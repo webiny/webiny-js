@@ -8,8 +8,7 @@ import {
     CmsContentEntryPermissionType,
     CmsContentEntryType,
     CmsContentModelType,
-    CmsContext,
-    DbItemTypes
+    CmsContext
 } from "@webiny/api-headless-cms/types";
 import * as utils from "../../../utils";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation";
@@ -33,6 +32,12 @@ const STATUS_PUBLISHED = "published";
 const STATUS_UNPUBLISHED = "unpublished";
 const STATUS_CHANGES_REQUESTED = "changesRequested";
 const STATUS_REVIEW_REQUESTED = "reviewRequested";
+
+type DbItem<T> = T & {
+    PK: string;
+    SK: string;
+    TYPE: string;
+};
 
 const createElasticSearchData = ({ values, ...entry }: CmsContentEntryType) => {
     return {
@@ -59,15 +64,19 @@ export default (): ContextPlugin<CmsContext> => ({
     async apply(context) {
         const { db, elasticSearch, security } = context;
 
-        const PK_ENTRY = () => `${createCmsPK(context)}#CME`;
-        const PK_ENTRY_LATEST = () => PK_ENTRY() + "#L";
-        const PK_ENTRY_PUBLISHED = () => PK_ENTRY() + "#P";
+        const PK_ENTRY = entryId => `${createCmsPK(context)}#CME#${entryId}`;
+        const SK_REVISION = version => {
+            return typeof version === "string" ? `REV#${version}` : `REV#${utils.zeroPad(version)}`;
+        };
+        const SK_LATEST = () => "L";
+        const SK_PUBLISHED = () => "P";
 
         const loaders = {
             getAllEntryRevisions: dataLoaders.getAllEntryRevisions(context, { PK_ENTRY }),
             getRevisionById: dataLoaders.getRevisionById(context, { PK_ENTRY }),
             getPublishedRevisionById: dataLoaders.getPublishedRevisionById(context, {
-                PK_ENTRY_PUBLISHED
+                PK_ENTRY,
+                SK_PUBLISHED
             })
         };
 
@@ -223,8 +232,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 const identity = security.getIdentity();
                 const locale = context.cms.getLocale();
 
-                const uniqueId = mdbid();
-                const version = 1;
+                const [uniqueId, version] = [mdbid(), 1];
                 const id = `${uniqueId}#${utils.zeroPad(version)}`;
 
                 const owner = {
@@ -255,8 +263,8 @@ export default (): ContextPlugin<CmsContext> => ({
                     .create({
                         ...utils.defaults.db,
                         data: {
-                            PK: PK_ENTRY(),
-                            SK: id,
+                            PK: PK_ENTRY(uniqueId),
+                            SK: SK_REVISION(version),
                             TYPE: TYPE_ENTRY,
                             ...entry
                         }
@@ -265,8 +273,8 @@ export default (): ContextPlugin<CmsContext> => ({
                     .create({
                         ...utils.defaults.db,
                         data: {
-                            PK: PK_ENTRY_LATEST(),
-                            SK: uniqueId,
+                            PK: PK_ENTRY(uniqueId),
+                            SK: SK_LATEST(),
                             TYPE: TYPE_ENTRY_LATEST,
                             id
                         }
@@ -288,17 +296,17 @@ export default (): ContextPlugin<CmsContext> => ({
                 utils.checkEntryAccess(context, permission, model);
 
                 // Entries are identified by a common parent ID + Revision number
-                const [uniqueId] = sourceId.split("#");
+                const [uniqueId, version] = sourceId.split("#");
 
                 const [[[entry]], [[latestEntry]]] = await db
                     .batch()
                     .read({
                         ...utils.defaults.db,
-                        query: { PK: PK_ENTRY(), SK: sourceId }
+                        query: { PK: PK_ENTRY(uniqueId), SK: SK_REVISION(version) }
                     })
                     .read({
                         ...utils.defaults.db,
-                        query: { PK: PK_ENTRY_LATEST(), SK: uniqueId }
+                        query: { PK: PK_ENTRY(uniqueId), SK: SK_LATEST() }
                     })
                     .execute();
 
@@ -309,12 +317,12 @@ export default (): ContextPlugin<CmsContext> => ({
                 }
 
                 const identity = security.getIdentity();
-                const version = parseInt(latestEntry.id.split("#")[1]) + 1;
-                const id = `${uniqueId}#${utils.zeroPad(version)}`;
+                const nextVersion = parseInt(latestEntry.id.split("#")[1]) + 1;
+                const id = `${uniqueId}#${utils.zeroPad(nextVersion)}`;
 
                 const newEntry: CmsContentEntryType = {
                     id,
-                    version,
+                    version: nextVersion,
                     modelId: entry.modelId,
                     locale: entry.locale,
                     savedOn: new Date().toISOString(),
@@ -337,9 +345,9 @@ export default (): ContextPlugin<CmsContext> => ({
                     .create({
                         ...utils.defaults.db,
                         data: {
-                            PK: PK_ENTRY(),
-                            SK: id,
-                            TYPE: DbItemTypes.CMS_CONTENT_MODEL_ENTRY,
+                            PK: PK_ENTRY(uniqueId),
+                            SK: SK_REVISION(utils.zeroPad(nextVersion)),
+                            TYPE: TYPE_ENTRY,
                             ...newEntry
                         }
                     })
@@ -347,8 +355,8 @@ export default (): ContextPlugin<CmsContext> => ({
                     .update({
                         ...utils.defaults.db,
                         data: {
-                            PK: PK_ENTRY_LATEST(),
-                            SK: uniqueId,
+                            PK: PK_ENTRY(uniqueId),
+                            SK: SK_LATEST(),
                             TYPE: TYPE_ENTRY_LATEST,
                             id
                         }
@@ -377,17 +385,17 @@ export default (): ContextPlugin<CmsContext> => ({
                 await validateModelEntryData(context, model, data);
 
                 // Now we know the data is valid, proceed with DB calls.
-                const [uniqueId] = id.split("#");
+                const [uniqueId, version] = id.split("#");
 
                 const [[[entry]], [[latestEntry]]] = await db
                     .batch()
                     .read({
                         ...utils.defaults.db,
-                        query: { PK: PK_ENTRY(), SK: id }
+                        query: { PK: PK_ENTRY(uniqueId), SK: SK_REVISION(version) }
                     })
                     .read({
                         ...utils.defaults.db,
-                        query: { PK: PK_ENTRY_LATEST(), SK: uniqueId }
+                        query: { PK: PK_ENTRY(uniqueId), SK: SK_LATEST() }
                     })
                     .execute();
 
@@ -414,7 +422,7 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 await db.update({
                     ...utils.defaults.db,
-                    query: { PK: PK_ENTRY(), SK: id },
+                    query: { PK: PK_ENTRY(uniqueId), SK: SK_REVISION(version) },
                     data: {
                         values: updatedEntryModel.values,
                         savedOn: updatedEntryModel.savedOn
@@ -439,174 +447,164 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 return updatedEntryModel;
             },
-            delete: async (model, id) => {
+            deleteRevision: async (model, revisionId) => {
                 const permission = await checkPermissions({ rwd: "d" });
                 utils.checkEntryAccess(context, permission, model);
 
-                const [uniqueId, version] = id.split("#");
+                const [uniqueId, version] = revisionId.split("#");
 
-                // If entry version is included in the ID, we only delete that specific revision.
-                if (version) {
-                    const [[[entry]], [[latestEntryData]], [[publishedEntryData]]] = await db
-                        .batch()
-                        .read({
-                            ...utils.defaults.db,
-                            query: {
-                                PK: PK_ENTRY(),
-                                SK: id
-                            }
-                        })
-                        .read({
-                            ...utils.defaults.db,
-                            query: {
-                                PK: PK_ENTRY_LATEST(),
-                                SK: uniqueId
-                            }
-                        })
-                        .read({
-                            ...utils.defaults.db,
-                            query: {
-                                PK: PK_ENTRY_PUBLISHED(),
-                                SK: uniqueId
-                            }
-                        })
-                        .execute();
-
-                    if (!entry) {
-                        throw new NotFoundError(`Entry "${id}" was not found!`);
-                    }
-
-                    utils.checkOwnership(context, permission, entry, "ownedBy");
-
-                    // Delete entry from DB
-                    const batch = db.batch().delete({
+                const [[[entry]], [[latestEntryData]], [[publishedEntryData]]] = await db
+                    .batch()
+                    .read({
                         ...utils.defaults.db,
                         query: {
-                            PK: PK_ENTRY(),
-                            SK: id
+                            PK: PK_ENTRY(uniqueId),
+                            SK: SK_REVISION(version)
                         }
-                    });
+                    })
+                    .read({
+                        ...utils.defaults.db,
+                        query: {
+                            PK: PK_ENTRY(uniqueId),
+                            SK: SK_LATEST()
+                        }
+                    })
+                    .read({
+                        ...utils.defaults.db,
+                        query: {
+                            PK: PK_ENTRY(uniqueId),
+                            SK: SK_PUBLISHED()
+                        }
+                    })
+                    .execute();
 
-                    const es = utils.defaults.es(context);
-                    const esOperations = [];
-
-                    const isLatest = latestEntryData ? latestEntryData.id === id : false;
-                    const isPublished = publishedEntryData ? publishedEntryData.id === id : false;
-
-                    // If the entry is published, remove published data, both from DB and ES.
-                    if (isPublished) {
-                        batch.delete({
-                            ...utils.defaults.db,
-                            query: {
-                                PK: PK_ENTRY_PUBLISHED(),
-                                SK: uniqueId
-                            }
-                        });
-
-                        esOperations.push({
-                            delete: { _id: `CME#P#${uniqueId}`, _index: es.index }
-                        });
-                    }
-
-                    // If the entry is "latest", assign the previously latest entry as the new latest.
-                    // Updates must be made on both DB and ES side.
-                    if (isLatest) {
-                        const [[prevLatestEntry]] = await db.read<CmsContentEntryType>({
-                            ...utils.defaults.db,
-                            query: { PK: PK_ENTRY(), SK: { $lt: id } },
-                            sort: { SK: -1 },
-                            limit: 1
-                        });
-
-                        // Update latest entry data.
-                        batch.update({
-                            ...utils.defaults.db,
-                            query: {
-                                PK: PK_ENTRY_LATEST(),
-                                SK: uniqueId
-                            },
-                            data: {
-                                ...latestEntryData,
-                                id: prevLatestEntry.id
-                            }
-                        });
-
-                        // Update the latest revision entry in ES.
-                        esOperations.push(
-                            { index: { _id: `CME#L#${uniqueId}`, _index: es.index } },
-                            getESLatestEntryData(prevLatestEntry)
-                        );
-                    }
-
-                    // Execute DB operations
-                    await batch.execute();
-
-                    // If the entry was neither published nor latest, we shouldn't have any operations to execute.
-                    if (esOperations.length) {
-                        await elasticSearch.bulk({ body: esOperations });
-                    }
-
-                    return;
+                if (!entry) {
+                    throw new NotFoundError(`Entry "${revisionId}" was not found!`);
                 }
 
-                // If we only have the entry ID, without the version number in it, delete all data related to that entry!
-                const [entries] = await db.read({
+                utils.checkOwnership(context, permission, entry, "ownedBy");
+
+                // Delete revision from DB
+                const batch = db.batch().delete({
                     ...utils.defaults.db,
                     query: {
-                        PK: PK_ENTRY(),
-                        SK: { $beginsWith: `${uniqueId}#` }
+                        PK: PK_ENTRY(uniqueId),
+                        SK: SK_REVISION(version)
                     }
                 });
 
-                if (!entries.length) {
-                    throw new NotFoundError(`Entry "${id}" was not found!`);
+                const es = utils.defaults.es(context);
+                const esOperations = [];
+
+                const isLatest = latestEntryData ? latestEntryData.id === revisionId : false;
+                const isPublished = publishedEntryData ? publishedEntryData.id === revisionId : false;
+
+                // If the entry is published, remove published data, both from DB and ES.
+                if (isPublished) {
+                    batch.delete({
+                        ...utils.defaults.db,
+                        query: {
+                            PK: PK_ENTRY(uniqueId),
+                            SK: SK_PUBLISHED()
+                        }
+                    });
+
+                    esOperations.push({
+                        delete: { _id: `CME#P#${uniqueId}`, _index: es.index }
+                    });
+                }
+
+                // If the entry is "latest", set the previous entry as the new latest.
+                // Updates must be made on both DB and ES side.
+                if (isLatest) {
+                    const [[prevLatestEntry]] = await db.read<DbItem<CmsContentEntryType>>({
+                        ...utils.defaults.db,
+                        query: {
+                            PK: PK_ENTRY(uniqueId),
+                            SK: { $lt: SK_REVISION(version) }
+                        },
+                        // Sorting in descending order will also make sure we only get items starting with REV#
+                        sort: { SK: -1 },
+                        limit: 1
+                    });
+
+                    if (!prevLatestEntry) {
+                        // If we haven't found the previous revision, this must must be the last revision.
+                        // We can safely call `deleteEntry` to remove the whole entry and all of the related data.
+                        return this.deleteEntry(model, uniqueId);
+                    }
+
+                    // Update latest entry data.
+                    batch.update({
+                        ...utils.defaults.db,
+                        query: {
+                            PK: PK_ENTRY(uniqueId),
+                            SK: SK_LATEST()
+                        },
+                        data: {
+                            ...latestEntryData,
+                            id: prevLatestEntry.id
+                        }
+                    });
+
+                    // Update the latest revision entry in ES.
+                    esOperations.push(
+                        { index: { _id: `CME#L#${uniqueId}`, _index: es.index } },
+                        getESLatestEntryData(prevLatestEntry)
+                    );
+                }
+
+                // Execute DB operations
+                await batch.execute();
+
+                // If the entry was neither published nor latest, we shouldn't have any operations to execute.
+                if (esOperations.length) {
+                    await elasticSearch.bulk({ body: esOperations });
+                }
+            },
+            deleteEntry: async (model, entryId) => {
+                const permission = await checkPermissions({ rwd: "d" });
+                utils.checkEntryAccess(context, permission, model);
+
+                const [items] = await db.read({
+                    ...utils.defaults.db,
+                    query: {
+                        PK: PK_ENTRY(entryId),
+                        SK: { $gt: " " }
+                    }
+                });
+
+                if (!items.length) {
+                    throw new NotFoundError(`Entry "${entryId}" was not found!`);
                 }
 
                 utils.checkOwnership(context, permission, entries[0], "ownedBy");
 
-                // TODO: handle batch via pagination in case we have more than 23 revisions.
-                // 23 because we also have "latest" and "published" records to delete
-                // and Dynamo has a batchDelete limit of 25.
-
                 // Delete all items from DB
-                await db
-                    .batch()
-                    .delete(
-                        ...entries.map(entry => ({
-                            ...utils.defaults.db,
-                            query: {
-                                PK: PK_ENTRY(),
-                                SK: entry.id
-                            }
-                        }))
-                    )
-                    .delete({
-                        // Also attempt to delete the "published" item (if it exists)
-                        ...utils.defaults.db,
-                        query: {
-                            PK: PK_ENTRY_PUBLISHED(),
-                            SK: uniqueId
-                        }
-                    })
-                    .delete({
-                        // And the "latest" item
-                        ...utils.defaults.db,
-                        query: {
-                            PK: PK_ENTRY_LATEST(),
-                            SK: uniqueId
-                        }
-                    })
-                    .execute();
+                await utils.paginateBatch(items, 25, async items => {
+                    await db
+                        .batch()
+                        .delete(
+                            ...items.map(item => ({
+                                ...utils.defaults.db,
+                                query: {
+                                    PK: item.PK,
+                                    SK: item.SK
+                                }
+                            }))
+                        )
+                        .execute();
+                });
 
                 // Remove everything from Elastic Search as well.
                 const es = utils.defaults.es(context);
                 await elasticSearch.bulk({
                     body: [
                         {
-                            delete: { _id: `CME#P#${uniqueId}`, _index: es.index }
+                            delete: { _id: `CME#P#${entryId}`, _index: es.index }
                         },
                         {
-                            delete: { _id: `CME#L#${uniqueId}`, _index: es.index }
+                            delete: { _id: `CME#L#${entryId}`, _index: es.index }
                         }
                     ]
                 });
@@ -615,21 +613,21 @@ export default (): ContextPlugin<CmsContext> => ({
                 const permission = await checkPermissions({ rcpu: "p" });
                 utils.checkEntryAccess(context, permission, model);
 
-                const [uniqueId] = id.split("#");
+                const [uniqueId, version] = id.split("#");
 
                 const [[[entry]], [[latestEntryData]], [[publishedEntryData]]] = await db
                     .batch()
                     .read({
                         ...utils.defaults.db,
-                        query: { PK: PK_ENTRY(), SK: id }
+                        query: { PK: PK_ENTRY(uniqueId), SK: SK_REVISION(version) }
                     })
                     .read({
                         ...utils.defaults.db,
-                        query: { PK: PK_ENTRY_LATEST(), SK: uniqueId }
+                        query: { PK: PK_ENTRY(uniqueId), SK: SK_LATEST() }
                     })
                     .read({
                         ...utils.defaults.db,
-                        query: { PK: PK_ENTRY_PUBLISHED(), SK: uniqueId }
+                        query: { PK: PK_ENTRY(uniqueId), SK: SK_PUBLISHED() }
                     })
                     .execute();
 
@@ -651,8 +649,8 @@ export default (): ContextPlugin<CmsContext> => ({
                 batch.update({
                     ...utils.defaults.db,
                     query: {
-                        PK: PK_ENTRY(),
-                        SK: id
+                        PK: PK_ENTRY(uniqueId),
+                        SK: SK_REVISION(version)
                     },
                     data: entry
                 });
@@ -668,7 +666,10 @@ export default (): ContextPlugin<CmsContext> => ({
 
                     const [[previouslyPublishedEntry]] = await db.read<CmsContentEntryType>({
                         ...utils.defaults.db,
-                        query: { PK: PK_ENTRY(), SK: publishedEntryData.id }
+                        query: {
+                            PK: PK_ENTRY(uniqueId),
+                            SK: SK_REVISION(utils.zeroPad(publishedEntryData.version))
+                        }
                     });
 
                     previouslyPublishedEntry.status = STATUS_UNPUBLISHED;
@@ -678,8 +679,8 @@ export default (): ContextPlugin<CmsContext> => ({
                             // Update currently published entry (unpublish it)
                             ...utils.defaults.db,
                             query: {
-                                PK: PK_ENTRY(),
-                                SK: publishedEntryData.id
+                                PK: PK_ENTRY(uniqueId),
+                                SK: SK_REVISION(utils.zeroPad(publishedEntryData.version))
                             },
                             data: previouslyPublishedEntry
                         })
@@ -687,12 +688,12 @@ export default (): ContextPlugin<CmsContext> => ({
                             // Update the helper item in DB with the new published entry ID
                             ...utils.defaults.db,
                             query: {
-                                PK: PK_ENTRY_PUBLISHED(),
-                                SK: uniqueId
+                                PK: PK_ENTRY(uniqueId),
+                                SK: SK_PUBLISHED()
                             },
                             data: {
-                                PK: PK_ENTRY_PUBLISHED(),
-                                SK: uniqueId,
+                                PK: PK_ENTRY(uniqueId),
+                                SK: SK_PUBLISHED(),
                                 ...publishedEntryData,
                                 ...omit(entry, ["PK", "SK", "TYPE"])
                             }
@@ -701,8 +702,8 @@ export default (): ContextPlugin<CmsContext> => ({
                     batch.create({
                         ...utils.defaults.db,
                         data: {
-                            PK: PK_ENTRY_PUBLISHED(),
-                            SK: uniqueId,
+                            PK: PK_ENTRY(uniqueId),
+                            SK: SK_PUBLISHED(),
                             TYPE: TYPE_ENTRY_PUBLISHED,
                             ...omit(entry, ["PK", "SK", "TYPE"])
                         }
@@ -745,17 +746,17 @@ export default (): ContextPlugin<CmsContext> => ({
             },
             requestChanges: async (model, id) => {
                 const permission = await checkPermissions({ rcpu: "c" });
-                const [uniqueId] = id.split("#");
+                const [uniqueId, version] = id.split("#");
 
                 const [[[entry]], [[latestEntryData]]] = await db
                     .batch()
                     .read({
                         ...utils.defaults.db,
-                        query: { PK: PK_ENTRY(), SK: id }
+                        query: { PK: PK_ENTRY(uniqueId), SK: SK_REVISION(version) }
                     })
                     .read({
                         ...utils.defaults.db,
-                        query: { PK: PK_ENTRY_LATEST(), SK: uniqueId }
+                        query: { PK: PK_ENTRY(uniqueId), SK: SK_LATEST() }
                     })
                     .execute();
 
@@ -791,8 +792,8 @@ export default (): ContextPlugin<CmsContext> => ({
                 await db.update({
                     ...utils.defaults.db,
                     query: {
-                        PK: PK_ENTRY(),
-                        SK: id
+                        PK: PK_ENTRY(uniqueId),
+                        SK: SK_REVISION(version)
                     },
                     data: updatedData
                 });
@@ -816,17 +817,17 @@ export default (): ContextPlugin<CmsContext> => ({
             },
             requestReview: async (model, id) => {
                 const permission = await checkPermissions({ rcpu: "r" });
-                const [uniqueId] = id.split("#");
+                const [uniqueId, version] = id.split("#");
 
                 const results = await db
                     .batch()
                     .read({
                         ...utils.defaults.db,
-                        query: { PK: PK_ENTRY(), SK: id }
+                        query: { PK: PK_ENTRY(uniqueId), SK: SK_REVISION(version) }
                     })
                     .read({
                         ...utils.defaults.db,
-                        query: { PK: PK_ENTRY_LATEST(), SK: uniqueId }
+                        query: { PK: PK_ENTRY(uniqueId), SK: SK_LATEST() }
                     })
                     .execute();
 
@@ -857,8 +858,8 @@ export default (): ContextPlugin<CmsContext> => ({
                 await db.update({
                     ...utils.defaults.db,
                     query: {
-                        PK: PK_ENTRY(),
-                        SK: id
+                        PK: PK_ENTRY(uniqueId),
+                        SK: SK_REVISION(version)
                     },
                     data: updatedData
                 });
@@ -883,21 +884,21 @@ export default (): ContextPlugin<CmsContext> => ({
             unpublish: async (model, id) => {
                 const permission = await checkPermissions({ rcpu: "u" });
 
-                const [uniqueId] = id.split("#");
+                const [uniqueId, version] = id.split("#");
 
                 const [[[entry]], [[latestEntryData]], [[publishedEntryData]]] = await db
                     .batch()
                     .read({
                         ...utils.defaults.db,
-                        query: { PK: PK_ENTRY(), SK: id }
+                        query: { PK: PK_ENTRY(uniqueId), SK: SK_REVISION(version) }
                     })
                     .read({
                         ...utils.defaults.db,
-                        query: { PK: PK_ENTRY_LATEST(), SK: uniqueId }
+                        query: { PK: PK_ENTRY(uniqueId), SK: SK_LATEST() }
                     })
                     .read({
                         ...utils.defaults.db,
-                        query: { PK: PK_ENTRY_PUBLISHED(), SK: uniqueId }
+                        query: { PK: PK_ENTRY(uniqueId), SK: SK_PUBLISHED() }
                     })
                     .execute();
 
@@ -920,15 +921,15 @@ export default (): ContextPlugin<CmsContext> => ({
                     .delete({
                         ...utils.defaults.db,
                         query: {
-                            PK: PK_ENTRY_PUBLISHED(),
-                            SK: uniqueId
+                            PK: PK_ENTRY(uniqueId),
+                            SK: SK_PUBLISHED()
                         }
                     })
                     .update({
                         ...utils.defaults.db,
                         query: {
-                            PK: PK_ENTRY(),
-                            SK: id
+                            PK: PK_ENTRY(uniqueId),
+                            SK: SK_REVISION(version)
                         },
                         data: entry
                     })

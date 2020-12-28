@@ -10,8 +10,8 @@ export const getAllEntryRevisions = (context: CmsContext, { PK_ENTRY }) => {
             const [entries] = await context.db.read({
                 ...utils.defaults.db,
                 query: {
-                    PK: PK_ENTRY(),
-                    SK: { $beginsWith: keys[i] }
+                    PK: PK_ENTRY(keys[i]),
+                    SK: { $beginsWith: "REV#" }
                 }
             });
 
@@ -24,18 +24,21 @@ export const getAllEntryRevisions = (context: CmsContext, { PK_ENTRY }) => {
 
 export const getRevisionById = (context: CmsContext, { PK_ENTRY }) => {
     return new DataLoader<string, CmsContentEntryType>(async keys => {
-        const batch = context.db.batch();
-        batch.read(
-            ...keys.map(id => ({
+        const queries = keys.map(id => {
+            const [entryId, version] = id.split("#");
+            return {
                 ...utils.defaults.db,
                 query: {
-                    PK: PK_ENTRY(),
-                    SK: id
+                    PK: PK_ENTRY(entryId),
+                    SK: `REV#${version}`
                 }
-            }))
-        );
+            };
+        });
 
-        const results = (await batch.execute()) as [CmsContentEntryType[]][];
+        const results = (await context.db
+            .batch()
+            .read(...queries)
+            .execute()) as [CmsContentEntryType[]][];
 
         // We're not filtering empty values here as we must return the same amount of items as the number of "keys".
         const items = results.map(result => {
@@ -48,7 +51,7 @@ export const getRevisionById = (context: CmsContext, { PK_ENTRY }) => {
     });
 };
 
-export const getPublishedRevisionById = (context: CmsContext, { PK_ENTRY_PUBLISHED }) => {
+export const getPublishedRevisionById = (context: CmsContext, { PK_ENTRY, SK_PUBLISHED }) => {
     return new DataLoader<string, CmsContentEntryType>(async keys => {
         const entries = await context.db
             .batch()
@@ -56,8 +59,8 @@ export const getPublishedRevisionById = (context: CmsContext, { PK_ENTRY_PUBLISH
                 ...keys.map(id => ({
                     ...utils.defaults.db,
                     query: {
-                        PK: PK_ENTRY_PUBLISHED(),
-                        SK: id
+                        PK: PK_ENTRY(id),
+                        SK: SK_PUBLISHED()
                     }
                 }))
             )

@@ -4,7 +4,7 @@ import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
 import models from "./mocks/contentModels";
 
-describe("MANAGE - Resolvers", () => {
+describe("Endpoint access", () => {
     let contentModelGroup: CmsContentModelGroupType;
 
     const esCmsIndex = "root-headless-cms";
@@ -23,6 +23,9 @@ describe("MANAGE - Resolvers", () => {
         {
             name: "cms.manage.contentEntry",
             rwd: "rwd"
+        },
+        {
+            name: "cms.manage.contentModel"
         }
     ];
 

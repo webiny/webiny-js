@@ -20,6 +20,9 @@ const createIdentity = (permissions: any[] = []): SecurityIdentity => {
             },
             {
                 name: "cms.endpoint.manage"
+            },
+            {
+                name: "cms.manage.contentModel"
             }
         ].concat(permissions)
     };
@@ -104,7 +107,8 @@ describe("MANAGE - resolvers - api key", () => {
             createCategory,
             updateCategory,
             getCategory,
-            listCategories
+            listCategories,
+            deleteCategory
         } = await useCategoryManageHandler({
             ...manageOpts,
             identity: createIdentity([
@@ -286,17 +290,19 @@ describe("MANAGE - resolvers - api key", () => {
             }
         });
 
-        // const [deleteResponse] = await deleteCategory({
-        //     revision: updatedCategory.id
-        // }, headers);
-        //
-        // expect(deleteResponse).toEqual({
-        //     data: {
-        //         deleteCategory: {
-        //             data: true,
-        //             error: null,
-        //         }
-        //     }
-        // });
+        const a = 12;
+        
+        const [deleteResponse] = await deleteCategory({
+            revision: updatedCategory.id
+        }, headers);
+
+        expect(deleteResponse).toEqual({
+            data: {
+                deleteCategory: {
+                    data: true,
+                    error: null,
+                }
+            }
+        });
     });
 });
