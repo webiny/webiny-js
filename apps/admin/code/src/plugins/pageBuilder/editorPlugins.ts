@@ -35,7 +35,6 @@ import gridBlock from "@webiny/app-page-builder/editor/plugins/blocks/gridBlock"
 import blocksCategories from "@webiny/app-page-builder/editor/plugins/blocksCategories";
 // Toolbar
 import addElement from "@webiny/app-page-builder/editor/plugins/toolbar/addElement";
-import onboarding from "@webiny/app-page-builder/editor/plugins/toolbar/onboarding";
 import saving from "@webiny/app-page-builder/editor/plugins/toolbar/saving";
 import preview from "@webiny/app-page-builder/editor/plugins/toolbar/preview";
 import { undo, redo } from "@webiny/app-page-builder/editor/plugins/toolbar/undoRedo";
@@ -110,7 +109,6 @@ export default [
     addElement,
     preview,
     saving,
-    onboarding,
     undo,
     redo,
     // Element settings
