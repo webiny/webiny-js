@@ -1,8 +1,13 @@
 import * as React from "react";
 import { plugins } from "@webiny/plugins";
-import { PbThemePlugin, PbTheme } from "@webiny/app-page-builder/types";
+import { PbThemePlugin, PbTheme, DisplayMode } from "@webiny/app-page-builder/types";
 
 export const PageBuilderContext = React.createContext(null);
+
+export type ResponsiveDisplayMode = {
+    displayMode: string;
+    setDisplayMode: Function;
+};
 
 export type PageBuilderContextValue = {
     theme: PbTheme;
@@ -12,6 +17,7 @@ export type PageBuilderContextValue = {
             error?: React.ComponentType<any>;
         };
     };
+    responsiveDisplayMode: ResponsiveDisplayMode;
 };
 
 export type PageBuilderProviderProps = {
@@ -19,6 +25,8 @@ export type PageBuilderProviderProps = {
 };
 
 export const PageBuilderProvider = ({ children }: PageBuilderProviderProps) => {
+    const [displayMode, setDisplayMode] = React.useState(DisplayMode.DESKTOP);
+
     const value: PageBuilderContextValue = React.useMemo(() => {
         const theme = Object.assign(
             {},
@@ -26,7 +34,11 @@ export const PageBuilderProvider = ({ children }: PageBuilderProviderProps) => {
         );
 
         return {
-            theme
+            theme,
+            responsiveDisplayMode: {
+                displayMode,
+                setDisplayMode
+            }
         };
     }, []);
 
