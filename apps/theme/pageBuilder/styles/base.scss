@@ -3,6 +3,36 @@
   position: relative;
   padding-bottom: 100px;
 }
+/**
+ * PB editor responsive device preview style.
+ * We dynamically assign these to PB page document element in editor,
+ * based on selected mode.
+ */
+.webiny-pb-editor-device--desktop {
+  max-width: 100%;
+}
+.webiny-pb-editor-device--tablet {
+  max-width: 768px;
+}
+.webiny-pb-editor-device--mobile-landscape {
+  max-width: 568px;
+}
+.webiny-pb-editor-device--mobile-portrait {
+  max-width: 320px;
+}
+/**
+ * Responsive page root CSS class.
+ * We dynamically assign these to PB page document element,
+ * based on screen size to mimic "@media-query" functionality.
+ */
+.webiny-pb-media-query--desktop {
+}
+.webiny-pb-media-query--tablet {
+}
+.webiny-pb-media-query--mobile-landscape {
+}
+.webiny-pb-media-query--mobile-portrait {
+}
 
 .webiny-pb-page-document {
   background-color: var(--webiny-theme-color-surface, #fff);
