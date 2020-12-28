@@ -1226,39 +1226,143 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                         return page;
                     },
 
-                    async render(args) {
-                        if (!configuration?.prerendering?.handler) {
-                            return;
-                        }
-
-                        const settings = await context.pageBuilder.settings.default.get();
-
-                        let appUrl = settings?.prerendering?.app?.url;
-                        let storageName = settings?.prerendering?.storage?.name;
-
-                        if (!appUrl || !storageName) {
-                            const defaultSettings = await context.pageBuilder.settings.default.getDefault();
-                            if (!appUrl) {
-                                appUrl = defaultSettings?.prerendering?.app?.url;
+                    prerendering: {
+                        async render(args) {
+                            const handlers = configuration?.prerendering?.handlers;
+                            if (!handlers) {
+                                return;
                             }
+
+                            const current = await context.pageBuilder.settings.default.get();
+                            const defaults = await context.pageBuilder.settings.default.getDefault();
+
+                            const appUrl =
+                                current?.prerendering?.app?.url || defaults?.prerendering?.app?.url;
+
+                            const storageName =
+                                current?.prerendering?.storage?.name ||
+                                defaults?.prerendering?.storage?.name;
+
+                            if (!appUrl || !storageName) {
+                                return;
+                            }
+
+                            const meta = merge(
+                                defaults?.prerendering?.meta,
+                                current?.prerendering?.meta
+                            );
+
+                            const { paths, tags } = args;
+
+                            if (Array.isArray(paths)) {
+                                if (!handlers.render) {
+                                    return;
+                                }
+
+                                return await context.handlerClient.invoke<RenderHandlerArgs>({
+                                    name: configuration.prerendering.handlers.render,
+                                    await: false,
+                                    payload: paths.map<RenderArgs>(p => ({
+                                        url: appUrl + p.path,
+                                        configuration: merge(
+                                            {
+                                                meta,
+                                                storage: {
+                                                    folder: trimStart(p.path, "/"),
+                                                    name: storageName
+                                                },
+                                                db: {
+                                                    namespace:
+                                                        "T#" + context.security.getTenant().id
+                                                }
+                                            },
+                                            p.configuration
+                                        )
+                                    }))
+                                });
+                            }
+
+                            return;
+                            if (!handlers.queue) {
+                                return;
+                            }
+
+                            return await context.handlerClient.invoke<RenderHandlerArgs>({
+                                name: configuration.prerendering.handlers.queue,
+                                await: false,
+                                payload: paths.map<RenderArgs>(p => ({
+                                    url: appUrl + p.path,
+                                    configuration: merge(
+                                        // Configuration is mainly static (defined here), but some configuration
+                                        // overrides can arrive via the call args, so let's do a merge here.
+                                        {
+                                            storage: {
+                                                folder: trimStart(p.path, "/"),
+                                                name: storageName
+                                            },
+                                            db: {
+                                                namespace: "T#" + context.security.getTenant().id
+                                            }
+                                        },
+                                        p.configuration
+                                    )
+                                }))
+                            });
+                        },
+                        async flush(args) {
+                            const handlers = configuration?.prerendering?.handlers;
+                            if (!handlers) {
+                                return;
+                            }
+
+                            const current = await context.pageBuilder.settings.default.get();
+                            const defaults = await context.pageBuilder.settings.default.getDefault();
+
+                            const appUrl =
+                                current?.prerendering?.app?.url || defaults?.prerendering?.app?.url;
+
+                            const storageName =
+                                current?.prerendering?.storage?.name ||
+                                defaults?.prerendering?.storage?.name;
 
                             if (!storageName) {
-                                storageName = defaultSettings?.prerendering?.storage?.name;
+                                return;
                             }
-                        }
 
-                        if (!appUrl || !storageName) {
+                            const { paths, tags } = args;
+
+                            if (Array.isArray(paths)) {
+                                if (!handlers.flush) {
+                                    return;
+                                }
+
+                                return await context.handlerClient.invoke<FlushHandlerArgs>({
+                                    name: configuration.prerendering.handlers.flush,
+                                    await: false,
+                                    payload: paths.map<FlushArgs>(p => ({
+                                        url: appUrl + p.path,
+                                        // Configuration is mainly static (defined here), but some configuration
+                                        // overrides can arrive via the call args, so let's do a merge here.
+                                        configuration: merge(
+                                            {
+                                                db: {
+                                                    namespace:
+                                                        "T#" + context.security.getTenant().id
+                                                }
+                                            },
+                                            p.configuration
+                                        )
+                                    }))
+                                });
+                            }
+
                             return;
-                        }
+                            if (!handlers.queue) {
+                                return;
+                            }
 
-                        const { paths, tags } = args;
-
-                        const tenant = context.security.getTenant().id;
-                        const locale = i18nContent.getLocale().code;
-
-                        if (Array.isArray(paths)) {
                             return await context.handlerClient.invoke<RenderHandlerArgs>({
-                                name: configuration.prerendering.handler,
+                                name: configuration.prerendering.handlers.queue,
                                 await: false,
                                 payload: paths.map<RenderArgs>(p => ({
                                     url: appUrl + p.path,
@@ -1274,25 +1378,6 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                                 }))
                             });
                         }
-
-                        if (tags.length > 20) {
-                            throw new Error("Cannot specify more than 20 tags.");
-                        }
-
-                        const batch = db.batch();
-                        for (let i = 0; i < tags.length; i++) {
-                            batch.create({
-                                data: {
-                                    PK: PK_PAGE_RENDER_QUEUE(),
-                                    SK: mdbid(),
-                                    tenant,
-                                    locale,
-                                    tag: tags[i]
-                                }
-                            });
-                        }
-
-                        await batch.execute();
                     }
                 }
             };
