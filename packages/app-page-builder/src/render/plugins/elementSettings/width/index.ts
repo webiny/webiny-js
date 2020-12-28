@@ -11,6 +11,6 @@ export default {
             return style;
         }
 
-        return { ...style, width: width.value };
+        return { ...style, maxWidth: width.value };
     }
 } as PbRenderElementStylePlugin;
