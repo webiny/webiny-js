@@ -54,8 +54,8 @@ export const createInitialPerDeviceSettingValue = (defaultValue: any) => {
         .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
         .map(pl => pl.config);
     // Set default value for each mode.
-    editorModes.forEach(({ name }) => {
-        value[name] = defaultValue;
+    editorModes.forEach(({ displayMode }) => {
+        value[displayMode] = defaultValue;
     });
     return value;
 };

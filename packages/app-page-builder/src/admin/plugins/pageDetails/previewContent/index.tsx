@@ -9,7 +9,6 @@ import styled from "@emotion/styled";
 import { Elevation } from "@webiny/ui/Elevation";
 import PagePreview from "./PagePreview";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { ResponsiveModeProvider } from "../../../../contexts/ResponsiveMode";
 
 const RenderBlock = styled("div")({
     position: "relative",
@@ -45,11 +44,7 @@ const plugins = [
         name: "pb-page-details-revision-preview",
         type: "pb-page-details-revision-content-preview",
         render(props) {
-            return (
-                <ResponsiveModeProvider>
-                    <PagePreview {...props} />
-                </ResponsiveModeProvider>
-            );
+            return <PagePreview {...props} />;
         }
     } as PbPageDetailsRevisionContentPreviewPlugin
 ];
