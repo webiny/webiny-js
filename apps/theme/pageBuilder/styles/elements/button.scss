@@ -142,8 +142,8 @@
     overflow: hidden !important;
   }
 }
-.webiny-pb-page-document-mode--mobile-landscape .webiny-pb-page-element-button,
-.webiny-pb-page-document-mode--mobile-portrait .webiny-pb-page-element-button {
+.webiny-pb-media-query--mobile-landscape .webiny-pb-page-element-button,
+.webiny-pb-media-query--mobile-portrait .webiny-pb-page-element-button {
   // force center align on mobile
   margin: 0 auto !important;
 }

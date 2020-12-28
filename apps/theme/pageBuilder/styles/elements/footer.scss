@@ -54,8 +54,8 @@
   }
 }
 
-.webiny-pb-page-document-mode--mobile-landscape .webiny-pb-section-footer,
-.webiny-pb-page-document-mode--mobile-portrait .webiny-pb-section-footer {
+.webiny-pb-media-query--mobile-landscape .webiny-pb-section-footer,
+.webiny-pb-media-query--mobile-portrait .webiny-pb-section-footer {
   &__wrapper {
     justify-content: space-evenly;
     flex-direction: column;

@@ -40,8 +40,8 @@
 }
 
 // desktop header
-.webiny-pb-page-document-mode--desktop,
-.webiny-pb-page-document-mode--tablet {
+.webiny-pb-media-query--desktop,
+.webiny-pb-media-query--tablet {
   .webiny-pb-section-header {
     padding: 10px 0 5px 0;
 
@@ -111,8 +111,8 @@
 }
 
 // mobile header
-.webiny-pb-page-document-mode--mobile-landscape,
-.webiny-pb-page-document-mode--mobile-portrait {
+.webiny-pb-media-query--mobile-landscape,
+.webiny-pb-media-query--mobile-portrait {
   .webiny-pb-section-header {
     &__mobile-icon {
       position: fixed;

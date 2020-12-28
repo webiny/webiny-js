@@ -39,15 +39,15 @@
   }
 }
 // Make items grow on tablet
-.webiny-pb-page-document-mode--tablet .webiny-pb-page-element-page-list {
+.webiny-pb-media-query--tablet .webiny-pb-page-element-page-list {
   &__item {
     flex: 1 1 280px;
   }
 }
 
 // Make items grow on mobile
-.webiny-pb-page-document-mode--mobile-landscape .hide-on-mobile,
-.webiny-pb-page-document-mode--mobile-portrait .hide-on-mobile {
+.webiny-pb-media-query--mobile-landscape .hide-on-mobile,
+.webiny-pb-media-query--mobile-portrait .hide-on-mobile {
   &__item {
     flex: 1 1 280px;
   }

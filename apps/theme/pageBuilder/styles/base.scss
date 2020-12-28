@@ -36,34 +36,20 @@
 
 .webiny-pb-page-document {
   background-color: var(--webiny-theme-color-surface, #fff);
-  min-height: calc(100vh + 150px);
   max-width: 100%;
 
   // fixes the overflow created by the animation library (fix pending)
   // https://github.com/michalsnik/aos/issues/416
   overflow: hidden;
   width: 100vw;
-
-  @include desktop-and-tablet {
-    min-height: calc(100vh - 230px);
-  }
 }
-/**
- * Responsive editor mode CSS class.
- * We dynamically assign these to PB page document element,
- * based on editor mode.
- */
-.webiny-pb-page-document-mode--desktop {
-  max-width: 100%;
+.webiny-pb-media-query--desktop .webiny-pb-page-document,
+.webiny-pb-media-query--tablet .webiny-pb-page-document {
+  min-height: calc(100vh - 230px);
 }
-.webiny-pb-page-document-mode--tablet {
-  max-width: 768px;
-}
-.webiny-pb-page-document-mode--mobile-landscape {
-  max-width: 568px;
-}
-.webiny-pb-page-document-mode--mobile-portrait {
-  max-width: 320px;
+.webiny-pb-media-query--mobile-landscape .webiny-pb-page-document,
+.webiny-pb-media-query--mobile-portrait .webiny-pb-page-document {
+  min-height: calc(100vh + 150px);
 }
 
 // base css class that applies to all elements created by the page editor
@@ -76,7 +62,7 @@
   justify-content: var(--desktop-justify-content);
   align-items: var(--desktop-align-items);
 }
-.webiny-pb-page-document-mode--tablet .webiny-pb-base-page-element-style {
+.webiny-pb-media-query--tablet .webiny-pb-base-page-element-style {
   padding: var(--tablet-padding-top) var(--tablet-padding-right) var(--tablet-padding-bottom)
     var(--tablet-padding-left);
   margin: var(--tablet-margin-top) var(--tablet-margin-right) var(--tablet-margin-bottom)
@@ -85,7 +71,7 @@
   justify-content: var(--tablet-justify-content);
   align-items: var(--tablet-align-items);
 }
-.webiny-pb-page-document-mode--mobile-landscape .webiny-pb-base-page-element-style {
+.webiny-pb-media-query--mobile-landscape .webiny-pb-base-page-element-style {
   padding: var(--mobile-landscape-padding-top) var(--mobile-landscape-padding-right)
     var(--mobile-landscape-padding-bottom) var(--mobile-landscape-padding-left);
   margin: var(--mobile-landscape-margin-top) var(--mobile-landscape-margin-right)
@@ -97,7 +83,7 @@
   // TODO: Make it also per-device
   //background-size: contain !important;
 }
-.webiny-pb-page-document-mode--mobile-portrait .webiny-pb-base-page-element-style {
+.webiny-pb-media-query--mobile-portrait .webiny-pb-base-page-element-style {
   padding: var(--mobile-portrait-padding-top) var(--mobile-portrait-padding-right)
     var(--mobile-portrait-padding-bottom) var(--mobile-portrait-padding-left);
   margin: var(--mobile-portrait-margin-top) var(--mobile-portrait-margin-right)
@@ -109,12 +95,12 @@
   //background-size: contain !important;
 }
 // Hide content on mobile
-.webiny-pb-page-document-mode--mobile-landscape .hide-on-mobile,
-.webiny-pb-page-document-mode--mobile-portrait .hide-on-mobile {
+.webiny-pb-media-query--mobile-landscape .hide-on-mobile,
+.webiny-pb-media-query--mobile-portrait .hide-on-mobile {
   display: none;
 }
 // Hide content on desktop & tablet
-.webiny-pb-page-document-mode--desktop .hide-on-desktop-and-tablet,
-.webiny-pb-page-document-mode--tablet .hide-on-desktop-and-tablet {
+.webiny-pb-media-query--desktop .hide-on-desktop-and-tablet,
+.webiny-pb-media-query--tablet .hide-on-desktop-and-tablet {
   display: none;
 }
