@@ -17,7 +17,7 @@ export type PageBuilderContextValue = {
             error?: React.ComponentType<any>;
         };
     };
-    responsiveDisplayMode: ResponsiveDisplayMode;
+    responsiveDisplayMode?: ResponsiveDisplayMode;
 };
 
 export type PageBuilderProviderProps = {
@@ -34,15 +34,23 @@ export const PageBuilderProvider = ({ children }: PageBuilderProviderProps) => {
         );
 
         return {
-            theme,
-            responsiveDisplayMode: {
-                displayMode,
-                setDisplayMode
-            }
+            theme
         };
     }, []);
 
-    return <PageBuilderContext.Provider value={value}>{children}</PageBuilderContext.Provider>;
+    return (
+        <PageBuilderContext.Provider
+            value={{
+                ...value,
+                responsiveDisplayMode: {
+                    displayMode,
+                    setDisplayMode
+                }
+            }}
+        >
+            {children}
+        </PageBuilderContext.Provider>
+    );
 };
 
 export const PageBuilderConsumer = ({ children }) => (

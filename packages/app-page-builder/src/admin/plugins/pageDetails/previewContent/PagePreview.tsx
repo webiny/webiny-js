@@ -93,7 +93,7 @@ const PagePreview = ({ page }: PagePreviewProps) => {
             let mode = "desktop";
             responsiveModeConfigs.forEach(config => {
                 if (width <= config.minWidth) {
-                    mode = config.name;
+                    mode = config.displayMode;
                 }
             });
 
