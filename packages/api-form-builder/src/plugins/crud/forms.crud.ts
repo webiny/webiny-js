@@ -15,6 +15,7 @@ import { encodeCursor } from "@webiny/api-file-manager/plugins/crud/utils/cursor
 const TYPE_FORM = "fb.form";
 const TYPE_FORM_LATEST = "fb.form.latest";
 const TYPE_FORM_LATEST_PUBLISHED = "fb.form.latestPublished";
+const TYPE_FORM_SUBMISSION = "fb.formSubmission";
 
 const getESDataForLatestRevision = (form: FbForm, context: FormBuilderContext) => ({
     __type: "fb.form",
@@ -35,15 +36,24 @@ const getESDataForLatestRevision = (form: FbForm, context: FormBuilderContext) =
 
 const zeroPad = version => `${version}`.padStart(4, "0");
 
+type DbItem<T = unknown> = T & {
+    PK: string;
+    SK: string;
+    TYPE: string;
+};
+
 export default {
     type: "context",
     apply(context) {
         const { db, i18nContent, elasticSearch, security } = context;
 
-        const PK_FORM = () => `${utils.getPKPrefix(context)}F`;
-        const PK_FORM_LATEST = () => PK_FORM() + "#L";
-        const PK_FORM_LATEST_PUBLISHED = () => PK_FORM() + "#LP";
-        const PK_FORM_SUBMISSION = () => `${PK_FORM()}S`;
+        const PK_FORM = formId => `${utils.getPKPrefix(context)}F#${formId}`;
+        const SK_FORM_REVISION = version => {
+            return typeof version === "string" ? `REV#${version}` : `REV#${zeroPad(version)}`;
+        };
+        const SK_FORM_LATEST = () => "L";
+        const SK_FORM_LATEST_PUBLISHED = () => "LP";
+        const SK_SUBMISSION = submissionId => `FS#${submissionId}`;
 
         context.formBuilder = {
             ...context.formBuilder,
@@ -51,11 +61,13 @@ export default {
                 async getForm(id) {
                     const permission = await utils.checkBaseFormPermissions(context, { rwd: "r" });
 
+                    const [uniqueId, version] = id.split("#");
+
                     const [[form]] = await db.read<FbForm>({
                         ...defaults.db,
                         query: {
-                            PK: PK_FORM(),
-                            SK: id
+                            PK: PK_FORM(uniqueId),
+                            SK: SK_FORM_REVISION(version)
                         }
                     });
 
@@ -143,17 +155,19 @@ export default {
                     const [uniqueId] = id.split("#");
                     const [forms] = await db.read<FbForm>({
                         ...defaults.db,
-                        query: { PK: PK_FORM(), SK: { $beginsWith: `${uniqueId}#` } }
+                        query: { PK: PK_FORM(uniqueId), SK: { $beginsWith: "REV#" } }
                     });
 
                     return forms.sort((a, b) => b.version - a.version);
                 },
                 async getPublishedFormRevisionById(revisionId) {
+                    const [uniqueId, version] = revisionId.split("#");
+
                     const [[form]] = await db.read<FbForm>({
                         ...defaults.db,
                         query: {
-                            PK: PK_FORM(),
-                            SK: revisionId
+                            PK: PK_FORM(uniqueId),
+                            SK: SK_FORM_REVISION(version)
                         }
                     });
 
@@ -170,8 +184,8 @@ export default {
                     const [[latestPublishedItem]] = await db.read({
                         ...defaults.db,
                         query: {
-                            PK: PK_FORM_LATEST_PUBLISHED(),
-                            SK: uniqueId
+                            PK: PK_FORM(uniqueId),
+                            SK: SK_FORM_LATEST_PUBLISHED()
                         }
                     });
 
@@ -182,8 +196,8 @@ export default {
                     const [[form]] = await db.read<FbForm>({
                         ...defaults.db,
                         query: {
-                            PK: PK_FORM(),
-                            SK: latestPublishedItem.id
+                            PK: PK_FORM(uniqueId),
+                            SK: SK_FORM_REVISION(latestPublishedItem.version)
                         }
                     });
 
@@ -238,22 +252,28 @@ export default {
                         .create({
                             ...defaults.db,
                             data: {
-                                PK: PK_FORM(),
-                                SK: form.id,
+                                PK: PK_FORM(uniqueId),
+                                SK: SK_FORM_REVISION(version),
                                 TYPE: TYPE_FORM,
                                 ...form
                             }
                         })
                         .create({
                             ...defaults.db,
-                            data: { PK: PK_FORM_LATEST(), SK: uniqueId, TYPE: TYPE_FORM_LATEST, id }
+                            data: {
+                                PK: PK_FORM(uniqueId),
+                                SK: SK_FORM_LATEST(),
+                                TYPE: TYPE_FORM_LATEST,
+                                id,
+                                version
+                            }
                         })
                         .execute();
 
                     // Index form in "Elastic Search"
                     await elasticSearch.create({
                         ...defaults.es(context),
-                        id: `L#${uniqueId}`,
+                        id: `FORM#L#${uniqueId}`,
                         body: getESDataForLatestRevision(form, context)
                     });
 
@@ -264,22 +284,22 @@ export default {
                     const updateData = new models.FormUpdateDataModel().populate(data);
                     await updateData.validate();
 
-                    const [uniqueId] = id.split("#");
+                    const [uniqueId, version] = id.split("#");
 
                     const [[[form]], [[latestForm]]] = await db
                         .batch()
                         .read({
                             ...defaults.db,
                             query: {
-                                PK: PK_FORM(),
-                                SK: id
+                                PK: PK_FORM(uniqueId),
+                                SK: SK_FORM_REVISION(version)
                             }
                         })
                         .read({
                             ...defaults.db,
                             query: {
-                                PK: PK_FORM_LATEST(),
-                                SK: uniqueId
+                                PK: PK_FORM(uniqueId),
+                                SK: SK_FORM_LATEST()
                             }
                         })
                         .execute();
@@ -298,8 +318,8 @@ export default {
                     await db.update({
                         ...defaults.db,
                         query: {
-                            PK: PK_FORM(),
-                            SK: id
+                            PK: PK_FORM(uniqueId),
+                            SK: SK_FORM_REVISION(version)
                         },
                         data: newData
                     });
@@ -308,7 +328,7 @@ export default {
                     if (latestForm.id === id) {
                         await elasticSearch.update({
                             ...defaults.es(context),
-                            id: `L#${uniqueId}`,
+                            id: `FORM#L#${uniqueId}`,
                             body: {
                                 doc: {
                                     id: id,
@@ -326,65 +346,47 @@ export default {
 
                     const [uniqueId] = id.split("#");
 
-                    const [revisions] = await db.read<FbForm>({
+                    const [items] = await db.read<DbItem<FbForm>>({
                         ...defaults.db,
                         query: {
-                            PK: PK_FORM(),
-                            SK: { $beginsWith: uniqueId }
+                            PK: PK_FORM(uniqueId),
+                            SK: { $gt: " " }
                         }
                     });
 
-                    if (!revisions.length) {
+                    if (!items.length) {
                         throw new NotFoundError(`Form ${id} was not found!`);
                     }
 
-                    const originalForm = revisions.find(form => form.version === 1);
-                    checkOwnership(originalForm, permission, context);
+                    const form = items.find(item => item.TYPE === TYPE_FORM);
+                    checkOwnership(form, permission, context);
 
-                    const batch = db
-                        .batch()
-                        .delete({
-                            ...defaults.db,
-                            query: {
-                                PK: PK_FORM_LATEST_PUBLISHED(),
-                                SK: uniqueId
-                            }
-                        })
-                        .delete({
-                            ...defaults.db,
-                            query: {
-                                PK: PK_FORM_LATEST(),
-                                SK: uniqueId
-                            }
-                        });
-
-                    // TODO: batch can only delete up to 25 records (discuss with @adrian)
-                    for (let i = 0; i < revisions.length; i++) {
-                        batch.delete({
-                            ...defaults.db,
-                            query: {
-                                PK: PK_FORM(),
-                                SK: revisions[i].id
-                            }
-                        });
-                    }
-
-                    await batch.execute();
+                    // Delete all items in batches of 25
+                    await utils.paginateBatch<DbItem>(items, 25, async items => {
+                        await db
+                            .batch()
+                            .delete(
+                                ...items.map(item => ({
+                                    ...defaults.db,
+                                    query: { PK: item.PK, SK: item.SK }
+                                }))
+                            )
+                            .execute();
+                    });
 
                     // Delete items from "Elastic Search"
                     await elasticSearch.delete({
                         ...defaults.es(context),
-                        id: `L#${uniqueId}`
+                        id: `FORM#L#${uniqueId}`
                     });
-
-                    // TODO: delete form submissions
 
                     return true;
                 },
                 async deleteRevision(id) {
                     const permission = await utils.checkBaseFormPermissions(context, { rwd: "d" });
 
-                    const [uniqueId] = id.split("#");
+                    const [uniqueId, version] = id.split("#");
+                    const FORM_PK = PK_FORM(uniqueId);
 
                     // Load form, latest form and latest published form records
                     const [[[form]], [[lForm]], [[lpForm]]] = await db
@@ -392,22 +394,22 @@ export default {
                         .read({
                             ...defaults.db,
                             query: {
-                                PK: PK_FORM(),
-                                SK: id
+                                PK: FORM_PK,
+                                SK: SK_FORM_REVISION(version)
                             }
                         })
                         .read({
                             ...defaults.db,
                             query: {
-                                PK: PK_FORM_LATEST(),
-                                SK: uniqueId
+                                PK: FORM_PK,
+                                SK: SK_FORM_LATEST()
                             }
                         })
                         .read({
                             ...defaults.db,
                             query: {
-                                PK: PK_FORM_LATEST_PUBLISHED(),
-                                SK: uniqueId
+                                PK: FORM_PK,
+                                SK: SK_FORM_LATEST_PUBLISHED()
                             }
                         })
                         .execute();
@@ -421,8 +423,8 @@ export default {
                     const batch = db.batch().delete({
                         ...defaults.db,
                         query: {
-                            PK: PK_FORM(),
-                            SK: id
+                            PK: FORM_PK,
+                            SK: SK_FORM_REVISION(version)
                         }
                     });
 
@@ -430,7 +432,7 @@ export default {
                         // Get all form revisions
                         const [revisions] = await db.read<FbForm>({
                             ...defaults.db,
-                            query: { PK: PK_FORM(), SK: { $beginsWith: uniqueId } }
+                            query: { PK: FORM_PK, SK: { $beginsWith: "REV#" } }
                         });
 
                         // Update or delete the "latest published" record
@@ -448,22 +450,23 @@ export default {
                                 batch.update({
                                     ...defaults.db,
                                     query: {
-                                        PK: PK_FORM_LATEST_PUBLISHED(),
-                                        SK: id
+                                        PK: FORM_PK,
+                                        SK: SK_FORM_LATEST_PUBLISHED()
                                     },
                                     data: {
-                                        PK: PK_FORM_LATEST_PUBLISHED(),
-                                        SK: uniqueId,
+                                        PK: FORM_PK,
+                                        SK: SK_FORM_LATEST_PUBLISHED(),
                                         TYPE: TYPE_FORM_LATEST_PUBLISHED,
-                                        id: publishedRevision.id
+                                        id: publishedRevision.id,
+                                        version: publishedRevision.version
                                     }
                                 });
                             } else {
                                 batch.delete({
                                     ...defaults.db,
                                     query: {
-                                        PK: PK_FORM_LATEST_PUBLISHED(),
-                                        SK: id
+                                        PK: FORM_PK,
+                                        SK: SK_FORM_LATEST_PUBLISHED()
                                     }
                                 });
                             }
@@ -484,20 +487,21 @@ export default {
                             batch.update({
                                 ...defaults.db,
                                 query: {
-                                    PK: PK_FORM_LATEST(),
-                                    SK: uniqueId
+                                    PK: FORM_PK,
+                                    SK: SK_FORM_LATEST()
                                 },
                                 data: {
-                                    PK: PK_FORM_LATEST(),
-                                    SK: uniqueId,
+                                    PK: FORM_PK,
+                                    SK: SK_FORM_LATEST(),
                                     TYPE: TYPE_FORM_LATEST,
-                                    id: prevRevision.id
+                                    id: prevRevision.id,
+                                    version: prevRevision.version
                                 }
                             });
 
                             await elasticSearch.index({
                                 ...defaults.es(context),
-                                id: `L#${uniqueId}`,
+                                id: `FORM#L#${uniqueId}`,
                                 body: getESDataForLatestRevision(prevRevision, context)
                             });
                         }
@@ -510,22 +514,22 @@ export default {
                 async publishForm(id) {
                     const permission = await utils.checkBaseFormPermissions(context, { rwd: "p" });
 
-                    const [uniqueId] = id.split("#");
+                    const [uniqueId, version] = id.split("#");
 
                     const [[[form]], [[latestForm]]] = await db
                         .batch()
                         .read({
                             ...defaults.db,
                             query: {
-                                PK: PK_FORM(),
-                                SK: id
+                                PK: PK_FORM(uniqueId),
+                                SK: SK_FORM_REVISION(version)
                             }
                         })
                         .read({
                             ...defaults.db,
                             query: {
-                                PK: PK_FORM_LATEST(),
-                                SK: uniqueId
+                                PK: PK_FORM(uniqueId),
+                                SK: SK_FORM_LATEST()
                             }
                         })
                         .execute();
@@ -553,22 +557,23 @@ export default {
                         .update({
                             ...defaults.db,
                             query: {
-                                PK: PK_FORM(),
-                                SK: id
+                                PK: PK_FORM(uniqueId),
+                                SK: SK_FORM_REVISION(version)
                             },
                             data: form
                         })
                         .update({
                             ...defaults.db,
                             query: {
-                                PK: PK_FORM_LATEST_PUBLISHED(),
-                                SK: uniqueId
+                                PK: PK_FORM(uniqueId),
+                                SK: SK_FORM_LATEST_PUBLISHED()
                             },
                             data: {
-                                PK: PK_FORM_LATEST_PUBLISHED(),
-                                SK: uniqueId,
+                                PK: PK_FORM(uniqueId),
+                                SK: SK_FORM_LATEST_PUBLISHED(),
                                 TYPE: TYPE_FORM_LATEST_PUBLISHED,
-                                id
+                                id,
+                                version: form.version
                             }
                         })
                         .execute();
@@ -577,7 +582,7 @@ export default {
                     if (latestForm.id === id) {
                         await elasticSearch.update({
                             ...defaults.es(context),
-                            id: `L#${uniqueId}`,
+                            id: `FORM#L#${uniqueId}`,
                             body: {
                                 doc: {
                                     published: true,
@@ -595,29 +600,30 @@ export default {
                 async unpublishForm(id) {
                     const permission = await utils.checkBaseFormPermissions(context, { rwd: "p" });
 
-                    const [uniqueId] = id.split("#");
+                    const [uniqueId, version] = id.split("#");
+                    const FORM_PK = PK_FORM(uniqueId);
 
                     const [[[form]], [[latestForm]], [[latestPublishedForm]]] = await db
                         .batch()
                         .read({
                             ...defaults.db,
                             query: {
-                                PK: PK_FORM(),
-                                SK: id
+                                PK: FORM_PK,
+                                SK: SK_FORM_REVISION(version)
                             }
                         })
                         .read({
                             ...defaults.db,
                             query: {
-                                PK: PK_FORM_LATEST(),
-                                SK: uniqueId
+                                PK: FORM_PK,
+                                SK: SK_FORM_LATEST()
                             }
                         })
                         .read({
                             ...defaults.db,
                             query: {
-                                PK: PK_FORM_LATEST_PUBLISHED(),
-                                SK: uniqueId
+                                PK: FORM_PK,
+                                SK: SK_FORM_LATEST_PUBLISHED()
                             }
                         })
                         .execute();
@@ -641,8 +647,8 @@ export default {
                     const batch = db.batch().update({
                         ...defaults.db,
                         query: {
-                            PK: PK_FORM(),
-                            SK: id
+                            PK: FORM_PK,
+                            SK: SK_FORM_REVISION(version)
                         },
                         data: form
                     });
@@ -652,8 +658,8 @@ export default {
                         const [revisions] = await db.read<FbForm>({
                             ...defaults.db,
                             query: {
-                                PK: PK_FORM(),
-                                SK: { $beginsWith: uniqueId }
+                                PK: FORM_PK,
+                                SK: { $beginsWith: "REV#" }
                             }
                         });
 
@@ -671,22 +677,23 @@ export default {
                             batch.update({
                                 ...defaults.db,
                                 query: {
-                                    PK: PK_FORM_LATEST_PUBLISHED(),
-                                    SK: id
+                                    PK: FORM_PK,
+                                    SK: SK_FORM_LATEST_PUBLISHED()
                                 },
                                 data: {
-                                    PK: PK_FORM_LATEST_PUBLISHED(),
-                                    SK: uniqueId,
+                                    PK: FORM_PK,
+                                    SK: SK_FORM_LATEST_PUBLISHED(),
                                     TYPE: TYPE_FORM_LATEST_PUBLISHED,
-                                    id: publishedRevision.id
+                                    id: publishedRevision.id,
+                                    version: publishedRevision.version
                                 }
                             });
                         } else {
                             batch.delete({
                                 ...defaults.db,
                                 query: {
-                                    PK: PK_FORM_LATEST_PUBLISHED(),
-                                    SK: id
+                                    PK: FORM_PK,
+                                    SK: SK_FORM_LATEST_PUBLISHED()
                                 }
                             });
                         }
@@ -698,7 +705,7 @@ export default {
                     if (latestForm.id === id) {
                         await elasticSearch.update({
                             ...defaults.es(context),
-                            id: `L#${uniqueId}`,
+                            id: `FORM#L#${uniqueId}`,
                             body: {
                                 doc: {
                                     published: false,
@@ -716,21 +723,22 @@ export default {
 
                     const batch = db.batch();
 
-                    const [uniqueId] = sourceRevisionId.split("#");
+                    const [uniqueId, version] = sourceRevisionId.split("#");
+                    const FORM_PK = PK_FORM(uniqueId);
 
                     const [[[form]], [[latestForm]]] = await batch
                         .read({
                             ...defaults.db,
                             query: {
-                                PK: PK_FORM(),
-                                SK: sourceRevisionId
+                                PK: FORM_PK,
+                                SK: SK_FORM_REVISION(version)
                             }
                         })
                         .read({
                             ...defaults.db,
                             query: {
-                                PK: PK_FORM_LATEST(),
-                                SK: uniqueId
+                                PK: FORM_PK,
+                                SK: SK_FORM_LATEST()
                             }
                         })
                         .execute();
@@ -740,8 +748,8 @@ export default {
                     }
 
                     const identity = context.security.getIdentity();
-                    const version = parseInt(latestForm.id.split("#")[1]) + 1;
-                    const id = `${uniqueId}#${zeroPad(version)}`;
+                    const newVersion = latestForm.version + 1;
+                    const id = `${uniqueId}#${zeroPad(newVersion)}`;
 
                     const newRevision: FbForm = {
                         id,
@@ -756,7 +764,7 @@ export default {
                         ownedBy: form.ownedBy,
                         name: form.name,
                         slug: form.slug,
-                        version: version,
+                        version: newVersion,
                         locked: false,
                         published: false,
                         publishedOn: null,
@@ -778,8 +786,8 @@ export default {
                         .create({
                             ...defaults.db,
                             data: {
-                                PK: PK_FORM(),
-                                SK: newRevision.id,
+                                PK: FORM_PK,
+                                SK: SK_FORM_REVISION(newVersion),
                                 TYPE: "fb.form",
                                 ...newRevision
                             }
@@ -787,14 +795,15 @@ export default {
                         .update({
                             ...defaults.db,
                             query: {
-                                PK: PK_FORM_LATEST(),
-                                SK: uniqueId
+                                PK: FORM_PK,
+                                SK: SK_FORM_LATEST()
                             },
                             data: {
-                                PK: PK_FORM_LATEST(),
-                                SK: uniqueId,
+                                PK: FORM_PK,
+                                SK: SK_FORM_LATEST(),
                                 TYPE: TYPE_FORM_LATEST,
-                                id: newRevision.id
+                                id: newRevision.id,
+                                version: newRevision.version
                             }
                         })
                         .execute();
@@ -802,18 +811,22 @@ export default {
                     // Index form in "Elastic Search"
                     await elasticSearch.index({
                         ...defaults.es(context),
-                        id: `L#${uniqueId}`,
+                        id: `FORM#L#${uniqueId}`,
                         body: getESDataForLatestRevision(newRevision, context)
                     });
 
                     return newRevision;
                 },
                 async incrementFormViews(id) {
+                    const [uniqueId, version] = id.split("#");
+                    const FORM_PK = PK_FORM(uniqueId);
+                    const FORM_SK = SK_FORM_REVISION(version);
+
                     const [[form]] = await db.read<FbForm>({
                         ...defaults.db,
                         query: {
-                            PK: PK_FORM(),
-                            SK: id
+                            PK: FORM_PK,
+                            SK: FORM_SK
                         }
                     });
 
@@ -828,8 +841,8 @@ export default {
                     await db.update({
                         ...defaults.db,
                         query: {
-                            PK: PK_FORM(),
-                            SK: id
+                            PK: FORM_PK,
+                            SK: FORM_SK
                         },
                         data: {
                             stats: form.stats
@@ -839,13 +852,16 @@ export default {
                     return true;
                 },
                 async incrementFormSubmissions(id) {
+                    const [uniqueId, version] = id.split("#");
+                    const FORM_PK = PK_FORM(uniqueId);
+                    const FORM_SK = SK_FORM_REVISION(version);
+
                     const [[form]] = await db.read<FbForm>({
                         ...defaults.db,
                         query: {
-                            PK: PK_FORM(),
-                            SK: id
-                        },
-                        limit: 1
+                            PK: FORM_PK,
+                            SK: FORM_SK
+                        }
                     });
 
                     if (!form) {
@@ -859,8 +875,8 @@ export default {
                     await db.update({
                         ...defaults.db,
                         query: {
-                            PK: PK_FORM(),
-                            SK: id
+                            PK: FORM_PK,
+                            SK: FORM_SK
                         },
                         data: {
                             stats: form.stats
@@ -871,6 +887,7 @@ export default {
                 },
                 async getSubmissionsByIds(formId, submissionIds) {
                     const [uniqueId] = formId.split("#");
+                    const FORM_PK = PK_FORM(uniqueId);
 
                     const batch = db.batch();
 
@@ -878,8 +895,8 @@ export default {
                         ...submissionIds.map(submissionId => ({
                             ...defaults.db,
                             query: {
-                                PK: `${PK_FORM_SUBMISSION()}#${uniqueId}`,
-                                SK: `${submissionId}`
+                                PK: FORM_PK,
+                                SK: `FS#${submissionId}`
                             }
                         }))
                     );
@@ -965,13 +982,13 @@ export default {
                 async createFormSubmission(formId, reCaptchaResponseToken, rawData, meta) {
                     const { formBuilder } = context;
 
-                    const [uniqueId] = formId.split("#");
+                    const [uniqueId, version] = formId.split("#");
 
                     const [[form]] = await db.read<FbForm>({
                         ...defaults.db,
                         query: {
-                            PK: PK_FORM(),
-                            SK: formId
+                            PK: PK_FORM(uniqueId),
+                            SK: SK_FORM_REVISION(version)
                         }
                     });
 
@@ -1091,9 +1108,9 @@ export default {
                     // Store submission to DB
                     await db.create({
                         data: {
-                            PK: `${PK_FORM_SUBMISSION()}#${uniqueId}`,
-                            SK: submission.id,
-                            TYPE: "fb.formSubmission",
+                            PK: PK_FORM(uniqueId),
+                            SK: SK_SUBMISSION(submission.id),
+                            TYPE: TYPE_FORM_SUBMISSION,
                             tenant: form.tenant,
                             ...submission
                         }
@@ -1171,8 +1188,8 @@ export default {
                     await db.update({
                         ...defaults.db,
                         query: {
-                            PK: `${PK_FORM_SUBMISSION()}#${uniqueId}`,
-                            SK: data.id
+                            PK: PK_FORM(uniqueId),
+                            SK: SK_SUBMISSION(data.id)
                         },
                         data: {
                             logs: data.logs
@@ -1182,12 +1199,12 @@ export default {
                     return true;
                 },
                 async deleteSubmission(formId, submissionId) {
-                    const [uniqueId, version] = formId.split("#");
+                    const [uniqueId] = formId.split("#");
                     await db.delete({
                         ...defaults.db,
                         query: {
-                            PK: `${PK_FORM_SUBMISSION()}#${uniqueId}`,
-                            SK: `${version}#${submissionId}`
+                            PK: PK_FORM(uniqueId),
+                            SK: SK_SUBMISSION(submissionId)
                         }
                     });
 

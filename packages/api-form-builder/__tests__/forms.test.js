@@ -172,7 +172,7 @@ describe('Form Builder "Form" Test', () => {
         await createRevisionFrom({ revision: id });
 
         // Delete the whole form
-        await deleteForm({ id });
+        const [df] = await deleteForm({ id });
 
         await until(
             () => listForms().then(([data]) => data),
