@@ -67,7 +67,6 @@ const PagePreview = ({ page }: PagePreviewProps) => {
     }, []);
 
     const resizeObserver = React.useMemo(() => {
-        // @ts-ignore
         return new ResizeObserver(entries => {
             for (const entry of entries) {
                 const { width, height } = entry.contentRect;
@@ -97,7 +96,6 @@ const PagePreview = ({ page }: PagePreviewProps) => {
         [responsiveModeConfigs]
     );
 
-    console.log({ editorMode });
     return (
         <Zoom>
             {({ zoom, setZoom }) => (

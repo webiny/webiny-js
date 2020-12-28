@@ -70,7 +70,6 @@ const Content = () => {
     );
 
     const resizeObserver = useMemo(() => {
-        // @ts-ignore
         return new ResizeObserver(entries => {
             for (const entry of entries) {
                 const { width, height } = entry.contentRect;
