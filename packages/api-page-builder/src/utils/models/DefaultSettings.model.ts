@@ -32,7 +32,8 @@ export default withFields({
                 instanceOf: withFields({
                     name: string({ validation: "maxLength:500" })
                 })()
-            })
+            }),
+            meta: object()
         })()
     }),
     social: fields({
