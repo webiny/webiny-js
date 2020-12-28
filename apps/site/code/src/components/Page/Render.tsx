@@ -51,6 +51,7 @@ function Render({
 
     return (
         <div className="webiny-pb-page">
+            <ps-tag data-key={"pb-page"} data-value={page.id} />
             <Helmet>
                 {/* Read favicon from settings. */}
                 {head.favicon && (

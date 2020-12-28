@@ -8,9 +8,9 @@ declare global {
     // eslint-disable-next-line
     namespace JSX {
         interface IntrinsicElements {
-            "ssr-cache": {
-                class?: string;
-                id?: string;
+            "ps-tag": {
+                key?: string;
+                value?: string;
             };
         }
     }
@@ -47,7 +47,7 @@ const Menu = ({ slug, component: Component }) => {
 
                 return (
                     <>
-                        <ssr-cache data-class="pb-menu" data-id={slug} />
+                        <ps-tag data-key="pb-menu" data-value={slug} />
                         <Component {...props} data={data} />
                     </>
                 );
