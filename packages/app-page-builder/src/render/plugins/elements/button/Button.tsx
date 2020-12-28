@@ -6,7 +6,7 @@ import { Link } from "@webiny/react-router";
 import { ResponsiveModeContext } from "../../../../contexts/ResponsiveMode";
 
 const Button = ({ element }: { element: PbElement }) => {
-    const { editorMode } = React.useContext(ResponsiveModeContext);
+    const { displayMode } = React.useContext(ResponsiveModeContext);
     const { type = "default", icon = {}, link = {} } = element.data || {};
     const { svg = null } = icon;
     const { position = "left" } = icon;
@@ -29,7 +29,7 @@ const Button = ({ element }: { element: PbElement }) => {
         <ElementRoot className={"webiny-pb-base-page-element-style"} element={element}>
             {({ getAllClasses, elementStyle, elementAttributes }) => {
                 // Use per-device style
-                const justifyContent = elementStyle[`--${kebabCase(editorMode)}-justify-content`];
+                const justifyContent = elementStyle[`--${kebabCase(displayMode)}-justify-content`];
 
                 return (
                     <div style={{ display: "flex", justifyContent }}>

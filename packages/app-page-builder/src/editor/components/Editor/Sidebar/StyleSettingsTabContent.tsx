@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { PbElement } from "../../../../types";
-import { EditorMode } from "../../../recoil/modules";
+import { PbElement, DisplayMode } from "../../../../types";
 import useElementStyleSettings from "../../../plugins/elementSettings/hooks/useElementStyleSettings";
 import NoActiveElement from "./NoActiveElement";
 import { ReactComponent as TouchIcon } from "./icons/touch_app.svg";
@@ -23,11 +22,11 @@ const RootElement = styled("div")({
     }
 });
 
-type StyleSettingsTabContentProps = { element: PbElement; editorMode: EditorMode };
+type StyleSettingsTabContentProps = { element: PbElement; displayMode: DisplayMode };
 
 const StyleSettingsTabContent: React.FunctionComponent<StyleSettingsTabContentProps> = ({
     element,
-    editorMode
+    displayMode
 }) => {
     const elementStyleSettings = useElementStyleSettings();
 
@@ -47,7 +46,7 @@ const StyleSettingsTabContent: React.FunctionComponent<StyleSettingsTabContentPr
                     return React.cloneElement(plugin.render({ options }), {
                         key: index,
                         defaultAccordionValue: index === 0,
-                        editorMode
+                        displayMode
                     });
                 })
             ) : (

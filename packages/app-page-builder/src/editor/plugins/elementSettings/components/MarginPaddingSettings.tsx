@@ -140,15 +140,15 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
     defaultAccordionValue
 }) => {
     const valueKey = `data.settings.${styleAttribute}`;
-    const { editorMode } = useRecoilValue(uiAtom);
+    const { displayMode } = useRecoilValue(uiAtom);
     const element = useRecoilValue(activeElementWithChildrenSelector);
-    const advanced = get(element, `${valueKey}.${editorMode}.advanced`, false);
+    const advanced = get(element, `${valueKey}.${displayMode}.advanced`, false);
 
     const { config: activeEditorModeConfig } = useMemo(() => {
         return plugins
             .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
-            .find(pl => pl.config.name === editorMode);
-    }, [editorMode]);
+            .find(pl => pl.config.displayMode === displayMode);
+    }, [displayMode]);
 
     const { getUpdateValue } = useUpdateHandlers({
         element,
@@ -159,16 +159,16 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
                 return;
             }
             const changeInTopValue = name.includes(".top");
-            const advanced = get(newElement, `${valueKey}.${editorMode}.advanced`);
+            const advanced = get(newElement, `${valueKey}.${displayMode}.advanced`);
             // Update all values in advanced settings
             if (!advanced && changeInTopValue) {
                 // Modify the element directly.
-                set(newElement, `${valueKey}.${editorMode}.top`, newValue);
-                set(newElement, `${valueKey}.${editorMode}.right`, newValue);
-                set(newElement, `${valueKey}.${editorMode}.bottom`, newValue);
-                set(newElement, `${valueKey}.${editorMode}.left`, newValue);
+                set(newElement, `${valueKey}.${displayMode}.top`, newValue);
+                set(newElement, `${valueKey}.${displayMode}.right`, newValue);
+                set(newElement, `${valueKey}.${displayMode}.bottom`, newValue);
+                set(newElement, `${valueKey}.${displayMode}.left`, newValue);
                 // Also set "all"
-                set(newElement, `${valueKey}.${editorMode}.all`, newValue);
+                set(newElement, `${valueKey}.${displayMode}.all`, newValue);
             }
         }
     });
@@ -176,19 +176,19 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
     const toggleAdvanced = useCallback(
         event => {
             event.stopPropagation();
-            getUpdateValue(`${editorMode}.advanced`)(!advanced);
+            getUpdateValue(`${displayMode}.advanced`)(!advanced);
         },
-        [advanced, editorMode, getUpdateValue]
+        [advanced, displayMode, getUpdateValue]
     );
 
     const [top, right, bottom, left] = useMemo(() => {
         return SIDES.map(side => {
             if (advanced) {
-                return get(element, valueKey + `.${editorMode}.` + side, DEFAULT_VALUE);
+                return get(element, valueKey + `.${displayMode}.` + side, DEFAULT_VALUE);
             }
-            return get(element, valueKey + `.${editorMode}.` + "all", DEFAULT_VALUE);
+            return get(element, valueKey + `.${displayMode}.` + "all", DEFAULT_VALUE);
         });
-    }, [advanced, element, editorMode]);
+    }, [advanced, element, displayMode]);
 
     return (
         <Accordion
@@ -207,7 +207,7 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
                 </Tooltip>
             }
             icon={
-                <Tooltip content={`Changes will apply for ${activeEditorModeConfig.name}`}>
+                <Tooltip content={`Changes will apply for ${activeEditorModeConfig.displayMode}`}>
                     {activeEditorModeConfig.icon}
                 </Tooltip>
             }
@@ -217,7 +217,7 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
                 <Top className="align-center">
                     <SpacingPicker
                         value={top}
-                        onChange={getUpdateValue(`${editorMode}.top`)}
+                        onChange={getUpdateValue(`${displayMode}.top`)}
                         options={options[styleAttribute]}
                     />
                 </Top>
@@ -225,7 +225,7 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
                 <Left>
                     <SpacingPicker
                         value={left}
-                        onChange={getUpdateValue(`${editorMode}.left`)}
+                        onChange={getUpdateValue(`${displayMode}.left`)}
                         options={options[styleAttribute]}
                         disabled={!advanced}
                     />
@@ -240,7 +240,7 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
                 <Right>
                     <SpacingPicker
                         value={right}
-                        onChange={getUpdateValue(`${editorMode}.right`)}
+                        onChange={getUpdateValue(`${displayMode}.right`)}
                         options={options[styleAttribute]}
                         disabled={!advanced}
                     />
@@ -249,7 +249,7 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
                 <Bottom className={"align-center"}>
                     <SpacingPicker
                         value={bottom}
-                        onChange={getUpdateValue(`${editorMode}.bottom`)}
+                        onChange={getUpdateValue(`${displayMode}.bottom`)}
                         options={options[styleAttribute]}
                         disabled={!advanced}
                     />

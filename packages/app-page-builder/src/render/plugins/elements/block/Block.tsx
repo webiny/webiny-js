@@ -9,7 +9,7 @@ import { Interpolation } from "@emotion/core";
 import { ResponsiveModeContext } from "../../../../contexts/ResponsiveMode";
 
 const Block = ({ element }: { element: PbElement }) => {
-    const { editorMode } = React.useContext(ResponsiveModeContext);
+    const { displayMode } = React.useContext(ResponsiveModeContext);
     return (
         <ElementAnimation>
             <ElementRoot element={element}>
@@ -17,8 +17,8 @@ const Block = ({ element }: { element: PbElement }) => {
                     const { width, ...containerStyle } = elementStyle;
                     // Use per-device style
                     const justifyContent =
-                        elementStyle[`--${kebabCase(editorMode)}-justify-content`];
-                    const alignItems = elementStyle[`--${kebabCase(editorMode)}-align-items`];
+                        elementStyle[`--${kebabCase(displayMode)}-justify-content`];
+                    const alignItems = elementStyle[`--${kebabCase(displayMode)}-align-items`];
 
                     return (
                         <div

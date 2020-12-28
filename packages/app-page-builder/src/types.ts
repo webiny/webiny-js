@@ -5,7 +5,7 @@ import {
     EventActionHandlerActionCallableResponseType,
     EventActionHandlerMetaType
 } from "@webiny/app-page-builder/editor/recoil/eventActions";
-import { EditorMode, PluginsAtomType } from "@webiny/app-page-builder/editor/recoil/modules";
+import { PluginsAtomType } from "@webiny/app-page-builder/editor/recoil/modules";
 import { PbState } from "@webiny/app-page-builder/editor/recoil/modules/types";
 import { Plugin } from "@webiny/app/types";
 import { BindComponent } from "@webiny/form/Bind";
@@ -543,7 +543,7 @@ export type PbEditorPageElementSaveActionPlugin = Plugin & {
 
 export type PbEditorPageElementSettingsRenderComponentProps = {
     defaultAccordionValue?: boolean;
-    editorMode?: EditorMode;
+    displayMode?: DisplayMode;
 };
 
 export type PbConfigPluginType = Plugin & {
@@ -565,7 +565,7 @@ export enum DisplayMode {
 export type PbEditorResponsiveModePlugin = Plugin & {
     type: "pb-editor-responsive-mode";
     config: {
-        name: string;
+        displayMode: string;
         label: string;
         icon: React.ReactElement;
     };
@@ -574,7 +574,7 @@ export type PbEditorResponsiveModePlugin = Plugin & {
 export type PbRenderResponsiveModePlugin = Plugin & {
     type: "pb-render-responsive-mode";
     config: {
-        name: string;
+        displayMode: string;
         maxWidth: number;
         minWidth: number;
     };

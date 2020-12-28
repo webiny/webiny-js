@@ -1,12 +1,11 @@
-import { PbRenderResponsiveModePlugin } from "../../../types";
-import { EditorMode } from "../../../editor/recoil/modules";
+import { PbRenderResponsiveModePlugin, DisplayMode } from "../../../types";
 
 export default () => [
     {
         type: "pb-render-responsive-mode",
         name: "pb-render-responsive-mode-desktop",
         config: {
-            name: EditorMode.desktop,
+            displayMode: DisplayMode.DESKTOP,
             maxWidth: 0,
             minWidth: 4000
         }
@@ -15,7 +14,7 @@ export default () => [
         type: "pb-render-responsive-mode",
         name: "pb-render-responsive-mode-tablet",
         config: {
-            name: EditorMode.tablet,
+            displayMode: DisplayMode.TABLET,
             maxWidth: 0,
             minWidth: 991
         }
@@ -24,7 +23,7 @@ export default () => [
         type: "pb-render-responsive-mode",
         name: "pb-render-responsive-mode-mobile-landscape",
         config: {
-            name: EditorMode.mobileLandscape,
+            displayMode: DisplayMode.MOBILE_LANDSCAPE,
             maxWidth: 0,
             minWidth: 767
         }
@@ -33,7 +32,7 @@ export default () => [
         type: "pb-render-responsive-mode",
         name: "pb-render-responsive-mode-mobile-portrait",
         config: {
-            name: EditorMode.mobilePortrait,
+            displayMode: DisplayMode.MOBILE_PORTRAIT,
             maxWidth: 0,
             minWidth: 478
         }

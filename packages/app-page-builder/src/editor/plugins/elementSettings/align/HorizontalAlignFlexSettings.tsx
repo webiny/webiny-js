@@ -64,9 +64,9 @@ const DATA_NAMESPACE = "data.settings.horizontalAlignFlex";
 
 const HorizontalAlignFlexSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps> = ({
     defaultAccordionValue = false,
-    editorMode
+    displayMode
 }) => {
-    const propName = `${DATA_NAMESPACE}.${editorMode}`;
+    const propName = `${DATA_NAMESPACE}.${displayMode}`;
     const handler = useEventActionHandler();
     const element = useRecoilValue(activeElementWithChildrenSelector);
     const align = get(element, propName, AlignmentsTypeEnum.CENTER);
@@ -74,8 +74,8 @@ const HorizontalAlignFlexSettings: React.FunctionComponent<PbEditorPageElementSe
     const { config: activeEditorModeConfig } = useMemo(() => {
         return plugins
             .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
-            .find(pl => pl.config.name === editorMode);
-    }, [editorMode]);
+            .find(pl => pl.config.displayMode === displayMode);
+    }, [displayMode]);
 
     const updateElement = (element: PbElement) => {
         handler.trigger(
@@ -104,7 +104,7 @@ const HorizontalAlignFlexSettings: React.FunctionComponent<PbEditorPageElementSe
             title={"Horizontal align"}
             defaultValue={defaultAccordionValue}
             icon={
-                <Tooltip content={`Changes will apply for ${activeEditorModeConfig.name}`}>
+                <Tooltip content={`Changes will apply for ${activeEditorModeConfig.displayMode}`}>
                     {activeEditorModeConfig.icon}
                 </Tooltip>
             }

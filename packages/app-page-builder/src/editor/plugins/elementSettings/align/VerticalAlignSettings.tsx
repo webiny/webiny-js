@@ -66,9 +66,9 @@ const DATA_NAMESPACE = "data.settings.verticalAlign";
 
 const VerticalAlignSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps> = ({
     defaultAccordionValue,
-    editorMode
+    displayMode
 }) => {
-    const propName = `${DATA_NAMESPACE}.${editorMode}`;
+    const propName = `${DATA_NAMESPACE}.${displayMode}`;
     const handler = useEventActionHandler();
     const element = useRecoilValue(activeElementWithChildrenSelector);
     const align = get(element, propName, AlignTypesEnum.center);
@@ -76,8 +76,8 @@ const VerticalAlignSettings: React.FunctionComponent<PbEditorPageElementSettings
     const { config: activeEditorModeConfig } = useMemo(() => {
         return plugins
             .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
-            .find(pl => pl.config.name === editorMode);
-    }, [editorMode]);
+            .find(pl => pl.config.displayMode === displayMode);
+    }, [displayMode]);
 
     const updateElement = (element: PbElement) => {
         handler.trigger(
@@ -106,7 +106,7 @@ const VerticalAlignSettings: React.FunctionComponent<PbEditorPageElementSettings
             title={"Vertical align"}
             defaultValue={defaultAccordionValue}
             icon={
-                <Tooltip content={`Changes will apply for ${activeEditorModeConfig.name}`}>
+                <Tooltip content={`Changes will apply for ${activeEditorModeConfig.displayMode}`}>
                     {activeEditorModeConfig.icon}
                 </Tooltip>
             }

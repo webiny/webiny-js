@@ -7,7 +7,7 @@ import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Typography } from "@webiny/ui/Typography";
 import { PbEditorResponsiveModePlugin } from "../../../../types";
-import { uiAtom, setEditorModeMutation } from "../../../recoil/modules";
+import { uiAtom, setDisplayModeMutation } from "../../../recoil/modules";
 import { updateConnectedValue } from "../../../recoil/modules/connected";
 
 const classes = {
@@ -59,10 +59,10 @@ const classes = {
 };
 
 const EditorResponsiveBar = () => {
-    const { editorMode, pagePreviewDimension } = useRecoilValue(uiAtom);
+    const { displayMode, pagePreviewDimension } = useRecoilValue(uiAtom);
     const setEditorMode = useCallback(
-        editorMode => {
-            updateConnectedValue(uiAtom, prev => setEditorModeMutation(prev, editorMode));
+        displayMode => {
+            updateConnectedValue(uiAtom, prev => setDisplayModeMutation(prev, displayMode));
         },
         [uiAtom]
     );
@@ -71,17 +71,20 @@ const EditorResponsiveBar = () => {
 
     return (
         <div className={classes.wrapper}>
-            {editorModes.map(({ config: mode }) => {
+            {editorModes.map(({ config }) => {
                 return (
                     <Tooltip
-                        key={mode.name}
-                        content={mode.label}
+                        key={config.displayMode}
+                        content={config.label}
                         placement={"bottom"}
                         className={classNames("action-wrapper", {
-                            active: editorMode === mode.name
+                            active: displayMode === config.displayMode
                         })}
                     >
-                        <IconButton icon={mode.icon} onClick={() => setEditorMode(mode.name)} />
+                        <IconButton
+                            icon={config.icon}
+                            onClick={() => setEditorMode(config.displayMode)}
+                        />
                     </Tooltip>
                 );
             })}

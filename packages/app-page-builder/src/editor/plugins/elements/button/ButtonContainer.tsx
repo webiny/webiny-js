@@ -37,7 +37,7 @@ const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = ({
 
     const { svg = null, position = "left" } = icon || {};
     // Use per-device style
-    const justifyContent = elementStyle[`--${kebabCase(uiAtomValue.editorMode)}-justify-content`];
+    const justifyContent = elementStyle[`--${kebabCase(uiAtomValue.displayMode)}-justify-content`];
 
     const onChange = useCallback(
         (received: string) => {

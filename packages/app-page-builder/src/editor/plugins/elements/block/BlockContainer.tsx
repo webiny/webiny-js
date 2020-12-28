@@ -42,15 +42,15 @@ const BlockContainer: React.FunctionComponent<BlockContainerPropsType> = ({
     combineClassNames,
     elementId
 }) => {
-    const { editorMode } = useRecoilValue(uiAtom);
+    const { displayMode } = useRecoilValue(uiAtom);
     const handler = useEventActionHandler();
     const element = useRecoilValue(elementByIdSelector(elementId));
     const { id, path, type, elements } = element;
 
     const { width, ...containerStyle } = elementStyle;
     // Use per-device style
-    const justifyContent = elementStyle[`--${kebabCase(editorMode)}-justify-content`];
-    const alignItems = elementStyle[`--${kebabCase(editorMode)}-align-items`];
+    const justifyContent = elementStyle[`--${kebabCase(displayMode)}-justify-content`];
+    const alignItems = elementStyle[`--${kebabCase(displayMode)}-align-items`];
 
     const onAddClick = () => {
         handler.trigger(

@@ -21,7 +21,7 @@ type GridContainerPropsType = {
 };
 const GridContainer: React.FunctionComponent<GridContainerPropsType> = ({ element: { id } }) => {
     const element = useRecoilValue(elementWithChildrenByIdSelector(id));
-    const { editorMode } = useRecoilValue(uiAtom);
+    const { displayMode } = useRecoilValue(uiAtom);
     // TODO remove when state is fully switched to use content instead of flat elements
     if (!element) {
         return null;
@@ -32,7 +32,7 @@ const GridContainer: React.FunctionComponent<GridContainerPropsType> = ({ elemen
                 {({ elementStyle, elementAttributes, customClasses, combineClassNames }) => {
                     // Use per-device style
                     const justifyContent =
-                        elementStyle[`--${kebabCase(editorMode)}-justify-content`];
+                        elementStyle[`--${kebabCase(displayMode)}-justify-content`];
 
                     return (
                         <GridContainerStyle id={id} style={{ justifyContent }}>
@@ -45,7 +45,7 @@ const GridContainer: React.FunctionComponent<GridContainerPropsType> = ({ elemen
                                     ...customClasses
                                 ]}
                                 combineClassNames={combineClassNames}
-                                editorMode={editorMode}
+                                displayMode={displayMode}
                             />
                         </GridContainerStyle>
                     );

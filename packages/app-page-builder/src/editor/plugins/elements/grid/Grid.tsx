@@ -2,9 +2,8 @@ import React, { CSSProperties } from "react";
 import kebabCase from "lodash/kebabCase";
 import styled from "@emotion/styled";
 import { css } from "emotion";
-import { PbElement } from "../../../../types";
+import { PbElement, DisplayMode } from "../../../../types";
 import Element from "../../../components/Element";
-import { EditorMode } from "../../../recoil/modules";
 
 const StyledGrid = styled("div")({
     display: "flex",
@@ -20,7 +19,7 @@ type GridPropsType = {
     elementAttributes: { [key: string]: string };
     customClasses: string[];
     element: PbElement;
-    editorMode: EditorMode;
+    displayMode: DisplayMode;
 };
 const Grid: React.FunctionComponent<GridPropsType> = ({
     elementStyle,
@@ -28,11 +27,11 @@ const Grid: React.FunctionComponent<GridPropsType> = ({
     customClasses,
     combineClassNames,
     element,
-    editorMode
+    displayMode
 }) => {
     const { width, ...containerStyle } = elementStyle || {};
     // Use per-device style
-    const alignItems = elementStyle[`--${kebabCase(editorMode)}-align-items`];
+    const alignItems = elementStyle[`--${kebabCase(displayMode)}-align-items`];
     return (
         <StyledGrid
             className={combineClassNames(

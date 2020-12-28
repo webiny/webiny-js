@@ -68,7 +68,7 @@ const EditorSideBar = () => {
                 <Tab label={"style"}>
                     <StyleSettingsTabContent
                         element={element}
-                        editorMode={uiAtomValue.editorMode}
+                        displayMode={uiAtomValue.displayMode}
                     />
                 </Tab>
                 <Tab label={"element"} disabled={!element}>

@@ -1,7 +1,6 @@
 import React from "react";
 import { css } from "emotion";
-import { PbEditorResponsiveModePlugin } from "../../../types";
-import { EditorMode } from "../../recoil/modules";
+import { PbEditorResponsiveModePlugin, DisplayMode } from "../../../types";
 // Icons
 import { ReactComponent as DesktopIcon } from "./icons/laptop_mac.svg";
 import { ReactComponent as TabletIcon } from "./icons/tablet_mac.svg";
@@ -16,7 +15,7 @@ export default () => [
         type: "pb-editor-responsive-mode",
         name: "pb-editor-responsive-mode-desktop",
         config: {
-            name: EditorMode.desktop,
+            displayMode: DisplayMode.DESKTOP,
             label: "Desktop base breakpoint",
             icon: <DesktopIcon />
         }
@@ -25,7 +24,7 @@ export default () => [
         type: "pb-editor-responsive-mode",
         name: "pb-editor-responsive-mode-tablet",
         config: {
-            name: EditorMode.tablet,
+            displayMode: DisplayMode.TABLET,
             label: "Tablet 991px and down",
             icon: <TabletIcon />
         }
@@ -34,7 +33,7 @@ export default () => [
         type: "pb-editor-responsive-mode",
         name: "pb-editor-responsive-mode-mobile-landscape",
         config: {
-            name: EditorMode.mobileLandscape,
+            displayMode: DisplayMode.MOBILE_LANDSCAPE,
             label: "Mobile landscape 767px and down",
             icon: <MobileIcon className={rotateStyle} />
         }
@@ -43,7 +42,7 @@ export default () => [
         type: "pb-editor-responsive-mode",
         name: "pb-editor-responsive-mode-mobile-portrait",
         config: {
-            name: EditorMode.mobilePortrait,
+            displayMode: DisplayMode.MOBILE_PORTRAIT,
             label: "Mobile portrait 478px and down",
             icon: <MobileIcon />
         }

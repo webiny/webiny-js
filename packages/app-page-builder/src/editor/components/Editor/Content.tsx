@@ -57,7 +57,7 @@ const Content = () => {
     const rootElement = useRecoilValue(contentSelector);
     const renderLayout = useRecoilValue(isPluginActiveSelector("pb-editor-toolbar-preview"));
     const layout = useRecoilValue(layoutSelector);
-    const { editorMode } = useRecoilValue(uiAtom);
+    const { displayMode } = useRecoilValue(uiAtom);
     const pagePreviewRef = useRef();
 
     const setPagePreviewDimension = useCallback(
@@ -105,8 +105,8 @@ const Content = () => {
             <ContentContainer
                 theme={theme}
                 className={`webiny-pb-editor-device--${kebabCase(
-                    editorMode
-                )} webiny-pb-media-query--${kebabCase(editorMode)}`}
+                    displayMode
+                )} webiny-pb-media-query--${kebabCase(displayMode)}`}
             >
                 {pluginsByType.map(plugin =>
                     React.cloneElement(plugin.render(), { key: plugin.name })
