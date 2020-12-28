@@ -1024,7 +1024,9 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                         const pages = settings?.pages || {};
                         for (const key in pages) {
                             if (pages[key] === page.pid) {
-                                throw new Error(`Cannot unpublish page because it's set as ${key}`);
+                                throw new Error(
+                                    `Cannot unpublish page because it's set as ${key}.`
+                                );
                             }
                         }
 
