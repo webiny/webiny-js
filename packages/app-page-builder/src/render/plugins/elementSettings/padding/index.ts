@@ -27,12 +27,12 @@ export default {
         // Set per side padding value
         ["top", "right", "bottom", "left"].forEach(side => {
             // Set per-device property value
-            editorModes.forEach(({ name: deviceName }) => {
-                const adv = get(padding, `${deviceName}.advanced`, false);
+            editorModes.forEach(({ displayMode }) => {
+                const adv = get(padding, `${displayMode}.advanced`, false);
                 const value = adv
-                    ? get(padding, `${deviceName}.${side}`)
-                    : get(padding, `${deviceName}.all`);
-                style[`--${kebabCase(deviceName)}-padding-${side}`] = validateSpacingValue(value);
+                    ? get(padding, `${displayMode}.${side}`)
+                    : get(padding, `${displayMode}.all`);
+                style[`--${kebabCase(displayMode)}-padding-${side}`] = validateSpacingValue(value);
             });
         });
 

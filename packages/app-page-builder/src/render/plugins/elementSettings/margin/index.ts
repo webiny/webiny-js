@@ -31,12 +31,12 @@ export default {
 
         ["top", "right", "bottom", "left"].forEach(side => {
             // Set per-device property value
-            editorModes.forEach(({ name: deviceName }) => {
-                const adv = get(margin, `${deviceName}.advanced`, false);
+            editorModes.forEach(({ displayMode }) => {
+                const adv = get(margin, `${displayMode}.advanced`, false);
                 const value = adv
-                    ? get(margin, `${deviceName}.${side}`)
-                    : get(margin, `${deviceName}.all`);
-                style[`--${kebabCase(deviceName)}-margin-${side}`] = validateSpacingValue(value);
+                    ? get(margin, `${displayMode}.${side}`)
+                    : get(margin, `${displayMode}.all`);
+                style[`--${kebabCase(displayMode)}-margin-${side}`] = validateSpacingValue(value);
             });
         });
 

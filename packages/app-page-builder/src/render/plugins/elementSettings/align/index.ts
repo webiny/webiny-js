@@ -30,10 +30,10 @@ export default [
                 .map(pl => pl.config);
 
             // Set per-device property value
-            editorModes.forEach(({ name: deviceName }) => {
-                style[`--${kebabCase(deviceName)}-justify-content`] = get(
+            editorModes.forEach(({ displayMode }) => {
+                style[`--${kebabCase(displayMode)}-justify-content`] = get(
                     horizontalAlignFlex,
-                    deviceName
+                    displayMode
                 );
             });
 
@@ -55,8 +55,8 @@ export default [
                 .map(pl => pl.config);
 
             // Set per-device property value
-            editorModes.forEach(({ name: deviceName }) => {
-                style[`--${kebabCase(deviceName)}-align-items`] = get(verticalAlign, deviceName);
+            editorModes.forEach(({ displayMode }) => {
+                style[`--${kebabCase(displayMode)}-align-items`] = get(verticalAlign, displayMode);
             });
 
             return style;
