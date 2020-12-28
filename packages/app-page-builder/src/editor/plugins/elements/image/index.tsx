@@ -45,10 +45,7 @@ export default (): Plugin[] => {
                 "pb-editor-page-element-style-settings-link",
                 "pb-editor-page-element-style-settings-border",
                 "pb-editor-page-element-style-settings-shadow",
-                [
-                    "pb-editor-page-element-style-settings-horizontal-align",
-                    { alignments: ["left", "center", "right"] }
-                ],
+                "pb-editor-page-element-style-settings-horizontal-align-flex",
                 "pb-editor-page-element-style-settings-padding",
                 "pb-editor-page-element-style-settings-margin",
                 "pb-editor-page-element-settings-clone",
@@ -61,7 +58,7 @@ export default (): Plugin[] => {
                     elements: [],
                     data: {
                         settings: {
-                            horizontalAlign: createInitialPerDeviceSettingValue("center"),
+                            horizontalAlignFlex: createInitialPerDeviceSettingValue("center"),
                             margin: createInitialPerDeviceSettingValue({ all: "0px" }),
                             padding: createInitialPerDeviceSettingValue({ all: "0px" })
                         }
