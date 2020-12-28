@@ -11,6 +11,9 @@ const ids = {
     field24: shortId.generate(),
     field25: shortId.generate(),
     field26: shortId.generate(),
+    field27: shortId.generate(),
+    field28: shortId.generate(),
+    field29: shortId.generate(),
     field31: shortId.generate(),
     field32: shortId.generate(),
     field33: shortId.generate()
@@ -102,7 +105,10 @@ const models: CmsContentModelType[] = [
             [ids.field23],
             [ids.field24],
             [ids.field25],
-            [ids.field26]
+            [ids.field26],
+            [ids.field27],
+            [ids.field28],
+            [ids.field29]
         ],
         fields: [
             {
@@ -223,6 +229,81 @@ const models: CmsContentModelType[] = [
                     {
                         name: "required",
                         message: "Please enter a date"
+                    }
+                ],
+                placeholderText: "placeholder text",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            },
+            {
+                id: ids.field27,
+                multipleValues: false,
+                helpText: "",
+                label: "Color",
+                fieldId: "color",
+                type: "text",
+                settings: {
+                    type: "text"
+                },
+                validation: [
+                    {
+                        name: "required",
+                        message: "Please select a color"
+                    }
+                ],
+                placeholderText: "placeholder text",
+                predefinedValues: {
+                    enabled: true,
+                    values: ["white", "black", "blue", "red"]
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            },
+            {
+                id: ids.field28,
+                multipleValues: true,
+                helpText: "",
+                label: "Available sizes",
+                fieldId: "availableSizes",
+                type: "text",
+                settings: {
+                    type: "text"
+                },
+                validation: [
+                    {
+                        name: "required",
+                        message: "Please select from list of sizes"
+                    }
+                ],
+                placeholderText: "placeholder text",
+                predefinedValues: {
+                    enabled: true,
+                    values: ["s", "m", "l", "xl"]
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            },
+            {
+                id: ids.field29,
+                multipleValues: false,
+                helpText: "Upload an image of the product",
+                label: "Image",
+                fieldId: "image",
+                type: "file",
+                settings: {
+                    type: "file"
+                },
+                validation: [
+                    {
+                        name: "required",
+                        message: "Please upload an image of the product"
                     }
                 ],
                 placeholderText: "placeholder text",

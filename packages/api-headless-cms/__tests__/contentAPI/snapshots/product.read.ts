@@ -12,6 +12,9 @@ export default /* GraphQL */ `
         inStock: Boolean
         itemsInStock: Number
         availableOn: String
+        color: String
+        availableSizes: [String]
+        image: String
     }
 
     input ProductGetWhereInput {
@@ -21,6 +24,8 @@ export default /* GraphQL */ `
         inStock: Boolean
         itemsInStock: Number
         availableOn: String
+        color: String
+        availableSizes: String
     }
 
     input ProductListWhereInput {
@@ -79,6 +84,20 @@ export default /* GraphQL */ `
         availableOn_lte: String
         availableOn_gt: String
         availableOn_gte: String
+
+        color: String
+        color_not: String
+        color_in: [String]
+        color_not_in: [String]
+        color_contains: String
+        color_not_contains: String
+
+        availableSizes: String
+        availableSizes_not: String
+        availableSizes_in: [String]
+        availableSizes_not_in: [String]
+        availableSizes_contains: String
+        availableSizes_not_contains: String
     }
 
     enum ProductListSorter {
@@ -98,6 +117,10 @@ export default /* GraphQL */ `
         itemsInStock_DESC
         availableOn_ASC
         availableOn_DESC
+        color_ASC
+        color_DESC
+        availableSizes_ASC
+        availableSizes_DESC
     }
 
     type ProductResponse {
