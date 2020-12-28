@@ -1,15 +1,15 @@
 import React, { useCallback } from "react";
+import { useRecoilValue } from "recoil";
 import styled from "@emotion/styled";
 import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
-import { PbElement } from "@webiny/app-page-builder/types";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor";
-import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
-
-const position = { left: "flex-start", center: "center", right: "flex-end" };
+import { PbElement } from "../../../../types";
+import { useEventActionHandler } from "../../../../editor";
+import { UpdateElementActionEvent } from "../../../recoil/actions";
+import { uiAtom } from "../../../recoil/modules";
 
 const AlignImage = styled("div")((props: any) => ({
     img: {
-        alignSelf: position[props.align] || "center"
+        alignSelf: props.align
     }
 }));
 
@@ -17,12 +17,15 @@ type ImageContainerType = {
     element: PbElement;
 };
 const ImageContainer: React.FunctionComponent<ImageContainerType> = ({ element }) => {
+    const { displayMode } = useRecoilValue(uiAtom);
     const handler = useEventActionHandler();
     const {
         id,
         data: { image = {}, settings = {} }
     } = element || {};
-    const { horizontalAlign = "center" } = settings;
+    const { horizontalAlignFlex } = settings;
+    // Use per-device style
+    const align = horizontalAlignFlex[displayMode] || "center";
 
     const imgStyle = { width: null, height: null };
     if (image.width) {
@@ -61,7 +64,7 @@ const ImageContainer: React.FunctionComponent<ImageContainerType> = ({ element }
     }
 
     return (
-        <AlignImage align={horizontalAlign}>
+        <AlignImage align={align}>
             <SingleImageUpload
                 imagePreviewProps={{ style: imgStyle, srcSet: "auto" }}
                 onChange={onChange}
