@@ -20,7 +20,6 @@ import Accordion from "../components/Accordion";
 import Wrapper from "../components/Wrapper";
 import SpacingPicker from "../components/SpacingPicker";
 import { classes } from "../components/StyledComponents";
-import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
 const rightCellStyle = css({
     justifySelf: "end"
@@ -126,12 +125,8 @@ const Settings: React.FunctionComponent<PbEditorPageElementSettingsRenderCompone
             .find(pl => pl.config.displayMode === displayMode);
     }, [displayMode]);
 
-    const defaultValue = React.useMemo(
-        () => createInitialPerDeviceSettingValue({ value: "100%" }),
-        []
-    );
     const settings = React.useMemo(
-        () => get(element, `${DATA_NAMESPACE}.${displayMode}`, defaultValue),
+        () => get(element, `${DATA_NAMESPACE}.${displayMode}`, { value: "100%" }),
         [displayMode, element]
     );
 
