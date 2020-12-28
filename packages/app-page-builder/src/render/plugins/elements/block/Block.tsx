@@ -1,21 +1,28 @@
 import React from "react";
 import { css } from "emotion";
+import kebabCase from "lodash/kebabCase";
 import Element from "@webiny/app-page-builder/render/components/Element";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
 import { PbElement } from "@webiny/app-page-builder/types";
 import ElementAnimation from "@webiny/app-page-builder/render/components/ElementAnimation";
 import { Interpolation } from "@emotion/core";
+import { ResponsiveModeContext } from "../../../../contexts/ResponsiveMode";
 
 const Block = ({ element }: { element: PbElement }) => {
+    const { editorMode } = React.useContext(ResponsiveModeContext);
     return (
         <ElementAnimation>
             <ElementRoot element={element}>
                 {({ elementStyle, elementAttributes, customClasses, combineClassNames }) => {
-                    const { width, alignItems, justifyContent, ...containerStyle } = elementStyle;
+                    const { width, ...containerStyle } = elementStyle;
+                    // Use per-device style
+                    const justifyContent =
+                        elementStyle[`--${kebabCase(editorMode)}-justify-content`];
+                    const alignItems = elementStyle[`--${kebabCase(editorMode)}-align-items`];
 
                     return (
                         <div
-                            style={{ width: "100%", display: "flex", justifyContent: "center" }}
+                            style={{ width: "100%", display: "flex", justifyContent, alignItems }}
                             className={
                                 "webiny-pb-layout-block-container " +
                                 css(containerStyle as Interpolation)
@@ -24,9 +31,7 @@ const Block = ({ element }: { element: PbElement }) => {
                         >
                             <div
                                 style={{
-                                    width: width ? width : "100%",
-                                    alignSelf: justifyContent,
-                                    alignItems: alignItems
+                                    width: width ? width : "100%"
                                 }}
                                 className={combineClassNames(
                                     "webiny-pb-layout-block webiny-pb-base-page-element-style",

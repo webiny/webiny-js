@@ -1,13 +1,14 @@
 import React from "react";
-import { get } from "dot-prop-immutable";
+import kebabCase from "lodash/kebabCase";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
 import { PbElement } from "@webiny/app-page-builder/types";
 import { Link } from "@webiny/react-router";
+import { ResponsiveModeContext } from "../../../../contexts/ResponsiveMode";
 
 const Button = ({ element }: { element: PbElement }) => {
+    const { editorMode } = React.useContext(ResponsiveModeContext);
     const { type = "default", icon = {}, link = {} } = element.data || {};
     const { svg = null } = icon;
-    const justifyContent = get(element, "data.settings.horizontalAlignFlex") || "flex-start";
     const { position = "left" } = icon;
 
     const classes = [
@@ -25,22 +26,29 @@ const Button = ({ element }: { element: PbElement }) => {
     );
 
     return (
-        <ElementRoot element={element}>
-            {({ getAllClasses, elementStyle, elementAttributes }) => (
-                <div
-                    style={{ ...elementStyle, display: "flex", justifyContent }}
-                    {...elementAttributes}
-                >
-                    <Link
-                        to={link.href || "/"}
-                        style={!link.href ? { pointerEvents: "none" } : null}
-                        target={link.newTab ? "_blank" : "_self"}
-                        className={getAllClasses(...classes)}
-                    >
-                        {content}
-                    </Link>
-                </div>
-            )}
+        <ElementRoot className={"webiny-pb-base-page-element-style"} element={element}>
+            {({ getAllClasses, elementStyle, elementAttributes }) => {
+                // Use per-device style
+                const justifyContent = elementStyle[`--${kebabCase(editorMode)}-justify-content`];
+
+                return (
+                    <div style={{ display: "flex", justifyContent }}>
+                        <Link
+                            to={link.href || "/"}
+                            target={link.newTab ? "_blank" : "_self"}
+                            style={
+                                !link.href
+                                    ? { ...elementStyle, pointerEvents: "none" }
+                                    : elementStyle
+                            }
+                            {...elementAttributes}
+                            className={getAllClasses(...classes)}
+                        >
+                            {content}
+                        </Link>
+                    </div>
+                );
+            }}
         </ElementRoot>
     );
 };
