@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["./src"],
+  "exclude": ["node_modules", "../api-prerendering-service-aws"],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist"
+  },
+  "references": [
+    {
+      "path": "../api-prerendering-service/tsconfig.build.json"
+    }
+  ]
+}
