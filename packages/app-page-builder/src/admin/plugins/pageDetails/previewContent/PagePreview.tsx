@@ -9,7 +9,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { Select } from "@webiny/ui/Select";
 import { PbPageDetailsContextValue, PbRenderResponsiveModePlugin } from "../../../../types";
 import RenderElement from "../../../../render/components/Element";
-import { ResponsiveModeContext } from "../../../../contexts/ResponsiveMode";
+import { PageBuilderContext, PageBuilderContextValue } from "../../../../contexts/PageBuilder";
 import Zoom from "./Zoom";
 
 const pageInnerWrapper = css({
@@ -58,7 +58,9 @@ type PagePreviewProps = {
 };
 
 const PagePreview = ({ page }: PagePreviewProps) => {
-    const { editorMode, setEditorMode } = React.useContext(ResponsiveModeContext);
+    const {
+        responsiveDisplayMode: { displayMode, setDisplayMode }
+    } = React.useContext<PageBuilderContextValue>(PageBuilderContext);
     const pagePreviewRef = React.useRef();
     const responsiveModeConfigs = React.useMemo(() => {
         return plugins
@@ -95,7 +97,7 @@ const PagePreview = ({ page }: PagePreviewProps) => {
                 }
             });
 
-            setEditorMode(mode);
+            setDisplayMode(mode);
         },
         [responsiveModeConfigs]
     );
@@ -107,7 +109,7 @@ const PagePreview = ({ page }: PagePreviewProps) => {
                     ref={pagePreviewRef}
                     className={classNames(
                         pageInnerWrapper,
-                        ` webiny-pb-media-query--${kebabCase(editorMode)}`
+                        ` webiny-pb-media-query--${kebabCase(displayMode)}`
                     )}
                     // @ts-ignore
                     style={{ "--webiny-pb-page-preview-scale": zoom }}

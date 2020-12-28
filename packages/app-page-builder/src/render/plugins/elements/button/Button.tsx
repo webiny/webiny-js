@@ -3,10 +3,12 @@ import kebabCase from "lodash/kebabCase";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
 import { PbElement } from "@webiny/app-page-builder/types";
 import { Link } from "@webiny/react-router";
-import { ResponsiveModeContext } from "../../../../contexts/ResponsiveMode";
+import { PageBuilderContext, PageBuilderContextValue } from "../../../../contexts/PageBuilder";
 
 const Button = ({ element }: { element: PbElement }) => {
-    const { displayMode } = React.useContext(ResponsiveModeContext);
+    const {
+        responsiveDisplayMode: { displayMode }
+    } = React.useContext<PageBuilderContextValue>(PageBuilderContext);
     const { type = "default", icon = {}, link = {} } = element.data || {};
     const { svg = null } = icon;
     const { position = "left" } = icon;

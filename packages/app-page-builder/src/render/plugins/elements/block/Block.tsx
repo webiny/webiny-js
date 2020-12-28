@@ -6,10 +6,12 @@ import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementR
 import { PbElement } from "@webiny/app-page-builder/types";
 import ElementAnimation from "@webiny/app-page-builder/render/components/ElementAnimation";
 import { Interpolation } from "@emotion/core";
-import { ResponsiveModeContext } from "../../../../contexts/ResponsiveMode";
+import { PageBuilderContext, PageBuilderContextValue } from "../../../../contexts/PageBuilder";
 
 const Block = ({ element }: { element: PbElement }) => {
-    const { displayMode } = React.useContext(ResponsiveModeContext);
+    const {
+        responsiveDisplayMode: { displayMode }
+    } = React.useContext<PageBuilderContextValue>(PageBuilderContext);
     return (
         <ElementAnimation>
             <ElementRoot element={element}>
