@@ -56,6 +56,8 @@
 
 // base css class that applies to all elements created by the page editor
 .webiny-pb-base-page-element-style {
+  max-width: var(--desktop-width);
+
   padding: var(--desktop-padding-top) var(--desktop-padding-right) var(--desktop-padding-bottom)
     var(--desktop-padding-left);
   margin: var(--desktop-margin-top) var(--desktop-margin-right) var(--desktop-margin-bottom)
@@ -67,6 +69,8 @@
   align-items: var(--desktop-align-items);
 }
 .webiny-pb-media-query--tablet .webiny-pb-base-page-element-style {
+  max-width: var(--tablet-width);
+
   padding: var(--tablet-padding-top) var(--tablet-padding-right) var(--tablet-padding-bottom)
     var(--tablet-padding-left);
   margin: var(--tablet-margin-top) var(--tablet-margin-right) var(--tablet-margin-bottom)
@@ -78,6 +82,8 @@
   align-items: var(--tablet-align-items);
 }
 .webiny-pb-media-query--mobile-landscape .webiny-pb-base-page-element-style {
+  max-width: var(--mobile-landscape-width);
+
   padding: var(--mobile-landscape-padding-top) var(--mobile-landscape-padding-right)
     var(--mobile-landscape-padding-bottom) var(--mobile-landscape-padding-left);
   margin: var(--mobile-landscape-margin-top) var(--mobile-landscape-margin-right)
@@ -92,6 +98,8 @@
   //background-size: contain !important;
 }
 .webiny-pb-media-query--mobile-portrait .webiny-pb-base-page-element-style {
+  max-width: var(--mobile-portrait-width);
+
   padding: var(--mobile-portrait-padding-top) var(--mobile-portrait-padding-right)
     var(--mobile-portrait-padding-bottom) var(--mobile-portrait-padding-left);
   margin: var(--mobile-portrait-margin-top) var(--mobile-portrait-margin-right)
