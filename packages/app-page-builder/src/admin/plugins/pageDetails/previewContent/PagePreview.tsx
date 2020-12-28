@@ -1,12 +1,16 @@
 // @ts-nocheck
-import * as React from "react";
+import React from "react";
 import { css } from "emotion";
 import styled from "@emotion/styled";
+import classNames from "classnames";
+import kebabCase from "lodash/kebabCase";
+import { plugins } from "@webiny/plugins";
 import { Typography } from "@webiny/ui/Typography";
 import { Select } from "@webiny/ui/Select";
-import RenderElement from "@webiny/app-page-builder/render/components/Element";
+import { PbPageDetailsContextValue, PbRenderResponsiveModePlugin } from "../../../../types";
+import RenderElement from "../../../../render/components/Element";
+import { ResponsiveModeContext } from "../../../../contexts/ResponsiveMode";
 import Zoom from "./Zoom";
-import { PbPageDetailsContextValue } from "@webiny/app-page-builder/types";
 
 const pageInnerWrapper = css({
     overflowY: "scroll",
@@ -54,11 +58,55 @@ type PagePreviewProps = {
 };
 
 const PagePreview = ({ page }: PagePreviewProps) => {
+    const { editorMode, setEditorMode } = React.useContext(ResponsiveModeContext);
+    const pagePreviewRef = React.useRef();
+    const responsiveModeConfigs = React.useMemo(() => {
+        return plugins
+            .byType<PbRenderResponsiveModePlugin>("pb-render-responsive-mode")
+            .map(pl => pl.config);
+    }, []);
+
+    const resizeObserver = React.useMemo(() => {
+        // @ts-ignore
+        return new ResizeObserver(entries => {
+            for (const entry of entries) {
+                const { width, height } = entry.contentRect;
+                handlerResize({ width, height });
+            }
+        });
+    }, []);
+    // Set resize observer
+    React.useEffect(() => {
+        if (pagePreviewRef.current) {
+            // Add resize observer
+            resizeObserver.observe(pagePreviewRef.current);
+        }
+    }, []);
+    // Handle document resize
+    const handlerResize = React.useCallback(
+        ({ width }) => {
+            let mode = "desktop";
+            responsiveModeConfigs.forEach(config => {
+                if (width <= config.minWidth) {
+                    mode = config.name;
+                }
+            });
+
+            setEditorMode(mode);
+        },
+        [responsiveModeConfigs]
+    );
+
+    console.log({ editorMode });
     return (
         <Zoom>
             {({ zoom, setZoom }) => (
                 <div
-                    className={pageInnerWrapper}
+                    ref={pagePreviewRef}
+                    className={classNames(
+                        pageInnerWrapper,
+                        ` webiny-pb-media-query--${kebabCase(editorMode)}`
+                    )}
                     // @ts-ignore
                     style={{ "--webiny-pb-page-preview-scale": zoom }}
                 >
