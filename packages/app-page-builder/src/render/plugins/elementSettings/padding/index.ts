@@ -1,7 +1,7 @@
 import get from "lodash/get";
 import kebabCase from "lodash/kebabCase";
 import { plugins } from "@webiny/plugins";
-import { PbEditorResponsiveModePlugin, PbRenderElementStylePlugin } from "../../../../types";
+import { PbRenderResponsiveModePlugin, PbRenderElementStylePlugin } from "../../../../types";
 
 const validateSpacingValue = value => {
     const parsedValue = parseInt(value);
@@ -22,7 +22,7 @@ export default {
         }
         // Get editor modes
         const editorModes = plugins
-            .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
+            .byType<PbRenderResponsiveModePlugin>("pb-render-responsive-mode")
             .map(pl => pl.config);
         // Set per side padding value
         ["top", "right", "bottom", "left"].forEach(side => {
