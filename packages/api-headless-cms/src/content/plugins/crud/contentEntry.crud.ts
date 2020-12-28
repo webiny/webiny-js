@@ -567,7 +567,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     ...utils.defaults.db,
                     query: {
                         PK: PK_ENTRY(uniqueId),
-                        SK: { $beginsWith: "" }
+                        SK: { $gt: " " }
                     }
                 });
 
