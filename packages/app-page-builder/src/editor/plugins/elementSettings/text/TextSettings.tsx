@@ -1,9 +1,15 @@
 import React, { useCallback, useMemo } from "react";
 import { css } from "emotion";
 import { useRecoilValue } from "recoil";
+import get from "lodash/get";
 import { plugins } from "@webiny/plugins";
-import { PbEditorPageElementSettingsRenderComponentProps, PbThemePlugin } from "../../../../types";
-import { activeElementWithChildrenSelector } from "../../../recoil/modules";
+import { Tooltip } from "@webiny/ui/Tooltip";
+import {
+    PbEditorPageElementSettingsRenderComponentProps,
+    PbEditorResponsiveModePlugin,
+    PbThemePlugin
+} from "../../../../types";
+import { activeElementWithChildrenSelector, uiAtom } from "../../../recoil/modules";
 // Components
 import Accordion from "../../elementSettings/components/Accordion";
 import Wrapper from "../../elementSettings/components/Wrapper";
@@ -30,23 +36,20 @@ const classes = {
     })
 };
 
+const DATA_NAMESPACE = "data.text";
+
 const TextSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps & {
     options: any;
 }> = ({ defaultAccordionValue, options }) => {
+    const { displayMode } = useRecoilValue(uiAtom);
     const element = useRecoilValue(activeElementWithChildrenSelector);
     const [{ theme }] = plugins.byType<PbThemePlugin>("pb-theme");
 
-    const {
-        data: {
-            text = {
-                color: "",
-                typography: "paragraph",
-                type: "paragraph",
-                alignment: "left",
-                tag: "h1"
-            }
-        } = {}
-    } = element;
+    const { config: activeDisplayModeConfig } = useMemo(() => {
+        return plugins
+            .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
+            .find(pl => pl.config.displayMode === displayMode);
+    }, [displayMode]);
 
     const themeTypographyOptions = useMemo(() => {
         const { types } = theme.elements[element.type];
@@ -59,30 +62,51 @@ const TextSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderCom
 
     const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
         element,
-        dataNamespace: "data.text"
+        dataNamespace: DATA_NAMESPACE
     });
 
-    const updateColor = useCallback((value: string) => getUpdateValue("color")(value), [
-        getUpdateValue
-    ]);
-    const updateColorPreview = useCallback((value: string) => getUpdatePreview("color")(value), [
-        getUpdatePreview
+    const updateColor = useCallback(
+        (value: string) => getUpdateValue(`${displayMode}.color`)(value),
+        [getUpdateValue, displayMode]
+    );
+    const updateColorPreview = useCallback(
+        (value: string) => getUpdatePreview(`${displayMode}.color`)(value),
+        [getUpdatePreview]
+    );
+
+    const updateTypography = useCallback(
+        (value: string) => getUpdateValue(`${displayMode}.typography`)(value),
+        [getUpdateValue, displayMode]
+    );
+
+    const updateAlignment = useCallback(
+        (value: string) => getUpdateValue(`${displayMode}.alignment`)(value),
+        [getUpdateValue, displayMode]
+    );
+
+    const updateTag = useCallback((value: string) => getUpdateValue(`${displayMode}.tag`)(value), [
+        getUpdateValue,
+        displayMode
     ]);
 
-    const updateTypography = useCallback((value: string) => getUpdateValue("typography")(value), [
-        getUpdateValue
-    ]);
-
-    const updateAlignment = useCallback((value: string) => getUpdateValue("alignment")(value), [
-        getUpdateValue
-    ]);
-
-    const updateTag = useCallback((value: string) => getUpdateValue("tag")(value), [
-        getUpdateValue
-    ]);
+    const text = get(element, `${DATA_NAMESPACE}.${displayMode}`, {
+        color: "",
+        typography: "paragraph",
+        type: "paragraph",
+        alignment: "left",
+        tag: "h1"
+    });
 
     return (
-        <Accordion title={"Text"} defaultValue={defaultAccordionValue}>
+        <Accordion
+            title={"Text"}
+            defaultValue={defaultAccordionValue}
+            icon={
+                <Tooltip content={`Changes will apply for ${activeDisplayModeConfig.displayMode}`}>
+                    {activeDisplayModeConfig.icon}
+                </Tooltip>
+            }
+        >
             <>
                 <Wrapper containerClassName={classes.grid} label={"Color"}>
                     <BaseColorPicker

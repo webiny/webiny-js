@@ -1,5 +1,6 @@
 import React, { useCallback } from "react";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
+import get from "lodash/get";
 import classNames from "classnames";
 import { PbElement } from "../../types";
 import {
@@ -13,6 +14,7 @@ import useUpdateHandlers from "../plugins/elementSettings/useUpdateHandlers";
 import ReactMediumEditor from "../components/MediumEditor";
 
 export const textClassName = "webiny-pb-base-page-element-style webiny-pb-page-element-text";
+const DATA_NAMESPACE = "data.text";
 
 type TextElementProps = {
     elementId: string;
@@ -24,17 +26,17 @@ const Text: React.FunctionComponent<TextElementProps> = ({
     editorOptions,
     rootClassName
 }) => {
-    const setUiAtomValue = useSetRecoilState(uiAtom);
+    const [uiAtomValue, setUiAtomValue] = useRecoilState(uiAtom);
     const element: PbElement = useRecoilValue(elementWithChildrenByIdSelector(elementId));
     const activeElementId = useRecoilValue(activeElementIdSelector);
     const { getUpdateValue } = useUpdateHandlers({
         element,
-        dataNamespace: "data.text"
+        dataNamespace: DATA_NAMESPACE
     });
 
     const onChange = useCallback(
         value => {
-            getUpdateValue("data.text")(value);
+            getUpdateValue(DATA_NAMESPACE)(value);
         },
         [getUpdateValue]
     );
@@ -49,7 +51,9 @@ const Text: React.FunctionComponent<TextElementProps> = ({
         return null;
     }
 
-    const { typography, data, tag } = element.data.text;
+    const { data } = element.data.text;
+    const tag = get(element, `${DATA_NAMESPACE}.${uiAtomValue.displayMode}.tag`, "div");
+    const typography = get(element, `${DATA_NAMESPACE}.${uiAtomValue.displayMode}.typography`);
 
     return (
         <ElementRoot

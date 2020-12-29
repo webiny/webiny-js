@@ -1,21 +1,34 @@
 import get from "lodash/get";
-import { PbRenderElementStylePlugin } from "@webiny/app-page-builder/types";
+import kebabCase from "lodash/kebabCase";
+import { plugins } from "@webiny/plugins";
+import { PbRenderElementStylePlugin, PbRenderResponsiveModePlugin } from "../../../../types";
 
 export default {
     name: "pb-render-page-element-style-text",
     type: "pb-render-page-element-style",
     renderStyle({ element, style }) {
-        const { color, alignment } = get(element, "data.text", {});
-        const newStyle = { ...style };
+        const textSettings = get(element, "data.text", {});
+        // Get display modes
+        const displayModeConfigs = plugins
+            .byType<PbRenderResponsiveModePlugin>("pb-render-responsive-mode")
+            .map(pl => pl.config);
 
-        if (color) {
-            newStyle["color"] = color;
-        }
+        // Set per-device property value
+        displayModeConfigs.forEach(({ displayMode }) => {
+            // Set text color
+            style[`--${kebabCase(displayMode)}-color`] = get(
+                textSettings,
+                `${displayMode}.color`,
+                "unset"
+            );
+            // Set text alignment
+            style[`--${kebabCase(displayMode)}-text-align`] = get(
+                textSettings,
+                `${displayMode}.alignment`,
+                "unset"
+            );
+        });
 
-        if (alignment) {
-            newStyle["textAlign"] = alignment;
-        }
-
-        return newStyle;
+        return style;
     }
 } as PbRenderElementStylePlugin;
