@@ -112,7 +112,7 @@ export const SecurityPermissions = ({ parent, value, onChange }) => {
                                 <Select label={t`Access Level`}>
                                     <option value={NO_ACCESS}>{t`No access`}</option>
                                     <option value={FULL_ACCESS}>{t`Full access`}</option>
-                                    <option value={CUSTOM_ACCESS}>{t`Custom`}</option>
+                                    <option value={CUSTOM_ACCESS}>{t`Custom access`}</option>
                                 </Select>
                             </Bind>
                         </Cell>
