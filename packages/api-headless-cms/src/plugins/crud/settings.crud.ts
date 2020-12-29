@@ -2,6 +2,7 @@ import { ContextPlugin } from "@webiny/handler/types";
 import Error from "@webiny/error";
 import * as utils from "../../utils";
 import {
+    CmsContentModelGroupType,
     CmsContext,
     CmsSettingsContextType,
     CmsSettingsPermissionType,
@@ -9,6 +10,7 @@ import {
     DbItemTypes
 } from "../../types";
 import { NotAuthorizedError } from "@webiny/api-security";
+import WebinyError from "@webiny/error";
 
 type SettingsGetOptionsArgsType = {
     auth?: boolean;
@@ -63,15 +65,20 @@ export default {
                 }
 
                 // Add default content model group.
-                const contentModel = await context.cms.groups.create(initialContentModelGroup);
+                let contentModelGroup: CmsContentModelGroupType;
+                try {
+                    contentModelGroup = await context.cms.groups.create(initialContentModelGroup);
+                } catch (ex) {
+                    throw new WebinyError(ex.message, "CMS_INSTALLATION_CONTENT_MODEL_GROUP_ERROR");
+                }
 
                 const model: CmsSettingsType = {
                     isInstalled: true,
-                    contentModelLastChange: contentModel.savedOn
+                    contentModelLastChange: contentModelGroup.savedOn
                 };
 
                 // Store the initial timestamp which is then used to determine if CMS Schema was changed.
-                context.cms.settings.contentModelLastChange = contentModel.savedOn;
+                context.cms.settings.contentModelLastChange = contentModelGroup.savedOn;
 
                 // mark as installed in settings
                 await db.create({

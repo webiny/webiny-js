@@ -1,8 +1,26 @@
 import { useAdminGqlHandler } from "../utils/useAdminGqlHandler";
+import { useContentGqlHandler } from "../utils/useContentGqlHandler";
+import { createIdentity } from "../utils/helpers";
 
 describe("Settings crud test", () => {
-    const { installMutation, elasticSearch } = useAdminGqlHandler();
-    const { isInstalledQuery } = useAdminGqlHandler({
+    const manageOpts = {
+        path: "manage/en-US"
+    };
+
+    const { listContentModelGroupsQuery } = useContentGqlHandler({
+        ...manageOpts
+    });
+
+    const { installMutation } = useAdminGqlHandler({
+        ...manageOpts
+    });
+
+    const {
+        isInstalledQuery,
+        installMutation: installMutationNoPermission,
+        elasticSearch
+    } = useAdminGqlHandler({
+        ...manageOpts,
         permissions: []
     });
 
@@ -22,7 +40,7 @@ describe("Settings crud test", () => {
         } catch (e) {}
     });
 
-    test("cms is not installed", async () => {
+    test("cms is not installed yet", async () => {
         const [response] = await isInstalledQuery();
         expect(response).toEqual({
             data: {
@@ -48,7 +66,7 @@ describe("Settings crud test", () => {
         });
     });
 
-    test("cms is installed", async () => {
+    test("cms is being installed", async () => {
         await installMutation();
 
         const [response] = await isInstalledQuery();
@@ -59,6 +77,28 @@ describe("Settings crud test", () => {
                         data: true,
                         error: null
                     }
+                }
+            }
+        });
+
+        const [listContentModelGroupsResponse] = await listContentModelGroupsQuery();
+
+        expect(listContentModelGroupsResponse).toMatchObject({
+            data: {
+                listContentModelGroups: {
+                    data: [
+                        {
+                            id: expect.any(String),
+                            createdBy: createIdentity(),
+                            createdOn: /^20/,
+                            savedOn: /^20/,
+                            description: "A generic content model group",
+                            icon: "fas/star",
+                            name: "Ungrouped",
+                            slug: "ungrouped"
+                        }
+                    ],
+                    error: null
                 }
             }
         });
@@ -104,6 +144,25 @@ describe("Settings crud test", () => {
                     isInstalled: {
                         data: true,
                         error: null
+                    }
+                }
+            }
+        });
+    });
+
+    test("should not install due to lack of permissions", async () => {
+        const [response] = await installMutationNoPermission();
+
+        expect(response).toEqual({
+            data: {
+                cms: {
+                    install: {
+                        data: null,
+                        error: {
+                            code: "CMS_INSTALLATION_CONTENT_MODEL_GROUP_ERROR",
+                            message: "Not authorized!",
+                            data: null
+                        }
                     }
                 }
             }
