@@ -5,17 +5,17 @@ import { Select } from "@webiny/ui/Select";
 import { i18n } from "@webiny/app/i18n";
 import { Elevation } from "@webiny/ui/Elevation";
 import { PermissionSelector, PermissionSelectorWrapper } from "./PermissionSelector";
-import { Checkbox, CheckboxGroup } from "@webiny/ui/Checkbox";
+// import { Checkbox, CheckboxGroup } from "@webiny/ui/Checkbox";
 import { useCmsData } from "@webiny/app-headless-cms/admin/plugins/permissionRenderer/components/useCmsData";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
-const rcpuOptions = [
+/*const rcpuOptions = [
     { id: "p", name: t`Publish` },
     { id: "u", name: t`Unpublish` },
     { id: "r", name: t`Request review` },
     { id: "c", name: t`Request changes` }
-];
+];*/
 
 export const ContentEntryPermission = ({ Bind, data, entity, title, locales }) => {
     const modelsGroups = useCmsData(locales);
@@ -86,7 +86,7 @@ export const ContentEntryPermission = ({ Bind, data, entity, title, locales }) =
                                 </Select>
                             </Bind>
                         </Cell>
-                        {data.endpoints.includes("manage") ? (
+                        {/* {data.endpoints.includes("manage") ? (
                             <Cell span={12}>
                                 <Bind name={`${entity}RCPU`}>
                                     <CheckboxGroup
@@ -109,7 +109,7 @@ export const ContentEntryPermission = ({ Bind, data, entity, title, locales }) =
                                     </CheckboxGroup>
                                 </Bind>
                             </Cell>
-                        ) : null}
+                        ) : null}*/}
                     </Grid>
                 </Cell>
             </Grid>

@@ -34,15 +34,15 @@ export const SecurityPermissions = ({ parent, value, onChange }) => {
             if (data.level === FULL_ACCESS) {
                 permissions.push({ name: SECURITY_FULL_ACCESS });
             } else if (data.level === CUSTOM_ACCESS) {
-                if (data.userAccessLevel === FULL_ACCESS) {
+                if (data.userAccessScope === FULL_ACCESS) {
                     permissions.push({ name: SECURITY_USER_ACCESS });
                 }
 
-                if (data.groupAccessLevel === FULL_ACCESS) {
+                if (data.groupAccessScope === FULL_ACCESS) {
                     permissions.push({ name: SECURITY_GROUP_ACCESS });
                 }
 
-                if (data.apiKeyAccessLevel === FULL_ACCESS) {
+                if (data.apiKeyAccessScope === FULL_ACCESS) {
                     permissions.push({ name: SECURITY_API_KEY_ACCESS });
                 }
             }
@@ -76,24 +76,24 @@ export const SecurityPermissions = ({ parent, value, onChange }) => {
 
         const data = {
             level: CUSTOM_ACCESS,
-            groupAccessLevel: NO_ACCESS,
-            userAccessLevel: NO_ACCESS,
-            apiKeyAccessLevel: NO_ACCESS
+            groupAccessScope: NO_ACCESS,
+            userAccessScope: NO_ACCESS,
+            apiKeyAccessScope: NO_ACCESS
         };
 
         const hasGroupAccess = permissions.find(item => item.name === SECURITY_GROUP_ACCESS);
         if (hasGroupAccess) {
-            data.groupAccessLevel = FULL_ACCESS;
+            data.groupAccessScope = FULL_ACCESS;
         }
 
         const hasUserAccess = permissions.find(item => item.name === SECURITY_USER_ACCESS);
         if (hasUserAccess) {
-            data.userAccessLevel = FULL_ACCESS;
+            data.userAccessScope = FULL_ACCESS;
         }
 
         const hasApiKeyAccess = permissions.find(item => item.name === SECURITY_API_KEY_ACCESS);
         if (hasApiKeyAccess) {
-            data.apiKeyAccessLevel = FULL_ACCESS;
+            data.apiKeyAccessScope = FULL_ACCESS;
         }
 
         return data;
@@ -111,7 +111,7 @@ export const SecurityPermissions = ({ parent, value, onChange }) => {
                             <Bind name={"level"}>
                                 <Select label={t`Access Level`}>
                                     <option value={NO_ACCESS}>{t`No access`}</option>
-                                    <option value={FULL_ACCESS}>{t`Full Access`}</option>
+                                    <option value={FULL_ACCESS}>{t`Full access`}</option>
                                     <option value={CUSTOM_ACCESS}>{t`Custom`}</option>
                                 </Select>
                             </Bind>
@@ -125,23 +125,14 @@ export const SecurityPermissions = ({ parent, value, onChange }) => {
                                         <Typography use={"overline"}>{t`Users`}</Typography>
                                     </Cell>
                                     <Cell span={12}>
-                                        <Grid style={{ padding: 0, paddingBottom: 24 }}>
-                                            <Cell span={6}>
-                                                <PermissionInfo title={t`Manage users`} />
-                                            </Cell>
-                                            <Cell span={6} align={"middle"}>
-                                                <Bind name={"userAccessLevel"}>
-                                                    <Select label={t`Access Level`}>
-                                                        <option
-                                                            value={NO_ACCESS}
-                                                        >{t`No access`}</option>
-                                                        <option
-                                                            value={FULL_ACCESS}
-                                                        >{t`Full Access`}</option>
-                                                    </Select>
-                                                </Bind>
-                                            </Cell>
-                                        </Grid>
+                                        <Bind name={"userAccessScope"}>
+                                            <Select label={t`Access Scope`}>
+                                                <option value={NO_ACCESS}>{t`No access`}</option>
+                                                <option
+                                                    value={FULL_ACCESS}
+                                                >{t`Full access`}</option>
+                                            </Select>
+                                        </Bind>
                                     </Cell>
                                 </Grid>
                             </Elevation>
@@ -151,23 +142,14 @@ export const SecurityPermissions = ({ parent, value, onChange }) => {
                                         <Typography use={"overline"}>{t`Groups`}</Typography>
                                     </Cell>
                                     <Cell span={12}>
-                                        <Grid style={{ padding: 0, paddingBottom: 24 }}>
-                                            <Cell span={6}>
-                                                <PermissionInfo title={t`Manage groups`} />
-                                            </Cell>
-                                            <Cell span={6} align={"middle"}>
-                                                <Bind name={"groupAccessLevel"}>
-                                                    <Select label={t`Access Level`}>
-                                                        <option
-                                                            value={NO_ACCESS}
-                                                        >{t`No access`}</option>
-                                                        <option
-                                                            value={FULL_ACCESS}
-                                                        >{t`Full Access`}</option>
-                                                    </Select>
-                                                </Bind>
-                                            </Cell>
-                                        </Grid>
+                                        <Bind name={"groupAccessScope"}>
+                                            <Select label={t`Access Scope`}>
+                                                <option value={NO_ACCESS}>{t`No access`}</option>
+                                                <option
+                                                    value={FULL_ACCESS}
+                                                >{t`Full access`}</option>
+                                            </Select>
+                                        </Bind>
                                     </Cell>
                                 </Grid>
                             </Elevation>
@@ -177,23 +159,16 @@ export const SecurityPermissions = ({ parent, value, onChange }) => {
                                         <Typography use={"overline"}>{t`API Keys`}</Typography>
                                     </Cell>
                                     <Cell span={12}>
-                                        <Grid style={{ padding: 0, paddingBottom: 24 }}>
-                                            <Cell span={6}>
-                                                <PermissionInfo title={t`Manage API keys`} />
-                                            </Cell>
-                                            <Cell span={6} align={"middle"}>
-                                                <Bind name={"apiKeyAccessLevel"}>
-                                                    <Select label={t`Access Level`}>
-                                                        <option
-                                                            value={NO_ACCESS}
-                                                        >{t`No access`}</option>
-                                                        <option
-                                                            value={FULL_ACCESS}
-                                                        >{t`Full Access`}</option>
-                                                    </Select>
-                                                </Bind>
-                                            </Cell>
-                                        </Grid>
+                                        <Bind name={"apiKeyAccessScope"}>
+                                            <Select label={t`Access Scope`}>
+                                                <option
+                                                    value={NO_ACCESS}
+                                                >{t`No access`}</option>
+                                                <option
+                                                    value={FULL_ACCESS}
+                                                >{t`Full access`}</option>
+                                            </Select>
+                                        </Bind>
                                     </Cell>
                                 </Grid>
                             </Elevation>

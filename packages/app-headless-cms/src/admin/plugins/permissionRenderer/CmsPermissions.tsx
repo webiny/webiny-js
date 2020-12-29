@@ -210,8 +210,8 @@ export const CMSPermissions = ({ parent, value, onChange }) => {
                             <Bind name={"accessLevel"}>
                                 <Select label={t`Access Level`}>
                                     <option value={NO_ACCESS}>{t`No access`}</option>
-                                    <option value={FULL_ACCESS}>{t`Full Access`}</option>
-                                    <option value={CUSTOM_ACCESS}>{t`Custom Access`}</option>
+                                    <option value={FULL_ACCESS}>{t`Full access`}</option>
+                                    <option value={CUSTOM_ACCESS}>{t`Custom access`}</option>
                                 </Select>
                             </Bind>
                         </Cell>

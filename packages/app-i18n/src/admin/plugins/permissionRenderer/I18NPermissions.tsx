@@ -7,9 +7,6 @@ import {
     gridNoPaddingClass
 } from "@webiny/app-security-tenancy/components/permission";
 import { Form } from "@webiny/form";
-import { Switch } from "@webiny/ui/Switch";
-import { Elevation } from "@webiny/ui/Elevation";
-import { Typography } from "@webiny/ui/Typography";
 
 const t = i18n.ns("app-i18n/admin/plugins/permissionRenderer");
 
@@ -18,7 +15,6 @@ const I18N_FULL_ACCESS = `${I18N}.*`;
 const I18N_LOCALES = `${I18N}.locales`;
 const FULL_ACCESS = "full";
 const NO_ACCESS = "no";
-const CUSTOM_ACCESS = "custom";
 
 export const I18NPermissions = ({ parent, value, onChange }) => {
     const onFormChange = useCallback(
@@ -39,7 +35,7 @@ export const I18NPermissions = ({ parent, value, onChange }) => {
             if (permission) {
                 newValue.push(permission);
             }
-
+            
             onChange(newValue);
         },
         [parent.id, value]
@@ -61,14 +57,11 @@ export const I18NPermissions = ({ parent, value, onChange }) => {
         if (!permission) {
             return { level: NO_ACCESS };
         }
-
-        // It's either "i18n.*" or "i18n.locales", that's why `locales: true`.
-        return { level: CUSTOM_ACCESS, locales: true };
     }, [parent.id]);
 
     return (
         <Form data={formData} onChange={onFormChange}>
-            {({ data, Bind }) => (
+            {({ Bind }) => (
                 <Fragment>
                     <Grid className={gridNoPaddingClass}>
                         <Cell span={6}>
@@ -78,33 +71,11 @@ export const I18NPermissions = ({ parent, value, onChange }) => {
                             <Bind name={"level"}>
                                 <Select label={t`Access Level`}>
                                     <option value={NO_ACCESS}>{t`No access`}</option>
-                                    <option value={FULL_ACCESS}>{t`Full Access`}</option>
-                                    <option value={CUSTOM_ACCESS}>{t`Custom`}</option>
+                                    <option value={FULL_ACCESS}>{t`Full access`}</option>
                                 </Select>
                             </Bind>
                         </Cell>
                     </Grid>
-                    {data.level === CUSTOM_ACCESS && (
-                        <Elevation z={1} style={{ marginTop: 10 }}>
-                            <Grid>
-                                <Cell span={12}>
-                                    <Typography use={"overline"}>{t`Locales`}</Typography>
-                                </Cell>
-                                <Cell span={12}>
-                                    <Grid style={{ padding: 0, paddingBottom: 24 }}>
-                                        <Cell span={6}>
-                                            <PermissionInfo title={t`Manage locales`} />
-                                        </Cell>
-                                        <Cell span={6} align={"middle"}>
-                                            <Bind name={"locales"}>
-                                                <Switch />
-                                            </Bind>
-                                        </Cell>
-                                    </Grid>
-                                </Cell>
-                            </Grid>
-                        </Elevation>
-                    )}
                 </Fragment>
             )}
         </Form>
