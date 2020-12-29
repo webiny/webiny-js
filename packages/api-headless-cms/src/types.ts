@@ -600,3 +600,29 @@ export type CmsContentEntryPermissionType = SecurityPermission<{
         [key: string]: string[]; // array of group.id values
     };
 }>;
+
+type CmsModelFieldToElasticSearchPluginResultType = {
+    rawData: any;
+    [key: string]: any;
+};
+export type CmsModelFieldToElasticSearchPlugin = Plugin & {
+    type: "cms-model-field-to-elastic-search";
+    fieldType: string;
+    unmappedType?: string;
+    /**
+     * { rawData: { description: ["<p>blah-blah<p>"] }, search: { description: "blah-blah"} }
+     */
+    toIndex(params: {
+        field: CmsContentModelFieldType;
+        context: CmsContext;
+        value: any;
+    }): CmsModelFieldToElasticSearchPluginResultType;
+    fromIndex(params: { field: CmsContentModelFieldType; context: CmsContext; rawData: any }): any;
+};
+
+export type CmsModelFieldToStoragePlugin = Plugin & {
+    type: "cms-model-field-to-storage";
+    fieldType: string;
+    toStorage?(params: { field: CmsContentModelFieldType; context: CmsContext; value: any }): any;
+    fromStorage?(params: { field: CmsContentModelFieldType; context: CmsContext; value: any }): any;
+};

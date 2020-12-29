@@ -7,9 +7,12 @@ import {
     CmsContentEntryContextType,
     CmsContentEntryPermissionType,
     CmsContentEntryType,
+    CmsContentModelFieldType,
     CmsContentModelType,
-    CmsContext
+    CmsContext,
+    CmsModelFieldToElasticSearchPlugin
 } from "@webiny/api-headless-cms/types";
+import lodashMerge from "lodash/merge";
 import * as utils from "../../../utils";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation";
 import {
@@ -22,6 +25,7 @@ import { beforeCreateHook } from "./contentEntry/beforeCreate.hook";
 import { afterCreateHook } from "./contentEntry/afterCreate.hook";
 import { beforeSaveHook } from "./contentEntry/beforeSave.hook";
 import { afterSaveHook } from "./contentEntry/afterSave.hook";
+import WebinyError from "@webiny/error";
 
 const TYPE_ENTRY = "cms.entry";
 const TYPE_ENTRY_LATEST = TYPE_ENTRY + ".l";
@@ -37,6 +41,12 @@ type DbItem<T> = T & {
     PK: string;
     SK: string;
     TYPE: string;
+};
+
+type PrepareElasticSearchDataArgsType = {
+    context: CmsContext;
+    entry: CmsContentEntryType;
+    model: CmsContentModelType;
 };
 
 const createElasticSearchData = ({ values, ...entry }: CmsContentEntryType) => {
@@ -56,6 +66,69 @@ const getESLatestEntryData = (entry: CmsContentEntryType) => {
 
 const getESPublishedEntryData = (entry: CmsContentEntryType) => {
     return { ...createElasticSearchData(entry), published: true, __type: TYPE_ENTRY_PUBLISHED };
+};
+
+type PreparedCmsContentEntryType = CmsContentEntryType & {
+    rawData: Record<string, any>;
+    [key: string]: any;
+};
+const prepareEntryToIndex = (
+    args: PrepareElasticSearchDataArgsType
+): PreparedCmsContentEntryType => {
+    const { context, entry, model } = args;
+    const plugins = context.plugins.byType<CmsModelFieldToElasticSearchPlugin>(
+        "cms-model-field-to-elastic-search"
+    );
+    const fieldsAsObject: Record<string, CmsContentModelFieldType> = model.fields.reduce(
+        (acc, field) => {
+            acc[field.id] = field;
+            return acc;
+        },
+        {}
+    );
+
+    const fieldPlugins: Record<string, CmsModelFieldToElasticSearchPlugin> = {};
+    for (const plugin of plugins.reverse()) {
+        if (fieldPlugins[plugin.fieldType]) {
+            continue;
+        }
+        fieldPlugins[plugin.fieldType] = plugin;
+    }
+
+    let preparedEntry: PreparedCmsContentEntryType = {
+        ...entry,
+        rawData: {}
+    };
+    for (const fieldId in entry.values) {
+        if (entry.values.hasOwnProperty(fieldId) === false) {
+            throw new Error(
+                `There is no ${fieldId} in entry.values being looped through. Which is impossible...`
+            );
+        }
+        const field = fieldsAsObject[fieldId];
+        if (!field) {
+            throw new WebinyError(`There is no field type with fieldId "${fieldId}".`);
+        }
+        const value = entry.values[fieldId];
+
+        const targetFieldPlugin = fieldPlugins[field.type];
+        // we decided to take only last registered plugin for given field type
+        if (targetFieldPlugin) {
+            const { rawData, ...toIndexPluginValues } = targetFieldPlugin.toIndex({
+                context,
+                field,
+                value
+            });
+            delete preparedEntry.values[fieldId];
+            preparedEntry = lodashMerge(preparedEntry, {
+                rawData: {
+                    [fieldId]: rawData
+                },
+                ...toIndexPluginValues
+            });
+        }
+    }
+    return preparedEntry;
 };
 
 export default (): ContextPlugin<CmsContext> => ({
@@ -281,10 +354,15 @@ export default (): ContextPlugin<CmsContext> => ({
                     })
                     .execute();
 
+                const preparedEntry = prepareEntryToIndex({
+                    context,
+                    model,
+                    entry
+                });
                 await elasticSearch.create({
                     ...utils.defaults.es(context),
                     id: `CME#L#${uniqueId}`,
-                    body: getESLatestEntryData(entry)
+                    body: getESLatestEntryData(preparedEntry)
                 });
 
                 await afterCreateHook({ model, entry, context });
@@ -363,10 +441,16 @@ export default (): ContextPlugin<CmsContext> => ({
                     })
                     .execute();
 
+                const preparedEntry = prepareEntryToIndex({
+                    context,
+                    model,
+                    entry
+                });
+
                 await elasticSearch.index({
                     ...utils.defaults.es(context),
                     id: `CME#L#${uniqueId}`,
-                    body: getESLatestEntryData(newEntry)
+                    body: getESLatestEntryData(preparedEntry)
                 });
 
                 return newEntry;
@@ -429,6 +513,13 @@ export default (): ContextPlugin<CmsContext> => ({
                     }
                 });
 
+                // TODO verify that this is correct for updating entry
+                const preparedEntry = prepareEntryToIndex({
+                    context,
+                    model,
+                    entry
+                });
+
                 if (latestEntry.id === id) {
                     // Index file in "Elastic Search"
                     await elasticSearch.update({
@@ -436,7 +527,8 @@ export default (): ContextPlugin<CmsContext> => ({
                         id: `CME#L#${uniqueId}`,
                         body: {
                             doc: {
-                                values: updatedEntryModel.values,
+                                ...preparedEntry,
+                                // values: updatedEntryModel.values,
                                 savedOn: updatedEntryModel.savedOn
                             }
                         }
