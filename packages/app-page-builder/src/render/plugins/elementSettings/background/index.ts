@@ -47,7 +47,7 @@ export default {
             style[`--${kebabCase(displayMode)}-background-color`] = get(
                 background,
                 `${displayMode}.color`,
-                "unset"
+                "transparent"
             );
             // Set background image properties
             const image = get(background, `${displayMode}.image`);
