@@ -68,6 +68,9 @@
   @include border(--desktop);
   @include background(--desktop);
 
+  color: var(--desktop-color);
+  text-align: var(--desktop-text-align);
+
   justify-content: var(--desktop-justify-content);
   align-items: var(--desktop-align-items);
 }
@@ -83,6 +86,9 @@
   @include border(--tablet);
   @include background(--tablet);
 
+  color: var(--tablet-color);
+  text-align: var(--tablet-text-align);
+
   justify-content: var(--tablet-justify-content);
   align-items: var(--tablet-align-items);
 }
@@ -97,6 +103,9 @@
 
   @include border(--mobile-landscape);
   @include background(--mobile-landscape);
+
+  color: var(--mobile-landscape-color);
+  text-align: var(--mobile-landscape-text-align);
 
   justify-content: var(--mobile-landscape-justify-content);
   align-items: var(--mobile-landscape-align-items);
@@ -115,6 +124,9 @@
 
   @include border(--mobile-portrait);
   @include background(--mobile-portrait);
+
+  color: var(--mobile-portrait-color);
+  text-align: var(--mobile-portrait-text-align);
 
   justify-content: var(--mobile-portrait-justify-content);
   align-items: var(--mobile-portrait-align-items);
