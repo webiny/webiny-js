@@ -1,5 +1,6 @@
 import { ContextPlugin } from "@webiny/handler/types";
 import Error from "@webiny/error";
+import { NotAuthorizedError } from "@webiny/api-security";
 import * as utils from "../../utils";
 import {
     CmsContentModelGroupType,
@@ -9,12 +10,6 @@ import {
     CmsSettingsType,
     DbItemTypes
 } from "../../types";
-import { NotAuthorizedError } from "@webiny/api-security";
-import WebinyError from "@webiny/error";
-
-type SettingsGetOptionsArgsType = {
-    auth?: boolean;
-};
 
 const initialContentModelGroup = {
     name: "Ungrouped",
@@ -24,6 +19,14 @@ const initialContentModelGroup = {
 };
 
 const SETTINGS_SECONDARY_KEY = "settings";
+
+const defaultMapping = {
+    mappings: {
+        properties: {
+            rawData: { type: "object", enabled: false }
+        }
+    }
+};
 
 export default {
     type: "context",
@@ -64,12 +67,22 @@ export default {
                     throw new Error("The app is already installed.", "CMS_INSTALLATION_ERROR");
                 }
 
+                // Create ES index if it doesn't already exist.
+                const esIndex = utils.defaults.es(context);
+                const { body: exists } = await elasticSearch.indices.exists(esIndex);
+                if (!exists) {
+                    await elasticSearch.indices.create({
+                        ...esIndex,
+                        body: defaultMapping
+                    });
+                }
+
                 // Add default content model group.
                 let contentModelGroup: CmsContentModelGroupType;
                 try {
                     contentModelGroup = await context.cms.groups.create(initialContentModelGroup);
                 } catch (ex) {
-                    throw new WebinyError(ex.message, "CMS_INSTALLATION_CONTENT_MODEL_GROUP_ERROR");
+                    throw new Error(ex.message, "CMS_INSTALLATION_CONTENT_MODEL_GROUP_ERROR");
                 }
 
                 const model: CmsSettingsType = {
@@ -90,13 +103,6 @@ export default {
                         ...model
                     }
                 });
-
-                // Create ES index if it doesn't already exist.
-                const esIndex = utils.defaults.es(context);
-                const { body: exists } = await elasticSearch.indices.exists(esIndex);
-                if (!exists) {
-                    await elasticSearch.indices.create(esIndex);
-                }
 
                 return model;
             },
