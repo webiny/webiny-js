@@ -2,13 +2,19 @@ import {
     CmsContentEntryListOptionsType,
     CmsContentEntryListSortType,
     CmsContentEntryListWhereType,
+    CmsContentEntryType,
+    CmsContentModelFieldType,
     CmsContentModelType,
     CmsContext,
+    CmsModelFieldToElasticSearchPlugin,
     CmsModelFieldToGraphQLPlugin,
     ElasticSearchQueryBuilderPlugin,
     ElasticSearchQueryType
 } from "@webiny/api-headless-cms/types";
 import { decodeElasticSearchCursor } from "@webiny/api-headless-cms/utils";
+import Error from "@webiny/error";
+import WebinyError from "@webiny/error";
+import lodashMerge from "lodash/merge";
 
 type ModelFieldType = {
     unmappedType?: string;
@@ -343,4 +349,138 @@ export const createElasticSearchParams = (params: CreateElasticSearchParamsType)
         // eslint-disable-next-line
         search_after: decodeElasticSearchCursor(after) || undefined
     };
+};
+
+type SetupEntriesIndexHelpersArgsType = {
+    context: CmsContext;
+    model: CmsContentModelType;
+};
+type IndexedEntryType = CmsContentEntryType & {
+    rawData: Record<string, any>;
+    [key: string]: any;
+};
+type PrepareElasticSearchDataArgsType = SetupEntriesIndexHelpersArgsType & {
+    entry: CmsContentEntryType;
+};
+type ExtractEntryFromIndexArgsType = SetupEntriesIndexHelpersArgsType & {
+    entry: IndexedEntryType;
+};
+type ExtractEntriesFromIndexArgsType = SetupEntriesIndexHelpersArgsType & {
+    entries: IndexedEntryType[];
+};
+
+const setupEntriesIndexHelpers = ({ context, model }: SetupEntriesIndexHelpersArgsType) => {
+    const plugins = context.plugins.byType<CmsModelFieldToElasticSearchPlugin>(
+        "cms-model-field-to-elastic-search"
+    );
+    const fieldsAsObject: Record<string, CmsContentModelFieldType> = {};
+    for (const field of model.fields) {
+        fieldsAsObject[field.fieldId] = field;
+    }
+
+    const fieldPlugins: Record<string, CmsModelFieldToElasticSearchPlugin> = {};
+    for (const plugin of plugins.reverse()) {
+        if (fieldPlugins[plugin.fieldType]) {
+            continue;
+        }
+        fieldPlugins[plugin.fieldType] = plugin;
+    }
+    return {
+        fieldsAsObject,
+        fieldPlugins
+    };
+};
+
+export const prepareEntryToIndex = (args: PrepareElasticSearchDataArgsType): IndexedEntryType => {
+    const { context, entry, model } = args;
+    const plugins = context.plugins.byType<CmsModelFieldToElasticSearchPlugin>(
+        "cms-model-field-to-elastic-search"
+    );
+    const fieldsAsObject: Record<string, CmsContentModelFieldType> = {};
+    for (const field of model.fields) {
+        fieldsAsObject[field.fieldId] = field;
+    }
+
+    const fieldPlugins: Record<string, CmsModelFieldToElasticSearchPlugin> = {};
+    for (const plugin of plugins.reverse()) {
+        if (fieldPlugins[plugin.fieldType]) {
+            continue;
+        }
+        fieldPlugins[plugin.fieldType] = plugin;
+    }
+
+    let preparedEntry: IndexedEntryType = {
+        ...entry,
+        rawData: {}
+    };
+    for (const fieldId in entry.values) {
+        if (entry.values.hasOwnProperty(fieldId) === false) {
+            throw new Error(
+                `There is no ${fieldId} in entry.values being looped through. Which is impossible...`
+            );
+        }
+        const field = fieldsAsObject[fieldId];
+        if (!field) {
+            throw new WebinyError(`There is no field type with fieldId "${fieldId}".`);
+        }
+        const value = entry.values[fieldId];
+
+        const targetFieldPlugin = fieldPlugins[field.type];
+        // we decided to take only last registered plugin for given field type
+        if (targetFieldPlugin) {
+            const newEntryValues = targetFieldPlugin.toIndex({
+                context,
+                model,
+                field,
+                entry,
+                value
+            });
+            preparedEntry = lodashMerge(preparedEntry, newEntryValues);
+        }
+    }
+    return preparedEntry;
+};
+
+export const extractEntriesFromIndex = ({
+    context,
+    entries,
+    model
+}: ExtractEntriesFromIndexArgsType): CmsContentEntryType[] => {
+    const { fieldsAsObject, fieldPlugins } = setupEntriesIndexHelpers({
+        context,
+        model
+    });
+
+    const list: CmsContentEntryType[] = [];
+    for (const entry of entries) {
+        let newEntry: CmsContentEntryType = {
+            ...entry
+        };
+        for (const fieldId in fieldsAsObject) {
+            if (fieldsAsObject.hasOwnProperty(fieldId) === false) {
+                throw new WebinyError(
+                    `There is no ${fieldId} in fields object being looped through. Which is impossible...`,
+                    "EXTRACT_ENTRIES_FROM_INDEX_ERROR"
+                );
+            }
+            const field = fieldsAsObject[fieldId];
+            const targetFieldPlugin = fieldPlugins[field.type];
+            if (!targetFieldPlugin) {
+                throw new WebinyError(
+                    `There is no "CmsModelFieldToElasticSearchPlugin" plugin to extract raw data from indexed entry for field "${field.type}".`,
+                    "EXTRACT_ENTRIES_FROM_INDEX_ERROR"
+                );
+            }
+            const calculatedEntry = targetFieldPlugin.fromIndex({
+                context,
+                model,
+                field,
+                entry
+            });
+            newEntry = lodashMerge(newEntry, calculatedEntry);
+        }
+        list.push(newEntry);
+    }
+
+    return list;
 };

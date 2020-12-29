@@ -7,17 +7,16 @@ import {
     CmsContentEntryContextType,
     CmsContentEntryPermissionType,
     CmsContentEntryType,
-    CmsContentModelFieldType,
     CmsContentModelType,
-    CmsContext,
-    CmsModelFieldToElasticSearchPlugin
+    CmsContext
 } from "@webiny/api-headless-cms/types";
-import lodashMerge from "lodash/merge";
 import * as utils from "../../../utils";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation";
 import {
     createElasticSearchParams,
-    createElasticSearchLimit
+    createElasticSearchLimit,
+    prepareEntryToIndex,
+    extractEntriesFromIndex
 } from "./contentEntry/elasticSearchHelpers";
 import * as dataLoaders from "./contentEntry/dataLoaders";
 import { createCmsPK } from "../../../utils";
@@ -43,92 +42,12 @@ type DbItem<T> = T & {
     TYPE: string;
 };
 
-type PrepareElasticSearchDataArgsType = {
-    context: CmsContext;
-    entry: CmsContentEntryType;
-    model: CmsContentModelType;
-};
-
-const createElasticSearchData = ({ values, ...entry }: CmsContentEntryType) => {
-    return {
-        ...entry,
-        values: {
-            // Keep "values" as a nested object to avoid collisions between
-            // system and user-defined properties
-            ...values
-        }
-    };
-};
-
 const getESLatestEntryData = (entry: CmsContentEntryType) => {
-    return { ...createElasticSearchData(entry), latest: true, __type: TYPE_ENTRY_LATEST };
+    return { ...entry, latest: true, __type: TYPE_ENTRY_LATEST };
 };
 
 const getESPublishedEntryData = (entry: CmsContentEntryType) => {
-    return { ...createElasticSearchData(entry), published: true, __type: TYPE_ENTRY_PUBLISHED };
-};
-
-type PreparedCmsContentEntryType = CmsContentEntryType & {
-    rawData: Record<string, any>;
-    [key: string]: any;
-};
-const prepareEntryToIndex = (
-    args: PrepareElasticSearchDataArgsType
-): PreparedCmsContentEntryType => {
-    const { context, entry, model } = args;
-    const plugins = context.plugins.byType<CmsModelFieldToElasticSearchPlugin>(
-        "cms-model-field-to-elastic-search"
-    );
-    const fieldsAsObject: Record<string, CmsContentModelFieldType> = model.fields.reduce(
-        (acc, field) => {
-            acc[field.id] = field;
-            return acc;
-        },
-        {}
-    );
-
-    const fieldPlugins: Record<string, CmsModelFieldToElasticSearchPlugin> = {};
-    for (const plugin of plugins.reverse()) {
-        if (fieldPlugins[plugin.fieldType]) {
-            continue;
-        }
-        fieldPlugins[plugin.fieldType] = plugin;
-    }
-
-    let preparedEntry: PreparedCmsContentEntryType = {
-        ...entry,
-        rawData: {}
-    };
-    for (const fieldId in entry.values) {
-        if (entry.values.hasOwnProperty(fieldId) === false) {
-            throw new Error(
-                `There is no ${fieldId} in entry.values being looped through. Which is impossible...`
-            );
-        }
-        const field = fieldsAsObject[fieldId];
-        if (!field) {
-            throw new WebinyError(`There is no field type with fieldId "${fieldId}".`);
-        }
-        const value = entry.values[fieldId];
-
-        const targetFieldPlugin = fieldPlugins[field.type];
-        // we decided to take only last registered plugin for given field type
-        if (targetFieldPlugin) {
-            const { rawData, ...toIndexPluginValues } = targetFieldPlugin.toIndex({
-                context,
-                field,
-                value
-            });
-            delete preparedEntry.values[fieldId];
-            preparedEntry = lodashMerge(preparedEntry, {
-                rawData: {
-                    [fieldId]: rawData
-                },
-                ...toIndexPluginValues
-            });
-        }
-    }
-    return preparedEntry;
+    return { ...entry, published: true, __type: TYPE_ENTRY_PUBLISHED };
 };
 
 export default (): ContextPlugin<CmsContext> => ({
@@ -242,7 +161,11 @@ export default (): ContextPlugin<CmsContext> => ({
                 }
 
                 const { hits, total } = response.body.hits;
-                const items = hits.map(item => item._source);
+                const items = extractEntriesFromIndex({
+                    context,
+                    model,
+                    entries: hits.map(item => item._source)
+                });
 
                 const hasMoreItems = items.length > limit;
                 if (hasMoreItems) {
@@ -490,7 +413,10 @@ export default (): ContextPlugin<CmsContext> => ({
                 }
 
                 if (entry.locked) {
-                    throw new Error(`Cannot update entry because it's locked.`);
+                    throw new WebinyError(
+                        `Cannot update entry because it's locked.`,
+                        "CONTENT_ENTRY_UPDATE_ERROR"
+                    );
                 }
 
                 utils.checkOwnership(context, permission, entry, "ownedBy");

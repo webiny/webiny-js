@@ -615,9 +615,16 @@ export type CmsModelFieldToElasticSearchPlugin = Plugin & {
     toIndex(params: {
         field: CmsContentModelFieldType;
         context: CmsContext;
+        model: CmsContentModelType;
+        entry: CmsContentEntryType;
         value: any;
     }): CmsModelFieldToElasticSearchPluginResultType;
-    fromIndex(params: { field: CmsContentModelFieldType; context: CmsContext; rawData: any }): any;
+    fromIndex(params: {
+        context: CmsContext;
+        model: CmsContentModelType;
+        field: CmsContentModelFieldType;
+        entry: CmsContentEntryType;
+    }): any;
 };
 
 export type CmsModelFieldToStoragePlugin = Plugin & {
