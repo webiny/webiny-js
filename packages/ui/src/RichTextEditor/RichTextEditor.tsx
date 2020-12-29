@@ -1,10 +1,10 @@
-import React, { useRef, useEffect, Fragment } from "react";
+import React, { Fragment, useEffect, useMemo, useRef } from "react";
 import EditorJS, {
-    OutputData,
+    LogLevels,
     OutputBlockData,
-    ToolSettings,
+    OutputData,
     SanitizerConfig,
-    LogLevels
+    ToolSettings
 } from "@editorjs/editorjs";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { css } from "emotion";
@@ -29,7 +29,7 @@ export type OnReadyParams = { editor: EditorJS; initialData: OutputData };
 export type RichTextEditorProps = {
     autofocus?: boolean;
     context?: { [key: string]: any };
-    logLevel?: LogLevels;
+    logLevel?: string;
     minHeight?: number;
     onChange?: (data: OutputBlockData[]) => void;
     onReady?: (params: OnReadyParams) => void;
@@ -54,6 +54,7 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
         editorRef.current = new EditorJS({
             ...nativeProps,
             holder: elementRef.current,
+            logLevel: "ERROR" as LogLevels.ERROR,
             data: initialData,
             onChange: async () => {
                 const { blocks: data } = await editorRef.current.save();
@@ -70,12 +71,24 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
                 tools[name] = tool;
                 if (!tool.config) {
                     tool.config = { context };
+                } else if (typeof tool.config === "function") {
+                    tool.config = tool.config();
                 } else {
                     tool.config = { ...tool.config, context };
                 }
                 return tools;
             }, {})
         });
+
+        return async () => {
+            if (!editorRef.current) {
+                return;
+            }
+
+            await editorRef.current.isReady;
+            typeof editorRef.current.destroy === "function" && editorRef.current.destroy();
+            
+        };
     }, []);
 
     const { label, description, disabled } = props;
