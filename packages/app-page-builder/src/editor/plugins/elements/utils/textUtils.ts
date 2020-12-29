@@ -13,13 +13,11 @@ const getTypographyFromTheme = (type: string) => {
     return defaultType.className;
 };
 type CreateInitialTextValueArgs = {
-    text: string;
     type: string;
     tag?: string;
     alignment?: string;
 };
 export const createInitialTextValue = ({
-    text,
     type,
     alignment = "left",
     tag = "div"
@@ -30,9 +28,6 @@ export const createInitialTextValue = ({
         type,
         typography,
         alignment,
-        tag,
-        data: {
-            text
-        }
+        tag
     };
 };
