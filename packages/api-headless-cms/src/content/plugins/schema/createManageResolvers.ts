@@ -7,6 +7,7 @@ import { createManageTypeName, createTypeName } from "../utils/createTypeName";
 import { commonFieldResolvers } from "../utils/commonFieldResolvers";
 import { resolveManageGet } from "../utils/resolvers/resolveManageGet";
 import { resolveList } from "../utils/resolvers/resolveList";
+import { resolveGetRevisions } from "../utils/resolvers/resolveGetRevisions";
 import { resolveGetByIds } from "../utils/resolvers/resolveGetByIds";
 import { resolveCreate } from "../utils/resolvers/resolveCreate";
 import { resolveUpdate } from "../utils/resolvers/resolveUpdate";
@@ -36,6 +37,7 @@ export const createManageResolvers: CreateManageResolvers = ({
     return {
         Query: {
             [`get${typeName}`]: resolveManageGet({ model }),
+            [`get${typeName}Revisions`]: resolveGetRevisions({ model }),
             [`get${pluralizedTypeName(typeName)}ByIds`]: resolveGetByIds({ model }),
             [`list${pluralizedTypeName(typeName)}`]: resolveList({ model })
         },

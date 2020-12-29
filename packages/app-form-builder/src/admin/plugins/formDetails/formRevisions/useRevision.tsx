@@ -10,7 +10,11 @@ import {
 } from "@webiny/app-form-builder/admin/graphql";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { FbFormModel } from "@webiny/app-form-builder/types";
-import { removeRevisionFromFormCache, updateLatestRevisionInListCache } from "../../../views/cache";
+import {
+    removeRevisionFromFormCache,
+    updateLatestRevisionInListCache,
+    addRevisionToRevisionsCache
+} from "../../../views/cache";
 
 export type UseRevisionProps = {
     revision: FbFormModel;
@@ -34,7 +38,9 @@ export const useRevision = ({ revision, form }: UseRevisionProps) => {
                 mutation: CREATE_REVISION_FROM,
                 variables: { revision: revision.id },
                 update(cache, { data }) {
-                    updateLatestRevisionInListCache(cache, data.formBuilder.revision.data);
+                    const newRevision = data.formBuilder.revision.data;
+                    updateLatestRevisionInListCache(cache, newRevision);
+                    addRevisionToRevisionsCache(cache, newRevision);
                 }
             });
 

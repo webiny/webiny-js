@@ -66,7 +66,10 @@ export const checkPermissions = async <TPermission = SecurityPermission>(
 
     // We need to check this manually as CMS locale comes from the URL and not the default i18n app.
     const code = context.cms.getLocale().code;
-    if (!Array.isArray(contentPermission.locales) || !contentPermission.locales.includes(code)) {
+    
+    // IMPORTANT: If we have a `contentPermission`, and `locales` key is NOT SET - it means the user has access to all locales.
+    // However, if the the `locales` IS SET - check that it contains the required locale.
+    if (Array.isArray(contentPermission.locales) && !contentPermission.locales.includes(code)) {
         throw new NotAuthorizedError({
             data: {
                 reason: `missing locale "${code}"`

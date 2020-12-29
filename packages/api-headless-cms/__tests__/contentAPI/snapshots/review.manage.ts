@@ -106,6 +106,8 @@ export default /* GraphQL */ `
     extend type Query {
         getReview(revision: ID!): ReviewResponse
         
+        getReviewRevisions(id: ID!): ReviewArrayResponse
+        
         getReviewsByIds(revisions: [ID!]!): ReviewArrayResponse
 
         listReviews(

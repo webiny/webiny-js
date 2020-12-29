@@ -102,6 +102,8 @@ export default /* GraphQL */ `
     extend type Query {
         getCategory(revision: ID!): CategoryResponse
         
+        getCategoryRevisions(id: ID!): CategoryArrayResponse
+        
         getCategoriesByIds(revisions: [ID!]!): CategoryArrayResponse
 
         listCategories(

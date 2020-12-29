@@ -7,10 +7,10 @@ import { PUBLISH_REVISION, UNPUBLISH_REVISION } from "@webiny/app-form-builder/a
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { useApolloClient } from "react-apollo";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { FbFormModel } from "@webiny/app-form-builder/types";
+import { FbRevisionModel } from "@webiny/app-form-builder/types";
 
 type PublishRevisionProps = {
-    revision: FbFormModel;
+    revision: FbRevisionModel;
 };
 
 const PublishRevision = ({ revision }: PublishRevisionProps) => {

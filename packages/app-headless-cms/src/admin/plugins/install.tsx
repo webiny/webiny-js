@@ -37,6 +37,7 @@ const INSTALL = gql`
                 error {
                     code
                     message
+                    data
                 }
             }
         }
@@ -64,14 +65,17 @@ const CMSInstaller = ({ onInstalled }) => {
             });
     }, []);
 
+    const label = error ? (
+        <Alert title={t`Something went wrong`} type={"danger"}>
+            {error}
+        </Alert>
+    ) : (
+        t`Installing CMS...`
+    );
+
     return (
         <SimpleForm>
-            <CircularProgress label={t`Installing CMS...`} />
-            {error && (
-                <Alert title={t`Something went wrong`} type={"danger"}>
-                    {error}
-                </Alert>
-            )}
+            <CircularProgress label={label} />
             <SimpleFormContent>
                 <SimpleFormPlaceholder />
             </SimpleFormContent>

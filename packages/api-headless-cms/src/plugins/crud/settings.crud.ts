@@ -8,6 +8,7 @@ import {
     CmsSettingsType,
     DbItemTypes
 } from "../../types";
+import { NotAuthorizedError } from "@webiny/api-security";
 
 type SettingsGetOptionsArgsType = {
     auth?: boolean;
@@ -50,12 +51,18 @@ export default {
                 return settings;
             },
             install: async (): Promise<CmsSettingsType> => {
-                const settings = await context.cms.settings.get();
+                const identity = context.security.getIdentity();
+                if (!identity) {
+                    throw new NotAuthorizedError();
+                }
+                
+                // Get settings without any permission checks.
+                const settings = await context.cms.settings.get({ auth: false });
                 if (!!settings?.isInstalled) {
                     throw new Error("The app is already installed.", "CMS_INSTALLATION_ERROR");
                 }
 
-                // then add default content model group
+                // Add default content model group.
                 const contentModel = await context.cms.groups.create(initialContentModelGroup);
 
                 const model: CmsSettingsType = {
@@ -63,7 +70,7 @@ export default {
                     contentModelLastChange: contentModel.savedOn
                 };
 
-                // this will store the initial timestamp which is then used to determine if CMS Schema was changed.
+                // Store the initial timestamp which is then used to determine if CMS Schema was changed.
                 context.cms.settings.contentModelLastChange = contentModel.savedOn;
 
                 // mark as installed in settings

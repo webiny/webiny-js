@@ -94,6 +94,8 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
         extend type Query {
             get${typeName}(revision: ID!): ${mTypeName}Response
             
+            get${typeName}Revisions(id: ID!): ${mTypeName}ArrayResponse
+            
             get${pluralizedTypeName(typeName)}ByIds(revisions: [ID!]!): ${mTypeName}ArrayResponse
 
             list${pluralizedTypeName(typeName)}(

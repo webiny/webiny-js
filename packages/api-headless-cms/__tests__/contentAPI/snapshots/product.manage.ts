@@ -169,6 +169,8 @@ export default /* GraphQL */ `
     extend type Query {
         getProduct(revision: ID!): ProductResponse
         
+        getProductRevisions(id: ID!): ProductArrayResponse
+        
         getProductsByIds(revisions: [ID!]!): ProductArrayResponse
 
         listProducts(

@@ -75,20 +75,19 @@ const PBInstaller = ({ onInstalled }) => {
         onInstalled();
     }, []);
 
+    const label = error ? (
+        <Alert title={t`Something went wrong`} type={"danger"}>
+            {error}
+        </Alert>
+    ) : (
+        t`Installing Page Builder...`
+    );
+
     return (
         <Form onSubmit={onSubmit} submitOnEnter>
             {({ Bind, submit }) => (
                 <SimpleForm>
-                    {loading && <CircularProgress label={t`Installing Page Builder...`} />}
-                    {error && (
-                        <Grid>
-                            <Cell span={12}>
-                                <Alert title={t`Something went wrong`} type={"danger"}>
-                                    {error}
-                                </Alert>
-                            </Cell>
-                        </Grid>
-                    )}
+                    {loading && <CircularProgress label={label} />}
                     <SimpleFormHeader title={t`Install Page Builder`} />
                     <SimpleFormContent>
                         <Grid>

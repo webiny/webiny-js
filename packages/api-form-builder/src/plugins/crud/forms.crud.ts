@@ -149,14 +149,14 @@ export default {
                     return response.body.hits.hits.map(item => item._source);
                 },
                 async getFormRevisions(id) {
-                    // We don't need to check permissions here, as this method is only called
-                    // from resolvers of `FbForm` GraphQL type fields, and we already check permissions
-                    // and ownership when resolving the Form itself.
-                    const [uniqueId] = id.split("#");
+                    const permission = await utils.checkBaseFormPermissions(context, { rwd: "r" });
+
                     const [forms] = await db.read<FbForm>({
                         ...defaults.db,
-                        query: { PK: PK_FORM(uniqueId), SK: { $beginsWith: "REV#" } }
+                        query: { PK: PK_FORM(id), SK: { $beginsWith: "REV#" } }
                     });
+
+                    utils.checkOwnership(forms[0], permission, context);
 
                     return forms.sort((a, b) => b.version - a.version);
                 },

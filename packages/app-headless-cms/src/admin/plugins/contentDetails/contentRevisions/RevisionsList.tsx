@@ -1,6 +1,5 @@
 import React from "react";
 import { css } from "emotion";
-import get from "lodash/get";
 import { List } from "@webiny/ui/List";
 import { Elevation } from "@webiny/ui/Elevation";
 import { CircularProgress } from "@webiny/ui/Progress";
@@ -36,6 +35,7 @@ export type Props = {
     setLoading: (loading: boolean) => void;
     getLoading: () => boolean;
     entry: CmsEditorContentEntry;
+    revisions: CmsEditorContentEntry[];
     refetchContent: () => void;
     contentModel: CmsEditorContentModel;
     state: any;
@@ -44,8 +44,7 @@ export type Props = {
 };
 
 const RevisionsList = (props: Props) => {
-    const { entry } = props;
-    const revisions = get(entry, "meta.revisions", []);
+    const { entry, revisions } = props;
 
     return (
         <Elevation className={style.list} z={2}>

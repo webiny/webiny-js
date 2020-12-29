@@ -103,7 +103,6 @@ export type CmsEditorContentEntry = {
         locked: boolean;
         status: "draft" | "published" | "unpublished" | "changesRequested" | "reviewRequested";
         version: number;
-        revisions: CmsEditorContentEntry[];
     };
 };
 

@@ -50,13 +50,25 @@ export const createReadQuery = model => {
                     savedOn
                     meta {
                         ${CONTENT_META_FIELDS}
-                        revisions {
-                            id
-                            savedOn
-                            meta {
-                                ${CONTENT_META_FIELDS}
-                            }
-                        }
+                    }
+                }
+                error ${ERROR_FIELD}
+            }
+        }
+    `;
+};
+
+export const createRevisionsQuery = model => {
+    const ucFirstModelId = upperFirst(model.modelId);
+
+    return gql`
+        query CmsEntriesGet${ucFirstModelId}Revisions($id: ID!) {
+            revisions: get${ucFirstModelId}Revisions(id: $id) {
+                data {
+                    id
+                    savedOn
+                    meta {
+                        ${CONTENT_META_FIELDS}
                     }
                 }
                 error ${ERROR_FIELD}
@@ -172,13 +184,6 @@ export const createPublishMutation = model => {
                     id
                     meta {
                         ${CONTENT_META_FIELDS}
-                        revisions {
-                            id
-                            savedOn
-                            meta {
-                                ${CONTENT_META_FIELDS}
-                            }
-                        }
                     }
                 }
                 error ${ERROR_FIELD}
@@ -196,13 +201,6 @@ export const createUnpublishMutation = model => {
                     id
                     meta {
                         ${CONTENT_META_FIELDS}
-                        revisions {
-                            id
-                            savedOn
-                            meta {
-                                ${CONTENT_META_FIELDS}
-                            }
-                        }
                     }
                 }
                 error ${ERROR_FIELD}
