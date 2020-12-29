@@ -21,7 +21,7 @@ export default {
             style[`--${kebabCase(displayMode)}-height`] = get(
                 height,
                 `${displayMode}.value`,
-                "100%"
+                "auto"
             );
         });
 
