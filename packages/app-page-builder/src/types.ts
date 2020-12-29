@@ -566,7 +566,12 @@ export type PbEditorResponsiveModePlugin = Plugin & {
     type: "pb-editor-responsive-mode";
     config: {
         displayMode: string;
-        label: string;
+        toolTip: {
+            title: string;
+            subTitle: string;
+            body: string;
+            subTitleIcon?: ReactNode;
+        };
         icon: React.ReactElement;
     };
 };
