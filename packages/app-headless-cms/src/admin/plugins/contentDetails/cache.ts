@@ -92,7 +92,7 @@ export const unpublishPreviouslyPublishedRevision = (model, cache, publishedId) 
     };
 
     const { revisions } = cache.readQuery(gqlParams);
-    
+
     const prevPublished = revisions.data.findIndex(
         item => item.id !== publishedId && item.meta.status === "published"
     );

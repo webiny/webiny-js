@@ -469,7 +469,7 @@ export type ContentModelManagerPlugin = Plugin & {
 export enum DbItemTypes {
     CMS_CONTENT_MODEL_GROUP = "cms.group",
     CMS_CONTENT_MODEL = "cms.model",
-    CMS_SETTINGS = "cms.settings",
+    CMS_SETTINGS = "cms.settings"
 }
 
 type CmsContentEntryResolverFactoryParamsType = {
