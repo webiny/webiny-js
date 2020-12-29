@@ -10,7 +10,7 @@ const t = i18n.ns("app-headless-cms/admin/fields/ref");
 const warn = t`Before publishing the main content entry, make sure you publish the following referenced entries: {entries}`;
 
 function ContentEntriesMultiAutocomplete({ bind, field }) {
-    const { options, setSearch, entries, loading } = useReferences({ bind, field });
+    const { options, setSearch, entries, loading, onChange } = useReferences({ bind, field });
 
     // Currently we only support 1 model in the `ref` field, so we use index 0 (this will be upgraded in the future).
     const { modelId } = field.settings.models[0];
@@ -35,11 +35,7 @@ function ContentEntriesMultiAutocomplete({ bind, field }) {
     return (
         <MultiAutoComplete
             {...bind}
-            onChange={values => {
-                console.log("set values", values);
-                bind.onChange(values.map(item => ({ modelId, entryId: item.id })));
-                setSearch("");
-            }}
+            onChange={onChange}
             loading={loading}
             value={entries}
             options={options}

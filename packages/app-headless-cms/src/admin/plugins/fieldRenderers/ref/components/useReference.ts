@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import get from "lodash/get";
 import { useApolloClient } from "@webiny/app-headless-cms/admin/hooks";
 import { createListQuery, createGetQuery, GET_CONTENT_MODEL } from "./graphql";
@@ -11,13 +11,13 @@ type ValueEntry = {
     name: string;
 };
 
-const emptyValue = {
-    id: null,
-    published: false,
-    name: ""
-};
+function distinctBy(key, array) {
+    const keys = array.map(value => value[key]);
+    return array.filter((value, index) => keys.indexOf(value[key]) === index);
+}
 
 export const useReference = ({ bind, field }) => {
+    const allEntries = useRef([]);
     const client = useApolloClient();
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(false);
@@ -26,7 +26,7 @@ export const useReference = ({ bind, field }) => {
     const [GET_CONTENT, setGetContent] = useState(null);
     const [entries, setEntries] = useState([]);
     const [latestEntries, setLatestEntries] = useState([]);
-    const [valueEntry, setValueEntry] = useState<ValueEntry>(emptyValue);
+    const [valueEntry, setValueEntry] = useState<ValueEntry>(null);
 
     const { modelId } = field.settings.models[0];
     const value = bind.value ? bind.value.entryId : null;
@@ -39,12 +39,8 @@ export const useReference = ({ bind, field }) => {
         const { titleFieldId } = model;
 
         if (!LIST_CONTENT || !search || !titleFieldId) {
-            console.log([LIST_CONTENT, search, model.titleFieldId]);
-            console.log("exit search");
             return;
         }
-
-        console.log("perform search", search);
 
         setLoading(true);
         const { data } = await client.query({
@@ -53,6 +49,7 @@ export const useReference = ({ bind, field }) => {
         });
         setLoading(false);
 
+        allEntries.current = distinctBy("id", [...allEntries.current, ...data.content.data]);
         setEntries(data.content.data);
     };
 
@@ -94,12 +91,17 @@ export const useReference = ({ bind, field }) => {
             })
             .then(({ data }) => {
                 setLatestEntries(data.content.data);
+                allEntries.current = [...data.content.data];
             });
     }, [LIST_CONTENT]);
 
     useEffect(() => {
         if (!value || !model || !model.titleFieldId || !GET_CONTENT) {
-            setValueEntry(emptyValue);
+            setValueEntry(null);
+            return;
+        }
+
+        if (allEntries.current.find(entry => entry.id === value)) {
             return;
         }
 
@@ -116,10 +118,26 @@ export const useReference = ({ bind, field }) => {
                           published: entry.meta.status === "published",
                           name: entry.meta.title
                       }
-                    : emptyValue
+                    : null
             );
         });
     }, [value, GET_CONTENT, model]);
+
+    const onChange = useCallback(value => {
+        if (value !== null) {
+            const entry = allEntries.current.find(entry => entry.id === value);
+
+            setValueEntry({
+                id: entry.id,
+                published: entry.meta.status === "published",
+                name: entry.meta.title
+            });
+            return bind.onChange({ modelId, entryId: value });
+        }
+
+        setValueEntry(null);
+        bind.onChange(null);
+    }, []);
 
     // Format options for the Autocomplete component.
     const options = useMemo(() => getOptions(entries), [entries]);
@@ -128,9 +146,8 @@ export const useReference = ({ bind, field }) => {
     const defaultOptions = useMemo(() => getOptions(latestEntries), [latestEntries]);
 
     return {
-        setSearch: query => {
-            setSearch(query);
-        },
+        onChange,
+        setSearch,
         value: valueEntry,
         loading,
         options: search ? options : defaultOptions || []

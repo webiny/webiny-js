@@ -7,36 +7,27 @@ import { useReference } from "./useReference";
 
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
+const label = t`Selected content entry is not published. Make sure to {publishItLink} before publishing the main content entry.`;
+
 function ContentEntriesAutocomplete({ bind, field }) {
-    const { options, setSearch, value, loading } = useReference({ bind, field });
+    const { options, setSearch, value, loading, onChange } = useReference({ bind, field });
 
     // Currently we only support 1 model in the `ref` field, so we use index 0 (this will be upgraded in the future).
     const { modelId } = field.settings.models[0];
 
-    const unpublishedEntryInfo =
-        value.id &&
-        !value.published &&
-        t`Selected content entry is not published. Make sure to {publishItLink} before publishing the main content entry.`(
-            {
-                publishItLink: (
-                    <Link
-                        to={`/cms/content-entries/${modelId}?id=${encodeURIComponent(value.id)}`}
-                    >{t`publish it`}</Link>
-                )
-            }
-        );
+    let unpublishedEntryInfo = null;
+    if(value && !value.published) {
+        const link = `/cms/content-entries/${modelId}?id=${encodeURIComponent(value.id)}`;
+        unpublishedEntryInfo = label({ publishItLink: <Link to={link}>{t`publish it`}</Link> });
+    }
+        
 
     return (
         <AutoComplete
             {...bind}
-            onChange={value => {
-                if (value !== null) {
-                    return bind.onChange({ modelId, entryId: value });
-                }
-                bind.onChange(null);
-            }}
+            onChange={onChange}
             loading={loading}
-            value={value.id}
+            value={value ? value.id : null}
             options={options}
             label={field.label}
             description={

@@ -1,8 +1,8 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import get from "lodash/get";
 import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
 import { LIST_CONTENT_MODELS } from "@webiny/app-headless-cms/admin/viewsGraphql";
-import { validation } from "@webiny/validation";
+import { validation, ValidationError } from "@webiny/validation";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { AutoComplete, Placement } from "@webiny/ui/AutoComplete";
 import { CircularProgress } from "@webiny/ui/Progress";
@@ -58,11 +58,19 @@ const plugin: CmsEditorFieldTypePlugin = {
                 });
             }, [data]);
 
+            const atLeastOneItem = useCallback(async value => {
+                try {
+                    await validation.validate(value, "required,minLength:1");
+                } catch (err) {
+                    throw new ValidationError(`Please select at least 1 item`);
+                }
+            }, []);
+
             return (
                 <Grid>
                     {loading && <CircularProgress />}
                     <Cell span={12}>
-                        <Bind name={"settings.models"} validators={validation.create("required")}>
+                        <Bind name={"settings.models"} validators={atLeastOneItem}>
                             {bind => {
                                 // At this point we only use index 0.
                                 // (we'll be upgrading this to allow `ref` field to accept different models in the future).
