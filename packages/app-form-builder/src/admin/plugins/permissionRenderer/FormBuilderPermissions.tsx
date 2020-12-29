@@ -49,14 +49,14 @@ export const FormBuilderPermissions = ({ parent, value, onChange }) => {
                 const permission = {
                     name: FB_ACCESS_FORM,
                     own: false,
-                    permissions: undefined,
+                    rwd: undefined,
                     submissions: "no"
                 };
 
                 if (data.formAccessLevel === "own") {
                     permission.own = true;
                 } else {
-                    permission.permissions = data.formPermissions;
+                    permission.rwd = data.formPermissions;
                 }
 
                 if (data.submissionPermissions !== NO_ACCESS) {
