@@ -21,7 +21,7 @@ const classes = {
         padding: "12px 16px",
 
         display: "flex",
-        alignItems: "center",
+        alignItems: "flex-start",
         justifyContent: "space-between",
 
         "& .accordion-header--left": {
@@ -36,9 +36,14 @@ const classes = {
             "& .icon-container": {
                 marginLeft: 16,
                 display: "flex",
+                "& span": {
+                    display: "flex",
+                    marginTop: 4
+                },
                 "& svg": {
                     fill: "currentColor",
-                    width: 14
+                    width: 14,
+                    height: 14
                 }
             }
         },
@@ -68,7 +73,7 @@ const classes = {
             backgroundColor: "hsla(0,0%,97%,1)",
 
             "&::before": {
-                transform: "rotate(90deg)"
+                transform: "translateY(3px) rotate(90deg)"
             },
 
             "& .action-container": {
