@@ -465,19 +465,15 @@ export const extractEntriesFromIndex = ({
             }
             const field = fieldsAsObject[fieldId];
             const targetFieldPlugin = fieldPlugins[field.type];
-            if (!targetFieldPlugin) {
-                throw new WebinyError(
-                    `There is no "CmsModelFieldToElasticSearchPlugin" plugin to extract raw data from indexed entry for field "${field.type}".`,
-                    "EXTRACT_ENTRIES_FROM_INDEX_ERROR"
-                );
+            if (targetFieldPlugin) {
+                const calculatedEntry = targetFieldPlugin.fromIndex({
+                    context,
+                    model,
+                    field,
+                    entry
+                });
+                newEntry = lodashMerge(newEntry, calculatedEntry);
             }
-            const calculatedEntry = targetFieldPlugin.fromIndex({
-                context,
-                model,
-                field,
-                entry
-            });
-            newEntry = lodashMerge(newEntry, calculatedEntry);
         }
         list.push(newEntry);
     }

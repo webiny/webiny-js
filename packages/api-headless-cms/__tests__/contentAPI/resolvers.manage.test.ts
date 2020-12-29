@@ -416,10 +416,24 @@ describe("MANAGE - Resolvers", () => {
         expect(newEntry.meta.revisions.length).toBe(2);
 
         // Wait until the new category revision is propagated to ES index
-        await until(
+        const response = await until(
             () => listCategories().then(([data]) => data),
             ({ data }) => data.listCategories.data[0].id === newEntry.id
         );
+
+        expect(response).toMatchObject({
+            data: {
+                listCategories: {
+                    data: [newEntry],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
+                        cursor: expect.any(String)
+                    },
+                    error: null
+                }
+            }
+        });
     });
 
     test(`update category`, async () => {

@@ -16,11 +16,10 @@ function ContentEntriesAutocomplete({ bind, field }) {
     const { modelId } = field.settings.models[0];
 
     let unpublishedEntryInfo = null;
-    if(value && !value.published) {
+    if (value && !value.published) {
         const link = `/cms/content-entries/${modelId}?id=${encodeURIComponent(value.id)}`;
         unpublishedEntryInfo = label({ publishItLink: <Link to={link}>{t`publish it`}</Link> });
     }
-        
 
     return (
         <AutoComplete

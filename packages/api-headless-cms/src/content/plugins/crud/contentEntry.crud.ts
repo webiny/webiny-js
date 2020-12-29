@@ -367,7 +367,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 const preparedEntry = prepareEntryToIndex({
                     context,
                     model,
-                    entry
+                    entry: newEntry
                 });
 
                 await elasticSearch.index({

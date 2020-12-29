@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useMemo, useRef, useState} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import get from "lodash/get";
 import { useApolloClient } from "@webiny/app-headless-cms/admin/hooks";
 import { createListQuery, createGetByIdsQuery, GET_CONTENT_MODEL } from "./graphql";
@@ -157,6 +157,6 @@ export const useReferences = ({ bind, field }) => {
         // Selected entries
         entries: valueEntries,
         // Options to show when the autocomplete dropdown is visible
-        options: search ? options : defaultOptions || [],
+        options: search ? options : defaultOptions || []
     };
 };
