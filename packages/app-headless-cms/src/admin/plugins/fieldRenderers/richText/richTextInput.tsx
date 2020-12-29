@@ -1,10 +1,16 @@
-import React from "react";
+import React, { useMemo } from "react";
 import get from "lodash/get";
-import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
 import { i18n } from "@webiny/app/i18n";
-import { RichTextEditor } from "@webiny/app-admin/components/RichTextEditor";
+import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
+import { createPropsFromConfig, RichTextEditor } from "@webiny/app-admin/components/RichTextEditor";
+import { plugins } from "@webiny/plugins";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
+
+const getKey = (field, bind) => {
+    const formId = bind.form.state.data.id || "new";
+    return `${formId}.${field.fieldId}`;
+};
 
 const plugin: CmsEditorFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
@@ -23,10 +29,16 @@ const plugin: CmsEditorFieldRendererPlugin = {
         render({ field, getBind }) {
             const Bind = getBind();
 
+            const rteProps = useMemo(() => {
+                return createPropsFromConfig(plugins.byType("cms-rte-config").map(pl => pl.config));
+            }, []);
+
             return (
                 <Bind>
                     {bind => (
                         <RichTextEditor
+                            key={getKey(field, bind)}
+                            {...rteProps}
                             {...bind}
                             onChange={bind.onChange}
                             label={field.label}
