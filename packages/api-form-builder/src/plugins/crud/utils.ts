@@ -52,11 +52,11 @@ export const getStatus = (params: { published: boolean; locked: boolean }) => {
 };
 
 export const hasRwd = (permission: FbFormPermission, rwd: string) => {
-    if (typeof permission.permissions !== "string") {
+    if (typeof permission.rwd !== "string") {
         return true;
     }
 
-    return permission.permissions.includes(rwd);
+    return permission.rwd.includes(rwd);
 };
 
 export const normalizeSortInput = (sort: Record<string, number>) => {
