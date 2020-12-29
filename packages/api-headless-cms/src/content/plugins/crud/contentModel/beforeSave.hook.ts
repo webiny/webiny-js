@@ -3,7 +3,7 @@ import {
     CmsContext,
     CmsModelLockedFieldPlugin
 } from "@webiny/api-headless-cms/types";
-import Error from "@webiny/error";
+import WebinyError from "@webiny/error";
 
 type ArgsType = {
     context: CmsContext;
@@ -25,7 +25,7 @@ export const beforeSaveHook = async (args: ArgsType) => {
     if (titleFieldId) {
         const target = fields.find(f => f.fieldId === titleFieldId);
         if (!target) {
-            throw new Error(
+            throw new WebinyError(
                 `Field "${titleFieldId}" does not exist in the model!`,
                 "VALIDATION_ERROR"
             );
@@ -48,12 +48,16 @@ export const beforeSaveHook = async (args: ArgsType) => {
     if (titleFieldId) {
         const field = fields.find(item => item.fieldId === titleFieldId);
         if (field.type !== "text") {
-            throw new Error("Only text fields can be used as an entry title.");
+            throw new WebinyError(
+                "Only text fields can be used as an entry title.",
+                "ENTRY_TITLE_FIELD_TYPE"
+            );
         }
 
         if (field.multipleValues) {
-            throw new Error(
-                `Fields that accept multiple values cannot be used as the entry title (tried to use "${titleFieldId}" field)`
+            throw new WebinyError(
+                `Fields that accept multiple values cannot be used as the entry title (tried to use "${titleFieldId}" field)`,
+                "ENTRY_TITLE_FIELD_TYPE"
             );
         }
     }
@@ -68,20 +72,23 @@ export const beforeSaveHook = async (args: ArgsType) => {
     for (const lockedField of lockedFields) {
         const existingField = fields.find(item => item.fieldId === lockedField.fieldId);
         if (!existingField) {
-            throw new Error(
-                `Cannot remove the field "${lockedField.fieldId}" because it's already in use in created content.`
+            throw new WebinyError(
+                `Cannot remove the field "${lockedField.fieldId}" because it's already in use in created content.`,
+                "ENTRY_FIELD_USED"
             );
         }
 
         if (lockedField.multipleValues !== existingField.multipleValues) {
-            throw new Error(
-                `Cannot change "multipleValues" for the "${lockedField.fieldId}" field because it's already in use in created content.`
+            throw new WebinyError(
+                `Cannot change "multipleValues" for the "${lockedField.fieldId}" field because it's already in use in created content.`,
+                "ENTRY_FIELD_USED"
             );
         }
 
         if (lockedField.type !== existingField.type) {
-            throw new Error(
-                `Cannot change field type for the "${lockedField.fieldId}" field because it's already in use in created content.`
+            throw new WebinyError(
+                `Cannot change field type for the "${lockedField.fieldId}" field because it's already in use in created content.`,
+                "ENTRY_FIELD_USED"
             );
         }
 

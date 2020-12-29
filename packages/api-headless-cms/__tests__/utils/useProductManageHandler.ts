@@ -19,7 +19,10 @@ const productFields = `
     }
     # user defined fields
     title
-    category
+    category {
+        modelId
+        entryId
+    }
     price
     inStock
     itemsInStock
