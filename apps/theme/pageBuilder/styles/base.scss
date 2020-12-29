@@ -1,4 +1,5 @@
 @import "./mixins/border";
+@import "./mixins/background";
 
 .webiny-pb-page {
   min-height: 100vh;
@@ -65,6 +66,7 @@
     var(--desktop-margin-left);
 
   @include border(--desktop);
+  @include background(--desktop);
 
   justify-content: var(--desktop-justify-content);
   align-items: var(--desktop-align-items);
@@ -79,6 +81,7 @@
     var(--tablet-margin-left);
 
   @include border(--tablet);
+  @include background(--tablet);
 
   justify-content: var(--tablet-justify-content);
   align-items: var(--tablet-align-items);
@@ -93,6 +96,7 @@
     var(--mobile-landscape-margin-bottom) var(--mobile-landscape-margin-left);
 
   @include border(--mobile-landscape);
+  @include background(--mobile-landscape);
 
   justify-content: var(--mobile-landscape-justify-content);
   align-items: var(--mobile-landscape-align-items);
@@ -110,6 +114,7 @@
     var(--mobile-portrait-margin-bottom) var(--mobile-portrait-margin-left);
 
   @include border(--mobile-portrait);
+  @include background(--mobile-portrait);
 
   justify-content: var(--mobile-portrait-justify-content);
   align-items: var(--mobile-portrait-align-items);
