@@ -222,7 +222,7 @@ export const CMSPermissions = ({ parent, value, onChange }) => {
                                 <Cell span={12}>
                                     <Bind name={"endpoints"}>
                                         <CheckboxGroup
-                                            label={t`Headless API Endpoints`}
+                                            label={t`API Endpoints`}
                                             description={t`API endpoints with different purpose and type of data returned.`}
                                         >
                                             {({ getValue, onChange }) =>
