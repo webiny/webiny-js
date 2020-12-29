@@ -35,7 +35,7 @@ export const I18NPermissions = ({ parent, value, onChange }) => {
             if (permission) {
                 newValue.push(permission);
             }
-            
+
             onChange(newValue);
         },
         [parent.id, value]

@@ -161,9 +161,7 @@ export const SecurityPermissions = ({ parent, value, onChange }) => {
                                     <Cell span={12}>
                                         <Bind name={"apiKeyAccessScope"}>
                                             <Select label={t`Access Scope`}>
-                                                <option
-                                                    value={NO_ACCESS}
-                                                >{t`No access`}</option>
+                                                <option value={NO_ACCESS}>{t`No access`}</option>
                                                 <option
                                                     value={FULL_ACCESS}
                                                 >{t`Full access`}</option>

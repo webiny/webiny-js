@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useMemo, useRef } from "react";
+import React, { Fragment, useEffect, useRef } from "react";
 import EditorJS, {
     LogLevels,
     OutputBlockData,
@@ -87,7 +87,6 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
 
             await editorRef.current.isReady;
             typeof editorRef.current.destroy === "function" && editorRef.current.destroy();
-            
         };
     }, []);
 

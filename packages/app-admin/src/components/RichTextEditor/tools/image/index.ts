@@ -49,7 +49,7 @@ export default class ImageTool {
     constructor({ data, config, api, readOnly }) {
         this.api = api;
         this.readOnly = readOnly;
-        
+
         this.config = {
             getFileSrc: config.getFileSrc || defaultGetFileSrc,
             onSelectFile: config.onSelectFile || defaultOnSelectFile,
