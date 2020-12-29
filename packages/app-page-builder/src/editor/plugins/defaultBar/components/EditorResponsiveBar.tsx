@@ -66,13 +66,19 @@ const classes = {
         },
         "& .tooltip__info": {
             display: "flex",
+            "& span": {
+                fontWeight: 600
+            },
             "& svg": {
                 fill: "var(--mdc-theme-surface)",
                 marginRight: 4
             }
         },
         "& .tooltip__body": {
-            marginTop: 4
+            marginTop: 4,
+            "& span": {
+                fontWeight: 600
+            }
         }
     })
 };
