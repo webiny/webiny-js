@@ -190,7 +190,7 @@ export type FbFormPermission = SecurityPermission<{
     name: "fb.form";
     rwd: string;
     own: boolean;
-    submissions: string;
+    submissions: boolean;
 }>;
 
 export type FbFormSettingsPermission = SecurityPermission<{

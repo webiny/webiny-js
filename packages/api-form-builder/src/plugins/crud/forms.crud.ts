@@ -911,9 +911,9 @@ export default {
                         .filter(Boolean);
                 },
                 async listFormSubmissions(formId, options = {}) {
-                    const permission = await utils.checkBaseFormPermissions(context);
+                    const { submissions } = await utils.checkBaseFormPermissions(context);
 
-                    if (permission.submissions === "no") {
+                    if (typeof submissions !== "undefined" && submissions !== true) {
                         throw new NotAuthorizedError();
                     }
 
