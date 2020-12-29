@@ -57,6 +57,7 @@
 // base css class that applies to all elements created by the page editor
 .webiny-pb-base-page-element-style {
   max-width: var(--desktop-width);
+  height: var(--desktop-height);
 
   padding: var(--desktop-padding-top) var(--desktop-padding-right) var(--desktop-padding-bottom)
     var(--desktop-padding-left);
@@ -70,6 +71,7 @@
 }
 .webiny-pb-media-query--tablet .webiny-pb-base-page-element-style {
   max-width: var(--tablet-width);
+  height: var(--tablet-height);
 
   padding: var(--tablet-padding-top) var(--tablet-padding-right) var(--tablet-padding-bottom)
     var(--tablet-padding-left);
@@ -83,6 +85,7 @@
 }
 .webiny-pb-media-query--mobile-landscape .webiny-pb-base-page-element-style {
   max-width: var(--mobile-landscape-width);
+  height: var(--mobile-landscape-height);
 
   padding: var(--mobile-landscape-padding-top) var(--mobile-landscape-padding-right)
     var(--mobile-landscape-padding-bottom) var(--mobile-landscape-padding-left);
@@ -99,6 +102,7 @@
 }
 .webiny-pb-media-query--mobile-portrait .webiny-pb-base-page-element-style {
   max-width: var(--mobile-portrait-width);
+  height: var(--mobile-portrait-height);
 
   padding: var(--mobile-portrait-padding-top) var(--mobile-portrait-padding-right)
     var(--mobile-portrait-padding-bottom) var(--mobile-portrait-padding-left);
