@@ -89,13 +89,7 @@ const TextSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderCom
         displayMode
     ]);
 
-    const text = get(element, `${DATA_NAMESPACE}.${displayMode}`, {
-        color: "",
-        typography: "paragraph",
-        type: "paragraph",
-        alignment: "left",
-        tag: "h1"
-    });
+    const text = get(element, `${DATA_NAMESPACE}.${displayMode}`);
 
     return (
         <Accordion

@@ -51,8 +51,8 @@ const Text: React.FunctionComponent<TextElementProps> = ({
         return null;
     }
 
-    const { data } = element.data.text;
-    const tag = get(element, `${DATA_NAMESPACE}.${uiAtomValue.displayMode}.tag`, "div");
+    const textContent = get(element, `${DATA_NAMESPACE}.data.text`);
+    const tag = get(element, `${DATA_NAMESPACE}.${uiAtomValue.displayMode}.tag`);
     const typography = get(element, `${DATA_NAMESPACE}.${uiAtomValue.displayMode}.typography`);
 
     return (
@@ -62,7 +62,7 @@ const Text: React.FunctionComponent<TextElementProps> = ({
         >
             <ReactMediumEditor
                 tag={tag}
-                value={data.text}
+                value={textContent}
                 onChange={onChange}
                 options={editorOptions}
                 onSelect={onSelect}

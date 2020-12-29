@@ -56,7 +56,16 @@ export default (): PbEditorPageElementPlugin => {
                 type: "list",
                 elements: [],
                 data: {
-                    text: createInitialTextValue({ text: previewText, type: this.elementType }),
+                    text: {
+                        ...createInitialPerDeviceSettingValue(
+                            createInitialTextValue({
+                                type: this.elementType
+                            })
+                        ),
+                        data: {
+                            text: previewText
+                        }
+                    },
                     settings: {
                         margin: createInitialPerDeviceSettingValue({ all: "0px" }),
                         padding: createInitialPerDeviceSettingValue({ all: "0px" })

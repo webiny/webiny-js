@@ -48,11 +48,17 @@ export default (): PbEditorPageElementPlugin => {
                 type: "heading",
                 elements: [],
                 data: {
-                    text: createInitialTextValue({
-                        text: previewText,
-                        type: this.elementType,
-                        tag: "h1"
-                    }),
+                    text: {
+                        ...createInitialPerDeviceSettingValue(
+                            createInitialTextValue({
+                                type: this.elementType,
+                                tag: "h1"
+                            })
+                        ),
+                        data: {
+                            text: previewText
+                        }
+                    },
                     settings: {
                         margin: createInitialPerDeviceSettingValue({ all: "0px" }),
                         padding: createInitialPerDeviceSettingValue({ all: "0px" }),
