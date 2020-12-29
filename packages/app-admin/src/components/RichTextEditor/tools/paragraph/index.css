@@ -1,0 +1,29 @@
+.ce-paragraph {
+  line-height: 1.6em;
+  outline: none;
+}
+
+.ce-paragraph[data-placeholder]:empty::before{
+  content: attr(data-placeholder);
+  color: #707684;
+  font-weight: normal;
+  opacity: 0;
+}
+
+/** Show placeholder at the first paragraph if Editor is empty */
+.codex-editor--empty .ce-block:first-child .ce-paragraph[data-placeholder]:empty::before {
+  opacity: 1;
+}
+
+.codex-editor--toolbox-opened .ce-block:first-child .ce-paragraph[data-placeholder]:empty::before,
+.codex-editor--empty .ce-block:first-child .ce-paragraph[data-placeholder]:empty:focus::before {
+  opacity: 0;
+}
+
+.ce-paragraph p:first-of-type{
+  margin-top: 0;
+}
+
+.ce-paragraph p:last-of-type{
+  margin-bottom: 0;
+}
