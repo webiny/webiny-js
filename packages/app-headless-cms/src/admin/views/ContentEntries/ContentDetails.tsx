@@ -71,7 +71,8 @@ const ContentDetails = ({ contentModel }) => {
         skip: !entryId
     });
 
-    const getLoading = useCallback(() => getEntry.loading || getRevisions.loading, [
+    const getLoading = useCallback(() => loading || getEntry.loading || getRevisions.loading, [
+        loading,
         getEntry.loading,
         getRevisions.loading
     ]);
