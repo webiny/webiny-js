@@ -117,7 +117,11 @@ export const useRevision = ({ contentModel, revision, entry, setLoading }: UseRe
                             return showSnackbar(error.message);
                         }
 
-                        GQLCache.unpublishPreviouslyPublishedRevision(contentModel, cache, revision.id);
+                        GQLCache.unpublishPreviouslyPublishedRevision(
+                            contentModel,
+                            cache,
+                            revision.id
+                        );
 
                         showSnackbar(
                             <span>

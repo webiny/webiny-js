@@ -55,7 +55,7 @@ export default {
                 if (!identity) {
                     throw new NotAuthorizedError();
                 }
-                
+
                 // Get settings without any permission checks.
                 const settings = await context.cms.settings.get({ auth: false });
                 if (!!settings?.isInstalled) {

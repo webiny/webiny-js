@@ -85,7 +85,6 @@ export const GET_FORM_REVISIONS = gql`
     }
 `;
 
-
 export const LIST_FORM_SUBMISSIONS = gql`
     query FbListFormSubmissions(
         $form: ID!

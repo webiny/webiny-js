@@ -259,7 +259,24 @@ const models: CmsContentModelType[] = [
                 placeholderText: "placeholder text",
                 predefinedValues: {
                     enabled: true,
-                    values: ["white", "black", "blue", "red"]
+                    values: [
+                        {
+                            label: "white",
+                            value: "white"
+                        },
+                        {
+                            label: "black",
+                            value: "black"
+                        },
+                        {
+                            label: "blue",
+                            value: "blue"
+                        },
+                        {
+                            label: "red",
+                            value: "red"
+                        }
+                    ]
                 },
                 renderer: {
                     name: "renderer"
@@ -284,7 +301,24 @@ const models: CmsContentModelType[] = [
                 placeholderText: "placeholder text",
                 predefinedValues: {
                     enabled: true,
-                    values: ["s", "m", "l", "xl"]
+                    values: [
+                        {
+                            label: "s",
+                            value: "s"
+                        },
+                        {
+                            label: "m",
+                            value: "m"
+                        },
+                        {
+                            label: "l",
+                            value: "l"
+                        },
+                        {
+                            label: "xl",
+                            value: "xl"
+                        }
+                    ]
                 },
                 renderer: {
                     name: "renderer"

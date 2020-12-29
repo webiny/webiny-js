@@ -29,6 +29,8 @@ const ContentDetails = ({ contentModel }) => {
     const { history, location } = useRouter();
     const { showSnackbar } = useSnackbar();
     const [state, setState] = useState({});
+    // TODO remove eslint disable
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [loading, setLoading] = useState(false);
 
     const query = new URLSearchParams(location.search);
