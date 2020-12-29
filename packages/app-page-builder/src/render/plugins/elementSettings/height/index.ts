@@ -1,5 +1,7 @@
-import { get } from "lodash";
-import { PbRenderElementStylePlugin } from "@webiny/app-page-builder/types";
+import get from "lodash/get";
+import kebabCase from "lodash/kebabCase";
+import { plugins } from "@webiny/plugins";
+import { PbRenderElementStylePlugin, PbRenderResponsiveModePlugin } from "../../../../types";
 
 export default {
     name: "pb-render-page-element-style-height",
@@ -10,12 +12,18 @@ export default {
             return style;
         }
 
-        if (height.fullHeight) {
-            // If `fullHeight=true`, we completely ignore the height value.
-            style.minHeight = "100vh";
-        } else {
-            style.height = height.value;
-        }
+        // Get display modes
+        const displayModeConfigs = plugins
+            .byType<PbRenderResponsiveModePlugin>("pb-render-responsive-mode")
+            .map(pl => pl.config);
+        // Set per-device property value
+        displayModeConfigs.forEach(({ displayMode }) => {
+            style[`--${kebabCase(displayMode)}-height`] = get(
+                height,
+                `${displayMode}.value`,
+                "100%"
+            );
+        });
 
         return style;
     }
