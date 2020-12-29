@@ -1,11 +1,17 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { css } from "emotion";
 import { useRecoilValue } from "recoil";
 import startCase from "lodash/startCase";
+import get from "lodash/get";
+import { Tooltip } from "@webiny/ui/Tooltip";
+import { plugins } from "@webiny/plugins";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
-import { PbEditorPageElementSettingsRenderComponentProps } from "../../../../types";
-import { activeElementWithChildrenSelector } from "../../../recoil/modules";
+import {
+    PbEditorPageElementSettingsRenderComponentProps,
+    PbEditorResponsiveModePlugin
+} from "../../../../types";
+import { activeElementWithChildrenSelector, uiAtom } from "../../../recoil/modules";
 import useUpdateHandlers from "../useUpdateHandlers";
 // Components
 import Wrapper from "../components/Wrapper";
@@ -39,32 +45,56 @@ type SettingsPropsType = {
 };
 const BackgroundSettings: React.FunctionComponent<SettingsPropsType &
     PbEditorPageElementSettingsRenderComponentProps> = ({ options, defaultAccordionValue }) => {
+    const { displayMode } = useRecoilValue(uiAtom);
     const element = useRecoilValue(activeElementWithChildrenSelector);
     const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
         element,
         dataNamespace: DATA_NAMESPACE
     });
 
-    const setImage = useCallback(value => getUpdateValue("image.file")(value), [getUpdateValue]);
-    const setScaling = useCallback(value => getUpdateValue("image.scaling")(value), [
-        getUpdateValue
+    const { config: activeDisplayModeConfig } = useMemo(() => {
+        return plugins
+            .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
+            .find(pl => pl.config.displayMode === displayMode);
+    }, [displayMode]);
+
+    const setImage = useCallback(value => getUpdateValue(`${displayMode}.image.file`)(value), [
+        getUpdateValue,
+        displayMode
     ]);
-    const setPosition = useCallback(value => getUpdateValue("image.position")(value), [
-        getUpdateValue
+    const setScaling = useCallback(value => getUpdateValue(`${displayMode}.image.scaling`)(value), [
+        getUpdateValue,
+        displayMode
     ]);
-    const setColor = useCallback(value => getUpdateValue("color")(value), [getUpdateValue]);
-    const onColorChange = useCallback(value => getUpdatePreview("color")(value), [
-        getUpdatePreview
+    const setPosition = useCallback(
+        value => getUpdateValue(`${displayMode}.image.position`)(value),
+        [getUpdateValue]
+    );
+    const setColor = useCallback(value => getUpdateValue(`${displayMode}.color`)(value), [
+        getUpdateValue,
+        displayMode
+    ]);
+    const onColorChange = useCallback(value => getUpdatePreview(`${displayMode}.color`)(value), [
+        getUpdatePreview,
+        displayMode
     ]);
 
-    const background = element.data.settings?.background;
+    const background = get(element, `${DATA_NAMESPACE}.${displayMode}`, {});
     const { color: backgroundColor, image: backgroundImage } = background || {};
     const { scaling: backgroundImageScaling, position: backgroundImagePosition } =
         backgroundImage || {};
     const { src: backgroundImageSrc } = backgroundImage?.file || {};
 
     return (
-        <Accordion title={"Background"} defaultValue={defaultAccordionValue}>
+        <Accordion
+            title={"Background"}
+            defaultValue={defaultAccordionValue}
+            icon={
+                <Tooltip content={`Changes will apply for ${activeDisplayModeConfig.displayMode}`}>
+                    {activeDisplayModeConfig.icon}
+                </Tooltip>
+            }
+        >
             <ContentWrapper direction={"column"}>
                 <Grid className={classes.simpleGrid}>
                     <Cell span={12}>
