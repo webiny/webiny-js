@@ -97,23 +97,6 @@ export type CmsContentModelType = {
     titleFieldId: string;
 };
 
-export type CmsModelFieldToCommodoFieldPlugin<TContext = CmsContext> = Plugin & {
-    type: "cms-model-field-to-commodo-field";
-    fieldType: string;
-    dataModel(params: {
-        context: TContext;
-        model: Function;
-        field: CmsContentModelFieldType;
-        validation(value): Promise<boolean>;
-    }): void;
-    searchModel?(params: {
-        context: TContext;
-        model: Function;
-        field: CmsContentModelFieldType;
-        validation?(value): Promise<boolean>;
-    }): void;
-};
-
 export type ContextBeforeContentModelsPlugin<T = BaseContext> = Plugin & {
     type: "context-before-content-models";
     apply?: (context: T) => void | Promise<void>;
@@ -132,7 +115,7 @@ export type CmsModelFieldDefinitionType = {
 export type CmsModelFieldToGraphQLPlugin = Plugin & {
     type: "cms-model-field-to-graphql";
     fieldType: string;
-    es?: {
+    elasticSearch?: {
         unmappedType?: string;
     };
     isSearchable: boolean;
@@ -469,7 +452,7 @@ export type ContentModelManagerPlugin = Plugin & {
 export enum DbItemTypes {
     CMS_CONTENT_MODEL_GROUP = "cms.group",
     CMS_CONTENT_MODEL = "cms.model",
-    CMS_SETTINGS = "cms.settings",
+    CMS_SETTINGS = "cms.settings"
 }
 
 type CmsContentEntryResolverFactoryParamsType = {
@@ -488,7 +471,7 @@ export type CmsContentEntryResolverFactoryType<
     >;
 };
 
-export type ElasticSearchQueryOperations =
+export type ElasticSearchQueryOperator =
     | "eq"
     | "not"
     | "in"
@@ -578,7 +561,7 @@ export type ElasticSearchQueryBuilderArgsPluginType = {
 export type ElasticSearchQueryBuilderPlugin = Plugin & {
     type: "elastic-search-query-builder";
     name: string;
-    targetOperation: ElasticSearchQueryOperations;
+    operator: ElasticSearchQueryOperator;
     apply: (query: ElasticSearchQueryType, args: ElasticSearchQueryBuilderArgsPluginType) => void;
 };
 

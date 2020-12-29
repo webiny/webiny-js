@@ -3,7 +3,7 @@ import { ElasticSearchQueryBuilderPlugin } from "@webiny/api-headless-cms/types"
 export const elasticSearchQueryBuilderBetweenPlugin = (): ElasticSearchQueryBuilderPlugin => ({
     type: "elastic-search-query-builder",
     name: "elastic-search-query-builder-between",
-    targetOperation: "between",
+    operator: "between",
     apply(query, { field, value }) {
         if (Array.isArray(value) === false) {
             throw new Error(

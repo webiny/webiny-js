@@ -3,7 +3,7 @@ import { ElasticSearchQueryBuilderPlugin } from "@webiny/api-headless-cms/types"
 export const elasticSearchQueryBuilderInPlugin = (): ElasticSearchQueryBuilderPlugin => ({
     type: "elastic-search-query-builder",
     name: "elastic-search-query-builder-in",
-    targetOperation: "in",
+    operator: "in",
     apply(query, { field, value: values }) {
         if (Array.isArray(values) === false || values.length === 0) {
             throw new Error(

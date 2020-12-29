@@ -210,7 +210,7 @@ const execElasticSearchBuildQueryPlugins = (
         }
 
         for (const plugin of plugins) {
-            if (plugin.targetOperation !== op) {
+            if (plugin.operator !== op) {
                 continue;
             }
 
@@ -285,8 +285,8 @@ const createModelFieldOptions = (
     };
 
     const pluginFieldTypes = plugins.reduce((types, plugin) => {
-        const { fieldType, es, isSearchable, isSortable } = plugin;
-        const { unmappedType } = es || {};
+        const { fieldType, elasticSearch, isSearchable, isSortable } = plugin;
+        const { unmappedType } = elasticSearch || {};
         types[fieldType] = {
             unmappedType: unmappedType || undefined,
             isSearchable: isSearchable === true,
