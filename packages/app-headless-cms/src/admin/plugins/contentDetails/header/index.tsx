@@ -5,7 +5,6 @@ import RevisionSelector from "./revisionSelector/RevisionSelector";
 import SaveContentButton from "./saveContent/SaveContent";
 import SaveAndPublishButton from "./saveAndPublishContent/SaveAndPublishContent";
 import ContentFormOptionsMenu from "./contentFormOptionsMenu/ContentFormOptionsMenu";
-import RefreshContentButton from "./refreshContent/RefreshContent";
 
 const plugins: CmsContentDetailsPlugin[] = [
     {
@@ -34,13 +33,6 @@ const plugins: CmsContentDetailsPlugin[] = [
         type: "cms-content-details-header-right",
         render(props) {
             return <SaveAndPublishButton {...props} />;
-        }
-    },
-    {
-        name: "cms-content-details-header-right-refresh",
-        type: "cms-content-details-header-right",
-        render(props) {
-            return <RefreshContentButton {...props} />;
         }
     },
     {
