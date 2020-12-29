@@ -55,7 +55,7 @@ export const FileManagerPermissions = ({ parent, value, onChange }) => {
                 if (data.filesAccessScope === "own") {
                     permission.own = true;
                 } else {
-                    permission.rwd = data.filesRWD;
+                    permission.rwd = data.filesRWD || "r";
                 }
                 newValue.push(permission);
             }
@@ -98,7 +98,7 @@ export const FileManagerPermissions = ({ parent, value, onChange }) => {
         if (filesPermission) {
             data.filesAccessScope = filesPermission.own ? "own" : FULL_ACCESS;
             if (data.filesAccessScope === FULL_ACCESS) {
-                data.filesRWD = filesPermission.permissions;
+                data.filesRWD = filesPermission.rwd;
             }
         }
 

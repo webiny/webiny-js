@@ -50,17 +50,17 @@ export const FormBuilderPermissions = ({ parent, value, onChange }) => {
                     name: FB_ACCESS_FORM,
                     own: false,
                     rwd: undefined,
-                    submissions: "no"
+                    submissions: false
                 };
 
                 if (data.formAccessLevel === "own") {
                     permission.own = true;
                 } else {
-                    permission.rwd = data.formPermissions;
+                    permission.rwd = data.formPermissions || "r";
                 }
 
-                if (data.submissionPermissions !== NO_ACCESS) {
-                    permission.submissions = "all";
+                if (data.submissionPermissions && data.submissionPermissions !== NO_ACCESS) {
+                    permission.submissions = true;
                 }
 
                 newValue.push(permission);
@@ -104,10 +104,10 @@ export const FormBuilderPermissions = ({ parent, value, onChange }) => {
         const formPermission = permissions.find(item => item.name === FB_ACCESS_FORM);
         if (formPermission) {
             data.formAccessLevel = formPermission.own ? "own" : FULL_ACCESS;
-            if (data.formAccessLevel === FULL_ACCESS) {
-                data.formPermissions = formPermission.permissions;
+            if (data.formAccessLevel === CUSTOM_ACCESS) {
+                data.formPermissions = formPermission.rwd;
             }
-            if (formPermission.submissions === "all") {
+            if (formPermission.submissions === true) {
                 data.submissionPermissions = FULL_ACCESS;
             }
         }

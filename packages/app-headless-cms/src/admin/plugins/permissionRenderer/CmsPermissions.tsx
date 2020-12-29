@@ -121,7 +121,7 @@ export const CMSPermissions = ({ parent, value, onChange }) => {
                     newValue.push(permission);
                 }
             });
-
+            
             onChange(newValue);
         },
         [parent.id, value]
@@ -244,7 +244,7 @@ export const CMSPermissions = ({ parent, value, onChange }) => {
                                     locales={locales}
                                     data={data}
                                     Bind={Bind}
-                                    entity={"contentModels"}
+                                    entity={"contentModel"}
                                     title={"Content Models"}
                                 />
                             )}
@@ -253,7 +253,7 @@ export const CMSPermissions = ({ parent, value, onChange }) => {
                                 <CustomSection
                                     data={data}
                                     Bind={Bind}
-                                    entity={"contentModelGroups"}
+                                    entity={"contentModelGroup"}
                                     title={"Content Model Groups"}
                                 />
                             )}
@@ -265,7 +265,7 @@ export const CMSPermissions = ({ parent, value, onChange }) => {
                                     locales={locales}
                                     data={data}
                                     Bind={Bind}
-                                    entity={"contentEntries"}
+                                    entity={"contentEntry"}
                                     title={"Content Entries"}
                                 />
                             )}
