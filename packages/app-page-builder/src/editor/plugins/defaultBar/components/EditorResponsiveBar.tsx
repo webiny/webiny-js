@@ -55,6 +55,25 @@ const classes = {
                 marginLeft: 4
             }
         }
+    }),
+    tooltip: css({
+        textAlign: "left",
+        textTransform: "initial",
+        "& .tooltip__title": {
+            "& span": {
+                fontWeight: 900
+            }
+        },
+        "& .tooltip__info": {
+            display: "flex",
+            "& svg": {
+                fill: "var(--mdc-theme-surface)",
+                marginRight: 4
+            }
+        },
+        "& .tooltip__body": {
+            marginTop: 4
+        }
     })
 };
 
@@ -71,20 +90,30 @@ const EditorResponsiveBar = () => {
 
     return (
         <div className={classes.wrapper}>
-            {editorModes.map(({ config }) => {
+            {editorModes.map(({ config: { displayMode: mode, icon, toolTip } }) => {
                 return (
                     <Tooltip
-                        key={config.displayMode}
-                        content={config.label}
+                        key={mode}
+                        content={
+                            <div className={classes.tooltip}>
+                                <div className={"tooltip__title"}>
+                                    <Typography use={"subtitle1"}>{toolTip.title}</Typography>
+                                </div>
+                                <div className={"tooltip__info"}>
+                                    {toolTip.subTitleIcon}
+                                    <Typography use={"body2"}>{toolTip.subTitle}</Typography>
+                                </div>
+                                <div className={"tooltip__body"}>
+                                    <Typography use={"body2"}>{toolTip.body}</Typography>
+                                </div>
+                            </div>
+                        }
                         placement={"bottom"}
                         className={classNames("action-wrapper", {
-                            active: displayMode === config.displayMode
+                            active: mode === displayMode
                         })}
                     >
-                        <IconButton
-                            icon={config.icon}
-                            onClick={() => setEditorMode(config.displayMode)}
-                        />
+                        <IconButton icon={icon} onClick={() => setEditorMode(mode)} />
                     </Tooltip>
                 );
             })}
