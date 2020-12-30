@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useRecoilValue } from "recoil";
 import get from "lodash/get";
 import { plugins } from "@webiny/plugins";
@@ -9,6 +9,7 @@ import {
 } from "../../../../types";
 import { activeElementSelector, uiAtom } from "../../../recoil/modules";
 import useUpdateHandlers from "../useUpdateHandlers";
+import { applyFallbackDisplayMode } from "../elementSettingsUtils";
 // Components
 import Accordion from "../components/Accordion";
 import ColorPicker from "../components/ColorPicker";
@@ -36,8 +37,32 @@ const BorderSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderC
             .find(pl => pl.config.displayMode === displayMode);
     }, [displayMode]);
 
-    const border = element.data.settings?.border || {};
-    const borderStyle = get(border, `${displayMode}.style`, "none");
+    const getUpdateValueWidthDisplayMode = useCallback(
+        name => value => getUpdateValue(`${displayMode}.${name}`)(value),
+        [getUpdateValue, displayMode]
+    );
+
+    const updateColor = useCallback(value => getUpdateValue(`${displayMode}.color`)(value), [
+        getUpdateValue,
+        displayMode
+    ]);
+
+    const updateColorPreview = useCallback(
+        value => getUpdatePreview(`${displayMode}.color`)(value),
+        [getUpdatePreview, displayMode]
+    );
+
+    const fallbackValue = useMemo(
+        () =>
+            applyFallbackDisplayMode(displayMode, mode =>
+                get(element, `${DATA_NAMESPACE}.${mode}`)
+            ),
+        [displayMode]
+    );
+
+    const border = get(element, `${DATA_NAMESPACE}.${displayMode}`, fallbackValue || {});
+    const borderStyle = get(border, `style`, "none");
+
     return (
         <Accordion
             title={"Border"}
@@ -64,22 +89,21 @@ const BorderSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderC
                 <ColorPicker
                     className={classes.simpleGrid}
                     label={"Color"}
-                    valueKey={`${DATA_NAMESPACE}.${displayMode}.color`}
-                    defaultValue={"#fff"}
-                    updateValue={getUpdateValue(`${displayMode}.color`)}
-                    updatePreview={getUpdatePreview(`${displayMode}.color`)}
+                    value={border.color}
+                    updateValue={updateColor}
+                    updatePreview={updateColorPreview}
                 />
                 <BoxInputs
                     label={"Width"}
                     value={border}
-                    valueKey={`${displayMode}.width`}
-                    getUpdateValue={getUpdateValue}
+                    valueKey={"width"}
+                    getUpdateValue={getUpdateValueWidthDisplayMode}
                 />
                 <BoxInputs
                     label={"Radius"}
                     value={border}
-                    valueKey={`${displayMode}.radius`}
-                    getUpdateValue={getUpdateValue}
+                    valueKey={"radius"}
+                    getUpdateValue={getUpdateValueWidthDisplayMode}
                     sides={[
                         {
                             label: "Top left",
