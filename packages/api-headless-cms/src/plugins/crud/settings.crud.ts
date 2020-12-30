@@ -20,14 +20,6 @@ const initialContentModelGroup = {
 
 const SETTINGS_SECONDARY_KEY = "settings";
 
-const defaultMapping = {
-    mappings: {
-        properties: {
-            rawData: { type: "object", enabled: false }
-        }
-    }
-};
-
 export default {
     type: "context",
     name: "context-settings-crud",
@@ -73,7 +65,13 @@ export default {
                 if (!exists) {
                     await elasticSearch.indices.create({
                         ...esIndex,
-                        body: defaultMapping
+                        body: {
+                            mappings: {
+                                properties: {
+                                    rawData: { type: "object", enabled: false }
+                                }
+                            }
+                        }
                     });
                 }
 
