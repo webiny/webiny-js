@@ -10,7 +10,7 @@ import { checkOwnership } from "./utils";
 import defaults from "./defaults";
 import * as models from "./forms.models";
 import { FbForm, FbSubmission, FormBuilderContext } from "../../types";
-import { decodeCursor, encodeCursor } from "@webiny/api-file-manager/plugins/crud/utils/cursors";
+import { encodeCursor } from "@webiny/api-file-manager/plugins/crud/utils/cursors";
 
 const TYPE_FORM = "fb.form";
 const TYPE_FORM_LATEST = "fb.form.latest";
