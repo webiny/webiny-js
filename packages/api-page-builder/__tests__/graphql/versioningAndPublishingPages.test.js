@@ -9,6 +9,7 @@ describe("versioning and publishing pages", () => {
         createPage,
         publishPage,
         updatePage,
+        deletePage,
         unpublishPage,
         listPages,
         listPublishedPages,
@@ -420,6 +421,58 @@ describe("versioning and publishing pages", () => {
         // Try publishing 2nd page, it should work.
         await publishPage({ id: p1v1.id });
         await deletePage({ id: p1v1.id });
+
+        // This one should not return any results - it's an old URL.
+        await getPublishedPage({ path: "/pages-test" }).then(([res]) =>
+            expect(res).toEqual({
+                data: {
+                    pageBuilder: {
+                        getPublishedPage: {
+                            data: null,
+                            error: {
+                                code: "NOT_FOUND",
+                                data: null,
+                                message: "Page not found."
+                            }
+                        }
+                    }
+                }
+            })
+        );
+
+        // Also, the should not exist as well.
+        await db
+            .read({
+                ...defaults.db,
+                query: {
+                    PK: "T#root#L#en-US#PB#P#P#PATH",
+                    SK: { $gte: " " }
+                }
+            })
+            .then(([res]) => expect(res.length).toBe(0));
+    });
+
+    test("once a page has been unpublished, it should not be available via the previous published path", async () => {
+        await createCategory({
+            data: {
+                slug: `slug`,
+                name: `name`,
+                url: `/some-url/`,
+                layout: `layout`
+            }
+        });
+
+        const p1v1 = await createPage({ category: "slug" }).then(
+            ([res]) => res.data.pageBuilder.createPage.data
+        );
+
+        await updatePage({ id: p1v1.id, data: { path: "/pages-test" } }).then(([res]) =>
+            expect(res.data.pageBuilder.updatePage.data.id).toBe(p1v1.id)
+        );
+
+        // Try publishing 2nd page, it should work.
+        await publishPage({ id: p1v1.id });
+        await unpublishPage({ id: p1v1.id });
 
         // This one should not return any results - it's an old URL.
         await getPublishedPage({ path: "/pages-test" }).then(([res]) =>

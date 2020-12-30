@@ -936,6 +936,9 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                                         SK: previouslyPublishedPage.path
                                     }
                                 });
+
+                                // TODO: We could be overwriting a completely different page here. Need to handler that too.
+                                // TODO: If we just unpublished a different page, let's update its data as well.
                             }
 
                             batch
@@ -963,12 +966,8 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                                         path: page.path
                                     }
                                 })
-                                .update({
+                                .create({
                                     ...defaults.db,
-                                    query: {
-                                        PK: PK_PAGE_PUBLISHED_PATH(),
-                                        SK: pid
-                                    },
                                     data: {
                                         PK: PK_PAGE_PUBLISHED_PATH(),
                                         SK: page.path,
@@ -1117,6 +1116,13 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                                 query: {
                                     PK: PK_PAGE_PUBLISHED(),
                                     SK: pageUniqueId
+                                }
+                            })
+                            .delete({
+                                ...defaults.db,
+                                query: {
+                                    PK: PK_PAGE_PUBLISHED_PATH(),
+                                    SK: publishedPageData.path
                                 }
                             })
                             .update({
