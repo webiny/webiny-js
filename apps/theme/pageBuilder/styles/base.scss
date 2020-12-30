@@ -74,6 +74,11 @@
   justify-content: var(--desktop-justify-content);
   align-items: var(--desktop-align-items);
 }
+// Some styles need more specificity
+.webiny-pb-media-query--desktop .webiny-pb-base-page-element-style {
+  display: var(--desktop-visibility);
+}
+
 .webiny-pb-media-query--tablet .webiny-pb-base-page-element-style {
   max-width: var(--tablet-width);
   height: var(--tablet-height);
@@ -86,6 +91,7 @@
   @include border(--tablet);
   @include background(--tablet);
 
+  display: var(--tablet-visibility);
   color: var(--tablet-color);
   text-align: var(--tablet-text-align);
 
@@ -104,6 +110,7 @@
   @include border(--mobile-landscape);
   @include background(--mobile-landscape);
 
+  display: var(--mobile-landscape-visibility);
   color: var(--mobile-landscape-color);
   text-align: var(--mobile-landscape-text-align);
 
@@ -125,6 +132,7 @@
   @include border(--mobile-portrait);
   @include background(--mobile-portrait);
 
+  display: var(--mobile-portrait-visibility);
   color: var(--mobile-portrait-color);
   text-align: var(--mobile-portrait-text-align);
 
