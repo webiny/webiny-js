@@ -655,6 +655,10 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                             publishedPageData
                         });
 
+                        // Before we continue, note that if `publishedPageData` exists, then `publishedPagePathData`
+                        // also exists. And to delete it, we can read `publishedPageData.path` to get its SK.
+                        // There can't be a situation where just one record exists, there's always gonna be both.
+
                         // If we are deleting the initial version, we need to remove all versions and all of the meta data.
                         if (pageVersion === getZeroPaddedVersionNumber(1)) {
                             // 4.1. We delete pages in batches of 10.
