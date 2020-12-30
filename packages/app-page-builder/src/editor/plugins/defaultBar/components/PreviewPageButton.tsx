@@ -16,8 +16,10 @@ const PreviewPageButton: React.FunctionComponent = () => {
     const { getPageUrl, getWebsiteUrl } = usePageBuilderSettings();
     const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getWebsiteUrl());
 
-    const { showConfigureWebsiteUrlDialog } = useConfigureWebsiteUrlDialog(getWebsiteUrl(), refreshSiteStatus);
-
+    const { showConfigureWebsiteUrlDialog } = useConfigureWebsiteUrlDialog(
+        getWebsiteUrl(),
+        refreshSiteStatus
+    );
 
     return (
         <MenuItem

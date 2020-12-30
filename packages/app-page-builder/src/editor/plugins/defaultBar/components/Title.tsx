@@ -35,9 +35,7 @@ const extractPageInfo = (page: PageAtomType): any => {
 const Title: React.FunctionComponent = () => {
     const handler = useEventActionHandler();
     const page = useRecoilValue(pageAtom);
-    const { pageTitle, pageVersion, pageLocked, pageCategory } = extractPageInfo(
-        page
-    );
+    const { pageTitle, pageVersion, pageLocked, pageCategory } = extractPageInfo(page);
     const [editTitle, setEdit] = useState<boolean>(false);
     const [stateTitle, setTitle] = useState<string>(null);
     let title = stateTitle === null ? pageTitle : stateTitle;

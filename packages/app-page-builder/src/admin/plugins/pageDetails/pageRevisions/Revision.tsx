@@ -77,7 +77,10 @@ const Revision = ({ revision, page }: RevisionProps) => {
         page
     });
 
-    const { showConfigureWebsiteUrlDialog } = useConfigureWebsiteUrlDialog(getWebsiteUrl(), refreshSiteStatus);
+    const { showConfigureWebsiteUrlDialog } = useConfigureWebsiteUrlDialog(
+        getWebsiteUrl(),
+        refreshSiteStatus
+    );
 
     return (
         <ConfirmationDialog

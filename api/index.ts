@@ -16,7 +16,7 @@ const fileManager = new FileManager();
 const prerenderingService = new PrerenderingService({
     env: {
         DEBUG: String(process.env.DEBUG),
-        DB_TABLE: dynamoDb.table.name,
+        DB_TABLE: dynamoDb.table.name
     }
 });
 

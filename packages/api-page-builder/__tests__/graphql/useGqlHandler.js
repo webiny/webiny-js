@@ -13,7 +13,14 @@ import { Client } from "@elastic/elasticsearch";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
 
 import { INSTALL, IS_INSTALLED } from "./graphql/install";
-import { CREATE_MENU, DELETE_MENU, LIST_MENUS, UPDATE_MENU, GET_MENU, GET_PUBLIC_MENU } from "./graphql/menus";
+import {
+    CREATE_MENU,
+    DELETE_MENU,
+    LIST_MENUS,
+    UPDATE_MENU,
+    GET_MENU,
+    GET_PUBLIC_MENU
+} from "./graphql/menus";
 import {
     CREATE_PAGE_ELEMENT,
     DELETE_PAGE_ELEMENT,

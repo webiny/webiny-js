@@ -33,6 +33,7 @@ const LinkForm = ({ data, onSubmit, onCancel }) => {
                                             {...rest}
                                             onChange={(value, selection) => {
                                                 onChange(value);
+                                                console.log("state", state);
                                                 if (!data.title) {
                                                     form.setState(state => {
                                                         state.data.title = selection.title;

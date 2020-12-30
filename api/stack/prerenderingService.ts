@@ -120,15 +120,12 @@ class PageBuilder {
             isEnabled: true
         });
 
-        new aws.lambda.Permission(
-            "ps-event-rule-queue-process-permission",
-            {
-                action: "lambda:InvokeFunction",
-                function: this.functions.queue.process.arn,
-                principal: "events.amazonaws.com",
-                sourceArn: eventRule.arn
-            }
-        );
+        new aws.lambda.Permission("ps-event-rule-queue-process-permission", {
+            action: "lambda:InvokeFunction",
+            function: this.functions.queue.process.arn,
+            principal: "events.amazonaws.com",
+            sourceArn: eventRule.arn
+        });
 
         new aws.cloudwatch.EventTarget("process-queue-cron-event-target", {
             rule: eventRule.name,

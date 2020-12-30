@@ -41,9 +41,7 @@ import {
     Args as FlushArgs
 } from "@webiny/api-prerendering-service/flush/types";
 
-import {
-    HandlerArgs as QueueAddHandlerArgs,
-} from "@webiny/api-prerendering-service/queue/add/types";
+import { HandlerArgs as QueueAddHandlerArgs } from "@webiny/api-prerendering-service/queue/add/types";
 
 import {
     TYPE,

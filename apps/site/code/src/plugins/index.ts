@@ -5,9 +5,4 @@ import formBuilder from "./formBuilder";
 
 import theme from "theme";
 
-plugins.register([
-    imageComponent(),
-    pageBuilder,
-    formBuilder,
-    theme()
-]);
+plugins.register([imageComponent(), pageBuilder, formBuilder, theme()]);

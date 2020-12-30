@@ -8,7 +8,7 @@ export const App = () => (
     <ApolloProvider client={createApolloClient()}>
         <BrowserRouter basename={process.env.PUBLIC_URL}>
             <Switch>
-                <Route path={"*"} component={Page}/>
+                <Route path={"*"} component={Page} />
             </Switch>
         </BrowserRouter>
     </ApolloProvider>

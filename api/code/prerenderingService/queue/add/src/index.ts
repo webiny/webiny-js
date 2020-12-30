@@ -14,5 +14,5 @@ export const handler = createHandler(
                 region: process.env.AWS_REGION
             })
         })
-    }),
+    })
 );

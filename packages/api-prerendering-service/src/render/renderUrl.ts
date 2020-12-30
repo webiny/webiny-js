@@ -72,7 +72,6 @@ export default async (url: string, { log }): Promise<File[]> => {
                         data: responses[i].data
                     });
                 }
-
             }
             return;
         }
@@ -88,7 +87,7 @@ export default async (url: string, { log }): Promise<File[]> => {
         noopener(),
         injectRenderId(browserPage, { log, renderId }),
         injectRenderTs(browserPage, { log, renderTs }),
-        injectApolloState(browserPage, { log }),
+        injectApolloState(browserPage, { log })
     ]).process(await browserPage.content());
     log("Processing HTML done.");
 

@@ -66,7 +66,6 @@ function Render({
                 {/* Read title from page settings. */}
                 {head.title && <title>{head.title}</title>}
 
-
                 {/* Read SEO tags from page settings. */}
                 {head.seo.title && <meta name="title" content={head.seo.title} />}
                 {head.seo.description && <meta name="description" content={head.seo.description} />}

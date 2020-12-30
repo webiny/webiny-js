@@ -40,7 +40,7 @@ export const handler = createHandler(
                 flush: process.env.PRERENDERING_FLUSH_HANDLER,
                 queue: {
                     add: process.env.PRERENDERING_QUEUE_ADD_HANDLER,
-                    process: process.env.PRERENDERING_QUEUE_PROCESS_HANDLER,
+                    process: process.env.PRERENDERING_QUEUE_PROCESS_HANDLER
                 }
             }
         }

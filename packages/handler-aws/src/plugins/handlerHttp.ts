@@ -21,8 +21,8 @@ export default {
                 base: invocationArgs.rawPath,
                 parameters: invocationArgs.pathParameters,
                 query: invocationArgs.queryStringParameters
-            },
-        }
+            }
+        };
 
         context.http = {
             ...request,
