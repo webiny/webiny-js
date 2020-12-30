@@ -86,14 +86,16 @@ class PageBuilder {
             role: defaultLambdaRole.role.arn,
             runtime: "nodejs12.x",
             handler: "handler.handler",
-            timeout: 600,
-            memorySize: 2048,
+            timeout: 900, // 15 minutes.
+            memorySize: 4096,
             environment: {
                 variables: {
-                    ...env
+                    ...env,
+                    PRERENDERING_RENDER_HANDLER: render.arn,
+                    PRERENDERING_FLUSH_HANDLER: flush.arn
                 }
             },
-            description: "Processes all tasks added to the prerendering queue.",
+            description: "Processes all jobs added to the prerendering queue.",
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive("./code/prerenderingService/queue/process/build")
             }),
