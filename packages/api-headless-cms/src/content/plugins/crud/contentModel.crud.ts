@@ -243,7 +243,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 if (managers.has(modelId)) {
                     return managers.get(modelId);
                 }
-                const models = await context.cms.models.list();
+                const models = await modelsList();
                 const model = models.find(m => m.modelId === modelId);
                 if (!model) {
                     throw new NotFoundError(`There is no content model "${modelId}".`);
