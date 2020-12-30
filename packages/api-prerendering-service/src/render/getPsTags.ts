@@ -1,5 +1,5 @@
 const parseAttributes = content => {
-    const regex = /data-([a-zA-Z0-9-]+)="([a-zA-Z0-9-]+)"/gm;
+    const regex = /data-([a-zA-Z0-9-#]+)="([a-zA-Z0-9-#]+)"/gm;
     let m;
 
     const output: any = {};
@@ -19,13 +19,12 @@ const parseAttributes = content => {
     return output;
 };
 
-export default content => {
-    console.log('dobio content', content)
+export default (content, unique = true) => {
     if (!content) {
         return [];
     }
 
-    const cacheTags = [];
+    const psTags = [];
     const regex = /<ps-tag (.*?)>/gm;
     let m;
 
@@ -36,8 +35,16 @@ export default content => {
         }
 
         const [, attrs] = m;
-        cacheTags.push(parseAttributes(attrs));
+        psTags.push(parseAttributes(attrs));
     }
 
-    return cacheTags;
+    if (unique && psTags.length > 0) {
+        const uniqueMap = {};
+        for (let i = 0; i < psTags.length; i++) {
+            const psTag = psTags[i];
+            uniqueMap[psTag.key + psTag.value] = psTag;
+        }
+        return Object.values(uniqueMap);
+    }
+    return psTags;
 };

@@ -2,9 +2,10 @@ import chromium from "chrome-aws-lambda";
 import posthtml from "posthtml";
 import { noopener } from "posthtml-noopener";
 import injectApolloState from "./injectApolloState";
-import injectApolloPrefetching from "./injectApolloPrefetching";
-import path from "path";
+import injectRenderId from "./injectRenderId";
+import injectRenderTs from "./injectRenderTs";
 import getPsTags from "./getPsTags";
+import shortid from "shortid";
 
 const windowSet = (page, name, value) => {
     page.evaluateOnNewDocument(`
@@ -15,11 +16,14 @@ const windowSet = (page, name, value) => {
     })`);
 };
 
-export type File = { type: string; body: any; name: string; meta: {} };
+export type File = { type: string; body: any; name: string; meta: Record<string, any> };
 
 let browser;
 export default async (url: string, { log }): Promise<File[]> => {
-    log(`Rendering "${url}"`);
+    const renderId = shortid.generate();
+    const renderTs = new Date().getTime();
+
+    log(`Rendering "${url}" (render ID: ${renderId})...`);
     if (!browser) {
         browser = await chromium.puppeteer.launch({
             args: chromium.args,
@@ -33,16 +37,12 @@ export default async (url: string, { log }): Promise<File[]> => {
     const browserPage = await browser.newPage();
 
     // Currently, this variable is not used but lets keep it here as an example of setting page window variables.
-    windowSet(browserPage, "__WEBINY_PRERENDER__", true);
-
-    // Keep track of all external requests made from the page.
-    const requests = [];
+    windowSet(browserPage, "__PS_RENDER__", true);
 
     // Don't load these resources during prerender.
     const skipResources = ["image", "stylesheet"];
     await browserPage.setRequestInterception(true);
 
-    const prefetchApolloState = [];
     const gqlCache = [];
 
     browserPage.on("request", request => {
@@ -53,6 +53,7 @@ export default async (url: string, { log }): Promise<File[]> => {
         }
     });
 
+    // TODO: should be a plugin
     browserPage.on("response", async response => {
         const request = response.request();
         const url = request.url();
@@ -65,14 +66,13 @@ export default async (url: string, { log }): Promise<File[]> => {
                 const { operationName, query, variables } = operations[i];
 
                 if (operationName === "PbGetPublishedPage") {
-                    prefetchApolloState.push(path.join(variables.path, "graphql.json"));
+                    gqlCache.push({
+                        query,
+                        variables,
+                        data: responses[i].data
+                    });
                 }
-                requests.push(`${url}: ${operationName} ${JSON.stringify(variables)}`);
-                gqlCache.push({
-                    query,
-                    variables,
-                    data: responses[i].data
-                });
+
             }
             return;
         }
@@ -81,16 +81,20 @@ export default async (url: string, { log }): Promise<File[]> => {
     // Load URL and wait for all network requests to settle.
     await browserPage.goto(url, { waitUntil: "networkidle0" });
 
-    // Process HTML
-    log("Processing HTML");
+    // Process HTML.
+    // TODO: should be plugins.
+    log("Processing HTML...");
     const { html } = await posthtml([
         noopener(),
+        injectRenderId(browserPage, { log, renderId }),
+        injectRenderTs(browserPage, { log, renderTs }),
         injectApolloState(browserPage, { log }),
-        injectApolloPrefetching(prefetchApolloState, { log })
     ]).process(await browserPage.content());
+    log("Processing HTML done.");
 
-    log("Done!");
+    log(`Rendering "${url}" completed.`);
 
+    // TODO: should be plugins.
     return [
         {
             name: "index.html",
