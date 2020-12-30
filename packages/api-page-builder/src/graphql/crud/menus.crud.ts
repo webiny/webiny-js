@@ -34,7 +34,7 @@ const plugin: ContextPlugin<PbContext> = {
         const { db } = context;
         const PK = () => `${getPKPrefix(context)}M`;
 
-        const hookPlugins = context.plugins.byType<MenuHookPlugin>("pb-menu-hooks");
+        const hookPlugins = context.plugins.byType<MenuHookPlugin>("pb-menu-hook");
 
         context.pageBuilder = {
             ...context.pageBuilder,
