@@ -1,14 +1,10 @@
 const { buildFunction } = require("./bundling/function");
 const { startApp, buildApp } = require("./bundling/app");
-const { buildAppHandler, buildAppHandlerWithSSR } = require("./bundling/appHandler");
-const { buildAppSSR, buildAppSSRFromSource } = require("./bundling/ssr");
+const { buildAppHandler } = require("./bundling/appHandler");
 
 module.exports = {
     buildApp,
     buildAppHandler,
-    buildAppHandlerWithSSR,
     startApp,
-    buildAppSSR,
-    buildAppSSRFromSource,
     buildFunction
 };
