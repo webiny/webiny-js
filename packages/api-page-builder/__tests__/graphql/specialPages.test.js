@@ -8,7 +8,7 @@ const CANNOT_UNPUBLISH_RESPONSE = type => ({
                 error: {
                     code: "",
                     data: null,
-                    message: `Cannot unpublish page because it's set as ${type}`
+                    message: `Cannot unpublish page because it's set as ${type}.`
                 }
             }
         }
