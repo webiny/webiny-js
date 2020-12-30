@@ -77,7 +77,10 @@ export default (configuration: Configuration): HandlerPlugin => ({
             const uniqueJobsObject = {};
             for (let i = 0; i < jobs.length; i++) {
                 const job = jobs[i];
-                uniqueJobsObject[hash(job)] = job;
+                // If job doesn't have args (which should not happen), just ignore the job.
+                if (job.args) {
+                    uniqueJobsObject[hash(job.args)] = job;
+                }
             }
 
             const uniqueJobs = Object.values<DbQueueJob>(uniqueJobsObject);
@@ -99,11 +102,6 @@ export default (configuration: Configuration): HandlerPlugin => ({
             for (let i = 0; i < uniqueJobs.length; i++) {
                 const uniqueJob = uniqueJobs[i];
                 log("Processing unique job.", JSON.stringify(uniqueJob));
-                const { args } = uniqueJob;
-                if (!args) {
-                    log("No args provided for the unique job. Continuing with the next one...");
-                    continue;
-                }
 
                 // TODO: Ideally, we'd want to add support for processing `flush` jobs as well.
                 const { render /*flush*/ } = args;
