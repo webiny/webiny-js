@@ -1,4 +1,4 @@
-import renderPage, { File } from "./renderPage";
+import renderUrl, { File } from "./renderUrl";
 import path from "path";
 import S3 from "aws-sdk/clients/s3";
 import getStorageName from "./../utils/getStorageName";
@@ -78,7 +78,7 @@ export default (configuration?: Configuration): HandlerPlugin => ({
 
                 // TODO: will need to add flushing of all files created in the render process.
 
-                const files = await renderPage(url, {
+                const files = await renderUrl(url, {
                     log
                 });
 
