@@ -3,12 +3,11 @@ import { get } from "dot-prop-immutable";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
 import { PbElement } from "@webiny/app-page-builder/types";
 import { Link } from "@webiny/react-router";
-import TextRenderer from "../RichTextEditorOutputRenderer";
 
 const Button = ({ element }: { element: PbElement }) => {
     const { type = "default", icon = {}, link = {} } = element.data || {};
     const { svg = null } = icon;
-    const alignItems = get(element, "data.settings.horizontalAlignFlex") || "flex-start";
+    const justifyContent = get(element, "data.settings.horizontalAlignFlex") || "flex-start";
     const { position = "left" } = icon;
 
     const classes = [
@@ -21,7 +20,7 @@ const Button = ({ element }: { element: PbElement }) => {
     const content = (
         <>
             {svg && <span dangerouslySetInnerHTML={{ __html: svg }} />}
-            <TextRenderer data={element.data.text} />
+            <p>{element.data.text}</p>
         </>
     );
 
@@ -29,11 +28,12 @@ const Button = ({ element }: { element: PbElement }) => {
         <ElementRoot element={element}>
             {({ getAllClasses, elementStyle, elementAttributes }) => (
                 <div
-                    style={{ ...elementStyle, display: "flex", justifyContent: alignItems }}
+                    style={{ ...elementStyle, display: "flex", justifyContent }}
                     {...elementAttributes}
                 >
                     <Link
-                        to={link.href || null}
+                        to={link.href || "/"}
+                        style={!link.href ? { pointerEvents: "none" } : null}
                         target={link.newTab ? "_blank" : "_self"}
                         className={getAllClasses(...classes)}
                     >

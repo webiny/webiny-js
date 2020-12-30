@@ -6,6 +6,11 @@ import { Typography } from "@webiny/ui/Typography";
 
 const classes = {
     accordionWrapper: css({
+        /**
+         * We're using position: "relative" here for "Popping Out of Hidden Overflow" https://css-tricks.com/popping-hidden-overflow/
+         * so that, we can use absolute positioned element inside without "overflow: hidden" being a problem
+         */
+        position: "relative",
         width: "100%",
         borderBottom: `1px solid ${COLORS.gray}`
     }),
@@ -42,7 +47,7 @@ const classes = {
 
         "&.open": {
             color: COLORS.black,
-            paddingBottom: 0,
+            backgroundColor: "hsla(0,0%,97%,1)",
 
             "&::before": {
                 transform: "rotate(90deg)"

@@ -1,19 +1,8 @@
 import React from "react";
 import loremIpsum from "lorem-ipsum";
-import Text, { className } from "./Text";
-import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
-import { OutputBlockData } from "@editorjs/editorjs";
-
-const createInitialEditorValue = (text: string, type: string): OutputBlockData[] => {
-    return [
-        {
-            type,
-            data: {
-                text
-            }
-        }
-    ];
-};
+import { PbEditorPageElementPlugin } from "../../../../types";
+import Heading, { headingClassName } from "./Heading";
+import { createInitialTextValue } from "../utils/textUtils";
 
 export default (): PbEditorPageElementPlugin => {
     const defaultLipsum = {
@@ -24,19 +13,24 @@ export default (): PbEditorPageElementPlugin => {
     };
 
     return {
-        name: "pb-editor-page-element-text",
+        name: "pb-editor-page-element-heading",
         type: "pb-editor-page-element",
-        elementType: "text",
+        elementType: "heading",
         toolbar: {
-            title: "Text",
+            title: "Heading",
             group: "pb-editor-element-group-basic",
             preview() {
-                const previewText = loremIpsum(defaultLipsum);
+                const previewText =
+                    "The Easiest Way To Adopt  Serverless" || loremIpsum(defaultLipsum);
 
-                return <p className={className}>{previewText}</p>;
+                return <h2 className={headingClassName}>{previewText}</h2>;
             }
         },
         settings: [
+            [
+                "pb-editor-page-element-style-settings-text",
+                { useCustomTag: true, tags: ["h1", "h2", "h3", "h4", "h5", "h6"] }
+            ],
             "pb-editor-page-element-style-settings-background",
             "pb-editor-page-element-style-settings-border",
             "pb-editor-page-element-style-settings-shadow",
@@ -50,27 +44,32 @@ export default (): PbEditorPageElementPlugin => {
             const previewText = content.text || loremIpsum(content.lipsum || defaultLipsum);
 
             return {
-                type: "text",
+                type: "heading",
                 elements: [],
                 data: {
-                    text: createInitialEditorValue(previewText, content.typography || "paragraph"),
+                    text: createInitialTextValue({
+                        text: previewText,
+                        type: this.elementType,
+                        tag: "h1"
+                    }),
                     settings: {
                         margin: {
                             mobile: { top: "0px", left: "0px", right: "0px", bottom: "15px" },
-                            desktop: { top: "0px", left: "0px", right: "0px", bottom: "25px" },
+                            desktop: { top: "0px", left: "0px", right: "0px", bottom: "0px" },
                             advanced: true
                         },
                         padding: {
                             desktop: { all: "0px" },
                             mobile: { all: "0px" }
-                        }
+                        },
+                        horizontalAlign: "center"
                     }
                 },
                 ...options
             };
         },
         render({ element }) {
-            return <Text elementId={element.id} />;
+            return <Heading elementId={element.id} />;
         }
     };
 };

@@ -112,7 +112,8 @@ export const GridSettings: React.FunctionComponent<PbEditorPageElementSettingsRe
                             }
                         }
                     }
-                }
+                },
+                history: true
             })
         );
     };
@@ -136,7 +137,8 @@ export const GridSettings: React.FunctionComponent<PbEditorPageElementSettingsRe
                         }
                     },
                     elements: updateChildrenWithPreset(element, pl)
-                }
+                },
+                history: true
             })
         );
     };

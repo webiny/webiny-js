@@ -60,7 +60,8 @@ const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = ({
         };
         eventActionHandler.trigger(
             new UpdateElementActionEvent({
-                element: newElement
+                element: newElement,
+                history: true
             })
         );
     }, [elementId]);

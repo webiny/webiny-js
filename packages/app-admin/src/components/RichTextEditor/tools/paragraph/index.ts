@@ -7,36 +7,32 @@ import { Alignment, ALIGNMENTS, TextAlign, ALIGNMENT_ICONS } from "../utils";
 require("./index.css").toString();
 
 /**
- * Base Paragraph Block for the Editor.js.
- * Represents simple paragraph
- *
- * @author CodeX (team@codex.so)
- * @copyright CodeX 2018
- * @license The MIT License (MIT)
- */
-
-/**
  * @typedef {object} ParagraphConfig
  * @property {string} placeholder - placeholder for the empty paragraph
- * @property {boolean} preserveBlank - Whether or not to keep blank paragraphs when saving editor data
+ * @property {boolean} preserveBlank - Whether or not to keep blank paragraphs when saving editor data`
  */
-
+type ParagraphConfig = {
+    placeholder: string;
+    preserveBlank: boolean;
+};
 /**
  * @typedef {Object} ParagraphData
  * @description Tool's input and output data format
  * @property {String} text — Paragraph's content. Can include HTML tags: <a><b><i>
  */
-class Paragraph {
-    /**
-     * Default placeholder for Paragraph Tool
-     *
-     * @return {string}
-     * @constructor
-     */
-    static get DEFAULT_PLACEHOLDER() {
-        return "";
-    }
+type ParagraphData = {
+    text: string;
+    textAlign: TextAlign;
+};
 
+type Typography = {
+    [key: string]: {
+        label: string;
+        component: string;
+        className: string;
+    };
+};
+class Paragraph {
     api: API;
     readOnly: boolean;
     _CSS: any;
@@ -47,6 +43,7 @@ class Paragraph {
     _preserveBlank: boolean;
     alignments: Alignment[];
     settingsButtons: HTMLElement[];
+    typography: Typography;
 
     /**
      * Render plugin`s main Element and fill it with saved data
@@ -58,10 +55,9 @@ class Paragraph {
      * @param {boolean} readOnly - read only mode flag
      */
     constructor({ data, config, api, readOnly }) {
-        console.log("readonly", readOnly);
         this.api = api;
         this.readOnly = readOnly;
-
+        this.typography = config.typography || null;
         this._CSS = {
             block: this.api.styles.block,
             settingsButton: this.api.styles.settingsButton,
@@ -88,8 +84,138 @@ class Paragraph {
     }
 
     /**
+     * Default placeholder for Paragraph Tool
+     *
+     * @return {string}
+     * @constructor
+     */
+    static get DEFAULT_PLACEHOLDER() {
+        return "";
+    }
+
+    /**
+     * Enable Conversion Toolbar. Paragraph can be converted to/from other tools
+     */
+    static get conversionConfig() {
+        return {
+            export: "text", // to convert Paragraph to other block, use 'text' property of saved data
+            import: "text" // to covert other block's exported string to Paragraph, fill 'text' property of tool data
+        };
+    }
+
+    /**
+     * Sanitizer rules
+     */
+    static get sanitize() {
+        return {
+            text: {
+                br: true
+            }
+        };
+    }
+
+    /**
+     * Returns true to notify the core that read-only mode is supported
+     *
+     * @return {boolean}
+     */
+    static get isReadOnlySupported() {
+        return true;
+    }
+
+    /**
+     * Get current Tools`s data
+     * @returns {ParagraphData} Current data
+     * @private
+     */
+    get data() {
+        const text = this._element.innerHTML;
+
+        // this._data.text = text;
+
+        return {
+            ...this._data,
+            text
+        };
+    }
+
+    /**
+     * Store data in plugin:
+     * - at the this._data property
+     * - at the HTML
+     *
+     * @param {ParagraphData} data — data to set
+     * @private
+     */
+    set data(data) {
+        this._data = data || {};
+
+        this._element.innerHTML = this._data.text || "";
+
+        /**
+         * Add Alignment class
+         */
+        this.alignments.forEach(alignment => {
+            if (alignment.name === this._data.textAlign) {
+                this._element.classList.add(`ce-header-text--${alignment.name}`);
+            } else {
+                this._element.classList.remove(`ce-header-text--${alignment.name}`);
+            }
+        });
+
+        /**
+         * Add Typography class
+         */
+        if (this._data.className) {
+            this._element.classList.add(...this._data.className.split(" "));
+        }
+    }
+
+    /**
+     * Used by Editor paste handling API.
+     * Provides configuration to handle P tags.
+     *
+     * @returns {{tags: string[]}}
+     */
+    static get pasteConfig() {
+        return {
+            tags: ["P"]
+        };
+    }
+
+    /**
+     * Icon and title for displaying at the Toolbox
+     *
+     * @return {{icon: string, title: string}}
+     */
+    static get toolbox() {
+        return {
+            icon:
+                '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.2 -0.3 9 11.4" width="12" height="14">\n' +
+                '  <path d="M0 2.77V.92A1 1 0 01.2.28C.35.1.56 0 .83 0h7.66c.28.01.48.1.63.28.14.17.21.38.21.64v1.85c0 .26-.08.48-.23.66-.15.17-.37.26-.66.26-.28 0-.5-.09-.64-.26a1 1 0 01-.21-.66V1.69H5.6v7.58h.5c.25 0 .45.08.6.23.17.16.25.35.25.6s-.08.45-.24.6a.87.87 0 01-.62.22H3.21a.87.87 0 01-.61-.22.78.78 0 01-.24-.6c0-.25.08-.44.24-.6a.85.85 0 01.61-.23h.5V1.7H1.73v1.08c0 .26-.08.48-.23.66-.15.17-.37.26-.66.26-.28 0-.5-.09-.64-.26A1 1 0 010 2.77z"/>\n' +
+                "</svg>",
+            title: "Text"
+        };
+    }
+
+    /**
+     * Get current alignment
+     *
+     * @returns {alignment}
+     */
+    get currentAlignment() {
+        let alignment = this.alignments.find(alignment => alignment.name === this._data.textAlign);
+
+        if (!alignment) {
+            alignment = { name: TextAlign.LEFT, svg: ALIGNMENT_ICONS.left };
+        }
+
+        return alignment;
+    }
+
+    /**
      * Check if text content is empty and set empty string to inner html.
-     * We need this because some browsers (e.g. Safari) insert <br> into empty contenteditanle elements
+     * We need this because some browsers (e.g. Safari) insert <br> into empty contentEditable elements
      *
      * @param {KeyboardEvent} e - key up event
      */
@@ -112,8 +238,11 @@ class Paragraph {
      */
     drawView() {
         const div = document.createElement("DIV");
-
         div.classList.add(this._CSS.wrapper, this._CSS.block);
+        // Add custom className to view.
+        if (this._data.className) {
+            div.classList.add(this._data.className);
+        }
         div.contentEditable = "false";
         div.dataset.placeholder = this.api.i18n.t(this._placeholder);
 
@@ -183,6 +312,38 @@ class Paragraph {
             this.settingsButtons.push(selectTypeButton);
         });
 
+        // Add `Typography` selector
+        if (this.typography) {
+            const typographyForParagraph = Object.values(this.typography).filter(
+                item => item.component === "p"
+            );
+
+            const selectTypeButton = document.createElement("SELECT") as HTMLSelectElement;
+            // Add editor's default input style
+            selectTypeButton.classList.add(this.api.styles.input);
+            // Add typography options
+            typographyForParagraph.forEach(item => {
+                const option = new Option(item.label, item.className);
+
+                selectTypeButton.appendChild(option);
+            });
+            // Add "onclick" handler
+            selectTypeButton.onclick = event => {
+                const { value } = event.target as HTMLSelectElement;
+                this.setTypographyClass(value);
+            };
+
+            /**
+             * Append settings button to holder
+             */
+            holder.appendChild(selectTypeButton);
+
+            /**
+             * Save settings buttons
+             */
+            this.settingsButtons.push(selectTypeButton);
+        }
+
         return holder;
     }
 
@@ -207,11 +368,7 @@ class Paragraph {
      * @public
      */
     validate(savedData) {
-        if (savedData.text.trim() === "" && !this._preserveBlank) {
-            return false;
-        }
-
-        return true;
+        return !(savedData.text.trim() === "" && !this._preserveBlank);
     }
 
     /**
@@ -222,8 +379,27 @@ class Paragraph {
      */
     save(toolsContent) {
         return {
-            text: toolsContent.innerHTML
+            text: toolsContent.innerHTML,
+            textAlign: this.getTextAlign(toolsContent.className),
+            className: this.data.className
         };
+    }
+
+    /**
+     * Extract textAlign from className
+     *
+     * @param {string} className - heading element className
+     * @returns {TextAlign} textAlign
+     */
+    getTextAlign(className) {
+        let textAlign = TextAlign.LEFT;
+        // Match className with alignment
+        this.alignments.forEach(alignment => {
+            if (className.includes(`ce-header-text--${alignment.name}`)) {
+                textAlign = alignment.name;
+            }
+        });
+        return textAlign;
     }
 
     /**
@@ -237,119 +413,6 @@ class Paragraph {
         };
 
         this.data = data;
-    }
-
-    /**
-     * Enable Conversion Toolbar. Paragraph can be converted to/from other tools
-     */
-    static get conversionConfig() {
-        return {
-            export: "text", // to convert Paragraph to other block, use 'text' property of saved data
-            import: "text" // to covert other block's exported string to Paragraph, fill 'text' property of tool data
-        };
-    }
-
-    /**
-     * Sanitizer rules
-     */
-    static get sanitize() {
-        return {
-            text: {
-                br: true
-            }
-        };
-    }
-
-    /**
-     * Returns true to notify the core that read-only mode is supported
-     *
-     * @return {boolean}
-     */
-    static get isReadOnlySupported() {
-        return true;
-    }
-
-    /**
-     * Get current Tools`s data
-     * @returns {ParagraphData} Current data
-     * @private
-     */
-    get data() {
-        const text = this._element.innerHTML;
-
-        // this._data.text = text;
-
-        return {
-            ...this._data,
-            text
-        };
-    }
-
-    /**
-     * Store data in plugin:
-     * - at the this._data property
-     * - at the HTML
-     *
-     * @param {ParagraphData} data — data to set
-     * @private
-     */
-    set data(data) {
-        this._data = data || {};
-
-        this._element.innerHTML = this._data.text || "";
-
-        /**
-         * Add Alignment class
-         */
-        this.alignments.forEach(aligment => {
-            if (aligment.name === this._data.textAlign) {
-                this._element.classList.add(`ce-header-text--${aligment.name}`);
-            } else {
-                this._element.classList.remove(`ce-header-text--${aligment.name}`);
-            }
-        });
-    }
-
-    /**
-     * Used by Editor paste handling API.
-     * Provides configuration to handle P tags.
-     *
-     * @returns {{tags: string[]}}
-     */
-    static get pasteConfig() {
-        return {
-            tags: ["P"]
-        };
-    }
-
-    /**
-     * Icon and title for displaying at the Toolbox
-     *
-     * @return {{icon: string, title: string}}
-     */
-    static get toolbox() {
-        return {
-            icon:
-                '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0.2 -0.3 9 11.4" width="12" height="14">\n' +
-                '  <path d="M0 2.77V.92A1 1 0 01.2.28C.35.1.56 0 .83 0h7.66c.28.01.48.1.63.28.14.17.21.38.21.64v1.85c0 .26-.08.48-.23.66-.15.17-.37.26-.66.26-.28 0-.5-.09-.64-.26a1 1 0 01-.21-.66V1.69H5.6v7.58h.5c.25 0 .45.08.6.23.17.16.25.35.25.6s-.08.45-.24.6a.87.87 0 01-.62.22H3.21a.87.87 0 01-.61-.22.78.78 0 01-.24-.6c0-.25.08-.44.24-.6a.85.85 0 01.61-.23h.5V1.7H1.73v1.08c0 .26-.08.48-.23.66-.15.17-.37.26-.66.26-.28 0-.5-.09-.64-.26A1 1 0 010 2.77z"/>\n' +
-                "</svg>",
-            title: "Text"
-        };
-    }
-
-    /**
-     * Get current alignment
-     *
-     * @returns {alignment}
-     */
-    get currentAlignment() {
-        let alignment = this.alignments.find(levelItem => levelItem.name === this._data.alignment);
-
-        if (!alignment) {
-            alignment = { name: TextAlign.LEFT, svg: ALIGNMENT_ICONS.left };
-        }
-
-        return alignment;
     }
 
     /**
@@ -375,6 +438,19 @@ class Paragraph {
     }
 
     /**
+     * Callback for Block's settings buttons
+     *
+     * @param {string} className - name of typography class
+     */
+    setTypographyClass(className: string) {
+        this.data = {
+            textAlign: this.data.textAlign,
+            text: this.data.text,
+            className: className
+        };
+    }
+
+    /**
      * Normalize input data
      *
      * @param {HeaderData} data - saved data to process
@@ -391,6 +467,7 @@ class Paragraph {
 
         newData.text = data.text || "";
         newData.textAlign = data.textAlign || TextAlign.LEFT;
+        newData.className = data.className || "";
 
         return newData;
     }

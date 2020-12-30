@@ -68,7 +68,8 @@ const HorizontalAlignFlexSettings: React.FunctionComponent<PbEditorPageElementSe
     const updateElement = (element: PbElement) => {
         handler.trigger(
             new UpdateElementActionEvent({
-                element
+                element,
+                history: true
             })
         );
     };

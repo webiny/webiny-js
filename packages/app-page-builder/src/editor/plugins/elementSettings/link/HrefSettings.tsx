@@ -41,7 +41,8 @@ const LinkSettingsComponent: React.FunctionComponent<LinkSettingsPropsType &
     const updateElement = (element: PbElement) => {
         handler.trigger(
             new UpdateElementActionEvent({
-                element
+                element,
+                history: true
             })
         );
     };

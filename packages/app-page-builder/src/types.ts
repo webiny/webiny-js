@@ -72,6 +72,15 @@ export type PbElementDataSettingsBorderType = {
         left?: boolean;
     };
 };
+export type PbElementDataTextType = {
+    color?: string;
+    alignment: string;
+    typography: string;
+    tag: string;
+    data: {
+        text: string;
+    };
+};
 export type PbElementDataImageType = {
     width?: string | number;
     height?: string | number;
@@ -129,7 +138,7 @@ export type PbElementDataSettingsType = {
 export type PbElementDataType = {
     settings?: PbElementDataSettingsType;
     // this needs to be any since editor can be changed
-    text?: any;
+    text?: PbElementDataTextType;
     image?: PbElementDataImageType;
     link?: {
         href?: string;
@@ -338,7 +347,7 @@ export type PbEditorPageElementPlugin = Plugin & {
     // Whitelist elements that can accept this element (for drag&drop interaction)
     target?: string[];
     // Array of element settings plugin names.
-    settings?: Array<string>;
+    settings?: Array<string | Array<string | any>>;
     // A function to create an element data structure.
     create: (options: { [key: string]: any }, parent?: PbElement) => Omit<PbElement, "id" | "path">;
     // A function to render an element in the editor.
@@ -529,3 +538,12 @@ export type PbEditorPageElementSaveActionPlugin = Plugin & {
 };
 
 export type PbEditorPageElementSettingsRenderComponentProps = { defaultAccordionValue?: boolean };
+
+export type PbConfigPluginType = Plugin & {
+    type: "pb-config";
+    config(): PbConfigType;
+};
+
+export type PbConfigType = {
+    maxEventActionsNesting: number;
+};

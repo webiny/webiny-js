@@ -21,13 +21,31 @@ export default {
             },
             paragraph: {
                 class: Paragraph,
-                inlineToolbar: ["bold", "italic", "underline", "color", "link"]
+                inlineToolbar: ["bold", "italic", "underline", "color", "link"],
+                config: () => {
+                    const [pbTheme] = plugins.byType("pb-theme");
+                    const typography = pbTheme.theme.typography;
+                    // Use typography options only for "p" tag.
+                    const typographyForParagraph = {
+                        paragraph: typography.paragraph,
+                        description: typography.description
+                    };
+                    return {
+                        typography: typographyForParagraph
+                    };
+                }
             },
             header: {
                 class: Header,
                 inlineToolbar: ["bold", "italic", "underline", "color", "link"],
-                config: {
-                    levels: [1, 2, 3, 4]
+                config: () => {
+                    const [pbTheme] = plugins.byType("pb-theme");
+                    const typography = pbTheme.theme.typography;
+
+                    return {
+                        typography,
+                        levels: [1, 2, 3, 4, 5, 6]
+                    };
                 }
             },
             image: {

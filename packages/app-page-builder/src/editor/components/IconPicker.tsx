@@ -13,8 +13,7 @@ import { COLORS } from "../plugins/elementSettings/components/StyledComponents";
 // Icons
 import { ReactComponent as IconPickerIcon } from "../assets/icons/icon-picker.svg";
 
-const COLUMN_COUNT = 6;
-
+const noop = () => null;
 const gridItem = css({
     position: "relative",
     display: "flex",
@@ -134,6 +133,10 @@ const iconPickerWrapper = css({
         "& svg": {
             width: 16,
             height: 16
+        },
+        "&.disabled": {
+            pointerEvents: "none",
+            opacity: 0.5
         }
     }
 });
@@ -144,15 +147,21 @@ type IconPickerPropsType = {
     removable?: boolean;
     handlerClassName?: string;
     useInSidebar?: boolean;
+    removeIcon?: () => void;
 };
 const IconPicker: React.FunctionComponent<IconPickerPropsType> = ({
     value,
     onChange,
     removable = true,
     handlerClassName,
-    useInSidebar
+    useInSidebar,
+    removeIcon = noop
 }) => {
     const [filter, setFilter] = useState<string>("");
+    // Icon "Grid" props
+    const columnCount = useInSidebar ? 3 : 6;
+    const columnWidth = useInSidebar ? 85 : 100;
+    const gridWidth = useInSidebar ? 300 : 640;
 
     const onFilterChange = useCallback(
         (value, cb) => {
@@ -204,14 +213,10 @@ const IconPicker: React.FunctionComponent<IconPickerPropsType> = ({
         return filter ? allIcons.filter(ic => ic.name.includes(filter)) : allIcons;
     }, [filter, selectedIconPrefix, selectedIconName]);
 
-    const starIcon = useMemo(() => {
-        return allIcons.find(item => item.id[0] === "far" && item.id[1] === "star");
-    }, [allIcons]);
-
     const renderCell = useCallback(
         ({ closeMenu }) => {
             return function renderCell({ columnIndex, key, rowIndex, style }) {
-                const item = icons[rowIndex * COLUMN_COUNT + columnIndex];
+                const item = icons[rowIndex * columnCount + columnIndex];
                 if (!item) {
                     return null;
                 }
@@ -262,12 +267,12 @@ const IconPicker: React.FunctionComponent<IconPickerPropsType> = ({
                     <Grid
                         className={grid}
                         cellRenderer={renderCell({ closeMenu })}
-                        columnCount={COLUMN_COUNT}
-                        columnWidth={100}
+                        columnCount={columnCount}
+                        columnWidth={columnWidth}
                         height={440}
-                        rowCount={Math.ceil(icons.length / COLUMN_COUNT)}
+                        rowCount={Math.ceil(icons.length / columnCount)}
                         rowHeight={100}
-                        width={640}
+                        width={gridWidth}
                     />
                 </>
             );
@@ -276,6 +281,7 @@ const IconPicker: React.FunctionComponent<IconPickerPropsType> = ({
     );
 
     if (useInSidebar) {
+        const disableRemoveIcon = !value || !removable;
         return (
             <div className={iconPickerWrapper}>
                 <Menu
@@ -288,8 +294,10 @@ const IconPicker: React.FunctionComponent<IconPickerPropsType> = ({
                     {renderGrid}
                 </Menu>
                 <div
-                    className={classNames("button", "iconContainer")}
-                    onClick={() => onChange(starIcon)}
+                    className={classNames("button", "iconContainer", {
+                        disabled: disableRemoveIcon
+                    })}
+                    onClick={removeIcon}
                 >
                     <FontAwesomeIcon icon={(value as any) || ["far", "star"]} size={"2x"} />
                 </div>

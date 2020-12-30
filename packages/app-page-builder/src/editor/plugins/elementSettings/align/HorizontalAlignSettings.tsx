@@ -54,6 +54,7 @@ const iconDescriptions = {
 };
 
 const defaultAlignValue = "left";
+const DEFAULT_ALIGNMENTS = Object.keys(icons);
 
 const getAlignValue = (element: PbElement, defaultAlign: string): string => {
     return element.data.settings?.horizontalAlign || defaultAlign;
@@ -68,7 +69,7 @@ type HorizontalAlignActionPropsType = {
 };
 const HorizontalAlignSettings: React.FunctionComponent<HorizontalAlignActionPropsType &
     PbEditorPageElementSettingsRenderComponentProps> = ({
-    options: { alignments },
+    options: { alignments = DEFAULT_ALIGNMENTS },
     defaultAccordionValue
 }) => {
     const handler = useEventActionHandler();
@@ -78,7 +79,8 @@ const HorizontalAlignSettings: React.FunctionComponent<HorizontalAlignActionProp
     const updateElement = (element: PbElement) => {
         handler.trigger(
             new UpdateElementActionEvent({
-                element
+                element,
+                history: true
             })
         );
     };

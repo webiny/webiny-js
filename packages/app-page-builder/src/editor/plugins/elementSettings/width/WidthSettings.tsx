@@ -103,7 +103,8 @@ const Settings: React.FunctionComponent<PbEditorPageElementSettingsRenderCompone
                             width: data
                         }
                     }
-                }
+                },
+                history: true
             })
         );
     };

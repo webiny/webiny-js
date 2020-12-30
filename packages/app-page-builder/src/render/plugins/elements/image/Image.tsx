@@ -36,17 +36,6 @@ const Image: React.FunctionComponent<ImagePropsType> = ({ element }) => {
     const { horizontalAlign = "center" } = settings;
 
     const style = { width, height };
-    if (!style.width) {
-        style.width = "auto";
-    } else {
-        style.width += (style.width as string).endsWith("px") ? "" : "px";
-    }
-
-    if (!style.height) {
-        style.height = "auto";
-    } else {
-        style.height += (style.height as string).endsWith("px") ? "" : "px";
-    }
 
     return (
         <ElementRoot

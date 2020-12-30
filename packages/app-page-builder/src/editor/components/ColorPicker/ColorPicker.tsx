@@ -23,7 +23,22 @@ const CompactColorPicker = styled("div")({
     display: "flex",
     justifyContent: "flex-end",
     "& .mdc-menu-surface--anchor": {
-        position: "static"
+        /**
+         * This menu is being treated differently because its parent "Accordion" has property "overflow: hidden",
+         * which makes it impossible to show the complete content of absolute positioned element using z-index.
+         * To overcome this issue, we're using a trick known as "Popping Out of Hidden Overflow"
+         * https://css-tricks.com/popping-hidden-overflow/
+         */
+        position: "static",
+        "& .mdc-menu-surface": {
+            transition: "transform 0.12s cubic-bezier(0, 0, 0.2, 1)"
+        },
+        /**
+         * Adjusting Menu position due to the fact it's positioned relative to "Accordion" and not to its direct parent.
+         */
+        "& .mdc-menu-surface--open": {
+            transform: "translate(-42px, 64px)"
+        }
     },
     "& .mdc-menu-surface": {
         overflow: "visible"
@@ -256,6 +271,7 @@ const ColorPicker = ({ value, onChange, onChangeComplete, compact = false }: Col
         return (
             <CompactColorPicker>
                 <Menu
+                    anchor={"bottomLeft"}
                     handle={
                         <button className={styles.button}>
                             <ColorizeIcon />

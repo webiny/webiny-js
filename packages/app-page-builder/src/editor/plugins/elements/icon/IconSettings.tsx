@@ -4,11 +4,11 @@ import { useRecoilValue } from "recoil";
 import { PbEditorPageElementSettingsRenderComponentProps } from "../../../../types";
 import { activeElementWithChildrenSelector } from "../../../recoil/modules";
 // Components
+import IconPicker from "../../../components/IconPicker";
 import Accordion from "../../elementSettings/components/Accordion";
 import Wrapper from "../../elementSettings/components/Wrapper";
 import InputField from "../../elementSettings/components/InputField";
 import { BaseColorPicker } from "../../elementSettings/components/ColorPicker";
-import { BaseIconPicker } from "../../elementSettings/components/IconPicker";
 import useUpdateHandlers from "../../elementSettings/useUpdateHandlers";
 import { updateIconElement } from "../utils/iconUtils";
 
@@ -54,7 +54,12 @@ const IconSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderCom
         <Accordion title={"Icon"} defaultValue={defaultAccordionValue}>
             <>
                 <Wrapper containerClassName={classes.grid} label={"Icon"}>
-                    <BaseIconPicker value={icon.id} updateValue={updateIcon} removable={false} />
+                    <IconPicker
+                        value={icon.id}
+                        onChange={updateIcon}
+                        removable={false}
+                        useInSidebar={true}
+                    />
                 </Wrapper>
 
                 <Wrapper containerClassName={classes.grid} label={"Color"}>
