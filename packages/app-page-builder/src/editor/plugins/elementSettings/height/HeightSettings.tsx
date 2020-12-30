@@ -15,6 +15,7 @@ import {
 import { useEventActionHandler } from "../../../../editor";
 import { UpdateElementActionEvent } from "../../../recoil/actions";
 import { uiAtom, activeElementWithChildrenSelector } from "../../../recoil/modules";
+import { applyFallbackDisplayMode } from "../elementSettingsUtils";
 // Components
 import { classes } from "../components/StyledComponents";
 import Accordion from "../components/Accordion";
@@ -124,10 +125,12 @@ const Settings: React.FunctionComponent<PbEditorPageElementSettingsRenderCompone
             .find(pl => pl.config.displayMode === displayMode);
     }, [displayMode]);
 
-    const settings = React.useMemo(
-        () => get(element, `${DATA_NAMESPACE}.${displayMode}`, { value: "100%" }),
-        [displayMode, element]
-    );
+    const settings = React.useMemo(() => {
+        const fallbackValue = applyFallbackDisplayMode(displayMode, mode =>
+            get(element, `${DATA_NAMESPACE}.${mode}`)
+        );
+        return get(element, `${DATA_NAMESPACE}.${displayMode}`, fallbackValue || { value: "100%" });
+    }, [displayMode, element]);
 
     return (
         <Accordion
