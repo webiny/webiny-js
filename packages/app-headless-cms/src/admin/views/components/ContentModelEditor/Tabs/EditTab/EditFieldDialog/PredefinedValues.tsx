@@ -20,9 +20,6 @@ export default function PredefinedValues({ field, fieldPlugin, form }) {
                             ...bind,
                             value: getValue({ bind, index, name }),
                             onChange: value => {
-                                console.log("onChange", value);
-                                console.log("index", index);
-                                console.log("name", name);
                                 setValue({ value, bind, index, name });
                             }
                         };

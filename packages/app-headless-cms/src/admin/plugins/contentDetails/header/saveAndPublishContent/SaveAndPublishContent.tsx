@@ -32,7 +32,6 @@ const SaveAndPublishButton = ({ entry, contentModel, getLoading, setLoading, sta
             });
 
             const contentData = get(response, "data.content");
-            console.log("onPublish", contentData);
             setLoading(false);
             if (contentData.error) {
                 return showSnackbar(contentData.error.message);
@@ -60,7 +59,6 @@ const SaveAndPublishButton = ({ entry, contentModel, getLoading, setLoading, sta
                     if (!entry) {
                         return;
                     }
-                    console.log("save publish", entry);
                     await onPublish(entry.id);
                 });
             }}
