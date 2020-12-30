@@ -1,4 +1,4 @@
-import i18n from "@webiny/api-i18n/plugins/i18n";
+import i18n from "@webiny/api-i18n/graphql/context";
 import I18NLocales from "../mocks/I18NLocales";
 import { dataManagerPlugins } from "../mocks/dataManagerClient";
 

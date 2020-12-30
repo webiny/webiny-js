@@ -4,7 +4,7 @@ import neDb from "@webiny/api-plugin-commodo-nedb";
 import { Database } from "@commodo/fields-storage-nedb";
 import securityAuthPlugins from "@webiny/api-security/plugins/auth";
 import securityAuthJwtPlugins from "@webiny/api-security/plugins/auth/jwt";
-import i18n from "@webiny/api-i18n/plugins/i18n";
+import i18n from "@webiny/api-i18n/graphql/context";
 import { mockLocalesPlugins } from "@webiny/api-i18n/testing";
 import { JWT_TOKEN_SIGN_SECRET, createJwtToken } from "@webiny/api-security/testing";
 
