@@ -3,6 +3,7 @@ import refMocks from "./mocks/fields/refFieldReadApi.js";
 import { createContentModelGroup, createEnvironment } from "@webiny/api-headless-cms/testing";
 import { Database } from "@commodo/fields-storage-nedb";
 
+// eslint-disable-next-line
 describe.skip("Ref Field - READ API", () => {
     const database = new Database();
     const { environment: manageEnvironment } = useContentHandler({ database });

@@ -2,6 +2,7 @@ import useContentHandler from "./utils/useContentHandler";
 import mocks from "./mocks/preventTitleFieldDeletion";
 import { createContentModelGroup, createEnvironment } from "@webiny/api-headless-cms/testing";
 
+// eslint-disable-next-line
 describe.skip("Title field deletion test", () => {
     const { environment, database } = useContentHandler();
 

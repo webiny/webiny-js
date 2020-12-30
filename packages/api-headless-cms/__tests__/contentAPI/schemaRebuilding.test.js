@@ -3,6 +3,7 @@ import useContentHandler from "./utils/useContentHandler";
 import mocks from "./mocks/schemaRebuilding";
 import { Database } from "@commodo/fields-storage-nedb";
 
+// eslint-disable-next-line
 describe.skip("Schema Rebuilding Test", () => {
     const database = new Database();
 

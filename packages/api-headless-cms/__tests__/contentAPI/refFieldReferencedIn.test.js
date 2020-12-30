@@ -2,6 +2,7 @@ import useContentHandler from "./utils/useContentHandler";
 import refMocks from "./mocks/fields/refReferencedIn";
 import { createContentModelGroup, createEnvironment } from "@webiny/api-headless-cms/testing";
 
+// eslint-disable-next-line
 describe.skip("Ref Field - Referenced In Test", () => {
     const { database, environment } = useContentHandler();
     const initial = {};

@@ -55,7 +55,10 @@ export default {
             install: async (): Promise<CmsSettingsType> => {
                 const identity = context.security.getIdentity();
                 if (!identity) {
-                    throw new NotAuthorizedError();
+                    throw new NotAuthorizedError({
+                        message: `There is no "identity" in the "context.security", presumably because you are not logged in.`,
+                        code: "IDENTITY_ERROR"
+                    });
                 }
 
                 // Get settings without any permission checks.

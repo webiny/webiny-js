@@ -12,6 +12,7 @@ const LIST_P = /* GraphQL */ `
     }
 `;
 
+// eslint-disable-next-line
 describe.skip("Pluralize Content Model Test", () => {
     const { database, environment } = useContentHandler();
     const initial = {};

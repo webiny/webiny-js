@@ -2,6 +2,7 @@ import mdbid from "mdbid";
 import useContentHandler from "./utils/useContentHandler";
 import mocks from "./mocks/predefinedValues";
 
+// eslint-disable-next-line
 describe.skip("Predefined Values Test", () => {
     const { database, environment } = useContentHandler();
     const ids = { environment: mdbid(), contentModelGroup: mdbid() };

@@ -3,6 +3,7 @@ import mocks from "./mocks/parallelQueries";
 import { createContentModelGroup, createEnvironment } from "@webiny/api-headless-cms/testing";
 import { Database } from "@commodo/fields-storage-nedb";
 
+// eslint-disable-next-line
 describe.skip("parallel queries test", () => {
     const database = new Database();
 

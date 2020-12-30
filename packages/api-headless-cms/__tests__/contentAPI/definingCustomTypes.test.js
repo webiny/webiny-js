@@ -5,6 +5,7 @@ import { i18nFieldType } from "@webiny/api-headless-cms/content/plugins/graphqlT
 import gql from "graphql-tag";
 import { Database } from "@commodo/fields-storage-nedb";
 
+// eslint-disable-next-line
 describe.skip("defining custom GQL types should work on both READ and MANAGE API ", () => {
     const database = new Database();
     const customFieldsPlugins = [
