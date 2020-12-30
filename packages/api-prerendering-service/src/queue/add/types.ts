@@ -1,34 +1,26 @@
 import { HandlerPlugin as DefaultHandlerPlugin, Context } from "@webiny/handler/types";
-import { Plugin } from "@webiny/plugins/types";
+import { ArgsContext } from "@webiny/handler-args/types";
 import { DbContext } from "@webiny/handler-db/types";
-
-export type Configuration = {
-    website?: {
-        url?: string;
-    };
-    storage?: {
-        name?: string;
-        folder?: string;
-    };
-    meta?: Record<string, any>;
-};
+import { HandlerArgs as FlushArgs } from "./../../flush/types";
+import { HandlerArgs as RenderArgs } from "./../../render/types";
+import { Plugin } from "@webiny/plugins/types";
 
 export type Args = {
-    configuration?: Configuration;
-    url?: string;
-    path?: string;
+    flush?: FlushArgs;
+    render?: RenderArgs;
 };
 
-export type HandlerContext = Context<DbContext>;
+export type HandlerArgs = Args | Args[];
+export type HandlerContext = Context<DbContext, ArgsContext<HandlerArgs>>;
 export type HandlerPlugin = DefaultHandlerPlugin<HandlerContext>;
 
-export type HookCallbackFunction = ({
-    context: HandlerContext,
-    configuration: Configuration,
-    args: HandlerArgs
+export type HookCallbackFunction = (args: {
+    log: debug.Debugger;
+    context: HandlerContext;
+    args: Args;
 }) => void | Promise<void>;
 
-export type addHookPlugin = Plugin<{
+export type QueueAddHookPlugin = Plugin<{
     type: "ps-queue-add-hook";
     beforeAdd?: HookCallbackFunction;
     afterAdd?: HookCallbackFunction;

@@ -1,60 +1,63 @@
-import log from "./../../utils/log";
-import { HandlerPlugin, Configuration, addHookPlugin } from "./types";
+import { HandlerPlugin, QueueAddHookPlugin } from "./types";
+import { TYPE, DbQueueJob } from "../../types";
 import { HandlerResponse } from "@webiny/api-prerendering-service/types";
+import debug from "debug";
+import mdbid from "mdbid";
 
-const LOG_PREFIX = "queue:add";
+const log = debug("wby:api-prerendering-service:queue:add");
 
-export default (configuration?: Configuration): HandlerPlugin => ({
+export default (): HandlerPlugin => ({
     type: "handler",
     async handle(context): Promise<HandlerResponse> {
         const { invocationArgs } = context;
         const handlerArgs = Array.isArray(invocationArgs) ? invocationArgs : [invocationArgs];
-        const handlerHookPlugins = context.plugins.byType<addHookPlugin>("ps-queue-add-hook");
+        const handlerHookPlugins = context.plugins.byType<QueueAddHookPlugin>("ps-queue-add-hook");
 
-        const promises = [];
-
-        log(LOG_PREFIX, "Received args: ", JSON.stringify(invocationArgs));
+        log("Received args: ", JSON.stringify(invocationArgs));
 
         try {
             for (let i = 0; i < handlerArgs.length; i++) {
                 const args = handlerArgs[i];
 
-                promises.push(
-                    new Promise(async resolve => {
-                        for (let j = 0; j < handlerHookPlugins.length; j++) {
-                            const plugin = handlerHookPlugins[j];
-                            if (typeof plugin.beforeAdd === "function") {
-                                await plugin.beforeAdd({
-                                    context,
-                                    configuration,
-                                    args
-                                });
-                            }
-                        }
+                for (let j = 0; j < handlerHookPlugins.length; j++) {
+                    const plugin = handlerHookPlugins[j];
+                    if (typeof plugin.beforeAdd === "function") {
+                        await plugin.beforeAdd({
+                            context,
+                            args,
+                            log
+                        });
+                    }
+                }
 
-                        // TODO: do something...
+                log("Saving new queue job.");
 
-                        for (let j = 0; j < handlerHookPlugins.length; j++) {
-                            const plugin = handlerHookPlugins[j];
-                            if (typeof plugin.afterAdd === "function") {
-                                await plugin.afterAdd({
-                                    context,
-                                    configuration,
-                                    args
-                                });
-                            }
-                        }
+                const data: DbQueueJob = {
+                    PK: "PS#Q#JOB",
+                    SK: mdbid(),
+                    TYPE: TYPE.DbQueueJob,
+                    args
+                };
 
-                        resolve();
-                    })
-                );
+                await context.db.create({ data });
+
+                log("Queue job saved.", JSON.stringify(invocationArgs));
+
+                for (let j = 0; j < handlerHookPlugins.length; j++) {
+                    const plugin = handlerHookPlugins[j];
+                    if (typeof plugin.afterAdd === "function") {
+                        await plugin.afterAdd({
+                            context,
+                            args,
+                            log
+                        });
+                    }
+                }
             }
-
-            await Promise.all(promises);
 
             return { data: null, error: null };
         } catch (e) {
-            log(LOG_PREFIX, "An error occurred while trying to add to prerendering queue...", e);
+            log("An error occurred while trying to add to prerendering queue...", e);
             return { data: null, error: e };
         }
     }
