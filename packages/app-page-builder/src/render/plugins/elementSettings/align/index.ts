@@ -1,7 +1,7 @@
 import { get } from "lodash";
 import kebabCase from "lodash/kebabCase";
-import { plugins } from "@webiny/plugins";
-import { PbRenderResponsiveModePlugin, PbRenderElementStylePlugin } from "../../../../types";
+import { PbRenderElementStylePlugin } from "../../../../types";
+import { applyPerDeviceStyleWithFallback } from "../../../utils";
 
 export default [
     {
@@ -20,20 +20,19 @@ export default [
         type: "pb-render-page-element-style",
         renderStyle({ element, style }) {
             const { horizontalAlignFlex } = get(element, "data.settings", {});
-            if (!horizontalAlignFlex) {
-                return style;
-            }
-
-            // Get editor modes
-            const editorModes = plugins
-                .byType<PbRenderResponsiveModePlugin>("pb-render-responsive-mode")
-                .map(pl => pl.config);
 
             // Set per-device property value
-            editorModes.forEach(({ displayMode }) => {
+            applyPerDeviceStyleWithFallback(({ displayMode, fallbackMode }) => {
+                const fallbackValue = get(
+                    style,
+                    `--${kebabCase(fallbackMode)}-justify-content`,
+                    "flex-start"
+                );
+
                 style[`--${kebabCase(displayMode)}-justify-content`] = get(
                     horizontalAlignFlex,
-                    displayMode
+                    displayMode,
+                    fallbackValue
                 );
             });
 
@@ -45,18 +44,20 @@ export default [
         type: "pb-render-page-element-style",
         renderStyle({ element, style }) {
             const { verticalAlign } = get(element, "data.settings", {});
-            if (!verticalAlign) {
-                return style;
-            }
-
-            // Get editor modes
-            const editorModes = plugins
-                .byType<PbRenderResponsiveModePlugin>("pb-render-responsive-mode")
-                .map(pl => pl.config);
 
             // Set per-device property value
-            editorModes.forEach(({ displayMode }) => {
-                style[`--${kebabCase(displayMode)}-align-items`] = get(verticalAlign, displayMode);
+            applyPerDeviceStyleWithFallback(({ displayMode, fallbackMode }) => {
+                const fallbackValue = get(
+                    style,
+                    `--${kebabCase(fallbackMode)}-align-items`,
+                    "flex-start"
+                );
+
+                style[`--${kebabCase(displayMode)}-align-items`] = get(
+                    verticalAlign,
+                    displayMode,
+                    fallbackValue
+                );
             });
 
             return style;

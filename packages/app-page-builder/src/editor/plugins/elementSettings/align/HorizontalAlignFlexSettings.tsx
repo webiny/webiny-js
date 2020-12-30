@@ -16,7 +16,8 @@ import {
 } from "../../../../types";
 import { useEventActionHandler } from "../../../../editor";
 import { UpdateElementActionEvent } from "../../../recoil/actions";
-import { activeElementWithChildrenSelector } from "../../../recoil/modules";
+import { activeElementWithChildrenSelector, uiAtom } from "../../../recoil/modules";
+import { applyFallbackDisplayMode } from "../elementSettingsUtils";
 // Components
 import { ContentWrapper } from "../components/StyledComponents";
 import Accordion from "../components/Accordion";
@@ -63,13 +64,20 @@ const alignments = Object.keys(icons);
 const DATA_NAMESPACE = "data.settings.horizontalAlignFlex";
 
 const HorizontalAlignFlexSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps> = ({
-    defaultAccordionValue = false,
-    displayMode
+    defaultAccordionValue = false
 }) => {
+    const { displayMode } = useRecoilValue(uiAtom);
     const propName = `${DATA_NAMESPACE}.${displayMode}`;
     const handler = useEventActionHandler();
     const element = useRecoilValue(activeElementWithChildrenSelector);
-    const align = get(element, propName, AlignmentsTypeEnum.CENTER);
+    const fallbackValue = useMemo(
+        () =>
+            applyFallbackDisplayMode(displayMode, mode =>
+                get(element, `${DATA_NAMESPACE}.${mode}`)
+            ),
+        [displayMode]
+    );
+    const align = get(element, propName, fallbackValue || AlignmentsTypeEnum.CENTER);
 
     const { config: activeEditorModeConfig } = useMemo(() => {
         return plugins
