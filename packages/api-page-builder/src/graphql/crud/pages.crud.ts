@@ -874,11 +874,37 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                             throw new NotFoundError(`Page "${pageId}" is already published.`);
                         }
 
+                        const [[pagePublishedPathData]] = await db.read<DbPagePublishedPath>({
+                            ...defaults.db,
+                            query: {
+                                PK: PK_PAGE_PUBLISHED_PATH(),
+                                SK: page.path
+                            }
+                        });
+
                         await executeHookCallbacks(hookPlugins, "beforePublish", context, {
                             page,
                             latestPageData,
                             publishedPageData
                         });
+
+                        const pathTakenByAnotherPage =
+                            pagePublishedPathData && !pagePublishedPathData.id.startsWith(page.pid);
+
+                        // If this is true, let's unpublish the page first. Note that we're not talking about this
+                        // same page, but a previous revision. We're talking about a completely different page
+                        // (with different PID). Remember that page ID equals `PID#version`.
+                        if (pathTakenByAnotherPage) {
+                            // Note two things here...
+                            // 1) It is possible that this call is about to try to unpublish a page that is set as
+                            // a special page (home/404/error). In that case, this whole process will fail, and that
+                            // is to be expected. Maybe we could think of a better solution in the future, but for
+                            // now, it works like this. If there was only more ⏱.
+                            // 2) If a user doesn't have the unpublish permission, again, the whole action will fail.
+                            await this.unpublish(pagePublishedPathData.id);
+                        }
+
+                        // Now that the other page has been unpublished, we can continue with publish the current one.
 
                         // Change loaded page's status to published.
                         page.status = STATUS_PUBLISHED;
