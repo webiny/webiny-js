@@ -15,7 +15,7 @@ import {
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
 import { Typography } from "@webiny/ui/Typography";
-import { Permissions } from "@webiny/app-security-tenancy/components/Permissions";
+import { Permissions } from "@webiny/app-admin/components/Permissions";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { pickDataForAPI } from "./utils";
 import { CREATE_GROUP, LIST_GROUPS, READ_GROUP, UPDATE_GROUP } from "./graphql";

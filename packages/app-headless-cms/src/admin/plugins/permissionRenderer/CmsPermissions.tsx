@@ -2,10 +2,7 @@ import React, { Fragment, useCallback, useMemo } from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { i18n } from "@webiny/app/i18n";
-import {
-    PermissionInfo,
-    gridNoPaddingClass
-} from "@webiny/app-security-tenancy/components/permission";
+import { PermissionInfo, gridNoPaddingClass } from "@webiny/app-admin/components/Permissions";
 import { Form } from "@webiny/form";
 import CustomSection from "./components/CustomSection";
 import { ContentModelPermission } from "./components/ContentModelPermission";

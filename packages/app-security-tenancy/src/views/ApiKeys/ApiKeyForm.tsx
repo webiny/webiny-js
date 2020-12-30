@@ -9,7 +9,7 @@ import { Input } from "@webiny/ui/Input";
 import { ButtonPrimary, CopyButton } from "@webiny/ui/Button";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
-import { Permissions } from "@webiny/app-security-tenancy/components/Permissions";
+import { Permissions } from "@webiny/app-admin/components/Permissions";
 import { validation } from "@webiny/validation";
 import {
     SimpleForm,

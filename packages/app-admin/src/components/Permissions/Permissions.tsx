@@ -19,7 +19,7 @@ export const Permissions = ({ id, value, onChange }: Props) => {
             .byType<AdminAppPermissionRendererPlugin>("admin-app-permissions-renderer")
             .reduce(
                 (acc, plugin) => {
-                    if (plugin.system) {
+                    if (plugin.system === true) {
                         acc.systemPlugins.push(plugin);
                     } else {
                         acc.permissionPlugins.push(plugin);
