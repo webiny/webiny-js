@@ -113,6 +113,27 @@ class PageBuilder {
                 process: queueProcess
             }
         };
+
+        const eventRule = new aws.cloudwatch.EventRule("process-queue-cron-event", {
+            description: `Triggers "ps-process-queue" Lambda function that will process all queued prerendering jobs.`,
+            scheduleExpression: "rate(10 minutes)",
+            isEnabled: true
+        });
+
+        new aws.lambda.Permission(
+            "ps-event-rule-queue-process-permission",
+            {
+                action: "lambda:InvokeFunction",
+                function: this.functions.queue.process.arn,
+                principal: "events.amazonaws.com",
+                sourceArn: eventRule.arn
+            }
+        );
+
+        new aws.cloudwatch.EventTarget("process-queue-cron-event-target", {
+            rule: eventRule.name,
+            arn: this.functions.queue.process.arn
+        });
     }
 }
 
