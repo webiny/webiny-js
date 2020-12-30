@@ -439,26 +439,32 @@ export default (): ContextPlugin<CmsContext> => ({
                     }
                 });
 
-                // TODO verify that this is correct for updating entry
                 const preparedEntry = prepareEntryToIndex({
                     context,
                     model,
-                    entry
+                    entry: updatedEntryModel
                 });
 
                 if (latestEntry.id === id) {
-                    // Index file in "Elastic Search"
-                    await elasticSearch.update({
-                        ...utils.defaults.es(context),
-                        id: `CME#L#${uniqueId}`,
-                        body: {
-                            doc: {
-                                ...preparedEntry,
-                                // values: updatedEntryModel.values,
-                                savedOn: updatedEntryModel.savedOn
+                    const esDoc = {
+                        ...preparedEntry,
+                        savedOn: updatedEntryModel.savedOn
+                    };
+                    try {
+                        await elasticSearch.update({
+                            ...utils.defaults.es(context),
+                            id: `CME#L#${uniqueId}`,
+                            body: {
+                                doc: esDoc
                             }
-                        }
-                    });
+                        });
+                    } catch (ex) {
+                        throw new WebinyError({
+                            message: ex.message,
+                            code: ex.code || "ES_UPDATE_FAILED",
+                            data: esDoc
+                        });
+                    }
                 }
 
                 await afterSaveHook({ model, entry: updatedEntryModel, context });

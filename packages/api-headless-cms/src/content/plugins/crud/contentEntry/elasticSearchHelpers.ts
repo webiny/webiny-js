@@ -423,7 +423,6 @@ export const prepareEntryToIndex = (args: PrepareElasticSearchDataArgsType): Ind
         if (!field) {
             throw new WebinyError(`There is no field type with fieldId "${fieldId}".`);
         }
-        const value = entry.values[fieldId];
 
         const targetFieldPlugin = fieldPlugins[field.type];
         // we decided to take only last registered plugin for given field type
@@ -433,7 +432,7 @@ export const prepareEntryToIndex = (args: PrepareElasticSearchDataArgsType): Ind
                 model,
                 field,
                 entry,
-                value
+                value: entry.values[fieldId]
             });
             preparedEntry = lodashMerge(preparedEntry, newEntryValues);
         }

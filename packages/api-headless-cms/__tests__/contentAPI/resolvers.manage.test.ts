@@ -438,29 +438,47 @@ describe("MANAGE - Resolvers", () => {
 
     test(`update category`, async () => {
         await setupContentModel();
-        const { createCategory, updateCategory } = useCategoryManageHandler(manageOpts);
+        const { until, createCategory, updateCategory, listCategories } = useCategoryManageHandler(
+            manageOpts
+        );
         const [create] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
 
-        const { id } = create.data.createCategory.data;
+        const createdCategory = create.data.createCategory.data;
 
-        const [update] = await updateCategory({
-            revision: id,
+        const [response] = await updateCategory({
+            revision: createdCategory.id,
             data: { title: "New title", slug: "hardware-store" }
         });
 
-        expect(update.data.updateCategory.data).toMatchObject({
-            id: expect.any(String),
-            savedOn: /^20/,
-            title: "New title",
-            slug: "hardware-store",
-            meta: {
-                title: "New title"
+        expect(response).toMatchObject({
+            data: {
+                updateCategory: {
+                    data: {
+                        id: expect.any(String),
+                        savedOn: /^20/,
+                        title: "New title",
+                        slug: "hardware-store",
+                        meta: {
+                            title: "New title"
+                        }
+                    },
+                    error: null
+                }
             }
         });
 
+        const updatedCategory = response.data.updateCategory.data;
+
         const createdOn = new Date(create.data.createCategory.data.savedOn).getTime();
-        const updatedOn = new Date(update.data.updateCategory.data.savedOn).getTime();
+        const updatedOn = new Date(updatedCategory.savedOn).getTime();
         expect(createdOn).toBeLessThan(updatedOn);
+
+        // If this `until` resolves successfully, we know entry is accessible via the "read" API
+        const listCategoriesResponse = await until(
+            () => listCategories({}).then(([data]) => data),
+            ({ data }) => data.listCategories.data[0].id === updatedCategory.id,
+            { name: "create category" }
+        );
     });
 
     test(`delete category`, async () => {

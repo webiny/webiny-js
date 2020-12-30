@@ -164,7 +164,8 @@ describe("MANAGE - resolvers - api key", () => {
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         await until(
             () => listCategories({}, headers).then(([data]) => data),
-            ({ data }) => data.listCategories.data[0].id === category.id
+            ({ data }) => data.listCategories.data[0].id === category.id,
+            { name: "create category" }
         );
 
         const [getResponse] = await getCategory(
@@ -250,7 +251,8 @@ describe("MANAGE - resolvers - api key", () => {
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         const listResponse = await until(
             () => listCategories({}, headers).then(([data]) => data),
-            ({ data }) => data.listCategories.data[0].slug === updatedCategory.slug
+            ({ data }) => data.listCategories.data[0].slug === updatedCategory.slug,
+            { name: `waiting for ${updatedCategory.slug}` }
         );
 
         expect(listResponse).toEqual({
@@ -270,8 +272,8 @@ describe("MANAGE - resolvers - api key", () => {
                                 revisions: [
                                     {
                                         id: updatedCategory.id,
-                                        slug: "green-vegetables",
-                                        title: "Green vegetables"
+                                        slug: updatedCategory.slug,
+                                        title: updatedCategory.title
                                     }
                                 ],
                                 status: "draft",

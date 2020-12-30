@@ -6,6 +6,7 @@ import { CmsContext, CmsSettingsType } from "@webiny/api-headless-cms/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import buildSchemaPlugins from "./plugins/buildSchemaPlugins";
 import { NotAuthorizedError, NotAuthorizedResponse } from "@webiny/api-security";
+import { ErrorResponse } from "@webiny/handler-graphql";
 
 type CreateGraphQLHandlerOptionsType = {
     debug?: boolean;
@@ -192,7 +193,11 @@ export const graphQLHandlerFactory = (
                 });
             }
 
-            throw ex;
+            return new ErrorResponse({
+                message: ex.message,
+                code: ex.code || "GENERAL_ERROR",
+                data: ex.data || {}
+            });
         }
     }
 });
