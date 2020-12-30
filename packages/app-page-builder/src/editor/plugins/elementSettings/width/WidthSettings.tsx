@@ -20,6 +20,7 @@ import Accordion from "../components/Accordion";
 import Wrapper from "../components/Wrapper";
 import SpacingPicker from "../components/SpacingPicker";
 import { classes } from "../components/StyledComponents";
+import { applyFallbackDisplayMode } from "../elementSettingsUtils";
 
 const rightCellStyle = css({
     justifySelf: "end"
@@ -125,10 +126,13 @@ const Settings: React.FunctionComponent<PbEditorPageElementSettingsRenderCompone
             .find(pl => pl.config.displayMode === displayMode);
     }, [displayMode]);
 
-    const settings = React.useMemo(
-        () => get(element, `${DATA_NAMESPACE}.${displayMode}`, { value: "100%" }),
-        [displayMode, element]
-    );
+    const settings = React.useMemo(() => {
+        const fallbackValue = applyFallbackDisplayMode(displayMode, mode =>
+            get(element, `${DATA_NAMESPACE}.${mode}`)
+        );
+
+        return get(element, `${DATA_NAMESPACE}.${displayMode}`, fallbackValue || { value: "100%" });
+    }, [displayMode, element]);
 
     return (
         <Accordion
