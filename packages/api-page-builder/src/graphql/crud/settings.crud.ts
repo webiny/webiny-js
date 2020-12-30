@@ -29,7 +29,7 @@ const plugin: ContextPlugin<PbContext> = {
     apply(context) {
         const { db, security, i18nContent } = context;
 
-        const hookPlugins = context.plugins.byType<SettingsHookPlugin>("pb-page-hooks");
+        const hookPlugins = context.plugins.byType<SettingsHookPlugin>("pb-settings-hook");
 
         context.pageBuilder = {
             ...context.pageBuilder,
