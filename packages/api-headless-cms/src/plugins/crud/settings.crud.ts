@@ -32,20 +32,25 @@ export default {
             return utils.checkPermissions(context, "cms.settings");
         };
 
+        const settingsGet = async () => {
+            const [[settings]] = await db.read<CmsSettingsType>({
+                ...utils.defaults.db,
+                query: { PK: PK_SETTINGS(), SK: SETTINGS_SECONDARY_KEY }
+            });
+
+            return settings;
+        };
+
         const settings: CmsSettingsContextType = {
             contentModelLastChange: new Date(),
-            get: async (options): Promise<CmsSettingsType | null> => {
-                const { auth = true } = options || {};
-                if (auth !== false) {
-                    await checkPermissions();
-                }
-
-                const [[settings]] = await db.read<CmsSettingsType>({
-                    ...utils.defaults.db,
-                    query: { PK: PK_SETTINGS(), SK: SETTINGS_SECONDARY_KEY }
-                });
-
-                return settings;
+            noAuth: () => {
+                return {
+                    get: settingsGet
+                };
+            },
+            get: async (): Promise<CmsSettingsType | null> => {
+                await checkPermissions();
+                return settingsGet();
             },
             install: async (): Promise<CmsSettingsType> => {
                 const identity = context.security.getIdentity();
@@ -54,7 +59,7 @@ export default {
                 }
 
                 // Get settings without any permission checks.
-                const settings = await context.cms.settings.get({ auth: false });
+                const settings = await settingsGet();
                 if (!!settings?.isInstalled) {
                     throw new Error("The app is already installed.", "CMS_INSTALLATION_ERROR");
                 }

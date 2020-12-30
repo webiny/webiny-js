@@ -193,12 +193,13 @@ export type CmsSettingsType = {
     contentModelLastChange: Date;
 };
 
-type CmsSettingsGetOptionsArgsType = {
-    auth?: boolean;
-};
 export type CmsSettingsContextType = {
+    // is a function so we can easily add params if required
+    noAuth: () => {
+        get: () => Promise<CmsSettingsType | null>;
+    };
     contentModelLastChange: Date;
-    get: (options?: CmsSettingsGetOptionsArgsType) => Promise<CmsSettingsType>;
+    get: () => Promise<CmsSettingsType | null>;
     install: () => Promise<CmsSettingsType>;
     updateContentModelLastChange: () => Promise<CmsSettingsType>;
     getContentModelLastChange: () => Date;

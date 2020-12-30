@@ -18,7 +18,7 @@ export default {
             isInstalled: async (_, __, context: CmsContext) => {
                 try {
                     // we are disabling auth here because we only require isInstalled flag
-                    const settings = await context.cms.settings.get({ auth: false });
+                    const settings = await context.cms.settings.noAuth().get();
                     return new Response(!!settings?.isInstalled);
                 } catch (e) {
                     return new ErrorResponse(e);

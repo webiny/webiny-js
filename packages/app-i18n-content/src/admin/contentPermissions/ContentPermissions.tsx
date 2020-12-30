@@ -11,23 +11,20 @@ const t = i18n.ns("app-i18n/admin/plugins/permissionRenderer");
 export const ContentPermissions = ({ value, onChange }) => {
     const { getLocales } = useI18N();
 
-    const onFormChange = useCallback(
-        formData => {
-            let newValue = [];
-            if (Array.isArray(value)) {
-                // Let's just filter out the `content*` permission objects, it's easier to build new ones from scratch.
-                newValue = value.filter(item => !item.name.startsWith("content"));
-            }
+    const onFormChange = useCallback(formData => {
+        let newValue = [];
+        if (Array.isArray(value)) {
+            // Let's just filter out the `content*` permission objects, it's easier to build new ones from scratch.
+            newValue = value.filter(item => !item.name.startsWith("content"));
+        }
 
-            const permission = { name: "content.i18n", locales: undefined };
-            if (formData.level === "locales") {
-                permission.locales = Array.isArray(formData.locales) ? formData.locales : [];
-            }
-            newValue.push(permission);
-            onChange(newValue);
-        },
-        []
-    );
+        const permission = { name: "content.i18n", locales: undefined };
+        if (formData.level === "locales") {
+            permission.locales = Array.isArray(formData.locales) ? formData.locales : [];
+        }
+        newValue.push(permission);
+        onChange(newValue);
+    }, []);
 
     const formData = useMemo(() => {
         const defaultData = { level: undefined, locales: [] };
@@ -46,7 +43,7 @@ export const ContentPermissions = ({ value, onChange }) => {
 
         return defaultData;
     }, []);
-    
+
     return (
         <Form data={formData} onChange={onFormChange}>
             {({ data, Bind }) => (
