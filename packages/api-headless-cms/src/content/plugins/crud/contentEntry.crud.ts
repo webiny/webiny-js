@@ -1,5 +1,6 @@
 import mdbid from "mdbid";
 import omit from "lodash/omit";
+import cloneDeep from "lodash/cloneDeep";
 import { ContextPlugin } from "@webiny/handler/types";
 import { ErrorResponse, NotFoundError } from "@webiny/handler-graphql";
 import Error from "@webiny/error";
@@ -280,7 +281,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 const preparedEntry = prepareEntryToIndex({
                     context,
                     model,
-                    entry
+                    entry: cloneDeep(entry)
                 });
                 await elasticSearch.create({
                     ...utils.defaults.es(context),
@@ -421,34 +422,37 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 utils.checkOwnership(context, permission, entry, "ownedBy");
 
-                // we need full entry model because of before and after save hooks
-                const updatedEntryModel: CmsContentEntryType = {
+                // we need full entry because of "before/after save" hooks
+                const updatedEntry: CmsContentEntryType = {
                     ...entry,
-                    values: data,
-                    savedOn: new Date().toISOString()
+                    savedOn: new Date().toISOString(),
+                    values: {
+                        ...entry.values,
+                        ...data
+                    }
                 };
 
-                await beforeSaveHook({ model, entry: updatedEntryModel, context });
+                await beforeSaveHook({ model, entry: updatedEntry, context });
 
                 await db.update({
                     ...utils.defaults.db,
                     query: { PK: PK_ENTRY(uniqueId), SK: SK_REVISION(version) },
                     data: {
-                        values: updatedEntryModel.values,
-                        savedOn: updatedEntryModel.savedOn
+                        values: updatedEntry.values,
+                        savedOn: updatedEntry.savedOn
                     }
                 });
 
                 const preparedEntry = prepareEntryToIndex({
                     context,
                     model,
-                    entry: updatedEntryModel
+                    entry: cloneDeep(updatedEntry)
                 });
 
                 if (latestEntry.id === id) {
                     const esDoc = {
                         ...preparedEntry,
-                        savedOn: updatedEntryModel.savedOn
+                        savedOn: updatedEntry.savedOn
                     };
                     try {
                         await elasticSearch.update({
@@ -467,9 +471,9 @@ export default (): ContextPlugin<CmsContext> => ({
                     }
                 }
 
-                await afterSaveHook({ model, entry: updatedEntryModel, context });
+                await afterSaveHook({ model, entry: updatedEntry, context });
 
-                return updatedEntryModel;
+                return updatedEntry;
             },
             deleteRevision: async (model, revisionId) => {
                 const permission = await checkPermissions({ rwd: "d" });
