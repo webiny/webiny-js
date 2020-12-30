@@ -402,7 +402,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                             createdOn: new Date().toISOString(),
                             ownedBy: owner,
                             createdBy: owner,
-                            content: compressContent()
+                            content: compressContent() // Just create the initial { compression, content } object.
                         };
 
                         await executeHookCallbacks(hookPlugins, "beforeCreate", context, data);
@@ -679,6 +679,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                             }
 
                             // 4.2. Delete latest / published data.
+                            // TODO: delete PK_PAGE_PUBLISHED_PATH record!
                             await db
                                 .batch()
                                 .delete({
@@ -741,6 +742,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
 
                         // 6.2. If the page is published, remove published data, both from DB and ES.
                         if (isPublished) {
+                            // TODO: delete PK_PAGE_PUBLISHED_PATH record!
                             batch.delete({
                                 ...defaults.db,
                                 query: {
@@ -873,8 +875,10 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
 
                         if (publishedPageData) {
                             // If there is a `published` page already, we need to set it as `unpublished`. We need to
-                            // execute two updates - update the previously published page's status and the published
-                            // page entry (PK_PAGE_PUBLISHED()).
+                            // execute three updates
+                            // - update the previously published page's status
+                            // - update the published page entry (PK_PAGE_PUBLISHED())
+                            // - update the published page path entry (PK_PAGE_PUBLISHED_PATH())
 
                             // 🤦 DynamoDB does not support `batchUpdate` - so here we load the previously published
                             // page's data so that we can update its status within a batch operation. If, hopefully,
