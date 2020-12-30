@@ -1,8 +1,17 @@
 {
-  "extends": "../../tsconfig",
-  "references": [
-    {
-      "path": "../api-prerendering-service"
-    }
-  ]
+	"extends": "../../tsconfig",
+	"references": [
+		{
+			"path": "../api-prerendering-service"
+		},
+		{
+			"path": "../handler"
+		},
+		{
+			"path": "../handler-args"
+		},
+		{
+			"path": "../plugins"
+		}
+	]
 }

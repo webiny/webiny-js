@@ -21,8 +21,6 @@
     "@webiny/handler-db": "^4.14.0",
     "@webiny/plugins": "^4.14.0",
     "@webiny/db-dynamodb": "^4.14.0",
-    "@webiny/commodo": "^4.14.0",
-    "@webiny/validation": "^4.14.0",
     "accept-language-parser": "^1.5.0",
     "i18n-locales": "^0.0.2",
     "lodash": "^4.17.4",

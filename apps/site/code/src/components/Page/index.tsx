@@ -1,7 +1,7 @@
 import React from "react";
 import { useQuery } from "react-apollo";
 import Render from "./Render";
-import trim from "lodash/trim";
+import trim from "lodash.trim";
 
 import { GET_SETTINGS, GET_PUBLISHED_PAGE } from "./graphql";
 
