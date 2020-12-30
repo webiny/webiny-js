@@ -8,12 +8,11 @@ import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import elasticSearch from "@webiny/api-plugin-elastic-search-client";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
+
 // File storage S3 plugin for API file manager.
 import fileManagerS3 from "@webiny/api-file-manager-s3";
 import formBuilderPlugins from "@webiny/api-form-builder/plugins";
 import securityPlugins from "./security";
-
-import { PageHookPlugin } from "@webiny/api-page-builder/graphql/types";
 
 export const handler = createHandler(
     graphqlPlugins({ debug: process.env.DEBUG }),
@@ -45,10 +44,5 @@ export const handler = createHandler(
             }
         }
     }),
-    formBuilderPlugins(),
-
-    {
-        type: "pb-page-hook",
-        afterPublish: () => {}
-    } as PageHookPlugin
+    formBuilderPlugins()
 );
