@@ -38,7 +38,7 @@ export default {
         };
 
         if (isBase64Encoded) {
-            context.http.body = Buffer.from(context.http.body, "base64").toString("utf-8");
+            context.http.request.body = Buffer.from(context.http.request.body, "base64").toString("utf-8");
         }
     }
 } as ContextPlugin<HttpContext & ArgsContext>;
