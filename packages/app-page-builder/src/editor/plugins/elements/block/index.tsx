@@ -64,7 +64,7 @@ export default (): PbEditorPageElementPlugin => {
                             DisplayMode.DESKTOP
                         ),
                         verticalAlign: createInitialPerDeviceSettingValue(
-                            "start",
+                            "flex-start",
                             DisplayMode.DESKTOP
                         )
                     }

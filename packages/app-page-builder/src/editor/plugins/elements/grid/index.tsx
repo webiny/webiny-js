@@ -105,7 +105,10 @@ export default {
                         "flex-start",
                         DisplayMode.DESKTOP
                     ),
-                    verticalAlign: createInitialPerDeviceSettingValue("start", DisplayMode.DESKTOP)
+                    verticalAlign: createInitialPerDeviceSettingValue(
+                        "flex-start",
+                        DisplayMode.DESKTOP
+                    )
                 }
             },
             ...options
