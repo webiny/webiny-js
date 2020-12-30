@@ -1,12 +1,11 @@
 import React, { Fragment, useEffect, useRef } from "react";
-import EditorJS from "./editorjs/editor.js";
-import {
+import EditorJS, {
     LogLevels,
     OutputBlockData,
     OutputData,
     SanitizerConfig,
     ToolSettings
-} from "./editorjs/types";
+} from "@editorjs/editorjs";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { css } from "emotion";
 import classNames from "classnames";
@@ -25,7 +24,7 @@ const classes = {
     })
 };
 
-export type OnReadyParams = { editor: any; initialData: OutputData };
+export type OnReadyParams = { editor: EditorJS; initialData: OutputData };
 
 export type RichTextEditorProps = {
     autofocus?: boolean;
@@ -46,7 +45,7 @@ export type RichTextEditorProps = {
 
 export const RichTextEditor = (props: RichTextEditorProps) => {
     const elementRef = useRef();
-    const editorRef = useRef<any>();
+    const editorRef = useRef<EditorJS>();
 
     useEffect(() => {
         const { value, context, onReady, ...nativeProps } = props;
@@ -58,6 +57,7 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
             logLevel: "ERROR" as LogLevels.ERROR,
             data: initialData,
             onChange: async () => {
+                // @ts-ignore
                 const { blocks: data } = await editorRef.current.save();
                 props.onChange(data);
             },
