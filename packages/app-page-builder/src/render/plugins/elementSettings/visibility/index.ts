@@ -17,11 +17,11 @@ export default {
                 style[`--${kebabCase(displayMode)}-visibility`] = get(
                     style,
                     `--${kebabCase(fallbackMode)}-visibility`,
-                    "block"
+                    "flex"
                 );
             } else {
                 // Set visibility
-                style[`--${kebabCase(displayMode)}-visibility`] = hidden ? "none" : "block";
+                style[`--${kebabCase(displayMode)}-visibility`] = hidden ? "none" : "flex";
             }
         });
 
