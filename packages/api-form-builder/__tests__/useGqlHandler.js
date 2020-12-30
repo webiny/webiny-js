@@ -5,7 +5,7 @@ import apolloServerPlugins from "@webiny/handler-graphql";
 import securityPlugins from "@webiny/api-security/authenticator";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
 import dbPlugins from "@webiny/handler-db";
-import i18nContext from "@webiny/api-i18n/graphql/plugins/context";
+import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";

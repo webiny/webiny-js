@@ -3,7 +3,7 @@ import apolloServerPlugins from "@webiny/handler-graphql";
 import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
 import securityPlugins from "@webiny/api-security/authenticator";
 import dbPlugins from "@webiny/handler-db";
-import i18nContext from "@webiny/api-i18n/graphql/plugins/context";
+import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
@@ -61,6 +61,18 @@ const defaultTenant = { id: "root", name: "Root", parent: null };
 export default ({ permissions, identity, tenant } = {}) => {
     const logsDb = new Db({
         logTable: "PageBuilderLogs",
+        driver: new DynamoDbDriver({
+            documentClient: new DocumentClient({
+                convertEmptyValues: true,
+                endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
+                sslEnabled: false,
+                region: "local"
+            })
+        })
+    });
+
+    const db = new Db({
+        table: "PageBuilder",
         driver: new DynamoDbDriver({
             documentClient: new DocumentClient({
                 convertEmptyValues: true,
@@ -145,6 +157,19 @@ export default ({ permissions, identity, tenant } = {}) => {
         handler,
         invoke,
         // Helpers.
+        db,
+        defaults: {
+            db: {
+                keys: [
+                    {
+                        primary: true,
+                        unique: true,
+                        name: "primary",
+                        fields: [{ name: "PK" }, { name: "SK" }]
+                    }
+                ]
+            }
+        },
         elasticSearch,
         logsDb,
         deleteElasticSearchIndex: async () => {
