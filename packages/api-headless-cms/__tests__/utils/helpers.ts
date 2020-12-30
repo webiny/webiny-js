@@ -24,8 +24,7 @@ export const createPermissions = (permissions: PermissionsArgType[]): Permission
     }
     return [
         {
-            name: "cms.settings",
-            rwd: "rwd"
+            name: "cms.settings"
         },
         {
             name: "cms.contentModel",
@@ -38,9 +37,6 @@ export const createPermissions = (permissions: PermissionsArgType[]): Permission
         {
             name: "cms.contentEntry",
             rwd: "rwd"
-        },
-        {
-            name: "cms.settings"
         },
         {
             name: "cms.endpoint.read"
