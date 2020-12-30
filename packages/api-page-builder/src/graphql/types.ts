@@ -59,15 +59,15 @@ export type ListMeta = {
 };
 
 // Pages CRUD.
-export type Tag = { id?: string; class?: string };
+export type Tag = { key: string; value?: string };
 
 export type RenderArgs = {
-    tags?: Tag[];
+    tags?: { tag: Tag; configuration?: { storage?: { folder?: string; name?: string } } }[];
     paths?: { path: string; configuration?: { storage?: { folder?: string; name?: string } } }[];
 };
 
 export type FlushArgs = {
-    tags?: Tag[];
+    tags?: { tag: Tag; configuration?: { storage?: { folder?: string; name?: string } } }[];
     paths?: { path: string; configuration?: { storage?: { folder?: string; name?: string } } }[];
 };
 
