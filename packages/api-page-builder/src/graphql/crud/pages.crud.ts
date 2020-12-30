@@ -685,30 +685,34 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                             }
 
                             // 4.2. Delete latest / published data.
-                            await db
-                                .batch()
-                                .delete({
-                                    ...defaults.db,
-                                    query: {
-                                        PK: PK_PAGE_LATEST(),
-                                        SK: pageUniqueId
-                                    }
-                                })
-                                .delete({
-                                    ...defaults.db,
-                                    query: {
-                                        PK: PK_PAGE_PUBLISHED(),
-                                        SK: pageUniqueId
-                                    }
-                                })
-                                .delete({
-                                    ...defaults.db,
-                                    query: {
-                                        PK: PK_PAGE_PUBLISHED_PATH(),
-                                        SK: publishedPageData.path
-                                    }
-                                })
-                                .execute();
+                            const deleteBatch = db.batch();
+                            await deleteBatch.delete({
+                                ...defaults.db,
+                                query: {
+                                    PK: PK_PAGE_LATEST(),
+                                    SK: pageUniqueId
+                                }
+                            });
+
+                            if (publishedPageData) {
+                                deleteBatch
+                                    .delete({
+                                        ...defaults.db,
+                                        query: {
+                                            PK: PK_PAGE_PUBLISHED(),
+                                            SK: publishedPageData.SK,
+                                        }
+                                    })
+                                    .delete({
+                                        ...defaults.db,
+                                        query: {
+                                            PK: PK_PAGE_PUBLISHED_PATH(),
+                                            SK: publishedPageData.path
+                                        }
+                                    });
+                            }
+
+                            await deleteBatch.execute();
 
                             // 4.3. Finally, delete data from ES.
                             await elasticSearch.bulk({
