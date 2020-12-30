@@ -36,6 +36,7 @@ describe("Update Settings Handler Test", () => {
                 favicon: null,
                 logo: null,
                 prerendering: {
+                    meta: null,
                     app: {
                         url: "https://www.app.com"
                     },
