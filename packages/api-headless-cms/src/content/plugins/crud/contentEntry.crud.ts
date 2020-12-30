@@ -76,7 +76,7 @@ export default (): ContextPlugin<CmsContext> => ({
             rwd?: string;
             rcpu?: string;
         }): Promise<CmsContentEntryPermissionType> => {
-            return utils.checkPermissions(context, "cms.manage.contentEntry", check);
+            return utils.checkPermissions(context, "cms.contentEntry", check);
         };
 
         const entries: CmsContentEntryContextType = {

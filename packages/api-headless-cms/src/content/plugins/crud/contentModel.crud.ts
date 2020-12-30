@@ -51,7 +51,7 @@ export default (): ContextPlugin<CmsContext> => ({
         };
 
         const checkPermissions = (check: string): Promise<CmsContentModelPermissionType> => {
-            return utils.checkPermissions(context, "cms.manage.contentModel", { rwd: check });
+            return utils.checkPermissions(context, "cms.contentModel", { rwd: check });
         };
 
         const models: CmsContentModelContextType = {

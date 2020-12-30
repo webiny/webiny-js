@@ -102,7 +102,7 @@ export default (): ContextPlugin<CmsContext> => ({
         const PK_GROUP = () => `${utils.createCmsPK(context)}#CMG`;
 
         const checkPermissions = (check: string): Promise<CmsContentModelGroupPermissionType> => {
-            return utils.checkPermissions(context, "cms.manage.contentModelGroup", { rwd: check });
+            return utils.checkPermissions(context, "cms.contentModelGroup", { rwd: check });
         };
 
         const groups: CmsContentModelGroupContextType = {
