@@ -131,14 +131,6 @@ export const graphQLHandlerFactory = (
         } catch (ex) {
             return respond(http, new NotAuthorizedResponse(ex));
         }
-        
-        let type = context.cms.type;
-        if (context.cms.READ === true) {
-            const permissions = await (context.security as any).getPermissions();
-            type = "READ";
-           
-            const x = permissions;
-        }
 
         try {
             const schema = await getSchema({

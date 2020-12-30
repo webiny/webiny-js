@@ -30,7 +30,7 @@ describe("READ - resolvers - api key", () => {
     const esCmsIndex = "root-headless-cms";
 
     const manageOpts = {
-        path: "manage/en-US",
+        path: "manage/en-US"
     };
     const readOpts = { path: "read/en-US", permissions: [] };
 
