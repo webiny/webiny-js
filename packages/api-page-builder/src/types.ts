@@ -20,6 +20,8 @@ export type DbPageLatest = {
 
 // Represents a database entry that contains information (exact page ID) about the published revision of a page.
 // It also contains the path with which the page was published. This entry is used to query published pages by ID.
+// Note that if this entry exists, the `DbPagePublishedPath` entry also exists and that the `id` and `path` fields
+// on these two database entries are always in sync.
 export type DbPagePublished = {
     PK: string;
     SK: string;
@@ -32,6 +34,8 @@ export type DbPagePublished = {
 
 // Represents a database entry that contains information (exact page URL path) about the published revision of a page.
 // It also contains the ID with which the page was published. This entry is used to query published pages by path.
+// Note that if this entry exists, the `DbPagePublished` entry also exists and that the `id` and `path` fields
+// on these two database entries are always in sync.
 export type DbPagePublishedPath = {
     PK: string;
     SK: string;
