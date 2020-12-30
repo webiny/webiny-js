@@ -7,6 +7,7 @@ require("medium-editor/dist/css/medium-editor.css");
 require("medium-editor/dist/css/themes/mani.css");
 
 const editorClass = css({
+    width: "100%",
     "&:focus": {
         outline: "none"
     },

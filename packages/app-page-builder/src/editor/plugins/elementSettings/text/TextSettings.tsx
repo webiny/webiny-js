@@ -99,7 +99,7 @@ const TextSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderCom
     );
 
     const text = get(element, `${DATA_NAMESPACE}.${displayMode}`, fallbackValue);
-    console.log({ fallbackValue, text });
+
     return (
         <Accordion
             title={"Text"}
