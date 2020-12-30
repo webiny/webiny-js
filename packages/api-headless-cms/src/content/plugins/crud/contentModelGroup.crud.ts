@@ -4,6 +4,7 @@ import { validation } from "@webiny/validation";
 import mdbid from "mdbid";
 import {
     CmsContentModelGroupContextType,
+    CmsContentModelGroupListArgsType,
     CmsContentModelGroupPermissionType,
     CmsContentModelGroupType,
     CmsContext,
@@ -105,42 +106,58 @@ export default (): ContextPlugin<CmsContext> => ({
             return utils.checkPermissions(context, "cms.contentModelGroup", { rwd: check });
         };
 
+        const groupsGet = async (id: string) => {
+            const [[group]] = await db.read<CmsContentModelGroupType>({
+                ...utils.defaults.db,
+                query: { PK: PK_GROUP(), SK: id }
+            });
+
+            if (!group) {
+                throw new NotFoundError(`Content model group "${id}" was not found!`);
+            }
+
+            return group;
+        };
+
+        const groupsList = async (args?: CmsContentModelGroupListArgsType) => {
+            const { where, limit } = args || {};
+            const [groups] = await db.read<CmsContentModelGroupType>({
+                ...utils.defaults.db,
+                query: { PK: PK_GROUP(), SK: { $gt: " " } },
+                limit
+            });
+
+            const whereKeys = Object.keys(where || {});
+            if (whereKeys.length === 0) {
+                return groups;
+            }
+
+            return groups.filter(whereFilterFactory(where));
+        };
+
         const groups: CmsContentModelGroupContextType = {
+            noAuth: () => {
+                return {
+                    get: groupsGet,
+                    list: groupsList
+                };
+            },
             get: async id => {
                 const permission = await checkPermissions("r");
 
-                const [[group]] = await db.read<CmsContentModelGroupType>({
-                    ...utils.defaults.db,
-                    query: { PK: PK_GROUP(), SK: id }
-                });
-
-                if (!group) {
-                    throw new NotFoundError(`Content model group "${id}" was not found!`);
-                }
-
+                const group = await groupsGet(id);
                 utils.checkOwnership(context, permission, group);
 
                 return group;
             },
-            list: async ({ where, limit } = {}) => {
+            list: async args => {
                 const permission = await checkPermissions("r");
 
-                const [response] = await db.read<CmsContentModelGroupType>({
-                    ...utils.defaults.db,
-                    query: { PK: PK_GROUP(), SK: { $gt: " " } },
-                    limit
-                });
+                const response = await groupsList(args);
 
-                const groups = response.filter(group =>
+                return response.filter(group =>
                     utils.validateOwnership(context, permission, group)
                 );
-
-                const whereKeys = Object.keys(where || {});
-                if (whereKeys.length === 0) {
-                    return response;
-                }
-
-                return groups.filter(whereFilterFactory(where));
             },
             create: async data => {
                 await checkPermissions("w");

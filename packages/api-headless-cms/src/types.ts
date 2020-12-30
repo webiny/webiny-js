@@ -229,11 +229,15 @@ export type CmsContentModelGroupType = {
     createdOn: Date;
     savedOn: Date;
 };
-type CmsContentModelGroupListArgsType = {
+export type CmsContentModelGroupListArgsType = {
     where?: Record<string, any>;
     limit?: number;
 };
 export type CmsContentModelGroupContextType = {
+    noAuth: () => {
+        get: (id: string) => Promise<CmsContentModelGroupType | null>;
+        list: (args?: CmsContentModelGroupListArgsType) => Promise<CmsContentModelGroupType[]>;
+    };
     get: (id: string) => Promise<CmsContentModelGroupType | null>;
     list: (args?: CmsContentModelGroupListArgsType) => Promise<CmsContentModelGroupType[]>;
     create: (data: CmsContentModelGroupCreateInputType) => Promise<CmsContentModelGroupType>;
