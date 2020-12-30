@@ -14,6 +14,7 @@ import * as utils from "../../../utils";
 import { beforeDeleteHook } from "./contentModelGroup/beforeDelete.hook";
 import { beforeCreateHook } from "./contentModelGroup/beforeCreate.hook";
 import { NotFoundError } from "@webiny/handler-graphql";
+import WebinyError from "@webiny/error";
 
 const CreateContentModelGroupModel = withFields({
     name: string({ validation: validation.create("required,maxLength:100") }),
@@ -61,12 +62,12 @@ const compare = (key: string, compareValue: any, value: any): boolean => {
         return value <= compareValue;
     } else if (key.endsWith("_not_between")) {
         if (!Array.isArray(compareValue) || compareValue.length === 0) {
-            throw new Error(`Wrong compareValue for "${key}".`);
+            throw new WebinyError(`Wrong compareValue for "${key}".`);
         }
         return value < compareValue[0] && value > compareValue[1];
     } else if (key.endsWith("_between")) {
         if (!Array.isArray(compareValue) || compareValue.length === 0) {
-            throw new Error(`Wrong compareValue for "${key}".`);
+            throw new WebinyError(`Wrong compareValue for "${key}".`);
         }
         return value >= compareValue[0] && value <= compareValue[1];
     }
@@ -78,15 +79,7 @@ const whereFilterFactory = (where: Record<string, any> = {}) => {
         if (!where) {
             return true;
         }
-        if (!where.hasOwnProperty) {
-            throw new Error(
-                `Argument "where" does not "hasOwnProperty" because it is a "${typeof where}"`
-            );
-        }
         for (const key in where) {
-            if (where.hasOwnProperty(key) === false) {
-                continue;
-            }
             const whereValue = where[key];
             const value = model[removeWhereKeySuffix(key)];
             return compare(key, whereValue, value);
@@ -202,7 +195,7 @@ export default (): ContextPlugin<CmsContext> => ({
             update: async (id, data) => {
                 const permission = await checkPermissions("w");
 
-                const group = await context.cms.groups.get(id);
+                const group = await context.cms.groups.noAuth().get(id);
 
                 utils.checkOwnership(context, permission, group);
 
@@ -231,7 +224,7 @@ export default (): ContextPlugin<CmsContext> => ({
             delete: async id => {
                 const permission = await checkPermissions("d");
 
-                const group = await context.cms.groups.get(id);
+                const group = await context.cms.groups.noAuth().get(id);
 
                 utils.checkOwnership(context, permission, group);
 

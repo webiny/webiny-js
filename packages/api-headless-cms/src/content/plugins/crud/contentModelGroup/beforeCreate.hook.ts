@@ -10,7 +10,7 @@ export const beforeCreateHook = async (
     const { name, slug = "" } = model;
     // If there is a slug assigned, check if it's unique ...
     if (slug.trim()) {
-        const groups = await context.cms.groups.list({
+        const groups = await context.cms.groups.noAuth().list({
             where: {
                 slug
             },
@@ -27,7 +27,7 @@ export const beforeCreateHook = async (
 
     // ... otherwise, assign a unique slug automatically.
     const newSlug = toSlug(name);
-    const groups = await context.cms.groups.list({
+    const groups = await context.cms.groups.noAuth().list({
         where: {
             slug: newSlug
         },

@@ -94,8 +94,8 @@ export const checkPermissions = async <TPermission = SecurityPermission>(
     if (!permission) {
         throw new NotAuthorizedError({
             data: {
-                reason: `Missing permission "${name}".`
-            }
+                reason: `Missing permission "${name}".`,
+            },
         });
     }
 

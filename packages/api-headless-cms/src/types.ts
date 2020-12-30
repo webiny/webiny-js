@@ -294,6 +294,10 @@ export interface CmsContentModelManagerInterface {
 }
 
 export type CmsContentModelContextType = {
+    noAuth: () => {
+        get: (modelId: string) => Promise<CmsContentModelType | null>;
+        list: () => Promise<CmsContentModelType[]>;
+    };
     get: (modelId: string) => Promise<CmsContentModelType | null>;
     list: () => Promise<CmsContentModelType[]>;
     create: (data: CmsContentModelCreateInputType) => Promise<CmsContentModelType>;

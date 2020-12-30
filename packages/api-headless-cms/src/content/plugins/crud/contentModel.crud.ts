@@ -54,27 +54,43 @@ export default (): ContextPlugin<CmsContext> => ({
             return utils.checkPermissions(context, "cms.contentModel", { rwd: check });
         };
 
+        const modelsGet = async (modelId: string) => {
+            const [[model]] = await db.read<CmsContentModelType>({
+                ...utils.defaults.db,
+                query: { PK: PK_CONTENT_MODEL(), SK: modelId }
+            });
+
+            if (!model) {
+                throw new NotFoundError(`Content model "${modelId}" was not found!`);
+            }
+
+            return model;
+        };
+
+        const modelsList = async () => {
+            return await loaders.listModels.load("listModels");
+        };
+
         const models: CmsContentModelContextType = {
+            noAuth: () => {
+                return {
+                    get: modelsGet,
+                    list: modelsList
+                };
+            },
             async get(modelId) {
                 const permission = await checkPermissions("r");
 
-                const [[model]] = await db.read<CmsContentModelType>({
-                    ...utils.defaults.db,
-                    query: { PK: PK_CONTENT_MODEL(), SK: modelId }
-                });
+                const model = await modelsGet(modelId);
 
                 utils.checkOwnership(context, permission, model);
                 utils.checkModelAccess(context, permission, model);
-
-                if (!model) {
-                    throw new NotFoundError(`Content model "${modelId}" was not found!`);
-                }
 
                 return model;
             },
             async list() {
                 const permission = await checkPermissions("r");
-                const models = await loaders.listModels.load("listModels");
+                const models = await modelsList();
                 return models.filter(model => {
                     if (!utils.validateOwnership(context, permission, model)) {
                         return false;
@@ -89,7 +105,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 await createdData.validate();
                 const createdDataJson = await createdData.toJSON();
 
-                const group = await context.cms.groups.get(createdDataJson.group);
+                const group = await context.cms.groups.noAuth().get(createdDataJson.group);
                 if (!group) {
                     throw new NotFoundError(`There is no group "${createdDataJson.group}".`);
                 }
@@ -168,7 +184,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     return {} as any;
                 }
                 if (updatedDataJson.group) {
-                    const group = await context.cms.groups.get(updatedDataJson.group);
+                    const group = await context.cms.groups.noAuth().get(updatedDataJson.group);
                     if (!group) {
                         throw new NotFoundError(`There is no group "${updatedDataJson.group}".`);
                     }

@@ -201,10 +201,6 @@ const execElasticSearchBuildQueryPlugins = (
     }
 
     for (const key in where) {
-        if (where.hasOwnProperty(key) === false) {
-            continue;
-        }
-
         const { field, op } = parseWhereKey(key);
         const modelFieldOptions = modelFields[field];
         const { isSearchable = false, isSystemField } = modelFieldOptions || {};

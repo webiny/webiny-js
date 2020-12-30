@@ -3,7 +3,6 @@ import omit from "lodash/omit";
 import cloneDeep from "lodash/cloneDeep";
 import { ContextPlugin } from "@webiny/handler/types";
 import { ErrorResponse, NotFoundError } from "@webiny/handler-graphql";
-import Error from "@webiny/error";
 import {
     CmsContentEntryContextType,
     CmsContentEntryPermissionType,
@@ -463,11 +462,7 @@ export default (): ContextPlugin<CmsContext> => ({
                             }
                         });
                     } catch (ex) {
-                        throw new WebinyError({
-                            message: ex.message,
-                            code: ex.code || "ES_UPDATE_FAILED",
-                            data: esDoc
-                        });
+                        throw new WebinyError(ex.message, ex.code || "ES_UPDATE_FAILED", esDoc);
                     }
                 }
 
@@ -797,7 +792,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 }
 
                 if (entry.status !== STATUS_REVIEW_REQUESTED) {
-                    throw new Error(
+                    throw new WebinyError(
                         "Cannot request changes on an entry that's not under review.",
                         "ENTRY_NOT_UNDER_REVIEW"
                     );
@@ -805,7 +800,7 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 const identity = context.security.getIdentity();
                 if (entry.ownedBy.id === identity.id) {
-                    throw new Error(
+                    throw new WebinyError(
                         "You cannot request changes on your own entry.",
                         "CANNOT_REQUEST_CHANGES_ON_OWN_ENTRY"
                     );
