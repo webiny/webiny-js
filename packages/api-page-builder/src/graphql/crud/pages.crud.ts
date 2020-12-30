@@ -839,6 +839,8 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
 
                         const [pid] = pageId.split("#");
 
+                        // `publishedPageData` will give us a record that contains `id` and `path, which tell us
+                        // the current revision and over which path it has been published, respectively.
                         const [[[page]], [[publishedPageData]], [[latestPageData]]] = await db
                             .batch<[[Page]], [[DbPagePublished]], [[DbPageLatest]]>()
                             .read({
