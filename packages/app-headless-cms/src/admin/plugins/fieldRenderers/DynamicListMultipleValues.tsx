@@ -3,6 +3,7 @@ import { css } from "emotion";
 import { i18n } from "@webiny/app/i18n";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { ButtonDefault } from "@webiny/ui/Button";
+import { CmsEditorField } from "@webiny/app-headless-cms/types";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -13,7 +14,15 @@ const style = {
     })
 };
 
-const DynamicListMultipleValues = ({ field, getBind, Label, children }) => {
+type Props = {
+    field: CmsEditorField;
+    getBind(index?: number): React.ComponentType<any>;
+    Label: React.ComponentType<any>;
+    children: (params: any) => React.ReactNode;
+    emptyValue?: any;
+};
+
+const DynamicListMultipleValues = ({ field, getBind, Label, children, emptyValue = "" }: Props) => {
     const Bind = getBind();
     const FirstFieldBind = getBind(0);
 
@@ -58,7 +67,7 @@ const DynamicListMultipleValues = ({ field, getBind, Label, children }) => {
                         <Cell span={12} className={style.addButton}>
                             <ButtonDefault
                                 disabled={value[0] === undefined}
-                                onClick={() => appendValue("")}
+                                onClick={() => appendValue(emptyValue)}
                             >{t`+ Add value`}</ButtonDefault>
                         </Cell>
                     </Grid>
