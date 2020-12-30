@@ -543,7 +543,6 @@ export type PbEditorPageElementSaveActionPlugin = Plugin & {
 
 export type PbEditorPageElementSettingsRenderComponentProps = {
     defaultAccordionValue?: boolean;
-    displayMode?: DisplayMode;
 };
 
 export type PbConfigPluginType = Plugin & {
