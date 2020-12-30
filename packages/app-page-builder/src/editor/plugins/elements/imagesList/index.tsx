@@ -2,7 +2,8 @@ import React from "react";
 import styled from "@emotion/styled";
 import {
     PbEditorPageElementPlugin,
-    PbEditorPageElementAdvancedSettingsPlugin
+    PbEditorPageElementAdvancedSettingsPlugin,
+    DisplayMode
 } from "../../../../types";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 import ImagesList from "./ImagesList";
@@ -46,8 +47,14 @@ export default () => {
                     data: {
                         component: "mosaic",
                         settings: {
-                            margin: createInitialPerDeviceSettingValue({ all: "0px" }),
-                            padding: createInitialPerDeviceSettingValue({ all: "0px" })
+                            margin: createInitialPerDeviceSettingValue(
+                                { all: "0px" },
+                                DisplayMode.DESKTOP
+                            ),
+                            padding: createInitialPerDeviceSettingValue(
+                                { all: "0px" },
+                                DisplayMode.DESKTOP
+                            )
                         }
                     },
                     ...options

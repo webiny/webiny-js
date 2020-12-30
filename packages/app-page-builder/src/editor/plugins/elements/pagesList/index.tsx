@@ -3,7 +3,8 @@ import styled from "@emotion/styled";
 import { PluginCollection } from "@webiny/plugins/types";
 import {
     PbEditorPageElementPlugin,
-    PbEditorPageElementAdvancedSettingsPlugin
+    PbEditorPageElementAdvancedSettingsPlugin,
+    DisplayMode
 } from "@webiny/app-page-builder/types";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 import { ReactComponent as PageListIcon } from "./page-list-icon.svg";
@@ -47,8 +48,14 @@ export default (): PluginCollection => {
                         resultsPerPage: 10,
                         component: "default",
                         settings: {
-                            margin: createInitialPerDeviceSettingValue({ all: "0px" }),
-                            padding: createInitialPerDeviceSettingValue({ all: "0px" })
+                            margin: createInitialPerDeviceSettingValue(
+                                { all: "0px" },
+                                DisplayMode.DESKTOP
+                            ),
+                            padding: createInitialPerDeviceSettingValue(
+                                { all: "0px" },
+                                DisplayMode.DESKTOP
+                            )
                         }
                     },
                     ...options

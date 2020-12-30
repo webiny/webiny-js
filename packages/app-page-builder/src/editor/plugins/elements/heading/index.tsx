@@ -1,6 +1,6 @@
 import React from "react";
 import loremIpsum from "lorem-ipsum";
-import { PbEditorPageElementPlugin } from "../../../../types";
+import { DisplayMode, PbEditorPageElementPlugin } from "../../../../types";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 import Heading, { headingClassName } from "./Heading";
 import { createInitialTextValue } from "../utils/textUtils";
@@ -53,16 +53,26 @@ export default (): PbEditorPageElementPlugin => {
                             createInitialTextValue({
                                 type: this.elementType,
                                 tag: "h1"
-                            })
+                            }),
+                            DisplayMode.DESKTOP
                         ),
                         data: {
                             text: previewText
                         }
                     },
                     settings: {
-                        margin: createInitialPerDeviceSettingValue({ all: "0px" }),
-                        padding: createInitialPerDeviceSettingValue({ all: "0px" }),
-                        horizontalAlign: createInitialPerDeviceSettingValue("center")
+                        margin: createInitialPerDeviceSettingValue(
+                            { all: "0px" },
+                            DisplayMode.DESKTOP
+                        ),
+                        padding: createInitialPerDeviceSettingValue(
+                            { all: "0px" },
+                            DisplayMode.DESKTOP
+                        ),
+                        horizontalAlign: createInitialPerDeviceSettingValue(
+                            "center",
+                            DisplayMode.DESKTOP
+                        )
                     }
                 },
                 ...options

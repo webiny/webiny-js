@@ -14,6 +14,7 @@ import {
     createEmptyElementHelper
 } from "@webiny/app-page-builder/editor/helpers";
 import {
+    DisplayMode,
     PbEditorPageElementPlugin,
     PbEditorPageElementSaveActionPlugin,
     PbElement
@@ -44,15 +45,21 @@ const cellPlugin: PbEditorPageElementPlugin = {
             data: {
                 settings: {
                     margin: {
-                        ...createInitialPerDeviceSettingValue({
-                            top: "0px",
-                            right: "0px",
-                            bottom: "0px",
-                            left: "0px",
-                            advanced: true
-                        })
+                        ...createInitialPerDeviceSettingValue(
+                            {
+                                top: "0px",
+                                right: "0px",
+                                bottom: "0px",
+                                left: "0px",
+                                advanced: true
+                            },
+                            DisplayMode.DESKTOP
+                        )
                     },
-                    padding: createInitialPerDeviceSettingValue({ all: "10px" }),
+                    padding: createInitialPerDeviceSettingValue(
+                        { all: "10px" },
+                        DisplayMode.DESKTOP
+                    ),
                     grid: {
                         size: options.data?.settings?.grid?.size || 1
                     }

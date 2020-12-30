@@ -1,6 +1,7 @@
 import React from "react";
 import { css } from "emotion";
 import {
+    DisplayMode,
     PbEditorPageElementPlugin,
     PbEditorPageElementStyleSettingsPlugin
 } from "@webiny/app-page-builder/types";
@@ -45,9 +46,18 @@ export default () => {
                     data: {
                         buttonText: "Click me",
                         settings: {
-                            margin: createInitialPerDeviceSettingValue({ all: "0px" }),
-                            padding: createInitialPerDeviceSettingValue({ all: "0px" }),
-                            horizontalAlignFlex: createInitialPerDeviceSettingValue("center")
+                            margin: createInitialPerDeviceSettingValue(
+                                { all: "0px" },
+                                DisplayMode.DESKTOP
+                            ),
+                            padding: createInitialPerDeviceSettingValue(
+                                { all: "0px" },
+                                DisplayMode.DESKTOP
+                            ),
+                            horizontalAlignFlex: createInitialPerDeviceSettingValue(
+                                "center",
+                                DisplayMode.DESKTOP
+                            )
                         }
                     },
                     ...options

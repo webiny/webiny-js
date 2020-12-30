@@ -8,7 +8,8 @@ import { ReactComponent as ImageIcon } from "./round-image-24px.svg";
 import {
     PbEditorPageElementPlugin,
     PbEditorPageElementStyleSettingsPlugin,
-    PbEditorEventActionPlugin
+    PbEditorEventActionPlugin,
+    DisplayMode
 } from "@webiny/app-page-builder/types";
 import { Plugin } from "@webiny/plugins/types";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
@@ -58,9 +59,18 @@ export default (): Plugin[] => {
                     elements: [],
                     data: {
                         settings: {
-                            horizontalAlignFlex: createInitialPerDeviceSettingValue("center"),
-                            margin: createInitialPerDeviceSettingValue({ all: "0px" }),
-                            padding: createInitialPerDeviceSettingValue({ all: "0px" })
+                            horizontalAlignFlex: createInitialPerDeviceSettingValue(
+                                "center",
+                                DisplayMode.DESKTOP
+                            ),
+                            margin: createInitialPerDeviceSettingValue(
+                                { all: "0px" },
+                                DisplayMode.DESKTOP
+                            ),
+                            padding: createInitialPerDeviceSettingValue(
+                                { all: "0px" },
+                                DisplayMode.DESKTOP
+                            )
                         }
                     },
                     ...options

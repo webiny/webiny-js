@@ -1,6 +1,6 @@
 import React from "react";
 import Quote, { className } from "./Quote";
-import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
+import { DisplayMode, PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 import { createInitialTextValue } from "../utils/textUtils";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
@@ -46,15 +46,22 @@ export default (): PbEditorPageElementPlugin => {
                         ...createInitialPerDeviceSettingValue(
                             createInitialTextValue({
                                 type: this.elementType
-                            })
+                            }),
+                            DisplayMode.DESKTOP
                         ),
                         data: {
                             text: previewText
                         }
                     },
                     settings: {
-                        margin: createInitialPerDeviceSettingValue({ all: "0px" }),
-                        padding: createInitialPerDeviceSettingValue({ all: "0px" })
+                        margin: createInitialPerDeviceSettingValue(
+                            { all: "0px" },
+                            DisplayMode.DESKTOP
+                        ),
+                        padding: createInitialPerDeviceSettingValue(
+                            { all: "0px" },
+                            DisplayMode.DESKTOP
+                        )
                     }
                 },
                 ...options

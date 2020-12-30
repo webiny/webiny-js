@@ -2,7 +2,8 @@ import React from "react";
 import styled from "@emotion/styled";
 import {
     PbEditorPageElementPlugin,
-    PbEditorPageElementStyleSettingsPlugin
+    PbEditorPageElementStyleSettingsPlugin,
+    DisplayMode
 } from "@webiny/app-page-builder/types";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 // Icons
@@ -62,9 +63,18 @@ export default () => {
                             width: 50
                         },
                         settings: {
-                            horizontalAlign: createInitialPerDeviceSettingValue("center"),
-                            margin: createInitialPerDeviceSettingValue({ all: "0px" }),
-                            padding: createInitialPerDeviceSettingValue({ all: "0px" })
+                            horizontalAlign: createInitialPerDeviceSettingValue(
+                                "center",
+                                DisplayMode.DESKTOP
+                            ),
+                            margin: createInitialPerDeviceSettingValue(
+                                { all: "0px" },
+                                DisplayMode.DESKTOP
+                            ),
+                            padding: createInitialPerDeviceSettingValue(
+                                { all: "0px" },
+                                DisplayMode.DESKTOP
+                            )
                         }
                     },
                     ...options
