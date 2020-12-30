@@ -8,7 +8,6 @@ export default (): CmsModelFieldToElasticSearchPlugin => ({
         const { entry, value, field } = args;
         const values = entry.values;
         const rawData: Record<string, any> = {};
-        const search: Record<string, any> = {};
         // we want to remove value key fieldId since we do not want it indexed by default
         delete values[field.fieldId];
 
@@ -18,8 +17,7 @@ export default (): CmsModelFieldToElasticSearchPlugin => ({
         //
         return {
             values,
-            rawData,
-            search
+            rawData
         };
     },
     fromIndex(args) {
