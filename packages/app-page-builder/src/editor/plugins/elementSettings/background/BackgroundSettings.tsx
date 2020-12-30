@@ -19,6 +19,7 @@ import SelectField from "../components/SelectField";
 import Accordion from "../components/Accordion";
 import ColorPicker from "../components/ColorPicker";
 import { ContentWrapper, classes } from "../components/StyledComponents";
+import { applyFallbackDisplayMode } from "@webiny/app-page-builder/editor/plugins/elementSettings/elementSettingsUtils";
 
 const positions = [
     "top left",
@@ -79,8 +80,16 @@ const BackgroundSettings: React.FunctionComponent<SettingsPropsType &
         displayMode
     ]);
 
-    const background = get(element, `${DATA_NAMESPACE}.${displayMode}`, {});
-    const { color: backgroundColor, image: backgroundImage } = background || {};
+    const fallbackValue = useMemo(
+        () =>
+            applyFallbackDisplayMode(displayMode, mode =>
+                get(element, `${DATA_NAMESPACE}.${mode}`)
+            ),
+        [displayMode]
+    );
+
+    const background = get(element, `${DATA_NAMESPACE}.${displayMode}`, fallbackValue || {});
+    const { color: backgroundColor, image: backgroundImage } = background;
     const { scaling: backgroundImageScaling, position: backgroundImagePosition } =
         backgroundImage || {};
     const { src: backgroundImageSrc } = backgroundImage?.file || {};

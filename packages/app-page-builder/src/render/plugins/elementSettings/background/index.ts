@@ -1,7 +1,7 @@
-import get from "lodash/get";
+import { get } from "lodash";
 import kebabCase from "lodash/kebabCase";
-import { plugins } from "@webiny/plugins";
-import { PbRenderElementStylePlugin, PbRenderResponsiveModePlugin } from "../../../../types";
+import { PbRenderElementStylePlugin } from "../../../../types";
+import { applyPerDeviceStyleWithFallback } from "../../../utils";
 
 const scaling = {
     cover: {
@@ -36,18 +36,13 @@ export default {
     renderStyle({ element, style }) {
         const { background } = get(element, "data.settings", {});
 
-        // Get display modes
-        const displayModeConfigs = plugins
-            .byType<PbRenderResponsiveModePlugin>("pb-render-responsive-mode")
-            .map(pl => pl.config);
-
         // Set per-device property value
-        displayModeConfigs.forEach(({ displayMode }) => {
+        applyPerDeviceStyleWithFallback(({ displayMode, fallbackMode }) => {
             // Set background color
             style[`--${kebabCase(displayMode)}-background-color`] = get(
                 background,
                 `${displayMode}.color`,
-                "transparent"
+                get(style, `--${kebabCase(fallbackMode)}-background-color`, "transparent")
             );
             // Set background image properties
             const image = get(background, `${displayMode}.image`);
@@ -62,10 +57,26 @@ export default {
                 style[`--${kebabCase(displayMode)}-background-image`] = src ? `url(${src})` : "";
                 style[`--${kebabCase(displayMode)}-background-position`] = position;
             } else {
-                style[`--${kebabCase(displayMode)}-background-size`] = "none";
-                style[`--${kebabCase(displayMode)}-background-repeat`] = "none";
-                style[`--${kebabCase(displayMode)}-background-image`] = "none";
-                style[`--${kebabCase(displayMode)}-background-position`] = "none";
+                style[`--${kebabCase(displayMode)}-background-size`] = get(
+                    style,
+                    `--${kebabCase(fallbackMode)}-background-size`,
+                    "none"
+                );
+                style[`--${kebabCase(displayMode)}-background-repeat`] = get(
+                    style,
+                    `--${kebabCase(fallbackMode)}-background-repeat`,
+                    "none"
+                );
+                style[`--${kebabCase(displayMode)}-background-image`] = get(
+                    style,
+                    `--${kebabCase(fallbackMode)}-background-image`,
+                    "none"
+                );
+                style[`--${kebabCase(displayMode)}-background-position`] = get(
+                    style,
+                    `--${kebabCase(fallbackMode)}-background-position`,
+                    "none"
+                );
             }
         });
 
