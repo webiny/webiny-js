@@ -41,7 +41,7 @@ export const ContentPermissions = ({ value, onChange }) => {
             return { level: "locales", locales: permission.locales };
         }
 
-        return defaultData;
+        return { level: "all" };
     }, []);
 
     return (
