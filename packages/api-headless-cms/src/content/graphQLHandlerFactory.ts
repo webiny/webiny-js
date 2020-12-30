@@ -175,6 +175,7 @@ export const graphQLHandlerFactory = (
                 error: {
                     name: ex.constructor.name,
                     message: ex.message,
+                    data: ex.data || {},
                     stack: ex.stack
                 }
             };
