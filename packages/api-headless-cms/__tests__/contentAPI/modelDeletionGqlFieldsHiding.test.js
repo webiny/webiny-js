@@ -2,7 +2,7 @@ import useContentHandler from "./utils/useContentHandler";
 import mocks from "./mocks/modelDeletionGqlFieldsHiding";
 import { createContentModelGroup, createEnvironment } from "@webiny/api-headless-cms/testing";
 
-describe("Refresh schema on content model deletion", () => {
+describe.skip("Refresh schema on content model deletion", () => {
     const { environment, database } = useContentHandler();
 
     const initial = {};

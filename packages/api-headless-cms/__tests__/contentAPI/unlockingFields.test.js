@@ -2,7 +2,7 @@ import useContentHandler from "./utils/useContentHandler";
 import mocks from "./mocks/unlockingFields";
 import { createContentModelGroup, createEnvironment } from "@webiny/api-headless-cms/testing";
 
-describe("Unlocking fields test", () => {
+describe.skip("Unlocking fields test", () => {
     const { environment, database } = useContentHandler();
 
     const initial = {};

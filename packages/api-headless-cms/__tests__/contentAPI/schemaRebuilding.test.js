@@ -3,7 +3,7 @@ import useContentHandler from "./utils/useContentHandler";
 import mocks from "./mocks/schemaRebuilding";
 import { Database } from "@commodo/fields-storage-nedb";
 
-describe("Schema Rebuilding Test", () => {
+describe.skip("Schema Rebuilding Test", () => {
     const database = new Database();
 
     const { environment } = useContentHandler({ database });

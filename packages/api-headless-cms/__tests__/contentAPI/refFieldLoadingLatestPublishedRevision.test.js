@@ -3,9 +3,8 @@ import mocks from "./mocks/fields/refFieldLoadingLatestPublishedRevision";
 import pick from "lodash/pick";
 import { createContentModelGroup, createEnvironment } from "@webiny/api-headless-cms/testing";
 import { Database } from "@commodo/fields-storage-nedb";
-import { locales } from "@webiny/api-i18n/testing";
 
-describe("Ref Field - loading of latest and published revisions", () => {
+describe.skip("Ref Field - loading of latest and published revisions", () => {
     const database = new Database();
     const { environment } = useContentHandler({ database });
     const { environment: environmentRead } = useContentHandler({ database, type: "read" });

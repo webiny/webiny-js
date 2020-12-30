@@ -3,7 +3,7 @@ import mocks from "./mocks/fields/refFieldCrud";
 import pick from "lodash/pick";
 import { createContentModelGroup, createEnvironment } from "@webiny/api-headless-cms/testing";
 
-describe("Ref Field - CRUD Test", () => {
+describe.skip("Ref Field - CRUD Test", () => {
     const { database, environment } = useContentHandler();
     const getEntries2Entries = () =>
         database

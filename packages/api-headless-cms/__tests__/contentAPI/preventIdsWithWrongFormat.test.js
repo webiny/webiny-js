@@ -2,7 +2,7 @@ import useContentHandler from "./utils/useContentHandler";
 import mocks from "./mocks/preventIdsWithWrongFormat";
 import { createContentModelGroup, createEnvironment } from "@webiny/api-headless-cms/testing";
 
-describe("Fields ID Test", () => {
+describe.skip("Fields ID Test", () => {
     const { environment, database } = useContentHandler();
 
     const initial = {};

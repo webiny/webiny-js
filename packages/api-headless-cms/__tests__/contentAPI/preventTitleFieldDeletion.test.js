@@ -2,7 +2,7 @@ import useContentHandler from "./utils/useContentHandler";
 import mocks from "./mocks/preventTitleFieldDeletion";
 import { createContentModelGroup, createEnvironment } from "@webiny/api-headless-cms/testing";
 
-describe("Title field deletion test", () => {
+describe.skip("Title field deletion test", () => {
     const { environment, database } = useContentHandler();
 
     const initial = {};

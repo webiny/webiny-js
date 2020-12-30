@@ -2,7 +2,7 @@ import useContentHandler from "./utils/useContentHandler";
 import refMocks from "./mocks/fields/refInvalidReferences";
 import { createContentModelGroup, createEnvironment } from "@webiny/api-headless-cms/testing";
 
-describe("Ref Field - Invalid References In Test", () => {
+describe.skip("Ref Field - Invalid References In Test", () => {
     const { database, environment } = useContentHandler();
     const initial = {};
 

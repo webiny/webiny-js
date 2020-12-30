@@ -3,7 +3,7 @@ import mocks from "./mocks/fields/refFieldMultipleRevisions";
 import pick from "lodash/pick";
 import { createContentModelGroup, createEnvironment } from "@webiny/api-headless-cms/testing";
 
-describe("Ref Field - Multiple Revisions Test", () => {
+describe.skip("Ref Field - Multiple Revisions Test", () => {
     const { database, environment } = useContentHandler();
     const initial = {};
 

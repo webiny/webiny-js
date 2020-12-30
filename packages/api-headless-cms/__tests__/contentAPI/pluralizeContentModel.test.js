@@ -12,7 +12,7 @@ const LIST_P = /* GraphQL */ `
     }
 `;
 
-describe("Pluralize Content Model Test", () => {
+describe.skip("Pluralize Content Model Test", () => {
     const { database, environment } = useContentHandler();
     const initial = {};
 
