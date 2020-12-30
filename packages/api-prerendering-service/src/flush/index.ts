@@ -8,6 +8,7 @@ import { HandlerResponse, DbRender } from "@webiny/api-prerendering-service/type
 import debug from "debug";
 import defaults from "./../utils/defaults";
 import path from "path";
+import getTagUrlLinkPKSK from "./../utils/getTagUrlLinkPKSK";
 
 const s3 = new S3({ region: process.env.AWS_REGION });
 
@@ -42,7 +43,7 @@ export default (configuration?: Configuration): HandlerPlugin => ({
                         const dbNamespace = getDbNamespace(args, configuration);
                         const url = getRenderUrl(args, configuration);
                         const PK = [dbNamespace, "PS", "RENDER"].filter(Boolean).join("#");
-                        const [[render]] = await context.db.read<DbRender>({
+                        const [[currentRenderData]] = await context.db.read<DbRender>({
                             ...defaults.db,
                             query: {
                                 PK,
@@ -58,23 +59,64 @@ export default (configuration?: Configuration): HandlerPlugin => ({
                                     context,
                                     configuration,
                                     args,
-                                    render
+                                    render: currentRenderData
                                 });
                             }
                         }
 
-                        if (render) {
-                            const storageName = getStorageName(render.args, render.configuration);
+                        if (currentRenderData) {
+                            const storageName = getStorageName(
+                                currentRenderData.args,
+                                currentRenderData.configuration
+                            );
                             const storageFolder = getStorageFolder(
-                                render.args,
-                                render.configuration
+                                currentRenderData.args,
+                                currentRenderData.configuration
                             );
 
-                            if (Array.isArray(render.files)) {
-                                for (let j = 0; j < render.files.length; j++) {
-                                    const file = render.files[j];
+                            if (Array.isArray(currentRenderData.files)) {
+                                for (let j = 0; j < currentRenderData.files.length; j++) {
+                                    const file = currentRenderData.files[j];
                                     const key = path.join(storageFolder, file.name);
                                     await deleteFile({ key, storageName });
+                                }
+
+                                // Let's delete existing tag / URL links.
+                                log("Checking if there are existing tag / URL links to remove...");
+
+                                // Get currently stored tags and delete all tag-URL links.
+                                const currentIndexHtml = currentRenderData.files.find(item =>
+                                    item.name.endsWith(".html")
+                                );
+
+                                const currentIndexHtmlTags = currentIndexHtml?.meta?.tags;
+                                if (
+                                    Array.isArray(currentIndexHtmlTags) &&
+                                    currentIndexHtmlTags.length
+                                ) {
+                                    log(
+                                        "There are existing tag / URL links to be deleted...",
+                                        currentIndexHtmlTags
+                                    );
+                                    const batch = context.db.batch();
+
+                                    for (let k = 0; k < currentIndexHtmlTags.length; k++) {
+                                        const tag = currentIndexHtmlTags[k];
+                                        const [PK, SK] = getTagUrlLinkPKSK({
+                                            tag,
+                                            url,
+                                            dbNamespace
+                                        });
+
+                                        if (PK && SK) {
+                                            batch.delete({ query: { PK, SK } });
+                                        }
+                                    }
+
+                                    await batch.execute();
+                                    log("Existing tag / URL links deleted.");
+                                } else {
+                                    log("There are no existing tag / URL links to delete.");
                                 }
                             }
                         }
@@ -82,8 +124,8 @@ export default (configuration?: Configuration): HandlerPlugin => ({
                         await context.db.delete({
                             ...defaults.db,
                             query: {
-                                PK: render.PK,
-                                SK: render.SK
+                                PK: currentRenderData.PK,
+                                SK: currentRenderData.SK
                             }
                         });
 
@@ -95,7 +137,7 @@ export default (configuration?: Configuration): HandlerPlugin => ({
                                     context,
                                     configuration,
                                     args,
-                                    render
+                                    render: currentRenderData
                                 });
                             }
                         }
