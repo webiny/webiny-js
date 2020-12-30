@@ -16,7 +16,8 @@
     "posthtml-noopener": "^1.0.5",
     "puppeteer": "^5.5.0",
     "chrome-aws-lambda": "^5.5.0",
-    "puppeteer-core": "^5.5.0"
+    "puppeteer-core": "^5.5.0",
+    "pluralize": "^8.0.0"
   },
   "devDependencies": {
     "@types/puppeteer": "^5.4.2",
