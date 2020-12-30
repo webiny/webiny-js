@@ -13,6 +13,8 @@ describe("versioning and publishing pages", () => {
         listPages,
         listPublishedPages,
         getPublishedPage,
+        db,
+        defaults,
         until,
         sleep
     } = useGqlHandler();
@@ -319,7 +321,7 @@ describe("versioning and publishing pages", () => {
         );
     });
 
-    test("if we changed the path of the page, previously published URL must be deleted", async () => {
+    test("upon publishing, if the path of the page has changed, previously published URL must not exist", async () => {
         await createCategory({
             data: {
                 slug: `slug`,
@@ -375,5 +377,25 @@ describe("versioning and publishing pages", () => {
                 }
             })
         );
+
+        await db
+            .read({
+                ...defaults.db,
+                query: {
+                    PK: "T#root#L#en-US#PB#P#P#PATH",
+                    SK: { $gte: " " }
+                }
+            })
+            .then(([[entry]]) =>
+                expect(entry).toEqual({
+                    PK: "T#root#L#en-US#PB#P#P#PATH",
+                    SK: "/pages-test-updated",
+                    TYPE: "pb.page.p.path",
+                    id: `${p1v1.pid}#0002`,
+                    locale: "en-US",
+                    path: "/pages-test-updated",
+                    tenant: "root"
+                })
+            );
     });
 });
