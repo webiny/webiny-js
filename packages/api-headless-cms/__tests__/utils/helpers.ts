@@ -24,19 +24,19 @@ export const createPermissions = (permissions: PermissionsArgType[]): Permission
     }
     return [
         {
-            name: "cms.manage.settings",
+            name: "cms.settings",
             rwd: "rwd"
         },
         {
-            name: "cms.manage.contentModel",
+            name: "cms.contentModel",
             rwd: "rwd"
         },
         {
-            name: "cms.manage.contentModelGroup",
+            name: "cms.contentModelGroup",
             rwd: "rwd"
         },
         {
-            name: "cms.manage.contentEntry",
+            name: "cms.contentEntry",
             rwd: "rwd"
         },
         {

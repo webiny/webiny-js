@@ -21,11 +21,11 @@ describe("Endpoint access", () => {
             name: "cms.settings"
         },
         {
-            name: "cms.manage.contentEntry",
+            name: "cms.contentEntry",
             rwd: "rwd"
         },
         {
-            name: "cms.manage.contentModel"
+            name: "cms.contentModel"
         }
     ];
 

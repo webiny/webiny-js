@@ -23,7 +23,7 @@ const createIdentity = (permissions: any[] = []): SecurityIdentity => {
                 name: "cms.endpoint.read"
             },
             {
-                name: "cms.manage.contentModel"
+                name: "cms.contentModel"
             }
         ].concat(permissions)
     };
@@ -116,7 +116,7 @@ describe("READ - resolvers - api key", () => {
             ...readOpts,
             identity: createIdentity([
                 {
-                    name: "cms.manage.contentEntry",
+                    name: "cms.contentEntry",
                     rwd: "r"
                 }
             ])
@@ -171,7 +171,7 @@ describe("READ - resolvers - api key", () => {
             ...readOpts,
             identity: createIdentity([
                 {
-                    name: "cms.manage.contentEntry",
+                    name: "cms.contentEntry",
                     rwd: "r"
                 }
             ])
@@ -266,7 +266,7 @@ describe("READ - resolvers - api key", () => {
                         code: "SECURITY_NOT_AUTHORIZED",
                         message: `Not authorized!`,
                         data: {
-                            reason: `missing permission "cms.manage.contentEntry"`
+                            reason: `missing permission "cms.contentEntry"`
                         }
                     }
                 }
@@ -324,7 +324,7 @@ describe("READ - resolvers - api key", () => {
                         code: "SECURITY_NOT_AUTHORIZED",
                         message: `Not authorized!`,
                         data: {
-                            reason: `missing permission "cms.manage.contentEntry"`
+                            reason: `missing permission "cms.contentEntry"`
                         }
                     },
                     meta: null
@@ -357,7 +357,7 @@ describe("READ - resolvers - api key", () => {
             ...readOpts,
             identity: createIdentity([
                 {
-                    name: "cms.manage.contentEntry",
+                    name: "cms.contentEntry",
                     rwd: rwd
                 }
             ])
@@ -390,7 +390,7 @@ describe("READ - resolvers - api key", () => {
                         code: "SECURITY_NOT_AUTHORIZED",
                         message: `Not authorized!`,
                         data: {
-                            reason: `missing "cms.manage.contentEntry" rwd "r"`
+                            reason: `missing "cms.contentEntry" rwd "r"`
                         }
                     }
                 }
@@ -422,7 +422,7 @@ describe("READ - resolvers - api key", () => {
                 ...readOpts,
                 identity: createIdentity([
                     {
-                        name: "cms.manage.contentEntry",
+                        name: "cms.contentEntry",
                         rwd: rwd
                     }
                 ])
@@ -455,7 +455,7 @@ describe("READ - resolvers - api key", () => {
                             code: "SECURITY_NOT_AUTHORIZED",
                             message: `Not authorized!`,
                             data: {
-                                reason: `missing "cms.manage.contentEntry" rwd "r"`
+                                reason: `missing "cms.contentEntry" rwd "r"`
                             }
                         },
                         meta: null

@@ -22,7 +22,7 @@ const createIdentity = (permissions: any[] = []): SecurityIdentity => {
                 name: "cms.endpoint.manage"
             },
             {
-                name: "cms.manage.contentModel"
+                name: "cms.contentModel"
             }
         ].concat(permissions)
     };
@@ -113,7 +113,7 @@ describe("MANAGE - resolvers - api key", () => {
             ...manageOpts,
             identity: createIdentity([
                 {
-                    name: "cms.manage.contentEntry",
+                    name: "cms.contentEntry",
                     rwd: "rwd"
                 }
             ])
