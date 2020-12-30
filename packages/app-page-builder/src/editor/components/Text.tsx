@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import get from "lodash/get";
 import classNames from "classnames";
@@ -12,6 +12,7 @@ import {
 import { ElementRoot } from "../../render/components/ElementRoot";
 import useUpdateHandlers from "../plugins/elementSettings/useUpdateHandlers";
 import ReactMediumEditor from "../components/MediumEditor";
+import { applyFallbackDisplayMode } from "@webiny/app-page-builder/editor/plugins/elementSettings/elementSettingsUtils";
 
 export const textClassName = "webiny-pb-base-page-element-style webiny-pb-page-element-text";
 const DATA_NAMESPACE = "data.text";
@@ -26,13 +27,22 @@ const Text: React.FunctionComponent<TextElementProps> = ({
     editorOptions,
     rootClassName
 }) => {
-    const [uiAtomValue, setUiAtomValue] = useRecoilState(uiAtom);
+    const [{ displayMode }, setUiAtomValue] = useRecoilState(uiAtom);
     const element: PbElement = useRecoilValue(elementWithChildrenByIdSelector(elementId));
     const activeElementId = useRecoilValue(activeElementIdSelector);
     const { getUpdateValue } = useUpdateHandlers({
         element,
         dataNamespace: DATA_NAMESPACE
     });
+
+    const fallbackValue = useMemo(
+        () =>
+            applyFallbackDisplayMode(displayMode, mode =>
+                get(element, `${DATA_NAMESPACE}.${mode}`)
+            ),
+        [displayMode]
+    );
+    const value = get(element, `${DATA_NAMESPACE}.${displayMode}`, fallbackValue);
 
     const onChange = useCallback(
         value => {
@@ -52,8 +62,8 @@ const Text: React.FunctionComponent<TextElementProps> = ({
     }
 
     const textContent = get(element, `${DATA_NAMESPACE}.data.text`);
-    const tag = get(element, `${DATA_NAMESPACE}.${uiAtomValue.displayMode}.tag`);
-    const typography = get(element, `${DATA_NAMESPACE}.${uiAtomValue.displayMode}.typography`);
+    const tag = get(value, "tag");
+    const typography = get(value, "typography");
 
     return (
         <ElementRoot

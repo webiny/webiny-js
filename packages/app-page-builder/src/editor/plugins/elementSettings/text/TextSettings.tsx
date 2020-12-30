@@ -17,6 +17,7 @@ import SelectField from "../../elementSettings/components/SelectField";
 import { BaseColorPicker } from "../../elementSettings/components/ColorPicker";
 import useUpdateHandlers from "../../elementSettings/useUpdateHandlers";
 import TextAlignment from "./TextAlignment";
+import { applyFallbackDisplayMode } from "@webiny/app-page-builder/editor/plugins/elementSettings/elementSettingsUtils";
 
 const classes = {
     grid: css({
@@ -89,8 +90,16 @@ const TextSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderCom
         displayMode
     ]);
 
-    const text = get(element, `${DATA_NAMESPACE}.${displayMode}`);
+    const fallbackValue = useMemo(
+        () =>
+            applyFallbackDisplayMode(displayMode, mode =>
+                get(element, `${DATA_NAMESPACE}.${mode}`)
+            ),
+        [displayMode]
+    );
 
+    const text = get(element, `${DATA_NAMESPACE}.${displayMode}`, fallbackValue);
+    console.log({ fallbackValue, text });
     return (
         <Accordion
             title={"Text"}
