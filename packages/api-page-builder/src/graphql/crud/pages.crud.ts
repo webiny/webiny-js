@@ -42,6 +42,10 @@ import {
 } from "@webiny/api-prerendering-service/flush/types";
 
 import {
+    HandlerArgs as QueueAddHandlerArgs,
+} from "@webiny/api-prerendering-service/queue/add/types";
+
+import {
     TYPE,
     DbPageLatest,
     DbPagePublished,
@@ -1341,31 +1345,31 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                                 });
                             }
 
-                            return;
-                            if (!handlers.queue) {
+                            if (!Array.isArray(tags)) {
                                 return;
                             }
 
-                            return await context.handlerClient.invoke<RenderHandlerArgs>({
-                                name: configuration.prerendering.handlers.queue,
+                            if (!handlers.queue || !handlers.queue.add) {
+                                return;
+                            }
+
+                            return await context.handlerClient.invoke<QueueAddHandlerArgs>({
+                                name: handlers.queue.add,
                                 await: false,
-                                payload: paths.map<RenderArgs>(p => ({
-                                    url: appUrl + p.path,
-                                    configuration: merge(
-                                        // Configuration is mainly static (defined here), but some configuration
-                                        // overrides can arrive via the call args, so let's do a merge here.
-                                        {
-                                            storage: {
-                                                folder: trimStart(p.path, "/"),
-                                                name: storageName
+                                payload: {
+                                    render: tags.map(current => ({
+                                        tag: current.tag,
+                                        configuration: merge(
+                                            {
+                                                db: {
+                                                    namespace:
+                                                        "T#" + context.security.getTenant().id
+                                                }
                                             },
-                                            db: {
-                                                namespace: "T#" + context.security.getTenant().id
-                                            }
-                                        },
-                                        p.configuration
-                                    )
-                                }))
+                                            current.configuration
+                                        )
+                                    }))
+                                }
                             });
                         },
                         async flush(args) {
@@ -1415,26 +1419,31 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                                 });
                             }
 
-                            return;
-                            if (!handlers.queue) {
+                            if (!Array.isArray(tags)) {
                                 return;
                             }
 
-                            return await context.handlerClient.invoke<RenderHandlerArgs>({
-                                name: configuration.prerendering.handlers.queue,
+                            if (!handlers.queue || !handlers.queue.add) {
+                                return;
+                            }
+
+                            return await context.handlerClient.invoke<QueueAddHandlerArgs>({
+                                name: handlers.queue.add,
                                 await: false,
-                                payload: paths.map<RenderArgs>(p => ({
-                                    url: appUrl + p.path,
-                                    configuration: merge(
-                                        {
-                                            storage: {
-                                                folder: trimStart(p.path, "/"),
-                                                name: storageName
-                                            }
-                                        },
-                                        p.configuration
-                                    )
-                                }))
+                                payload: {
+                                    flush: tags.map(current => ({
+                                        tag: current.tag,
+                                        configuration: merge(
+                                            {
+                                                db: {
+                                                    namespace:
+                                                        "T#" + context.security.getTenant().id
+                                                }
+                                            },
+                                            current.configuration
+                                        )
+                                    }))
+                                }
                             });
                         }
                     }
