@@ -29,12 +29,6 @@
       "path": "../db-dynamodb"
     },
     {
-      "path": "../commodo"
-    },
-    {
-      "path": "../validation"
-    },
-    {
       "path": "../handler-http"
     }
   ]

@@ -7,7 +7,6 @@
 		"node_modules",
 		"dist",
 		"../form",
-		"../app-i18n",
 		"../app-page-builder",
 		"../app-plugin-admin-welcome-screen",
 		"../app",
@@ -27,9 +26,6 @@
 	"references": [
 		{
 			"path": "../form/tsconfig.build.json"
-		},
-		{
-			"path": "../app-i18n/tsconfig.build.json"
 		},
 		{
 			"path": "../app-page-builder/tsconfig.build.json"

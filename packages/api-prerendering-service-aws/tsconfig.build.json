@@ -5,7 +5,6 @@
 	],
 	"exclude": [
 		"node_modules",
-		"../api-prerendering-service-aws",
 		"../api-prerendering-service",
 		"../handler",
 		"../handler-args",

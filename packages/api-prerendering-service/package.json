@@ -15,6 +15,7 @@
 		"posthtml": "^0.15.0",
 		"posthtml-noopener": "^1.0.5",
 		"chrome-aws-lambda": "^5.5.0",
+		"debug": "^4.3.1",
 		"mdbid": "^1.0.0",
 		"object-hash": "^2.1.1",
 		"lodash": "^4.17.20",
@@ -27,18 +28,12 @@
 		"@webiny/plugins": "^4.14.0"
 	},
 	"devDependencies": {
-		"debug": "^4.3.1",
-		"@types/puppeteer": "^5.4.2",
-		"@webiny/api-plugin-elastic-search-client": "^4.14.0",
-		"@webiny/api-file-manager": "^4.14.0",
 		"@babel/cli": "^7.5.5",
 		"@babel/core": "^7.5.5",
 		"@babel/plugin-proposal-export-default-from": "^7.5.2",
 		"@babel/preset-env": "^7.5.5",
 		"@babel/preset-typescript": "^7.8.3",
-		"jest-dynalite": "^3.0.0",
-		"@webiny/db": "^4.14.0",
-		"@shelf/jest-elasticsearch": "^1.0.0"
+		"@webiny/db": "^4.14.0"
 	},
 	"publishConfig": {
 		"access": "public",
