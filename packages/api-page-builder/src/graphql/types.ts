@@ -90,7 +90,6 @@ export type PagesCrud = {
     unpublish(id: string): Promise<Page>;
     requestReview(id: string): Promise<Page>;
     requestChanges(id: string): Promise<Page>;
-    setAs(page: string, specialType: PageSpecialType): Promise<void>;
     prerendering: {
         render(args: RenderArgs): Promise<void>;
         flush(args: FlushArgs): Promise<void>;
@@ -140,7 +139,7 @@ export type SettingsCrud = {
             data: Record<string, any>,
             options?: { auth?: boolean } & DefaultSettingsCrudOptions
         ) => Promise<DefaultSettings>;
-        getSettingsCacheKey: (options: DefaultSettingsCrudOptions) => string;
+        getSettingsCacheKey: (options?: DefaultSettingsCrudOptions) => string;
     };
     install: {
         PK: () => string;

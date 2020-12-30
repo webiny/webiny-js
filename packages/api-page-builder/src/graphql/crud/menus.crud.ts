@@ -1,7 +1,8 @@
 import { ContextPlugin } from "@webiny/handler/types";
 import defaults from "./utils/defaults";
 import getPKPrefix from "./utils/getPKPrefix";
-import { Menu, MenuHookPlugin, PbContext } from "@webiny/api-page-builder/graphql/types";
+import { MenuHookPlugin, PbContext } from "@webiny/api-page-builder/graphql/types";
+import { Menu } from "@webiny/api-page-builder/types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
