@@ -685,7 +685,6 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                             }
 
                             // 4.2. Delete latest / published data.
-                            // TODO: delete PK_PAGE_PUBLISHED_PATH record!
                             await db
                                 .batch()
                                 .delete({
@@ -700,6 +699,13 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                                     query: {
                                         PK: PK_PAGE_PUBLISHED(),
                                         SK: pageUniqueId
+                                    }
+                                })
+                                .delete({
+                                    ...defaults.db,
+                                    query: {
+                                        PK: PK_PAGE_PUBLISHED_PATH(),
+                                        SK: publishedPageData.path
                                     }
                                 })
                                 .execute();
@@ -748,14 +754,21 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
 
                         // 6.2. If the page is published, remove published data, both from DB and ES.
                         if (isPublished) {
-                            // TODO: delete PK_PAGE_PUBLISHED_PATH record!
-                            batch.delete({
-                                ...defaults.db,
-                                query: {
-                                    PK: PK_PAGE_PUBLISHED(),
-                                    SK: pageUniqueId
-                                }
-                            });
+                            batch
+                                .delete({
+                                    ...defaults.db,
+                                    query: {
+                                        PK: PK_PAGE_PUBLISHED(),
+                                        SK: pageUniqueId
+                                    }
+                                })
+                                .delete({
+                                    ...defaults.db,
+                                    query: {
+                                        PK: PK_PAGE_PUBLISHED_PATH(),
+                                        SK: publishedPageData.path
+                                    }
+                                });
 
                             esOperations.push({
                                 delete: { _id: `P#${pageUniqueId}`, _index: ES_DEFAULTS().index }
