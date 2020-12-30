@@ -83,6 +83,8 @@ export default (configuration: Configuration): HandlerPlugin => ({
                 }
             }
 
+            // TODO: if we have a `render-all` job, then we can ignore all of the jobs basically (for DB namespace).
+
             const uniqueJobs = Object.values<DbQueueJob>(uniqueJobsObject);
 
             log(
