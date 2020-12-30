@@ -104,6 +104,7 @@ export default (configuration: Configuration): HandlerPlugin => ({
             for (let i = 0; i < uniqueJobs.length; i++) {
                 const uniqueJob = uniqueJobs[i];
                 log("Processing unique job.", JSON.stringify(uniqueJob));
+                const { args } = uniqueJob;
 
                 // TODO: Ideally, we'd want to add support for processing `flush` jobs as well.
                 const { render /*flush*/ } = args;
