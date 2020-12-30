@@ -12,10 +12,6 @@ const createIdentity = (permissions: any[] = []): SecurityIdentity => {
         type: "api-key",
         permissions: [
             {
-                name: "cms.settings",
-                rwd: "r"
-            },
-            {
                 name: "content.i18n",
                 locales: ["en-US"]
             },
@@ -23,7 +19,8 @@ const createIdentity = (permissions: any[] = []): SecurityIdentity => {
                 name: "cms.endpoint.read"
             },
             {
-                name: "cms.contentModel"
+                name: "cms.contentEntry",
+                rwd: "r"
             }
         ].concat(permissions)
     };

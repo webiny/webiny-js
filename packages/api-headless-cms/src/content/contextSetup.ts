@@ -35,7 +35,7 @@ const setContextCmsVariables = async (context: CmsContext): Promise<void> => {
 
     // Need to load settings because of the timestamp of last change to content models.
     // Based on that timestamp, we cache/refresh the schema definition.
-    const settings = await context.cms.settings.get();
+    const settings = await context.cms.settings.get({ auth: false });
     context.cms.getSettings = () => ({
         ...settings,
         contentModelLastChange: context.cms.settings.contentModelLastChange
