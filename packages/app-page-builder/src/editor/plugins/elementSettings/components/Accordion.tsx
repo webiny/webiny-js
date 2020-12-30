@@ -21,7 +21,7 @@ const classes = {
         padding: "12px 16px",
 
         display: "flex",
-        alignItems: "flex-start",
+        alignItems: "center",
         justifyContent: "space-between",
 
         "& .accordion-header--left": {
@@ -32,25 +32,26 @@ const classes = {
                 span: {
                     marginLeft: 16
                 }
+            }
+        },
+        "& .accordion-header--right": {
+            display: "flex",
+            "& .action-container": {
+                display: "none",
+                marginRight: 8
             },
             "& .icon-container": {
-                marginLeft: 16,
                 display: "flex",
+                alignItems: "center",
+
                 "& span": {
-                    display: "flex",
-                    marginTop: 4
+                    display: "flex"
                 },
                 "& svg": {
                     fill: "currentColor",
                     width: 14,
                     height: 14
                 }
-            }
-        },
-        "& .accordion-header--right": {
-            display: "flex",
-            "& .action-container": {
-                display: "none"
             }
         },
 
@@ -120,10 +121,10 @@ const Accordion = ({ title, children, action, icon, defaultValue = false }: Acco
                     <div className={"accordion-title"}>
                         <Typography use={"subtitle1"}>{title}</Typography>
                     </div>
-                    <div className={"icon-container"}>{icon}</div>
                 </div>
                 <div className="accordion-header--right">
                     <div className={"action-container"}>{action}</div>
+                    <div className={"icon-container"}>{icon}</div>
                 </div>
             </div>
             <div className={classNames(classes.accordionItem, { collapsed: !isOpen })}>
