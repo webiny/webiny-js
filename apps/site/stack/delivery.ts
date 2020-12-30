@@ -39,7 +39,7 @@ class Delivery {
             ],
             orderedCacheBehaviors: [
                 {
-                    allowedMethods: ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"],
+                    allowedMethods: ["GET", "HEAD", "OPTIONS"],
                     cachedMethods: ["GET", "HEAD", "OPTIONS"],
                     forwardedValues: {
                         cookies: {
@@ -50,7 +50,8 @@ class Delivery {
                     },
                     pathPattern: "/static/*",
                     viewerProtocolPolicy: "allow-all",
-                    targetOriginId: appS3Bucket.arn
+                    targetOriginId: appS3Bucket.arn,
+                    defaultTtl: 2592000 // 30 days.
                 }
             ],
             defaultRootObject: "index.html",
@@ -61,11 +62,9 @@ class Delivery {
                 cachedMethods: ["GET", "HEAD", "OPTIONS"],
                 forwardedValues: {
                     cookies: { forward: "none" },
-                    queryString: false
+                    queryString: true
                 },
-                minTtl: 0,
-                defaultTtl: 600,
-                maxTtl: 600
+                defaultTtl: 30
             },
             priceClass: "PriceClass_100",
             restrictions: {
