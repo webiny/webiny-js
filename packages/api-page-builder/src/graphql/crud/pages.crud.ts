@@ -700,7 +700,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                                         ...defaults.db,
                                         query: {
                                             PK: PK_PAGE_PUBLISHED(),
-                                            SK: publishedPageData.SK,
+                                            SK: publishedPageData.SK
                                         }
                                     })
                                     .delete({
