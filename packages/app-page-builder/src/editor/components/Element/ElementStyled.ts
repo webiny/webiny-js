@@ -43,8 +43,8 @@ export const typeStyle = css({
 
 type ElementContainerProps = {
     id: string;
-    onMouseEnter: (ev: any) => void;
-    onMouseLeave: (ev: any) => void;
+    onMouseOver: (ev: any) => void;
+    onMouseOut: (ev: any) => void;
     highlight: boolean;
     active: boolean;
     children: React.ReactNode;
