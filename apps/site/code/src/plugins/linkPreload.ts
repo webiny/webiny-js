@@ -2,6 +2,12 @@ import { ReactRouterOnLinkPlugin } from "@webiny/react-router/types";
 import gql from "graphql-tag";
 import { GET_PUBLISHED_PAGE } from "../components/Page/graphql";
 
+declare global {
+    interface Window {
+        __PS_RENDER_ID__: string;
+    }
+}
+
 export default (): ReactRouterOnLinkPlugin => {
     const preloadedPaths = [];
 
@@ -23,7 +29,12 @@ export default (): ReactRouterOnLinkPlugin => {
 
             preloadedPaths.push(path);
 
-            const fetchPath = path !== '/' ? path + `/graphql.json` : '/graphql.json';
+            let graphqlJson = "graphql.json";
+            if (window.__PS_RENDER_ID__) {
+                graphqlJson += `?k=${window.__PS_RENDER_ID__}`;
+            }
+
+            const fetchPath = path !== "/" ? `${path}/${graphqlJson}` : `/${graphqlJson}`;
             const pageState = await fetch(fetchPath)
                 .then(res => res.json())
                 .catch(() => null);
