@@ -16,10 +16,12 @@ export default [
             // After a page was unpublished, we need to rerender pages that contain pages list element.
             promises.push(
                 context.pageBuilder.pages.prerendering.render({
-                    tags: [{ class: "pb-pages-list" }]
+                    tags: [{ tag: { key: "pb-pages-list" } }]
                 })
             );
 
+            // Note: special pages (404/home/error) cannot be unpublished, that's why
+            // there is no special handling in regards to that here.
             await Promise.all(promises);
         }
     } as PageHookPlugin,
@@ -45,6 +47,9 @@ export default [
                     paths: [{ path: publishedPageData.path }]
                 });
             }
+
+            // Note: special pages (404/home/error) cannot be deleted, that's why
+            // there is no special handling in regards to that here.
         }
     } as PageHookPlugin,
     {
@@ -102,7 +107,7 @@ export default [
             // After a page was published, we need to rerender pages that contain pages list element.
             promises.push(
                 context.pageBuilder.pages.prerendering.render({
-                    tags: [{ class: "pb-pages-list" }]
+                    tags: [{ tag: { key: "pb-pages-list" } }]
                 })
             );
 
@@ -129,7 +134,9 @@ export default [
 
             // TODO: optimize this.
             // TODO: right now, on each update of settings, we trigger a complete site rebuild.
-            await context.pageBuilder.pages.prerendering.render({ tags: [{ class: "pb-page" }] });
+            await context.pageBuilder.pages.prerendering.render({
+                tags: [{ tag: { key: "pb-page" } }]
+            });
 
             // If a change on pages settings (home, error, notFound) has been made, let's rerender accordingly.
             for (let i = 0; i < meta.diff.pages.length; i++) {
@@ -173,7 +180,7 @@ export default [
         type: "pb-menu-hook",
         async afterUpdate(context, menu) {
             await context.pageBuilder.pages.prerendering.render({
-                tags: [{ class: "pb-menu", id: menu.slug }]
+                tags: [{ tag: { key: "pb-menu", value: menu.slug } }]
             });
         }
     } as MenuHookPlugin
