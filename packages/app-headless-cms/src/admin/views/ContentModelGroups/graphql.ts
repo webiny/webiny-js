@@ -42,7 +42,7 @@ export const CREATE_CONTENT_MODEL_GROUP = gql`
             data {
                 ${fields}
                 contentModels {
-                    id
+                    modelId
                     name
                 }
             }
