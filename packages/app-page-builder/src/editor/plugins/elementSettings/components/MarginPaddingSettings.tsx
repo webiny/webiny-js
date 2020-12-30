@@ -30,6 +30,7 @@ import {
     BottomRight
 } from "./StyledComponents";
 import Accordion from "./Accordion";
+import { applyFallbackDisplayMode } from "@webiny/app-page-builder/editor/plugins/elementSettings/elementSettingsUtils";
 
 const classes = {
     gridContainerClass: css({
@@ -150,6 +151,11 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
             .find(pl => pl.config.displayMode === displayMode);
     }, [displayMode]);
 
+    const fallbackValue = useMemo(
+        () => applyFallbackDisplayMode(displayMode, mode => get(element, `${valueKey}.${mode}`)),
+        [displayMode]
+    );
+
     const { getUpdateValue } = useUpdateHandlers({
         element,
         dataNamespace: valueKey,
@@ -184,11 +190,19 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
     const [top, right, bottom, left] = useMemo(() => {
         return SIDES.map(side => {
             if (advanced) {
-                return get(element, valueKey + `.${displayMode}.` + side, DEFAULT_VALUE);
+                return get(
+                    element,
+                    valueKey + `.${displayMode}.` + side,
+                    get(fallbackValue, side, DEFAULT_VALUE)
+                );
             }
-            return get(element, valueKey + `.${displayMode}.` + "all", DEFAULT_VALUE);
+            return get(
+                element,
+                valueKey + `.${displayMode}.` + "all",
+                get(fallbackValue, "all", DEFAULT_VALUE)
+            );
         });
-    }, [advanced, element, displayMode]);
+    }, [advanced, element, displayMode, fallbackValue]);
 
     return (
         <Accordion

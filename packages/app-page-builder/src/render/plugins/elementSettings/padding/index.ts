@@ -1,7 +1,7 @@
-import get from "lodash/get";
+import { get } from "lodash";
 import kebabCase from "lodash/kebabCase";
-import { plugins } from "@webiny/plugins";
-import { PbRenderResponsiveModePlugin, PbRenderElementStylePlugin } from "../../../../types";
+import { PbRenderElementStylePlugin } from "../../../../types";
+import { applyPerDeviceStyleWithFallback } from "../../../utils";
 
 const validateSpacingValue = value => {
     const parsedValue = parseInt(value);
@@ -17,21 +17,18 @@ export default {
     renderStyle({ element, style }) {
         const { padding } = get(element, "data.settings", {});
 
-        if (!padding) {
-            return style;
-        }
-        // Get editor modes
-        const editorModes = plugins
-            .byType<PbRenderResponsiveModePlugin>("pb-render-responsive-mode")
-            .map(pl => pl.config);
         // Set per side padding value
         ["top", "right", "bottom", "left"].forEach(side => {
             // Set per-device property value
-            editorModes.forEach(({ displayMode }) => {
+            applyPerDeviceStyleWithFallback(({ displayMode, fallbackMode }) => {
+                const fallbackPaddingValue = get(
+                    style,
+                    `--${kebabCase(fallbackMode)}-padding-${side}`
+                );
                 const adv = get(padding, `${displayMode}.advanced`, false);
                 const value = adv
-                    ? get(padding, `${displayMode}.${side}`)
-                    : get(padding, `${displayMode}.all`);
+                    ? get(padding, `${displayMode}.${side}`, fallbackPaddingValue)
+                    : get(padding, `${displayMode}.all`, fallbackPaddingValue);
                 style[`--${kebabCase(displayMode)}-padding-${side}`] = validateSpacingValue(value);
             });
         });

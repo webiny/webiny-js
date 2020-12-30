@@ -1,7 +1,7 @@
-import get from "lodash/get";
+import { get } from "lodash";
 import kebabCase from "lodash/kebabCase";
-import { plugins } from "@webiny/plugins";
-import { PbRenderResponsiveModePlugin, PbRenderElementStylePlugin } from "../../../../types";
+import { PbRenderElementStylePlugin } from "../../../../types";
+import { applyPerDeviceStyleWithFallback } from "../../../utils";
 
 const validateSpacingValue = value => {
     if (!value) {
@@ -20,22 +20,17 @@ export default {
     renderStyle({ element, style }) {
         const { margin } = get(element, "data.settings", {});
 
-        if (!margin) {
-            return style;
-        }
-
-        // Get editor modes
-        const editorModes = plugins
-            .byType<PbRenderResponsiveModePlugin>("pb-render-responsive-mode")
-            .map(pl => pl.config);
-
         ["top", "right", "bottom", "left"].forEach(side => {
             // Set per-device property value
-            editorModes.forEach(({ displayMode }) => {
+            applyPerDeviceStyleWithFallback(({ displayMode, fallbackMode }) => {
+                const fallbackMarginValue = get(
+                    style,
+                    `--${kebabCase(fallbackMode)}-margin-${side}`
+                );
                 const adv = get(margin, `${displayMode}.advanced`, false);
                 const value = adv
-                    ? get(margin, `${displayMode}.${side}`)
-                    : get(margin, `${displayMode}.all`);
+                    ? get(margin, `${displayMode}.${side}`, fallbackMarginValue)
+                    : get(margin, `${displayMode}.all`, fallbackMarginValue);
                 style[`--${kebabCase(displayMode)}-margin-${side}`] = validateSpacingValue(value);
             });
         });
