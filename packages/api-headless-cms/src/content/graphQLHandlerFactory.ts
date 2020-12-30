@@ -194,11 +194,14 @@ export const graphQLHandlerFactory = (
                 });
             }
 
-            return new ErrorResponse({
-                message: ex.message,
-                code: ex.code || "GENERAL_ERROR",
-                data: ex.data || {}
-            });
+            return respond(
+                http,
+                new ErrorResponse({
+                    message: ex.message,
+                    code: ex.code || "GENERAL_ERROR",
+                    data: ex.data || {}
+                })
+            );
         }
     }
 });

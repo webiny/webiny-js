@@ -393,20 +393,36 @@ const setupEntriesIndexHelpers = ({ context, model }: SetupEntriesIndexHelpersAr
 
 export const prepareEntryToIndex = (args: PrepareElasticSearchDataArgsType): IndexedEntryType => {
     const { context, entry, model } = args;
-    const plugins = context.plugins.byType<CmsModelFieldToElasticSearchPlugin>(
+    const fieldToElasticSearchPlugins = context.plugins.byType<CmsModelFieldToElasticSearchPlugin>(
         "cms-model-field-to-elastic-search"
     );
+    // we will use this plugin if no targeted plugin found
+    const defaultIndexFieldPlugin = fieldToElasticSearchPlugins.find(
+        plugin => plugin.fieldType === "*"
+    );
+
+    const modelFieldToGraphqlPlugins = context.plugins.byType<CmsModelFieldToGraphQLPlugin>(
+        "cms-model-field-to-graphql"
+    );
+    const mappedPluginFieldTypes: Record<string, CmsModelFieldToGraphQLPlugin> = {};
+    for (const plugin of modelFieldToGraphqlPlugins) {
+        mappedPluginFieldTypes[plugin.fieldType] = plugin;
+    }
+
     const fieldsAsObject: Record<string, CmsContentModelFieldType> = {};
     for (const field of model.fields) {
         fieldsAsObject[field.fieldId] = field;
     }
 
-    const fieldPlugins: Record<string, CmsModelFieldToElasticSearchPlugin> = {};
-    for (const plugin of plugins.reverse()) {
-        if (fieldPlugins[plugin.fieldType]) {
+    const mappedFieldToElasticSearchPlugins: Record<
+        string,
+        CmsModelFieldToElasticSearchPlugin
+    > = {};
+    for (const plugin of fieldToElasticSearchPlugins.reverse()) {
+        if (mappedFieldToElasticSearchPlugins[plugin.fieldType]) {
             continue;
         }
-        fieldPlugins[plugin.fieldType] = plugin;
+        mappedFieldToElasticSearchPlugins[plugin.fieldType] = plugin;
     }
 
     let preparedEntry: IndexedEntryType = {
@@ -423,8 +439,13 @@ export const prepareEntryToIndex = (args: PrepareElasticSearchDataArgsType): Ind
         if (!field) {
             throw new WebinyError(`There is no field type with fieldId "${fieldId}".`);
         }
+        const fieldTypePlugin = mappedPluginFieldTypes[field.type];
+        if (!fieldTypePlugin) {
+            throw new WebinyError(`Missing field type plugin "${field.type}".`);
+        }
 
-        const targetFieldPlugin = fieldPlugins[field.type];
+        const targetFieldPlugin =
+            mappedFieldToElasticSearchPlugins[field.type] || defaultIndexFieldPlugin;
         // we decided to take only last registered plugin for given field type
         if (targetFieldPlugin) {
             const newEntryValues = targetFieldPlugin.toIndex({
@@ -432,7 +453,8 @@ export const prepareEntryToIndex = (args: PrepareElasticSearchDataArgsType): Ind
                 model,
                 field,
                 entry,
-                value: entry.values[fieldId]
+                value: entry.values[fieldId],
+                fieldTypePlugin
             });
             preparedEntry = lodashMerge(preparedEntry, newEntryValues);
         }
@@ -450,6 +472,14 @@ export const extractEntriesFromIndex = ({
         model
     });
 
+    const modelFieldToGraphqlPlugins = context.plugins.byType<CmsModelFieldToGraphQLPlugin>(
+        "cms-model-field-to-graphql"
+    );
+    const mappedPluginFieldTypes: Record<string, CmsModelFieldToGraphQLPlugin> = {};
+    for (const plugin of modelFieldToGraphqlPlugins) {
+        mappedPluginFieldTypes[plugin.fieldType] = plugin;
+    }
+
     const list: CmsContentEntryType[] = [];
     for (const entry of entries) {
         let newEntry: CmsContentEntryType = {
@@ -463,13 +493,18 @@ export const extractEntriesFromIndex = ({
                 );
             }
             const field = fieldsAsObject[fieldId];
+            const fieldTypePlugin = mappedPluginFieldTypes[field.type];
+            if (!fieldTypePlugin) {
+                throw new WebinyError(`Missing field type plugin "${field.type}".`);
+            }
             const targetFieldPlugin = fieldPlugins[field.type];
             if (targetFieldPlugin) {
                 const calculatedEntry = targetFieldPlugin.fromIndex({
                     context,
                     model,
                     field,
-                    entry
+                    entry,
+                    fieldTypePlugin
                 });
                 newEntry = lodashMerge(newEntry, calculatedEntry);
             }

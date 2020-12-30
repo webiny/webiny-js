@@ -2,26 +2,31 @@ import { CmsModelFieldToElasticSearchPlugin } from "@webiny/api-headless-cms/typ
 
 export default (): CmsModelFieldToElasticSearchPlugin => ({
     type: "cms-model-field-to-elastic-search",
-    name: "cms-model-field-to-elastic-search-rich-text",
-    fieldType: "rich-text",
+    name: "cms-model-field-to-elastic-search-default",
+    fieldType: "*",
     toIndex(args) {
-        const { entry, value, field } = args;
+        const { field, entry, value, fieldTypePlugin } = args;
+        // when field is searchable - do nothing
+        if (fieldTypePlugin.isSearchable === true) {
+            return {};
+        }
         const values = entry.values;
-        const rawData: Record<string, any> = {};
         // we want to remove value key fieldId since we do not want it indexed by default
         delete values[field.fieldId];
-
-        rawData[field.fieldId] = value;
-        // TODO add search at some point
-
-        //
+        const rawData = {
+            [field.fieldId]: value
+        };
         return {
             values,
             rawData
         };
     },
     fromIndex(args) {
-        const { field, entry } = args;
+        const { field, entry, fieldTypePlugin } = args;
+        // when field is searchable - do nothing
+        if (fieldTypePlugin.isSearchable === true) {
+            return {};
+        }
         const rawData = entry.rawData || {};
         const rawFieldData = rawData[field.fieldId];
         // we want to remove rawData so next plugin does not run some action because of it

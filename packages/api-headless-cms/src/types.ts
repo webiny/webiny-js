@@ -602,7 +602,7 @@ export type CmsContentEntryPermissionType = SecurityPermission<{
 }>;
 
 type CmsModelFieldToElasticSearchPluginResultType = {
-    rawData: any;
+    rawData?: any;
     [key: string]: any;
 };
 export type CmsModelFieldToElasticSearchPlugin = Plugin & {
@@ -613,6 +613,7 @@ export type CmsModelFieldToElasticSearchPlugin = Plugin & {
      * { rawData: { description: ["<p>blah-blah<p>"] }, search: { description: "blah-blah"} }
      */
     toIndex(params: {
+        fieldTypePlugin: CmsModelFieldToGraphQLPlugin;
         field: CmsContentModelFieldType;
         context: CmsContext;
         model: CmsContentModelType;
@@ -622,8 +623,9 @@ export type CmsModelFieldToElasticSearchPlugin = Plugin & {
     fromIndex(params: {
         context: CmsContext;
         model: CmsContentModelType;
+        fieldTypePlugin: CmsModelFieldToGraphQLPlugin;
         field: CmsContentModelFieldType;
-        entry: CmsContentEntryType;
+        entry: CmsContentEntryType & Record<string, any>;
     }): any;
 };
 
