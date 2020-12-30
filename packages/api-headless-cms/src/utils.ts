@@ -48,6 +48,19 @@ export const hasRcpu = (permission, rcpu) => {
     return permission.rcpu.includes(rcpu);
 };
 
+const RCPU = {
+    r: "request review",
+    c: "request change",
+    p: "publish",
+    u: "unpublish"
+};
+
+const RWD = {
+    r: "read",
+    w: "write",
+    d: "delete"
+};
+
 export const checkPermissions = async <TPermission = SecurityPermission>(
     context: CmsContext,
     name: string,
@@ -59,7 +72,7 @@ export const checkPermissions = async <TPermission = SecurityPermission>(
     if (!contentPermission) {
         throw new NotAuthorizedError({
             data: {
-                reason: "contentPermission"
+                reason: "Missing access to content in any locale."
             }
         });
     }
@@ -72,7 +85,7 @@ export const checkPermissions = async <TPermission = SecurityPermission>(
     if (Array.isArray(contentPermission.locales) && !contentPermission.locales.includes(code)) {
         throw new NotAuthorizedError({
             data: {
-                reason: `missing locale "${code}"`
+                reason: `Not allowed to access content in "${code}."`
             }
         });
     }
@@ -82,7 +95,7 @@ export const checkPermissions = async <TPermission = SecurityPermission>(
     if (!permission) {
         throw new NotAuthorizedError({
             data: {
-                reason: `missing permission "${name}"`
+                reason: `Missing permission "${name}".`
             }
         });
     }
@@ -90,13 +103,11 @@ export const checkPermissions = async <TPermission = SecurityPermission>(
     if (!check) {
         return permission;
     }
-    // r = read
-    // w = write
-    // d = delete
+
     if (check.rwd && !hasRwd(permission, check.rwd)) {
         throw new NotAuthorizedError({
             data: {
-                reason: `missing "${name}" rwd "${check.rwd}"`
+                reason: `Not allowed to perform "${RWD[check.rwd]}" on "${name}".`
             }
         });
     }
@@ -108,7 +119,7 @@ export const checkPermissions = async <TPermission = SecurityPermission>(
     if (check.rcpu && !hasRcpu(permission, check.rcpu)) {
         throw new NotAuthorizedError({
             data: {
-                reason: `missing "${name}" rcpu "${check.rcpu}"`
+                reason: `Not allowed to perform "${RCPU[check.rcpu]}" on "${name}".`
             }
         });
     }
@@ -131,7 +142,7 @@ export const checkOwnership = (
     if (!identity || record[field].id !== identity.id) {
         throw new NotAuthorizedError({
             data: {
-                reason: `ownership`
+                reason: `You are not the owner of the record.`
             }
         });
     }
@@ -164,7 +175,7 @@ export const checkModelAccess = (
     }
     throw new NotAuthorizedError({
         data: {
-            reason: `model access`
+            reason: `Not allowed to access model "${model.modelId}".`
         }
     });
 };
@@ -198,29 +209,6 @@ export const validateModelAccess = (
         return false;
     }
     return true;
-};
-
-export const checkEntryAccess = (
-    context: CmsContext,
-    permission: SecurityPermission<CmsContentEntryPermissionType>,
-    model: CmsContentModelType
-): void => {
-    if (validateEntryAccess(context, permission, model)) {
-        return;
-    }
-    throw new NotAuthorizedError({
-        data: {
-            reason: `entry access`
-        }
-    });
-};
-
-export const validateEntryAccess = (
-    context: CmsContext,
-    permission: SecurityPermission<CmsContentEntryPermissionType>,
-    model: CmsContentModelType
-): boolean => {
-    return validateModelAccess(context, permission, model);
 };
 
 export const toSlug = text => {

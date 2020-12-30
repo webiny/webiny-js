@@ -93,19 +93,11 @@ const getSchema = async (args: ArgsType): Promise<GraphQLSchema> => {
 };
 
 const checkEndpointAccess = async (context: CmsContext): Promise<void> => {
-    const { type } = context.cms || {};
-    if (!type) {
-        throw new NotAuthorizedError({
-            data: {
-                reason: `missing context type`
-            }
-        });
-    }
-    const permission = await context.security.getPermission(`cms.endpoint.${type}`);
+    const permission = await context.security.getPermission(`cms.endpoint.${context.cms.type}`);
     if (!permission) {
         throw new NotAuthorizedError({
             data: {
-                reason: `endpoint access`
+                reason: `Not allowed to access "${context.cms.type}" endpoint.`
             }
         });
     }
@@ -137,14 +129,7 @@ export const graphQLHandlerFactory = (
         try {
             await checkEndpointAccess(context);
         } catch (ex) {
-            return respond(
-                http,
-                new NotAuthorizedResponse({
-                    data: {
-                        reason: "endpoint access"
-                    }
-                })
-            );
+            return respond(http, new NotAuthorizedResponse(ex));
         }
 
         try {
