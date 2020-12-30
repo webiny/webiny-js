@@ -27,7 +27,7 @@ const API_ENDPOINTS = [
     { id: "preview", name: "Preview" }
 ];
 
-export const CMSPermissions = ({ parent, value, onChange }) => {
+export const CMSPermissions = ({ value, onChange }) => {
     const { getLocales } = useI18N();
 
     const getFormLocales = () => {
@@ -124,7 +124,7 @@ export const CMSPermissions = ({ parent, value, onChange }) => {
 
             onChange(newValue);
         },
-        [parent.id, value]
+        [value]
     );
 
     const formData = useMemo(() => {
@@ -194,7 +194,7 @@ export const CMSPermissions = ({ parent, value, onChange }) => {
         });
 
         return returnData;
-    }, [parent.id]);
+    }, []);
 
     const locales = getFormLocales();
 

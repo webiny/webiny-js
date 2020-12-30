@@ -16,7 +16,7 @@ const I18N_LOCALES = `${I18N}.locales`;
 const FULL_ACCESS = "full";
 const NO_ACCESS = "no";
 
-export const I18NPermissions = ({ parent, value, onChange }) => {
+export const I18NPermissions = ({ value, onChange }) => {
     const onFormChange = useCallback(
         data => {
             let newValue = [];
@@ -38,7 +38,7 @@ export const I18NPermissions = ({ parent, value, onChange }) => {
 
             onChange(newValue);
         },
-        [parent.id, value]
+        [value]
     );
 
     const formData = useMemo(() => {
@@ -57,7 +57,7 @@ export const I18NPermissions = ({ parent, value, onChange }) => {
         if (!permission) {
             return { level: NO_ACCESS };
         }
-    }, [parent.id]);
+    }, []);
 
     return (
         <Form data={formData} onChange={onFormChange}>

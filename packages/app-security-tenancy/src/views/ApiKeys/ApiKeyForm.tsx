@@ -1,12 +1,15 @@
 import React, { useCallback } from "react";
+import { useMutation, useQuery } from "react-apollo";
+import get from "lodash/get";
 import { useRouter } from "@webiny/react-router";
 import { i18n } from "@webiny/app/i18n";
 import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { ButtonPrimary, CopyButton } from "@webiny/ui/Button";
-import { Accordion } from "@webiny/ui/Accordion";
 import { CircularProgress } from "@webiny/ui/Progress";
+import { FormElementMessage } from "@webiny/ui/FormElementMessage";
+import { Permissions } from "@webiny/app-security-tenancy/components/Permissions";
 import { validation } from "@webiny/validation";
 import {
     SimpleForm,
@@ -15,14 +18,9 @@ import {
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
 import { Typography } from "@webiny/ui/Typography";
-import { plugins } from "@webiny/plugins";
-import { AdminAppPermissionRendererPlugin } from "@webiny/app-admin/types";
-import { pickDataForAPI } from "./utils";
-import { useMutation, useQuery } from "react-apollo";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import get from "lodash/get";
+import { pickDataForAPI } from "./utils";
 import * as GQL from "./graphql";
-import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 
 const t = i18n.ns("app-security-tenancy/admin/api-keys/form");
 
@@ -81,10 +79,6 @@ const ApiKeyForm = () => {
     );
 
     const data = get(getQuery, "data.security.apiKey.data", {});
-
-    const permissionPlugins = plugins.byType<AdminAppPermissionRendererPlugin>(
-        "admin-app-permissions-renderer"
-    );
 
     return (
         <Form data={data} onSubmit={onSubmit}>
@@ -156,19 +150,7 @@ const ApiKeyForm = () => {
                                 </Cell>
                                 <Cell span={12}>
                                     <Bind name={"permissions"}>
-                                        {props => (
-                                            <Accordion elevation={0}>
-                                                {permissionPlugins.map(pl => (
-                                                    <React.Fragment key={pl.name + data.slug}>
-                                                        {pl.render({
-                                                            parent: { id: data.id || "new" },
-                                                            value: props.value,
-                                                            onChange: props.onChange
-                                                        })}
-                                                    </React.Fragment>
-                                                ))}
-                                            </Accordion>
-                                        )}
+                                        {bind => <Permissions id={data.id || "new"} {...bind} />}
                                     </Bind>
                                 </Cell>
                             </Grid>

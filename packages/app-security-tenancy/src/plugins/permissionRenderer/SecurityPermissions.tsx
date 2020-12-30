@@ -21,7 +21,7 @@ const FULL_ACCESS = "full";
 const NO_ACCESS = "no";
 const CUSTOM_ACCESS = "custom";
 
-export const SecurityPermissions = ({ parent, value, onChange }) => {
+export const SecurityPermissions = ({ value, onChange }) => {
     const onFormChange = useCallback(
         data => {
             let newValue = [];
@@ -53,7 +53,7 @@ export const SecurityPermissions = ({ parent, value, onChange }) => {
 
             onChange(newValue);
         },
-        [parent.id, value]
+        [value]
     );
 
     const formData = useMemo(() => {
@@ -97,7 +97,7 @@ export const SecurityPermissions = ({ parent, value, onChange }) => {
         }
 
         return data;
-    }, [parent.id]);
+    }, []);
 
     return (
         <Form data={formData} onChange={onFormChange}>

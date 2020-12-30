@@ -8,7 +8,7 @@ import { Radio, RadioGroup } from "@webiny/ui/Radio";
 
 const t = i18n.ns("app-i18n/admin/plugins/permissionRenderer");
 
-export const ContentPermissions = ({ parent, value, onChange }) => {
+export const ContentPermissions = ({ value, onChange }) => {
     const { getLocales } = useI18N();
 
     const onFormChange = useCallback(
@@ -26,11 +26,11 @@ export const ContentPermissions = ({ parent, value, onChange }) => {
             newValue.push(permission);
             onChange(newValue);
         },
-        [parent.id]
+        []
     );
 
     const formData = useMemo(() => {
-        const defaultData = { level: "all", locales: [] };
+        const defaultData = { level: undefined, locales: [] };
         if (!Array.isArray(value)) {
             return defaultData;
         }
@@ -45,8 +45,8 @@ export const ContentPermissions = ({ parent, value, onChange }) => {
         }
 
         return defaultData;
-    }, [parent.id]);
-
+    }, []);
+    
     return (
         <Form data={formData} onChange={onFormChange}>
             {({ data, Bind }) => (

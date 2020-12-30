@@ -22,7 +22,7 @@ const FULL_ACCESS = "full";
 const NO_ACCESS = "no";
 const CUSTOM_ACCESS = "custom";
 
-export const FormBuilderPermissions = ({ parent, value, onChange }) => {
+export const FormBuilderPermissions = ({ value, onChange }) => {
     const onFormChange = useCallback(
         data => {
             let newValue = [];
@@ -73,7 +73,7 @@ export const FormBuilderPermissions = ({ parent, value, onChange }) => {
 
             onChange(newValue);
         },
-        [parent.id, value]
+        [value]
     );
 
     const formData = useMemo(() => {
@@ -119,7 +119,7 @@ export const FormBuilderPermissions = ({ parent, value, onChange }) => {
         }
 
         return data;
-    }, [parent.id]);
+    }, []);
 
     return (
         <Form data={formData} onChange={onFormChange}>

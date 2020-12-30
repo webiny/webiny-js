@@ -1,11 +1,11 @@
 import React, { useCallback } from "react";
+import { useMutation, useQuery } from "react-apollo";
 import { useRouter } from "@webiny/react-router";
 import { i18n } from "@webiny/app/i18n";
 import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { ButtonPrimary } from "@webiny/ui/Button";
-import { Accordion } from "@webiny/ui/Accordion";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { validation } from "@webiny/validation";
 import {
@@ -15,11 +15,9 @@ import {
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
 import { Typography } from "@webiny/ui/Typography";
-import { plugins } from "@webiny/plugins";
-import { AdminAppPermissionRendererPlugin } from "@webiny/app-admin/types";
-import { pickDataForAPI } from "./utils";
-import { useMutation, useQuery } from "react-apollo";
+import { Permissions } from "@webiny/app-security-tenancy/components/Permissions";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+import { pickDataForAPI } from "./utils";
 import { CREATE_GROUP, LIST_GROUPS, READ_GROUP, UPDATE_GROUP } from "./graphql";
 
 const t = i18n.ns("app-security/admin/groups/form");
@@ -80,10 +78,6 @@ const GroupForm = () => {
 
     const data = getQuery?.data?.security?.group.data || {};
 
-    const permissionPlugins = plugins.byType<AdminAppPermissionRendererPlugin>(
-        "admin-app-permissions-renderer"
-    );
-
     return (
         <Form data={data} onSubmit={onSubmit}>
             {({ data, form, Bind }) => {
@@ -126,19 +120,7 @@ const GroupForm = () => {
                                 </Cell>
                                 <Cell span={12}>
                                     <Bind name={"permissions"}>
-                                        {props => (
-                                            <Accordion elevation={0}>
-                                                {permissionPlugins.map(pl => (
-                                                    <React.Fragment key={pl.name + data.slug}>
-                                                        {pl.render({
-                                                            parent: { id: data.id || "new" },
-                                                            value: props.value,
-                                                            onChange: props.onChange
-                                                        })}
-                                                    </React.Fragment>
-                                                ))}
-                                            </Accordion>
-                                        )}
+                                        {bind => <Permissions id={data.slug || "new"} {...bind} />}
                                     </Bind>
                                 </Cell>
                             </Grid>

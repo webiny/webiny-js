@@ -126,5 +126,6 @@ export type ApiInformationDialogPlugin = Plugin & {
 
 export type AdminAppPermissionRendererPlugin = Plugin & {
     type: "admin-app-permissions-renderer";
+    system: boolean;
     render(params: any): ReactElement;
 };
