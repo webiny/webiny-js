@@ -1,5 +1,3 @@
-import { Args, Configuration } from "../types";
-
-export default (args: Args, configuration: Configuration) => {
+export default (args, configuration) => {
     return args?.configuration?.storage.name || configuration?.storage.name;
 };

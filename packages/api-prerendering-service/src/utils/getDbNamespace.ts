@@ -1,3 +1,3 @@
-export default (args: Record<string, any>, configuration: Record<string, any>) => {
+export default (args, configuration) => {
     return args?.configuration?.db?.namespace || configuration?.db?.folder?.namepace || "";
 };
