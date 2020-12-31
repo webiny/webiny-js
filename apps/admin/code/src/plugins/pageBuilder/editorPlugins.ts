@@ -55,7 +55,6 @@ import save from "@webiny/app-page-builder/editor/plugins/elementSettings/save";
 import link from "@webiny/app-page-builder/editor/plugins/elementSettings/link";
 import gridSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/grid";
 import textSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/text";
-import visibilitySettings from "@webiny/app-page-builder/editor/plugins/elementSettings/visibility";
 // Default bar
 import defaultBarPlugins from "@webiny/app-page-builder/editor/plugins/defaultBar";
 // Responsive editor mode
@@ -129,7 +128,6 @@ export default [
     link,
     gridSettings,
     textSettings,
-    visibilitySettings,
     // Default bar
     defaultBarPlugins,
     // Responsive editor mode
