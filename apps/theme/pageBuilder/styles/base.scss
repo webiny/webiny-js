@@ -76,8 +76,6 @@
 }
 // Some styles need more specificity
 .webiny-pb-media-query--desktop .webiny-pb-base-page-element-style {
-  display: var(--desktop-visibility);
-  flex-direction: column;
 }
 
 .webiny-pb-media-query--tablet .webiny-pb-base-page-element-style {
@@ -92,8 +90,6 @@
   @include border(--tablet);
   @include background(--tablet);
 
-  display: var(--tablet-visibility);
-  flex-direction: column;
   color: var(--tablet-color);
   text-align: var(--tablet-text-align);
 
@@ -112,16 +108,11 @@
   @include border(--mobile-landscape);
   @include background(--mobile-landscape);
 
-  display: var(--mobile-landscape-visibility);
-  flex-direction: column;
   color: var(--mobile-landscape-color);
   text-align: var(--mobile-landscape-text-align);
 
   justify-content: var(--mobile-landscape-justify-content);
   align-items: var(--mobile-landscape-align-items);
-
-  // TODO: Make it also per-device
-  //background-size: contain !important;
 }
 .webiny-pb-media-query--mobile-portrait .webiny-pb-base-page-element-style {
   max-width: var(--mobile-portrait-width);
@@ -135,15 +126,11 @@
   @include border(--mobile-portrait);
   @include background(--mobile-portrait);
 
-  display: var(--mobile-portrait-visibility);
-  flex-direction: column;
   color: var(--mobile-portrait-color);
   text-align: var(--mobile-portrait-text-align);
 
   justify-content: var(--mobile-portrait-justify-content);
   align-items: var(--mobile-portrait-align-items);
-  // TODO: Make it also per-device
-  //background-size: contain !important;
 }
 // Hide content on mobile
 .webiny-pb-media-query--mobile-landscape .hide-on-mobile,
