@@ -1,7 +1,7 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createHandler } from "@webiny/handler-aws";
 import graphqlPlugins from "@webiny/handler-graphql";
-import i18nPlugins from "@webiny/api-i18n/plugins";
+import i18nPlugins from "@webiny/api-i18n/graphql";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
 import dbPlugins from "@webiny/handler-db";
