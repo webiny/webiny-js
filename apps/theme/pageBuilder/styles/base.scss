@@ -77,6 +77,7 @@
 // Some styles need more specificity
 .webiny-pb-media-query--desktop .webiny-pb-base-page-element-style {
   display: var(--desktop-visibility);
+  flex-direction: column;
 }
 
 .webiny-pb-media-query--tablet .webiny-pb-base-page-element-style {
@@ -92,6 +93,7 @@
   @include background(--tablet);
 
   display: var(--tablet-visibility);
+  flex-direction: column;
   color: var(--tablet-color);
   text-align: var(--tablet-text-align);
 
@@ -111,6 +113,7 @@
   @include background(--mobile-landscape);
 
   display: var(--mobile-landscape-visibility);
+  flex-direction: column;
   color: var(--mobile-landscape-color);
   text-align: var(--mobile-landscape-text-align);
 
@@ -133,6 +136,7 @@
   @include background(--mobile-portrait);
 
   display: var(--mobile-portrait-visibility);
+  flex-direction: column;
   color: var(--mobile-portrait-color);
   text-align: var(--mobile-portrait-text-align);
 
