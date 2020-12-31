@@ -49,9 +49,13 @@ const BlockContainer: React.FunctionComponent<BlockContainerPropsType> = ({
 
     const containerStyle = elementStyle;
     // Use per-device style
-    const justifyContent = elementStyle[`--${kebabCase(displayMode)}-justify-content`];
-    const alignItems = elementStyle[`--${kebabCase(displayMode)}-align-items`];
     const width = elementStyle[`--${kebabCase(displayMode)}-width`];
+    /**
+     * We're swapping "justifyContent" & "alignItems" value here because
+     * ".webiny-pb-layout-block" has "flex-direction: column"
+     */
+    const alignItems = elementStyle[`--${kebabCase(displayMode)}-justify-content`];
+    const justifyContent = elementStyle[`--${kebabCase(displayMode)}-align-items`];
 
     const onAddClick = () => {
         handler.trigger(
@@ -78,13 +82,15 @@ const BlockContainer: React.FunctionComponent<BlockContainerPropsType> = ({
     const totalElements = elements.length;
     return (
         <div
-            style={{ width: "100%", display: "flex", justifyContent, alignItems }}
+            style={{ width: "100%", display: "flex" }}
             className={"webiny-pb-layout-block-container " + css(containerStyle as any)}
             {...elementAttributes}
         >
             <div
                 style={{
-                    width
+                    width,
+                    justifyContent,
+                    alignItems
                 }}
                 className={combineClassNames(...customClasses)}
             >
