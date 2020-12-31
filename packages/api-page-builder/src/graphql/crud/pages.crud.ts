@@ -64,7 +64,7 @@ const PERMISSION_NAME = "pb.page";
 const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbContext> => {
     const plugin: ContextPlugin<PbContext> = {
         type: "context",
-        apply(context) {
+        async apply(context) {
             const { db, i18nContent, elasticSearch } = context;
 
             const PK_PAGE = () => `${getPKPrefix(context)}P`;

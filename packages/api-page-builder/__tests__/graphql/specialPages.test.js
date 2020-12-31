@@ -40,7 +40,7 @@ describe("Settings Test", () => {
             }
         });
 
-        let page = await createPage({ category: "category" }).then(
+        const page = await createPage({ category: "category" }).then(
             ([res]) => res.data.pageBuilder.createPage.data
         );
 
@@ -63,7 +63,7 @@ describe("Settings Test", () => {
             })
         );
 
-        const aa = await updateSettings({
+        await updateSettings({
             data: {
                 pages: {
                     home: page.id
@@ -104,11 +104,11 @@ describe("Settings Test", () => {
             }
         });
 
-        let p1 = await createPage({ category: "category" }).then(
+        const p1 = await createPage({ category: "category" }).then(
             ([res]) => res.data.pageBuilder.createPage.data
         );
 
-        let p2 = await createPage({ category: "category" }).then(
+        const p2 = await createPage({ category: "category" }).then(
             ([res]) => res.data.pageBuilder.createPage.data
         );
 

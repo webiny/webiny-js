@@ -13,7 +13,7 @@ describe("oEmbed test", () => {
                             // eslint-disable-next-line @typescript-eslint/camelcase
                             author_name: "Webiny",
                             // eslint-disable-next-line @typescript-eslint/camelcase
-	                        author_url: /^https:\/\/www.youtube.com/,
+                            author_url: /^https:\/\/www.youtube.com/,
                             // eslint-disable-next-line @typescript-eslint/camelcase
                             provider_name: "YouTube",
                             // eslint-disable-next-line @typescript-eslint/camelcase
