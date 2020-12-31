@@ -1,15 +1,18 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { Tab } from "@webiny/ui/Tabs";
-import { Input } from "@webiny/ui/Input";
-import { Grid, Cell } from "@webiny/ui/Grid";
+import { Typography } from "@webiny/ui/Typography";
+import { validation } from "@webiny/validation";
 import {
     createEmbedPlugin,
     createEmbedSettingsPlugin
 } from "./../../utils/oembed/createEmbedPlugin";
-import { ReactComponent as MediaIcon } from "./../../../elementGroups/media/round-music_video-24px.svg";
 import { ReactComponent as LogoIcon } from "./soundcloud-brands.svg";
-import { validation } from "@webiny/validation";
+import Accordion from "../../../elementSettings/components/Accordion";
+import InputField from "../../../elementSettings/components/InputField";
+import {
+    ButtonContainer,
+    SimpleButton
+} from "../../../elementSettings/components/StyledComponents";
 
 const PreviewBox = styled("div")({
     textAlign: "center",
@@ -37,20 +40,23 @@ export default () => [
     }),
     createEmbedSettingsPlugin({
         type: "soundcloud",
-        render({ Bind }) {
+        render({ Bind, submit }) {
             return (
-                <Tab icon={<MediaIcon />} label="Soundcloud">
-                    <Grid>
-                        <Cell span={12}>
-                            <Bind
-                                name={"source.url"}
-                                validators={validation.create("required,url")}
-                            >
-                                <Input label={"Song URL"} description={"Enter a song URL"} />
-                            </Bind>
-                        </Cell>
-                    </Grid>
-                </Tab>
+                <Accordion title={"SoundCloud"} defaultValue={true}>
+                    <>
+                        <Bind name={"source.url"} validators={validation.create("required,url")}>
+                            <InputField
+                                placeholder={"https://soundcloud.com/xyz"}
+                                description={"Enter a song URL"}
+                            />
+                        </Bind>
+                        <ButtonContainer>
+                            <SimpleButton onClick={submit}>
+                                <Typography use={"caption"}>Save</Typography>
+                            </SimpleButton>
+                        </ButtonContainer>
+                    </>
+                </Accordion>
             );
         }
     })

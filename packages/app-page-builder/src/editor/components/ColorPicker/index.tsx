@@ -109,7 +109,21 @@ const styles = {
     })
 };
 
-const ColorPicker = ({ value, onChange, onChangeComplete, compact = false }) => {
+type ColorPickerProps = {
+    value: string;
+    onChange: Function;
+    onChangeComplete: Function;
+    compact?: boolean;
+    handlerClassName?: string;
+};
+
+const ColorPicker = ({
+    value,
+    onChange,
+    onChangeComplete,
+    compact = false,
+    handlerClassName
+}: ColorPickerProps) => {
     const [showPicker, setShowPicker] = useState(false);
 
     const getColorValue = useCallback(rgb => {
@@ -205,7 +219,7 @@ const ColorPicker = ({ value, onChange, onChangeComplete, compact = false }) => 
             <CompactColorPicker>
                 <Menu
                     handle={
-                        <div className={styles.swatch}>
+                        <div className={classnames(styles.swatch, handlerClassName)}>
                             <div className={styles.color} style={{ backgroundColor: value }} />
                         </div>
                     }

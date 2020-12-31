@@ -30,14 +30,14 @@ export default (options: HandlerGraphQLOptions = {}): HandlerPlugin => ({
             return next();
         }
 
-        if (http.method === "OPTIONS") {
+        if (http.request.method === "OPTIONS") {
             return http.response({
                 statusCode: 204,
                 headers: DEFAULT_HEADERS
             });
         }
 
-        if (http.method !== "POST") {
+        if (http.request.method !== "POST") {
             return next();
         }
 
@@ -89,7 +89,7 @@ export default (options: HandlerGraphQLOptions = {}): HandlerPlugin => ({
         }
 
         try {
-            const body = JSON.parse(http.body);
+            const body = JSON.parse(http.request.body);
             let result;
             if (Array.isArray(body)) {
                 const promises = [];

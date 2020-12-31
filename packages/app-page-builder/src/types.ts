@@ -18,12 +18,12 @@ export type PbMenuSettingsItemPlugin = Plugin & {
     render(props: { Item: typeof Item }): React.ReactNode;
 };
 
-export type PbElementDataSettingsMarginPaddingType = {
-    all?: number;
-    top?: number;
-    right?: number;
-    bottom?: number;
-    left?: number;
+export type PbElementDataSettingsSpacingValueType = {
+    all?: string;
+    top?: string;
+    right?: string;
+    bottom?: string;
+    left?: string;
 };
 export type PbElementDataSettingsBackgroundType = {
     color?: string;
@@ -37,23 +37,48 @@ export type PbElementDataSettingsBackgroundType = {
 };
 export type PbElementDataSettingsMarginType = {
     advanced?: boolean;
-    mobile?: PbElementDataSettingsMarginPaddingType;
-    desktop?: PbElementDataSettingsMarginPaddingType;
+    mobile?: PbElementDataSettingsSpacingValueType;
+    desktop?: PbElementDataSettingsSpacingValueType;
 };
 export type PbElementDataSettingsPaddingType = {
     advanced?: boolean;
-    mobile?: PbElementDataSettingsMarginPaddingType;
-    desktop?: PbElementDataSettingsMarginPaddingType;
+    mobile?: PbElementDataSettingsSpacingValueType;
+    desktop?: PbElementDataSettingsSpacingValueType;
 };
 export type PbElementDataSettingsBorderType = {
-    width?: number;
+    width?:
+        | number
+        | {
+              all?: number;
+              top?: number;
+              right?: number;
+              bottom?: number;
+              left?: number;
+          };
     style?: "none" | "solid" | "dashed" | "dotted";
-    radius?: number;
+    radius?:
+        | number
+        | {
+              all?: number;
+              topLeft?: number;
+              topRight?: number;
+              bottomLeft?: number;
+              bottomRight?: number;
+          };
     borders?: {
         top?: boolean;
         right?: boolean;
         bottom?: boolean;
         left?: boolean;
+    };
+};
+export type PbElementDataTextType = {
+    color?: string;
+    alignment: string;
+    typography: string;
+    tag: string;
+    data: {
+        text: string;
     };
 };
 export type PbElementDataImageType = {
@@ -76,7 +101,16 @@ export type PbElementDataSettingsFormType = {
     parent?: string;
     revision?: string;
 };
+export enum AlignmentTypesEnum {
+    HORIZONTAL_LEFT = "horizontalLeft",
+    HORIZONTAL_CENTER = "horizontalCenter",
+    HORIZONTAL_RIGHT = "horizontalRight",
+    VERTICAL_TOP = "verticalTop",
+    VERTICAL_CENTER = "verticalCenter",
+    VERTICAL_BOTTOM = "verticalBottom"
+}
 export type PbElementDataSettingsType = {
+    alignment?: AlignmentTypesEnum;
     horizontalAlign?: "left" | "center" | "right" | "justify";
     horizontalAlignFlex?: "flex-start" | "center" | "flex-end";
     verticalAlign?: "start" | "center" | "end";
@@ -104,7 +138,7 @@ export type PbElementDataSettingsType = {
 export type PbElementDataType = {
     settings?: PbElementDataSettingsType;
     // this needs to be any since editor can be changed
-    text?: any;
+    text?: PbElementDataTextType;
     image?: PbElementDataImageType;
     link?: {
         href?: string;
@@ -176,24 +210,26 @@ export type PbPageLayoutComponentPlugin = Plugin & {
 };
 
 export type PbPageData = {
+    id: string;
+    path: string;
     title?: string;
     content: any;
-    seo?: {
-        title: string;
-        description: string;
-        meta: { name: string; content: string }[];
-    };
-    social?: {
-        title: string;
-        description: string;
-        meta: { property: string; content: string }[];
-        image: {
-            src: string;
-        };
-    };
     settings?: {
         general?: {
             layout?: string;
+        };
+        seo?: {
+            title: string;
+            description: string;
+            meta: { name: string; content: string }[];
+        };
+        social?: {
+            title: string;
+            description: string;
+            meta: { property: string; content: string }[];
+            image: {
+                src: string;
+            };
         };
     };
 };
@@ -311,7 +347,7 @@ export type PbEditorPageElementPlugin = Plugin & {
     // Whitelist elements that can accept this element (for drag&drop interaction)
     target?: string[];
     // Array of element settings plugin names.
-    settings?: Array<string>;
+    settings?: Array<string | Array<string | any>>;
     // A function to create an element data structure.
     create: (options: { [key: string]: any }, parent?: PbElement) => Omit<PbElement, "id" | "path">;
     // A function to render an element in the editor.
@@ -459,14 +495,19 @@ export type PbEditorBlockCategoryPlugin = Plugin & {
 export type PbEditorPageElementSettingsPlugin = Plugin & {
     type: "pb-editor-page-element-settings";
     renderAction(params: { options?: any }): ReactElement;
-    renderMenu?: (params: { options?: any }) => ReactElement;
+    elements?: boolean | string[];
+};
+
+export type PbEditorPageElementStyleSettingsPlugin = Plugin & {
+    type: "pb-editor-page-element-style-settings";
+    render(params: { options?: any }): ReactElement;
     elements?: boolean | string[];
 };
 
 export type PbEditorPageElementAdvancedSettingsPlugin = Plugin & {
     type: "pb-editor-page-element-advanced-settings";
     elementType: string;
-    render(params?: { Bind: BindComponent; data: any }): ReactElement;
+    render(params?: { Bind: BindComponent; data: any; submit: () => void }): ReactElement;
     onSave?: (data: FormData) => FormData;
 };
 
@@ -494,4 +535,15 @@ export type PbEditorPageElementSaveActionPlugin = Plugin & {
     type: "pb-editor-page-element-save-action";
     elementType: string;
     onSave: (element: PbElement) => PbElement;
+};
+
+export type PbEditorPageElementSettingsRenderComponentProps = { defaultAccordionValue?: boolean };
+
+export type PbConfigPluginType = Plugin & {
+    type: "pb-config";
+    config(): PbConfigType;
+};
+
+export type PbConfigType = {
+    maxEventActionsNesting: number;
 };

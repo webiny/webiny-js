@@ -74,15 +74,13 @@ const BlockContainer: React.FunctionComponent<BlockContainerPropsType> = ({
     const totalElements = elements.length;
     return (
         <div
-            style={{ width: "100%", display: "flex", justifyContent: "center" }}
+            style={{ width: "100%", display: "flex", justifyContent, alignItems }}
             className={"webiny-pb-layout-block-container " + css(containerStyle as any)}
             {...elementAttributes}
         >
             <div
                 style={{
-                    width: width ? width : "100%",
-                    alignSelf: justifyContent,
-                    alignItems: alignItems
+                    width: width ? width : "100%"
                 }}
                 className={combineClassNames(...customClasses)}
             >

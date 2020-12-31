@@ -1,9 +1,5 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { Tab } from "@webiny/ui/Tabs";
-import { Input } from "@webiny/ui/Input";
-import { Grid, Cell } from "@webiny/ui/Grid";
-import { ReactComponent as CodeIcon } from "./round-text_format-24px.svg";
 import { ReactComponent as TypeformLogo } from "./typeform-logo.svg";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
 import TypeFormEmbed from "./TypeFormEmbed";
@@ -13,6 +9,12 @@ import {
     PbEditorPageElementPlugin,
     PbEditorPageElementAdvancedSettingsPlugin
 } from "@webiny/app-page-builder/types";
+import Accordion from "@webiny/app-page-builder/editor/plugins/elementSettings/components/Accordion";
+import InputField from "@webiny/app-page-builder/editor/plugins/elementSettings/components/InputField";
+import {
+    ButtonContainer,
+    SimpleButton
+} from "@webiny/app-page-builder/editor/plugins/elementSettings/components/StyledComponents";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-typeform/admin");
 
@@ -44,7 +46,6 @@ export default () => [
         },
         settings: [
             "pb-editor-page-element-settings-delete",
-            "",
             "pb-editor-page-element-settings-height"
         ],
         target: ["column", "row", "list-item"],
@@ -73,23 +74,21 @@ export default () => [
         name: "pb-editor-page-element-advanced-settings-typeform",
         type: "pb-editor-page-element-advanced-settings",
         elementType: "typeform",
-        render({ Bind }) {
+        render({ Bind, submit }) {
             return (
-                <Tab icon={<CodeIcon />} label={t`Typeform`}>
-                    <Grid>
-                        <Cell span={12}>
-                            <Bind
-                                name={"source.url"}
-                                validators={validation.create("required,url")}
-                            >
-                                <Input
-                                    label={t`Typeform URL`}
-                                    description={t`Enter a Typeform URL`}
-                                />
-                            </Bind>
-                        </Cell>
-                    </Grid>
-                </Tab>
+                <Accordion title={t`Typeform`} defaultValue={true}>
+                    <React.Fragment>
+                        <Bind name={"source.url"} validators={validation.create("required,url")}>
+                            <InputField
+                                description={t`Enter a Typeform URL`}
+                                placeholder={"https://typeform.com"}
+                            />
+                        </Bind>
+                        <ButtonContainer>
+                            <SimpleButton onClick={submit}>Save</SimpleButton>
+                        </ButtonContainer>
+                    </React.Fragment>
+                </Accordion>
             );
         }
     } as PbEditorPageElementAdvancedSettingsPlugin

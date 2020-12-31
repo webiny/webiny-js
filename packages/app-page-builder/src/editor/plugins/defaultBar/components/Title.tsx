@@ -1,5 +1,4 @@
 import React, { useState, useCallback, SyntheticEvent } from "react";
-import slugify from "slugify";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor";
 import { UpdatePageRevisionActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { pageAtom, PageAtomType } from "@webiny/app-page-builder/editor/recoil/modules";
@@ -36,17 +35,15 @@ const extractPageInfo = (page: PageAtomType): any => {
 const Title: React.FunctionComponent = () => {
     const handler = useEventActionHandler();
     const page = useRecoilValue(pageAtom);
-    const { pageTitle, pageVersion, pageLocked, pageCategory, pageCategoryUrl } = extractPageInfo(
-        page
-    );
+    const { pageTitle, pageVersion, pageLocked, pageCategory } = extractPageInfo(page);
     const [editTitle, setEdit] = useState<boolean>(false);
     const [stateTitle, setTitle] = useState<string>(null);
     let title = stateTitle === null ? pageTitle : stateTitle;
 
-    const updatePage = ({ title, pageTitle, pageCategoryUrl }) => {
+    const updatePage = data => {
         handler.trigger(
             new UpdatePageRevisionActionEvent({
-                page: getRevData({ title, pageTitle, pageCategoryUrl }) as any
+                page: data
             })
         );
     };
@@ -59,7 +56,7 @@ const Title: React.FunctionComponent = () => {
             setTitle(title);
         }
         setEdit(false);
-        updatePage({ title, pageTitle, pageCategoryUrl });
+        updatePage({ title });
     }, [title]);
 
     const onKeyDown = useCallback(
@@ -80,7 +77,7 @@ const Title: React.FunctionComponent = () => {
                     e.preventDefault();
                     setEdit(false);
 
-                    updatePage({ title, pageTitle, pageCategoryUrl });
+                    updatePage({ title });
                     break;
                 default:
                     return;
@@ -125,21 +122,6 @@ const Title: React.FunctionComponent = () => {
             </div>
         </TitleWrapper>
     );
-};
-
-const getRevData = ({ title, pageTitle, pageCategoryUrl }) => {
-    const newData: { title: string; url?: string } = { title };
-    if (pageTitle === "Untitled") {
-        newData.url =
-            pageCategoryUrl +
-            slugify(title, {
-                replacement: "-",
-                lower: true,
-                remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g
-            });
-    }
-
-    return newData;
 };
 
 export default React.memo(Title);

@@ -39,7 +39,7 @@ export const createEmbedPlugin = (config: EmbedPluginConfig): PbEditorPageElemen
         type: "pb-editor-page-element",
         elementType: config.type,
         toolbar: config.toolbar,
-        settings: config.settings || ["pb-editor-page-element-settings-delete", ""],
+        settings: config.settings || ["pb-editor-page-element-settings-delete"],
         target: config.target || ["cell", "block", "list-item"],
         // eslint-disable-next-line
         create({ content = {}, ...options }) {
@@ -48,8 +48,8 @@ export const createEmbedPlugin = (config: EmbedPluginConfig): PbEditorPageElemen
                 elements: [],
                 data: {
                     settings: {
-                        margin: { desktop: { all: 0 }, mobile: { all: 0 } },
-                        padding: { desktop: { all: 0 }, mobile: { all: 0 } }
+                        margin: { desktop: { all: "0px" }, mobile: { all: "0px" } },
+                        padding: { desktop: { all: "0px" }, mobile: { all: "0px" } }
                     }
                 },
                 ...options
@@ -69,7 +69,7 @@ export const createEmbedPlugin = (config: EmbedPluginConfig): PbEditorPageElemen
 
 type EmbedPluginSidebarConfig = {
     type: string;
-    render(params?: { Bind: BindComponent }): React.ReactElement;
+    render(params?: { Bind: BindComponent; submit: () => void }): React.ReactElement;
 };
 
 export const createEmbedSettingsPlugin = ({

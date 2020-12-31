@@ -12,8 +12,6 @@
     "../handler-client",
     "../handler-db",
     "../db-dynamodb",
-    "../commodo",
-    "../validation",
     "../handler-http"
   ],
   "compilerOptions": {
@@ -48,12 +46,6 @@
     },
     {
       "path": "../db-dynamodb/tsconfig.build.json"
-    },
-    {
-      "path": "../commodo/tsconfig.build.json"
-    },
-    {
-      "path": "../validation/tsconfig.build.json"
     },
     {
       "path": "../handler-http/tsconfig.build.json"

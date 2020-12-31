@@ -1,21 +1,21 @@
 import React, { useState } from "react";
+import { BindComponentRenderProp, Form } from "@webiny/form";
+import { FbFormModelField, FormLayoutComponent } from "@webiny/app-form-builder/types";
+import { validation } from "@webiny/validation";
+
 import Input from "./fields/Input";
 import Select from "./fields/Select";
 import Radio from "./fields/Radio";
 import Checkbox from "./fields/Checkbox";
 import Textarea from "./fields/Textarea";
-import { BindComponentRenderProp, Form } from "@webiny/form";
 import HelperMessage from "./components/HelperMessage";
-import { FbFormModelField, FormLayoutComponent } from "@webiny/app-form-builder/types";
-import { validation } from "@webiny/validation";
+
 import RichTextEditorOutputRenderer from "./components/RichTextEditorOutputRenderer";
 
 /**
  * This is the default form layout component, in which we render all the form fields. We also render terms of service
  * and reCAPTCHA (if enabled in form settings), and at the bottom, the submit button. Note that we also utilized
- * the "webiny-form" package, which makes working with forms and form fields a walk in the park. Also, as labels for
- * various parts of the form can be translated to different languages via the Form Editor (eg. submit button's label,
- * terms of service message...), we use the I18NValue component, which is a part of the "webiny-app-i18n" package.
+ * the "webiny-form" package, which makes working with forms and form fields a walk in the park.
  *
  * Feel free to use this component as your starting point for your own form layouts. Add or remove things as you like!
  */

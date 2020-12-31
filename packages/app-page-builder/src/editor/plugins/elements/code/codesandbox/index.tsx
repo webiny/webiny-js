@@ -1,16 +1,18 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { Tab } from "@webiny/ui/Tabs";
-import { Input } from "@webiny/ui/Input";
-import { Grid, Cell } from "@webiny/ui/Grid";
-import { ReactComponent as CodeIcon } from "./../../../elementGroups/code/code.svg";
+import { validation } from "@webiny/validation";
+import { Typography } from "@webiny/ui/Typography";
 import {
     createEmbedPlugin,
     createEmbedSettingsPlugin
 } from "./../../utils/oembed/createEmbedPlugin";
-
 import { ReactComponent as LogoIcon } from "./codesandbox-logo.svg";
-import { validation } from "@webiny/validation";
+import Accordion from "../../../elementSettings/components/Accordion";
+import InputField from "../../../elementSettings/components/InputField";
+import {
+    ButtonContainer,
+    SimpleButton
+} from "../../../elementSettings/components/StyledComponents";
 
 const PreviewBox = styled("div")({
     textAlign: "center",
@@ -44,23 +46,23 @@ export default () => [
     }),
     createEmbedSettingsPlugin({
         type: "codesandbox",
-        render({ Bind }) {
+        render({ Bind, submit }) {
             return (
-                <Tab icon={<CodeIcon />} label="CodeSandbox">
-                    <Grid>
-                        <Cell span={12}>
-                            <Bind
-                                name={"source.url"}
-                                validators={validation.create("required,url")}
-                            >
-                                <Input
-                                    label={"CodeSandbox URL"}
-                                    description={"Enter a CodeSandbox URL"}
-                                />
-                            </Bind>
-                        </Cell>
-                    </Grid>
-                </Tab>
+                <Accordion title={"CodeSandbox"} defaultValue={true}>
+                    <>
+                        <Bind name={"source.url"} validators={validation.create("required,url")}>
+                            <InputField
+                                placeholder={"https://codesandbox.io/"}
+                                description={"Enter a CodeSandbox URL"}
+                            />
+                        </Bind>
+                        <ButtonContainer>
+                            <SimpleButton onClick={submit}>
+                                <Typography use={"caption"}>Save</Typography>
+                            </SimpleButton>
+                        </ButtonContainer>
+                    </>
+                </Accordion>
             );
         }
     })

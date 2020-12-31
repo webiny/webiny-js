@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import * as Styled from "./StyledComponents";
 import { activePluginParamsByNameSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor";
@@ -23,6 +23,7 @@ import {
     PbEditorPageElementGroupPlugin,
     PbEditorPageElementPlugin
 } from "@webiny/app-page-builder/types";
+import { useKeyHandler } from "../../../hooks/useKeyHandler";
 
 const ADD_ELEMENT = "pb-editor-toolbar-add-element";
 
@@ -47,11 +48,9 @@ const categoriesList = css({
 
 const AddElement: React.FunctionComponent = () => {
     const handler = useEventActionHandler();
-    const plugin = useRecoilValue(
-        activePluginParamsByNameSelector("pb-editor-toolbar-add-element")
-    );
-
+    const plugin = useRecoilValue(activePluginParamsByNameSelector(ADD_ELEMENT));
     const { params } = plugin || {};
+    const { removeKeyHandler, addKeyHandler } = useKeyHandler();
 
     const dragStart = useCallback(() => {
         handler.trigger(new DragStartActionEvent());
@@ -169,6 +168,15 @@ const AddElement: React.FunctionComponent = () => {
         },
         [params, deactivatePlugin, dropElement, renderOverlay]
     );
+
+    useEffect(() => {
+        addKeyHandler("escape", e => {
+            e.preventDefault();
+            deactivatePlugin();
+        });
+
+        return () => removeKeyHandler("escape");
+    });
 
     return (
         <Styled.Flex>

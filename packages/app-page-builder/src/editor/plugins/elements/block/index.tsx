@@ -11,6 +11,7 @@ import {
     createDroppedElementHelper
 } from "@webiny/app-page-builder/editor/helpers";
 import { PbEditorPageElementPlugin, PbElement } from "@webiny/app-page-builder/types";
+import { AfterDropElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions/afterDropElement";
 
 export default (): PbEditorPageElementPlugin => {
     return {
@@ -18,22 +19,18 @@ export default (): PbEditorPageElementPlugin => {
         type: "pb-editor-page-element",
         elementType: "block",
         settings: [
-            "pb-editor-page-element-settings-background",
-            "pb-editor-page-element-settings-animation",
-            "",
-            "pb-editor-page-element-settings-border",
-            "pb-editor-page-element-settings-shadow",
-            "",
-            "pb-editor-page-element-settings-padding",
-            "pb-editor-page-element-settings-margin",
-            "pb-editor-page-element-settings-width",
-            "pb-editor-page-element-settings-height",
-            "pb-editor-page-element-settings-horizontal-align-flex",
-            "pb-editor-page-element-settings-vertical-align",
-            "",
+            "pb-editor-page-element-style-settings-background",
+            "pb-editor-page-element-style-settings-animation",
+            "pb-editor-page-element-style-settings-border",
+            "pb-editor-page-element-style-settings-shadow",
+            "pb-editor-page-element-style-settings-padding",
+            "pb-editor-page-element-style-settings-margin",
+            "pb-editor-page-element-style-settings-width",
+            "pb-editor-page-element-style-settings-height",
+            "pb-editor-page-element-style-settings-horizontal-align-flex",
+            "pb-editor-page-element-style-settings-vertical-align",
             "pb-editor-page-element-settings-clone",
-            "pb-editor-page-element-settings-delete",
-            ""
+            "pb-editor-page-element-settings-delete"
         ],
         create(options = {}) {
             return {
@@ -41,16 +38,18 @@ export default (): PbEditorPageElementPlugin => {
                 elements: [],
                 data: {
                     settings: {
-                        width: { value: "1000px" },
+                        width: { value: "100%" },
                         margin: {
-                            mobile: { top: 15, left: 15, right: 15, bottom: 15 },
-                            desktop: { top: 25, left: 0, right: 0, bottom: 25 },
+                            mobile: { top: "15px", left: "15px", right: "15px", bottom: "15px" },
+                            desktop: { top: "0px", left: "0px", right: "0px", bottom: "0px" },
                             advanced: true
                         },
                         padding: {
-                            mobile: { all: 10 },
-                            desktop: { all: 0 }
-                        }
+                            mobile: { all: "10px" },
+                            desktop: { all: "0px" }
+                        },
+                        horizontalAlignFlex: "flex-start",
+                        verticalAlign: "start"
                     }
                 },
                 ...options
@@ -69,8 +68,15 @@ export default (): PbEditorPageElementPlugin => {
             const block = addElementToParentHelper(element, target, position);
 
             const result = updateElementAction(state, meta, {
-                element: block
+                element: block,
+                history: true
             }) as EventActionHandlerActionCallableResponseType;
+
+            result.actions.push(
+                new AfterDropElementActionEvent({
+                    element
+                })
+            );
 
             if (source.path) {
                 result.actions.push(

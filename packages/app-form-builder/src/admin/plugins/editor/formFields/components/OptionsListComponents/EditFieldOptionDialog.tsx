@@ -3,7 +3,6 @@ import { css } from "emotion";
 import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
-import { I18NInput } from "@webiny/app-i18n/admin/components";
 import { i18n } from "@webiny/app/i18n";
 import { Hotkeys } from "react-hotkeyz";
 import { validation } from "@webiny/validation";
@@ -51,10 +50,7 @@ const EditFieldOptionDialog = (props: EditFieldOptionDialogProps) => {
                                     <Grid>
                                         <Cell span={12}>
                                             <Bind name={"label"}>
-                                                <I18NInput
-                                                    label={t`Label`}
-                                                    showTranslateIcon={false}
-                                                />
+                                                <Input label={t`Label`} />
                                             </Bind>
                                         </Cell>
                                         <Cell span={12}>

@@ -9,7 +9,7 @@ export default ({ identityType }) => {
     return {
         type: "security-authentication",
         async authenticate(context: Context) {
-            const { headers } = context.http;
+            const { headers } = context.http.request;
             const header = headers["Authorization"] || headers["authorization"];
             const token = header ? header.split(" ").pop() : null;
             if (!token || !token.startsWith("p")) {

@@ -15,6 +15,11 @@ const GET_PUBLISHED_PAGE = gql`
                     status
                     title
                 }
+                error {
+                    code
+                    message
+                    data
+                }
             }
         }
     }
@@ -28,6 +33,11 @@ const LIST_PUBLISHED_PAGES = gql`
                     uniquePageId
                     status
                     title
+                }
+                error {
+                    code
+                    message
+                    data
                 }
             }
         }

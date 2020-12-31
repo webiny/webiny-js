@@ -9,7 +9,7 @@ import gql from "graphql-tag";
 import lodashIsEqual from "lodash/isEqual";
 import lodashDebounce from "lodash/debounce";
 
-type PageRevisionType = Pick<PageAtomType, "title" | "snippet" | "url" | "settings"> & {
+type PageRevisionType = Pick<PageAtomType, "title" | "snippet" | "path" | "settings"> & {
     category: string;
     content: PbElement;
 };
@@ -41,7 +41,7 @@ export const saveRevisionAction: EventActionCallableType<SaveRevisionActionArgsT
     const data: PageRevisionType = {
         title: state.page.title,
         snippet: state.page.snippet,
-        url: state.page.url,
+        path: state.page.path,
         settings: state.page.settings,
         content: state.content,
         category: state.page.category.slug

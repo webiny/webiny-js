@@ -235,7 +235,7 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
         const options = this.getOptions();
 
         return (
-            <div className={autoCompleteStyle}>
+            <div className={classNames(autoCompleteStyle, props.className)}>
                 <Downshift
                     defaultSelectedItem={null}
                     // @ts-ignore

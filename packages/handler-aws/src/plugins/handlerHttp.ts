@@ -12,7 +12,7 @@ export default {
 
         const { isBase64Encoded } = invocationArgs;
 
-        context.http = {
+        const request = {
             method: invocationArgs.httpMethod,
             body: invocationArgs.body,
             headers: invocationArgs.headers,
@@ -21,7 +21,12 @@ export default {
                 base: invocationArgs.rawPath,
                 parameters: invocationArgs.pathParameters,
                 query: invocationArgs.queryStringParameters
-            },
+            }
+        };
+
+        context.http = {
+            ...request,
+            request,
             response({ statusCode = 200, body = "", headers = {} }) {
                 return {
                     statusCode,
@@ -33,7 +38,9 @@ export default {
         };
 
         if (isBase64Encoded) {
-            context.http.body = Buffer.from(context.http.body, "base64").toString("utf-8");
+            context.http.request.body = Buffer.from(context.http.request.body, "base64").toString(
+                "utf-8"
+            );
         }
     }
 } as ContextPlugin<HttpContext & ArgsContext>;

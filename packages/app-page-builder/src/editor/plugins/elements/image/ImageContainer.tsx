@@ -27,11 +27,11 @@ const ImageContainer: React.FunctionComponent<ImageContainerType> = ({ element }
     const imgStyle = { width: null, height: null };
     if (image.width) {
         const { width } = image;
-        imgStyle.width = parseInt(width as string);
+        imgStyle.width = width;
     }
     if (image.height) {
         const { height } = image;
-        imgStyle.height = parseInt(height as string);
+        imgStyle.height = height;
     }
 
     const onChange = useCallback(
@@ -48,7 +48,8 @@ const ImageContainer: React.FunctionComponent<ImageContainerType> = ({ element }
                             }
                         }
                     },
-                    merge: true
+                    merge: true,
+                    history: true
                 })
             );
         },

@@ -117,12 +117,34 @@ class Db {
         });
     }
 
-    batch() {
-        return new Batch(this);
+    batch<
+        T0 = any,
+        T1 = any,
+        T2 = any,
+        T3 = any,
+        T4 = any,
+        T5 = any,
+        T6 = any,
+        T7 = any,
+        T8 = any,
+        T9 = any
+    >() {
+        return new Batch<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>(this);
     }
 }
 
-class Batch {
+class Batch<
+    T0 = any,
+    T1 = any,
+    T2 = any,
+    T3 = any,
+    T4 = any,
+    T5 = any,
+    T6 = any,
+    T7 = any,
+    T8 = any,
+    T9 = any
+> {
     db: Db;
     type: "batch" | "transaction";
     id: string;
@@ -173,7 +195,7 @@ class Batch {
         return this;
     }
 
-    async execute() {
+    async execute(): Promise<[T0?, T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?]> {
         const promises = [];
         for (let i = 0; i < this.operations.length; i++) {
             const [operation, args] = this.operations[i];
@@ -188,7 +210,9 @@ class Batch {
             );
         }
 
-        return Promise.all(promises);
+        const result = Promise.all(promises);
+
+        return result as Promise<[T0?, T1?, T2?, T3?, T4?, T5?, T6?, T7?, T8?, T9?]>;
     }
 }
 

@@ -1,11 +1,10 @@
 import document from "./document";
 import block from "./block";
 import image from "./image";
-import text from "./text";
+import paragraph from "./paragraph";
 import grid from "./grid";
 import cell from "./cell";
 import icon from "./icon";
-import spacer from "./spacer";
 import button from "./button";
 import media from "./media";
 import social from "./social";
@@ -21,8 +20,7 @@ export default [
     ...icon(),
     ...image(),
     ...imagesList(),
-    text(),
-    spacer(),
+    paragraph(),
     ...button(),
     ...media,
     ...social,

@@ -10,7 +10,7 @@ export default (options: PlaygroundConfig = {}): HandlerPlugin<HttpContext> => (
     type: "handler",
     handle(context) {
         const { http } = context;
-        const path = http.path.base || "/";
+        const path = http.request.path.base || "/";
 
         const playgroundOptions = createPlaygroundOptions(options);
 

@@ -8,7 +8,7 @@ import apiKeyCrud from "./crud/apiKey.crud";
 const tenantCache = {};
 
 const getCurrentTenant = async (context: TenancyContext): Promise<Tenant> => {
-    const { headers = {} } = context.http;
+    const { headers = {} } = context.http.request;
 
     const tenantId = headers["X-Tenant"] ?? "root";
 

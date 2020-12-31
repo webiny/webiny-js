@@ -1,19 +1,17 @@
 import React from "react";
 import { Link } from "@webiny/react-router";
-import { Menu } from "@webiny/app-page-builder/render/components";
+import Menu from "./Menu";
 import Navigation from "./Navigation";
 
-const DesktopHeader = ({
-    menuName,
-    logo,
-    name
-}: {
+type DesktopHeaderProps = {
     menuName: string;
     logo: {
         src: string;
     };
     name: string;
-}) => {
+};
+
+const DesktopHeader = ({ menuName, logo, name }: DesktopHeaderProps) => {
     return (
         <div
             className="webiny-pb-section-header__wrapper hide-on-mobile"

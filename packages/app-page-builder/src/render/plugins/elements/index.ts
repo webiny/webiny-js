@@ -4,8 +4,7 @@ import grid from "./grid";
 import cell from "./cell";
 import icon from "./icon";
 import image from "./image";
-import text from "./text";
-import spacer from "./spacer";
+import paragraph from "./paragraph";
 import button from "./button";
 import embeds from "./embeds";
 import pagesList from "./pagesList";
@@ -18,8 +17,7 @@ export default [
     cell(),
     image(),
     icon(),
-    text(),
-    spacer(),
+    paragraph(),
     button(),
     ...embeds,
     ...pagesList(),

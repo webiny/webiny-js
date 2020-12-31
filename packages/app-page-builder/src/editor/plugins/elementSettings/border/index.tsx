@@ -1,16 +1,11 @@
 import React from "react";
-import { ReactComponent as BorderIcon } from "@webiny/app-page-builder/editor/assets/icons/border_outer.svg";
-import Settings from "./Settings";
-import Action from "../components/Action";
-import { PbEditorPageElementSettingsPlugin } from "@webiny/app-page-builder/types";
+import { PbEditorPageElementStyleSettingsPlugin } from "../../../../types";
+import BorderSettings from "./BorderSettings";
 
 export default {
-    name: "pb-editor-page-element-settings-border",
-    type: "pb-editor-page-element-settings",
-    renderAction() {
-        return <Action tooltip={"Border"} plugin={this.name} icon={<BorderIcon />} />;
-    },
-    renderMenu() {
-        return <Settings />;
+    name: "pb-editor-page-element-style-settings-border",
+    type: "pb-editor-page-element-style-settings",
+    render() {
+        return <BorderSettings />;
     }
-} as PbEditorPageElementSettingsPlugin;
+} as PbEditorPageElementStyleSettingsPlugin;

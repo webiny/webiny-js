@@ -55,7 +55,7 @@ const createContentState = (content: ContentAtomType, element: PbElement, merge:
 export const updateElementAction: EventActionCallableType<UpdateElementActionArgsType> = (
     state,
     { client },
-    { element, merge, history = false }
+    { element, merge, history }
 ) => {
     const content = createContentState(lodashCloneDeep(state.content), element, merge);
     const actions = [];

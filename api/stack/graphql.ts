@@ -9,13 +9,7 @@ class Graphql {
     };
     role: aws.iam.Role;
     policy: aws.iam.RolePolicyAttachment;
-    constructor({
-        dynamoDbTable,
-        env
-    }: {
-        dynamoDbTable: aws.dynamodb.Table;
-        env: Record<string, any>;
-    }) {
+    constructor({ env }: { env: Record<string, any> }) {
         this.role = new aws.iam.Role("api-lambda-role", {
             assumeRolePolicy: {
                 Version: "2012-10-17",
@@ -49,7 +43,6 @@ class Graphql {
                 environment: {
                     variables: {
                         ...env,
-                        DB_TABLE: dynamoDbTable.name,
                         AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
                     }
                 },

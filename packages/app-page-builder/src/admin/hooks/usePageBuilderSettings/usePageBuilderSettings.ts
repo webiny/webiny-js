@@ -1,53 +1,99 @@
-import { useCallback } from "react";
-import { useQuery } from "react-apollo";
+import { useQuery, useMutation } from "react-apollo";
 import gql from "graphql-tag";
 import { get } from "lodash";
-import getPagePreviewUrlFunction from "./getPagePreviewUrl";
 
-export const DOMAIN_QUERY = gql`
-    query PbGetDomain {
-        pageBuilder {
-            getSettings {
+const DATA_FIELDS = /* GraphQL */ `
+    {
+        id
+        data {
+            websiteUrl
+            websitePreviewUrl
+            name
+            logo {
                 id
-                data {
-                    domain
+                src
+            }
+            favicon {
+                id
+                src
+            }
+            pages {
+                home
+                error
+                notFound
+            }
+            social {
+                facebook
+                twitter
+                instagram
+                image {
+                    id
+                    src
                 }
             }
+        }
+        error {
+            message
+        }
+    }
+`;
+
+export const GET_SETTINGS = gql`
+    query GetSettings {
+        pageBuilder {
+            getSettings ${DATA_FIELDS}
+            getDefaultSettings ${DATA_FIELDS}
+        }
+    }
+`;
+
+export const UPDATE_SETTINGS = gql`
+    mutation UpdateSettings($data: PbSettingsInput!) {
+        pageBuilder {
+            updateSettings(data: $data) ${DATA_FIELDS}
         }
     }
 `;
 
 export function usePageBuilderSettings() {
-    const { data, loading } = useQuery(DOMAIN_QUERY);
+    const getSettingsQuery = useQuery(GET_SETTINGS);
 
-    const getDomain = () => {
-        return get(data, "pageBuilder.getSettings.data.domain");
+    const settings = get(getSettingsQuery, "data.pageBuilder.getSettings.data") || {};
+    const defaultSettings = get(getSettingsQuery, "data.pageBuilder.getDefaultSettings.data") || {};
+
+    const getWebsiteUrl = (preview = false) => {
+        if (preview) {
+            return settings.websitePreviewUrl || defaultSettings.websitePreviewUrl;
+        }
+        return settings.websiteUrl || defaultSettings.websiteUrl;
     };
 
-    const getPageUrl = useCallback(
-        page => {
-            if (loading) {
-                return null;
-            }
-            return getDomain() + page.url;
-        },
-        [data, loading]
-    );
+    const getPageUrl = (page, preview = false) => {
+        const url = getWebsiteUrl(preview) + page.path;
+        if (!preview || page.status === "published") {
+            return url;
+        }
 
-    const getPagePreviewUrl = useCallback(
-        page => {
-            if (loading) {
-                return null;
-            }
-            return getPagePreviewUrlFunction({ page, domain: getDomain() });
-        },
-        [data, loading]
-    );
+        // We must append `preview` query param if page status is not `published`.
+        return url + "?preview=" + encodeURIComponent(page.id);
+    };
 
+    const isSpecialPage = (page, type: "home" | "error" | "notFound") => {
+        if (!settings.pages?.[type]) {
+            return false;
+        }
+
+        return settings.pages[type] === page.pid;
+    };
+
+    const updateSettingsMutation = useMutation(UPDATE_SETTINGS);
     return {
-        getDomain,
+        getWebsiteUrl,
         getPageUrl,
-        getPagePreviewUrl,
-        data: loading ? null : get(data, "pageBuilder.getSettings.data")
+        isSpecialPage,
+        settings,
+        defaultSettings,
+        getSettingsQuery,
+        updateSettingsMutation
     };
 }

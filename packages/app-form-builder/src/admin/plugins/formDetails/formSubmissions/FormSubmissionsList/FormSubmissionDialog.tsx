@@ -1,7 +1,6 @@
 import React from "react";
 import { css } from "emotion";
 import { Typography } from "@webiny/ui/Typography";
-import { I18NValue } from "@webiny/app-i18n/components";
 import { Dialog, DialogContent, DialogTitle, DialogCancel, DialogActions } from "@webiny/ui/Dialog";
 
 import { i18n } from "@webiny/app/i18n";
@@ -27,7 +26,7 @@ const getFieldValueLabel = (field, value) => {
     if (field.options.length > 0) {
         const selectedOption = field.options.find(option => option.value === value);
         if (selectedOption) {
-            return I18NValue(selectedOption.label);
+            return selectedOption.label;
         }
     }
 

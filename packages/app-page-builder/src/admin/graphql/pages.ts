@@ -6,16 +6,11 @@ error {
     message
 }`;
 
-/**
- isHomePage
- isErrorPage
- isNotFoundPage
- savedOn
- * */
 export const DATA_FIELDS = `
     id
+    pid
     title
-    url
+    path
     version
     locked
     status
@@ -55,6 +50,7 @@ export const LIST_PAGES = gql`
             listPages(where: $where, sort: $sort, limit: $limit, page: $page, search: $search) {
                 data {
                     id
+                    pid
                     status
                     title
                     version
@@ -88,19 +84,6 @@ export const LIST_PAGES = gql`
     }
 `;
 
-/**
- *
- settings {
-                        _empty
-                        ${getPlugins("pb-editor-page-settings")
-                            .map((pl: PbEditorPageSettingsPlugin) => pl.fields)
-                            .join("\n")}
-                    }
- revisions {
-                        ${sharedFields}
-                    }
- *
- * */
 export const GET_PAGE = gql`
     query GetPage($id: ID!) {
         pageBuilder {
@@ -155,16 +138,13 @@ const elementFields = /*GraphQL*/ `
     type
     category
     content
-    preview {
-        src
-        meta
-    }
+    preview
 `;
 
 export const LIST_ELEMENTS = gql`
     query PbListElements {
         pageBuilder {
-            elements: listElements(limit: 1000) {
+            elements: listPageElements {
                 data {
                     ${elementFields}
                 }

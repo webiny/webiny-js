@@ -4,9 +4,9 @@ import { useRouter } from "@webiny/react-router";
 import styled from "@emotion/styled";
 import { Elevation } from "@webiny/ui/Elevation";
 import { renderPlugins } from "@webiny/app/plugins";
-import { GET_PAGE } from "@webiny/app-page-builder/admin/graphql/pages";
-import { ElementAnimation } from "@webiny/app-page-builder/render/components";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+import { GET_PAGE } from "../../graphql/pages";
+import ElementAnimation from "../../../render/components/ElementAnimation";
 
 declare global {
     // eslint-disable-next-line

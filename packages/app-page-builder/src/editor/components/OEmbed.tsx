@@ -1,12 +1,12 @@
-import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
-import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, ReactElement } from "react";
 import gql from "graphql-tag";
 import { css } from "emotion";
 import { useQuery } from "react-apollo";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
+import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { PbElement } from "@webiny/app-page-builder/types";
-import { ReactElement } from "react";
+import useRenderEmptyEmbed from "../plugins/elements/utils/oembed/useRenderEmptyEmbed";
 
 function appendSDK(props) {
     const { sdk, global, element } = props;
@@ -98,7 +98,8 @@ const OEmbedComponent = (props: OEmbedProps) => {
                 };
                 eventActionHandler.trigger(
                     new UpdateElementActionEvent({
-                        element: newElement
+                        element: newElement,
+                        history: true
                     })
                 );
             }
@@ -108,10 +109,7 @@ const OEmbedComponent = (props: OEmbedProps) => {
         }
     });
 
-    const renderEmpty = useCallback(
-        () => <div>You must configure your embed in the settings!</div>,
-        []
-    );
+    const renderEmpty = useRenderEmptyEmbed(element);
 
     const renderEmbed = useCallback(
         (targetElement: PbElement, isLoading: boolean) => {

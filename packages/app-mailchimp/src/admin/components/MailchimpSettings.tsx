@@ -84,6 +84,7 @@ const MailchimpSettings = () => {
                                                                                         target={
                                                                                             "_blank"
                                                                                         }
+                                                                                        rel="noreferrer"
                                                                                         href="https://mailchimp.com/help/about-api-keys/"
                                                                                     >
                                                                                         {t`here`}

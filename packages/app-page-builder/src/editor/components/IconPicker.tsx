@@ -9,9 +9,11 @@ import { Menu } from "@webiny/ui/Menu";
 import { Input } from "@webiny/ui/Input";
 import { PbIcon, PbIconsPlugin } from "@webiny/app-page-builder/types";
 import classNames from "classnames";
+import { COLORS } from "../plugins/elementSettings/components/StyledComponents";
+// Icons
+import { ReactComponent as IconPickerIcon } from "../assets/icons/icon-picker.svg";
 
-const COLUMN_COUNT = 6;
-
+const noop = () => null;
 const gridItem = css({
     position: "relative",
     display: "flex",
@@ -85,17 +87,81 @@ const searchInput = css({
     }
 });
 
+const iconPickerWrapper = css({
+    display: "flex",
+    justifyContent: "flex-end",
+    height: 30,
+
+    "& .mdc-menu-surface--anchor": {
+        position: "static"
+    },
+
+    "& .button": {
+        boxSizing: "border-box",
+        width: 30,
+        height: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: COLORS.lightGray,
+        borderRadius: 1,
+        border: `1px solid ${COLORS.gray}`,
+        cursor: "pointer",
+        "&:hover:not(:disabled)": { borderColor: COLORS.darkGray, backgroundColor: COLORS.gray },
+        "&:focus:not(:disabled)": {
+            borderColor: COLORS.darkGray,
+            outline: "none",
+            backgroundColor: COLORS.gray
+        },
+        "&:disabled": {
+            opacity: 0.5,
+            cursor: "not-allowed",
+            borderColor: COLORS.lightGray
+        }
+    },
+    "& .iconContainer": {
+        boxSizing: "border-box",
+        width: 30,
+        height: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: COLORS.lightGray,
+        borderRadius: 1,
+        border: `1px solid ${COLORS.gray}`,
+
+        "& svg": {
+            width: 16,
+            height: 16
+        },
+        "&.disabled": {
+            pointerEvents: "none",
+            opacity: 0.5
+        }
+    }
+});
+
 type IconPickerPropsType = {
     value: [string, string];
     onChange: (item: PbIcon) => void;
     removable?: boolean;
+    handlerClassName?: string;
+    useInSidebar?: boolean;
+    removeIcon?: () => void;
 };
 const IconPicker: React.FunctionComponent<IconPickerPropsType> = ({
     value,
     onChange,
-    removable = true
+    removable = true,
+    handlerClassName,
+    useInSidebar,
+    removeIcon = noop
 }) => {
     const [filter, setFilter] = useState<string>("");
+    // Icon "Grid" props
+    const columnCount = useInSidebar ? 3 : 6;
+    const columnWidth = useInSidebar ? 85 : 100;
+    const gridWidth = useInSidebar ? 300 : 640;
 
     const onFilterChange = useCallback(
         (value, cb) => {
@@ -150,7 +216,7 @@ const IconPicker: React.FunctionComponent<IconPickerPropsType> = ({
     const renderCell = useCallback(
         ({ closeMenu }) => {
             return function renderCell({ columnIndex, key, rowIndex, style }) {
-                const item = icons[rowIndex * COLUMN_COUNT + columnIndex];
+                const item = icons[rowIndex * columnCount + columnIndex];
                 if (!item) {
                     return null;
                 }
@@ -201,12 +267,12 @@ const IconPicker: React.FunctionComponent<IconPickerPropsType> = ({
                     <Grid
                         className={grid}
                         cellRenderer={renderCell({ closeMenu })}
-                        columnCount={COLUMN_COUNT}
-                        columnWidth={100}
+                        columnCount={columnCount}
+                        columnWidth={columnWidth}
                         height={440}
-                        rowCount={Math.ceil(icons.length / COLUMN_COUNT)}
+                        rowCount={Math.ceil(icons.length / columnCount)}
                         rowHeight={100}
-                        width={640}
+                        width={gridWidth}
                     />
                 </>
             );
@@ -214,10 +280,35 @@ const IconPicker: React.FunctionComponent<IconPickerPropsType> = ({
         [icons]
     );
 
+    if (useInSidebar) {
+        const disableRemoveIcon = !value || !removable;
+        return (
+            <div className={iconPickerWrapper}>
+                <Menu
+                    handle={
+                        <div className={classNames("button", "menuHandler", handlerClassName)}>
+                            <IconPickerIcon />
+                        </div>
+                    }
+                >
+                    {renderGrid}
+                </Menu>
+                <div
+                    className={classNames("button", "iconContainer", {
+                        disabled: disableRemoveIcon
+                    })}
+                    onClick={removeIcon}
+                >
+                    <FontAwesomeIcon icon={(value as any) || ["far", "star"]} size={"2x"} />
+                </div>
+            </div>
+        );
+    }
+
     return (
         <Menu
             handle={
-                <div className={pickIcon}>
+                <div className={classNames(pickIcon, handlerClassName)}>
                     <FontAwesomeIcon icon={(value as any) || ["far", "star"]} size={"2x"} />
                 </div>
             }

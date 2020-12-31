@@ -1,5 +1,3 @@
-// TODO remove
-// @ts-nocheck
 import React, { useState } from "react";
 import { css } from "emotion";
 import styled from "@emotion/styled";
@@ -66,14 +64,6 @@ const SortableItem = sortableElement(
                     setOptionsValue(newValue);
                 }}
                 editOption={() => setEditOption({ index: optionIndex, data: cloneDeep(option) })}
-                setOptionTranslations={label => {
-                    const newValue = [...options];
-                    newValue.splice(optionIndex, 1, {
-                        value: option.value,
-                        label
-                    });
-                    setOptionsValue(newValue);
-                }}
             />
         </OptionListItem>
     )
