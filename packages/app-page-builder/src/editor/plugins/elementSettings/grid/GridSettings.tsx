@@ -41,15 +41,13 @@ const StyledIconButton = styled("button")(({ active }: any) => ({
     height: "auto",
     border: "0 none",
     cursor: "pointer",
-    // Highlight svg icon
-    "& svg g": {
-        strokeWidth: active ? 2 : 1
+    opacity: active ? 1 : 0.7,
+    "& svg": {
+        filter: active ? "none" : "grayscale(1)"
     },
     ":hover": {
         "& svg": {
-            "& g": {
-                strokeWidth: 2
-            }
+            boxShadow: active ? "none" : "0 0 5px rgba(0, 204, 176, 1)"
         }
     },
     ":focus": {
