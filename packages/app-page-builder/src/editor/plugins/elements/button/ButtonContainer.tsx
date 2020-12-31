@@ -55,7 +55,8 @@ const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = ({
             elements: [],
             data: {
                 ...element.data,
-                text: value.current as string
+                // @ts-ignore
+                text: value.current
             }
         };
         eventActionHandler.trigger(
