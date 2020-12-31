@@ -27,7 +27,7 @@ const ContentContainer = styled("div")(({ theme }) => ({
         overflowY: "visible", // cuts off the block selector tooltip
         overflowX: "visible",
         // We need this extra spacing so that editor content won't get cutoff
-        marginBottom: BREADCRUMB_HEIGHT
+        paddingBottom: BREADCRUMB_HEIGHT
     }
 }));
 const contentContainerWrapper = css({
@@ -104,7 +104,7 @@ const Content = () => {
         <Elevation className={contentContainerWrapper} z={0}>
             <ContentContainer
                 theme={theme}
-                className={`webiny-pb-editor-device--${kebabCase(
+                className={`mdc-elevation--z1 webiny-pb-editor-device--${kebabCase(
                     displayMode
                 )} webiny-pb-media-query--${kebabCase(displayMode)}`}
             >
