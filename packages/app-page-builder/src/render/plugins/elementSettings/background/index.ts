@@ -48,7 +48,7 @@ export default {
             const image = get(background, `${displayMode}.image`);
             const src = get(image, "file.src");
             if (src) {
-                const scaleSettings = get(scaling, get(image, "scaling"), {});
+                const scaleSettings = get(scaling, get(image, "scaling", "cover"), {});
                 const position = get(image, "position", "center center");
 
                 style[`--${kebabCase(displayMode)}-background-size`] = scaleSettings.backgroundSize;
