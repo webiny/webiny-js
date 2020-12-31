@@ -1375,7 +1375,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                                     return;
                                 }
 
-                                return await context.handlerClient.invoke<RenderHandlerArgs>({
+                                await context.handlerClient.invoke<RenderHandlerArgs>({
                                     name: configuration.prerendering.handlers.render,
                                     await: false,
                                     payload: paths.map<RenderArgs>(p => ({
@@ -1396,6 +1396,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                                         )
                                     }))
                                 });
+                                return;
                             }
 
                             if (!Array.isArray(tags)) {
@@ -1406,7 +1407,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                                 return;
                             }
 
-                            return await context.handlerClient.invoke<QueueAddHandlerArgs>({
+                            await context.handlerClient.invoke<QueueAddHandlerArgs>({
                                 name: handlers.queue.add,
                                 await: false,
                                 payload: {
@@ -1452,7 +1453,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                                     return;
                                 }
 
-                                return await context.handlerClient.invoke<FlushHandlerArgs>({
+                                await context.handlerClient.invoke<FlushHandlerArgs>({
                                     name: configuration.prerendering.handlers.flush,
                                     await: false,
                                     payload: paths.map<FlushArgs>(p => ({
@@ -1470,6 +1471,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                                         )
                                     }))
                                 });
+                                return;
                             }
 
                             if (!Array.isArray(tags)) {
@@ -1480,7 +1482,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                                 return;
                             }
 
-                            return await context.handlerClient.invoke<QueueAddHandlerArgs>({
+                            await context.handlerClient.invoke<QueueAddHandlerArgs>({
                                 name: handlers.queue.add,
                                 await: false,
                                 payload: {
