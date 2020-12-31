@@ -5,15 +5,16 @@ import { CmsContentModelType } from "@webiny/api-headless-cms/types";
 const ids = {
     field11: shortId.generate(),
     field12: shortId.generate(),
-    field21: shortId.generate(),
-    field22: shortId.generate(),
-    field23: shortId.generate(),
-    field24: shortId.generate(),
-    field25: shortId.generate(),
-    field26: shortId.generate(),
-    field27: shortId.generate(),
-    field28: shortId.generate(),
-    field29: shortId.generate(),
+    field201: shortId.generate(),
+    field202: shortId.generate(),
+    field203: shortId.generate(),
+    field204: shortId.generate(),
+    field205: shortId.generate(),
+    field206: shortId.generate(),
+    field207: shortId.generate(),
+    field208: shortId.generate(),
+    field209: shortId.generate(),
+    field210: shortId.generate(),
     field31: shortId.generate(),
     field32: shortId.generate(),
     field33: shortId.generate()
@@ -100,19 +101,20 @@ const models: CmsContentModelType[] = [
             name: contentModelGroup.name
         },
         layout: [
-            [ids.field21],
-            [ids.field22],
-            [ids.field23],
-            [ids.field24],
-            [ids.field25],
-            [ids.field26],
-            [ids.field27],
-            [ids.field28],
-            [ids.field29]
+            [ids.field201],
+            [ids.field202],
+            [ids.field203],
+            [ids.field204],
+            [ids.field205],
+            [ids.field206],
+            [ids.field207],
+            [ids.field208],
+            [ids.field209],
+            [ids.field210]
         ],
         fields: [
             {
-                id: ids.field21,
+                id: ids.field201,
                 multipleValues: false,
                 helpText: "",
                 label: "Title",
@@ -134,7 +136,7 @@ const models: CmsContentModelType[] = [
                 }
             },
             {
-                id: ids.field22,
+                id: ids.field202,
                 multipleValues: false,
                 helpText: "",
                 label: "Category",
@@ -160,7 +162,7 @@ const models: CmsContentModelType[] = [
             },
 
             {
-                id: ids.field23,
+                id: ids.field203,
                 multipleValues: false,
                 helpText: "",
                 label: "Price",
@@ -182,7 +184,7 @@ const models: CmsContentModelType[] = [
                 }
             },
             {
-                id: ids.field24,
+                id: ids.field204,
                 multipleValues: false,
                 helpText: "",
                 label: "Price",
@@ -199,7 +201,7 @@ const models: CmsContentModelType[] = [
                 }
             },
             {
-                id: ids.field25,
+                id: ids.field205,
                 multipleValues: false,
                 helpText: "",
                 label: "Price",
@@ -216,7 +218,7 @@ const models: CmsContentModelType[] = [
                 }
             },
             {
-                id: ids.field26,
+                id: ids.field206,
                 multipleValues: false,
                 helpText: "",
                 label: "Available on",
@@ -241,7 +243,7 @@ const models: CmsContentModelType[] = [
                 }
             },
             {
-                id: ids.field27,
+                id: ids.field207,
                 multipleValues: false,
                 helpText: "",
                 label: "Color",
@@ -283,7 +285,7 @@ const models: CmsContentModelType[] = [
                 }
             },
             {
-                id: ids.field28,
+                id: ids.field208,
                 multipleValues: true,
                 helpText: "",
                 label: "Available sizes",
@@ -325,7 +327,7 @@ const models: CmsContentModelType[] = [
                 }
             },
             {
-                id: ids.field29,
+                id: ids.field209,
                 multipleValues: false,
                 helpText: "Upload an image of the product",
                 label: "Image",
@@ -343,6 +345,30 @@ const models: CmsContentModelType[] = [
                 placeholderText: "placeholder text",
                 predefinedValues: {
                     enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            },
+            {
+                id: ids.field210,
+                multipleValues: true,
+                helpText: "Reviews",
+                label: "Reviews",
+                fieldId: "reviews",
+                type: "ref",
+                settings: {
+                    models: [
+                        {
+                            modelId: "review"
+                        }
+                    ]
+                },
+                validation: [],
+                placeholderText: "Reviews",
+                predefinedValues: {
+                    enabled: true,
                     values: []
                 },
                 renderer: {

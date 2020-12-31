@@ -15,6 +15,7 @@ export default /* GraphQL */ `
         color: String
         availableSizes: [String]
         image: String
+        reviews: [Review]
     }
 
     input ProductGetWhereInput {
