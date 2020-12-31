@@ -45,7 +45,7 @@ const setContextCmsVariables = async (context: CmsContext): Promise<void> => {
 export default (options: any = {}): ContextPlugin<CmsContext> => ({
     type: "context",
     apply: async context => {
-        if (context.http.method === "OPTIONS") {
+        if (context.http.request.method === "OPTIONS") {
             return;
         }
 

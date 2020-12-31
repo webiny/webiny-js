@@ -111,18 +111,18 @@ export const graphQLHandlerFactory = (
     async handle(context: CmsContext, next) {
         const { http } = context;
 
-        if (!http || !http.path || !http.path.parameters) {
+        if (!http || !http.request || !http.request.path || !http.request.path.parameters) {
             return next();
         }
 
-        if (http.method === "OPTIONS") {
+        if (http.request.method === "OPTIONS") {
             return http.response({
                 statusCode: 204,
                 headers: DEFAULT_HEADERS
             });
         }
 
-        if (http.method !== "POST") {
+        if (http.request.method !== "POST") {
             return next();
         }
 
@@ -140,7 +140,7 @@ export const graphQLHandlerFactory = (
                 type: context.cms.type
             });
 
-            const body: ParsedBody | ParsedBody[] = JSON.parse(http.body);
+            const body: ParsedBody | ParsedBody[] = JSON.parse(http.request.body);
 
             if (Array.isArray(body)) {
                 const promises = [];
