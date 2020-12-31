@@ -1,6 +1,6 @@
 import dbPlugins from "@webiny/handler-db";
 import elasticSearch from "@webiny/api-plugin-elastic-search-client";
-import i18nContext from "@webiny/api-i18n/plugins/context";
+import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import securityPlugins from "@webiny/api-security/authenticator";
 import apiKeyAuthentication from "@webiny/api-security-tenancy/authentication/apiKey";
@@ -8,7 +8,7 @@ import apiKeyAuthorization from "@webiny/api-security-tenancy/authorization/apiK
 import { createHandler } from "@webiny/handler-aws";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { mockLocalesPlugins } from "@webiny/api-i18n/testing";
+import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { Client } from "@elastic/elasticsearch";
 import { createIdentity, createPermissions, until, PermissionsArgType } from "./helpers";
