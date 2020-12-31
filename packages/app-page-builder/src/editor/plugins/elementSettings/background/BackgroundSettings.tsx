@@ -3,6 +3,8 @@ import { css } from "emotion";
 import { useRecoilValue } from "recoil";
 import startCase from "lodash/startCase";
 import get from "lodash/get";
+import set from "lodash/set";
+import merge from "lodash/merge";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { plugins } from "@webiny/plugins";
 import { Cell, Grid } from "@webiny/ui/Grid";
@@ -38,6 +40,7 @@ const imageSelect = css({
 });
 
 const DATA_NAMESPACE = "data.settings.background";
+const BACKGROUND_SETTINGS_COUNT = 2;
 
 type SettingsPropsType = {
     options: {
@@ -50,7 +53,14 @@ const BackgroundSettings: React.FunctionComponent<SettingsPropsType &
     const element = useRecoilValue(activeElementWithChildrenSelector);
     const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
         element,
-        dataNamespace: DATA_NAMESPACE
+        dataNamespace: DATA_NAMESPACE,
+        postModifyElement: ({ newElement }) => {
+            const value = get(newElement, `${DATA_NAMESPACE}.${displayMode}`, {});
+            // if only partial settings are there, merge it with fallback value
+            if (Object.keys(value).length < BACKGROUND_SETTINGS_COUNT) {
+                set(newElement, `${DATA_NAMESPACE}.${displayMode}`, merge(fallbackValue, value));
+            }
+        }
     });
 
     const { config: activeDisplayModeConfig } = useMemo(() => {

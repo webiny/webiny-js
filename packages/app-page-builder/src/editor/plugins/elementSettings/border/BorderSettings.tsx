@@ -1,6 +1,8 @@
 import React, { useCallback, useMemo } from "react";
 import { useRecoilValue } from "recoil";
 import get from "lodash/get";
+import set from "lodash/set";
+import merge from "lodash/merge";
 import { plugins } from "@webiny/plugins";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import {
@@ -20,6 +22,7 @@ import Wrapper from "../components/Wrapper";
 
 const options = ["none", "solid", "dashed", "dotted"];
 const DATA_NAMESPACE = "data.settings.border";
+const BORDER_SETTINGS_COUNT = 4;
 
 const BorderSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps> = ({
     defaultAccordionValue
@@ -28,7 +31,14 @@ const BorderSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderC
     const element = useRecoilValue(activeElementSelector);
     const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
         element,
-        dataNamespace: DATA_NAMESPACE
+        dataNamespace: DATA_NAMESPACE,
+        postModifyElement: ({ newElement }) => {
+            const value = get(newElement, `${DATA_NAMESPACE}.${displayMode}`, {});
+            // if only partial settings are there, merge it with fallback value
+            if (Object.keys(value).length < BORDER_SETTINGS_COUNT) {
+                set(newElement, `${DATA_NAMESPACE}.${displayMode}`, merge(fallbackValue, value));
+            }
+        }
     });
 
     const { config: activeDisplayModeConfig } = useMemo(() => {

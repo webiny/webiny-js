@@ -2,6 +2,8 @@ import React, { useCallback, useMemo } from "react";
 import { css } from "emotion";
 import { useRecoilValue } from "recoil";
 import get from "lodash/get";
+import set from "lodash/set";
+import merge from "lodash/merge";
 import { plugins } from "@webiny/plugins";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import {
@@ -36,7 +38,7 @@ const classes = {
         alignSelf: "center"
     })
 };
-
+const TEXT_SETTINGS_COUNT = 4;
 const DATA_NAMESPACE = "data.text";
 
 const TextSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps & {
@@ -63,7 +65,14 @@ const TextSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderCom
 
     const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
         element,
-        dataNamespace: DATA_NAMESPACE
+        dataNamespace: DATA_NAMESPACE,
+        postModifyElement: ({ newElement }) => {
+            const value = get(newElement, `${DATA_NAMESPACE}.${displayMode}`, {});
+            // if only partial settings are there, merge it with fallback value
+            if (Object.keys(value).length < TEXT_SETTINGS_COUNT) {
+                set(newElement, `${DATA_NAMESPACE}.${displayMode}`, merge(fallbackValue, value));
+            }
+        }
     });
 
     const updateColor = useCallback(
