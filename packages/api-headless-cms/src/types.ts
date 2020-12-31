@@ -641,6 +641,16 @@ export type CmsModelFieldToElasticSearchPlugin = Plugin & {
 export type CmsModelFieldToStoragePlugin = Plugin & {
     type: "cms-model-field-to-storage";
     fieldType: string;
-    toStorage?(params: { field: CmsContentModelFieldType; context: CmsContext; value: any }): any;
-    fromStorage?(params: { field: CmsContentModelFieldType; context: CmsContext; value: any }): any;
+    toStorage?(params: {
+        field: CmsContentModelFieldType;
+        model: CmsContentModelType;
+        context: CmsContext;
+        value: any;
+    }): Promise<any>;
+    fromStorage?(params: {
+        field: CmsContentModelFieldType;
+        model: CmsContentModelType;
+        context: CmsContext;
+        value: any;
+    }): Promise<any>;
 };

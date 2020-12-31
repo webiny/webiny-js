@@ -1,7 +1,8 @@
 import {
     CmsContentModelType,
     CmsFieldTypePlugins,
-    CmsContext
+    CmsContext,
+    CmsContentEntryType
 } from "@webiny/api-headless-cms/types";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { createReadTypeName, createTypeName } from "../utils/createTypeName";
@@ -9,6 +10,7 @@ import { commonFieldResolvers } from "../utils/commonFieldResolvers";
 import { resolveGet } from "../utils/resolvers/resolveGet";
 import { resolveList } from "../utils/resolvers/resolveList";
 import { pluralizedTypeName } from "../utils/pluralizedTypeName";
+import { entryFromStorageMapperFactory } from "../utils/entryStorageMapperFactory";
 
 export interface CreateReadResolvers {
     (params: {
@@ -34,11 +36,22 @@ export const createReadResolvers: CreateReadResolvers = ({ models, model, fieldT
             const { read } = fieldTypePlugins[field.type];
             const resolver = read.createResolver({ models, model, field });
 
-            resolvers[field.fieldId] = async (entry, args, ctx, info) => {
+            resolvers[field.fieldId] = async (entry, args, ctx: CmsContext, info) => {
                 const value = await resolver(entry, args, ctx, info);
                 const cacheKey = `${model.modelId}:${entry.id}:${field.fieldId}`;
                 ctx.resolvedValues.set(cacheKey, value);
-                return value;
+                // eg. decompression from storage
+                const fromStorage = entryFromStorageMapperFactory(ctx, model);
+                if (!fromStorage) {
+                    return value;
+                }
+                const { values } = await fromStorage(({
+                    values: {
+                        [field.fieldId]: value
+                    }
+                } as unknown) as CmsContentEntryType);
+
+                return values[field.fieldId];
             };
 
             return resolvers;

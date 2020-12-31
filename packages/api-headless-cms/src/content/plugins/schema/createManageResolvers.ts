@@ -1,7 +1,8 @@
 import {
     CmsContentModelType,
     CmsFieldTypePlugins,
-    CmsContext
+    CmsContext,
+    CmsContentEntryType
 } from "@webiny/api-headless-cms/types";
 import { createManageTypeName, createTypeName } from "../utils/createTypeName";
 import { commonFieldResolvers } from "../utils/commonFieldResolvers";
@@ -16,6 +17,7 @@ import { resolvePublish } from "../utils/resolvers/resolvePublish";
 import { resolveUnpublish } from "../utils/resolvers/resolveUnpublish";
 import { resolveCreateFrom } from "../utils/resolvers/resolveCreateFrom";
 import { pluralizedTypeName } from "../utils/pluralizedTypeName";
+import { entryFromStorageMapperFactory } from "../utils/entryStorageMapperFactory";
 
 export interface CreateManageResolvers {
     (params: {
@@ -53,7 +55,23 @@ export const createManageResolvers: CreateManageResolvers = ({
             (resolvers, field) => {
                 const { manage } = fieldTypePlugins[field.type];
 
-                resolvers[field.fieldId] = manage.createResolver({ models, model, field });
+                const resolver = manage.createResolver({ models, model, field });
+
+                resolvers[field.fieldId] = async (entry, args, context: CmsContext, info) => {
+                    const value = await resolver(entry, args, context, info);
+                    // eg. decompression from storage
+                    const fromStorage = entryFromStorageMapperFactory(context, model);
+                    if (!fromStorage) {
+                        return value;
+                    }
+                    const { values } = await fromStorage(({
+                        values: {
+                            [field.fieldId]: value
+                        }
+                    } as unknown) as CmsContentEntryType);
+
+                    return values[field.fieldId];
+                };
 
                 return resolvers;
             },

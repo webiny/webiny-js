@@ -8,6 +8,7 @@ import contentModelManager from "./plugins/contentModelManager";
 import fieldTypePlugins from "./plugins/graphqlFields";
 import validatorsPlugins from "./plugins/validators";
 import elasticSearchOperators from "./plugins/es";
+import fieldsStoragePlugins from "./plugins/fieldsStorage";
 
 type CmsContentPluginsIndexArgsType = {
     debug?: boolean;
@@ -22,6 +23,7 @@ export default (options: CmsContentPluginsIndexArgsType = {}) => [
     contentEntry(),
     graphQLHandlerFactory(options),
     fieldTypePlugins(),
+    fieldsStoragePlugins(),
     validatorsPlugins(),
     elasticSearchOperators()
 ];

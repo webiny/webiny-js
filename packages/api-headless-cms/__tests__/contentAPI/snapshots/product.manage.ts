@@ -18,7 +18,7 @@ export default /* GraphQL */ `
         color: String
         availableSizes: [String]
         image: String
-        reviews: [RefField]
+        richText: JSON
     }
 
     type ProductMeta {
@@ -42,7 +42,7 @@ export default /* GraphQL */ `
         color: String
         availableSizes: [String]
         image: String
-        reviews: [RefFieldInput]
+        richText: JSON
     }
 
     input ProductGetWhereInput {

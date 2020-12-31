@@ -25,6 +25,7 @@ import { afterCreateHook } from "./contentEntry/afterCreate.hook";
 import { beforeSaveHook } from "./contentEntry/beforeSave.hook";
 import { afterSaveHook } from "./contentEntry/afterSave.hook";
 import WebinyError from "@webiny/error";
+import { entryToStorageMapperFactory } from "../utils/entryStorageMapperFactory";
 
 const TYPE_ENTRY = "cms.entry";
 const TYPE_ENTRY_LATEST = TYPE_ENTRY + ".l";
@@ -253,6 +254,12 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 await beforeCreateHook({ model, entry, context });
 
+                const entryToStorageMapperCallable = entryToStorageMapperFactory(context, model);
+
+                const storageEntry = entryToStorageMapperCallable
+                    ? entryToStorageMapperCallable(entry)
+                    : entry;
+
                 await db
                     .batch()
                     // Create main entry item
@@ -262,7 +269,7 @@ export default (): ContextPlugin<CmsContext> => ({
                             PK: PK_ENTRY(uniqueId),
                             SK: SK_REVISION(version),
                             TYPE: TYPE_ENTRY,
-                            ...entry
+                            ...storageEntry
                         }
                     })
                     // Create "latest" entry item
@@ -280,7 +287,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 const preparedEntry = prepareEntryToIndex({
                     context,
                     model,
-                    entry: cloneDeep(entry)
+                    entry: cloneDeep(storageEntry)
                 });
                 await elasticSearch.create({
                     ...utils.defaults.es(context),
@@ -290,7 +297,7 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 await afterCreateHook({ model, entry, context });
 
-                return entry;
+                return storageEntry;
             },
             createRevisionFrom: async (model, sourceId, data = {}) => {
                 const permission = await checkPermissions({ rwd: "w" });
@@ -321,6 +328,14 @@ export default (): ContextPlugin<CmsContext> => ({
                 const nextVersion = parseInt(latestEntry.id.split("#")[1]) + 1;
                 const id = `${uniqueId}#${utils.zeroPad(nextVersion)}`;
 
+                const entryToStorageMapperCallable = entryToStorageMapperFactory(context, model);
+                let storageEntry: Partial<CmsContentEntryType> = {};
+                if (entryToStorageMapperCallable) {
+                    storageEntry = await entryToStorageMapperCallable({
+                        values: data || {}
+                    } as any);
+                }
+
                 const newEntry: CmsContentEntryType = {
                     id,
                     version: nextVersion,
@@ -337,7 +352,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     locked: false,
                     publishedOn: null,
                     status: STATUS_DRAFT,
-                    values: { ...entry.values, ...data }
+                    values: { ...entry.values, ...storageEntry.values }
                 };
 
                 await db
@@ -367,7 +382,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 const preparedEntry = prepareEntryToIndex({
                     context,
                     model,
-                    entry: newEntry
+                    entry: cloneDeep(newEntry)
                 });
 
                 await elasticSearch.index({
@@ -421,13 +436,21 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 utils.checkOwnership(context, permission, entry, "ownedBy");
 
+                const entryToStorageMapperCallable = entryToStorageMapperFactory(context, model);
+                let storageEntry: Partial<CmsContentEntryType> = {};
+                if (entryToStorageMapperCallable) {
+                    storageEntry = await entryToStorageMapperCallable({
+                        values: data || {}
+                    } as any);
+                }
+
                 // we need full entry because of "before/after save" hooks
                 const updatedEntry: CmsContentEntryType = {
                     ...entry,
                     savedOn: new Date().toISOString(),
                     values: {
                         ...entry.values,
-                        ...data
+                        ...storageEntry.values
                     }
                 };
 

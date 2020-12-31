@@ -353,22 +353,18 @@ const models: CmsContentModelType[] = [
             },
             {
                 id: ids.field210,
-                multipleValues: true,
-                helpText: "Reviews",
-                label: "Reviews",
-                fieldId: "reviews",
-                type: "ref",
+                multipleValues: false,
+                helpText: "Rich text",
+                label: "Rich text",
+                fieldId: "richText",
+                type: "rich-text",
                 settings: {
-                    models: [
-                        {
-                            modelId: "review"
-                        }
-                    ]
+                    type: "text"
                 },
                 validation: [],
-                placeholderText: "Reviews",
+                placeholderText: "Rich text",
                 predefinedValues: {
-                    enabled: true,
+                    enabled: false,
                     values: []
                 },
                 renderer: {
