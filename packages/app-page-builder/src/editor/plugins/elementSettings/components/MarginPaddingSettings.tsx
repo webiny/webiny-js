@@ -189,6 +189,34 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
         [advanced, displayMode, getUpdateValue]
     );
 
+    const updateValueTop = useCallback(
+        value => {
+            getUpdateValue(`${displayMode}.top`)(value);
+        },
+        [displayMode, getUpdateValue]
+    );
+
+    const updateValueRight = useCallback(
+        value => {
+            getUpdateValue(`${displayMode}.right`)(value);
+        },
+        [displayMode, getUpdateValue]
+    );
+
+    const updateValueBottom = useCallback(
+        value => {
+            getUpdateValue(`${displayMode}.bottom`)(value);
+        },
+        [displayMode, getUpdateValue]
+    );
+
+    const updateValueLeft = useCallback(
+        value => {
+            getUpdateValue(`${displayMode}.left`)(value);
+        },
+        [displayMode, getUpdateValue]
+    );
+
     const [top, right, bottom, left] = useMemo(() => {
         return SIDES.map(side => {
             if (advanced) {
@@ -233,7 +261,7 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
                 <Top className="align-center">
                     <SpacingPicker
                         value={top}
-                        onChange={getUpdateValue(`${displayMode}.top`)}
+                        onChange={updateValueTop}
                         options={options[styleAttribute]}
                     />
                 </Top>
@@ -241,7 +269,7 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
                 <Left>
                     <SpacingPicker
                         value={left}
-                        onChange={getUpdateValue(`${displayMode}.left`)}
+                        onChange={updateValueLeft}
                         options={options[styleAttribute]}
                         disabled={!advanced}
                     />
@@ -256,7 +284,7 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
                 <Right>
                     <SpacingPicker
                         value={right}
-                        onChange={getUpdateValue(`${displayMode}.right`)}
+                        onChange={updateValueRight}
                         options={options[styleAttribute]}
                         disabled={!advanced}
                     />
@@ -265,7 +293,7 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
                 <Bottom className={"align-center"}>
                     <SpacingPicker
                         value={bottom}
-                        onChange={getUpdateValue(`${displayMode}.bottom`)}
+                        onChange={updateValueBottom}
                         options={options[styleAttribute]}
                         disabled={!advanced}
                     />
