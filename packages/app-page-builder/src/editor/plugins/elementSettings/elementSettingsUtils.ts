@@ -1,5 +1,6 @@
 import { plugins } from "@webiny/plugins";
 import orderBy from "lodash/orderBy";
+import merge from "lodash/merge";
 import {
     PbEditorResponsiveModePlugin,
     PbRenderResponsiveModePlugin,
@@ -81,10 +82,14 @@ export const applyFallbackDisplayMode = (mode: DisplayMode, getValue: any) => {
     // Get fallback display mode
     const orderedConfigs = orderBy(displayModeConfigs, "minWidth", "desc");
     const index = orderedConfigs.findIndex(({ displayMode }) => displayMode === mode);
-    // Find a value till last fallback
-    for (let i = index; i >= 0; i--) {
-        if (getValue(orderedConfigs[i].displayMode)) {
-            return getValue(orderedConfigs[i].displayMode);
+
+    // Merge all values from base "DisplayMode" upto current
+    let output = undefined;
+    for (let i = 0; i < index; i++) {
+        const currentValue = getValue(orderedConfigs[i].displayMode);
+        if (currentValue) {
+            output = merge(output, currentValue);
         }
     }
+    return output;
 };
