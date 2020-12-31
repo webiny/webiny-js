@@ -51,11 +51,13 @@ const classes = {
         }
     }),
     linkSettings: css({
+        boxSizing: "border-box",
+        width: 25,
+        height: 25,
         display: "flex",
         alignItems: "center",
         border: `1px solid ${COLORS.gray}`,
-        padding: "0px 5px",
-        minHeight: 30,
+        padding: "0px 4px",
 
         "& svg": {
             transform: "rotate(135deg)",
