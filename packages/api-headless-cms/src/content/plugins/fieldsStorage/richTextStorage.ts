@@ -5,6 +5,8 @@ export default (): CmsModelFieldToStoragePlugin => ({
     name: "cms-model-field-to-storage-rich-text",
     fieldType: "rich-text",
     fromStorage(args) {
+        // https://www.npmjs.com/package/jsonpack
+        // { compression: "jsonpack", value: "....." }
         return args.value;
     },
     toStorage(args): any {
