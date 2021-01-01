@@ -383,13 +383,13 @@ describe("versioning and publishing pages", () => {
             .read({
                 ...defaults.db,
                 query: {
-                    PK: "T#root#L#en-US#PB#P#P#PATH",
+                    PK: "T#root#L#en-US#PB#PATH",
                     SK: { $gte: " " }
                 }
             })
             .then(([[entry]]) =>
                 expect(entry).toEqual({
-                    PK: "T#root#L#en-US#PB#P#P#PATH",
+                    PK: "T#root#L#en-US#PB#PATH",
                     SK: "/pages-test-updated",
                     TYPE: "pb.page.p.path",
                     id: `${p1v1.pid}#0002`,
@@ -472,6 +472,49 @@ describe("versioning and publishing pages", () => {
 
         // Try publishing 2nd page, it should work.
         await publishPage({ id: p1v1.id });
+
+        await getPublishedPage({ path: "/pages-test" }).then(([res]) =>
+            expect(res).toMatchObject({
+                "data": {
+                    "pageBuilder": {
+                        "getPublishedPage": {
+                            "data": {
+                                "category": {
+                                    "slug": "slug"
+                                },
+                                "locked": true,
+                                "path": "/pages-test",
+                                "settings": {
+                                    "general": {
+                                        "image": null,
+                                        "layout": "layout",
+                                        "snippet": null,
+                                        "tags": null
+                                    },
+                                    "seo": {
+                                        "description": null,
+                                        "meta": [],
+                                        "title": null
+                                    },
+                                    "social": {
+                                        "description": null,
+                                        "image": null,
+                                        "meta": [],
+                                        "title": null
+                                    }
+                                },
+                                "status": "published",
+                                "title": "Untitled",
+                                "url": "/pages-test",
+                                "version": 1
+                            },
+                            "error": null
+                        }
+                    }
+                }
+            })
+        );
+
         await unpublishPage({ id: p1v1.id });
 
         // This one should not return any results - it's an old URL.

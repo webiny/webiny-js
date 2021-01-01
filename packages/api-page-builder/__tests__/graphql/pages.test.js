@@ -36,7 +36,7 @@ describe("CRUD Test", () => {
             }
         });
 
-        const [category] = await createCategory({
+        await createCategory({
             data: {
                 slug: `slug`,
                 name: `name`,
@@ -49,7 +49,7 @@ describe("CRUD Test", () => {
         // Test creating, getting and updating three pages.
         for (let i = 0; i < 3; i++) {
             let data = {
-                category: category.data.pageBuilder.createCategory.data.slug
+                category: 'slug'
             };
 
             let [response] = await createPage(data);
