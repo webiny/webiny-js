@@ -436,7 +436,7 @@ describe("MANAGE - Resolvers", () => {
         });
     });
 
-    test.only(`update category`, async () => {
+    test(`update category`, async () => {
         await setupContentModel();
         const { until, createCategory, updateCategory, listCategories } = useCategoryManageHandler(
             manageOpts

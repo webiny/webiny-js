@@ -470,7 +470,11 @@ export default (): ContextPlugin<CmsContext> => ({
                     ...entry,
                     savedOn: new Date().toISOString(),
                     values: {
+                        // Values from DB
                         ...entry.values,
+                        // New values
+                        ...data,
+                        // Transformed values
                         ...storageEntry.values
                     }
                 };
