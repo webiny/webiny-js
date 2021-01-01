@@ -29,6 +29,7 @@ const productFields = `
     availableOn
     color
     availableSizes
+    richText
 `;
 
 const errorFields = `

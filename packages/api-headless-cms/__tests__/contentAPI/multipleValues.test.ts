@@ -264,6 +264,12 @@ describe("multiple values in field", () => {
                         availableSizes: ["s", "m"],
                         inStock: null,
                         itemsInStock: null,
+                        richText: [
+                            {
+                                tag: "p",
+                                value: "some text"
+                            }
+                        ],
                         meta: {
                             locked: false,
                             modelId: "product",
