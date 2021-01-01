@@ -1,5 +1,3 @@
-import mdbid from "mdbid";
-import useContentHandler from "./utils/useContentHandler";
 import mocks from "./mocks/predefinedValues";
 
 // eslint-disable-next-line

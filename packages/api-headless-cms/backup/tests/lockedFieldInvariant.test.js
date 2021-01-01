@@ -1,6 +1,4 @@
-import useContentHandler from "./utils/useContentHandler";
 import lockedFieldsMocks from "./mocks/fields/lockedFields";
-import { createContentModelGroup, createEnvironment } from "@webiny/api-headless-cms/testing";
 
 // eslint-disable-next-line
 describe.skip("Locked Field - Invariant test", () => {

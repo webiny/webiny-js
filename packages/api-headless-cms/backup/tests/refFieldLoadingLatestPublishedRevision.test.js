@@ -1,8 +1,5 @@
-import useContentHandler from "./utils/useContentHandler";
 import mocks from "./mocks/fields/refFieldLoadingLatestPublishedRevision";
 import pick from "lodash/pick";
-import { createContentModelGroup, createEnvironment } from "@webiny/api-headless-cms/testing";
-import { Database } from "@commodo/fields-storage-nedb";
 
 // eslint-disable-next-line
 describe.skip("Ref Field - loading of latest and published revisions", () => {

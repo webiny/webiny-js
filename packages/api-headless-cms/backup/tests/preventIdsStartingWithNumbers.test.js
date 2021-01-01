@@ -1,6 +1,4 @@
-import useContentHandler from "./utils/useContentHandler";
 import mocks from "./mocks/preventIdsStartingWithNumbers";
-import { createContentModelGroup, createEnvironment } from "@webiny/api-headless-cms/testing";
 
 // eslint-disable-next-line
 describe.skip("Unlocking Fields Test", () => {

@@ -1,6 +1,4 @@
-import useContentHandler from "./utils/useContentHandler";
 import mocks from "./mocks/pluralizeContentModel";
-import { createContentModelGroup, createEnvironment } from "@webiny/api-headless-cms/testing";
 
 const LIST_P = /* GraphQL */ `
     query {

@@ -1,6 +1,3 @@
-import { setupContext } from "@webiny/graphql/testing";
-import validatorPlugins from "../src/content/plugins/validators";
-
 // eslint-disable-next-line
 describe.skip("Headless CMS - Field validators", () => {
     let context;
