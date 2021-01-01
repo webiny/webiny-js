@@ -25,7 +25,10 @@ import { afterCreateHook } from "./contentEntry/afterCreate.hook";
 import { beforeSaveHook } from "./contentEntry/beforeSave.hook";
 import { afterSaveHook } from "./contentEntry/afterSave.hook";
 import WebinyError from "@webiny/error";
-import { entryToStorageMapperFactory } from "../utils/entryStorageMapperFactory";
+import {
+    entryFromStorageMapperFactory,
+    entryToStorageMapperFactory
+} from "../utils/entryStorageMapperFactory";
 
 const TYPE_ENTRY = "cms.entry";
 const TYPE_ENTRY_LATEST = TYPE_ENTRY + ".l";
@@ -308,7 +311,8 @@ export default (): ContextPlugin<CmsContext> => ({
                 const preparedEntry = prepareEntryToIndex({
                     context,
                     model,
-                    entry: cloneDeep(storageEntry)
+                    storageEntry: cloneDeep(storageEntry),
+                    originalEntry: cloneDeep(entry)
                 });
                 await elasticSearch.create({
                     ...utils.defaults.es(context),
@@ -373,7 +377,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     locked: false,
                     publishedOn: null,
                     status: STATUS_DRAFT,
-                    values: { ...entry.values, ...storageEntry.values }
+                    values: { ...entry.values, ...data, ...storageEntry.values }
                 };
 
                 await db
@@ -400,10 +404,17 @@ export default (): ContextPlugin<CmsContext> => ({
                     })
                     .execute();
 
+                // We need to convert data from DB to its original form before constructing ES index data.
+                const entryFromStorageCallable = entryFromStorageMapperFactory(context, model);
+                const originalEntry = entryFromStorageCallable
+                    ? await entryFromStorageCallable(newEntry)
+                    : newEntry;
+
                 const preparedEntry = prepareEntryToIndex({
                     context,
                     model,
-                    entry: cloneDeep(newEntry)
+                    originalEntry: cloneDeep(originalEntry),
+                    storageEntry: cloneDeep(newEntry)
                 });
 
                 await elasticSearch.index({
@@ -490,10 +501,17 @@ export default (): ContextPlugin<CmsContext> => ({
                     }
                 });
 
+                // We need to convert data from DB to its original form before constructing ES index data.
+                const entryFromStorageCallable = entryFromStorageMapperFactory(context, model);
+                const originalEntry = entryFromStorageCallable
+                    ? await entryFromStorageCallable(updatedEntry)
+                    : updatedEntry;
+
                 const preparedEntry = prepareEntryToIndex({
                     context,
                     model,
-                    entry: cloneDeep(updatedEntry)
+                    originalEntry: cloneDeep(originalEntry),
+                    storageEntry: cloneDeep(updatedEntry)
                 });
 
                 if (latestEntry.id === id) {

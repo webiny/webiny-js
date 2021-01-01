@@ -631,8 +631,10 @@ export type CmsModelFieldToElasticSearchPlugin = Plugin & {
         field: CmsContentModelFieldType;
         context: CmsContext;
         model: CmsContentModelType;
-        entry: CmsContentEntryType;
-        value: any;
+        // This is the entry in the same form it gets stored to DB (processed, possibly compressed, etc.)
+        storageEntry: CmsContentEntryType;
+        // This is the entry in the original form (the way it comes into the API)
+        originalEntry: CmsContentEntryType;
     }): CmsModelFieldToElasticSearchPluginResultType;
     fromIndex(params: {
         context: CmsContext;

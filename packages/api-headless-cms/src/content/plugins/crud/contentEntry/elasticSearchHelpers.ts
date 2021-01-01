@@ -13,7 +13,6 @@ import {
 } from "@webiny/api-headless-cms/types";
 import { decodeElasticSearchCursor } from "@webiny/api-headless-cms/utils";
 import Error from "@webiny/error";
-import WebinyError from "@webiny/error";
 import lodashMerge from "lodash/merge";
 
 type ModelFieldType = {
@@ -356,7 +355,8 @@ type IndexedEntryType = CmsContentEntryType & {
     [key: string]: any;
 };
 type PrepareElasticSearchDataArgsType = SetupEntriesIndexHelpersArgsType & {
-    entry: CmsContentEntryType;
+    storageEntry: CmsContentEntryType;
+    originalEntry: CmsContentEntryType;
 };
 type ExtractEntryFromIndexArgsType = SetupEntriesIndexHelpersArgsType & {
     entry: IndexedEntryType;
@@ -388,7 +388,7 @@ const setupEntriesIndexHelpers = ({ context, model }: SetupEntriesIndexHelpersAr
 };
 
 export const prepareEntryToIndex = (args: PrepareElasticSearchDataArgsType): IndexedEntryType => {
-    const { context, entry, model } = args;
+    const { context, originalEntry, storageEntry, model } = args;
     const fieldToElasticSearchPlugins = context.plugins.byType<CmsModelFieldToElasticSearchPlugin>(
         "cms-model-field-to-elastic-search"
     );
@@ -422,22 +422,21 @@ export const prepareEntryToIndex = (args: PrepareElasticSearchDataArgsType): Ind
     }
 
     let preparedEntry: IndexedEntryType = {
-        ...entry,
+        ...storageEntry,
         rawData: {}
     };
-    for (const fieldId in entry.values) {
-        if (entry.values.hasOwnProperty(fieldId) === false) {
-            throw new Error(
-                `There is no ${fieldId} in entry.values being looped through. Which is impossible...`
-            );
+    for (const fieldId in storageEntry.values) {
+        if (storageEntry.values.hasOwnProperty(fieldId) === false) {
+            continue;
         }
+
         const field = fieldsAsObject[fieldId];
         if (!field) {
-            throw new WebinyError(`There is no field type with fieldId "${fieldId}".`);
+            throw new Error(`There is no field type with fieldId "${fieldId}".`);
         }
         const fieldTypePlugin = mappedPluginFieldTypes[field.type];
         if (!fieldTypePlugin) {
-            throw new WebinyError(`Missing field type plugin "${field.type}".`);
+            throw new Error(`Missing field type plugin "${field.type}".`);
         }
 
         const targetFieldPlugin =
@@ -448,8 +447,8 @@ export const prepareEntryToIndex = (args: PrepareElasticSearchDataArgsType): Ind
                 context,
                 model,
                 field,
-                entry,
-                value: entry.values[fieldId],
+                originalEntry,
+                storageEntry,
                 fieldTypePlugin
             });
             preparedEntry = lodashMerge(preparedEntry, newEntryValues);
@@ -483,15 +482,12 @@ export const extractEntriesFromIndex = ({
         };
         for (const fieldId in fieldsAsObject) {
             if (fieldsAsObject.hasOwnProperty(fieldId) === false) {
-                throw new WebinyError(
-                    `There is no ${fieldId} in fields object being looped through. Which is impossible...`,
-                    "EXTRACT_ENTRIES_FROM_INDEX_ERROR"
-                );
+                continue;
             }
             const field = fieldsAsObject[fieldId];
             const fieldTypePlugin = mappedPluginFieldTypes[field.type];
             if (!fieldTypePlugin) {
-                throw new WebinyError(`Missing field type plugin "${field.type}".`);
+                throw new Error(`Missing field type plugin "${field.type}".`);
             }
             const targetFieldPlugin = fieldPlugins[field.type];
             if (targetFieldPlugin) {
