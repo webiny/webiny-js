@@ -85,3 +85,25 @@ export const entryStorageMapperFactory = (
         };
     };
 };
+
+export const entryFieldFromStorage = async (
+    context: CmsContext,
+    model: CmsContentModelType,
+    field: CmsContentModelFieldType,
+    value: any
+) => {
+    const fromStorage = entryFromStorageMapperFactory(context, model);
+    if (!fromStorage) {
+        return value;
+    }
+
+    // Storage transformers are optimized for bulk processing so we need to pass a partial
+    // entry object to it. We get a transformed entry back.
+    const transformedEntry = await fromStorage(({
+        values: {
+            [field.fieldId]: value
+        }
+    } as unknown) as CmsContentEntryType);
+
+    return transformedEntry.values[field.fieldId];
+};
