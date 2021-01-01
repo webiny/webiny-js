@@ -59,7 +59,7 @@ export const createManageResolvers: CreateManageResolvers = ({
                 resolvers[field.fieldId] = async (entry, args, context: CmsContext, info) => {
                     const value = await resolver(entry, args, context, info);
                     // Get transformed value (eg. data decompression)
-                    return entryFieldFromStorage(context, model, field, value);
+                    return entryFieldFromStorage(context, model, entry, field, value);
                 };
 
                 return resolvers;

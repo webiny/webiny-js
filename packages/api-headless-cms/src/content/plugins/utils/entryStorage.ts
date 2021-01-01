@@ -107,16 +107,20 @@ export const entryFromStorageTransform = async (
 export const entryFieldFromStorage = async (
     context: CmsContext,
     model: CmsContentModelType,
+    entry: CmsContentEntryType,
     field: CmsContentModelFieldType,
     value: any
 ) => {
-    const entry = ({
+    const transformedEntry = await entryFromStorageTransform(context, model, {
+        // required due to possibility that resolver for the field did something to it and value in entry is not valid at that point
+        ...entry,
         values: {
+            ...entry.values,
             [field.fieldId]: value
         }
-    } as unknown) as CmsContentEntryType;
-
-    const transformedEntry = await entryFromStorageTransform(context, model, entry);
-
+    });
+    if (!transformedEntry.values[field.fieldId]) {
+        return null;
+    }
     return transformedEntry.values[field.fieldId];
 };

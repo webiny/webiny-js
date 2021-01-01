@@ -39,7 +39,7 @@ export const createReadResolvers: CreateReadResolvers = ({ models, model, fieldT
                 const value = await resolver(entry, args, ctx, info);
 
                 // Get transformed value (eg. data decompression)
-                return entryFieldFromStorage(ctx, model, field, value);
+                return entryFieldFromStorage(ctx, model, entry, field, value);
             };
 
             return resolvers;
