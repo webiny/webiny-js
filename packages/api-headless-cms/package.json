@@ -34,6 +34,7 @@
     "apollo-server-core": "2.17.0",
     "apollo-server-env": "^2.4.3",
     "dataloader": "^2.0.0",
+    "jsonpack": "^1.1.5",
     "fast-deep-equal": "^3.1.1",
     "fecha": "^4.0.0",
     "graphql-tag": "^2.10.1",
@@ -61,7 +62,8 @@
     "jest-dynalite": "^3.0.0",
     "@shelf/jest-elasticsearch": "^1.0.0",
     "@webiny/api-plugin-elastic-search-client": "^4.14.0",
-    "@elastic/elasticsearch": "^7.9.1"
+    "@elastic/elasticsearch": "^7.9.1",
+      "@types/jsonpack": "^1.1.0"
   },
   "publishConfig": {
     "access": "public",

@@ -417,10 +417,7 @@ export type CmsContentEntryContextType = {
         model: CmsContentModelType,
         ids: string[]
     ) => Promise<CmsContentEntryType[]>;
-    getLatestByIds: (
-        model: CmsContentModelType,
-        ids: string[]
-    ) => Promise<CmsContentEntryType[]>;
+    getLatestByIds: (model: CmsContentModelType, ids: string[]) => Promise<CmsContentEntryType[]>;
     create: (model: CmsContentModelType, data: Record<string, any>) => Promise<CmsContentEntryType>;
     createRevisionFrom: (
         model: CmsContentModelType,
