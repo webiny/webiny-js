@@ -9,7 +9,7 @@ type PageCategoryType = {
 export type PageAtomType = {
     id?: string;
     title?: string;
-    url?: string;
+    path?: string;
     settings?: {
         general?: {
             layout?: string;
@@ -19,9 +19,6 @@ export type PageAtomType = {
     version: number;
     locked: boolean;
     published: boolean;
-    isHomePage: boolean;
-    isErrorPage: boolean;
-    isNotFoundPage: boolean;
     savedOn?: Date;
     snippet: string | null;
     category?: PageCategoryType;
@@ -36,9 +33,6 @@ export const pageAtom = connectedAtom<PageAtomType>({
         locked: false,
         version: 1,
         published: false,
-        isHomePage: false,
-        isErrorPage: false,
-        isNotFoundPage: false,
         snippet: null,
         createdBy: {
             id: null

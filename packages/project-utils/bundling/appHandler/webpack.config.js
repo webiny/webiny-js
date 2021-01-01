@@ -1,4 +1,4 @@
-module.exports = ({ ssr }) => {
+module.exports = () => {
     const path = require("path");
     const WebpackBar = require("webpackbar");
 
@@ -17,7 +17,7 @@ module.exports = ({ ssr }) => {
     }
 
     return {
-        entry: path.resolve(__dirname, ssr ? "./handlerWithSSR.js" : "./handler.js"),
+        entry: path.resolve(__dirname, "./handler.js"),
         mode: "development",
         // Generate sourcemaps for proper error messages
         devtool: shouldUseSourceMap ? "source-map" : false,

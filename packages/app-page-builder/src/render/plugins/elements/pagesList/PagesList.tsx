@@ -7,8 +7,20 @@ import { get } from "lodash";
 import { PbPageElementPagesListComponentPlugin } from "@webiny/app-page-builder/types";
 import { useState } from "react";
 
-const PagesList = props => {
-    const { component, ...vars } = props.data;
+declare global {
+    // eslint-disable-next-line
+    namespace JSX {
+        interface IntrinsicElements {
+            "ps-tag": {
+                key?: string;
+                value?: string;
+            };
+        }
+    }
+}
+
+const PagesListRender = props => {
+    const { component, ...vars } = props.data || {};
     const components = getPlugins<PbPageElementPagesListComponentPlugin>(
         "pb-page-element-pages-list-component"
     );
@@ -81,4 +93,14 @@ const PagesList = props => {
     );
 };
 
+const PagesList = props => {
+    const { component } = props.data || {};
+
+    return (
+        <>
+            <ps-tag data-key={"pb-pages-list"} data-value={component} />
+            <PagesListRender {...props} />
+        </>
+    );
+};
 export default React.memo(PagesList);

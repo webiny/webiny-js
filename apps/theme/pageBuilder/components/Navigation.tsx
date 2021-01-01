@@ -2,7 +2,8 @@ import React from "react";
 import { Link } from "@webiny/react-router";
 
 const Navigation = ({ data }) => {
-    if (!data) {
+    const items = data?.items;
+    if (!Array.isArray(items)) {
         return null;
     }
 
@@ -14,13 +15,11 @@ const Navigation = ({ data }) => {
                         <li key={item.id + index}>
                             {item.title}
                             <ul>
-                                {item.children.map((item, index) => {
-                                    return (
-                                        <li key={item.id + index}>
-                                            <Link to={item.url}>{item.title}</Link>
-                                        </li>
-                                    );
-                                })}
+                                {item.children.map((item, index) => (
+                                    <li key={item.id + index}>
+                                        <Link to={item.path || item.url}>{item.title}</Link>
+                                    </li>
+                                ))}
                             </ul>
                         </li>
                     );
@@ -28,7 +27,7 @@ const Navigation = ({ data }) => {
 
                 return (
                     <li key={item.id + index}>
-                        <Link to={item.url}>{item.title}</Link>
+                        <Link to={item.path || item.url}>{item.title}</Link>
                     </li>
                 );
             })}

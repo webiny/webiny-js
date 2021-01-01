@@ -39,7 +39,7 @@ export default ({ region, userPoolId, identityType, getIdentity }: CognitoAuthOp
     return {
         type: "security-authentication",
         async authenticate(context: Context) {
-            const { method: httpMethod, headers = {} } = context.http;
+            const { method: httpMethod, headers = {} } = context.http.request;
             let idToken = headers["Authorization"] || headers["authorization"] || "";
 
             if (!idToken) {

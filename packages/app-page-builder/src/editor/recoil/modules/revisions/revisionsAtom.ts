@@ -3,13 +3,10 @@ import { connectedAtom } from "@webiny/app-page-builder/editor/recoil/modules/co
 export type RevisionItemAtomType = {
     id: string;
     title: string;
-    url: string;
+    path: string;
     version: number;
     parent?: string;
     published: boolean;
-    isHomePage: boolean;
-    isErrorPage: boolean;
-    isNotFoundPage: boolean;
     locked: boolean;
     savedOn?: Date;
 };

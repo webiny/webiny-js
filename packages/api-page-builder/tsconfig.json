@@ -17,16 +17,16 @@
       "path": "../api-security"
     },
     {
-      "path": "../commodo"
-    },
-    {
       "path": "../handler"
     },
     {
-      "path": "../handler-db"
+      "path": "../handler-client"
     },
     {
-      "path": "../handler-ssr"
+      "path": "../handler-args"
+    },
+    {
+      "path": "../handler-db"
     },
     {
       "path": "../validation"
@@ -51,6 +51,9 @@
     },
     {
       "path": "../api-security-tenancy"
+    },
+    {
+      "path": "../api-prerendering-service"
     }
   ]
 }

@@ -35,7 +35,9 @@ const LinkForm = ({ data, onSubmit, onCancel }) => {
                                                 onChange(value);
                                                 if (!data.title) {
                                                     form.setState(state => {
-                                                        state.data.title = selection.title;
+                                                        if (selection) {
+                                                            state.data.title = selection.title;
+                                                        }
                                                     });
                                                 }
                                             }}

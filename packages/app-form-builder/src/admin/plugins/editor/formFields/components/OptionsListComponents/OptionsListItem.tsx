@@ -1,6 +1,4 @@
 import React from "react";
-import { I18NValue } from "@webiny/app-i18n/components";
-import { I18NInput } from "@webiny/app-i18n/admin/components";
 import { Typography } from "@webiny/ui/Typography";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { css } from "emotion";
@@ -9,7 +7,6 @@ import { IconButton } from "@webiny/ui/Button";
 import { Switch } from "@webiny/ui/Switch";
 import { ReactComponent as EditIcon } from "@webiny/app-form-builder/admin/icons/edit.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/app-form-builder/admin/icons/delete.svg";
-import { ReactComponent as TranslateIcon } from "@webiny/app-form-builder/admin/icons/round-translate-24px.svg";
 import { BindComponent } from "@webiny/form/Bind";
 
 const optionsListItemLeft = css({
@@ -92,19 +89,10 @@ type OptionsListItemProps = {
     option: { label: string; value: string };
     deleteOption: () => void;
     editOption: () => void;
-    setOptionTranslations: (label: string) => void;
 };
 
 export default function OptionsListItem(props: OptionsListItemProps) {
-    const {
-        option,
-        multiple,
-        dragHandle,
-        Bind,
-        deleteOption,
-        editOption,
-        setOptionTranslations
-    } = props;
+    const { option, multiple, dragHandle, Bind, deleteOption, editOption } = props;
 
     return (
         <>
@@ -113,20 +101,12 @@ export default function OptionsListItem(props: OptionsListItemProps) {
                     <span>{dragHandle}</span>
                 </Tooltip>
                 <div>
-                    <Typography use={"subtitle1"}>
-                        <I18NValue value={option.label} />
-                    </Typography>
+                    <Typography use={"subtitle1"}>{option.label}</Typography>
                     <Typography use={"caption"}>{option.value}</Typography>
                 </div>
             </div>
             <div className={optionsListItemRight}>
                 <IconButton icon={<EditIcon />} onClick={editOption} />
-                <I18NInput value={option.label} onChange={setOptionTranslations}>
-                    {({ openDialog }) => {
-                        return <IconButton icon={<TranslateIcon />} onClick={openDialog} />;
-                    }}
-                </I18NInput>
-
                 <IconButton icon={<DeleteIcon />} onClick={deleteOption} />
 
                 <Bind name={"settings.defaultValue"}>

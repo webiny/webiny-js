@@ -26,7 +26,7 @@ declare global {
     // eslint-disable-next-line
     namespace JSX {
         interface IntrinsicElements {
-            "ssr-cache": {
+            "ps-tag": {
                 class?: string;
                 id?: string;
             };
@@ -208,7 +208,7 @@ const FormRender = (props: FbFormRenderComponentProps) => {
 
     return (
         <>
-            <ssr-cache data-class="fb-form" data-id={data.parent} />
+            <ps-tag data-key="fb-form" data-value={data.parent} />
             <LayoutRenderComponent {...layoutProps} />
         </>
     );

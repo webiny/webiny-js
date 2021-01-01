@@ -8,10 +8,10 @@
     "../api-i18n-content",
     "../api-plugin-elastic-search-client",
     "../api-security",
-    "../commodo",
     "../handler",
+    "../handler-args",
+    "../handler-client",
     "../handler-db",
-    "../handler-ssr",
     "../validation",
     "../api-i18n",
     "../handler-graphql",
@@ -19,7 +19,8 @@
     "../db-dynamodb",
     "../error",
     "../api-file-manager",
-    "../api-security-tenancy"
+    "../api-security-tenancy",
+    "../api-prerendering-service"
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -43,7 +44,10 @@
       "path": "../handler-db/tsconfig.build.json"
     },
     {
-      "path": "../handler-ssr/tsconfig.build.json"
+      "path": "../handler-args/tsconfig.build.json"
+    },
+    {
+      "path": "../handler-client/tsconfig.build.json"
     },
     {
       "path": "../validation/tsconfig.build.json"
@@ -56,9 +60,6 @@
     },
     {
       "path": "../api-plugin-elastic-search-client/tsconfig.build.json"
-    },
-    {
-      "path": "../commodo/tsconfig.build.json"
     },
     {
       "path": "../handler-graphql/tsconfig.build.json"
@@ -77,6 +78,9 @@
     },
     {
       "path": "../api-security-tenancy/tsconfig.build.json"
+    },
+    {
+      "path": "../api-prerendering-service/tsconfig.build.json"
     }
   ]
 }

@@ -1,0 +1,23 @@
+{
+	"extends": "../../tsconfig",
+	"references": [
+		{
+			"path": "../plugins"
+		},
+		{
+			"path": "../db"
+		},
+		{
+			"path": "../handler"
+		},
+		{
+			"path": "../handler-db"
+		},
+		{
+			"path": "../handler-args"
+		},
+		{
+			"path": "../handler-client"
+		}
+	]
+}

@@ -11,6 +11,7 @@ export default (): PbPageSettingsFieldsPlugin[] => [
                 }
                 tags
                 layout
+                snippet
             }
     `
     },

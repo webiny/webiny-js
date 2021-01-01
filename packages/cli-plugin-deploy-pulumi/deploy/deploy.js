@@ -15,14 +15,6 @@ const notify = ({ message }) => {
     });
 };
 
-const sleep = () => {
-    return new Promise(resolve => {
-        setTimeout(() => {
-            resolve();
-        }, 1000);
-    });
-};
-
 const getStackName = stack => {
     stack = stack.split("/").pop();
     return stack === "." ? basename(process.cwd()) : stack;
@@ -122,7 +114,6 @@ module.exports = async (inputs, context) => {
     } else {
         console.log(`💡 Running "hook-before-deploy" hook...`);
         await processHooks("hook-before-deploy", hookDeployArgs);
-        await sleep();
 
         const continuing = inputs.preview ? `Previewing stack...` : `Deploying stack...`;
         console.log(`${green("✔")} Hook "hook-before-deploy" completed. ${continuing}\n`);
@@ -164,7 +155,6 @@ module.exports = async (inputs, context) => {
     } else {
         console.log(`💡 Running "hook-after-deploy" hook...`);
         await processHooks("hook-after-deploy", hookDeployArgs);
-        await sleep();
         console.log(`${green("✔")} Hook "hook-after-deploy" completed.\n`);
     }
 };

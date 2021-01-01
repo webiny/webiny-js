@@ -4,8 +4,8 @@ type ResponseArgs = {
     body?: string;
 };
 
-export type HttpContextObject = {
-    method: "POST" | "GET" | "DELETE" | "OPTIONS";
+export type HttpRequestObject = {
+    method: "POST" | "GET" | "PUT" | "DELETE" | "OPTIONS" | string;
     body: string;
     headers: { [key: string]: any };
     cookies: string[];
@@ -14,9 +14,13 @@ export type HttpContextObject = {
         parameters: { [key: string]: any };
         query: { [key: string]: any };
     };
+};
+
+export type HttpObject = {
     response: (args: ResponseArgs) => { [key: string]: any };
+    request: HttpRequestObject;
 };
 
 export type HttpContext = {
-    http: HttpContextObject;
+    http: HttpObject;
 };

@@ -3,11 +3,12 @@ import { createHandler } from "@webiny/handler-aws";
 import graphqlPlugins from "@webiny/handler-graphql";
 import i18nPlugins from "@webiny/api-i18n/plugins";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
-import pageBuilderPlugins from "@webiny/api-page-builder/plugins";
+import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import elasticSearch from "@webiny/api-plugin-elastic-search-client";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
+
 // File storage S3 plugin for API file manager.
 import fileManagerS3 from "@webiny/api-file-manager-s3";
 import formBuilderPlugins from "@webiny/api-form-builder/plugins";
@@ -31,6 +32,17 @@ export const handler = createHandler(
     fileManagerPlugins(),
     // Add File storage S3 plugin for API file manager.
     fileManagerS3(),
-    pageBuilderPlugins(),
+    pageBuilderPlugins({
+        prerendering: {
+            handlers: {
+                render: process.env.PRERENDERING_RENDER_HANDLER,
+                flush: process.env.PRERENDERING_FLUSH_HANDLER,
+                queue: {
+                    add: process.env.PRERENDERING_QUEUE_ADD_HANDLER,
+                    process: process.env.PRERENDERING_QUEUE_PROCESS_HANDLER
+                }
+            }
+        }
+    }),
     formBuilderPlugins()
 );

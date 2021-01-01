@@ -1,3 +1,3 @@
-export type ArgsContext = {
-    invocationArgs: { [key: string]: any };
+export type ArgsContext<TArgs = Record<string, any>> = {
+    invocationArgs: TArgs;
 };

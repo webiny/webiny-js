@@ -20,7 +20,7 @@ import { ReactComponent as LockIcon } from "@webiny/app-page-builder/admin/asset
 import { ReactComponent as BeenHereIcon } from "@webiny/app-page-builder/admin/assets/beenhere.svg";
 import { ReactComponent as GestureIcon } from "@webiny/app-page-builder/admin/assets/gesture.svg";
 import { useRevisionHandlers } from "./useRevisionHandlers";
-import { useConfigureDomainDialog } from "@webiny/app-page-builder/admin/hooks/useConfigureDomain";
+import { useConfigureWebsiteUrlDialog } from "@webiny/app-page-builder/admin/hooks/useConfigureWebsiteUrl";
 import { usePageBuilderSettings } from "@webiny/app-page-builder/admin/hooks/usePageBuilderSettings";
 import { useSiteStatus } from "@webiny/app-page-builder/admin/hooks/useSiteStatus";
 import { ReactComponent as AddIcon } from "@webiny/app-page-builder/admin/assets/add.svg";
@@ -69,15 +69,18 @@ const Div = ({ children }) => {
 
 const Revision = ({ revision, page }: RevisionProps) => {
     const { icon, text: tooltipText } = getIcon(revision);
-    const { getDomain, getPagePreviewUrl } = usePageBuilderSettings();
-    const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getDomain());
+    const { getWebsiteUrl, getPagePreviewUrl } = usePageBuilderSettings();
+    const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getWebsiteUrl());
 
     const { deleteRevision, createRevision, publishRevision, editRevision } = useRevisionHandlers({
         revision,
         page
     });
 
-    const { showConfigureDomainDialog } = useConfigureDomainDialog(getDomain(), refreshSiteStatus);
+    const { showConfigureWebsiteUrlDialog } = useConfigureWebsiteUrlDialog(
+        getWebsiteUrl(),
+        refreshSiteStatus
+    );
 
     return (
         <ConfirmationDialog
@@ -137,7 +140,7 @@ const Revision = ({ revision, page }: RevisionProps) => {
                                             "noopener"
                                         );
                                     } else {
-                                        showConfigureDomainDialog();
+                                        showConfigureWebsiteUrlDialog();
                                     }
                                 }}
                             >

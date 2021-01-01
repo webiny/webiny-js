@@ -2,7 +2,7 @@ import { createHandler } from "@webiny/handler";
 import neDb from "@webiny/api-plugin-commodo-nedb";
 import { Database } from "@commodo/fields-storage-nedb";
 import { dataManagerPlugins } from "../mocks/dataManagerClient";
-import i18n from "@webiny/api-i18n/plugins/i18n";
+import i18n from "@webiny/api-i18n/graphql/context";
 import { mockLocalesPlugins } from "@webiny/api-i18n/testing";
 import dataManager from "../../src/dataManager/handler";
 

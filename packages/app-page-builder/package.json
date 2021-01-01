@@ -36,7 +36,6 @@
     "dot-prop-immutable": "^1.4.0",
     "emotion": "^10.0.17",
     "graphql-tag": "^2.10.1",
-    "history": "^4.10.1",
     "immutable": "^3.8.2",
     "invariant": "^2.2.4",
     "is-hotkey": "^0.1.3",

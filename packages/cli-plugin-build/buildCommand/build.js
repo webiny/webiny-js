@@ -1,7 +1,6 @@
-const { green } = require("chalk");
+const { cyan } = require("chalk");
 const { resolve, join } = require("path");
 const execa = require("execa");
-const ProgressBar = require("progress");
 const getPackages = require("get-yarn-workspaces");
 
 module.exports = async (inputs, context) => {
@@ -22,32 +21,13 @@ module.exports = async (inputs, context) => {
     const packages = getPackages().filter(item => item.includes(workingPath));
 
     console.log(
-        `⏳  Building ${packages.length} package(s) in ${green(join(process.cwd(), path))}...`
+        `🚧 Building ${packages.length} package(s) in ${cyan(join(process.cwd(), path))}...`
     );
 
-    const bar = new ProgressBar("[:bar] :percent (:current/:total)", {
-        complete: "=",
-        incomplete: " ",
-        width: 1024,
-        total: packages.length
-    });
-
-    const promises = [];
     for (let i = 0; i < packages.length; i++) {
-        promises.push(
-            new Promise(async (resolve, reject) => {
-                try {
-                    const cwd = packages[i];
-                    await execa("yarn", ["build", "--env", env], { cwd });
-                    bar.tick();
-
-                    resolve();
-                } catch (e) {
-                    reject(e);
-                }
-            })
-        );
+        const cwd = packages[i];
+        console.log();
+        console.log(cyan(`➜ ${cwd}`));
+        await execa("yarn", ["build", "--env", env], { cwd, stdio: "inherit" });
     }
-
-    await Promise.all(promises);
 };
