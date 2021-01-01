@@ -3,18 +3,18 @@ import {
     CmsFieldTypePlugins,
     CmsContext
 } from "@webiny/api-headless-cms/types";
+import { commonFieldResolvers } from "./resolvers/commonFieldResolvers";
+import { resolveGet } from "./resolvers/manage/resolveGet";
+import { resolveList } from "./resolvers/manage/resolveList";
+import { resolveGetRevisions } from "./resolvers/manage/resolveGetRevisions";
+import { resolveGetByIds } from "./resolvers/manage/resolveGetByIds";
+import { resolveCreate } from "./resolvers/manage/resolveCreate";
+import { resolveUpdate } from "./resolvers/manage/resolveUpdate";
+import { resolveDelete } from "./resolvers/manage/resolveDelete";
+import { resolvePublish } from "./resolvers/manage/resolvePublish";
+import { resolveUnpublish } from "./resolvers/manage/resolveUnpublish";
+import { resolveCreateFrom } from "./resolvers/manage/resolveCreateFrom";
 import { createManageTypeName, createTypeName } from "../utils/createTypeName";
-import { commonFieldResolvers } from "../utils/commonFieldResolvers";
-import { resolveManageGet } from "../utils/resolvers/resolveManageGet";
-import { resolveList } from "../utils/resolvers/resolveList";
-import { resolveGetRevisions } from "../utils/resolvers/resolveGetRevisions";
-import { resolveGetByIds } from "../utils/resolvers/resolveGetByIds";
-import { resolveCreate } from "../utils/resolvers/resolveCreate";
-import { resolveUpdate } from "../utils/resolvers/resolveUpdate";
-import { resolveDelete } from "../utils/resolvers/resolveDelete";
-import { resolvePublish } from "../utils/resolvers/resolvePublish";
-import { resolveUnpublish } from "../utils/resolvers/resolveUnpublish";
-import { resolveCreateFrom } from "../utils/resolvers/resolveCreateFrom";
 import { pluralizedTypeName } from "../utils/pluralizedTypeName";
 import { entryFieldFromStorage } from "../utils/entryStorageMapperFactory";
 
@@ -37,7 +37,7 @@ export const createManageResolvers: CreateManageResolvers = ({
 
     return {
         Query: {
-            [`get${typeName}`]: resolveManageGet({ model }),
+            [`get${typeName}`]: resolveGet({ model }),
             [`get${typeName}Revisions`]: resolveGetRevisions({ model }),
             [`get${pluralizedTypeName(typeName)}ByIds`]: resolveGetByIds({ model }),
             [`list${pluralizedTypeName(typeName)}`]: resolveList({ model })

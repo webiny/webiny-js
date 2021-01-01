@@ -7,13 +7,10 @@ import {
 
 export const resolveList: ResolverFactory = ({ model }) => async (root, args, { cms }) => {
     try {
-        let response: [CmsContentEntryType[], CmsContentEntryMetaType];
-
-        if (cms.READ) {
-            response = await cms.entries.listPublished(model, args);
-        } else {
-            response = await cms.entries.listLatest(model, args);
-        }
+        const response: [
+            CmsContentEntryType[],
+            CmsContentEntryMetaType
+        ] = await cms.entries.listPublished(model, args);
 
         return new ListResponse(...response);
     } catch (e) {

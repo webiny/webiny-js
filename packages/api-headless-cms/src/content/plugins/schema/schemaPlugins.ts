@@ -8,6 +8,7 @@ import { createManageSDL } from "./createManageSDL";
 import { createReadSDL } from "./createReadSDL";
 import { createManageResolvers } from "./createManageResolvers";
 import { createReadResolvers } from "./createReadResolvers";
+import { createPreviewResolvers } from "./createPreviewResolvers";
 import { getSchemaFromFieldPlugins } from "../utils/getSchemaFromFieldPlugins";
 
 export const generateSchemaPlugins = async (
@@ -65,12 +66,19 @@ export const generateSchemaPlugins = async (
                         type: "graphql-schema",
                         schema: {
                             typeDefs: createReadSDL({ model, fieldTypePlugins }),
-                            resolvers: createReadResolvers({
-                                models,
-                                model,
-                                fieldTypePlugins,
-                                context
-                            })
+                            resolvers: cms.READ
+                                ? createReadResolvers({
+                                      models,
+                                      model,
+                                      fieldTypePlugins,
+                                      context
+                                  })
+                                : createPreviewResolvers({
+                                      models,
+                                      model,
+                                      fieldTypePlugins,
+                                      context
+                                  })
                         }
                     });
                     break;

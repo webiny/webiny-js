@@ -4,14 +4,14 @@ import {
     CmsContext
 } from "@webiny/api-headless-cms/types";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
-import { createReadTypeName, createTypeName } from "../utils/createTypeName";
 import { commonFieldResolvers } from "./resolvers/commonFieldResolvers";
-import { resolveGet } from "./resolvers/read/resolveGet";
-import { resolveList } from "./resolvers/read/resolveList";
+import { resolveGet } from "./resolvers/preview/resolveGet";
+import { resolveList } from "./resolvers/preview/resolveList";
+import { createReadTypeName, createTypeName } from "../utils/createTypeName";
 import { pluralizedTypeName } from "../utils/pluralizedTypeName";
 import { entryFieldFromStorage } from "../utils/entryStorageMapperFactory";
 
-export interface CreateReadResolvers {
+export interface CreatePreviewResolvers {
     (params: {
         models: CmsContentModelType[];
         model: CmsContentModelType;
@@ -20,7 +20,11 @@ export interface CreateReadResolvers {
     }): any;
 }
 
-export const createReadResolvers: CreateReadResolvers = ({ models, model, fieldTypePlugins }) => {
+export const createPreviewResolvers: CreatePreviewResolvers = ({
+    models,
+    model,
+    fieldTypePlugins
+}) => {
     const typeName = createTypeName(model.modelId);
     const rTypeName = createReadTypeName(typeName);
 
