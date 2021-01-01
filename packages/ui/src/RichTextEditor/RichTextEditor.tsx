@@ -1,11 +1,13 @@
 import React, { Fragment, useEffect, useRef } from "react";
-import EditorJS, {
+import shortid from "shortid";
+import EditorJS from "./editorjs/editor.js";
+import {
     LogLevels,
     OutputBlockData,
     OutputData,
     SanitizerConfig,
     ToolSettings
-} from "@editorjs/editorjs";
+} from "./editorjs/types";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { css } from "emotion";
 import classNames from "classnames";
@@ -24,7 +26,7 @@ const classes = {
     })
 };
 
-export type OnReadyParams = { editor: EditorJS; initialData: OutputData };
+export type OnReadyParams = { editor: any; initialData: OutputData };
 
 export type RichTextEditorProps = {
     autofocus?: boolean;
@@ -44,8 +46,8 @@ export type RichTextEditorProps = {
 };
 
 export const RichTextEditor = (props: RichTextEditorProps) => {
-    const elementRef = useRef();
-    const editorRef = useRef<EditorJS>();
+    const elementId = useRef(shortid.generate());
+    const editorRef = useRef<any>();
 
     useEffect(() => {
         const { value, context, onReady, ...nativeProps } = props;
@@ -53,7 +55,7 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
 
         editorRef.current = new EditorJS({
             ...nativeProps,
-            holder: elementRef.current,
+            holder: elementId.current,
             logLevel: "ERROR" as LogLevels.ERROR,
             data: initialData,
             onChange: async () => {
@@ -105,7 +107,7 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
                         {label}
                     </div>
                 )}
-                <div ref={elementRef} />
+                <div id={elementId.current} />
             </div>
             {description && <FormElementMessage>{description}</FormElementMessage>}
         </Fragment>
