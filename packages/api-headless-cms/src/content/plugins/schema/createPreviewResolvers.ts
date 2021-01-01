@@ -9,7 +9,7 @@ import { resolveGet } from "./resolvers/preview/resolveGet";
 import { resolveList } from "./resolvers/preview/resolveList";
 import { createReadTypeName, createTypeName } from "../utils/createTypeName";
 import { pluralizedTypeName } from "../utils/pluralizedTypeName";
-import { entryFieldFromStorage } from "../utils/entryStorageMapperFactory";
+import { entryFieldFromStorage } from "../utils/entryStorage";
 
 export interface CreatePreviewResolvers {
     (params: {

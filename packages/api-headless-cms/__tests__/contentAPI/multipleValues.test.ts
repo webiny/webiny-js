@@ -236,7 +236,13 @@ describe("multiple values in field", () => {
                 category: {
                     modelId: categoryContentModel.modelId,
                     entryId: category.id
-                }
+                },
+                richText: [
+                    {
+                        tag: "p",
+                        value: "some text"
+                    }
+                ]
             }
         });
 

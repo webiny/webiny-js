@@ -25,10 +25,7 @@ import { afterCreateHook } from "./contentEntry/afterCreate.hook";
 import { beforeSaveHook } from "./contentEntry/beforeSave.hook";
 import { afterSaveHook } from "./contentEntry/afterSave.hook";
 import WebinyError from "@webiny/error";
-import {
-    entryFromStorageMapperFactory,
-    entryToStorageMapperFactory
-} from "../utils/entryStorageMapperFactory";
+import { entryFromStorageTransform, entryToStorageTransform } from "../utils/entryStorage";
 
 const TYPE_ENTRY = "cms.entry";
 const TYPE_ENTRY_LATEST = TYPE_ENTRY + ".l";
@@ -278,11 +275,7 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 await beforeCreateHook({ model, entry, context });
 
-                const entryToStorageMapperCallable = entryToStorageMapperFactory(context, model);
-
-                const storageEntry = entryToStorageMapperCallable
-                    ? entryToStorageMapperCallable(entry)
-                    : entry;
+                const storageEntry = await entryToStorageTransform(context, model, entry);
 
                 await db
                     .batch()
@@ -353,13 +346,9 @@ export default (): ContextPlugin<CmsContext> => ({
                 const nextVersion = parseInt(latestEntry.id.split("#")[1]) + 1;
                 const id = `${uniqueId}#${utils.zeroPad(nextVersion)}`;
 
-                const entryToStorageMapperCallable = entryToStorageMapperFactory(context, model);
-                let storageEntry: Partial<CmsContentEntryType> = {};
-                if (entryToStorageMapperCallable) {
-                    storageEntry = await entryToStorageMapperCallable({
-                        values: data || {}
-                    } as any);
-                }
+                const storageEntry = await entryToStorageTransform(context, model, {
+                    values: data || {}
+                } as any);
 
                 const newEntry: CmsContentEntryType = {
                     id,
@@ -405,10 +394,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     .execute();
 
                 // We need to convert data from DB to its original form before constructing ES index data.
-                const entryFromStorageCallable = entryFromStorageMapperFactory(context, model);
-                const originalEntry = entryFromStorageCallable
-                    ? await entryFromStorageCallable(newEntry)
-                    : newEntry;
+                const originalEntry = await entryFromStorageTransform(context, model, newEntry);
 
                 const preparedEntry = prepareEntryToIndex({
                     context,
@@ -468,13 +454,9 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 utils.checkOwnership(context, permission, entry, "ownedBy");
 
-                const entryToStorageMapperCallable = entryToStorageMapperFactory(context, model);
-                let storageEntry: Partial<CmsContentEntryType> = {};
-                if (entryToStorageMapperCallable) {
-                    storageEntry = await entryToStorageMapperCallable({
-                        values: data || {}
-                    } as any);
-                }
+                const storageEntry = await entryToStorageTransform(context, model, {
+                    values: data || {}
+                } as any);
 
                 // we need full entry because of "before/after save" hooks
                 const updatedEntry: CmsContentEntryType = {
@@ -502,10 +484,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 });
 
                 // We need to convert data from DB to its original form before constructing ES index data.
-                const entryFromStorageCallable = entryFromStorageMapperFactory(context, model);
-                const originalEntry = entryFromStorageCallable
-                    ? await entryFromStorageCallable(updatedEntry)
-                    : updatedEntry;
+                const originalEntry = await entryFromStorageTransform(context, model, updatedEntry);
 
                 const preparedEntry = prepareEntryToIndex({
                     context,

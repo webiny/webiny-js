@@ -7,19 +7,13 @@ import {
 } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
 
-export const entryToStorageMapperFactory = (context: CmsContext, model: CmsContentModelType) => {
-    return entryStorageMapperFactory(context, model, "toStorage");
-};
-export const entryFromStorageMapperFactory = (context: CmsContext, model: CmsContentModelType) => {
-    return entryStorageMapperFactory(context, model, "fromStorage");
-};
 /*
  * this is a factory function that will create a mapper to transform values of fields that have
  * a plugin of "CmsModelFieldToStoragePlugin" type into something else - depending on plugin
  * the idea behind this was to introduce a compression of rich-text fields
  * but it can be used for anything (convert object to string and revert it, etc...)
  */
-export const entryStorageMapperFactory = (
+const entryStorage = (
     context: CmsContext,
     model: CmsContentModelType,
     operation: "toStorage" | "fromStorage"
@@ -86,24 +80,43 @@ export const entryStorageMapperFactory = (
     };
 };
 
+export const entryToStorageTransform = async (
+    context: CmsContext,
+    model: CmsContentModelType,
+    entry: CmsContentEntryType
+): Promise<CmsContentEntryType> => {
+    const transform = entryStorage(context, model, "toStorage");
+    if (!transform) {
+        return entry;
+    }
+    return await transform(entry);
+};
+
+export const entryFromStorageTransform = async (
+    context: CmsContext,
+    model: CmsContentModelType,
+    entry: CmsContentEntryType & Record<string, any>
+): Promise<CmsContentEntryType> => {
+    const transform = entryStorage(context, model, "fromStorage");
+    if (!transform) {
+        return entry;
+    }
+    return await transform(entry);
+};
+
 export const entryFieldFromStorage = async (
     context: CmsContext,
     model: CmsContentModelType,
     field: CmsContentModelFieldType,
     value: any
 ) => {
-    const fromStorage = entryFromStorageMapperFactory(context, model);
-    if (!fromStorage) {
-        return value;
-    }
-
-    // Storage transformers are optimized for bulk processing so we need to pass a partial
-    // entry object to it. We get a transformed entry back.
-    const transformedEntry = await fromStorage(({
+    const entry = ({
         values: {
             [field.fieldId]: value
         }
-    } as unknown) as CmsContentEntryType);
+    } as unknown) as CmsContentEntryType;
+
+    const transformedEntry = await entryFromStorageTransform(context, model, entry);
 
     return transformedEntry.values[field.fieldId];
 };

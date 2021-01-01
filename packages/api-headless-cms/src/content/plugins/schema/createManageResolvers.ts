@@ -16,7 +16,7 @@ import { resolveUnpublish } from "./resolvers/manage/resolveUnpublish";
 import { resolveCreateFrom } from "./resolvers/manage/resolveCreateFrom";
 import { createManageTypeName, createTypeName } from "../utils/createTypeName";
 import { pluralizedTypeName } from "../utils/pluralizedTypeName";
-import { entryFieldFromStorage } from "../utils/entryStorageMapperFactory";
+import { entryFieldFromStorage } from "../utils/entryStorage";
 
 export interface CreateManageResolvers {
     (params: {

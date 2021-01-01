@@ -9,7 +9,7 @@ import { commonFieldResolvers } from "./resolvers/commonFieldResolvers";
 import { resolveGet } from "./resolvers/read/resolveGet";
 import { resolveList } from "./resolvers/read/resolveList";
 import { pluralizedTypeName } from "../utils/pluralizedTypeName";
-import { entryFieldFromStorage } from "../utils/entryStorageMapperFactory";
+import { entryFieldFromStorage } from "../utils/entryStorage";
 
 export interface CreateReadResolvers {
     (params: {
