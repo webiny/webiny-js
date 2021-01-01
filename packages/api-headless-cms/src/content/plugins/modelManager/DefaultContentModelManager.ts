@@ -1,11 +1,10 @@
 import {
     CmsContentModelManagerInterface,
     CmsContentModelType,
-    CmsContext,
-    ContentModelManagerPlugin
+    CmsContext
 } from "@webiny/api-headless-cms/types";
 
-class DefaultContentModelManager implements CmsContentModelManagerInterface {
+export class DefaultContentModelManager implements CmsContentModelManagerInterface {
     private readonly _context: CmsContext;
     private readonly _model: CmsContentModelType;
 
@@ -46,15 +45,11 @@ class DefaultContentModelManager implements CmsContentModelManagerInterface {
         return this._context.cms.entries.getPublishedByIds(this._model, ids);
     }
 
+    public async getLatestByIds(ids: string[]) {
+        return this._context.cms.entries.getLatestByIds(this._model, ids);
+    }
+
     public async update(id, data) {
         return this._context.cms.entries.update(this._model, id, data);
     }
 }
-const plugin: ContentModelManagerPlugin = {
-    type: "content-model-manager",
-    name: "content-model-manager-default",
-    create: async (context, model) => {
-        return new DefaultContentModelManager(context, model);
-    }
-};
-export default () => plugin;
