@@ -287,6 +287,7 @@ export interface CmsContentModelManagerInterface {
         args?: CmsContentEntryListArgsType
     ): Promise<[CmsContentEntryType[], CmsContentEntryMetaType]>;
     getPublishedByIds(ids: string[]): Promise<CmsContentEntryType[]>;
+    getLatestByIds(ids: string[]): Promise<CmsContentEntryType[]>;
     get(args?: CmsContentEntryGetArgsType): Promise<CmsContentEntryType>;
     create(data: Record<string, any>): Promise<CmsContentEntryType>;
     update(id: string, data: Record<string, any>): Promise<CmsContentEntryType>;
@@ -413,6 +414,10 @@ export type CmsContentEntryContextType = {
         args?: CmsContentEntryListArgsType
     ) => Promise<[CmsContentEntryType[], CmsContentEntryMetaType]>;
     getPublishedByIds: (
+        model: CmsContentModelType,
+        ids: string[]
+    ) => Promise<CmsContentEntryType[]>;
+    getLatestByIds: (
         model: CmsContentModelType,
         ids: string[]
     ) => Promise<CmsContentEntryType[]>;

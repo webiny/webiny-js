@@ -16,11 +16,11 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             return field.fieldId + `: ${field.multipleValues ? `[${gqlType}]` : gqlType}`;
         },
         createResolver({ field }) {
-            return async (instance, args, context: CmsContext) => {
+            return async (instance, args, { cms }: CmsContext) => {
                 const { modelId } = field.settings.models[0];
 
                 // Get model manager, to get access to CRUD methods
-                const model = await context.cms.getModel(modelId);
+                const model = await cms.getModel(modelId);
 
                 // Get field value for this entry
                 const value = instance.values[field.fieldId];
@@ -29,11 +29,21 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                     const ids = value.map(ref => ref.entryId);
 
                     // eslint-disable-next-line @typescript-eslint/camelcase
-                    const entries = await model.getPublishedByIds(ids);
+                    const entries = cms.READ
+                        ? // `read` API works with `published` data
+                          await model.getPublishedByIds(ids)
+                        : // `preview` API works with `latest` data
+                          await model.getLatestByIds(ids);
                     return entries.filter(Boolean);
                 }
 
-                return (await model.getPublishedByIds([value.entryId]))[0];
+                const revisions = cms.READ
+                    ? // `read` API works with `published` data
+                      await model.getPublishedByIds([value.entryId])
+                    : // `preview` API works with `latest` data
+                      await model.getLatestByIds([value.entryId]);
+
+                return revisions[0];
             };
         }
     },

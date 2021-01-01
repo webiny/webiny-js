@@ -51,7 +51,7 @@ export const getRevisionById = (context: CmsContext, { PK_ENTRY }) => {
     });
 };
 
-export const getPublishedRevisionById = (context: CmsContext, { PK_ENTRY, SK_PUBLISHED }) => {
+export const getPublishedRevisionByEntryId = (context: CmsContext, { PK_ENTRY, SK_PUBLISHED }) => {
     return new DataLoader<string, CmsContentEntryType>(async keys => {
         const entries = await context.db
             .batch()
@@ -61,6 +61,25 @@ export const getPublishedRevisionById = (context: CmsContext, { PK_ENTRY, SK_PUB
                     query: {
                         PK: PK_ENTRY(id),
                         SK: SK_PUBLISHED()
+                    }
+                }))
+            )
+            .execute();
+
+        return entries.map(result => result[0][0]);
+    });
+};
+
+export const getLatestRevisionByEntryId = (context: CmsContext, { PK_ENTRY, SK_LATEST }) => {
+    return new DataLoader<string, CmsContentEntryType>(async keys => {
+        const entries = await context.db
+            .batch()
+            .read(
+                ...keys.map(id => ({
+                    ...utils.defaults.db,
+                    query: {
+                        PK: PK_ENTRY(id),
+                        SK: SK_LATEST()
                     }
                 }))
             )

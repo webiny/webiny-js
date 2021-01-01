@@ -67,9 +67,13 @@ export default (): ContextPlugin<CmsContext> => ({
         const loaders = {
             getAllEntryRevisions: dataLoaders.getAllEntryRevisions(context, { PK_ENTRY }),
             getRevisionById: dataLoaders.getRevisionById(context, { PK_ENTRY }),
-            getPublishedRevisionById: dataLoaders.getPublishedRevisionById(context, {
+            getPublishedRevisionByEntryId: dataLoaders.getPublishedRevisionByEntryId(context, {
                 PK_ENTRY,
                 SK_PUBLISHED
+            }),
+            getLatestRevisionByEntryId: dataLoaders.getLatestRevisionByEntryId(context, {
+                PK_ENTRY,
+                SK_LATEST
             })
         };
 
@@ -100,12 +104,29 @@ export default (): ContextPlugin<CmsContext> => ({
             getPublishedByIds: async (model: CmsContentModelType, ids: string[]) => {
                 const permission = await checkPermissions({ rwd: "r" });
                 utils.checkModelAccess(context, permission, model);
-                const { getPublishedRevisionById } = loaders;
+                const { getPublishedRevisionByEntryId } = loaders;
 
                 // We only need entry ID (not revision ID) to get published revision for that entry.
                 const entryIds = ids.map(id => id.split("#")[0]);
 
-                const entries = (await getPublishedRevisionById.loadMany(
+                const entries = (await getPublishedRevisionByEntryId.loadMany(
+                    entryIds
+                )) as CmsContentEntryType[];
+
+                return entries.filter(entry => utils.validateOwnership(context, permission, entry));
+            },
+            /**
+             * Get latest revisions by entry IDs.
+             */
+            getLatestByIds: async (model: CmsContentModelType, ids: string[]) => {
+                const permission = await checkPermissions({ rwd: "r" });
+                utils.checkModelAccess(context, permission, model);
+                const { getLatestRevisionByEntryId } = loaders;
+
+                // We only need entry ID (not revision ID) to get the latest revision for that entry.
+                const entryIds = ids.map(id => id.split("#")[0]);
+
+                const entries = (await getLatestRevisionByEntryId.loadMany(
                     entryIds
                 )) as CmsContentEntryType[];
 
@@ -279,7 +300,7 @@ export default (): ContextPlugin<CmsContext> => ({
                             PK: PK_ENTRY(uniqueId),
                             SK: SK_LATEST(),
                             TYPE: TYPE_ENTRY_LATEST,
-                            id
+                            ...storageEntry
                         }
                     })
                     .execute();
@@ -374,7 +395,7 @@ export default (): ContextPlugin<CmsContext> => ({
                             PK: PK_ENTRY(uniqueId),
                             SK: SK_LATEST(),
                             TYPE: TYPE_ENTRY_LATEST,
-                            id
+                            ...newEntry
                         }
                     })
                     .execute();
@@ -591,7 +612,7 @@ export default (): ContextPlugin<CmsContext> => ({
                         },
                         data: {
                             ...latestEntryData,
-                            id: prevLatestEntry.id
+                            ...omit(prevLatestEntry, ["PK", "SK", "TYPE"])
                         }
                     });
 
