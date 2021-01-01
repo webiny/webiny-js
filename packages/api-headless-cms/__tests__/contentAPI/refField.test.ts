@@ -1,8 +1,9 @@
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import { CmsContentModelGroupType } from "@webiny/api-headless-cms/types";
+import { CmsContentEntryType, CmsContentModelGroupType } from "@webiny/api-headless-cms/types";
 import models from "./mocks/contentModels";
 import { useReviewManageHandler } from "../utils/useReviewManageHandler";
 import { useProductManageHandler } from "../utils/useProductManageHandler";
+import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 
 describe("refField", () => {
     const esCmsIndex = "root-headless-cms";
@@ -30,8 +31,8 @@ describe("refField", () => {
         return createCMG.data.createContentModelGroup.data;
     };
 
-    const setupCategoryModel = async (contentModelGroup: CmsContentModelGroupType) => {
-        const model = models.find(m => m.modelId === "category");
+    const setupContentModel = async (contentModelGroup: CmsContentModelGroupType, name: string) => {
+        const model = models.find(m => m.modelId === name);
         // Create initial record
         const [create] = await createContentModelMutation({
             data: {
@@ -55,6 +56,53 @@ describe("refField", () => {
         });
         return update.data.updateContentModel.data;
     };
+    const setupContentModels = async (contentModelGroup: CmsContentModelGroupType) => {
+        const models = {
+            category: null,
+            product: null,
+            review: null
+        };
+        for (const name in models) {
+            models[name] = await setupContentModel(contentModelGroup, name);
+        }
+        return models;
+    };
+
+    const createCategory = async () => {
+        const { createCategory } = useCategoryManageHandler({
+            ...manageOpts
+        });
+        const [createCategoryResponse] = await createCategory({
+            data: {
+                title: "Vegetables",
+                slug: "vegetables"
+            }
+        });
+        return createCategoryResponse.data.createCategory.data as CmsContentEntryType;
+    };
+
+    const createProduct = async (category: CmsContentEntryType) => {
+        const { createProduct } = useProductManageHandler({
+            ...manageOpts
+        });
+
+        const [createProductResponse] = await createProduct({
+            data: {
+                title: "Potato",
+                price: 100,
+                availableOn: "2020-12-25T16:37:00Z.000",
+                color: "white",
+                availableSizes: ["s", "m"],
+                image: "file.jpg",
+                category: {
+                    modelId: "category",
+                    entryId: category.id
+                }
+            }
+        });
+
+        return createProductResponse.data.createProduct.data as CmsContentEntryType;
+    };
 
     beforeEach(async () => {
         try {
@@ -68,31 +116,12 @@ describe("refField", () => {
         } catch {}
     });
 
-    test("should create a product and then connect reviews", async () => {
+    test("should create review connected to a product", async () => {
         const contentModelGroup = await setupContentModelGroup();
-        const category = await setupCategoryModel(contentModelGroup);
-        // create a entry so fields get locked
-        const { createProduct } = useProductManageHandler({
-            ...manageOpts
-        });
+        await setupContentModels(contentModelGroup);
 
-        // todo ProductInput does not exist
-        const [createProductResponse] = await createProduct({
-            data: {
-                title: "Potato",
-                price: 100,
-                availableOn: "2020-12-25T16:37:00Z.000",
-                color: "white",
-                availableSizes: ["s", "m"],
-                image: "file.jpg",
-                category: {
-                    modelId: category.modelId,
-                    entryId: category.id
-                }
-            }
-        });
-
-        const product = createProductResponse.data.createProduct.data;
+        const category = await createCategory();
+        const product = await createProduct(category);
 
         const { createReview } = useReviewManageHandler({
             ...manageOpts
@@ -100,12 +129,16 @@ describe("refField", () => {
 
         const [response] = await createReview({
             data: {
-                product: product.id,
+                product: {
+                    modelId: "product",
+                    entryId: product.id
+                },
                 text: `review text`,
                 rating: 5
             }
         });
 
+        // TODO there is no title field in revisions object in Review
         expect(response).toEqual({
             data: {
                 createReview: {
