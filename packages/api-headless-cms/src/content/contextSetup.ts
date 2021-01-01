@@ -1,5 +1,4 @@
 import { Context, ContextPlugin } from "@webiny/handler/types";
-import { TypeValueEmitter } from "@webiny/api-headless-cms/content/plugins/utils/TypeValueEmitter";
 import { CmsContext } from "@webiny/api-headless-cms/types";
 
 export type CmsHttpParametersType = {
@@ -61,9 +60,6 @@ export default (options: any = {}): ContextPlugin<CmsContext> => ({
             MANAGE: type === "manage"
         };
 
-        if (!context.cms.MANAGE) {
-            context.resolvedValues = new TypeValueEmitter();
-        }
         await setContextCmsVariables(context);
     }
 });
