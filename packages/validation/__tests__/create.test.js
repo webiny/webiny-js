@@ -1,3 +1,4 @@
+/* eslint-disable jest/no-try-expect */
 import { validation } from "../src";
 
 describe("create test", () => {

@@ -1,36 +1,50 @@
 import React, { Fragment, useCallback, useMemo } from "react";
-import isEmpty from "lodash/isEmpty";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { i18n } from "@webiny/app/i18n";
-import {
-    PermissionInfo,
-    gridNoPaddingClass
-} from "@webiny/app-security-tenancy/components/permission";
+import { PermissionInfo, gridNoPaddingClass } from "@webiny/app-admin/components/Permissions";
 import { Form } from "@webiny/form";
-import { Elevation } from "@webiny/ui/Elevation";
-import { Typography } from "@webiny/ui/Typography";
 import CustomSection from "./components/CustomSection";
 import { ContentModelPermission } from "./components/ContentModelPermission";
 import { ContentEntryPermission } from "./components/ContentEntryPermission";
-import { EnvironmentPermission } from "./components/EnvironmentPermission";
+import { Checkbox, CheckboxGroup } from "@webiny/ui/Checkbox";
+import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 
-const t = i18n.ns("app-page-builder/admin/plugins/permissionRenderer");
-// Here "manage" represents the "MANAGE API"
-const CMS_MANAGE = "cms.manage";
-const CMS_MANAGE_FULL_ACCESS = "cms.manage.*";
+const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
+
+const CMS_PERMISSION = "cms";
+const CMS_PERMISSION_FULL_ACCESS = "cms.*";
 const FULL_ACCESS = "full";
 const NO_ACCESS = "no";
 const CUSTOM_ACCESS = "custom";
-const ENTITIES = ["contentModels", "contentModelGroups", "contentEntries", "environments"];
+const ENTITIES = ["contentModel", "contentModelGroup", "contentEntry"];
+const API_ENDPOINTS = [
+    { id: "read", name: "Read" },
+    { id: "manage", name: "Manage" },
+    { id: "preview", name: "Preview" }
+];
 
-export const CMSPermissions = ({ parent, value, onChange }) => {
+export const CMSPermissions = ({ value, onChange }) => {
+    const { getLocales } = useI18N();
+
+    const getFormLocales = () => {
+        const localePermission = (value || []).find(item => item.name.startsWith("content.i18n"));
+        if (!localePermission) {
+            return getLocales().map(l => l.code);
+        }
+
+        return Array.isArray(localePermission.locales)
+            ? localePermission.locales
+            : getLocales().map(l => l.code);
+    };
+
     const onFormChange = useCallback(
         data => {
             let newValue = [];
             if (Array.isArray(value)) {
-                // Let's just filter out the `cms*` permission objects, it's easier to build new ones from scratch.
-                newValue = value.filter(item => !item.name.startsWith(CMS_MANAGE));
+                // Let's just filter out the `cms*` permission objects.
+                // Based on the `data` we rebuild new permission object from scratch.
+                newValue = value.filter(item => !item.name.startsWith(CMS_PERMISSION));
             }
 
             if (data.accessLevel === NO_ACCESS) {
@@ -39,117 +53,147 @@ export const CMSPermissions = ({ parent, value, onChange }) => {
             }
 
             if (data.accessLevel === FULL_ACCESS) {
-                newValue.push({ name: CMS_MANAGE_FULL_ACCESS });
+                newValue.push({ name: CMS_PERMISSION_FULL_ACCESS });
                 onChange(newValue);
                 return;
             }
 
             // Handling custom access level.
+            if (Array.isArray(data.endpoints)) {
+                API_ENDPOINTS.forEach(api => {
+                    if (data.endpoints.includes(api.id)) {
+                        newValue.push({
+                            name: `${CMS_PERMISSION}.endpoint.${api.id}`
+                        });
+                    }
+                });
+            }
 
-            // Content models, content model groups, content entries and environments first.
+            const locales = getFormLocales();
+
+            // Content models, content model groups, content entries
             ENTITIES.forEach(entity => {
-                if (data[`${entity}AccessLevel`] && data[`${entity}AccessLevel`] !== NO_ACCESS) {
+                const accessScope = data[`${entity}AccessScope`];
+                if (accessScope) {
                     const permission = {
-                        name: `${CMS_MANAGE}.${entity}`,
+                        name: `${CMS_PERMISSION}.${entity}`,
                         own: false,
-                        permissions: undefined,
-                        props: undefined
+                        rwd: undefined,
+                        rcpu: undefined,
+                        groups: undefined,
+                        models: undefined
                     };
 
-                    if (data[`${entity}AccessLevel`] === "own") {
+                    if (accessScope === "own") {
                         permission.own = true;
                     } else {
-                        permission.permissions = data[`${entity}Permissions`];
-                        permission.props = data[`${entity}Props`];
+                        permission.rwd = data[`${entity}RWD`] || "r";
                     }
+
+                    if (accessScope === "models") {
+                        permission.models = {};
+                    }
+
+                    if (accessScope === "groups") {
+                        permission.groups = {};
+                    }
+
+                    const props = data[`${entity}Props`];
+                    if (props) {
+                        ["models", "groups"].forEach(entity => {
+                            if (accessScope === entity && props[entity]) {
+                                permission[entity] = locales.reduce((acc, locale) => {
+                                    if (props[entity][locale]) {
+                                        acc[locale] = props[entity][locale];
+                                    }
+                                    return acc;
+                                }, {});
+                            }
+                        });
+                    }
+
+                    const RCPU = data[`${entity}RCPU`] || [];
+                    permission.rcpu = RCPU.length > 0 ? RCPU.join("") : undefined;
+
                     newValue.push(permission);
                 }
             });
 
-            // Settings second.
-            if (data.aliasesSettingsAccessLevel === FULL_ACCESS) {
-                newValue.push({ name: "cms.settings.aliases" });
-            }
-            if (data.environmentsSettingsAccessLevel === FULL_ACCESS) {
-                newValue.push({ name: "cms.settings.environments" });
-            }
-
             onChange(newValue);
         },
-        [parent.id, value]
+        [value]
     );
 
     const formData = useMemo(() => {
+        // This function only runs once on Form mount
         if (!Array.isArray(value)) {
-            return { accessLevel: NO_ACCESS };
+            return { accessLevel: NO_ACCESS, endpoints: [] };
         }
 
         const hasFullAccess = value.find(
-            item => item.name === CMS_MANAGE_FULL_ACCESS || item.name === "*"
+            item => item.name === CMS_PERMISSION_FULL_ACCESS || item.name === "*"
         );
+
         if (hasFullAccess) {
-            return { accessLevel: FULL_ACCESS };
+            return { accessLevel: FULL_ACCESS, endpoints: API_ENDPOINTS.map(item => item.id) };
         }
 
-        const permissions = value.filter(item => item.name.startsWith(CMS_MANAGE));
+        const permissions = value.filter(item => item.name.startsWith(CMS_PERMISSION));
+
         if (!permissions.length) {
-            return { accessLevel: NO_ACCESS };
+            return { accessLevel: NO_ACCESS, endpoints: [] };
         }
 
         // We're dealing with custom permissions. Let's first prepare data for "content models", "content model groups", "content entries" and "environments".
         const returnData = {
             accessLevel: CUSTOM_ACCESS,
-            environmentsSettingsAccessLevel: NO_ACCESS,
-            aliasesSettingsAccessLevel: NO_ACCESS
+            endpoints: permissions
+                .filter(p => p.name.startsWith("cms.endpoint."))
+                .map(p => p.name.replace("cms.endpoint.", ""))
         };
+
         ENTITIES.forEach(entity => {
             const data = {
-                [`${entity}AccessLevel`]: NO_ACCESS,
-                [`${entity}Permissions`]: "r"
+                [`${entity}AccessScope`]: NO_ACCESS,
+                [`${entity}RWD`]: "r",
+                [`${entity}RCPU`]: [],
+                [`${entity}Props`]: {}
             };
 
             const entityPermission = permissions.find(
-                item => item.name === `${CMS_MANAGE}.${entity}`
+                item => item.name === `${CMS_PERMISSION}.${entity}`
             );
+
             if (entityPermission) {
-                data[`${entity}AccessLevel`] = entityPermission.own ? "own" : FULL_ACCESS;
-                if (data[`${entity}AccessLevel`] === FULL_ACCESS) {
-                    data[`${entity}Permissions`] = entityPermission.permissions;
-                    data[`${entity}Props`] = entityPermission.props;
+                data[`${entity}AccessScope`] = entityPermission.own ? "own" : FULL_ACCESS;
+                if (data[`${entity}AccessScope`] === FULL_ACCESS) {
+                    data[`${entity}RWD`] = entityPermission.rwd;
+                    data[`${entity}RCPU`] = entityPermission.rcpu || [];
                 }
-                // If there are any non-empty props We'll set "AccessLevel" to that prop.
-                if (entityPermission.props) {
-                    let accessLevel;
-                    Object.keys(entityPermission.props).forEach(key => {
-                        if (!isEmpty(entityPermission.props[key])) {
-                            accessLevel = key;
-                        }
-                    });
-                    if (accessLevel) {
-                        data[`${entity}AccessLevel`] = accessLevel;
-                    }
+
+                // If there are any non-empty props we'll set "AccessScope" to that prop.
+                if (entityPermission.models) {
+                    data[`${entity}AccessScope`] = "models";
+                    data[`${entity}Props`] = { models: entityPermission.models };
+                }
+
+                if (entityPermission.groups) {
+                    data[`${entity}AccessScope`] = "groups";
+                    data[`${entity}Props`] = { groups: entityPermission.groups };
+                }
+
+                if (entity === "contentEntries") {
+                    data[`${entity}RCPU`] = entityPermission.rcpu ? [...entityPermission.rcpu] : [];
                 }
             }
 
             Object.assign(returnData, data);
         });
 
-        // Finally, let's prepare data for Headless CMS_MANAGE settings.
-        const hasAliasesSettingsAccess = permissions.find(
-            item => item.name === `${CMS_MANAGE}.settings.aliases`
-        );
-        if (hasAliasesSettingsAccess) {
-            returnData.aliasesSettingsAccessLevel = FULL_ACCESS;
-        }
-        const hasEnvironmentsSettingsAccess = permissions.find(
-            item => item.name === `${CMS_MANAGE}.settings.environments`
-        );
-        if (hasEnvironmentsSettingsAccess) {
-            returnData.environmentsSettingsAccessLevel = FULL_ACCESS;
-        }
-
         return returnData;
-    }, [parent.id]);
+    }, []);
+
+    const locales = getFormLocales();
 
     return (
         <Form data={formData} onChange={onFormChange}>
@@ -163,83 +207,66 @@ export const CMSPermissions = ({ parent, value, onChange }) => {
                             <Bind name={"accessLevel"}>
                                 <Select label={t`Access Level`}>
                                     <option value={NO_ACCESS}>{t`No access`}</option>
-                                    <option value={FULL_ACCESS}>{t`Full Access`}</option>
-                                    <option value={CUSTOM_ACCESS}>{t`Custom Access`}</option>
+                                    <option value={FULL_ACCESS}>{t`Full access`}</option>
+                                    <option value={CUSTOM_ACCESS}>{t`Custom access`}</option>
                                 </Select>
                             </Bind>
                         </Cell>
                     </Grid>
                     {data.accessLevel === CUSTOM_ACCESS && (
-                        <Fragment>
-                            <ContentModelPermission
-                                data={data}
-                                Bind={Bind}
-                                entity={"contentModels"}
-                                title={"Content Models"}
-                            />
-                            <CustomSection
-                                data={data}
-                                Bind={Bind}
-                                entity={"contentModelGroups"}
-                                title={"Content Model Groups"}
-                            />
-                            <ContentEntryPermission
-                                data={data}
-                                Bind={Bind}
-                                entity={"contentEntries"}
-                                title={"Content Entries"}
-                            />
-                            <EnvironmentPermission
-                                data={data}
-                                Bind={Bind}
-                                entity={"environments"}
-                            />
-                            <Elevation z={1} style={{ marginTop: 10 }}>
-                                <Grid>
-                                    <Cell span={12}>
-                                        <Typography use={"overline"}>{t`Settings`}</Typography>
-                                    </Cell>
-                                    <Cell span={12}>
-                                        <Grid style={{ padding: 0, paddingBottom: 24 }}>
-                                            <Cell span={6}>
-                                                <PermissionInfo title={t`Manage environments`} />
-                                            </Cell>
-                                            <Cell span={6} align={"middle"}>
-                                                <Bind name={"environmentsSettingsAccessLevel"}>
-                                                    <Select label={t`Access Level`}>
-                                                        <option
-                                                            value={NO_ACCESS}
-                                                        >{t`No access`}</option>
-                                                        <option
-                                                            value={FULL_ACCESS}
-                                                        >{t`Full Access`}</option>
-                                                    </Select>
-                                                </Bind>
-                                            </Cell>
-                                        </Grid>
-                                    </Cell>
-                                    <Cell span={12}>
-                                        <Grid style={{ padding: 0, paddingBottom: 24 }}>
-                                            <Cell span={6}>
-                                                <PermissionInfo title={t`Manage aliases`} />
-                                            </Cell>
-                                            <Cell span={6} align={"middle"}>
-                                                <Bind name={"aliasesSettingsAccessLevel"}>
-                                                    <Select label={t`Access Level`}>
-                                                        <option
-                                                            value={NO_ACCESS}
-                                                        >{t`No access`}</option>
-                                                        <option
-                                                            value={FULL_ACCESS}
-                                                        >{t`Full Access`}</option>
-                                                    </Select>
-                                                </Bind>
-                                            </Cell>
-                                        </Grid>
-                                    </Cell>
-                                </Grid>
-                            </Elevation>
-                        </Fragment>
+                        <>
+                            <Grid>
+                                <Cell span={12}>
+                                    <Bind name={"endpoints"}>
+                                        <CheckboxGroup
+                                            label={t`API Endpoints`}
+                                            description={t`API endpoints with different purpose and type of data returned.`}
+                                        >
+                                            {({ getValue, onChange }) =>
+                                                API_ENDPOINTS.map(({ id, name }) => (
+                                                    <Checkbox
+                                                        key={id}
+                                                        label={name}
+                                                        value={getValue(id)}
+                                                        onChange={onChange(id)}
+                                                    />
+                                                ))
+                                            }
+                                        </CheckboxGroup>
+                                    </Bind>
+                                </Cell>
+                            </Grid>
+                            {data.endpoints.includes("manage") && (
+                                <ContentModelPermission
+                                    locales={locales}
+                                    data={data}
+                                    Bind={Bind}
+                                    entity={"contentModel"}
+                                    title={"Content Models"}
+                                />
+                            )}
+
+                            {data.endpoints.includes("manage") && (
+                                <CustomSection
+                                    data={data}
+                                    Bind={Bind}
+                                    entity={"contentModelGroup"}
+                                    title={"Content Model Groups"}
+                                />
+                            )}
+
+                            {(data.endpoints.includes("read") ||
+                                data.endpoints.includes("manage") ||
+                                data.endpoints.includes("preview")) && (
+                                <ContentEntryPermission
+                                    locales={locales}
+                                    data={data}
+                                    Bind={Bind}
+                                    entity={"contentEntry"}
+                                    title={"Content Entries"}
+                                />
+                            )}
+                        </>
                     )}
                 </Fragment>
             )}

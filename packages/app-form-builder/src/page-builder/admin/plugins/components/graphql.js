@@ -5,14 +5,8 @@ export const LIST_FORMS = gql`
         formBuilder {
             listForms {
                 data {
-                    parent
+                    id
                     name
-                    publishedRevisions {
-                        id
-                        name
-                        version
-                        published
-                    }
                 }
             }
         }

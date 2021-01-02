@@ -15,7 +15,6 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@editorjs/editorjs": "^2.19.0",
     "@emotion/core": "^10.0.17",
     "@emotion/styled": "^10.0.17",
     "@rmwc/base": "^5.6.0",
@@ -61,7 +60,8 @@
     "react-custom-scrollbars": "^4.2.1",
     "react-loading-skeleton": "^0.5.0",
     "react-spinner-material": "1.1.4",
-    "react-transition-group": "^4.3.0"
+    "react-transition-group": "^4.3.0",
+    "shortid": "^2.2.16"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

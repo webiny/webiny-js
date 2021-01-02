@@ -1,26 +1,20 @@
 import React, { useCallback, useMemo } from "react";
+import { get } from "lodash";
+import { css } from "emotion";
 import { i18n } from "@webiny/app/i18n";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { createPublishMutation } from "@webiny/app-headless-cms/admin/components/ContentModelForm/graphql";
 import { useMutation } from "@webiny/app-headless-cms/admin/hooks";
-import { get } from "lodash";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
-import { css } from "emotion";
+import { createPublishMutation } from "../../../../views/components/ContentModelForm/graphql";
+
 const t = i18n.ns("app-headless-cms/admin/plugins/content-details/header/publish-revision");
 
 const buttonStyles = css({
     marginLeft: 16
 });
 
-const SaveAndPublishButton = ({
-    content,
-    contentModel,
-    getLoading,
-    setLoading,
-    revisionsList,
-    state
-}) => {
+const SaveAndPublishButton = ({ entry, contentModel, getLoading, setLoading, state }) => {
     const { showSnackbar } = useSnackbar();
     const { PUBLISH_CONTENT } = useMemo(() => {
         return {
@@ -34,7 +28,7 @@ const SaveAndPublishButton = ({
         async id => {
             setLoading(true);
             const response = await publishContentMutation({
-                variables: { revision: id || content.id }
+                variables: { revision: id || entry.id }
             });
 
             const contentData = get(response, "data.content");
@@ -44,9 +38,8 @@ const SaveAndPublishButton = ({
             }
 
             showSnackbar(t`Content published successfully.`);
-            revisionsList.refetch();
         },
-        [content.id]
+        [entry.id]
     );
 
     const { showConfirmation } = useConfirmationDialog({
@@ -62,12 +55,11 @@ const SaveAndPublishButton = ({
             className={buttonStyles}
             onClick={() => {
                 showConfirmation(async () => {
-                    const response = await state.contentForm.submit();
-                    if (response.data.content.error) {
+                    const entry = await state.contentForm.submit();
+                    if (!entry) {
                         return;
                     }
-                    const { id } = response.data.content.data;
-                    await onPublish(id);
+                    await onPublish(entry.id);
                 });
             }}
             disabled={getLoading()}

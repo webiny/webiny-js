@@ -9,10 +9,9 @@ const defaultHandler = useGqlHandler({
 describe("Pages Security Test", () => {
     const { deleteElasticSearchIndex, createCategory, until } = useGqlHandler();
 
-    let initialPageIds, initialCategory;
+    let initialCategory;
 
     beforeEach(async () => {
-        initialPageIds = [];
         await deleteElasticSearchIndex();
 
         await createCategory({

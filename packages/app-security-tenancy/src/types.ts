@@ -29,13 +29,3 @@ export type SecurityUserAccountFormPlugin = Plugin & {
     type: "security-user-account-form";
     render(params: SecurityViewProps): React.ReactNode;
 };
-
-export type PermissionRendererSecurityPlugin = Plugin & {
-    type: "permission-renderer-security";
-    key: string;
-    label: string;
-    render: (
-        value: SecurityPermission,
-        setValue: (newValue: SecurityPermission) => void
-    ) => React.ReactElement;
-};

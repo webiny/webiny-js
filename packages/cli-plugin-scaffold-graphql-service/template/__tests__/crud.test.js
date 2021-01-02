@@ -12,7 +12,7 @@ describe("CRUD Test", () => {
 
     it("should be able to perform basic CRUD operations", async () => {
         // 1. Let's create a couple of entities.
-        let [entity1] = await invoke({
+        const [entity1] = await invoke({
             body: {
                 query: CREATE_ENTITY,
                 variables: {
@@ -25,7 +25,7 @@ describe("CRUD Test", () => {
             }
         });
 
-        let [entity2] = await invoke({
+        const [entity2] = await invoke({
             body: {
                 query: CREATE_ENTITY,
                 variables: {
@@ -34,7 +34,7 @@ describe("CRUD Test", () => {
             }
         });
 
-        let [entity3] = await invoke({
+        const [entity3] = await invoke({
             body: {
                 query: CREATE_ENTITY,
                 variables: {
@@ -44,7 +44,7 @@ describe("CRUD Test", () => {
         });
 
         // 2. Now that we have entities created, let's see if they come up in a basic listEntities query.
-        let [entitiesList] = await invoke({
+        const [entitiesList] = await invoke({
             body: {
                 query: LIST_ENTITIES
             }
@@ -92,7 +92,7 @@ describe("CRUD Test", () => {
             }
         });
 
-        let [error] = body.errors;
+        const [error] = body.errors;
         expect(error.message).toBe(
             'Variable "$data" got invalid value { description: "This is my 1st entity.", isNice: false }; Field title of required type String! was not provided.'
         );

@@ -26,7 +26,7 @@ const checkBasePermissions = async (context: PbContext) => {
 
 const plugin: ContextPlugin<PbContext> = {
     type: "context",
-    apply(context) {
+    async apply(context) {
         const { db, security, i18nContent } = context;
 
         const hookPlugins = context.plugins.byType<SettingsHookPlugin>("pb-settings-hook");

@@ -1,9 +1,7 @@
 import useCms from "./useCms";
 
 const useApolloClient = function() {
-    const {
-        environments: { apolloClient }
-    } = useCms();
+    const { apolloClient } = useCms();
 
     return apolloClient;
 };

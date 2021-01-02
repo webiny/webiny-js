@@ -65,9 +65,9 @@ describe("Categories Security Test", () => {
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
-            let [permissions, identity] = insufficientPermissions[i];
+            const [permissions, identity] = insufficientPermissions[i];
             const { listCategories } = useGqlHandler({ permissions, identity });
-            let [response] = await listCategories();
+            const [response] = await listCategories();
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("listCategories"));
         }
 
@@ -84,9 +84,9 @@ describe("Categories Security Test", () => {
         ];
 
         for (let i = 0; i < sufficientPermissionsAll.length; i++) {
-            let [permissions, identity] = sufficientPermissionsAll[i];
+            const [permissions, identity] = sufficientPermissionsAll[i];
             const { listCategories } = useGqlHandler({ permissions, identity });
-            let [response] = await listCategories();
+            const [response] = await listCategories();
             expect(response).toMatchObject({
                 data: {
                     pageBuilder: {
@@ -238,10 +238,10 @@ describe("Categories Security Test", () => {
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
-            let [permissions, identity] = insufficientPermissions[i];
+            const [permissions, identity] = insufficientPermissions[i];
             const { createCategory } = useGqlHandler({ permissions, identity });
 
-            let [response] = await createCategory({ data: new Mock() });
+            const [response] = await createCategory({ data: new Mock() });
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("createCategory"));
         }
 
@@ -255,11 +255,11 @@ describe("Categories Security Test", () => {
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
-            let [permissions, identity] = sufficientPermissions[i];
+            const [permissions, identity] = sufficientPermissions[i];
             const { createCategory } = useGqlHandler({ permissions, identity });
 
             const data = new Mock(`category-create-${i}-`);
-            let [response] = await createCategory({ data });
+            const [response] = await createCategory({ data });
             expect(response).toMatchObject({
                 data: {
                     pageBuilder: {
@@ -279,7 +279,7 @@ describe("Categories Security Test", () => {
 
         await createCategory({ data: mock });
 
-        let insufficientPermissions = [
+        const insufficientPermissions = [
             [[], null],
             [[], identityA],
             [[{ name: "pb.category", rwd: "r" }], identityA],
@@ -293,13 +293,13 @@ describe("Categories Security Test", () => {
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
-            let [permissions, identity] = insufficientPermissions[i];
+            const [permissions, identity] = insufficientPermissions[i];
             const { updateCategory } = useGqlHandler({ permissions, identity });
-            let [response] = await updateCategory({ slug: mock.slug, data: mock });
+            const [response] = await updateCategory({ slug: mock.slug, data: mock });
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("updateCategory"));
         }
 
-        let sufficientPermissions = [
+        const sufficientPermissions = [
             [[{ name: "content.i18n" }, { name: "pb.category" }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.category", own: true }], identityA],
 
@@ -309,9 +309,9 @@ describe("Categories Security Test", () => {
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
-            let [permissions, identity] = sufficientPermissions[i];
+            const [permissions, identity] = sufficientPermissions[i];
             const { updateCategory } = useGqlHandler({ permissions, identity });
-            let [response] = await updateCategory({ slug: mock.slug, data: mock });
+            const [response] = await updateCategory({ slug: mock.slug, data: mock });
             expect(response).toMatchObject({
                 data: {
                     pageBuilder: {
@@ -331,7 +331,7 @@ describe("Categories Security Test", () => {
 
         await createCategory({ data: mock });
 
-        let insufficientPermissions = [
+        const insufficientPermissions = [
             [[], null],
             [[], identityA],
             [[{ name: "content.i18n" }, { name: "pb.category", rwd: "r" }], identityA],
@@ -345,13 +345,13 @@ describe("Categories Security Test", () => {
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
-            let [permissions, identity] = insufficientPermissions[i];
+            const [permissions, identity] = insufficientPermissions[i];
             const { deleteCategory } = useGqlHandler({ permissions, identity });
-            let [response] = await deleteCategory({ slug: mock.slug });
+            const [response] = await deleteCategory({ slug: mock.slug });
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("deleteCategory"));
         }
 
-        let sufficientPermissions = [
+        const sufficientPermissions = [
             [[{ name: "content.i18n" }, { name: "pb.category" }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.category", own: true }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.category", rwd: "rwd" }], identityA],
@@ -366,12 +366,12 @@ describe("Categories Security Test", () => {
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
-            let [permissions, identity] = sufficientPermissions[i];
+            const [permissions, identity] = sufficientPermissions[i];
             const { createCategory, deleteCategory } = useGqlHandler({ permissions, identity });
             const mock = new Mock(`delete-category-${i}-`);
 
             await createCategory({ data: mock });
-            let [response] = await deleteCategory({
+            const [response] = await deleteCategory({
                 slug: mock.slug
             });
             expect(response).toMatchObject({
@@ -393,7 +393,7 @@ describe("Categories Security Test", () => {
 
         await createCategory({ data: mock });
 
-        let insufficientPermissions = [
+        const insufficientPermissions = [
             [[], null],
             [[], identityA],
             [[{ name: "content.i18n" }, { name: "pb.category", rwd: "w" }], identityA],
@@ -406,13 +406,13 @@ describe("Categories Security Test", () => {
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {
-            let [permissions, identity] = insufficientPermissions[i];
+            const [permissions, identity] = insufficientPermissions[i];
             const { getCategory } = useGqlHandler({ permissions, identity });
-            let [response] = await getCategory({ slug: mock.slug, data: mock });
+            const [response] = await getCategory({ slug: mock.slug, data: mock });
             expect(response).toMatchObject(NOT_AUTHORIZED_RESPONSE("getCategory"));
         }
 
-        let sufficientPermissions = [
+        const sufficientPermissions = [
             [[{ name: "content.i18n" }, { name: "pb.category" }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.category", own: true }], identityA],
             [[{ name: "content.i18n" }, { name: "pb.category", rwd: "r" }], identityA],
@@ -429,9 +429,9 @@ describe("Categories Security Test", () => {
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
-            let [permissions, identity] = sufficientPermissions[i];
+            const [permissions, identity] = sufficientPermissions[i];
             const { getCategory } = useGqlHandler({ permissions, identity });
-            let [response] = await getCategory({ slug: mock.slug, data: mock });
+            const [response] = await getCategory({ slug: mock.slug, data: mock });
             expect(response).toMatchObject({
                 data: {
                     pageBuilder: {

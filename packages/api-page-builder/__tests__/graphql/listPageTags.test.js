@@ -27,7 +27,7 @@ describe("listing tags used by pages", () => {
 
         const letters = ["a", "z", "b", "x", "c"];
         for (let i = 0; i < 5; i++) {
-            let [response] = await createPage({ category: "category" });
+            const [response] = await createPage({ category: "category" });
             const { id } = response.data.pageBuilder.createPage.data;
 
             await updatePage({

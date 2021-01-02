@@ -8,29 +8,26 @@ import { Radio, RadioGroup } from "@webiny/ui/Radio";
 
 const t = i18n.ns("app-i18n/admin/plugins/permissionRenderer");
 
-export const ContentPermissions = ({ parent, value, onChange }) => {
+export const ContentPermissions = ({ value, onChange }) => {
     const { getLocales } = useI18N();
 
-    const onFormChange = useCallback(
-        formData => {
-            let newValue = [];
-            if (Array.isArray(value)) {
-                // Let's just filter out the `content*` permission objects, it's easier to build new ones from scratch.
-                newValue = value.filter(item => !item.name.startsWith("content"));
-            }
+    const onFormChange = useCallback(formData => {
+        let newValue = [];
+        if (Array.isArray(value)) {
+            // Let's just filter out the `content*` permission objects, it's easier to build new ones from scratch.
+            newValue = value.filter(item => !item.name.startsWith("content"));
+        }
 
-            const permission = { name: "content.i18n", locales: undefined };
-            if (formData.level === "locales") {
-                permission.locales = Array.isArray(formData.locales) ? formData.locales : [];
-            }
-            newValue.push(permission);
-            onChange(newValue);
-        },
-        [parent.id]
-    );
+        const permission = { name: "content.i18n", locales: undefined };
+        if (formData.level === "locales") {
+            permission.locales = Array.isArray(formData.locales) ? formData.locales : [];
+        }
+        newValue.push(permission);
+        onChange(newValue);
+    }, []);
 
     const formData = useMemo(() => {
-        const defaultData = { level: "all", locales: [] };
+        const defaultData = { level: undefined, locales: [] };
         if (!Array.isArray(value)) {
             return defaultData;
         }
@@ -44,8 +41,8 @@ export const ContentPermissions = ({ parent, value, onChange }) => {
             return { level: "locales", locales: permission.locales };
         }
 
-        return defaultData;
-    }, [parent.id]);
+        return { level: "all" };
+    }, []);
 
     return (
         <Form data={formData} onChange={onFormChange}>
@@ -77,7 +74,7 @@ export const ContentPermissions = ({ parent, value, onChange }) => {
                                 <Bind name={"locales"}>
                                     <CheckboxGroup
                                         label={t`Available Locales`}
-                                        description={t`The user will be able to manage content in the selected locales.`}
+                                        description={t`The user will be able to access content in the selected locales.`}
                                     >
                                         {({ onChange, getValue }) =>
                                             getLocales().map(({ code }) => (

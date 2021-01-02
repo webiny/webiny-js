@@ -31,6 +31,15 @@
 		},
 		{
 			"path": "../validation"
-		}
+		},
+        {
+            "path": "../api-i18n-content"
+        },
+        {
+            "path": "../api-plugin-elastic-search-client"
+        },
+        {
+            "path": "../api-security-tenancy"
+        }
 	]
 }

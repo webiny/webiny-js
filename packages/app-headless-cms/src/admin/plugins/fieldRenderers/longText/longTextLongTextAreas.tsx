@@ -1,10 +1,10 @@
 import React from "react";
+import get from "lodash/get";
 import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
 import { Input } from "@webiny/ui/Input";
 import { i18n } from "@webiny/app/i18n";
 import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/close.svg";
 import DynamicListMultipleValues from "./../DynamicListMultipleValues";
-import get from "lodash/get";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 

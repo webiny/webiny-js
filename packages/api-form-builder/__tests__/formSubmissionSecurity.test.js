@@ -104,27 +104,27 @@ describe("Forms Security Test", () => {
         // Create submissions
         // NOTE: response variables are unused but left here for debugging purposes!
 
-        const [a1] = await handlerA.createFormSubmission({
+        await handlerA.createFormSubmission({
             form: formA.id,
             ...new MockSubmission("A1-")
         });
 
-        const [a2] = await handlerA.createFormSubmission({
+        await handlerA.createFormSubmission({
             form: formA.id,
             ...new MockSubmission("A2-")
         });
 
-        const [a3] = await handlerA.createFormSubmission({
+        await handlerA.createFormSubmission({
             form: formA.id,
             ...new MockSubmission("A3-")
         });
 
-        const [b1] = await handlerB.createFormSubmission({
+        await handlerB.createFormSubmission({
             form: formB.id,
             ...new MockSubmission("B1-")
         });
 
-        const [b2] = await handlerB.createFormSubmission({
+        await handlerB.createFormSubmission({
             form: formB.id,
             ...new MockSubmission("B2-")
         });

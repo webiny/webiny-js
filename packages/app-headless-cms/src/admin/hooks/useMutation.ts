@@ -1,10 +1,8 @@
-import useCms from "./useCms";
 import { useMutation as apolloUseMutation } from "react-apollo";
+import useCms from "./useCms";
 
 const useMutation = function(mutation, options = {}) {
-    const {
-        environments: { apolloClient }
-    } = useCms();
+    const { apolloClient } = useCms();
 
     return apolloUseMutation(mutation, {
         client: apolloClient,

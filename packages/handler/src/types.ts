@@ -16,7 +16,6 @@ export type Context<
 > = {
     plugins: PluginsContainer;
     args: HandlerArgs;
-    [key: string]: any;
 } & C0 &
     C1 &
     C2 &
@@ -41,7 +40,7 @@ export type ContextPlugin<
     C9 = Context
 > = Plugin & {
     type: "context";
-    apply(context: C0 & C1 & C2 & C3 & C4 & C5 & C6 & C7 & C8 & C9): void;
+    apply(context: C0 & C1 & C2 & C3 & C4 & C5 & C6 & C7 & C8 & C9): Promise<void>;
 };
 
 export type HandlerPlugin<

@@ -1,3 +1,4 @@
+/* eslint-disable jest/no-try-expect */
 import { validation, ValidationError } from "../src";
 
 describe("invalid validators test", () => {

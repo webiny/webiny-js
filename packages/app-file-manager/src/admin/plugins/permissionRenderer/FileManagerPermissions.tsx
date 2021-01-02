@@ -2,11 +2,7 @@ import React, { Fragment, useCallback, useMemo } from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { i18n } from "@webiny/app/i18n";
-
-import {
-    PermissionInfo,
-    gridNoPaddingClass
-} from "@webiny/app-security-tenancy/components/permission";
+import { PermissionInfo, gridNoPaddingClass } from "@webiny/app-admin/components/Permissions";
 import { Form } from "@webiny/form";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Typography } from "@webiny/ui/Typography";
@@ -22,7 +18,7 @@ const FULL_ACCESS = "full";
 const NO_ACCESS = "no";
 const CUSTOM_ACCESS = "custom";
 
-export const FileManagerPermissions = ({ parent, value, onChange }) => {
+export const FileManagerPermissions = ({ value, onChange }) => {
     const onFormChange = useCallback(
         data => {
             let newValue = [];
@@ -45,59 +41,60 @@ export const FileManagerPermissions = ({ parent, value, onChange }) => {
             // Handling custom access level.
 
             // Files first.
-            if (data.filesAccessLevel && data.filesAccessLevel !== NO_ACCESS) {
+            if (data.filesAccessScope && data.filesAccessScope !== NO_ACCESS) {
                 const permission = {
                     name: FILE_MANAGER_ACCESS_FILE,
                     own: false,
-                    permissions: undefined
+                    rwd: undefined
                 };
-                if (data.filesAccessLevel === "own") {
+
+                if (data.filesAccessScope === "own") {
                     permission.own = true;
                 } else {
-                    permission.permissions = data.filesPermissions;
+                    permission.rwd = data.filesRWD || "r";
                 }
                 newValue.push(permission);
             }
 
             // Settings second.
-            if (data.settingsAccessLevel === FULL_ACCESS) {
+            if (data.settingsAccessScope === FULL_ACCESS) {
                 newValue.push({ name: FILE_MANAGER_ACCESS_SETTINGS });
             }
 
             onChange(newValue);
         },
-        [parent.id, value]
+        [value]
     );
 
     const formData = useMemo(() => {
         if (!Array.isArray(value)) {
-            return { accessLevel: NO_ACCESS };
+            return { accessScope: NO_ACCESS };
         }
 
         const hasFullAccess = value.find(
             item => item.name === FILE_MANAGER_FULL_ACCESS || item.name === "*"
         );
         if (hasFullAccess) {
-            return { accessLevel: FULL_ACCESS };
+            return { accessScope: FULL_ACCESS };
         }
 
         const permissions = value.filter(item => item.name.startsWith(FILE_MANAGER));
         if (!permissions.length) {
-            return { accessLevel: NO_ACCESS };
+            return { accessScope: NO_ACCESS };
         }
 
         const data = {
-            accessLevel: CUSTOM_ACCESS,
-            filesAccessLevel: NO_ACCESS,
-            settingsAccessLevel: NO_ACCESS,
-            filesPermissions: "r"
+            accessScope: CUSTOM_ACCESS,
+            filesAccessScope: NO_ACCESS,
+            settingsAccessScope: NO_ACCESS,
+            filesRWD: "r"
         };
 
         const filesPermission = permissions.find(item => item.name === FILE_MANAGER_ACCESS_FILE);
         if (filesPermission) {
-            data.filesAccessLevel = filesPermission.own ? "own" : FULL_ACCESS;
-            if (data.filesAccessLevel === FULL_ACCESS) {
-                data.filesPermissions = filesPermission.permissions;
+            data.filesAccessScope = filesPermission.own ? "own" : FULL_ACCESS;
+            if (data.filesAccessScope === FULL_ACCESS) {
+                data.filesRWD = filesPermission.rwd;
             }
         }
 
@@ -105,11 +102,11 @@ export const FileManagerPermissions = ({ parent, value, onChange }) => {
             item => item.name === FILE_MANAGER_ACCESS_SETTINGS
         );
         if (hasSettingsAccess) {
-            data.settingsAccessLevel = FULL_ACCESS;
+            data.settingsAccessScope = FULL_ACCESS;
         }
 
         return data;
-    }, [parent.id]);
+    }, []);
 
     return (
         <Form data={formData} onChange={onFormChange}>
@@ -123,8 +120,8 @@ export const FileManagerPermissions = ({ parent, value, onChange }) => {
                             <Bind name={"accessLevel"}>
                                 <Select label={t`Access Level`}>
                                     <option value={NO_ACCESS}>{t`No access`}</option>
-                                    <option value={FULL_ACCESS}>{t`Full Access`}</option>
-                                    <option value={CUSTOM_ACCESS}>{t`Custom Access`}</option>
+                                    <option value={FULL_ACCESS}>{t`Full access`}</option>
+                                    <option value={CUSTOM_ACCESS}>{t`Custom access`}</option>
                                 </Select>
                             </Bind>
                         </Cell>
@@ -138,12 +135,9 @@ export const FileManagerPermissions = ({ parent, value, onChange }) => {
                                     </Cell>
                                     <Cell span={12}>
                                         <Grid style={{ padding: 0, paddingBottom: 24 }}>
-                                            <Cell span={6}>
-                                                <PermissionInfo title={t`Access Level`} />
-                                            </Cell>
-                                            <Cell span={6} align={"middle"}>
-                                                <Bind name={"filesAccessLevel"}>
-                                                    <Select label={t`Access Level`}>
+                                            <Cell span={12}>
+                                                <Bind name={"filesAccessScope"}>
+                                                    <Select label={t`Access Scope`}>
                                                         <option
                                                             value={NO_ACCESS}
                                                         >{t`No access`}</option>
@@ -152,18 +146,15 @@ export const FileManagerPermissions = ({ parent, value, onChange }) => {
                                                         >{t`All files`}</option>
                                                         <option
                                                             value={"own"}
-                                                        >{t`Only the one they created`}</option>
+                                                        >{t`Only files created by the user`}</option>
                                                     </Select>
                                                 </Bind>
                                             </Cell>
-                                            <Cell span={6}>
-                                                <PermissionInfo title={t`Permissions`} />
-                                            </Cell>
-                                            <Cell span={6} align={"middle"}>
-                                                <Bind name={"filesPermissions"}>
+                                            <Cell span={12}>
+                                                <Bind name={"filesRWD"}>
                                                     <Select
-                                                        label={t`Permissions`}
-                                                        disabled={data.filesAccessLevel !== "full"}
+                                                        label={t`Primary Actions`}
+                                                        disabled={data.filesAccessScope !== "full"}
                                                     >
                                                         <option value={"r"}>{t`Read`}</option>
                                                         <option
@@ -185,23 +176,14 @@ export const FileManagerPermissions = ({ parent, value, onChange }) => {
                                         <Typography use={"overline"}>{t`Settings`}</Typography>
                                     </Cell>
                                     <Cell span={12}>
-                                        <Grid style={{ padding: 0, paddingBottom: 24 }}>
-                                            <Cell span={6}>
-                                                <PermissionInfo title={t`Manage settings`} />
-                                            </Cell>
-                                            <Cell span={6} align={"middle"}>
-                                                <Bind name={"settingsAccessLevel"}>
-                                                    <Select label={t`Access Level`}>
-                                                        <option
-                                                            value={NO_ACCESS}
-                                                        >{t`No access`}</option>
-                                                        <option
-                                                            value={FULL_ACCESS}
-                                                        >{t`Full Access`}</option>
-                                                    </Select>
-                                                </Bind>
-                                            </Cell>
-                                        </Grid>
+                                        <Bind name={"settingsAccessScope"}>
+                                            <Select label={t`Access Scope`}>
+                                                <option value={NO_ACCESS}>{t`No access`}</option>
+                                                <option
+                                                    value={FULL_ACCESS}
+                                                >{t`Full access`}</option>
+                                            </Select>
+                                        </Bind>
                                     </Cell>
                                 </Grid>
                             </Elevation>

@@ -1,56 +1,27 @@
-import { CmsContentModel, CmsFieldTypePlugins, CmsContext } from "@webiny/api-headless-cms/types";
-import { hasCmsPermission } from "@webiny/api-security";
+import {
+    CmsContentModelType,
+    CmsFieldTypePlugins,
+    CmsContext
+} from "@webiny/api-headless-cms/types";
+import { commonFieldResolvers } from "./resolvers/commonFieldResolvers";
+import { resolveGet } from "./resolvers/manage/resolveGet";
+import { resolveList } from "./resolvers/manage/resolveList";
+import { resolveGetRevisions } from "./resolvers/manage/resolveGetRevisions";
+import { resolveGetByIds } from "./resolvers/manage/resolveGetByIds";
+import { resolveCreate } from "./resolvers/manage/resolveCreate";
+import { resolveUpdate } from "./resolvers/manage/resolveUpdate";
+import { resolveDelete } from "./resolvers/manage/resolveDelete";
+import { resolvePublish } from "./resolvers/manage/resolvePublish";
+import { resolveUnpublish } from "./resolvers/manage/resolveUnpublish";
+import { resolveCreateFrom } from "./resolvers/manage/resolveCreateFrom";
 import { createManageTypeName, createTypeName } from "../utils/createTypeName";
-import { commonFieldResolvers } from "../utils/commonFieldResolvers";
-import { resolveGet } from "../utils/resolvers/resolveGet";
-import { resolveList } from "../utils/resolvers/resolveList";
-import { resolveCreate } from "../utils/resolvers/manage/resolveCreate";
-import { resolveUpdate } from "../utils/resolvers/manage/resolveUpdate";
-import { resolveDelete } from "../utils/resolvers/manage/resolveDelete";
-import { resolvePublish } from "../utils/resolvers/manage/resolvePublish";
-import { resolveUnpublish } from "../utils/resolvers/manage/resolveUnpublish";
-import { resolveCreateFrom } from "../utils/resolvers/manage/resolveCreateFrom";
 import { pluralizedTypeName } from "../utils/pluralizedTypeName";
-
-const createPermissionChecker = (checker, model) => {
-    return ({ args, context, permission }) => {
-        return checker({ args, context, permission, model });
-    };
-};
-
-const checkContentEntryUpdatePermission = async ({ context, permission, model }) => {
-    let allowed = true;
-    const { CmsContentModelGroup } = context.models;
-    const identity = context.security.getIdentity();
-
-    if (allowed && permission.own) {
-        // Check if the model is created by the user
-        allowed = model.createdBy === identity.id;
-    }
-
-    if (allowed && Array.isArray(permission.models) && permission.models.length) {
-        allowed = permission.models.includes(model.modelId);
-    }
-
-    if (allowed && Array.isArray(permission.groups) && permission.groups.length) {
-        const contentModelGroupData = await CmsContentModelGroup.find({
-            query: { slug: { $in: permission.groups } }
-        });
-
-        if (Array.isArray(contentModelGroupData)) {
-            const contentModelGroup = await model.group;
-
-            allowed = contentModelGroupData.some(item => item.id === contentModelGroup.id);
-        }
-    }
-
-    return allowed;
-};
+import { entryFieldFromStorageTransform } from "../utils/entryStorage";
 
 export interface CreateManageResolvers {
     (params: {
-        models: CmsContentModel[];
-        model: CmsContentModel;
+        models: CmsContentModelType[];
+        model: CmsContentModelType;
         context: CmsContext;
         fieldTypePlugins: CmsFieldTypePlugins;
     }): any;
@@ -67,42 +38,61 @@ export const createManageResolvers: CreateManageResolvers = ({
     return {
         Query: {
             [`get${typeName}`]: resolveGet({ model }),
+            [`get${typeName}Revisions`]: resolveGetRevisions({ model }),
+            [`get${pluralizedTypeName(typeName)}ByIds`]: resolveGetByIds({ model }),
             [`list${pluralizedTypeName(typeName)}`]: resolveList({ model })
         },
         Mutation: {
-            [`create${typeName}`]: hasCmsPermission(
-                "cms.manage.contentEntry.update",
-                createPermissionChecker(checkContentEntryUpdatePermission, model)
-            )(resolveCreate({ model })),
-            [`update${typeName}`]: hasCmsPermission(
-                "cms.manage.contentEntry.update",
-                createPermissionChecker(checkContentEntryUpdatePermission, model)
-            )(resolveUpdate({ model })),
-            [`delete${typeName}`]: hasCmsPermission(
-                "cms.manage.contentEntry.delete",
-                createPermissionChecker(checkContentEntryUpdatePermission, model)
-            )(resolveDelete({ model })),
-            [`publish${typeName}`]: hasCmsPermission(
-                "cms.manage.contentEntry.publish",
-                createPermissionChecker(checkContentEntryUpdatePermission, model)
-            )(resolvePublish({ model })),
-            [`unpublish${typeName}`]: hasCmsPermission(
-                "cms.manage.contentEntry.publish",
-                createPermissionChecker(checkContentEntryUpdatePermission, model)
-            )(resolveUnpublish({ model })),
+            [`create${typeName}`]: resolveCreate({ model }),
+            [`update${typeName}`]: resolveUpdate({ model }),
+            [`delete${typeName}`]: resolveDelete({ model }),
+            [`publish${typeName}`]: resolvePublish({ model }),
+            [`unpublish${typeName}`]: resolveUnpublish({ model }),
             [`create${typeName}From`]: resolveCreateFrom({ model })
         },
-        [mTypeName]: model.fields.reduce((resolvers, field) => {
-            const { manage } = fieldTypePlugins[field.type];
-            const resolver = manage.createResolver({ models, model, field });
+        [mTypeName]: model.fields.reduce(
+            (resolvers, field) => {
+                const { manage } = fieldTypePlugins[field.type];
 
-            resolvers[field.fieldId] = async (entry, args, ctx, info) => {
-                // If field-level locale is not specified, use context locale.
-                const locale = args.locale || ctx.cms.locale.code;
-                return await resolver(entry, { ...args, locale }, ctx, info);
-            };
+                const resolver = manage.createResolver({ models, model, field });
 
-            return resolvers;
-        }, commonFieldResolvers())
+                resolvers[field.fieldId] = async (entry, args, context: CmsContext, info) => {
+                    const value = await resolver(entry, args, context, info);
+                    // Get transformed value (eg. data decompression)
+                    return entryFieldFromStorageTransform({
+                        context,
+                        model,
+                        entry,
+                        field,
+                        value
+                    });
+                };
+
+                return resolvers;
+            },
+            {
+                ...commonFieldResolvers(),
+                meta(entry) {
+                    return entry;
+                }
+            }
+        ),
+        [`${mTypeName}Meta`]: {
+            title(entry) {
+                if (model.titleFieldId) {
+                    return entry.values[model.titleFieldId];
+                }
+
+                return "";
+            },
+            status(entry) {
+                return entry.status;
+            },
+            async revisions(entry, args, context: CmsContext) {
+                const entryId = entry.id.split("#")[0];
+                const revisions = await context.cms.entries.getEntryRevisions(entryId);
+                return revisions.sort((a, b) => b.version - a.version);
+            }
+        }
     };
 };

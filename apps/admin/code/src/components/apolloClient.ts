@@ -8,7 +8,7 @@ import { plugins } from "@webiny/plugins";
 import { GET_ERROR } from "./NetworkError";
 import { CacheGetObjectIdPlugin } from "@webiny/app/types";
 
-export const createApolloClient = () => {
+export const createApolloClient = ({ uri }) => {
     return new ApolloClient({
         link: ApolloLink.from([
             /**
@@ -41,7 +41,7 @@ export const createApolloClient = () => {
             /**
              * This batches requests made to the API to pack multiple requests into a single HTTP request.
              */
-            new BatchHttpLink({ uri: process.env.REACT_APP_GRAPHQL_API_URL })
+            new BatchHttpLink({ uri })
         ]),
         cache: new InMemoryCache({
             addTypename: true,

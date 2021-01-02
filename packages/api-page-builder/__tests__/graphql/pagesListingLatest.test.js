@@ -32,7 +32,7 @@ describe("listing latest pages", () => {
 
         const letters = ["a", "z", "b", "x", "c"];
         for (let i = 0; i < 5; i++) {
-            let [response] = await createPage({ category: "category" });
+            const [response] = await createPage({ category: "category" });
             const { id } = response.data.pageBuilder.createPage.data;
 
             await updatePage({
@@ -174,8 +174,8 @@ describe("listing latest pages", () => {
         const letters = ["j", "n", "k", "m", "l"];
         // Test creating, getting and updating three pages.
         for (let i = 0; i < letters.length; i++) {
-            let letter = letters[i];
-            let [response] = await createPage({ category: "custom" });
+            const letter = letters[i];
+            const [response] = await createPage({ category: "custom" });
             const { id } = response.data.pageBuilder.createPage.data;
 
             await updatePage({

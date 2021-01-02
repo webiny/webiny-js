@@ -179,11 +179,7 @@ const plugin: GraphQLSchemaPlugin = {
                             }
                             return new Response(user);
                         } catch (e) {
-                            return new ErrorResponse({
-                                code: e.code,
-                                message: e.message,
-                                data: e.data || null
-                            });
+                            return new ErrorResponse(e);
                         }
                     }
                 ),
@@ -210,11 +206,7 @@ const plugin: GraphQLSchemaPlugin = {
 
                         return new ListResponse(userList);
                     } catch (e) {
-                        return new ListErrorResponse({
-                            code: e.code,
-                            message: e.message,
-                            data: e.data || null
-                        });
+                        return new ListErrorResponse(e);
                     }
                 })
             },
@@ -252,11 +244,7 @@ const plugin: GraphQLSchemaPlugin = {
 
                         return new Response(user);
                     } catch (e) {
-                        return new ErrorResponse({
-                            message: e.message,
-                            code: e.code,
-                            data: e.data
-                        });
+                        return new ErrorResponse(e);
                     }
                 },
                 updateCurrentUser: async (_, args: { data: UpdateUserInput }, context: Context) => {
@@ -297,11 +285,7 @@ const plugin: GraphQLSchemaPlugin = {
 
                         return new Response(user);
                     } catch (e) {
-                        return new ErrorResponse({
-                            code: e.code,
-                            message: e.message,
-                            data: e.data || null
-                        });
+                        return new ErrorResponse(e);
                     }
                 },
                 createUser: hasPermission("security.user")(
@@ -332,11 +316,7 @@ const plugin: GraphQLSchemaPlugin = {
 
                             return new Response(user);
                         } catch (e) {
-                            return new ErrorResponse({
-                                code: e.code,
-                                message: e.message,
-                                data: e.data
-                            });
+                            return new ErrorResponse(e);
                         }
                     }
                 ),
@@ -391,11 +371,7 @@ const plugin: GraphQLSchemaPlugin = {
 
                             return new Response(user);
                         } catch (e) {
-                            return new ErrorResponse({
-                                code: e.code,
-                                message: e.message,
-                                data: e.data
-                            });
+                            return new ErrorResponse(e);
                         }
                     }
                 ),
@@ -418,11 +394,7 @@ const plugin: GraphQLSchemaPlugin = {
 
                             return new Response(true);
                         } catch (e) {
-                            return new ErrorResponse({
-                                code: e.code,
-                                message: e.message,
-                                data: e.data
-                            });
+                            return new ErrorResponse(e);
                         }
                     }
                 )

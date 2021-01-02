@@ -1,9 +1,10 @@
 import React from "react";
-import { ReactComponent as NotesIcon } from "./icons/round-text_fields-24px.svg";
-import { Grid, Cell } from "@webiny/ui/Grid";
-import { I18NInput } from "@webiny/app-i18n/admin/components";
-import { CmsEditorFieldTypePlugin } from "@webiny/app-headless-cms/types";
 import { i18n } from "@webiny/app/i18n";
+import { CmsEditorFieldTypePlugin } from "@webiny/app-headless-cms/types";
+import { Grid, Cell } from "@webiny/ui/Grid";
+import { ReactComponent as NotesIcon } from "./icons/round-text_fields-24px.svg";
+import { Input } from "@webiny/ui/Input";
+
 const t = i18n.ns("app-headless-cms/admin/fields");
 
 const plugin: CmsEditorFieldTypePlugin = {
@@ -16,10 +17,6 @@ const plugin: CmsEditorFieldTypePlugin = {
         icon: <NotesIcon />,
         allowMultipleValues: true,
         allowPredefinedValues: false,
-        allowIndexes: {
-            singleValue: false,
-            multipleValues: false
-        },
         multipleValuesLabel: t`Use as a list of rich texts`,
         createField() {
             return {
@@ -36,7 +33,7 @@ const plugin: CmsEditorFieldTypePlugin = {
                 <Grid>
                     <Cell span={12}>
                         <Bind name={"placeholderText"}>
-                            <I18NInput
+                            <Input
                                 label={t`Placeholder text`}
                                 description={t`Placeholder text (optional)`}
                             />

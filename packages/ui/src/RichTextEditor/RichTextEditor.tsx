@@ -1,11 +1,13 @@
-import React, { useRef, useEffect, Fragment } from "react";
-import EditorJS, {
-    OutputData,
+import React, { Fragment, useEffect, useRef } from "react";
+import shortid from "shortid";
+import EditorJS from "./editorjs/editor.js";
+import {
+    LogLevels,
     OutputBlockData,
-    ToolSettings,
+    OutputData,
     SanitizerConfig,
-    LogLevels
-} from "@editorjs/editorjs";
+    ToolSettings
+} from "./editorjs/types";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { css } from "emotion";
 import classNames from "classnames";
@@ -24,12 +26,12 @@ const classes = {
     })
 };
 
-export type OnReadyParams = { editor: EditorJS; initialData: OutputData };
+export type OnReadyParams = { editor: any; initialData: OutputData };
 
 export type RichTextEditorProps = {
     autofocus?: boolean;
     context?: { [key: string]: any };
-    logLevel?: LogLevels;
+    logLevel?: string;
     minHeight?: number;
     onChange?: (data: OutputBlockData[]) => void;
     onReady?: (params: OnReadyParams) => void;
@@ -44,8 +46,8 @@ export type RichTextEditorProps = {
 };
 
 export const RichTextEditor = (props: RichTextEditorProps) => {
-    const elementRef = useRef();
-    const editorRef = useRef<EditorJS>();
+    const elementId = useRef(shortid.generate());
+    const editorRef = useRef<any>();
 
     useEffect(() => {
         const { value, context, onReady, ...nativeProps } = props;
@@ -53,9 +55,11 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
 
         editorRef.current = new EditorJS({
             ...nativeProps,
-            holder: elementRef.current,
+            holder: elementId.current,
+            logLevel: "ERROR" as LogLevels.ERROR,
             data: initialData,
             onChange: async () => {
+                // @ts-ignore
                 const { blocks: data } = await editorRef.current.save();
                 props.onChange(data);
             },
@@ -78,30 +82,34 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
                 return tools;
             }, {})
         });
+
+        return async () => {
+            if (!editorRef.current) {
+                return;
+            }
+
+            typeof editorRef.current.destroy === "function" && editorRef.current.destroy();
+        };
     }, []);
 
     const { label, description, disabled } = props;
 
-    if (label || description || disabled) {
-        return (
-            <Fragment>
-                <div className={classNames(classes.wrapper, { [classes.disable]: disabled })}>
-                    {label && (
-                        <div
-                            className={classNames(
-                                "mdc-text-field-helper-text mdc-text-field-helper-text--persistent",
-                                classes.label
-                            )}
-                        >
-                            {label}
-                        </div>
-                    )}
-                    <div ref={elementRef} />
-                </div>
-                {description && <FormElementMessage>{description}</FormElementMessage>}
-            </Fragment>
-        );
-    }
-
-    return <div ref={elementRef} />;
+    return (
+        <Fragment>
+            <div className={classNames(classes.wrapper, { [classes.disable]: disabled })}>
+                {label && (
+                    <div
+                        className={classNames(
+                            "mdc-text-field-helper-text mdc-text-field-helper-text--persistent",
+                            classes.label
+                        )}
+                    >
+                        {label}
+                    </div>
+                )}
+                <div id={elementId.current} />
+            </div>
+            {description && <FormElementMessage>{description}</FormElementMessage>}
+        </Fragment>
+    );
 };

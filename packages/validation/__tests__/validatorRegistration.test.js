@@ -1,7 +1,9 @@
 import { validation, ValidationError } from "../src";
 
 validation.setValidator("gender", value => {
-    if (!value) return;
+    if (!value) {
+        return;
+    }
     value = value + "";
 
     if (["male", "female"].includes(value)) {
@@ -16,7 +18,7 @@ describe("gt test", () => {
     });
 
     test('should return newly registered "gender" validator', () => {
-        expect(validation.getValidator("gender")).toBeFunction;
+        expect(validation.getValidator("gender")).toBeFunction();
     });
 
     test("should fail - invalid gender set", async () => {

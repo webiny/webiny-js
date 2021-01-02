@@ -19,7 +19,7 @@
     "@babel/preset-env": "^7.9.6",
     "@babel/preset-react": "^7.9.4",
     "@babel/preset-typescript": "^7.9.0",
-    "@hot-loader/react-dom": "^16.13.0",
+    "@hot-loader/react-dom": "^16.14.0",
     "@svgr/webpack": "4.3.3",
     "@types/webpack-env": "1.15.2",
     "@webiny/cli": "^4.14.0",

@@ -1,4 +1,4 @@
-import { CmsContentModel, CmsFieldTypePlugins, CmsContext } from "@webiny/api-headless-cms/types";
+import { CmsContentModelType, CmsFieldTypePlugins } from "@webiny/api-headless-cms/types";
 import { createReadTypeName, createTypeName } from "../utils/createTypeName";
 import { renderSortEnum } from "../utils/renderSortEnum";
 import { renderFields } from "../utils/renderFields";
@@ -7,11 +7,7 @@ import { renderGetFilterFields } from "../utils/renderGetFilterFields";
 import { pluralizedTypeName } from "../utils/pluralizedTypeName";
 
 export interface CreateManageSDL {
-    (params: {
-        model: CmsContentModel;
-        context: CmsContext;
-        fieldTypePlugins: CmsFieldTypePlugins;
-    }): string;
+    (params: { model: CmsContentModelType; fieldTypePlugins: CmsFieldTypePlugins }): string;
 }
 
 export const createReadSDL: CreateManageSDL = ({ model, fieldTypePlugins }): string => {
@@ -34,7 +30,6 @@ export const createReadSDL: CreateManageSDL = ({ model, fieldTypePlugins }): str
         type ${rTypeName} {
             id: ID
             createdOn: DateTime
-            updatedOn: DateTime
             savedOn: DateTime
             ${fieldsRender.map(f => f.fields).join("\n")}
         }
@@ -68,15 +63,13 @@ export const createReadSDL: CreateManageSDL = ({ model, fieldTypePlugins }): str
         }
         
         extend type Query {
-            get${typeName}(locale: String, where: ${rTypeName}GetWhereInput!): ${rTypeName}Response
+            get${typeName}(where: ${rTypeName}GetWhereInput!): ${rTypeName}Response
 
             list${pluralizedTypeName(typeName)}(
-                locale: String
                 where: ${rTypeName}ListWhereInput
                 sort: [${rTypeName}ListSorter]
                 limit: Int
                 after: String
-                before: String
             ): ${rTypeName}ListResponse
         }
     `;

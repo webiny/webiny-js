@@ -8,7 +8,7 @@ import {
     EditRevision,
     RevisionSelector
 } from "./HeaderComponents";
-import { FbFormDetailsPluginRenderParams, FbFormModel } from "@webiny/app-form-builder/types";
+import { FbFormDetailsPluginRenderParams, FbRevisionModel } from "@webiny/app-form-builder/types";
 
 const headerTitle = css({
     "&.mdc-layout-grid": {
@@ -37,8 +37,8 @@ const headerActions = css({
 });
 
 type HeaderProps = FbFormDetailsPluginRenderParams & {
-    revision: FbFormModel;
-    selectRevision: (revision: FbFormModel) => void;
+    revision: FbRevisionModel;
+    selectRevision: (revision: FbRevisionModel) => void;
 };
 
 const Header = (props: HeaderProps) => {

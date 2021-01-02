@@ -1,11 +1,16 @@
-import React from "react";
-import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
-import { i18n } from "@webiny/app/i18n";
-import I18NRichTextEditor from "@webiny/app-i18n/admin/components/I18NRichTextEditor";
+import React, { useMemo } from "react";
 import get from "lodash/get";
-import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
+import { i18n } from "@webiny/app/i18n";
+import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
+import { createPropsFromConfig, RichTextEditor } from "@webiny/app-admin/components/RichTextEditor";
+import { plugins } from "@webiny/plugins";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
+
+const getKey = (field, bind) => {
+    const formId = bind.form.state.data.id || "new";
+    return `${formId}.${field.fieldId}`;
+};
 
 const plugin: CmsEditorFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
@@ -21,23 +26,24 @@ const plugin: CmsEditorFieldRendererPlugin = {
                 !get(field, "predefinedValues.enabled")
             );
         },
-        render({ field, getBind, locale }) {
+        render({ field, getBind }) {
             const Bind = getBind();
-            const { getValue } = useI18N();
 
-            const label = getValue(field.label, locale);
-            const placeholderText = getValue(field.placeholderText, locale);
-            const helpText = getValue(field.helpText, locale);
+            const rteProps = useMemo(() => {
+                return createPropsFromConfig(plugins.byType("cms-rte-config").map(pl => pl.config));
+            }, []);
 
             return (
                 <Bind>
                     {bind => (
-                        <I18NRichTextEditor
+                        <RichTextEditor
+                            key={getKey(field, bind)}
+                            {...rteProps}
                             {...bind}
                             onChange={bind.onChange}
-                            label={label}
-                            placeholder={placeholderText}
-                            description={helpText}
+                            label={field.label}
+                            placeholder={field.placeholderText}
+                            description={field.helpText}
                         />
                     )}
                 </Bind>

@@ -138,7 +138,7 @@ describe("publishing workflow", () => {
             })
         );
 
-        const [pasd] = await getPage({ id: initialPageIds[0] });
+        await getPage({ id: initialPageIds[0] });
 
         await until(
             listPages,

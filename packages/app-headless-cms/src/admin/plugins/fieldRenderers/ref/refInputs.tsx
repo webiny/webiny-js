@@ -5,6 +5,10 @@ import ContentEntriesMultiAutocomplete from "./components/ContentEntriesMultiAut
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
+const getKey = (field, bind) => {
+    return bind.form.state.data.id + "." + field.fieldId;
+};
+
 const plugin: CmsEditorFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
     name: "cms-editor-field-renderer-ref-inputs",
@@ -18,7 +22,15 @@ const plugin: CmsEditorFieldRendererPlugin = {
         render(props) {
             const Bind = props.getBind();
             return (
-                <Bind>{bind => <ContentEntriesMultiAutocomplete {...props} bind={bind} />}</Bind>
+                <Bind>
+                    {bind => (
+                        <ContentEntriesMultiAutocomplete
+                            key={getKey(props.field, bind)}
+                            {...props}
+                            bind={bind}
+                        />
+                    )}
+                </Bind>
             );
         }
     }

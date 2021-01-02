@@ -24,11 +24,15 @@ const RenderBlock = styled("div")({
 
 const PreviewContentTab = (props: FbFormDetailsPluginRenderParams) => {
     const [revisionId, setRevisionId] = useState();
-    useEffect(() => {
-        setRevisionId(props.form.revisions[0].id);
-    }, [props.form.id]);
 
-    const revision = props.form.revisions.find(item => item.id === revisionId);
+    useEffect(() => {
+        if (!props.revisions.length) {
+            return;
+        }
+        setRevisionId(props.revisions[0].id);
+    }, [props.form.id, props.revisions.length]);
+
+    const revision = props.revisions.find(item => item.id === revisionId);
     if (!revision) {
         return null;
     }

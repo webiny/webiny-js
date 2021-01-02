@@ -1,14 +1,14 @@
-import React, { useMemo } from "react";
-import { ReactComponent as RefIcon } from "./icons/round-link-24px.svg";
+import React, { useCallback, useMemo } from "react";
+import get from "lodash/get";
 import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
-import { LIST_MENU_CONTENT_GROUPS_MODELS } from "@webiny/app-headless-cms/admin/viewsGraphql";
-import { validation } from "@webiny/validation";
+import { LIST_CONTENT_MODELS } from "@webiny/app-headless-cms/admin/viewsGraphql";
+import { validation, ValidationError } from "@webiny/validation";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { AutoComplete, Placement } from "@webiny/ui/AutoComplete";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CmsEditorFieldTypePlugin } from "@webiny/app-headless-cms/types";
-import get from "lodash/get";
+import { ReactComponent as RefIcon } from "./icons/round-link-24px.svg";
 
 import { i18n } from "@webiny/app/i18n";
 
@@ -25,16 +25,12 @@ const plugin: CmsEditorFieldTypePlugin = {
         icon: <RefIcon />,
         allowMultipleValues: true,
         allowPredefinedValues: false,
-        allowIndexes: {
-            singleValue: false,
-            multipleValues: false
-        },
         multipleValuesLabel: t`Use as a list of references`,
         createField() {
             return {
                 type: this.type,
                 settings: {
-                    modelId: ""
+                    models: []
                 },
                 validation: [],
                 renderer: {
@@ -47,7 +43,7 @@ const plugin: CmsEditorFieldTypePlugin = {
             const fieldId = get(formData, "fieldId", null);
             const lockedField = lockedFields.find(lockedField => lockedField.fieldId === fieldId);
 
-            const { data, loading, error } = useQuery(LIST_MENU_CONTENT_GROUPS_MODELS);
+            const { data, loading, error } = useQuery(LIST_CONTENT_MODELS);
             const { showSnackbar } = useSnackbar();
 
             if (error) {
@@ -57,36 +53,41 @@ const plugin: CmsEditorFieldTypePlugin = {
 
             // Format options for the Autocomplete component.
             const options = useMemo(() => {
-                const optionList = [];
-                get(data, "listContentModelGroups.data", []).forEach(({ contentModels }) => {
-                    if (contentModels) {
-                        const currentOptions = contentModels.map(item => {
-                            return { id: item.modelId, name: item.name };
-                        });
-
-                        optionList.push(...currentOptions);
-                    }
+                return get(data, "listContentModels.data", []).map(model => {
+                    return { id: model.modelId, name: model.name };
                 });
-                return optionList;
             }, [data]);
+
+            const atLeastOneItem = useCallback(async value => {
+                try {
+                    await validation.validate(value, "required,minLength:1");
+                } catch (err) {
+                    throw new ValidationError(`Please select at least 1 item`);
+                }
+            }, []);
 
             return (
                 <Grid>
                     {loading && <CircularProgress />}
                     <Cell span={12}>
-                        <Bind name={"settings.modelId"} validators={validation.create("required")}>
+                        <Bind name={"settings.models"} validators={atLeastOneItem}>
                             {bind => {
-                                const id = get(bind, "value.id", bind.value);
+                                // At this point we only use index 0.
+                                // (we'll be upgrading this to allow `ref` field to accept different models in the future).
+                                const modelId = get(bind, "value.0.modelId");
+
                                 // Format value prop for AutoComplete component.
                                 const formattedValueForAutoComplete = options.find(
-                                    option => option.id === id
+                                    option => option.id === modelId
                                 );
 
                                 return (
                                     <AutoComplete
                                         {...bind}
                                         value={formattedValueForAutoComplete}
-                                        onChange={bind.onChange}
+                                        onChange={value => {
+                                            bind.onChange([{ modelId: value }]);
+                                        }}
                                         label={t`Content Model`}
                                         description={t`Cannot be changed later`}
                                         options={options}
@@ -103,17 +104,8 @@ const plugin: CmsEditorFieldTypePlugin = {
         graphql: {
             queryField: /* GraphQL */ `
                 {
-                    values {
-                        value {
-                            id
-                            meta {
-                                title {
-                                    value
-                                }
-                            }
-                        }
-                        locale
-                    }
+                    modelId
+                    entryId
                 }
             `
         }

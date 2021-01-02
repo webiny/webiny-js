@@ -11,36 +11,31 @@ describe("maxLength test", () => {
         );
     });
 
-    it("should pass - string has less than 5 characters", () => {
-        expect(validation.validate("abc", "maxLength:5")).resolves.toBe(true);
-        expect(validation.validate("abcde", "maxLength:5")).resolves.toBe(true);
+    it("should pass - string has less than 5 characters", async () => {
+        await expect(validation.validate("abc", "maxLength:5")).resolves.toBe(true);
+        await expect(validation.validate("abcde", "maxLength:5")).resolves.toBe(true);
     });
 
-    it("should pass - string is required and also has to be less than 20 characters long", () => {
-        expect(validation.validate("12345678901234567890", "required,maxLength:20")).resolves.toBe(
-            true
-        ),
-            expect(validation.validate("abcde", "required,maxLength:20")).resolves.toBe(true);
+    it("should pass - string is required and also has to be less than 20 characters long", async () => {
+        await expect(
+            validation.validate("12345678901234567890", "required,maxLength:20")
+        ).resolves.toBe(true);
+        await expect(validation.validate("abcde", "required,maxLength:20")).resolves.toBe(true);
     });
 
-    it("should fail - array has more than 5 elements", () => {
-        expect(validation.validate([1, 2, 3, 4, 5, 6], "maxLength:5")).rejects.toThrow(
+    it("should fail - array has more than 5 elements", async () => {
+        await expect(validation.validate([1, 2, 3, 4, 5, 6], "maxLength:5")).rejects.toThrow(
             ValidationError
         );
     });
 
-    it("should pass - array has less than 5 elements", () => {
-        expect(validation.validate([1, 2, 3], "maxLength:5")).resolves.toBe(true);
-        expect(validation.validate([1, 2, 3, 4, 5], "maxLength:5")).resolves.toBe(true);
+    it("should pass - array has less than 5 elements", async () => {
+        await expect(validation.validate([1, 2, 3], "maxLength:5")).resolves.toBe(true);
+        await expect(validation.validate([1, 2, 3, 4, 5], "maxLength:5")).resolves.toBe(true);
     });
 
-    it("should pass - array has less than 5 elements", () => {
-        expect(validation.validate([1, 2, 3], "maxLength:5")).resolves.toBe(true);
-        expect(validation.validate([1, 2, 3, 4, 5], "maxLength:5")).resolves.toBe(true);
-    });
-
-    it("should fail - object has more than 5 keys", () => {
-        expect(
+    it("should fail - object has more than 5 keys", async () => {
+        await expect(
             validation.validate(
                 { a: null, b: null, c: null, d: null, e: null, f: null },
                 "maxLength:5"
@@ -48,13 +43,13 @@ describe("maxLength test", () => {
         ).rejects.toThrow(ValidationError);
     });
 
-    it("should succeed - object has less than 5 keys", () => {
-        expect(validation.validate({ a: null, b: null, c: null }, "maxLength:5")).resolves.toBe(
-            true
-        );
+    it("should succeed - object has less than 5 keys", async () => {
+        await expect(
+            validation.validate({ a: null, b: null, c: null }, "maxLength:5")
+        ).resolves.toBe(true);
     });
 
-    it("should fail - invalid value so no validation is made", () => {
-        expect(validation.validate(true, "maxLength:5")).resolves.toBe(true);
+    it("should fail - invalid value so no validation is made", async () => {
+        await expect(validation.validate(true, "maxLength:5")).resolves.toBe(true);
     });
 });

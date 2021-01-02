@@ -27,14 +27,16 @@ export type GraphQLSchemaPluginTypeArgs = {
 };
 
 export type Resolvers<TContext> =
+    | GraphQLScalarType
     | GraphQLFieldResolver<any, Record<string, any>, TContext>
     | { [property: string]: Resolvers<TContext> };
 
+export type GraphQLSchemaDefinition<TContext> = {
+    typeDefs: Types;
+    resolvers?: Resolvers<TContext>;
+};
+
 export type GraphQLSchemaPlugin<TContext = Context> = Plugin<{
     type: "graphql-schema";
-    prepare?: (params: { context: TContext }) => Promise<void>;
-    schema: {
-        typeDefs: Types;
-        resolvers: Resolvers<TContext>;
-    };
+    schema: GraphQLSchemaDefinition<TContext>;
 }>;

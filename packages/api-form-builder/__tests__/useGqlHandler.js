@@ -144,6 +144,7 @@ export default ({ permissions, identity, tenant } = {}) => {
                     }
                 };
             },
+            // eslint-disable-next-line
             async delete(args) {}
         }
     );

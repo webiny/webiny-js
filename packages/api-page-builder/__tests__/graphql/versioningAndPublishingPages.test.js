@@ -96,7 +96,7 @@ describe("versioning and publishing pages", () => {
         });
 
         // 3. Create p1v3 from p1v1 as well.
-        let p1v3 = await createPage({ from: p1v1.id }).then(
+        const p1v3 = await createPage({ from: p1v1.id }).then(
             ([res]) => res.data.pageBuilder.createPage.data
         );
 
@@ -163,7 +163,7 @@ describe("versioning and publishing pages", () => {
 
         // 5. Let's try creating a new version (v4) from published p1v2 and publish that.
         [response] = await createPage({ from: p1v2.id });
-        let p1v4 = response.data.pageBuilder.createPage.data;
+        const p1v4 = response.data.pageBuilder.createPage.data;
         expect(p1v4).toMatchObject({
             id: p1v1UniqueId + "#0004",
             createdFrom: p1v2.id,

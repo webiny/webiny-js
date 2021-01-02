@@ -9,8 +9,7 @@ describe("listing published pages", () => {
         listPublishedPages,
         updatePage,
         logsDb,
-        until,
-        sleep
+        until
     } = useGqlHandler();
 
     let initiallyCreatedPagesIds;
@@ -29,7 +28,7 @@ describe("listing published pages", () => {
 
         const letters = ["a", "z", "b", "x", "c"];
         for (let i = 0; i < 5; i++) {
-            let [response] = await createPage({ category: "category" });
+            const [response] = await createPage({ category: "category" });
             const { id } = response.data.pageBuilder.createPage.data;
 
             await updatePage({
@@ -129,8 +128,8 @@ describe("listing published pages", () => {
         const letters = ["j", "n", "k", "m", "l"];
         // Test creating, getting and updating three pages.
         for (let i = 0; i < letters.length; i++) {
-            let letter = letters[i];
-            let [response] = await createPage({ category: "custom" });
+            const letter = letters[i];
+            const [response] = await createPage({ category: "custom" });
             const { id } = response.data.pageBuilder.createPage.data;
 
             await updatePage({
@@ -366,7 +365,7 @@ describe("listing published pages", () => {
     test("filtering by tags", async () => {
         const letters = ["j", "n", "k", "m", "l"];
         for (let i = 0; i < 5; i++) {
-            let [response] = await createPage({ category: "category" });
+            const [response] = await createPage({ category: "category" });
             const { id } = response.data.pageBuilder.createPage.data;
 
             await updatePage({
@@ -578,16 +577,19 @@ describe("listing published pages", () => {
         );
 
         // Let's use the `id` of the last log as the cursor.
-        let [logs] = await logsDb.readLogs();
-        let { id: cursor } = logs.pop();
+        const [logs] = await logsDb.readLogs();
+        const { id: cursor } = logs.pop();
 
         await listPublishedPages();
 
+        // TODO fix this
+        /* eslint-disable jest/valid-expect-in-promise */
         // When listing published pages, settings must have been loaded from the DB only once.
-        await logsDb
+        const result = await logsDb
             .readLogs()
             .then(([logs]) => logs.filter(item => item.id > cursor))
-            .then(logs => logs.filter(item => item.query.PK === "T#root#L#en-US#PB#C"))
-            .then(logs => expect(logs.length).toBe(1));
+            .then(logs => logs.filter(item => item.query.PK === "T#root#L#en-US#PB#C"));
+
+        expect(result).toHaveLength(1);
     });
 });

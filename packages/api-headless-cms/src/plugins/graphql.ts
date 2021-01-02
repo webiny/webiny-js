@@ -1,9 +1,6 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { merge } from "lodash";
-import cmsEnvironment from "./graphql/environment";
-import cmsEnvironmentAlias from "./graphql/environmentAlias";
-import cmsAccessToken from "./graphql/accessToken";
-import cmsInstall from "./graphql/install";
+import cmsSettings from "./graphql/settings";
 
 const emptyResolver = () => ({});
 
@@ -13,12 +10,6 @@ export default () => [
         type: "graphql-schema",
         schema: {
             typeDefs: /* GraphQL */ `
-                input CmsSearchInput {
-                    query: String
-                    fields: [String]
-                    operator: String
-                }
-
                 type CmsError {
                     code: String
                     message: String
@@ -31,9 +22,8 @@ export default () => [
                 }
 
                 type CmsListMeta {
-                    cursors: CmsCursors
-                    hasNextPage: Boolean
-                    hasPreviousPage: Boolean
+                    cursor: String
+                    hasMoreItems: Boolean
                     totalCount: Int
                 }
 
@@ -63,10 +53,7 @@ export default () => [
                     _empty: String
                 }
 
-                ${cmsInstall.typeDefs}
-                ${cmsEnvironment.typeDefs}
-                ${cmsEnvironmentAlias.typeDefs}
-                ${cmsAccessToken.typeDefs}
+                ${cmsSettings.typeDefs}
             `,
             resolvers: merge(
                 {
@@ -77,10 +64,7 @@ export default () => [
                         cms: emptyResolver
                     }
                 },
-                cmsInstall.resolvers,
-                cmsEnvironment.resolvers,
-                cmsEnvironmentAlias.resolvers,
-                cmsAccessToken.resolvers
+                cmsSettings.resolvers
             )
         }
     } as GraphQLSchemaPlugin

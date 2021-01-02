@@ -128,14 +128,14 @@ describe("Menus Test", () => {
         // After deleting all menus, list should be empty.
         for (let i = 0; i < 3; i++) {
             const prefix = `menu-${i}-`;
-            let data = {
+            const data = {
                 slug: `${prefix}slug`,
                 title: `${prefix}title-UPDATED`,
                 description: `${prefix}description-UPDATED`,
                 items: { [`${prefix}items`]: "items-UPDATED" }
             };
 
-            let [response] = await deleteMenu({ slug: data.slug });
+            const [response] = await deleteMenu({ slug: data.slug });
             expect(response).toMatchObject({
                 data: {
                     pageBuilder: {

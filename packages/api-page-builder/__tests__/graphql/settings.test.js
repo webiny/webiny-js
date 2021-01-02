@@ -151,12 +151,13 @@ describe("Settings Test", () => {
         );
 
         // Let's use the `id` of the last log as the cursor.
-        let [logs] = await logsDb.readLogs();
-        let { id: cursor } = logs.pop();
+        const [logs] = await logsDb.readLogs();
+        const { id: cursor } = logs.pop();
 
         await listPublishedPages();
 
         // When listing published pages, settings must have been loaded from the DB only once.
+        //eslint-disable-next-line jest/valid-expect-in-promise
         await logsDb
             .readLogs()
             .then(([logs]) => logs.filter(item => item.id > cursor && item.operation === "read"))
@@ -328,7 +329,7 @@ describe("Settings Test", () => {
     });
 
     test("settings special pages (error, notFound, home)", async () => {
-        let page = await createPage({ category: "category" }).then(
+        const page = await createPage({ category: "category" }).then(
             ([res]) => res.data.pageBuilder.createPage.data
         );
 
@@ -404,7 +405,7 @@ describe("Settings Test", () => {
     });
 
     test("must not be able to unset pages as special", async () => {
-        let page = await createPage({ category: "category" }).then(
+        const page = await createPage({ category: "category" }).then(
             ([res]) => res.data.pageBuilder.createPage.data
         );
         const [pid] = page.id.split("#");

@@ -7,16 +7,12 @@ import pageBuilderConfig from "@webiny/app-page-builder/editor/plugins/pageBuild
 /* Welcome screen widget for Page Builder */
 import welcomeScreenWidget from "@webiny/app-page-builder/admin/plugins/welcomeScreenWidget";
 
-/* Other plugins to extend Page Builder */
-import richTextEditor from "./pageBuilder/richTextEditor";
-
 export default [
     pageBuilderConfig({
         maxEventActionsNesting: 10
     }),
     pageBuilderPlugins(),
     welcomeScreenWidget,
-    richTextEditor,
     /**
      * This plugin is responsible for lazy-loading plugin presets for page builder editor and list views.
      * Since Editor is quite heavy, we don't want to include it in the main app bundle.

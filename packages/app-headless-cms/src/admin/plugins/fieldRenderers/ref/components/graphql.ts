@@ -1,57 +1,77 @@
 import gql from "graphql-tag";
 import upperFirst from "lodash/upperFirst";
+import pluralize from "pluralize";
 
 export const createListQuery = model => {
-    const ucFirstPluralizedModelId = upperFirst(model.pluralizedModelId);
+    const ucFirstPluralizedModelId = upperFirst(pluralize(model.modelId));
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
-        query List${ucFirstPluralizedModelId}($where: ${ucFirstModelId}ListWhereInput) {
+        query CmsList${ucFirstPluralizedModelId}($where: ${ucFirstModelId}ListWhereInput) {
             content: list${ucFirstPluralizedModelId}(where: $where) {
-            data {
-                id
-                meta {
-                    published
-                    model
-                    title {
-                        values {
-                            locale
-                            value
-                        }
+                data {
+                    id
+                    meta {
+                        status
+                        modelId
+                        title
                     }
+                }
+                error {
+                    code
+                    message
                 }
             }
         }
+    `;
+};
+
+export const createGetByIdsQuery = model => {
+    const ucFirstPluralizedModelId = upperFirst(pluralize(model.modelId));
+
+    return gql`
+        query CmsGet${ucFirstPluralizedModelId}ByIds($revisions: [ID!]!) {
+            content: get${ucFirstPluralizedModelId}ByIds(revisions: $revisions) {
+                data {
+                    id
+                    meta {
+                        status
+                        modelId
+                        title
+                    }
+                }
+                error {
+                    code
+                    message
+                }
+            }
         }
     `;
 };
 
 export const createGetQuery = model => {
     const ucFirstModelId = upperFirst(model.modelId);
+
     return gql`
-        query Get${ucFirstModelId}($where: ${ucFirstModelId}GetWhereInput!) {
-            content: get${ucFirstModelId}(where: $where) {
-            data {
-                id
-                meta {
-                    published
-                    model
-                    title {
-                        value
+        query CmsGet${ucFirstModelId}($revision:ID!) {
+            content: get${ucFirstModelId}(revision: $revision) {
+                data {
+                    id
+                    meta {
+                        status
+                        modelId
+                        title
                     }
                 }
             }
-        }
         }
     `;
 };
 
 export const GET_CONTENT_MODEL = gql`
-    query HeadlessCmsGetContentModel($where: JSON) {
-        getContentModel(where: $where) {
+    query CmsGetContentModel($modelId: ID!) {
+        getContentModel(modelId: $modelId) {
             data {
-                id
-                pluralizedModelId
                 modelId
                 titleFieldId
             }

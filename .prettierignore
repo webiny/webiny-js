@@ -2,3 +2,4 @@
 **/dist/
 **/*.d.ts
 **/.out/
+packages/ui/src/RichTextEditor/editorjs/**

@@ -37,6 +37,7 @@ const INSTALL = gql`
                 error {
                     code
                     message
+                    data
                 }
             }
         }
@@ -64,14 +65,17 @@ const CMSInstaller = ({ onInstalled }) => {
             });
     }, []);
 
+    const label = error ? (
+        <Alert title={t`Something went wrong`} type={"danger"}>
+            {error}
+        </Alert>
+    ) : (
+        t`Installing CMS...`
+    );
+
     return (
         <SimpleForm>
-            <CircularProgress label={t`Installing CMS...`} />
-            {error && (
-                <Alert title={t`Something went wrong`} type={"danger"}>
-                    {error}
-                </Alert>
-            )}
+            <CircularProgress label={label} />
             <SimpleFormContent>
                 <SimpleFormPlaceholder />
             </SimpleFormContent>
@@ -83,10 +87,9 @@ const plugin: AdminInstallationPlugin = {
     name: "admin-installation-cms",
     type: "admin-installation",
     title: t`Headless CMS`,
-    dependencies: [],
+    dependencies: ["admin-installation-security", "admin-installation-i18n"],
     secure: true,
     async isInstalled({ client }) {
-        return true;
         const { data } = await client.query({ query: IS_INSTALLED });
         return data.cms.isInstalled.data;
     },

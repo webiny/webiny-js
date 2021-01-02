@@ -3,6 +3,18 @@ import Ui from "./ui";
 import Tunes from "./tunes";
 import svgs from "./svgs";
 
+const defaultGetFileSrc = file => {
+    if (typeof file === "string") {
+        return file;
+    }
+
+    return file.src;
+};
+
+const defaultOnSelectFile = file => {
+    return file.src;
+};
+
 export default class ImageTool {
     private api: API;
     private readOnly: boolean;
@@ -39,6 +51,8 @@ export default class ImageTool {
         this.readOnly = readOnly;
 
         this.config = {
+            getFileSrc: config.getFileSrc || defaultGetFileSrc,
+            onSelectFile: config.onSelectFile || defaultOnSelectFile,
             actions: config.actions || [],
             context: config.context
         };
@@ -51,7 +65,7 @@ export default class ImageTool {
             config: this.config,
             onSelectFile: () => {
                 this.config.context.showFileManager(file => {
-                    this.image = file;
+                    this.image = this.config.onSelectFile(file);
                 });
             },
             readOnly
@@ -154,8 +168,8 @@ export default class ImageTool {
     set image(file) {
         this._data.file = file || {};
 
-        if (file && file.src) {
-            this.ui.fillImage(file.src);
+        if (file) {
+            this.ui.fillImage(this.config.getFileSrc(file));
         }
     }
 

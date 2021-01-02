@@ -1,5 +1,5 @@
 import * as React from "react";
-import _ from "lodash";
+import noop from "lodash/noop";
 
 /**
  * This component is used to wrap Input and Textarea components to optimize form re-render.
@@ -22,7 +22,7 @@ class DelayedOnChange extends React.Component<any> {
         this.setState({ value: this.props.value });
     }
 
-    applyValue = (value: any, callback: Function = _.noop) => {
+    applyValue = (value: any, callback: Function = noop) => {
         this.delay && clearTimeout(this.delay);
         this.delay = null;
         this.props.onChange(value, callback);
@@ -52,8 +52,8 @@ class DelayedOnChange extends React.Component<any> {
             : React.cloneElement(children as React.ReactElement, newProps);
 
         const props = { ...child.props };
-        const realOnKeyDown = props.onKeyDown || _.noop;
-        const realOnBlur = props.onBlur || _.noop;
+        const realOnKeyDown = props.onKeyDown || noop;
+        const realOnBlur = props.onBlur || noop;
 
         // Need to apply value if input lost focus
         props.onBlur = e => {

@@ -7,15 +7,20 @@ const ERROR_FIELDS = `
 `;
 
 const BASE_CONTENT_MODEL_FIELDS = `
-    id
+    description
+    modelId
     name
     savedOn
+    group {
+        id
+        name
+    }
 `;
 
 // Fetches data needed for constructing content models list in the main menu.
 export const LIST_MENU_CONTENT_GROUPS_MODELS = gql`
-    query HeadlessCmsListMenuContentGroupsModels {
-        listContentModelGroups(sort: { name: 1 }, limit: 100) {
+    query CmsListMenuContentGroupsModels {
+        listContentModelGroups {
             data {
                 id
                 name
@@ -23,7 +28,6 @@ export const LIST_MENU_CONTENT_GROUPS_MODELS = gql`
                 contentModels {
                     name
                     modelId
-                    id
                 }
             }
         }
@@ -31,33 +35,20 @@ export const LIST_MENU_CONTENT_GROUPS_MODELS = gql`
 `;
 
 export const LIST_CONTENT_MODELS = gql`
-    query HeadlessCmsListContentModels($sort: JSON, $after: String, $before: String, $limit: Int) {
-        listContentModels(sort: $sort, after: $after, before: $before, limit: $limit) {
+    query CmsListContentModels {
+        listContentModels {
             data {
                 ${BASE_CONTENT_MODEL_FIELDS}
-                modelId
-            }
-            meta {
-                cursors {
-                    next
-                    previous
-                }
-                hasNextPage
-                hasPreviousPage
-                totalCount
             }
         }
     }
 `;
 
 export const CREATE_CONTENT_MODEL = gql`
-    mutation CreateContentModel($data: CmsContentModelInput!) {
+    mutation CmsCreateContentModel($data: CmsContentModelCreateInput!) {
         createContentModel(data: $data) {
             data {
-                id
-                name
-                description
-                modelId
+                ${BASE_CONTENT_MODEL_FIELDS}
             }
             error {
                 message
@@ -68,8 +59,8 @@ export const CREATE_CONTENT_MODEL = gql`
 `;
 
 export const DELETE_CONTENT_MODEL = gql`
-    mutation HeadlessCmsDeleteContentModel($id: ID!) {
-        deleteContentModel(id: $id) {
+    mutation CmsDeleteContentModel($modelId: ID!) {
+        deleteContentModel(modelId: $modelId) {
             data
             error {
                 ${ERROR_FIELDS}

@@ -2,6 +2,7 @@ import React from "react";
 import { ReactComponent as FileIcon } from "./icons/round_insert_drive_file-24px.svg";
 import { CmsEditorFieldTypePlugin } from "@webiny/app-headless-cms/types";
 import { i18n } from "@webiny/app/i18n";
+
 const t = i18n.ns("app-headless-cms/admin/fields");
 
 const plugin: CmsEditorFieldTypePlugin = {
@@ -15,10 +16,6 @@ const plugin: CmsEditorFieldTypePlugin = {
         validators: ["required"],
         allowMultipleValues: true,
         allowPredefinedValues: false,
-        allowIndexes: {
-            singleValue: true,
-            multipleValues: false
-        },
         multipleValuesLabel: t`Use as a list of files or an image gallery`,
         createField() {
             return {

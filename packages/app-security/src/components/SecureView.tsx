@@ -15,7 +15,9 @@ export default ({
     if (!permission && scopes) {
         !warned &&
             console.warn(
-                `DEPRECATION WARNING: <SecureView> "scopes" prop is deprecated. Please upgrade to "permission" prop.`
+                `DEPRECATION WARNING: <SecureView> "scopes" prop is deprecated. Please upgrade to "permission" prop! [${scopes.join(
+                    ","
+                )}]`
             );
         warned = true;
         permission = scopes[0];

@@ -54,7 +54,7 @@ describe("Form Builder Settings Security Test", () => {
         `should forbid "updateSettings" with %j and %j`,
         async (permissions, identity) => {
             const { updateSettings } = useGqlHandler({ permissions, identity });
-            let [response] = await updateSettings();
+            const [response] = await updateSettings();
             expect(response).toEqual(NOT_AUTHORIZED_RESPONSE("updateSettings"));
         }
     );
@@ -68,7 +68,7 @@ describe("Form Builder Settings Security Test", () => {
         `should allow "updateSettings" with invalid permissions`,
         async (permissions, identity) => {
             const { updateSettings } = useGqlHandler({ permissions, identity });
-            let [response] = await updateSettings({ data: { domain: "localhost:3000" } });
+            const [response] = await updateSettings({ data: { domain: "localhost:3000" } });
             expect(response).toMatchObject({
                 data: {
                     formBuilder: {
@@ -103,7 +103,7 @@ describe("Form Builder Settings Security Test", () => {
             await install({ domain: "localhost:5000" });
 
             const { getSettings } = useGqlHandler({ permissions, identity });
-            let [response] = await getSettings();
+            const [response] = await getSettings();
             expect(response).toEqual(NOT_AUTHORIZED_RESPONSE("getSettings"));
         }
     );
@@ -121,7 +121,7 @@ describe("Form Builder Settings Security Test", () => {
             await install({ domain: "localhost:5000" });
 
             const { getSettings } = useGqlHandler({ permissions, identity });
-            let [response] = await getSettings();
+            const [response] = await getSettings();
             expect(response).toMatchObject({
                 data: {
                     formBuilder: {

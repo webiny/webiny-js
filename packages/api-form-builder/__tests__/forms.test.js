@@ -260,13 +260,13 @@ describe('Form Builder "Form" Test', () => {
         await publishRevision({ id });
 
         // Create form submissions
-        const [s1] = await createFormSubmission({
+        await createFormSubmission({
             form: id,
             data: formSubmissionDataA.data,
             meta: formSubmissionDataA.meta
         });
 
-        const [s2] = await createFormSubmission({
+        await createFormSubmission({
             form: id,
             data: formSubmissionDataB.data,
             meta: formSubmissionDataB.meta

@@ -29,7 +29,7 @@ const GeneralSettings = ({ Bind }) => {
     );
 
     const rteProps = useMemo(() => {
-        return createPropsFromConfig(plugins.byType("pb-rte-config").map(pl => pl.config));
+        return createPropsFromConfig(plugins.byType("fb-rte-config").map(pl => pl.config));
     }, []);
 
     return (

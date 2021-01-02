@@ -1,12 +1,14 @@
 import React from "react";
+import get from "lodash/get";
+import pluralize from "pluralize";
 import { i18n } from "@webiny/app/i18n";
-import { LIST_MENU_CONTENT_GROUPS_MODELS } from "./../../viewsGraphql";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import get from "lodash.get";
-const t = i18n.ns("app-headless-cms/admin/menus");
 import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
+import { LIST_MENU_CONTENT_GROUPS_MODELS } from "./../../viewsGraphql";
 
-const ContentModelMenuItems = function({ Section, Item }) {
+const t = i18n.ns("app-headless-cms/admin/menus");
+
+const ContentModelMenuItems = ({ Section, Item }) => {
     const response = useQuery(LIST_MENU_CONTENT_GROUPS_MODELS);
 
     const { data } = get(response, "data.listContentModelGroups") || {};
@@ -32,9 +34,9 @@ const ContentModelMenuItems = function({ Section, Item }) {
                 )}
                 {contentModelGroup.contentModels.map(contentModel => (
                     <Item
-                        key={contentModel.id}
-                        label={contentModel.name}
-                        path={`/cms/content-models/manage/${contentModel.modelId}`}
+                        key={contentModel.modelId}
+                        label={pluralize(contentModel.name)}
+                        path={`/cms/content-entries/${contentModel.modelId}`}
                     />
                 ))}
             </Section>
