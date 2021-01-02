@@ -359,10 +359,9 @@ describe("versioning and publishing pages", () => {
         });
 
         // Now, if we try to publish 1st page, we should still be able to do it.
-        const reza = await publishPage({ id: p1v2.id });
+        await publishPage({ id: p1v2.id });
 
         await getPublishedPage({ path: "/pages-test-updated" }).then(([res]) => {
-            const aaa = 123;
             expect(res.data.pageBuilder.getPublishedPage.data.id).toBe(p1v2.id);
         });
 
