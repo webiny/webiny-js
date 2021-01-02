@@ -1,0 +1,7 @@
+@mixin background($property) {
+  background-color: var(#{$property}-background-color);
+  background-image: var(#{$property}-background-image);
+  background-size: var(#{$property}-background-size);
+  background-repeat: var(#{$property}-background-repeat);
+  background-position: var(#{$property}-background-position);
+}

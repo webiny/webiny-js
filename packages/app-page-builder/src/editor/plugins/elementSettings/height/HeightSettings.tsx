@@ -1,11 +1,21 @@
 import React from "react";
 import { css } from "emotion";
 import { useRecoilValue } from "recoil";
+import merge from "lodash/merge";
+import set from "lodash/set";
+import get from "lodash/get";
+import { plugins } from "@webiny/plugins";
+import { Tooltip } from "@webiny/ui/Tooltip";
 import { Form } from "@webiny/form";
-import { PbEditorPageElementSettingsRenderComponentProps } from "../../../../types";
+import {
+    PbEditorPageElementSettingsRenderComponentProps,
+    PbElement,
+    PbEditorResponsiveModePlugin
+} from "../../../../types";
 import { useEventActionHandler } from "../../../../editor";
 import { UpdateElementActionEvent } from "../../../recoil/actions";
-import { activeElementWithChildrenSelector } from "../../../recoil/modules";
+import { uiAtom, activeElementWithChildrenSelector } from "../../../recoil/modules";
+import { applyFallbackDisplayMode } from "../elementSettingsUtils";
 // Components
 import { classes } from "../components/StyledComponents";
 import Accordion from "../components/Accordion";
@@ -81,9 +91,12 @@ const validateHeight = (value: string | undefined) => {
     throw Error("Specify a valid value!");
 };
 
+const DATA_NAMESPACE = "data.settings.height";
+
 const Settings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps> = ({
     defaultAccordionValue
 }) => {
+    const { displayMode } = useRecoilValue(uiAtom);
     const handler = useEventActionHandler();
     const element = useRecoilValue(activeElementWithChildrenSelector);
     const updateSettings = async (data, form) => {
@@ -91,28 +104,45 @@ const Settings: React.FunctionComponent<PbEditorPageElementSettingsRenderCompone
         if (!valid) {
             return;
         }
+
+        const newElement: PbElement = merge(
+            {},
+            element,
+            set({}, `${DATA_NAMESPACE}.${displayMode}`, data)
+        );
+
         return handler.trigger(
             new UpdateElementActionEvent({
-                element: {
-                    ...element,
-                    data: {
-                        ...element.data,
-                        settings: {
-                            ...(element.data.settings || {}),
-                            height: data
-                        }
-                    }
-                },
+                element: newElement,
                 history: true
             })
         );
     };
 
-    const data = element.data.settings?.height || { value: "100%" };
+    const { config: activeDisplayModeConfig } = React.useMemo(() => {
+        return plugins
+            .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
+            .find(pl => pl.config.displayMode === displayMode);
+    }, [displayMode]);
+
+    const settings = React.useMemo(() => {
+        const fallbackValue = applyFallbackDisplayMode(displayMode, mode =>
+            get(element, `${DATA_NAMESPACE}.${mode}`)
+        );
+        return get(element, `${DATA_NAMESPACE}.${displayMode}`, fallbackValue || { value: "100%" });
+    }, [displayMode, element]);
 
     return (
-        <Accordion title={"Height"} defaultValue={defaultAccordionValue}>
-            <Form data={data} onChange={updateSettings}>
+        <Accordion
+            title={"Height"}
+            defaultValue={defaultAccordionValue}
+            icon={
+                <Tooltip content={`Changes will apply for ${activeDisplayModeConfig.displayMode}`}>
+                    {activeDisplayModeConfig.icon}
+                </Tooltip>
+            }
+        >
+            <Form data={settings} onChange={updateSettings}>
                 {({ Bind }) => (
                     <Wrapper
                         label={"Height"}

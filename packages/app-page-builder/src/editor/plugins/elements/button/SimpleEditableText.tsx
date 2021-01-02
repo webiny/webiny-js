@@ -21,7 +21,8 @@ const SimpleEditableText: React.FunctionComponent<SimpleTextPropsType> = ({
     const onChangeHandler = useCallback(
         (ev: InputEvent) => {
             const target = ev.target as HTMLElement;
-            const elementValue = target.innerHTML || "";
+            // Remove space from HTML
+            const elementValue = target.innerHTML.replace(/&nbsp;/gi, "") || "";
             ev.preventDefault();
             ev.stopPropagation();
             if (elementValue === value.current) {

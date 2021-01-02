@@ -1,4 +1,10 @@
-import { connectedAtom } from "@webiny/app-page-builder/editor/recoil/modules/connected";
+import { DisplayMode } from "../../../../types";
+import { connectedAtom } from "../connected";
+
+export type PagePreviewDimension = {
+    width: number;
+    height: number;
+};
 
 export type UiAtomType = {
     isDragging: boolean;
@@ -9,6 +15,8 @@ export type UiAtomType = {
     textEditorActive: boolean;
     sidebarActiveTabIndex: number;
     highlightElementTab: boolean;
+    displayMode: DisplayMode;
+    pagePreviewDimension: PagePreviewDimension;
 };
 export const uiAtom = connectedAtom<UiAtomType>({
     key: "uiAtom",
@@ -20,6 +28,11 @@ export const uiAtom = connectedAtom<UiAtomType>({
         isSaving: false,
         textEditorActive: false,
         sidebarActiveTabIndex: 0,
-        highlightElementTab: false
+        highlightElementTab: false,
+        displayMode: DisplayMode.DESKTOP,
+        pagePreviewDimension: {
+            width: 100,
+            height: 100
+        }
     }
 });

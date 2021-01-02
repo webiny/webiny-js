@@ -1,16 +1,26 @@
 import React from "react";
 import { useRecoilValue } from "recoil";
 import { css } from "emotion";
+import merge from "lodash/merge";
+import set from "lodash/set";
+import get from "lodash/get";
 import { Form } from "@webiny/form";
-import { PbEditorPageElementSettingsRenderComponentProps } from "../../../../types";
+import { plugins } from "@webiny/plugins";
+import { Tooltip } from "@webiny/ui/Tooltip";
+import {
+    PbEditorPageElementSettingsRenderComponentProps,
+    PbEditorResponsiveModePlugin,
+    PbElement
+} from "../../../../types";
 import { useEventActionHandler } from "../../../../editor";
 import { UpdateElementActionEvent } from "../../../../editor/recoil/actions";
-import { activeElementWithChildrenSelector } from "../../../../editor/recoil/modules";
+import { activeElementWithChildrenSelector, uiAtom } from "../../../../editor/recoil/modules";
 // Components
 import Accordion from "../components/Accordion";
 import Wrapper from "../components/Wrapper";
 import SpacingPicker from "../components/SpacingPicker";
 import { classes } from "../components/StyledComponents";
+import { applyFallbackDisplayMode } from "../elementSettingsUtils";
 
 const rightCellStyle = css({
     justifySelf: "end"
@@ -81,38 +91,59 @@ const validateWidth = (value: string | undefined) => {
     throw Error("Specify a valid value!");
 };
 
+const DATA_NAMESPACE = "data.settings.width";
+
 const Settings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps> = ({
     defaultAccordionValue
 }) => {
-    const handler = useEventActionHandler();
+    const { displayMode } = useRecoilValue(uiAtom);
     const element = useRecoilValue(activeElementWithChildrenSelector);
+
+    const handler = useEventActionHandler();
     const updateSettings = async (data, form) => {
         const valid = await form.validate();
         if (!valid) {
             return;
         }
 
+        const newElement: PbElement = merge(
+            {},
+            element,
+            set({}, `${DATA_NAMESPACE}.${displayMode}`, data)
+        );
+
         return handler.trigger(
             new UpdateElementActionEvent({
-                element: {
-                    ...element,
-                    data: {
-                        ...element.data,
-                        settings: {
-                            ...(element.data.settings || {}),
-                            width: data
-                        }
-                    }
-                },
+                element: newElement,
                 history: true
             })
         );
     };
 
-    const settings = element.data.settings?.width || { value: "100%" };
+    const { config: activeDisplayModeConfig } = React.useMemo(() => {
+        return plugins
+            .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
+            .find(pl => pl.config.displayMode === displayMode);
+    }, [displayMode]);
+
+    const settings = React.useMemo(() => {
+        const fallbackValue = applyFallbackDisplayMode(displayMode, mode =>
+            get(element, `${DATA_NAMESPACE}.${mode}`)
+        );
+
+        return get(element, `${DATA_NAMESPACE}.${displayMode}`, fallbackValue || { value: "100%" });
+    }, [displayMode, element]);
 
     return (
-        <Accordion title={"Width"} defaultValue={defaultAccordionValue}>
+        <Accordion
+            title={"Width"}
+            defaultValue={defaultAccordionValue}
+            icon={
+                <Tooltip content={`Changes will apply for ${activeDisplayModeConfig.displayMode}`}>
+                    {activeDisplayModeConfig.icon}
+                </Tooltip>
+            }
+        >
             <Form data={settings} onChange={updateSettings}>
                 {({ Bind }) => (
                     <Wrapper

@@ -1,6 +1,10 @@
-@keyframes webiny-pb-page-element-button-animation-rotate { 100% { transform: rotate(360deg); } }
+@keyframes webiny-pb-page-element-button-animation-rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
 
-.webiny-pb-page-element-button{
+.webiny-pb-page-element-button {
   display: flex;
   align-items: center !important;
   justify-content: center;
@@ -15,7 +19,7 @@
   cursor: pointer;
   text-decoration: none;
   text-transform: uppercase;
-  letter-spacing: .025em;
+  letter-spacing: 0.025em;
   font-weight: 600;
   box-sizing: border-box;
   outline: none;
@@ -25,26 +29,29 @@
   background-color: var(--webiny-theme-color-background, #fafbfb);
   font-family: var(--webiny-theme-typography-primary-font-family, "IBM Plex Sans, sans-serif");
   color: var(--webiny-theme-color-on-background, #131313);
-  >span{
+  > span {
     display: block;
     font-size: 1px;
     line-height: 100%;
   }
-  &:hover{
-    box-shadow: 0 7px 14px rgba(50,50,93,.1), 0 3px 6px rgba(0,0,0,.08);
+  &:hover {
+    box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
     transform: translateY(-1px);
   }
-  &:active{
+  &:active {
     transform: translateY(1px);
   }
-  &:disabled{
+  &:disabled {
     opacity: 0.5;
     transform: translateY(0px);
     box-shadow: none;
     cursor: wait;
   }
-  &--loading{
-    background-image: linear-gradient(var(--webiny-theme-color-primary, #ee896b) 0%, var(--webiny-theme-color-primary, #ee896b) 100%) !important;
+  &--loading {
+    background-image: linear-gradient(
+      var(--webiny-theme-color-primary, #ee896b) 0%,
+      var(--webiny-theme-color-primary, #ee896b) 100%
+    ) !important;
     position: relative;
     text-transform: uppercase;
     color: transparent;
@@ -60,70 +67,70 @@
       left: 50%;
       top: 50%;
       color: #fff;
-      content: '';
+      content: "";
       border-radius: 24px;
       background-clip: padding-box;
       border: rgba(255, 255, 255, 0.25) 2px solid;
       border-top-color: #fff;
       animation: webiny-pb-page-element-button-animation-rotate 750ms linear infinite;
-      span{
+      span {
         color: transparent;
       }
     }
   }
-  &--primary{
+  &--primary {
     background-color: var(--webiny-theme-color-primary, #ee896b);
     color: var(--webiny-theme-color-on-primary, #ffffff);
   }
-  &--secondary{
+  &--secondary {
     background-color: var(--webiny-theme-color-secondary, #00ccb0);
     color: var(--webiny-theme-color-on-secondary, #ffffff);
   }
-  &--outline-primary{
+  &--outline-primary {
     border: 2px solid var(--webiny-theme-color-primary, #ee896b);
     color: var(--webiny-theme-color-primary, #ee896b);
     padding: 10px 16px !important;
     background-color: transparent;
   }
-  &--outline-secondary{
+  &--outline-secondary {
     border: 2px solid var(--webiny-theme-color-secondary, #00ccb0);
     color: var(--webiny-theme-color-secondary, #00ccb0);
     padding: 10px 16px !important;
     background-color: transparent;
   }
-  &--simple{
+  &--simple {
     background-color: transparent;
     color: var(--webiny-theme-color-primary, #ee896b);
     padding: 0 !important;
     min-width: 0;
-    &:hover{
+    &:hover {
       box-shadow: none;
       transform: none;
       text-decoration: underline;
     }
   }
-  &__icon{
-    &--left{
+  &__icon {
+    &--left {
       flex-direction: row;
-      svg{
+      svg {
         margin-right: 5px;
       }
     }
-    &--right{
+    &--right {
       flex-direction: row-reverse;
-      svg{
+      svg {
         margin-left: 5px;
       }
     }
-    &--top{
+    &--top {
       flex-direction: column;
-      svg{
+      svg {
         margin-bottom: 5px;
       }
     }
-    &--bottom{
+    &--bottom {
       flex-direction: column-reverse;
-      svg{
+      svg {
         margin-top: 5px;
       }
     }
@@ -134,9 +141,9 @@
     word-break: keep-all !important;
     overflow: hidden !important;
   }
-
+}
+.webiny-pb-media-query--mobile-landscape .webiny-pb-page-element-button,
+.webiny-pb-media-query--mobile-portrait .webiny-pb-page-element-button {
   // force center align on mobile
-  @include mobile{
-    margin: 20px auto !important;
-  }
+  margin: 0 auto !important;
 }

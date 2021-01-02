@@ -7,6 +7,7 @@ require("medium-editor/dist/css/medium-editor.css");
 require("medium-editor/dist/css/themes/mani.css");
 
 const editorClass = css({
+    width: "100%",
     "&:focus": {
         outline: "none"
     },
@@ -63,15 +64,14 @@ const ReactMediumEditor = ({
         });
 
         const handleChange = (data, editable) => {
-            if (onChange) {
+            if (typeof onChange === "function") {
                 onChange(editable.innerHTML);
             }
         };
 
-        const handleSelect = (data, editable) => {
-            if (onSelect) {
+        const handleSelect = () => {
+            if (typeof onSelect === "function") {
                 onSelect();
-                onChange(editable.innerHTML);
             }
         };
 

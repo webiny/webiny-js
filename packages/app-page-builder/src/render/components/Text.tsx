@@ -8,11 +8,13 @@ type TextPropsType = {
     rootClassName?: string;
 };
 const TextElement: React.FunctionComponent<TextPropsType> = ({ element, rootClassName }) => {
-    const { data, typography } = element.data.text;
+    const { data, typography, tag = "div" } = element.data.text;
 
     return (
         <ElementRoot element={element} className={classNames(className, rootClassName, typography)}>
-            <div dangerouslySetInnerHTML={{ __html: data.text }} />
+            {React.createElement(tag, {
+                dangerouslySetInnerHTML: { __html: data.text }
+            })}
         </ElementRoot>
     );
 };

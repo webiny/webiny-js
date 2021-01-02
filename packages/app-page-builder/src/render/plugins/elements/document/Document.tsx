@@ -1,6 +1,6 @@
 import React from "react";
-import RenderElement from "@webiny/app-page-builder/render/components/Element";
-import { PbElement } from "@webiny/app-page-builder/types";
+import { PbElement } from "../../../../types";
+import RenderElement from "../../../components/Element";
 
 const Document = ({ element }: { element: PbElement }) => {
     if (!element || Array.isArray(element)) {
