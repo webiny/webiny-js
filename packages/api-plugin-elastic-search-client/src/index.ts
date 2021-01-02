@@ -11,7 +11,7 @@ export default ({ endpoint }: Params): ContextPlugin => {
     return {
         type: "context",
         name: "context-elastic-search",
-        apply(context) {
+        async apply(context) {
             context.elasticSearch = new Client({
                 ...createAwsElasticsearchConnector(AWS.config),
                 node: endpoint

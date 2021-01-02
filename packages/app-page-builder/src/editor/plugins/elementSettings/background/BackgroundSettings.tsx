@@ -1,11 +1,19 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { css } from "emotion";
 import { useRecoilValue } from "recoil";
 import startCase from "lodash/startCase";
+import get from "lodash/get";
+import set from "lodash/set";
+import merge from "lodash/merge";
+import { Tooltip } from "@webiny/ui/Tooltip";
+import { plugins } from "@webiny/plugins";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
-import { PbEditorPageElementSettingsRenderComponentProps } from "../../../../types";
-import { activeElementWithChildrenSelector } from "../../../recoil/modules";
+import {
+    PbEditorPageElementSettingsRenderComponentProps,
+    PbEditorResponsiveModePlugin
+} from "../../../../types";
+import { activeElementWithChildrenSelector, uiAtom } from "../../../recoil/modules";
 import useUpdateHandlers from "../useUpdateHandlers";
 // Components
 import Wrapper from "../components/Wrapper";
@@ -13,6 +21,7 @@ import SelectField from "../components/SelectField";
 import Accordion from "../components/Accordion";
 import ColorPicker from "../components/ColorPicker";
 import { ContentWrapper, classes } from "../components/StyledComponents";
+import { applyFallbackDisplayMode } from "@webiny/app-page-builder/editor/plugins/elementSettings/elementSettingsUtils";
 
 const positions = [
     "top left",
@@ -31,6 +40,7 @@ const imageSelect = css({
 });
 
 const DATA_NAMESPACE = "data.settings.background";
+const BACKGROUND_SETTINGS_COUNT = 2;
 
 type SettingsPropsType = {
     options: {
@@ -39,32 +49,71 @@ type SettingsPropsType = {
 };
 const BackgroundSettings: React.FunctionComponent<SettingsPropsType &
     PbEditorPageElementSettingsRenderComponentProps> = ({ options, defaultAccordionValue }) => {
+    const { displayMode } = useRecoilValue(uiAtom);
     const element = useRecoilValue(activeElementWithChildrenSelector);
     const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
         element,
-        dataNamespace: DATA_NAMESPACE
+        dataNamespace: DATA_NAMESPACE,
+        postModifyElement: ({ newElement }) => {
+            const value = get(newElement, `${DATA_NAMESPACE}.${displayMode}`, {});
+            // if only partial settings are there, merge it with fallback value
+            if (Object.keys(value).length < BACKGROUND_SETTINGS_COUNT) {
+                set(newElement, `${DATA_NAMESPACE}.${displayMode}`, merge(fallbackValue, value));
+            }
+        }
     });
 
-    const setImage = useCallback(value => getUpdateValue("image.file")(value), [getUpdateValue]);
-    const setScaling = useCallback(value => getUpdateValue("image.scaling")(value), [
-        getUpdateValue
+    const { config: activeDisplayModeConfig } = useMemo(() => {
+        return plugins
+            .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
+            .find(pl => pl.config.displayMode === displayMode);
+    }, [displayMode]);
+
+    const setImage = useCallback(value => getUpdateValue(`${displayMode}.image.file`)(value), [
+        getUpdateValue,
+        displayMode
     ]);
-    const setPosition = useCallback(value => getUpdateValue("image.position")(value), [
-        getUpdateValue
+    const setScaling = useCallback(value => getUpdateValue(`${displayMode}.image.scaling`)(value), [
+        getUpdateValue,
+        displayMode
     ]);
-    const setColor = useCallback(value => getUpdateValue("color")(value), [getUpdateValue]);
-    const onColorChange = useCallback(value => getUpdatePreview("color")(value), [
-        getUpdatePreview
+    const setPosition = useCallback(
+        value => getUpdateValue(`${displayMode}.image.position`)(value),
+        [getUpdateValue]
+    );
+    const setColor = useCallback(value => getUpdateValue(`${displayMode}.color`)(value), [
+        getUpdateValue,
+        displayMode
+    ]);
+    const onColorChange = useCallback(value => getUpdatePreview(`${displayMode}.color`)(value), [
+        getUpdatePreview,
+        displayMode
     ]);
 
-    const background = element.data.settings?.background;
-    const { color: backgroundColor, image: backgroundImage } = background || {};
+    const fallbackValue = useMemo(
+        () =>
+            applyFallbackDisplayMode(displayMode, mode =>
+                get(element, `${DATA_NAMESPACE}.${mode}`)
+            ),
+        [displayMode]
+    );
+
+    const background = get(element, `${DATA_NAMESPACE}.${displayMode}`, fallbackValue || {});
+    const { color: backgroundColor, image: backgroundImage } = background;
     const { scaling: backgroundImageScaling, position: backgroundImagePosition } =
         backgroundImage || {};
     const { src: backgroundImageSrc } = backgroundImage?.file || {};
 
     return (
-        <Accordion title={"Background"} defaultValue={defaultAccordionValue}>
+        <Accordion
+            title={"Background"}
+            defaultValue={defaultAccordionValue}
+            icon={
+                <Tooltip content={`Changes will apply for ${activeDisplayModeConfig.displayMode}`}>
+                    {activeDisplayModeConfig.icon}
+                </Tooltip>
+            }
+        >
             <ContentWrapper direction={"column"}>
                 <Grid className={classes.simpleGrid}>
                     <Cell span={12}>

@@ -2,15 +2,12 @@ import React, { Fragment, useCallback, useMemo } from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { i18n } from "@webiny/app/i18n";
-import {
-    PermissionInfo,
-    gridNoPaddingClass
-} from "@webiny/app-security-tenancy/components/permission";
+import { PermissionInfo, gridNoPaddingClass } from "@webiny/app-admin/components/Permissions";
 import { Form } from "@webiny/form";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Typography } from "@webiny/ui/Typography";
-import CustomSection from "./CustomSection";
 import { Checkbox, CheckboxGroup } from "@webiny/ui/Checkbox";
+import CustomSection from "./CustomSection";
 
 const t = i18n.ns("app-page-builder/admin/plugins/permissionRenderer");
 
@@ -29,7 +26,7 @@ const rcpuOptions = [
     { id: "c", name: t`Request changes` }
 ];
 
-export const PageBuilderPermissions = ({ parent, value, onChange }) => {
+export const PageBuilderPermissions = ({ value, onChange }) => {
     const onFormChange = useCallback(
         formData => {
             let newValue = [];
@@ -94,7 +91,7 @@ export const PageBuilderPermissions = ({ parent, value, onChange }) => {
 
             onChange(newValue);
         },
-        [parent.id, value]
+        [value]
     );
 
     const formData = useMemo(() => {
@@ -154,7 +151,7 @@ export const PageBuilderPermissions = ({ parent, value, onChange }) => {
         }
 
         return formData;
-    }, [parent.id]);
+    }, []);
 
     return (
         <Form data={formData} onChange={onFormChange}>

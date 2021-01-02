@@ -52,11 +52,11 @@ export const getStatus = (params: { published: boolean; locked: boolean }) => {
 };
 
 export const hasRwd = (permission: FbFormPermission, rwd: string) => {
-    if (typeof permission.permissions !== "string") {
+    if (typeof permission.rwd !== "string") {
         return true;
     }
 
-    return permission.permissions.includes(rwd);
+    return permission.rwd.includes(rwd);
 };
 
 export const normalizeSortInput = (sort: Record<string, number>) => {
@@ -119,4 +119,15 @@ export const decodeCursor = cursor => {
     }
 
     return JSON.parse(Buffer.from(cursor, "base64").toString("ascii"));
+};
+
+export const paginateBatch = async <T = Record<string, any>>(
+    items: T[],
+    perPage: number,
+    execute: (items: T[]) => Promise<any>
+) => {
+    const pages = Math.ceil(items.length / perPage);
+    for (let i = 0; i < pages; i++) {
+        await execute(items.slice(i * perPage, i * perPage + perPage));
+    }
 };

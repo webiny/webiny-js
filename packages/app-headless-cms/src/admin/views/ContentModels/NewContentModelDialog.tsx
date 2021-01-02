@@ -1,25 +1,20 @@
 import React, { useCallback } from "react";
 import { css } from "emotion";
+import get from "lodash.get";
 import { useRouter } from "@webiny/react-router";
 import { Form } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";
 import { Select } from "@webiny/ui/Select";
-import { CREATE_CONTENT_MODEL, LIST_MENU_CONTENT_GROUPS_MODELS } from "../../viewsGraphql";
-import get from "lodash.get";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { validation } from "@webiny/validation";
 import { useQuery, useMutation } from "@webiny/app-headless-cms/admin/hooks";
 import { i18n } from "@webiny/app/i18n";
 import { ButtonDefault } from "@webiny/ui/Button";
-import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    DialogOnClose
-} from "@webiny/ui/Dialog";
+import * as UID from "@webiny/ui/Dialog";
 import { Grid, Cell } from "@webiny/ui/Grid";
+import { addModelToGroupCache, addModelToListCache } from "./cache";
+import * as GQL from "../../viewsGraphql";
 
 const t = i18n.ns("app-headless-cms/admin/views/content-models/new-content-model-dialog");
 
@@ -36,21 +31,30 @@ const noPadding = css({
 
 export type NewContentModelDialogProps = {
     open: boolean;
-    onClose: DialogOnClose;
-    contentModelsDataList: any;
+    onClose: UID.DialogOnClose;
 };
 
-const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
-    open,
-    onClose,
-    contentModelsDataList
-}) => {
+const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({ open, onClose }) => {
     const [loading, setLoading] = React.useState(false);
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
 
-    const [createContentModel] = useMutation(CREATE_CONTENT_MODEL);
-    const { data } = useQuery(LIST_MENU_CONTENT_GROUPS_MODELS, {
+    const [createContentModel] = useMutation(GQL.CREATE_CONTENT_MODEL, {
+        update(cache, { data }) {
+            const { data: model, error } = data.createContentModel;
+
+            if (error) {
+                return showSnackbar(error.message);
+            }
+
+            addModelToListCache(cache, model);
+            addModelToGroupCache(cache, model);
+
+            history.push("/cms/content-models/" + model.modelId);
+        }
+    });
+
+    const { data } = useQuery(GQL.LIST_MENU_CONTENT_GROUPS_MODELS, {
         skip: !open
     });
 
@@ -69,7 +73,7 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
     }, undefined);
 
     return (
-        <Dialog
+        <UID.Dialog
             open={open}
             onClose={onClose}
             className={narrowDialog}
@@ -82,32 +86,16 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
                     }}
                     onSubmit={async data => {
                         setLoading(true);
-                        const response = get(
-                            await createContentModel({
-                                variables: { data },
-                                awaitRefetchQueries: true,
-                                refetchQueries: [
-                                    "HeadlessCmsListContentModels",
-                                    "HeadlessCmsListMenuContentGroupsModels"
-                                ]
-                            }),
-                            "data.createContentModel"
-                        );
-
-                        if (response.error) {
-                            setLoading(false);
-                            return showSnackbar(response.error.message);
-                        }
-
-                        await contentModelsDataList.refresh();
-                        history.push("/cms/content-models/" + response.data.id);
+                        await createContentModel({
+                            variables: { data }
+                        });
                     }}
                 >
                     {({ Bind, submit }) => (
                         <>
                             {loading && <CircularProgress />}
-                            <DialogTitle>{t`New Content Model`}</DialogTitle>
-                            <DialogContent>
+                            <UID.DialogTitle>{t`New Content Model`}</UID.DialogTitle>
+                            <UID.DialogContent>
                                 <Grid className={noPadding}>
                                     <Cell span={12}>
                                         <Bind
@@ -149,15 +137,15 @@ const NewContentModelDialog: React.FC<NewContentModelDialogProps> = ({
                                         </Bind>
                                     </Cell>
                                 </Grid>
-                            </DialogContent>
-                            <DialogActions>
+                            </UID.DialogContent>
+                            <UID.DialogActions>
                                 <ButtonDefault onClick={submit}>+ {t`Create`}</ButtonDefault>
-                            </DialogActions>
+                            </UID.DialogActions>
                         </>
                     )}
                 </Form>
             )}
-        </Dialog>
+        </UID.Dialog>
     );
 };
 

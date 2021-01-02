@@ -30,7 +30,7 @@ export default FormEditorContext => {
             async getForm(id: string) {
                 const response = await self.apollo.query({
                     query: GET_FORM,
-                    variables: { id: decodeURIComponent(id) }
+                    variables: { revision: decodeURIComponent(id) }
                 });
                 const { data, error } = response?.data?.formBuilder?.getForm || {};
                 if (error) {

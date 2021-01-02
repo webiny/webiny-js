@@ -43,8 +43,8 @@ export const typeStyle = css({
 
 type ElementContainerProps = {
     id: string;
-    onMouseEnter: (ev: any) => void;
-    onMouseLeave: (ev: any) => void;
+    onMouseOver: (ev: any) => void;
+    onMouseOut: (ev: any) => void;
     highlight: boolean;
     active: boolean;
     children: React.ReactNode;
@@ -111,7 +111,6 @@ export const ElementContainer = React.memo<ElementContainerProps>(
                     pointerEvents: highlight ? "auto" : "none",
                     display: !active ? "block" : "none",
                     position: "absolute",
-                    backgroundColor: active ? "rgba(250, 87, 35, 1)" : "rgba(0, 204, 176, 0.1)",
                     width: "100%",
                     height: "100%",
                     cursor: "pointer",

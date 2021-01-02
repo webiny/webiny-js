@@ -126,14 +126,14 @@ describe("Categories CRUD Test", () => {
         // After deleting all categories, list should be empty.
         for (let i = 0; i < 3; i++) {
             const prefix = `category-${i}-`;
-            let data = {
+            const data = {
                 slug: `${prefix}slug`,
                 name: `${prefix}name-UPDATED`,
                 url: `${prefix}url-UPDATED`,
                 layout: `${prefix}layout-UPDATED`
             };
 
-            let [response] = await deleteCategory({ slug: data.slug });
+            const [response] = await deleteCategory({ slug: data.slug });
             expect(response).toMatchObject({
                 data: {
                     pageBuilder: {

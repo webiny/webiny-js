@@ -64,7 +64,6 @@ const DateTimeWithTimezone = props => {
                         label: appendTextToLabel(props.field.label, " date")
                     }}
                     type={"date"}
-                    locale={props.locale}
                 />
             </Cell>
             <Cell span={4}>
@@ -83,7 +82,6 @@ const DateTimeWithTimezone = props => {
                     }}
                     type={"time"}
                     step={5}
-                    locale={props.locale}
                 />
             </Cell>
             <Cell span={cellSize}>

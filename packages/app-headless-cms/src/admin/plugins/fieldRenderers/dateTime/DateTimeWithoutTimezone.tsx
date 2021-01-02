@@ -1,7 +1,7 @@
 import React from "react";
-import Input from "./Input";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { DEFAULT_DATE, DEFAULT_TIME, appendTextToLabel, RemoveFieldButton } from "./utils";
+import Input from "./Input";
 
 const DateTimeWithoutTimezone = props => {
     // "2020-05-18 09:00:00"
@@ -46,7 +46,6 @@ const DateTimeWithoutTimezone = props => {
                         label: appendTextToLabel(props.field.label, " date")
                     }}
                     type={"date"}
-                    locale={props.locale}
                 />
             </Cell>
             <Cell span={cellSize}>
@@ -65,7 +64,6 @@ const DateTimeWithoutTimezone = props => {
                     }}
                     type={"time"}
                     step={5}
-                    locale={props.locale}
                 />
             </Cell>
             <RemoveFieldButton trailingIcon={props.trailingIcon} />

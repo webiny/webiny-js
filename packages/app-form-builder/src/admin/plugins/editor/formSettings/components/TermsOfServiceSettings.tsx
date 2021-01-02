@@ -12,7 +12,7 @@ const TermsOfServiceSettings: FormSettingsPluginRenderFunctionType = ({ Bind, fo
     const enabled = get(formData, "termsOfServiceMessage.enabled");
 
     const rteProps = useMemo(() => {
-        return createPropsFromConfig(plugins.byType("pb-rte-config").map(pl => pl.config));
+        return createPropsFromConfig(plugins.byType("fb-rte-config").map(pl => pl.config));
     }, []);
 
     return (

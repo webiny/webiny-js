@@ -1,11 +1,6 @@
 import { useContext } from "react";
 import { I18NContext, I18NContextValue } from "../contexts/I18N";
 
-type I18NValueObject = {
-    value?: string;
-    values?: Array<{ value: string; locale: string }>;
-};
-
 export function useI18N() {
     const context = useContext<I18NContextValue>(I18NContext);
 
@@ -44,20 +39,6 @@ export function useI18N() {
         },
         getLocales() {
             return state.locales;
-        },
-        // @ts-ignore TODO: remove this
-        getValue(valueObject?: I18NValueObject, locale?: string): string {
-            if (!valueObject) {
-                return "";
-            }
-            // @ts-ignore
-            locale = locale || self.getLocale().id;
-            if (Array.isArray(valueObject.values)) {
-                const output = valueObject.values.find(item => item.locale === locale);
-                return output ? output.value : "";
-            }
-
-            return valueObject.value || "";
         },
         state
     };

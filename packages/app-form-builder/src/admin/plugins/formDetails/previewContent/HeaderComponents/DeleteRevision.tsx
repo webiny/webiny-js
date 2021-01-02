@@ -13,13 +13,13 @@ import {
     updateLatestRevisionInListCache
 } from "../../../../views/cache";
 
-const DeleteRevision = ({ form, revision, selectRevision }) => {
+const DeleteRevision = ({ revisions, form, revision, selectRevision }) => {
     const { showSnackbar } = useSnackbar();
     const client = useApolloClient();
     const { history } = useRouter();
 
     let message = "You are about to delete this form revision, are you sure want to continue?";
-    const lastRevision = form.revisions.length === 1;
+    const lastRevision = revisions.length === 1;
     if (lastRevision) {
         message = "You are about to delete this form. Are you sure want to continue?";
     }

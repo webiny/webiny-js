@@ -40,7 +40,7 @@ export default (context: FileManagerContext) => {
     const { db, i18nContent, elasticSearch, security } = context;
     const localeCode = i18nContent?.locale?.code;
 
-    const PK_FILE = () => `${getPKPrefix(context)}F`;
+    const PK_FILE = id => `${getPKPrefix(context)}F#${id}`;
 
     return {
         async getFile(id: string) {
@@ -48,7 +48,7 @@ export default (context: FileManagerContext) => {
 
             const [[file]] = await db.read<File>({
                 ...defaults.db,
-                query: { PK: PK_FILE(), SK: id },
+                query: { PK: PK_FILE(id), SK: "A" },
                 limit: 1
             });
 
@@ -86,8 +86,8 @@ export default (context: FileManagerContext) => {
             // Save file to DB.
             await db.create({
                 data: {
-                    PK: PK_FILE(),
-                    SK: file.id,
+                    PK: PK_FILE(id),
+                    SK: "A",
                     TYPE: "fm.file",
                     ...file
                 }
@@ -107,7 +107,7 @@ export default (context: FileManagerContext) => {
 
             const [[file]] = await db.read<File>({
                 ...defaults.db,
-                query: { PK: PK_FILE(), SK: id },
+                query: { PK: PK_FILE(id), SK: "A" },
                 limit: 1
             });
 
@@ -125,7 +125,7 @@ export default (context: FileManagerContext) => {
 
             await db.update({
                 ...defaults.db,
-                query: { PK: PK_FILE(), SK: id },
+                query: { PK: PK_FILE(id), SK: "A" },
                 data: updateFile
             });
 
@@ -153,7 +153,7 @@ export default (context: FileManagerContext) => {
             // Delete from DB.
             await db.delete({
                 ...defaults.db,
-                query: { PK: PK_FILE(), SK: id }
+                query: { PK: PK_FILE(id), SK: "A" }
             });
 
             // Delete index form ES.
@@ -215,8 +215,8 @@ export default (context: FileManagerContext) => {
 
                 batch.create({
                     data: {
-                        PK: PK_FILE(),
-                        SK: file.id,
+                        PK: PK_FILE(file.id),
+                        SK: "A",
                         ...file
                     }
                 });

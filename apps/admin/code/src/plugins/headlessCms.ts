@@ -34,8 +34,11 @@ import upperCaseFieldValidator from "@webiny/app-headless-cms/admin/plugins/vali
 
 import welcomeScreenWidget from "@webiny/app-headless-cms/admin/plugins/welcomeScreenWidget";
 
+import richTextEditor from "./headlessCMS/richTextEditor";
+
 export default [
     headlessCmsPlugins(),
+    richTextEditor,
     textField,
     longTextField,
     richTextField,

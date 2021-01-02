@@ -1,8 +1,17 @@
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 import { useRecoilValue } from "recoil";
-import { PbEditorPageElementSettingsRenderComponentProps } from "../../../../types";
-import { activeElementSelector } from "../../../recoil/modules";
+import get from "lodash/get";
+import set from "lodash/set";
+import merge from "lodash/merge";
+import { plugins } from "@webiny/plugins";
+import { Tooltip } from "@webiny/ui/Tooltip";
+import {
+    PbEditorPageElementSettingsRenderComponentProps,
+    PbEditorResponsiveModePlugin
+} from "../../../../types";
+import { activeElementSelector, uiAtom } from "../../../recoil/modules";
 import useUpdateHandlers from "../useUpdateHandlers";
+import { applyFallbackDisplayMode } from "../elementSettingsUtils";
 // Components
 import Accordion from "../components/Accordion";
 import ColorPicker from "../components/ColorPicker";
@@ -13,22 +22,73 @@ import Wrapper from "../components/Wrapper";
 
 const options = ["none", "solid", "dashed", "dotted"];
 const DATA_NAMESPACE = "data.settings.border";
+const BORDER_SETTINGS_COUNT = 4;
 
 const BorderSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps> = ({
     defaultAccordionValue
 }) => {
+    const { displayMode } = useRecoilValue(uiAtom);
     const element = useRecoilValue(activeElementSelector);
     const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
         element,
-        dataNamespace: DATA_NAMESPACE
+        dataNamespace: DATA_NAMESPACE,
+        postModifyElement: ({ newElement }) => {
+            const value = get(newElement, `${DATA_NAMESPACE}.${displayMode}`, {});
+            // if only partial settings are there, merge it with fallback value
+            if (Object.keys(value).length < BORDER_SETTINGS_COUNT) {
+                set(newElement, `${DATA_NAMESPACE}.${displayMode}`, merge(fallbackValue, value));
+            }
+        }
     });
-    const border = element.data.settings?.border || {};
+
+    const { config: activeDisplayModeConfig } = useMemo(() => {
+        return plugins
+            .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
+            .find(pl => pl.config.displayMode === displayMode);
+    }, [displayMode]);
+
+    const getUpdateValueWidthDisplayMode = useCallback(
+        name => value => getUpdateValue(`${displayMode}.${name}`)(value),
+        [getUpdateValue, displayMode]
+    );
+
+    const updateColor = useCallback(value => getUpdateValue(`${displayMode}.color`)(value), [
+        getUpdateValue,
+        displayMode
+    ]);
+
+    const updateColorPreview = useCallback(
+        value => getUpdatePreview(`${displayMode}.color`)(value),
+        [getUpdatePreview, displayMode]
+    );
+
+    const fallbackValue = useMemo(
+        () =>
+            applyFallbackDisplayMode(displayMode, mode =>
+                get(element, `${DATA_NAMESPACE}.${mode}`)
+            ),
+        [displayMode]
+    );
+
+    const border = get(element, `${DATA_NAMESPACE}.${displayMode}`, fallbackValue || {});
+    const borderStyle = get(border, `style`, "none");
 
     return (
-        <Accordion title={"Border"} defaultValue={defaultAccordionValue}>
+        <Accordion
+            title={"Border"}
+            defaultValue={defaultAccordionValue}
+            icon={
+                <Tooltip content={`Changes will apply for ${activeDisplayModeConfig.displayMode}`}>
+                    {activeDisplayModeConfig.icon}
+                </Tooltip>
+            }
+        >
             <ContentWrapper direction={"column"}>
                 <Wrapper label={"Style"} containerClassName={classes.simpleGrid}>
-                    <SelectField value={border.style || "none"} onChange={getUpdateValue("style")}>
+                    <SelectField
+                        value={borderStyle}
+                        onChange={getUpdateValue(`${displayMode}.style`)}
+                    >
                         {options.map(option => (
                             <option key={option} value={option}>
                                 {option}
@@ -39,22 +99,21 @@ const BorderSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderC
                 <ColorPicker
                     className={classes.simpleGrid}
                     label={"Color"}
-                    valueKey={DATA_NAMESPACE + ".color"}
-                    defaultValue={"#fff"}
-                    updateValue={getUpdateValue("color")}
-                    updatePreview={getUpdatePreview("color")}
+                    value={border.color}
+                    updateValue={updateColor}
+                    updatePreview={updateColorPreview}
                 />
                 <BoxInputs
                     label={"Width"}
                     value={border}
                     valueKey={"width"}
-                    getUpdateValue={getUpdateValue}
+                    getUpdateValue={getUpdateValueWidthDisplayMode}
                 />
                 <BoxInputs
                     label={"Radius"}
                     value={border}
                     valueKey={"radius"}
-                    getUpdateValue={getUpdateValue}
+                    getUpdateValue={getUpdateValueWidthDisplayMode}
                     sides={[
                         {
                             label: "Top left",

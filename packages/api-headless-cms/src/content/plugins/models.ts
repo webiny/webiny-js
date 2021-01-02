@@ -2,9 +2,6 @@
 import { pipe, withStorage, withCrudLogs, withSoftDelete, withFields } from "@webiny/commodo";
 import contentModel from "./models/contentModel.model";
 import cmsAccessToken from "../../plugins/models/accessToken.model";
-import CmsEnvironment2AccessToken from "../../plugins/models/environment2accessToken";
-import environmentModel from "../../plugins/models/environment.model";
-import environmentModelAlias from "../../plugins/models/environmentAlias.model";
 import contentModelGroup from "./models/contentModelGroup.model";
 import contentEntrySearch from "./models/contentEntrySearch.model";
 import { createDataModel } from "./utils/createDataModel";

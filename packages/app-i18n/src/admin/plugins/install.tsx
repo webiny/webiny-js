@@ -65,16 +65,19 @@ const I18NInstaller = ({ onInstalled }) => {
         onInstalled();
     }, []);
 
+    const label = error ? (
+        <Alert title={t`Something went wrong`} type={"danger"}>
+            {error}
+        </Alert>
+    ) : (
+        t`Installing I18N...`
+    );
+
     return (
         <Form onSubmit={onSubmit} data={{ code: "en-US" }}>
             {({ Bind, submit }) => (
                 <SimpleForm>
-                    {loading && <CircularProgress />}
-                    {error && (
-                        <Alert title={"Something went wrong"} type={"danger"}>
-                            {error}
-                        </Alert>
-                    )}
+                    {loading && <CircularProgress label={label} />}
                     <SimpleFormHeader title={"Install I18N"} />
                     <SimpleFormContent>
                         <Grid>

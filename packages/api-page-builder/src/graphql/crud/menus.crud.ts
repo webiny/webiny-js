@@ -31,7 +31,7 @@ const PERMISSION_NAME = TYPE;
 
 const plugin: ContextPlugin<PbContext> = {
     type: "context",
-    apply(context) {
+    async apply(context) {
         const { db } = context;
         const PK = () => `${getPKPrefix(context)}M`;
 

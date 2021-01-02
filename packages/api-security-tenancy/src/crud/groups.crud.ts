@@ -75,7 +75,7 @@ export default (context: DbContext & SecurityContext & TenancyContext): GroupsCR
                 data: {
                     PK: `T#${tenant.id}`,
                     SK: `G#${data.slug}`,
-                    TYPE: "security:group",
+                    TYPE: "security.group",
                     ...group
                 }
             });

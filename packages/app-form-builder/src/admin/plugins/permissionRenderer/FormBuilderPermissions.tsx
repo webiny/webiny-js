@@ -2,11 +2,7 @@ import React, { Fragment, useCallback, useMemo } from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { i18n } from "@webiny/app/i18n";
-
-import {
-    PermissionInfo,
-    gridNoPaddingClass
-} from "@webiny/app-security-tenancy/components/permission";
+import { PermissionInfo, gridNoPaddingClass } from "@webiny/app-admin/components/Permissions";
 import { Form } from "@webiny/form";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Typography } from "@webiny/ui/Typography";
@@ -22,7 +18,7 @@ const FULL_ACCESS = "full";
 const NO_ACCESS = "no";
 const CUSTOM_ACCESS = "custom";
 
-export const FormBuilderPermissions = ({ parent, value, onChange }) => {
+export const FormBuilderPermissions = ({ value, onChange }) => {
     const onFormChange = useCallback(
         data => {
             let newValue = [];
@@ -49,18 +45,18 @@ export const FormBuilderPermissions = ({ parent, value, onChange }) => {
                 const permission = {
                     name: FB_ACCESS_FORM,
                     own: false,
-                    permissions: undefined,
-                    submissions: "no"
+                    rwd: undefined,
+                    submissions: false
                 };
 
                 if (data.formAccessLevel === "own") {
                     permission.own = true;
                 } else {
-                    permission.permissions = data.formPermissions;
+                    permission.rwd = data.formPermissions || "r";
                 }
 
-                if (data.submissionPermissions !== NO_ACCESS) {
-                    permission.submissions = "all";
+                if (data.submissionPermissions && data.submissionPermissions !== NO_ACCESS) {
+                    permission.submissions = true;
                 }
 
                 newValue.push(permission);
@@ -73,7 +69,7 @@ export const FormBuilderPermissions = ({ parent, value, onChange }) => {
 
             onChange(newValue);
         },
-        [parent.id, value]
+        [value]
     );
 
     const formData = useMemo(() => {
@@ -104,10 +100,10 @@ export const FormBuilderPermissions = ({ parent, value, onChange }) => {
         const formPermission = permissions.find(item => item.name === FB_ACCESS_FORM);
         if (formPermission) {
             data.formAccessLevel = formPermission.own ? "own" : FULL_ACCESS;
-            if (data.formAccessLevel === FULL_ACCESS) {
-                data.formPermissions = formPermission.permissions;
+            if (data.formAccessLevel === CUSTOM_ACCESS) {
+                data.formPermissions = formPermission.rwd;
             }
-            if (formPermission.submissions === "all") {
+            if (formPermission.submissions === true) {
                 data.submissionPermissions = FULL_ACCESS;
             }
         }
@@ -119,7 +115,7 @@ export const FormBuilderPermissions = ({ parent, value, onChange }) => {
         }
 
         return data;
-    }, [parent.id]);
+    }, []);
 
     return (
         <Form data={formData} onChange={onFormChange}>
@@ -133,8 +129,8 @@ export const FormBuilderPermissions = ({ parent, value, onChange }) => {
                             <Bind name={"accessLevel"}>
                                 <Select label={t`Access Level`}>
                                     <option value={NO_ACCESS}>{t`No access`}</option>
-                                    <option value={FULL_ACCESS}>{t`Full Access`}</option>
-                                    <option value={CUSTOM_ACCESS}>{t`Custom Access`}</option>
+                                    <option value={FULL_ACCESS}>{t`Full access`}</option>
+                                    <option value={CUSTOM_ACCESS}>{t`Custom access`}</option>
                                 </Select>
                             </Bind>
                         </Cell>

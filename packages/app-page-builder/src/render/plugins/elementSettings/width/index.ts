@@ -1,5 +1,7 @@
-import { get } from "lodash";
-import { PbRenderElementStylePlugin } from "@webiny/app-page-builder/types";
+import get from "lodash/get";
+import kebabCase from "lodash/kebabCase";
+import { PbRenderElementStylePlugin } from "../../../../types";
+import { applyPerDeviceStyleWithFallback } from "../../../utils";
 
 export default {
     name: "pb-render-page-element-style-width",
@@ -7,10 +9,16 @@ export default {
     renderStyle({ element, style }) {
         const { width } = get(element, "data.settings", {});
 
-        if (!width) {
-            return style;
-        }
+        applyPerDeviceStyleWithFallback(({ displayMode, fallbackMode }) => {
+            const fallbackValue = get(style, `--${kebabCase(fallbackMode)}-width`, "100%");
 
-        return { ...style, width: width.value };
+            style[`--${kebabCase(displayMode)}-width`] = get(
+                width,
+                `${displayMode}.value`,
+                fallbackValue
+            );
+        });
+
+        return style;
     }
 } as PbRenderElementStylePlugin;

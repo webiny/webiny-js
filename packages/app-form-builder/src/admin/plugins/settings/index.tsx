@@ -10,8 +10,6 @@ import { AdminMenuSettingsPlugin } from "@webiny/app-admin/types";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-form-builder/admin/menus");
 
-const ROLE_FORMS_SETTINGS = ["fb.settings"];
-
 const plugins = [
     {
         type: "route",
@@ -22,7 +20,7 @@ const plugins = [
                 render={() => (
                     <AdminLayout>
                         <Helmet title={t`Form Builder - reCAPTCHA Settings`} />
-                        <SecureRoute scopes={ROLE_FORMS_SETTINGS}>
+                        <SecureRoute permission={"fb.settings"}>
                             <FormsSettings />
                         </SecureRoute>
                     </AdminLayout>
@@ -35,7 +33,7 @@ const plugins = [
         name: "menu-settings-form-builder",
         render({ Item, Section }) {
             return (
-                <SecureView scopes={ROLE_FORMS_SETTINGS}>
+                <SecureView permission={"fb.settings"}>
                     <Section label={t`Form Builder`}>
                         <Item label={t`reCAPTCHA`} path={"/settings/form-builder/recaptcha"} />
                     </Section>

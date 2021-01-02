@@ -1,41 +1,24 @@
 import React from "react";
-import get from "lodash.get";
-import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
-import { LIST_CONTENT_MODELS } from "@webiny/app-headless-cms/admin/viewsGraphql";
-import { LIST_CONTENT_MODEL_GROUPS } from "@webiny/app-headless-cms/admin/views/ContentModelGroups/graphql";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
 import { Select } from "@webiny/ui/Select";
-import { PermissionSelector, PermissionSelectorWrapper } from "./PermissionSelector";
-
 import { i18n } from "@webiny/app/i18n";
-import { PermissionInfo } from "@webiny/app-security-tenancy/components/permission";
 import { Elevation } from "@webiny/ui/Elevation";
+import { PermissionSelector, PermissionSelectorWrapper } from "./PermissionSelector";
+// import { Checkbox, CheckboxGroup } from "@webiny/ui/Checkbox";
+import { useCmsData } from "@webiny/app-headless-cms/admin/plugins/permissionRenderer/components/useCmsData";
+
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
-export const ContentEntryPermission = ({ Bind, data, entity, title }) => {
-    // TODO: We'll revisit "locale" based data fetching later.
-    // Data fetching
-    const {
-        data: contentModelData,
-        error: contentModelError,
-        loading: contentModelLoading
-    } = useQuery(LIST_CONTENT_MODELS);
-    const contentModels = get(contentModelData, "listContentModels.data", []).map(contentModel => ({
-        id: contentModel.modelId,
-        name: contentModel.name
-    }));
+/*const rcpuOptions = [
+    { id: "p", name: t`Publish` },
+    { id: "u", name: t`Unpublish` },
+    { id: "r", name: t`Request review` },
+    { id: "c", name: t`Request changes` }
+];*/
 
-    const {
-        data: contentModelGroupData,
-        error: contentModelGroupError,
-        loading: contentModelGroupLoading
-    } = useQuery(LIST_CONTENT_MODEL_GROUPS);
-    const contentModelGroups = get(
-        contentModelGroupData,
-        "contentModelGroups.data",
-        []
-    ).map(contentModelGroup => ({ id: contentModelGroup.slug, name: contentModelGroup.name }));
+export const ContentEntryPermission = ({ Bind, data, entity, title, locales }) => {
+    const modelsGroups = useCmsData(locales);
 
     return (
         <Elevation z={1} style={{ marginTop: 10 }}>
@@ -45,15 +28,14 @@ export const ContentEntryPermission = ({ Bind, data, entity, title }) => {
                 </Cell>
                 <Cell span={12}>
                     <Grid style={{ padding: 0, paddingBottom: 24 }}>
-                        <Cell span={6}>
-                            <PermissionInfo title={t`Access Level`} />
-                        </Cell>
-                        <Cell span={6}>
-                            <Bind name={`${entity}AccessLevel`}>
-                                <Select label={t`Access Level`}>
+                        <Cell span={12}>
+                            <Bind name={`${entity}AccessScope`}>
+                                <Select label={t`Access Scope`}>
                                     <option value={"no"}>{t`No access`}</option>
-                                    <option value={"full"}>{t`All`}</option>
-                                    <option value={"own"}>{t`Only the one they created`}</option>
+                                    <option value={"full"}>{t`All entries`}</option>
+                                    <option
+                                        value={"own"}
+                                    >{t`Only entries created by the user`}</option>
                                     <option
                                         value={"models"}
                                     >{t`Only entries in specific content models`}</option>
@@ -63,59 +45,71 @@ export const ContentEntryPermission = ({ Bind, data, entity, title }) => {
                                 </Select>
                             </Bind>
                         </Cell>
-                        {data[`${entity}AccessLevel`] === "models" && (
+                        {data[`${entity}AccessScope`] === "models" && (
                             <PermissionSelectorWrapper>
                                 <PermissionSelector
+                                    locales={locales}
                                     Bind={Bind}
                                     entity={entity}
-                                    data={data}
                                     selectorKey={"models"}
-                                    dataList={{
-                                        loading: contentModelLoading,
-                                        error: contentModelError,
-                                        list: contentModels
-                                    }}
+                                    cmsData={modelsGroups}
                                 />
                             </PermissionSelectorWrapper>
                         )}
-                        {data[`${entity}AccessLevel`] === "groups" && (
+                        {data[`${entity}AccessScope`] === "groups" && (
                             <PermissionSelectorWrapper>
                                 <PermissionSelector
+                                    locales={locales}
                                     Bind={Bind}
                                     entity={entity}
-                                    data={data}
                                     selectorKey={"groups"}
-                                    dataList={{
-                                        loading: contentModelGroupLoading,
-                                        error: contentModelGroupError,
-                                        list: contentModelGroups
-                                    }}
+                                    cmsData={modelsGroups}
                                 />
                             </PermissionSelectorWrapper>
                         )}
 
-                        <Cell span={6}>
-                            <PermissionInfo title={t`Permissions`} />
-                        </Cell>
-                        <Cell span={6} align={"middle"}>
-                            <Bind name={`${entity}Permissions`}>
+                        <Cell span={12}>
+                            <Bind name={`${entity}RWD`}>
                                 <Select
-                                    label={t`Permissions`}
-                                    disabled={
-                                        data[`${entity}AccessLevel`] === "own" ||
-                                        data[`${entity}AccessLevel`] === "no"
-                                    }
+                                    label={t`Primary Actions`}
+                                    disabled={[undefined, "own", "no"].includes(
+                                        data[`${entity}AccessScope`]
+                                    )}
                                 >
                                     <option value={"r"}>{t`Read`}</option>
-                                    <option value={"rw"}>{t`Read, write`}</option>
-                                    <option value={"rwp"}>{t`Read, write, publish`}</option>
-                                    <option value={"rwd"}>{t`Read, write, delete`}</option>
-                                    <option
-                                        value={"rwdp"}
-                                    >{t`Read, write, delete, publish`}</option>
+                                    {data.endpoints.includes("manage") ? (
+                                        <option value={"rw"}>{t`Read, write`}</option>
+                                    ) : null}
+                                    {data.endpoints.includes("manage") ? (
+                                        <option value={"rwd"}>{t`Read, write, delete`}</option>
+                                    ) : null}
                                 </Select>
                             </Bind>
                         </Cell>
+                        {/* {data.endpoints.includes("manage") ? (
+                            <Cell span={12}>
+                                <Bind name={`${entity}RCPU`}>
+                                    <CheckboxGroup
+                                        label={t`Publishing workflow`}
+                                        description={t`Publishing-related actions that can be performed on content entries.`}
+                                    >
+                                        {({ getValue, onChange }) =>
+                                            rcpuOptions.map(({ id, name }) => (
+                                                <Checkbox
+                                                    disabled={
+                                                        data.contentEntriesAccessScope === "no"
+                                                    }
+                                                    key={id}
+                                                    label={name}
+                                                    value={getValue(id)}
+                                                    onChange={onChange(id)}
+                                                />
+                                            ))
+                                        }
+                                    </CheckboxGroup>
+                                </Bind>
+                            </Cell>
+                        ) : null}*/}
                     </Grid>
                 </Cell>
             </Grid>

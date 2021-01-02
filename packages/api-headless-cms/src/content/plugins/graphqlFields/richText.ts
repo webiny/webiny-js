@@ -4,41 +4,43 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
     name: "cms-model-field-to-graphql-rich-text",
     type: "cms-model-field-to-graphql",
     fieldType: "rich-text",
+    isSortable: false,
+    isSearchable: false,
     read: {
         createTypeField({ field }) {
-            const localeArg = "(locale: String)";
             if (field.multipleValues) {
-                return `${field.fieldId}${localeArg}: [JSON]`;
+                return `${field.fieldId}: [JSON]`;
             }
 
-            return `${field.fieldId}${localeArg}: JSON`;
+            return `${field.fieldId}: JSON`;
         },
         createGetFilters({ field }) {
             return `${field.fieldId}: JSON`;
         },
         createResolver({ field }) {
-            return (instance, args) => {
-                return instance[field.fieldId].value(args.locale);
+            return instance => {
+                return instance.values[field.fieldId];
             };
         }
     },
     manage: {
         createResolver({ field }) {
             return instance => {
-                return instance[field.fieldId];
+                return instance.values[field.fieldId];
             };
         },
         createTypeField({ field }) {
-            return field.fieldId + ": CmsJSON";
             if (field.multipleValues) {
-                return field.fieldId + ": CmsJSONList";
+                return `${field.fieldId}: [JSON]`;
             }
+
+            return `${field.fieldId}: JSON`;
         },
         createInputField({ field }) {
             if (field.multipleValues) {
-                return field.fieldId + ": CmsJSONListInput";
+                return field.fieldId + ": [JSON]";
             }
-            return field.fieldId + ": CmsJSONInput";
+            return field.fieldId + ": JSON";
         }
     }
 };

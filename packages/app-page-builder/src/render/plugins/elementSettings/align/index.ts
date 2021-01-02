@@ -1,13 +1,9 @@
 import { get } from "lodash";
-import { PbRenderElementStylePlugin } from "@webiny/app-page-builder/types";
+import kebabCase from "lodash/kebabCase";
+import { PbRenderElementStylePlugin } from "../../../../types";
+import { applyPerDeviceStyleWithFallback } from "../../../utils";
 
-const vertical = {
-    start: "flex-start",
-    center: "center",
-    end: "flex-end"
-};
-
-const plugins: PbRenderElementStylePlugin[] = [
+export default [
     {
         name: "pb-render-page-element-style-horizontal-align",
         type: "pb-render-page-element-style",
@@ -24,10 +20,23 @@ const plugins: PbRenderElementStylePlugin[] = [
         type: "pb-render-page-element-style",
         renderStyle({ element, style }) {
             const { horizontalAlignFlex } = get(element, "data.settings", {});
-            if (!horizontalAlignFlex) {
-                return style;
-            }
-            return { ...style, justifyContent: horizontalAlignFlex };
+
+            // Set per-device property value
+            applyPerDeviceStyleWithFallback(({ displayMode, fallbackMode }) => {
+                const fallbackValue = get(
+                    style,
+                    `--${kebabCase(fallbackMode)}-justify-content`,
+                    "flex-start"
+                );
+
+                style[`--${kebabCase(displayMode)}-justify-content`] = get(
+                    horizontalAlignFlex,
+                    displayMode,
+                    fallbackValue
+                );
+            });
+
+            return style;
         }
     },
     {
@@ -35,12 +44,23 @@ const plugins: PbRenderElementStylePlugin[] = [
         type: "pb-render-page-element-style",
         renderStyle({ element, style }) {
             const { verticalAlign } = get(element, "data.settings", {});
-            if (!verticalAlign) {
-                return style;
-            }
-            return { ...style, alignItems: vertical[verticalAlign] };
+
+            // Set per-device property value
+            applyPerDeviceStyleWithFallback(({ displayMode, fallbackMode }) => {
+                const fallbackValue = get(
+                    style,
+                    `--${kebabCase(fallbackMode)}-align-items`,
+                    "flex-start"
+                );
+
+                style[`--${kebabCase(displayMode)}-align-items`] = get(
+                    verticalAlign,
+                    displayMode,
+                    fallbackValue
+                );
+            });
+
+            return style;
         }
     }
-];
-
-export default plugins;
+] as PbRenderElementStylePlugin[];

@@ -30,7 +30,7 @@ const PERMISSION_NAME = TYPE;
 
 const plugin: ContextPlugin<PbContext> = {
     type: "context",
-    apply(context) {
+    async apply(context) {
         const { db } = context;
         const PK = () => `${getPKPrefix(context)}C`;
         const ES_DEFAULTS = () => defaults.es(context);

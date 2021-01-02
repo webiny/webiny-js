@@ -1,5 +1,6 @@
-import React, { useCallback } from "react";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import React, { useCallback, useMemo } from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
+import get from "lodash/get";
 import classNames from "classnames";
 import { PbElement } from "../../types";
 import {
@@ -11,8 +12,10 @@ import {
 import { ElementRoot } from "../../render/components/ElementRoot";
 import useUpdateHandlers from "../plugins/elementSettings/useUpdateHandlers";
 import ReactMediumEditor from "../components/MediumEditor";
+import { applyFallbackDisplayMode } from "@webiny/app-page-builder/editor/plugins/elementSettings/elementSettingsUtils";
 
 export const textClassName = "webiny-pb-base-page-element-style webiny-pb-page-element-text";
+const DATA_NAMESPACE = "data.text";
 
 type TextElementProps = {
     elementId: string;
@@ -24,17 +27,26 @@ const Text: React.FunctionComponent<TextElementProps> = ({
     editorOptions,
     rootClassName
 }) => {
-    const setUiAtomValue = useSetRecoilState(uiAtom);
+    const [{ displayMode }, setUiAtomValue] = useRecoilState(uiAtom);
     const element: PbElement = useRecoilValue(elementWithChildrenByIdSelector(elementId));
     const activeElementId = useRecoilValue(activeElementIdSelector);
     const { getUpdateValue } = useUpdateHandlers({
         element,
-        dataNamespace: "data.text"
+        dataNamespace: DATA_NAMESPACE
     });
+
+    const fallbackValue = useMemo(
+        () =>
+            applyFallbackDisplayMode(displayMode, mode =>
+                get(element, `${DATA_NAMESPACE}.${mode}`)
+            ),
+        [displayMode]
+    );
+    const value = get(element, `${DATA_NAMESPACE}.${displayMode}`, fallbackValue);
 
     const onChange = useCallback(
         value => {
-            getUpdateValue("data.text")(value);
+            getUpdateValue(DATA_NAMESPACE)(value);
         },
         [getUpdateValue]
     );
@@ -49,7 +61,9 @@ const Text: React.FunctionComponent<TextElementProps> = ({
         return null;
     }
 
-    const { typography, data, tag } = element.data.text;
+    const textContent = get(element, `${DATA_NAMESPACE}.data.text`);
+    const tag = get(value, "tag");
+    const typography = get(value, "typography");
 
     return (
         <ElementRoot
@@ -58,7 +72,7 @@ const Text: React.FunctionComponent<TextElementProps> = ({
         >
             <ReactMediumEditor
                 tag={tag}
-                value={data.text}
+                value={textContent}
                 onChange={onChange}
                 options={editorOptions}
                 onSelect={onSelect}

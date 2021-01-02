@@ -1,12 +1,11 @@
 import * as React from "react";
 import { Plugin } from "@webiny/plugins/types";
 import { ReactElement, ReactNode } from "react";
-import { I18NStringValue, I18NListValue } from "@webiny/app-i18n/types";
 import { BindComponent, FormChildrenFunctionParams, Form } from "@webiny/form";
 import { ApolloClient } from "apollo-client";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
-import Label from "@webiny/app-headless-cms/admin/components/ContentModelForm/ContentFormRender/components/Label";
 import { SecurityPermission } from "@webiny/app-security/SecurityIdentity";
+import Label from "./admin/views/components/ContentModelForm/ContentFormRender/components/Label";
 
 export type CmsEditorFieldTypePlugin = Plugin & {
     type: "cms-editor-field-type";
@@ -18,12 +17,8 @@ export type CmsEditorFieldTypePlugin = Plugin & {
         icon: React.ReactNode;
         allowMultipleValues: boolean;
         allowPredefinedValues: boolean;
-        allowIndexes: {
-            singleValue: boolean;
-            multipleValues: false; // At the moment, we don't support indexing fields with multiple values.
-        };
         multipleValuesLabel: React.ReactNode;
-        createField: ({ i18n: any }) => CmsEditorField;
+        createField: () => CmsEditorField;
         renderSettings?: (params: {
             form: FormChildrenFunctionParams;
             afterChangeLabel: (value: string) => void;
@@ -51,25 +46,24 @@ export type CmsEditorFieldRendererPlugin = Plugin & {
             field: CmsEditorField;
             Label: typeof Label;
             getBind: (index?: number) => any;
-            locale: string;
             contentModel: CmsEditorContentModel;
         }): React.ReactNode;
     };
 };
 
-export type CmsEditorField = {
-    _id?: string;
+export type CmsEditorField<T = unknown> = T & {
+    id?: string;
     type: string;
     fieldId?: CmsEditorFieldId;
-    label?: I18NStringValue;
-    helpText?: I18NStringValue;
-    placeholderText?: I18NStringValue;
+    label?: string;
+    helpText?: string;
+    placeholderText?: string;
     validation?: CmsEditorFieldValidator[];
     multipleValuesValidation?: CmsEditorFieldValidator[];
     multipleValues?: boolean;
     predefinedValues?: {
         enabled: boolean;
-        values: I18NListValue;
+        values: [{ label: string; value: string }];
     };
     settings?: { [key: string]: any };
     renderer: {
@@ -82,10 +76,14 @@ export type CmsEditorFieldsLayout = CmsEditorFieldId[][];
 
 export type CmsEditorContentModel = {
     id: CmsEditorFieldId;
+    group: {
+        id: string;
+        name: string;
+    };
     version: number;
-    parent: string;
     layout?: CmsEditorFieldsLayout;
     fields: CmsEditorField[];
+    lockedFields: CmsEditorField[];
     name: string;
     modelId: string;
     titleFieldId: string;
@@ -96,9 +94,21 @@ export type CmsEditorContentModel = {
     meta: any;
 };
 
+export type CmsEditorContentEntry = {
+    id: string;
+    savedOn: string;
+    [key: string]: any;
+    meta: {
+        title: string;
+        locked: boolean;
+        status: "draft" | "published" | "unpublished" | "changesRequested" | "reviewRequested";
+        version: number;
+    };
+};
+
 export type CmsEditorFieldValidator = {
     name: string;
-    message: I18NStringValue;
+    message: string;
     settings: any;
 };
 
@@ -125,11 +135,10 @@ export type CmsEditorContentTab = React.FC<{
 // ------------------------------------------------------------------------------------------------------------
 
 export type CmsContentModelFormProps = {
-    locale?: string;
     loading?: boolean;
     onForm?: (form: any) => void;
     contentModel: CmsEditorContentModel;
-    content?: { [key: string]: any };
+    entry?: { [key: string]: any };
     onSubmit?: (data: { [key: string]: any }) => any;
     onChange?: (data: { [key: string]: any }) => any;
 };
@@ -216,7 +225,6 @@ export type FormRenderCmsEditorField = CmsEditorField & {
 export type UseContentModelEditorReducerStateType = {
     apolloClient: ApolloClient<any>;
     id: string;
-    defaultLayoutRenderer: string;
 };
 
 export type FormSettingsPluginType = Plugin & {

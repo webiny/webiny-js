@@ -1,17 +1,17 @@
 import React, { useCallback, useMemo } from "react";
+import { get } from "lodash";
+import { i18n } from "@webiny/app/i18n";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as PublishIcon } from "@webiny/app-headless-cms/admin/icons/publish.svg";
-import { get } from "lodash";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { createPublishMutation } from "@webiny/app-headless-cms/admin/components/ContentModelForm/graphql";
 import { useMutation } from "@webiny/app-headless-cms/admin/hooks";
-import { i18n } from "@webiny/app/i18n";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
+import { createPublishMutation } from "../../../../views/components/ContentModelForm/graphql";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/content-details/header/publish-revision");
 
-const PublishRevision = ({ content, contentModel, getLoading, setLoading, revisionsList }) => {
+const PublishRevision = ({ entry, contentModel, getLoading, setLoading }) => {
     const { showSnackbar } = useSnackbar();
 
     const { PUBLISH_CONTENT } = useMemo(() => {
@@ -24,19 +24,20 @@ const PublishRevision = ({ content, contentModel, getLoading, setLoading, revisi
 
     const onPublish = useCallback(async () => {
         setLoading(true);
+
         const response = await publishContentMutation({
-            variables: { revision: content.id }
+            variables: { revision: entry.id }
         });
 
-        const contentData = get(response, "data.content");
         setLoading(false);
+
+        const contentData = get(response, "data.content");
         if (contentData.error) {
             return showSnackbar(contentData.error.message);
         }
 
         showSnackbar(t`Content published successfully.`);
-        revisionsList.refetch();
-    }, [content.id]);
+    }, [entry.id]);
 
     const { showConfirmation } = useConfirmationDialog({
         title: t`Publish content`,
@@ -51,7 +52,7 @@ const PublishRevision = ({ content, contentModel, getLoading, setLoading, revisi
                 <IconButton
                     icon={<PublishIcon />}
                     onClick={() => showConfirmation(onPublish)}
-                    disabled={!content.id || getLoading()}
+                    disabled={!entry.id || getLoading()}
                 />
             </Tooltip>
         </React.Fragment>

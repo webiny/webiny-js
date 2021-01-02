@@ -1,7 +1,8 @@
 import React from "react";
 import Quote, { className } from "./Quote";
-import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
+import { DisplayMode, PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 import { createInitialTextValue } from "../utils/textUtils";
+import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
 export default (): PbEditorPageElementPlugin => {
     return {
@@ -41,17 +42,26 @@ export default (): PbEditorPageElementPlugin => {
                 type: "quote",
                 elements: [],
                 data: {
-                    text: createInitialTextValue({ text: previewText, type: this.elementType }),
-                    settings: {
-                        margin: {
-                            mobile: { top: "0px", left: "0px", right: "0px", bottom: "15px" },
-                            desktop: { top: "0px", left: "0px", right: "0px", bottom: "0px" },
-                            advanced: true
-                        },
-                        padding: {
-                            desktop: { all: "0px" },
-                            mobile: { all: "0px" }
+                    text: {
+                        ...createInitialPerDeviceSettingValue(
+                            createInitialTextValue({
+                                type: this.elementType
+                            }),
+                            DisplayMode.DESKTOP
+                        ),
+                        data: {
+                            text: previewText
                         }
+                    },
+                    settings: {
+                        margin: createInitialPerDeviceSettingValue(
+                            { all: "0px" },
+                            DisplayMode.DESKTOP
+                        ),
+                        padding: createInitialPerDeviceSettingValue(
+                            { all: "0px" },
+                            DisplayMode.DESKTOP
+                        )
                     }
                 },
                 ...options

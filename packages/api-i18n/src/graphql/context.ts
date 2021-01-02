@@ -125,6 +125,15 @@ export default {
             getLocales() {
                 return self.__i18n.locales;
             },
+            getLocale(code) {
+                const item = self.__i18n.locales.find(
+                    locale => locale.code.toLowerCase() === code.toLowerCase()
+                );
+                if (!item) {
+                    return null;
+                }
+                return item;
+            },
             // @ts-ignore TODO: remove
             getValue(value) {
                 if (!value) {

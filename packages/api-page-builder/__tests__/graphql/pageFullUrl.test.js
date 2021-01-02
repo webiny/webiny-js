@@ -10,7 +10,7 @@ describe("page full URL test", () => {
         updatePage,
         until
     } = useGqlHandler();
-
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     let initialCategory;
 
     beforeEach(async () => {

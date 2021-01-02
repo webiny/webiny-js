@@ -3,6 +3,7 @@ import { SecurityContext } from "@webiny/api-security/types";
 
 export default ({ identityType }) => ({
     type: "security-authorization",
+    name: "security-authorization-user",
     async getPermissions({ security }: SecurityContext & TenancyContext) {
         const identity = security.getIdentity();
         const tenant = security.getTenant();

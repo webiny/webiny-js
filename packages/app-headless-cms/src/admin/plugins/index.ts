@@ -10,6 +10,7 @@ import defaultBar from "./editor/defaultBar";
 import formSettings from "./editor/formSettings";
 import apiInformationDialog from "./apiInformationDialog";
 import permissionRenderer from "./permissionRenderer";
+import getObjectId from "./getObjectId";
 
 export default () => [
     install,
@@ -23,5 +24,6 @@ export default () => [
     defaultBar,
     formSettings,
     permissionRenderer,
-    apiInformationDialog
+    apiInformationDialog,
+    getObjectId
 ];

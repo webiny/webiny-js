@@ -9,43 +9,21 @@ const fields = `
 `;
 
 export const LIST_CONTENT_MODEL_GROUPS = gql`
-    query ListContentModelGroups(
-        $where: JSON
-        $sort: JSON
-        $search: CmsSearchInput
-        $limit: Int
-        $after: String
-        $before: String
-    ) {
-        contentModelGroups: listContentModelGroups(
-            where: $where
-            sort: $sort
-            search: $search
-            limit: $limit
-            after: $after
-            before: $before
-        ) {
+    query CmsListContentModelGroups {
+        listContentModelGroups {
             data {
-                id
-                name
-                slug
-                totalContentModels
-            }
-            meta {
-                cursors {
-                    next
-                    previous
+                ${fields}
+                contentModels {
+                    modelId
+                    name
                 }
-                hasNextPage
-                hasPreviousPage
-                totalCount
             }
         }
     }
 `;
 
 export const GET_CONTENT_MODEL_GROUP = gql`
-    query GetContentModelGroup($id: ID!) {
+    query CmsGetContentModelGroup($id: ID!) {
         contentModelGroup: getContentModelGroup(id: $id){
             data {
                 ${fields}
@@ -59,10 +37,14 @@ export const GET_CONTENT_MODEL_GROUP = gql`
 `;
 
 export const CREATE_CONTENT_MODEL_GROUP = gql`
-    mutation CreateContentModelGroup($data: CmsContentModelGroupInput!){
+    mutation CmsCreateContentModelGroup($data: CmsContentModelGroupInput!){
         contentModelGroup: createContentModelGroup(data: $data) {
             data {
                 ${fields}
+                contentModels {
+                    modelId
+                    name
+                }
             }
             error {
                 code
@@ -74,7 +56,7 @@ export const CREATE_CONTENT_MODEL_GROUP = gql`
 `;
 
 export const UPDATE_CONTENT_MODEL_GROUP = gql`
-    mutation UpdateContentModelGroup($id: ID!, $data: CmsContentModelGroupInput!){
+    mutation CmsUpdateContentModelGroup($id: ID!, $data: CmsContentModelGroupInput!){
         contentModelGroup: updateContentModelGroup(id: $id, data: $data) {
             data {
                 ${fields}
@@ -89,7 +71,7 @@ export const UPDATE_CONTENT_MODEL_GROUP = gql`
 `;
 
 export const DELETE_CONTENT_MODEL_GROUP = gql`
-    mutation DeleteContentModelGroup($id: ID!) {
+    mutation CmsDeleteContentModelGroup($id: ID!) {
         deleteContentModelGroup(id: $id) {
             data
             error {

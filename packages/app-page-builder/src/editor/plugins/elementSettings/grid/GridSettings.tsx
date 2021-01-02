@@ -42,8 +42,13 @@ const StyledIconButton = styled("button")(({ active }: any) => ({
     border: "0 none",
     cursor: "pointer",
     opacity: active ? 1 : 0.7,
+    "& svg": {
+        filter: active ? "none" : "grayscale(1)"
+    },
     ":hover": {
-        opacity: 1
+        "& svg": {
+            boxShadow: active ? "none" : "0 0 5px rgba(0, 204, 176, 1)"
+        }
     },
     ":focus": {
         outline: "none"

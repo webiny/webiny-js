@@ -1,9 +1,10 @@
 import React from "react";
 import { ReactComponent as LongTextIcon } from "./icons/round-notes.svg";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { I18NInput } from "@webiny/app-i18n/admin/components";
+import { Input } from "@webiny/ui/Input";
 import { CmsEditorFieldTypePlugin } from "@webiny/app-headless-cms/types";
 import { i18n } from "@webiny/app/i18n";
+
 const t = i18n.ns("app-headless-cms/admin/fields");
 
 const plugin: CmsEditorFieldTypePlugin = {
@@ -17,10 +18,6 @@ const plugin: CmsEditorFieldTypePlugin = {
         icon: <LongTextIcon />,
         allowMultipleValues: true,
         allowPredefinedValues: false, // TODO: implement "renderPredefinedValues" and set to true.
-        allowIndexes: {
-            singleValue: false,
-            multipleValues: false
-        },
         multipleValuesLabel: t`Use as a list of long texts`,
         createField() {
             return {
@@ -36,7 +33,7 @@ const plugin: CmsEditorFieldTypePlugin = {
                 <Grid>
                     <Cell span={12}>
                         <Bind name={"placeholderText"}>
-                            <I18NInput
+                            <Input
                                 label={t`Placeholder text`}
                                 description={t`Placeholder text (optional)`}
                             />

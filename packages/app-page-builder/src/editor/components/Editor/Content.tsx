@@ -1,28 +1,33 @@
+import React, { useEffect, useRef, useMemo, useCallback } from "react";
+import { useRecoilValue } from "recoil";
+import styled from "@emotion/styled";
+import { css } from "emotion";
+import kebabCase from "lodash/kebabCase";
+import { plugins } from "@webiny/plugins";
+import { Elevation } from "@webiny/ui/Elevation";
+import { PbEditorContentPlugin, PbElement, PbPageLayout, PbPageLayoutPlugin } from "../../../types";
 import {
     contentSelector,
     isPluginActiveSelector,
-    layoutSelector
-} from "@webiny/app-page-builder/editor/recoil/modules";
-import React from "react";
-import styled from "@emotion/styled";
-import { css } from "emotion";
-import { plugins } from "@webiny/plugins";
-import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
-import Element from "@webiny/app-page-builder/editor/components/Element";
-import { Elevation } from "@webiny/ui/Elevation";
-import { PbElement, PbPageLayout, PbPageLayoutPlugin } from "@webiny/app-page-builder/types";
-import { PbEditorContentPlugin } from "@webiny/app-page-builder/types";
-import { useRecoilValue } from "recoil";
+    layoutSelector,
+    uiAtom,
+    setPagePreviewDimensionMutation
+} from "../../recoil/modules";
+import { updateConnectedValue } from "../../recoil/modules/connected";
+
+import { usePageBuilder } from "../../../hooks/usePageBuilder";
+import Element from "../Element";
 
 const BREADCRUMB_HEIGHT = 33;
 const ContentContainer = styled("div")(({ theme }) => ({
     backgroundColor: (theme as any)?.colors?.background,
     position: "relative",
+    margin: "0 auto",
     ".webiny-pb-page-document": {
         overflowY: "visible", // cuts off the block selector tooltip
         overflowX: "visible",
         // We need this extra spacing so that editor content won't get cutoff
-        marginBottom: BREADCRUMB_HEIGHT
+        paddingBottom: BREADCRUMB_HEIGHT
     }
 }));
 const contentContainerWrapper = css({
@@ -52,6 +57,38 @@ const Content = () => {
     const rootElement = useRecoilValue(contentSelector);
     const renderLayout = useRecoilValue(isPluginActiveSelector("pb-editor-toolbar-preview"));
     const layout = useRecoilValue(layoutSelector);
+    const { displayMode } = useRecoilValue(uiAtom);
+    const pagePreviewRef = useRef();
+
+    const setPagePreviewDimension = useCallback(
+        pagePreviewDimension => {
+            updateConnectedValue(uiAtom, prev =>
+                setPagePreviewDimensionMutation(prev, pagePreviewDimension)
+            );
+        },
+        [uiAtom]
+    );
+
+    const resizeObserver = useMemo(() => {
+        return new ResizeObserver(entries => {
+            for (const entry of entries) {
+                const { width, height } = entry.contentRect;
+                setPagePreviewDimension({ width, height });
+            }
+        });
+    }, []);
+    // Set resize observer
+    useEffect(() => {
+        if (pagePreviewRef.current) {
+            // Add resize observer
+            resizeObserver.observe(pagePreviewRef.current);
+        }
+
+        // Cleanup
+        return () => {
+            resizeObserver.disconnect();
+        };
+    }, []);
 
     const { theme } = usePageBuilder();
     const pluginsByType = plugins.byType<PbEditorContentPlugin>("pb-editor-content");
@@ -64,12 +101,17 @@ const Content = () => {
         return <div>Layout &quot;{layout}&quot; was not found in your theme!</div>;
     }
     return (
-        <Elevation className={contentContainerWrapper} z={2}>
-            <ContentContainer theme={theme}>
+        <Elevation className={contentContainerWrapper} z={0}>
+            <ContentContainer
+                theme={theme}
+                className={`mdc-elevation--z1 webiny-pb-editor-device--${kebabCase(
+                    displayMode
+                )} webiny-pb-media-query--${kebabCase(displayMode)}`}
+            >
                 {pluginsByType.map(plugin =>
                     React.cloneElement(plugin.render(), { key: plugin.name })
                 )}
-                <BaseContainer className={"webiny-pb-editor-content-preview"}>
+                <BaseContainer ref={pagePreviewRef} className={"webiny-pb-editor-content-preview"}>
                     {renderContent(themeLayout, rootElement, renderLayout)}
                 </BaseContainer>
             </ContentContainer>

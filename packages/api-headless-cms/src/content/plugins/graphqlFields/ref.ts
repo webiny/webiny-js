@@ -1,85 +1,87 @@
-import gql from "graphql-tag";
-import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
-import { i18nFieldInput } from "./../graphqlTypes/i18nFieldInput";
-import { createTypeName } from "../utils/createTypeName";
+import { CmsContext, CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
 import { createReadTypeName } from "../utils/createTypeName";
 
 const plugin: CmsModelFieldToGraphQLPlugin = {
     name: "cms-model-field-to-graphql-ref",
     type: "cms-model-field-to-graphql",
     fieldType: "ref",
+    isSortable: false,
+    isSearchable: false,
     read: {
         createTypeField({ field }) {
-            const { modelId } = field.settings;
-            const gqlType = createReadTypeName(modelId);
-            const fieldArgs = "(locale: String)";
+            const { models } = field.settings;
+            // For now we only use the first model in the list. Support for multiple models will come in the future.
+            const gqlType = createReadTypeName(models[0].modelId);
 
-            return (
-                field.fieldId + fieldArgs + `: ${field.multipleValues ? `[${gqlType}]` : gqlType}`
-            );
+            return field.fieldId + `: ${field.multipleValues ? `[${gqlType}]` : gqlType}`;
         },
         createResolver({ field }) {
-            return (instance, args) => {
-                return instance[field.fieldId].value(args.locale);
+            return async (instance, args, { cms }: CmsContext) => {
+                const { modelId } = field.settings.models[0];
+
+                // Get model manager, to get access to CRUD methods
+                const model = await cms.getModel(modelId);
+
+                // Get field value for this entry
+                const value = instance.values[field.fieldId];
+
+                if (field.multipleValues) {
+                    const ids = value.map(ref => ref.entryId);
+
+                    // eslint-disable-next-line @typescript-eslint/camelcase
+                    const entries = cms.READ
+                        ? // `read` API works with `published` data
+                          await model.getPublishedByIds(ids)
+                        : // `preview` API works with `latest` data
+                          await model.getLatestByIds(ids);
+                    return entries.filter(Boolean);
+                }
+
+                const revisions = cms.READ
+                    ? // `read` API works with `published` data
+                      await model.getPublishedByIds([value.entryId])
+                    : // `preview` API works with `latest` data
+                      await model.getLatestByIds([value.entryId]);
+
+                return revisions[0];
             };
         }
     },
     manage: {
-        createResolver({ field }) {
-            return instance => {
-                return instance[field.fieldId];
-            };
-        },
         createSchema() {
             return {
-                typeDefs: gql`
-                    ${i18nFieldInput("CmsRef", "RefInput")}
-                `
+                typeDefs: `
+                    type RefField {
+                        modelId: String!
+                        entryId: ID!
+                    }
+                    
+                    input RefFieldInput {
+                        modelId: String!
+                        entryId: ID!
+                    }
+                `,
+                resolvers: {}
             };
         },
-        createTypeField({ field, model }) {
-            const modelIdType = createTypeName(model.modelId);
-            const fieldIdType = createTypeName(field.fieldId);
-            const refModelIdType = createTypeName(field.settings.modelId);
-
-            const refPrefix = `CmsRef${modelIdType}${fieldIdType}`;
-
+        createResolver({ field }) {
+            return instance => {
+                return instance.values[field.fieldId];
+            };
+        },
+        createTypeField({ field }) {
             if (field.multipleValues) {
-                return {
-                    fields: `${field.fieldId}: ${refPrefix}List`,
-                    typeDefs: `
-                        type ${refPrefix}ListLocalized {
-                            value: [${refModelIdType}]
-                            locale: ID!
-                        }
-    
-                        type ${refPrefix}List {
-                            value(locale: String): [${refModelIdType}]
-                            values: [${refPrefix}ListLocalized]!
-                        }`
-                };
+                return `${field.fieldId}: [RefField]`;
             }
 
-            return {
-                fields: `${field.fieldId}: ${refPrefix}`,
-                typeDefs: `
-                        type ${refPrefix}Localized {
-                            value: ${refModelIdType}
-                            locale: ID!
-                        }
-    
-                        type ${refPrefix} {
-                            value(locale: String): ${refModelIdType}
-                            values: [${refPrefix}Localized]!
-                        }`
-            };
+            return `${field.fieldId}: RefField`;
         },
         createInputField({ field }) {
             if (field.multipleValues) {
-                return field.fieldId + ": CmsRefListInput";
+                return field.fieldId + ": [RefFieldInput]";
             }
 
-            return field.fieldId + ": CmsRefInput";
+            return field.fieldId + ": RefFieldInput";
         }
     }
 };

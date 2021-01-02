@@ -1,14 +1,31 @@
-import React from "react";
-import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
-import { I18NValue } from "@webiny/app-i18n/components";
-import { i18n } from "@webiny/app/i18n";
-import I18NRichTextEditor from "@webiny/app-i18n/admin/components/I18NRichTextEditor";
-import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/close.svg";
+import React, { useMemo } from "react";
 import get from "lodash/get";
+import { i18n } from "@webiny/app/i18n";
+import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
+import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/close.svg";
 import DynamicListMultipleValues from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/DynamicListMultipleValues";
-import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
+import { RichTextEditor, createPropsFromConfig } from "@webiny/app-admin/components/RichTextEditor";
+import { IconButton } from "@webiny/ui/Button";
+import { plugins } from "@webiny/plugins";
+import styled from "@emotion/styled";
 
 const t = i18n.ns("app-headless-cms/admin/fields/rich-text");
+
+const getKey = (field, bind, index) => {
+    const formId = bind.index.form.state.data.id || "new";
+    return `${formId}.${field.fieldId}.${index}`;
+};
+
+const emptyValue = [{ type: "paragraph", data: { textAlign: "left", className: null, text: "" } }];
+
+const EditorWrapper = styled("div")({
+    position: "relative",
+    "> button": {
+        position: "absolute",
+        top: 5,
+        right: 5
+    }
+});
 
 const plugin: CmsEditorFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
@@ -25,27 +42,31 @@ const plugin: CmsEditorFieldRendererPlugin = {
             );
         },
         render(props) {
-            const { field, locale } = props;
-            const { getValue } = useI18N();
+            const { field } = props;
 
-            const placeholderText = getValue(field.placeholderText, locale);
-            const helpText = getValue(field.helpText, locale);
+            const rteProps = useMemo(() => {
+                return createPropsFromConfig(plugins.byType("cms-rte-config").map(pl => pl.config));
+            }, []);
 
             return (
-                <DynamicListMultipleValues {...props}>
+                <DynamicListMultipleValues {...props} emptyValue={emptyValue}>
                     {({ bind, index }) => (
-                        <I18NRichTextEditor
-                            {...bind.index}
-                            label={I18NValue({ value: `Value ${index + 1}` })}
-                            placeholder={placeholderText}
-                            description={helpText}
-                            trailingIcon={
-                                index > 0 && {
-                                    icon: <DeleteIcon />,
-                                    onClick: bind.index.removeValue
-                                }
-                            }
-                        />
+                        <EditorWrapper>
+                            {index > 0 && (
+                                <IconButton
+                                    icon={<DeleteIcon />}
+                                    onClick={bind.index.removeValue}
+                                />
+                            )}
+                            <RichTextEditor
+                                key={getKey(field, bind, index)}
+                                {...rteProps}
+                                {...bind.index}
+                                label={`Value ${index + 1}`}
+                                placeholder={field.placeholderText}
+                                description={field.helpText}
+                            />
+                        </EditorWrapper>
                     )}
                 </DynamicListMultipleValues>
             );

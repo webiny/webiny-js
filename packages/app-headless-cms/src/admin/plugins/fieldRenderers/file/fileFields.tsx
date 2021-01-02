@@ -1,79 +1,92 @@
-import React, { useState } from "react";
+import React from "react";
+import dotProp from "dot-prop-immutable";
 import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
 import { i18n } from "@webiny/app/i18n";
-import { Cell, Grid } from "@webiny/ui/Grid";
-import MultipleFile from "./MultipleFile";
-import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
+import { Cell, GridInner } from "@webiny/ui/Grid";
+import { imageWrapperStyles } from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/file/utils";
+import { FileManager } from "@webiny/app-admin/components";
+import styled from "@emotion/styled";
+import File from "./File";
 
 const t = i18n.ns("app-headless-cms/admin/fields/file");
 
-function CmsEditorFieldRenderer({ field, getBind, Label, locale }) {
-    const [previewURLs, setPreviewURLs] = useState({});
+const FileUploadWrapper = styled("div")({
+    position: "relative",
+    ".disabled": {
+        opacity: 0.75,
+        pointerEvents: "none"
+    },
+    ".mdc-text-field-helper-text": {
+        color: "var(--mdc-theme-text-secondary-on-background)"
+    }
+});
 
+function FieldRenderer({ getBind, Label, field }) {
     const Bind = getBind();
-    const FirstFieldBind = getBind(0);
-
-    const { getValue } = useI18N();
-    const label = getValue(field.label, locale);
 
     return (
         <Bind>
-            {({ appendValues, value, appendValue }) => (
-                <Grid>
-                    <Cell span={12}>
-                        <Label>{label}</Label>
-                    </Cell>
-                    <Cell span={3}>
-                        <FirstFieldBind>
-                            {bind => (
-                                <MultipleFile
-                                    previewURLs={previewURLs}
-                                    setPreviewURLs={setPreviewURLs}
-                                    field={field}
-                                    bind={bind}
-                                    appendValue={appendValues}
-                                    removeValue={bind.removeValue}
-                                />
-                            )}
-                        </FirstFieldBind>
-                    </Cell>
+            {({ value, onChange }) => (
+                <FileUploadWrapper className={imageWrapperStyles}>
+                    <FileManager multiple={true}>
+                        {({ showFileManager }) => {
+                            const selectFiles = (index = -1) => {
+                                showFileManager(files => {
+                                    if (!files) {
+                                        return;
+                                    }
 
-                    {value.slice(1).map((item, index) => {
-                        const Bind = getBind(index + 1);
-                        return (
-                            <Cell span={3} key={index + 1}>
-                                <Bind>
-                                    {bind => (
-                                        <MultipleFile
-                                            previewURLs={previewURLs}
-                                            setPreviewURLs={setPreviewURLs}
-                                            field={field}
-                                            bind={bind}
-                                            appendValue={appendValues}
-                                            removeValue={bind.removeValue}
+                                    const urls = files.map(f => f.src);
+                                    if (index === -1) {
+                                        onChange([...(value || []), ...urls]);
+                                    } else {
+                                        onChange([
+                                            ...value.slice(0, index),
+                                            ...urls,
+                                            ...value.slice(index + 1)
+                                        ]);
+                                    }
+                                });
+                            };
+                            return (
+                                <GridInner>
+                                    <Cell span={12}>
+                                        <Label>{field.label}</Label>
+                                    </Cell>
+
+                                    {value.map((url, index) => (
+                                        <Cell span={3} key={url}>
+                                            <File
+                                                url={url}
+                                                showFileManager={() => selectFiles(index)}
+                                                onRemove={() =>
+                                                    onChange(dotProp.delete(value, index))
+                                                }
+                                                placeholder={t`Select a file"`}
+                                            />
+                                        </Cell>
+                                    ))}
+
+                                    <Cell span={3}>
+                                        <File
+                                            showFileManager={() => selectFiles()}
+                                            placeholder={t`Select a file"`}
                                         />
-                                    )}
-                                </Bind>
-                            </Cell>
-                        );
-                    })}
-                    {value.length >= 1 && (
-                        <Cell span={3}>
-                            <MultipleFile
-                                previewURLs={previewURLs}
-                                setPreviewURLs={setPreviewURLs}
-                                field={field}
-                                bind={{ value: null, onChange: appendValue }}
-                                appendValue={appendValues}
-                                removeValue={() => null}
-                            />
-                        </Cell>
-                    )}
-                </Grid>
+                                    </Cell>
+                                </GridInner>
+                            );
+                        }}
+                    </FileManager>
+                </FileUploadWrapper>
             )}
         </Bind>
     );
 }
+
+FieldRenderer.defaultProps = {
+    validation: { isValid: null },
+    styles: { width: "100%", height: "auto" }
+};
 
 const plugin: CmsEditorFieldRendererPlugin = {
     type: "cms-editor-field-renderer",
@@ -85,15 +98,8 @@ const plugin: CmsEditorFieldRendererPlugin = {
         canUse({ field }) {
             return field.type === "file" && field.multipleValues;
         },
-        render({ field, getBind, Label, locale }) {
-            return (
-                <CmsEditorFieldRenderer
-                    field={field}
-                    getBind={getBind}
-                    Label={Label}
-                    locale={locale}
-                />
-            );
+        render({ field, getBind, Label }) {
+            return <FieldRenderer field={field} getBind={getBind} Label={Label} />;
         }
     }
 };

@@ -6,9 +6,10 @@ import { ButtonDefault } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import { Typography } from "@webiny/ui/Typography";
 import { ReactComponent as DownButton } from "./icons/round-arrow_drop_down-24px.svg";
-import { useFormEditor } from "@webiny/app-form-builder/admin/components/FormEditor/Context";
-
 import { i18n } from "@webiny/app/i18n";
+import { useQuery } from "react-apollo";
+import { GET_FORM_REVISIONS } from "../../../graphql";
+import { useFormEditor } from "@webiny/app-form-builder/admin/components/FormEditor";
 const t = i18n.namespace("FormEditor.RevisionsMenu");
 
 const buttonStyle = css({
@@ -33,7 +34,14 @@ const Revisions = () => {
 
     const { history } = useRouter();
 
-    const revisions = data.revisions || [];
+    const getRevisions = useQuery(GET_FORM_REVISIONS, {
+        variables: {
+            id: data.id.split("#")[0]
+        }
+    });
+
+    const revisions = getRevisions.loading ? [] : getRevisions.data.formBuilder.revisions.data;
+
     return (
         <Menu
             className={menuList}

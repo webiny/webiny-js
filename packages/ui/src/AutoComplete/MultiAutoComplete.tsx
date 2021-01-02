@@ -199,11 +199,11 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
                                 key={`${getOptionValue(item, this.props)}-${index}`}
                                 trailingIcon={<BaselineCloseIcon />}
                                 onRemove={() => {
-                                    // On removal, let's update the value and call "onChange" callback.
                                     if (onChange) {
-                                        const newValue = [...value];
-                                        newValue.splice(index, 1);
-                                        onChange(newValue);
+                                        onChange([
+                                            ...value.slice(0, index),
+                                            ...value.slice(index + 1)
+                                        ]);
                                     }
                                 }}
                             />
@@ -253,6 +253,7 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
                         }
 
                         if (this.assignedValueAfterClearing.set) {
+                            this.setState({ inputValue: "" });
                             this.assignedValueAfterClearing.set = false;
                             if (Array.isArray(value)) {
                                 onChange &&

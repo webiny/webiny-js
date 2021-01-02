@@ -1,6 +1,5 @@
 import { FileManagerContext, FilePermission } from "@webiny/api-file-manager/types";
 import { NotAuthorizedError } from "@webiny/api-security";
-import hasRwd from "./hasRwd";
 
 export default async (
     context: FileManagerContext,
@@ -16,4 +15,12 @@ export default async (
     }
 
     return filePermission;
+};
+
+const hasRwd = (filesFilePermission, rwd) => {
+    if (typeof filesFilePermission.rwd !== "string") {
+        return true;
+    }
+
+    return filesFilePermission.rwd.includes(rwd);
 };

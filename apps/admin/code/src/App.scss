@@ -45,7 +45,7 @@ $webiny-theme-typography-font-family: "Source Sans Pro";
   border: 1px solid #f2f2f2 !important;
   border-radius: 5px !important;
   border-bottom: 5px solid #e86337 !important;
-  box-shadow: 0 0px 5px rgba(0, 0, 0, 0.75) !important;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.75) !important;
 }
 .medium-editor-toolbar li button {
   background-color: #fff !important;
@@ -57,7 +57,7 @@ $webiny-theme-typography-font-family: "Source Sans Pro";
   border-right: 1px solid #f2f2f2 !important;
 }
 .medium-editor-toolbar li .medium-editor-button-active {
-  background-color: #f2f2f2 !important;
+  background: #f2f2f2 !important;
   color: #e86337 !important;
 }
 .medium-editor-toolbar li button:hover {

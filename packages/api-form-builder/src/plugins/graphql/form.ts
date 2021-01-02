@@ -59,6 +59,22 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 published: Boolean
                 locked: Boolean
                 status: FbFormStatusEnum
+                stats: FbFormStatsType
+            }
+
+            type FbFormRevision {
+                id: ID
+                createdBy: FbFormUser
+                createdOn: DateTime
+                savedOn: DateTime
+                publishedOn: DateTime
+                version: Int
+                name: String
+                slug: String
+                published: Boolean
+                locked: Boolean
+                status: FbFormStatusEnum
+                stats: FbFormStatsType
             }
 
             type FbFieldOptionsType {
@@ -192,7 +208,6 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 name: String!
             }
 
-            # Response types
             type FbFormResponse {
                 data: FbForm
                 error: FbError
@@ -234,7 +249,6 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 totalCount: Int
             }
 
-            # Response types
             type FbFormSubmissionsListResponse {
                 data: [FbFormSubmission]
                 meta: FbListSubmissionsMeta
@@ -243,6 +257,11 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
 
             type FbFormSubmissionResponse {
                 data: FbFormSubmission
+                error: FbError
+            }
+
+            type FbFormRevisionsResponse {
+                data: [FbFormRevision]
                 error: FbError
             }
 
@@ -262,7 +281,10 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
 
             extend type FbQuery {
                 # Get form (can be published or not, requires authorization )
-                getForm(id: ID!): FbFormResponse
+                getForm(revision: ID!): FbFormResponse
+
+                # Get form revisions
+                getFormRevisions(id: ID!): FbFormRevisionsResponse
 
                 # Get published form by exact revision ID, or parent form ID (public access)
                 getPublishedForm(revision: ID, parent: ID): FbFormResponse
@@ -338,9 +360,18 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
             FbQuery: {
                 getForm: async (_, args, { formBuilder }) => {
                     try {
-                        const form = await formBuilder.forms.getForm(args.id);
+                        const form = await formBuilder.forms.getForm(args.revision);
 
                         return new Response(form);
+                    } catch (e) {
+                        return new ErrorResponse(e);
+                    }
+                },
+                getFormRevisions: async (_, args, { formBuilder }) => {
+                    try {
+                        const revisions = await formBuilder.forms.getFormRevisions(args.id);
+
+                        return new Response(revisions);
                     } catch (e) {
                         return new ErrorResponse(e);
                     }

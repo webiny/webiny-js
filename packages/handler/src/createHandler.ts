@@ -25,8 +25,10 @@ export default (...plugins) => async (...args) => {
 
         return result;
     } catch (error) {
+        // Log error to cloud, as these can be extremely annoying to debug!
+        console.log(error);
         const handlers = context.plugins.byType<HandlerErrorPlugin>("handler-error");
         const handler = middleware(handlers.map(pl => pl.handle));
-        return handler(context, error);
+        return await handler(context, error);
     }
 };

@@ -5,9 +5,12 @@
 	],
 	"exclude": [
 		"node_modules",
+		"./backup",
 		"../plugins",
 		"../api-i18n",
+        "../api-plugin-elastic-search-client",
 		"../api-security",
+		"../api-security-tenancy",
 		"../commodo",
 		"../handler",
 		"../handler-graphql",
@@ -48,6 +51,15 @@
 		},
 		{
 			"path": "../commodo/tsconfig.build.json"
-		}
-	]
+		},
+        {
+            "path": "../api-i18n-content/tsconfig.build.json"
+        },
+        {
+            "path": "../api-plugin-elastic-search-client/tsconfig.build.json"
+        },
+        {
+            "path": "../api-security-tenancy/tsconfig.build.json"
+        }
+    ]
 }

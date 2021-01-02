@@ -1,4 +1,11 @@
 import React from "react";
+import {
+    PbEditorBarPlugin,
+    PbEditorDefaultBarLeftPlugin,
+    PbEditorDefaultBarRightPageOptionsPlugin,
+    PbEditorDefaultBarRightPlugin,
+    PbEditorDefaultBarCenterPlugin
+} from "../../../types";
 import PageSettings from "./components/PageSettings";
 import PageSettingsButton from "./components/PageSettingsButton";
 import PublishPageButton from "./components/PublishPageButton";
@@ -9,12 +16,7 @@ import Divider from "./components/Divider";
 import Title from "./components/Title";
 import BackButton from "./components/BackButton";
 import Revisions from "./components/Revisions";
-import {
-    PbEditorBarPlugin,
-    PbEditorDefaultBarLeftPlugin,
-    PbEditorDefaultBarRightPageOptionsPlugin,
-    PbEditorDefaultBarRightPlugin
-} from "@webiny/app-page-builder/types";
+import EditorResponsiveBar from "./components/EditorResponsiveBar";
 
 export default [
     {
@@ -102,5 +104,12 @@ export default [
         render() {
             return <Title />;
         }
-    } as PbEditorDefaultBarLeftPlugin
+    } as PbEditorDefaultBarLeftPlugin,
+    {
+        name: "pb-editor-default-bar-center-editor-mode",
+        type: "pb-editor-default-bar-center",
+        render() {
+            return <EditorResponsiveBar />;
+        }
+    } as PbEditorDefaultBarCenterPlugin
 ];

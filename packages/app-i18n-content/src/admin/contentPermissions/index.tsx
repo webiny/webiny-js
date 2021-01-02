@@ -10,9 +10,11 @@ const t = i18n.ns("app-i18n/admin/plugins/permissionRenderer");
 export default {
     type: "admin-app-permissions-renderer",
     name: "admin-app-permissions-renderer-content-locales",
+    system: true,
     render(props) {
         return (
             <AccordionItem
+                open={true}
                 icon={<Icon />}
                 title={t`Content`}
                 description={t`Per-locale content access permissions management.`}

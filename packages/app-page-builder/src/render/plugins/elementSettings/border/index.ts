@@ -1,32 +1,78 @@
-import { get, startCase, upperFirst } from "lodash";
-import { PbRenderElementStylePlugin } from "@webiny/app-page-builder/types";
+import { get } from "lodash";
+import kebabCase from "lodash/kebabCase";
+import { PbRenderElementStylePlugin } from "../../../../types";
+import { applyPerDeviceStyleWithFallback } from "../../../utils";
 
-const borderRadiusSides = ["topLeft", "topRight", "bottomLeft", "bottomRight"];
+const borderRadiusSides = ["top-left", "top-right", "bottom-left", "bottom-right"];
 const boxSides = ["top", "right", "bottom", "left"];
+
+const removeUnitFromEnd = (value: string, unit = "px") => {
+    if (value) {
+        return value.replace(unit, "");
+    }
+    return value;
+};
 
 export default {
     name: "pb-render-page-element-style-border",
     type: "pb-render-page-element-style",
     renderStyle({ element, style }) {
         const { border } = get(element, "data.settings", {});
-        if (!border) {
-            return style;
-        }
 
+        // Set "per-side" border style
         boxSides.forEach((side, index) => {
-            const Side = startCase(side);
-            style[`border${Side}Style`] = border.style;
-            style[`border${Side}Color`] = border.color;
-            // Set "border-width".
-            const allSideWidth = border?.width?.all;
-            style[`border${Side}Width`] =
-                ((allSideWidth ? allSideWidth : border?.width?.[side]) || 0) + "px";
-            // Set "border-radius".
-            const borderRadiusSide = borderRadiusSides[index];
-            const BorderRadiusSide = upperFirst(borderRadiusSide);
-            const allSideRadius = border?.radius?.all;
-            style[`border${BorderRadiusSide}Radius`] =
-                ((allSideRadius ? allSideRadius : border?.radius?.[borderRadiusSide]) || 0) + "px";
+            // Set per-device property value
+            applyPerDeviceStyleWithFallback(({ displayMode, fallbackMode }) => {
+                // Set "border style"
+                style[`--${kebabCase(displayMode)}-border-${side}-style`] = get(
+                    border,
+                    `${displayMode}.style`,
+                    get(style, `--${kebabCase(fallbackMode)}-border-${side}-style`)
+                );
+                // Set "border-color"
+                style[`--${kebabCase(displayMode)}-border-${side}-color`] = get(
+                    border,
+                    `${displayMode}.color`,
+                    get(style, `--${kebabCase(fallbackMode)}-border-${side}-color`)
+                );
+                // Set "border-width"
+                const fallbackWidthValue = get(
+                    style,
+                    `--${kebabCase(fallbackMode)}-border-${side}-width`,
+                    0
+                );
+                const allWidth = get(
+                    border,
+                    `${displayMode}.width.all`,
+                    removeUnitFromEnd(fallbackWidthValue)
+                );
+                const sideWidth = get(
+                    border,
+                    `${displayMode}.width.${side}`,
+                    removeUnitFromEnd(fallbackWidthValue)
+                );
+                style[`--${kebabCase(displayMode)}-border-${side}-width`] =
+                    (allWidth ? allWidth : sideWidth) + "px";
+                // Set "border-radius".
+                const borderRadiusSide = borderRadiusSides[index];
+                const fallbackRadiusValue = get(
+                    style,
+                    `--${kebabCase(fallbackMode)}-border-${side}-radius`,
+                    0
+                );
+                const allRadius = get(
+                    border,
+                    `${displayMode}.radius.all`,
+                    removeUnitFromEnd(fallbackRadiusValue)
+                );
+                const sideRadius = get(
+                    border,
+                    `${displayMode}.radius.${side}`,
+                    removeUnitFromEnd(fallbackRadiusValue)
+                );
+                style[`--${kebabCase(displayMode)}-border-${kebabCase(borderRadiusSide)}-radius`] =
+                    (allRadius ? allRadius : sideRadius) + "px";
+            });
         });
 
         return style;

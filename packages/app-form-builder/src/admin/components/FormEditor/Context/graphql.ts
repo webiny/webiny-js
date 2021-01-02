@@ -53,9 +53,9 @@ const SETTINGS_FIELDS = /* GraphQL */ `
 `;
 
 export const GET_FORM = gql`
-    query FbGetForm($id: ID!) {
+    query FbGetForm($revision: ID!) {
         formBuilder {
-            getForm(id: $id) {
+            getForm(revision: $revision) {
                 data {
                     id
                     name

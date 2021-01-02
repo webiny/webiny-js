@@ -4,7 +4,7 @@ import { renderPlugins } from "@webiny/app/plugins";
 import { useRouter } from "@webiny/react-router";
 import styled from "@emotion/styled";
 import { Elevation } from "@webiny/ui/Elevation";
-import { GET_FORM } from "@webiny/app-form-builder/admin/graphql";
+import { GET_FORM, GET_FORM_REVISIONS } from "@webiny/app-form-builder/admin/graphql";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Tabs } from "@webiny/ui/Tabs";
 import { CircularProgress } from "@webiny/ui/Progress";
@@ -55,9 +55,9 @@ const FormDetails = ({ refreshForms }: FormDetailsProps) => {
     const query = new URLSearchParams(location.search + location.hash);
     const formId = query.get("id");
 
-    const { data, loading } = useQuery(GET_FORM, {
+    const getForm = useQuery(GET_FORM, {
         variables: {
-            id: formId
+            revision: formId
         },
         skip: !formId,
         onCompleted: data => {
@@ -74,20 +74,28 @@ const FormDetails = ({ refreshForms }: FormDetailsProps) => {
         }
     });
 
+    const getRevisions = useQuery(GET_FORM_REVISIONS, {
+        variables: {
+            id: formId ? formId.split("#")[0] : null
+        },
+        skip: !formId
+    });
+
     if (!formId) {
         return <EmptyFormDetails />;
     }
 
-    const form = loading ? null : data.formBuilder.form.data;
+    const form = getForm.loading ? null : getForm.data.formBuilder.form.data;
+    const revisions = getRevisions.loading ? [] : getRevisions.data.formBuilder.revisions.data;
 
     return (
         <DetailsContainer>
-            {loading && <CircularProgress label={"Loading details..."} />}
+            {getForm.loading && <CircularProgress label={"Loading details..."} />}
             {form && (
                 <Tabs>
                     {renderPlugins(
                         "forms-form-details-revision-content",
-                        { refreshForms, form, loading },
+                        { refreshForms, form, revisions, loading: getForm.loading },
                         { wrapper: false }
                     )}
                 </Tabs>
