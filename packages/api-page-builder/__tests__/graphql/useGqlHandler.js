@@ -58,6 +58,8 @@ import { Db } from "@webiny/db";
 
 const defaultTenant = { id: "root", name: "Root", parent: null };
 
+const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
+
 export default ({ permissions, identity, tenant } = {}) => {
     const logsDb = new Db({
         logTable: "PageBuilderLogs",
@@ -96,7 +98,7 @@ export default ({ permissions, identity, tenant } = {}) => {
                 })
             })
         }),
-        elasticSearchPlugins({ endpoint: `http://localhost:9200` }),
+        elasticSearchPlugins({ endpoint: `http://localhost:${ELASTICSEARCH_PORT}` }),
         apolloServerPlugins(),
         securityPlugins(),
         {
@@ -149,8 +151,8 @@ export default ({ permissions, identity, tenant } = {}) => {
     };
 
     const elasticSearch = new Client({
-        hosts: [`http://localhost:9200`],
-        node: "http://localhost:9200"
+        hosts: [`http://localhost:${ELASTICSEARCH_PORT}`],
+        node: `http://localhost:${ELASTICSEARCH_PORT}`
     });
 
     return {

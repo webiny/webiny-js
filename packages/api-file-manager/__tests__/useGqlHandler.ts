@@ -34,6 +34,8 @@ type UseGqlHandlerParams = {
     identity?: SecurityIdentity;
 };
 
+const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
+
 export default ({ permissions, identity }: UseGqlHandlerParams) => {
     const tenant = { id: "root", name: "Root", parent: null };
     // Creates the actual handler. Feel free to add additional plugins if needed.
@@ -49,7 +51,7 @@ export default ({ permissions, identity }: UseGqlHandlerParams) => {
                 })
             })
         }),
-        elasticSearch({ endpoint: `http://localhost:9200` }),
+        elasticSearch({ endpoint: `http://localhost:${ELASTICSEARCH_PORT}` }),
         graphqlHandlerPlugins(),
         securityPlugins(),
         {
@@ -100,7 +102,7 @@ export default ({ permissions, identity }: UseGqlHandlerParams) => {
     return {
         tenant,
         elasticSearch: new Client({
-            node: "http://localhost:9200"
+            node: `http://localhost:${ELASTICSEARCH_PORT}`
         }),
         sleep: (ms = 100) => {
             return new Promise(resolve => {
