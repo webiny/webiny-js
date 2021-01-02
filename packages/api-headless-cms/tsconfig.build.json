@@ -6,16 +6,19 @@
 	"exclude": [
 		"node_modules",
 		"./backup",
-		"../plugins",
 		"../api-i18n",
-        "../api-plugin-elastic-search-client",
+		"../api-i18n-content",
+		"../api-plugin-elastic-search-client",
 		"../api-security",
 		"../api-security-tenancy",
 		"../commodo",
+		"../error",
+		"../db-dynamodb",
 		"../handler",
+		"../handler-aws",
+		"../handler-db",
 		"../handler-graphql",
-		"../handler-client",
-		"../handler-http",
+		"../plugins",
 		"../validation",
 		"./jest.config.js"
 	],
@@ -41,16 +44,19 @@
 			"path": "../handler-graphql/tsconfig.build.json"
 		},
 		{
-			"path": "../handler-client/tsconfig.build.json"
+			"path": "../handler-db/tsconfig.build.json"
 		},
 		{
-			"path": "../handler-http/tsconfig.build.json"
+			"path": "../handler-aws/tsconfig.build.json"
 		},
 		{
 			"path": "../validation/tsconfig.build.json"
 		},
 		{
 			"path": "../commodo/tsconfig.build.json"
+		},
+		{
+			"path": "../error/tsconfig.build.json"
 		},
         {
             "path": "../api-i18n-content/tsconfig.build.json"
@@ -60,6 +66,9 @@
         },
         {
             "path": "../api-security-tenancy/tsconfig.build.json"
-        }
+        },
+		{
+			"path": "../db-dynamodb/tsconfig.build.json"
+		}
     ]
 }

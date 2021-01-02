@@ -12,7 +12,6 @@
 		"../app",
 		"../app-admin",
 		"../app-security",
-		"../app-security-tenancy",
 		"../plugins",
 		"../react-router",
 		"../ui",
@@ -41,9 +40,6 @@
 		},
 		{
 			"path": "../app-security/tsconfig.build.json"
-		},
-		{
-			"path": "../app-security-tenancy/tsconfig.build.json"
 		},
 		{
 			"path": "../plugins/tsconfig.build.json"
