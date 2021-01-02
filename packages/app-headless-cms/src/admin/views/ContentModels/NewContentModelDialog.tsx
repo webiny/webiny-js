@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { css } from "emotion";
-import get from "lodash.get";
+import get from "lodash/get";
 import { useRouter } from "@webiny/react-router";
 import { Form } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";

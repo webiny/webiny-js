@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import get from "lodash.get";
+import get from "lodash/get";
 import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";

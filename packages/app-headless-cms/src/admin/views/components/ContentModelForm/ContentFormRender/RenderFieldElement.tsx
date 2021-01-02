@@ -4,7 +4,7 @@ import {
     CmsEditorFieldRendererPlugin,
     CmsEditorContentModel
 } from "@webiny/app-headless-cms/types";
-import get from "lodash.get";
+import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
 import getValue from "./functions/getValue";
 import setValue from "./functions/setValue";

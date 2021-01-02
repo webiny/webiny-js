@@ -23,9 +23,6 @@
 			"path": "../app-security"
 		},
 		{
-			"path": "../app-security-tenancy"
-		},
-		{
 			"path": "../react-router"
 		},
 		{

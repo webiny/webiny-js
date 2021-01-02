@@ -13,7 +13,6 @@
 		"../form",
 		"../plugins",
 		"../app-security",
-		"../app-security-tenancy",
 		"../react-router",
 		"../ui",
 		"../validation"
@@ -44,9 +43,6 @@
 		},
 		{
 			"path": "../app-security/tsconfig.build.json"
-		},
-		{
-			"path": "../app-security-tenancy/tsconfig.build.json"
 		},
 		{
 			"path": "../react-router/tsconfig.build.json"

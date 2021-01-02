@@ -5,7 +5,7 @@ import { i18n } from "@webiny/app/i18n";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Typography } from "@webiny/ui/Typography";
 
-const t = i18n.ns("app-page-builder/admin/plugins/permissionRenderer");
+const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
 const CustomSection = ({ Bind, data, entity, title }) => {
     return (
