@@ -7,7 +7,7 @@ import {
     OutputData,
     SanitizerConfig,
     ToolSettings
-} from "./editorjs/types";
+} from "@editorjs/editorjs/types";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { css } from "emotion";
 import classNames from "classnames";
