@@ -950,7 +950,6 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                                 });
                         }
 
-                        const ogog = 123;
                         await batch.execute();
 
                         // Update data in ES.
