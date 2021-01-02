@@ -10,8 +10,6 @@ import DataLoader from "dataloader";
 import { ClientContext } from "@webiny/handler-client/types";
 import {
     Category,
-    DbPageLatest,
-    DbPagePublished,
     DefaultSettings,
     InstallSettings,
     Menu,
@@ -215,23 +213,23 @@ export type PageHookPlugin = Plugin<{
     afterUpdate?: HookCallbackFunction<Page>;
     beforeDelete?: HookCallbackFunction<{
         page: Page;
-        latestPageData: DbPageLatest;
-        publishedPageData?: DbPagePublished;
+        latestPage: Page;
+        publishedPage?: Page;
     }>;
     afterDelete?: HookCallbackFunction<{
         page: Page;
-        latestPageData: DbPageLatest;
-        publishedPageData?: DbPagePublished;
+        latestPage: Page;
+        publishedPage?: Page;
     }>;
     beforePublish?: HookCallbackFunction<{
         page: Page;
-        latestPageData: DbPageLatest;
-        publishedPageData?: DbPagePublished;
+        latestPage: Page;
+        publishedPage?: Page;
     }>;
     afterPublish?: HookCallbackFunction<{
         page: Page;
-        latestPageData: DbPageLatest;
-        publishedPageData?: DbPagePublished;
+        latestPage: Page;
+        publishedPage?: Page;
     }>;
     beforeUnpublish?: HookCallbackFunction<Page>;
     afterUnpublish?: HookCallbackFunction<Page>;
