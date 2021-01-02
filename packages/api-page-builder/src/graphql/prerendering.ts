@@ -28,23 +28,23 @@ export default [
     {
         // After we deleted a page, we need to clear prerender files / cache as well, if the page was published.
         type: "pb-page-hook",
-        async afterDelete(context, { page, publishedPageData }) {
+        async afterDelete(context, { page, publishedPage }) {
             // Published pages have this record.
-            if (!publishedPageData) {
+            if (!publishedPage) {
                 return;
             }
 
             if (page.version === 1) {
                 return context.pageBuilder.pages.prerendering.flush({
-                    paths: [{ path: publishedPageData.path }]
+                    paths: [{ path: publishedPage.path }]
                 });
             }
 
             // If the published version was deleted.
-            const isPublished = publishedPageData.id === page.id;
+            const isPublished = publishedPage.id === page.id;
             if (isPublished) {
                 return context.pageBuilder.pages.prerendering.flush({
-                    paths: [{ path: publishedPageData.path }]
+                    paths: [{ path: publishedPage.path }]
                 });
             }
 
@@ -55,7 +55,7 @@ export default [
     {
         // After a page was published, we need to render the page.
         type: "pb-page-hook",
-        async afterPublish(context, { page, publishedPageData }) {
+        async afterPublish(context, { page, publishedPage }) {
             const promises = [];
             promises.push(
                 context.pageBuilder.pages.prerendering.render({ paths: [{ path: page.path }] })
@@ -113,10 +113,10 @@ export default [
 
             // If we had a published page and the URL on which it was published is different than
             // the URL of the just published page, then let's flush the page on old URL.
-            if (publishedPageData && publishedPageData.path !== page.path) {
+            if (publishedPage && publishedPage.path !== page.path) {
                 promises.push(
                     context.pageBuilder.pages.prerendering.flush({
-                        paths: [{ path: publishedPageData.path }]
+                        paths: [{ path: publishedPage.path }]
                     })
                 );
             }
