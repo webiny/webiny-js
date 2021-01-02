@@ -219,8 +219,8 @@ describe('Form Builder "Form" Test', () => {
 
         // Increment views for #1
         await saveFormView({ revision: id });
-        await saveFormView({ revision:id });
-        await saveFormView({ revision:id });
+        await saveFormView({ revision: id });
+        await saveFormView({ revision: id });
 
         // Verify stats for #1
         const [{ data: get2 }] = await getForm({ revision: id });

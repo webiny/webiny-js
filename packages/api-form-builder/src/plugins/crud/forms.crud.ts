@@ -154,7 +154,11 @@ export default {
 
                     const [forms] = await db.read<FbForm>({
                         ...defaults.db,
-                        query: { PK: PK_FORM(uniqueId), SK: { $beginsWith: "REV#" }, sort: { SK: -1 } }
+                        query: {
+                            PK: PK_FORM(uniqueId),
+                            SK: { $beginsWith: "REV#" },
+                            sort: { SK: -1 }
+                        }
                     });
 
                     utils.checkOwnership(forms[0], permission, context);
