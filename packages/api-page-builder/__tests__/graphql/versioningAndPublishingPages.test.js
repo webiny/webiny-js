@@ -351,15 +351,20 @@ describe("versioning and publishing pages", () => {
             async ([res]) => res.data.pageBuilder.createPage.data
         );
 
-        await updatePage({ id: p1v2.id, data: { path: "/pages-test-updated" } }).then(([res]) =>
-            expect(res.data.pageBuilder.updatePage.data.id).toBe(p1v2.id)
-        );
-        // Now, if we try to publish 1st page, we should still be able to do it.
-        await publishPage({ id: p1v2.id });
+        await updatePage({
+            id: p1v2.id,
+            data: { path: "/pages-test-updated" }
+        }).then(([res]) => {
+            expect(res.data.pageBuilder.updatePage.data.id).toBe(p1v2.id);
+        });
 
-        await getPublishedPage({ path: "/pages-test-updated" }).then(([res]) =>
-            expect(res.data.pageBuilder.getPublishedPage.data.id).toBe(p1v2.id)
-        );
+        // Now, if we try to publish 1st page, we should still be able to do it.
+        const reza = await publishPage({ id: p1v2.id });
+
+        await getPublishedPage({ path: "/pages-test-updated" }).then(([res]) => {
+            const aaa = 123;
+            expect(res.data.pageBuilder.getPublishedPage.data.id).toBe(p1v2.id);
+        });
 
         // This one should not return any results - it's an old URL.
         await getPublishedPage({ path: "/pages-test" }).then(([res]) =>
@@ -388,14 +393,14 @@ describe("versioning and publishing pages", () => {
                 }
             })
             .then(([[entry]]) =>
-                expect(entry).toEqual({
-                    PK: "T#root#L#en-US#PB#PATH",
-                    SK: "/pages-test-updated",
-                    TYPE: "pb.page.p.path",
-                    id: `${p1v1.pid}#0002`,
-                    locale: "en-US",
-                    path: "/pages-test-updated",
-                    tenant: "root"
+                expect(entry).toMatchObject({
+                    "PK": "T#root#L#en-US#PB#PATH",
+                    "SK": "/pages-test-updated",
+                    "TYPE": "pb.page",
+                    "status": "published",
+                    "tenant": "root",
+                    "title": "Untitled",
+                    "version": 2
                 })
             );
     });
@@ -466,49 +471,50 @@ describe("versioning and publishing pages", () => {
             ([res]) => res.data.pageBuilder.createPage.data
         );
 
-        await updatePage({ id: p1v1.id, data: { path: "/pages-test" } }).then(([res]) =>
-            expect(res.data.pageBuilder.updatePage.data.id).toBe(p1v1.id)
-        );
+        await updatePage({
+            id: p1v1.id,
+            data: { path: "/pages-test" }
+        }).then(([res]) => expect(res.data.pageBuilder.updatePage.data.id).toBe(p1v1.id));
 
         // Try publishing 2nd page, it should work.
         await publishPage({ id: p1v1.id });
 
         await getPublishedPage({ path: "/pages-test" }).then(([res]) =>
             expect(res).toMatchObject({
-                "data": {
-                    "pageBuilder": {
-                        "getPublishedPage": {
-                            "data": {
-                                "category": {
-                                    "slug": "slug"
+                data: {
+                    pageBuilder: {
+                        getPublishedPage: {
+                            data: {
+                                category: {
+                                    slug: "slug"
                                 },
-                                "locked": true,
-                                "path": "/pages-test",
-                                "settings": {
-                                    "general": {
-                                        "image": null,
-                                        "layout": "layout",
-                                        "snippet": null,
-                                        "tags": null
+                                locked: true,
+                                path: "/pages-test",
+                                settings: {
+                                    general: {
+                                        image: null,
+                                        layout: "layout",
+                                        snippet: null,
+                                        tags: null
                                     },
-                                    "seo": {
-                                        "description": null,
-                                        "meta": [],
-                                        "title": null
+                                    seo: {
+                                        description: null,
+                                        meta: [],
+                                        title: null
                                     },
-                                    "social": {
-                                        "description": null,
-                                        "image": null,
-                                        "meta": [],
-                                        "title": null
+                                    social: {
+                                        description: null,
+                                        image: null,
+                                        meta: [],
+                                        title: null
                                     }
                                 },
-                                "status": "published",
-                                "title": "Untitled",
-                                "url": "/pages-test",
-                                "version": 1
+                                status: "published",
+                                title: "Untitled",
+                                url: "/pages-test",
+                                version: 1
                             },
-                            "error": null
+                            error: null
                         }
                     }
                 }

@@ -43,12 +43,7 @@ import {
 
 import { HandlerArgs as QueueAddHandlerArgs } from "@webiny/api-prerendering-service/queue/add/types";
 
-import {
-    TYPE,
-    DbPageLatest,
-    DbPagePublished,
-    DbPagePublishedPath
-} from "@webiny/api-page-builder/types";
+import { TYPE } from "@webiny/api-page-builder/types";
 
 const STATUS_CHANGES_REQUESTED = "changesRequested";
 const STATUS_REVIEW_REQUESTED = "reviewRequested";
@@ -109,26 +104,12 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                                         continue;
                                     }
 
-                                    // If we only have unique page ID (previously know as `parent`),
-                                    // then let's find out which version is published.
-                                    const [[pagePublished]] = await db.read<DbPagePublished>({
-                                        ...defaults.db,
-                                        query: { PK: PK_PAGE(pid), SK: "P" }
-                                    });
-
-                                    if (!pagePublished) {
-                                        errorsAndResults.push(notFoundError);
-                                        continue;
-                                    }
-
                                     errorsAndResults.push(batchResultIndex++);
-                                    // TODO: simplify this. The `P` can contain complete data probably.
-                                    const [, publishedRevisionNumber] = pagePublished.id.split("#");
                                     batch.read({
                                         ...defaults.db,
                                         query: {
                                             PK: PK_PAGE(pid),
-                                            SK: `REV#${publishedRevisionNumber}`
+                                            SK: `P`
                                         }
                                     });
                                 }
@@ -212,28 +193,18 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                             });
                         }
 
-                        // TODO: simplify this - can probably already contain complete data.
-                        const [[pagePublishedPath]] = await db.read<DbPagePublishedPath>({
-                            ...defaults.db,
-                            query: { PK: PK_PAGE_PUBLISHED_PATH(), SK: normalizedPath },
-                            limit: 1
-                        });
-
-                        if (!pagePublishedPath) {
-                            throw notFoundError;
-                        }
-
-                        const [pid, rev] = pagePublishedPath.id.split("#");
                         const [[page]] = await db.read<Page>({
                             ...defaults.db,
-                            query: { PK: PK_PAGE(pid), SK: `REV#${rev}` },
-                            limit: 1
+                            query: { PK: PK_PAGE_PUBLISHED_PATH(), SK: normalizedPath }
                         });
+
+                        if (!page) {
+                            throw notFoundError;
+                        }
 
                         if (page) {
                             // Extract compressed page content.
                             page.content = await extractContent(page.content);
-
                             return page;
                         }
 
@@ -422,14 +393,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                             .create({ ...defaults.db, data })
                             .create({
                                 ...defaults.db,
-                                data: {
-                                    PK: PK_PAGE(pid),
-                                    SK: "L",
-                                    TYPE: TYPE.PAGE_LATEST,
-                                    tenant: context.security.getTenant().id,
-                                    locale: context.i18nContent.getLocale().code,
-                                    id
-                                }
+                                data: { ...data, PK: PK_PAGE(pid), SK: "L" }
                             })
                             .execute();
 
@@ -452,8 +416,8 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
 
                         const [fromPid, fromVersion] = from.split("#");
 
-                        const [[[page]], [[latestPageData]]] = await db
-                            .batch<[[Page]], [[DbPageLatest]]>()
+                        const [[[page]], [[latestPage]]] = await db
+                            .batch<[[Page]], [[Page]]>()
                             .read({
                                 ...defaults.db,
                                 query: {
@@ -482,15 +446,14 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                             }
                         }
 
-                        const [, latestPageVersion] = latestPageData.id.split("#");
-                        const nextVersion = parseInt(latestPageVersion) + 1;
-                        const zeroPaddedVersion = getZeroPaddedVersionNumber(nextVersion);
-                        const nextId = `${fromPid}#${zeroPaddedVersion}`;
+                        const nextVersion = latestPage.version + 1;
+                        const zeroPaddedNextVersion = getZeroPaddedVersionNumber(nextVersion);
+                        const nextId = `${fromPid}#${zeroPaddedNextVersion}`;
                         const identity = context.security.getIdentity();
 
                         const data: Record<string, any> = {
                             ...page,
-                            SK: `REV#${zeroPaddedVersion}`,
+                            SK: `REV#${zeroPaddedNextVersion}`,
                             id: nextId,
                             status: STATUS_DRAFT,
                             locked: false,
@@ -518,12 +481,9 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                                     SK: "L"
                                 },
                                 data: {
+                                    ...data,
                                     PK: PK_PAGE(fromPid),
-                                    SK: "L",
-                                    TYPE: TYPE.PAGE_LATEST,
-                                    tenant: context.security.getTenant().id,
-                                    locale: context.i18nContent.getLocale().code,
-                                    id: nextId
+                                    SK: "L"
                                 }
                             })
                             .execute();
@@ -549,7 +509,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
 
                         const [pid, rev] = id.split("#");
 
-                        const [[[page]], [[latestPageData]]] = await db
+                        const [[[page]], [[latestPage]]] = await db
                             .batch()
                             .read({
                                 ...defaults.db,
@@ -600,8 +560,14 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                             data: updateData
                         });
 
-                        // If we updated the latest rev, then make sure the changes are propagated to ES too.
-                        if (latestPageData.id === id) {
+                        // If we updated the latest rev, make sure the changes are propagated to "L" record and ES.
+                        if (latestPage.id === id) {
+                            await db.update({
+                                ...defaults.db,
+                                query: { PK: PK_PAGE(pid), SK: "L" },
+                                data: updateData
+                            });
+
                             // Index file in "Elastic Search"
                             await elasticSearch.update({
                                 ...ES_DEFAULTS(),
@@ -625,8 +591,8 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                         const [pid, rev] = pageId.split("#");
 
                         // 1. Load the page and latest / published page (rev) data.
-                        const [[[page]], [[latestPageData]], [[publishedPageData]]] = await db
-                            .batch<[[Page]], [[DbPageLatest]], [[DbPagePublished]]>()
+                        const [[[page]], [[latestPage]], [[publishedPage]]] = await db
+                            .batch<[[Page]], [[Page]], [[Page]]>()
                             .read({
                                 ...defaults.db,
                                 query: { PK: PK_PAGE(pid), SK: `REV#${rev}` }
@@ -660,8 +626,8 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                         // 3. Let's start updating. But first, let's trigger before-delete hook callbacks.
                         await executeHookCallbacks(hookPlugins, "beforeDelete", context, {
                             page,
-                            latestPageData,
-                            publishedPageData
+                            latestPage,
+                            publishedPage
                         });
 
                         // Before we continue, note that if `publishedPageData` exists, then `publishedPagePathData`
@@ -669,62 +635,41 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                         // There can't be a situation where just one record exists, there's always gonna be both.
 
                         // If we are deleting the initial version, we need to remove all versions and all of the meta data.
-                        if (rev === getZeroPaddedVersionNumber(1)) {
-                            // 4.1. We delete pages in batches of 10.
+                        if (page.version === 1) {
+                            // 4.1. We delete pages in batches of 15.
+                            let publishedPathEntryDeleted = false;
                             while (true) {
-                                // TODO: optimize this - we can get everything in one query ('P' and 'S' entries too).
-                                const [pagesBatch] = await db.read({
+                                const [pageItemCollection] = await db.read({
                                     ...defaults.db,
-                                    query: { PK: PK_PAGE(pid), SK: { $beginsWith: "REV#" } }
+                                    limit: 15,
+                                    query: { PK: PK_PAGE(pid), SK: { $gte: " " } }
                                 });
 
-                                if (pagesBatch.length === 0) {
+                                if (pageItemCollection.length === 0) {
                                     break;
                                 }
 
                                 const batch = db.batch();
-                                for (let i = 0; i < pagesBatch.length; i++) {
-                                    const page = pagesBatch[i];
+                                for (let i = 0; i < pageItemCollection.length; i++) {
+                                    const item = pageItemCollection[i];
+                                    if (item.status === "published" && !publishedPathEntryDeleted) {
+                                        publishedPathEntryDeleted = true;
+                                        batch.delete({
+                                            ...defaults.db,
+                                            query: { PK: PK_PAGE_PUBLISHED_PATH(), SK: item.path }
+                                        });
+                                    }
+
                                     batch.delete({
                                         ...defaults.db,
-                                        query: { PK: page.PK, SK: page.SK }
+                                        query: { PK: item.PK, SK: item.SK }
                                     });
                                 }
 
                                 await batch.execute();
                             }
 
-                            // 4.2. Delete latest / published data.
-                            const deleteBatch = db.batch();
-                            await deleteBatch.delete({
-                                ...defaults.db,
-                                query: {
-                                    PK: PK_PAGE(pid),
-                                    SK: "L"
-                                }
-                            });
-
-                            if (publishedPageData) {
-                                deleteBatch
-                                    .delete({
-                                        ...defaults.db,
-                                        query: {
-                                            PK: PK_PAGE(pid),
-                                            SK: "P"
-                                        }
-                                    })
-                                    .delete({
-                                        ...defaults.db,
-                                        query: {
-                                            PK: PK_PAGE_PUBLISHED_PATH(),
-                                            SK: publishedPageData.path
-                                        }
-                                    });
-                            }
-
-                            await deleteBatch.execute();
-
-                            // 4.3. Finally, delete data from ES.
+                            // 4.2. Finally, delete data from ES.
                             await elasticSearch.bulk({
                                 body: [
                                     {
@@ -744,8 +689,8 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
 
                             await executeHookCallbacks(hookPlugins, "afterDelete", context, {
                                 page,
-                                latestPageData,
-                                publishedPageData
+                                latestPage,
+                                publishedPage
                             });
 
                             return [page, null];
@@ -762,12 +707,8 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                         // We need to update / delete data in ES too.
                         const esOperations = [];
 
-                        const isLatest = latestPageData?.id === pageId;
-                        const isPublished = publishedPageData?.id === pageId;
-                        let latestPage = null;
-
                         // 6.2. If the page is published, remove published data, both from DB and ES.
-                        if (isPublished) {
+                        if (publishedPage && publishedPage.id === page.id) {
                             batch
                                 .delete({
                                     ...defaults.db,
@@ -780,7 +721,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                                     ...defaults.db,
                                     query: {
                                         PK: PK_PAGE_PUBLISHED_PATH(),
-                                        SK: publishedPageData.path
+                                        SK: publishedPage.path
                                     }
                                 });
 
@@ -791,8 +732,9 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
 
                         // 6.3. If the page is latest, assign the previously latest page as the new latest.
                         // Updates must be made again both on DB and ES side.
-                        if (isLatest) {
-                            [[latestPage]] = await db.read({
+                        let newLatestPage;
+                        if (latestPage.id === page.id) {
+                            [[newLatestPage]] = await db.read({
                                 ...defaults.db,
                                 query: { PK: PK_PAGE(pid), SK: { $lt: `REV#${rev}` } },
                                 sort: { SK: -1 },
@@ -807,12 +749,9 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                                     SK: "L"
                                 },
                                 data: {
+                                    ...newLatestPage,
                                     PK: PK_PAGE(pid),
-                                    SK: "L",
-                                    TYPE: TYPE.PAGE_LATEST,
-                                    tenant: context.security.getTenant().id,
-                                    locale: context.i18nContent.getLocale().code,
-                                    id: latestPage.id
+                                    SK: "L"
                                 }
                             });
 
@@ -821,7 +760,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                                 {
                                     index: { _id: `L#${pid}`, _index: ES_DEFAULTS().index }
                                 },
-                                getESLatestPageData(context, latestPage)
+                                getESLatestPageData(context, newLatestPage)
                             );
                         }
 
@@ -834,12 +773,12 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
 
                         await executeHookCallbacks(hookPlugins, "afterDelete", context, {
                             page,
-                            latestPageData,
-                            publishedPageData
+                            latestPage,
+                            publishedPage
                         });
 
                         // 7. Done. We return both the deleted page, and the new latest one (if there is one).
-                        return [page, latestPage];
+                        return [page, newLatestPage];
                     },
 
                     async publish(pageId: string) {
@@ -851,8 +790,8 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
 
                         // `publishedPageData` will give us a record that contains `id` and `path, which tell us
                         // the current revision and over which path it has been published, respectively.
-                        const [[[page]], [[publishedPageData]], [[latestPageData]]] = await db
-                            .batch<[[Page]], [[DbPagePublished]], [[DbPageLatest]]>()
+                        const [[[page]], [[publishedPage]], [[latestPage]]] = await db
+                            .batch<[[Page]], [[Page]], [[Page]]>()
                             .read({
                                 ...defaults.db,
                                 query: { PK: PK_PAGE(pid), SK: `REV#${rev}` }
@@ -880,11 +819,11 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                         const identity = context.security.getIdentity();
                         checkOwnPermissions(identity, permission, page, "ownedBy");
 
-                        if (page.status === "published") {
+                        if (page.status === STATUS_PUBLISHED) {
                             throw new NotFoundError(`Page "${pageId}" is already published.`);
                         }
 
-                        const [[pagePublishedPathData]] = await db.read<DbPagePublishedPath>({
+                        const [[publishedPageOnPath]] = await db.read<Page>({
                             ...defaults.db,
                             query: {
                                 PK: PK_PAGE_PUBLISHED_PATH(),
@@ -894,12 +833,12 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
 
                         await executeHookCallbacks(hookPlugins, "beforePublish", context, {
                             page,
-                            latestPageData,
-                            publishedPageData
+                            latestPage,
+                            publishedPage
                         });
 
                         const pathTakenByAnotherPage =
-                            pagePublishedPathData && !pagePublishedPathData.id.startsWith(page.pid);
+                            publishedPageOnPath && publishedPageOnPath.pid !== page.pid;
 
                         // If this is true, let's unpublish the page first. Note that we're not talking about this
                         // same page, but a previous revision. We're talking about a completely different page
@@ -911,7 +850,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                             // is to be expected. Maybe we could think of a better solution in the future, but for
                             // now, it works like this. If there was only more ⏱.
                             // 2) If a user doesn't have the unpublish permission, again, the whole action will fail.
-                            await this.unpublish(pagePublishedPathData.id);
+                            await this.unpublish(publishedPageOnPath.id);
                         }
 
                         // Now that the other page has been unpublished, we can continue with publish the current one.
@@ -934,53 +873,8 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                             data: page
                         });
 
-                        if (publishedPageData) {
-                            const [, publishedRev] = publishedPageData.id.split("#");
-                            // If there is a `published` page already, we need to set it as `unpublished`. We need to
-                            // execute three updates
-                            // - update the previously published page's status
-                            // - update the published page entry (PK_PAGE_PUBLISHED())
-                            // - update the published page path entry (PK_PAGE_PUBLISHED_PATH())
-
-                            // 🤦 DynamoDB does not support `batchUpdate` - so here we load the previously published
-                            // page's data so that we can update its status within a batch operation. If, hopefully,
-                            // they introduce a true update batch operation, remove this `read` call.
-
-                            const previouslyPublishedPageDataBatch = db
-                                .batch<[[Page]], [[DbPagePublishedPath]]>()
-                                .read({
-                                    ...defaults.db,
-                                    query: { PK: PK_PAGE(pid), SK: `REV#${publishedRev}` }
-                                })
-                                .read({
-                                    ...defaults.db,
-                                    query: {
-                                        PK: PK_PAGE_PUBLISHED_PATH(),
-                                        SK: publishedPageData.path
-                                    }
-                                });
-
-                            const [
-                                [[previouslyPublishedPage]],
-                                [[publishedPagePathData]]
-                            ] = await previouslyPublishedPageDataBatch.execute();
-
-                            previouslyPublishedPage.status = STATUS_UNPUBLISHED;
-
-                            // If the paths are different, delete previous `DbPagePublishedPath` entry.
-                            if (
-                                previouslyPublishedPage.id === publishedPagePathData.id &&
-                                page.path !== publishedPagePathData.path
-                            ) {
-                                batch.delete({
-                                    ...defaults.db,
-                                    query: {
-                                        PK: PK_PAGE_PUBLISHED_PATH(),
-                                        SK: previouslyPublishedPage.path
-                                    }
-                                });
-                            }
-
+                        if (publishedPage) {
+                            const [, publishedRev] = publishedPage.id.split("#");
                             batch
                                 .update({
                                     ...defaults.db,
@@ -988,7 +882,12 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                                         PK: PK_PAGE(pid),
                                         SK: `REV#${publishedRev}`
                                     },
-                                    data: previouslyPublishedPage
+                                    data: {
+                                        ...publishedPage,
+                                        status: STATUS_UNPUBLISHED,
+                                        PK: PK_PAGE(pid),
+                                        SK: `REV#${publishedRev}`
+                                    }
                                 })
                                 .update({
                                     ...defaults.db,
@@ -996,63 +895,69 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                                         PK: PK_PAGE(pid),
                                         SK: "P"
                                     },
-                                    data: {
-                                        PK: PK_PAGE(pid),
-                                        SK: "P",
-                                        TYPE: TYPE.PAGE_PUBLISHED,
-                                        tenant: context.security.getTenant().id,
-                                        locale: context.i18nContent.getLocale().code,
-                                        id: pageId,
-                                        path: page.path
-                                    }
-                                })
-                                .create({
+                                    data: { ...page, PK: PK_PAGE(pid), SK: "P" }
+                                });
+
+                            // If the paths are different, delete previous published-page-on-path entry.
+                            if (publishedPage.path !== page.path) {
+                                batch
+                                    .delete({
+                                        ...defaults.db,
+                                        query: {
+                                            PK: PK_PAGE_PUBLISHED_PATH(),
+                                            SK: publishedPage.path
+                                        }
+                                    })
+                                    .create({
+                                        ...defaults.db,
+                                        data: {
+                                            ...page,
+                                            PK: PK_PAGE_PUBLISHED_PATH(),
+                                            SK: page.path
+                                        }
+                                    });
+                            } else {
+                                batch.update({
                                     ...defaults.db,
-                                    data: {
+                                    query: {
                                         PK: PK_PAGE_PUBLISHED_PATH(),
-                                        SK: page.path,
-                                        TYPE: TYPE.PAGE_PUBLISHED_PATH,
-                                        tenant: context.security.getTenant().id,
-                                        locale: context.i18nContent.getLocale().code,
-                                        id: page.id,
-                                        path: page.path
+                                        SK: page.path
+                                    },
+                                    data: {
+                                        ...page,
+                                        PK: PK_PAGE_PUBLISHED_PATH(),
+                                        SK: page.path
                                     }
                                 });
+                            }
                         } else {
                             batch
                                 .create({
                                     ...defaults.db,
                                     data: {
+                                        ...page,
                                         PK: PK_PAGE(pid),
-                                        SK: "P",
-                                        TYPE: TYPE.PAGE_PUBLISHED,
-                                        tenant: context.security.getTenant().id,
-                                        locale: context.i18nContent.getLocale().code,
-                                        id: pageId,
-                                        path: page.path
+                                        SK: "P"
                                     }
                                 })
                                 .create({
                                     ...defaults.db,
                                     data: {
+                                        ...page,
                                         PK: PK_PAGE_PUBLISHED_PATH(),
-                                        SK: page.path,
-                                        TYPE: TYPE.PAGE_PUBLISHED_PATH,
-                                        tenant: context.security.getTenant().id,
-                                        locale: context.i18nContent.getLocale().code,
-                                        id: page.id,
-                                        path: page.path
+                                        SK: page.path
                                     }
                                 });
                         }
 
+                        const ogog = 123;
                         await batch.execute();
 
                         // Update data in ES.
                         const esOperations = [];
 
                         // If we are publishing the latest revision, let's also update the latest revision entry's status in ES.
-                        if (latestPageData?.id === pageId) {
+                        if (latestPage?.id === pageId) {
                             esOperations.push(
                                 {
                                     update: {
@@ -1085,8 +990,8 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
 
                         await executeHookCallbacks(hookPlugins, "afterPublish", context, {
                             page,
-                            latestPageData,
-                            publishedPageData
+                            latestPage,
+                            publishedPage
                         });
 
                         return page;
@@ -1099,7 +1004,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
 
                         const [pid, rev] = pageId.split("#");
 
-                        const [[[page]], [[publishedPageData]], [[latestPageData]]] = await db
+                        const [[[page]], [[publishedPage]], [[latestPage]]] = await db
                             .batch()
                             .read({
                                 ...defaults.db,
@@ -1131,7 +1036,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                         const identity = context.security.getIdentity();
                         checkOwnPermissions(identity, permission, page, "ownedBy");
 
-                        if (!publishedPageData || publishedPageData.id !== pageId) {
+                        if (!publishedPage || publishedPage.id !== pageId) {
                             throw new Error(`Page "${pageId}" is not published.`);
                         }
 
@@ -1162,7 +1067,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                                 ...defaults.db,
                                 query: {
                                     PK: PK_PAGE_PUBLISHED_PATH(),
-                                    SK: publishedPageData.path
+                                    SK: publishedPage.path
                                 }
                             })
                             .update({
@@ -1179,7 +1084,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                         const esOperations = [];
 
                         // If we are unpublishing the latest revision, let's also update the latest revision entry's status in ES.
-                        if (latestPageData.id === pageId) {
+                        if (latestPage.id === pageId) {
                             esOperations.push(
                                 {
                                     update: {
@@ -1214,12 +1119,10 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                             .batch()
                             .read({
                                 ...defaults.db,
-                                query: { PK: PK_PAGE(pid), SK: `REV#${rev}` },
-                                limit: 1
+                                query: { PK: PK_PAGE(pid), SK: `REV#${rev}` }
                             })
                             .read({
                                 ...defaults.db,
-                                limit: 1,
                                 query: {
                                     PK: PK_PAGE(pid),
                                     SK: "L"
@@ -1284,12 +1187,10 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                             .batch()
                             .read({
                                 ...defaults.db,
-                                query: { PK: PK_PAGE(pid), SK: `REV#${rev}` },
-                                limit: 1
+                                query: { PK: PK_PAGE(pid), SK: `REV#${rev}` }
                             })
                             .read({
                                 ...defaults.db,
-                                limit: 1,
                                 query: {
                                     PK: PK_PAGE(pid),
                                     SK: "L"
