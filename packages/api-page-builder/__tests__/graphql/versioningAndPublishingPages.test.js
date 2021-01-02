@@ -394,13 +394,13 @@ describe("versioning and publishing pages", () => {
             })
             .then(([[entry]]) =>
                 expect(entry).toMatchObject({
-                    "PK": "T#root#L#en-US#PB#PATH",
-                    "SK": "/pages-test-updated",
-                    "TYPE": "pb.page",
-                    "status": "published",
-                    "tenant": "root",
-                    "title": "Untitled",
-                    "version": 2
+                    PK: "T#root#L#en-US#PB#PATH",
+                    SK: "/pages-test-updated",
+                    TYPE: "pb.page",
+                    status: "published",
+                    tenant: "root",
+                    title: "Untitled",
+                    version: 2
                 })
             );
     });

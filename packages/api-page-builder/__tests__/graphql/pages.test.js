@@ -49,7 +49,7 @@ describe("CRUD Test", () => {
         // Test creating, getting and updating three pages.
         for (let i = 0; i < 3; i++) {
             let data = {
-                category: 'slug'
+                category: "slug"
             };
 
             let [response] = await createPage(data);
