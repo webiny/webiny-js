@@ -16,7 +16,7 @@ import { resolveUnpublish } from "./resolvers/manage/resolveUnpublish";
 import { resolveCreateFrom } from "./resolvers/manage/resolveCreateFrom";
 import { createManageTypeName, createTypeName } from "../utils/createTypeName";
 import { pluralizedTypeName } from "../utils/pluralizedTypeName";
-import { entryFieldFromStorage } from "../utils/entryStorage";
+import { entryFieldFromStorageTransform } from "../utils/entryStorage";
 
 export interface CreateManageResolvers {
     (params: {
@@ -59,7 +59,13 @@ export const createManageResolvers: CreateManageResolvers = ({
                 resolvers[field.fieldId] = async (entry, args, context: CmsContext, info) => {
                     const value = await resolver(entry, args, context, info);
                     // Get transformed value (eg. data decompression)
-                    return entryFieldFromStorage(context, model, entry, field, value);
+                    return entryFieldFromStorageTransform({
+                        context,
+                        model,
+                        entry,
+                        field,
+                        value
+                    });
                 };
 
                 return resolvers;

@@ -9,7 +9,7 @@ import { commonFieldResolvers } from "./resolvers/commonFieldResolvers";
 import { resolveGet } from "./resolvers/read/resolveGet";
 import { resolveList } from "./resolvers/read/resolveList";
 import { pluralizedTypeName } from "../utils/pluralizedTypeName";
-import { entryFieldFromStorage } from "../utils/entryStorage";
+import { entryFieldFromStorageTransform } from "../utils/entryStorage";
 
 export interface CreateReadResolvers {
     (params: {
@@ -39,7 +39,13 @@ export const createReadResolvers: CreateReadResolvers = ({ models, model, fieldT
                 const value = await resolver(entry, args, ctx, info);
 
                 // Get transformed value (eg. data decompression)
-                return entryFieldFromStorage(ctx, model, entry, field, value);
+                return entryFieldFromStorageTransform({
+                    context: ctx,
+                    model,
+                    entry,
+                    field,
+                    value
+                });
             };
 
             return resolvers;

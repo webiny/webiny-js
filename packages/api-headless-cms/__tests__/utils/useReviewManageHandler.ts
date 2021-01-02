@@ -14,7 +14,7 @@ const reviewFields = `
         status
         revisions {
             id
-            title
+            text
         }
     }
     # user defined fields

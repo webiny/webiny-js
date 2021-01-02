@@ -96,10 +96,10 @@ describe("defaultFieldIndexPlugin", () => {
         const plugin = defaultFieldIndexPlugin();
 
         const result = plugin.toIndex({
-            entry: mockInputEntry as any,
+            originalEntry: mockInputEntry as any,
+            storageEntry: mockInputEntry as any,
             field: mockRichTextField,
             model: mockModel,
-            value: mockRichTextValue,
             context: mockContext,
             fieldTypePlugin: mockRichTextFieldTypePlugin
         });
@@ -131,10 +131,10 @@ describe("defaultFieldIndexPlugin", () => {
         const plugin = defaultFieldIndexPlugin();
 
         const result = plugin.toIndex({
-            entry: mockInputEntry as any,
+            originalEntry: mockInputEntry as any,
+            storageEntry: mockInputEntry as any,
             field: mockTextField,
             model: mockModel,
-            value: mockTextValue,
             context: mockContext,
             fieldTypePlugin: mockTextFieldTypePlugin
         });

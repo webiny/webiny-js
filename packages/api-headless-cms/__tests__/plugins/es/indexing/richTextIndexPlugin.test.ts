@@ -68,10 +68,10 @@ describe("richTextIndexing", () => {
         const plugin = richTextIndexing();
 
         const result = plugin.toIndex({
-            entry: mockInputEntry as any,
+            originalEntry: mockInputEntry as any,
+            storageEntry: mockInputEntry as any,
             field: mockField,
             model: mockModel,
-            value: mockValue,
             context: mockContext,
             fieldTypePlugin: mockFieldTypePlugin
         });

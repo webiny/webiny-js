@@ -138,18 +138,34 @@ describe("refField", () => {
             }
         });
 
-        // TODO there is no title field in revisions object in Review
-        expect(response).toEqual({
+        expect(response).toMatchObject({
             data: {
                 createReview: {
                     data: {
                         id: expect.any(String),
-                        createOn: /^20/,
+                        createdOn: /^20/,
                         savedOn: /^20/,
                         text: "review text",
-                        rating: 5
+                        rating: 5,
+                        meta: {
+                            locked: false,
+                            modelId: "review",
+                            publishedOn: null,
+                            revisions: [
+                                {
+                                    id: expect.any(String),
+                                    text: "review text"
+                                }
+                            ],
+                            status: "draft",
+                            title: "review text",
+                            version: 1
+                        },
+                        product: {
+                            entryId: expect.any(String),
+                            modelId: "product"
+                        }
                     },
-                    meta: {},
                     error: null
                 }
             }

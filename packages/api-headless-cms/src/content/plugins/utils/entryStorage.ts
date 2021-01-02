@@ -7,31 +7,38 @@ import {
 } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
 
+const getStoragePlugins = (context: CmsContext): Record<string, CmsModelFieldToStoragePlugin> => {
+    return (
+        context.plugins
+            .byType<CmsModelFieldToStoragePlugin>("cms-model-field-to-storage")
+            // we reverse plugins because we want to get latest added only
+            .reverse()
+            .reduce((items, plugin) => {
+                // either existing plugin added or plugin fieldType does not exist in current model
+                // this is to iterate a bit less later
+                if (items[plugin.fieldType]) {
+                    return items;
+                }
+                items[plugin.fieldType] = plugin;
+                return items;
+            }, {})
+    );
+};
+
 /*
  * this is a factory function that will create a mapper to transform values of fields that have
  * a plugin of "CmsModelFieldToStoragePlugin" type into something else - depending on plugin
  * the idea behind this was to introduce a compression of rich-text fields
  * but it can be used for anything (convert object to string and revert it, etc...)
+ *
+ * this should be used when transforming a whole entry
  */
-const entryStorage = (
+const entryStorageTransformFactory = (
     context: CmsContext,
     model: CmsContentModelType,
     operation: "toStorage" | "fromStorage"
 ): null | ((entry: CmsContentEntryType) => Promise<CmsContentEntryType>) => {
-    const plugins: Record<string, CmsModelFieldToStoragePlugin> = context.plugins
-        .byType<CmsModelFieldToStoragePlugin>("cms-model-field-to-storage")
-        // we reverse plugins because we want to get latest added only
-        .reverse()
-        .reduce((items, plugin) => {
-            // either existing plugin added or plugin fieldType does not exist in current model
-            // this is to iterate a bit less later
-            if (items[plugin.fieldType]) {
-                return items;
-            }
-            items[plugin.fieldType] = plugin;
-            return items;
-        }, {});
-
+    const plugins = getStoragePlugins(context);
     // we map plugins to each field so we basically can go through plugins object
     // and iterate only those fields that have plugins
     const fieldByIdToPluginMap: Record<string, CmsModelFieldToStoragePlugin> = {};
@@ -80,47 +87,83 @@ const entryStorage = (
     };
 };
 
+const entryFieldStorageTransformFactory = (
+    context: CmsContext,
+    model: CmsContentModelType,
+    operation: "toStorage" | "fromStorage"
+) => {
+    const plugins = getStoragePlugins(context);
+    return async (
+        entry: CmsContentEntryType,
+        field: CmsContentModelFieldType,
+        value: any
+    ): Promise<any> => {
+        const plugin = plugins[field.type];
+        if (!plugin) {
+            return value;
+        } else if (typeof plugin[operation] !== "function") {
+            throw new WebinyError(
+                `Missing function "${operation}" in plugin "${plugin.name ||
+                    "unknown"}" for field type "${plugin.fieldType}".`,
+                "STORAGE_MAPPING_ERROR"
+            );
+        }
+        return await plugin[operation]({
+            field,
+            context,
+            model,
+            value: entry.values[field.fieldId]
+        });
+    };
+};
+/*
+ * A function that is used in crud to transform entry into the storage type
+ */
 export const entryToStorageTransform = async (
     context: CmsContext,
     model: CmsContentModelType,
     entry: CmsContentEntryType
 ): Promise<CmsContentEntryType> => {
-    const transform = entryStorage(context, model, "toStorage");
+    const transform = entryStorageTransformFactory(context, model, "toStorage");
     if (!transform) {
         return entry;
     }
     return await transform(entry);
 };
-
+/*
+ * A function that is used to transform whole entry from storage
+ * This function is mostly used in crud when extracting some target entry and then need to use it further in the code
+ */
 export const entryFromStorageTransform = async (
     context: CmsContext,
     model: CmsContentModelType,
     entry: CmsContentEntryType & Record<string, any>
 ): Promise<CmsContentEntryType> => {
-    const transform = entryStorage(context, model, "fromStorage");
+    const transform = entryStorageTransformFactory(context, model, "fromStorage");
     if (!transform) {
         return entry;
     }
     return await transform(entry);
 };
 
-export const entryFieldFromStorage = async (
-    context: CmsContext,
-    model: CmsContentModelType,
-    entry: CmsContentEntryType,
-    field: CmsContentModelFieldType,
-    value: any
-) => {
-    const transformedEntry = await entryFromStorageTransform(context, model, {
-        // required due to possibility that resolver for the field did something to it and value in entry is not valid at that point
-        ...entry,
-        values: {
-            ...entry.values,
-            [field.fieldId]: value
-        }
-    });
-    if (!transformedEntry.values[field.fieldId]) {
-        return null;
+type EntryFieldFromStorageTransformArgsType = {
+    context: CmsContext;
+    model: CmsContentModelType;
+    entry: CmsContentEntryType & Record<string, any>;
+    field: CmsContentModelFieldType;
+    value: any;
+};
+/*
+ * A function that is used to transform a single field from storage
+ * in 99% cases this is going to be used since transformation is done when resolving the field
+ */
+export const entryFieldFromStorageTransform = async (
+    args: EntryFieldFromStorageTransformArgsType
+): Promise<any> => {
+    const { context, model, entry, field, value } = args;
+    const transform = entryFieldStorageTransformFactory(context, model, "fromStorage");
+    if (!transform) {
+        return entry;
     }
-    return transformedEntry.values[field.fieldId];
+    return await transform(entry, field, value);
 };
