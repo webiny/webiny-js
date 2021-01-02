@@ -31,8 +31,8 @@ export const Permissions = ({ id, value, onChange }: Props) => {
     }, []);
 
     return (
-        <Fragment>
-            {systemPlugins.map(pl => (
+        <Accordion elevation={0}>
+            {[...systemPlugins, ...permissionPlugins].map(pl => (
                 <React.Fragment key={pl.name + "." + id}>
                     {pl.render({
                         value,
@@ -40,16 +40,6 @@ export const Permissions = ({ id, value, onChange }: Props) => {
                     })}
                 </React.Fragment>
             ))}
-            <Accordion elevation={0}>
-                {permissionPlugins.map(pl => (
-                    <React.Fragment key={pl.name + "." + id}>
-                        {pl.render({
-                            value,
-                            onChange
-                        })}
-                    </React.Fragment>
-                ))}
-            </Accordion>
-        </Fragment>
+        </Accordion>
     );
 };
