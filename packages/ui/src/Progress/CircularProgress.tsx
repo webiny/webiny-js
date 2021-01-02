@@ -41,20 +41,16 @@ const Label = styled("div")({
 const CircularProgress = ({ label, size, spinnerWidth, spinnerColor, visible, style }: Props) => {
     return (
         <SpinnerWrapper style={style}>
-            {process.env.REACT_APP_ENV === "ssr" ? null : (
-                <div>
-                    <Spinner
-                        size={size}
-                        spinnerColor={spinnerColor}
-                        spinnerWidth={spinnerWidth}
-                        visible={visible}
-                    />
-                    {label && (
-                        <Label>
-                            <Typography use={"overline"}>{label}</Typography>
-                        </Label>
-                    )}
-                </div>
+            <Spinner
+                size={size}
+                spinnerColor={spinnerColor}
+                spinnerWidth={spinnerWidth}
+                visible={visible}
+            />
+            {label && (
+                <Label>
+                    <Typography use={"overline"}>{label}</Typography>
+                </Label>
             )}
         </SpinnerWrapper>
     );

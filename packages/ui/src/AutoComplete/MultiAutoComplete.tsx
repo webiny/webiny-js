@@ -33,10 +33,6 @@ type State = {
 };
 
 function Spinner() {
-    if (process.env.REACT_APP_ENV === "ssr") {
-        return null;
-    }
-
     return <MaterialSpinner size={24} spinnerColor={"#fa5723"} spinnerWidth={2} visible />;
 }
 

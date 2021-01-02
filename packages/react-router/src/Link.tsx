@@ -9,10 +9,8 @@ function Link({ children, ...props }: LinkProps) {
 
     let { to } = props;
 
-    if (process.env.REACT_APP_ENV === "browser") {
-        if (typeof to === "string" && to.startsWith(window.location.origin)) {
-            to = to.replace(window.location.origin, "");
-        }
+    if (typeof to === "string" && to.startsWith(window.location.origin)) {
+        to = to.replace(window.location.origin, "");
     }
 
     useEffect(() => {
