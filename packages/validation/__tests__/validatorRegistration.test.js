@@ -18,7 +18,7 @@ describe("gt test", () => {
     });
 
     test('should return newly registered "gender" validator', () => {
-        expect(validation.getValidator("gender")).toBeFunction();
+        expect(validation.getValidator("gender")).toBeInstanceOf(Function);
     });
 
     test("should fail - invalid gender set", async () => {
