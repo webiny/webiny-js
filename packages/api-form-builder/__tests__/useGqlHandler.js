@@ -82,6 +82,8 @@ const until = async (execute, until, options = {}) => {
     );
 };
 
+const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
+
 export default ({ permissions, identity, tenant } = {}) => {
     const handler = createHandler(
         dbPlugins({
@@ -95,7 +97,7 @@ export default ({ permissions, identity, tenant } = {}) => {
                 })
             })
         }),
-        elasticSearch({ endpoint: `http://localhost:9200` }),
+        elasticSearch({ endpoint: `http://localhost:${ELASTICSEARCH_PORT}` }),
         apolloServerPlugins(),
         securityPlugins(),
         {
@@ -165,8 +167,8 @@ export default ({ permissions, identity, tenant } = {}) => {
     return {
         until,
         elasticSearch: new Client({
-            hosts: [`http://localhost:9200`],
-            node: "http://localhost:9200"
+            hosts: [`http://localhost:${ELASTICSEARCH_PORT}`],
+            node: `http://localhost:${ELASTICSEARCH_PORT}`
         }),
         sleep: (ms = 100) => {
             return new Promise(resolve => {

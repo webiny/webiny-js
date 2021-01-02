@@ -308,26 +308,26 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 createRevisionFrom(revision: ID!): FbFormResponse
 
                 # Update revision
-                updateRevision(id: ID!, data: FbUpdateFormInput!): FbFormResponse
+                updateRevision(revision: ID!, data: FbUpdateFormInput!): FbFormResponse
 
                 # Publish revision
-                publishRevision(id: ID!): FbFormResponse
+                publishRevision(revision: ID!): FbFormResponse
 
                 # Unpublish revision
-                unpublishRevision(id: ID!): FbFormResponse
+                unpublishRevision(revision: ID!): FbFormResponse
 
                 # Delete form and all of its revisions
                 deleteForm(id: ID!): FbDeleteResponse
 
                 # Delete a single revision
-                deleteRevision(id: ID!): FbDeleteResponse
+                deleteRevision(revision: ID!): FbDeleteResponse
 
                 # Logs a view of a form
-                saveFormView(id: ID!): FbSaveFormViewResponse
+                saveFormView(revision: ID!): FbSaveFormViewResponse
 
                 # Submits a form
                 createFormSubmission(
-                    form: ID!
+                    revision: ID!
                     data: JSON!
                     reCaptchaResponseToken: String
                     meta: JSON
@@ -466,7 +466,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 // Updates revision
                 updateRevision: async (_, args, { formBuilder }) => {
                     try {
-                        const form = await formBuilder.forms.updateForm(args.id, args.data);
+                        const form = await formBuilder.forms.updateForm(args.revision, args.data);
 
                         return new Response(form);
                     } catch (e) {
@@ -474,9 +474,9 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                     }
                 },
                 // Publish revision (must be given an exact revision ID to publish)
-                publishRevision: async (_, { id }, { formBuilder }) => {
+                publishRevision: async (_, { revision }, { formBuilder }) => {
                     try {
-                        const form = await formBuilder.forms.publishForm(id);
+                        const form = await formBuilder.forms.publishForm(revision);
 
                         return new Response(form);
                     } catch (e) {
@@ -485,7 +485,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 },
                 unpublishRevision: async (_, args, { formBuilder }) => {
                     try {
-                        const form = await formBuilder.forms.unpublishForm(args.id);
+                        const form = await formBuilder.forms.unpublishForm(args.revision);
 
                         return new Response(form);
                     } catch (e) {
@@ -495,7 +495,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 // Delete a revision
                 deleteRevision: async (_, args, { formBuilder }) => {
                     try {
-                        await formBuilder.forms.deleteRevision(args.id);
+                        await formBuilder.forms.deleteRevision(args.revision);
 
                         return new Response(true);
                     } catch (e) {
@@ -504,7 +504,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 },
                 saveFormView: async (_, args, { formBuilder }) => {
                     try {
-                        const form = await formBuilder.forms.incrementFormViews(args.id);
+                        const form = await formBuilder.forms.incrementFormViews(args.revision);
 
                         return new Response(form);
                     } catch (e) {
@@ -512,11 +512,11 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                     }
                 },
                 createFormSubmission: async (root: any, args, { formBuilder }) => {
-                    const { form, data, reCaptchaResponseToken, meta = {} } = args;
+                    const { revision, data, reCaptchaResponseToken, meta = {} } = args;
 
                     try {
                         const formSubmission = await formBuilder.forms.createFormSubmission(
-                            form,
+                            revision,
                             reCaptchaResponseToken,
                             data,
                             meta

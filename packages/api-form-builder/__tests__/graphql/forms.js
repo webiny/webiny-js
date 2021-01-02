@@ -89,9 +89,9 @@ export const CREATE_REVISION_FROM = /* GraphQL */ `
 `;
 
 export const UPDATE_REVISION = /* GraphQL */ `
-    mutation UpdateRevision($id: ID!, $data: FbUpdateFormInput!) {
+    mutation UpdateRevision($revision: ID!, $data: FbUpdateFormInput!) {
         formBuilder {
-            updateRevision(id: $id, data: $data) {
+            updateRevision(revision: $revision, data: $data) {
                 data ${FORM_DATA_FIELD}
                 error ${ERROR_FIELD}
             }
@@ -100,9 +100,9 @@ export const UPDATE_REVISION = /* GraphQL */ `
 `;
 
 export const PUBLISH_REVISION = /* GraphQL */ `
-    mutation publishRevision($id: ID!) {
+    mutation publishRevision($revision: ID!) {
         formBuilder {
-            publishRevision(id: $id) {
+            publishRevision(revision: $revision) {
                 data ${FORM_DATA_FIELD}
                 error ${ERROR_FIELD}
             }
@@ -111,9 +111,9 @@ export const PUBLISH_REVISION = /* GraphQL */ `
 `;
 
 export const UNPUBLISH_REVISION = /* GraphQL */ `
-    mutation UnpublishRevision($id: ID!) {
+    mutation UnpublishRevision($revision: ID!) {
         formBuilder {
-            unpublishRevision(id: $id) {
+            unpublishRevision(revision: $revision) {
                 data ${FORM_DATA_FIELD}
                 error ${ERROR_FIELD}
             }
@@ -133,9 +133,9 @@ export const DELETE_FORM = /* GraphQL */ `
 `;
 
 export const DELETE_REVISION = /* GraphQL */ `
-    mutation DeleteRevision($id: ID!) {
+    mutation DeleteRevision($revision: ID!) {
         formBuilder {
-            deleteRevision(id: $id) {
+            deleteRevision(revision: $revision) {
                 data
                 error ${ERROR_FIELD}
             }
@@ -144,9 +144,9 @@ export const DELETE_REVISION = /* GraphQL */ `
 `;
 
 export const SAVE_FORM_VIEW = /* GraphQL */ `
-    mutation SaveFormView($id: ID!) {
+    mutation SaveFormView($revision: ID!) {
         formBuilder {
-            saveFormView(id: $id) {
+            saveFormView(revision: $revision) {
                 error ${ERROR_FIELD}
             }
         }
@@ -154,9 +154,9 @@ export const SAVE_FORM_VIEW = /* GraphQL */ `
 `;
 
 export const GET_FORM = /* GraphQL */ `
-    query GetForm($id: ID!) {
+    query GetForm($revision: ID!) {
         formBuilder {
-            getForm(id: $id) {
+            getForm(revision: $revision) {
                 data ${FORM_DATA_FIELD}
                 error ${ERROR_FIELD}
             }

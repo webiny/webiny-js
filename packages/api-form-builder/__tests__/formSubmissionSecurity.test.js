@@ -74,13 +74,13 @@ describe("Forms Security Test", () => {
 
         // Let's add some fields.
         await handlerA.updateRevision({
-            id: formA.id,
+            revision: formA.id,
             data: {
                 fields: mocks.fields
             }
         });
 
-        await handlerA.publishRevision({ id: formA.id });
+        await handlerA.publishRevision({ revision: formA.id });
 
         // Create form as Identity B (this guy can only access his own forms)
         const handlerB = useGqlHandler({
@@ -93,39 +93,39 @@ describe("Forms Security Test", () => {
 
         // Let's add some fields.
         await handlerB.updateRevision({
-            id: formB.id,
+            revision: formB.id,
             data: {
                 fields: mocks.fields
             }
         });
 
-        await handlerB.publishRevision({ id: formB.id });
+        await handlerB.publishRevision({ revision: formB.id });
 
         // Create submissions
         // NOTE: response variables are unused but left here for debugging purposes!
 
         await handlerA.createFormSubmission({
-            form: formA.id,
+            revision: formA.id,
             ...new MockSubmission("A1-")
         });
 
         await handlerA.createFormSubmission({
-            form: formA.id,
+            revision: formA.id,
             ...new MockSubmission("A2-")
         });
 
         await handlerA.createFormSubmission({
-            form: formA.id,
+            revision: formA.id,
             ...new MockSubmission("A3-")
         });
 
         await handlerB.createFormSubmission({
-            form: formB.id,
+            revision: formB.id,
             ...new MockSubmission("B1-")
         });
 
         await handlerB.createFormSubmission({
-            form: formB.id,
+            revision: formB.id,
             ...new MockSubmission("B2-")
         });
 

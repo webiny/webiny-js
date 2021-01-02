@@ -150,10 +150,11 @@ export default {
                 },
                 async getFormRevisions(id) {
                     const permission = await utils.checkBaseFormPermissions(context, { rwd: "r" });
+                    const [uniqueId] = id.split("#");
 
                     const [forms] = await db.read<FbForm>({
                         ...defaults.db,
-                        query: { PK: PK_FORM(id), SK: { $beginsWith: "REV#" } }
+                        query: { PK: PK_FORM(uniqueId), SK: { $beginsWith: "REV#" }, sort: { SK: -1 } }
                     });
 
                     utils.checkOwnership(forms[0], permission, context);
@@ -432,7 +433,8 @@ export default {
                         // Get all form revisions
                         const [revisions] = await db.read<FbForm>({
                             ...defaults.db,
-                            query: { PK: FORM_PK, SK: { $beginsWith: "REV#" } }
+                            query: { PK: FORM_PK, SK: { $beginsWith: "REV#" } },
+                            sort: { SK: -1 }
                         });
 
                         // Update or delete the "latest published" record
@@ -660,7 +662,8 @@ export default {
                             query: {
                                 PK: FORM_PK,
                                 SK: { $beginsWith: "REV#" }
-                            }
+                            },
+                            sort: { SK: -1 }
                         });
 
                         // Find published revision with highest publishedOn data

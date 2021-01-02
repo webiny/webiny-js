@@ -42,9 +42,9 @@ export const ERROR_FIELD = /* GraphQL */ `
 `;
 
 export const CREATE_FROM_SUBMISSION = /* GraphQL */ `
-    mutation CreateFormSubmission($form: ID!, $data: JSON!, $reCaptchaResponseToken: String, $meta: JSON) {
+    mutation CreateFormSubmission($revision: ID!, $data: JSON!, $reCaptchaResponseToken: String, $meta: JSON) {
         formBuilder {
-            createFormSubmission(form: $form, data: $data, reCaptchaResponseToken: $reCaptchaResponseToken, meta:  $meta) {
+            createFormSubmission(revision: $revision, data: $data, reCaptchaResponseToken: $reCaptchaResponseToken, meta:  $meta) {
                 data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }

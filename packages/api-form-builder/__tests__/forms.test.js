@@ -4,6 +4,8 @@ import csv from "csvtojson";
 import useGqlHandler from "./useGqlHandler";
 import { fields, formSubmissionDataA, formSubmissionDataB } from "./mocks/form.mocks";
 
+jest.setTimeout(60000);
+
 describe('Form Builder "Form" Test', () => {
     const {
         until,
@@ -35,9 +37,9 @@ describe('Form Builder "Form" Test', () => {
             await install();
             // Run FM installer (we'll need to have FM settings to perform submissions export)
             await installFileManager({ srcPrefix: "https://some.domain.com/files/" });
-            // Create empty index
-            await elasticSearch.indices.create({ index: esFbIndex });
-        } catch (e) {}
+        } catch (e) {
+            console.log(e);
+        }
     });
 
     afterEach(async () => {
@@ -92,7 +94,7 @@ describe('Form Builder "Form" Test', () => {
             layout: [["QIspyfQRx", "AVoKqyAuH"], ["fNJag3ZdX"]]
         };
 
-        const [update] = await updateRevision({ id, data: newData });
+        const [update] = await updateRevision({ revision: id, data: newData });
         expect(update.data.formBuilder.updateRevision.data).toMatchObject(newData);
 
         await until(
@@ -100,7 +102,7 @@ describe('Form Builder "Form" Test', () => {
             ({ data }) => data.formBuilder.listForms.data[0].name === newData.name
         );
 
-        const [get] = await getForm({ id });
+        const [get] = await getForm({ revision: id });
         expect(get.data.formBuilder.getForm.data).toMatchObject(newData);
 
         const [list] = await listForms();
@@ -138,7 +140,7 @@ describe('Form Builder "Form" Test', () => {
         expect(data1[0].id).toEqual(id3);
 
         // Delete latest revision
-        await deleteRevision({ id: id3 });
+        await deleteRevision({ revision: id3 });
 
         // Wait until the previous revision is indexed in Elastic as "latest"
         await until(
@@ -153,10 +155,10 @@ describe('Form Builder "Form" Test', () => {
         expect(data2[0].id).toEqual(id2);
 
         // Delete revision #1; Revision #2 should still be "latest"
-        await deleteRevision({ id });
+        await deleteRevision({ revision: id });
 
         // Get revision #2 and verify it's the only remaining revision of this form
-        const [get] = await getForm({ id: id2 });
+        const [get] = await getForm({ revision: id2 });
         const { revisions } = get.data.formBuilder.getForm.data;
         expect(revisions.length).toBe(1);
         expect(revisions[0].id).toEqual(id2);
@@ -179,7 +181,7 @@ describe('Form Builder "Form" Test', () => {
             ({ data }) => data.formBuilder.listForms.data.length === 0
         );
 
-        const [get] = await getForm({ id });
+        const [get] = await getForm({ revision: id });
         expect(get.data.formBuilder.getForm.data).toBe(null);
         const [list] = await listForms();
         expect(list.data.formBuilder.listForms.data.length).toBe(0);
@@ -190,7 +192,7 @@ describe('Form Builder "Form" Test', () => {
         const { id } = create.data.formBuilder.createForm.data;
 
         // Publish revision #1
-        await publishRevision({ id });
+        await publishRevision({ revision: id });
 
         // Get the published form
         const [{ data: get }] = await getPublishedForm({ revision: id });
@@ -216,34 +218,34 @@ describe('Form Builder "Form" Test', () => {
         expect(data[0].id).toEqual(id2);
 
         // Increment views for #1
-        await saveFormView({ id });
-        await saveFormView({ id });
-        await saveFormView({ id });
+        await saveFormView({ revision: id });
+        await saveFormView({ revision:id });
+        await saveFormView({ revision:id });
 
         // Verify stats for #1
-        const [{ data: get2 }] = await getForm({ id });
+        const [{ data: get2 }] = await getForm({ revision: id });
         expect(get2.formBuilder.getForm.data.stats.views).toEqual(3);
 
         // Publish revision #2
-        await publishRevision({ id: id2 });
+        await publishRevision({ revision: id2 });
 
         // Latest published form should now be #2
         const [latestPublished2] = await getPublishedForm({ parent: id.split("#")[0] });
         expect(latestPublished2.data.formBuilder.getPublishedForm.data.id).toEqual(id2);
 
         // Increment views for #2
-        await saveFormView({ id: id2 });
-        await saveFormView({ id: id2 });
+        await saveFormView({ revision: id2 });
+        await saveFormView({ revision: id2 });
 
         // Verify stats for #2
-        const [{ data: get3 }] = await getForm({ id: id2 });
+        const [{ data: get3 }] = await getForm({ revision: id2 });
         expect(get3.formBuilder.getForm.data.stats.views).toEqual(2);
 
         // Verify overall stats
         expect(get3.formBuilder.getForm.data.overallStats.views).toEqual(5);
 
         // Unpublish #2
-        await unpublishRevision({ id: id2 });
+        await unpublishRevision({ revision: id2 });
 
         // Latest published form should now again be #1
         const [latestPublished3] = await getPublishedForm({ parent: id.split("#")[0] });
@@ -255,19 +257,19 @@ describe('Form Builder "Form" Test', () => {
         const { id } = create.data.formBuilder.createForm.data;
 
         // Add fields definitions
-        await updateRevision({ id, data: { fields } });
+        await updateRevision({ revision: id, data: { fields } });
 
-        await publishRevision({ id });
+        await publishRevision({ revision: id });
 
         // Create form submissions
         await createFormSubmission({
-            form: id,
+            revision: id,
             data: formSubmissionDataA.data,
             meta: formSubmissionDataA.meta
         });
 
         await createFormSubmission({
-            form: id,
+            revision: id,
             data: formSubmissionDataB.data,
             meta: formSubmissionDataB.meta
         });

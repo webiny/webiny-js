@@ -245,7 +245,7 @@ describe("Forms Security Test", () => {
             const [permissions, identity] = insufficientPermissions[i];
             const { updateRevision } = useGqlHandler({ permissions, identity });
             const mock = new Mock(`new-updated-form-`);
-            const [response] = await updateRevision({ id: formId, data: mock });
+            const [response] = await updateRevision({ revision: formId, data: mock });
             expect(response).toEqual(NOT_AUTHORIZED_RESPONSE("updateRevision"));
         }
 
@@ -261,7 +261,7 @@ describe("Forms Security Test", () => {
             const [permissions, identity] = sufficientPermissions[i];
             const { updateRevision } = useGqlHandler({ permissions, identity });
             const mock = new Mock(`new-updated-form-`);
-            const [response] = await updateRevision({ id: formId, data: mock });
+            const [response] = await updateRevision({ revision: formId, data: mock });
             expect(response).toMatchObject({
                 data: {
                     formBuilder: {
@@ -296,7 +296,7 @@ describe("Forms Security Test", () => {
         for (let i = 0; i < insufficientPermissions.length; i++) {
             const [permissions, identity] = insufficientPermissions[i];
             const { getForm } = useGqlHandler({ permissions, identity });
-            const [response] = await getForm({ id: formId });
+            const [response] = await getForm({ revision: formId });
             expect(response).toEqual(NOT_AUTHORIZED_RESPONSE("getForm"));
         }
 
@@ -311,7 +311,7 @@ describe("Forms Security Test", () => {
         for (let i = 0; i < sufficientPermissions.length; i++) {
             const [permissions, identity] = sufficientPermissions[i];
             const { getForm } = useGqlHandler({ permissions, identity });
-            const [response] = await getForm({ id: formId });
+            const [response] = await getForm({ revision: formId });
             expect(response).toMatchObject({
                 data: {
                     formBuilder: {
@@ -393,7 +393,7 @@ describe("Forms Security Test", () => {
         for (let i = 0; i < insufficientPermissions.length; i++) {
             const [permissions, identity] = insufficientPermissions[i];
             const { publishRevision } = useGqlHandler({ permissions, identity });
-            const [response] = await publishRevision({ id: formId });
+            const [response] = await publishRevision({ revision: formId });
             expect(response).toEqual(NOT_AUTHORIZED_RESPONSE("publishRevision"));
         }
 
@@ -406,7 +406,7 @@ describe("Forms Security Test", () => {
         for (let i = 0; i < sufficientPermissions.length; i++) {
             const [permissions, identity] = sufficientPermissions[i];
             const { publishRevision, unpublishRevision } = useGqlHandler({ permissions, identity });
-            const [response] = await publishRevision({ id: formId });
+            const [response] = await publishRevision({ revision: formId });
             expect(response).toMatchObject({
                 data: {
                     formBuilder: {
@@ -428,7 +428,7 @@ describe("Forms Security Test", () => {
             });
 
             // Let's restore the form.
-            const [unPublishFormRevision] = await unpublishRevision({ id: formId });
+            const [unPublishFormRevision] = await unpublishRevision({ revision: formId });
             formId = unPublishFormRevision.data.formBuilder.unpublishRevision.data.id;
         }
     });
@@ -441,7 +441,7 @@ describe("Forms Security Test", () => {
         const { id: formId } = createFormResponse.data.formBuilder.createForm.data;
 
         // Let's also publish the form.
-        const [publish] = await publishRevision({ id: formId });
+        const [publish] = await publishRevision({ revision: formId });
 
         expect(publish).toMatchObject({
             data: {
@@ -511,7 +511,7 @@ describe("Forms Security Test", () => {
             });
 
             // Let's also publish this form.
-            const [publish] = await publishRevision({ id });
+            const [publish] = await publishRevision({ revision: id });
             expect(publish).toMatchObject({
                 data: {
                     formBuilder: {
