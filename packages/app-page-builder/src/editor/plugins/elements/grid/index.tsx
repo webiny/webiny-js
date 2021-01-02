@@ -3,11 +3,12 @@ import GridContainer from "./GridContainer";
 import styled from "@emotion/styled";
 import { ReactComponent as GridIcon } from "@webiny/app-page-builder/editor/assets/icons/view_quilt.svg";
 import { createElementHelper } from "@webiny/app-page-builder/editor/helpers";
-import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
+import { PbEditorPageElementPlugin, DisplayMode } from "@webiny/app-page-builder/types";
 import {
     getDefaultPresetCellsTypePluginType,
     calculatePresetCells
 } from "@webiny/app-page-builder/editor/plugins/gridPresets";
+import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
 const PreviewBox = styled("div")({
     textAlign: "center",
@@ -77,21 +78,37 @@ export default {
             elements: elements || createDefaultCells(cellsType),
             data: {
                 settings: {
-                    width: { value: "100%" },
+                    width: createInitialPerDeviceSettingValue(
+                        { value: "100%" },
+                        DisplayMode.DESKTOP
+                    ),
                     margin: {
-                        mobile: { top: "15px", left: "15px", right: "15px", bottom: "15px" },
-                        desktop: { top: "0px", left: "0px", right: "0px", bottom: "0px" },
-                        advanced: true
+                        ...createInitialPerDeviceSettingValue(
+                            {
+                                top: "0px",
+                                right: "0px",
+                                bottom: "0px",
+                                left: "0px",
+                                advanced: true
+                            },
+                            DisplayMode.DESKTOP
+                        )
                     },
-                    padding: {
-                        mobile: { all: "10px" },
-                        desktop: { all: "0px" }
-                    },
+                    padding: createInitialPerDeviceSettingValue(
+                        { all: "10px" },
+                        DisplayMode.DESKTOP
+                    ),
                     grid: {
                         cellsType
                     },
-                    horizontalAlignFlex: "flex-start",
-                    verticalAlign: "start"
+                    horizontalAlignFlex: createInitialPerDeviceSettingValue(
+                        "flex-start",
+                        DisplayMode.DESKTOP
+                    ),
+                    verticalAlign: createInitialPerDeviceSettingValue(
+                        "flex-start",
+                        DisplayMode.DESKTOP
+                    )
                 }
             },
             ...options

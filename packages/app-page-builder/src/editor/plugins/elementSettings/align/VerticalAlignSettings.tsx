@@ -1,19 +1,23 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { css } from "emotion";
 import { useRecoilValue } from "recoil";
 import classNames from "classnames";
 import get from "lodash/get";
+import set from "lodash/set";
+import merge from "lodash/merge";
 import { plugins } from "@webiny/plugins";
+import { Tooltip } from "@webiny/ui/Tooltip";
+import { IconButton } from "@webiny/ui/Button";
 import {
     PbEditorPageElementPlugin,
     PbElement,
-    PbEditorPageElementSettingsRenderComponentProps
-} from "@webiny/app-page-builder/types";
-import { Tooltip } from "@webiny/ui/Tooltip";
-import { IconButton } from "@webiny/ui/Button";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor";
-import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
-import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+    PbEditorPageElementSettingsRenderComponentProps,
+    PbEditorResponsiveModePlugin
+} from "../../../../types";
+import { useEventActionHandler } from "../../../../editor";
+import { UpdateElementActionEvent } from "../../../recoil/actions";
+import { activeElementWithChildrenSelector, uiAtom } from "../../../recoil/modules";
+import { applyFallbackDisplayMode } from "../elementSettingsUtils";
 // Components
 import { ContentWrapper } from "../components/StyledComponents";
 import Accordion from "../components/Accordion";
@@ -38,31 +42,50 @@ const classes = {
 type IconsType = {
     [key: string]: React.ReactElement;
 };
+
+enum AlignTypesEnum {
+    start = "flex-start",
+    center = "center",
+    end = "flex-end"
+}
+
 // Icons map for dynamic render
 const icons: IconsType = {
-    start: <AlignTopIcon />,
-    center: <AlignCenterIcon />,
-    end: <AlignBottomIcon />
+    [AlignTypesEnum.start]: <AlignTopIcon />,
+    [AlignTypesEnum.center]: <AlignCenterIcon />,
+    [AlignTypesEnum.end]: <AlignBottomIcon />
 };
 const alignments = Object.keys(icons);
 
-enum AlignTypesEnum {
-    START = "start",
-    CENTER = "center",
-    END = "end"
-}
 const iconDescriptions = {
-    start: "Align top",
-    center: "Align center",
-    end: "Align bottom"
+    [AlignTypesEnum.start]: "Align top",
+    [AlignTypesEnum.center]: "Align center",
+    [AlignTypesEnum.end]: "Align bottom"
 };
+
+const DATA_NAMESPACE = "data.settings.verticalAlign";
 
 const VerticalAlignSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps> = ({
     defaultAccordionValue
 }) => {
+    const { displayMode } = useRecoilValue(uiAtom);
+    const propName = `${DATA_NAMESPACE}.${displayMode}`;
     const handler = useEventActionHandler();
     const element = useRecoilValue(activeElementWithChildrenSelector);
-    const align = get(element, "data.settings.verticalAlign", AlignTypesEnum.CENTER);
+    const fallbackValue = useMemo(
+        () =>
+            applyFallbackDisplayMode(displayMode, mode =>
+                get(element, `${DATA_NAMESPACE}.${mode}`)
+            ),
+        [displayMode]
+    );
+    const align = get(element, propName, fallbackValue || AlignTypesEnum.center);
+
+    const { config: activeEditorModeConfig } = useMemo(() => {
+        return plugins
+            .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
+            .find(pl => pl.config.displayMode === displayMode);
+    }, [displayMode]);
 
     const updateElement = (element: PbElement) => {
         handler.trigger(
@@ -74,16 +97,8 @@ const VerticalAlignSettings: React.FunctionComponent<PbEditorPageElementSettings
     };
 
     const onClick = (type: AlignTypesEnum) => {
-        updateElement({
-            ...element,
-            data: {
-                ...element.data,
-                settings: {
-                    ...element.data.settings,
-                    verticalAlign: type
-                }
-            }
-        });
+        const newElement = merge({}, element, set({}, propName, type));
+        updateElement(newElement);
     };
 
     const plugin = plugins
@@ -95,7 +110,15 @@ const VerticalAlignSettings: React.FunctionComponent<PbEditorPageElementSettings
     }
 
     return (
-        <Accordion title={"Vertical align"} defaultValue={defaultAccordionValue}>
+        <Accordion
+            title={"Vertical align"}
+            defaultValue={defaultAccordionValue}
+            icon={
+                <Tooltip content={`Changes will apply for ${activeEditorModeConfig.displayMode}`}>
+                    {activeEditorModeConfig.icon}
+                </Tooltip>
+            }
+        >
             <ContentWrapper>
                 {alignments.map(type => (
                     <Tooltip key={type} content={iconDescriptions[type]} placement={"top"}>

@@ -1,6 +1,7 @@
 import React from "react";
 import loremIpsum from "lorem-ipsum";
-import { PbEditorPageElementPlugin } from "../../../../types";
+import { DisplayMode, PbEditorPageElementPlugin } from "../../../../types";
+import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 import Heading, { headingClassName } from "./Heading";
 import { createInitialTextValue } from "../utils/textUtils";
 
@@ -47,22 +48,31 @@ export default (): PbEditorPageElementPlugin => {
                 type: "heading",
                 elements: [],
                 data: {
-                    text: createInitialTextValue({
-                        text: previewText,
-                        type: this.elementType,
-                        tag: "h1"
-                    }),
+                    text: {
+                        ...createInitialPerDeviceSettingValue(
+                            createInitialTextValue({
+                                type: this.elementType,
+                                tag: "h1"
+                            }),
+                            DisplayMode.DESKTOP
+                        ),
+                        data: {
+                            text: previewText
+                        }
+                    },
                     settings: {
-                        margin: {
-                            mobile: { top: "0px", left: "0px", right: "0px", bottom: "15px" },
-                            desktop: { top: "0px", left: "0px", right: "0px", bottom: "0px" },
-                            advanced: true
-                        },
-                        padding: {
-                            desktop: { all: "0px" },
-                            mobile: { all: "0px" }
-                        },
-                        horizontalAlign: "center"
+                        margin: createInitialPerDeviceSettingValue(
+                            { all: "0px" },
+                            DisplayMode.DESKTOP
+                        ),
+                        padding: createInitialPerDeviceSettingValue(
+                            { all: "0px" },
+                            DisplayMode.DESKTOP
+                        ),
+                        horizontalAlign: createInitialPerDeviceSettingValue(
+                            "center",
+                            DisplayMode.DESKTOP
+                        )
                     }
                 },
                 ...options

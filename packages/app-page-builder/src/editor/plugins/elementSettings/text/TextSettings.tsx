@@ -1,9 +1,17 @@
 import React, { useCallback, useMemo } from "react";
 import { css } from "emotion";
 import { useRecoilValue } from "recoil";
+import get from "lodash/get";
+import set from "lodash/set";
+import merge from "lodash/merge";
 import { plugins } from "@webiny/plugins";
-import { PbEditorPageElementSettingsRenderComponentProps, PbThemePlugin } from "../../../../types";
-import { activeElementWithChildrenSelector } from "../../../recoil/modules";
+import { Tooltip } from "@webiny/ui/Tooltip";
+import {
+    PbEditorPageElementSettingsRenderComponentProps,
+    PbEditorResponsiveModePlugin,
+    PbThemePlugin
+} from "../../../../types";
+import { activeElementWithChildrenSelector, uiAtom } from "../../../recoil/modules";
 // Components
 import Accordion from "../../elementSettings/components/Accordion";
 import Wrapper from "../../elementSettings/components/Wrapper";
@@ -11,6 +19,7 @@ import SelectField from "../../elementSettings/components/SelectField";
 import { BaseColorPicker } from "../../elementSettings/components/ColorPicker";
 import useUpdateHandlers from "../../elementSettings/useUpdateHandlers";
 import TextAlignment from "./TextAlignment";
+import { applyFallbackDisplayMode } from "@webiny/app-page-builder/editor/plugins/elementSettings/elementSettingsUtils";
 
 const classes = {
     grid: css({
@@ -29,24 +38,21 @@ const classes = {
         alignSelf: "center"
     })
 };
+const TEXT_SETTINGS_COUNT = 4;
+const DATA_NAMESPACE = "data.text";
 
 const TextSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps & {
     options: any;
 }> = ({ defaultAccordionValue, options }) => {
+    const { displayMode } = useRecoilValue(uiAtom);
     const element = useRecoilValue(activeElementWithChildrenSelector);
     const [{ theme }] = plugins.byType<PbThemePlugin>("pb-theme");
 
-    const {
-        data: {
-            text = {
-                color: "",
-                typography: "paragraph",
-                type: "paragraph",
-                alignment: "left",
-                tag: "h1"
-            }
-        } = {}
-    } = element;
+    const { config: activeDisplayModeConfig } = useMemo(() => {
+        return plugins
+            .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
+            .find(pl => pl.config.displayMode === displayMode);
+    }, [displayMode]);
 
     const themeTypographyOptions = useMemo(() => {
         const { types } = theme.elements[element.type];
@@ -59,30 +65,60 @@ const TextSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderCom
 
     const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
         element,
-        dataNamespace: "data.text"
+        dataNamespace: DATA_NAMESPACE,
+        postModifyElement: ({ newElement }) => {
+            const value = get(newElement, `${DATA_NAMESPACE}.${displayMode}`, {});
+            // if only partial settings are there, merge it with fallback value
+            if (Object.keys(value).length < TEXT_SETTINGS_COUNT) {
+                set(newElement, `${DATA_NAMESPACE}.${displayMode}`, merge(fallbackValue, value));
+            }
+        }
     });
 
-    const updateColor = useCallback((value: string) => getUpdateValue("color")(value), [
-        getUpdateValue
-    ]);
-    const updateColorPreview = useCallback((value: string) => getUpdatePreview("color")(value), [
-        getUpdatePreview
+    const updateColor = useCallback(
+        (value: string) => getUpdateValue(`${displayMode}.color`)(value),
+        [getUpdateValue, displayMode]
+    );
+    const updateColorPreview = useCallback(
+        (value: string) => getUpdatePreview(`${displayMode}.color`)(value),
+        [getUpdatePreview]
+    );
+
+    const updateTypography = useCallback(
+        (value: string) => getUpdateValue(`${displayMode}.typography`)(value),
+        [getUpdateValue, displayMode]
+    );
+
+    const updateAlignment = useCallback(
+        (value: string) => getUpdateValue(`${displayMode}.alignment`)(value),
+        [getUpdateValue, displayMode]
+    );
+
+    const updateTag = useCallback((value: string) => getUpdateValue(`${displayMode}.tag`)(value), [
+        getUpdateValue,
+        displayMode
     ]);
 
-    const updateTypography = useCallback((value: string) => getUpdateValue("typography")(value), [
-        getUpdateValue
-    ]);
+    const fallbackValue = useMemo(
+        () =>
+            applyFallbackDisplayMode(displayMode, mode =>
+                get(element, `${DATA_NAMESPACE}.${mode}`)
+            ),
+        [displayMode]
+    );
 
-    const updateAlignment = useCallback((value: string) => getUpdateValue("alignment")(value), [
-        getUpdateValue
-    ]);
-
-    const updateTag = useCallback((value: string) => getUpdateValue("tag")(value), [
-        getUpdateValue
-    ]);
+    const text = get(element, `${DATA_NAMESPACE}.${displayMode}`, fallbackValue);
 
     return (
-        <Accordion title={"Text"} defaultValue={defaultAccordionValue}>
+        <Accordion
+            title={"Text"}
+            defaultValue={defaultAccordionValue}
+            icon={
+                <Tooltip content={`Changes will apply for ${activeDisplayModeConfig.displayMode}`}>
+                    {activeDisplayModeConfig.icon}
+                </Tooltip>
+            }
+        >
             <>
                 <Wrapper containerClassName={classes.grid} label={"Color"}>
                     <BaseColorPicker

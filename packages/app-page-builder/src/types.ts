@@ -140,6 +140,7 @@ export type PbElementDataType = {
     // this needs to be any since editor can be changed
     text?: PbElementDataTextType;
     image?: PbElementDataImageType;
+    buttonText?: string;
     link?: {
         href?: string;
         newTab?: boolean;
@@ -444,6 +445,11 @@ export type PbEditorDefaultBarLeftPlugin = Plugin & {
     render(): ReactElement;
 };
 
+export type PbEditorDefaultBarCenterPlugin = Plugin & {
+    type: "pb-editor-default-bar-center";
+    render(): ReactElement;
+};
+
 export type PbEditorDefaultBarRightPlugin = Plugin & {
     type: "pb-editor-default-bar-right";
     render(): ReactElement;
@@ -537,7 +543,9 @@ export type PbEditorPageElementSaveActionPlugin = Plugin & {
     onSave: (element: PbElement) => PbElement;
 };
 
-export type PbEditorPageElementSettingsRenderComponentProps = { defaultAccordionValue?: boolean };
+export type PbEditorPageElementSettingsRenderComponentProps = {
+    defaultAccordionValue?: boolean;
+};
 
 export type PbConfigPluginType = Plugin & {
     type: "pb-config";
@@ -546,4 +554,34 @@ export type PbConfigPluginType = Plugin & {
 
 export type PbConfigType = {
     maxEventActionsNesting: number;
+};
+
+export enum DisplayMode {
+    DESKTOP = "desktop",
+    TABLET = "tablet",
+    MOBILE_LANDSCAPE = "mobile-landscape",
+    MOBILE_PORTRAIT = "mobile-portrait"
+}
+
+export type PbEditorResponsiveModePlugin = Plugin & {
+    type: "pb-editor-responsive-mode";
+    config: {
+        displayMode: string;
+        toolTip: {
+            title: string;
+            subTitle: string;
+            body: string;
+            subTitleIcon?: ReactNode;
+        };
+        icon: React.ReactElement;
+    };
+};
+
+export type PbRenderResponsiveModePlugin = Plugin & {
+    type: "pb-render-responsive-mode";
+    config: {
+        displayMode: string;
+        maxWidth: number;
+        minWidth: number;
+    };
 };

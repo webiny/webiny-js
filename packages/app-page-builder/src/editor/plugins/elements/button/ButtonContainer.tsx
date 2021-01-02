@@ -1,16 +1,20 @@
 import React, { CSSProperties, useCallback, useRef } from "react";
-import SimpleEditableText from "./SimpleEditableText";
-import { PbElement } from "@webiny/app-page-builder/types";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
-import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
+import { useRecoilState, useRecoilValue } from "recoil";
+import kebabCase from "lodash/kebabCase";
+import merge from "lodash/merge";
+import set from "lodash/set";
+import { PbElement } from "../../../../types";
+import { useEventActionHandler } from "../../../provider";
+import { UpdateElementActionEvent } from "../../../recoil/actions";
 import {
     elementByIdSelector,
     textEditorIsActiveMutation,
     textEditorIsNotActiveMutation,
     uiAtom
-} from "@webiny/app-page-builder/editor/recoil/modules";
-import { useRecoilState, useRecoilValue } from "recoil";
+} from "../../../recoil/modules";
+import SimpleEditableText from "./SimpleEditableText";
 
+const DATA_NAMESPACE = "data.buttonText";
 type ButtonContainerPropsType = {
     getAllClasses: (...classes: string[]) => string;
     elementStyle: CSSProperties;
@@ -27,12 +31,13 @@ const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = ({
     const [uiAtomValue, setUiAtomValue] = useRecoilState(uiAtom);
     const { textEditorActive } = uiAtomValue;
     const element = useRecoilValue(elementByIdSelector(elementId));
-    const { type = "default", icon = {}, text: dataText } = element.data || {};
-    const { justifyContent } = elementStyle;
-    const defaultValue = typeof dataText === "string" ? dataText : "Click me";
+    const { type = "default", icon = {}, buttonText } = element.data || {};
+    const defaultValue = typeof buttonText === "string" ? buttonText : "Click me";
     const value = useRef<string>(defaultValue);
 
     const { svg = null, position = "left" } = icon || {};
+    // Use per-device style
+    const justifyContent = elementStyle[`--${kebabCase(uiAtomValue.displayMode)}-justify-content`];
 
     const onChange = useCallback(
         (received: string) => {
@@ -50,19 +55,18 @@ const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = ({
         if (value.current === defaultValue) {
             return;
         }
-        const newElement: PbElement = {
-            ...element,
-            elements: [],
-            data: {
-                ...element.data,
-                // @ts-ignore
-                text: value.current
-            }
-        };
+
+        const newElement: PbElement = merge(
+            {},
+            element,
+            set({ elements: [] }, DATA_NAMESPACE, value.current)
+        );
+
         eventActionHandler.trigger(
             new UpdateElementActionEvent({
                 element: newElement,
-                history: true
+                history: true,
+                merge: true
             })
         );
     }, [elementId]);

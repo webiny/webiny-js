@@ -1,8 +1,9 @@
 import React from "react";
 import loremIpsum from "lorem-ipsum";
-import { PbEditorPageElementPlugin } from "../../../../types";
+import { DisplayMode, PbEditorPageElementPlugin } from "../../../../types";
 import Text, { textClassName } from "./Paragraph";
 import { createInitialTextValue } from "../utils/textUtils";
+import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
 export default (): PbEditorPageElementPlugin => {
     const defaultLipsum = {
@@ -43,20 +44,26 @@ export default (): PbEditorPageElementPlugin => {
                 type: "paragraph",
                 elements: [],
                 data: {
-                    text: createInitialTextValue({
-                        text: previewText,
-                        type: this.elementType
-                    }),
-                    settings: {
-                        margin: {
-                            mobile: { top: "0px", left: "0px", right: "0px", bottom: "15px" },
-                            desktop: { top: "0px", left: "0px", right: "0px", bottom: "0px" },
-                            advanced: true
-                        },
-                        padding: {
-                            desktop: { all: "0px" },
-                            mobile: { all: "0px" }
+                    text: {
+                        ...createInitialPerDeviceSettingValue(
+                            createInitialTextValue({
+                                type: this.elementType
+                            }),
+                            DisplayMode.DESKTOP
+                        ),
+                        data: {
+                            text: previewText
                         }
+                    },
+                    settings: {
+                        margin: createInitialPerDeviceSettingValue(
+                            { all: "0px" },
+                            DisplayMode.DESKTOP
+                        ),
+                        padding: createInitialPerDeviceSettingValue(
+                            { all: "0px" },
+                            DisplayMode.DESKTOP
+                        )
                     }
                 },
                 ...options

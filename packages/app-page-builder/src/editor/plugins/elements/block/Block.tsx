@@ -18,7 +18,7 @@ const Block: React.FunctionComponent<BlockType> = ({ element }) => {
     const { id } = element;
 
     return (
-        <BlockStyle id={id} style={{ zIndex: 20, position: "relative" }}>
+        <BlockStyle id={id} style={{ position: "relative" }}>
             <ElementAnimation>
                 <ElementRoot element={element}>
                     {({ elementStyle, elementAttributes, customClasses, combineClassNames }) => (

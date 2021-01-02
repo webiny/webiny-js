@@ -8,9 +8,11 @@ import { ReactComponent as ImageIcon } from "./round-image-24px.svg";
 import {
     PbEditorPageElementPlugin,
     PbEditorPageElementStyleSettingsPlugin,
-    PbEditorEventActionPlugin
+    PbEditorEventActionPlugin,
+    DisplayMode
 } from "@webiny/app-page-builder/types";
 import { Plugin } from "@webiny/plugins/types";
+import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
 const PreviewBox = styled("div")({
     textAlign: "center",
@@ -44,10 +46,7 @@ export default (): Plugin[] => {
                 "pb-editor-page-element-style-settings-link",
                 "pb-editor-page-element-style-settings-border",
                 "pb-editor-page-element-style-settings-shadow",
-                [
-                    "pb-editor-page-element-style-settings-horizontal-align",
-                    { alignments: ["left", "center", "right"] }
-                ],
+                "pb-editor-page-element-style-settings-horizontal-align-flex",
                 "pb-editor-page-element-style-settings-padding",
                 "pb-editor-page-element-style-settings-margin",
                 "pb-editor-page-element-settings-clone",
@@ -60,16 +59,18 @@ export default (): Plugin[] => {
                     elements: [],
                     data: {
                         settings: {
-                            horizontalAlign: "center",
-                            margin: {
-                                desktop: { all: "0px" },
-                                mobile: { top: "0px", left: "0px", right: "0px", bottom: "15px" },
-                                advanced: true
-                            },
-                            padding: {
-                                desktop: { all: "0px" },
-                                mobile: { all: "0px" }
-                            }
+                            horizontalAlignFlex: createInitialPerDeviceSettingValue(
+                                "center",
+                                DisplayMode.DESKTOP
+                            ),
+                            margin: createInitialPerDeviceSettingValue(
+                                { all: "0px" },
+                                DisplayMode.DESKTOP
+                            ),
+                            padding: createInitialPerDeviceSettingValue(
+                                { all: "0px" },
+                                DisplayMode.DESKTOP
+                            )
                         }
                     },
                     ...options

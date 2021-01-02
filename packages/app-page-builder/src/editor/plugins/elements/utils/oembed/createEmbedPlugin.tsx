@@ -4,8 +4,10 @@ import OEmbed, { OEmbedProps } from "@webiny/app-page-builder/editor/components/
 import {
     PbElement,
     PbEditorPageElementPlugin,
-    PbEditorPageElementAdvancedSettingsPlugin
+    PbEditorPageElementAdvancedSettingsPlugin,
+    DisplayMode
 } from "@webiny/app-page-builder/types";
+import { createInitialPerDeviceSettingValue } from "../../../elementSettings/elementSettingsUtils";
 
 type EmbedPluginConfig = {
     type: string;
@@ -48,8 +50,14 @@ export const createEmbedPlugin = (config: EmbedPluginConfig): PbEditorPageElemen
                 elements: [],
                 data: {
                     settings: {
-                        margin: { desktop: { all: "0px" }, mobile: { all: "0px" } },
-                        padding: { desktop: { all: "0px" }, mobile: { all: "0px" } }
+                        margin: createInitialPerDeviceSettingValue(
+                            { all: "0px" },
+                            DisplayMode.DESKTOP
+                        ),
+                        padding: createInitialPerDeviceSettingValue(
+                            { all: "0px" },
+                            DisplayMode.DESKTOP
+                        )
                     }
                 },
                 ...options

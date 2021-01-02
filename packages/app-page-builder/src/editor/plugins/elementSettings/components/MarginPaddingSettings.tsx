@@ -5,8 +5,12 @@ import classNames from "classnames";
 import { css } from "emotion";
 import { Typography } from "@webiny/ui/Typography";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { PbEditorPageElementSettingsRenderComponentProps } from "../../../../types";
-import { activeElementWithChildrenSelector } from "../../../recoil/modules";
+import { plugins } from "@webiny/plugins";
+import {
+    PbEditorPageElementSettingsRenderComponentProps,
+    PbEditorResponsiveModePlugin
+} from "../../../../types";
+import { activeElementWithChildrenSelector, uiAtom } from "../../../recoil/modules";
 import useUpdateHandlers, { PostModifyElementArgs } from "../useUpdateHandlers";
 // Icons
 import { ReactComponent as LinkIcon } from "../../../assets/icons/link.svg";
@@ -26,6 +30,7 @@ import {
     BottomRight
 } from "./StyledComponents";
 import Accordion from "./Accordion";
+import { applyFallbackDisplayMode } from "@webiny/app-page-builder/editor/plugins/elementSettings/elementSettingsUtils";
 
 const classes = {
     gridContainerClass: css({
@@ -46,11 +51,13 @@ const classes = {
         }
     }),
     linkSettings: css({
+        boxSizing: "border-box",
+        width: 25,
+        height: 25,
         display: "flex",
         alignItems: "center",
         border: `1px solid ${COLORS.gray}`,
-        padding: "0px 5px",
-        minHeight: 30,
+        padding: "0px 4px",
 
         "& svg": {
             transform: "rotate(135deg)",
@@ -136,8 +143,20 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
     defaultAccordionValue
 }) => {
     const valueKey = `data.settings.${styleAttribute}`;
+    const { displayMode } = useRecoilValue(uiAtom);
     const element = useRecoilValue(activeElementWithChildrenSelector);
-    const advanced = get(element, `${valueKey}.advanced`, false);
+    const advanced = get(element, `${valueKey}.${displayMode}.advanced`, false);
+
+    const { config: activeEditorModeConfig } = useMemo(() => {
+        return plugins
+            .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
+            .find(pl => pl.config.displayMode === displayMode);
+    }, [displayMode]);
+
+    const fallbackValue = useMemo(
+        () => applyFallbackDisplayMode(displayMode, mode => get(element, `${valueKey}.${mode}`)),
+        [displayMode]
+    );
 
     const { getUpdateValue } = useUpdateHandlers({
         element,
@@ -148,17 +167,16 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
                 return;
             }
             const changeInTopValue = name.includes(".top");
-            const advanced = get(newElement, `${valueKey}.advanced`);
+            const advanced = get(newElement, `${valueKey}.${displayMode}.advanced`);
             // Update all values in advanced settings
             if (!advanced && changeInTopValue) {
-                const prefix = name.includes("desktop") ? "desktop" : "mobile";
                 // Modify the element directly.
-                set(newElement, `${valueKey}.${prefix}.top`, newValue);
-                set(newElement, `${valueKey}.${prefix}.right`, newValue);
-                set(newElement, `${valueKey}.${prefix}.bottom`, newValue);
-                set(newElement, `${valueKey}.${prefix}.left`, newValue);
+                set(newElement, `${valueKey}.${displayMode}.top`, newValue);
+                set(newElement, `${valueKey}.${displayMode}.right`, newValue);
+                set(newElement, `${valueKey}.${displayMode}.bottom`, newValue);
+                set(newElement, `${valueKey}.${displayMode}.left`, newValue);
                 // Also set "all"
-                set(newElement, `${valueKey}.${prefix}.all`, newValue);
+                set(newElement, `${valueKey}.${displayMode}.all`, newValue);
             }
         }
     });
@@ -166,19 +184,55 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
     const toggleAdvanced = useCallback(
         event => {
             event.stopPropagation();
-            getUpdateValue("advanced")(!advanced);
+            getUpdateValue(`${displayMode}.advanced`)(!advanced);
         },
-        [advanced]
+        [advanced, displayMode, getUpdateValue]
+    );
+
+    const updateValueTop = useCallback(
+        value => {
+            getUpdateValue(`${displayMode}.top`)(value);
+        },
+        [displayMode, getUpdateValue]
+    );
+
+    const updateValueRight = useCallback(
+        value => {
+            getUpdateValue(`${displayMode}.right`)(value);
+        },
+        [displayMode, getUpdateValue]
+    );
+
+    const updateValueBottom = useCallback(
+        value => {
+            getUpdateValue(`${displayMode}.bottom`)(value);
+        },
+        [displayMode, getUpdateValue]
+    );
+
+    const updateValueLeft = useCallback(
+        value => {
+            getUpdateValue(`${displayMode}.left`)(value);
+        },
+        [displayMode, getUpdateValue]
     );
 
     const [top, right, bottom, left] = useMemo(() => {
         return SIDES.map(side => {
             if (advanced) {
-                return get(element, valueKey + ".desktop." + side, DEFAULT_VALUE);
+                return get(
+                    element,
+                    valueKey + `.${displayMode}.` + side,
+                    get(fallbackValue, side, DEFAULT_VALUE)
+                );
             }
-            return get(element, valueKey + ".desktop." + "all", DEFAULT_VALUE);
+            return get(
+                element,
+                valueKey + `.${displayMode}.` + "all",
+                get(fallbackValue, "all", DEFAULT_VALUE)
+            );
         });
-    }, [advanced, element]);
+    }, [advanced, element, displayMode, fallbackValue]);
 
     return (
         <Accordion
@@ -196,13 +250,18 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
                     </button>
                 </Tooltip>
             }
+            icon={
+                <Tooltip content={`Changes will apply for ${activeEditorModeConfig.displayMode}`}>
+                    {activeEditorModeConfig.icon}
+                </Tooltip>
+            }
         >
             <SpacingGrid>
                 <TopLeft />
                 <Top className="align-center">
                     <SpacingPicker
                         value={top}
-                        onChange={getUpdateValue("desktop.top")}
+                        onChange={updateValueTop}
                         options={options[styleAttribute]}
                     />
                 </Top>
@@ -210,7 +269,7 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
                 <Left>
                     <SpacingPicker
                         value={left}
-                        onChange={getUpdateValue("desktop.left")}
+                        onChange={updateValueLeft}
                         options={options[styleAttribute]}
                         disabled={!advanced}
                     />
@@ -225,7 +284,7 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
                 <Right>
                     <SpacingPicker
                         value={right}
-                        onChange={getUpdateValue("desktop.right")}
+                        onChange={updateValueRight}
                         options={options[styleAttribute]}
                         disabled={!advanced}
                     />
@@ -234,7 +293,7 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
                 <Bottom className={"align-center"}>
                     <SpacingPicker
                         value={bottom}
-                        onChange={getUpdateValue("desktop.bottom")}
+                        onChange={updateValueBottom}
                         options={options[styleAttribute]}
                         disabled={!advanced}
                     />
