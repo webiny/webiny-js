@@ -52,7 +52,7 @@ export default FormEditorContext => {
                 const response = await self.apollo.mutate({
                     mutation: UPDATE_REVISION,
                     variables: {
-                        id: data.id,
+                        revision: decodeURIComponent(data.id),
                         data: pick(data, ["layout", "fields", "name", "settings", "triggers"])
                     }
                 });

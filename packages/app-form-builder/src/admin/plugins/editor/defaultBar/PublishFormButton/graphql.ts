@@ -1,9 +1,9 @@
 import gql from "graphql-tag";
 
 export const publishRevision = gql`
-    mutation FormsPublishRevision($id: ID!) {
+    mutation FormsPublishRevision($revision: ID!) {
         formBuilder {
-            publishRevision(id: $id) {
+            publishRevision(revision: $revision) {
                 error {
                     code
                     message

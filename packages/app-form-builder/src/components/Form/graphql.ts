@@ -50,9 +50,9 @@ export const DATA_FIELDS = `
 `;
 
 export const GET_PUBLISHED_FORM = gql`
-    query GetPublishedForm($id: ID, $parent: ID) {
+    query GetPublishedForm($revision: ID, $parent: ID) {
         formBuilder {
-            getPublishedForm(revision: $id, parent: $parent) {
+            getPublishedForm(revision: $revision, parent: $parent) {
                 data {
                     ${DATA_FIELDS}
                 }

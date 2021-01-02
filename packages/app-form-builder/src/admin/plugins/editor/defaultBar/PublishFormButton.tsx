@@ -31,7 +31,7 @@ const PublishFormButton = () => {
                         showConfirmation(async () => {
                             const response = await publish({
                                 variables: {
-                                    id: data.id
+                                    revision: data.id
                                 }
                             });
 

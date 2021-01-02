@@ -163,9 +163,9 @@ export const CREATE_REVISION_FROM = gql`
 `;
 
 export const PUBLISH_REVISION = gql`
-    mutation FormsPublishRevision($id: ID!) {
+    mutation FormsPublishRevision($revision: ID!) {
         formBuilder {
-            publishRevision(id: $id) {
+            publishRevision(revision: $revision) {
                 data {
                     ${BASE_FORM_FIELDS}
                 }
@@ -178,9 +178,9 @@ export const PUBLISH_REVISION = gql`
 `;
 
 export const UNPUBLISH_REVISION = gql`
-    mutation FormsUnpublishRevision($id: ID!) {
+    mutation FormsUnpublishRevision($revision: ID!) {
         formBuilder {
-            unpublishRevision(id: $id) {
+            unpublishRevision(revision: $revision) {
                 data {
                     ${BASE_FORM_FIELDS}
                 }
@@ -193,9 +193,9 @@ export const UNPUBLISH_REVISION = gql`
 `;
 
 export const DELETE_REVISION = gql`
-    mutation FormsDeleteRevision($id: ID!) {
+    mutation FormsDeleteRevision($revision: ID!) {
         formBuilder {
-            deleteForm: deleteRevision(id: $id) {
+            deleteForm: deleteRevision(revision: $revision) {
                 data
                 error {
                     ${ERROR_FIELDS}

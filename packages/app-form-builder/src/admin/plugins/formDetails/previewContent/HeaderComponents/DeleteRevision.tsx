@@ -36,7 +36,9 @@ const DeleteRevision = ({ revisions, form, revision, selectRevision }) => {
                                     mutation: lastRevision
                                         ? queries.DELETE_FORM
                                         : queries.DELETE_REVISION,
-                                    variables: { id: revision.id },
+                                    variables: lastRevision
+                                        ? { id: revision.id }
+                                        : { revision: revision.id },
                                     update: (cache, { data }) => {
                                         const { error } = data.formBuilder.deleteForm;
                                         if (error) {

@@ -58,7 +58,7 @@ export const useRevision = ({ revision, form }: UseRevisionProps) => {
         deleteRevision: () => async () => {
             await client.mutate({
                 mutation: DELETE_REVISION,
-                variables: { id: revision.id },
+                variables: { revision: revision.id },
                 update: (cache, updated) => {
                     const { error } = updated.data.formBuilder.deleteForm; // `deleteForm` because we assigned an alias
                     if (error) {
@@ -79,7 +79,7 @@ export const useRevision = ({ revision, form }: UseRevisionProps) => {
         publishRevision: () => async () => {
             const { data: res } = await client.mutate({
                 mutation: PUBLISH_REVISION,
-                variables: { id: revision.id }
+                variables: { revision: revision.id }
             });
 
             const { error } = res.formBuilder.publishRevision;
@@ -96,7 +96,7 @@ export const useRevision = ({ revision, form }: UseRevisionProps) => {
         unpublishRevision: () => async () => {
             await client.mutate({
                 mutation: UNPUBLISH_REVISION,
-                variables: { id: revision.id }
+                variables: { revision: revision.id }
             });
         }
     });

@@ -34,7 +34,7 @@ const PublishRevision = ({ revision }: PublishRevisionProps) => {
                                     showConfirmation(async () => {
                                         const { data: res } = await client.mutate({
                                             mutation: PUBLISH_REVISION,
-                                            variables: { id: revision.id }
+                                            variables: { revision: revision.id }
                                         });
 
                                         const { error } = res.formBuilder.publishRevision;
@@ -69,7 +69,7 @@ const PublishRevision = ({ revision }: PublishRevisionProps) => {
                                     showConfirmation(async () => {
                                         const { data: res } = await client.mutate({
                                             mutation: UNPUBLISH_REVISION,
-                                            variables: { id: revision.id }
+                                            variables: { revision: revision.id }
                                         });
 
                                         const { error } = res.formBuilder.unpublishRevision;

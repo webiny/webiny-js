@@ -85,9 +85,9 @@ export const GET_FORM = gql`
 `;
 
 export const UPDATE_REVISION = gql`
-    mutation UpdateForm($id: ID!, $data: FbUpdateFormInput!) {
+    mutation UpdateForm($revision: ID!, $data: FbUpdateFormInput!) {
         formBuilder {
-            updateRevision(id: $id, data: $data) {
+            updateRevision(revision: $revision, data: $data) {
                 data {
                     id
                     name

@@ -39,7 +39,7 @@ export default async ({
     let response: any = await client.mutate({
         mutation: CREATE_FORM_SUBMISSION,
         variables: {
-            id: form.id,
+            revision: form.id,
             reCaptchaResponseToken,
             data,
             meta: {

@@ -17,7 +17,7 @@ const saveFormView = ({ data, client }: FbFormRenderComponentProps) => {
     client.mutate({
         mutation: SAVE_FORM_VIEW,
         variables: {
-            id: data.id
+            revision: data.id
         }
     });
 };
