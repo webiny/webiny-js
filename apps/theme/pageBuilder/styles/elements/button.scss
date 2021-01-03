@@ -1,3 +1,42 @@
+@mixin button-loading {
+  background-image: linear-gradient(
+    var(--webiny-theme-color-primary, #ee896b) 0%,
+    var(--webiny-theme-color-primary, #ee896b) 100%
+  ) !important;
+  color: transparent;
+}
+@mixin button-primary {
+  background-color: var(--webiny-theme-color-primary, #ee896b);
+  color: var(--webiny-theme-color-on-primary, #ffffff);
+}
+@mixin button-secondary {
+  background-color: var(--webiny-theme-color-secondary, #00ccb0);
+  color: var(--webiny-theme-color-on-secondary, #ffffff);
+}
+@mixin button-outline-primary {
+  border: 2px solid var(--webiny-theme-color-primary, #ee896b);
+  color: var(--webiny-theme-color-primary, #ee896b);
+  padding: 10px 16px !important;
+  background-color: transparent;
+}
+@mixin button-outline-secondary {
+  border: 2px solid var(--webiny-theme-color-primary, #ee896b);
+  color: var(--webiny-theme-color-primary, #ee896b);
+  padding: 10px 16px !important;
+  background-color: transparent;
+}
+@mixin button-simple {
+  background-color: transparent;
+  color: var(--webiny-theme-color-primary, #ee896b);
+  padding: 0 !important;
+  min-width: 0;
+  &:hover {
+    box-shadow: none;
+    transform: none;
+    text-decoration: underline;
+  }
+}
+
 @keyframes webiny-pb-page-element-button-animation-rotate {
   100% {
     transform: rotate(360deg);
@@ -52,9 +91,9 @@
       var(--webiny-theme-color-primary, #ee896b) 0%,
       var(--webiny-theme-color-primary, #ee896b) 100%
     ) !important;
+    color: transparent;
     position: relative;
     text-transform: uppercase;
-    color: transparent;
     font-size: 0;
     height: 42px;
     transition: all 350ms ease;
@@ -79,35 +118,19 @@
     }
   }
   &--primary {
-    background-color: var(--webiny-theme-color-primary, #ee896b);
-    color: var(--webiny-theme-color-on-primary, #ffffff);
+    @include button-primary();
   }
   &--secondary {
-    background-color: var(--webiny-theme-color-secondary, #00ccb0);
-    color: var(--webiny-theme-color-on-secondary, #ffffff);
+    @include button-secondary();
   }
   &--outline-primary {
-    border: 2px solid var(--webiny-theme-color-primary, #ee896b);
-    color: var(--webiny-theme-color-primary, #ee896b);
-    padding: 10px 16px !important;
-    background-color: transparent;
+    @include button-outline-primary();
   }
   &--outline-secondary {
-    border: 2px solid var(--webiny-theme-color-secondary, #00ccb0);
-    color: var(--webiny-theme-color-secondary, #00ccb0);
-    padding: 10px 16px !important;
-    background-color: transparent;
+    @include button-outline-secondary();
   }
   &--simple {
-    background-color: transparent;
-    color: var(--webiny-theme-color-primary, #ee896b);
-    padding: 0 !important;
-    min-width: 0;
-    &:hover {
-      box-shadow: none;
-      transform: none;
-      text-decoration: underline;
-    }
+    @include button-simple();
   }
   &__icon {
     &--left {
@@ -142,8 +165,48 @@
     overflow: hidden !important;
   }
 }
+.webiny-pb-media-query--tablet .webiny-pb-page-element-button {
+  border-radius: 4px;
+  background-color: var(--webiny-theme-color-background, #fafbfb);
+  color: var(--webiny-theme-color-on-background, #131313);
+
+  &--primary {
+    @include button-primary();
+  }
+  &--secondary {
+    @include button-secondary();
+  }
+  &--outline-primary {
+    @include button-outline-primary();
+  }
+  &--outline-secondary {
+    @include button-outline-secondary();
+  }
+  &--simple {
+    @include button-simple();
+  }
+}
 .webiny-pb-media-query--mobile-landscape .webiny-pb-page-element-button,
 .webiny-pb-media-query--mobile-portrait .webiny-pb-page-element-button {
+  border-radius: 4px;
+  background-color: var(--webiny-theme-color-background, #fafbfb);
+  color: var(--webiny-theme-color-on-background, #131313);
+
+  &--primary {
+    @include button-primary();
+  }
+  &--secondary {
+    @include button-secondary();
+  }
+  &--outline-primary {
+    @include button-outline-primary();
+  }
+  &--outline-secondary {
+    @include button-outline-secondary();
+  }
+  &--simple {
+    @include button-simple();
+  }
   // force center align on mobile
   margin: 0 auto !important;
 }
