@@ -1,0 +1,32 @@
+/**
+ *  `Medium editor` styles
+ */
+@import "~medium-editor/dist/css/medium-editor.css";
+@import "~medium-editor/dist/css/themes/mani.css";
+
+/**
+ *  Override `Medium editor` toolbar default styles
+ */
+.medium-editor-toolbar {
+    border: 1px solid #f2f2f2 !important;
+    border-radius: 5px !important;
+    border-bottom: 5px solid #e86337 !important;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.75) !important;
+}
+.medium-editor-toolbar li button {
+    background-color: #fff !important;
+    min-width: 30px !important;
+    height: 30px !important;
+    line-height: 100% !important;
+    padding: 5px !important;
+    color: #757575 !important;
+    border-right: 1px solid #f2f2f2 !important;
+}
+.medium-editor-toolbar li .medium-editor-button-active {
+    background: #f2f2f2 !important;
+    color: #e86337 !important;
+}
+.medium-editor-toolbar li button:hover {
+    background-color: #fff !important;
+    color: #e86337 !important;
+}
