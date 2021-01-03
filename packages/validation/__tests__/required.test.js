@@ -1,8 +1,8 @@
 import { validation, ValidationError } from "../src";
 
 describe("required test", () => {
-    it("should pass - empty string sent", async () => {
-        await expect(validation.validate("", "required")).resolves.toBe(true);
+    it("should fail - empty string", async () => {
+        await expect(validation.validate("", "required")).rejects.toThrow(ValidationError);
     });
 
     it("should fail - null sent", async () => {

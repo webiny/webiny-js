@@ -5,7 +5,7 @@ const throwError = () => {
 };
 
 export default (value: any) => {
-    if (value === null || value === undefined) {
+    if (value === "" || value === null || value === undefined) {
         throwError();
     }
 };
