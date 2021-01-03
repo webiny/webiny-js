@@ -132,47 +132,43 @@ export const DELETE_PAGE = gql`
     }
 `;
 
-const elementFields = /*GraphQL*/ `
-    id
-    name
-    type
-    category
-    content
-    preview
+const PAGE_ELEMENT_FIELDS = /*GraphQL*/ `
+    {
+        id
+        name
+        type
+        category
+        content
+        preview
+    }
 `;
 
-export const LIST_ELEMENTS = gql`
-    query PbListElements {
+export const LIST_PAGE_ELEMENTS = gql`
+    query PbListPageElements {
         pageBuilder {
-            elements: listPageElements {
-                data {
-                    ${elementFields}
-                }
+            listPageElements {
+                data ${PAGE_ELEMENT_FIELDS}
             }
         }
     }
 `;
 
-export const CREATE_ELEMENT = gql`
-    mutation PbCreateElement($data: PbElementInput!) {
+export const CREATE_PAGE_ELEMENT = gql`
+    mutation PbCreatePageElement($data: PbPageElementInput!) {
         pageBuilder {
-            element: createElement(data: $data) {
-                data {
-                    ${elementFields}
-                }
+            createPageElement(data: $data) {
+                data ${PAGE_ELEMENT_FIELDS}
                 ${error}
             }
         }
     }
 `;
 
-export const UPDATE_ELEMENT = gql`
-    mutation PbUpdateElement($id: ID!, $data: PbUpdateElementInput!) {
+export const UPDATE_PAGE_ELEMENT = gql`
+    mutation PbUpdatePageElement($id: ID!, $data: PbPageElementInput!) {
         pageBuilder {
-            element: updateElement(id: $id, data: $data) {
-                data {
-                    ${elementFields}
-                }
+            updatePageElement(id: $id, data: $data) {
+                data ${PAGE_ELEMENT_FIELDS}
                 ${error}
             }
         }
