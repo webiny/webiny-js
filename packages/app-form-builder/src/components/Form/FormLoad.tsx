@@ -5,22 +5,12 @@ import FormRender from "./FormRender";
 import { FormLoadComponentPropsType } from "@webiny/app-form-builder/types";
 
 const FormLoad = (props: FormLoadComponentPropsType) => {
-    const variables = {
-        slug: null,
-        version: null,
-        parent: null,
-        id: null
-    };
+    const variables = {};
 
-    if (props.slug) {
-        variables.slug = props.slug;
-        if (props.version) {
-            variables.version = props.version;
-        }
-    } else if (props.parentId) {
-        variables.parent = props.parentId;
+    if (props.parentId) {
+        variables["parent"] = props.parentId;
     } else {
-        variables.id = props.revisionId;
+        variables["revision"] = props.revisionId;
     }
 
     const { data, loading, error } = useQuery(GET_PUBLISHED_FORM, {

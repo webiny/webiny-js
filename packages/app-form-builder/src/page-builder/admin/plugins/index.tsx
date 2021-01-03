@@ -39,7 +39,7 @@ export default () => [
             "pb-editor-page-element-settings-delete",
             "pb-editor-page-element-settings-height"
         ],
-        target: ["column", "row", "list-item"],
+        target: ["block", "cell"],
         onCreate: "open-settings",
         render({ element }) {
             return <FormElement element={element} />;
