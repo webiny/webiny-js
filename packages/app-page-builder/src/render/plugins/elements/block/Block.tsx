@@ -18,14 +18,17 @@ const Block = ({ element }: { element: PbElement }) => {
                 {({ elementStyle, elementAttributes, customClasses, combineClassNames }) => {
                     const containerStyle = elementStyle;
                     // Use per-device style
-                    const justifyContent =
-                        elementStyle[`--${kebabCase(displayMode)}-justify-content`];
-                    const alignItems = elementStyle[`--${kebabCase(displayMode)}-align-items`];
                     const width = elementStyle[`--${kebabCase(displayMode)}-align-items`];
+                    /**
+                     * We're swapping "justifyContent" & "alignItems" value here because
+                     * ".webiny-pb-layout-block" has "flex-direction: column"
+                     */
+                    const alignItems = elementStyle[`--${kebabCase(displayMode)}-justify-content`];
+                    const justifyContent = elementStyle[`--${kebabCase(displayMode)}-align-items`];
 
                     return (
                         <div
-                            style={{ width: "100%", display: "flex", justifyContent, alignItems }}
+                            style={{ width: "100%", display: "flex" }}
                             className={
                                 "webiny-pb-layout-block-container " +
                                 css(containerStyle as Interpolation)
@@ -34,7 +37,9 @@ const Block = ({ element }: { element: PbElement }) => {
                         >
                             <div
                                 style={{
-                                    width
+                                    width,
+                                    justifyContent,
+                                    alignItems
                                 }}
                                 className={combineClassNames(
                                     "webiny-pb-layout-block webiny-pb-base-page-element-style",
