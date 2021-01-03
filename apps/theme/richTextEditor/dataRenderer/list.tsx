@@ -11,7 +11,7 @@ export default (): RTEDataBlockRendererPlugin => {
             switch (block.data.style) {
                 case "unordered":
                     return (
-                        <ul>
+                        <ul className={"rte-block-list"}>
                             {block.data.items.map((text, i) => (
                                 <li key={i}>{text}</li>
                             ))}
@@ -20,7 +20,7 @@ export default (): RTEDataBlockRendererPlugin => {
 
                 case "ordered":
                     return (
-                        <ol>
+                        <ol className={"rte-block-list"}>
                             {block.data.items.map((text, i) => (
                                 <li key={i}>{text}</li>
                             ))}

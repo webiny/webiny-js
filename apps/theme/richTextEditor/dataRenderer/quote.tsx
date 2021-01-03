@@ -9,7 +9,7 @@ export default (): RTEDataBlockRendererPlugin => {
         blockType: "quote",
         render(block) {
             return (
-                <blockquote>
+                <blockquote className={"rte-block-blockquote"}>
                     <p>{block.data.text}</p>
                 </blockquote>
             );

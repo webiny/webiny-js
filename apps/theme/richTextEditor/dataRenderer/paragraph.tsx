@@ -1,4 +1,5 @@
 import React from "react";
+import classNames from "classnames";
 import { RTEDataBlockRendererPlugin } from "../../types";
 
 export default () =>
@@ -16,6 +17,12 @@ export default () =>
             if (block.data.className) {
                 props.className = block.data.className;
             }
-            return <p {...props} dangerouslySetInnerHTML={{ __html: block.data.text }} />;
+            return (
+                <p
+                    {...props}
+                    className={classNames("rte-block-paragraph", props.className)}
+                    dangerouslySetInnerHTML={{ __html: block.data.text }}
+                />
+            );
         }
     } as RTEDataBlockRendererPlugin);
