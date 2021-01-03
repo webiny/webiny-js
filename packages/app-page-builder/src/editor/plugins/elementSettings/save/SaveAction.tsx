@@ -2,6 +2,7 @@ import React, { useEffect, useCallback, useState } from "react";
 import dataURLtoBlob from "dataurl-to-blob";
 import SaveDialog from "./SaveDialog";
 import pick from "lodash.pick";
+import get from "lodash/get";
 import createElementPlugin from "@webiny/app-page-builder/admin/utils/createElementPlugin";
 import createBlockPlugin from "@webiny/app-page-builder/admin/utils/createBlockPlugin";
 import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
@@ -10,7 +11,10 @@ import { cloneDeep } from "lodash";
 import { plugins } from "@webiny/plugins";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
-import { CREATE_ELEMENT, UPDATE_ELEMENT } from "@webiny/app-page-builder/admin/graphql/pages";
+import {
+    CREATE_PAGE_ELEMENT,
+    UPDATE_PAGE_ELEMENT
+} from "@webiny/app-page-builder/admin/graphql/pages";
 import { useRecoilValue } from "recoil";
 import { CREATE_FILE } from "./SaveDialog/graphql";
 import { FileUploaderPlugin } from "@webiny/app/types";
@@ -75,7 +79,7 @@ const SaveAction: React.FunctionComponent = ({ children }) => {
         const blob = dataURLtoBlob(formData.preview);
         blob.name = "pb-editor-page-element-" + element.id + ".png";
 
-        const fileUploaderPlugin = plugins.byName<FileUploaderPlugin>("file-uploader");
+        const fileUploaderPlugin = plugins.byName<FileUploaderPlugin>("app-file-manager-storage");
         const previewImage = await fileUploaderPlugin.upload(blob, { apolloClient: client });
         previewImage.meta = meta;
         previewImage.meta.private = true;
@@ -87,16 +91,16 @@ const SaveAction: React.FunctionComponent = ({ children }) => {
             }
         });
 
-        const createdImage = createdImageResponse?.data?.files?.createFile || {};
+        const createdImage = get(createdImageResponse, "data.fileManager.createFile", {});
         if (createdImage.error) {
             return showSnackbar("Image could not be saved.");
         } else if (!createdImage.data.id) {
             return showSnackbar("Missing saved image id.");
         }
 
-        formData.preview = createdImage.data.id;
+        formData.preview = createdImage.data;
 
-        const query = formData.overwrite ? UPDATE_ELEMENT : CREATE_ELEMENT;
+        const query = formData.overwrite ? UPDATE_PAGE_ELEMENT : CREATE_PAGE_ELEMENT;
 
         const { data: res } = await client.mutate({
             mutation: query,
@@ -109,7 +113,8 @@ const SaveAction: React.FunctionComponent = ({ children }) => {
         });
 
         hideDialog();
-        const { data } = res.pageBuilder.element;
+        const mutationName = formData.overwrite ? "updatePageElement" : "createPageElement";
+        const data = get(res, `pageBuilder.${mutationName}.data`);
         if (data.type === "block") {
             createBlockPlugin(data);
         } else {
