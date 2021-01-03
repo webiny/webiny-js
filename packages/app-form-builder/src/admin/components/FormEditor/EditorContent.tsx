@@ -32,7 +32,7 @@ const titleIcon = css({
 
 const LeftBarFieldList = styled("div")({
     padding: 40,
-    overflow: "scroll",
+    overflow: "auto",
     height: "calc(100vh - 250px)"
 });
 

@@ -8,7 +8,7 @@ export const Flex = styled("div")({
 export const Elements = styled("div")({
     flex: "65%",
     backgroundColor: "var(--mdc-theme-background)",
-    overflow: "scroll",
+    overflow: "auto",
     marginBottom: 65
 });
 

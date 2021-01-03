@@ -20,9 +20,8 @@ const gridInner = css({
 });
 
 const RightPanelWrapper = styled("div")({
-    //padding: 25,
     backgroundColor: "var(--mdc-theme-background)",
-    overflow: "scroll",
+    overflow: "auto",
     height: "calc(100vh - 70px)"
 });
 
@@ -34,14 +33,14 @@ const leftPanel = css({
         maxHeight: "calc(100vh - 70px)",
         ".mdc-list": {
             height: "100%",
-            overflow: "scroll"
+            overflow: "auto"
         }
     },
     ">.mdc-list": {
         display: "flex",
         flexDirection: "column",
         maxHeight: "calc(100vh - 70px)",
-        overflow: "scroll"
+        overflow: "auto"
     }
 });
 
