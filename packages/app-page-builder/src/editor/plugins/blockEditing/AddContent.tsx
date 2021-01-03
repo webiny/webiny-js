@@ -1,13 +1,14 @@
 import React from "react";
-import styled from "@emotion/styled";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
-import { TogglePluginActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
-import { elementsInContentTotalSelector } from "@webiny/app-page-builder/editor/recoil/modules/page/selectors/elementsInContentTotalSelector";
+import { useRecoilValue } from "recoil";
 import { keyframes } from "emotion";
+import styled from "@emotion/styled";
 import { Elevation } from "@webiny/ui/Elevation";
 import { ButtonFloating } from "@webiny/ui/Button";
-import { ReactComponent as AddIcon } from "@webiny/app-page-builder/editor/assets/icons/add.svg";
-import { useRecoilValue } from "recoil";
+import { useEventActionHandler } from "../../provider";
+import { ReactComponent as AddIcon } from "../../assets/icons/add.svg";
+import { TogglePluginActionEvent } from "../../recoil/actions";
+import { uiAtom } from "../../recoil/modules";
+import { elementsInContentTotalSelector } from "../../recoil/modules/page/selectors/elementsInContentTotalSelector";
 
 const pulse = keyframes`
   0% {
@@ -21,32 +22,43 @@ const pulse = keyframes`
   }
 `;
 
-const AddBlockContainer = styled("div")({
-    position: "absolute",
-    zIndex: 11,
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%,-50%)",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "150px",
-    height: "100px",
-    borderRadius: 2,
-    color: "var(--mdc-theme-on-surface)",
-    marginLeft: 54
+const AddBlockContainer = styled<"div", { displayMode: string }>("div")(({ displayMode }) => {
+    const marginLeft = displayMode === "desktop" ? 54 : 0;
+    return {
+        position: "absolute",
+        zIndex: 11,
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%,-50%)",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        width: "150px",
+        height: "100px",
+        borderRadius: 2,
+        color: "var(--mdc-theme-on-surface)",
+        marginLeft,
+
+        "& .elevation": {
+            backgroundColor: "var(--mdc-theme-surface)",
+            padding: displayMode === "mobile-portrait" ? "16px 8px" : "30px 20px",
+            transform: "translateY(-50%)",
+            borderRadius: 2
+        }
+    };
 });
 
-const AddBlockContent = styled("div")({
-    width: 300,
+const AddBlockContent = styled<"div", { displayMode: string }>("div")(({ displayMode }) => ({
+    width: displayMode === "mobile-portrait" ? 280 : 300,
     margin: 5,
     textAlign: "center",
     display: "flex",
     alignItems: "center"
-});
+}));
 
 const AddContent = () => {
+    const { displayMode } = useRecoilValue(uiAtom);
     const totalElements = useRecoilValue(elementsInContentTotalSelector);
     const eventActionHandler = useEventActionHandler();
     if (totalElements) {
@@ -61,17 +73,9 @@ const AddContent = () => {
         );
     };
     return (
-        <AddBlockContainer data-type={"container"}>
-            <Elevation
-                z={4}
-                style={{
-                    backgroundColor: "var(--mdc-theme-surface)",
-                    padding: "30px 20px",
-                    transform: "translateY(-50%)",
-                    borderRadius: 2
-                }}
-            >
-                <AddBlockContent>
+        <AddBlockContainer data-type={"container"} displayMode={displayMode}>
+            <Elevation z={4} className={"elevation"}>
+                <AddBlockContent displayMode={displayMode}>
                     Click the
                     <ButtonFloating
                         data-testid={"pb-content-add-block-button"}
