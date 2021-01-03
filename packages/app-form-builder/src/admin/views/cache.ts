@@ -1,6 +1,7 @@
 import dotProp from "dot-prop-immutable";
 import { GET_FORM_REVISIONS, LIST_FORMS } from "../graphql";
 
+// Replace existing "latest" revision with the new revision
 export const updateLatestRevisionInListCache = (cache, revision) => {
     const gqlParams = { query: LIST_FORMS };
 
@@ -13,6 +14,22 @@ export const updateLatestRevisionInListCache = (cache, revision) => {
         ...gqlParams,
         data: {
             formBuilder: dotProp.set(formBuilder, `listForms.data.${index}`, revision)
+        }
+    });
+};
+
+export const addFormToListCache = (cache, revision) => {
+    const gqlParams = { query: LIST_FORMS };
+
+    const { formBuilder } = cache.readQuery(gqlParams);
+    
+    cache.writeQuery({
+        ...gqlParams,
+        data: {
+            formBuilder: dotProp.set(formBuilder, `listForms.data`, [
+                revision,
+                ...formBuilder.listForms.data
+            ])
         }
     });
 };

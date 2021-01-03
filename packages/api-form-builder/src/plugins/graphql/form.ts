@@ -41,40 +41,8 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 published: Boolean
                 locked: Boolean
                 status: FbFormStatusEnum
-                revisions: [FbForm]
                 stats: FbFormStatsType
                 overallStats: FbFormStatsType
-            }
-
-            # Contains only the data necessary for listing latest forms
-            type FbLatestForm {
-                id: ID
-                createdBy: FbFormUser
-                createdOn: DateTime
-                savedOn: DateTime
-                publishedOn: DateTime
-                version: Int
-                name: String
-                slug: String
-                published: Boolean
-                locked: Boolean
-                status: FbFormStatusEnum
-                stats: FbFormStatsType
-            }
-
-            type FbFormRevision {
-                id: ID
-                createdBy: FbFormUser
-                createdOn: DateTime
-                savedOn: DateTime
-                publishedOn: DateTime
-                version: Int
-                name: String
-                slug: String
-                published: Boolean
-                locked: Boolean
-                status: FbFormStatusEnum
-                stats: FbFormStatsType
             }
 
             type FbFieldOptionsType {
@@ -214,7 +182,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
             }
 
             type FbFormListResponse {
-                data: [FbLatestForm]
+                data: [FbForm]
                 error: FbError
             }
 
@@ -261,7 +229,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
             }
 
             type FbFormRevisionsResponse {
-                data: [FbFormRevision]
+                data: [FbForm]
                 error: FbError
             }
 
@@ -341,9 +309,6 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
             FbForm: {
                 overallStats: (form, args, { formBuilder }) => {
                     return formBuilder.forms.getFormStats(form.id);
-                },
-                revisions: (form, args, { formBuilder }) => {
-                    return formBuilder.forms.getFormRevisions(form.id);
                 },
                 settings: async (form, args, { formBuilder }) => {
                     const settings = await formBuilder.settings.getSettings({ auth: false });

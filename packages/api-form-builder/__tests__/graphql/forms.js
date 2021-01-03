@@ -16,11 +16,6 @@ export const FORM_DATA_FIELD = /* GraphQL */ `
                 }
             }
         }
-        revisions {
-            id
-            name
-            version
-        }
         triggers
         published
         locked
@@ -157,6 +152,17 @@ export const GET_FORM = /* GraphQL */ `
     query GetForm($revision: ID!) {
         formBuilder {
             getForm(revision: $revision) {
+                data ${FORM_DATA_FIELD}
+                error ${ERROR_FIELD}
+            }
+        }
+    }
+`;
+
+export const GET_FORM_REVISIONS = /* GraphQL */ `
+    query GetFormRevisions($id: ID!) {
+        formBuilder {
+            getFormRevisions(id: $id) {
                 data ${FORM_DATA_FIELD}
                 error ${ERROR_FIELD}
             }

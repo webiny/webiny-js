@@ -21,6 +21,7 @@ describe('Form Builder "Form" Test', () => {
         createRevisionFrom,
         saveFormView,
         getForm,
+        getFormRevisions,
         listForms,
         getPublishedForm,
         createFormSubmission,
@@ -155,11 +156,11 @@ describe('Form Builder "Form" Test', () => {
         expect(data2[0].id).toEqual(id2);
 
         // Delete revision #1; Revision #2 should still be "latest"
-        await deleteRevision({ revision: id });
+         await deleteRevision({ revision: id });
 
-        // Get revision #2 and verify it's the only remaining revision of this form
-        const [get] = await getForm({ revision: id2 });
-        const { revisions } = get.data.formBuilder.getForm.data;
+        // Get revisions #2 and verify it's the only remaining revision of this form
+        const [get] = await getFormRevisions({ id: id2 });
+        const { data: revisions } = get.data.formBuilder.getFormRevisions;
         expect(revisions.length).toBe(1);
         expect(revisions[0].id).toEqual(id2);
         expect(revisions[0].version).toEqual(2);
