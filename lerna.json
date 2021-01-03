@@ -17,6 +17,7 @@
       ],
       "allowBranch": [
         "master",
+        "v5-cwp",
         "next",
         "develop",
         "release-*"
