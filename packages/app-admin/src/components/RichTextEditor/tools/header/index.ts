@@ -1,10 +1,6 @@
 import { API } from "@editorjs/editorjs";
 import { ALIGNMENTS, ALIGNMENT_ICONS, TextAlign, Alignment } from "../utils";
 
-/**
- * Build styles
- */
-require("./index.css").toString();
 type Typography = {
     [key: string]: {
         label: string;
@@ -12,15 +8,18 @@ type Typography = {
         className: string;
     };
 };
+
 type HeaderData = {
     text: string;
     level: any;
     textAlign: TextAlign;
 };
+
 type HeaderConfig = {
     levels: number[];
     typography: Typography;
 };
+
 class Header {
     api: API;
     readOnly: boolean;

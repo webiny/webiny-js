@@ -2,11 +2,6 @@ import { API } from "@editorjs/editorjs";
 import { Alignment, ALIGNMENTS, TextAlign, ALIGNMENT_ICONS } from "../utils";
 
 /**
- * Build styles
- */
-require("./index.css").toString();
-
-/**
  * @typedef {object} ParagraphConfig
  * @property {string} placeholder - placeholder for the empty paragraph
  * @property {boolean} preserveBlank - Whether or not to keep blank paragraphs when saving editor data`

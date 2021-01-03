@@ -1,10 +1,5 @@
 import { API } from "@editorjs/editorjs";
 
-/**
- * Build styles
- */
-require("./index.css").toString();
-
 const COLOR_TOOL_CLASS = "cdx-text-color";
 
 class TextColorTool {
