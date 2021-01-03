@@ -13,6 +13,9 @@ import cell from "@webiny/app-page-builder/render/plugins/elements/cell";
 import icon from "@webiny/app-page-builder/render/plugins/elements/icon";
 import image from "@webiny/app-page-builder/render/plugins/elements/image";
 import paragraph from "@webiny/app-page-builder/render/plugins/elements/paragraph";
+import heading from "@webiny/app-page-builder/render/plugins/elements/heading";
+import list from "@webiny/app-page-builder/render/plugins/elements/list";
+import quote from "@webiny/app-page-builder/render/plugins/elements/quote";
 import button from "@webiny/app-page-builder/render/plugins/elements/button";
 import codepen from "@webiny/app-page-builder/render/plugins/elements/embeds/codepen";
 import codesandbox from "@webiny/app-page-builder/render/plugins/elements/embeds/codesandbox";
@@ -42,6 +45,11 @@ import width from "@webiny/app-page-builder/render/plugins/elementSettings/width
 import shadow from "@webiny/app-page-builder/render/plugins/elementSettings/shadow";
 import padding from "@webiny/app-page-builder/render/plugins/elementSettings/padding";
 import margin from "@webiny/app-page-builder/render/plugins/elementSettings/margin";
+import textSetting from "@webiny/app-page-builder/render/plugins/elementSettings/text";
+/**
+ * Responsive display mode plugins.
+ */
+import responsiveMode from "@webiny/app-page-builder/render/plugins/responsiveMode";
 
 export default [
     linkPreload(),
@@ -53,6 +61,9 @@ export default [
     image(),
     icon(),
     paragraph(),
+    heading(),
+    list(),
+    quote(),
     button(),
     codepen(),
     codesandbox(),
@@ -75,5 +86,7 @@ export default [
     width,
     shadow,
     padding,
-    margin
+    margin,
+    textSetting,
+    responsiveMode()
 ];
