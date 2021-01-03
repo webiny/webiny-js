@@ -58,7 +58,8 @@ export const renderPlugins: RenderPlugins = (type, params = {}, options = {}) =>
 
     const content = getPlugins(type)
         .filter(filter)
-        .map(plugin => renderPlugin(plugin.name, params, { wrapper, fn }));
+        .map(plugin => renderPlugin(plugin.name, params, { wrapper, fn }))
+        .filter(Boolean);
 
     if (reverse) {
         content.reverse();
