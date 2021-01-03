@@ -6,7 +6,11 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
     return (
         <FileManager>
             {({ showFileManager }) => (
-                <UiRichTextEditor {...props} context={{ ...props.context, showFileManager }} />
+                <UiRichTextEditor
+                    placeholder={"Click here to type"}
+                    {...props}
+                    context={{ ...props.context, showFileManager }}
+                />
             )}
         </FileManager>
     );

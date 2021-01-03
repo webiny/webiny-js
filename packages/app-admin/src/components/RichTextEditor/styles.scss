@@ -42,3 +42,17 @@
     max-width: 92%;
   }
 }
+
+@media (min-width: 651px) {
+  .codex-editor--narrow .codex-editor__redactor {
+    margin-right: 0 !important;
+  }
+
+  .codex-editor--narrow .ce-toolbar__plus {
+    left: -35px !important;
+  }
+
+  .codex-editor--narrow .ce-toolbar__actions {
+    right: -30px !important;
+  }
+}
