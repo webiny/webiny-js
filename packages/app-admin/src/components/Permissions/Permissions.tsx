@@ -1,4 +1,4 @@
-import React, { useMemo, Fragment } from "react";
+import React, { useMemo } from "react";
 import { AdminAppPermissionRendererPlugin } from "@webiny/app-admin/types";
 import { Accordion } from "@webiny/ui/Accordion";
 import { plugins } from "@webiny/plugins";
