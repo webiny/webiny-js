@@ -135,6 +135,7 @@
     "setup-cypress": "node scripts/setupCypress",
     "test": "jest --config jest.config.js --runInBand",
     "validate-packages": "node scripts/validatePackages.js",
+    "verdaccio:publish": "lerna publish from-package --force-publish --dist-tag beta --registry=\"http://localhost:4873\" --no-verify-access --no-verify-registry",
     "webiny-ui-build-storybook": "cd packages/ui && cross-env OUT=../../netlify-static yarn build-storybook"
   },
   "husky": {
