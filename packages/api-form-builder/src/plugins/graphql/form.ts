@@ -346,7 +346,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                     return formBuilder.forms.getFormRevisions(form.id);
                 },
                 settings: async (form, args, { formBuilder }) => {
-                    const settings = await formBuilder.settings.getSettings();
+                    const settings = await formBuilder.settings.getSettings({ auth: false });
 
                     return {
                         ...form.settings,
