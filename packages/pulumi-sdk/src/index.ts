@@ -43,7 +43,7 @@ class Pulumi {
         if (installed) {
             await execa(
                 path.join(PULUMI_FOLDER, "pulumi", "pulumi"),
-                ["plugin", "install", "resource", "aws", "v3.5.0"],
+                ["plugin", "install", "resource", "aws", "v3.22.0"],
                 {
                     stdio: "inherit",
                     env: {

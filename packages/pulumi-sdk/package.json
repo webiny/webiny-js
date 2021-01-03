@@ -18,9 +18,8 @@
     "@types/node": "^10.0.0"
   },
   "dependencies": {
-    "@pulumi/pulumi": "2.11.2",
-    "@pulumi/aws": "3.5.0",
-    "@pulumi/awsx": "0.22.0",
+    "@pulumi/pulumi": "2.16.2",
+    "@pulumi/aws": "3.22.0",
     "execa": "^4.0.3",
     "decompress": "^4.2.1",
     "lodash": "^4.17.4",
@@ -31,8 +30,7 @@
     "ignore": {
       "dependencies": [
         "@pulumi/pulumi",
-        "@pulumi/aws",
-        "@pulumi/awsx"
+        "@pulumi/aws"
       ]
     }
   },
