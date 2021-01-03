@@ -1,50 +1,13 @@
-.codex-editor {
-  .codex-editor__redactor {
-    // ".codex-editor__redactor" element has a "padding-bottom" of 300px by default,
-    // which is too much for a page document. So, we're remove it altogether here.
-    // We'll conditionally add it later when the editor is in use.
-    padding-bottom: 0 !important;
-    margin: 0;
-    transition: padding-bottom 100ms linear;
-    will-change: padding-bottom;
-  }
-
-  .ce-delimiter {
-    line-height: 1.6em;
-    width: 100%;
-    text-align: center;
-  }
-
-  .ce-delimiter:before {
+.rte-block-delimiter {
+  line-height: 1.6em;
+  width: 100%;
+  text-align: center;
+  &:before {
     display: inline-block;
     content: "***";
     font-size: 30px;
     line-height: 65px;
     height: 30px;
     letter-spacing: 0.2em;
-  }
-
-  // Reset default styles
-  .ce-block__content:focus {
-    outline: none;
-  }
-  *:focus {
-    outline: none;
-  }
-  .ce-block__content {
-    max-width: 100% !important;
-  }
-
-  // Reset drop target styles for block
-  .ce-block--drop-target .ce-block__content:before {
-    content: none !important;
-  }
-  .ce-block--drop-target .ce-block__content:after {
-    content: none !important;
-  }
-
-  // Reset Toolbar style
-  .ce-toolbar__content {
-    max-width: 92%;
   }
 }

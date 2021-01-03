@@ -1,12 +1,12 @@
 import React from "react";
 import { RTEDataBlockRendererPlugin } from "../../types";
-import { BlockType } from "./index";
 
 export default () =>
     ({
         type: "rte-data-block-renderer",
         name: "rte-data-block-renderer-header",
-        blockType: BlockType.header,
+        outputType: "react",
+        blockType: "header",
         render(block) {
             const props = { style: {}, className: null };
 

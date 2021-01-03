@@ -4,15 +4,10 @@ import { RTEDataBlockRendererPlugin } from "../../types";
 export default (): RTEDataBlockRendererPlugin => {
     return {
         type: "rte-data-block-renderer",
-        name: "rte-data-block-renderer-block",
         outputType: "react",
-        blockType: "quote",
-        render(block) {
-            return (
-                <blockquote>
-                    <p>{block.data.text}</p>
-                </blockquote>
-            );
+        blockType: "delimiter",
+        render() {
+            return <div className="rte-block-delimiter"/>;
         }
     };
 };
