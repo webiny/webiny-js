@@ -46,7 +46,7 @@ export type RichTextEditorProps = {
 };
 
 export const RichTextEditor = (props: RichTextEditorProps) => {
-    const elementId = useRef(shortid.generate());
+    const elementId = useRef("rte-" + shortid.generate());
     const editorRef = useRef<any>();
 
     useEffect(() => {
