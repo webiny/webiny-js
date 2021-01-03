@@ -1,10 +1,11 @@
 import gql from "graphql-tag";
 
-const fileFields = /* GraphQL */ `
+const FILE_FIELDS = /* GraphQL */ `
     {
         __typename
         id
         name
+        key
         src
         size
         type
@@ -13,14 +14,20 @@ const fileFields = /* GraphQL */ `
     }
 `;
 
+const ERROR_FIELDS = /* GraphQL */ `
+    {
+        code
+        message
+        data
+    }
+`;
+
 export const CREATE_FILE = gql`
     mutation CreateFile($data: FileInput!) {
-        files {
+        fileManager {
             createFile(data: $data) {
-                error {
-                    message
-                }
-                data ${fileFields}
+                error ${ERROR_FIELDS}
+                data ${FILE_FIELDS}
             }
         }
     }
