@@ -1,0 +1,5 @@
+name: api
+runtime: nodejs
+description: The stack that represent's your app's API (GraphQL, REST, ...).
+backend:
+  url: file://

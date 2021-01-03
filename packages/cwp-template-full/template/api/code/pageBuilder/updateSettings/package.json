@@ -1,0 +1,13 @@
+{
+  "name": "api-page-builder-update-settings",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "webiny run build"
+  },
+  "dependencies": {
+    "@webiny/handler-aws": "^4.14.0",
+    "@webiny/handler-db": "^4.14.0",
+    "@webiny/api-i18n": "^4.14.0",
+    "@webiny/api-page-builder": "^4.14.0"
+  }
+}

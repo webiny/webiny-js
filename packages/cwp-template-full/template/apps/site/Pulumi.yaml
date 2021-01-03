@@ -1,0 +1,5 @@
+name: site
+runtime: nodejs
+description: The stack that hosts your Site app.
+backend:
+  url: file://

@@ -1,0 +1,14 @@
+{
+  "extends": "../../../../tsconfig",
+  "references": [
+    {
+      "path": "../../../../packages/api-prerendering-service"
+    },
+    {
+      "path": "../../../../packages/api-prerendering-service-aws"
+    },
+    {
+      "path": "../../../../packages/handler-aws"
+    }
+  ]
+}
