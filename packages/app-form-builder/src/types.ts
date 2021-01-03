@@ -9,6 +9,7 @@ import {
     FormChildrenFunctionParamsSubmit
 } from "@webiny/form";
 import { ApolloClient } from "apollo-client";
+import { SecurityContextValue } from "@webiny/app-security";
 
 export type FbBuilderFieldValidator = {
     name: string;
@@ -97,6 +98,7 @@ export type FbRevisionModel = {
 };
 
 export type FbFormDetailsPluginRenderParams = {
+    security: SecurityContextValue;
     refreshForms: () => Promise<void>;
     form: FbFormModel;
     revisions: FbRevisionModel[];

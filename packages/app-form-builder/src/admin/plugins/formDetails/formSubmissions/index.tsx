@@ -26,7 +26,13 @@ export default [
     {
         name: "forms-form-details-revision-content-submissions",
         type: "forms-form-details-revision-content",
-        render({ form, loading }) {
+        render({ form, loading, security }) {
+            const { submissions } = security.identity.getPermission("fb.form");
+
+            if (typeof submissions !== "undefined" && submissions !== true) {
+                return null;
+            }
+
             return (
                 <Tab label={t`Submissions`} disabled={loading}>
                     <RenderBlock>
