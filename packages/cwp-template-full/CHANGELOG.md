@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.22](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.21...v5.0.0-beta.22) (2021-01-04)
+
+
+### Bug Fixes
+
+* add `@webiny/cli-plugin-build` package ([91af637](https://github.com/webiny/webiny-js/commit/91af637e336cb85dddceb9de1073b16278ed1d1a))
+* set Webiny package versions to `latest` ([e5e8fb2](https://github.com/webiny/webiny-js/commit/e5e8fb2ba7359e2634b241af40decd1df21e2b82))
+
+
+
+
+
 # [5.0.0-beta.21](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.20...v5.0.0-beta.21) (2021-01-04)
 
 
