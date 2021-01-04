@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.25](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.24...v5.0.0-beta.25) (2021-01-04)
+
+
+### Bug Fixes
+
+* add `theme` folder ([fe1e6f5](https://github.com/webiny/webiny-js/commit/fe1e6f5772081cf20069794a447340611a42ff42))
+
+
+
+
+
 # [5.0.0-beta.24](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.23...v5.0.0-beta.24) (2021-01-04)
 
 
