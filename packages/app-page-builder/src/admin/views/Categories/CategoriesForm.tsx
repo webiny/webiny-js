@@ -108,7 +108,7 @@ const CategoriesForm = () => {
             {({ data, form, Bind }) => (
                 <SimpleForm>
                     {loading && <CircularProgress />}
-                    <SimpleFormHeader title={data.slug || t`New category`} />
+                    <SimpleFormHeader title={data.name || t`New category`} />
                     <SimpleFormContent>
                         <Grid>
                             <Cell span={6}>
