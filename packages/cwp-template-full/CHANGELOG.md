@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.24](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.23...v5.0.0-beta.24) (2021-01-04)
+
+
+### Bug Fixes
+
+* increase hash length ([f720a7c](https://github.com/webiny/webiny-js/commit/f720a7ca455e907bbec35cdde365b1040e8c54b0))
+* reorganize dependencies ([9fd4bc6](https://github.com/webiny/webiny-js/commit/9fd4bc6b17c641b769560e6fe8d1c66131d90446))
+
+
+
+
+
 # [5.0.0-beta.23](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.22...v5.0.0-beta.23) (2021-01-04)
 
 
