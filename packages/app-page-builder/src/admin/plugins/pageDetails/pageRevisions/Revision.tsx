@@ -44,13 +44,14 @@ const revisionsMenu = css({
 });
 
 const getIcon = (rev: PbPageRevision) => {
+    const published = rev.status === "published";
     switch (true) {
-        case rev.locked && !rev.published:
+        case rev.locked && !published:
             return {
                 icon: <Icon icon={<LockIcon />} />,
                 text: "This revision is locked (it has already been published)"
             };
-        case rev.published:
+        case published:
             return {
                 icon: <Icon icon={<BeenHereIcon />} className={primaryColor} />,
                 text: "This revision is currently published!"
