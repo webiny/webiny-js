@@ -12,8 +12,6 @@ const s3BucketName = (projectId, appName, env) => {
     return `${projectId}-${appName.toLowerCase().replace(/_/g, "-")}-${env}`;
 };
 
-const IS_TEST = process.env.NODE_ENV === "test";
-
 module.exports = async ({ appName, root }) => {
     const { name, version } = require("./package.json");
     const filesToCopy = require("./filesToCopy");
@@ -26,10 +24,8 @@ module.exports = async ({ appName, root }) => {
     }
 
     //Commit .gitignore
-    if (!IS_TEST) {
-        execa.sync("git", ["add", ".gitignore"], { cwd: root });
-        execa.sync("git", ["commit", "-m", `chore: initialize .gitignore`], { cwd: root });
-    }
+    execa.sync("git", ["add", ".gitignore"], { cwd: root });
+    execa.sync("git", ["commit", "-m", `chore: initialize .gitignore`], { cwd: root });
 
     //Update api/.env.json
     const apiEnvJson = path.join(root, "api", ".env.json");
