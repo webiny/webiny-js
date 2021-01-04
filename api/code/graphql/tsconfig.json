@@ -22,7 +22,6 @@
     {
       "path": "../../../packages/api-file-manager"
     },
-    ,
     {
       "path": "../../../packages/api-file-manager-s3"
     },
