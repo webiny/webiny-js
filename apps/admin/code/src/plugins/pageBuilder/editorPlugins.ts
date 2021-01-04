@@ -36,7 +36,6 @@ import blocksCategories from "@webiny/app-page-builder/editor/plugins/blocksCate
 // Toolbar
 import addElement from "@webiny/app-page-builder/editor/plugins/toolbar/addElement";
 import saving from "@webiny/app-page-builder/editor/plugins/toolbar/saving";
-import preview from "@webiny/app-page-builder/editor/plugins/toolbar/preview";
 import { undo, redo } from "@webiny/app-page-builder/editor/plugins/toolbar/undoRedo";
 // Element settings
 import advanced from "@webiny/app-page-builder/editor/plugins/elementSettings/advanced";
@@ -107,7 +106,6 @@ export default [
     blocksCategories,
     // Toolbar
     addElement,
-    preview,
     saving,
     undo,
     redo,
