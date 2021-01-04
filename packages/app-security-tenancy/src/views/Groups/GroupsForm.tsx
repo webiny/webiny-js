@@ -1,6 +1,7 @@
 import React, { useCallback } from "react";
 import { useMutation, useQuery } from "react-apollo";
-import { pick } from "lodash";
+import pick from "lodash/pick";
+import get from "lodash/get";
 import { useRouter } from "@webiny/react-router";
 import { i18n } from "@webiny/app/i18n";
 import { Form } from "@webiny/form";
@@ -88,20 +89,18 @@ const GroupForm = () => {
 
             const response = await operation(args);
 
-            const error = response?.data?.security?.group?.error;
+            const { data: group, error } = response.data.security.group;
             if (error) {
                 return showSnackbar(error.message);
             }
 
-            const slug = response?.data?.security?.group?.data?.slug;
-
-            !isUpdate && history.push(`/security/groups?slug=${slug}`);
+            !isUpdate && history.push(`/security/groups?slug=${group.slug}`);
             showSnackbar(t`Group saved successfully!`);
         },
         [slug]
     );
 
-    const data = getQuery?.data?.security?.group.data || {};
+    const data = loading ? {} : get(getQuery, "data.security.group.data", {});
 
     return (
         <Form data={data} onSubmit={onSubmit}>
