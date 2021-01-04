@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-file-manager",
-  "version": "4.14.0",
+  "version": "5.0.0-beta.10",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -17,21 +17,21 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@commodo/fields": "1.1.2-beta.20",
-    "@webiny/api-i18n-content": "^4.14.0",
-    "@webiny/api-plugin-elastic-search-client": "^4.14.0",
-    "@webiny/api-security": "^4.14.0",
-    "@webiny/api-security-tenancy": "^4.14.0",
-    "@webiny/error": "^4.14.0",
-    "@webiny/handler": "^4.14.0",
-    "@webiny/handler-client": "^4.14.0",
-    "@webiny/handler-graphql": "^4.14.0",
-    "@webiny/project-utils": "^4.14.0",
-    "@webiny/validation": "^4.14.0",
+    "@webiny/api-i18n-content": "^5.0.0-beta.10",
+    "@webiny/api-plugin-elastic-search-client": "^5.0.0-beta.10",
+    "@webiny/api-security": "^5.0.0-beta.10",
+    "@webiny/api-security-tenancy": "^5.0.0-beta.10",
+    "@webiny/error": "^5.0.0-beta.10",
+    "@webiny/handler": "^5.0.0-beta.10",
+    "@webiny/handler-client": "^5.0.0-beta.10",
+    "@webiny/handler-graphql": "^5.0.0-beta.10",
+    "@webiny/project-utils": "^5.0.0-beta.10",
+    "@webiny/validation": "^5.0.0-beta.10",
+    "aws-sdk": "^2.539.0",
     "commodo-fields-object": "^1.0.6",
     "mdbid": "^1.0.0",
-    "sanitize-filename": "^1.6.3",
-    "aws-sdk": "^2.539.0",
-    "object-hash": "^1.3.1"
+    "object-hash": "^1.3.1",
+    "sanitize-filename": "^1.6.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

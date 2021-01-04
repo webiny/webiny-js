@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.10](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.10) (2021-01-04)
+
+
+### Bug Fixes
+
+* remove `Addons` ([3436c47](https://github.com/webiny/webiny-js/commit/3436c47b306b685b9b1b544e0f5943d0be11a46f))
+* revert to React 16.14.0 ([db2c17d](https://github.com/webiny/webiny-js/commit/db2c17df8dbcd33ce8518c9edcdc5db911571dd1))
+* **code-format:** update configs for prettier and eslint ([#1237](https://github.com/webiny/webiny-js/issues/1237)) ([5ff6d22](https://github.com/webiny/webiny-js/commit/5ff6d22f427093a52560963770dadf96d8e6685b))
+* merge `new-security` into `master` ([da26908](https://github.com/webiny/webiny-js/commit/da269089ebaf18cc00c43919688fc4a005314d72))
+
+
+### Features
+
+* add `AppFileManagerStoragePlugin` type ([d364ed1](https://github.com/webiny/webiny-js/commit/d364ed18675b2a94d8ce6db4b1054060724e81ec))
+* add `reverse` option ([4b8e5f7](https://github.com/webiny/webiny-js/commit/4b8e5f7dd2fff9ee3a2187a81f380d14149f30d8))
+* create ES indexes per tenant ([caf87e8](https://github.com/webiny/webiny-js/commit/caf87e87e4040beb48c94b62dfb1709646b6734e))
+* migrate security to v5 ([d8f2b76](https://github.com/webiny/webiny-js/commit/d8f2b76738de99772a5285b9ceae1f5969f793ed))
+
+
+
+
+
 # [4.14.0](https://github.com/webiny/webiny-js/compare/v4.14.0-beta.1...v4.14.0) (2020-10-30)
 
 **Note:** Version bump only for package @webiny/app

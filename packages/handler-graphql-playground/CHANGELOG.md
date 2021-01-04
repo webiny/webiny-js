@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.10](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.10) (2021-01-04)
+
+
+### Bug Fixes
+
+* adjust types ([c06c089](https://github.com/webiny/webiny-js/commit/c06c08906fea491a4a7fbef87214cd5cd78a4d4e))
+* correct path to `path` ([cf2dcf8](https://github.com/webiny/webiny-js/commit/cf2dcf86d900c4320db3f73bc2b2a77886658367))
+* remove old tests ([8418f1b](https://github.com/webiny/webiny-js/commit/8418f1bb4b30776d4c78154fde3e8f2d7b361340))
+* remove word `Handler` from context plugin type names ([277f0dd](https://github.com/webiny/webiny-js/commit/277f0dd300b7451a8a162678417e2b428cf002cf))
+* update dependencies ([9e23d9d](https://github.com/webiny/webiny-js/commit/9e23d9d435c8e3993713d73123a7b93119893eb1))
+* update devDependencies ([536b569](https://github.com/webiny/webiny-js/commit/536b56989c427abeb1438c4f7bf3fe69e7d804a2))
+
+
+### Features
+
+* introduce `handler-graphql-playground` package ([91855b2](https://github.com/webiny/webiny-js/commit/91855b2d9bf5d3e9c7eb52e37fedb2c8782de770))
+
+
+
+
+
 # [4.14.0](https://github.com/webiny/webiny-js/compare/v4.14.0-beta.1...v4.14.0) (2020-10-30)
 
 **Note:** Version bump only for package @webiny/handler-files

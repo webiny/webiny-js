@@ -1,6 +1,6 @@
 {
   "name": "@webiny/graphql-client",
-  "version": "4.14.0",
+  "version": "5.0.0-beta.10",
   "main": "index.js",
   "types": "types.d.ts",
   "repository": {
@@ -14,9 +14,9 @@
     "directory": "dist"
   },
   "devDependencies": {
-    "graphql-tag": "^2.10.1",
+    "@webiny/error": "^5.0.0-beta.10",
     "cross-fetch": "^3.0.6",
-    "@webiny/error": "^4.14.0"
+    "graphql-tag": "^2.10.1"
   },
   "peerDependencies": {
     "graphql": "^14.0.0 || ^15.0.0"

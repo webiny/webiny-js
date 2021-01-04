@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.10](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.10) (2021-01-04)
+
+
+### Bug Fixes
+
+* fix eslint errors ([f559a57](https://github.com/webiny/webiny-js/commit/f559a57522ab893120d8c686a2dd4caeb0c1ccb6))
+* merge `new-security` into `master` ([da26908](https://github.com/webiny/webiny-js/commit/da269089ebaf18cc00c43919688fc4a005314d72))
+* remove `@webiny/commodo-graphql` ([c63988c](https://github.com/webiny/webiny-js/commit/c63988c264e708a427d2b5beeafa4ca317e0fdf2))
+* remove `@webiny/graphql` ([ce70fd5](https://github.com/webiny/webiny-js/commit/ce70fd581456ba56787c2e12fe8075592138a3b7))
+* remove old packages from dependencies ([9342ddd](https://github.com/webiny/webiny-js/commit/9342ddd29af8f4aa10cff4f26288d0f8bda29dc2))
+* remove redundant files ([ec3452e](https://github.com/webiny/webiny-js/commit/ec3452e37467199cba9e7287b8a8f0618ba46db6))
+* remove use of `gql` in `graphql-schema` plugins ([101e8fe](https://github.com/webiny/webiny-js/commit/101e8fe782e38644d686a1670cf938e3aa6a0c0c))
+* rename `handler-apollo-server` to `handler-graphql` ([c32769a](https://github.com/webiny/webiny-js/commit/c32769a84872658898d74f0153176a7d7c7416ee))
+* **code-format:** update configs for prettier and eslint ([#1237](https://github.com/webiny/webiny-js/issues/1237)) ([5ff6d22](https://github.com/webiny/webiny-js/commit/5ff6d22f427093a52560963770dadf96d8e6685b))
+
+
+
+
+
 # [4.14.0](https://github.com/webiny/webiny-js/compare/v4.14.0-beta.1...v4.14.0) (2020-10-30)
 
 **Note:** Version bump only for package @webiny/cli-plugin-scaffold-graphql-service

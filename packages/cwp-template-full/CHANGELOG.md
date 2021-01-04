@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.10](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.10) (2021-01-04)
+
+
+### Bug Fixes
+
+* merge `new-security` into `master` ([da26908](https://github.com/webiny/webiny-js/commit/da269089ebaf18cc00c43919688fc4a005314d72))
+* remove `api-plugin-page-builder-resolvers-mongodb` ([5542806](https://github.com/webiny/webiny-js/commit/5542806e0d51611578f8e1707890a270723a0c59))
+* remove `api-settings-manager` ([547d686](https://github.com/webiny/webiny-js/commit/547d68600132b28950ce6574041bd639f0e752ff))
+* remove `serverless-*` packages 🥳🎉 ([54368f2](https://github.com/webiny/webiny-js/commit/54368f2db6d7f3091ab66fbd448ac8980c07fed3))
+* remove old packages from dependencies ([9342ddd](https://github.com/webiny/webiny-js/commit/9342ddd29af8f4aa10cff4f26288d0f8bda29dc2))
+* rename `handler-apollo-server` to `handler-graphql` ([c32769a](https://github.com/webiny/webiny-js/commit/c32769a84872658898d74f0153176a7d7c7416ee))
+* rename `JWT_SECRET` to `JWT_TOKEN_SECRET` ([b6bf5ee](https://github.com/webiny/webiny-js/commit/b6bf5eeac590f8a70921e830b9b95093ae34563a))
+* revert to React 16.14.0 ([db2c17d](https://github.com/webiny/webiny-js/commit/db2c17df8dbcd33ce8518c9edcdc5db911571dd1))
+* update dependencies ([573502c](https://github.com/webiny/webiny-js/commit/573502c066a3d76c8f23ca0a7914c3fae3ea1b05))
+
+
+### Features
+
+* **app-page-builder:** switch redux for recoil ([a1c5f18](https://github.com/webiny/webiny-js/commit/a1c5f18e271d27a6e65a912014de66dc048741a9))
+
+
+
+
+
 # [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.0...v5.0.0-beta.1) (2021-01-03)
 
 **Note:** Version bump only for package @webiny/cwp-template-full

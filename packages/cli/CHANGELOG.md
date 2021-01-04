@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.10](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.10) (2021-01-04)
+
+
+### Bug Fixes
+
+* add default value ([6888d92](https://github.com/webiny/webiny-js/commit/6888d920255e81905df042479c059577294ca527))
+* merge `new-security` into `master` ([da26908](https://github.com/webiny/webiny-js/commit/da269089ebaf18cc00c43919688fc4a005314d72))
+* remove indenting ([771c1e6](https://github.com/webiny/webiny-js/commit/771c1e694730b42f58c2405f118d48f97816c870))
+* update dependencies ([e32454c](https://github.com/webiny/webiny-js/commit/e32454c14c95f5a5f5ee4114126fd3b92020346c))
+
+
+### Features
+
+* improve error messaging when loading env files ([d48df8a](https://github.com/webiny/webiny-js/commit/d48df8a6e95e179d810ec89455e87849139417c6))
+
+
+
+
+
 # [4.14.0](https://github.com/webiny/webiny-js/compare/v4.14.0-beta.1...v4.14.0) (2020-10-30)
 
 **Note:** Version bump only for package @webiny/cli

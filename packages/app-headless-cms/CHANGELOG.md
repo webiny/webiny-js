@@ -3,6 +3,54 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.10](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.10) (2021-01-04)
+
+
+### Bug Fixes
+
+* add `error` field ([8ec9426](https://github.com/webiny/webiny-js/commit/8ec942657972b1960f992115f66f1dc851ad7c68))
+* add `value` as dependency to `onFormChange` callback ([eb9b56c](https://github.com/webiny/webiny-js/commit/eb9b56cac1d00bbeec0c1d504573989b24e8e4af))
+* add icon files and remove lodash.get ([0666136](https://github.com/webiny/webiny-js/commit/066613645e72a2b4a63938549ba07cc16845a33d))
+* add type in `createPermissionsArray` ([c3c7afe](https://github.com/webiny/webiny-js/commit/c3c7afe2cda8acbc7d60d5a0d5508afc67a472ec))
+* adjust permission name ([5653832](https://github.com/webiny/webiny-js/commit/5653832b8170232ab097d3a223bfb34462b27faf))
+* installation, operation names, etc. ([4b06551](https://github.com/webiny/webiny-js/commit/4b06551b2e29d8ea027c20ee6ded4e349121bdc9))
+* load environments only if available ([179d679](https://github.com/webiny/webiny-js/commit/179d679416743563351cb2d96159146cf89b7932))
+* merge `new-security` into `master` ([da26908](https://github.com/webiny/webiny-js/commit/da269089ebaf18cc00c43919688fc4a005314d72))
+* remove `id` as `key` ([c2e5608](https://github.com/webiny/webiny-js/commit/c2e5608edff70b0ce168b64c8e1e285843fe34d4))
+* remove old packages ([4b50392](https://github.com/webiny/webiny-js/commit/4b50392463dd9cf1ebbb563b8cd45b666be40583))
+* render only if allowed ([5ff0ead](https://github.com/webiny/webiny-js/commit/5ff0ead1681fbb72a24c9d1134138841fdfc6790))
+* revert to React 16.14.0 ([db2c17d](https://github.com/webiny/webiny-js/commit/db2c17df8dbcd33ce8518c9edcdc5db911571dd1))
+* simplify code ([45337e8](https://github.com/webiny/webiny-js/commit/45337e8bb7fdf29de5d5237bbb21a1a86ace8eb9))
+* update dependencies ([9e23d9d](https://github.com/webiny/webiny-js/commit/9e23d9d435c8e3993713d73123a7b93119893eb1))
+* update permission description ([0dca558](https://github.com/webiny/webiny-js/commit/0dca558a9c0338451cd3ef01a84c49cf17f25452))
+* update permission renderer to use "parent" instead of "securityGroup" ([9a0882c](https://github.com/webiny/webiny-js/commit/9a0882cccaee302c7a0635b4ab2a57b98eb5801b))
+* update permissions name for CMS ([208e95e](https://github.com/webiny/webiny-js/commit/208e95edef03618d0b5e340873fe7f20f9c7d499))
+
+
+### Features
+
+* **app-headless-cms:** add `accessLevelOperations` & `orderAccessLevel` ([c1addbd](https://github.com/webiny/webiny-js/commit/c1addbd74f717a333abfecb4746504f0e387b71a))
+* **app-headless-cms:** add `cmsEnvironmentPermissionPlugin` ([f7cc1b2](https://github.com/webiny/webiny-js/commit/f7cc1b2ce96533bdf047b191a22b25270ad315ad))
+* **app-headless-cms:** add `cmsSettingsPermissionPlugin` ([ef1cdcd](https://github.com/webiny/webiny-js/commit/ef1cdcd844ac06a18c00b3352b9cc00745c75c8d))
+* **app-headless-cms:** add a plugin which generates cms scopes ([c2cb605](https://github.com/webiny/webiny-js/commit/c2cb6050a79a9f560194f68c63097cea9949fb8c))
+* **app-headless-cms:** add scopes to AT form ([3211f9a](https://github.com/webiny/webiny-js/commit/3211f9a62c4bb97828f0b4d48f576862e89867a1))
+* **app-headless-cms:** add scopes to ATs & slugs to envs ([574f60e](https://github.com/webiny/webiny-js/commit/574f60e4fc785036a7d807cabd3826df6b2a0054))
+* **app-headless-cms:** add slug to env form ([ff6ab1e](https://github.com/webiny/webiny-js/commit/ff6ab1e89ffafbbac22ded440c3826afe476d6c4))
+* **app-headless-cms:** export scopesList plugin ([1e7a411](https://github.com/webiny/webiny-js/commit/1e7a411fb663c031733c82000fca6bfc9bdad879))
+* **app-headless-cms:** refactor permission renderer ([f92dd52](https://github.com/webiny/webiny-js/commit/f92dd52e2d0a0da1fccd782834c27f647308ef62))
+* **app-headless-cms:** simplify and refactor permission UI ([031ca42](https://github.com/webiny/webiny-js/commit/031ca42142f66b4b6b2c1312b32a79f2362111f7))
+* **app-headless-cms:** update `PermissionSelector` ([c69bb2b](https://github.com/webiny/webiny-js/commit/c69bb2bc1c6780082e5a29c7987d74c0fcd71096))
+* **app-headless-cms:** update permission `reducer` ([1db5887](https://github.com/webiny/webiny-js/commit/1db58875cf86f0d9ca64514a3e4649e15f8016d6))
+* **app-headless-cms:** update permission UI renderer ([87c74e9](https://github.com/webiny/webiny-js/commit/87c74e9033a9ccfca25143697a337380bcfc16a8))
+* **app-page-builder:** switch redux for recoil ([a1c5f18](https://github.com/webiny/webiny-js/commit/a1c5f18e271d27a6e65a912014de66dc048741a9))
+* add boilerplate for permission UI plugins ([d66a865](https://github.com/webiny/webiny-js/commit/d66a8653fd6d4248fb5c9aefd65aa6cc9d917857))
+* remove roles ([714a9de](https://github.com/webiny/webiny-js/commit/714a9de25fe30e29cfd4065cd6d2285bf4b6a44e))
+* update the way `permissions` are being handled ([b783a93](https://github.com/webiny/webiny-js/commit/b783a931efc1d8e69a11123463b163ab9f621974))
+
+
+
+
+
 # [4.14.0](https://github.com/webiny/webiny-js/compare/v4.14.0-beta.1...v4.14.0) (2020-10-30)
 
 **Note:** Version bump only for package @webiny/app-headless-cms

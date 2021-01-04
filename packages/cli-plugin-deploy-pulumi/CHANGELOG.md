@@ -1,0 +1,50 @@
+# Change Log
+
+All notable changes to this project will be documented in this file.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+# [5.0.0-beta.10](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.10) (2021-01-04)
+
+
+### Bug Fixes
+
+* adapt Pulumi arguments ([d758707](https://github.com/webiny/webiny-js/commit/d7587079cc5955681bf0d5953a2d67ad788b66c9))
+* adapt to latest `pulumi-sdk` changes ([e76b2d7](https://github.com/webiny/webiny-js/commit/e76b2d79d854cb05ba035c69849cb2cac59de54e))
+* adapt to newest `pulumi-sdk` changes ([7558088](https://github.com/webiny/webiny-js/commit/7558088010e9f9691acffadec18f656f5728dee0))
+* adapt to recent `pulumi-sdk` changes ([19d0160](https://github.com/webiny/webiny-js/commit/19d0160570a41950e955e2fc4e494f7732896040))
+* add missing / remove redundant dependencies ([cdc8c39](https://github.com/webiny/webiny-js/commit/cdc8c3980890834f4c4d0d6beee372525f18cad6))
+* change icon (weird spacing with the previous one) ([abe9be6](https://github.com/webiny/webiny-js/commit/abe9be621b9a3abd1bbb1e01f8f4b14959ddaf22))
+* check AWS credentials and region before deployment ([f49c6fa](https://github.com/webiny/webiny-js/commit/f49c6fa5855274c7c3a4a9310eb416d25c2e05c2))
+* cleanup args ([23021a8](https://github.com/webiny/webiny-js/commit/23021a8c29f8aace81392bf87331753f0ceb0ef9))
+* first instantiate and then execute `run` ([f6525fe](https://github.com/webiny/webiny-js/commit/f6525fed1088dec877c53562ba2fd32b24dba0e9))
+* forward original pulumi output to stdout ([5fba9c3](https://github.com/webiny/webiny-js/commit/5fba9c35b3f4b3b9eb90bc50add7c22b4b2f631f))
+* improve error messaging ([cd8b67d](https://github.com/webiny/webiny-js/commit/cd8b67d3be687aada6cf1fc70b18a0a4c03b3b99))
+* improve messaging ([15a27e6](https://github.com/webiny/webiny-js/commit/15a27e665e03d225d2e413e42f5efc7d1e68487d))
+* improve messaging ([b5dc28c](https://github.com/webiny/webiny-js/commit/b5dc28c36b7b8ecd14be5e27ea4b3e704d082414))
+* only execute hook for `api` stack ([7cadc66](https://github.com/webiny/webiny-js/commit/7cadc6680e2f934d627402e01cce0c89883c2d28))
+* pass env ([6f8980c](https://github.com/webiny/webiny-js/commit/6f8980c991c7cbcd4b0c45d40718ff5d40bc44fa))
+* pass region to config Pulumi files ([5bea518](https://github.com/webiny/webiny-js/commit/5bea5189729ccc0c528a3c590a4ca82849ba1b17))
+* prettier and eslint run for v5 ([3069a33](https://github.com/webiny/webiny-js/commit/3069a33ccef2fd3767818b274a730df28cecaf5b))
+* remove `sleep` calls ([e88b5d5](https://github.com/webiny/webiny-js/commit/e88b5d580521a5fb0bbf7c6352590830660c3670))
+* remove build phase ([28eae01](https://github.com/webiny/webiny-js/commit/28eae011821e314ae5a809f536f9ccdff2f13d96))
+* remove new line ([84f1b83](https://github.com/webiny/webiny-js/commit/84f1b833a5e9d6e2d2c398c87ef066fd4a65a3cc))
+* remove options ([cdf40e2](https://github.com/webiny/webiny-js/commit/cdf40e2bc7bb32425f47b3a0c9d7fd8d8ed41531))
+* remove setting `aws:region` to Pulumi.yaml ([8b4a425](https://github.com/webiny/webiny-js/commit/8b4a425d38f8c329f2abd693c2cf4a8029eac098))
+* rename `folder` to `stack` ([984e405](https://github.com/webiny/webiny-js/commit/984e40556c8c43332982ce9c1113eac069d5b55f))
+* rename `folder` to `stack` ([765ee96](https://github.com/webiny/webiny-js/commit/765ee96478ec620f8ca4ef54df7eb2f9317750a2))
+* rename `remove` to `destroy` ([d1537f3](https://github.com/webiny/webiny-js/commit/d1537f301ae0f0fd8b740faf11f94eaf8f92d5f4))
+* rename `remove` to `destroy` ([289a990](https://github.com/webiny/webiny-js/commit/289a99011c0af401e318b92e31c2cb42d2cbf162))
+* rename `remove` to `destroy` ([24dacd0](https://github.com/webiny/webiny-js/commit/24dacd05e7661624515fc9e657c9e080e568f66e))
+* return plain object instead of an array ([472a642](https://github.com/webiny/webiny-js/commit/472a642a36078d88033d3b714f64d8fdc9400738))
+* simplify message (remove word "binaries") ([868f304](https://github.com/webiny/webiny-js/commit/868f3042b7dd7b68cf86cc5db11f717f26be8248))
+* update command execution (used old approach) ([ce9cf88](https://github.com/webiny/webiny-js/commit/ce9cf88d8fb29047d96f2f76775d779dc7473750))
+* update dependencies ([e32454c](https://github.com/webiny/webiny-js/commit/e32454c14c95f5a5f5ee4114126fd3b92020346c))
+* use the `toConsole` function ([00b2361](https://github.com/webiny/webiny-js/commit/00b23611cc60c9b9ba17e10304605062a456cc59))
+
+
+### Features
+
+* **app-page-builder:** switch redux for recoil ([a1c5f18](https://github.com/webiny/webiny-js/commit/a1c5f18e271d27a6e65a912014de66dc048741a9))
+* add Elastic domain setup ([2205343](https://github.com/webiny/webiny-js/commit/220534345830ce216bc82667f2d3d6390df8d9e8))
+* add ES service role creation plugin ([72baddb](https://github.com/webiny/webiny-js/commit/72baddbe1ff89a0cff0047508183f0678988bb53))
+* introduce cli-plugin-deploy-pulumi ([6e2a61e](https://github.com/webiny/webiny-js/commit/6e2a61e04b99322e7dbe00e41836fda101fcdc89))

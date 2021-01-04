@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-security-tenancy",
-  "version": "4.14.0",
+  "version": "5.0.0-beta.10",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -11,19 +11,19 @@
   "license": "MIT",
   "dependencies": {
     "@commodo/fields": "1.1.2-beta.20",
-    "@webiny/api-security": "^4.14.0",
-    "@webiny/db-dynamodb": "^4.14.0",
-    "@webiny/validation": "^4.14.0",
-    "@webiny/handler": "^4.14.0",
-    "@webiny/handler-aws": "^4.14.0",
-    "@webiny/handler-graphql": "^4.14.0",
-    "@webiny/handler-db": "^4.14.0",
-    "@webiny/handler-http": "^4.14.0",
-    "@webiny/plugins": "^4.14.0",
+    "@webiny/api-security": "^5.0.0-beta.10",
+    "@webiny/db-dynamodb": "^5.0.0-beta.10",
+    "@webiny/handler": "^5.0.0-beta.10",
+    "@webiny/handler-aws": "^5.0.0-beta.10",
+    "@webiny/handler-db": "^5.0.0-beta.10",
+    "@webiny/handler-graphql": "^5.0.0-beta.10",
+    "@webiny/handler-http": "^5.0.0-beta.10",
+    "@webiny/plugins": "^5.0.0-beta.10",
+    "@webiny/validation": "^5.0.0-beta.10",
     "commodo-fields-object": "^1.0.6",
     "deep-equal": "^2.0.4",
-    "mdbid": "^1.0.0",
-    "md5": "^2.3.0"
+    "md5": "^2.3.0",
+    "mdbid": "^1.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

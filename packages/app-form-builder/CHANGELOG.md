@@ -3,6 +3,65 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.10](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.10) (2021-01-04)
+
+
+### Bug Fixes
+
+* **app-page-builder:** update `Form` page element target ([23230db](https://github.com/webiny/webiny-js/commit/23230db5a254f91cd61ce0094d1e3e04913b2b41))
+* installation, operation names, etc. ([4b06551](https://github.com/webiny/webiny-js/commit/4b06551b2e29d8ea027c20ee6ded4e349121bdc9))
+* refactor to match new DataList props ([cf021c8](https://github.com/webiny/webiny-js/commit/cf021c8265175d02479866f3bbe253763a135d2b))
+* refetch "Form list" on mount ([edb8f95](https://github.com/webiny/webiny-js/commit/edb8f950c5a8599e09626a0875a4d415d08312ac))
+* rename `ssr-cache` to `ps-tag` ([b1e0dec](https://github.com/webiny/webiny-js/commit/b1e0dec8b4996cfcf4797b3413e5fa8069cb10e0))
+* resolve ES errors ([345b203](https://github.com/webiny/webiny-js/commit/345b203cad70011fdb79aa7ef261cb2bbbd2545e))
+* revert to React 16.14.0 ([db2c17d](https://github.com/webiny/webiny-js/commit/db2c17df8dbcd33ce8518c9edcdc5db911571dd1))
+* run prettier ([db9ddae](https://github.com/webiny/webiny-js/commit/db9ddae47197cfec2669993fac571853aa7800d5))
+* update `FormsExportFormSubmissions` schema ([1bec0fc](https://github.com/webiny/webiny-js/commit/1bec0fc0a434ed69d636f17a7c38c26beabfd430))
+* update permission renderer to use "parent" instead of "securityGroup" ([9a0882c](https://github.com/webiny/webiny-js/commit/9a0882cccaee302c7a0635b4ab2a57b98eb5801b))
+* update queries to match new graphql parameters ([451af90](https://github.com/webiny/webiny-js/commit/451af906f370d5f1bfc00e8fff35e085ae4279e2))
+* update tsconfig references and deps ([eec7eb0](https://github.com/webiny/webiny-js/commit/eec7eb00bc276a9d1496458315b3eb9ec0930f35))
+* **app-form-builder:** add `client` to `FbFormRenderComponentProps` type ([e269cf8](https://github.com/webiny/webiny-js/commit/e269cf8e27305814bd12f1fd6abedce91f79b6af))
+* **app-form-builder:** always send `parent` form id ([bc9d2bf](https://github.com/webiny/webiny-js/commit/bc9d2bf467913e24041db37b4ea3144cd1f21b50))
+* **app-form-builder:** fix query variable ([5cbf7d8](https://github.com/webiny/webiny-js/commit/5cbf7d8718e0440425928bbeb8376b60ead130d8))
+* **app-form-builder:** remove `nested locale` values ([422ae4a](https://github.com/webiny/webiny-js/commit/422ae4a6853977e3266a512d042ee5867be3a046))
+* **app-form-builder:** remove redundant value field from field `label` ([3ca05d3](https://github.com/webiny/webiny-js/commit/3ca05d369ae550582d2e8f44ee295ca35c2e37ef))
+* **app-form-builder:** replace "I18NStringValue" with "string" ([d3d2d3c](https://github.com/webiny/webiny-js/commit/d3d2d3c1b843cfa1cc9169131ffcb18acec0b687))
+* **app-form-builder:** replace `I18NInput` with `Input` ([4bc66dd](https://github.com/webiny/webiny-js/commit/4bc66ddbfb2ca70d39b3671f81045cd0cc3c854c))
+* **app-form-builder:** replace `I18NInput` with `Input` ([ccbc425](https://github.com/webiny/webiny-js/commit/ccbc425739e41c2a19247e457f38b138a3667015))
+* **app-form-builder:** update `form` graphql schema ([42746b3](https://github.com/webiny/webiny-js/commit/42746b3529292776802baa532049e794a6d5f835))
+* **app-form-builder:** update forms permissions ([9bd5d83](https://github.com/webiny/webiny-js/commit/9bd5d836c19dd02cb5b727ad6a69fc0ae6c49434))
+* **app-form-builder:** use error message directly ([fcc7550](https://github.com/webiny/webiny-js/commit/fcc75505dc2f7d2bb5ade35f1ab96111c27508cd))
+* **app-form-builder:** use form `id & status` for editHandler key ([ca4db2b](https://github.com/webiny/webiny-js/commit/ca4db2b47be9ad2a7cddedbeb724306b2eae2755))
+* **app-form-builder:** use label value directly in `FieldContainer` info ([34323fe](https://github.com/webiny/webiny-js/commit/34323fe6c3801b0f988e8e6939d138d3a66c2832))
+* add `value` as dependency to `onFormChange` callback ([eb9b56c](https://github.com/webiny/webiny-js/commit/eb9b56cac1d00bbeec0c1d504573989b24e8e4af))
+* update dependencies ([9e23d9d](https://github.com/webiny/webiny-js/commit/9e23d9d435c8e3993713d73123a7b93119893eb1))
+* **code-format:** update configs for prettier and eslint ([#1237](https://github.com/webiny/webiny-js/issues/1237)) ([5ff6d22](https://github.com/webiny/webiny-js/commit/5ff6d22f427093a52560963770dadf96d8e6685b))
+* merge `new-security` into `master` ([da26908](https://github.com/webiny/webiny-js/commit/da269089ebaf18cc00c43919688fc4a005314d72))
+
+
+### Features
+
+* **app-form-builder:** add "RichTextEditor" ([73a6a84](https://github.com/webiny/webiny-js/commit/73a6a8401a64d4b10cf39ded542d60cbcabe68f1))
+* **app-form-builder:** add `GET_FORM_REVISIONS` query ([23c19c8](https://github.com/webiny/webiny-js/commit/23c19c8e84be8142c12374df8fede47d67dd1a1c))
+* **app-form-builder:** add `permissionRenderer` to plugins ([0cda145](https://github.com/webiny/webiny-js/commit/0cda14521e517ad4a8848683a411c9ef610f51e7))
+* **app-form-builder:** add permission renderer ([56354b9](https://github.com/webiny/webiny-js/commit/56354b9ec202bb6ed3f0121f0cb62371b5c78be8))
+* **app-form-builder:** encode form `id` in URL ([b343cb3](https://github.com/webiny/webiny-js/commit/b343cb3b8c8ccfe7455522f3963b49432fa0bbab))
+* **app-form-builder:** remove `nested locale` values ([2de35e6](https://github.com/webiny/webiny-js/commit/2de35e6642e4e416b6cceaa1e01c74c39067b567))
+* **app-form-builder:** remove `slug` from `FormLoad` component ([6d63143](https://github.com/webiny/webiny-js/commit/6d63143fa482a95e74e2e9011da7b69c96831659))
+* **app-form-builder:** remove locale values ([8e491f2](https://github.com/webiny/webiny-js/commit/8e491f20b45829f3dc9d3abb03322ac25b395cde))
+* **app-form-builder:** update `advanced settings` UI ([c1a849a](https://github.com/webiny/webiny-js/commit/c1a849a35c41d4f5e0dee53264cb83213b98614e))
+* **app-form-builder:** update `Form` element advanced settings ([2815007](https://github.com/webiny/webiny-js/commit/2815007b992df5ff10572aa81838b21e543ad58b))
+* rewrite and improve form builder ([b5f5fb9](https://github.com/webiny/webiny-js/commit/b5f5fb91dba8ff7d753601cee05501481fb74f54))
+* rewrite form builder ([1b42622](https://github.com/webiny/webiny-js/commit/1b42622147c71964db96b894b9e353b536d8ba75))
+* **app-form-builder:** update `form id` for editor ([0c2d381](https://github.com/webiny/webiny-js/commit/0c2d381d5fc385fd9d1a0c9c7263267393ef35ad))
+* **app-form-builder:** use encoded form id in URL ([9312a57](https://github.com/webiny/webiny-js/commit/9312a570c059759dbaa7b175d21abc959d548fc6))
+* **app-page-builder:** switch redux for recoil ([a1c5f18](https://github.com/webiny/webiny-js/commit/a1c5f18e271d27a6e65a912014de66dc048741a9))
+* add "form builder" admin app plugins ([d08044e](https://github.com/webiny/webiny-js/commit/d08044ec8814882e4f748895298bb3998c596ed7))
+
+
+
+
+
 # [4.14.0](https://github.com/webiny/webiny-js/compare/v4.14.0-beta.1...v4.14.0) (2020-10-30)
 
 **Note:** Version bump only for package @webiny/app-form-builder
