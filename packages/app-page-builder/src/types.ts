@@ -327,6 +327,8 @@ export type PbEditorPageElementGroupPlugin = Plugin & {
         title: string;
         // Icon rendered in the toolbar.
         icon: ReactElement;
+        // Empty element group view rendered in the toolbar.
+        emptyView?: ReactElement;
     };
 };
 
