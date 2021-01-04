@@ -11,7 +11,7 @@ function Forms() {
     const [newFormDialogOpened, openNewFormDialog] = React.useState(false);
 
     const listQuery = useQuery(LIST_FORMS);
-    
+
     return (
         <>
             <NewFormDialog open={newFormDialogOpened} onClose={() => openNewFormDialog(false)} />

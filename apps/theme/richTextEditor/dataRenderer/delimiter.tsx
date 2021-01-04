@@ -7,7 +7,7 @@ export default (): RTEDataBlockRendererPlugin => {
         outputType: "react",
         blockType: "delimiter",
         render() {
-            return <div className="rte-block-delimiter"/>;
+            return <div className="rte-block-delimiter" />;
         }
     };
 };

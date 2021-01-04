@@ -36,7 +36,7 @@ const PublishFormButton = () => {
                                 update(cache, { data }) {
                                     const { data: revision, error } =
                                         data.formBuilder.publishRevision || {};
-                                    
+
                                     if (error) {
                                         return showSnackbar(error.message);
                                     }

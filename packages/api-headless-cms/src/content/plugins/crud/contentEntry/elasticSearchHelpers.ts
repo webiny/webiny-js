@@ -251,10 +251,6 @@ const createModelFieldOptions = (
     context: CmsContext,
     model: CmsContentModelType
 ): ModelFieldsType => {
-    const plugins = context.plugins.byType<CmsModelFieldToGraphQLPlugin>(
-        "cms-model-field-to-graphql"
-    );
-
     const modelFields = model.fields.map(field => {
         return {
             id: field.fieldId,
@@ -284,17 +280,29 @@ const createModelFieldOptions = (
             isSortable: true
         }
     };
-
-    const pluginFieldTypes = plugins.reduce((types, plugin) => {
-        const { fieldType, elasticSearch, isSearchable, isSortable } = plugin;
-        const { unmappedType } = elasticSearch || {};
-        types[fieldType] = {
-            unmappedType: unmappedType || undefined,
-            isSearchable: isSearchable === true,
-            isSortable: isSortable === true
-        };
-        return types;
-    }, {});
+    // collect all unmappedType from elastic plugins
+    const unmappedTypes = context.plugins
+        .byType<CmsModelFieldToElasticSearchPlugin>("cms-model-field-to-elastic-search")
+        .reduce((acc, plugin) => {
+            if (!plugin.unmappedType) {
+                return acc;
+            }
+            acc[plugin.fieldType] = plugin.unmappedType;
+            return acc;
+        }, {});
+    // collect all field types from
+    const pluginFieldTypes = context.plugins
+        .byType<CmsModelFieldToGraphQLPlugin>("cms-model-field-to-graphql")
+        .reduce((types, plugin) => {
+            const { fieldType, isSearchable, isSortable } = plugin;
+            const unmappedType = unmappedTypes[fieldType];
+            types[fieldType] = {
+                unmappedType: unmappedType || undefined,
+                isSearchable: isSearchable === true,
+                isSortable: isSortable === true
+            };
+            return types;
+        }, {});
 
     return modelFields.reduce((fields, { id, type }) => {
         if (!pluginFieldTypes[type]) {
@@ -442,7 +450,7 @@ export const prepareEntryToIndex = (args: PrepareElasticSearchDataArgsType): Ind
         const targetFieldPlugin =
             mappedFieldToElasticSearchPlugins[field.type] || defaultIndexFieldPlugin;
         // we decided to take only last registered plugin for given field type
-        if (targetFieldPlugin) {
+        if (targetFieldPlugin && targetFieldPlugin.toIndex) {
             const newEntryValues = targetFieldPlugin.toIndex({
                 context,
                 model,
@@ -490,7 +498,7 @@ export const extractEntriesFromIndex = ({
                 throw new Error(`Missing field type plugin "${field.type}".`);
             }
             const targetFieldPlugin = fieldPlugins[field.type];
-            if (targetFieldPlugin) {
+            if (targetFieldPlugin && targetFieldPlugin.fromIndex) {
                 const calculatedEntry = targetFieldPlugin.fromIndex({
                     context,
                     model,

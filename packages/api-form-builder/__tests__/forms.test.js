@@ -156,7 +156,7 @@ describe('Form Builder "Form" Test', () => {
         expect(data2[0].id).toEqual(id2);
 
         // Delete revision #1; Revision #2 should still be "latest"
-         await deleteRevision({ revision: id });
+        await deleteRevision({ revision: id });
 
         // Get revisions #2 and verify it's the only remaining revision of this form
         const [get] = await getFormRevisions({ id: id2 });
