@@ -5,7 +5,7 @@
 		"build": "webiny run build"
 	},
 	"dependencies": {
-		"@webiny/handler-aws": "^4.13.0",
-		"@webiny/api-file-manager": "^4.13.0"
+		"@webiny/handler-aws": "latest",
+		"@webiny/api-file-manager": "latest"
 	}
 }

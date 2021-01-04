@@ -5,9 +5,9 @@
 		"build": "webiny run build"
 	},
 	"dependencies": {
-		"@webiny/handler": "^4.13.0",
-		"@webiny/handler-aws": "^4.13.0",
-		"@webiny/handler-graphql-playground": "^4.13.0",
-		"@webiny/project-utils": "^4.13.0"
+		"@webiny/handler": "latest",
+		"@webiny/handler-aws": "latest",
+		"@webiny/handler-graphql-playground": "latest",
+		"@webiny/project-utils": "latest"
 	}
 }

@@ -5,20 +5,21 @@
     "build": "webiny run build"
   },
   "dependencies": {
-    "@webiny/api-file-manager": "^4.13.0",
-    "@webiny/api-file-manager-s3": "^4.14.0",
-    "@webiny/api-form-builder": "^4.13.0",
-    "@webiny/api-i18n": "^4.13.0",
-    "@webiny/api-i18n-content": "^4.13.0",
-    "@webiny/api-page-builder": "^4.13.0",
-    "@webiny/api-plugin-elastic-search-client": "^4.13.0",
-    "@webiny/api-plugin-security-cognito": "^4.13.0",
-    "@webiny/api-security": "^4.13.0",
-    "@webiny/api-security-tenancy": "^4.13.0",
-    "@webiny/handler-aws": "^4.13.0",
-    "@webiny/handler-db": "^4.13.0",
-    "@webiny/handler-graphql": "^4.13.0",
-    "@webiny/db-dynamodb": "^4.13.0",
-    "@webiny/project-utils": "^4.13.0"
+    "@webiny/api-file-manager": "latest",
+    "@webiny/api-file-manager-s3": "latest",
+    "@webiny/api-form-builder": "latest",
+    "@webiny/api-headless-cms": "latest",
+    "@webiny/api-i18n": "latest",
+    "@webiny/api-i18n-content": "latest",
+    "@webiny/api-page-builder": "latest",
+    "@webiny/api-plugin-elastic-search-client": "latest",
+    "@webiny/api-plugin-security-cognito": "latest",
+    "@webiny/api-security": "latest",
+    "@webiny/api-security-tenancy": "latest",
+    "@webiny/handler-aws": "latest",
+    "@webiny/handler-db": "latest",
+    "@webiny/handler-graphql": "latest",
+    "@webiny/db-dynamodb": "latest",
+    "@webiny/project-utils": "latest"
   }
 }
