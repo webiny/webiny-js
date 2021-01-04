@@ -15,17 +15,12 @@ module.exports = [
         newFile: ".gitattributes"
     },
     {
-        dir: "api",
+        dir: "apps/admin/code",
         oldFile: "example.env.json",
         newFile: ".env.json"
     },
     {
-        dir: "apps/admin",
-        oldFile: "example.env.json",
-        newFile: ".env.json"
-    },
-    {
-        dir: "apps/site",
+        dir: "apps/site/code",
         oldFile: "example.env.json",
         newFile: ".env.json"
     },
