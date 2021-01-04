@@ -1,4 +1,5 @@
 import richTextIndexing from "./richTextIndexing";
 import defaultFieldIndexPlugin from "./defaultFieldIndexPlugin";
+import dateTimeIndexing from "./dateTimeIndexing";
 
-export default () => [richTextIndexing(), defaultFieldIndexPlugin()];
+export default () => [dateTimeIndexing(), richTextIndexing(), defaultFieldIndexPlugin()];

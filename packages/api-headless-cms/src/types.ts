@@ -115,9 +115,6 @@ export type CmsModelFieldDefinitionType = {
 export type CmsModelFieldToGraphQLPlugin = Plugin & {
     type: "cms-model-field-to-graphql";
     fieldType: string;
-    elasticSearch?: {
-        unmappedType?: string;
-    };
     isSearchable: boolean;
     isSortable: boolean;
     read: {
@@ -623,7 +620,7 @@ export type CmsModelFieldToElasticSearchPlugin = Plugin & {
     /**
      * { rawData: { description: ["<p>blah-blah<p>"] }, search: { description: "blah-blah"} }
      */
-    toIndex(params: {
+    toIndex?(params: {
         fieldTypePlugin: CmsModelFieldToGraphQLPlugin;
         field: CmsContentModelFieldType;
         context: CmsContext;
@@ -633,7 +630,7 @@ export type CmsModelFieldToElasticSearchPlugin = Plugin & {
         // This is the entry in the original form (the way it comes into the API)
         originalEntry: CmsContentEntryType;
     }): CmsModelFieldToElasticSearchPluginResultType;
-    fromIndex(params: {
+    fromIndex?(params: {
         context: CmsContext;
         model: CmsContentModelType;
         fieldTypePlugin: CmsModelFieldToGraphQLPlugin;

@@ -22,7 +22,7 @@ export const addFormToListCache = (cache, revision) => {
     const gqlParams = { query: LIST_FORMS };
 
     const { formBuilder } = cache.readQuery(gqlParams);
-    
+
     cache.writeQuery({
         ...gqlParams,
         data: {
