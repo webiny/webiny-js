@@ -427,9 +427,9 @@ async function createApp({ projectName, template, tag, log }) {
 
         console.log(`\nWriting log to ${blue(path.resolve(logPath))}...`);
         fs.writeFileSync(path.resolve(logPath), err.toString());
-        console.log("Cleaning up project...");
-        rimraf.sync(root);
-        console.log("Project cleaned!");
+        // console.log("Cleaning up project...");
+        // rimraf.sync(root);
+        // console.log("Project cleaned!");
         process.exit(1);
     });
 
