@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.14](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.13...v5.0.0-beta.14) (2021-01-04)
+
+
+### Bug Fixes
+
+* move PB after-deploy plugin to PB package ([b3be3b1](https://github.com/webiny/webiny-js/commit/b3be3b1979c609d201e8eca3af00b65ab643061b))
+* update dependencies ([69ae3a3](https://github.com/webiny/webiny-js/commit/69ae3a3cf1a5ba641be9546f1b46a6b75543079a))
+
+
+
+
+
 # [5.0.0-beta.10](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.10) (2021-01-04)
 
 
