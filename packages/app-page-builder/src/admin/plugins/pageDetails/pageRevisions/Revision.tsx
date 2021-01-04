@@ -70,7 +70,7 @@ const Div = ({ children }) => {
 
 const Revision = ({ revision, page }: RevisionProps) => {
     const { icon, text: tooltipText } = getIcon(revision);
-    const { getWebsiteUrl, getPagePreviewUrl } = usePageBuilderSettings();
+    const { getWebsiteUrl, getPageUrl } = usePageBuilderSettings();
     const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getWebsiteUrl());
 
     const { deleteRevision, createRevision, publishRevision, editRevision } = useRevisionHandlers({
@@ -136,7 +136,10 @@ const Revision = ({ revision, page }: RevisionProps) => {
                                 onClick={() => {
                                     if (isSiteRunning) {
                                         window.open(
-                                            getPagePreviewUrl(revision),
+                                            getPageUrl({
+                                                ...revision,
+                                                path: page.path
+                                            }),
                                             "_blank",
                                             "noopener"
                                         );
