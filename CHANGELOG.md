@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.11](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.10...v5.0.0-beta.11) (2021-01-04)
+
+
+### Bug Fixes
+
+* revert file relocation ([6962d7d](https://github.com/webiny/webiny-js/commit/6962d7d741d3cf8197f4258dd7fea750501b43a0))
+
+
+
+
+
 # [5.0.0-beta.10](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.10) (2021-01-04)
 
 
