@@ -29,6 +29,8 @@
 		"@webiny/handler-graphql": "^5.0.0-beta.10",
 		"@webiny/plugins": "^5.0.0-beta.10",
 		"@webiny/validation": "^5.0.0-beta.10",
+		"@webiny/pulumi-sdk": "^5.0.0-beta.10",
+		"chalk": "^2.4.1",
 		"commodo-fields-object": "^1.0.6",
 		"dataloader": "^2.0.0",
 		"jsonpack": "^1.1.5",
