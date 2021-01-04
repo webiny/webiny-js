@@ -9,7 +9,6 @@
     "@webiny/plugins": "latest",
     "@webiny/project-utils": "latest",
     "@webiny/react-router": "latest",
-    "@webiny/cli-plugin-deploy-pulumi": "latest",
     "apollo-client": "^2.2.8",
     "apollo-link": "^1.2.14",
     "apollo-link-batch-http": "^1.2.14",
@@ -24,9 +23,6 @@
     "react-helmet": "^6.1.0",
     "regenerator-runtime": "^0.13.5",
     "theme": "^0.1.0"
-  },
-  "devDependencies": {
-    "env-cmd": "^10.1.0"
   },
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
