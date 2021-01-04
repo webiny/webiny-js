@@ -7,7 +7,7 @@ const loadJson = require("load-json-file");
 const writeJson = require("write-json-file");
 const crypto = require("crypto");
 
-function random(length = 5) {
+function random(length = 32) {
     return crypto
         .randomBytes(Math.ceil(length / 2))
         .toString("hex")
