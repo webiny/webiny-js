@@ -3,24 +3,8 @@
   "dependencies": {
     "@webiny/aws-layers": "latest",
     "@webiny/cli": "latest",
-    "@webiny/cli-plugin-deploy-components": "latest",
-    "@webiny/cli-plugin-scaffold": "latest",
-    "@webiny/cli-plugin-scaffold-graphql-service": "latest",
-    "@webiny/cli-plugin-scaffold-lambda": "latest",
-    "@webiny/cli-plugin-scaffold-node-package": "latest",
-    "@webiny/cli-plugin-scaffold-react-package": "latest",
-    "@webiny/cli-plugin-scaffold-admin-app-module": "latest",
-    "@webiny/cli-plugin-scaffold-react-app": "latest",
-    "@webiny/project-utils": "latest",
-    "@webiny/serverless-api-gateway": "latest",
-    "@webiny/serverless-aws-api-gateway": "latest",
-    "@webiny/serverless-aws-cloudfront": "latest",
-    "@webiny/serverless-aws-cognito-user-pool": "latest",
-    "@webiny/serverless-aws-lambda": "latest",
-    "@webiny/serverless-aws-s3-object": "latest",
-    "@webiny/serverless-component": "latest",
-    "@webiny/serverless-files": "latest",
-    "@webiny/serverless-function": "latest"
+    "@webiny/cli-plugin-deploy-pulumi": "latest",
+    "@webiny/project-utils": "latest"
   },
   "devDependencies": {
     "@babel/cli": "^7.10.4",
@@ -54,16 +38,18 @@
   },
   "workspaces": {
     "packages": [
-      "apps/*",
-      "api/apolloGateway",
-      "api/databaseProxy",
-      "api/files/*",
-      "api/formBuilder",
-      "api/cms/*",
-      "api/i18n/*",
-      "api/pageBuilder",
-      "api/security/*",
-      "api/settingsManager"
+      "apps/admin/code",
+      "apps/site/code",
+      "apps/theme",
+      "api/code/fileManager/*",
+      "api/code/graphqlPlayground",
+      "api/code/graphql",
+      "api/code/headlessCMS",
+      "api/code/fileManager/*",
+      "api/code/pageBuilder/*",
+      "api/code/prerenderingService/render",
+      "api/code/prerenderingService/flush",
+      "api/code/prerenderingService/queue/*"
     ]
   },
   "scripts": {
