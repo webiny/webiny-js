@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { pingSite } from "./utils";
 
 export const useSiteStatus = url => {
-    const [active, setActive] = useState(true);
+    const [active, setActive] = useState(false);
 
     useEffect(() => {
         if (url) {
