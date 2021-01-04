@@ -47,7 +47,6 @@ const LIST_PUBLISHED_PAGES = gql`
 export function PagesAutocomplete(props) {
     const [query, setQuery] = useState();
     const listPublishedPagesQuery = useQuery(LIST_PUBLISHED_PAGES, {
-        skip: !query,
         variables: {
             search: {
                 query
@@ -71,7 +70,7 @@ export function PagesAutocomplete(props) {
         <AutoComplete
             {...props}
             options={publishedPages}
-            onInput={debounce(query => query && setQuery(query), 250)}
+            onInput={debounce(query => typeof query === "string" && setQuery(query), 250)}
             valueProp={"uniquePageId"}
             textProp={"title"}
             value={publishedPage}

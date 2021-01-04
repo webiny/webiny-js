@@ -103,7 +103,7 @@ const MenusForm = () => {
             {({ data, form, Bind }) => (
                 <SimpleForm data-testid={"pb-menus-form"}>
                     {loading && <CircularProgress />}
-                    <SimpleFormHeader title={data.slug || t`New menu`} />
+                    <SimpleFormHeader title={data.title || t`New menu`} />
                     <SimpleFormContent>
                         <Grid>
                             <Cell span={6}>
