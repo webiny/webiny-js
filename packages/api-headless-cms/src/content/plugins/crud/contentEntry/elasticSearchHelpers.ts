@@ -14,6 +14,7 @@ import {
 import { decodeElasticSearchCursor } from "@webiny/api-headless-cms/utils";
 import Error from "@webiny/error";
 import lodashMerge from "lodash/merge";
+import lodashCloneDeep from "lodash/cloneDeep";
 
 type ModelFieldType = {
     unmappedType?: string;
@@ -251,13 +252,6 @@ const createModelFieldOptions = (
     context: CmsContext,
     model: CmsContentModelType
 ): ModelFieldsType => {
-    const modelFields = model.fields.map(field => {
-        return {
-            id: field.fieldId,
-            type: field.type
-        };
-    });
-
     const systemFields: ModelFieldsType = {
         id: {
             type: "text",
@@ -304,12 +298,12 @@ const createModelFieldOptions = (
             return types;
         }, {});
 
-    return modelFields.reduce((fields, { id, type }) => {
+    return model.fields.reduce((fields, { fieldId, type }) => {
         if (!pluginFieldTypes[type]) {
             throw new Error(`There is no plugin for field type "${type}".`);
         }
         const { isSearchable, isSortable, unmappedType } = pluginFieldTypes[type];
-        fields[id] = {
+        fields[fieldId] = {
             type,
             isSearchable,
             isSortable,
@@ -430,7 +424,7 @@ export const prepareEntryToIndex = (args: PrepareElasticSearchDataArgsType): Ind
     }
 
     let preparedEntry: IndexedEntryType = {
-        ...storageEntry,
+        ...lodashCloneDeep(storageEntry),
         rawData: {}
     };
     for (const fieldId in storageEntry.values) {
@@ -475,19 +469,19 @@ export const extractEntriesFromIndex = ({
         model
     });
 
-    const modelFieldToGraphqlPlugins = context.plugins.byType<CmsModelFieldToGraphQLPlugin>(
-        "cms-model-field-to-graphql"
-    );
-    const mappedPluginFieldTypes: Record<string, CmsModelFieldToGraphQLPlugin> = {};
-    for (const plugin of modelFieldToGraphqlPlugins) {
-        mappedPluginFieldTypes[plugin.fieldType] = plugin;
-    }
+    const mappedPluginFieldTypes: Record<
+        string,
+        CmsModelFieldToGraphQLPlugin
+    > = context.plugins
+        .byType<CmsModelFieldToGraphQLPlugin>("cms-model-field-to-graphql")
+        .reduce((plugins, plugin) => {
+            plugins[plugin.fieldType] = plugin;
+            return plugins;
+        }, {});
 
     const list: CmsContentEntryType[] = [];
     for (const entry of entries) {
-        let newEntry: CmsContentEntryType = {
-            ...entry
-        };
+        let newEntry: CmsContentEntryType = lodashCloneDeep(entry);
         for (const fieldId in fieldsAsObject) {
             if (fieldsAsObject.hasOwnProperty(fieldId) === false) {
                 continue;
