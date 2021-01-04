@@ -145,7 +145,8 @@ const Welcome = () => {
                                     )}
                                     {!canSeeAnyWidget && (
                                         <p className={pGetStartedStyle}>
-                                            Please contact the administrator for permissions to access Webiny apps.
+                                            Please contact the administrator for permissions to
+                                            access Webiny apps.
                                         </p>
                                     )}
                                     <br />
