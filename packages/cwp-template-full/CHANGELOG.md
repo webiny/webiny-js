@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.19](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.18...v5.0.0-beta.19) (2021-01-04)
+
+
+### Bug Fixes
+
+* add example env.json files ([283f415](https://github.com/webiny/webiny-js/commit/283f415ad4442085438b2d5e8d6f79461c3566f7))
+* clean up redundant steps ([8086d6f](https://github.com/webiny/webiny-js/commit/8086d6ffcebb23e5372f26cd2771ddac56334f36))
+* update list of files ([58fa81a](https://github.com/webiny/webiny-js/commit/58fa81a1c288295970825dc85d0a4fd4dd40544b))
+
+
+
+
+
 # [5.0.0-beta.17](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.16...v5.0.0-beta.17) (2021-01-04)
 
 
