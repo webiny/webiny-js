@@ -54,7 +54,7 @@ describe("Security Access Token Test", () => {
         // Update token
         const [update] = await securityApiKeys.update({
             id: token.id,
-            data: { name: "Renamed token", description: "Updated description" }
+            data: { name: "Renamed token", description: "Updated description", permissions: [] }
         });
 
         const { data: updatedToken } = update.data.security.updateApiKey;
