@@ -1,15 +1,12 @@
-// @ts-nocheck
-import React from "react";
+import React, { CSSProperties } from "react";
 import { css } from "emotion";
 import styled from "@emotion/styled";
 import classNames from "classnames";
-import kebabCase from "lodash/kebabCase";
-import { plugins } from "@webiny/plugins";
 import { Typography } from "@webiny/ui/Typography";
 import { Select } from "@webiny/ui/Select";
-import { PbPageDetailsContextValue, PbRenderResponsiveModePlugin } from "../../../../types";
+import { PbPageData } from "../../../../types";
 import RenderElement from "../../../../render/components/Element";
-import { PageBuilderContext, PageBuilderContextValue } from "../../../../contexts/PageBuilder";
+import useResponsiveClassName from "../../../../hooks/useResponsiveClassName";
 import Zoom from "./Zoom";
 
 const pageInnerWrapper = css({
@@ -54,65 +51,19 @@ const PagePreviewToolbar = styled("div")({
 });
 
 type PagePreviewProps = {
-    page: PbPageDetailsContextValue;
+    page: PbPageData;
 };
 
 const PagePreview = ({ page }: PagePreviewProps) => {
-    const {
-        responsiveDisplayMode: { displayMode, setDisplayMode }
-    } = React.useContext<PageBuilderContextValue>(PageBuilderContext);
-    const pagePreviewRef = React.useRef();
-    const responsiveModeConfigs = React.useMemo(() => {
-        return plugins
-            .byType<PbRenderResponsiveModePlugin>("pb-render-responsive-mode")
-            .map(pl => pl.config);
-    }, []);
-
-    const resizeObserver = React.useMemo(() => {
-        return new ResizeObserver(entries => {
-            for (const entry of entries) {
-                const { width, height } = entry.contentRect;
-                handlerResize({ width, height });
-            }
-        });
-    }, []);
-    // Set resize observer
-    React.useEffect(() => {
-        if (pagePreviewRef.current) {
-            // Add resize observer
-            resizeObserver.observe(pagePreviewRef.current);
-        }
-        // Cleanup
-        return () => {
-            resizeObserver.disconnect();
-        };
-    }, []);
-    // Handle document resize
-    const handlerResize = React.useCallback(
-        ({ width }) => {
-            let mode = "desktop";
-            responsiveModeConfigs.forEach(config => {
-                if (width <= config.minWidth) {
-                    mode = config.displayMode;
-                }
-            });
-
-            setDisplayMode(mode);
-        },
-        [responsiveModeConfigs]
-    );
+    const { pageElementRef, responsiveClassName } = useResponsiveClassName();
 
     return (
         <Zoom>
             {({ zoom, setZoom }) => (
                 <div
-                    ref={pagePreviewRef}
-                    className={classNames(
-                        pageInnerWrapper,
-                        ` webiny-pb-media-query--${kebabCase(displayMode)}`
-                    )}
-                    // @ts-ignore
-                    style={{ "--webiny-pb-page-preview-scale": zoom }}
+                    ref={pageElementRef}
+                    className={classNames(pageInnerWrapper, responsiveClassName)}
+                    style={{ "--webiny-pb-page-preview-scale": zoom } as CSSProperties}
                 >
                     <RenderElement key={page.id} element={page.content} />
                     <PagePreviewToolbar>
