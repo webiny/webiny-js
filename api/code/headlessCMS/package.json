@@ -9,6 +9,7 @@
     "@webiny/api-file-manager-s3": "^4.14.0",
     "@webiny/api-form-builder": "^4.13.0",
     "@webiny/api-i18n": "^4.13.0",
+    "@webiny/api-headless-cms": "^4.13.0",
     "@webiny/api-i18n-content": "^4.13.0",
     "@webiny/api-page-builder": "^4.13.0",
     "@webiny/api-plugin-elastic-search-client": "^4.13.0",
