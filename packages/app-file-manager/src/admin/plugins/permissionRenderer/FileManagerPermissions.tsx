@@ -84,7 +84,7 @@ export const FileManagerPermissions = ({ value, onChange }) => {
         }
 
         const data = {
-            accessScope: CUSTOM_ACCESS,
+            accessLevel: CUSTOM_ACCESS,
             filesAccessScope: NO_ACCESS,
             settingsAccessScope: NO_ACCESS,
             filesRWD: "r"
