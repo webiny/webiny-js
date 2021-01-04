@@ -21,6 +21,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { pickDataForAPI } from "./utils";
 import * as GQL from "./graphql";
+import {SnackbarAction} from "@webiny/ui/Snackbar";
 
 const t = i18n.ns("app-security-tenancy/admin/api-keys/form");
 
@@ -58,6 +59,15 @@ const ApiKeyForm = () => {
 
     const onSubmit = useCallback(
         async data => {
+            if(!data.permissions || !data.permissions.length) {
+                showSnackbar(t`You must configure permissions before saving!`, {
+                    timeout: 60000,
+                    dismissesOnAction: true,
+                    action: <SnackbarAction label={"OK"} />
+                });
+                return;
+            }
+            
             const isUpdate = data.createdOn;
             const [operation, args] = isUpdate
                 ? [update, { variables: { id: data.id, data: pickDataForAPI(data) } }]
@@ -149,7 +159,7 @@ const ApiKeyForm = () => {
                                     <Typography use={"subtitle1"}>{t`Permissions`}</Typography>
                                 </Cell>
                                 <Cell span={12}>
-                                    <Bind name={"permissions"}>
+                                    <Bind name={"permissions"} defaultValue={[]}>
                                         {bind => <Permissions id={data.id || "new"} {...bind} />}
                                     </Bind>
                                 </Cell>
