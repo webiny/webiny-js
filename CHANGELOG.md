@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.23](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.22...v5.0.0-beta.23) (2021-01-04)
+
+
+### Bug Fixes
+
+* generate  `PULUMI_CONFIG_PASSPHRASE` ([8010108](https://github.com/webiny/webiny-js/commit/801010851eea81a3be06c2c2db92c589530d59a7))
+* update `env.json` ([6b68c32](https://github.com/webiny/webiny-js/commit/6b68c32eab1930bb08432adbd27c18cd5e9d35da))
+
+
+
+
+
 # [5.0.0-beta.22](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.21...v5.0.0-beta.22) (2021-01-04)
 
 
