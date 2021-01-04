@@ -4,8 +4,8 @@ module.exports = {
     create({ yargs, context }) {
         yargs.example("$0 destroy api --env=dev");
         yargs.command(
-            "destroy <folder>",
-            `destroy resources from <folder>.`,
+            "destroy <stack>",
+            `Destroys given stack`,
             yargs => {
                 yargs.positional("stack", {
                     describe: `Stack to destroy`,
