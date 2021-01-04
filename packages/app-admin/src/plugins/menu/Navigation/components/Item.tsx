@@ -7,8 +7,10 @@ import { css } from "emotion";
 const linkStyle = css({
     color: "var(--mdc-theme-text-primary-on-background)",
     textDecoration: "none",
-    display: "block",
+    display: "flex",
+    alignItems: "center",
     width: "100%",
+    height: "100%",
     outline: "none",
     paddingLeft: 65,
     "&:hover": {
