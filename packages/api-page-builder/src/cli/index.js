@@ -3,7 +3,7 @@ const LambdaClient = require("aws-sdk/clients/lambda");
 const path = require("path");
 const { green } = require("chalk");
 
-export default () => [
+module.exports = () => [
     {
         type: "hook-after-deploy",
         name: "hook-after-deploy-pb-update-settings",
