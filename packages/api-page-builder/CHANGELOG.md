@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.17](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.16...v5.0.0-beta.17) (2021-01-04)
+
+
+### Bug Fixes
+
+* export a function ([7cde27e](https://github.com/webiny/webiny-js/commit/7cde27e6a5228d80c586ab118a1171316f0fadbb))
+
+
+
+
+
 # [5.0.0-beta.14](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.13...v5.0.0-beta.14) (2021-01-04)
 
 
