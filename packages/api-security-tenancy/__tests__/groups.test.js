@@ -61,7 +61,6 @@ describe("Security Group CRUD Test", () => {
             slug: mocks.groupB.slug,
             data: {
                 name: updatedName,
-                slug: mocks.groupB.slug,
                 permissions: mocks.groupB.permissions
             }
         });

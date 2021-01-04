@@ -16,7 +16,7 @@ const ERROR_FIELD = /* GraphQL */ `
 `;
 
 export const CREATE_SECURITY_GROUP = /* GraphQL */ `
-    mutation CreateGroup($data: SecurityGroupInput!) {
+    mutation CreateGroup($data: SecurityGroupCreateInput!) {
         security {
             createGroup(data: $data) {
                 data ${DATA_FIELD}
@@ -27,7 +27,7 @@ export const CREATE_SECURITY_GROUP = /* GraphQL */ `
 `;
 
 export const UPDATE_SECURITY_GROUP = /* GraphQL */ `
-    mutation UpdateGroup($slug: String!, $data: SecurityGroupInput!) {
+    mutation UpdateGroup($slug: String!, $data: SecurityGroupUpdateInput!) {
         security {
             updateGroup(slug: $slug, data: $data) {
                 data ${DATA_FIELD}

@@ -27,11 +27,17 @@ const plugin: GraphQLSchemaPlugin = {
                 permissions: [JSON]
             }
 
-            input SecurityGroupInput {
+            input SecurityGroupCreateInput {
                 name: String!
                 slug: String!
                 description: String
-                permissions: [JSON]!
+                permissions: [JSON!]!
+            }
+
+            input SecurityGroupUpdateInput {
+                name: String
+                description: String
+                permissions: [JSON!]
             }
 
             type SecurityGroupResponse {
@@ -50,8 +56,8 @@ const plugin: GraphQLSchemaPlugin = {
             }
 
             extend type SecurityMutation {
-                createGroup(data: SecurityGroupInput!): SecurityGroupResponse
-                updateGroup(slug: String!, data: SecurityGroupInput!): SecurityGroupResponse
+                createGroup(data: SecurityGroupCreateInput!): SecurityGroupResponse
+                updateGroup(slug: String!, data: SecurityGroupUpdateInput!): SecurityGroupResponse
                 deleteGroup(slug: String!): SecurityBooleanResponse
             }
         `,
