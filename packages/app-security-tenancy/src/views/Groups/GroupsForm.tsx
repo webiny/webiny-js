@@ -1,5 +1,6 @@
 import React, { useCallback } from "react";
 import { useMutation, useQuery } from "react-apollo";
+import { pick } from "lodash";
 import { useRouter } from "@webiny/react-router";
 import { i18n } from "@webiny/app/i18n";
 import { Form } from "@webiny/form";
@@ -17,7 +18,6 @@ import {
 import { Typography } from "@webiny/ui/Typography";
 import { Permissions } from "@webiny/app-admin/components/Permissions";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { pickDataForAPI } from "./utils";
 import { CREATE_GROUP, LIST_GROUPS, READ_GROUP, UPDATE_GROUP } from "./graphql";
 import { SnackbarAction } from "@webiny/ui/Snackbar";
 
@@ -68,8 +68,23 @@ const GroupForm = () => {
 
             const isUpdate = data.createdOn;
             const [operation, args] = isUpdate
-                ? [update, { variables: { slug: data.slug, data: pickDataForAPI(data) } }]
-                : [create, { variables: { data: pickDataForAPI(data) } }];
+                ? [
+                      update,
+                      {
+                          variables: {
+                              slug: data.slug,
+                              data: pick(data, ["name", "description", "permissions"])
+                          }
+                      }
+                  ]
+                : [
+                      create,
+                      {
+                          variables: {
+                              data: pick(data, ["name", "slug", "description", "permissions"])
+                          }
+                      }
+                  ];
 
             const response = await operation(args);
 
@@ -81,7 +96,7 @@ const GroupForm = () => {
             const slug = response?.data?.security?.group?.data?.slug;
 
             !isUpdate && history.push(`/security/groups?slug=${slug}`);
-            showSnackbar(t`Group saved successfully.`);
+            showSnackbar(t`Group saved successfully!`);
         },
         [slug]
     );
@@ -110,7 +125,7 @@ const GroupForm = () => {
                                         name="slug"
                                         validators={validation.create("required,minLength:3")}
                                     >
-                                        <Input disabled={data.id} label={t`Slug`} />
+                                        <Input disabled={Boolean(slug)} label={t`Slug`} />
                                     </Bind>
                                 </Cell>
                             </Grid>
