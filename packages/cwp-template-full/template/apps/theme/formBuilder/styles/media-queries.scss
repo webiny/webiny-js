@@ -1,0 +1,23 @@
+@mixin mobile {
+  @media (min-width: 0px) and (max-width: #{$webiny-fb-theme-tablet-width - 1px}) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (min-width: #{$webiny-fb-theme-tablet-width}) and (max-width: #{$webiny-fb-theme-desktop-width - 1px}) {
+    @content;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: #{$webiny-fb-theme-desktop-width}) {
+    @content;
+  }
+}
+
+@mixin desktop-and-tablet {
+  @media (min-width: #{$webiny-fb-theme-tablet-width}) {
+    @content;
+  }
+}

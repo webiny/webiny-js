@@ -1,0 +1,78 @@
+.webiny-pb-section-footer {
+  background-color: var(--webiny-theme-color-background, #eaecec);
+  height: 100px;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  &__wrapper {
+    margin: 0 auto;
+    max-width: 1200px;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    justify-content: space-between;
+    flex-direction: row;
+  }
+
+  &__logo {
+    flex: 1;
+    align-items: center;
+    display: flex;
+    a {
+      display: inline-block;
+      line-height: 80%;
+      img {
+        max-height: 25px;
+        margin-right: 10px;
+      }
+    }
+  }
+  &__social {
+    text-align: right;
+    a {
+      display: inline-block;
+      svg {
+        height: 25px;
+        margin-left: 10px;
+        opacity: 0.5;
+        transition: opacity 0.3s;
+        color: var(--webiny-theme-color-on-background, #131313);
+        &:hover {
+          opacity: 1;
+        }
+      }
+    }
+  }
+}
+
+// adjust some styles in case when we render the full layout inside the page editor
+.webiny-pb-editor-content-preview {
+  .webiny-pb-section-footer {
+    padding: 0 10px;
+    box-sizing: border-box;
+    position: relative;
+  }
+}
+
+.webiny-pb-media-query--mobile-landscape .webiny-pb-section-footer,
+.webiny-pb-media-query--mobile-portrait .webiny-pb-section-footer {
+  &__wrapper {
+    justify-content: space-evenly;
+    flex-direction: column;
+  }
+
+  &__logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    img {
+      margin-bottom: 5px;
+    }
+  }
+  &__social {
+    flex: 1;
+    height: 25px;
+    padding-bottom: 10px;
+  }
+}
