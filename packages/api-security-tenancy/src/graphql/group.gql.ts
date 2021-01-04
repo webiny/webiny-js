@@ -28,10 +28,10 @@ const plugin: GraphQLSchemaPlugin = {
             }
 
             input SecurityGroupInput {
-                name: String
-                slug: String
+                name: String!
+                slug: String!
                 description: String
-                permissions: [JSON]
+                permissions: [JSON]!
             }
 
             type SecurityGroupResponse {
