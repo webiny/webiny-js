@@ -7,8 +7,8 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
         <FileManager>
             {({ showFileManager }) => (
                 <UiRichTextEditor
-                    placeholder={"Click here to type"}
                     {...props}
+                    placeholder={props.placeholder || "Click here to type"}
                     context={{ ...props.context, showFileManager }}
                 />
             )}
