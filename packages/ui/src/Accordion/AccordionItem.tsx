@@ -51,7 +51,8 @@ const defaultStyle = {
     transition: `all ${duration}ms ease-in-out`,
     opacity: 0,
     height: 0,
-    pointerEvents: "none"
+    pointerEvents: "none",
+    overflow: "hidden"
 };
 
 const transitionStyles = {
