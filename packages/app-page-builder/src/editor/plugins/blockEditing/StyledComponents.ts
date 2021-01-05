@@ -107,7 +107,9 @@ export const DeleteBlock = styled("div")({
     right: 0,
     zIndex: 100,
     cursor: "pointer",
-    color: "white"
+    "& svg": {
+        color: "var(--mdc-theme-surface)"
+    }
 });
 
 export const EditBlock = styled("div")({
@@ -118,7 +120,9 @@ export const EditBlock = styled("div")({
     left: 0,
     zIndex: 100,
     cursor: "pointer",
-    color: "white"
+    "& svg": {
+        color: "var(--mdc-theme-surface)"
+    }
 });
 
 export const Overlay = styled("div")({
