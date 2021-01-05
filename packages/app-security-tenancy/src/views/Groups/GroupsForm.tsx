@@ -7,6 +7,7 @@ import { i18n } from "@webiny/app/i18n";
 import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
+import { Alert } from "@webiny/ui/Alert";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { validation } from "@webiny/validation";
@@ -102,6 +103,8 @@ const GroupForm = () => {
 
     const data = loading ? {} : get(getQuery, "data.security.group.data", {});
 
+    const systemGroup = data.slug === "full-access";
+
     return (
         <Form data={data} onSubmit={onSubmit}>
             {({ data, form, Bind }) => {
@@ -116,7 +119,7 @@ const GroupForm = () => {
                                         name="name"
                                         validators={validation.create("required,minLength:3")}
                                     >
-                                        <Input label={t`Name`} />
+                                        <Input label={t`Name`} disabled={systemGroup} />
                                     </Bind>
                                 </Cell>
                                 <Cell span={6}>
@@ -134,24 +137,44 @@ const GroupForm = () => {
                                         name="description"
                                         validators={validation.create("maxLength:500")}
                                     >
-                                        <Input label={t`Description`} rows={3} />
+                                        <Input
+                                            label={t`Description`}
+                                            rows={3}
+                                            disabled={systemGroup}
+                                        />
                                     </Bind>
                                 </Cell>
                             </Grid>
-                            <Grid>
-                                <Cell span={12}>
-                                    <Typography use={"subtitle1"}>{t`Permissions`}</Typography>
-                                </Cell>
-                                <Cell span={12}>
-                                    <Bind name={"permissions"} defaultValue={[]}>
-                                        {bind => <Permissions id={data.slug || "new"} {...bind} />}
-                                    </Bind>
-                                </Cell>
-                            </Grid>
+                            {systemGroup && (
+                                <Grid>
+                                    <Cell span={12}>
+                                        <Alert type={"info"} title={"Permissions are locked"}>
+                                            This is a protected system group and you can&apos;t modify its
+                                            permissions.
+                                        </Alert>
+                                    </Cell>
+                                </Grid>
+                            )}
+                            {!systemGroup && (
+                                <Grid>
+                                    <Cell span={12}>
+                                        <Typography use={"subtitle1"}>{t`Permissions`}</Typography>
+                                    </Cell>
+                                    <Cell span={12}>
+                                        <Bind name={"permissions"} defaultValue={[]}>
+                                            {bind => (
+                                                <Permissions id={data.slug || "new"} {...bind} />
+                                            )}
+                                        </Bind>
+                                    </Cell>
+                                </Grid>
+                            )}
                         </SimpleFormContent>
-                        <SimpleFormFooter>
-                            <ButtonPrimary onClick={form.submit}>{t`Save group`}</ButtonPrimary>
-                        </SimpleFormFooter>
+                        {systemGroup ? null : (
+                            <SimpleFormFooter>
+                                <ButtonPrimary onClick={form.submit}>{t`Save group`}</ButtonPrimary>
+                            </SimpleFormFooter>
+                        )}
                     </SimpleForm>
                 );
             }}
