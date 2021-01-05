@@ -1,5 +1,1 @@
-module.exports = options => [
-    require("./deploy")(options),
-    require("./destroy"),
-    require("./pulumi"),
-];
+module.exports = () => [require("./pulumi"), require("./stack")];
