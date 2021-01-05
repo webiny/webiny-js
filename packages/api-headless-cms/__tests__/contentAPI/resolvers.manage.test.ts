@@ -152,7 +152,7 @@ describe("MANAGE - Resolvers", () => {
 
         const [response] = await listCategories();
 
-        expect(response).toEqual({
+        expect(response).toMatchObject({
             data: {
                 listCategories: {
                     data: [
@@ -165,10 +165,10 @@ describe("MANAGE - Resolvers", () => {
                             meta: {
                                 locked: true,
                                 modelId: "category",
-                                publishedOn: publishedOn,
+                                publishedOn: /^20/,
                                 revisions: [
                                     {
-                                        id: category.id,
+                                        id: /^([a-zA-Z0-9]+)$/,
                                         slug: "slug-1",
                                         title: "Title 1"
                                     }
@@ -183,7 +183,7 @@ describe("MANAGE - Resolvers", () => {
                     meta: {
                         hasMoreItems: false,
                         totalCount: 1,
-                        cursor: expect.any(String)
+                        cursor: /^([a-zA-Z0-9]+)$/
                     }
                 }
             }
