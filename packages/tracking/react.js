@@ -7,6 +7,8 @@ const setProperties = data => {
 
 const sendEvent = (event, data = {}) => {
     if (process.env.REACT_APP_WEBINY_TELEMETRY !== "false") {
+        data.version = process.env.REACT_APP_WEBINY_VERSION;
+
         const payload = {
             api_key: API_KEY,
             distinct_id: process.env.REACT_APP_USER_ID,
