@@ -25,13 +25,10 @@
     "regenerator-runtime": "^0.13.5",
     "theme": "^0.1.0"
   },
-  "devDependencies": {
-    "env-cmd": "^10.1.0"
-  },
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
     "build": "webiny run build",
-    "start": "webiny run start --env local"
+    "start": "webiny run start"
   },
   "browserslist": {
     "development": [
