@@ -22,10 +22,16 @@ type RunArgs = {
     afterPulumiInstall?: () => any;
 };
 
-const FLAG_NON_INTERACTIVE = "--non-interactive";
-const PULUMI_FOLDER = path.join(__dirname, "pulumi");
+type InstallArgs = {
+    beforePulumiInstall?: () => any;
+    afterPulumiInstall?: () => any;
+};
 
-class Pulumi {
+export const FLAG_NON_INTERACTIVE = "--non-interactive";
+export const PULUMI_FOLDER = path.join(__dirname, "pulumi");
+export const PULUMI_BINARY_PATH = path.join(PULUMI_FOLDER, "pulumi", "pulumi");
+
+export class Pulumi {
     defaultArgs: DefaultArgs;
     constructor(options: DefaultArgs = {}) {
         this.defaultArgs = options;
@@ -34,25 +40,7 @@ class Pulumi {
     async run(rawArgs: RunArgs) {
         const args = merge({}, this.defaultArgs, rawArgs);
 
-        const installed = await downloadBinaries(
-            PULUMI_FOLDER,
-            args.beforePulumiInstall,
-            args.afterPulumiInstall
-        );
-
-        if (installed) {
-            await execa(
-                path.join(PULUMI_FOLDER, "pulumi", "pulumi"),
-                ["plugin", "install", "resource", "aws", "v3.22.0"],
-                {
-                    stdio: "inherit",
-                    env: {
-                        PULUMI_HOME: PULUMI_FOLDER,
-                        PULUMI_SKIP_UPDATE_CHECK: "true"
-                    }
-                }
-            );
-        }
+        await this.install(rawArgs);
 
         if (!Array.isArray(args.command)) {
             args.command = [args.command];
@@ -79,12 +67,34 @@ class Pulumi {
         set(args.execa, "env.PULUMI_SKIP_UPDATE_CHECK", "true");
         set(args.execa, "env.PULUMI_HOME", PULUMI_FOLDER);
 
-        return await execa(
-            path.join(PULUMI_FOLDER, "pulumi", "pulumi"),
-            [...args.command, ...finalArgs, FLAG_NON_INTERACTIVE],
-            { ...args.execa }
+        return execa(PULUMI_BINARY_PATH, [...args.command, ...finalArgs, FLAG_NON_INTERACTIVE], {
+            ...args.execa
+        });
+    }
+
+    async install(rawArgs?: InstallArgs): Promise<boolean> {
+        const args = merge({}, this.defaultArgs, rawArgs);
+
+        const installed = await downloadBinaries(
+            PULUMI_FOLDER,
+            args.beforePulumiInstall,
+            args.afterPulumiInstall
         );
+
+        if (installed) {
+            await execa(
+                path.join(PULUMI_FOLDER, "pulumi", "pulumi"),
+                ["plugin", "install", "resource", "aws", "v3.22.0"],
+                {
+                    stdio: "inherit",
+                    env: {
+                        PULUMI_HOME: PULUMI_FOLDER,
+                        PULUMI_SKIP_UPDATE_CHECK: "true"
+                    }
+                }
+            );
+        }
+
+        return installed;
     }
 }
-
-export { Pulumi };
