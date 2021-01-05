@@ -317,7 +317,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                             }
                         });
 
-                        return pages;
+                        return pages.sort((a, b) => b.version - a.version);
                     },
 
                     async create(categorySlug) {
