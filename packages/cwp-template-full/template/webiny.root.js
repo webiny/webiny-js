@@ -6,8 +6,7 @@ module.exports = {
             require("@webiny/cli-plugin-build")(),
             require("@webiny/cli-plugin-deploy-pulumi")(),
             require("@webiny/api-page-builder/cli")(),
-            require("@webiny/cwp-template-full/hooks/api")(),
-            require("@webiny/cwp-template-full/hooks/apps")(),
+            require("@webiny/cwp-template-full/cli")()
         ]
     }
 };

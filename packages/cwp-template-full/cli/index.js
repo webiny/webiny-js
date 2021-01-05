@@ -1,1 +1,1 @@
-module.exports = () => [require("./deployAll")(), require("./info")];
+module.exports = () => [require("./deployAll")(), require("./info"), require("./aws")];
