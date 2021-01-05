@@ -1,12 +1,9 @@
-import React, { useCallback, useMemo } from "react";
-import { get } from "lodash";
+import React from "react";
 import { css } from "emotion";
 import { i18n } from "@webiny/app/i18n";
 import { ButtonPrimary } from "@webiny/ui/Button";
-import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { useMutation } from "@webiny/app-headless-cms/admin/hooks";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
-import { createPublishMutation } from "../../../../views/components/ContentModelForm/graphql";
+import { useRevision } from "@webiny/app-headless-cms/admin/plugins/contentDetails/contentRevisions/useRevision";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/content-details/header/publish-revision");
 
@@ -15,32 +12,7 @@ const buttonStyles = css({
 });
 
 const SaveAndPublishButton = ({ entry, contentModel, getLoading, setLoading, state }) => {
-    const { showSnackbar } = useSnackbar();
-    const { PUBLISH_CONTENT } = useMemo(() => {
-        return {
-            PUBLISH_CONTENT: createPublishMutation(contentModel)
-        };
-    }, [contentModel.modelId]);
-
-    const [publishContentMutation] = useMutation(PUBLISH_CONTENT);
-
-    const onPublish = useCallback(
-        async id => {
-            setLoading(true);
-            const response = await publishContentMutation({
-                variables: { revision: id || entry.id }
-            });
-
-            const contentData = get(response, "data.content");
-            setLoading(false);
-            if (contentData.error) {
-                return showSnackbar(contentData.error.message);
-            }
-
-            showSnackbar(t`Content published successfully.`);
-        },
-        [entry.id]
-    );
+    const { publishRevision } = useRevision({ contentModel, entry, revision: entry, setLoading });
 
     const { showConfirmation } = useConfirmationDialog({
         title: t`Publish content`,
@@ -59,7 +31,7 @@ const SaveAndPublishButton = ({ entry, contentModel, getLoading, setLoading, sta
                     if (!entry) {
                         return;
                     }
-                    await onPublish(entry.id);
+                    await publishRevision(entry.id);
                 });
             }}
             disabled={getLoading()}
