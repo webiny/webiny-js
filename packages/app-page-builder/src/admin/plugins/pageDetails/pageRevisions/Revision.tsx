@@ -29,7 +29,6 @@ import { ReactComponent as PublishIcon } from "@webiny/app-page-builder/admin/as
 import { ReactComponent as DeleteIcon } from "@webiny/app-page-builder/admin/assets/delete.svg";
 import { ReactComponent as PreviewIcon } from "@webiny/app-page-builder/admin/assets/visibility.svg";
 import { PbPageRevision } from "@webiny/app-page-builder/types";
-import statusesLabels from "@webiny/app-page-builder/admin/constants/pageStatusesLabels";
 
 type RevisionProps = {
     revision: PbPageRevision;
@@ -98,8 +97,8 @@ const Revision = ({ revision, page }: RevisionProps) => {
                     <ListItemText>
                         <ListItemTextPrimary>{revision.title}</ListItemTextPrimary>
                         <ListItemTextSecondary>
-                            {statusesLabels[revision.status]} (v{revision.version}), last modified{" "}
-                            <TimeAgo datetime={revision.savedOn} />
+                            Last modified <TimeAgo datetime={revision.savedOn} />
+                            (#{revision.version})
                         </ListItemTextSecondary>
                     </ListItemText>
                     <ListItemMeta>
