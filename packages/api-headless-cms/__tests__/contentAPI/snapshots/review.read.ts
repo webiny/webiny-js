@@ -9,6 +9,7 @@ export default /* GraphQL */ `
         text: String
         product: Product
         rating: Number
+        author: Author
     }
 
     input ReviewGetWhereInput {

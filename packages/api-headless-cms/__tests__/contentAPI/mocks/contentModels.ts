@@ -17,7 +17,9 @@ const ids = {
     field210: shortId.generate(),
     field31: shortId.generate(),
     field32: shortId.generate(),
-    field33: shortId.generate()
+    field33: shortId.generate(),
+    field34: shortId.generate(),
+    field40: shortId.generate()
 };
 
 const models: CmsContentModelType[] = [
@@ -385,7 +387,7 @@ const models: CmsContentModelType[] = [
             id: contentModelGroup.id,
             name: contentModelGroup.name
         },
-        layout: [[ids.field31], [ids.field32], [ids.field33]],
+        layout: [[ids.field31], [ids.field32], [ids.field33], [ids.field34]],
         fields: [
             {
                 id: ids.field31,
@@ -437,6 +439,64 @@ const models: CmsContentModelType[] = [
                 type: "number",
                 fieldId: "rating",
                 validation: [],
+                placeholderText: "placeholder text",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            },
+            {
+                id: ids.field34,
+                multipleValues: false,
+                helpText: "",
+                label: "Author",
+                type: "ref",
+                fieldId: "author",
+                validation: [],
+                settings: {
+                    models: [{ modelId: "author" }]
+                },
+                placeholderText: "placeholder text",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            }
+        ]
+    },
+    {
+        createdOn: new Date(),
+        savedOn: new Date(),
+        titleFieldId: "fullName",
+        lockedFields: [],
+        name: "Author",
+        description: "Author",
+        modelId: "author",
+        group: {
+            id: contentModelGroup.id,
+            name: contentModelGroup.name
+        },
+        layout: [[ids.field40]],
+        fields: [
+            {
+                id: ids.field40,
+                multipleValues: false,
+                helpText: "",
+                label: "Full name",
+                type: "text",
+                fieldId: "fullName",
+                validation: [
+                    {
+                        name: "required",
+                        message: "This field is required"
+                    }
+                ],
                 placeholderText: "placeholder text",
                 predefinedValues: {
                     enabled: false,

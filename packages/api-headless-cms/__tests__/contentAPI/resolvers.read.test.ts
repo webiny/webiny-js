@@ -63,6 +63,9 @@ describe("READ - Resolvers", () => {
 
     beforeEach(async () => {
         try {
+            await elasticSearch.indices.delete({ index: esCmsIndex });
+        } catch (e) {}
+        try {
             await elasticSearch.indices.create({ index: esCmsIndex });
         } catch {
             // Ignore errors
@@ -278,7 +281,7 @@ describe("READ - Resolvers", () => {
                 listCategories({
                     limit: 1
                 }).then(([data]) => data),
-            ({ data }) => data.listCategories.data.length === 1,
+            ({ data }) => data.listCategories.data[0].id === animals.id,
             { name: "list entries with limit after" }
         );
 

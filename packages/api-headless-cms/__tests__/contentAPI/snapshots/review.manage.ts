@@ -12,6 +12,7 @@ export default /* GraphQL */ `
         text: String
         product: RefField
         rating: Number
+        author: RefField
     }
 
     type ReviewMeta {
@@ -29,6 +30,7 @@ export default /* GraphQL */ `
         text: String
         product: RefFieldInput
         rating: Number
+        author: RefFieldInput
     }
 
     input ReviewGetWhereInput {
