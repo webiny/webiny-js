@@ -135,7 +135,9 @@ describe("MANAGE - Resolvers", () => {
         const { id } = category;
 
         // Publish it so it becomes available in the "read" API
-        await publishCategory({ revision: id });
+        const [publishCategoryResponse] = await publishCategory({ revision: id });
+
+        const { publishedOn } = publishCategoryResponse.data.publishCategory.data.meta;
 
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         await until(
@@ -146,7 +148,7 @@ describe("MANAGE - Resolvers", () => {
 
         const [response] = await listCategories();
 
-        expect(response).toMatchObject({
+        expect(response).toEqual({
             data: {
                 listCategories: {
                     data: [
@@ -159,10 +161,10 @@ describe("MANAGE - Resolvers", () => {
                             meta: {
                                 locked: true,
                                 modelId: "category",
-                                publishedOn: /^20/,
+                                publishedOn: publishedOn,
                                 revisions: [
                                     {
-                                        id: /^([a-zA-Z0-9]+)$/,
+                                        id: category.id,
                                         slug: "slug-1",
                                         title: "Title 1"
                                     }
@@ -177,7 +179,7 @@ describe("MANAGE - Resolvers", () => {
                     meta: {
                         hasMoreItems: false,
                         totalCount: 1,
-                        cursor: /^([a-zA-Z0-9]+)$/
+                        cursor: expect.any(String)
                     }
                 }
             }
