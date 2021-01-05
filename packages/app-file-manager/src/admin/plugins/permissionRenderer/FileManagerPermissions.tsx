@@ -68,19 +68,19 @@ export const FileManagerPermissions = ({ value, onChange }) => {
 
     const formData = useMemo(() => {
         if (!Array.isArray(value)) {
-            return { accessScope: NO_ACCESS };
+            return { accessLevel: NO_ACCESS };
         }
 
         const hasFullAccess = value.find(
             item => item.name === FILE_MANAGER_FULL_ACCESS || item.name === "*"
         );
         if (hasFullAccess) {
-            return { accessScope: FULL_ACCESS };
+            return { accessLevel: FULL_ACCESS };
         }
 
         const permissions = value.filter(item => item.name.startsWith(FILE_MANAGER));
         if (!permissions.length) {
-            return { accessScope: NO_ACCESS };
+            return { accessLevel: NO_ACCESS };
         }
 
         const data = {
