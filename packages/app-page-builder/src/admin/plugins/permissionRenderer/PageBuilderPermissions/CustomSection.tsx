@@ -7,8 +7,8 @@ import { Typography } from "@webiny/ui/Typography";
 
 const t = i18n.ns("app-page-builder/admin/plugins/permission-renderer");
 
-const CustomSection = ({ Bind, data, entity, title, children = null }) => {
-    const rwdSelectEnabled = ["full", "own"].includes(data[`${entity}AccessScope`]);
+const CustomSection = ({ Bind, data, entity, setValue, title, children = null }) => {
+    const rwdSelectEnabled = ["full"].includes(data[`${entity}AccessScope`]);
 
     return (
         <Elevation z={1} style={{ marginTop: 10 }}>
@@ -19,7 +19,15 @@ const CustomSection = ({ Bind, data, entity, title, children = null }) => {
                 <Cell span={12}>
                     <Grid style={{ padding: 0, paddingBottom: 24 }}>
                         <Cell span={12}>
-                            <Bind name={`${entity}AccessScope`}>
+                            <Bind
+                                name={`${entity}AccessScope`}
+                                beforeChange={(value, cb) => {
+                                    if (value === "own") {
+                                        setValue(`${entity}RWD`, "rwd");
+                                    }
+                                    cb(value);
+                                }}
+                            >
                                 <Select
                                     label={t`Access Scope`}
                                     description={t`The scope of the content that can be accessed.`}
@@ -33,7 +41,7 @@ const CustomSection = ({ Bind, data, entity, title, children = null }) => {
                             </Bind>
                         </Cell>
                         <Cell span={12}>
-                            <Bind name={`${entity}Rwd`}>
+                            <Bind name={`${entity}RWD`}>
                                 <Select
                                     disabled={!rwdSelectEnabled}
                                     label={t`Primary actions`}

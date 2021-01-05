@@ -350,8 +350,7 @@ describe("Forms Security Test", () => {
         const sufficientPermissions = [
             [[{ name: "content.i18n" }, { name: "fb.form" }], identityA],
             [[{ name: "content.i18n" }, { name: "fb.form", own: true }], identityA],
-            [[{ name: "content.i18n" }, { name: "fb.form", rwd: "rwd" }], identityA],
-            [[{ name: "content.i18n" }, { name: "fb.form", rwd: "rwdp" }], identityA]
+            [[{ name: "content.i18n" }, { name: "fb.form", rwd: "rwd" }], identityA]
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
@@ -375,37 +374,48 @@ describe("Forms Security Test", () => {
         }
     });
 
-    test(`allow "publishForm" if identity has sufficient permissions`, async () => {
-        const { createForm } = defaultHandler;
-        const mock = new Mock("publishRevision-form-");
+    const insufficientPublishPermissions = [
+        [[], null],
+        [[], identityA],
+        [[{ name: "fb.form" }], identityA],
+        [[{ name: "fb.form", rwd: "rw" }], identityA],
+        [[{ name: "fb.form", own: true }], identityB],
+        [[{ name: "content.i18n" }, { name: "fb.form", own: true }], identityA],
+        [[{ name: "content.i18n" }, { name: "fb.form", own: true }], identityA],
+        [[{ name: "content.i18n" }, { name: "fb.form", own: true, rwd: "r", pw: "" }], identityA]
+    ];
 
-        const [createFormResponse] = await createForm({ data: mock });
-        let formId = createFormResponse.data.formBuilder.createForm.data.id;
+    test.each(insufficientPublishPermissions)(
+        `do not allow "publishForm" with %j`,
+        async (permissions, identity) => {
+            const { createForm } = defaultHandler;
+            const mock = new Mock("publishRevision-form-");
 
-        const insufficientPermissions = [
-            [[], null],
-            [[], identityA],
-            [[{ name: "fb.form", rwd: "w" }], identityA],
-            [[{ name: "fb.form", rwd: "rw" }], identityA],
-            [[{ name: "fb.form", own: true }], identityB]
-        ];
+            const [createFormResponse] = await createForm({ data: mock });
+            const formId = createFormResponse.data.formBuilder.createForm.data.id;
 
-        for (let i = 0; i < insufficientPermissions.length; i++) {
-            const [permissions, identity] = insufficientPermissions[i];
             const { publishRevision } = useGqlHandler({ permissions, identity });
             const [response] = await publishRevision({ revision: formId });
             expect(response).toEqual(NOT_AUTHORIZED_RESPONSE("publishRevision"));
         }
+    );
 
-        const sufficientPermissions = [
-            [[{ name: "content.i18n" }, { name: "fb.form" }], identityA],
-            [[{ name: "content.i18n" }, { name: "fb.form", own: true }], identityA],
-            [[{ name: "content.i18n" }, { name: "fb.form", rwd: "rwdp" }], identityA]
-        ];
+    const sufficientPublishPermissions = [
+        [[{ name: "content.i18n" }, { name: "fb.form" }], identityA],
+        [[{ name: "content.i18n" }, { name: "fb.form", rwd: "r", pw: "pu" }], identityA],
+        [[{ name: "content.i18n" }, { name: "fb.form", own: true, pw: "pu" }], identityA]
+    ];
 
-        for (let i = 0; i < sufficientPermissions.length; i++) {
-            const [permissions, identity] = sufficientPermissions[i];
-            const { publishRevision, unpublishRevision } = useGqlHandler({ permissions, identity });
+    test.each(sufficientPublishPermissions)(
+        `allow "publishForm" with %j`,
+        async (permissions, identity) => {
+            const { createForm } = defaultHandler;
+            const mock = new Mock("publishRevision-form-");
+
+            const [createFormResponse] = await createForm({ data: mock });
+            const formId = createFormResponse.data.formBuilder.createForm.data.id;
+
+            const { publishRevision } = useGqlHandler({ permissions, identity });
             const [response] = await publishRevision({ revision: formId });
             expect(response).toMatchObject({
                 data: {
@@ -426,12 +436,8 @@ describe("Forms Security Test", () => {
                     }
                 }
             });
-
-            // Let's restore the form.
-            const [unPublishFormRevision] = await unpublishRevision({ revision: formId });
-            formId = unPublishFormRevision.data.formBuilder.unpublishRevision.data.id;
         }
-    });
+    );
 
     test(`allow "createRevisionFrom" if identity has sufficient permissions`, async () => {
         const { createForm, publishRevision } = defaultHandler;

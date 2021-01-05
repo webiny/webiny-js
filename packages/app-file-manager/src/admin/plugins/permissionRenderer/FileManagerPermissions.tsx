@@ -50,6 +50,7 @@ export const FileManagerPermissions = ({ value, onChange }) => {
 
                 if (data.filesAccessScope === "own") {
                     permission.own = true;
+                    permission.rwd = "rwd";
                 } else {
                     permission.rwd = data.filesRWD || "r";
                 }
@@ -95,6 +96,8 @@ export const FileManagerPermissions = ({ value, onChange }) => {
             data.filesAccessScope = filesPermission.own ? "own" : FULL_ACCESS;
             if (data.filesAccessScope === FULL_ACCESS) {
                 data.filesRWD = filesPermission.rwd;
+            } else {
+                data.filesRWD = "rwd";
             }
         }
 
@@ -110,7 +113,7 @@ export const FileManagerPermissions = ({ value, onChange }) => {
 
     return (
         <Form data={formData} onChange={onFormChange}>
-            {({ data, Bind }) => (
+            {({ data, Bind, setValue }) => (
                 <Fragment>
                     <Grid className={gridNoPaddingClass}>
                         <Cell span={6}>
@@ -136,7 +139,15 @@ export const FileManagerPermissions = ({ value, onChange }) => {
                                     <Cell span={12}>
                                         <Grid style={{ padding: 0, paddingBottom: 24 }}>
                                             <Cell span={12}>
-                                                <Bind name={"filesAccessScope"}>
+                                                <Bind
+                                                    name={"filesAccessScope"}
+                                                    beforeChange={(value, cb) => {
+                                                        if (value === "own") {
+                                                            setValue(`filesRWD`, "rwd");
+                                                        }
+                                                        cb(value);
+                                                    }}
+                                                >
                                                     <Select label={t`Access Scope`}>
                                                         <option
                                                             value={NO_ACCESS}

@@ -59,7 +59,7 @@ const RequestChanges = props => {
         return null;
     }
 
-    if (typeof pbPagePermission.rcpu === "string" && !pbPagePermission.rcpu.includes("c")) {
+    if (typeof pbPagePermission.pw === "string" && !pbPagePermission.pw.includes("c")) {
         return null;
     }
 

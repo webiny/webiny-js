@@ -39,17 +39,24 @@ export const hasRwd = (permission, rwd) => {
     return permission.rwd.includes(rwd);
 };
 
-export const hasRcpu = (permission, rcpu) => {
-    if (typeof permission.rcpu !== "string") {
+export const hasPw = (permission, pw) => {
+    const isCustom = Object.keys(permission).length > 1; // "name" key is always present
+
+    if (!isCustom) {
+        // Means it's a "full-access" permission.
         return true;
     }
 
-    return permission.rcpu.includes(rcpu);
+    if (typeof permission.pw !== "string") {
+        return false;
+    }
+
+    return permission.pw.includes(pw);
 };
 
-const RCPU = {
-    r: "request review",
-    c: "request change",
+const PW = {
+    // r: "request review",
+    // c: "request change",
     p: "publish",
     u: "unpublish"
 };
@@ -63,7 +70,7 @@ const RWD = {
 export const checkPermissions = async <TPermission = SecurityPermission>(
     context: CmsContext,
     name: string,
-    check?: { rwd?: string; rcpu?: string }
+    check?: { rwd?: string; pw?: string }
 ): Promise<TPermission> => {
     // Check if user is allowed to edit content in current language
     const contentPermission: any = await context.security.getPermission("content.i18n");
@@ -115,10 +122,10 @@ export const checkPermissions = async <TPermission = SecurityPermission>(
     // c = request change
     // p = publish
     // u = unpublish
-    if (check.rcpu && !hasRcpu(permission, check.rcpu)) {
+    if (check.pw && !hasPw(permission, check.pw)) {
         throw new NotAuthorizedError({
             data: {
-                reason: `Not allowed to perform "${RCPU[check.rcpu]}" on "${name}".`
+                reason: `Not allowed to perform "${PW[check.pw]}" on "${name}".`
             }
         });
     }

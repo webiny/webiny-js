@@ -598,7 +598,7 @@ export type CmsContentModelGroupPermissionType = SecurityPermission<{
 export type CmsContentEntryPermissionType = SecurityPermission<{
     own: boolean;
     rwd: string;
-    rcpu: string;
+    pw: string;
     models?: {
         // key is locale
         [key: string]: string[]; // array of model.modelId values

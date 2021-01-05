@@ -189,6 +189,7 @@ export type SettingsCRUD = {
 export type FbFormPermission = SecurityPermission<{
     name: "fb.form";
     rwd: string;
+    pw: string;
     own: boolean;
     submissions: boolean;
 }>;

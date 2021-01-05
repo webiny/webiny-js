@@ -6,6 +6,7 @@ import { PermissionInfo, gridNoPaddingClass } from "@webiny/app-admin/components
 import { Form } from "@webiny/form";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Typography } from "@webiny/ui/Typography";
+import { Checkbox, CheckboxGroup } from "@webiny/ui/Checkbox";
 
 const t = i18n.ns("app-form-builder/admin/plugins/permissionRenderer");
 
@@ -17,6 +18,13 @@ const FB_SETTINGS = `${FB}.settings`;
 const FULL_ACCESS = "full";
 const NO_ACCESS = "no";
 const CUSTOM_ACCESS = "custom";
+
+const pwOptions = [
+    { id: "p", name: t`Publish` },
+    { id: "u", name: t`Unpublish` }
+    // { id: "r", name: t`Request review` },
+    // { id: "c", name: t`Request changes` }
+];
 
 export const FormBuilderPermissions = ({ value, onChange }) => {
     const onFormChange = useCallback(
@@ -39,20 +47,24 @@ export const FormBuilderPermissions = ({ value, onChange }) => {
             }
 
             // Handling custom access level.
-
-            // Form permission
             if (data.formAccessLevel && data.formAccessLevel !== NO_ACCESS) {
                 const permission = {
                     name: FB_ACCESS_FORM,
                     own: false,
                     rwd: undefined,
+                    pw: "",
                     submissions: false
                 };
 
                 if (data.formAccessLevel === "own") {
                     permission.own = true;
+                    permission.rwd = "rwd";
                 } else {
-                    permission.rwd = data.formPermissions || "r";
+                    permission.rwd = data.formRWD || "r";
+                }
+
+                if (Array.isArray(data.formPW)) {
+                    permission.pw = data.formPW.join("");
                 }
 
                 if (data.submissionPermissions && data.submissionPermissions !== NO_ACCESS) {
@@ -92,7 +104,8 @@ export const FormBuilderPermissions = ({ value, onChange }) => {
         const data = {
             accessLevel: CUSTOM_ACCESS,
             formAccessLevel: NO_ACCESS,
-            formPermissions: undefined,
+            formRWD: undefined,
+            formPW: undefined,
             submissionPermissions: NO_ACCESS,
             settingsAccessLevel: NO_ACCESS
         };
@@ -100,9 +113,13 @@ export const FormBuilderPermissions = ({ value, onChange }) => {
         const formPermission = permissions.find(item => item.name === FB_ACCESS_FORM);
         if (formPermission) {
             data.formAccessLevel = formPermission.own ? "own" : FULL_ACCESS;
-            if (data.formAccessLevel === CUSTOM_ACCESS) {
-                data.formPermissions = formPermission.rwd;
+            if (data.formAccessLevel === "own") {
+                data.formRWD = "rwd";
+            } else {
+                data.formRWD = formPermission.rwd;
             }
+
+            data.formPW = (formPermission.pw || "").split("");
             if (formPermission.submissions === true) {
                 data.submissionPermissions = FULL_ACCESS;
             }
@@ -119,7 +136,7 @@ export const FormBuilderPermissions = ({ value, onChange }) => {
 
     return (
         <Form data={formData} onChange={onFormChange}>
-            {({ data, Bind }) => (
+            {({ data, Bind, setValue }) => (
                 <Fragment>
                     <Grid className={gridNoPaddingClass}>
                         <Cell span={6}>
@@ -145,7 +162,15 @@ export const FormBuilderPermissions = ({ value, onChange }) => {
                                     <Cell span={12}>
                                         <Grid style={{ padding: 0, paddingBottom: 24 }}>
                                             <Cell span={12}>
-                                                <Bind name={`formAccessLevel`}>
+                                                <Bind
+                                                    name={`formAccessLevel`}
+                                                    beforeChange={(value, cb) => {
+                                                        if (value === "own") {
+                                                            setValue(`formRWD`, "rwd");
+                                                        }
+                                                        cb(value);
+                                                    }}
+                                                >
                                                     <Select
                                                         label={t`Access Scope`}
                                                         description={
@@ -165,7 +190,7 @@ export const FormBuilderPermissions = ({ value, onChange }) => {
                                                 </Bind>
                                             </Cell>
                                             <Cell span={12}>
-                                                <Bind name={`formPermissions`}>
+                                                <Bind name={`formRWD`}>
                                                     <Select
                                                         label={t`Primary Actions`}
                                                         description={
@@ -180,15 +205,33 @@ export const FormBuilderPermissions = ({ value, onChange }) => {
                                                             value={"rw"}
                                                         >{t`Read, write`}</option>
                                                         <option
-                                                            value={"rwp"}
-                                                        >{t`Read, write, publish`}</option>
-                                                        <option
                                                             value={"rwd"}
                                                         >{t`Read, write, delete`}</option>
-                                                        <option
-                                                            value={"rwdp"}
-                                                        >{t`Read, write, delete, publish`}</option>
                                                     </Select>
+                                                </Bind>
+                                            </Cell>
+                                            <Cell span={12}>
+                                                <Bind name={"formPW"}>
+                                                    <CheckboxGroup
+                                                        label={t`Publishing actions`}
+                                                        description={t`Publishing-related actions that can be performed on the forms.`}
+                                                    >
+                                                        {({ getValue, onChange }) =>
+                                                            pwOptions.map(({ id, name }) => (
+                                                                <Checkbox
+                                                                    disabled={
+                                                                        !["full", "own"].includes(
+                                                                            data.formAccessLevel
+                                                                        )
+                                                                    }
+                                                                    key={id}
+                                                                    label={name}
+                                                                    value={getValue(id)}
+                                                                    onChange={onChange(id)}
+                                                                />
+                                                            ))
+                                                        }
+                                                    </CheckboxGroup>
                                                 </Bind>
                                             </Cell>
                                             <Cell span={12}>

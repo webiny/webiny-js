@@ -35,7 +35,7 @@ const PublishRevision = props => {
         return null;
     }
 
-    if (typeof pbPagePermission.rcpu === "string" && !pbPagePermission.rcpu.includes("p")) {
+    if (typeof pbPagePermission.pw === "string" && !pbPagePermission.pw.includes("p")) {
         return null;
     }
 

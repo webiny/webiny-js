@@ -78,17 +78,20 @@ export const CMSPermissions = ({ value, onChange }) => {
                     const permission = {
                         name: `${CMS_PERMISSION}.${entity}`,
                         own: false,
-                        rwd: undefined,
-                        rcpu: undefined,
+                        rwd: "r",
+                        pw: "",
                         groups: undefined,
                         models: undefined
                     };
 
                     if (accessScope === "own") {
                         permission.own = true;
+                        permission.rwd = "rwd";
                     } else {
                         permission.rwd = data[`${entity}RWD`] || "r";
                     }
+
+                    permission.pw = (data[`${entity}PW`] || []).join("");
 
                     if (accessScope === "models") {
                         permission.models = {};
@@ -112,13 +115,9 @@ export const CMSPermissions = ({ value, onChange }) => {
                         });
                     }
 
-                    const RCPU = data[`${entity}RCPU`] || [];
-                    permission.rcpu = RCPU.length > 0 ? RCPU.join("") : undefined;
-
                     newValue.push(permission);
                 }
             });
-
             onChange(newValue);
         },
         [value]
@@ -156,7 +155,6 @@ export const CMSPermissions = ({ value, onChange }) => {
             const data = {
                 [`${entity}AccessScope`]: NO_ACCESS,
                 [`${entity}RWD`]: "r",
-                [`${entity}RCPU`]: [],
                 [`${entity}Props`]: {}
             };
 
@@ -166,9 +164,10 @@ export const CMSPermissions = ({ value, onChange }) => {
 
             if (entityPermission) {
                 data[`${entity}AccessScope`] = entityPermission.own ? "own" : FULL_ACCESS;
-                if (data[`${entity}AccessScope`] === FULL_ACCESS) {
+                if (data[`${entity}AccessScope`] === "own") {
+                    data[`${entity}RWD`] = "rwd";
+                } else {
                     data[`${entity}RWD`] = entityPermission.rwd;
-                    data[`${entity}RCPU`] = entityPermission.rcpu || [];
                 }
 
                 // If there are any non-empty props we'll set "AccessScope" to that prop.
@@ -182,8 +181,8 @@ export const CMSPermissions = ({ value, onChange }) => {
                     data[`${entity}Props`] = { groups: entityPermission.groups };
                 }
 
-                if (entity === "contentEntries") {
-                    data[`${entity}RCPU`] = entityPermission.rcpu ? [...entityPermission.rcpu] : [];
+                if (entity === "contentEntry") {
+                    data[`${entity}PW`] = entityPermission.pw ? entityPermission.pw.split("") : [];
                 }
             }
 
@@ -197,7 +196,7 @@ export const CMSPermissions = ({ value, onChange }) => {
 
     return (
         <Form data={formData} onChange={onFormChange}>
-            {({ data, Bind }) => (
+            {({ data, Bind, setValue }) => (
                 <Fragment>
                     <Grid className={gridNoPaddingClass}>
                         <Cell span={6}>
@@ -262,6 +261,7 @@ export const CMSPermissions = ({ value, onChange }) => {
                                     locales={locales}
                                     data={data}
                                     Bind={Bind}
+                                    setValue={setValue}
                                     entity={"contentEntry"}
                                     title={"Content Entries"}
                                 />
