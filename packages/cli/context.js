@@ -17,6 +17,8 @@ const projectRoot = path.dirname(webinyRootPath);
 
 class Context {
     constructor() {
+        this.loadedEnvFiles = {};
+
         this.paths = {
             projectRoot
         };
@@ -109,6 +111,10 @@ class Context {
     }
 
     async loadEnv(envPath, env, { debug = false } = {}) {
+        if (this.loadedEnvFiles[envPath]) {
+            return;
+        }
+
         if (fs.existsSync(envPath)) {
             const consoleError = console.error;
             const envFile = this.replaceProjectRoot(envPath);
@@ -127,6 +133,8 @@ class Context {
                 if (debug) {
                     console.log(`💡 Loaded ${green(env)} environment from ${envFile}.`);
                 }
+
+                this.loadedEnvFiles[envPath] = envConfig;
             } catch (err) {
                 if (debug) {
                     console.log(yellow(`⚠️ Could not load environment from ${envFile}:`));
