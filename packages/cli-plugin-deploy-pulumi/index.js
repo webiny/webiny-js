@@ -1,4 +1,5 @@
 module.exports = options => [
     require("./deploy")(options),
-    require("./destroy")
+    require("./destroy"),
+    require("./pulumi"),
 ];
