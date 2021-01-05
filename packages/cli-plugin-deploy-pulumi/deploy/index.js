@@ -30,9 +30,12 @@ module.exports = (options = {}) => ({
                 });
             },
             async argv => {
-                await require("./deploy")({ ...argv, debug: true, options }, context);
+                await require("./deploy")({ ...argv, options }, context);
                 process.exit(0);
             }
         );
+    },
+    execute(args, context) {
+        return require("./deploy")(args, context);
     }
 });

@@ -38,7 +38,7 @@ module.exports = async (inputs, context) => {
         return (new Date() - start) / 1000;
     };
 
-    const { env, stack, debug = true } = inputs;
+    const { env, stack, build, debug = true } = inputs;
     const stackName = getStackName(stack);
 
     const projectRoot = context.paths.projectRoot;
@@ -53,7 +53,7 @@ module.exports = async (inputs, context) => {
 
     const stacksDir = path.join(".", stack);
 
-    if (inputs.build) {
+    if (build) {
         const buildPlugin = context.plugins.byName("cli-command-build");
         await buildPlugin.execute({ path: stacksDir, env }, context);
     }
