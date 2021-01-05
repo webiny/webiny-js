@@ -1,22 +1,18 @@
 const { green } = require("chalk");
 const { Pulumi } = require("@webiny/pulumi-sdk");
 const ora = require("ora");
-import merge from "lodash/merge";
+const merge = require("lodash/merge");
 
-module.exports = async (cwd, args = {}) => {
+module.exports = (args = {}) => {
     const spinner = new ora();
 
     return new Pulumi(
         merge(
             {
                 execa: {
-                    cwd,
                     env: {
                         PULUMI_CONFIG_PASSPHRASE: process.env.PULUMI_CONFIG_PASSPHRASE
                     }
-                },
-                args: {
-                    secretsProvider: "passphrase"
                 },
                 beforePulumiInstall: () => {
                     console.log(
