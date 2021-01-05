@@ -156,7 +156,13 @@ describe("refField", () => {
         const product = await createProduct(category);
         const author = await createAuthor();
 
-        const { createReview, getReview: manageGetReview, publishReview } = useReviewManageHandler({
+        const {
+            until,
+            createReview,
+            getReview: manageGetReview,
+            listReviews: manageListReviews,
+            publishReview
+        } = useReviewManageHandler({
             ...manageOpts
         });
 
@@ -224,7 +230,60 @@ describe("refField", () => {
             }
         });
 
-        const { until, getReview: readGetReview } = useReviewReadHandler({
+        // If this `until` resolves successfully, we know entry is accessible via the "read" API
+        await until(
+            () => manageListReviews().then(([data]) => data),
+            ({ data }) => data.listReviews.data.length > 0,
+            { name: "manage list reviews" }
+        );
+
+        const [manageListResponse] = await manageListReviews();
+
+        expect(manageListResponse).toEqual({
+            data: {
+                listReviews: {
+                    data: [
+                        {
+                            author: {
+                                entryId: author.id,
+                                modelId: "author"
+                            },
+                            createdOn: review.createdOn,
+                            id: review.id,
+                            meta: {
+                                locked: true,
+                                modelId: "review",
+                                publishedOn: publishedOn,
+                                revisions: [
+                                    {
+                                        id: review.id,
+                                        text: review.text
+                                    }
+                                ],
+                                status: "published",
+                                title: review.text,
+                                version: 1
+                            },
+                            product: {
+                                entryId: product.id,
+                                modelId: "product"
+                            },
+                            rating: 5,
+                            savedOn: review.savedOn,
+                            text: review.text
+                        }
+                    ],
+                    error: null,
+                    meta: {
+                        cursor: expect.any(String),
+                        hasMoreItems: false,
+                        totalCount: 1
+                    }
+                }
+            }
+        });
+
+        const { getReview: readGetReview } = useReviewReadHandler({
             ...readOpts
         });
 
