@@ -31,6 +31,9 @@ import {
 import { INTROSPECTION } from "./graphql/schema";
 import { ApiKey } from "@webiny/api-security-tenancy/types";
 
+import elasticSearchPlugins from "../../src/content/plugins/es";
+import fieldsStoragePlugins from "../../src/content/plugins/fieldsStorage";
+
 export type GQLHandlerCallableArgsType = {
     permissions?: PermissionsArgType[];
     identity?: SecurityIdentity;
@@ -116,6 +119,8 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgsType) => {
         i18nContext,
         i18nContentPlugins(),
         mockLocalesPlugins(),
+        elasticSearchPlugins(),
+        fieldsStoragePlugins(),
         {
             type: "security-authorization",
             name: "security-authorization",
