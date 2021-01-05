@@ -28,9 +28,9 @@ export const SecurityPermissions = ({ value, onChange }) => {
             }
 
             const permissions = [];
-            if (data.level === FULL_ACCESS) {
+            if (data.accessLevel === FULL_ACCESS) {
                 permissions.push({ name: SECURITY_FULL_ACCESS });
-            } else if (data.level === CUSTOM_ACCESS) {
+            } else if (data.accessLevel === CUSTOM_ACCESS) {
                 if (data.userAccessScope === FULL_ACCESS) {
                     permissions.push({ name: SECURITY_USER_ACCESS });
                 }
@@ -55,7 +55,7 @@ export const SecurityPermissions = ({ value, onChange }) => {
 
     const formData = useMemo(() => {
         if (!Array.isArray(value)) {
-            return { level: NO_ACCESS };
+            return { accessLevel: NO_ACCESS };
         }
 
         const hasFullAccess = value.find(
@@ -63,16 +63,16 @@ export const SecurityPermissions = ({ value, onChange }) => {
         );
 
         if (hasFullAccess) {
-            return { level: FULL_ACCESS };
+            return { accessLevel: FULL_ACCESS };
         }
 
         const permissions = value.filter(item => item.name.startsWith(SECURITY));
         if (permissions.length === 0) {
-            return { level: NO_ACCESS };
+            return { accessLevel: NO_ACCESS };
         }
 
         const data = {
-            level: CUSTOM_ACCESS,
+            accessLevel: CUSTOM_ACCESS,
             groupAccessScope: NO_ACCESS,
             userAccessScope: NO_ACCESS,
             apiKeyAccessScope: NO_ACCESS
@@ -105,7 +105,7 @@ export const SecurityPermissions = ({ value, onChange }) => {
                             <PermissionInfo title={t`Access Level`} />
                         </Cell>
                         <Cell span={6}>
-                            <Bind name={"level"}>
+                            <Bind name={"accessLevel"}>
                                 <Select label={t`Access Level`}>
                                     <option value={NO_ACCESS}>{t`No access`}</option>
                                     <option value={FULL_ACCESS}>{t`Full access`}</option>
@@ -114,7 +114,7 @@ export const SecurityPermissions = ({ value, onChange }) => {
                             </Bind>
                         </Cell>
                     </Grid>
-                    {data.level === CUSTOM_ACCESS && (
+                    {data.accessLevel === CUSTOM_ACCESS && (
                         <React.Fragment>
                             <Elevation z={1} style={{ marginTop: 10 }}>
                                 <Grid>
