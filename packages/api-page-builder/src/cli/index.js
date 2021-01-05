@@ -63,11 +63,11 @@ module.exports = () => [
                         FunctionName: apiExports.updatePbSettingsFunction,
                         Payload: JSON.stringify({
                             data: {
-                                websiteUrl: siteExports.deliveryURL,
-                                websitePreviewUrl: siteExports.appURL,
+                                websiteUrl: siteExports.deliveryUrl,
+                                websitePreviewUrl: siteExports.appUrl,
                                 prerendering: {
                                     app: {
-                                        url: siteExports.appURL
+                                        url: siteExports.appUrl
                                     },
                                     storage: {
                                         name: siteExports.deliveryStorage

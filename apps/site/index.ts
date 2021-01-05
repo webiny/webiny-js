@@ -9,7 +9,7 @@ const delivery = new Delivery({ appS3Bucket: app.bucket });
 // The files that are generated in that process will be stored in the below deliveryStorage S3 bucket.
 export const appId = app.cloudfront.id;
 export const appStorage = app.bucket.id;
-export const appURL = app.cloudfront.domainName.apply(value => `https://${value}`);
+export const appUrl = app.cloudfront.domainName.apply(value => `https://${value}`);
 
 // Cloudfront and S3 bucket that will deliver static pages to actual website visitors. Except the fact that this
 // S3 bucket is utilized by the Page Builder app's prerendering engine, in order to store the files that were
@@ -17,4 +17,4 @@ export const appURL = app.cloudfront.domainName.apply(value => `https://${value}
 // defined above, for serving static assets (JS, CSS, images).
 export const deliveryId = delivery.cloudfront.id;
 export const deliveryStorage = delivery.bucket.id;
-export const deliveryURL = delivery.cloudfront.domainName.apply(value => `https://${value}`);
+export const deliveryUrl = delivery.cloudfront.domainName.apply(value => `https://${value}`);
