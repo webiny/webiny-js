@@ -15,7 +15,7 @@ const Container = styled("div")(({ isOver }: { isOver: boolean }) => ({
     border: isOver
         ? "2px dashed var(--mdc-theme-primary)"
         : "2px dashed var(--mdc-theme-secondary)",
-    opacity: isOver ? 1 : 0.6
+    opacity: 1
 }));
 
 // @ts-ignore
