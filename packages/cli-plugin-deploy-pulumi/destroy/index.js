@@ -21,5 +21,8 @@ module.exports = {
                 process.exit(0);
             }
         );
+    },
+    execute(args, context) {
+        return require("./destroy")(args, context);
     }
 };
