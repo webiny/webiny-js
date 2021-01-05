@@ -295,6 +295,15 @@ Fix the width of input components when inside grids
   @include mdc-snackbar-shape-radius(2px);
   @include mdc-snackbar-z-index(1000);
 }
+.mdc-snackbar__action:not(:disabled) {
+  color: var(--mdc-theme-primary);
+  &::before {
+    background-color: var(--mdc-theme-primary);
+  }
+  &::after {
+    background-color: var(--mdc-theme-primary);
+  }
+}
 
 // when grid is inside another grid cell, child grid should not have any padding
 .mdc-layout-grid {
