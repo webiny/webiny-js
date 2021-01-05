@@ -22,6 +22,7 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { pickDataForAPI } from "./utils";
 import * as GQL from "./graphql";
 import { SnackbarAction } from "@webiny/ui/Snackbar";
+import { actionButtonStyle } from "../Components/Styled";
 
 const t = i18n.ns("app-security-tenancy/admin/api-keys/form");
 
@@ -63,7 +64,7 @@ const ApiKeyForm = () => {
                 showSnackbar(t`You must configure permissions before saving!`, {
                     timeout: 60000,
                     dismissesOnAction: true,
-                    action: <SnackbarAction label={"OK"} />
+                    action: <SnackbarAction label={"OK"} className={actionButtonStyle} />
                 });
                 return;
             }

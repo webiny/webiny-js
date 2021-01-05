@@ -21,6 +21,7 @@ import { Permissions } from "@webiny/app-admin/components/Permissions";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CREATE_GROUP, LIST_GROUPS, READ_GROUP, UPDATE_GROUP } from "./graphql";
 import { SnackbarAction } from "@webiny/ui/Snackbar";
+import { actionButtonStyle } from "../Components/Styled";
 
 const t = i18n.ns("app-security/admin/groups/form");
 
@@ -62,7 +63,7 @@ const GroupForm = () => {
                 showSnackbar(t`You must configure permissions before saving!`, {
                     timeout: 60000,
                     dismissesOnAction: true,
-                    action: <SnackbarAction label={"OK"} />
+                    action: <SnackbarAction label={"OK"} className={actionButtonStyle} />
                 });
                 return;
             }
