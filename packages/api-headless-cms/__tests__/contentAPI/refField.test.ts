@@ -4,11 +4,13 @@ import models from "./mocks/contentModels";
 import { useReviewManageHandler } from "../utils/useReviewManageHandler";
 import { useProductManageHandler } from "../utils/useProductManageHandler";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
+import { useReviewReadHandler } from "../utils/useReviewReadHandler";
 
 describe("refField", () => {
     const esCmsIndex = "root-headless-cms";
 
     const manageOpts = { path: "manage/en-US" };
+    const readOpts = { path: "read/en-US" };
 
     const {
         elasticSearch,
@@ -82,7 +84,7 @@ describe("refField", () => {
     };
 
     const createProduct = async (category: CmsContentEntryType) => {
-        const { createProduct } = useProductManageHandler({
+        const { createProduct, publishProduct } = useProductManageHandler({
             ...manageOpts
         });
 
@@ -101,7 +103,13 @@ describe("refField", () => {
             }
         });
 
-        return createProductResponse.data.createProduct.data as CmsContentEntryType;
+        const product = createProductResponse.data.createProduct.data as CmsContentEntryType;
+
+        await publishProduct({
+            revision: product.id
+        });
+
+        return product;
     };
 
     beforeEach(async () => {
@@ -123,11 +131,11 @@ describe("refField", () => {
         const category = await createCategory();
         const product = await createProduct(category);
 
-        const { createReview } = useReviewManageHandler({
+        const { createReview, getReview: manageGetReview, publishReview } = useReviewManageHandler({
             ...manageOpts
         });
 
-        const [response] = await createReview({
+        const [createResponse] = await createReview({
             data: {
                 product: {
                     modelId: "product",
@@ -138,32 +146,85 @@ describe("refField", () => {
             }
         });
 
-        expect(response).toMatchObject({
+        const review = createResponse.data.createReview.data;
+
+        const [publishResponse] = await publishReview({
+            revision: review.id
+        });
+
+        const { publishedOn } = publishResponse.data.publishReview.data.meta;
+
+        const [manageGetResponse] = await manageGetReview({
+            revision: review.id
+        });
+
+        expect(manageGetResponse).toEqual({
             data: {
-                createReview: {
+                getReview: {
                     data: {
-                        id: expect.any(String),
-                        createdOn: /^20/,
-                        savedOn: /^20/,
+                        id: review.id,
+                        createdOn: review.createdOn,
+                        savedOn: review.savedOn,
                         text: "review text",
                         rating: 5,
                         meta: {
-                            locked: false,
+                            locked: true,
                             modelId: "review",
-                            publishedOn: null,
+                            publishedOn: publishedOn,
                             revisions: [
                                 {
-                                    id: expect.any(String),
-                                    text: "review text"
+                                    id: review.id,
+                                    text: review.text
                                 }
                             ],
-                            status: "draft",
-                            title: "review text",
+                            status: "published",
+                            title: review.text,
                             version: 1
                         },
                         product: {
-                            entryId: expect.any(String),
+                            entryId: product.id,
                             modelId: "product"
+                        }
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const { until, getReview: readGetReview } = useReviewReadHandler({
+            ...readOpts
+        });
+
+        // If this `until` resolves successfully, we know entry is accessible via the "read" API
+        await until(
+            () =>
+                readGetReview({
+                    where: {
+                        id: review.id
+                    }
+                }).then(([data]) => data),
+            ({ data }) => data.getReview.data.id === review.id,
+            { name: "get created review" }
+        );
+
+        const [response] = await readGetReview({
+            where: {
+                id: review.id
+            }
+        });
+
+        expect(response).toEqual({
+            data: {
+                getReview: {
+                    data: {
+                        id: review.id,
+                        createdOn: review.createdOn,
+                        savedOn: review.savedOn,
+                        text: "review text",
+                        rating: 5,
+                        product: {
+                            id: product.id,
+                            title: "Potato"
                         }
                     },
                     error: null
