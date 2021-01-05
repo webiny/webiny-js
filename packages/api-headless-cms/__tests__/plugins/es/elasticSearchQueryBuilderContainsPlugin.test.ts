@@ -27,7 +27,7 @@ describe("elasticSearchQueryBuilderContainsPlugin", () => {
                         // eslint-disable-next-line @typescript-eslint/camelcase
                         allow_leading_wildcard: true,
                         fields: ["name"],
-                        query: "John"
+                        query: "*John*"
                     }
                 },
                 {
@@ -36,7 +36,7 @@ describe("elasticSearchQueryBuilderContainsPlugin", () => {
                         // eslint-disable-next-line @typescript-eslint/camelcase
                         allow_leading_wildcard: true,
                         fields: ["name"],
-                        query: "Doe"
+                        query: "*Doe*"
                     }
                 }
             ],
