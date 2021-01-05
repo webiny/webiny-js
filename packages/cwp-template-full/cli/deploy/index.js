@@ -2,9 +2,9 @@ module.exports = () => ({
     type: "cli-command",
     name: "cli-command-deploy-all",
     create({ yargs, context }) {
-        yargs.example("$0 deploy-all");
+        yargs.example("$0 deploy");
         yargs.command(
-            "deploy-all",
+            "deploy",
             `Completely deploys the project by deploying the "api", "admin", and "site" stacks, into the given environment name`,
             yargs => {
                 yargs.option("env", {
@@ -20,12 +20,12 @@ module.exports = () => ({
                 });
             },
             async argv => {
-                await require("./deployAll")(argv, context);
+                await require("./deploy")(argv, context);
                 process.exit(0);
             }
         );
     },
     execute(args, context) {
-        return require("./deployAll")(args, context);
+        return require("./deploy")(args, context);
     }
 });
