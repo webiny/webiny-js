@@ -1,9 +1,9 @@
 const { join, basename } = require("path");
 const { green } = require("chalk");
 const notifier = require("node-notifier");
-const { Pulumi } = require("@webiny/pulumi-sdk");
 const path = require("path");
-const ora = require("ora");
+const loadEnvFiles = require("../utils/loadEnvFiles");
+const getPulumi = require("../utils/getPulumi");
 
 const notify = ({ message }) => {
     notifier.notify({
@@ -38,18 +38,10 @@ module.exports = async (inputs, context) => {
         return (new Date() - start) / 1000;
     };
 
-    const { env, stack, build, debug = true } = inputs;
+    const { env, stack, build } = inputs;
     const stackName = getStackName(stack);
 
-    const projectRoot = context.paths.projectRoot;
-
-    if (env) {
-        // Load .env.json from project root.
-        await context.loadEnv(path.resolve(projectRoot, ".env.json"), env, { debug });
-
-        // Load .env.json from cwd (this will change depending on the folder you specified).
-        await context.loadEnv(path.resolve(projectRoot, stack, ".env.json"), env, { debug });
-    }
+    await loadEnvFiles(inputs, context);
 
     const stacksDir = path.join(".", stack);
 
@@ -58,38 +50,35 @@ module.exports = async (inputs, context) => {
         await buildPlugin.execute({ path: stacksDir, env }, context);
     }
 
-    const spinner = new ora();
-    const pulumi = new Pulumi({
+    const pulumi = getPulumi({
         execa: {
-            cwd: stacksDir,
-            env: { PULUMI_CONFIG_PASSPHRASE: process.env.PULUMI_CONFIG_PASSPHRASE }
-        },
-        args: {
-            secretsProvider: "passphrase"
-        },
-        beforePulumiInstall: () => {
-            console.log(
-                `💡 It looks like this is your first time using ${green("@webiny/pulumi-sdk")}.`
-            );
-            spinner.start(`Downloading Pulumi...`);
-        },
-        afterPulumiInstall: () => {
-            spinner.stopAndPersist({
-                symbol: green("✔"),
-                text: `Pulumi downloaded, continuing...`
-            });
+            cwd: stacksDir
         }
     });
 
     let stackExists = true;
     try {
-        await pulumi.run({ command: ["stack", "select", env] });
+        await pulumi.run(
+            { command: ["stack", "select", env] },
+            {
+                args: {
+                    secretsProvider: "passphrase"
+                }
+            }
+        );
     } catch (e) {
         stackExists = false;
     }
 
     if (!stackExists) {
-        await pulumi.run({ command: ["stack", "init", env] });
+        await pulumi.run(
+            { command: ["stack", "init", env] },
+            {
+                args: {
+                    secretsProvider: "passphrase"
+                }
+            }
+        );
     }
 
     const isFirstDeploy = !stackExists;
@@ -107,12 +96,9 @@ module.exports = async (inputs, context) => {
     }
 
     if (inputs.preview) {
-        const pulumi = new Pulumi();
         await pulumi.run({
             command: "preview",
             execa: {
-                cwd: stacksDir,
-                env: { PULUMI_CONFIG_PASSPHRASE: process.env.PULUMI_CONFIG_PASSPHRASE },
                 stdio: "inherit"
             }
         });
@@ -121,7 +107,8 @@ module.exports = async (inputs, context) => {
             command: "up",
             args: {
                 yes: true,
-                skipPreview: true
+                skipPreview: true,
+                secretsProvider: "passphrase"
             },
             execa: {
                 stdio: "inherit"

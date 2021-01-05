@@ -1,7 +1,8 @@
 const { basename } = require("path");
 const { red, green } = require("chalk");
 const path = require("path");
-const { Pulumi } = require("@webiny/pulumi-sdk");
+const loadEnvFiles = require("../utils/loadEnvFiles");
+const getPulumi = require("../utils/getPulumi");
 
 const getStackName = folder => {
     folder = folder.split("/").pop();
@@ -21,23 +22,14 @@ const processHooks = async (hook, { context, ...options }) => {
 };
 
 module.exports = async (inputs, context) => {
-    const { env, folder, debug = true } = inputs;
+    const { env, folder } = inputs;
     const stacksDir = path.join(".", folder);
 
-    const projectRoot = context.paths.projectRoot;
+    await loadEnvFiles(inputs, context);
 
-    if (env) {
-        // Load .env.json from project root.
-        await context.loadEnv(path.resolve(projectRoot, ".env.json"), env, { debug });
-
-        // Load .env.json from cwd (this will change depending on the folder you specified).
-        await context.loadEnv(path.resolve(projectRoot, folder, ".env.json"), env, { debug });
-    }
-
-    const pulumi = new Pulumi({
+    const pulumi = getPulumi({
         execa: {
-            cwd: stacksDir,
-            env: { PULUMI_CONFIG_PASSPHRASE: process.env.PULUMI_CONFIG_PASSPHRASE }
+            cwd: stacksDir
         }
     });
 
@@ -68,7 +60,7 @@ module.exports = async (inputs, context) => {
         }
     });
 
-    console.log(`\n🎉 Done! Resources destroyed.`);
+    console.log(`\n🎉 Done! Stack destroyed.`);
 
     await processHooks("hook-stack-after-destroy", hooksParams);
     await processHooks("hook-after-destroy", hooksParams);
