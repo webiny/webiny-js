@@ -5,6 +5,7 @@ import { useReviewManageHandler } from "../utils/useReviewManageHandler";
 import { useProductManageHandler } from "../utils/useProductManageHandler";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useReviewReadHandler } from "../utils/useReviewReadHandler";
+import { useAuthorManageHandler } from "../utils/useAuthorManageHandler";
 
 describe("refField", () => {
     const esCmsIndex = "root-headless-cms";
@@ -47,6 +48,9 @@ describe("refField", () => {
         if (create.errors) {
             console.error(`[beforeEach] ${create.errors[0].message}`);
             process.exit(1);
+        } else if (create.data.createContentModel.data.error) {
+            console.error(`[beforeEach] ${create.data.createContentModel.data.error.message}`);
+            process.exit(1);
         }
 
         const [update] = await updateContentModelMutation({
@@ -62,7 +66,8 @@ describe("refField", () => {
         const models = {
             category: null,
             product: null,
-            review: null
+            review: null,
+            author: null
         };
         for (const name in models) {
             models[name] = await setupContentModel(contentModelGroup, name);
@@ -112,6 +117,25 @@ describe("refField", () => {
         return product;
     };
 
+    const createAuthor = async () => {
+        const { createAuthor, publishAuthor } = useAuthorManageHandler({
+            ...manageOpts
+        });
+        const [createResponse] = await createAuthor({
+            data: {
+                fullName: "John Doe"
+            }
+        });
+
+        const author = createResponse.data.createAuthor.data;
+
+        await publishAuthor({
+            revision: author.id
+        });
+
+        return author;
+    };
+
     beforeEach(async () => {
         try {
             await elasticSearch.indices.create({ index: esCmsIndex });
@@ -130,6 +154,7 @@ describe("refField", () => {
 
         const category = await createCategory();
         const product = await createProduct(category);
+        const author = await createAuthor();
 
         const { createReview, getReview: manageGetReview, publishReview } = useReviewManageHandler({
             ...manageOpts
@@ -140,6 +165,10 @@ describe("refField", () => {
                 product: {
                     modelId: "product",
                     entryId: product.id
+                },
+                author: {
+                    modelId: "author",
+                    entryId: author.id
                 },
                 text: `review text`,
                 rating: 5
@@ -184,6 +213,10 @@ describe("refField", () => {
                         product: {
                             entryId: product.id,
                             modelId: "product"
+                        },
+                        author: {
+                            modelId: "author",
+                            entryId: author.id
                         }
                     },
                     error: null
@@ -225,6 +258,10 @@ describe("refField", () => {
                         product: {
                             id: product.id,
                             title: "Potato"
+                        },
+                        author: {
+                            id: author.id,
+                            fullName: author.fullName
                         }
                     },
                     error: null

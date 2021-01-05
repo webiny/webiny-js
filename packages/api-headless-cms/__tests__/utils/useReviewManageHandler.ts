@@ -23,6 +23,10 @@ const reviewFields = `
         modelId
         entryId
     }
+    author {
+        modelId
+        entryId
+    }
     rating
 `;
 

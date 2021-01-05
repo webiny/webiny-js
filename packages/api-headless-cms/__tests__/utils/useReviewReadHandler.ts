@@ -10,6 +10,10 @@ const reviewFields = `
         id
         title
     }
+    author {
+        id
+        fullName
+    }
     rating
 `;
 
