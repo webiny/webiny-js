@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-google-tag-manager",
-  "version": "5.0.0-beta.31",
+  "version": "5.0.0-beta.32",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -12,8 +12,8 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/commodo": "^5.0.0-beta.31",
-    "@webiny/handler-graphql": "^5.0.0-beta.31",
+    "@webiny/commodo": "^5.0.0-beta.32",
+    "@webiny/handler-graphql": "^5.0.0-beta.32",
     "lodash": "^4.17.4"
   },
   "devDependencies": {
