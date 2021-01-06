@@ -657,8 +657,8 @@ describe("listing latest pages", () => {
         ).then(([res]) =>
             expect(res.data.pageBuilder.listPages.data).toMatchObject([
                 { title: "Why should you go Serverless today?" },
-                { title: "Serverless Side Rendering — The Ultimate Guide" },
-                { title: "What is Serverless and is it worth it?" }
+                { title: "What is Serverless and is it worth it?" },
+                { title: "Serverless Side Rendering — The Ultimate Guide" }
             ])
         );
 
