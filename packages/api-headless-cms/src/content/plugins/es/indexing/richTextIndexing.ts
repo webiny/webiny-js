@@ -7,6 +7,7 @@ export default (): CmsModelFieldToElasticSearchPlugin => ({
     toIndex(args) {
         const { toIndexEntry, field } = args;
         const values = toIndexEntry.values;
+        const value = values[field.fieldId];
         // TODO: convert rich-text object to a searchable string to offer full-text search at some point
 
         // we are removing the field value from "values" because we do not want it indexed.
@@ -17,7 +18,7 @@ export default (): CmsModelFieldToElasticSearchPlugin => ({
             values,
             rawValues: {
                 ...(toIndexEntry.rawValues || {}),
-                [field.fieldId]: values[field.fieldId]
+                [field.fieldId]: value
             }
         };
     },
