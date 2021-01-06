@@ -4,7 +4,7 @@ const execa = require("execa");
 const getPackages = require("get-yarn-workspaces");
 
 // The function is NOT doing any environment variables loading since that's up to the `build` script.
-module.exports = async (inputs) => {
+module.exports = async inputs => {
     const { env, path } = inputs;
 
     const workingPath = join(process.cwd(), path).replace(/\\/g, "/");

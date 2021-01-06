@@ -47,9 +47,13 @@ module.exports = async (inputs, context) => {
     const stackDir = path.join(".", stack);
 
     if (build) {
-        await execa("webiny", ["build", stackDir, "--env", inputs.env, "--debug", Boolean(inputs.debug)], {
-            stdio: "inherit"
-        })
+        await execa(
+            "webiny",
+            ["build", stackDir, "--env", inputs.env, "--debug", Boolean(inputs.debug)],
+            {
+                stdio: "inherit"
+            }
+        );
     }
 
     const pulumi = getPulumi({

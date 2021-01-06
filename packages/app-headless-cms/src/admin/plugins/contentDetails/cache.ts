@@ -76,7 +76,7 @@ export const addRevisionToRevisionsCache = (model, cache, revision) => {
     };
 
     const { revisions } = cache.readQuery(gqlParams);
-    
+
     cache.writeQuery({
         ...gqlParams,
         data: {

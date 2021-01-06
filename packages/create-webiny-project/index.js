@@ -430,11 +430,13 @@ async function createApp({ projectName, template, tag, log }) {
         [
             "",
             `Your new Webiny project ${green(appName)} is ready!`,
-            `Finish the setup by running the following command: ${green(`cd ${appName} && webiny deploy`)}`,
+            `Finish the setup by running the following command: ${green(
+                `cd ${appName} && webiny deploy`
+            )}`,
             "",
-            `To see all of the available CLI commands, run ${green("webiny --help")} in your ${green(
-                appName
-            )} directory.`,
+            `To see all of the available CLI commands, run ${green(
+                "webiny --help"
+            )} in your ${green(appName)} directory.`,
             "",
             "For more information on setting up your database connection:\nhttps://docs.webiny.com/docs/get-started/quick-start#3-setup-database-connection",
             "",

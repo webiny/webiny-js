@@ -15,8 +15,12 @@ const execa = require("execa");
         console.log(`🚨 Failed to build packages: ${err.message}`);
     }
 
-    console.log()
+    console.log();
     console.log(`🏁 Your repo is ready!`);
     console.log(`💡 To deploy a new project, run ${green("yarn webiny deploy")} to deploy.`);
-    console.log(`💡 Alternatively, to deploy a stack separately, run ${green("yarn webiny stack deploy")} command.`);
+    console.log(
+        `💡 Alternatively, to deploy a stack separately, run ${green(
+            "yarn webiny stack deploy"
+        )} command.`
+    );
 })();
