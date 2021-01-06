@@ -15,16 +15,6 @@ module.exports = [
         newFile: ".gitattributes"
     },
     {
-        dir: "apps/admin/code",
-        oldFile: "example.env",
-        newFile: ".env"
-    },
-    {
-        dir: "apps/site/code",
-        oldFile: "example.env",
-        newFile: ".env"
-    },
-    {
         dir: "",
         oldFile: "example.babel.node.js",
         newFile: ".babel.node.js"

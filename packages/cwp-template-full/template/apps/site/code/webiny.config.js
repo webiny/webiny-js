@@ -1,6 +1,5 @@
 const { startApp, buildApp } = require("@webiny/project-utils");
-const path = require("path");
-const { setEnvironmentFromState } = require("@webiny/cli-plugin-deploy-pulumi/utils");
+const { getStackOutput } = require("@webiny/cli-plugin-deploy-pulumi/utils");
 
 const map = {
     REACT_APP_GRAPHQL_API_URL: "${apiUrl}/graphql",
@@ -10,25 +9,21 @@ const map = {
 module.exports = {
     commands: {
         async start({ env, ...options }, context) {
-            // Load .env.json from current directory.
-            await context.loadEnv(path.resolve(__dirname, ".env.json"), env);
-
             // Set environment variables for given project environment and stack.
             // This will load state values using the provided map and
             // populate process.env, overwriting existing values.
-            await setEnvironmentFromState({ env, stack: "api", map }, context);
+            const output = getStackOutput("api", env, map);
+            Object.assign(process.env, output);
 
             // Start local development
             await startApp(options, context);
         },
         async build({ env, ...options }, context) {
-            // Load .env.json from current directory.
-            await context.loadEnv(path.resolve(__dirname, ".env.json"), env);
-
             // Set environment variables for given project environment and stack.
             // This will load state values using the provided map and
             // populate process.env, overwriting existing values.
-            await setEnvironmentFromState({ env, stack: "api", map }, context);
+            const output = getStackOutput("api", env, map);
+            Object.assign(process.env, output);
 
             // Bundle app for deployment
             await buildApp(options, context);
