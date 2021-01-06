@@ -8,11 +8,7 @@ Do not run elasticsearch when starting the tests, use local one. You must instal
 ###### ELASTICSEARCH_PORT
 Custom port for local elasticsearch.
 
-###### DB_TABLE_HEADLESS_CMS
-Table name for everything CMS related
-
-
 ##### Usage
 ````
-ELASTICSEARCH_PORT=9200 LOCAL_ELASTICSEARCH=true DB_TABLE_HEADLESS_CMS=HeadlessCms yarn test packages/api-headless-cms
+ELASTICSEARCH_PORT=9200 LOCAL_ELASTICSEARCH=true yarn test packages/api-headless-cms
 ````
