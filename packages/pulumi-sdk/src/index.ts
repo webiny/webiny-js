@@ -31,7 +31,11 @@ export const FLAG_NON_INTERACTIVE = "--non-interactive";
 export const PULUMI_FOLDER = path.join(__dirname, "pulumi");
 export const PULUMI_BINARY_PATH = path.join(PULUMI_FOLDER, "pulumi", "pulumi");
 
-// When updating versions, make sure to update this one, the one in `downloadBinaries.ts` file, and in `package.json`.
+// When updating versions, make sure to update it in three places:
+// - the AWS_PLUGIN_VERSION in this file, below this comment
+// – in `downloadBinaries.ts` file
+// - in `package.json`.
+// Check the README for more information.
 const AWS_PLUGIN_VERSION = "3.22.0";
 
 export class Pulumi {
