@@ -15,7 +15,6 @@
     "@webiny/plugins": "^5.0.0-beta.0",
     "@webiny/validation": "^5.0.0-beta.0",
     "form-data": "^3.0.0",
-    "mime": "^2.4.6",
     "node-fetch": "^2.6.1",
     "sanitize-filename": "^1.6.3",
     "uniqid": "^5.2.0"
