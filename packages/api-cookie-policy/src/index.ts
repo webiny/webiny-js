@@ -113,7 +113,7 @@ export default () => [
                     }
                 },
                 CookiePolicyMutation: {
-                    /*updateSettings: hasScope("pb:settings")(
+                    /*updateSettings: hasPermission("pb:settings")(
                         /!*resolveUpdateSettings(({ models }) => models.CookiePolicySettings)*!/
                     )*/
                 }

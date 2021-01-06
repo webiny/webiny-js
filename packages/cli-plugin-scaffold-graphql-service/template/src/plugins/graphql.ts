@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { hasScope } from "@webiny/api-security";
+import { hasPermission } from "@webiny/api-security";
 
 const emptyResolver = () => ({});
 
@@ -117,17 +117,17 @@ const plugin: GraphQLSchemaPlugin = {
                 entities: emptyResolver
             },
             EntityQuery: {
-                // With the generic resolvers, we also rely on the "hasScope" helper function from the
+                // With the generic resolvers, we also rely on the "hasPermission" helper function from the
                 // "@webiny/api-security" package, in order to define the required security scopes (permissions).
-                getEntity: hasScope("entities:get")(resolveGet(entityFetcher)),
-                listEntities: hasScope("entities:list")(resolveList(entityFetcher))
+                getEntity: hasPermission("entities:get")(resolveGet(entityFetcher)),
+                listEntities: hasPermission("entities:list")(resolveList(entityFetcher))
             },
             EntityMutation: {
-                // With the generic resolvers, we also rely on the "hasScope" helper function from the
+                // With the generic resolvers, we also rely on the "hasPermission" helper function from the
                 // "@webiny/api-security" package, in order to define the required security scopes (permissions).
-                createEntity: hasScope("entities:create")(resolveCreate(entityFetcher)),
-                updateEntity: hasScope("entities:update")(resolveUpdate(entityFetcher)),
-                deleteEntity: hasScope("entities:delete")(resolveDelete(entityFetcher))
+                createEntity: hasPermission("entities:create")(resolveCreate(entityFetcher)),
+                updateEntity: hasPermission("entities:update")(resolveUpdate(entityFetcher)),
+                deleteEntity: hasPermission("entities:delete")(resolveDelete(entityFetcher))
             }
         }
     }

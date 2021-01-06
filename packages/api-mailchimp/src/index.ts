@@ -1,5 +1,5 @@
 import { ListErrorResponse, ListResponse, ErrorResponse } from "@webiny/handler-graphql/responses";
-import { hasScope } from "@webiny/api-security";
+import { hasPermission } from "@webiny/api-security";
 import mailchimpSettings from "./mailchimpSettings.model";
 import MailchimpApi from "./MailchimpApi";
 import { get } from "lodash";
@@ -126,7 +126,7 @@ export default () => [
                             return new ListErrorResponse(e);
                         }
                     },
-                    getSettings: hasScope("pb:settings")(async (_, args, context) => {
+                    getSettings: hasPermission("pb:settings")(async (_, args, context) => {
                         try {
                             const data = await context.settingsManager.getSettings("mailchimp");
                             return { data };
@@ -182,7 +182,7 @@ export default () => [
                             });
                         }
                     }
-                    /*updateSettings: hasScope("pb:settings")(
+                    /*updateSettings: hasPermission("pb:settings")(
                         /!*resolveUpdateSettings(({ models }) => models.MailchimpSettings)*!/
                     )*/
                 }
