@@ -4,11 +4,12 @@ const { getProjectRoot } = require("@webiny/cli/utils");
 
 const getOutputJson = async (stack, env) => {
     try {
+        const cwd = getProjectRoot();
         const { stdout } = await execa(
             "webiny",
             ["stack", "output", stack, "--env", env, "--json", "--no-debug"].filter(Boolean),
             {
-                cwd: getProjectRoot()
+                cwd
             }
         );
 
