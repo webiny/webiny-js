@@ -11,6 +11,9 @@ const BASE_CONTENT_MODEL_FIELDS = `
     modelId
     name
     savedOn
+    fields {
+        id
+    }
     group {
         id
         name

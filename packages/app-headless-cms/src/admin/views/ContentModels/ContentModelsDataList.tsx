@@ -26,10 +26,6 @@ const listItemMinHeight = css({
     minHeight: "66px !important"
 });
 
-const viewEntriesIconStyles = css({
-    color: "var(--mdc-theme-text-secondary-on-background)"
-});
-
 const ContentModelsDataList = () => {
     const { history } = useRouter();
     const client = useApolloClient();
@@ -76,41 +72,54 @@ const ContentModelsDataList = () => {
         <UIL.DataList loading={loading} data={models} title={t`Content Models`} refresh={refetch}>
             {({ data = [] }) => (
                 <UIL.List data-testid="default-data-list">
-                    {data.map(contentModel => (
-                        <UIL.ListItem key={contentModel.modelId} className={listItemMinHeight}>
-                            <UIL.ListItemText>
-                                {contentModel.name}
-                                <UIL.ListItemTextSecondary>
-                                    {t`Last modified: {time}.`({
-                                        time: <TimeAgo datetime={contentModel.savedOn} />
-                                    })}
-                                </UIL.ListItemTextSecondary>
-                            </UIL.ListItemText>
-                            <UIL.ListItemMeta className={rightAlign}>
-                                <UIL.ListActions>
-                                    <Tooltip content={t`View content`} placement={"top"}>
-                                        <IconButton
-                                            data-testid={"cms-view-content-model-button"}
-                                            icon={
-                                                <ViewListIcon className={viewEntriesIconStyles} />
-                                            }
-                                            label={t`View entries`}
-                                            onClick={viewContentEntries(contentModel)}
-                                        />
-                                    </Tooltip>
-                                    <Tooltip content={t`Edit content model`} placement={"top"}>
-                                        <EditIcon
-                                            onClick={() => editRecord(contentModel)}
-                                            data-testid={"cms-edit-content-model-button"}
-                                        />
-                                    </Tooltip>
-                                    <Tooltip content={t`Delete content model`} placement={"top"}>
-                                        <DeleteIcon onClick={() => deleteRecord(contentModel)} />
-                                    </Tooltip>
-                                </UIL.ListActions>
-                            </UIL.ListItemMeta>
-                        </UIL.ListItem>
-                    ))}
+                    {data.map(contentModel => {
+                        const disableViewContent = contentModel.fields.length === 0;
+                        const message = disableViewContent
+                            ? "You first need to add a field"
+                            : "View content";
+                        return (
+                            <UIL.ListItem key={contentModel.modelId} className={listItemMinHeight}>
+                                <UIL.ListItemText>
+                                    {contentModel.name}
+                                    <UIL.ListItemTextSecondary>
+                                        {t`Last modified: {time}.`({
+                                            time: <TimeAgo datetime={contentModel.savedOn} />
+                                        })}
+                                    </UIL.ListItemTextSecondary>
+                                </UIL.ListItemText>
+                                <UIL.ListItemMeta className={rightAlign}>
+                                    <UIL.ListActions>
+                                        <Tooltip
+                                            content={t`{message}`({ message })}
+                                            placement={"top"}
+                                        >
+                                            <IconButton
+                                                data-testid={"cms-view-content-model-button"}
+                                                icon={<ViewListIcon />}
+                                                label={t`View entries`}
+                                                onClick={viewContentEntries(contentModel)}
+                                                disabled={disableViewContent}
+                                            />
+                                        </Tooltip>
+                                        <Tooltip content={t`Edit content model`} placement={"top"}>
+                                            <EditIcon
+                                                onClick={() => editRecord(contentModel)}
+                                                data-testid={"cms-edit-content-model-button"}
+                                            />
+                                        </Tooltip>
+                                        <Tooltip
+                                            content={t`Delete content model`}
+                                            placement={"top"}
+                                        >
+                                            <DeleteIcon
+                                                onClick={() => deleteRecord(contentModel)}
+                                            />
+                                        </Tooltip>
+                                    </UIL.ListActions>
+                                </UIL.ListItemMeta>
+                            </UIL.ListItem>
+                        );
+                    })}
                 </UIL.List>
             )}
         </UIL.DataList>
