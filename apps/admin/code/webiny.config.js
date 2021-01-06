@@ -1,6 +1,5 @@
 const { startApp, buildApp } = require("@webiny/project-utils");
 const { getStackOutput } = require("@webiny/cli-plugin-deploy-pulumi/utils");
-require("dotenv").config();
 
 const map = {
     REACT_APP_USER_POOL_REGION: "${region}",
