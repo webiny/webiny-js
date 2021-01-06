@@ -72,7 +72,8 @@ describe("refField", () => {
         const models = {
             category: null,
             product: null,
-            review: null
+            review: null,
+            author: null
         };
         for (const name in models) {
             models[name] = await setupContentModel(contentModelGroup, name);
@@ -111,7 +112,7 @@ describe("refField", () => {
         } catch {}
     });
 
-    test("should create review connected to a product", async () => {
+    test("should create a product with richText field populated", async () => {
         const contentModelGroup = await setupContentModelGroup();
         await setupContentModels(contentModelGroup);
 

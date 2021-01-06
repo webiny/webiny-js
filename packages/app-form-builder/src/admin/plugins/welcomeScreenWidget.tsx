@@ -19,7 +19,7 @@ const buttonStyle = css({
 const plugin: AdminWelcomeScreenWidgetPlugin = {
     type: "admin-welcome-screen-widget",
     name: "admin-welcome-screen-widget-form-builder",
-    scopes: ["fb.form"],
+    permission: "fb.form",
     widget: {
         cta: (
             <Link to="/forms" className={linkStyle}>

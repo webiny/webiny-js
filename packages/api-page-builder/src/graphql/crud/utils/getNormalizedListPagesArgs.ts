@@ -55,9 +55,10 @@ const getQuery = (args: ListPagesArgs) => {
     if (search && search.query) {
         query.bool.must = {
             // eslint-disable-next-line @typescript-eslint/camelcase
-            multi_match: {
-                query: search.query,
-                type: "most_fields",
+            query_string: {
+                query: `*${search.query}*`,
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                allow_leading_wildcard: true,
                 fields: ["title", "snippet"]
             }
         };

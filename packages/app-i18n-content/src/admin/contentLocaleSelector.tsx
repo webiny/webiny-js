@@ -22,6 +22,12 @@ const plugin: AdminHeaderRightPlugin = {
     render() {
         const { setCurrentLocale, getCurrentLocale, getLocales } = useI18N();
 
+        const locales = getLocales();
+
+        if (locales.length === 1) {
+            return null;
+        }
+
         const currentLocale = getCurrentLocale("content");
         return (
             <Menu
@@ -33,7 +39,7 @@ const plugin: AdminHeaderRightPlugin = {
                     </ButtonPrimary>
                 }
             >
-                {getLocales().map(locale => (
+                {locales.map(locale => (
                     <MenuItem
                         key={locale.code}
                         onClick={() => {

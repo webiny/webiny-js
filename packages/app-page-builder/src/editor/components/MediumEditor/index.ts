@@ -1,10 +1,6 @@
 import React from "react";
 import MediumEditor from "medium-editor";
 import { css } from "emotion";
-// FIXME: Move to appropriate location
-// load theme styles with webpack
-require("medium-editor/dist/css/medium-editor.css");
-require("medium-editor/dist/css/themes/mani.css");
 
 const editorClass = css({
     width: "100%",
@@ -35,7 +31,7 @@ type ReactMediumEditorProps = {
 };
 
 const ReactMediumEditor = ({
-    tag,
+    tag = "div",
     value,
     onChange,
     options,

@@ -18,9 +18,9 @@ const plugin: GraphQLSchemaPlugin<TenancyContext> = {
             }
 
             input SecurityApiKeyInput {
-                name: String
+                name: String!
                 description: String
-                permissions: [JSON]
+                permissions: [JSON]!
             }
 
             type SecurityApiKeyResponse {

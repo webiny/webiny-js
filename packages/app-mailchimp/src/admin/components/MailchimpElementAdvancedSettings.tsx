@@ -24,7 +24,7 @@ const t = i18n.ns("app-mailchimp/admin");
 const formPreview = css({
     padding: 25,
     border: "1px solid var(--mdc-theme-background)",
-    overflow: "scroll"
+    overflow: "auto"
 });
 
 const saveApiKeyButtonWrapper = css({

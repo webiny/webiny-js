@@ -25,8 +25,16 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                 // Get field value for this entry
                 const value = instance.values[field.fieldId];
 
+                if (!value) {
+                    return null;
+                }
+
                 if (field.multipleValues) {
                     const ids = value.map(ref => ref.entryId);
+
+                    if (!ids.length) {
+                        return [];
+                    }
 
                     // eslint-disable-next-line @typescript-eslint/camelcase
                     const entries = cms.READ

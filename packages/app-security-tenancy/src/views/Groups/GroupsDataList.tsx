@@ -15,6 +15,7 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useQuery, useMutation } from "react-apollo";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import { LIST_GROUPS, DELETE_GROUP } from "./graphql";
+import { Tooltip } from "@webiny/ui/Tooltip";
 
 const t = i18n.ns("app-security/admin/groups/data-list");
 
@@ -74,7 +75,16 @@ const GroupsDataList = () => {
 
                             <ListItemMeta>
                                 <ListActions>
-                                    <DeleteIcon onClick={() => deleteItem(item)} />
+                                    {item.slug !== "full-access" ? (
+                                        <DeleteIcon onClick={() => deleteItem(item)} />
+                                    ) : (
+                                        <Tooltip
+                                            placement={"bottom"}
+                                            content={<span>{t`You can't delete this group.`}</span>}
+                                        >
+                                            <DeleteIcon disabled />
+                                        </Tooltip>
+                                    )}
                                 </ListActions>
                             </ListItemMeta>
                         </ListItem>

@@ -69,14 +69,6 @@ export const GET_FORM = gql`
                     published
                     locked
                     status
-                    revisions {
-                        id
-                        name
-                        published
-                        locked
-                        status
-                        version
-                    }
                 }
                 error ${ERROR_FIELDS}
             }

@@ -213,9 +213,9 @@ describe("publishing workflow", () => {
             [[{ name: "content.i18n" }, { name: "pb.page" }], identityB],
             [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.page" }], identityA],
             [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.page" }], identityB],
-            [[{ name: "content.i18n" }, { name: "pb.page", rcpu: "p" }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.page", rcpu: "p" }], identityB],
-            [[{ name: "content.i18n" }, { name: "pb.page", own: true, rcpu: "p" }], identityA]
+            [[{ name: "content.i18n" }, { name: "pb.page", pw: "p" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.page", pw: "p" }], identityB],
+            [[{ name: "content.i18n" }, { name: "pb.page", own: true, pw: "p" }], identityA]
         ];
 
         for (let i = 0; i < sufficientPermission.length; i++) {
@@ -242,18 +242,18 @@ describe("publishing workflow", () => {
         const insufficientPermissions = [
             [[], null],
             [[], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.page", rcpu: "rcu" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.page", pw: "rcu" }], identityA],
             [
                 [
                     { name: "content.i18n", locales: ["en-US"] },
-                    { name: "pb.page", rcpu: "rcu" }
+                    { name: "pb.page", pw: "rcu" }
                 ],
                 identityA
             ],
             [
                 [
                     { name: "content.i18n", locales: ["en-US"] },
-                    { name: "pb.page", rcpu: "rcu" }
+                    { name: "pb.page", pw: "rcu" }
                 ],
                 identityB
             ],
@@ -261,7 +261,7 @@ describe("publishing workflow", () => {
             [
                 [
                     { name: "content.i18n", locales: ["en-US"] },
-                    { name: "pb.page", own: true, rcpu: "rpcu" }
+                    { name: "pb.page", own: true, pw: "rpcu" }
                 ],
                 identityB
             ]
@@ -291,9 +291,9 @@ describe("publishing workflow", () => {
             [[{ name: "content.i18n" }, { name: "pb.page" }], identityB],
             [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.page" }], identityA],
             [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.page" }], identityB],
-            [[{ name: "content.i18n" }, { name: "pb.page", rcpu: "u" }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.page", rcpu: "u" }], identityB],
-            [[{ name: "content.i18n" }, { name: "pb.page", own: true, rcpu: "u" }], identityA]
+            [[{ name: "content.i18n" }, { name: "pb.page", pw: "u" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.page", pw: "u" }], identityB],
+            [[{ name: "content.i18n" }, { name: "pb.page", own: true, pw: "u" }], identityA]
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
@@ -332,22 +332,22 @@ describe("publishing workflow", () => {
             [
                 [
                     { name: "content.i18n", locales: ["de-DE"] },
-                    { name: "pb.page", rcpu: "rcpu" }
+                    { name: "pb.page", pw: "rcpu" }
                 ],
                 identityA
             ],
-            [[{ name: "content.i18n" }, { name: "pb.page", rcpu: "rcp" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.page", pw: "rcp" }], identityA],
             [
                 [
                     { name: "content.i18n", locales: ["en-US"] },
-                    { name: "pb.page", rcpu: "rcp" }
+                    { name: "pb.page", pw: "rcp" }
                 ],
                 identityA
             ],
             [
                 [
                     { name: "content.i18n", locales: ["en-US"] },
-                    { name: "pb.page", rcpu: "rcp" }
+                    { name: "pb.page", pw: "rcp" }
                 ],
                 identityB
             ],
@@ -355,7 +355,7 @@ describe("publishing workflow", () => {
             [
                 [
                     { name: "content.i18n", locales: ["en-US"] },
-                    { name: "pb.page", own: true, rcpu: "rpcu" }
+                    { name: "pb.page", own: true, pw: "rpcu" }
                 ],
                 identityB
             ]
@@ -391,9 +391,9 @@ describe("publishing workflow", () => {
             [[{ name: "content.i18n" }, { name: "pb.page" }], identityB],
             [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.page" }], identityA],
             [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.page" }], identityB],
-            [[{ name: "content.i18n" }, { name: "pb.page", rcpu: "r" }], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.page", rcpu: "r" }], identityB],
-            [[{ name: "content.i18n" }, { name: "pb.page", own: true, rcpu: "r" }], identityA]
+            [[{ name: "content.i18n" }, { name: "pb.page", pw: "r" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.page", pw: "r" }], identityB],
+            [[{ name: "content.i18n" }, { name: "pb.page", own: true, pw: "r" }], identityA]
         ];
 
         for (let i = 0; i < sufficientPermission.length; i++) {
@@ -422,18 +422,18 @@ describe("publishing workflow", () => {
         const insufficientPermissions = [
             [[], null],
             [[], identityA],
-            [[{ name: "content.i18n" }, { name: "pb.page", rcpu: "cpu" }], identityA],
+            [[{ name: "content.i18n" }, { name: "pb.page", pw: "cpu" }], identityA],
             [
                 [
                     { name: "content.i18n", locales: ["en-US"] },
-                    { name: "pb.page", rcpu: "cpu" }
+                    { name: "pb.page", pw: "cpu" }
                 ],
                 identityA
             ],
             [
                 [
                     { name: "content.i18n", locales: ["en-US"] },
-                    { name: "pb.page", rcpu: "cpu" }
+                    { name: "pb.page", pw: "cpu" }
                 ],
                 identityB
             ],
@@ -441,7 +441,7 @@ describe("publishing workflow", () => {
             [
                 [
                     { name: "content.i18n", locales: ["en-US"] },
-                    { name: "pb.page", own: true, rcpu: "rpcu" }
+                    { name: "pb.page", own: true, pw: "rpcu" }
                 ],
                 identityB
             ]
@@ -469,7 +469,7 @@ describe("publishing workflow", () => {
         const sufficientPermissions = [
             [[{ name: "content.i18n" }, { name: "pb.page" }], identityB],
             [[{ name: "content.i18n", locales: ["en-US"] }, { name: "pb.page" }], identityB],
-            [[{ name: "content.i18n" }, { name: "pb.page", rcpu: "c" }], identityB]
+            [[{ name: "content.i18n" }, { name: "pb.page", pw: "c" }], identityB]
         ];
 
         for (let i = 0; i < sufficientPermissions.length; i++) {
@@ -508,12 +508,12 @@ describe("publishing workflow", () => {
             [
                 [
                     { name: "content.i18n", locales: ["de-DE"] },
-                    { name: "pb.page", rcpu: "rcpu" }
+                    { name: "pb.page", pw: "rcpu" }
                 ],
                 identityB
             ],
-            [[{ name: "content.i18n" }, { name: "pb.page", rcpu: "rpu" }], identityB],
-            [[{ name: "content.i18n" }, { name: "pb.page", rcpu: "rcpu", own: true }], identityB]
+            [[{ name: "content.i18n" }, { name: "pb.page", pw: "rpu" }], identityB],
+            [[{ name: "content.i18n" }, { name: "pb.page", pw: "rcpu", own: true }], identityB]
         ];
 
         for (let i = 0; i < insufficientPermissions.length; i++) {

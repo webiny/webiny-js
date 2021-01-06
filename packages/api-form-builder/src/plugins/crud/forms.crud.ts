@@ -518,7 +518,10 @@ export default {
                     return true;
                 },
                 async publishForm(id) {
-                    const permission = await utils.checkBaseFormPermissions(context, { rwd: "p" });
+                    const permission = await utils.checkBaseFormPermissions(context, {
+                        rwd: "r",
+                        pw: "p"
+                    });
 
                     const [uniqueId, version] = id.split("#");
 
@@ -604,7 +607,10 @@ export default {
                     return form;
                 },
                 async unpublishForm(id) {
-                    const permission = await utils.checkBaseFormPermissions(context, { rwd: "p" });
+                    const permission = await utils.checkBaseFormPermissions(context, {
+                        rwd: "r",
+                        pw: "u"
+                    });
 
                     const [uniqueId, version] = id.split("#");
                     const FORM_PK = PK_FORM(uniqueId);

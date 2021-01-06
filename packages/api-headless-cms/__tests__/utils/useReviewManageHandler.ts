@@ -23,6 +23,10 @@ const reviewFields = `
         modelId
         entryId
     }
+    author {
+        modelId
+        entryId
+    }
     rating
 `;
 
@@ -158,7 +162,7 @@ export const useReviewManageHandler = (options: GQLHandlerCallableArgsType) => {
                 headers
             });
         },
-        async listReviews(variables, headers: Record<string, any> = {}) {
+        async listReviews(variables = {}, headers: Record<string, any> = {}) {
             return await contentHandler.invoke({
                 body: { query: listReviewsQuery, variables },
                 headers

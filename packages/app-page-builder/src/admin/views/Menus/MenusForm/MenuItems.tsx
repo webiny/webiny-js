@@ -18,7 +18,7 @@ import { Form } from "@webiny/form";
 const leftPanel = css({
     padding: 25,
     backgroundColor: "var(--mdc-theme-background)",
-    overflow: "scroll"
+    overflow: "auto"
 });
 
 const menuItems = css({

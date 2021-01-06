@@ -8,7 +8,7 @@ import {
 
 export const checkBaseFormPermissions = async (
     context: FormBuilderContext,
-    check: { rwd?: string } = {}
+    check: { rwd?: string; pw?: string } = {}
 ): Promise<FbFormPermission> => {
     await context.i18nContent.checkI18NContentPermission();
     const permission = await context.security.getPermission<FbFormPermission>("fb.form");
@@ -17,6 +17,10 @@ export const checkBaseFormPermissions = async (
     }
 
     if (check.rwd && !hasRwd(permission, check.rwd)) {
+        throw new NotAuthorizedError();
+    }
+
+    if (check.pw && !hasPW(permission, check.pw)) {
         throw new NotAuthorizedError();
     }
 
@@ -51,12 +55,29 @@ export const getStatus = (params: { published: boolean; locked: boolean }) => {
     return params.locked ? "locked" : "draft";
 };
 
+// Has read/write/delete permissions?
 export const hasRwd = (permission: FbFormPermission, rwd: string) => {
     if (typeof permission.rwd !== "string") {
         return true;
     }
 
     return permission.rwd.includes(rwd);
+};
+
+// Has publishing workflow permissions?
+export const hasPW = (permission: FbFormPermission, pw: string) => {
+    const isCustom = Object.keys(permission).length > 1; // "name" key is always present
+
+    if (!isCustom) {
+        // Means it's a "full-access" permission.
+        return true;
+    }
+
+    if (typeof permission.pw !== "string") {
+        return false;
+    }
+
+    return permission.pw.includes(pw);
 };
 
 export const normalizeSortInput = (sort: Record<string, number>) => {

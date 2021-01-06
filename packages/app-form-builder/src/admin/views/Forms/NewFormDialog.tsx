@@ -19,6 +19,7 @@ import {
     DialogOnClose
 } from "@webiny/ui/Dialog";
 import { ButtonDefault } from "@webiny/ui/Button";
+import { addFormToListCache } from "@webiny/app-form-builder/admin/views/cache";
 
 const narrowDialog = css({
     ".mdc-dialog__surface": {
@@ -50,16 +51,21 @@ const NewFormDialog: React.FC<NewFormDialogProps> = ({ open, onClose }) => {
                 onSubmit={async formData => {
                     setLoading(true);
 
-                    const response = await create({ variables: formData });
+                    await create({
+                        variables: formData,
+                        update(cache, { data }) {
+                            const { data: revision, error } = data.formBuilder.form;
 
-                    const { data, error } = response.data.formBuilder.form;
+                            if (error) {
+                                setLoading(false);
+                                return showSnackbar(error.message);
+                            }
 
-                    if (error) {
-                        setLoading(false);
-                        return showSnackbar(error.message);
-                    }
+                            addFormToListCache(cache, revision);
 
-                    history.push("/forms/" + encodeURIComponent(data.id));
+                            history.push("/forms/" + encodeURIComponent(revision.id));
+                        }
+                    });
                 }}
             >
                 {({ Bind, submit }) => (

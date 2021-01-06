@@ -59,7 +59,10 @@ describe("Security Group CRUD Test", () => {
         const updatedName = "Group B - updated";
         [response] = await securityGroup.update({
             slug: mocks.groupB.slug,
-            data: { name: updatedName }
+            data: {
+                name: updatedName,
+                permissions: mocks.groupB.permissions
+            }
         });
 
         expect(response).toEqual({

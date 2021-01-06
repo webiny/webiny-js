@@ -22,7 +22,7 @@ const SpinnerWrapper = styled("div")({
     top: 0,
     left: 0,
     zIndex: 10,
-    "> div": {
+    "& .spinner__inner-wrapper": {
         position: "absolute",
         top: "50%",
         left: "50%",
@@ -41,17 +41,19 @@ const Label = styled("div")({
 const CircularProgress = ({ label, size, spinnerWidth, spinnerColor, visible, style }: Props) => {
     return (
         <SpinnerWrapper style={style}>
-            <Spinner
-                size={size}
-                spinnerColor={spinnerColor}
-                spinnerWidth={spinnerWidth}
-                visible={visible}
-            />
-            {label && (
-                <Label>
-                    <Typography use={"overline"}>{label}</Typography>
-                </Label>
-            )}
+            <div className={"spinner__inner-wrapper"}>
+                <Spinner
+                    size={size}
+                    spinnerColor={spinnerColor}
+                    spinnerWidth={spinnerWidth}
+                    visible={visible}
+                />
+                {label && (
+                    <Label>
+                        <Typography use={"overline"}>{label}</Typography>
+                    </Label>
+                )}
+            </div>
         </SpinnerWrapper>
     );
 };

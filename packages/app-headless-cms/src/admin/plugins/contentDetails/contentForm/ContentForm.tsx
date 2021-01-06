@@ -5,7 +5,7 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useMutation } from "@webiny/app-headless-cms/admin/hooks";
 import { ContentModelForm } from "../../../views/components/ContentModelForm";
 import * as GQL from "../../../views/components/ContentModelForm/graphql";
-import { addEntryToListCache, updateLatestRevisionInListCache } from "../cache";
+import * as GQLCache from "../cache";
 
 const ContentForm = ({ contentModel, entry, setLoading, getLoading, setState }) => {
     const { history } = useRouter();
@@ -39,7 +39,7 @@ const ContentForm = ({ contentModel, entry, setLoading, getLoading, setState }) 
                         return;
                     }
 
-                    addEntryToListCache(contentModel, cache, entry);
+                    GQLCache.addEntryToListCache(contentModel, cache, entry);
                 }
             });
             setLoading(false);
@@ -89,7 +89,8 @@ const ContentForm = ({ contentModel, entry, setLoading, getLoading, setState }) 
                         return;
                     }
 
-                    updateLatestRevisionInListCache(contentModel, cache, newRevision);
+                    GQLCache.updateLatestRevisionInListCache(contentModel, cache, newRevision);
+                    GQLCache.addRevisionToRevisionsCache(contentModel, cache, newRevision);
 
                     showSnackbar("A new revision was created!");
                     history.push(

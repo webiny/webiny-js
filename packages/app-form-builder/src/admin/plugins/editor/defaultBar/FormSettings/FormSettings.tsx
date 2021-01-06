@@ -34,7 +34,11 @@ const FormSettings = ({ onExited }: FormSettingsProps) => {
     const [activePlugin, setActivePlugin] = useState(plugins[0]);
 
     return (
-        <OverlayLayout barMiddle={Title} onExited={onExited}>
+        <OverlayLayout
+            barMiddle={Title}
+            onExited={onExited}
+            style={{ color: "var(--mdc-theme-on-surface)" }}
+        >
             <SplitView>
                 <LeftPanel span={5}>
                     <List twoLine className={listStyle}>

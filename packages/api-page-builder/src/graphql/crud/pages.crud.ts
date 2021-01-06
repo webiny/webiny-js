@@ -16,7 +16,8 @@ import {
     PageHookPlugin,
     PbContext,
     Page,
-    HandlerConfiguration
+    HandlerConfiguration,
+    PageSecurityPermission
 } from "@webiny/api-page-builder/types";
 import createListMeta from "./utils/createListMeta";
 import checkBasePermissions from "./utils/checkBasePermissions";
@@ -317,7 +318,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                             }
                         });
 
-                        return pages;
+                        return pages.sort((a, b) => b.version - a.version);
                     },
 
                     async create(categorySlug) {
@@ -782,9 +783,13 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                     },
 
                     async publish(pageId: string) {
-                        const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                            rcpu: "p"
-                        });
+                        const permission = await checkBasePermissions<PageSecurityPermission>(
+                            context,
+                            PERMISSION_NAME,
+                            {
+                                pw: "p"
+                            }
+                        );
 
                         const [pid, rev] = pageId.split("#");
 
@@ -997,9 +1002,13 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
                     },
 
                     async unpublish(pageId: string) {
-                        const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                            rcpu: "u"
-                        });
+                        const permission = await checkBasePermissions<PageSecurityPermission>(
+                            context,
+                            PERMISSION_NAME,
+                            {
+                                pw: "u"
+                            }
+                        );
 
                         const [pid, rev] = pageId.split("#");
 
@@ -1109,7 +1118,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
 
                     async requestReview(pageId: string) {
                         const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                            rcpu: "r"
+                            pw: "r"
                         });
 
                         const [pid, rev] = pageId.split("#");
@@ -1177,7 +1186,7 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
 
                     async requestChanges(pageId: string) {
                         const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                            rcpu: "c"
+                            pw: "c"
                         });
 
                         const [pid, rev] = pageId.split("#");

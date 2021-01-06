@@ -18,7 +18,7 @@ const RenderBlock = styled("div")({
     zIndex: 0,
     backgroundColor: "var(--mdc-theme-background)",
     height: "100%",
-    overflow: "scroll",
+    overflow: "auto",
     padding: 25
 });
 
@@ -26,7 +26,13 @@ export default [
     {
         name: "forms-form-details-revision-content-submissions",
         type: "forms-form-details-revision-content",
-        render({ form, loading }) {
+        render({ form, loading, security }) {
+            const { submissions } = security.identity.getPermission("fb.form");
+
+            if (typeof submissions !== "undefined" && submissions !== true) {
+                return null;
+            }
+
             return (
                 <Tab label={t`Submissions`} disabled={loading}>
                     <RenderBlock>

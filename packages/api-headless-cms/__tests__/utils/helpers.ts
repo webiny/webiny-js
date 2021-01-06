@@ -5,7 +5,7 @@ export type PermissionsArgType = {
     name: string;
     locales?: string[];
     rwd?: string;
-    rcpu?: string;
+    pw?: string;
 };
 
 export const identity = {
@@ -36,7 +36,8 @@ export const createPermissions = (permissions: PermissionsArgType[]): Permission
         },
         {
             name: "cms.contentEntry",
-            rwd: "rwd"
+            rwd: "rwd",
+            pw: "pu"
         },
         {
             name: "cms.endpoint.read"

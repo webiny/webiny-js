@@ -8,7 +8,7 @@ import { IconButton } from "@webiny/ui/Button";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { ReactComponent as DeleteIcon } from "@webiny/app-page-builder/editor/assets/icons/close.svg";
 import { ReactComponent as EditIcon } from "@webiny/app-page-builder/editor/assets/icons/edit.svg";
-import { deleteElement, updateElement } from "./graphql";
+import { DELETE_PAGE_ELEMENT, UPDATE_PAGE_ELEMENT } from "./graphql";
 import EditElementDialog from "./EditElementDialog";
 import createElementPlugin from "@webiny/app-page-builder/admin/utils/createElementPlugin";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
@@ -38,14 +38,14 @@ const Title = props => {
         onSubmit: ({ id, refresh }) => async plugin => {
             const { title: name } = plugin;
             const response = await client.mutate({
-                mutation: updateElement,
+                mutation: UPDATE_PAGE_ELEMENT,
                 variables: {
                     id,
                     data: { name }
                 }
             });
 
-            const { error, data } = response.data.pageBuilder.updateElement;
+            const { error, data } = response.data.pageBuilder.updatePageElement;
             if (error) {
                 closeEditDialog();
                 setTimeout(() => {
@@ -100,11 +100,11 @@ const Title = props => {
                                 showConfirmation(async () => {
                                     const { plugin, refresh, id } = props;
                                     const { data: res } = await client.mutate({
-                                        mutation: deleteElement,
+                                        mutation: DELETE_PAGE_ELEMENT,
                                         variables: { id }
                                     });
 
-                                    const { error } = res.pageBuilder.deleteElement;
+                                    const { error } = res.pageBuilder.deletePageElement;
                                     if (error) {
                                         return showSnackbar(error.message);
                                     }

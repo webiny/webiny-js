@@ -18,6 +18,7 @@
 		"@webiny/app-plugin-security-cognito": "^4.13.0",
 		"@webiny/app-security": "^4.13.0",
 		"@webiny/app-page-builder": "^4.13.0",
+		"@webiny/app-playground": "^4.13.0",
 		"@webiny/app-security-tenancy": "^4.13.0",
 		"@webiny/app-i18n": "^4.13.0",
 		"@webiny/app-form-builder": "^4.13.0",

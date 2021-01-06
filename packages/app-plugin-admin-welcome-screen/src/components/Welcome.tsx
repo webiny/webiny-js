@@ -9,7 +9,7 @@ import {
     SimpleFormFooter
 } from "@webiny/app-admin/components/SimpleForm";
 import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { Typography } from "@webiny/ui/Typography";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Elevation } from "@webiny/ui/Elevation";
@@ -21,7 +21,6 @@ import TwitterIcon from "../icons/twitter-logo.svg";
 import TextbookIcon from "../icons/textbook.svg";
 import LaptopIcon from "../icons/laptop.svg";
 import { AdminWelcomeScreenWidgetPlugin } from "../types";
-import { SecureView } from "@webiny/app-security/components";
 
 const linkStyle = css({
     textDecoration: "none",
@@ -98,6 +97,7 @@ const Widget = styled("div")({
 
 const WelcomeScreenWidgetsWrapper = styled("div")({
     display: "flex",
+    justifyContent: "center",
     "@media (max-width: 479px)": {
         flexDirection: "column"
     }
@@ -118,14 +118,16 @@ const Welcome = () => {
         return null;
     }
 
-    const canSeeAnyWidget = true;
+    const widgets = plugins
+        .byType<AdminWelcomeScreenWidgetPlugin>("admin-welcome-screen-widget")
+        .filter(pl => {
+            if (pl.permission) {
+                return identity.getPermission(pl.permission);
+            }
+            return true;
+        });
 
-    /*
-    TODO: update permissions checks!!
-    const canSeeAnyWidget = getPlugins<AdminWelcomeScreenWidgetPlugin>(
-        "admin-welcome-screen-widget"
-    ).some(pl => identity.getPermission(pl.scopes[0] || ""));
-    */
+    const canSeeAnyWidget = widgets.length > 0;
 
     return (
         <Grid>
@@ -143,37 +145,33 @@ const Welcome = () => {
                                     )}
                                     {!canSeeAnyWidget && (
                                         <p className={pGetStartedStyle}>
-                                            Please contact administrator for permission to use the
-                                            site&apso;s actions.
+                                            Please contact the administrator for permissions to
+                                            access Webiny apps.
                                         </p>
                                     )}
                                     <br />
                                 </Typography>
                             </Cell>
                             <WelcomeScreenWidgetsWrapper>
-                                {getPlugins<AdminWelcomeScreenWidgetPlugin>(
-                                    "admin-welcome-screen-widget"
-                                ).map(pl => {
+                                {widgets.map(pl => {
                                     return (
-                                        <SecureView scopes={pl.scopes} key={pl.name}>
-                                            <Widget key={pl.name}>
-                                                <Elevation z={2} style={{ padding: 10 }}>
-                                                    <Typography use={"headline6"}>
-                                                        <p className={widgetTitleStyle}>
-                                                            {pl.widget.title}
-                                                        </p>
-                                                    </Typography>
-                                                    <Typography use={"body1"}>
-                                                        <p className={widgetDescriptionStyle}>
-                                                            {pl.widget.description}
-                                                        </p>
-                                                    </Typography>
-                                                    <div className={widgetButtonStyle}>
-                                                        {pl.widget.cta}
-                                                    </div>
-                                                </Elevation>
-                                            </Widget>
-                                        </SecureView>
+                                        <Widget key={pl.name}>
+                                            <Elevation z={2} style={{ padding: 10 }}>
+                                                <Typography use={"headline6"}>
+                                                    <p className={widgetTitleStyle}>
+                                                        {pl.widget.title}
+                                                    </p>
+                                                </Typography>
+                                                <Typography use={"body1"}>
+                                                    <p className={widgetDescriptionStyle}>
+                                                        {pl.widget.description}
+                                                    </p>
+                                                </Typography>
+                                                <div className={widgetButtonStyle}>
+                                                    {pl.widget.cta}
+                                                </div>
+                                            </Elevation>
+                                        </Widget>
                                     );
                                 })}
                             </WelcomeScreenWidgetsWrapper>

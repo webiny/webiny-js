@@ -29,7 +29,7 @@ const createDefaultGroups = async (
     if (!fullAccessGroup) {
         fullAccessGroup = await context.security.groups.createGroup(tenant, {
             name: "Full Access",
-            description: "Grants full access to all API fields.",
+            description: "Grants full access to all apps.",
             system: true,
             slug: "full-access",
             permissions: [{ name: "*" }]

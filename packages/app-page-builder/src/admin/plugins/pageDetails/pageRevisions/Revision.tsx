@@ -29,7 +29,6 @@ import { ReactComponent as PublishIcon } from "@webiny/app-page-builder/admin/as
 import { ReactComponent as DeleteIcon } from "@webiny/app-page-builder/admin/assets/delete.svg";
 import { ReactComponent as PreviewIcon } from "@webiny/app-page-builder/admin/assets/visibility.svg";
 import { PbPageRevision } from "@webiny/app-page-builder/types";
-import statusesLabels from "@webiny/app-page-builder/admin/constants/pageStatusesLabels";
 
 type RevisionProps = {
     revision: PbPageRevision;
@@ -44,13 +43,14 @@ const revisionsMenu = css({
 });
 
 const getIcon = (rev: PbPageRevision) => {
+    const published = rev.status === "published";
     switch (true) {
-        case rev.locked && !rev.published:
+        case rev.locked && !published:
             return {
                 icon: <Icon icon={<LockIcon />} />,
                 text: "This revision is locked (it has already been published)"
             };
-        case rev.published:
+        case published:
             return {
                 icon: <Icon icon={<BeenHereIcon />} className={primaryColor} />,
                 text: "This revision is currently published!"
@@ -69,7 +69,7 @@ const Div = ({ children }) => {
 
 const Revision = ({ revision, page }: RevisionProps) => {
     const { icon, text: tooltipText } = getIcon(revision);
-    const { getWebsiteUrl, getPagePreviewUrl } = usePageBuilderSettings();
+    const { getWebsiteUrl, getPageUrl } = usePageBuilderSettings();
     const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getWebsiteUrl());
 
     const { deleteRevision, createRevision, publishRevision, editRevision } = useRevisionHandlers({
@@ -97,8 +97,8 @@ const Revision = ({ revision, page }: RevisionProps) => {
                     <ListItemText>
                         <ListItemTextPrimary>{revision.title}</ListItemTextPrimary>
                         <ListItemTextSecondary>
-                            {statusesLabels[revision.status]} (v{revision.version}), last modified{" "}
-                            <TimeAgo datetime={revision.savedOn} />
+                            Last modified <TimeAgo datetime={revision.savedOn} />
+                            (#{revision.version})
                         </ListItemTextSecondary>
                     </ListItemText>
                     <ListItemMeta>
@@ -135,7 +135,10 @@ const Revision = ({ revision, page }: RevisionProps) => {
                                 onClick={() => {
                                     if (isSiteRunning) {
                                         window.open(
-                                            getPagePreviewUrl(revision),
+                                            getPageUrl({
+                                                ...revision,
+                                                path: page.path
+                                            }),
                                             "_blank",
                                             "noopener"
                                         );

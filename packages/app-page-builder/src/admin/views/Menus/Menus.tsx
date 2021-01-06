@@ -25,10 +25,10 @@ const Menus = () => {
     return (
         <>
             <SplitView>
-                <LeftPanel>
+                <LeftPanel span={3}>
                     <MenusDataList />
                 </LeftPanel>
-                <RightPanel>
+                <RightPanel span={9}>
                     <MenusForm />
                 </RightPanel>
             </SplitView>

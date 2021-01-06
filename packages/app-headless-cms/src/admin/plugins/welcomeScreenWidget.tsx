@@ -18,7 +18,7 @@ const buttonStyle = css({
 const plugin: AdminWelcomeScreenWidgetPlugin = {
     type: "admin-welcome-screen-widget",
     name: "admin-welcome-screen-widget-headless-cms",
-    scopes: [],
+    permission: "cms.contentModel",
     widget: {
         cta: (
             <Link to="/cms/content-models" className={linkStyle}>

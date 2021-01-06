@@ -22,6 +22,8 @@ import { PbPageLayoutPlugin } from "@webiny/app-page-builder/types";
 import { Select } from "@webiny/ui/Select";
 import { useSecurity } from "@webiny/app-security";
 import pick from "object.pick";
+import get from "lodash/get";
+import set from "lodash/set";
 
 const t = i18n.ns("app-page-builder/admin/categories/form");
 
@@ -55,7 +57,25 @@ const CategoriesForm = () => {
     });
 
     const [update, updateMutation] = useMutation(UPDATE_CATEGORY, {
-        refetchQueries: [{ query: LIST_CATEGORIES }]
+        refetchQueries: [{ query: LIST_CATEGORIES }],
+        update: (cache, { data }) => {
+            const categoryDataFromCache = cache.readQuery({
+                query: GET_CATEGORY,
+                variables: { slug }
+            });
+            const updatedCategoryData = get(data, "pageBuilder.category.data");
+
+            if (updatedCategoryData) {
+                cache.writeQuery({
+                    query: GET_CATEGORY,
+                    data: set(
+                        categoryDataFromCache,
+                        "pageBuilder.getCategory.data",
+                        updatedCategoryData
+                    )
+                });
+            }
+        }
     });
 
     const loading = [getQuery, createMutation, updateMutation].find(item => item.loading);
@@ -108,7 +128,7 @@ const CategoriesForm = () => {
             {({ data, form, Bind }) => (
                 <SimpleForm>
                     {loading && <CircularProgress />}
-                    <SimpleFormHeader title={data.slug || t`New category`} />
+                    <SimpleFormHeader title={data.name || t`New category`} />
                     <SimpleFormContent>
                         <Grid>
                             <Cell span={6}>

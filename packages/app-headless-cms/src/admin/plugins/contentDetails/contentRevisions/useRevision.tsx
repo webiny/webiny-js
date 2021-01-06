@@ -106,13 +106,13 @@ export const useRevision = ({ contentModel, revision, entry, setLoading }: UseRe
 
                 setLoading(false);
             },
-            publishRevision: () => async () => {
+            publishRevision: () => async id => {
                 setLoading(true);
                 await client.mutate({
                     mutation: PUBLISH_REVISION,
-                    variables: { revision: revision.id },
+                    variables: { revision: id || revision.id },
                     update(cache, { data }) {
-                        const { error } = data.content;
+                        const { data: published, error } = data.content;
                         if (error) {
                             return showSnackbar(error.message);
                         }
@@ -120,13 +120,13 @@ export const useRevision = ({ contentModel, revision, entry, setLoading }: UseRe
                         GQLCache.unpublishPreviouslyPublishedRevision(
                             contentModel,
                             cache,
-                            revision.id
+                            published.id
                         );
 
                         showSnackbar(
                             <span>
-                                Successfully published revision <strong>#{revision.version}</strong>
-                                !
+                                Successfully published revision{" "}
+                                <strong>#{published.meta.version}</strong>!
                             </span>
                         );
                     }

@@ -18,7 +18,7 @@ const RenderBlock = styled("div")({
     zIndex: 0,
     backgroundColor: "var(--mdc-theme-background)",
     height: "100%",
-    overflow: "scroll",
+    overflow: "auto",
     padding: 25
 });
 

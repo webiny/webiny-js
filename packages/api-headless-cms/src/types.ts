@@ -115,9 +115,6 @@ export type CmsModelFieldDefinitionType = {
 export type CmsModelFieldToGraphQLPlugin = Plugin & {
     type: "cms-model-field-to-graphql";
     fieldType: string;
-    elasticSearch?: {
-        unmappedType?: string;
-    };
     isSearchable: boolean;
     isSortable: boolean;
     read: {
@@ -601,7 +598,7 @@ export type CmsContentModelGroupPermissionType = SecurityPermission<{
 export type CmsContentEntryPermissionType = SecurityPermission<{
     own: boolean;
     rwd: string;
-    rcpu: string;
+    pw: string;
     models?: {
         // key is locale
         [key: string]: string[]; // array of model.modelId values
@@ -616,29 +613,38 @@ type CmsModelFieldToElasticSearchPluginResultType = {
     rawData?: any;
     [key: string]: any;
 };
+
+export type CmsContentIndexEntryType = CmsContentEntryType & {
+    rawValues: Record<string, any>;
+    [key: string]: any;
+};
 export type CmsModelFieldToElasticSearchPlugin = Plugin & {
     type: "cms-model-field-to-elastic-search";
     fieldType: string;
     unmappedType?: string;
     /**
-     * { rawData: { description: ["<p>blah-blah<p>"] }, search: { description: "blah-blah"} }
+     * { rawValues: { description: ["<p>blah-blah<p>"] }, search: { description: "blah-blah"} }
      */
-    toIndex(params: {
+    toIndex?(params: {
         fieldTypePlugin: CmsModelFieldToGraphQLPlugin;
         field: CmsContentModelFieldType;
         context: CmsContext;
         model: CmsContentModelType;
+        // This is the entry that will go into the index
+        // It is exact copy of storageEntry at the beginning of the toIndex loop
+        // Always return top level properties that you want to merge together, eg. {values: {...toIndexEntry.values, ...myValues}}
+        toIndexEntry: CmsContentIndexEntryType;
         // This is the entry in the same form it gets stored to DB (processed, possibly compressed, etc.)
         storageEntry: CmsContentEntryType;
         // This is the entry in the original form (the way it comes into the API)
         originalEntry: CmsContentEntryType;
     }): CmsModelFieldToElasticSearchPluginResultType;
-    fromIndex(params: {
+    fromIndex?(params: {
         context: CmsContext;
         model: CmsContentModelType;
         fieldTypePlugin: CmsModelFieldToGraphQLPlugin;
         field: CmsContentModelFieldType;
-        entry: CmsContentEntryType & Record<string, any>;
+        entry: CmsContentIndexEntryType;
     }): any;
 };
 

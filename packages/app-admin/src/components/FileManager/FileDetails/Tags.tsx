@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React, { useState } from "react";
 import { css } from "emotion";
 import { useApolloClient } from "react-apollo";
@@ -47,7 +46,7 @@ function Tags({ file }) {
                             const newFileData = get(updated, "data.fileManager.updateFile.data");
 
                             // 1. Update files list cache
-                            let data: any = cloneDeep(
+                            const data: any = cloneDeep(
                                 cache.readQuery({
                                     query: LIST_FILES,
                                     variables: queryParams
@@ -79,7 +78,13 @@ function Tags({ file }) {
                 <React.Fragment>
                     {editing ? (
                         <>
-                            <Bind name={"tags"}>
+                            <Bind
+                                name={"tags"}
+                                beforeChange={(tags, baseOnChange) => {
+                                    const formattedTags = tags.map(tag => tag.toLowerCase());
+                                    baseOnChange(formattedTags);
+                                }}
+                            >
                                 <TagsComponent
                                     disabled={saving}
                                     autoFocus

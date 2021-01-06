@@ -74,6 +74,8 @@
       "@webiny/app-page-builder/*": ["./packages/app-page-builder/src/*"],
       "@webiny/app-page-builder-theme": ["./packages/app-page-builder-theme/src"],
       "@webiny/app-page-builder-theme/*": ["./packages/app-page-builder-theme/src/*"],
+      "@webiny/app-playground": ["./packages/app-playground/src"],
+      "@webiny/app-playground/*": ["./packages/app-playground/src/*"],
       "@webiny/app-security": ["./packages/app-security/src"],
       "@webiny/app-security/*": ["./packages/app-security/src/*"],
       "@webiny/app-security-tenancy": ["./packages/app-security-tenancy/src"],

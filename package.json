@@ -133,7 +133,7 @@
     "setup-env-files": "node scripts/setupEnvFiles",
     "setup-ci-cypress": "node scripts/setupCiCypress",
     "setup-cypress": "node scripts/setupCypress",
-    "test": "jest --config jest.config.js --runInBand",
+    "test": "jest --config jest.config.js --runInBand --logHeapUsage",
     "validate-packages": "node scripts/validatePackages.js",
     "ci:version": "yarn lerna version --conventional-prerelease --force-publish --preid beta --no-push",
     "ci:publish": "yarn lerna publish from-package --force-publish --dist-tag beta --registry=\"http://localhost:4873\" --no-verify-access --no-verify-registry",

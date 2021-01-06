@@ -2,6 +2,13 @@ import React, { useState, useEffect, useRef } from "react";
 import { get } from "lodash";
 import { List, WindowScroller } from "react-virtualized";
 import BlockPreview from "./BlockPreview";
+import { css } from "emotion";
+
+const listStyle = css({
+    "& .ReactVirtualized__Grid__innerScrollContainer": {
+        overflow: "auto !important"
+    }
+});
 
 const listWidth = 800;
 
@@ -77,6 +84,7 @@ const BlocksList = props => {
                         data-testid={"pb-editor-page-blocks-list"}
                     >
                         <List
+                            className={listStyle}
                             key={category}
                             autoHeight
                             height={window.innerHeight - 70}

@@ -13,7 +13,11 @@ const OverlayLayoutWrapper = styled("div")({
     width: "100%",
     height: "100vh",
     backgroundColor: "var(--mdc-theme-background)",
-    zIndex: 50, // has to be higher than 5 so it's above advanced settings dialog, and below 10, so the image editor can be displayed above
+    /**
+     * Has to be higher than 5 so it's above advanced settings dialog,
+     * and below 20, so the image editor & Dialogs can be displayed above.
+     */
+    zIndex: 18,
     paddingTop: 65,
     top: 0,
     left: 0

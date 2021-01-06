@@ -174,8 +174,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                 },
                 async listTags(_, args, context) {
                     try {
-                        const tags = await context.fileManager.files.listTags();
-                        return new ListResponse(tags);
+                        return await context.fileManager.files.listTags();
                     } catch (error) {
                         return new ErrorResponse(error);
                     }

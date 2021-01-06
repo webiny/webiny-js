@@ -19,11 +19,11 @@ const NO_ACCESS = "no";
 const CUSTOM_ACCESS = "custom";
 const ENTITIES = ["category", "menu", "page"];
 
-const rcpuOptions = [
+const pwOptions = [
     { id: "p", name: t`Publish` },
-    { id: "u", name: t`Unpublish` },
-    { id: "r", name: t`Request review` },
-    { id: "c", name: t`Request changes` }
+    { id: "u", name: t`Unpublish` }
+    // { id: "r", name: t`Request review` },
+    // { id: "c", name: t`Request changes` }
 ];
 
 export const PageBuilderPermissions = ({ value, onChange }) => {
@@ -55,28 +55,23 @@ export const PageBuilderPermissions = ({ value, onChange }) => {
                     formData[`${entity}AccessScope`] !== NO_ACCESS
                 ) {
                     const permission: Record<string, any> = {
-                        name: `${PAGE_BUILDER}.${entity}`
+                        name: `${PAGE_BUILDER}.${entity}`,
+                        rwd: "r"
                     };
 
                     if (formData[`${entity}AccessScope`] === "own") {
                         permission.own = true;
-                    }
-
-                    if (formData[`${entity}Rwd`]) {
-                        permission.rwd = formData[`${entity}Rwd`];
+                        permission.rwd = "rwd";
+                    } else if (formData[`${entity}RWD`]) {
+                        permission.rwd = formData[`${entity}RWD`];
                     }
 
                     // For pages, we can also manage publishing and reviewing of pages.
                     if (entity === "page") {
-                        if (Array.isArray(formData[`${entity}Rcpu`])) {
-                            const rcpu = formData[`${entity}Rcpu`].reduce(
-                                (current, item) => current + item,
-                                ""
-                            );
-
-                            if (rcpu) {
-                                permission.rcpu = rcpu;
-                            }
+                        // Set default publishing workflow value
+                        permission.pw = "";
+                        if (Array.isArray(formData[`${entity}PW`])) {
+                            permission.pw = formData[`${entity}PW`].join("");
                         }
                     }
 
@@ -120,7 +115,7 @@ export const PageBuilderPermissions = ({ value, onChange }) => {
         ENTITIES.forEach(entity => {
             const data: Record<string, any> = {
                 [`${entity}AccessScope`]: NO_ACCESS,
-                [`${entity}Rwd`]: "r"
+                [`${entity}RWD`]: "r"
             };
 
             const entityPermission = permissions.find(
@@ -130,12 +125,12 @@ export const PageBuilderPermissions = ({ value, onChange }) => {
             if (entityPermission) {
                 data[`${entity}AccessScope`] = entityPermission.own ? "own" : FULL_ACCESS;
                 if (entityPermission.rwd) {
-                    data[`${entity}Rwd`] = entityPermission.rwd;
+                    data[`${entity}RWD`] = entityPermission.rwd;
                 }
 
-                // For pages, we can also manage publishing and reviewing of pages.
+                // For pages, we can also manage publishing workflow.
                 if (entity === "page") {
-                    data[`${entity}Rcpu`] = entityPermission.rcpu ? [...entityPermission.rcpu] : [];
+                    data[`${entity}PW`] = entityPermission.pw ? [...entityPermission.pw] : [];
                 }
             }
 
@@ -155,7 +150,7 @@ export const PageBuilderPermissions = ({ value, onChange }) => {
 
     return (
         <Form data={formData} onChange={onFormChange}>
-            {({ data, Bind }) => (
+            {({ data, Bind, setValue }) => (
                 <Fragment>
                     <Grid className={gridNoPaddingClass}>
                         <Cell span={6}>
@@ -176,42 +171,48 @@ export const PageBuilderPermissions = ({ value, onChange }) => {
                             <CustomSection
                                 data={data}
                                 Bind={Bind}
+                                setValue={setValue}
                                 entity={"category"}
                                 title={"Categories"}
                             />
                             <CustomSection
                                 data={data}
                                 Bind={Bind}
+                                setValue={setValue}
                                 entity={"menu"}
                                 title={"Menus"}
                             />
 
-                            <CustomSection data={data} Bind={Bind} entity={"page"} title={"Pages"}>
+                            <CustomSection
+                                data={data}
+                                Bind={Bind}
+                                setValue={setValue}
+                                entity={"page"}
+                                title={"Pages"}
+                            >
                                 <Cell span={12}>
-                                    <Cell span={12}>
-                                        <Bind name={"pageRcpu"}>
-                                            <CheckboxGroup
-                                                label={t`Publishing workflow`}
-                                                description={t`Publishing-related actions that can be performed on the content.`}
-                                            >
-                                                {({ getValue, onChange }) =>
-                                                    rcpuOptions.map(({ id, name }) => (
-                                                        <Checkbox
-                                                            disabled={
-                                                                !["full", "own"].includes(
-                                                                    data.pageAccessScope
-                                                                )
-                                                            }
-                                                            key={id}
-                                                            label={name}
-                                                            value={getValue(id)}
-                                                            onChange={onChange(id)}
-                                                        />
-                                                    ))
-                                                }
-                                            </CheckboxGroup>
-                                        </Bind>
-                                    </Cell>
+                                    <Bind name={"pagePW"}>
+                                        <CheckboxGroup
+                                            label={t`Publishing actions`}
+                                            description={t`Publishing-related actions that can be performed on the content.`}
+                                        >
+                                            {({ getValue, onChange }) =>
+                                                pwOptions.map(({ id, name }) => (
+                                                    <Checkbox
+                                                        disabled={
+                                                            !["full", "own"].includes(
+                                                                data.pageAccessScope
+                                                            )
+                                                        }
+                                                        key={id}
+                                                        label={name}
+                                                        value={getValue(id)}
+                                                        onChange={onChange(id)}
+                                                    />
+                                                ))
+                                            }
+                                        </CheckboxGroup>
+                                    </Bind>
                                 </Cell>
                             </CustomSection>
 

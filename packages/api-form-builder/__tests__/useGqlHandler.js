@@ -32,6 +32,7 @@ import {
     DELETE_REVISION,
     SAVE_FORM_VIEW,
     GET_FORM,
+    GET_FORM_REVISIONS,
     LIST_FORMS,
     GET_PUBLISHED_FORM
 } from "./graphql/forms";
@@ -222,6 +223,9 @@ export default ({ permissions, identity, tenant } = {}) => {
         },
         async getForm(variables) {
             return invoke({ body: { query: GET_FORM, variables } });
+        },
+        async getFormRevisions(variables) {
+            return invoke({ body: { query: GET_FORM_REVISIONS, variables } });
         },
         async getPublishedForm(variables) {
             return invoke({ body: { query: GET_PUBLISHED_FORM, variables } });

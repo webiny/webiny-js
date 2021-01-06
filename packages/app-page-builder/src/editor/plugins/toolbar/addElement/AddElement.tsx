@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useMemo } from "react";
 import * as Styled from "./StyledComponents";
 import { activePluginParamsByNameSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor";
@@ -178,6 +178,13 @@ const AddElement: React.FunctionComponent = () => {
         return () => removeKeyHandler("escape");
     });
 
+    const emptyViewContent = useMemo(() => {
+        const { group: selectedGroup } = getGroups().find(pl => pl.name === group);
+        return selectedGroup.emptyView;
+    }, [group]);
+
+    const groupElements = group ? getGroupElements(group) : [];
+
     return (
         <Styled.Flex>
             <List className={categoriesList}>
@@ -198,28 +205,29 @@ const AddElement: React.FunctionComponent = () => {
                 ))}
             </List>
             <Styled.Elements>
-                {group &&
-                    getGroupElements(group).map(plugin => {
-                        return (params ? renderClickable : renderDraggable)(
-                            <div data-role="draggable">
-                                <Styled.ElementBox>
-                                    <Styled.ElementTitle>
-                                        {typeof plugin.toolbar.title === "function" ? (
-                                            plugin.toolbar.title({ refresh })
-                                        ) : (
-                                            <Typography use="overline">
-                                                {plugin.toolbar.title}
-                                            </Typography>
-                                        )}
-                                    </Styled.ElementTitle>
-                                    <Styled.ElementPreviewCanvas>
-                                        {plugin.toolbar.preview({ theme })}
-                                    </Styled.ElementPreviewCanvas>
-                                </Styled.ElementBox>
-                            </div>,
-                            plugin
-                        );
-                    })}
+                {groupElements.length
+                    ? groupElements.map(plugin => {
+                          return (params ? renderClickable : renderDraggable)(
+                              <div data-role="draggable">
+                                  <Styled.ElementBox>
+                                      <Styled.ElementTitle>
+                                          {typeof plugin.toolbar.title === "function" ? (
+                                              plugin.toolbar.title({ refresh })
+                                          ) : (
+                                              <Typography use="overline">
+                                                  {plugin.toolbar.title}
+                                              </Typography>
+                                          )}
+                                      </Styled.ElementTitle>
+                                      <Styled.ElementPreviewCanvas>
+                                          {plugin.toolbar.preview({ theme })}
+                                      </Styled.ElementPreviewCanvas>
+                                  </Styled.ElementBox>
+                              </div>,
+                              plugin
+                          );
+                      })
+                    : emptyViewContent}
             </Styled.Elements>
         </Styled.Flex>
     );

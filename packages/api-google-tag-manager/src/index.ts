@@ -77,7 +77,7 @@ export default () => [
                     }
                 },
                 GtmMutation: {
-                    /*updateSettings: hasScope("pb:settings")(
+                    /*updateSettings: hasPermission("pb:settings")(
                         /!*resolveUpdateSettings(({ models }) => models.GoogleTagManagerSettings)*!/
                     )*/
                 }

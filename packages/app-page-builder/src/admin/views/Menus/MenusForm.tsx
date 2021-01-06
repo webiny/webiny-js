@@ -19,6 +19,8 @@ import { Input } from "@webiny/ui/Input";
 import MenuItems from "./MenusForm/MenuItems";
 import { useSecurity } from "@webiny/app-security";
 import pick from "object.pick";
+import get from "lodash/get";
+import set from "lodash/set";
 
 const t = i18n.ns("app-page-builder/admin/menus/form");
 
@@ -45,7 +47,21 @@ const MenusForm = () => {
     });
 
     const [update, updateMutation] = useMutation(UPDATE_MENU, {
-        refetchQueries: [{ query: LIST_MENUS }]
+        refetchQueries: [{ query: LIST_MENUS }],
+        update: (cache, { data }) => {
+            const dataFromCache = cache.readQuery({
+                query: GET_MENU,
+                variables: { slug }
+            });
+            const updatedData = get(data, "pageBuilder.menu.data");
+
+            if (updatedData) {
+                cache.writeQuery({
+                    query: GET_MENU,
+                    data: set(dataFromCache, "pageBuilder.getMenu.data", updatedData)
+                });
+            }
+        }
     });
 
     const loadedMenu = getQuery.data?.pageBuilder?.getMenu?.data || {};
@@ -103,7 +119,7 @@ const MenusForm = () => {
             {({ data, form, Bind }) => (
                 <SimpleForm data-testid={"pb-menus-form"}>
                     {loading && <CircularProgress />}
-                    <SimpleFormHeader title={data.slug || t`New menu`} />
+                    <SimpleFormHeader title={data.title || t`New menu`} />
                     <SimpleFormContent>
                         <Grid>
                             <Cell span={6}>

@@ -119,7 +119,7 @@ const listActions = css({
 });
 
 const scrollList = css({
-    overflow: "scroll",
+    overflow: "auto",
     height: "calc(100vh - 235px)"
 });
 

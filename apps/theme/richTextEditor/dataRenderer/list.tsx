@@ -1,17 +1,17 @@
 import React from "react";
 import { RTEDataBlockRendererPlugin } from "../../types";
-import { BlockType } from "./index";
 
-export default () =>
-    ({
+export default (): RTEDataBlockRendererPlugin => {
+    return {
         type: "rte-data-block-renderer",
         name: "rte-data-block-renderer-list",
-        blockType: BlockType.list,
+        outputType: "react",
+        blockType: "list",
         render(block) {
             switch (block.data.style) {
                 case "unordered":
                     return (
-                        <ul>
+                        <ul className={"rte-block-list"}>
                             {block.data.items.map((text, i) => (
                                 <li key={i}>{text}</li>
                             ))}
@@ -20,12 +20,15 @@ export default () =>
 
                 case "ordered":
                     return (
-                        <ol>
+                        <ol className={"rte-block-list"}>
                             {block.data.items.map((text, i) => (
                                 <li key={i}>{text}</li>
                             ))}
                         </ol>
                     );
+                default:
+                    return null;
             }
         }
-    } as RTEDataBlockRendererPlugin);
+    };
+};

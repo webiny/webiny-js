@@ -79,7 +79,7 @@ export default (): ContextPlugin<CmsContext> => ({
 
         const checkPermissions = (check: {
             rwd?: string;
-            rcpu?: string;
+            pw?: string;
         }): Promise<CmsContentEntryPermissionType> => {
             return utils.checkPermissions(context, "cms.contentEntry", check);
         };
@@ -486,14 +486,13 @@ export default (): ContextPlugin<CmsContext> => ({
                 // We need to convert data from DB to its original form before constructing ES index data.
                 const originalEntry = await entryFromStorageTransform(context, model, updatedEntry);
 
-                const preparedEntry = prepareEntryToIndex({
-                    context,
-                    model,
-                    originalEntry: cloneDeep(originalEntry),
-                    storageEntry: cloneDeep(updatedEntry)
-                });
-
                 if (latestEntry.id === id) {
+                    const preparedEntry = prepareEntryToIndex({
+                        context,
+                        model,
+                        originalEntry: cloneDeep(originalEntry),
+                        storageEntry: cloneDeep(updatedEntry)
+                    });
                     const esDoc = {
                         ...preparedEntry,
                         savedOn: updatedEntry.savedOn
@@ -680,7 +679,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 });
             },
             publish: async (model, id) => {
-                const permission = await checkPermissions({ rcpu: "p" });
+                const permission = await checkPermissions({ pw: "p" });
                 utils.checkModelAccess(context, permission, model);
 
                 const [uniqueId, version] = id.split("#");
@@ -800,11 +799,17 @@ export default (): ContextPlugin<CmsContext> => ({
                         }
                     );
                 }
-
+                const originalEntry = entryFromStorageTransform(context, model, entry);
+                const preparedEntry = prepareEntryToIndex({
+                    context,
+                    model,
+                    originalEntry: cloneDeep(originalEntry),
+                    storageEntry: cloneDeep(entry)
+                });
                 // Update the published revision entry in ES.
                 esOperations.push(
                     { index: { _id: `CME#P#${uniqueId}`, _index: es.index } },
-                    getESPublishedEntryData(entry)
+                    getESPublishedEntryData(preparedEntry)
                 );
 
                 await elasticSearch.bulk({ body: esOperations });
@@ -815,7 +820,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 return entry;
             },
             requestChanges: async (model, id) => {
-                const permission = await checkPermissions({ rcpu: "c" });
+                const permission = await checkPermissions({ pw: "c" });
                 const [uniqueId, version] = id.split("#");
 
                 const [[[entry]], [[latestEntryData]]] = await db
@@ -886,7 +891,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 return Object.assign(entry, updatedData);
             },
             requestReview: async (model, id) => {
-                const permission = await checkPermissions({ rcpu: "r" });
+                const permission = await checkPermissions({ pw: "r" });
                 const [uniqueId, version] = id.split("#");
 
                 const results = await db
@@ -952,7 +957,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 return Object.assign(entry, updatedData);
             },
             unpublish: async (model, id) => {
-                const permission = await checkPermissions({ rcpu: "u" });
+                const permission = await checkPermissions({ pw: "u" });
 
                 const [uniqueId, version] = id.split("#");
 

@@ -4,10 +4,10 @@ import { useRouter } from "@webiny/react-router";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { useFormEditor } from "@webiny/app-form-builder/admin/components/FormEditor/Context";
-import { publishRevision } from "./PublishFormButton/graphql";
-
 import { i18n } from "@webiny/app/i18n";
+import { useFormEditor } from "@webiny/app-form-builder/admin/components/FormEditor/Context";
+import { PUBLISH_REVISION } from "../../../graphql";
+
 const t = i18n.namespace("FormEditor.PublishPageButton");
 
 const PublishFormButton = () => {
@@ -18,7 +18,7 @@ const PublishFormButton = () => {
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
 
-    const [publish] = useMutation(publishRevision);
+    const [publish] = useMutation(PUBLISH_REVISION);
 
     return (
         <ConfirmationDialog
@@ -29,23 +29,26 @@ const PublishFormButton = () => {
                 <ButtonPrimary
                     onClick={async () => {
                         showConfirmation(async () => {
-                            const response = await publish({
+                            await publish({
                                 variables: {
                                     revision: data.id
+                                },
+                                update(cache, { data }) {
+                                    const { data: revision, error } =
+                                        data.formBuilder.publishRevision || {};
+
+                                    if (error) {
+                                        return showSnackbar(error.message);
+                                    }
+
+                                    history.push(`/forms?id=${encodeURIComponent(revision.id)}`);
+
+                                    // Let's wait a bit, because we are also redirecting the user.
+                                    setTimeout(() => {
+                                        showSnackbar(t`Your form was published successfully!`);
+                                    }, 500);
                                 }
                             });
-
-                            const { error } = response.data.formBuilder.publishRevision || {};
-                            if (error) {
-                                return showSnackbar(error?.message);
-                            }
-
-                            history.push(`/forms?id=${encodeURIComponent(data.id)}`);
-
-                            // Let's wait a bit, because we are also redirecting the user.
-                            setTimeout(() => {
-                                showSnackbar(t`Your form was published successfully!`);
-                            }, 500);
                         });
                     }}
                 >

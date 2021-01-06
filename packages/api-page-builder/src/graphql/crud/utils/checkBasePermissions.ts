@@ -1,12 +1,12 @@
 import { PbContext } from "@webiny/api-page-builder/types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import hasRwd from "./hasRwd";
-import hasRcpu from "./hasRcpu";
+import { SecurityPermission } from "@webiny/api-security/types";
 
-export default async <TPermission = Record<string, any>>(
+export default async <TPermission = SecurityPermission>(
     context: PbContext,
     name: string,
-    check: { rwd?: string; rcpu?: string }
+    check: { rwd?: string; pw?: string }
 ): Promise<TPermission> => {
     await context.i18nContent.checkI18NContentPermission();
     const pbPagePermission = await context.security.getPermission<TPermission>(name);
@@ -18,9 +18,25 @@ export default async <TPermission = Record<string, any>>(
         throw new NotAuthorizedError();
     }
 
-    if (check.rcpu && !hasRcpu(pbPagePermission, check.rcpu)) {
+    if (check.pw && !hasPw<TPermission>(pbPagePermission, check.pw)) {
         throw new NotAuthorizedError();
     }
 
     return pbPagePermission;
+};
+
+// Has publishing workflow permissions?
+const hasPw = <TPermission = Record<string, any>>(permission: TPermission, pw: string) => {
+    const isCustom = Object.keys(permission).length > 1; // "name" key is always present
+
+    if (!isCustom) {
+        // Means it's a "full-access" permission.
+        return true;
+    }
+
+    if (typeof permission["pw"] !== "string") {
+        return false;
+    }
+
+    return permission["pw"].includes(pw);
 };

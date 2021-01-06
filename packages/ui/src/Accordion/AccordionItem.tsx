@@ -50,23 +50,28 @@ const duration = 150;
 const defaultStyle = {
     transition: `all ${duration}ms ease-in-out`,
     opacity: 0,
-    height: 0
+    height: 0,
+    pointerEvents: "none",
+    overflow: "hidden"
 };
 
 const transitionStyles = {
     entering: {
         opacity: 0,
         height: 0,
-        padding: "20px 20px 20px 65px"
+        padding: "20px 20px 20px 65px",
+        pointerEvents: "auto"
     },
     entered: {
         opacity: 1,
         height: "auto",
-        padding: "20px 20px 20px 65px"
+        padding: "20px 20px 20px 65px",
+        pointerEvents: "auto"
     },
     exiting: {
         height: "auto",
-        padding: "20px 20px 20px 65px"
+        padding: "20px 20px 20px 65px",
+        pointerEvents: "auto"
     }
 };
 

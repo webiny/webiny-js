@@ -1,7 +1,6 @@
 import uniqueId from "uniqid";
 import sanitizeFilename from "sanitize-filename";
 import S3 from "aws-sdk/clients/s3";
-import mime from "mime";
 import { validation } from "@webiny/validation";
 
 const S3_BUCKET = process.env.S3_BUCKET;
@@ -17,7 +16,7 @@ const sanitizeFileSizeValue = (value, defaultValue) => {
 };
 
 export default async (data, settings) => {
-    const contentType = mime.getType(data.name);
+    const contentType = data.type;
     if (!contentType) {
         throw Error(`File's content type could not be resolved.`);
     }

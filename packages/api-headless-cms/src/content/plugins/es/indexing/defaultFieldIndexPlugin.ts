@@ -5,22 +5,23 @@ export default (): CmsModelFieldToElasticSearchPlugin => ({
     name: "cms-model-field-to-elastic-search-default",
     fieldType: "*",
     toIndex(args) {
-        const { field, storageEntry, fieldTypePlugin } = args;
+        const { field, toIndexEntry, fieldTypePlugin } = args;
         // when field is searchable - do nothing
         if (fieldTypePlugin.isSearchable === true) {
             return {};
         }
-        const values = storageEntry.values;
-        const rawData = {
-            [field.fieldId]: values[field.fieldId]
-        };
+        const values = toIndexEntry.values;
+        const value = values[field.fieldId];
 
         // we are removing the field value from "values" because we do not want it indexed.
         delete values[field.fieldId];
 
         return {
             values,
-            rawData
+            rawValues: {
+                ...(toIndexEntry.rawValues || {}),
+                [field.fieldId]: value
+            }
         };
     },
     fromIndex(args) {
@@ -30,13 +31,17 @@ export default (): CmsModelFieldToElasticSearchPlugin => ({
             return {};
         }
 
-        const rawData = entry.rawData || {};
-        const value = rawData[field.fieldId];
-        delete rawData[field.fieldId];
+        const rawValues = entry.rawValues || {};
+        const value = rawValues[field.fieldId];
+        // we want to remove rawValues so next plugin does not run some action because of it
+        delete rawValues[field.fieldId];
 
         return {
-            values: { [field.fieldId]: value },
-            rawData
+            values: {
+                ...(entry.values || {}),
+                [field.fieldId]: value
+            },
+            rawValues
         };
     }
 });

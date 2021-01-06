@@ -5,19 +5,19 @@ import { Select } from "@webiny/ui/Select";
 import { i18n } from "@webiny/app/i18n";
 import { Elevation } from "@webiny/ui/Elevation";
 import { PermissionSelector, PermissionSelectorWrapper } from "./PermissionSelector";
-// import { Checkbox, CheckboxGroup } from "@webiny/ui/Checkbox";
+import { Checkbox, CheckboxGroup } from "@webiny/ui/Checkbox";
 import { useCmsData } from "@webiny/app-headless-cms/admin/plugins/permissionRenderer/components/useCmsData";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
-/*const rcpuOptions = [
+const pwOptions = [
     { id: "p", name: t`Publish` },
-    { id: "u", name: t`Unpublish` },
-    { id: "r", name: t`Request review` },
-    { id: "c", name: t`Request changes` }
-];*/
+    { id: "u", name: t`Unpublish` }
+    // { id: "r", name: t`Request review` },
+    // { id: "c", name: t`Request changes` }
+];
 
-export const ContentEntryPermission = ({ Bind, data, entity, title, locales }) => {
+export const ContentEntryPermission = ({ Bind, data, entity, setValue, title, locales }) => {
     const modelsGroups = useCmsData(locales);
 
     return (
@@ -29,7 +29,15 @@ export const ContentEntryPermission = ({ Bind, data, entity, title, locales }) =
                 <Cell span={12}>
                     <Grid style={{ padding: 0, paddingBottom: 24 }}>
                         <Cell span={12}>
-                            <Bind name={`${entity}AccessScope`}>
+                            <Bind
+                                name={`${entity}AccessScope`}
+                                beforeChange={(value, cb) => {
+                                    if (value === "own") {
+                                        setValue(`${entity}RWD`, "rwd");
+                                    }
+                                    cb(value);
+                                }}
+                            >
                                 <Select label={t`Access Scope`}>
                                     <option value={"no"}>{t`No access`}</option>
                                     <option value={"full"}>{t`All entries`}</option>
@@ -86,19 +94,19 @@ export const ContentEntryPermission = ({ Bind, data, entity, title, locales }) =
                                 </Select>
                             </Bind>
                         </Cell>
-                        {/* {data.endpoints.includes("manage") ? (
+                        {data.endpoints.includes("manage") ? (
                             <Cell span={12}>
-                                <Bind name={`${entity}RCPU`}>
+                                <Bind name={`${entity}PW`}>
                                     <CheckboxGroup
-                                        label={t`Publishing workflow`}
+                                        label={t`Publishing actions`}
                                         description={t`Publishing-related actions that can be performed on content entries.`}
                                     >
                                         {({ getValue, onChange }) =>
-                                            rcpuOptions.map(({ id, name }) => (
+                                            pwOptions.map(({ id, name }) => (
                                                 <Checkbox
-                                                    disabled={
-                                                        data.contentEntriesAccessScope === "no"
-                                                    }
+                                                    disabled={[undefined, "no"].includes(
+                                                        data[`${entity}AccessScope`]
+                                                    )}
                                                     key={id}
                                                     label={name}
                                                     value={getValue(id)}
@@ -109,7 +117,7 @@ export const ContentEntryPermission = ({ Bind, data, entity, title, locales }) =
                                     </CheckboxGroup>
                                 </Bind>
                             </Cell>
-                        ) : null}*/}
+                        ) : null}
                     </Grid>
                 </Cell>
             </Grid>

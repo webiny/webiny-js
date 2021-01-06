@@ -1,36 +1,40 @@
 import gql from "graphql-tag";
 
-export const deleteElement = gql`
-    mutation DeleteElement($id: ID!) {
+const ERROR_FIELDS = /*GraphQL*/ `
+    {
+        code
+        message
+    }
+`;
+
+const PAGE_ELEMENT_FIELDS = /*GraphQL*/ `
+    {
+        id
+        name
+        type
+        category
+        content
+        preview
+    }
+`;
+
+export const DELETE_PAGE_ELEMENT = gql`
+    mutation PbDeletePageElement($id: ID!) {
         pageBuilder {
-            deleteElement(id: $id) {
-                data
-                error {
-                    code
-                    message
-                }
+            deletePageElement(id: $id) {
+                data ${PAGE_ELEMENT_FIELDS}
+                error ${ERROR_FIELDS}
             }
         }
     }
 `;
 
-export const updateElement = gql`
-    mutation updateElement($id: ID!, $data: PbUpdateElementInput!) {
+export const UPDATE_PAGE_ELEMENT = gql`
+    mutation PbUpdatePageElement($id: ID!, $data: PbPageElementInput!) {
         pageBuilder {
-            updateElement(id: $id, data: $data) {
-                data {
-                    id
-                    name
-                    type
-                    category
-                    content
-                    preview {
-                        src
-                    }
-                }
-                error {
-                    message
-                }
+            updatePageElement(id: $id, data: $data) {
+                data ${PAGE_ELEMENT_FIELDS}
+                error ${ERROR_FIELDS}
             }
         }
     }

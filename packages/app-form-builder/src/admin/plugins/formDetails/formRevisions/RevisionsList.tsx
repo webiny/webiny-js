@@ -9,7 +9,7 @@ const listWrapper = css({
     margin: 25,
     display: "flex",
     flexDirection: "column",
-    overflow: "scroll",
+    overflow: "auto",
     maxHeight: "calc(100vh - 160px)",
     ".mdc-list .mdc-list-item": {
         borderBottom: "1px solid var(--mdc-theme-on-background)"

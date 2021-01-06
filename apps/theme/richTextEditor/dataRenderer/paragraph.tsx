@@ -1,12 +1,13 @@
 import React from "react";
+import classNames from "classnames";
 import { RTEDataBlockRendererPlugin } from "../../types";
-import { BlockType } from "./index";
 
 export default () =>
     ({
         type: "rte-data-block-renderer",
         name: "rte-data-block-renderer-paragraph",
-        blockType: BlockType.paragraph,
+        outputType: "react",
+        blockType: "paragraph",
         render(block) {
             const props = { style: {}, className: null };
 
@@ -16,6 +17,12 @@ export default () =>
             if (block.data.className) {
                 props.className = block.data.className;
             }
-            return <p {...props} dangerouslySetInnerHTML={{ __html: block.data.text }} />;
+            return (
+                <p
+                    {...props}
+                    className={classNames("rte-block-paragraph", props.className)}
+                    dangerouslySetInnerHTML={{ __html: block.data.text }}
+                />
+            );
         }
     } as RTEDataBlockRendererPlugin);

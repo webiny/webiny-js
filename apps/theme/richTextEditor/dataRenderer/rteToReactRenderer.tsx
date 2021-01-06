@@ -1,22 +1,14 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { OutputBlockData } from "@editorjs/editorjs";
 import { plugins } from "@webiny/plugins";
 import { RTEDataBlockRendererPlugin, RTEDataRendererPlugin } from "../../types";
-
-export enum BlockType {
-    header = "header",
-    paragraph = "paragraph",
-    image = "image",
-    quote = "quote",
-    list = "list"
-}
 
 const renderPlugin = ({
     blockType,
     plugins,
     renderParams
 }: {
-    blockType: BlockType;
+    blockType: string;
     plugins: Record<string, RTEDataBlockRendererPlugin>;
     renderParams: { block: OutputBlockData; options: {} };
 }) => {
@@ -27,30 +19,28 @@ const renderPlugin = ({
     if (pl) {
         return React.cloneElement(pl.render(block), options);
     }
-    // TODO: Display the error message in UI.
-    // Warn about missing plugin.
+    // Warn about a missing plugin.
     console.error(`Missing plugin: "rte-data-block-renderer-${blockType}".`);
 };
 
 const rteOutputRendererPlugin = (): RTEDataRendererPlugin => ({
     type: "rte-data-renderer",
-    outputType: "jsx",
+    outputType: "react",
     render(data: OutputBlockData[]) {
-        const blockPlugins = useMemo(() => {
-            // Get all plugins
-            const allPlugins = plugins.byType<RTEDataBlockRendererPlugin>(
-                "rte-data-block-renderer"
-            );
-            // Group plugins by blockType
-            return allPlugins.reduce((acc, pl) => {
-                acc[pl.blockType] = pl;
-                return acc;
-            }, {});
-        }, []);
+        // Get all plugins
+        const allPlugins = plugins
+            .byType<RTEDataBlockRendererPlugin>("rte-data-block-renderer")
+            .filter(({ outputType }) => outputType === "react");
+
+        // Group plugins by blockType
+        const blockPlugins = allPlugins.reduce((acc, pl) => {
+            acc[pl.blockType] = pl;
+            return acc;
+        }, {});
 
         return data.map((block, index) => {
             const renderParams = { block, options: { key: index } };
-            const blockType = block.type as BlockType;
+            const blockType = block.type;
 
             return renderPlugin({ blockType, plugins: blockPlugins, renderParams });
         });

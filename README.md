@@ -35,29 +35,24 @@ Our plugin-based approach to the whole system will make it easy for you to overr
 
 ### GraphQL API
 
-Our API layer works as a collection of Lambda functions with [Apollo Federation](https://www.apollographql.com/docs/apollo-server/federation/introduction/) handling all the GraphQL-related stuff. But it is not limited to just GraphQL. It's also easy to add REST APIs, or simple Lambda functions for simple data fetching or background processing.
+Our API layer works as a collection of plugins that process your GraphQL queries. Apps provided by Webiny are deployed as a monolith Lambda function. But that does not prevent you from deploying new Lambda functions with custom code. It's easy to extend our default setup and add handlers for REST API, or anything you might need.   
 
 ### Frontend layer (SPA)
 
 Our frontend (SPA) layer is powered by React and Apollo Client. If you ever developed using those tools - you already know Webiny 🙂
-As our UI library we are using Material Components, and a very promising project [RMWC](https://jamesmfriedman.github.io/rmwc/) to get going with Material faster.
+As our UI library we are using Material Components and [RMWC](https://jamesmfriedman.github.io/rmwc/) to get going with Material faster.
 You can see all the currently available components in our [storybook](https://storybook.webiny.com/).
 
-We also provide a server-side render setup out of the box. It is also powered by Lambda!
-
-Our apps are also composed using plugins, and we're very happy to provide you with an easy-to-share mechanism of `app templates`. Out of the box Webiny provides several app templates to get you going. Following the same approach, you can easily create your own templates for your own projects and share them on `npm` for the community to use.
+We also provide a prerendering service out of the box. It takes care of generating static snapshots of your pages for maximum delivery speed. This service is also powered by Lambda!
 
 ## Admin app
 
 We provide you with an administration app so you can kickstart your projects much faster and begin developing features for your clients right away. The entire admin app is based on plugins and you can customize everything.
 
-To find out more about it, visit https://docs.webiny.com/docs/webiny-apps/admin/introduction
-
 ## Deployment to the Cloud
 
-At this time, we provide a custom mechanism to deploy your project to the cloud using AWS SDK wrapped into reusable components. It's not the most robust mechanism, but it will serve you well during development especially with our `watch and redeploy` feature, which will deploy your code every time you change something during development 🚀
-
-In Webiny - everything is a plugin. And so is the deployment process. You can also deploy Webiny using native CloudFormation if you will, Pulumi, AWS SAM, or any other tool. Guides on those particular tools will come at a later stage, but it IS possible.
+We use [Pulumi IaaC](https://www.pulumi.com/) to reliably deploy infrastructure and your code to the cloud.
+You can also deploy Webiny using native CloudFormation if you will, AWS SAM, or any other tool. Guides on those particular tools will come at a later stage, but it IS possible.
 
 ## Contributing
 

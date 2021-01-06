@@ -12,6 +12,7 @@ const confirmationMessageStyles = css({
         padding: "0px 8px"
     }
 });
+const PAGE_BUILDER_SETTINGS_LINK = "/settings/page-builder/website";
 
 export const configureWebsiteUrlTitle = t`Configure website URL`;
 
@@ -22,9 +23,7 @@ export const ConfigureWebsiteUrlMessage = ({ websiteUrl }) => {
                 {t`Public website website URL is missing. Please visit the {pageBuilderSettingsLink} and set it first.`(
                     {
                         pageBuilderSettingsLink: (
-                            <Link
-                                to={"/settings/page-builder/general"}
-                            >{t`Page Builder settings`}</Link>
+                            <Link to={PAGE_BUILDER_SETTINGS_LINK}>{t`Page Builder settings`}</Link>
                         )
                     }
                 )}
@@ -50,7 +49,7 @@ export const ConfigureWebsiteUrlMessage = ({ websiteUrl }) => {
             )}
             <br />
             {t`or update the website URL by going into the`}{" "}
-            <Link to={"/settings/page-builder/general"}>{t`page builder settings.`}</Link>
+            <Link to={PAGE_BUILDER_SETTINGS_LINK}>{t`page builder settings.`}</Link>
         </span>
     );
 };

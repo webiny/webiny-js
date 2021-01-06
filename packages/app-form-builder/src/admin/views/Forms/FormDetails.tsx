@@ -8,6 +8,7 @@ import { GET_FORM, GET_FORM_REVISIONS } from "@webiny/app-form-builder/admin/gra
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Tabs } from "@webiny/ui/Tabs";
 import { CircularProgress } from "@webiny/ui/Progress";
+import { useSecurity } from "@webiny/app-security";
 
 const EmptySelect = styled("div")({
     width: "100%",
@@ -52,6 +53,7 @@ export type FormDetailsProps = {
 const FormDetails = ({ refreshForms }: FormDetailsProps) => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
+    const security = useSecurity();
     const query = new URLSearchParams(location.search + location.hash);
     const formId = query.get("id");
 
@@ -95,7 +97,7 @@ const FormDetails = ({ refreshForms }: FormDetailsProps) => {
                 <Tabs>
                     {renderPlugins(
                         "forms-form-details-revision-content",
-                        { refreshForms, form, revisions, loading: getForm.loading },
+                        { security, refreshForms, form, revisions, loading: getForm.loading },
                         { wrapper: false }
                     )}
                 </Tabs>

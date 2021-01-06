@@ -1,11 +1,12 @@
-/* eslint-disable */
 import React from "react";
 import bytes from "bytes";
 import { css } from "emotion";
 import { Drawer, DrawerContent } from "@webiny/ui/Drawer";
 import { IconButton } from "@webiny/ui/Button";
 import getFileTypePlugin from "./getFileTypePlugin";
-import get from "lodash.get";
+import get from "lodash/get";
+import set from "lodash/set";
+import cloneDeep from "lodash/cloneDeep";
 import Tags from "./FileDetails/Tags";
 import Name from "./FileDetails/Name";
 import { Tooltip } from "@webiny/ui/Tooltip";
@@ -17,7 +18,7 @@ import { useFileManager } from "./FileManagerContext";
 import { useMutation } from "react-apollo";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
-import { DELETE_FILE } from "./graphql";
+import { DELETE_FILE, LIST_FILES } from "./graphql";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-admin/file-manager/file-details");
 
@@ -98,7 +99,7 @@ export default function FileDetails(props) {
     const filePlugin = getFileTypePlugin(file);
     const actions = get(filePlugin, "fileDetails.actions") || [];
 
-    const { hideFileDetails } = useFileManager();
+    const { hideFileDetails, queryParams } = useFileManager();
 
     useHotkeys({
         zIndex: 55,
@@ -108,7 +109,25 @@ export default function FileDetails(props) {
         }
     });
 
-    const [deleteFile] = useMutation(DELETE_FILE, { refetchQueries: ["ListFiles"] });
+    const [deleteFile] = useMutation(DELETE_FILE, {
+        update: cache => {
+            const data: any = cloneDeep(
+                cache.readQuery({
+                    query: LIST_FILES,
+                    variables: queryParams
+                })
+            );
+            const filteredList = data.fileManager.listFiles.data.filter(
+                item => item.id !== file.id
+            );
+
+            cache.writeQuery({
+                query: LIST_FILES,
+                variables: queryParams,
+                data: set(data, "fileManager.listFiles.data", filteredList)
+            });
+        }
+    });
     const { showSnackbar } = useSnackbar();
 
     const fileDeleteConfirmationProps = {

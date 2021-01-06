@@ -1,4 +1,5 @@
 /* eslint-disable */
+import Error from "@webiny/error";
 import { CmsContentModelGroupType } from "@webiny/api-headless-cms/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
@@ -135,7 +136,12 @@ describe("MANAGE - Resolvers", () => {
         const { id } = category;
 
         // Publish it so it becomes available in the "read" API
-        await publishCategory({ revision: id });
+        const [publish] = await publishCategory({ revision: id });
+
+        const { error } = publish.data.publishCategory;
+        if (error) {
+            throw new Error(error);
+        }
 
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         await until(

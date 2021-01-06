@@ -60,7 +60,9 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                     }
 
                     try {
-                        const settings = await context.formBuilder.settings.getSettings();
+                        const settings = await context.formBuilder.settings.getSettings({
+                            auth: false
+                        });
                         if (!settings) {
                             return new Response(false);
                         }

@@ -11,7 +11,7 @@ export const elasticSearchQueryBuilderContainsPlugin = (): ElasticSearchQueryBui
                 // eslint-disable-next-line @typescript-eslint/camelcase
                 allow_leading_wildcard: true,
                 fields: [field],
-                query: value
+                query: `*${value}*`
             }
         });
     }

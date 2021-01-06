@@ -10,12 +10,17 @@ export default (): CmsModelFieldToStoragePlugin => ({
     type: "cms-model-field-to-storage",
     name: "cms-model-field-to-storage-rich-text",
     fieldType: "rich-text",
-    async fromStorage({ value }: { value?: StoragePackedValue }): Promise<any> {
-        if (typeof value !== "object") {
-            throw new WebinyError(`Value received in "fromStorage" function is not a object.`);
-        }
-        if (!value.compression) {
-            throw new WebinyError(`Missing compression in "fromStorage" function.`);
+    async fromStorage({ field, value }): Promise<any> {
+        if (!value) {
+            return value;
+        } else if (typeof value !== "object") {
+            throw new WebinyError(
+                `Value received in "fromStorage" function is not an object in field "${field.fieldId}".`
+            );
+        } else if (!value.compression) {
+            throw new WebinyError(
+                `Missing compression in "fromStorage" function in field "${field.fieldId}".`
+            );
         }
         if (value.compression !== "jsonpack") {
             throw new WebinyError(
@@ -27,7 +32,7 @@ export default (): CmsModelFieldToStoragePlugin => ({
     async toStorage({ value }): Promise<StoragePackedValue> {
         return {
             compression: "jsonpack",
-            value: jsonpack.pack(value)
+            value: jsonpack.pack(value || {})
         };
     }
 });

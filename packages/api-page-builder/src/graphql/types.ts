@@ -188,12 +188,12 @@ export type CategorySecurityPermission = PbSecurityPermission<"pb.category">;
 export type PageSecurityPermission = PbSecurityPermission<
     "pb.page",
     {
-        // Determines which of the following actions are allowed:
+        // Determines which of the following publishing workflow actions are allowed:
         // "r" - request review (for unpublished page)
         // "c" - request change (for unpublished page on which a review was requested)
         // "p" - publish
         // "u" - unpublish
-        rcpu: string;
+        pw: string;
     }
 >;
 

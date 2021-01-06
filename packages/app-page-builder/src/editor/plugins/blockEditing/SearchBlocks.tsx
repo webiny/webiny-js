@@ -6,7 +6,7 @@ import {
 import { createBlockElementsHelper } from "@webiny/app-page-builder/editor/helpers";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
 import { contentSelector } from "@webiny/app-page-builder/editor/recoil/modules";
-import { Mutation } from "react-apollo";
+import { useMutation } from "react-apollo";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { getPlugins, unregisterPlugin } from "@webiny/plugins";
@@ -28,7 +28,7 @@ import { useRecoilValue } from "recoil";
 import { ReactComponent as AllIcon } from "./icons/round-clear_all-24px.svg";
 import createBlockPlugin from "@webiny/app-page-builder/admin/utils/createBlockPlugin";
 import BlocksList from "./BlocksList";
-import { DELETE_ELEMENT, UPDATE_ELEMENT } from "./graphql";
+import { DELETE_PAGE_ELEMENT, UPDATE_PAGE_ELEMENT } from "./graphql";
 import EditBlockDialog from "./EditBlockDialog";
 import { listItem, ListItemTitle, listStyle, TitleContent } from "./SearchBlocksStyled";
 import * as Styled from "./StyledComponents";
@@ -70,6 +70,11 @@ const SearchBar = () => {
     const [search, setSearch] = useState<string>("");
     const [editingBlock, setEditingBlock] = useState(null);
     const [activeCategory, setActiveCategory] = useState("all");
+
+    const [updatePageElementMutation, { loading: updateInProgress }] = useMutation(
+        UPDATE_PAGE_ELEMENT
+    );
+    const [deletePageElementMutation] = useMutation(DELETE_PAGE_ELEMENT);
 
     const allCategories = useMemo(
         () => [
@@ -168,7 +173,7 @@ const SearchBar = () => {
             }
         });
 
-        const { error } = response.data.pageBuilder.deleteElement;
+        const { error } = response.data.pageBuilder.deletePageElement;
         if (error) {
             showSnackbar(error.message);
             return;
@@ -195,7 +200,7 @@ const SearchBar = () => {
                 }
             });
 
-            const { error, data } = response.data.pageBuilder.updateElement;
+            const { error, data } = response.data.pageBuilder.updatePageElement;
             if (error) {
                 showSnackbar(error.message);
                 return;
@@ -269,49 +274,44 @@ const SearchBar = () => {
                     </List>
                 </LeftPanel>
                 <RightPanel span={9}>
-                    <Mutation mutation={UPDATE_ELEMENT}>
-                        {(updateElement, { loading: updateInProgress }) => (
-                            <Mutation mutation={DELETE_ELEMENT}>
-                                {deleteElement =>
-                                    activeCategory && (
-                                        <SimpleForm>
-                                            <SimpleFormHeader
-                                                title={categoryPlugin.title}
-                                                icon={categoryPlugin.icon}
-                                            />
-                                            <SimpleFormContent>
-                                                <Styled.BlockList>
-                                                    <BlocksList
-                                                        category={activeCategory}
-                                                        addBlock={addBlockToContent}
-                                                        deactivatePlugin={deactivatePlugin}
-                                                        blocks={getBlocksList()}
-                                                        onEdit={plugin => setEditingBlock(plugin)}
-                                                        onDelete={plugin =>
-                                                            deleteBlock({
-                                                                plugin,
-                                                                deleteElement
-                                                            })
-                                                        }
-                                                    />
-                                                </Styled.BlockList>
+                    {activeCategory && (
+                        <SimpleForm>
+                            <SimpleFormHeader
+                                title={categoryPlugin.title}
+                                icon={categoryPlugin.icon}
+                            />
+                            <SimpleFormContent>
+                                <Styled.BlockList>
+                                    <BlocksList
+                                        category={activeCategory}
+                                        addBlock={addBlockToContent}
+                                        deactivatePlugin={deactivatePlugin}
+                                        blocks={getBlocksList()}
+                                        onEdit={plugin => setEditingBlock(plugin)}
+                                        onDelete={plugin =>
+                                            deleteBlock({
+                                                plugin,
+                                                deleteElement: deletePageElementMutation
+                                            })
+                                        }
+                                    />
+                                </Styled.BlockList>
 
-                                                <EditBlockDialog
-                                                    onClose={() => setEditingBlock(null)}
-                                                    onSubmit={data =>
-                                                        updateBlock({ data, updateElement })
-                                                    }
-                                                    open={!!editingBlock}
-                                                    plugin={editingBlock}
-                                                    loading={updateInProgress}
-                                                />
-                                            </SimpleFormContent>
-                                        </SimpleForm>
-                                    )
-                                }
-                            </Mutation>
-                        )}
-                    </Mutation>
+                                <EditBlockDialog
+                                    onClose={() => setEditingBlock(null)}
+                                    onSubmit={data =>
+                                        updateBlock({
+                                            data,
+                                            updateElement: updatePageElementMutation
+                                        })
+                                    }
+                                    open={!!editingBlock}
+                                    plugin={editingBlock}
+                                    loading={updateInProgress}
+                                />
+                            </SimpleFormContent>
+                        </SimpleForm>
+                    )}
                 </RightPanel>
             </SplitView>
         </OverlayLayout>

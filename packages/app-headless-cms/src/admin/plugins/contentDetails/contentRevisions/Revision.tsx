@@ -106,7 +106,7 @@ const Revision = (props: Props) => {
                     <ListItemText>
                         <ListItemTextPrimary>{revision.meta.title || t`N/A`}</ListItemTextPrimary>
                         <ListItemTextSecondary>
-                            {t`Last modified: {time} (#{version})`({
+                            {t`Last modified {time} (#{version})`({
                                 time: <TimeAgo datetime={revision.savedOn} />,
                                 version: revision.meta.version
                             })}

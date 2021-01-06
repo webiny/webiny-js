@@ -1,15 +1,16 @@
 import React from "react";
 import { RTEDataBlockRendererPlugin } from "../../types";
-import { BlockType } from "./index";
 
-const defaultStyle = { maxWidth: "100%" };
-
-export default () =>
-    ({
+export default (): RTEDataBlockRendererPlugin => {
+    return {
         type: "rte-data-block-renderer",
         name: "rte-data-block-renderer-image",
-        blockType: BlockType.image,
+        outputType: "react",
+        blockType: "image",
         render(block) {
-            return <img style={defaultStyle} alt={block.data.caption} src={block.data.file.src} />;
+            return (
+                <img className={"rte-block-image"} alt={block.data.caption} src={block.data.file} />
+            );
         }
-    } as RTEDataBlockRendererPlugin);
+    };
+};
