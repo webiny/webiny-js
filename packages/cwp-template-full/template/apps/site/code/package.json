@@ -27,7 +27,7 @@
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
     "build": "webiny run build",
-    "start": "webiny run start --env local"
+    "start": "PORT=3000 webiny run start"
   },
   "browserslist": {
     "development": [
