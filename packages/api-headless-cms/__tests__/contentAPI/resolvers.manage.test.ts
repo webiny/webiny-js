@@ -1,6 +1,6 @@
 /* eslint-disable */
 import Error from "@webiny/error";
-import { CmsContentModelGroupType } from "@webiny/api-headless-cms/types";
+import { CmsContentEntryType, CmsContentModelGroupType } from "@webiny/api-headless-cms/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
@@ -8,6 +8,13 @@ import models from "./mocks/contentModels";
 import modelsWithoutValidation from "./mocks/contentModels.noValidation";
 
 jest.setTimeout(10000);
+
+type CreateCategoriesResultType = {
+    fruits: CmsContentEntryType;
+    vegetables: CmsContentEntryType;
+    animals: CmsContentEntryType;
+    trees: CmsContentEntryType;
+};
 
 describe("MANAGE - Resolvers", () => {
     let contentModelGroup: CmsContentModelGroupType;
@@ -69,6 +76,38 @@ describe("MANAGE - Resolvers", () => {
         }
     };
 
+    const createCategories = async (): Promise<CreateCategoriesResultType> => {
+        await setupContentModel();
+        // Use "manage" API to create and publish entries
+        const { createCategory, listCategories } = useCategoryManageHandler(manageOpts);
+
+        const values = {
+            animals: "Animals",
+            fruits: "Fruits",
+            trees: "Trees",
+            vegetables: "Vegetables"
+        };
+        const categories: any = {};
+        for (const slug in values) {
+            const title = values[slug];
+            const [response] = await createCategory({
+                data: {
+                    title,
+                    slug
+                }
+            });
+            categories[slug] = response.data.createCategory.data;
+        }
+        // Wait until the previous revision is indexed in Elastic as "latest"
+        await until(
+            () => listCategories().then(([data]) => data),
+            ({ data }) => data.listCategories.data.length === Object.keys(values).length,
+            { name: "list all categories after creation in setupCategories" }
+        );
+
+        return categories;
+    };
+
     beforeEach(async () => {
         try {
             await elasticSearch.indices.create({ index: esCmsIndex });
@@ -99,10 +138,10 @@ describe("MANAGE - Resolvers", () => {
 
         const [response] = await getCategory({ revision: id });
 
-        expect(response.data.getCategory.data).toMatchObject({
+        expect(response.data.getCategory.data).toEqual({
             id,
-            createdOn: /^20/,
-            savedOn: /^20/,
+            createdOn: expect.stringMatching(/^20/),
+            savedOn: expect.stringMatching(/^20/),
             title: "Hardware",
             slug: "hardware",
             meta: {
@@ -152,7 +191,7 @@ describe("MANAGE - Resolvers", () => {
 
         const [response] = await listCategories();
 
-        expect(response).toMatchObject({
+        expect(response).toEqual({
             data: {
                 listCategories: {
                     data: [
@@ -165,10 +204,10 @@ describe("MANAGE - Resolvers", () => {
                             meta: {
                                 locked: true,
                                 modelId: "category",
-                                publishedOn: /^20/,
+                                publishedOn: expect.stringMatching(/^20/),
                                 revisions: [
                                     {
-                                        id: /^([a-zA-Z0-9]+)$/,
+                                        id: expect.any(String),
                                         slug: "slug-1",
                                         title: "Title 1"
                                     }
@@ -183,7 +222,7 @@ describe("MANAGE - Resolvers", () => {
                     meta: {
                         hasMoreItems: false,
                         totalCount: 1,
-                        cursor: /^([a-zA-Z0-9]+)$/
+                        cursor: expect.any(String)
                     }
                 }
             }
@@ -278,23 +317,6 @@ describe("MANAGE - Resolvers", () => {
         `;
     });
 
-    test(`list categories (contains, not_contains, in, not_in)`, async () => {
-        await setupContentModel();
-        // Test resolvers
-        const query = /* GraphQL */ `
-            query ListCategories($where: CategoryListWhereInput) {
-                listCategories(where: $where) {
-                    data {
-                        title
-                    }
-                    error {
-                        message
-                    }
-                }
-            }
-        `;
-    });
-
     test(`should create category`, async () => {
         await setupContentModel();
         const { until, createCategory, listCategories } = useCategoryManageHandler(manageOpts);
@@ -302,10 +324,10 @@ describe("MANAGE - Resolvers", () => {
 
         const category1 = create1.data.createCategory.data;
 
-        expect(category1).toMatchObject({
+        expect(category1).toEqual({
             id: expect.any(String),
-            createdOn: /^20/,
-            savedOn: /^20/,
+            createdOn: expect.stringMatching(/^20/),
+            savedOn: expect.stringMatching(/^20/),
             title: "Hardware",
             slug: "hardware",
             meta: {
@@ -335,18 +357,24 @@ describe("MANAGE - Resolvers", () => {
         await setupContentModel();
         const { createCategory } = useCategoryManageHandler(manageOpts);
 
-        const [create] = await createCategory({ data: { title: "Hardware" } });
+        const [response] = await createCategory({ data: { title: "Hardware" } });
 
-        const { error } = create.data.createCategory;
-
-        expect(error).toMatchObject({
-            code: "VALIDATION_FAILED",
-            data: expect.arrayContaining([
-                expect.objectContaining({
-                    fieldId: expect.any(String),
-                    error: expect.any(String)
-                })
-            ])
+        expect(response).toEqual({
+            data: {
+                createCategory: {
+                    data: null,
+                    error: {
+                        code: "VALIDATION_FAILED",
+                        data: [
+                            {
+                                error: "This field is required",
+                                fieldId: "slug"
+                            }
+                        ],
+                        message: "Validation failed."
+                    }
+                }
+            }
         });
     });
 
@@ -359,10 +387,10 @@ describe("MANAGE - Resolvers", () => {
 
         const category = result.data.createCategory.data;
 
-        expect(category).toMatchObject({
+        expect(category).toEqual({
             id: expect.any(String),
-            createdOn: /^20/,
-            savedOn: /^20/,
+            createdOn: expect.stringMatching(/^20/),
+            savedOn: expect.stringMatching(/^20/),
             title: "Hardware",
             slug: "hardware",
             meta: {
@@ -410,16 +438,40 @@ describe("MANAGE - Resolvers", () => {
         const [revision] = await createCategoryFrom({ revision: id });
 
         const newEntry = revision.data.createCategoryFrom.data;
-        expect(newEntry).toMatchObject({
-            id: expect.any(String),
-            title: "Hardware",
-            slug: "hardware",
-            meta: {
-                version: 2
+        expect(revision).toEqual({
+            data: {
+                createCategoryFrom: {
+                    data: {
+                        id: expect.any(String),
+                        savedOn: expect.stringMatching(/^20/),
+                        createdOn: expect.stringMatching(/^20/),
+                        title: "Hardware",
+                        slug: "hardware",
+                        meta: {
+                            locked: false,
+                            modelId: "category",
+                            publishedOn: null,
+                            revisions: [
+                                {
+                                    id: expect.any(String),
+                                    slug: "hardware",
+                                    title: "Hardware"
+                                },
+                                {
+                                    id: expect.any(String),
+                                    slug: "hardware",
+                                    title: "Hardware"
+                                }
+                            ],
+                            status: "draft",
+                            title: "Hardware",
+                            version: 2
+                        }
+                    },
+                    error: null
+                }
             }
         });
-
-        expect(newEntry.meta.revisions.length).toBe(2);
 
         // Wait until the new category revision is propagated to ES index
         const response = await until(
@@ -427,7 +479,7 @@ describe("MANAGE - Resolvers", () => {
             ({ data }) => data.listCategories.data[0].id === newEntry.id
         );
 
-        expect(response).toMatchObject({
+        expect(response).toEqual({
             data: {
                 listCategories: {
                     data: [newEntry],
@@ -456,16 +508,29 @@ describe("MANAGE - Resolvers", () => {
             data: { title: "New title", slug: "hardware-store" }
         });
 
-        expect(response).toMatchObject({
+        expect(response).toEqual({
             data: {
                 updateCategory: {
                     data: {
                         id: expect.any(String),
-                        savedOn: /^20/,
+                        createdOn: expect.stringMatching(/^20/),
+                        savedOn: expect.stringMatching(/^20/),
                         title: "New title",
                         slug: "hardware-store",
                         meta: {
-                            title: "New title"
+                            locked: false,
+                            modelId: "category",
+                            publishedOn: null,
+                            revisions: [
+                                {
+                                    id: expect.any(String),
+                                    title: "New title",
+                                    slug: "hardware-store"
+                                }
+                            ],
+                            title: "New title",
+                            status: "draft",
+                            version: 1
                         }
                     },
                     error: null
@@ -621,5 +686,133 @@ describe("MANAGE - Resolvers", () => {
             ({ data }) => data.listCategories.data[0].id === id3,
             { name: "publish latest revision again" }
         );
+    });
+
+    test(`list categories (contains, not_contains, in, not_in)`, async () => {
+        const { animals, fruits, vegetables, trees } = await createCategories();
+        const { listCategories } = useCategoryManageHandler(manageOpts);
+
+        const defaultQueryVars = {
+            sort: ["title_ASC"]
+        };
+
+        const [listResponse] = await listCategories(defaultQueryVars);
+
+        expect(listResponse).toEqual({
+            data: {
+                listCategories: {
+                    data: [animals, fruits, trees, vegetables],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 4,
+                        cursor: expect.any(String)
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listContainsResponse] = await listCategories({
+            ...defaultQueryVars,
+            where: {
+                title_contains: "ree"
+            }
+        });
+
+        expect(listContainsResponse).toEqual({
+            data: {
+                listCategories: {
+                    data: [trees],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
+                        cursor: expect.any(String)
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listNotContainsResponse] = await listCategories({
+            ...defaultQueryVars,
+            where: {
+                title_not_contains: "uit"
+            }
+        });
+        expect(listNotContainsResponse).toEqual({
+            data: {
+                listCategories: {
+                    data: [animals, trees, vegetables],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 3,
+                        cursor: expect.any(String)
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listNotContainsEResponse] = await listCategories({
+            ...defaultQueryVars,
+            where: {
+                title_not_contains: "e"
+            }
+        });
+        expect(listNotContainsEResponse).toEqual({
+            data: {
+                listCategories: {
+                    data: [animals, fruits],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 2,
+                        cursor: expect.any(String)
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listInResponse] = await listCategories({
+            ...defaultQueryVars,
+            where: {
+                id_in: [animals.id, vegetables.id]
+            }
+        });
+
+        expect(listInResponse).toEqual({
+            data: {
+                listCategories: {
+                    data: [animals, vegetables],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 2,
+                        cursor: expect.any(String)
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listNotInResponse] = await listCategories({
+            ...defaultQueryVars,
+            where: {
+                id_not_in: [trees.id, vegetables.id]
+            }
+        });
+
+        expect(listNotInResponse).toEqual({
+            data: {
+                listCategories: {
+                    data: [animals, fruits],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 2,
+                        cursor: expect.any(String)
+                    },
+                    error: null
+                }
+            }
+        });
     });
 });

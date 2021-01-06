@@ -609,11 +609,6 @@ export type CmsContentEntryPermissionType = SecurityPermission<{
     };
 }>;
 
-type CmsModelFieldToElasticSearchPluginResultType = {
-    rawData?: any;
-    [key: string]: any;
-};
-
 export type CmsContentIndexEntryType = CmsContentEntryType & {
     rawValues: Record<string, any>;
     [key: string]: any;
@@ -638,14 +633,14 @@ export type CmsModelFieldToElasticSearchPlugin = Plugin & {
         storageEntry: CmsContentEntryType;
         // This is the entry in the original form (the way it comes into the API)
         originalEntry: CmsContentEntryType;
-    }): CmsModelFieldToElasticSearchPluginResultType;
+    }): Partial<CmsContentIndexEntryType>;
     fromIndex?(params: {
         context: CmsContext;
         model: CmsContentModelType;
         fieldTypePlugin: CmsModelFieldToGraphQLPlugin;
         field: CmsContentModelFieldType;
         entry: CmsContentIndexEntryType;
-    }): any;
+    }): Partial<CmsContentIndexEntryType>;
 };
 
 export type CmsModelFieldToStoragePlugin = Plugin & {

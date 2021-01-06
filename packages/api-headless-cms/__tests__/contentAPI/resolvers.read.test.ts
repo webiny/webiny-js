@@ -168,10 +168,16 @@ describe("READ - Resolvers", () => {
             }
         });
 
-        expect(response.data.getCategory).toMatchObject({
-            data: null,
-            error: {
-                code: "NOT_FOUND"
+        expect(response).toEqual({
+            data: {
+                getCategory: {
+                    data: null,
+                    error: {
+                        code: "NOT_FOUND",
+                        message: "Entry not found!",
+                        data: null
+                    }
+                }
             }
         });
     });
@@ -199,7 +205,7 @@ describe("READ - Resolvers", () => {
 
         const [response] = await listCategories();
 
-        expect(response).toMatchObject({
+        expect(response).toEqual({
             data: {
                 listCategories: {
                     data: [
@@ -215,7 +221,7 @@ describe("READ - Resolvers", () => {
                     meta: {
                         hasMoreItems: false,
                         totalCount: 1,
-                        cursor: /^([a-zA-Z0-9]+)$/
+                        cursor: expect.any(String)
                     }
                 }
             }
@@ -235,11 +241,11 @@ describe("READ - Resolvers", () => {
                 listCategories({
                     limit: 2
                 }).then(([data]) => data),
-            ({ data }) => data.listCategories.data.length === 2,
+            ({ data }) => data.listCategories.meta.totalCount === 3,
             { name: "list entries with limit" }
         );
 
-        expect(result).toMatchObject({
+        expect(result).toEqual({
             data: {
                 listCategories: {
                     data: [
@@ -261,7 +267,7 @@ describe("READ - Resolvers", () => {
                     meta: {
                         hasMoreItems: true,
                         totalCount: 3,
-                        cursor: /^([a-zA-Z0-9]+)$/
+                        cursor: expect.any(String)
                     },
                     error: null
                 }
@@ -285,7 +291,7 @@ describe("READ - Resolvers", () => {
             { name: "list entries with limit after" }
         );
 
-        expect(firstResult).toMatchObject({
+        expect(firstResult).toEqual({
             data: {
                 listCategories: {
                     data: [
@@ -298,7 +304,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: /([a-zA-Z0-9]+)/,
+                        cursor: expect.any(String),
                         hasMoreItems: true,
                         totalCount: 3
                     },
@@ -320,7 +326,7 @@ describe("READ - Resolvers", () => {
             { name: "list categories after first cursor with limit" }
         );
 
-        expect(secondResult).toMatchObject({
+        expect(secondResult).toEqual({
             data: {
                 listCategories: {
                     data: [
@@ -333,7 +339,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: /([a-zA-Z0-9]+)/,
+                        cursor: expect.any(String),
                         hasMoreItems: true,
                         totalCount: 3
                     },
@@ -355,7 +361,7 @@ describe("READ - Resolvers", () => {
             { name: "list categories after second cursor with limit" }
         );
 
-        expect(thirdResult).toMatchObject({
+        expect(thirdResult).toEqual({
             data: {
                 listCategories: {
                     data: [
@@ -368,7 +374,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: /([a-zA-Z0-9]+)/,
+                        cursor: expect.any(String),
                         hasMoreItems: false,
                         totalCount: 3
                     },
@@ -389,7 +395,7 @@ describe("READ - Resolvers", () => {
             ({ data }) => data.listCategories.data.length === 2,
             { name: "list categories after first cursor with limit" }
         );
-        expect(fourthResult).toMatchObject({
+        expect(fourthResult).toEqual({
             data: {
                 listCategories: {
                     data: [
@@ -409,7 +415,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: /([a-zA-Z0-9]+)/,
+                        cursor: expect.any(String),
                         hasMoreItems: false,
                         totalCount: 3
                     },
@@ -434,7 +440,7 @@ describe("READ - Resolvers", () => {
             ({ data }) => data.listCategories.data.length === 3
         );
 
-        expect(result).toMatchObject({
+        expect(result).toEqual({
             data: {
                 listCategories: {
                     data: [
@@ -461,7 +467,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: /([a-zA-Z0-9]+)/,
+                        cursor: expect.any(String),
                         hasMoreItems: false,
                         totalCount: 3
                     },
@@ -487,7 +493,7 @@ describe("READ - Resolvers", () => {
             { name: "list entries by title DESC" }
         );
 
-        expect(result).toMatchObject({
+        expect(result).toEqual({
             data: {
                 listCategories: {
                     data: [
@@ -514,7 +520,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: /([a-zA-Z0-9]+)/,
+                        cursor: expect.any(String),
                         hasMoreItems: false,
                         totalCount: 3
                     },
@@ -542,7 +548,7 @@ describe("READ - Resolvers", () => {
             ({ data }) => data.listCategories.data[0].id === animals.id
         );
 
-        expect(result).toMatchObject({
+        expect(result).toEqual({
             data: {
                 listCategories: {
                     data: [
@@ -555,7 +561,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: /([a-zA-Z0-9]+)/,
+                        cursor: expect.any(String),
                         hasMoreItems: false,
                         totalCount: 1
                     },
@@ -583,7 +589,7 @@ describe("READ - Resolvers", () => {
             ({ data }) => data.listCategories.data.length === 2
         );
 
-        expect(result).toMatchObject({
+        expect(result).toEqual({
             data: {
                 listCategories: {
                     data: [
@@ -603,7 +609,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: /([a-zA-Z0-9]+)/,
+                        cursor: expect.any(String),
                         hasMoreItems: false,
                         totalCount: 2
                     },
@@ -631,7 +637,7 @@ describe("READ - Resolvers", () => {
             ({ data }) => data.listCategories.data.length === 2
         );
 
-        expect(result).toMatchObject({
+        expect(result).toEqual({
             data: {
                 listCategories: {
                     data: [
@@ -651,7 +657,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: /([a-zA-Z0-9]+)/,
+                        cursor: expect.any(String),
                         hasMoreItems: false,
                         totalCount: 2
                     },
@@ -679,7 +685,7 @@ describe("READ - Resolvers", () => {
             ({ data }) => data.listCategories.data.length === 1
         );
 
-        expect(result).toMatchObject({
+        expect(result).toEqual({
             data: {
                 listCategories: {
                     data: [
@@ -692,7 +698,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: /([a-zA-Z0-9]+)/,
+                        cursor: expect.any(String),
                         hasMoreItems: false,
                         totalCount: 1
                     },
@@ -723,7 +729,7 @@ describe("READ - Resolvers", () => {
             ({ data }) => data.listCategories.data.length === 3
         );
 
-        expect(result).toMatchObject({
+        expect(result).toEqual({
             data: {
                 listCategories: {
                     data: [
@@ -750,7 +756,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: /([a-zA-Z0-9]+)/,
+                        cursor: expect.any(String),
                         hasMoreItems: false,
                         totalCount: 3
                     },
@@ -778,7 +784,7 @@ describe("READ - Resolvers", () => {
             ({ data }) => data.listCategories.data.length === 1
         );
 
-        expect(result).toMatchObject({
+        expect(result).toEqual({
             data: {
                 listCategories: {
                     data: [
@@ -791,7 +797,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: /([a-zA-Z0-9]+)/,
+                        cursor: expect.any(String),
                         hasMoreItems: false,
                         totalCount: 1
                     },
@@ -822,12 +828,12 @@ describe("READ - Resolvers", () => {
             ({ data }) => Array.isArray(data.listCategories.data)
         );
 
-        expect(result).toMatchObject({
+        expect(result).toEqual({
             data: {
                 listCategories: {
                     data: [],
                     meta: {
-                        cursor: /([a-zA-Z0-9]+)/,
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 0
                     },
@@ -856,7 +862,7 @@ describe("READ - Resolvers", () => {
             ({ data }) => data.listCategories.data.length === 2
         );
 
-        expect(result).toMatchObject({
+        expect(result).toEqual({
             data: {
                 listCategories: {
                     data: [
@@ -876,7 +882,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: /([a-zA-Z0-9]+)/,
+                        cursor: expect.any(String),
                         hasMoreItems: false,
                         totalCount: 2
                     },
@@ -909,7 +915,7 @@ describe("READ - Resolvers", () => {
             ({ data }) => data.listCategories.data.length === 2
         );
 
-        expect(result).toMatchObject({
+        expect(result).toEqual({
             data: {
                 listCategories: {
                     data: [
@@ -929,7 +935,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: /([a-zA-Z0-9]+)/,
+                        cursor: expect.any(String),
                         hasMoreItems: false,
                         totalCount: 2
                     },

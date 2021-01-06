@@ -233,7 +233,7 @@ describe("refField", () => {
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         await until(
             () => manageListReviews().then(([data]) => data),
-            ({ data }) => data.listReviews.data.length > 0,
+            ({ data }) => data.listReviews.data[0].meta.publishedOn === publishedOn,
             { name: "manage list reviews" }
         );
 

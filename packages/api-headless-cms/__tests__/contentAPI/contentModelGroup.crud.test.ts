@@ -51,14 +51,14 @@ describe("Content model group crud test", () => {
                 data: modelData
             });
 
-            expect(response).toMatchObject({
+            expect(response).toEqual({
                 data: {
                     createContentModelGroup: {
                         data: {
-                            id: /([a-zA-Z0-9]+)/,
+                            id: expect.any(String),
                             ...modelData,
-                            createdOn: /^20/,
-                            savedOn: /^20/,
+                            createdOn: expect.stringMatching(/^20/),
+                            savedOn: expect.stringMatching(/^20/),
                             createdBy: identity
                         },
                         error: null
@@ -97,14 +97,14 @@ describe("Content model group crud test", () => {
                 data: updatedModelData
             });
 
-            expect(updateResponse).toMatchObject({
+            expect(updateResponse).toEqual({
                 data: {
                     updateContentModelGroup: {
                         data: {
                             id: groupId,
                             createdOn,
                             ...updatedModelData,
-                            savedOn: /^20/,
+                            savedOn: expect.stringMatching(/^20/),
                             createdBy: identity
                         },
                         error: null

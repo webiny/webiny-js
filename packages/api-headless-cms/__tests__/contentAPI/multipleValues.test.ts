@@ -246,13 +246,13 @@ describe("multiple values in field", () => {
             }
         });
 
-        expect(createProductResponse).toMatchObject({
+        expect(createProductResponse).toEqual({
             data: {
                 createProduct: {
                     data: {
                         id: expect.any(String),
-                        createdOn: /^20/,
-                        savedOn: /^20/,
+                        createdOn: expect.stringMatching(/^20/),
+                        savedOn: expect.stringMatching(/^20/),
                         category: {
                             modelId: categoryContentModel.modelId,
                             entryId: category.id

@@ -129,15 +129,15 @@ describe("MANAGE - resolvers - api key", () => {
             headers
         );
 
-        expect(createResponse).toMatchObject({
+        expect(createResponse).toEqual({
             data: {
                 createCategory: {
                     data: {
                         id: expect.any(String),
                         title: "Vegetables",
                         slug: "vegetables",
-                        createdOn: /^20/,
-                        savedOn: /^20/,
+                        createdOn: expect.stringMatching(/^20/),
+                        savedOn: expect.stringMatching(/^20/),
                         meta: {
                             locked: false,
                             modelId: "category",
@@ -216,15 +216,15 @@ describe("MANAGE - resolvers - api key", () => {
             headers
         );
 
-        expect(updateResponse).toMatchObject({
+        expect(updateResponse).toEqual({
             data: {
                 updateCategory: {
                     data: {
                         id: expect.any(String),
                         title: "Green vegetables",
                         slug: "green-vegetables",
-                        createdOn: /^20/,
-                        savedOn: /^20/,
+                        createdOn: expect.stringMatching(/^20/),
+                        savedOn: expect.stringMatching(/^20/),
                         meta: {
                             locked: false,
                             modelId: "category",
