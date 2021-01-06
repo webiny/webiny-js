@@ -3,6 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.26](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.25...v5.0.0-beta.26) (2021-01-06)
+
+
+### Bug Fixes
+
+* add utils ([2dbf91d](https://github.com/webiny/webiny-js/commit/2dbf91d93cf5efa93d27e8b6bb15b4573cb10cc3))
+* change "URL" to "Url" ([f2d0471](https://github.com/webiny/webiny-js/commit/f2d0471e380e04fd81ecc4ebb80206ad2dbb0601))
+* create `getStackOutput` function and delete unnecessary ones ([08b1970](https://github.com/webiny/webiny-js/commit/08b1970c5d3548c0af706082dffa6633e7159526))
+* execute existing commands instead of doing it manually ([32045c5](https://github.com/webiny/webiny-js/commit/32045c5bcdafdff2b851a78204ffdb06a299f53e))
+* execute existing commands instead of getting stuff manually ([dd5b9be](https://github.com/webiny/webiny-js/commit/dd5b9beeec9f03eb6b9422de12004c1e1fa1e91e))
+* move aws CLI plugins to cwp-template-full ([8f39101](https://github.com/webiny/webiny-js/commit/8f391019ff18c3e06d90c4a7cfe141f4277c6bdb))
+* move empty console.log ([2b6f9fe](https://github.com/webiny/webiny-js/commit/2b6f9fec2af6aa4ac135ee18ec5f2666c29532fa))
+* remove old files ([e7e6324](https://github.com/webiny/webiny-js/commit/e7e632413a10d446cd8e67da3f4cae30ddf067f5))
+* remove redundant import ([1aa89b1](https://github.com/webiny/webiny-js/commit/1aa89b13567c99329ee8b24f02fcb77cc55af52a))
+* rename `deploy-all` to `deploy` ([538cf64](https://github.com/webiny/webiny-js/commit/538cf643e88154a6dedd5115428e2c876d8c4c9e))
+* replace `env.json` with `.env` ([fae0a91](https://github.com/webiny/webiny-js/commit/fae0a91a9026b5a1db1371784b623fd8e0ac8ed4))
+* update setting of root `.env` file ([da1dee8](https://github.com/webiny/webiny-js/commit/da1dee85c9d11ca7370ad607350e51df9d41f006))
+* update template ([4c502b1](https://github.com/webiny/webiny-js/commit/4c502b153e78f50018afde63b4cb829d3c521b11))
+
+
+### Features
+
+* add `deploy-all` command ([2f9c294](https://github.com/webiny/webiny-js/commit/2f9c294a47f1a79d4cd3c341b20066ed3e52644a))
+* add `info` command ([aaa2b21](https://github.com/webiny/webiny-js/commit/aaa2b21272144133d43fb8b6a779d2e20b8dfb80))
+
+
+
+
+
 # [5.0.0-beta.25](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.24...v5.0.0-beta.25) (2021-01-04)
 
 

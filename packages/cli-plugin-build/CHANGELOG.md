@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.26](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.25...v5.0.0-beta.26) (2021-01-06)
+
+
+### Bug Fixes
+
+* use loadEnvVariables ([10ed828](https://github.com/webiny/webiny-js/commit/10ed8282110f2b7226adb92bceb4a8acd0896cee))
+
+
+
+
+
 # [5.0.0-beta.10](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.10) (2021-01-04)
 
 

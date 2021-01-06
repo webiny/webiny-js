@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.26](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.25...v5.0.0-beta.26) (2021-01-06)
+
+
+### Bug Fixes
+
+* add `execute` plugin property ([a1dbfd5](https://github.com/webiny/webiny-js/commit/a1dbfd524c9903f88277cf5e30a0b9bfdd65c5d7))
+* create `stack` command ([c5313e3](https://github.com/webiny/webiny-js/commit/c5313e3cb7aaf870fdf6704a56922d2fae188660))
+* enable returning output as a JSON ([a0f18c9](https://github.com/webiny/webiny-js/commit/a0f18c9b2f2727d7c306f1b6a51b44484ff377e4))
+* ensure Pulumi is installed ([cd4bacf](https://github.com/webiny/webiny-js/commit/cd4bacf042285ac0cf3c2756fb30c8d72be42a8e))
+* execute command from project-root ([b81a3e8](https://github.com/webiny/webiny-js/commit/b81a3e85377536c6a3a8b2bc1cd843367d5fcd1e))
+* execute command from project-root ([3c0f4d5](https://github.com/webiny/webiny-js/commit/3c0f4d5fd3e0ed021283ba4f26e56210fb33fe39))
+* move aws CLI plugins to cwp-template-full ([8f39101](https://github.com/webiny/webiny-js/commit/8f391019ff18c3e06d90c4a7cfe141f4277c6bdb))
+* remove `updateEnvValues` ([2d0d03b](https://github.com/webiny/webiny-js/commit/2d0d03b668d2ae6185a25cc0197dfcceb1edd496))
+* remove destroy ([7431736](https://github.com/webiny/webiny-js/commit/7431736327676af62a62770ec0486d4c0d91ef9e))
+* reorganize utils ([23c50cd](https://github.com/webiny/webiny-js/commit/23c50cd75e083fd9d867b93d0cc8482f76ab2e66))
+* update dependencies ([95f567d](https://github.com/webiny/webiny-js/commit/95f567df98d00596b3a52484b765ffcc28af11f3))
+* update exports ([516056b](https://github.com/webiny/webiny-js/commit/516056bcbd2cda025980e1f513fff069eaedda97))
+* update labels ([1f4c4c2](https://github.com/webiny/webiny-js/commit/1f4c4c2a58d720bae76e2b78088c9246df0924ad))
+* utilize newly create utils ([d3a458a](https://github.com/webiny/webiny-js/commit/d3a458a166823a30e3fa37a3ba1ad3a4596940cb))
+
+
+### Features
+
+* add `getPulumi` helper ([5e7d31b](https://github.com/webiny/webiny-js/commit/5e7d31b8abc97514352fae132d40670231dbc580))
+* add `webiny pulumi -- ...` command ([a71986e](https://github.com/webiny/webiny-js/commit/a71986ec8d922e584dbb532981aa8a5f78cce305))
+
+
+
+
+
 # [5.0.0-beta.10](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.10) (2021-01-04)
 
 

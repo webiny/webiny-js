@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.26](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.25...v5.0.0-beta.26) (2021-01-06)
+
+
+### Bug Fixes
+
+* change "URL" to "Url" ([1cd5411](https://github.com/webiny/webiny-js/commit/1cd5411a106c286eeea64b308e6b6e70d34b26ef))
+
+
+
+
+
 # [5.0.0-beta.21](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.20...v5.0.0-beta.21) (2021-01-04)
 
 

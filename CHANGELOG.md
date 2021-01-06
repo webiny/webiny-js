@@ -3,6 +3,65 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.26](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.25...v5.0.0-beta.26) (2021-01-06)
+
+
+### Bug Fixes
+
+* add `example.env` file ([9bd632d](https://github.com/webiny/webiny-js/commit/9bd632d7d8c95bde4f8efcf2600c48bc776f89ff))
+* add `execute` plugin property ([a1dbfd5](https://github.com/webiny/webiny-js/commit/a1dbfd524c9903f88277cf5e30a0b9bfdd65c5d7))
+* add utils ([2dbf91d](https://github.com/webiny/webiny-js/commit/2dbf91d93cf5efa93d27e8b6bb15b4573cb10cc3))
+* change "URL" to "Url" ([f2d0471](https://github.com/webiny/webiny-js/commit/f2d0471e380e04fd81ecc4ebb80206ad2dbb0601))
+* change "URL" to "Url" ([1cd5411](https://github.com/webiny/webiny-js/commit/1cd5411a106c286eeea64b308e6b6e70d34b26ef))
+* clean up script ([21d0642](https://github.com/webiny/webiny-js/commit/21d06426691df86c033d5bb1565b8ea037747a54))
+* create `getStackOutput` function and delete unnecessary ones ([08b1970](https://github.com/webiny/webiny-js/commit/08b1970c5d3548c0af706082dffa6633e7159526))
+* create `stack` command ([c5313e3](https://github.com/webiny/webiny-js/commit/c5313e3cb7aaf870fdf6704a56922d2fae188660))
+* do not reload ENV files if already loaded ([b223268](https://github.com/webiny/webiny-js/commit/b223268d9a1989e5ba4c0ac9f9592d9eeca31685))
+* enable returning output as a JSON ([a0f18c9](https://github.com/webiny/webiny-js/commit/a0f18c9b2f2727d7c306f1b6a51b44484ff377e4))
+* ensure Pulumi is installed ([cd4bacf](https://github.com/webiny/webiny-js/commit/cd4bacf042285ac0cf3c2756fb30c8d72be42a8e))
+* execute command from project-root ([b81a3e8](https://github.com/webiny/webiny-js/commit/b81a3e85377536c6a3a8b2bc1cd843367d5fcd1e))
+* execute command from project-root ([3c0f4d5](https://github.com/webiny/webiny-js/commit/3c0f4d5fd3e0ed021283ba4f26e56210fb33fe39))
+* execute existing commands instead of doing it manually ([32045c5](https://github.com/webiny/webiny-js/commit/32045c5bcdafdff2b851a78204ffdb06a299f53e))
+* execute existing commands instead of getting stuff manually ([dd5b9be](https://github.com/webiny/webiny-js/commit/dd5b9beeec9f03eb6b9422de12004c1e1fa1e91e))
+* move aws CLI plugins to cwp-template-full ([8f39101](https://github.com/webiny/webiny-js/commit/8f391019ff18c3e06d90c4a7cfe141f4277c6bdb))
+* move empty console.log ([2b6f9fe](https://github.com/webiny/webiny-js/commit/2b6f9fec2af6aa4ac135ee18ec5f2666c29532fa))
+* remove `info` command ([25f82fd](https://github.com/webiny/webiny-js/commit/25f82fd4580c8de7b0402f212542d0001c56ba55))
+* remove `updateEnvValues` ([2d0d03b](https://github.com/webiny/webiny-js/commit/2d0d03b668d2ae6185a25cc0197dfcceb1edd496))
+* remove creation of env files ([bc5b3e0](https://github.com/webiny/webiny-js/commit/bc5b3e071f52f03e91124698fb0f45a85cde8670))
+* remove destroy ([7431736](https://github.com/webiny/webiny-js/commit/7431736327676af62a62770ec0486d4c0d91ef9e))
+* remove extra dependencies ([7f0c88a](https://github.com/webiny/webiny-js/commit/7f0c88a87af857901a974891e45e0efe40eea05a))
+* remove old files ([e7e6324](https://github.com/webiny/webiny-js/commit/e7e632413a10d446cd8e67da3f4cae30ddf067f5))
+* remove redundant import ([1aa89b1](https://github.com/webiny/webiny-js/commit/1aa89b13567c99329ee8b24f02fcb77cc55af52a))
+* rename `CDN` to `appUrl` ([0615a86](https://github.com/webiny/webiny-js/commit/0615a862a640dc4d38f79e73692a337ce447cbad))
+* rename `deploy-all` to `deploy` ([538cf64](https://github.com/webiny/webiny-js/commit/538cf643e88154a6dedd5115428e2c876d8c4c9e))
+* reorganize utils ([23c50cd](https://github.com/webiny/webiny-js/commit/23c50cd75e083fd9d867b93d0cc8482f76ab2e66))
+* replace `env-cmd` with `dotenv` ([86662fc](https://github.com/webiny/webiny-js/commit/86662fcc82af8add6ffa73d270a239ac89cf280e))
+* replace `env.json` with `.env` ([fae0a91](https://github.com/webiny/webiny-js/commit/fae0a91a9026b5a1db1371784b623fd8e0ac8ed4))
+* set `waitForDeployment` to `true` ([5284250](https://github.com/webiny/webiny-js/commit/5284250de87ac75ceb912ec502a879aee12d4a0a))
+* update `waitForDeployment` ([e1443c2](https://github.com/webiny/webiny-js/commit/e1443c2f568b12a220f7ac74088d4b009f25c011))
+* update dependencies ([95f567d](https://github.com/webiny/webiny-js/commit/95f567df98d00596b3a52484b765ffcc28af11f3))
+* update exports ([516056b](https://github.com/webiny/webiny-js/commit/516056bcbd2cda025980e1f513fff069eaedda97))
+* update labels ([1f4c4c2](https://github.com/webiny/webiny-js/commit/1f4c4c2a58d720bae76e2b78088c9246df0924ad))
+* update setting of root `.env` file ([da1dee8](https://github.com/webiny/webiny-js/commit/da1dee85c9d11ca7370ad607350e51df9d41f006))
+* update template ([4c502b1](https://github.com/webiny/webiny-js/commit/4c502b153e78f50018afde63b4cb829d3c521b11))
+* use dotenv ([c00fbe1](https://github.com/webiny/webiny-js/commit/c00fbe160587e50e429e452b759d66858061b866))
+* use loadEnvVariables ([10ed828](https://github.com/webiny/webiny-js/commit/10ed8282110f2b7226adb92bceb4a8acd0896cee))
+* utilize newly create utils ([d3a458a](https://github.com/webiny/webiny-js/commit/d3a458a166823a30e3fa37a3ba1ad3a4596940cb))
+
+
+### Features
+
+* add `deploy-all` command ([2f9c294](https://github.com/webiny/webiny-js/commit/2f9c294a47f1a79d4cd3c341b20066ed3e52644a))
+* add `getProjectRoot` utility function ([05eb94e](https://github.com/webiny/webiny-js/commit/05eb94e2d61b8be332c7b21c4e7b9cd33f8e9ea9))
+* add `getPulumi` helper ([5e7d31b](https://github.com/webiny/webiny-js/commit/5e7d31b8abc97514352fae132d40670231dbc580))
+* add `info` command ([aaa2b21](https://github.com/webiny/webiny-js/commit/aaa2b21272144133d43fb8b6a779d2e20b8dfb80))
+* add `webiny pulumi -- ...` command ([a71986e](https://github.com/webiny/webiny-js/commit/a71986ec8d922e584dbb532981aa8a5f78cce305))
+* create separate `install` method ([d7566ec](https://github.com/webiny/webiny-js/commit/d7566ec938f4a4b27d882b397d9d52796499fa40))
+
+
+
+
+
 # [5.0.0-beta.25](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.24...v5.0.0-beta.25) (2021-01-04)
 
 

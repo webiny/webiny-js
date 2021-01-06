@@ -1,6 +1,6 @@
 {
 	"name": "@webiny/api-form-builder",
-	"version": "5.0.0-beta.10",
+	"version": "5.0.0-beta.26",
 	"main": "index.js",
 	"repository": {
 		"type": "git",
@@ -16,7 +16,7 @@
 	"dependencies": {
 		"@babel/runtime": "^7.5.5",
 		"@commodo/fields": "1.1.2-beta.20",
-		"@webiny/api-file-manager": "^5.0.0-beta.10",
+		"@webiny/api-file-manager": "^5.0.0-beta.26",
 		"@webiny/api-i18n": "^5.0.0-beta.10",
 		"@webiny/api-i18n-content": "^5.0.0-beta.10",
 		"@webiny/api-plugin-elastic-search-client": "^5.0.0-beta.10",

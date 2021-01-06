@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-file-manager",
-  "version": "5.0.0-beta.10",
+  "version": "5.0.0-beta.26",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -25,7 +25,7 @@
     "@webiny/handler": "^5.0.0-beta.10",
     "@webiny/handler-client": "^5.0.0-beta.10",
     "@webiny/handler-graphql": "^5.0.0-beta.10",
-    "@webiny/project-utils": "^5.0.0-beta.10",
+    "@webiny/project-utils": "^5.0.0-beta.26",
     "@webiny/validation": "^5.0.0-beta.10",
     "aws-sdk": "^2.539.0",
     "commodo-fields-object": "^1.0.6",
