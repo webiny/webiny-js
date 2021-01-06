@@ -3,6 +3,132 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.32](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.31...v5.0.0-beta.32) (2021-01-06)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [5.0.0-beta.31](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.30...v5.0.0-beta.31) (2021-01-06)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [5.0.0-beta.30](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.29...v5.0.0-beta.30) (2021-01-06)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [5.0.0-beta.29](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.28...v5.0.0-beta.29) (2021-01-06)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [5.0.0-beta.28](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.27...v5.0.0-beta.28) (2021-01-06)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [5.0.0-beta.10](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.10) (2021-01-04)
+
+
+### Bug Fixes
+
+* adapt for NeDB (and of course, maintain MongoDB compatibility) ([f2d3555](https://github.com/webiny/webiny-js/commit/f2d3555648b9a1230903ae3fc45a1eb2a5829106))
+* add "*" scope ([a33fb2a](https://github.com/webiny/webiny-js/commit/a33fb2a714f20c3068c4e11d45505338cccf5cca))
+* add `name` field ([4df8bdd](https://github.com/webiny/webiny-js/commit/4df8bdd2e54bda10a7caaffd5013b8117cd61646))
+* add environment slug ([dd02293](https://github.com/webiny/webiny-js/commit/dd02293836115f18ba84f57f33828888b71527ba))
+* add missing changes after merge ([58ab0bd](https://github.com/webiny/webiny-js/commit/58ab0bd4cb1824be7c168525e5f20c5edfbe88f1))
+* add scopes to "list" and "read" resolvers ([3b3c852](https://github.com/webiny/webiny-js/commit/3b3c85282ae0066f2c0cf5b07576ba078ac23977))
+* add slug ([aef6925](https://github.com/webiny/webiny-js/commit/aef6925214961f6d50654494968dbbcbbd0eceee))
+* allow "getMeta" query publicly ([5337892](https://github.com/webiny/webiny-js/commit/53378922b28bb0f0cc70287213760c8b9f31dfeb))
+* allow setting env/type via url/options/event ([0a8baca](https://github.com/webiny/webiny-js/commit/0a8baca41f7aff4526becea7d0b03e45e5249d62))
+* avoid hardcoded string ([e3ae87f](https://github.com/webiny/webiny-js/commit/e3ae87f2e31cd888994ce4c6870b5a26d1794d87))
+* check if args/event properties are missing ([ac2e0e0](https://github.com/webiny/webiny-js/commit/ac2e0e0ea697586cf88ba90eeae4d49290f6959a))
+* cleanup contentModels getter ([6fba948](https://github.com/webiny/webiny-js/commit/6fba948246655540d66c34817a13a0ee9fdfe9db))
+* correct check in the `getResolvers` function ([db17a52](https://github.com/webiny/webiny-js/commit/db17a52c5a4efb3a67793b0d901a111a3418b629))
+* correct dependencies ([f77bd16](https://github.com/webiny/webiny-js/commit/f77bd161c7049212d55a05b1708f7053115f5638))
+* correct import paths ([928bc41](https://github.com/webiny/webiny-js/commit/928bc41943be2bf23cc033961db4f919a315e6b9))
+* correct TS types and dependencies ([fc26441](https://github.com/webiny/webiny-js/commit/fc264419e868320d49d6d8cd1270481acb8527be))
+* disable headless-cms tests ([a36e1c1](https://github.com/webiny/webiny-js/commit/a36e1c1df2cc4c17f510a0fce7ecd7310a632e26))
+* expose "CONTENT_MODEL_GROUP_ID" ([79da20e](https://github.com/webiny/webiny-js/commit/79da20e84ad0186305b1ec841c9a4e4260bec85b))
+* fix eslint errors ([f559a57](https://github.com/webiny/webiny-js/commit/f559a57522ab893120d8c686a2dd4caeb0c1ccb6))
+* import `GraphQLFieldResolver` from `@webiny/handler-graphql` ([e232249](https://github.com/webiny/webiny-js/commit/e23224921b540b6f9393f4046bdfce156189d1bf))
+* import `HandlerI18NContext` correctly ([a202336](https://github.com/webiny/webiny-js/commit/a202336b2765c90ed7fe3e2f73756da42d7abe3d))
+* merge `new-security` into `master` ([da26908](https://github.com/webiny/webiny-js/commit/da269089ebaf18cc00c43919688fc4a005314d72))
+* optimize `handler-apollo-gateway` - remove redundant code ([3d50b9d](https://github.com/webiny/webiny-js/commit/3d50b9d14e4171d4f205968c8fdde1f2a7e66955))
+* prettier and eslint run for v5 ([3069a33](https://github.com/webiny/webiny-js/commit/3069a33ccef2fd3767818b274a730df28cecaf5b))
+* read params from `context.http` ([220a408](https://github.com/webiny/webiny-js/commit/220a4084dd3847d1b4576a15ac76cc9580d3df74))
+* remove `@webiny/commodo-graphql` ([c63988c](https://github.com/webiny/webiny-js/commit/c63988c264e708a427d2b5beeafa4ca317e0fdf2))
+* remove `@webiny/graphql` ([ce70fd5](https://github.com/webiny/webiny-js/commit/ce70fd581456ba56787c2e12fe8075592138a3b7))
+* remove `api-settings-manager` ([547d686](https://github.com/webiny/webiny-js/commit/547d68600132b28950ce6574041bd639f0e752ff))
+* remove `applyContextPlugins` ([1ef7d03](https://github.com/webiny/webiny-js/commit/1ef7d03bb8fa8d590a33f5c987a1cff17b5f4f11))
+* remove `createResponse` callback ([61f49f0](https://github.com/webiny/webiny-js/commit/61f49f0bdbd24d7976a5d626e3361f53eef223b2))
+* remove `extend type SecurityUser` ([8c88675](https://github.com/webiny/webiny-js/commit/8c886754deeb54dc75accd8a57c220bd906e051c))
+* remove `SecurityIdentity` class ([f4e403a](https://github.com/webiny/webiny-js/commit/f4e403adce08430b5e6193e073843e022c81ad28))
+* remove direct aws-sdk/Lambda client usage ([6dfdeae](https://github.com/webiny/webiny-js/commit/6dfdeae49114b683dfc64c88dd41449a7b1d70c5))
+* remove environments (already included in the scope) ([a192ab1](https://github.com/webiny/webiny-js/commit/a192ab1510f9b9d7a9b72bfe88da1b018b3fee96))
+* remove old parts ([72e97a1](https://github.com/webiny/webiny-js/commit/72e97a1bada71958882d2f78331a1f9c5e4c6360))
+* remove redundant comment ([5ae2fac](https://github.com/webiny/webiny-js/commit/5ae2facca965319daca545f4a8c3b7b12ff81bb0))
+* remove unused import ([37330d9](https://github.com/webiny/webiny-js/commit/37330d9c297455796dc9c7ae5da0eef68ce6a9c7))
+* remove use of `gql` in `graphql-schema` plugins ([101e8fe](https://github.com/webiny/webiny-js/commit/101e8fe782e38644d686a1670cf938e3aa6a0c0c))
+* remove word `Handler` from context plugin type names ([277f0dd](https://github.com/webiny/webiny-js/commit/277f0dd300b7451a8a162678417e2b428cf002cf))
+* rename `handler-apollo-server` to `handler-graphql` ([c32769a](https://github.com/webiny/webiny-js/commit/c32769a84872658898d74f0153176a7d7c7416ee))
+* rename type "authentication" to "security" ([59226f4](https://github.com/webiny/webiny-js/commit/59226f40fabcb441140f7c8d99d5643302e046c4))
+* replace `path` with `path.parameters` ([b6cb3b8](https://github.com/webiny/webiny-js/commit/b6cb3b80713024a7b7300955eb0b3e749355240b))
+* send data to `request` property ([4f38f2d](https://github.com/webiny/webiny-js/commit/4f38f2dd5a49ca767684bdd8e176ad7bfedf1ef8))
+* update `handle` function's args ([f0ffb37](https://github.com/webiny/webiny-js/commit/f0ffb37e5c95052e559f8ec854545fefbf84fbd7))
+* update dependencies ([2da7785](https://github.com/webiny/webiny-js/commit/2da77856bb535144d5f08f6408bba10716737d06))
+* update dependencies ([9e23d9d](https://github.com/webiny/webiny-js/commit/9e23d9d435c8e3993713d73123a7b93119893eb1))
+* update dependencies ([6559856](https://github.com/webiny/webiny-js/commit/65598567b87479b37a0c737d6c695d68f3bf94df))
+* update dependencies ([2598deb](https://github.com/webiny/webiny-js/commit/2598deb9a72b50d0fa0674d0676da6b387ab40d6))
+* update tsconfig references and deps ([eec7eb0](https://github.com/webiny/webiny-js/commit/eec7eb00bc276a9d1496458315b3eb9ec0930f35))
+* **api-headless-cms:** add slug to cmsEnv type ([2f54a4c](https://github.com/webiny/webiny-js/commit/2f54a4c7ea2db1fee8c47898c63ec363938fa919))
+* **api-headless-cms:** allow scope assigning instead of returning available scopes ([c7ccf58](https://github.com/webiny/webiny-js/commit/c7ccf5863b7f1dd7dc919f479ed1f2eab408e238))
+* **api-headless-cms:** fix env fetching ([e2d7f7d](https://github.com/webiny/webiny-js/commit/e2d7f7dc08791f2e444e48107056985be764691f))
+* **code-format:** update configs for prettier and eslint ([#1237](https://github.com/webiny/webiny-js/issues/1237)) ([5ff6d22](https://github.com/webiny/webiny-js/commit/5ff6d22f427093a52560963770dadf96d8e6685b))
+* use "const" instead of "let" ([c348198](https://github.com/webiny/webiny-js/commit/c348198c53adf07edaf6d4ab4c743de59c454da7))
+* use handler's context as Apollo GraphQL Server initial context ([11f9f8b](https://github.com/webiny/webiny-js/commit/11f9f8b3e849402e2546d69c7221f68d73dded43))
+* use more fine-grained scopes ([1db1e27](https://github.com/webiny/webiny-js/commit/1db1e275467e8aa8c962f54d78acc0cd6c0a651a))
+* use newly added `securityAuthPlugins` plugins ([de53e1c](https://github.com/webiny/webiny-js/commit/de53e1cabd35c3c8a28633d535edcf5b2f4e699e))
+* **api-headless-cms:** fix contentModels [WIP] ([133ac0a](https://github.com/webiny/webiny-js/commit/133ac0a4be116a273e45c4796b9b06ae3a60a48d))
+* **api-headless-cms:** use env slug instead of id ([558fff4](https://github.com/webiny/webiny-js/commit/558fff41a829ab397f6794c8ba190fbb25763403))
+
+
+### Features
+
+* **api-headless-cms:** use `hasCmsPermission` ([f937e2a](https://github.com/webiny/webiny-js/commit/f937e2ac191fef829c4e1cc3e11fc947941959fc))
+* **app-page-builder:** switch redux for recoil ([a1c5f18](https://github.com/webiny/webiny-js/commit/a1c5f18e271d27a6e65a912014de66dc048741a9))
+* add createAccessToken testing helper function ([b86822c](https://github.com/webiny/webiny-js/commit/b86822ce91437eafd54406473ba4bb7bf1eedc61))
+* remove preApply/postApply hooks ([c4275f8](https://github.com/webiny/webiny-js/commit/c4275f881647cd2cdde34cb5d8c304fc36db9ae3))
+* **api-headless-cms:** add 'createAccessToken' utility & use it ([db76848](https://github.com/webiny/webiny-js/commit/db76848f833587658ed3081c3f5d995e96eb1c6c))
+* **api-headless-cms:** add [WIP] cmsContentModel ([78b9ab5](https://github.com/webiny/webiny-js/commit/78b9ab51c6642033dd6555af3a783e7afa4f85ca))
+* **api-headless-cms:** add scopes to Access Tokens + scopes test ([ef1b8cf](https://github.com/webiny/webiny-js/commit/ef1b8cf1df2db30f29c35b6869d5bfea6557aa2b))
+* **api-headless-cms:** add scopes to content models ([e2a7288](https://github.com/webiny/webiny-js/commit/e2a728860622bff947a07193bd39ad60123c927e))
+* **api-headless-cms:** add slug & contentModels to gql schema ([f5846f7](https://github.com/webiny/webiny-js/commit/f5846f7f9c99135930ec6f24b0b29776c15f83e3))
+* **api-headless-cms:** add slug test & [WIP] contentModels test ([a3bb948](https://github.com/webiny/webiny-js/commit/a3bb9489b0227f3f387f32a106f538c098a2cd4b))
+* **api-headless-cms:** add slugs & [WIP] add contentModels ([e7b3bbd](https://github.com/webiny/webiny-js/commit/e7b3bbd5d692edf796e903153014f3aed1dcbc98))
+* **api-headless-cms:** move / split plugins to preApply ([dda0247](https://github.com/webiny/webiny-js/commit/dda024722e4158fc8915e724b86ea5c5165a6b0b))
+* **api-headless-cms:** separate [WIP] access token authentication ([658972a](https://github.com/webiny/webiny-js/commit/658972a8695ef6f0c9d023e113608616b315aa00))
+
+
+
+
+
 # [4.14.0](https://github.com/webiny/webiny-js/compare/v4.14.0-beta.1...v4.14.0) (2020-10-30)
 
 **Note:** Version bump only for package @webiny/api-headless-cms

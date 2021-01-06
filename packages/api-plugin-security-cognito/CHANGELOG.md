@@ -3,6 +3,76 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.32](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.31...v5.0.0-beta.32) (2021-01-06)
+
+**Note:** Version bump only for package @webiny/api-plugin-security-cognito
+
+
+
+
+
+# [5.0.0-beta.31](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.30...v5.0.0-beta.31) (2021-01-06)
+
+**Note:** Version bump only for package @webiny/api-plugin-security-cognito
+
+
+
+
+
+# [5.0.0-beta.30](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.29...v5.0.0-beta.30) (2021-01-06)
+
+**Note:** Version bump only for package @webiny/api-plugin-security-cognito
+
+
+
+
+
+# [5.0.0-beta.29](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.28...v5.0.0-beta.29) (2021-01-06)
+
+**Note:** Version bump only for package @webiny/api-plugin-security-cognito
+
+
+
+
+
+# [5.0.0-beta.28](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.27...v5.0.0-beta.28) (2021-01-06)
+
+**Note:** Version bump only for package @webiny/api-plugin-security-cognito
+
+
+
+
+
+# [5.0.0-beta.10](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.10) (2021-01-04)
+
+
+### Bug Fixes
+
+* correct dependencies ([f77bd16](https://github.com/webiny/webiny-js/commit/f77bd161c7049212d55a05b1708f7053115f5638))
+* correct path ([0720085](https://github.com/webiny/webiny-js/commit/07200851e39bd859b683b556119a4787e95c9f0b))
+* imports, types and tsconfig path mapping ([ffddb01](https://github.com/webiny/webiny-js/commit/ffddb0191e5d429a87dca803e16a94a9958537c3))
+* make `http.method` string uppercase ([d9d64b8](https://github.com/webiny/webiny-js/commit/d9d64b8d024dd728cd10554833e00d5e9b78fa3b))
+* merge `new-security` into `master` ([da26908](https://github.com/webiny/webiny-js/commit/da269089ebaf18cc00c43919688fc4a005314d72))
+* read params from `context.http` ([220a408](https://github.com/webiny/webiny-js/commit/220a4084dd3847d1b4576a15ac76cc9580d3df74))
+* remove `@webiny/graphql` ([ce70fd5](https://github.com/webiny/webiny-js/commit/ce70fd581456ba56787c2e12fe8075592138a3b7))
+* remove `request-promise`, use `node-fetch` ([dbeeb7a](https://github.com/webiny/webiny-js/commit/dbeeb7a4b507068bddc6761e82086fb2a8d96738))
+* remove use of `gql` in `graphql-schema` plugins ([101e8fe](https://github.com/webiny/webiny-js/commit/101e8fe782e38644d686a1670cf938e3aa6a0c0c))
+* remove word `Handler` from context plugin type names ([277f0dd](https://github.com/webiny/webiny-js/commit/277f0dd300b7451a8a162678417e2b428cf002cf))
+* update dependencies ([9e23d9d](https://github.com/webiny/webiny-js/commit/9e23d9d435c8e3993713d73123a7b93119893eb1))
+* update dependencies ([2598deb](https://github.com/webiny/webiny-js/commit/2598deb9a72b50d0fa0674d0676da6b387ab40d6))
+* **code-format:** update configs for prettier and eslint ([#1237](https://github.com/webiny/webiny-js/issues/1237)) ([5ff6d22](https://github.com/webiny/webiny-js/commit/5ff6d22f427093a52560963770dadf96d8e6685b))
+* update version of @webiny/packages ([4a02033](https://github.com/webiny/webiny-js/commit/4a02033bb47bd902631dba2634a141c1b060fde5))
+
+
+### Features
+
+* add personal access tokens ([37add76](https://github.com/webiny/webiny-js/commit/37add76fd40318e76c6364459da8b88d9ea78f96))
+* migrate security to v5 ([d8f2b76](https://github.com/webiny/webiny-js/commit/d8f2b76738de99772a5285b9ceae1f5969f793ed))
+
+
+
+
+
 # [4.14.0](https://github.com/webiny/webiny-js/compare/v4.14.0-beta.1...v4.14.0) (2020-10-30)
 
 **Note:** Version bump only for package @webiny/api-plugin-security-cognito

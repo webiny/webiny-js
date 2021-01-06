@@ -1,6 +1,6 @@
 {
 	"name": "@webiny/react-graphql-client",
-	"version": "4.14.0",
+	"version": "5.0.0-beta.0",
 	"main": "index.js",
 	"repository": {
 		"type": "git",
@@ -15,7 +15,7 @@
 	"license": "MIT",
 	"dependencies": {
 		"@babel/runtime": "^7.5.5",
-		"@webiny/graphql-client": "^4.14.0"
+		"@webiny/graphql-client": "^5.0.0-beta.0"
 	},
 	"devDependencies": {
 		"@babel/cli": "^7.5.5",
@@ -26,8 +26,8 @@
 		"babel-plugin-lodash": "^3.3.4"
 	},
 	"peerDependencies": {
-		"react": "^17.0.0",
-		"graphql": "^14.0.0 || ^15.0.0"
+		"graphql": "^14.0.0 || ^15.0.0",
+		"react": "^17.0.0"
 	},
 	"publishConfig": {
 		"access": "public",

@@ -50,10 +50,7 @@ const Playground = () => {
     return (
         <Styled>
             <Provider store={store}>
-                <GQLPlayground
-                    tabs={tabs}
-                    createApolloLink={createApolloLink}
-                />
+                <GQLPlayground tabs={tabs} createApolloLink={createApolloLink} />
             </Provider>
         </Styled>
     );

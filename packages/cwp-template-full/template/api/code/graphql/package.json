@@ -1,0 +1,24 @@
+{
+  "name": "api-graphql",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "webiny run build"
+  },
+  "dependencies": {
+    "@webiny/handler-aws": "latest",
+    "@webiny/api-form-builder": "latest",
+    "@webiny/api-security-tenancy": "latest",
+    "@webiny/api-i18n": "latest",
+    "@webiny/api-i18n-content": "latest",
+    "@webiny/api-page-builder": "latest",
+    "@webiny/handler-db": "latest",
+    "@webiny/db-dynamodb": "latest",
+    "@webiny/api-plugin-elastic-search-client": "latest",
+    "@webiny/api-file-manager": "latest",
+    "@webiny/handler-graphql": "latest",
+    "@webiny/api-security": "latest",
+    "@webiny/api-plugin-security-cognito": "latest",
+    "@webiny/project-utils": "latest",
+    "@webiny/api-file-manager-s3": "latest"
+  }
+}

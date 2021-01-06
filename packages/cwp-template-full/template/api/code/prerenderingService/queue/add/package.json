@@ -1,0 +1,8 @@
+{
+  "name": "api-prerendering-service-queue-add",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "webiny run build"
+  },
+  "dependencies": {}
+}

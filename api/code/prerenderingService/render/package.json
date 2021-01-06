@@ -5,7 +5,7 @@
     "build": "webiny run build"
   },
   "dependencies": {
-    "@webiny/api-prerendering-service": "4.14.0",
-    "@webiny/api-prerendering-service-aws": "4.14.0"
+    "@webiny/api-prerendering-service": "^5.0.0-beta.0",
+    "@webiny/api-prerendering-service-aws": "^5.0.0-beta.0"
   }
 }

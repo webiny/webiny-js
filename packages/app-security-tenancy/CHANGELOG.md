@@ -3,6 +3,67 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.32](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.31...v5.0.0-beta.32) (2021-01-06)
+
+**Note:** Version bump only for package @webiny/app-security-tenancy
+
+
+
+
+
+# [5.0.0-beta.31](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.30...v5.0.0-beta.31) (2021-01-06)
+
+**Note:** Version bump only for package @webiny/app-security-tenancy
+
+
+
+
+
+# [5.0.0-beta.30](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.29...v5.0.0-beta.30) (2021-01-06)
+
+**Note:** Version bump only for package @webiny/app-security-tenancy
+
+
+
+
+
+# [5.0.0-beta.29](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.28...v5.0.0-beta.29) (2021-01-06)
+
+**Note:** Version bump only for package @webiny/app-security-tenancy
+
+
+
+
+
+# [5.0.0-beta.28](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.27...v5.0.0-beta.28) (2021-01-06)
+
+**Note:** Version bump only for package @webiny/app-security-tenancy
+
+
+
+
+
+# [5.0.0-beta.10](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.10) (2021-01-04)
+
+
+### Bug Fixes
+
+* fix eslint errors ([8ad44ab](https://github.com/webiny/webiny-js/commit/8ad44ab12cf1811e8c9d24d94fc34385e220069c))
+* installation, operation names, etc. ([4b06551](https://github.com/webiny/webiny-js/commit/4b06551b2e29d8ea027c20ee6ded4e349121bdc9))
+* revert to React 16.14.0 ([db2c17d](https://github.com/webiny/webiny-js/commit/db2c17df8dbcd33ce8518c9edcdc5db911571dd1))
+* synchronize validators between UI and API ([e1db8dd](https://github.com/webiny/webiny-js/commit/e1db8dd8ad6d2371936c16bff2e8fa208399252b))
+* update tsconfig references and deps ([eec7eb0](https://github.com/webiny/webiny-js/commit/eec7eb00bc276a9d1496458315b3eb9ec0930f35))
+
+
+### Features
+
+* implement API keys UI ([e600ad0](https://github.com/webiny/webiny-js/commit/e600ad07955680c88252f1b6a968782213b90bb2))
+* migrate security to v5 ([d8f2b76](https://github.com/webiny/webiny-js/commit/d8f2b76738de99772a5285b9ceae1f5969f793ed))
+
+
+
+
+
 # [4.6.0](https://github.com/webiny/webiny-js/compare/v4.6.0-beta.0...v4.6.0) (2020-07-21)
 
 **Note:** Version bump only for package @webiny/app-security

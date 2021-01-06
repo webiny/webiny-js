@@ -3,6 +3,303 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.32](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.31...v5.0.0-beta.32) (2021-01-06)
+
+**Note:** Version bump only for package @webiny/cwp-template-full
+
+
+
+
+
+# [5.0.0-beta.31](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.30...v5.0.0-beta.31) (2021-01-06)
+
+
+### Bug Fixes
+
+* ensure Pulumi is installed before continuing ([dd50731](https://github.com/webiny/webiny-js/commit/dd50731efd1b5a6cc8049f7527a9f4cce35bfd6b))
+* update stacks ([ee19ca7](https://github.com/webiny/webiny-js/commit/ee19ca73d7b04707c29a4be6e7dcd43208cef525))
+
+
+
+
+
+# [5.0.0-beta.30](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.29...v5.0.0-beta.30) (2021-01-06)
+
+
+### Bug Fixes
+
+* update dependencies ([d61dc8d](https://github.com/webiny/webiny-js/commit/d61dc8d454c5073f7553a3f5873b7c1e5ee578fb))
+
+
+
+
+
+# [5.0.0-beta.29](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.28...v5.0.0-beta.29) (2021-01-06)
+
+
+### Bug Fixes
+
+* update list ([451eb39](https://github.com/webiny/webiny-js/commit/451eb3967b134ac24d22de7debe7bdb1f2b54738))
+
+
+
+
+
+# [5.0.0-beta.28](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.27...v5.0.0-beta.28) (2021-01-06)
+
+**Note:** Version bump only for package @webiny/cwp-template-full
+
+
+
+
+
+# [5.0.0-beta.27](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.26...v5.0.0-beta.27) (2021-01-06)
+
+
+### Bug Fixes
+
+* add missing `await` ([e882a0f](https://github.com/webiny/webiny-js/commit/e882a0fdad6ec4ba34e15f62cdc161ea079cf03c))
+* delete `getStackOutput` ([b8bc41f](https://github.com/webiny/webiny-js/commit/b8bc41fee5e730ebca782e0b8cc11889abc0bb6c))
+* require `getStackOutput` from `cli-plugin-deploy-pulumi` ([642b959](https://github.com/webiny/webiny-js/commit/642b95978916c7957d4ffdffb9c0993e0f020c6f))
+* require `getStackOutput` from `cli-plugin-deploy-pulumi` ([f5c8c9e](https://github.com/webiny/webiny-js/commit/f5c8c9e4cb9b7ab71c0e4e91feba812f6210ea0b))
+
+
+
+
+
+# [5.0.0-beta.26](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.25...v5.0.0-beta.26) (2021-01-06)
+
+
+### Bug Fixes
+
+* add utils ([2dbf91d](https://github.com/webiny/webiny-js/commit/2dbf91d93cf5efa93d27e8b6bb15b4573cb10cc3))
+* change "URL" to "Url" ([f2d0471](https://github.com/webiny/webiny-js/commit/f2d0471e380e04fd81ecc4ebb80206ad2dbb0601))
+* create `getStackOutput` function and delete unnecessary ones ([08b1970](https://github.com/webiny/webiny-js/commit/08b1970c5d3548c0af706082dffa6633e7159526))
+* execute existing commands instead of doing it manually ([32045c5](https://github.com/webiny/webiny-js/commit/32045c5bcdafdff2b851a78204ffdb06a299f53e))
+* execute existing commands instead of getting stuff manually ([dd5b9be](https://github.com/webiny/webiny-js/commit/dd5b9beeec9f03eb6b9422de12004c1e1fa1e91e))
+* move aws CLI plugins to cwp-template-full ([8f39101](https://github.com/webiny/webiny-js/commit/8f391019ff18c3e06d90c4a7cfe141f4277c6bdb))
+* move empty console.log ([2b6f9fe](https://github.com/webiny/webiny-js/commit/2b6f9fec2af6aa4ac135ee18ec5f2666c29532fa))
+* remove old files ([e7e6324](https://github.com/webiny/webiny-js/commit/e7e632413a10d446cd8e67da3f4cae30ddf067f5))
+* remove redundant import ([1aa89b1](https://github.com/webiny/webiny-js/commit/1aa89b13567c99329ee8b24f02fcb77cc55af52a))
+* rename `deploy-all` to `deploy` ([538cf64](https://github.com/webiny/webiny-js/commit/538cf643e88154a6dedd5115428e2c876d8c4c9e))
+* replace `env.json` with `.env` ([fae0a91](https://github.com/webiny/webiny-js/commit/fae0a91a9026b5a1db1371784b623fd8e0ac8ed4))
+* update setting of root `.env` file ([da1dee8](https://github.com/webiny/webiny-js/commit/da1dee85c9d11ca7370ad607350e51df9d41f006))
+* update template ([4c502b1](https://github.com/webiny/webiny-js/commit/4c502b153e78f50018afde63b4cb829d3c521b11))
+
+
+### Features
+
+* add `deploy-all` command ([2f9c294](https://github.com/webiny/webiny-js/commit/2f9c294a47f1a79d4cd3c341b20066ed3e52644a))
+* add `info` command ([aaa2b21](https://github.com/webiny/webiny-js/commit/aaa2b21272144133d43fb8b6a779d2e20b8dfb80))
+
+
+
+
+
+# [5.0.0-beta.25](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.24...v5.0.0-beta.25) (2021-01-04)
+
+
+### Bug Fixes
+
+* add `theme` folder ([fe1e6f5](https://github.com/webiny/webiny-js/commit/fe1e6f5772081cf20069794a447340611a42ff42))
+
+
+
+
+
+# [5.0.0-beta.24](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.23...v5.0.0-beta.24) (2021-01-04)
+
+
+### Bug Fixes
+
+* increase hash length ([f720a7c](https://github.com/webiny/webiny-js/commit/f720a7ca455e907bbec35cdde365b1040e8c54b0))
+* reorganize dependencies ([9fd4bc6](https://github.com/webiny/webiny-js/commit/9fd4bc6b17c641b769560e6fe8d1c66131d90446))
+
+
+
+
+
+# [5.0.0-beta.23](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.22...v5.0.0-beta.23) (2021-01-04)
+
+
+### Bug Fixes
+
+* generate  `PULUMI_CONFIG_PASSPHRASE` ([8010108](https://github.com/webiny/webiny-js/commit/801010851eea81a3be06c2c2db92c589530d59a7))
+* update `env.json` ([6b68c32](https://github.com/webiny/webiny-js/commit/6b68c32eab1930bb08432adbd27c18cd5e9d35da))
+
+
+
+
+
+# [5.0.0-beta.22](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.21...v5.0.0-beta.22) (2021-01-04)
+
+
+### Bug Fixes
+
+* add `@webiny/cli-plugin-build` package ([91af637](https://github.com/webiny/webiny-js/commit/91af637e336cb85dddceb9de1073b16278ed1d1a))
+* set Webiny package versions to `latest` ([e5e8fb2](https://github.com/webiny/webiny-js/commit/e5e8fb2ba7359e2634b241af40decd1df21e2b82))
+
+
+
+
+
+# [5.0.0-beta.21](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.20...v5.0.0-beta.21) (2021-01-04)
+
+
+### Bug Fixes
+
+* add `build` package ([2010cd2](https://github.com/webiny/webiny-js/commit/2010cd2e410771125a62f6f3ab88d350477476c4))
+
+
+
+
+
+# [5.0.0-beta.20](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.19...v5.0.0-beta.20) (2021-01-04)
+
+
+### Bug Fixes
+
+* move to `code` folder ([82f30f5](https://github.com/webiny/webiny-js/commit/82f30f5b5a41042c5794f87e7dfa6a021ace2c95))
+
+
+
+
+
+# [5.0.0-beta.19](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.18...v5.0.0-beta.19) (2021-01-04)
+
+
+### Bug Fixes
+
+* add example env.json files ([283f415](https://github.com/webiny/webiny-js/commit/283f415ad4442085438b2d5e8d6f79461c3566f7))
+* clean up redundant steps ([8086d6f](https://github.com/webiny/webiny-js/commit/8086d6ffcebb23e5372f26cd2771ddac56334f36))
+* update list of files ([58fa81a](https://github.com/webiny/webiny-js/commit/58fa81a1c288295970825dc85d0a4fd4dd40544b))
+
+
+
+
+
+# [5.0.0-beta.17](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.16...v5.0.0-beta.17) (2021-01-04)
+
+
+### Bug Fixes
+
+* undo latest changes ([5b01730](https://github.com/webiny/webiny-js/commit/5b01730090e246bf11f0f26e63074a1d56bc74d2))
+
+
+
+
+
+# [5.0.0-beta.16](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.15...v5.0.0-beta.16) (2021-01-04)
+
+
+### Bug Fixes
+
+* update workspaces ([ab74930](https://github.com/webiny/webiny-js/commit/ab749308e028abfcde9aadc90becf6e8fef5d698))
+
+
+
+
+
+# [5.0.0-beta.15](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.14...v5.0.0-beta.15) (2021-01-04)
+
+
+### Bug Fixes
+
+* update CLI plugins ([1616428](https://github.com/webiny/webiny-js/commit/16164284fef2d27aa4844911020ef8cdaae0551a))
+
+
+
+
+
+# [5.0.0-beta.13](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.12...v5.0.0-beta.13) (2021-01-04)
+
+
+### Bug Fixes
+
+* resolve syntax error ([fa0ee5b](https://github.com/webiny/webiny-js/commit/fa0ee5be443af4382f0af68645e1f347b0a31233))
+
+
+
+
+
+# [5.0.0-beta.12](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.11...v5.0.0-beta.12) (2021-01-04)
+
+
+### Bug Fixes
+
+* resolve syntax error ([4b6e8a9](https://github.com/webiny/webiny-js/commit/4b6e8a9761854f56bb2b8fea26f181e358ad105d))
+
+
+
+
+
+# [5.0.0-beta.11](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.10...v5.0.0-beta.11) (2021-01-04)
+
+
+### Bug Fixes
+
+* revert file relocation ([6962d7d](https://github.com/webiny/webiny-js/commit/6962d7d741d3cf8197f4258dd7fea750501b43a0))
+
+
+
+
+
+# [5.0.0-beta.10](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.10) (2021-01-04)
+
+
+### Bug Fixes
+
+* merge `new-security` into `master` ([da26908](https://github.com/webiny/webiny-js/commit/da269089ebaf18cc00c43919688fc4a005314d72))
+* remove `api-plugin-page-builder-resolvers-mongodb` ([5542806](https://github.com/webiny/webiny-js/commit/5542806e0d51611578f8e1707890a270723a0c59))
+* remove `api-settings-manager` ([547d686](https://github.com/webiny/webiny-js/commit/547d68600132b28950ce6574041bd639f0e752ff))
+* remove `serverless-*` packages 🥳🎉 ([54368f2](https://github.com/webiny/webiny-js/commit/54368f2db6d7f3091ab66fbd448ac8980c07fed3))
+* remove old packages from dependencies ([9342ddd](https://github.com/webiny/webiny-js/commit/9342ddd29af8f4aa10cff4f26288d0f8bda29dc2))
+* rename `handler-apollo-server` to `handler-graphql` ([c32769a](https://github.com/webiny/webiny-js/commit/c32769a84872658898d74f0153176a7d7c7416ee))
+* rename `JWT_SECRET` to `JWT_TOKEN_SECRET` ([b6bf5ee](https://github.com/webiny/webiny-js/commit/b6bf5eeac590f8a70921e830b9b95093ae34563a))
+* revert to React 16.14.0 ([db2c17d](https://github.com/webiny/webiny-js/commit/db2c17df8dbcd33ce8518c9edcdc5db911571dd1))
+* update dependencies ([573502c](https://github.com/webiny/webiny-js/commit/573502c066a3d76c8f23ca0a7914c3fae3ea1b05))
+
+
+### Features
+
+* **app-page-builder:** switch redux for recoil ([a1c5f18](https://github.com/webiny/webiny-js/commit/a1c5f18e271d27a6e65a912014de66dc048741a9))
+
+
+
+
+
+# [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.0...v5.0.0-beta.1) (2021-01-03)
+
+**Note:** Version bump only for package @webiny/cwp-template-full
+
+
+
+
+
+# [5.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.0) (2021-01-03)
+
+
+### Bug Fixes
+
+* merge `new-security` into `master` ([da26908](https://github.com/webiny/webiny-js/commit/da269089ebaf18cc00c43919688fc4a005314d72))
+* remove `api-plugin-page-builder-resolvers-mongodb` ([5542806](https://github.com/webiny/webiny-js/commit/5542806e0d51611578f8e1707890a270723a0c59))
+* remove `api-settings-manager` ([547d686](https://github.com/webiny/webiny-js/commit/547d68600132b28950ce6574041bd639f0e752ff))
+* remove `serverless-*` packages 🥳🎉 ([54368f2](https://github.com/webiny/webiny-js/commit/54368f2db6d7f3091ab66fbd448ac8980c07fed3))
+* remove old packages from dependencies ([9342ddd](https://github.com/webiny/webiny-js/commit/9342ddd29af8f4aa10cff4f26288d0f8bda29dc2))
+* rename `handler-apollo-server` to `handler-graphql` ([c32769a](https://github.com/webiny/webiny-js/commit/c32769a84872658898d74f0153176a7d7c7416ee))
+* rename `JWT_SECRET` to `JWT_TOKEN_SECRET` ([b6bf5ee](https://github.com/webiny/webiny-js/commit/b6bf5eeac590f8a70921e830b9b95093ae34563a))
+* revert to React 16.14.0 ([db2c17d](https://github.com/webiny/webiny-js/commit/db2c17df8dbcd33ce8518c9edcdc5db911571dd1))
+* update dependencies ([573502c](https://github.com/webiny/webiny-js/commit/573502c066a3d76c8f23ca0a7914c3fae3ea1b05))
+
+
+### Features
+
+* **app-page-builder:** switch redux for recoil ([a1c5f18](https://github.com/webiny/webiny-js/commit/a1c5f18e271d27a6e65a912014de66dc048741a9))
+
+
+
+
+
 # [4.14.0](https://github.com/webiny/webiny-js/compare/v4.14.0-beta.1...v4.14.0) (2020-10-30)
 
 **Note:** Version bump only for package @webiny/cwp-template-full

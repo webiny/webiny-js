@@ -3,6 +3,94 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.32](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.31...v5.0.0-beta.32) (2021-01-06)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.0.0-beta.31](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.30...v5.0.0-beta.31) (2021-01-06)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.0.0-beta.30](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.29...v5.0.0-beta.30) (2021-01-06)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.0.0-beta.29](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.28...v5.0.0-beta.29) (2021-01-06)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.0.0-beta.28](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.27...v5.0.0-beta.28) (2021-01-06)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.0.0-beta.10](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.10) (2021-01-04)
+
+
+### Bug Fixes
+
+* change button label ([5195cbd](https://github.com/webiny/webiny-js/commit/5195cbdbd86f69b2c47cdef43776d3016eb02ea3))
+* merge `new-security` into `master` ([da26908](https://github.com/webiny/webiny-js/commit/da269089ebaf18cc00c43919688fc4a005314d72))
+* merge latest changes from `feat/v5/file-storage` ([a60b944](https://github.com/webiny/webiny-js/commit/a60b9443484fbc3187dc834902030477ba88aea0))
+* preserve `header` tool settings ([e06c1b2](https://github.com/webiny/webiny-js/commit/e06c1b2a556a2c777f3403ce4c48d801daf01fbd))
+* preserve `paragraph` tool settings ([e4cbc22](https://github.com/webiny/webiny-js/commit/e4cbc222913d0a28ca2450236d7acbe246b3ee4f))
+* prettier and eslint run for v5 ([3069a33](https://github.com/webiny/webiny-js/commit/3069a33ccef2fd3767818b274a730df28cecaf5b))
+* render `admin-header-right` plugins in reverse ([703d6eb](https://github.com/webiny/webiny-js/commit/703d6eb432738a24dc7506efe194205aa0377e61))
+* revert to React 16.14.0 ([db2c17d](https://github.com/webiny/webiny-js/commit/db2c17df8dbcd33ce8518c9edcdc5db911571dd1))
+* save `color tool` settings ([fe4ae58](https://github.com/webiny/webiny-js/commit/fe4ae5873c3ffd0ef5161d5f775325320692e5e3))
+* skip installers if the system is already installed ([b2e3ff6](https://github.com/webiny/webiny-js/commit/b2e3ff68f018dc86483ccb1a9cc600f9a3bb1919))
+* throw error for missing Installer ([91cbd65](https://github.com/webiny/webiny-js/commit/91cbd6561b874865ab59414dfe3d3f362b98f641))
+* update `text color` tool to use theme color only ([6ee13bc](https://github.com/webiny/webiny-js/commit/6ee13bce9e136bab30ca853913b4605c3478a3dd))
+* update File Manager to use the new cursor pagination ([fff7306](https://github.com/webiny/webiny-js/commit/fff7306ea4dff054b2622730a6236a4f4265a155))
+* update permission renderer ([d070d74](https://github.com/webiny/webiny-js/commit/d070d7401301c08f5e6647421ce2034110cdb274))
+* update RTE output renderer style ([410be1e](https://github.com/webiny/webiny-js/commit/410be1e22d143a9e2dc3b977728ba73385668cf9))
+* **app-admin:** add `error` field in GQL schema ([64de0c3](https://github.com/webiny/webiny-js/commit/64de0c30d8972eb6949a643c337a992e857f776b))
+* **app-admin:** update icon style ([ee74765](https://github.com/webiny/webiny-js/commit/ee747655d837fa5aa1cf03c7ec7e29b636905e6b))
+* **code-format:** update configs for prettier and eslint ([#1237](https://github.com/webiny/webiny-js/issues/1237)) ([5ff6d22](https://github.com/webiny/webiny-js/commit/5ff6d22f427093a52560963770dadf96d8e6685b))
+
+
+### Features
+
+* **app-admin:** remove `reset` styles ([8109d9f](https://github.com/webiny/webiny-js/commit/8109d9fbcec67f599e36578625dea5217ff64bef))
+* add "paragraph" tool ([9f1a9db](https://github.com/webiny/webiny-js/commit/9f1a9db04321610d230b41938e53a89a99dc6b55))
+* add `alignment` helpers as utils ([355db43](https://github.com/webiny/webiny-js/commit/355db438ee5264841db5712d31b6e48235ece5af))
+* add `Header` block tool for "RTE" ([f2cfd22](https://github.com/webiny/webiny-js/commit/f2cfd22307a5d2bb102035363368897c3432f081))
+* add `onChangePick` prop ([9cc4b85](https://github.com/webiny/webiny-js/commit/9cc4b8573ff057097c4a02e99109f4c651e25f1e))
+* add `TextColor` inline tool for "RTE" ([5dd57b4](https://github.com/webiny/webiny-js/commit/5dd57b4ac8a9bd1123e7e78a47eb00822e1d84d9))
+* add `Typography` settings in paragraph block ([1e50418](https://github.com/webiny/webiny-js/commit/1e50418d73bce4fbd88fac59a59db65f67e88a42))
+* add default values ([dcd2dbd](https://github.com/webiny/webiny-js/commit/dcd2dbd637a46ea8ad5d08bae5b7640723cd7d1e))
+* create ES indexes per tenant ([caf87e8](https://github.com/webiny/webiny-js/commit/caf87e87e4040beb48c94b62dfb1709646b6734e))
+* remove roles ([714a9de](https://github.com/webiny/webiny-js/commit/714a9de25fe30e29cfd4065cd6d2285bf4b6a44e))
+* RichTextEditor component ([9552955](https://github.com/webiny/webiny-js/commit/9552955600d77729fc0b814bb34ed4696d30e2f4))
+* save `className` on data ([72a76c3](https://github.com/webiny/webiny-js/commit/72a76c34a94a36b77870690ce0e0f70cbb56b77c))
+* update "TextColor" tool style ([a4a4bea](https://github.com/webiny/webiny-js/commit/a4a4bea6262bf27eb0255815eae8ffd7ab3c4892))
+* **app-admin:** add "ListFilesSort" ([ed15875](https://github.com/webiny/webiny-js/commit/ed15875ae81d4970961d041c94059dc49e45d1c3))
+* **app-admin:** use `AppFileManagerStoragePlugin` plugin ([c7a6d49](https://github.com/webiny/webiny-js/commit/c7a6d49046b4761b4c6b0eb0dd026cd10af430d1))
+* **app-page-builder:** switch redux for recoil ([a1c5f18](https://github.com/webiny/webiny-js/commit/a1c5f18e271d27a6e65a912014de66dc048741a9))
+
+
+
+
+
 # [4.14.0](https://github.com/webiny/webiny-js/compare/v4.14.0-beta.1...v4.14.0) (2020-10-30)
 
 **Note:** Version bump only for package @webiny/app-admin

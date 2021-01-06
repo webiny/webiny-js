@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-playground",
-  "version": "4.14.0",
+  "version": "5.0.0-beta.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -10,14 +10,15 @@
   "author": "Webiny Ltd.",
   "license": "MIT",
   "dependencies": {
-    "@emotion/styled": "^10.0.17",
-    "@webiny/app": "^4.14.0",
-    "@webiny/app-admin": "^4.14.0",
-    "@webiny/app-headless-cms": "^4.14.0",
-    "@webiny/react-router": "^4.14.0",
+    "@emotion/styled": "^11.0.0",
+    "@webiny/app": "^5.0.0-beta.0",
+    "@webiny/app-admin": "^5.0.0-beta.0",
+    "@webiny/app-headless-cms": "^5.0.0-beta.0",
+    "@webiny/react-router": "^5.0.0-beta.0",
     "graphql-playground-react": "^1.7.27",
     "react-redux": "^7.2.2",
-    "react-helmet": "^6.0.0"
+    "react-helmet": "^6.0.0",
+    "@emotion/react": "^11.1.4"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
@@ -41,6 +42,9 @@
   },
   "adio": {
     "ignore": {
+      "dependencies": [
+        "@emotion/react"
+      ],
       "peerDependencies": [
         "react-dom"
       ]

@@ -1,8 +1,8 @@
 module.exports = [
     {
         dir: "",
-        oldFile: "example.env.json",
-        newFile: ".env.json"
+        oldFile: "example.env",
+        newFile: ".env"
     },
     {
         dir: "",
@@ -13,21 +13,6 @@ module.exports = [
         dir: "",
         oldFile: "example.gitattributes",
         newFile: ".gitattributes"
-    },
-    {
-        dir: "api",
-        oldFile: "example.env.json",
-        newFile: ".env.json"
-    },
-    {
-        dir: "apps/admin",
-        oldFile: "example.env.json",
-        newFile: ".env.json"
-    },
-    {
-        dir: "apps/site",
-        oldFile: "example.env.json",
-        newFile: ".env.json"
     },
     {
         dir: "",

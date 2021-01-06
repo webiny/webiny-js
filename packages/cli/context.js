@@ -1,7 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const { green, yellow } = require("chalk");
-const { GetEnvVars } = require("env-cmd");
+const { green, yellow, red } = require("chalk");
 const findUp = require("find-up");
 const { PluginsContainer } = require("@webiny/plugins");
 const debug = require("debug")("webiny");
@@ -17,6 +16,8 @@ const projectRoot = path.dirname(webinyRootPath);
 
 class Context {
     constructor() {
+        this.loadedEnvFiles = {};
+
         this.paths = {
             projectRoot
         };
@@ -108,33 +109,31 @@ class Context {
         return path.replace(projectRoot, "<projectRoot>").replace(/\\/g, "/");
     }
 
-    async loadEnv(envPath, env, { debug = false } = {}) {
-        if (fs.existsSync(envPath)) {
-            const consoleError = console.error;
-            const envFile = this.replaceProjectRoot(envPath);
-            try {
-                // We need to disable console.error because `env-cmd` is printing some ugly errors we don't want in our output.
-                // eslint-disable-next-line @typescript-eslint/no-empty-function
-                console.error = () => {};
-                const envConfig = await GetEnvVars({
-                    rc: {
-                        environments: ["default", env],
-                        filePath: envPath
-                    }
-                });
+    /**
+     * Uses `dotenv` lib to load env files, by accepting a simple file path.
+     * @param filePath
+     * @param debug
+     * @returns {Promise<void>}
+     */
+    async loadEnv(filePath, { debug = false } = {}) {
+        if (this.loadedEnvFiles[filePath]) {
+            return;
+        }
 
-                Object.assign(process.env, envConfig);
-                if (debug) {
-                    console.log(`💡 Loaded ${green(env)} environment from ${envFile}.`);
-                }
-            } catch (err) {
-                if (debug) {
-                    console.log(yellow(`⚠️ Could not load environment from ${envFile}:`));
-                    console.log(yellow(`   ${err.message}`));
-                    console.log();
-                }
-            } finally {
-                console.error = consoleError;
+        if (!fs.existsSync(filePath)) {
+            debug && console.log(yellow(`ⅹ No environment file found on ${filePath}.`));
+            return;
+        }
+
+        try {
+            require("dotenv").config({ path: filePath });
+            debug && console.log(green(`✔ Loaded environment variables from ${filePath}.`));
+            this.loadedEnvFiles[filePath] = true;
+        } catch (err) {
+            if (debug) {
+                console.log(red(`ⅹ️ Could not load env variables from ${filePath}:`));
+                console.log(red(`   ${err.message}`));
+                console.log();
             }
         }
     }

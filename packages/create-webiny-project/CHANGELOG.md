@@ -3,6 +3,84 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.32](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.31...v5.0.0-beta.32) (2021-01-06)
+
+**Note:** Version bump only for package create-webiny-project
+
+
+
+
+
+# [5.0.0-beta.31](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.30...v5.0.0-beta.31) (2021-01-06)
+
+
+### Bug Fixes
+
+* add `cd` ([5ccaf4b](https://github.com/webiny/webiny-js/commit/5ccaf4bd6f440ddab5d60ee7641eceb0e546afef))
+* bring back project-cleanup ([dcbbcaa](https://github.com/webiny/webiny-js/commit/dcbbcaa5867f69ed16da69eac2ce2a662d4cb162))
+
+
+
+
+
+# [5.0.0-beta.30](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.29...v5.0.0-beta.30) (2021-01-06)
+
+**Note:** Version bump only for package create-webiny-project
+
+
+
+
+
+# [5.0.0-beta.29](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.28...v5.0.0-beta.29) (2021-01-06)
+
+**Note:** Version bump only for package create-webiny-project
+
+
+
+
+
+# [5.0.0-beta.28](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.27...v5.0.0-beta.28) (2021-01-06)
+
+**Note:** Version bump only for package create-webiny-project
+
+
+
+
+
+# [5.0.0-beta.18](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.17...v5.0.0-beta.18) (2021-01-04)
+
+
+### Bug Fixes
+
+* temporary remove project deletion ([f66f1be](https://github.com/webiny/webiny-js/commit/f66f1bea90e392d6c743a8a55e3ccc013879c71e))
+
+
+
+
+
+# [5.0.0-beta.17](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.16...v5.0.0-beta.17) (2021-01-04)
+
+
+### Bug Fixes
+
+* temporary remove project deletion ([4b79acf](https://github.com/webiny/webiny-js/commit/4b79acf7f0e3a8c2063fc910ba1ea6c12a7caeda))
+
+
+
+
+
+# [5.0.0-beta.10](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.10) (2021-01-04)
+
+
+### Bug Fixes
+
+* **code-format:** update configs for prettier and eslint ([#1237](https://github.com/webiny/webiny-js/issues/1237)) ([5ff6d22](https://github.com/webiny/webiny-js/commit/5ff6d22f427093a52560963770dadf96d8e6685b))
+* merge `new-security` into `master` ([da26908](https://github.com/webiny/webiny-js/commit/da269089ebaf18cc00c43919688fc4a005314d72))
+
+
+
+
+
 # [4.14.0](https://github.com/webiny/webiny-js/compare/v4.14.0-beta.1...v4.14.0) (2020-10-30)
 
 **Note:** Version bump only for package create-webiny-project

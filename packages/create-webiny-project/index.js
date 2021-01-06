@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { red, green, blue } = require("chalk");
+const { red, green } = require("chalk");
 const execa = require("execa");
 const fs = require("fs-extra");
 const Listr = require("listr");
@@ -20,16 +20,6 @@ const { getPackageVersion } = require("./utils");
 process.on("unhandledRejection", err => {
     throw err;
 });
-
-// Add indentation to console.log output
-const log = console.log;
-console.log = (first = "", ...args) => {
-    if (typeof first === "string") {
-        log(indentString(first, 2), ...args);
-    } else {
-        log(first, ...args);
-    }
-};
 
 yargs
     .usage("Usage: $0 <project-name> [options]")
@@ -125,14 +115,14 @@ async function createApp({ projectName, template, tag, log }) {
                 "",
                 "IMPORTANT NOTICE:",
                 "----------------------------------------",
-                `We've detected a global installation of ${blue(
+                `We've detected a global installation of ${green(
                     "@webiny/cli"
                 )}. This might not play well with your new project.`,
                 `We recommend you do one of the following things:\n`,
-                ` - uninstall the global @webiny/cli package by running ${blue(
+                ` - uninstall the global @webiny/cli package by running ${green(
                     "npm rm -g @webiny/cli"
                 )} or`,
-                ` - run webiny commands using ${blue(
+                ` - run webiny commands using ${green(
                     "yarn webiny"
                 )} so that the package is always resolved to your project dependencies\n`,
                 `The second option is also recommended if you have an older version of Webiny project you want to keep using.`,
@@ -144,7 +134,7 @@ async function createApp({ projectName, template, tag, log }) {
         // @webiny/cli is not installed globally
     }
 
-    console.log(`Creating project at ${blue(root)}:`);
+    console.log(`Creating project at ${green(root)}:`);
 
     await sendEvent({ event: "create-webiny-project-start" });
 
@@ -425,8 +415,9 @@ async function createApp({ projectName, template, tag, log }) {
                 .join("\n")
         );
 
-        console.log(`\nWriting log to ${blue(path.resolve(logPath))}...`);
+        console.log(`\nWriting log to ${green(path.resolve(logPath))}...`);
         fs.writeFileSync(path.resolve(logPath), err.toString());
+        console.log("No cleanup.");
         console.log("Cleaning up project...");
         rimraf.sync(root);
         console.log("Project cleaned!");
@@ -438,20 +429,14 @@ async function createApp({ projectName, template, tag, log }) {
     console.log(
         [
             "",
-            `Your new Webiny project ${blue(appName)} is ready!`,
-            `Finish the configuration by following these steps:`,
+            `Your new Webiny project ${green(appName)} is ready!`,
+            `Finish the setup by running the following command: ${green(
+                `cd ${appName} && webiny deploy`
+            )}`,
             "",
-            `1.  ${blue("cd")} ${appName}`,
-            `2.  Update the ${blue("MONGODB_SERVER")} variable in the ${blue(
-                `${appName}/.env.json`
-            )} file with your database connection string.`,
-            `3.  ${blue("yarn webiny deploy")} api --env=local`,
-            `4.  ${blue("cd")} apps/admin`,
-            `5.  ${blue("yarn start")}`,
-            "",
-            `To see all the available CLI commands run ${blue("webiny --help")} in your ${blue(
-                appName
-            )} directory.`,
+            `To see all of the available CLI commands, run ${green(
+                "webiny --help"
+            )} in your ${green(appName)} directory.`,
             "",
             "For more information on setting up your database connection:\nhttps://docs.webiny.com/docs/get-started/quick-start#3-setup-database-connection",
             "",
