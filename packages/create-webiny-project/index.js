@@ -13,6 +13,7 @@ const findUp = require("find-up");
 const loadJsonFile = require("load-json-file");
 const { sendEvent } = require("@webiny/tracking");
 const writeJsonFile = require("write-json-file");
+const rimraf = require("rimraf");
 const packageJson = require("./package.json");
 const { getPackageVersion } = require("./utils");
 
@@ -417,9 +418,9 @@ async function createApp({ projectName, template, tag, log }) {
         console.log(`\nWriting log to ${green(path.resolve(logPath))}...`);
         fs.writeFileSync(path.resolve(logPath), err.toString());
         console.log("No cleanup.");
-        // console.log("Cleaning up project...");
-        // rimraf.sync(root);
-        // console.log("Project cleaned!");
+        console.log("Cleaning up project...");
+        rimraf.sync(root);
+        console.log("Project cleaned!");
         process.exit(1);
     });
 
