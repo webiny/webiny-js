@@ -106,7 +106,7 @@ describe("Endpoint access", () => {
 
         const [response] = await listCategories();
 
-        expect(response).toMatchObject({
+        expect(response).toEqual({
             data: {
                 listCategories: {
                     data: [],
@@ -163,7 +163,7 @@ describe("Endpoint access", () => {
 
         const [response] = await listCategories();
 
-        expect(response).toMatchObject({
+        expect(response).toEqual({
             data: {
                 listCategories: {
                     data: [],
@@ -195,7 +195,7 @@ describe("Endpoint access", () => {
 
         const [response] = await listCategories();
 
-        expect(response).toMatchObject({
+        expect(response).toEqual({
             data: null,
             error: {
                 message: "Not authorized!",
@@ -221,7 +221,7 @@ describe("Endpoint access", () => {
 
         const [response] = await listCategories();
 
-        expect(response).toMatchObject({
+        expect(response).toEqual({
             data: {
                 listCategories: {
                     data: [],
@@ -253,7 +253,7 @@ describe("Endpoint access", () => {
 
         const [response] = await listCategories();
 
-        expect(response).toMatchObject({
+        expect(response).toEqual({
             data: null,
             error: {
                 message: "Not authorized!",

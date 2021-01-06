@@ -83,15 +83,15 @@ describe("Settings crud test", () => {
 
         const [listContentModelGroupsResponse] = await listContentModelGroupsQuery();
 
-        expect(listContentModelGroupsResponse).toMatchObject({
+        expect(listContentModelGroupsResponse).toEqual({
             data: {
                 listContentModelGroups: {
                     data: [
                         {
                             id: expect.any(String),
                             createdBy: createIdentity(),
-                            createdOn: /^20/,
-                            savedOn: /^20/,
+                            createdOn: expect.stringMatching(/^20/),
+                            savedOn: expect.stringMatching(/^20/),
                             description: "A generic content model group",
                             icon: "fas/star",
                             name: "Ungrouped",

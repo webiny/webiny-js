@@ -106,14 +106,23 @@ describe("content model test", () => {
             }
         });
 
-        expect(createResponse).toMatchObject({
+        expect(createResponse).toEqual({
             data: {
                 createContentModel: {
                     data: {
+                        name: "Content model",
+                        description: null,
+                        titleFieldId: null,
                         modelId: "contentModel",
                         createdBy: helpers.identity,
-                        createdOn: /^20/,
-                        savedOn: /^20/
+                        createdOn: expect.stringMatching(/^20/),
+                        savedOn: expect.stringMatching(/^20/),
+                        fields: [],
+                        layout: [],
+                        group: {
+                            id: contentModelGroup.id,
+                            name: contentModelGroup.name
+                        }
                     },
                     error: null
                 }
@@ -143,12 +152,12 @@ describe("content model test", () => {
             }
         });
 
-        expect(updateResponse).toMatchObject({
+        expect(updateResponse).toEqual({
             data: {
                 updateContentModel: {
                     data: {
                         ...createResponse.data.createContentModel.data,
-                        savedOn: /^20/
+                        savedOn: expect.stringMatching(/^20/)
                     },
                     error: null
                 }
@@ -170,10 +179,10 @@ describe("content model test", () => {
             ...createdContentModel,
             name: "changed name",
             description: "changed description",
-            savedOn: /^20/
+            savedOn: expect.stringMatching(/^20/)
         };
 
-        expect(changedUpdateResponse).toMatchObject({
+        expect(changedUpdateResponse).toEqual({
             data: {
                 updateContentModel: {
                     data: updatedContentModel,
@@ -184,7 +193,7 @@ describe("content model test", () => {
 
         const [listResponse] = await listContentModelsQuery();
 
-        expect(listResponse).toMatchObject({
+        expect(listResponse).toEqual({
             data: {
                 listContentModels: {
                     data: [updatedContentModel],
@@ -457,13 +466,13 @@ describe("content model test", () => {
             }
         });
 
-        expect(response).toMatchObject({
+        expect(response).toEqual({
             data: {
                 updateContentModel: {
                     data: {
-                        savedOn: /^20/,
+                        savedOn: expect.stringMatching(/^20/),
                         createdBy: helpers.identity,
-                        createdOn: /^20/,
+                        createdOn: expect.stringMatching(/^20/),
                         description: null,
                         titleFieldId: "textField",
                         fields: [textField, numberField],
@@ -523,13 +532,14 @@ describe("content model test", () => {
             }
         });
 
-        expect(response).toMatchObject({
+        expect(response).toEqual({
             data: {
                 updateContentModel: {
                     data: null,
                     error: {
                         code: "VALIDATION_ERROR",
-                        message: `Field "nonExistingTitleFieldId" does not exist in the model!`
+                        message: `Field "nonExistingTitleFieldId" does not exist in the model!`,
+                        data: null
                     }
                 }
             }

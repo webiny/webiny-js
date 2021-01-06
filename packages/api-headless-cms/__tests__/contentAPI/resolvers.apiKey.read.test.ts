@@ -188,7 +188,7 @@ describe("READ - resolvers - api key", () => {
 
         const [result] = await listCategories(queryArgs, headers);
 
-        expect(result).toMatchObject({
+        expect(result).toEqual({
             data: {
                 listCategories: {
                     data: [
@@ -201,7 +201,7 @@ describe("READ - resolvers - api key", () => {
                         }
                     ],
                     meta: {
-                        cursor: /^([a-zA-Z0-9]+)$/,
+                        cursor: expect.any(String),
                         hasMoreItems: false,
                         totalCount: 1
                     },

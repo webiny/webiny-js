@@ -142,15 +142,16 @@ describe("refField", () => {
             }
         });
 
-        expect(createProductResponse).toMatchObject({
+        expect(createProductResponse).toEqual({
             data: {
                 createProduct: {
                     data: {
                         id: expect.any(String),
-                        savedOn: /^20/,
+                        createdOn: expect.stringMatching(/^20/),
+                        savedOn: expect.stringMatching(/^20/),
                         title: "Potato",
                         price: 100,
-                        availableOn: /^20/,
+                        availableOn: expect.stringMatching(/^20/),
                         color: "white",
                         availableSizes: ["s", "m"],
                         category: {
@@ -204,16 +205,16 @@ describe("refField", () => {
             }
         });
 
-        expect(response).toMatchObject({
+        expect(response).toEqual({
             data: {
                 getProduct: {
                     data: {
                         id: expect.any(String),
-                        createdOn: /^20/,
-                        savedOn: /^20/,
+                        createdOn: expect.stringMatching(/^20/),
+                        savedOn: expect.stringMatching(/^20/),
                         title: "Potato",
                         price: 100,
-                        availableOn: /^20/,
+                        availableOn: expect.stringMatching(/^20/),
                         color: "white",
                         availableSizes: ["s", "m"],
                         category: {
