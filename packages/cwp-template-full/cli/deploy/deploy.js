@@ -1,5 +1,5 @@
 const { green } = require("chalk");
-const { getStackOutput } = require("@webiny/cli-plugin-deploy-pulumi/utils");
+const { getStackOutput, getPulumi } = require("@webiny/cli-plugin-deploy-pulumi/utils");
 const sleep = require("../utils/sleep");
 const execa = require("execa");
 
@@ -25,6 +25,9 @@ const deploy = (stack, inputs) => {
 
 module.exports = async inputs => {
     const { env } = inputs;
+
+    // 0. Let's just make sure Pulumi is installed.
+    await getPulumi().install();
 
     // 1. Get exports from `site` stack, for `args.env` environment.
     const siteStackOutput = await getStackOutput("apps/site", env);
