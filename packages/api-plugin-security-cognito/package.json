@@ -12,11 +12,11 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@webiny/api-security": "^5.0.0-beta.32",
-    "@webiny/api-security-tenancy": "^5.0.0-beta.32",
-    "@webiny/handler": "^5.0.0-beta.32",
-    "@webiny/handler-graphql": "^5.0.0-beta.32",
-    "@webiny/handler-http": "^5.0.0-beta.32",
+    "@webiny/api-security": "^5.0.0-beta.0",
+    "@webiny/api-security-tenancy": "^5.0.0-beta.0",
+    "@webiny/handler": "^5.0.0-beta.0",
+    "@webiny/handler-graphql": "^5.0.0-beta.0",
+    "@webiny/handler-http": "^5.0.0-beta.0",
     "jsonwebtoken": "^8.5.1",
     "jwk-to-pem": "^2.0.1",
     "node-fetch": "^2.6.1"

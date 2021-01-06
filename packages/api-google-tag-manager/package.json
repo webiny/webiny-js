@@ -12,8 +12,8 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/commodo": "^5.0.0-beta.32",
-    "@webiny/handler-graphql": "^5.0.0-beta.32",
+    "@webiny/commodo": "^5.0.0-beta.0",
+    "@webiny/handler-graphql": "^5.0.0-beta.0",
     "lodash": "^4.17.4"
   },
   "devDependencies": {

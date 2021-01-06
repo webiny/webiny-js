@@ -16,8 +16,8 @@
   "dependencies": {
     "@apollographql/graphql-playground-html": "^1.6.26",
     "@babel/runtime": "^7.5.5",
-    "@webiny/handler": "^5.0.0-beta.32",
-    "@webiny/handler-http": "^5.0.0-beta.32",
+    "@webiny/handler": "^5.0.0-beta.0",
+    "@webiny/handler-http": "^5.0.0-beta.0",
     "apollo-server-core": "2.17.0"
   },
   "devDependencies": {

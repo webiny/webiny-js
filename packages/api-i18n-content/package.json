@@ -11,10 +11,10 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/api-i18n": "^5.0.0-beta.32",
-    "@webiny/api-security": "^5.0.0-beta.32",
-    "@webiny/handler": "^5.0.0-beta.32",
-    "@webiny/handler-graphql": "^5.0.0-beta.32"
+    "@webiny/api-i18n": "^5.0.0-beta.0",
+    "@webiny/api-security": "^5.0.0-beta.0",
+    "@webiny/handler": "^5.0.0-beta.0",
+    "@webiny/handler-graphql": "^5.0.0-beta.0"
   },
   "publishConfig": {
     "access": "public",

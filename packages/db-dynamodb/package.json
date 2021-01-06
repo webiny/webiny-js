@@ -11,7 +11,7 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
-    "@webiny/db": "^5.0.0-beta.32"
+    "@webiny/db": "^5.0.0-beta.0"
   },
   "publishConfig": {
     "access": "public",

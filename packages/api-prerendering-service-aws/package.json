@@ -12,10 +12,10 @@
 	"license": "MIT",
 	"dependencies": {
 		"@babel/runtime": "^7.5.5",
-		"@webiny/api-prerendering-service": "^5.0.0-beta.32",
-		"@webiny/handler": "^5.0.0-beta.32",
-		"@webiny/handler-args": "^5.0.0-beta.32",
-		"@webiny/plugins": "^5.0.0-beta.32"
+		"@webiny/api-prerendering-service": "^5.0.0-beta.0",
+		"@webiny/handler": "^5.0.0-beta.0",
+		"@webiny/handler-args": "^5.0.0-beta.0",
+		"@webiny/plugins": "^5.0.0-beta.0"
 	},
 	"devDependencies": {
 		"@babel/cli": "^7.5.5",
