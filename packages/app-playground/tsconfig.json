@@ -1,10 +1,9 @@
 {
   "extends": "../../tsconfig.json",
   "references": [
+    { "path": "../app" },
     { "path": "../app-admin" },
-    { "path": "../app-security" },
-    { "path": "../plugins" },
-    { "path": "../react-router" },
-    { "path": "../ui" }
+    { "path": "../app-headless-cms" },
+    { "path": "../react-router" }
   ]
 }
