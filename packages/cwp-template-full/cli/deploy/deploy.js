@@ -40,8 +40,8 @@ module.exports = async inputs => {
     }
 
     // Deploying `api` stack.
-    console.log();
     if (isFirstDeployment) {
+        console.log();
         console.log(`🚀 Deploying your ${green("API")} (${green("api")} stack)...`);
     } else {
         console.log(`🚀 Deploying ${green("api")} stack...`);
