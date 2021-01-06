@@ -31,7 +31,7 @@ type ReactMediumEditorProps = {
 };
 
 const ReactMediumEditor = ({
-    tag,
+    tag = "div",
     value,
     onChange,
     options,
