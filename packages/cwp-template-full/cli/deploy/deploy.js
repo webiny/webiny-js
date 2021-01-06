@@ -27,14 +27,17 @@ module.exports = async inputs => {
     const { env } = inputs;
 
     // 0. Let's just make sure Pulumi is installed.
-    await getPulumi().install();
+    const installed = await getPulumi().install();
+
+    // If we just installed Pulumi, let's add a new line.
+    installed && console.log();
 
     // 1. Get exports from `site` stack, for `args.env` environment.
     const siteStackOutput = await getStackOutput("apps/site", env);
     const isFirstDeployment = !siteStackOutput;
     if (isFirstDeployment) {
         console.log(
-            `⏳  We've detected this is your first time deploying the project (${green(
+            `⏳  This is your first time deploying the project (${green(
                 env
             )} environment). Note that the initial deployment can take up to 15 minutes, so please be patient.`
         );
