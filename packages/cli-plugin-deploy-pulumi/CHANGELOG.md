@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.27](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.26...v5.0.0-beta.27) (2021-01-06)
+
+
+### Bug Fixes
+
+* execute command directly instead of doing it via plugins ([9d53823](https://github.com/webiny/webiny-js/commit/9d538234076600bece10178ab8dd489051a7ca28))
+* remove `execute` property ([c4294ac](https://github.com/webiny/webiny-js/commit/c4294acf2ea1426bd65afe63f49e06ef6fc44281))
+
+
+
+
+
 # [5.0.0-beta.26](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.25...v5.0.0-beta.26) (2021-01-06)
 
 

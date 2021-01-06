@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.27](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.26...v5.0.0-beta.27) (2021-01-06)
+
+
+### Bug Fixes
+
+* add missing `await` ([e882a0f](https://github.com/webiny/webiny-js/commit/e882a0fdad6ec4ba34e15f62cdc161ea079cf03c))
+* delete `getStackOutput` ([b8bc41f](https://github.com/webiny/webiny-js/commit/b8bc41fee5e730ebca782e0b8cc11889abc0bb6c))
+* require `getStackOutput` from `cli-plugin-deploy-pulumi` ([642b959](https://github.com/webiny/webiny-js/commit/642b95978916c7957d4ffdffb9c0993e0f020c6f))
+* require `getStackOutput` from `cli-plugin-deploy-pulumi` ([f5c8c9e](https://github.com/webiny/webiny-js/commit/f5c8c9e4cb9b7ab71c0e4e91feba812f6210ea0b))
+
+
+
+
+
 # [5.0.0-beta.26](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.25...v5.0.0-beta.26) (2021-01-06)
 
 
