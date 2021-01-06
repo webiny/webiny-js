@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cli-plugin-deploy-pulumi",
-  "version": "5.0.0-beta.27",
+  "version": "5.0.0-beta.28",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -10,7 +10,7 @@
   "author": "Webiny Ltd",
   "description": "A tool to bootstrap a Webiny project.",
   "dependencies": {
-    "@webiny/pulumi-sdk": "^5.0.0-beta.26",
+    "@webiny/pulumi-sdk": "^5.0.0-beta.28",
     "chalk": "^4.0.0",
     "execa": "^4.0.0",
     "fs-extra": "^9.0.0",

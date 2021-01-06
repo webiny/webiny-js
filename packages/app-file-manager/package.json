@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-file-manager",
-  "version": "5.0.0-beta.10",
+  "version": "5.0.0-beta.28",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -11,13 +11,13 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@emotion/styled": "^10.0.27",
-    "@webiny/app": "^5.0.0-beta.10",
-    "@webiny/app-admin": "^5.0.0-beta.10",
-    "@webiny/app-security": "^5.0.0-beta.10",
-    "@webiny/form": "^5.0.0-beta.10",
-    "@webiny/plugins": "^5.0.0-beta.10",
-    "@webiny/react-router": "^5.0.0-beta.10",
-    "@webiny/ui": "^5.0.0-beta.10",
+    "@webiny/app": "^5.0.0-beta.28",
+    "@webiny/app-admin": "^5.0.0-beta.28",
+    "@webiny/app-security": "^5.0.0-beta.28",
+    "@webiny/form": "^5.0.0-beta.28",
+    "@webiny/plugins": "^5.0.0-beta.28",
+    "@webiny/react-router": "^5.0.0-beta.28",
+    "@webiny/ui": "^5.0.0-beta.28",
     "lodash.get": "^4.4.2",
     "react-helmet": "^5.2.0"
   },
