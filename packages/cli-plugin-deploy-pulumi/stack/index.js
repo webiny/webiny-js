@@ -108,9 +108,6 @@ module.exports = [
                     }
                 );
             });
-        },
-        execute(args, context) {
-            return require("./deploy")(args, context);
         }
     }
 ];

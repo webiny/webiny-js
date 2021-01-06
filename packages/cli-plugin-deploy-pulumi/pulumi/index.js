@@ -14,8 +14,5 @@ module.exports = {
                 process.exit(0);
             }
         );
-    },
-    execute(args, context) {
-        return require("./run")(args, context);
     }
 };
