@@ -17,7 +17,8 @@
     "@webiny/react-router": "^5.0.0-beta.0",
     "graphql-playground-react": "^1.7.27",
     "react-redux": "^7.2.2",
-    "react-helmet": "^6.0.0"
+    "react-helmet": "^6.0.0",
+    "@emotion/react": "^11.1.4"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
