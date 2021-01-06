@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useRef } from "react";
+import React, { useCallback } from "react";
 import { Input } from "@webiny/ui/Input";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { camelCase } from "lodash";
@@ -14,14 +14,7 @@ type GeneralTabProps = {
 
 const GeneralTab = ({ field, form }: GeneralTabProps) => {
     const { Bind, setValue } = form;
-    const inputRef = useRef(null);
     const { getField, getFieldPlugin } = useFormEditor();
-
-    const setRef = useCallback(ref => (inputRef.current = ref), []);
-
-    useEffect(() => {
-        inputRef.current && inputRef.current.focus();
-    }, []);
 
     const afterChangeLabel = useCallback(value => {
         setValue("fieldId", camelCase(value));
@@ -59,7 +52,7 @@ const GeneralTab = ({ field, form }: GeneralTabProps) => {
                         validators={validation.create("required")}
                         afterChange={afterChangeLabel}
                     >
-                        <Input label={"Label"} inputRef={setRef} />
+                        <Input label={"Label"} autoFocus={true} />
                     </Bind>
                 </Cell>
                 <Cell span={6}>
