@@ -101,7 +101,15 @@ export const useReference = ({ bind, field }) => {
             return;
         }
 
-        if (allEntries.current.find(entry => entry.id === value)) {
+        const entry = allEntries.current.find(entry => entry.id === value);
+        if (entry) {
+            // if entry exists set valueEntry to that one so we do not load new one
+            setValueEntry({
+                id: entry.id,
+                published: entry.meta.status === "published",
+                name: entry.meta.title
+            });
+            bind.onChange({ modelId, entryId: value });
             return;
         }
 
