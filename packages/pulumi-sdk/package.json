@@ -8,7 +8,7 @@
     "url": "https://github.com/webiny/webiny-js.git"
   },
   "description": "A simple Node.js Pulumi SDK.",
-  "author": "Webiny",
+  "author": "Webiny Ltd",
   "license": "MIT",
   "publishConfig": {
     "access": "public",
