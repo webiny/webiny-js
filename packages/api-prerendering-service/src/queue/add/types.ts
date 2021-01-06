@@ -4,6 +4,7 @@ import { DbContext } from "@webiny/handler-db/types";
 import { HandlerArgs as FlushArgs } from "./../../flush/types";
 import { HandlerArgs as RenderArgs } from "./../../render/types";
 import { Plugin } from "@webiny/plugins/types";
+import debug from "debug";
 
 export type Args = {
     flush?: FlushArgs;
