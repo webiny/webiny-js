@@ -7,27 +7,19 @@ import { ReactComponent as GithubIcon } from "@webiny/app-admin/assets/icons/git
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-admin/navigation");
 
-const plugin: AdminDrawerFooterMenuPlugin = {
+export default (): AdminDrawerFooterMenuPlugin => ({
     type: "admin-drawer-footer-menu",
     name: "admin-drawer-footer-menu-source",
     render() {
         return (
-            <>
-                <a
-                    href="https://github.com/webiny/webiny-js"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                >
-                    <ListItem ripple={false}>
-                        <ListItemGraphic>
-                            <Icon icon={<GithubIcon />} />
-                        </ListItemGraphic>
-                        {t`Source`}
-                    </ListItem>
-                </a>
-            </>
+            <a href="https://github.com/webiny/webiny-js" rel="noopener noreferrer" target="_blank">
+                <ListItem ripple={false}>
+                    <ListItemGraphic>
+                        <Icon icon={<GithubIcon />} />
+                    </ListItemGraphic>
+                    {t`Source`}
+                </ListItem>
+            </a>
         );
     }
-};
-
-export default plugin;
+});

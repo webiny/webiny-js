@@ -44,7 +44,7 @@ const Navigation = () => {
 
     footerMenuPlugins &&
         footerMenuPlugins.forEach(plugin => {
-            footerMenus.push(<React.Fragment key={plugin.name}>{plugin.render()}</React.Fragment>);
+            footerMenus.push(<React.Fragment key={plugin.name}>{plugin.render({ hideMenu })}</React.Fragment>);
         });
 
     return (

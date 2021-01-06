@@ -1,7 +1,5 @@
-import React from "react";
-import { Provider } from "react-redux";
-import { Playground as GQLPlayground, store } from "graphql-playground-react";
-import styled from "@emotion/styled";
+import React, { useEffect } from "react";
+import { css } from "emotion";
 import { useCms } from "@webiny/app-headless-cms/admin/hooks";
 
 const Playground = () => {
@@ -34,26 +32,28 @@ const Playground = () => {
         }
     ];
 
-    const Styled = styled("div")({
-        ".playground": {
-            height: "calc(100vh - 70px) !important",
-            marginTop: -3
-        }
-    });
-
     const createApolloLink = session => {
         return {
             link: createApolloClient({ uri: session.endpoint }).link
         };
     };
 
-    return (
-        <Styled>
-            <Provider store={store}>
-                <GQLPlayground tabs={tabs} createApolloLink={createApolloLink} />
-            </Provider>
-        </Styled>
-    );
+    useEffect(() => {
+        // @ts-ignore
+        window.GraphQLPlayground.init(document.getElementById("graphql-playground"), {
+            tabs,
+            createApolloLink
+        });
+    }, []);
+
+    const playgroundContainer = css({
+        marginTop: -3,
+        " .playground": {
+            height: "calc(100vh - 64px)"
+        }
+    });
+
+    return <div id={"graphql-playground"} className={playgroundContainer} />;
 };
 
 export default Playground;

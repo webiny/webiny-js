@@ -30,7 +30,7 @@ export type AdminGlobalSearchPreventHotkeyPlugin = Plugin & {
 
 export type AdminDrawerFooterMenuPlugin = Plugin & {
     type: "admin-drawer-footer-menu";
-    render(): React.ReactElement;
+    render(params: any): React.ReactElement;
 };
 
 export type AdminMenuLogoPlugin = Plugin & {

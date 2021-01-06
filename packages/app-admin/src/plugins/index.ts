@@ -8,7 +8,7 @@ import userMenu from "./userMenu";
 import { globalSearch, globalSearchHotkey } from "./globalSearch";
 import defaultHandle from "./userMenu/defaultHandle";
 
-export default [
+export default () => [
     fileManager,
     settingsMenu,
     adminLayout,
