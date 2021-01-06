@@ -20,6 +20,14 @@ const getOutputJson = async (stack, env) => {
 };
 
 module.exports = async (stack, env, map) => {
+    if (!stack) {
+        throw new Error(`Please specify stack, for example "apps/admin".`);
+    }
+
+    if (!env) {
+        throw new Error(`Please specify environment, for example "dev".`);
+    }
+
     const output = await getOutputJson(stack, env);
     if (!output) {
         return output;
