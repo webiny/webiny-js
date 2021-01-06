@@ -2,7 +2,8 @@
 .idea
 .webpack
 .webiny
-.env.json
+.env
+.env.*
 .npmrc
 htpasswd
 lerna-debug.log
