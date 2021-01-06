@@ -12,7 +12,7 @@ module.exports = {
             // Set environment variables for given project environment and stack.
             // This will load state values using the provided map and
             // populate process.env, overwriting existing values.
-            const output = getStackOutput("api", env, map);
+            const output = await getStackOutput("api", env, map);
             Object.assign(process.env, output);
 
             // Start local development
@@ -22,7 +22,7 @@ module.exports = {
             // Set environment variables for given project environment and stack.
             // This will load state values using the provided map and
             // populate process.env, overwriting existing values.
-            const output = getStackOutput("api", env, map);
+            const output = await getStackOutput("api", env, map);
             Object.assign(process.env, output);
 
             // Bundle app for deployment
