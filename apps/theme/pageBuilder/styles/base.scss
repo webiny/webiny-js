@@ -57,6 +57,7 @@
 
 // base css class that applies to all elements created by the page editor
 .webiny-pb-base-page-element-style {
+  box-sizing: border-box;
   max-width: var(--desktop-width);
   height: var(--desktop-height);
 
