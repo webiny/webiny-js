@@ -11,7 +11,7 @@ const { _: packagesToCheck } = argv;
 const pathPointsToWorkspacePackage = packageAbsolutePath => {
     const workspaces = rootPackageJson.workspaces.packages;
     for (let i = 0; i < workspaces.length; i++) {
-        const absolutePath = resolve(join(PROJECT_ROOT, workspaces[i]));
+        const absolutePath = resolve(join(PROJECT_ROOT, workspaces[i])).replace(/\\/g, "/");
         if (minimatch(packageAbsolutePath, absolutePath)) {
             return true;
         }
@@ -34,95 +34,97 @@ const TSCONFIG = {
  */
 
 (async () => {
-    const workspacePackagesErrors = {};
+    const errors = {};
     let errorsCount = 0;
     const warningsCount = 0;
 
     const workspacesPackages = getPackages({ includes: "/packages/" });
 
     for (let i = 0; i < workspacesPackages.length; i++) {
-        const workspacePackageObject = workspacesPackages[i];
+        const wpObject = workspacesPackages[i];
         if (packagesToCheck.length) {
-            if (!packagesToCheck.includes(workspacePackageObject.packageJson.name)) {
+            if (!packagesToCheck.includes(wpObject.packageJson.name)) {
                 continue;
             }
         }
 
-        const workspacePackageErrors = [];
+        const wpErrors = [];
 
         // 1. Check if all dependencies are listed in TS configs.
 
         // In current workspace package's "package.json", in "dependencies" and "devDependencies", only
         // examine dependency packages that are registered as workspaces (e.g. "@webiny/..." packages).
         const workspacePackageWbyDepsNames = Object.keys({
-            ...workspacePackageObject.packageJson.dependencies,
-            ...workspacePackageObject.packageJson.devDependencies
+            ...wpObject.packageJson.dependencies,
+            ...wpObject.packageJson.devDependencies
         }).filter(getPackage);
 
         for (let j = 0; j < workspacePackageWbyDepsNames.length; j++) {
-            const workspacePackageWbyDepName = workspacePackageWbyDepsNames[j];
+            const wpWbyDepName = workspacePackageWbyDepsNames[j];
 
-            const workspacePackageWbyDepObject = getPackage(workspacePackageWbyDepName);
-            if (!workspacePackageWbyDepObject) {
+            const wpWbyDepObject = getPackage(wpWbyDepName);
+            if (!wpWbyDepObject) {
                 errorsCount++;
-                workspacePackageErrors.push({
-                    message: `Dependency package "${workspacePackageWbyDepName}" not found. Is the package name correct?`
+                wpErrors.push({
+                    message: `Dependency package "${wpWbyDepName}" not found. Is the package name correct?`
                 });
                 continue;
             }
 
             // Do not check if the package is listed in TS configs if the package we're
             // examining is a plain JS package. We can just continue with the next one.
-            if (!workspacePackageWbyDepObject.isTs) {
+            if (!wpWbyDepObject.isTs) {
                 continue;
             }
 
             const depPackageRelativePath = relative(
-                workspacePackageObject.packageFolder,
-                workspacePackageWbyDepObject.packageFolder
-            );
+                wpObject.packageFolder,
+                wpWbyDepObject.packageFolder
+            ).replace(/\\/g, "/");
 
             // 1.1 Check tsconfig.json - "references" property.
-            if (workspacePackageObject.tsConfigJson) {
-                const tsConfigJsonReferences = workspacePackageObject.tsConfigJson.references || [];
+            if (wpObject.tsConfigJson) {
+                const tsConfigJsonReferences = wpObject.tsConfigJson.references || [];
                 const exists = tsConfigJsonReferences.find(
                     item => item.path === depPackageRelativePath
                 );
 
                 if (!exists) {
                     errorsCount++;
-                    workspacePackageErrors.push({
-                        package: workspacePackageObject,
-                        message: `missing "${workspacePackageWbyDepObject.packageJson.name}" in "references" property`,
+                    wpErrors.push({
+                        package: wpObject,
+                        message: `missing "${wpWbyDepObject.packageJson.name}" in "references" property`,
                         file: TSCONFIG.DEV
                     });
                 }
             }
 
             // 1.1 Check tsconfig.build.json - "references" and "exclude" properties.
-            if (workspacePackageObject.tsConfigBuildJson) {
-                const tsConfigBuildJsonExclude =
-                    workspacePackageObject.tsConfigBuildJson.exclude || [];
+            if (wpObject.tsConfigBuildJson) {
+                const tsConfigBuildJsonExclude = wpObject.tsConfigBuildJson.exclude || [];
 
                 let exists = tsConfigBuildJsonExclude.includes(depPackageRelativePath);
                 if (!exists) {
                     errorsCount++;
-                    workspacePackageErrors.push({
-                        package: workspacePackageObject,
-                        message: `missing package "${workspacePackageWbyDepObject.packageJson.name}" in "exclude" property`,
+                    wpErrors.push({
+                        package: wpObject,
+                        message: `missing package "${wpWbyDepObject.packageJson.name}" in "exclude" property`,
                         file: TSCONFIG.BUILD
                     });
                 }
 
-                const tsConfigBuildJsonReferences =
-                    workspacePackageObject.tsConfigBuildJson.references || [];
-                const path = join(depPackageRelativePath, "tsconfig.build.json");
+                const tsConfigBuildJsonReferences = wpObject.tsConfigBuildJson.references || [];
+
+                const path = join(depPackageRelativePath, "tsconfig.build.json").replace(
+                    /\\/g,
+                    "/"
+                );
                 exists = tsConfigBuildJsonReferences.find(item => item.path === path);
                 if (!exists) {
                     errorsCount++;
-                    workspacePackageErrors.push({
-                        package: workspacePackageObject,
-                        message: `missing "${workspacePackageWbyDepObject.packageJson.name}" in "references" property`,
+                    wpErrors.push({
+                        package: wpObject,
+                        message: `missing "${wpWbyDepObject.packageJson.name}" in "references" property`,
                         file: TSCONFIG.BUILD
                     });
                 }
@@ -130,11 +132,14 @@ const TSCONFIG = {
         }
 
         // 2. Check if TS configs have extra package listed (packages not present in package.json).
-        if (workspacePackageObject.tsConfigJson && workspacePackageObject.tsConfigJson.references) {
-            for (let j = 0; j < workspacePackageObject.tsConfigJson.references.length; j++) {
+        if (wpObject.tsConfigJson && wpObject.tsConfigJson.references) {
+            for (let j = 0; j < wpObject.tsConfigJson.references.length; j++) {
                 // Check if a package is defined in TS config, but not listed in package.json.
-                const ref = workspacePackageObject.tsConfigJson.references[j];
-                const referencePath = resolve(join(workspacePackageObject.packageFolder, ref.path));
+                const ref = wpObject.tsConfigJson.references[j];
+                const referencePath = resolve(join(wpObject.packageFolder, ref.path)).replace(
+                    /\\/g,
+                    "/"
+                );
                 const refPackageObject = getPackage(referencePath);
 
                 if (refPackageObject) {
@@ -145,14 +150,14 @@ const TSCONFIG = {
 
                         if (!exists) {
                             errorsCount++;
-                            workspacePackageErrors.push({
+                            wpErrors.push({
                                 file: TSCONFIG.DEV,
                                 message: `package "${refPackageObject.packageJson.name}" defined in ${TSCONFIG.DEV} ("references" property), but missing in package.json.`
                             });
                         }
                     } else {
                         errorsCount++;
-                        workspacePackageErrors.push({
+                        wpErrors.push({
                             file: TSCONFIG.DEV,
                             message: `package "${refPackageObject.packageJson.name}" is not a TypeScript package - remove it from "references"`
                         });
@@ -161,7 +166,7 @@ const TSCONFIG = {
                     // Only throw an error if the path points to a workspace folder.
                     if (pathPointsToWorkspacePackage(referencePath)) {
                         errorsCount++;
-                        workspacePackageErrors.push({
+                        wpErrors.push({
                             file: TSCONFIG.DEV,
                             message: `Could not find the package referenced via the "${ref.path}" path in "references" property`
                         });
@@ -170,16 +175,13 @@ const TSCONFIG = {
             }
         }
 
-        if (
-            workspacePackageObject.tsConfigBuildJson &&
-            workspacePackageObject.tsConfigBuildJson.references
-        ) {
+        if (wpObject.tsConfigBuildJson && wpObject.tsConfigBuildJson.references) {
             // Check if a package is defined in TS config, but not listed in package.json.
-            for (let j = 0; j < workspacePackageObject.tsConfigBuildJson.references.length; j++) {
-                const ref = workspacePackageObject.tsConfigBuildJson.references[j];
+            for (let j = 0; j < wpObject.tsConfigBuildJson.references.length; j++) {
+                const ref = wpObject.tsConfigBuildJson.references[j];
                 const referencePath = resolve(
-                    join(workspacePackageObject.packageFolder, parse(ref.path).dir)
-                );
+                    join(wpObject.packageFolder, parse(ref.path).dir)
+                ).replace(/\\/g, "/");
 
                 const refPackageObject = getPackage(referencePath);
 
@@ -191,14 +193,14 @@ const TSCONFIG = {
 
                         if (!exists) {
                             errorsCount++;
-                            workspacePackageErrors.push({
+                            wpErrors.push({
                                 file: TSCONFIG.BUILD,
                                 message: `package "${refPackageObject.packageJson.name}" defined in ${TSCONFIG.BUILD} ("references" property), but missing in package.json.`
                             });
                         }
                     } else {
                         errorsCount++;
-                        workspacePackageErrors.push({
+                        wpErrors.push({
                             file: TSCONFIG.BUILD,
                             message: `package "${refPackageObject.packageJson.name}" is not a TypeScript package - remove it from "references"`
                         });
@@ -207,7 +209,7 @@ const TSCONFIG = {
                     // Only throw an error if the path points to a workspace folder.
                     if (pathPointsToWorkspacePackage(referencePath)) {
                         errorsCount++;
-                        workspacePackageErrors.push({
+                        wpErrors.push({
                             file: TSCONFIG.BUILD,
                             message: `Could not find the package referenced via the "${ref.path}" path in "references" property`
                         });
@@ -216,14 +218,14 @@ const TSCONFIG = {
             }
         }
 
-        if (
-            workspacePackageObject.tsConfigBuildJson &&
-            workspacePackageObject.tsConfigBuildJson.exclude
-        ) {
+        if (wpObject.tsConfigBuildJson && wpObject.tsConfigBuildJson.exclude) {
             // Check if a package is defined in TS config, but not listed in package.json.
-            for (let j = 0; j < workspacePackageObject.tsConfigBuildJson.exclude.length; j++) {
-                const ref = workspacePackageObject.tsConfigBuildJson.exclude[j];
-                const referencePath = resolve(join(workspacePackageObject.packageFolder, ref));
+            for (let j = 0; j < wpObject.tsConfigBuildJson.exclude.length; j++) {
+                const ref = wpObject.tsConfigBuildJson.exclude[j];
+                const referencePath = resolve(join(wpObject.packageFolder, ref)).replace(
+                    /\\/g,
+                    "/"
+                );
                 const refPackageObject = getPackage(referencePath);
 
                 if (refPackageObject) {
@@ -234,14 +236,14 @@ const TSCONFIG = {
 
                         if (!exists) {
                             errorsCount++;
-                            workspacePackageErrors.push({
+                            wpErrors.push({
                                 file: TSCONFIG.BUILD,
                                 message: `package "${refPackageObject.packageJson.name}" defined in ${TSCONFIG.BUILD} ("exclude" property), but missing in package.json.`
                             });
                         }
                     } else {
                         errorsCount++;
-                        workspacePackageErrors.push({
+                        wpErrors.push({
                             file: TSCONFIG.BUILD,
                             message: `package "${refPackageObject.packageJson.name}" is not a TypeScript package - remove it from "exclude"`
                         });
@@ -250,7 +252,7 @@ const TSCONFIG = {
                     // Only throw an error if the path points to a workspace folder.
                     if (pathPointsToWorkspacePackage(referencePath)) {
                         errorsCount++;
-                        workspacePackageErrors.push({
+                        wpErrors.push({
                             file: TSCONFIG.BUILD,
                             message: `Could not find the package referenced via the "${ref}" path in "exclude" property`
                         });
@@ -259,19 +261,18 @@ const TSCONFIG = {
             }
         }
 
-        if (workspacePackageErrors.length) {
-            workspacePackagesErrors[workspacePackageObject.packageJson.name] = {
-                package: workspacePackageObject,
-                errors: workspacePackageErrors
+        if (wpErrors.length) {
+            errors[wpObject.packageJson.name] = {
+                package: wpObject,
+                errors: wpErrors
             };
         }
     }
 
-    for (const workspacePackageName in workspacePackagesErrors) {
-        const {
-            package: workspacePackageObject,
-            errors: workspacePackageErrors
-        } = workspacePackagesErrors[workspacePackageName];
+    for (const workspacePackageName in errors) {
+        const { package: workspacePackageObject, errors: workspacePackageErrors } = errors[
+            workspacePackageName
+        ];
 
         console.log(
             cyan(
