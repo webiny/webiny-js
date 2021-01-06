@@ -6,10 +6,12 @@ import slack from "@webiny/app-admin/plugins/menu/slack";
 import source from "@webiny/app-admin/plugins/menu/source";
 import documentation from "@webiny/app-admin/plugins/menu/documentation";
 import apiInformation from "@webiny/app-admin/plugins/menu/apiInformation";
+import playground from "@webiny/app-playground/plugins";
 
 export default [
     adminApp,
     logo,
+    playground(),
     // User meny
     help,
     sendFeedback,

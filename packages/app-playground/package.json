@@ -1,0 +1,51 @@
+{
+  "name": "@webiny/app-playground",
+  "version": "4.14.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "description": "Plugin for Admin app to render a Welcome screen",
+  "author": "Webiny Ltd.",
+  "license": "MIT",
+  "dependencies": {
+    "@apollographql/graphql-playground-react": "^1.7.34",
+    "@webiny/app-admin": "^4.14.0",
+    "@webiny/app-security": "^4.14.0",
+    "@webiny/plugins": "^4.14.0",
+    "@webiny/react-router": "^4.14.0",
+    "@webiny/ui": "^4.14.0",
+    "emotion": "^10.0.27",
+    "graphql-playground-react": "^1.7.27",
+    "react-redux": "^7.2.2",
+    "react-helmet": "^6.0.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/preset-typescript": "^7.8.3"
+  },
+  "peerDependencies": {
+    "react": "16.14.0",
+    "react-dom": "16.14.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "scripts": {
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\"",
+    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" --watch",
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
+  },
+  "adio": {
+    "ignore": {
+      "peerDependencies": [
+        "react-dom"
+      ]
+    }
+  }
+}
