@@ -42,6 +42,9 @@
   },
   "adio": {
     "ignore": {
+      "dependencies": [
+        "@emotion/react"
+      ],
       "peerDependencies": [
         "react-dom"
       ]
