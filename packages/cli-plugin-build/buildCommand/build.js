@@ -2,12 +2,10 @@ const { cyan } = require("chalk");
 const { join } = require("path");
 const execa = require("execa");
 const getPackages = require("get-yarn-workspaces");
-const loadEnvVariables = require("./loadEnvVariables");
 
-module.exports = async (inputs, context) => {
+// The function is NOT doing any environment variables loading since that's up to the `build` script.
+module.exports = async (inputs) => {
     const { env, path } = inputs;
-
-    await loadEnvVariables(inputs, context);
 
     const workingPath = join(process.cwd(), path).replace(/\\/g, "/");
 
