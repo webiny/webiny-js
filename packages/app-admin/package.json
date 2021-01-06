@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-admin",
-  "version": "5.0.0-beta.32",
+  "version": "5.0.0-beta.0",
   "main": "index.js",
   "description": "A collection of plugins that together form a complete admin interface, customizable and extensible with Webiny apps and plugins.",
   "repository": {
