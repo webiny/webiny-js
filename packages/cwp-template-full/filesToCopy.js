@@ -1,8 +1,8 @@
 module.exports = [
     {
         dir: "",
-        oldFile: "example.env.json",
-        newFile: ".env.json"
+        oldFile: "example.env",
+        newFile: ".env"
     },
     {
         dir: "",
@@ -16,13 +16,13 @@ module.exports = [
     },
     {
         dir: "apps/admin/code",
-        oldFile: "example.env.json",
-        newFile: ".env.json"
+        oldFile: "example.env",
+        newFile: ".env"
     },
     {
         dir: "apps/site/code",
-        oldFile: "example.env.json",
-        newFile: ".env.json"
+        oldFile: "example.env",
+        newFile: ".env"
     },
     {
         dir: "",
