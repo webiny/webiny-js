@@ -149,8 +149,8 @@ const GroupForm = () => {
                                 <Grid>
                                     <Cell span={12}>
                                         <Alert type={"info"} title={"Permissions are locked"}>
-                                            This is a protected system group and you can&apos;t modify its
-                                            permissions.
+                                            This is a protected system group and you can&apos;t
+                                            modify its permissions.
                                         </Alert>
                                     </Cell>
                                 </Grid>

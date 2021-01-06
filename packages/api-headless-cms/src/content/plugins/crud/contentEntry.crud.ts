@@ -486,14 +486,13 @@ export default (): ContextPlugin<CmsContext> => ({
                 // We need to convert data from DB to its original form before constructing ES index data.
                 const originalEntry = await entryFromStorageTransform(context, model, updatedEntry);
 
-                const preparedEntry = prepareEntryToIndex({
-                    context,
-                    model,
-                    originalEntry: cloneDeep(originalEntry),
-                    storageEntry: cloneDeep(updatedEntry)
-                });
-
                 if (latestEntry.id === id) {
+                    const preparedEntry = prepareEntryToIndex({
+                        context,
+                        model,
+                        originalEntry: cloneDeep(originalEntry),
+                        storageEntry: cloneDeep(updatedEntry)
+                    });
                     const esDoc = {
                         ...preparedEntry,
                         savedOn: updatedEntry.savedOn
@@ -800,11 +799,17 @@ export default (): ContextPlugin<CmsContext> => ({
                         }
                     );
                 }
-
+                const originalEntry = entryFromStorageTransform(context, model, entry);
+                const preparedEntry = prepareEntryToIndex({
+                    context,
+                    model,
+                    originalEntry: cloneDeep(originalEntry),
+                    storageEntry: cloneDeep(entry)
+                });
                 // Update the published revision entry in ES.
                 esOperations.push(
                     { index: { _id: `CME#P#${uniqueId}`, _index: es.index } },
-                    getESPublishedEntryData(entry)
+                    getESPublishedEntryData(preparedEntry)
                 );
 
                 await elasticSearch.bulk({ body: esOperations });

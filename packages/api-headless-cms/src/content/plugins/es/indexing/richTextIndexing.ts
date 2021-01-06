@@ -5,11 +5,9 @@ export default (): CmsModelFieldToElasticSearchPlugin => ({
     name: "cms-model-field-to-elastic-search-rich-text",
     fieldType: "rich-text",
     toIndex(args) {
-        const { storageEntry, field } = args;
-        const values = storageEntry.values;
-
-        const rawData: Record<string, any> = { [field.fieldId]: values[field.fieldId] };
-
+        const { toIndexEntry, field } = args;
+        const values = toIndexEntry.values;
+        const value = values[field.fieldId];
         // TODO: convert rich-text object to a searchable string to offer full-text search at some point
 
         // we are removing the field value from "values" because we do not want it indexed.
@@ -18,20 +16,25 @@ export default (): CmsModelFieldToElasticSearchPlugin => ({
         //
         return {
             values,
-            rawData
+            rawValues: {
+                ...(toIndexEntry.rawValues || {}),
+                [field.fieldId]: value
+            }
         };
     },
     fromIndex(args) {
         const { field, entry } = args;
-        const rawData = entry.rawData || {};
-        const rawFieldData = rawData[field.fieldId];
-        // we want to remove rawData so next plugin does not run some action because of it
-        delete rawData[field.fieldId];
+        const rawValues = entry.rawValues || {};
+        const value = rawValues[field.fieldId];
+        // we want to remove rawValues so next plugin does not run some action because of it
+        delete rawValues[field.fieldId];
+
         return {
             values: {
-                [field.fieldId]: rawFieldData
+                ...(entry.values || {}),
+                [field.fieldId]: value
             },
-            rawData
+            rawValues
         };
     }
 });

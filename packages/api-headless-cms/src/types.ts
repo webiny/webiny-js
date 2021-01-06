@@ -613,18 +613,27 @@ type CmsModelFieldToElasticSearchPluginResultType = {
     rawData?: any;
     [key: string]: any;
 };
+
+export type CmsContentIndexEntryType = CmsContentEntryType & {
+    rawValues: Record<string, any>;
+    [key: string]: any;
+};
 export type CmsModelFieldToElasticSearchPlugin = Plugin & {
     type: "cms-model-field-to-elastic-search";
     fieldType: string;
     unmappedType?: string;
     /**
-     * { rawData: { description: ["<p>blah-blah<p>"] }, search: { description: "blah-blah"} }
+     * { rawValues: { description: ["<p>blah-blah<p>"] }, search: { description: "blah-blah"} }
      */
     toIndex?(params: {
         fieldTypePlugin: CmsModelFieldToGraphQLPlugin;
         field: CmsContentModelFieldType;
         context: CmsContext;
         model: CmsContentModelType;
+        // This is the entry that will go into the index
+        // It is exact copy of storageEntry at the beginning of the toIndex loop
+        // Always return top level properties that you want to merge together, eg. {values: {...toIndexEntry.values, ...myValues}}
+        toIndexEntry: CmsContentIndexEntryType;
         // This is the entry in the same form it gets stored to DB (processed, possibly compressed, etc.)
         storageEntry: CmsContentEntryType;
         // This is the entry in the original form (the way it comes into the API)
@@ -635,7 +644,7 @@ export type CmsModelFieldToElasticSearchPlugin = Plugin & {
         model: CmsContentModelType;
         fieldTypePlugin: CmsModelFieldToGraphQLPlugin;
         field: CmsContentModelFieldType;
-        entry: CmsContentEntryType & Record<string, any>;
+        entry: CmsContentIndexEntryType;
     }): any;
 };
 

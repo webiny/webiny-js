@@ -4,6 +4,7 @@ import {
     CmsContentModelFieldType,
     CmsModelFieldToGraphQLPlugin
 } from "@webiny/api-headless-cms/types";
+import cloneDeep from "lodash/cloneDeep";
 
 const mockValue = [
     {
@@ -33,7 +34,7 @@ const mockIndexedEntry: Partial<CmsContentEntryType> & Record<string, any> = {
         },
         notAffectedArray: ["first", "second"]
     },
-    rawData: {
+    rawValues: {
         text: mockValue
     }
 };
@@ -68,35 +69,42 @@ describe("richTextIndexing", () => {
         const plugin = richTextIndexing();
 
         const result = plugin.toIndex({
-            originalEntry: mockInputEntry as any,
-            storageEntry: mockInputEntry as any,
+            toIndexEntry: cloneDeep(mockInputEntry) as any,
+            originalEntry: cloneDeep(mockInputEntry) as any,
+            storageEntry: cloneDeep(mockInputEntry) as any,
             field: mockField,
             model: mockModel,
             context: mockContext,
             fieldTypePlugin: mockFieldTypePlugin
         });
 
-        // here we receive new values and rawData objects that are populated, in rawData case, and values being without given fieldId
+        // here we receive new values and rawValues objects that are populated, in rawValues case, and values being without given fieldId
         expect(result).toEqual(mockIndexedEntry);
     });
 
     test("fromIndex should return transformed objects", () => {
         const plugin = richTextIndexing();
         const result = plugin.fromIndex({
-            entry: mockIndexedEntry as any,
+            entry: cloneDeep(mockIndexedEntry) as any,
             field: mockField,
             model: mockModel,
             context: mockContext,
             fieldTypePlugin: mockFieldTypePlugin
         });
 
-        // we receive a bit different output than in toIndex since here we take field from rawData and put it into values obj
+        // we receive a bit different output than in toIndex since here we take field from rawValues and put it into values obj
         // it is being merged into new entry after that
         expect(result).toEqual({
             values: {
+                notAffectedNumber: 1,
+                notAffectedString: "some text",
+                notAffectedObject: {
+                    test: true
+                },
+                notAffectedArray: ["first", "second"],
                 text: mockValue
             },
-            rawData: {}
+            rawValues: {}
         });
     });
 });

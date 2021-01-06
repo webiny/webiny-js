@@ -76,7 +76,7 @@ export default {
                         body: {
                             mappings: {
                                 properties: {
-                                    rawData: { type: "object", enabled: false }
+                                    rawValues: { type: "object", enabled: false }
                                 }
                             }
                         }

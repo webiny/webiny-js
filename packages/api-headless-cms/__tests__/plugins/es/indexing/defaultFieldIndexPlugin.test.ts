@@ -4,6 +4,7 @@ import {
     CmsContentModelFieldType,
     CmsModelFieldToGraphQLPlugin
 } from "@webiny/api-headless-cms/types";
+import cloneDeep from "lodash/cloneDeep";
 
 const mockRichTextValue = [
     {
@@ -36,7 +37,7 @@ const mockIndexedEntry: Partial<CmsContentEntryType> & Record<string, any> = {
         notAffectedArray: ["first", "second"],
         text: mockTextValue
     },
-    rawData: {
+    rawValues: {
         richText: mockRichTextValue
     }
 };
@@ -96,8 +97,9 @@ describe("defaultFieldIndexPlugin", () => {
         const plugin = defaultFieldIndexPlugin();
 
         const result = plugin.toIndex({
-            originalEntry: mockInputEntry as any,
-            storageEntry: mockInputEntry as any,
+            toIndexEntry: cloneDeep(mockInputEntry) as any,
+            originalEntry: cloneDeep(mockInputEntry) as any,
+            storageEntry: cloneDeep(mockInputEntry) as any,
             field: mockRichTextField,
             model: mockModel,
             context: mockContext,
@@ -110,20 +112,27 @@ describe("defaultFieldIndexPlugin", () => {
     test("fromIndex should return transformed objects", () => {
         const plugin = defaultFieldIndexPlugin();
         const result = plugin.fromIndex({
-            entry: mockIndexedEntry as any,
+            entry: cloneDeep(mockIndexedEntry) as any,
             field: mockRichTextField,
             model: mockModel,
             context: mockContext,
             fieldTypePlugin: mockRichTextFieldTypePlugin
         });
 
-        // we receive a bit different output than in toIndex since here we take field from rawData and put it into values obj
+        // we receive a bit different output than in toIndex since here we take field from rawValues and put it into values obj
         // it is being merged into new entry after that
         expect(result).toEqual({
             values: {
+                notAffectedNumber: 1,
+                notAffectedString: "some text",
+                notAffectedObject: {
+                    test: true
+                },
+                notAffectedArray: ["first", "second"],
+                text: "some short searchable text",
                 richText: mockRichTextValue
             },
-            rawData: {}
+            rawValues: {}
         });
     });
 
@@ -131,8 +140,9 @@ describe("defaultFieldIndexPlugin", () => {
         const plugin = defaultFieldIndexPlugin();
 
         const result = plugin.toIndex({
-            originalEntry: mockInputEntry as any,
-            storageEntry: mockInputEntry as any,
+            toIndexEntry: cloneDeep(mockInputEntry) as any,
+            originalEntry: cloneDeep(mockInputEntry) as any,
+            storageEntry: cloneDeep(mockInputEntry) as any,
             field: mockTextField,
             model: mockModel,
             context: mockContext,
@@ -146,7 +156,7 @@ describe("defaultFieldIndexPlugin", () => {
         const plugin = defaultFieldIndexPlugin();
 
         const result = plugin.fromIndex({
-            entry: mockIndexedEntry as any,
+            entry: cloneDeep(mockIndexedEntry) as any,
             field: mockTextField,
             model: mockModel,
             context: mockContext,
