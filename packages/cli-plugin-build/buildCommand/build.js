@@ -1,20 +1,13 @@
 const { cyan } = require("chalk");
-const { resolve, join } = require("path");
+const { join } = require("path");
 const execa = require("execa");
 const getPackages = require("get-yarn-workspaces");
+const loadEnvVariables = require("./loadEnvVariables");
 
 module.exports = async (inputs, context) => {
-    const { env, path, debug = true } = inputs;
+    const { env, path } = inputs;
 
-    const projectRoot = context.paths.projectRoot;
-
-    if (env) {
-        // Load .env.json from project root.
-        await context.loadEnv(resolve(projectRoot, ".env.json"), env, { debug });
-
-        // Load .env.json from cwd (this will change depending on the folder you specified).
-        await context.loadEnv(resolve(projectRoot, path, ".env.json"), env, { debug });
-    }
+    await loadEnvVariables(inputs, context);
 
     const workingPath = join(process.cwd(), path).replace(/\\/g, "/");
 
