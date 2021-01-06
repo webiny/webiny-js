@@ -7,7 +7,7 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
-  "description": "A Node.js Pulumi SDK.",
+  "description": "A simple Node.js Pulumi SDK.",
   "author": "Webiny",
   "license": "MIT",
   "publishConfig": {
