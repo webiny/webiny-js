@@ -1,5 +1,4 @@
 const { green } = require("chalk");
-const { join } = require("path");
 const getStackOutput = require("../utils/getStackOutput");
 const sleep = require("../utils/sleep");
 const execa = require("execa");
