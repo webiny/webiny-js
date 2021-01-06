@@ -4,6 +4,7 @@ const notifier = require("node-notifier");
 const path = require("path");
 const loadEnvVariables = require("../utils/loadEnvVariables");
 const getPulumi = require("../utils/getPulumi");
+const execa = require("execa");
 
 const notify = ({ message }) => {
     notifier.notify({
@@ -43,16 +44,17 @@ module.exports = async (inputs, context) => {
 
     await loadEnvVariables(inputs, context);
 
-    const stacksDir = path.join(".", stack);
+    const stackDir = path.join(".", stack);
 
     if (build) {
-        const buildPlugin = context.plugins.byName("cli-command-build");
-        await buildPlugin.execute({ path: stacksDir, env }, context);
+        await execa("webiny", ["build", stackDir, "--env", inputs.env, "--debug", Boolean(inputs.debug)], {
+            stdio: "inherit"
+        })
     }
 
     const pulumi = getPulumi({
         execa: {
-            cwd: stacksDir
+            cwd: stackDir
         }
     });
 
