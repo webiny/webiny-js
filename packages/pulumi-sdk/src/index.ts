@@ -31,6 +31,9 @@ export const FLAG_NON_INTERACTIVE = "--non-interactive";
 export const PULUMI_FOLDER = path.join(__dirname, "pulumi");
 export const PULUMI_BINARY_PATH = path.join(PULUMI_FOLDER, "pulumi", "pulumi");
 
+// When updating versions, make sure to update this one, the one in `downloadBinaries.ts` file, and in `package.json`.
+const AWS_PLUGIN_VERSION = "3.22.0";
+
 export class Pulumi {
     defaultArgs: DefaultArgs;
     constructor(options: DefaultArgs = {}) {
@@ -84,7 +87,7 @@ export class Pulumi {
         if (installed) {
             await execa(
                 path.join(PULUMI_FOLDER, "pulumi", "pulumi"),
-                ["plugin", "install", "resource", "aws", "v3.22.0"],
+                ["plugin", "install", "resource", "aws", `v${AWS_PLUGIN_VERSION}`],
                 {
                     stdio: "inherit",
                     env: {
