@@ -10,7 +10,7 @@ const getStackName = folder => {
 };
 
 module.exports = async (inputs, context) => {
-    const { env, stack } = inputs;
+    const { env, stack, json } = inputs;
     const stacksDir = path.join(".", stack);
 
     await loadEnvFiles(inputs, context);
@@ -30,13 +30,19 @@ module.exports = async (inputs, context) => {
         stackExists = false;
     }
 
-    if (!stackExists) {
-        console.log(`⚠️ ${red(stackName)} does not exist!`);
-        return;
+    if (stackExists) {
+        return pulumi.run({
+            command: ["stack", "output"],
+            args: {
+                json
+            },
+            execa: { stdio: "inherit" }
+        });
     }
 
-    await pulumi.run({
-        command: ["stack", "output"],
-        execa: { stdio: "inherit" }
-    });
+    if (json) {
+        return console.log(JSON.stringify(null));
+    }
+
+    console.log(`ⅹ ${red(stackName)} does not exist!`);
 };

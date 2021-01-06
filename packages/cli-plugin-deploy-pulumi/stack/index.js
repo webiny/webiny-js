@@ -15,6 +15,7 @@ module.exports = [
                     "deploy <stack>",
                     `Deploys given stack`,
                     yargs => {
+                        yargs.example("$0 stack deploy api --env=dev");
                         yargs.positional("stack", {
                             describe: `Stack to deploy`,
                             type: "string"
@@ -53,6 +54,7 @@ module.exports = [
                     "destroy <stack>",
                     `Destroys given stack`,
                     yargs => {
+                        yargs.example("$0 stack destroy api --env=dev");
                         yargs.positional("stack", {
                             describe: `Stack to deploy`,
                             type: "string"
@@ -79,6 +81,7 @@ module.exports = [
                     "output <stack>",
                     `Prints stack output`,
                     yargs => {
+                        yargs.example("$0 stack output api --env=dev --json");
                         yargs.positional("stack", {
                             describe: `Stack to print`,
                             type: "string"
@@ -88,7 +91,7 @@ module.exports = [
                             describe: `Environment`,
                             type: "string"
                         });
-                        yargs.option("--json", {
+                        yargs.option("json", {
                             describe: `Emit output as JSON`,
                             type: "boolean"
                         });
