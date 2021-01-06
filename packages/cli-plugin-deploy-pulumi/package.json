@@ -10,15 +10,13 @@
   "author": "Webiny Ltd",
   "description": "A tool to bootstrap a Webiny project.",
   "dependencies": {
+    "@webiny/cli": "^5.0.0-beta.29",
     "@webiny/pulumi-sdk": "^5.0.0-beta.29",
     "chalk": "^4.0.0",
     "execa": "^4.0.0",
-    "fs-extra": "^9.0.0",
-    "load-json-file": "^6.2.0",
-    "lodash.get": "^4.4.2",
+    "lodash": "^4.4.2",
     "node-notifier": "^7.0.1",
-    "ora": "^4.0.4",
-    "write-json-file": "^4.3.0"
+    "ora": "^4.0.4"
   },
   "license": "MIT",
   "publishConfig": {
