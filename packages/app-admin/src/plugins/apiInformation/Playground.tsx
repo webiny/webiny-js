@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 import { css } from "emotion";
-import { useCms } from "@webiny/app-headless-cms/admin/hooks";
+// import { useCms } from "@webiny/app-headless-cms/admin/hooks";
 
 const Playground = () => {
-    const { createApolloClient } = useCms();
+    // const { createApolloClient } = useCms();
 
     const tabs = [
         {
@@ -32,17 +32,17 @@ const Playground = () => {
         }
     ];
 
-    const createApolloLink = session => {
-        return {
-            link: createApolloClient({ uri: session.endpoint }).link
-        };
-    };
+    // const createApolloLink = session => {
+    //     return {
+    //         link: createApolloClient({ uri: session.endpoint }).link
+    //     };
+    // };
 
     useEffect(() => {
         // @ts-ignore
         window.GraphQLPlayground.init(document.getElementById("graphql-playground"), {
             tabs,
-            createApolloLink
+            // createApolloLink
         });
     }, []);
 
