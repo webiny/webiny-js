@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-plugin-security-cognito",
-  "version": "5.0.0-beta.30",
+  "version": "5.0.0-beta.31",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -12,11 +12,11 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@webiny/api-security": "^5.0.0-beta.30",
-    "@webiny/api-security-tenancy": "^5.0.0-beta.30",
-    "@webiny/handler": "^5.0.0-beta.30",
-    "@webiny/handler-graphql": "^5.0.0-beta.30",
-    "@webiny/handler-http": "^5.0.0-beta.30",
+    "@webiny/api-security": "^5.0.0-beta.31",
+    "@webiny/api-security-tenancy": "^5.0.0-beta.31",
+    "@webiny/handler": "^5.0.0-beta.31",
+    "@webiny/handler-graphql": "^5.0.0-beta.31",
+    "@webiny/handler-http": "^5.0.0-beta.31",
     "jsonwebtoken": "^8.5.1",
     "jwk-to-pem": "^2.0.1",
     "node-fetch": "^2.6.1"

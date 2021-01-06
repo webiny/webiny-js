@@ -1,6 +1,6 @@
 {
 	"name": "create-webiny-project",
-	"version": "5.0.0-beta.30",
+	"version": "5.0.0-beta.31",
 	"description": "local build tool to create webiny project with specific template",
 	"main": "index.js",
 	"scripts": {
@@ -17,7 +17,7 @@
 	],
 	"license": "MIT",
 	"dependencies": {
-		"@webiny/tracking": "^5.0.0-beta.30",
+		"@webiny/tracking": "^5.0.0-beta.31",
 		"chalk": "4.1.0",
 		"execa": "4.1.0",
 		"fast-glob": "3.2.4",

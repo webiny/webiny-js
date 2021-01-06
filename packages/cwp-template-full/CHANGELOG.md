@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.31](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.30...v5.0.0-beta.31) (2021-01-06)
+
+
+### Bug Fixes
+
+* ensure Pulumi is installed before continuing ([dd50731](https://github.com/webiny/webiny-js/commit/dd50731efd1b5a6cc8049f7527a9f4cce35bfd6b))
+* update stacks ([ee19ca7](https://github.com/webiny/webiny-js/commit/ee19ca73d7b04707c29a4be6e7dcd43208cef525))
+
+
+
+
+
 # [5.0.0-beta.30](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.29...v5.0.0-beta.30) (2021-01-06)
 
 

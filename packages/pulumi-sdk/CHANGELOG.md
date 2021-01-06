@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.31](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.30...v5.0.0-beta.31) (2021-01-06)
+
+
+### Bug Fixes
+
+* make version a constant ([aaeefc5](https://github.com/webiny/webiny-js/commit/aaeefc501d27cf51ee085a977cadd8416096049e))
+
+
+
+
+
 # [5.0.0-beta.30](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.29...v5.0.0-beta.30) (2021-01-06)
 
 **Note:** Version bump only for package @webiny/pulumi-sdk
