@@ -102,14 +102,6 @@ module.exports = async inputs => {
         }
     };
 
-    const usefulLinks = [
-        `🔗 Main GraphQL API: ${green(outputs.api.apiUrl + "/graphql")}`,
-        `🔗 Admin app: ${green(outputs.apps.admin.appUrl)}`,
-        `🔗 Public website: ${green(outputs.apps.site.appUrl)}`,
-        `   - App: ${green(outputs.apps.site.appUrl)}`,
-        `   - Delivery: ${green(outputs.apps.site.deliveryUrl)}`
-    ].join("\n");
-
     console.log();
     if (isFirstDeployment) {
         console.log(
@@ -126,6 +118,14 @@ module.exports = async inputs => {
             ].join("\n")
         );
     } else {
+        const usefulLinks = [
+            `🔗 Main GraphQL API: ${green(outputs.api.apiUrl + "/graphql")}`,
+            `🔗 Admin app: ${green(outputs.apps.admin.appUrl)}`,
+            `🔗 Public website: ${green(outputs.apps.site.appUrl)}`,
+            `   - App: ${green(outputs.apps.site.appUrl)}`,
+            `   - Delivery: ${green(outputs.apps.site.deliveryUrl)}`
+        ].join("\n");
+
         console.log(
             [
                 usefulLinks,
