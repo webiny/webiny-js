@@ -8,6 +8,7 @@ import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
 import * as GQL from "../components/ContentModelForm/graphql";
 
 const DetailsContainer = styled("div")({
+    height: "calc(100% - 10px)",
     overflow: "hidden",
     position: "relative",
     nav: {
