@@ -2,7 +2,7 @@ const { join, basename } = require("path");
 const { green } = require("chalk");
 const notifier = require("node-notifier");
 const path = require("path");
-const loadEnvFiles = require("../utils/loadEnvFiles");
+const loadEnvVariables = require("../utils/loadEnvVariables");
 const getPulumi = require("../utils/getPulumi");
 
 const notify = ({ message }) => {
@@ -41,7 +41,7 @@ module.exports = async (inputs, context) => {
     const { env, stack, build } = inputs;
     const stackName = getStackName(stack);
 
-    await loadEnvFiles(inputs, context);
+    await loadEnvVariables(inputs, context);
 
     const stacksDir = path.join(".", stack);
 

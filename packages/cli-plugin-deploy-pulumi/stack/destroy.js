@@ -1,7 +1,7 @@
 const { basename } = require("path");
 const { red, green } = require("chalk");
 const path = require("path");
-const loadEnvFiles = require("../utils/loadEnvFiles");
+const loadEnvVariables = require("../utils/loadEnvVariables");
 const getPulumi = require("../utils/getPulumi");
 
 const getStackName = folder => {
@@ -25,7 +25,7 @@ module.exports = async (inputs, context) => {
     const { env, stack } = inputs;
     const stacksDir = path.join(".", stack);
 
-    await loadEnvFiles(inputs, context);
+    await loadEnvVariables(inputs, context);
 
     const pulumi = getPulumi({
         execa: {
