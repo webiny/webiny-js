@@ -1,11 +1,15 @@
 const execa = require("execa");
 const mapStackOutput = require("./mapStackOutput");
+const { getProjectRoot } = require("@webiny/cli/utils");
 
 const getOutputJson = async (stack, env) => {
     try {
         const { stdout } = await execa(
             "webiny",
-            ["stack", "output", stack, "--env", env, "--json", "--no-debug"].filter(Boolean)
+            ["stack", "output", stack, "--env", env, "--json", "--no-debug"].filter(Boolean),
+            {
+                cwd: getProjectRoot()
+            }
         );
 
         return JSON.parse(stdout);
