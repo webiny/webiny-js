@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-file-manager-s3",
-  "version": "5.0.0-beta.29",
+  "version": "5.0.0-beta.30",
   "main": "index.js",
   "types": "types.d.ts",
   "repository": {
@@ -11,9 +11,9 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
-    "@webiny/handler-graphql": "^5.0.0-beta.29",
-    "@webiny/plugins": "^5.0.0-beta.29",
-    "@webiny/validation": "^5.0.0-beta.29",
+    "@webiny/handler-graphql": "^5.0.0-beta.30",
+    "@webiny/plugins": "^5.0.0-beta.30",
+    "@webiny/validation": "^5.0.0-beta.30",
     "form-data": "^3.0.0",
     "mime": "^2.4.6",
     "node-fetch": "^2.6.1",
