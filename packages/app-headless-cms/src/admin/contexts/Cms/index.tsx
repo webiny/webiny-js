@@ -39,6 +39,7 @@ export function CmsProvider(props: CmsProviderProps) {
             }
             return apolloClientsCache[locale];
         },
+        createApolloClient: props.createApolloClient,
         apolloClient: apolloClientsCache[currentLocale]
     };
 
