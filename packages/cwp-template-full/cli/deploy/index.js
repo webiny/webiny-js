@@ -1,11 +1,11 @@
 module.exports = () => ({
     type: "cli-command",
-    name: "cli-command-deploy-all",
+    name: "cli-command-deploy",
     create({ yargs, context }) {
         yargs.example("$0 deploy");
         yargs.command(
             "deploy",
-            `Completely deploys the project by deploying the "api", "admin", and "site" stacks, into the given environment name`,
+            `Completely deploys the project by deploying the "api", "admin", and "site" stacks, as part of the given environment.`,
             yargs => {
                 yargs.option("env", {
                     describe: `Environment`,
@@ -18,14 +18,17 @@ module.exports = () => ({
                     describe: `Build packages before deploying`,
                     type: "boolean"
                 });
+                yargs.option("debug", {
+                    required: false,
+                    default: false,
+                    describe: `Turn on debug logs`,
+                    type: "boolean"
+                });
             },
             async argv => {
                 await require("./deploy")(argv, context);
                 process.exit(0);
             }
         );
-    },
-    execute(args, context) {
-        return require("./deploy")(args, context);
     }
 });

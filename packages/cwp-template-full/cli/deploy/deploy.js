@@ -1,28 +1,35 @@
 const { green } = require("chalk");
-const { resolve, join } = require("path");
-const getStackOutputs = require("../utils/getStackOutputs");
-const stackExists = require("../utils/stackExists");
+const { join } = require("path");
+const getStackOutput = require("../utils/getStackOutput");
 const sleep = require("../utils/sleep");
+const execa = require("execa");
 
-module.exports = async (inputs, context) => {
-    const { env, debug = true } = inputs;
+const deploy = (stack, inputs) => {
+    return execa(
+        "webiny",
+        [
+            "stack",
+            "deploy",
+            stack,
+            "--env",
+            inputs.env,
+            "--debug",
+            Boolean(inputs.debug),
+            "--build",
+            Boolean(inputs.build)
+        ],
+        {
+            stdio: "inherit"
+        }
+    );
+};
 
-    const projectRoot = context.paths.projectRoot;
-    const apiStackDir = join(projectRoot, "api");
-    const appsAdminStackDir = join(projectRoot, "apps", "admin");
-    const appsSiteStackDir = join(projectRoot, "apps", "site");
-
-    if (env) {
-        // Load .env.json from project root.
-        await context.loadEnv(resolve(projectRoot, ".env.json"), env, { debug });
-
-        // Load .env.json from cwd (this will change depending on the folder you specified).
-        await context.loadEnv(resolve(apiStackDir, ".env.json"), env, { debug });
-    }
+module.exports = async inputs => {
+    const { env } = inputs;
 
     // 1. Get exports from `site` stack, for `args.env` environment.
-    const apiStackExists = await stackExists(apiStackDir, env);
-    const isFirstDeployment = !apiStackExists;
+    const siteStackOutput = await getStackOutput("apps/site", env);
+    const isFirstDeployment = !siteStackOutput;
     if (isFirstDeployment) {
         console.log(
             `⏳  We've detected this is your first time deploying the project (${green(
@@ -33,8 +40,6 @@ module.exports = async (inputs, context) => {
         await sleep();
     }
 
-    const deployPlugin = context.plugins.byName("cli-command-deploy");
-
     // Deploying `api` stack.
     console.log();
     if (isFirstDeployment) {
@@ -43,7 +48,8 @@ module.exports = async (inputs, context) => {
         console.log(`🚀 Deploying ${green("api")} stack...`);
     }
 
-    await deployPlugin.execute({ stack: "api", env: inputs.env, build: inputs.build }, context);
+    await deploy("api", inputs);
+
     if (isFirstDeployment) {
         console.log(
             `🎉 Your ${green("API")} was deployed successfully! Continuing with the apps...`
@@ -62,10 +68,7 @@ module.exports = async (inputs, context) => {
         console.log(`🚀 Deploying ${green("apps/admin")} stack...`);
     }
 
-    await deployPlugin.execute(
-        { stack: "apps/admin", env: inputs.env, build: inputs.build },
-        context
-    );
+    await deploy("apps/admin", inputs);
 
     if (isFirstDeployment) {
         console.log(`🎉 Your ${green("Admin")} app was deployed successfully!`);
@@ -84,10 +87,7 @@ module.exports = async (inputs, context) => {
         console.log(`🚀 Deploying ${green("apps/site")} stack...`);
     }
 
-    await deployPlugin.execute(
-        { stack: "apps/site", env: inputs.env, build: inputs.build },
-        context
-    );
+    await deploy("apps/site", inputs);
 
     if (isFirstDeployment) {
         console.log(`🎉 Your ${green("public website")} app was deployed successfully!`);
@@ -96,10 +96,10 @@ module.exports = async (inputs, context) => {
     }
 
     const outputs = {
-        api: await getStackOutputs(apiStackDir, env),
+        api: await getStackOutput("api", env),
         apps: {
-            admin: await getStackOutputs(appsAdminStackDir, env),
-            site: await getStackOutputs(appsSiteStackDir, env)
+            admin: await getStackOutput("apps/admin", env),
+            site: await getStackOutput("apps/site", env)
         }
     };
 
@@ -119,7 +119,7 @@ module.exports = async (inputs, context) => {
                     env
                 )} environment)!`,
                 "",
-                `To finish the setup, please open your ${green('Admin')} app (${green(
+                `To finish the setup, please open your ${green("Admin")} app (${green(
                     outputs.apps.admin.appUrl
                 )}) and complete the installation wizard. To learn more, visit ${green(
                     "https://docs.webiny.com"
@@ -132,9 +132,9 @@ module.exports = async (inputs, context) => {
                 usefulLinks,
                 "",
                 `💡 Tip: to deploy stacks separately, use the ${green(
-                    "deploy"
+                    "stack deploy"
                 )} command (e.g. ${green(
-                    `yarn webiny deploy apps/site --env ${env}`
+                    `yarn webiny stack deploy apps/site --env ${env}`
                 )}). For additional help, please run ${green("yarn webiny --help")}.`
             ].join("\n")
         );
