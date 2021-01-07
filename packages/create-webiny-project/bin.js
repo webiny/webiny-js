@@ -9,14 +9,20 @@ const currentNodeVersion = process.versions.node;
 const majorVersion = parseInt(currentNodeVersion.split(".")[0]);
 const minorVersion = parseInt(currentNodeVersion.split(".")[1]);
 
+const NODE_VERSION_MIN_MAJOR = 10;
+const NODE_VERSION_MIN_MINOR = 14;
+
 (async () => {
-    if (majorVersion < 10 || (majorVersion === 10 && minorVersion < 14)) {
+    if (
+        majorVersion < NODE_VERSION_MIN_MAJOR ||
+        (majorVersion === NODE_VERSION_MIN_MAJOR && minorVersion < NODE_VERSION_MIN_MINOR)
+    ) {
         console.error(
             chalk.red(
                 "You are running Node " +
                     currentNodeVersion +
                     ".\n" +
-                    "Webiny requires Node 10.14 or higher. \n" +
+                    `Webiny requires Node ${NODE_VERSION_MIN_MAJOR}.${NODE_VERSION_MIN_MINOR} or higher. \n` +
                     "Please update your version of Node."
             )
         );
