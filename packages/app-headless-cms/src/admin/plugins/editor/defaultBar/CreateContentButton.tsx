@@ -22,7 +22,9 @@ const CreateContentButton = () => {
     });
     const fields = get(getQuery, "getContentModel.data.fields", []);
     const disableViewContent = fields.length === 0;
-    const message = disableViewContent ? "You first need to add a field" : "View content";
+    const message = disableViewContent
+        ? "To view the content, you first need to add a field and save the form"
+        : "View content";
 
     return (
         <Tooltip content={t`{message}`({ message })} placement={"bottom"}>
