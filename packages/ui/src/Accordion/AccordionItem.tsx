@@ -60,18 +60,21 @@ const transitionStyles = {
         opacity: 0,
         height: 0,
         padding: "20px 20px 20px 65px",
-        pointerEvents: "auto"
+        pointerEvents: "auto",
+        overflow: "initial"
     },
     entered: {
         opacity: 1,
         height: "auto",
         padding: "20px 20px 20px 65px",
-        pointerEvents: "auto"
+        pointerEvents: "auto",
+        overflow: "initial"
     },
     exiting: {
         height: "auto",
         padding: "20px 20px 20px 65px",
-        pointerEvents: "auto"
+        pointerEvents: "auto",
+        overflow: "initial"
     }
 };
 
