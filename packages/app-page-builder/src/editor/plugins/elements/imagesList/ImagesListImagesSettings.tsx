@@ -60,15 +60,14 @@ const ImagesListImagesSettings = props => {
                                                     >
                                                         <File
                                                             file={item}
-                                                            onRemove={() =>
-                                                                form.setState(state => {
-                                                                    const next = {
-                                                                        ...state
-                                                                    };
-                                                                    next.data.images.splice(i, 1);
-                                                                    return next;
-                                                                })
-                                                            }
+                                                            onRemove={() => {
+                                                                // Remove the image at index i
+                                                                const updatedValue = [
+                                                                    ...value.slice(0, i),
+                                                                    ...value.slice(i + 1)
+                                                                ];
+                                                                onChange(updatedValue);
+                                                            }}
                                                         />
                                                     </SortableItem>
                                                 ))}
