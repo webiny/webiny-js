@@ -226,7 +226,7 @@ const Welcome = () => {
                             <Cell
                                 span={4}
                                 className={footerTextStyle}
-                                style={{ margin: "1rem 1rem 1rem 9px" }}
+                                style={{ margin: "1rem 1rem 1rem 9px", visibility: "hidden" }}
                             >
                                 <Link
                                     to="https://github.com/webiny/webiny-examples"
