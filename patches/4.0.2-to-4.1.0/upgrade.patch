@@ -181,7 +181,7 @@ index 5c56737..e7aa19c 100644
  	"private": true,
  	"dependencies": {
 +		"@webiny/aws-layers": "^4.1.0",
- 		"@webiny/cwp-template-full": "^4.0.2",
+ 		"@webiny/cwp-template-aws": "^4.0.2",
  		"@webiny/cli": "^4.0.2",
  		"@webiny/cli-plugin-deploy-components": "^4.0.2",
 diff --git a/tsconfig.build.json b/tsconfig.build.json

@@ -1,10 +1,10 @@
 {
-  "name": "@webiny/cwp-template-full",
+  "name": "@webiny/cwp-template-aws",
   "version": "5.0.0-beta.0",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "directory": "packages/cwp-template-full"
+    "directory": "packages/cwp-template-aws"
   },
   "publishConfig": {
     "access": "public",

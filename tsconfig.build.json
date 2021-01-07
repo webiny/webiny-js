@@ -150,7 +150,7 @@
     "**jest**",
     "./packages/cli**",
     "./packages/create-webiny-project",
-    "./packages/cwp-template-full",
+    "./packages/cwp-template-aws",
     "./packages/cwp-template-cms",
     "./packages/project-utils",
     "./packages/tracking",

@@ -11,5 +11,5 @@ Navigate to the directory where you want to create your webiny project and run
 `create-webiny-project projectName -t templateName --tag ../path/to/node_modules`
 
 Note:
-The templateName can either be `full` (This will pull a package named `cwp-template-full` from npm template) or actually link to the path of the template you wish to use locally ex. `../dev/template-to-use`
+The templateName can either be `full` (This will pull a package named `cwp-template-aws` from npm template) or actually link to the path of the template you wish to use locally ex. `../dev/template-to-use`
 

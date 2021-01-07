@@ -69,7 +69,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * ensure Pulumi is installed ([cd4bacf](https://github.com/webiny/webiny-js/commit/cd4bacf042285ac0cf3c2756fb30c8d72be42a8e))
 * execute command from project-root ([b81a3e8](https://github.com/webiny/webiny-js/commit/b81a3e85377536c6a3a8b2bc1cd843367d5fcd1e))
 * execute command from project-root ([3c0f4d5](https://github.com/webiny/webiny-js/commit/3c0f4d5fd3e0ed021283ba4f26e56210fb33fe39))
-* move aws CLI plugins to cwp-template-full ([8f39101](https://github.com/webiny/webiny-js/commit/8f391019ff18c3e06d90c4a7cfe141f4277c6bdb))
+* move aws CLI plugins to cwp-template-aws ([8f39101](https://github.com/webiny/webiny-js/commit/8f391019ff18c3e06d90c4a7cfe141f4277c6bdb))
 * remove `updateEnvValues` ([2d0d03b](https://github.com/webiny/webiny-js/commit/2d0d03b668d2ae6185a25cc0197dfcceb1edd496))
 * remove destroy ([7431736](https://github.com/webiny/webiny-js/commit/7431736327676af62a62770ec0486d4c0d91ef9e))
 * reorganize utils ([23c50cd](https://github.com/webiny/webiny-js/commit/23c50cd75e083fd9d867b93d0cc8482f76ab2e66))

@@ -5,7 +5,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [5.0.0-beta.32](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.31...v5.0.0-beta.32) (2021-01-06)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -47,7 +47,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [5.0.0-beta.28](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.27...v5.0.0-beta.28) (2021-01-06)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -77,7 +77,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * create `getStackOutput` function and delete unnecessary ones ([08b1970](https://github.com/webiny/webiny-js/commit/08b1970c5d3548c0af706082dffa6633e7159526))
 * execute existing commands instead of doing it manually ([32045c5](https://github.com/webiny/webiny-js/commit/32045c5bcdafdff2b851a78204ffdb06a299f53e))
 * execute existing commands instead of getting stuff manually ([dd5b9be](https://github.com/webiny/webiny-js/commit/dd5b9beeec9f03eb6b9422de12004c1e1fa1e91e))
-* move aws CLI plugins to cwp-template-full ([8f39101](https://github.com/webiny/webiny-js/commit/8f391019ff18c3e06d90c4a7cfe141f4277c6bdb))
+* move aws CLI plugins to cwp-template-aws ([8f39101](https://github.com/webiny/webiny-js/commit/8f391019ff18c3e06d90c4a7cfe141f4277c6bdb))
 * move empty console.log ([2b6f9fe](https://github.com/webiny/webiny-js/commit/2b6f9fec2af6aa4ac135ee18ec5f2666c29532fa))
 * remove old files ([e7e6324](https://github.com/webiny/webiny-js/commit/e7e632413a10d446cd8e67da3f4cae30ddf067f5))
 * remove redundant import ([1aa89b1](https://github.com/webiny/webiny-js/commit/1aa89b13567c99329ee8b24f02fcb77cc55af52a))
@@ -270,7 +270,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.0...v5.0.0-beta.1) (2021-01-03)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -302,7 +302,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.14.0](https://github.com/webiny/webiny-js/compare/v4.14.0-beta.1...v4.14.0) (2020-10-30)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -310,7 +310,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.14.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.14.0-beta.0...v4.14.0-beta.1) (2020-10-30)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -318,7 +318,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.14.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.13.0...v4.14.0-beta.0) (2020-10-30)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -326,7 +326,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.13.0](https://github.com/webiny/webiny-js/compare/v4.13.0-beta.0...v4.13.0) (2020-10-06)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -334,7 +334,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.13.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.12.1...v4.13.0-beta.0) (2020-10-06)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -342,7 +342,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [4.12.1](https://github.com/webiny/webiny-js/compare/v4.12.1-beta.0...v4.12.1) (2020-09-17)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -350,7 +350,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [4.12.1-beta.0](https://github.com/webiny/webiny-js/compare/v4.12.0...v4.12.1-beta.0) (2020-09-17)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -358,7 +358,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.12.0](https://github.com/webiny/webiny-js/compare/v4.12.0-beta.1...v4.12.0) (2020-09-16)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -377,7 +377,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.12.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.11.0...v4.12.0-beta.0) (2020-09-16)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -385,7 +385,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.11.0](https://github.com/webiny/webiny-js/compare/v4.11.0-beta.1...v4.11.0) (2020-09-09)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -415,7 +415,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.10.0](https://github.com/webiny/webiny-js/compare/v4.10.0-beta.0...v4.10.0) (2020-09-01)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -423,7 +423,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.10.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.9.0...v4.10.0-beta.0) (2020-09-01)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -431,7 +431,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.9.0](https://github.com/webiny/webiny-js/compare/v4.9.0-beta.0...v4.9.0) (2020-08-18)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -450,7 +450,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.8.0](https://github.com/webiny/webiny-js/compare/v4.8.0-beta.2...v4.8.0) (2020-08-12)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -458,7 +458,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.8.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.8.0-beta.1...v4.8.0-beta.2) (2020-08-12)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -500,7 +500,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * **cli:** better console.log() indenting ([69a1297](https://github.com/webiny/webiny-js/commit/69a12979506f725e3a920833d99e4f7e2e8b9365))
 * **cli:** print all API URLs ([64ad9a0](https://github.com/webiny/webiny-js/commit/64ad9a0466ee81206e53f75821229c2771ce4a29))
 * **cli:** print both "apps" stacks' urls ([f76f7a5](https://github.com/webiny/webiny-js/commit/f76f7a5d9836d579ededbafaa90c5b5a3ce9c231))
-* **cwp-template-full:** add "hook-stacks-info-api" plugin ([a8c49a3](https://github.com/webiny/webiny-js/commit/a8c49a3b55778313b9c1ce1f9629488f2815a8df))
+* **cwp-template-aws:** add "hook-stacks-info-api" plugin ([a8c49a3](https://github.com/webiny/webiny-js/commit/a8c49a3b55778313b9c1ce1f9629488f2815a8df))
 * **scaffolding:** add 'custom app' react scaffolding plugin ([8e6a505](https://github.com/webiny/webiny-js/commit/8e6a50517c0e51c57b62787c2990f0ce0d28b3b5))
 
 
@@ -509,7 +509,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.7.0](https://github.com/webiny/webiny-js/compare/v4.7.0-beta.1...v4.7.0) (2020-07-29)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -517,7 +517,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.7.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.7.0-beta.0...v4.7.0-beta.1) (2020-07-29)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -538,7 +538,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.6.0](https://github.com/webiny/webiny-js/compare/v4.6.0-beta.0...v4.6.0) (2020-07-21)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -546,7 +546,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.6.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.5.1...v4.6.0-beta.0) (2020-07-21)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -554,7 +554,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [4.5.1](https://github.com/webiny/webiny-js/compare/v4.5.1-beta.1...v4.5.1) (2020-07-19)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -562,7 +562,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [4.5.1-beta.1](https://github.com/webiny/webiny-js/compare/v4.5.1-beta.0...v4.5.1-beta.1) (2020-07-19)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -581,7 +581,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.5.0](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.4...v4.5.0) (2020-07-14)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -589,7 +589,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.5.0-beta.4](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.3...v4.5.0-beta.4) (2020-07-14)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -597,7 +597,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.5.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.2...v4.5.0-beta.3) (2020-07-14)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -605,7 +605,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.5.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.5.0-beta.1...v4.5.0-beta.2) (2020-07-14)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -636,7 +636,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.4.0](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.3...v4.4.0) (2020-07-08)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -644,7 +644,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.4.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.2...v4.4.0-beta.3) (2020-07-07)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -652,7 +652,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.4.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.1...v4.4.0-beta.2) (2020-07-07)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -660,7 +660,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.4.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.4.0-beta.0...v4.4.0-beta.1) (2020-07-07)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -685,7 +685,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.3.0](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.5...v4.3.0) (2020-07-01)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -693,7 +693,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.3.0-beta.5](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.4...v4.3.0-beta.5) (2020-07-01)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -701,7 +701,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.3.0-beta.4](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.3...v4.3.0-beta.4) (2020-07-01)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -709,7 +709,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.3.0-beta.3](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.2...v4.3.0-beta.3) (2020-07-01)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -717,7 +717,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.3.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.1...v4.3.0-beta.2) (2020-06-30)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -725,7 +725,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.3.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.3.0-beta.0...v4.3.0-beta.1) (2020-06-30)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -744,7 +744,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.2.0](https://github.com/webiny/webiny-js/compare/v4.2.0-beta.2...v4.2.0) (2020-06-23)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -752,7 +752,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.2.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.2.0-beta.1...v4.2.0-beta.2) (2020-06-23)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -760,7 +760,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.2.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.2.0-beta.0...v4.2.0-beta.1) (2020-06-23)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -768,7 +768,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.2.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.1.1-beta.2...v4.2.0-beta.0) (2020-06-23)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -776,7 +776,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [4.1.1-beta.2](https://github.com/webiny/webiny-js/compare/v4.1.1-beta.1...v4.1.1-beta.2) (2020-06-23)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -795,7 +795,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## 4.1.1-beta.0 (2020-06-22)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -803,7 +803,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # 4.1.0 (2020-06-16)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -822,7 +822,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # 4.1.0-beta.2 (2020-06-16)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -830,7 +830,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # 4.1.0-beta.1 (2020-06-16)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -849,7 +849,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # 4.1.0-beta.0 (2020-06-16)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -857,7 +857,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## 4.0.3-beta.0 (2020-06-16)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -865,7 +865,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## 4.0.2 (2020-06-05)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -873,7 +873,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## 4.0.1 (2020-06-04)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -881,7 +881,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.0.0](https://github.com/Webiny/webiny-js/compare/v4.0.0-beta.19...v4.0.0) (2020-06-04)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -911,7 +911,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # 4.0.0-beta.17 (2020-06-04)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -952,7 +952,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # 4.0.0-beta.13 (2020-06-02)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -960,7 +960,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # 4.0.0-beta.12 (2020-06-02)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -979,7 +979,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # 4.0.0-beta.10 (2020-06-02)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -987,7 +987,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # 4.0.0-beta.9 (2020-06-02)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -1006,7 +1006,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # 4.0.0-beta.7 (2020-06-01)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -1014,7 +1014,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.0.0-beta.6](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.5...v4.0.0-beta.6) (2020-06-01)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -1048,7 +1048,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-* **cwp-template-full:** set the correct graphql service ([31c3c19](https://github.com/Webiny/webiny-js/commit/31c3c198bbe7ee39ec57cc6a34a673da88fc2dd7))
+* **cwp-template-aws:** set the correct graphql service ([31c3c19](https://github.com/Webiny/webiny-js/commit/31c3c198bbe7ee39ec57cc6a34a673da88fc2dd7))
 * **cwp-templates:** add missing devDependencies ([9659f07](https://github.com/Webiny/webiny-js/commit/9659f07fddaf59225ee7b8b104cb47229c1bbc95))
 * add eslint config files ([53ef175](https://github.com/Webiny/webiny-js/commit/53ef1759e236f15b6b5701b84cbda77185bec8c3))
 
@@ -1064,7 +1064,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [4.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.0.0-beta.0...v4.0.0-beta.1) (2020-05-22)
 
-**Note:** Version bump only for package @webiny/cwp-template-full
+**Note:** Version bump only for package @webiny/cwp-template-aws
 
 
 
@@ -1075,7 +1075,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-* 🐛  Copy api folder for cwp-template-full. Update dependencies ([6381999](https://github.com/Webiny/webiny-js/commit/63819991ae974a315fb6b8c74f7763fe73f48099))
+* 🐛  Copy api folder for cwp-template-aws. Update dependencies ([6381999](https://github.com/Webiny/webiny-js/commit/63819991ae974a315fb6b8c74f7763fe73f48099))
 * 🐛  Enable MONGODB_NAME name to be project specific ([d139d27](https://github.com/Webiny/webiny-js/commit/d139d27c16b0ca452200f67bb992998f8e163e5f))
 * 🐛  Fix cwp-template building and compiling errors for api ([fecff42](https://github.com/Webiny/webiny-js/commit/fecff42107768290389ee64ca07942b0a2e2e9fb))
 * 🐛  Overwrite projectName for webiny.root.js ([38b1a5f](https://github.com/Webiny/webiny-js/commit/38b1a5fd9a0f6c36bdc72e62015ac85103728878))
