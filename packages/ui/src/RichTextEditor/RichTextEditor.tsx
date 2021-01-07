@@ -26,6 +26,11 @@ const classes = {
     })
 };
 
+type EditorJSType = {
+    destroy?: () => void;
+    save: () => Promise<any>;
+};
+
 export type OnReadyParams = { editor: any; initialData: OutputData };
 
 export type RichTextEditorProps = {
@@ -47,7 +52,7 @@ export type RichTextEditorProps = {
 
 export const RichTextEditor = (props: RichTextEditorProps) => {
     const elementId = useRef("rte-" + shortid.generate());
-    const editorRef = useRef<any>();
+    const editorRef = useRef<EditorJSType>();
 
     useEffect(() => {
         const { value, context, onReady, ...nativeProps } = props;
@@ -59,7 +64,6 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
             logLevel: "ERROR" as LogLevels.ERROR,
             data: initialData,
             onChange: async () => {
-                // @ts-ignore
                 const { blocks: data } = await editorRef.current.save();
                 props.onChange(data);
             },
@@ -84,11 +88,11 @@ export const RichTextEditor = (props: RichTextEditorProps) => {
         });
 
         return async () => {
-            if (!editorRef.current) {
+            if (!editorRef.current || typeof editorRef.current.destroy !== "function") {
                 return;
             }
 
-            typeof editorRef.current.destroy === "function" && editorRef.current.destroy();
+            editorRef.current.destroy();
         };
     }, []);
 

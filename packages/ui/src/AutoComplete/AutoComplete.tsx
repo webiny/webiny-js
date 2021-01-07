@@ -211,24 +211,22 @@ class AutoComplete extends React.Component<Props, State> {
                                     validation,
                                     rawOnChange: true,
                                     trailingIcon: this.props.loading && <Spinner />,
-                                    onChange: e => e,
-                                    onBlur: e => e,
-                                    onFocus: e => {
+                                    onChange: ev => ev,
+                                    onBlur: ev => ev,
+                                    onFocus: ev => {
                                         openMenu();
-                                        otherInputProps.onFocus && otherInputProps.onFocus(e);
+                                        otherInputProps.onFocus && otherInputProps.onFocus(ev);
                                     },
-                                    onKeyDown: (e: React.KeyboardEvent<HTMLElement>) => {
-                                        // @ts-ignore
-                                        const keyCode = keycode(e);
+                                    onKeyDown: (ev: React.KeyboardEvent<HTMLInputElement>) => {
+                                        const keyCode: string = keycode((ev as unknown) as Event);
 
                                         if (keyCode === "backspace") {
                                             onChange(null);
                                         }
                                     },
-                                    onKeyUp: (e: React.KeyboardEvent<HTMLElement>) => {
-                                        // @ts-ignore
-                                        const keyCode = keycode(e);
-                                        const target: any = e.target;
+                                    onKeyUp: (ev: React.KeyboardEvent<HTMLInputElement>) => {
+                                        const keyCode: string = keycode((ev as unknown) as Event);
+                                        const target = ev.currentTarget;
                                         const inputValue = target.value || "";
 
                                         // If user pressed 'esc', 'enter' or similar...
