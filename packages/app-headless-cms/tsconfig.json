@@ -8,6 +8,9 @@
 			"path": "../app-admin"
 		},
 		{
+			"path": "../app-graphql-playground"
+		},
+		{
 			"path": "../app-plugin-admin-welcome-screen"
 		},
 		{

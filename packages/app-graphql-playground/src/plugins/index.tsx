@@ -1,5 +1,6 @@
 import React from "react";
 import Helmet from "react-helmet";
+import ApolloClient from "apollo-client";
 import { AdminDrawerFooterMenuPlugin } from "@webiny/app-admin/types";
 import { ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
@@ -7,13 +8,18 @@ import { i18n } from "@webiny/app/i18n";
 import { Link, Route } from "@webiny/react-router";
 import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 import { RoutePlugin } from "@webiny/app/types";
-import { ReactComponent as InfoIcon } from "../../assets/icons/info.svg";
+import { ReactComponent as InfoIcon } from "./info.svg";
 import Playground from "./Playground";
+import {GraphQLPlaygroundTabPlugin} from "@webiny/app-graphql-playground/types";
 
 const t = i18n.ns("app-admin/navigation");
 
+type GraphQLPlaygroundOptions = {
+    createApolloClient(params: { uri: string }): ApolloClient<any>;
+};
+
 // @ts-ignore
-export default () => [
+export default (options: GraphQLPlaygroundOptions) => [
     {
         type: "admin-drawer-footer-menu",
         name: "admin-drawer-footer-menu-api-information",
@@ -42,10 +48,21 @@ export default () => [
                         <Helmet>
                             <title>API Information</title>
                         </Helmet>
-                        <Playground />
+                        <Playground createApolloClient={options.createApolloClient} />
                     </AdminLayout>
                 )}
             />
         )
-    } as RoutePlugin
+    } as RoutePlugin,
+    {
+        type: "graphql-playground-tab",
+        tab() {
+            return{
+                name: "Main API",
+                endpoint: process.env.REACT_APP_API_URL + "/graphql",
+                headers: {},
+                query: "# Write your query and hit the Play button to see results"
+            }
+        }
+    } as GraphQLPlaygroundTabPlugin
 ];

@@ -8,7 +8,7 @@ import contentForm from "./contentDetails/contentForm";
 import contentRevisions from "./contentDetails/contentRevisions";
 import defaultBar from "./editor/defaultBar";
 import formSettings from "./editor/formSettings";
-import apiInformationDialog from "./apiInformationDialog";
+import apiInformation from "./apiInformation";
 import permissionRenderer from "./permissionRenderer";
 import getObjectId from "./getObjectId";
 
@@ -24,6 +24,6 @@ export default () => [
     defaultBar,
     formSettings,
     permissionRenderer,
-    apiInformationDialog,
+    apiInformation,
     getObjectId
 ];

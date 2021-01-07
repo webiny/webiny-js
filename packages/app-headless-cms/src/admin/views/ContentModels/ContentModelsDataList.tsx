@@ -75,7 +75,7 @@ const ContentModelsDataList = () => {
                     {data.map(contentModel => {
                         const disableViewContent = contentModel.fields.length === 0;
                         const message = disableViewContent
-                            ? "You first need to add a field"
+                            ? "To view the content, you first need to add a field and save the model"
                             : "View content";
                         return (
                             <UIL.ListItem key={contentModel.modelId} className={listItemMinHeight}>
