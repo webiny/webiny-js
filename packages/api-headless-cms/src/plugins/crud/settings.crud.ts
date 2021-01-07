@@ -74,6 +74,7 @@ export default {
                     await elasticSearch.indices.create({
                         ...esIndex,
                         body: {
+                            // we are disabling indexing of rawValues property in object that is inserted into ES
                             mappings: {
                                 properties: {
                                     rawValues: { type: "object", enabled: false }

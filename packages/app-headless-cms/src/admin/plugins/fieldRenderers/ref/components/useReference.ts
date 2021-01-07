@@ -133,7 +133,6 @@ export const useReference = ({ bind, field }) => {
     const onChange = useCallback(value => {
         if (value !== null) {
             const entry = allEntries.current.find(entry => entry.id === value);
-
             setValueEntry({
                 id: entry.id,
                 published: entry.meta.status === "published",
