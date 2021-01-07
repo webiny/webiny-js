@@ -31,6 +31,7 @@ export const SearchBarInputWrapper = styled("div")({
 
 export const searchBarInput = css({
     width: "100%",
+    lineHeight: 1,
     border: "none",
     outline: "none",
     backgroundColor: "transparent",
