@@ -431,7 +431,7 @@ async function createApp({ projectName, template, tag, log }) {
             "",
             `Your new Webiny project ${green(appName)} is ready!`,
             `Finish the setup by running the following command: ${green(
-                `cd ${appName} && webiny deploy`
+                `cd ${appName} && yarn webiny deploy`
             )}`,
             "",
             `To see all of the available CLI commands, run ${green(
