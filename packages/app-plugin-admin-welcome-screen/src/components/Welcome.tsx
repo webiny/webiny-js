@@ -17,7 +17,7 @@ import { Elevation } from "@webiny/ui/Elevation";
 import { ReactComponent as YouTubeIcon } from "../icons/youtube.svg";
 import { ReactComponent as GithubIcon } from "../icons/github.svg";
 import { ReactComponent as SlackIcon } from "../icons/slack.svg";
-import { ReactComponent as TwitterIcon } from "../icons/twitter-logo.svg";
+import { ReactComponent as TwitterIcon } from "../icons/twitter.svg";
 import { ReactComponent as TextbookIcon } from "../icons/textbook.svg";
 import { ReactComponent as LaptopIcon } from "../icons/laptop.svg";
 import { AdminWelcomeScreenWidgetPlugin } from "../types";
