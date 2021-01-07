@@ -41,7 +41,7 @@ const Playground = () => {
     useEffect(() => {
         // @ts-ignore
         window.GraphQLPlayground.init(document.getElementById("graphql-playground"), {
-            tabs,
+            tabs
             // createApolloLink
         });
     }, []);

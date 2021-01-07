@@ -109,7 +109,6 @@ export const useReference = ({ bind, field }) => {
                 published: entry.meta.status === "published",
                 name: entry.meta.title
             });
-            bind.onChange({ modelId, entryId: value });
             return;
         }
 
