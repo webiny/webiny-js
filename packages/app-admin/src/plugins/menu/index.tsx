@@ -1,7 +1,6 @@
 import React from "react";
 import Hamburger from "./Hamburger";
-import gqlApiInformation from "./gqlApiInformation";
-import { AdminHeaderLeftPlugin, ApiInformationDialogPlugin } from "@webiny/app-admin/types";
+import { AdminHeaderLeftPlugin } from "@webiny/app-admin/types";
 
 const plugin = [
     {
@@ -10,8 +9,7 @@ const plugin = [
         render() {
             return <Hamburger />;
         }
-    } as AdminHeaderLeftPlugin,
-    gqlApiInformation as ApiInformationDialogPlugin
+    } as AdminHeaderLeftPlugin
 ];
 
 export default plugin;

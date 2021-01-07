@@ -7,7 +7,7 @@ import { ReactComponent as DocsIcon } from "../../assets/icons/icon-documentatio
 
 const t = i18n.ns("app-admin/navigation");
 
-const plugin: AdminDrawerFooterMenuPlugin = {
+export default (): AdminDrawerFooterMenuPlugin => ({
     type: "admin-drawer-footer-menu",
     name: "admin-drawer-footer-menu-documentation",
     render() {
@@ -22,6 +22,4 @@ const plugin: AdminDrawerFooterMenuPlugin = {
             </a>
         );
     }
-};
-
-export default plugin;
+});

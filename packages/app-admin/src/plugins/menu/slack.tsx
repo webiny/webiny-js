@@ -7,7 +7,7 @@ import { ReactComponent as SlackIcon } from "@webiny/app-admin/assets/icons/slac
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-admin/navigation");
 
-const plugin: AdminDrawerFooterMenuPlugin = {
+export default (): AdminDrawerFooterMenuPlugin => ({
     type: "admin-drawer-footer-menu",
     name: "admin-drawer-footer-menu-slack",
     render() {
@@ -24,6 +24,4 @@ const plugin: AdminDrawerFooterMenuPlugin = {
             </>
         );
     }
-};
-
-export default plugin;
+});
