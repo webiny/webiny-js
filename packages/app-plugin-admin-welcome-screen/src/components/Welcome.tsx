@@ -13,13 +13,13 @@ import { plugins } from "@webiny/plugins";
 import { Typography } from "@webiny/ui/Typography";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Elevation } from "@webiny/ui/Elevation";
-
-import GithubIcon from "../icons/github-logo.svg";
-import SlackIcon from "../icons/slack-logo.svg";
-import MediumIcon from "../icons/medium-logo.svg";
-import TwitterIcon from "../icons/twitter-logo.svg";
-import TextbookIcon from "../icons/textbook.svg";
-import LaptopIcon from "../icons/laptop.svg";
+// Icons
+import { ReactComponent as YouTubeIcon } from "../icons/youtube.svg";
+import { ReactComponent as GithubIcon } from "../icons/github.svg";
+import { ReactComponent as SlackIcon } from "../icons/slack.svg";
+import { ReactComponent as TwitterIcon } from "../icons/twitter-logo.svg";
+import { ReactComponent as TextbookIcon } from "../icons/textbook.svg";
+import { ReactComponent as LaptopIcon } from "../icons/laptop.svg";
 import { AdminWelcomeScreenWidgetPlugin } from "../types";
 
 const linkStyle = css({
@@ -210,14 +210,15 @@ const Welcome = () => {
                                 className={footerTextStyle}
                                 style={{ margin: "1rem 1rem 1rem 0rem" }}
                             >
-                                <Link to="https://docs.webiny.com/" className={linkStyle}>
+                                <Link
+                                    to="https://docs.webiny.com/"
+                                    className={linkStyle}
+                                    target={"_blank"}
+                                    rel={"noopener noreferrer"}
+                                >
                                     <Typography use={"headline5"}>
                                         <div className={footerContainerStyle}>
-                                            <img
-                                                className={imageStyle}
-                                                src={TextbookIcon}
-                                                alt={""}
-                                            />
+                                            <TextbookIcon className={imageStyle} />
                                             <p className={footerLinkTextStyle}>Documentation</p>
                                         </div>
                                     </Typography>
@@ -231,10 +232,12 @@ const Welcome = () => {
                                 <Link
                                     to="https://github.com/webiny/webiny-examples"
                                     className={linkStyle}
+                                    target={"_blank"}
+                                    rel={"noopener noreferrer"}
                                 >
                                     <Typography use={"headline5"}>
                                         <span className={footerContainerStyle}>
-                                            <img className={imageStyle} src={LaptopIcon} alt={""} />
+                                            <LaptopIcon className={imageStyle} />
                                             <p className={footerLinkTextStyle}>Code examples</p>
                                         </span>
                                     </Typography>
@@ -244,42 +247,43 @@ const Welcome = () => {
                                 <Link
                                     to="https://github.com/webiny/webiny-js"
                                     className={linkStyle}
+                                    target={"_blank"}
+                                    rel={"noopener noreferrer"}
                                 >
-                                    <img
-                                        className={imageStyle}
-                                        src={GithubIcon}
-                                        alt={"Github logo"}
-                                    />
+                                    <GithubIcon className={imageStyle} />
                                     <p>Github</p>
                                 </Link>
                             </Cell>
                             <Cell span={1} className={iconTextStyle} align="middle">
-                                <Link to="https://www.webiny.com/slack/" className={linkStyle}>
-                                    <img
-                                        className={imageStyle}
-                                        src={SlackIcon}
-                                        alt={"Slack logo"}
-                                    />
+                                <Link
+                                    to="https://www.webiny.com/slack/"
+                                    className={linkStyle}
+                                    target={"_blank"}
+                                    rel={"noopener noreferrer"}
+                                >
+                                    <SlackIcon className={imageStyle} />
                                     <p>Slack</p>
                                 </Link>
                             </Cell>
                             <Cell span={1} className={iconTextStyle} align="middle">
-                                <Link to="https://blog.webiny.com" className={linkStyle}>
-                                    <img
-                                        className={imageStyle}
-                                        src={MediumIcon}
-                                        alt={"Medium logo"}
-                                    />
-                                    <p>Medium</p>
+                                <Link
+                                    to="https://youtube.com/webiny"
+                                    className={linkStyle}
+                                    target={"_blank"}
+                                    rel={"noopener noreferrer"}
+                                >
+                                    <YouTubeIcon className={imageStyle} />
+                                    <p>YouTube</p>
                                 </Link>
                             </Cell>
                             <Cell span={1} className={iconTextStyle} align="middle">
-                                <Link to="https://twitter.com/WebinyPlatform" className={linkStyle}>
-                                    <img
-                                        className={imageStyle}
-                                        src={TwitterIcon}
-                                        alt={"Twitter logo"}
-                                    />
+                                <Link
+                                    to="https://twitter.com/WebinyPlatform"
+                                    className={linkStyle}
+                                    target={"_blank"}
+                                    rel={"noopener noreferrer"}
+                                >
+                                    <TwitterIcon className={imageStyle} />
                                     <p>Twitter</p>
                                 </Link>
                             </Cell>
