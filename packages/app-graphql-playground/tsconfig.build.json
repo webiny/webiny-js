@@ -7,8 +7,8 @@
     "./dist",
     "../app",
     "../app-i18n",
+    "../app-security",
     "../app-admin",
-    "../form",
     "../ui",
     "../react-router",
     "../plugins"
@@ -26,10 +26,10 @@
       "path": "../app-i18n/tsconfig.build.json"
     },
     {
-      "path": "../app-admin/tsconfig.build.json"
+      "path": "../app-security/tsconfig.build.json"
     },
     {
-      "path": "../form/tsconfig.build.json"
+      "path": "../app-admin/tsconfig.build.json"
     },
     {
       "path": "../ui/tsconfig.build.json"

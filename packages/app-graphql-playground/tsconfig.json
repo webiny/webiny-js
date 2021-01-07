@@ -8,10 +8,10 @@
       "path": "../app-i18n"
     },
     {
-      "path": "../app-admin"
+      "path": "../app-security"
     },
     {
-      "path": "../form"
+      "path": "../app-admin"
     },
     {
       "path": "../ui"
