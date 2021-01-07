@@ -45,7 +45,7 @@
 		"@elastic/elasticsearch": "^7.9.1",
 		"@shelf/jest-elasticsearch": "^1.0.0",
 		"csvtojson": "^2.0.10",
-		"jest-dynalite": "^3.0.0"
+		"jest-dynalite": "3.2.3"
 	},
 	"publishConfig": {
 		"access": "public",
