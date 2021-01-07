@@ -40,6 +40,7 @@
     "graphql-tag": "^2.10.1",
     "lodash": "^4.17.10",
     "pluralize": "^8.0.0",
+    "raw-loader": "^4.0.2",
     "react-apollo": "^3.1.0",
     "react-dnd": "^9.3.4",
     "react-dnd-html5-backend": "^9.3.4",
@@ -81,9 +82,13 @@
   },
   "adio": {
     "ignore": {
+      "src": [
+        "!!raw-loader!."
+      ],
       "dependencies": [
         "@svgr/webpack",
-        "@emotion/core"
+        "@emotion/core",
+        "raw-loader"
       ],
       "peerDependencies": [
         "react-dom"

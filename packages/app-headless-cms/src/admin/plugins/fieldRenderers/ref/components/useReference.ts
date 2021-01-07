@@ -152,7 +152,7 @@ export const useReference = ({ bind, field }) => {
 
     // Format default options for the Autocomplete component.
     const defaultOptions = useMemo(() => getOptions(latestEntries), [latestEntries]);
-    
+
     return {
         onChange,
         setSearch,
