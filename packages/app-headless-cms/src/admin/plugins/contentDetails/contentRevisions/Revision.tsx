@@ -139,7 +139,7 @@ const Revision = (props: Props) => {
                             )}
 
                             {revision.meta.status !== "published" && (
-                                <MenuItem onClick={publishRevision}>
+                                <MenuItem onClick={() => publishRevision(revision.id)}>
                                     <ListItemGraphic>
                                         <Icon icon={<PublishIcon />} />
                                     </ListItemGraphic>
