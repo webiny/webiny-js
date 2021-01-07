@@ -196,6 +196,10 @@ class AutoComplete extends React.Component<Props, State> {
                     return;
                 }
                 onChange(getOptionValue(selection, this.props), selection);
+                this.setState(state => ({
+                    ...state,
+                    inputValue: ""
+                }));
             }
         };
 
@@ -222,6 +226,7 @@ class AutoComplete extends React.Component<Props, State> {
 
                                         if (keyCode === "backspace") {
                                             onChange(null);
+                                            setTimeout(() => openMenu(), 50);
                                         }
                                     },
                                     onKeyUp: (ev: React.KeyboardEvent<HTMLInputElement>) => {

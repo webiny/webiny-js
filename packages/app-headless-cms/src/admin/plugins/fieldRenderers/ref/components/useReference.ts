@@ -47,6 +47,7 @@ export const useReference = ({ bind, field }) => {
             query: LIST_CONTENT,
             variables: { where: { [`${titleFieldId}_contains`]: search } }
         });
+
         setLoading(false);
 
         allEntries.current = distinctBy("id", [...allEntries.current, ...data.content.data]);
@@ -93,7 +94,7 @@ export const useReference = ({ bind, field }) => {
                 setLatestEntries(data.content.data);
                 allEntries.current = [...data.content.data];
             });
-    }, [LIST_CONTENT]);
+    }, [modelId, LIST_CONTENT]);
 
     useEffect(() => {
         if (!value || !model || !model.titleFieldId || !GET_CONTENT) {
@@ -133,6 +134,7 @@ export const useReference = ({ bind, field }) => {
     const onChange = useCallback(value => {
         if (value !== null) {
             const entry = allEntries.current.find(entry => entry.id === value);
+            setSearch("");
             setValueEntry({
                 id: entry.id,
                 published: entry.meta.status === "published",
@@ -150,7 +152,7 @@ export const useReference = ({ bind, field }) => {
 
     // Format default options for the Autocomplete component.
     const defaultOptions = useMemo(() => getOptions(latestEntries), [latestEntries]);
-
+    
     return {
         onChange,
         setSearch,
