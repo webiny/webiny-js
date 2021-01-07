@@ -5,12 +5,16 @@ import { PbPageElementImagesListComponentPlugin } from "../../../../types";
 import Accordion from "../../elementSettings/components/Accordion";
 import Wrapper from "../../elementSettings/components/Wrapper";
 import SelectField from "../../elementSettings/components/SelectField";
-import { classes } from "../../elementSettings/components/StyledComponents";
+import {
+    ButtonContainer,
+    classes,
+    SimpleButton
+} from "../../elementSettings/components/StyledComponents";
 import ImagesList from "./ImagesList";
 
-const ImagesListDesignSettings = ({ Bind, data }) => {
+const ImagesListDesignSettings = ({ Bind, data, submit }) => {
     const components = getPlugins<PbPageElementImagesListComponentPlugin>(
-        "pb-editor-page-element-images-list-component"
+        "pb-page-element-images-list-component"
     );
 
     return (
@@ -37,6 +41,13 @@ const ImagesListDesignSettings = ({ Bind, data }) => {
                 <Grid className={classes.simpleGrid}>
                     <Cell span={12} style={{ overflowY: "scroll" }}>
                         <ImagesList data={data} />
+                    </Cell>
+                </Grid>
+                <Grid className={classes.simpleGrid}>
+                    <Cell span={12}>
+                        <ButtonContainer>
+                            <SimpleButton onClick={submit}>Save</SimpleButton>
+                        </ButtonContainer>
                     </Cell>
                 </Grid>
             </React.Fragment>

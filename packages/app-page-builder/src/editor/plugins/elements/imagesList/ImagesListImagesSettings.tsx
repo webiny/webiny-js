@@ -31,12 +31,12 @@ class Item extends React.Component {
 const SortableItem = sortable(Item);
 
 const ImagesListImagesSettings = props => {
-    const { Bind, form } = props;
+    const { Bind, submit } = props;
     return (
         <Accordion title={"Images"} defaultValue={true}>
             <Grid className={classes.simpleGrid}>
                 <Cell span={12}>
-                    <Bind name={"images"}>
+                    <Bind name={"images"} afterChange={submit}>
                         {({ onChange, value }) => (
                             <FileManager
                                 images
