@@ -39,7 +39,7 @@ const ImagesListDesignSettings = ({ Bind, data, submit }) => {
                 </Wrapper>
 
                 <Grid className={classes.simpleGrid}>
-                    <Cell span={12} style={{ overflowY: "scroll" }}>
+                    <Cell span={12}>
                         <ImagesList data={data} />
                     </Cell>
                 </Grid>
