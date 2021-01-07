@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Input } from "@webiny/ui/Input";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Typography } from "@webiny/ui/Typography";
@@ -35,6 +35,18 @@ export const Name = () => {
         setEditing(true);
     }
 
+    const saveTitle = useCallback(
+        e => {
+            e.preventDefault();
+            setData(data => {
+                data.name = localName;
+                return data;
+            });
+            setEditing(false);
+        },
+        [localName]
+    );
+
     useHotkeys({
         zIndex: 100,
         keys: {
@@ -50,14 +62,7 @@ export const Name = () => {
                 e.preventDefault();
                 cancelChanges();
             },
-            enter: e => {
-                e.preventDefault();
-                setData(data => {
-                    data.name = localName;
-                    return data;
-                });
-                setEditing(false);
-            }
+            enter: saveTitle
         }
     });
 
@@ -72,7 +77,7 @@ export const Name = () => {
                 fullwidth
                 value={localName}
                 onChange={setLocalName}
-                onBlur={cancelChanges}
+                onBlur={saveTitle}
             />
         </NameInputWrapper>
     ) : (
