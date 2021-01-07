@@ -3,7 +3,7 @@ const pRetry = require("p-retry");
 const semver = require("semver");
 const execa = require("execa");
 
-function getPackageVersion(name, tag = "latest") {
+module.exports = function getPackageVersion(name, tag = "latest") {
     if (semver.valid(tag)) {
         return tag;
     }
@@ -21,6 +21,4 @@ function getPackageVersion(name, tag = "latest") {
     };
 
     return pRetry(getVersion, { retries: 5 });
-}
-
-module.exports = { getPackageVersion };
+};

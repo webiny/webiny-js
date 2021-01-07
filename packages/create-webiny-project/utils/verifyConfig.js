@@ -5,7 +5,7 @@ const writeJson = require("write-json-file");
 
 const configPath = path.join(os.homedir(), ".webiny", "config");
 
-const verifyConfig = async () => {
+module.exports = async () => {
     // Check user ID
     try {
         const config = await readJson(configPath);
@@ -18,5 +18,3 @@ const verifyConfig = async () => {
         writeJson.sync(configPath, { id: await publicIp.v4() });
     }
 };
-
-module.exports = { verifyConfig };
