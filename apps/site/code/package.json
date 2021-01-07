@@ -25,10 +25,13 @@
     "regenerator-runtime": "^0.13.5",
     "theme": "^0.1.0"
   },
+  "devDependencies": {
+    "cross-env": "^5.0.2"
+  },
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
     "build": "webiny run build",
-    "start": "PORT=3000 webiny run start"
+    "start": "cross-env PORT=3000 webiny run start"
   },
   "browserslist": {
     "development": [

@@ -40,9 +40,12 @@
 		"react-dom": "16.14.0",
 		"regenerator-runtime": "^0.13.5"
 	},
+	"devDependencies": {
+		"cross-env": "^5.0.2"
+	},
 	"scripts": {
 		"analyze": "source-map-explorer build/static/js/main.*",
-		"start": "PORT=3001 webiny run start",
+		"start": "cross-env PORT=3001 webiny run start",
 		"build": "webiny run build"
 	},
 	"browserslist": {
