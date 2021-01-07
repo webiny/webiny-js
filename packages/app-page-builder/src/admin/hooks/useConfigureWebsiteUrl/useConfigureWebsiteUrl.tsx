@@ -20,7 +20,7 @@ export const ConfigureWebsiteUrlMessage = ({ websiteUrl }) => {
     if (typeof websiteUrl !== "string") {
         return (
             <span className={confirmationMessageStyles}>
-                {t`Public website website URL is missing. Please visit the {pageBuilderSettingsLink} and set it first.`(
+                {t`Public website URL is missing. Please visit the {pageBuilderSettingsLink} and set it first.`(
                     {
                         pageBuilderSettingsLink: (
                             <Link to={PAGE_BUILDER_SETTINGS_LINK}>{t`Page Builder settings`}</Link>
