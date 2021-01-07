@@ -36,7 +36,7 @@ export const App = () => (
                 */}
                 <BrowserRouter basename={process.env.PUBLIC_URL}>
                     {/*
-                        This is the Webiny telemetry system, for more information please visit: https://docs.webiny.com/docs/webiny-telemetry
+                        To learn more about Webiny telemetry system, please visit: https://docs.webiny.com/docs/webiny-telemetry
                     */}
                     <Telemetry />
                     {/*
@@ -59,6 +59,11 @@ export const App = () => (
                                 the <SecurityProvider>.
                             */}
                             <Authentication getIdentityData={getIdentityData}>
+                                {/*
+                                    <TenancyProvider> controls access to different tenants and manages permissions a user
+                                    has on each particular tenant. At this point, Webiny doesn't provide a tenancy management app so
+                                    your app is limited to a single tenant.
+                                */}
                                 <TenancyProvider>
                                     {/*
                                         <I18NProvider> loads system locales. Webiny supports multi-language content and language-based
