@@ -10,9 +10,8 @@ import {
     classes,
     SimpleButton
 } from "../../elementSettings/components/StyledComponents";
-import ImagesList from "./ImagesList";
 
-const ImagesListDesignSettings = ({ Bind, data, submit }) => {
+const ImagesListDesignSettings = ({ Bind, submit }) => {
     const components = getPlugins<PbPageElementImagesListComponentPlugin>(
         "pb-page-element-images-list-component"
     );
@@ -37,12 +36,6 @@ const ImagesListDesignSettings = ({ Bind, data, submit }) => {
                         </SelectField>
                     </Bind>
                 </Wrapper>
-
-                <Grid className={classes.simpleGrid}>
-                    <Cell span={12}>
-                        <ImagesList data={data} />
-                    </Cell>
-                </Grid>
                 <Grid className={classes.simpleGrid}>
                     <Cell span={12}>
                         <ButtonContainer>
