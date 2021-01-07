@@ -30,6 +30,7 @@ export default () =>
             // 1. GET PreSignedPostPayload
             const response = await apolloClient.query({
                 query: GET_PRE_SIGNED_POST_PAYLOAD,
+                fetchPolicy: "no-cache",
                 variables: {
                     data: { size: file.size, name: file.name, type: file.type }
                 }
