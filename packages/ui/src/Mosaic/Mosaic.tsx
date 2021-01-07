@@ -12,8 +12,12 @@ export type MosaicProps = {
     className?: string;
 };
 
-export function Mosaic({ children }: MosaicProps) {
-    return <Columned>{children}</Columned>;
+export function Mosaic({ children, columns, className }: MosaicProps) {
+    return (
+        <Columned columns={columns} className={className}>
+            {children}
+        </Columned>
+    );
 }
 
 Mosaic.defaultProps = {
