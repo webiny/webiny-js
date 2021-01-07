@@ -57,8 +57,7 @@ const PrerenderingSettings = () => {
                                         label="App URL"
                                         description={
                                             <span>
-                                                This is the URL over which your app is available and
-                                                which will be used for prerendering.
+                                                The URL to access your app, which is used for prerendering.
                                                 {appUrl && (
                                                     <>
                                                         If not specified, the default one (
@@ -76,8 +75,8 @@ const PrerenderingSettings = () => {
                                         label="Storage name"
                                         description={
                                             <span>
-                                                The name of the cloud resource (bucket) in which the
-                                                prerender pages and other related resources will be
+                                                The name of the cloud resource (bucket) where the
+                                                prerendered pages and other related assets are
                                                 stored.{" "}
                                                 {storageName && (
                                                     <>
