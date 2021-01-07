@@ -106,8 +106,6 @@
       "@webiny/handler-apollo-gateway/*": ["./packages/handler-apollo-gateway/src/*"],
       "@webiny/handler-graphql": ["./packages/handler-graphql/src"],
       "@webiny/handler-graphql/*": ["./packages/handler-graphql/src/*"],
-      "@webiny/handler-graphql-playground": ["./packages/handler-graphql-playground/src"],
-      "@webiny/handler-graphql-playground/*": ["./packages/handler-graphql-playground/src/*"],
       "@webiny/handler-args": ["./packages/handler-args/src"],
       "@webiny/handler-args/*": ["./packages/handler-args/src/*"],
       "@webiny/handler-aws": ["./packages/handler-aws/src"],
