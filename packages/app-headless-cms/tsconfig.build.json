@@ -8,6 +8,7 @@
 		"dist",
 		"../app",
 		"../app-admin",
+		"../app-graphql-playground",
 		"../app-plugin-admin-welcome-screen",
 		"../app-i18n",
 		"../form",
@@ -28,6 +29,9 @@
 		},
 		{
 			"path": "../app-admin/tsconfig.build.json"
+		},
+		{
+			"path": "../app-graphql-playground/tsconfig.build.json"
 		},
 		{
 			"path": "../app-plugin-admin-welcome-screen/tsconfig.build.json"
