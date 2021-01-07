@@ -1,0 +1,15 @@
+#  Webiny Headless CMS Preview API
+#
+#  This is the API to use in your 3rd party apps to preview content.
+#  It returns the latest content revision, regardless of whether it was published or not.
+#
+#  Note: to use the API outside of the playground, you will need to provide an API key via the Authorization header.
+#
+#  Example query - list content models:
+{
+  listContentModels {
+    data {
+      name
+    }
+  }
+}

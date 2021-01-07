@@ -1,0 +1,18 @@
+#  Webiny Headless CMS Manage API
+#
+#  This API controls all the operations within the Headless CMS module.
+#  Use it to manage content, create and modify content models and more.
+#  Explore the schema for details.
+#
+#  Note: to use the API outside of the playground, you will need to provide an API key via the Authorization header.
+#
+#  Example query - list content model groups:
+{
+  listContentModelGroups {
+    data {
+      name
+      icon
+      slug
+    }
+  }
+}

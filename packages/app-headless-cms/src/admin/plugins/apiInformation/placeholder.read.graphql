@@ -1,0 +1,16 @@
+#  Webiny Headless CMS Read API
+#
+#  This is the API to use in your 3rd party apps to read your content.
+#  It returns only content that has been published.
+#
+#  Note: to use the API outside of the playground, you will need to provide an API key via the Authorization header.
+#
+#  Example query - list content models:
+{
+  listContentModels {
+    data {
+      name
+      modelId
+    }
+  }
+}
