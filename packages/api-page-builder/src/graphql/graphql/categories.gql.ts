@@ -15,7 +15,6 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
     schema: {
         typeDefs: /* GraphQL */ `
             type PbCategory {
-                id: ID
                 createdOn: DateTime
                 createdBy: PbCreatedBy
                 name: String
@@ -25,7 +24,6 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
             }
 
             input PbCategoryInput {
-                id: ID
                 name: String
                 slug: String
                 url: String
