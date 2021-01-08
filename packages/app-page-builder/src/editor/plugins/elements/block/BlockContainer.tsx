@@ -25,7 +25,7 @@ const addIcon = css({
 
 const BlockContainerInnerWrapStyled = styled("div")({
     position: "relative",
-    width: "100%"
+    maxWidth: "100%"
 });
 
 type BlockContainerPropsType = {

@@ -121,6 +121,7 @@ export default function FileDetails(props) {
             const filteredList = data.fileManager.listFiles.data.filter(
                 item => item.id !== file.id
             );
+            const selectedFile = data.fileManager.listFiles.data.find(item => item.id === file.id);
 
             cache.writeQuery({
                 query: LIST_FILES,
@@ -128,7 +129,6 @@ export default function FileDetails(props) {
                 data: set(data, "fileManager.listFiles.data", filteredList)
             });
             // 2. Update "ListTags" cache
-            const selectedFile = data.fileManager.listFiles.data.find(item => item.id === file.id);
             if (Array.isArray(selectedFile.tags)) {
                 const tagCountMap = {};
                 // Prepare "tag" count map
