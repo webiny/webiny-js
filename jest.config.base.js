@@ -17,6 +17,7 @@ module.exports = ({ path }, presets = []) => {
         modulePathIgnorePatterns: [],
         globals: {
             "ts-jest": {
+                isolatedModules: true,
                 babelConfig: `${path}/.babelrc.js`,
                 diagnostics: false
             }
