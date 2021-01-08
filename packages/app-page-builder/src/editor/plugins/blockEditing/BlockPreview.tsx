@@ -7,7 +7,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { ReactComponent as EditIcon } from "./icons/round-edit-24px.svg";
-import { ReactComponent as DeleteIcon } from "./icons/round-close-24px.svg";
+import { ReactComponent as DeleteIcon } from "./icons/delete-24dpx.svg";
 import * as Styled from "./StyledComponents";
 import kebabCase from "lodash/kebabCase";
 

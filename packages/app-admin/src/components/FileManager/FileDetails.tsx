@@ -18,7 +18,7 @@ import { useFileManager } from "./FileManagerContext";
 import { useMutation } from "react-apollo";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
-import { DELETE_FILE, LIST_FILES } from "./graphql";
+import { DELETE_FILE, LIST_FILES, LIST_TAGS } from "./graphql";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-admin/file-manager/file-details");
 
@@ -111,6 +111,7 @@ export default function FileDetails(props) {
 
     const [deleteFile] = useMutation(DELETE_FILE, {
         update: cache => {
+            // 1. Update files list cache
             const data: any = cloneDeep(
                 cache.readQuery({
                     query: LIST_FILES,
@@ -126,6 +127,44 @@ export default function FileDetails(props) {
                 variables: queryParams,
                 data: set(data, "fileManager.listFiles.data", filteredList)
             });
+            // 2. Update "ListTags" cache
+            const selectedFile = data.fileManager.listFiles.data.find(item => item.id === file.id);
+            if (Array.isArray(selectedFile.tags)) {
+                const tagCountMap = {};
+                // Prepare "tag" count map
+                data.fileManager.listFiles.data.forEach(file => {
+                    if (!Array.isArray(file.tags)) {
+                        return;
+                    }
+                    file.tags.forEach(tag => {
+                        if (tagCountMap[tag]) {
+                            tagCountMap[tag] += 1;
+                        } else {
+                            tagCountMap[tag] = 1;
+                        }
+                    });
+                });
+
+                // Get tags from cache
+                const listTagsData: any = cloneDeep(
+                    cache.readQuery({
+                        query: LIST_TAGS
+                    })
+                );
+                // Remove selected file tags from list.
+                const filteredTags = listTagsData.fileManager.listTags.filter(tag => {
+                    if (!selectedFile.tags.includes(tag)) {
+                        return true;
+                    }
+                    return tagCountMap[tag] > 1;
+                });
+
+                // Write it to cache
+                cache.writeQuery({
+                    query: LIST_TAGS,
+                    data: set(data, "fileManager.listTags", filteredTags)
+                });
+            }
         }
     });
     const { showSnackbar } = useSnackbar();

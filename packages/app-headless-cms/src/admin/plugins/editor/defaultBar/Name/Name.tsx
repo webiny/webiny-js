@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Input } from "@webiny/ui/Input";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { useContentModelEditor } from "../../../../views/components/ContentModelEditor/Context";
@@ -19,14 +19,26 @@ export const Name = () => {
     const [localName, setLocalName] = useState(null);
     const [editingEnabled, setEditing] = useState(false);
 
-    function cancelChanges() {
+    const cancelChanges = () => {
         setEditing(false);
-    }
+    };
 
-    function startEditing() {
+    const startEditing = () => {
         setLocalName(state.data.name);
         setEditing(true);
-    }
+    };
+
+    const saveName = useCallback(
+        e => {
+            e.preventDefault();
+            setData(data => {
+                data.name = localName;
+                return data;
+            });
+            setEditing(false);
+        },
+        [localName]
+    );
 
     useHotkeys({
         zIndex: 100,
@@ -43,14 +55,7 @@ export const Name = () => {
                 e.preventDefault();
                 cancelChanges();
             },
-            enter: e => {
-                e.preventDefault();
-                setData(data => {
-                    data.name = localName;
-                    return data;
-                });
-                setEditing(false);
-            }
+            enter: saveName
         }
     });
 
@@ -65,7 +70,7 @@ export const Name = () => {
                 fullwidth
                 value={localName}
                 onChange={setLocalName}
-                onBlur={cancelChanges}
+                onBlur={saveName}
             />
         </NameInputWrapper>
     ) : (

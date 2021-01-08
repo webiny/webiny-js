@@ -57,12 +57,12 @@ const PrerenderingSettings = () => {
                                         label="App URL"
                                         description={
                                             <span>
-                                                This is the URL over which your app is available and
-                                                which will be used for prerendering.
+                                                The URL to access your app, which is used for
+                                                prerendering.&nbsp; 
                                                 {appUrl && (
                                                     <>
                                                         If not specified, the default one (
-                                                        <a href={appUrl}>{appUrl}</a>) will be used.
+                                                        <a href={appUrl}>{appUrl}</a>) is used.
                                                     </>
                                                 )}
                                             </span>
@@ -76,14 +76,13 @@ const PrerenderingSettings = () => {
                                         label="Storage name"
                                         description={
                                             <span>
-                                                The name of the cloud resource (bucket) in which the
-                                                prerender pages and other related resources will be
-                                                stored.{" "}
+                                                The name of the cloud resource (bucket) where the
+                                                prerendered pages and other related assets are
+                                                stored.&nbsp;
                                                 {storageName && (
                                                     <>
                                                         If not specified, the default one (
-                                                        <strong>{storageName}</strong>) will be
-                                                        used.
+                                                        <strong>{storageName}</strong>) is used.
                                                     </>
                                                 )}
                                             </span>

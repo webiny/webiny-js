@@ -12,7 +12,7 @@ export default [
     adminApp(),
     logo(),
     graphqlPlayground({ createApolloClient }),
-    // User meny
+    // User menu
     help(),
     sendFeedback(),
     // Navigation menu footer

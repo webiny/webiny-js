@@ -1,5 +1,10 @@
-import React from "react";
 import { GraphQLPlaygroundTabPlugin } from "@webiny/app-graphql-playground/types";
+// @ts-ignore
+import manageQuery from "!!raw-loader!./placeholder.manage.graphql";
+// @ts-ignore
+import readQuery from "!!raw-loader!./placeholder.read.graphql";
+// @ts-ignore
+import previewQuery from "!!raw-loader!./placeholder.preview.graphql";
 
 const plugins: GraphQLPlaygroundTabPlugin[] = [
     {
@@ -11,10 +16,10 @@ const plugins: GraphQLPlaygroundTabPlugin[] = [
             }
 
             return {
-                name: "CMS Manage API",
+                name: "Headless CMS - Manage API",
                 endpoint: process.env.REACT_APP_API_URL + "/cms/manage/" + locale,
                 headers: {},
-                query: "# Write your query and hit the Play button to see results"
+                query: manageQuery
             };
         }
     },
@@ -27,10 +32,10 @@ const plugins: GraphQLPlaygroundTabPlugin[] = [
             }
 
             return {
-                name: "CMS Read API",
+                name: "Headless CMS - Read API",
                 endpoint: process.env.REACT_APP_API_URL + "/cms/read/" + locale,
                 headers: {},
-                query: "# Write your query and hit the Play button to see results"
+                query: readQuery
             };
         }
     },
@@ -43,10 +48,10 @@ const plugins: GraphQLPlaygroundTabPlugin[] = [
             }
 
             return {
-                name: "CMS Preview API",
+                name: "Headless CMS - Preview API",
                 endpoint: process.env.REACT_APP_API_URL + "/cms/preview/" + locale,
                 headers: {},
-                query: "# Write your query and hit the Play button to see results"
+                query: previewQuery
             };
         }
     }

@@ -10,7 +10,9 @@ import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 import { RoutePlugin } from "@webiny/app/types";
 import { ReactComponent as InfoIcon } from "./info.svg";
 import Playground from "./Playground";
-import {GraphQLPlaygroundTabPlugin} from "@webiny/app-graphql-playground/types";
+import { GraphQLPlaygroundTabPlugin } from "@webiny/app-graphql-playground/types";
+// @ts-ignore
+import placeholder from "!!raw-loader!./placeholder.graphql";
 
 const t = i18n.ns("app-admin/navigation");
 
@@ -57,12 +59,12 @@ export default (options: GraphQLPlaygroundOptions) => [
     {
         type: "graphql-playground-tab",
         tab() {
-            return{
+            return {
                 name: "Main API",
                 endpoint: process.env.REACT_APP_API_URL + "/graphql",
                 headers: {},
-                query: "# Write your query and hit the Play button to see results"
-            }
+                query: placeholder
+            };
         }
     } as GraphQLPlaygroundTabPlugin
 ];
