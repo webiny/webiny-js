@@ -31,7 +31,7 @@ module.exports = async function createProject({ projectName, template, tag, log 
         console.log(
             [
                 "",
-                "IMPORTANT NOTICE:",
+                "🚨 IMPORTANT NOTICE:",
                 "----------------------------------------",
                 `We've detected a global installation of ${green(
                     "@webiny/cli"
@@ -59,7 +59,7 @@ module.exports = async function createProject({ projectName, template, tag, log 
     const tasks = new Listr([
         {
             // Creates root package.json.
-            title: "Pre-template setup",
+            title: "Prepare project folder",
             task: () => {
                 checkProjectName(projectName);
                 fs.ensureDirSync(projectName);
@@ -129,6 +129,8 @@ module.exports = async function createProject({ projectName, template, tag, log 
             return new Promise(resolve => {
                 setTimeout(() => {
                     resolve();
+                    // Add a new line break before receiving output from template script.
+                    console.log();
                     return require(templatePath)({ projectName, root });
                 }, 500);
             });
@@ -161,7 +163,7 @@ module.exports = async function createProject({ projectName, template, tag, log 
             console.log(`\nWriting log to ${green(path.resolve(logPath))}...`);
             fs.writeFileSync(path.resolve(logPath), err.toString());
             console.log("Cleaning up project...");
-            // rimraf.sync(root);
+            rimraf.sync(root);
             console.log("Project cleaned!");
             process.exit(1);
         });
