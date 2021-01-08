@@ -3,6 +3,63 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.0) (2021-01-08)
+
+
+### Bug Fixes
+
+* add `execa` and `chalk` ([dd8625d](https://github.com/webiny/webiny-js/commit/dd8625d5e417d9749f8971f3ac43c8f4b031bbe9))
+* add `link-packages` script ([96bc7d0](https://github.com/webiny/webiny-js/commit/96bc7d06f27e1b7ea1eba344f7ef4ea418c6d0fd))
+* add `renames` utility file ([6724b39](https://github.com/webiny/webiny-js/commit/6724b391aa80f0b0211b391877ab5359bfed7818))
+* add `setupRepo` and `setupEnvFiles` script ([3669e5f](https://github.com/webiny/webiny-js/commit/3669e5f327eec362841cb63d0a63edfca961694b))
+* add congrats message ([36c0751](https://github.com/webiny/webiny-js/commit/36c07512e5d3a0d637638e19a649a5ee6394f1ae))
+* add missing file ([3d72d48](https://github.com/webiny/webiny-js/commit/3d72d4852bb23c6ce7150fee3afd2aa4c915beeb))
+* add new line ([8b98a8b](https://github.com/webiny/webiny-js/commit/8b98a8be854bb8f551004d9ad0b52f434c6b7882))
+* adjust args ([a436d01](https://github.com/webiny/webiny-js/commit/a436d01e86b3645675e1d71065bcc20c22bee838))
+* adjust version ([5ad8c4e](https://github.com/webiny/webiny-js/commit/5ad8c4ea6fb6376941dc2e79e88ef0d7d7ba8ee4))
+* bring back `example.env` file ([004bd44](https://github.com/webiny/webiny-js/commit/004bd44d3ff3e6e525e2ab21379b7fa6423ef149))
+* clean up `lerna.json` ([a7776e9](https://github.com/webiny/webiny-js/commit/a7776e9007a9febdccd827ad6025623bdb9f5f74))
+* cleanup ([b425249](https://github.com/webiny/webiny-js/commit/b4252497f6f64c1958a9cdabccfbfef0d0a3b640))
+* correct import paths ([8fd3881](https://github.com/webiny/webiny-js/commit/8fd3881ee78f3bb30cec04d104ace959542e4077))
+* correct spread ([1a8a5c6](https://github.com/webiny/webiny-js/commit/1a8a5c63ec3c41f93ed043592dda3cd5f2ec0423))
+* do not call `runInquirer` ([ec4535a](https://github.com/webiny/webiny-js/commit/ec4535ad770ab9fbc7795d7b4c9411eee952f7a8))
+* do not execute parts in test environment ([ebf2bd7](https://github.com/webiny/webiny-js/commit/ebf2bd7f22a2efe3115149b5c69be6b37c542f14))
+* hardcode version ([72bc307](https://github.com/webiny/webiny-js/commit/72bc3073959ba102fc15b0f4068c823d0f5dba8b))
+* import `chalk` ([83949d2](https://github.com/webiny/webiny-js/commit/83949d217c020690ed2276f23b8bff491f864261))
+* keep `example.env` file for future use ([23d0c08](https://github.com/webiny/webiny-js/commit/23d0c08917a0a3fda30ff584bcc09bec4771e2f7))
+* move parts of the code to `cwp-template-aws` ([fd4d4db](https://github.com/webiny/webiny-js/commit/fd4d4db7462b9f820ed8bea56f2624aaa339657e))
+* no need to print success message in testing mode ([17ed50d](https://github.com/webiny/webiny-js/commit/17ed50db72adc95f7efa22dc813a7ca98e537976))
+* only have `packages` folder ([c7b55e1](https://github.com/webiny/webiny-js/commit/c7b55e14948c537b5fde186e30792be3ed8728a7))
+* polish messaging ([f5cda7e](https://github.com/webiny/webiny-js/commit/f5cda7ee55f3ee2657fae7cf467d3fb57d47ef44))
+* polish success message ([c264e11](https://github.com/webiny/webiny-js/commit/c264e115d5b6b7d915d3a12f8e8e69623d3faffc))
+* prepend `yarn` ([5c8c9be](https://github.com/webiny/webiny-js/commit/5c8c9bea9cdd150a973c4f536f2449e4c8f3ba8a))
+* reduce amount of logic in `index.js` ([10ee520](https://github.com/webiny/webiny-js/commit/10ee520be27ffdfa062893632bb5643c43ec50e7))
+* remove `@commodo/fields` ([0f9617d](https://github.com/webiny/webiny-js/commit/0f9617d38c3367f9f37579b439a474350f6e7fbd))
+* remove `env-cmd` ([de8bb51](https://github.com/webiny/webiny-js/commit/de8bb51be1c482ba71b0023e1012ca108ee6d0fc))
+* remove irrelevant test ([9ba81bc](https://github.com/webiny/webiny-js/commit/9ba81bc137ee3c8ceb2a7f7b54532a5ae62531cd))
+* remove one space ([3507285](https://github.com/webiny/webiny-js/commit/3507285352345a87a9db1f7d4694abf83178a780))
+* remove redundant file ([c748dcc](https://github.com/webiny/webiny-js/commit/c748dccff32024981985d5a899c16da0979ed8ff))
+* remove redundant file ([56c674c](https://github.com/webiny/webiny-js/commit/56c674c91e5a6a633d91bcd662978e042302b2d4))
+* remove scripts ([27c6768](https://github.com/webiny/webiny-js/commit/27c6768ca2dd88b902999595acf3e82866e374d8))
+* remove scripts ([6359c36](https://github.com/webiny/webiny-js/commit/6359c36331327a620e025a8a9796eb3ee64f8f6f))
+* rename `appName` to `projectName` ([69f97d4](https://github.com/webiny/webiny-js/commit/69f97d4fb3d4fa57e977e10c70047059358b049c))
+* rename `cwp-template-full` to `cwp-template-aws` ([9ad9e6c](https://github.com/webiny/webiny-js/commit/9ad9e6c3da732feba1e8292cc238fde606302227))
+* revert version to `beta` ([b16c9ca](https://github.com/webiny/webiny-js/commit/b16c9ca1f633d7395d7ca505e8ab12a826581620))
+* test `package.json` versions replacement ([28da2aa](https://github.com/webiny/webiny-js/commit/28da2aa4ac26d8647c39e4cfbcad186ffcb8849d))
+* update deps ([bffcefd](https://github.com/webiny/webiny-js/commit/bffcefd38ec76c8b276c8e308f9daa11f5bb044a))
+* update deps ([635514f](https://github.com/webiny/webiny-js/commit/635514ff8a2715fae654d9127e9c34530b945126))
+* update packages ([f4e2c2e](https://github.com/webiny/webiny-js/commit/f4e2c2e9b127009988597b22e632b21f900efd20))
+* update project creation process ([fca232b](https://github.com/webiny/webiny-js/commit/fca232bd0ffea735c402bf15279bd1edbe611c54))
+
+
+### Features
+
+* add `vpc` and `no_vpc` stacks ([e581c94](https://github.com/webiny/webiny-js/commit/e581c94e1ddbdac09f0fa7ae41e96988fea1b413))
+
+
+
+
+
 # [5.0.0-beta.52](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.51...v5.0.0-beta.52) (2021-01-08)
 
 

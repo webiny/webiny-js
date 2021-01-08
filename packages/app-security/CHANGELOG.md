@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.0) (2021-01-08)
+
+
+### Bug Fixes
+
+* add missing dependency ([833c410](https://github.com/webiny/webiny-js/commit/833c410993ba78c6d71540f952b8a0e79676a685))
+* correct dependencies ([4b9e071](https://github.com/webiny/webiny-js/commit/4b9e07192a48d6df20f2e466d4e420f82254d8ac))
+* define return type ([d94c896](https://github.com/webiny/webiny-js/commit/d94c896baa798c205a2e5e3f7deab99c41be8670))
+* merge `new-security` into `master` ([da26908](https://github.com/webiny/webiny-js/commit/da269089ebaf18cc00c43919688fc4a005314d72))
+* remove `fullAccess` property ([12b592d](https://github.com/webiny/webiny-js/commit/12b592d327bac0077b9f98517381af24cbd7f70a))
+* revert to React 16.14.0 ([db2c17d](https://github.com/webiny/webiny-js/commit/db2c17df8dbcd33ce8518c9edcdc5db911571dd1))
+* update dependencies ([9e23d9d](https://github.com/webiny/webiny-js/commit/9e23d9d435c8e3993713d73123a7b93119893eb1))
+* **app-security:** fix typo ([efabefb](https://github.com/webiny/webiny-js/commit/efabefb874b8fa927d4abbaa1b36e28dae6623b3))
+* **app-security:** update type to allow apolloClient args ([4aa6b6d](https://github.com/webiny/webiny-js/commit/4aa6b6dd4c044f87301bc48fe875995741599824))
+* **code-format:** update configs for prettier and eslint ([#1237](https://github.com/webiny/webiny-js/issues/1237)) ([5ff6d22](https://github.com/webiny/webiny-js/commit/5ff6d22f427093a52560963770dadf96d8e6685b))
+
+
+### Features
+
+* migrate security to v5 ([d8f2b76](https://github.com/webiny/webiny-js/commit/d8f2b76738de99772a5285b9ceae1f5969f793ed))
+* **app-security:** add filter prop ([466b82d](https://github.com/webiny/webiny-js/commit/466b82d6445ed1e6053dae1b36b86bcab2df21ee))
+* **app-security:** pass apollo client to plugins ([a77e8f8](https://github.com/webiny/webiny-js/commit/a77e8f88a53b84b5a798b2c98606c33a653834fa))
+
+
+
+
+
 # [5.0.0-beta.52](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.51...v5.0.0-beta.52) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/app-security

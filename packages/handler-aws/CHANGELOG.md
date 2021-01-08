@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.0) (2021-01-08)
+
+
+### Bug Fixes
+
+* add plugin name ([d011bab](https://github.com/webiny/webiny-js/commit/d011bab27bfdf5321c96fd4a5809ea8b4c6636e2))
+* add types ([d63b14e](https://github.com/webiny/webiny-js/commit/d63b14ec10c7af59aced8160d3a0a7c94e6eeeea))
+* call default and AWS-specific plugins ([d45ad37](https://github.com/webiny/webiny-js/commit/d45ad37fe11d1ed227943191cd90711519f66bf9))
+* correct package name ([b7d71c8](https://github.com/webiny/webiny-js/commit/b7d71c8b77c5bc7250b62b854156d7d039ac986a))
+* correct path to `body` ([b9ae558](https://github.com/webiny/webiny-js/commit/b9ae558cde088658d7cf2f24dcea2d52f148e268))
+* group data into `request` property ([ffcefeb](https://github.com/webiny/webiny-js/commit/ffcefeb2405b6e81e65243db28be8dc14378700b))
+* remove any mention of MongoDb ([b3193cb](https://github.com/webiny/webiny-js/commit/b3193cb3016b58d8e6f95f7558af34a6f588b3c8))
+* remove word `Handler` from context plugin type names ([277f0dd](https://github.com/webiny/webiny-js/commit/277f0dd300b7451a8a162678417e2b428cf002cf))
+* update dependencies ([573502c](https://github.com/webiny/webiny-js/commit/573502c066a3d76c8f23ca0a7914c3fae3ea1b05))
+* update dependencies ([311526c](https://github.com/webiny/webiny-js/commit/311526c3189ef4ec0ec0613bb14ea77485b256e0))
+
+
+### Features
+
+* add `response` function to `context.http` ([163aeb4](https://github.com/webiny/webiny-js/commit/163aeb427b98c5b63ab1acc64a0d1fc816fac6ee))
+* introduce `handler-aws` package ([4fce9ec](https://github.com/webiny/webiny-js/commit/4fce9ecfd942e6cda986aab0d5ac31e7892aee7a))
+* introduce `handler-aws` package ([62baf65](https://github.com/webiny/webiny-js/commit/62baf656402c0bfced81b1cd5fc37c5c3602ae9b))
+* make `path` property an `{ base, parameters, query }` object ([0ad1a10](https://github.com/webiny/webiny-js/commit/0ad1a10f8981e6adf65fec1678789ba0fd51c26b))
+
+
+
+
+
 # [5.0.0-beta.52](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.51...v5.0.0-beta.52) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/handler-aws

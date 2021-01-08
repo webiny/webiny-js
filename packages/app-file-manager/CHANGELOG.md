@@ -3,6 +3,48 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.0) (2021-01-08)
+
+
+### Bug Fixes
+
+* update permissions and permission keys across the board ([dbb134c](https://github.com/webiny/webiny-js/commit/dbb134c7b48f30e6fbe85decc7db51d17932608f))
+* **app-file-manager:** assign permission settings to UI ([9446f1d](https://github.com/webiny/webiny-js/commit/9446f1d58099f005ad13ceab590e14cbdbbc9e34))
+* **app-file-manager:** rename obsolete form state key ([5294343](https://github.com/webiny/webiny-js/commit/52943436abdd6a0e16e4abce8c9730943d7aeaca))
+* "app-security-user-management" version in "app-file-manager" ([bb81db7](https://github.com/webiny/webiny-js/commit/bb81db7753e0c2ed9d6f98cf121e5b5785cd5b73))
+* add `app-i18n` to the install dependency ([a56204a](https://github.com/webiny/webiny-js/commit/a56204af6f48aea09fa049f687183515c63aacff))
+* add `value` as dependency to `onFormChange` callback ([eb9b56c](https://github.com/webiny/webiny-js/commit/eb9b56cac1d00bbeec0c1d504573989b24e8e4af))
+* adio warnings ([cbac917](https://github.com/webiny/webiny-js/commit/cbac917c7100291b19b5dd1a2e4a8090cdecc7da))
+* installation, operation names, etc. ([4b06551](https://github.com/webiny/webiny-js/commit/4b06551b2e29d8ea027c20ee6ded4e349121bdc9))
+* merge `feat/v5/i18n-locale-selector` into `feat/v5/security` ([a4a31b7](https://github.com/webiny/webiny-js/commit/a4a31b770676731adebec0f4243866f880e13675))
+* merge `new-security` into `master` ([da26908](https://github.com/webiny/webiny-js/commit/da269089ebaf18cc00c43919688fc4a005314d72))
+* prettier and eslint run for v5 ([3069a33](https://github.com/webiny/webiny-js/commit/3069a33ccef2fd3767818b274a730df28cecaf5b))
+* remove typo ([09f1fbc](https://github.com/webiny/webiny-js/commit/09f1fbc66ab74cf6557b80aeea75957f66a7b743))
+* revert to React 16.14.0 ([db2c17d](https://github.com/webiny/webiny-js/commit/db2c17df8dbcd33ce8518c9edcdc5db911571dd1))
+* undo hardcoded `true` return ([e040966](https://github.com/webiny/webiny-js/commit/e040966c430db31722203b7d17e9b32d008307ef))
+* update dependencies ([9e23d9d](https://github.com/webiny/webiny-js/commit/9e23d9d435c8e3993713d73123a7b93119893eb1))
+* update permission description ([0dca558](https://github.com/webiny/webiny-js/commit/0dca558a9c0338451cd3ef01a84c49cf17f25452))
+* update permission renderer to use "parent" instead of "securityGroup" ([9a0882c](https://github.com/webiny/webiny-js/commit/9a0882cccaee302c7a0635b4ab2a57b98eb5801b))
+* update tsconfig references and deps ([eec7eb0](https://github.com/webiny/webiny-js/commit/eec7eb00bc276a9d1496458315b3eb9ec0930f35))
+* **app-file-manager:** rename file manager permissions ([7058a23](https://github.com/webiny/webiny-js/commit/7058a23c94a5d3c6e31dde4837a08471452aa449))
+* use common style ([80d2575](https://github.com/webiny/webiny-js/commit/80d257522b5787bcf91d62c4b0807c9fd55a1da2))
+
+
+### Features
+
+* **app-file-manager:** add `FileManagerPermissions` ([04d7a05](https://github.com/webiny/webiny-js/commit/04d7a05a79276655f17d9a6db9cfdebcf2f0fd39))
+* **app-file-manager:** add `FilesPermission` ([73c0960](https://github.com/webiny/webiny-js/commit/73c096097f617de1f0d1ef3048d5d509ef9d6416))
+* **app-file-manager:** add `permissionRenderer` plugins ([df6bf48](https://github.com/webiny/webiny-js/commit/df6bf481775dc149520d9449280689bb7d24c8db))
+* **app-file-manager:** add `PermissionRendererFileManager` type ([d5638f7](https://github.com/webiny/webiny-js/commit/d5638f767cdb0bb8d3d68a8f15f4254175e4bf47))
+* **app-file-manager:** add `SettingsPermission` ([728bb8f](https://github.com/webiny/webiny-js/commit/728bb8fd02db0d6dc5966438b18eeff1a9c52639))
+* **app-file-manager:** export `permissionRenderer` ([ba9a26a](https://github.com/webiny/webiny-js/commit/ba9a26a071c19fb0c605ea4a7bef4123a7c44666))
+* **app-file-manager:** update `FM` settings permission ([2140c3a](https://github.com/webiny/webiny-js/commit/2140c3a4b682dd92e33cba8c4f7deef5fd501fda))
+* **app-file-manager:** update permission renderer message ([5c7f017](https://github.com/webiny/webiny-js/commit/5c7f01718ee835f2c1fe81ba83da3ae8cfff4437))
+
+
+
+
+
 # [5.0.0-beta.52](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.51...v5.0.0-beta.52) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/app-file-manager

@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.0) (2021-01-08)
+
+
+### Bug Fixes
+
+* add missing `TData` ([e891dba](https://github.com/webiny/webiny-js/commit/e891dbab76c190b43bff7737f91e22015196279e))
+
+
+### Features
+
+* introduce `@webiny/error` package ([793141f](https://github.com/webiny/webiny-js/commit/793141fb70c6fff66307dd3cd7e7f66bc34330c0))
+
+
+
+
+
 # [5.0.0-beta.52](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.51...v5.0.0-beta.52) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/error

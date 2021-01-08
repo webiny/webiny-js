@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.0) (2021-01-08)
+
+
+### Bug Fixes
+
+* correct TS dependencies ([0b76bc6](https://github.com/webiny/webiny-js/commit/0b76bc66e891c6969fcc39fde1111ffbf820bf1b))
+* update dependencies ([7e7aa55](https://github.com/webiny/webiny-js/commit/7e7aa5592b16ed8a1e43203e371df1e83484dd95))
+* update exports ([8282985](https://github.com/webiny/webiny-js/commit/82829854db9f6515881eff3511578bf4d55d1010))
+
+
+### Features
+
+* introduce `react-graphql-client` package ([11e030f](https://github.com/webiny/webiny-js/commit/11e030fd954a9305147fe77561540700e9c22e08))
+
+
+
+
+
 # [5.0.0-beta.52](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.51...v5.0.0-beta.52) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/react-graphql-client
