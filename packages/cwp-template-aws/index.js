@@ -36,5 +36,3 @@ function runInquirer({ projectName, root } = {}) {
 }
 
 module.exports = runInquirer;
-
-runInquirer();
