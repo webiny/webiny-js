@@ -6,6 +6,7 @@ const renames = require("./setup/renames");
 const merge = require("lodash/merge");
 const writeJsonFile = require("write-json-file");
 const loadJsonFile = require("load-json-file");
+const getPackages = require("get-yarn-workspaces");
 
 const IS_TEST = process.env.NODE_ENV === "test";
 
@@ -52,8 +53,8 @@ const setup = async args => {
 
     if (!IS_TEST) {
         // Commit .gitignore.
-        execa.sync("git", ["add", ".gitignore"], { cwd: root });
-        execa.sync("git", ["commit", "-m", `chore: initialize .gitignore`], { cwd: root });
+        execa.sync("git", ["add", ".gitignore"], { cwd: projectRoot });
+        execa.sync("git", ["commit", "-m", `chore: initialize .gitignore`], { cwd: projectRoot });
     }
 
     const rootEnvFilePath = path.join(projectRoot, ".env");
@@ -93,11 +94,34 @@ const setup = async args => {
         { overwrite: true }
     );
 
+    // Adjust versions - change them from `latest` to current one.
+    const latestVersion = version;
+
+    const workspaces = [projectRoot, ...getPackages(projectRoot)];
+
+    for (let i = 0; i < workspaces.length; i++) {
+        const packageJsonPath = path.join(workspaces[i], "package.json");
+        const packageJson = await loadJsonFile(packageJsonPath);
+        const depsList = Object.keys(packageJson.dependencies).filter(name =>
+            name.startsWith("@webiny")
+        );
+
+        depsList.forEach(name => {
+            if (packageJson.dependencies[name] === "latest") {
+                // Use version of @webiny/cli package (we have fixed package versioning)
+                packageJson.dependencies[name] = `^` + latestVersion;
+            }
+        });
+
+        await writeJsonFile(packageJsonPath, packageJson);
+    }
+
     if (!IS_TEST) {
         // Install dependencies.
         const options = {
             cwd: projectRoot,
-            maxBuffer: "500_000_000"
+            maxBuffer: "500_000_000",
+            stdio: "inherit"
         };
 
         await execa("yarn", [], options);
