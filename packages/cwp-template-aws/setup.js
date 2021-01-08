@@ -143,26 +143,28 @@ const setup = async args => {
         }*/
     }
 
-    console.log(
-        [
-            "",
-            `Your new Webiny project ${green(projectName)} is ready!`,
-            `Finish the setup by running the following command: ${green(
-                `cd ${projectName} && yarn webiny deploy`
-            )}`,
-            "",
-            `To see all of the available CLI commands, run ${green(
-                "yarn webiny --help"
-            )} in your ${green(projectName)} directory.`,
-            "",
-            "Want to delve deeper into Webiny? Check out https://docs.webiny.com!",
-            "Like the project? Star us on https://github.com/webiny/webiny-js!",
-            "",
-            "Need help? Join our Slack community! https://www.webiny.com/slack",
-            "",
-            "🚀 Happy coding!"
-        ].join("\n")
-    );
+    if (!IS_TEST) {
+        console.log(
+            [
+                "",
+                `Your new Webiny project ${green(projectName)} is ready!`,
+                `Finish the setup by running the following command: ${green(
+                    `cd ${projectName} && yarn webiny deploy`
+                )}`,
+                "",
+                `To see all of the available CLI commands, run ${green(
+                    "yarn webiny --help"
+                )} in your ${green(projectName)} directory.`,
+                "",
+                "Want to delve deeper into Webiny? Check out https://docs.webiny.com!",
+                "Like the project? Star us on https://github.com/webiny/webiny-js!",
+                "",
+                "Need help? Join our Slack community! https://www.webiny.com/slack",
+                "",
+                "🚀 Happy coding!"
+            ].join("\n")
+        );
+    }
 };
 
 module.exports = setup;
