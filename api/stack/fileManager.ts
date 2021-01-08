@@ -1,5 +1,6 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
+import vpc from "./vpc";
 
 // @ts-ignore
 import { getLayerArn } from "@webiny/aws-layers";
@@ -63,6 +64,10 @@ class FileManager {
             environment: {
                 variables: { S3_BUCKET: this.bucket.id }
             },
+            vpcConfig: {
+                subnetIds: vpc.subnets.private.map(subNet => subNet.id),
+                securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
+            }
         });
 
         const manage = new aws.lambda.Function("fm-manage", {
@@ -78,6 +83,10 @@ class FileManager {
             environment: {
                 variables: { S3_BUCKET: this.bucket.id }
             },
+            vpcConfig: {
+                subnetIds: vpc.subnets.private.map(subNet => subNet.id),
+                securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
+            }
         });
 
         const download = new aws.lambda.Function("fm-download", {
@@ -96,6 +105,10 @@ class FileManager {
                     IMAGE_TRANSFORMER_FUNCTION: transform.arn
                 }
             },
+            vpcConfig: {
+                subnetIds: vpc.subnets.private.map(subNet => subNet.id),
+                securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
+            }
         });
 
         this.functions = {
