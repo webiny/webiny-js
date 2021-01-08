@@ -150,7 +150,7 @@ const setup = async args => {
             )}`,
             "",
             `To see all of the available CLI commands, run ${green(
-                "webiny --help"
+                "yarn webiny --help"
             )} in your ${green(projectName)} directory.`,
             "",
             "For more information on setting up your database connection:\nhttps://docs.webiny.com/docs/get-started/quick-start#3-setup-database-connection",
