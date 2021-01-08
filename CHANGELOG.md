@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.43](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.42...v5.0.0-beta.43) (2021-01-08)
+
+
+### Bug Fixes
+
+* remove `@commodo/fields` ([0f9617d](https://github.com/webiny/webiny-js/commit/0f9617d38c3367f9f37579b439a474350f6e7fbd))
+
+
+
+
+
 # [5.0.0-beta.42](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.41...v5.0.0-beta.42) (2021-01-08)
 
 
