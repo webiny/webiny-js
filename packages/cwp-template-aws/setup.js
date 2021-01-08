@@ -118,6 +118,7 @@ const setup = async args => {
     }
 
     if (!IS_TEST) {
+        console.log()
         console.log(`⏳ Installing dependencies....`);
         console.log();
         // Install dependencies.
