@@ -52,7 +52,7 @@ module.exports = async function createProject({ projectName, template, tag, log 
         // @webiny/cli is not installed globally
     }
 
-    console.log(`Creating project at ${green(root)}:`);
+    console.log(`Initializing a new Webiny project at ${green(root)}:`);
 
     await sendEvent({ event: "create-webiny-project-start" });
 
@@ -115,7 +115,10 @@ module.exports = async function createProject({ projectName, template, tag, log 
     await tasks
         .run(context)
         .then(() => {
+            console.log();
             let templateName = context.templateName;
+
+            console.log(`Starting ${green(templateName)} template ...`);
             if (templateName.startsWith("file:")) {
                 templateName = templateName.replace("file:", "");
             }
@@ -126,11 +129,10 @@ module.exports = async function createProject({ projectName, template, tag, log 
                 })
             );
 
+            console.log();
             return new Promise(resolve => {
                 setTimeout(() => {
                     resolve();
-                    // Add a new line break before receiving output from template script.
-                    console.log();
                     return require(templatePath)({ projectName, root });
                 }, 500);
             });
