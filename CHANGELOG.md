@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.52](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.51...v5.0.0-beta.52) (2021-01-08)
+
+
+### Bug Fixes
+
+* bring back `example.env` file ([004bd44](https://github.com/webiny/webiny-js/commit/004bd44d3ff3e6e525e2ab21379b7fa6423ef149))
+
+
+
+
+
 # [5.0.0-beta.51](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.50...v5.0.0-beta.51) (2021-01-08)
 
 
