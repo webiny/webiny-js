@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-cookie-policy",
-  "version": "5.0.0-beta.33",
+  "version": "5.0.0-beta.34",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -11,14 +11,14 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/app": "^5.0.0-beta.33",
-    "@webiny/app-admin": "^5.0.0-beta.33",
-    "@webiny/app-page-builder": "^5.0.0-beta.33",
-    "@webiny/app-security": "^5.0.0-beta.33",
-    "@webiny/form": "^5.0.0-beta.33",
-    "@webiny/react-router": "^5.0.0-beta.33",
-    "@webiny/ui": "^5.0.0-beta.33",
-    "@webiny/validation": "^5.0.0-beta.33",
+    "@webiny/app": "^5.0.0-beta.34",
+    "@webiny/app-admin": "^5.0.0-beta.34",
+    "@webiny/app-page-builder": "^5.0.0-beta.34",
+    "@webiny/app-security": "^5.0.0-beta.34",
+    "@webiny/form": "^5.0.0-beta.34",
+    "@webiny/react-router": "^5.0.0-beta.34",
+    "@webiny/ui": "^5.0.0-beta.34",
+    "@webiny/validation": "^5.0.0-beta.34",
     "load-src": "^1.0.0",
     "lodash.get": "^4.4.2",
     "react-helmet": "^5.2.0"
@@ -45,5 +45,5 @@
     "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" --watch",
     "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
   },
-  "gitHead": "1c3e8fd44a71306cb449c653725d5d34a9a90e36"
+  "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
 }

@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-i18n-content",
-  "version": "5.0.0-beta.33",
+  "version": "5.0.0-beta.34",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -11,10 +11,10 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/api-i18n": "^5.0.0-beta.33",
-    "@webiny/api-security": "^5.0.0-beta.33",
-    "@webiny/handler": "^5.0.0-beta.33",
-    "@webiny/handler-graphql": "^5.0.0-beta.33"
+    "@webiny/api-i18n": "^5.0.0-beta.34",
+    "@webiny/api-security": "^5.0.0-beta.34",
+    "@webiny/handler": "^5.0.0-beta.34",
+    "@webiny/handler-graphql": "^5.0.0-beta.34"
   },
   "publishConfig": {
     "access": "public",
@@ -25,5 +25,5 @@
     "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
     "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
   },
-  "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
+  "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
 }

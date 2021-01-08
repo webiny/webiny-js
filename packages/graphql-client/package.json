@@ -1,6 +1,6 @@
 {
   "name": "@webiny/graphql-client",
-  "version": "5.0.0-beta.33",
+  "version": "5.0.0-beta.34",
   "main": "index.js",
   "types": "types.d.ts",
   "repository": {
@@ -14,7 +14,7 @@
     "directory": "dist"
   },
   "devDependencies": {
-    "@webiny/error": "^5.0.0-beta.33",
+    "@webiny/error": "^5.0.0-beta.34",
     "cross-fetch": "^3.0.6",
     "graphql-tag": "^2.10.1"
   },
@@ -26,5 +26,5 @@
     "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
     "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
   },
-  "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
+  "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
 }

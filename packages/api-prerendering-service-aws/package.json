@@ -1,6 +1,6 @@
 {
 	"name": "@webiny/api-prerendering-service-aws",
-	"version": "5.0.0-beta.33",
+	"version": "5.0.0-beta.34",
 	"main": "index.js",
 	"repository": {
 		"type": "git",
@@ -12,10 +12,10 @@
 	"license": "MIT",
 	"dependencies": {
 		"@babel/runtime": "^7.5.5",
-		"@webiny/api-prerendering-service": "^5.0.0-beta.33",
-		"@webiny/handler": "^5.0.0-beta.33",
-		"@webiny/handler-args": "^5.0.0-beta.33",
-		"@webiny/plugins": "^5.0.0-beta.33"
+		"@webiny/api-prerendering-service": "^5.0.0-beta.34",
+		"@webiny/handler": "^5.0.0-beta.34",
+		"@webiny/handler-args": "^5.0.0-beta.34",
+		"@webiny/plugins": "^5.0.0-beta.34"
 	},
 	"devDependencies": {
 		"@babel/cli": "^7.5.5",
@@ -40,5 +40,5 @@
 			]
 		}
 	},
-	"gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
+	"gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
 }

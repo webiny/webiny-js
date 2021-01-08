@@ -1,6 +1,6 @@
 {
 	"name": "@webiny/cli",
-	"version": "5.0.0-beta.33",
+	"version": "5.0.0-beta.34",
 	"main": "index.js",
 	"bin": {
 		"webiny": "./bin.js"
@@ -13,8 +13,8 @@
 	"author": "Pavel Denisjuk <pavel@webiny.com>",
 	"description": "A tool to bootstrap a Webiny project.",
 	"dependencies": {
-		"@webiny/plugins": "^5.0.0-beta.33",
-		"@webiny/tracking": "^5.0.0-beta.33",
+		"@webiny/plugins": "^5.0.0-beta.34",
+		"@webiny/tracking": "^5.0.0-beta.34",
 		"camelcase": "5.3.1",
 		"chalk": "2.4.2",
 		"debug": "4.3.1",
@@ -41,5 +41,5 @@
 			"/dist/"
 		]
 	},
-	"gitHead": "2cd812f1b150c10df088a5b2f75a62c9e376c1a4"
+	"gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
 }

@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-file-manager-s3",
-  "version": "5.0.0-beta.33",
+  "version": "5.0.0-beta.34",
   "main": "index.js",
   "types": "types.d.ts",
   "repository": {
@@ -11,9 +11,9 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
-    "@webiny/handler-graphql": "^5.0.0-beta.33",
-    "@webiny/plugins": "^5.0.0-beta.33",
-    "@webiny/validation": "^5.0.0-beta.33",
+    "@webiny/handler-graphql": "^5.0.0-beta.34",
+    "@webiny/plugins": "^5.0.0-beta.34",
+    "@webiny/validation": "^5.0.0-beta.34",
     "form-data": "^3.0.0",
     "node-fetch": "^2.6.1",
     "sanitize-filename": "^1.6.3",
@@ -28,5 +28,5 @@
     "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
     "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
   },
-  "gitHead": "71cab7d5607b2e32a63034e324a663770507b32b"
+  "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
 }

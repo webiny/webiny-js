@@ -1,39 +1,39 @@
 {
-  "name": "@webiny/cli-plugin-build",
-  "version": "5.0.0-beta.33",
-  "main": "index.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/webiny/webiny-js.git",
-    "directory": "packages/cli-plugin-build"
-  },
-  "author": "Webiny Ltd.",
-  "contributors": [
-    "Pavel Denisjuk <pavel@webiny.com>"
-  ],
-  "description": "A CLI plugin for building packages.",
-  "dependencies": {
-    "execa": "^4.0.0"
-  },
-  "license": "MIT",
-  "publishConfig": {
-    "access": "public",
-    "directory": "."
-  },
-  "scripts": {},
-  "adio": {
-    "ignoreDirs": [
-      "/node_modules/",
-      "/dist/"
-    ],
-    "ignore": {
-      "src": [
-        "vm"
-      ],
-      "dependencies": [
-        "execa"
-      ]
-    }
-  },
-  "gitHead": "2cd812f1b150c10df088a5b2f75a62c9e376c1a4"
+	"name": "@webiny/cli-plugin-build",
+	"version": "5.0.0-beta.34",
+	"main": "index.js",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/webiny/webiny-js.git",
+		"directory": "packages/cli-plugin-build"
+	},
+	"author": "Webiny Ltd.",
+	"contributors": [
+		"Pavel Denisjuk <pavel@webiny.com>"
+	],
+	"description": "A CLI plugin for building packages.",
+	"dependencies": {
+		"execa": "4.1.0"
+	},
+	"license": "MIT",
+	"publishConfig": {
+		"access": "public",
+		"directory": "."
+	},
+	"scripts": {},
+	"adio": {
+		"ignoreDirs": [
+			"/node_modules/",
+			"/dist/"
+		],
+		"ignore": {
+			"src": [
+				"vm"
+			],
+			"dependencies": [
+				"execa"
+			]
+		}
+	},
+	"gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
 }
