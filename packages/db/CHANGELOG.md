@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.47](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.46...v5.0.0-beta.47) (2021-01-08)
+
+**Note:** Version bump only for package @webiny/db
+
+
+
+
+
 # [5.0.0-beta.46](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.45...v5.0.0-beta.46) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/db
