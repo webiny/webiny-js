@@ -118,7 +118,7 @@ const setup = async args => {
     }
 
     if (!IS_TEST) {
-        console.log()
+        console.log();
         console.log(`⏳ Installing dependencies....`);
         console.log();
         // Install dependencies.
@@ -148,7 +148,8 @@ const setup = async args => {
         console.log(
             [
                 "",
-                `Your new Webiny project ${green(projectName)} is ready!`,
+                `🎉 Your new Webiny project ${green(projectName)} is ready!`,
+                "",
                 `Finish the setup by running the following command: ${green(
                     `cd ${projectName} && yarn webiny deploy`
                 )}`,
