@@ -66,22 +66,10 @@ const apiGateway = new ApiGateway({
             function: api.functions.api
         },
         {
-            name: "graphql-get",
-            path: "/graphql",
-            method: "GET",
-            function: api.functions.graphqlPlayground
-        },
-        {
             name: "files-any",
             path: "/files/{path}",
             method: "ANY",
             function: fileManager.functions.download
-        },
-        {
-            name: "cms-get",
-            path: "/cms/{key+}",
-            method: "GET",
-            function: api.functions.graphqlPlayground
         },
         {
             name: "cms-post",

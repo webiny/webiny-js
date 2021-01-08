@@ -1,6 +1,5 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-import vpc from "./vpc";
 import defaultLambdaRole from "./defaultLambdaRole";
 
 // @ts-ignore
@@ -34,10 +33,6 @@ class PageBuilder {
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive("./code/prerenderingService/render/build")
             }),
-            vpcConfig: {
-                subnetIds: vpc.subnets.private.map(subNet => subNet.id),
-                securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
-            }
         });
 
         const flush = new aws.lambda.Function("ps-flush", {
@@ -55,10 +50,6 @@ class PageBuilder {
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive("./code/prerenderingService/flush/build")
             }),
-            vpcConfig: {
-                subnetIds: vpc.subnets.private.map(subNet => subNet.id),
-                securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
-            }
         });
 
         const queueAdd = new aws.lambda.Function("ps-queue-add", {
@@ -76,10 +67,6 @@ class PageBuilder {
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive("./code/prerenderingService/queue/add/build")
             }),
-            vpcConfig: {
-                subnetIds: vpc.subnets.private.map(subNet => subNet.id),
-                securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
-            }
         });
 
         const queueProcess = new aws.lambda.Function("ps-queue-process", {
@@ -99,10 +86,6 @@ class PageBuilder {
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive("./code/prerenderingService/queue/process/build")
             }),
-            vpcConfig: {
-                subnetIds: vpc.subnets.private.map(subNet => subNet.id),
-                securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
-            }
         });
 
         this.functions = {
