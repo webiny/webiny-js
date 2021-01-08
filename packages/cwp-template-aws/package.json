@@ -11,7 +11,7 @@
 		"directory": "."
 	},
 	"dependencies": {
-		"@commodo/fields": "beta",
+		"@commodo/fields": "1.1.2-beta.20",
 		"@webiny/cli-plugin-deploy-pulumi": "^5.0.0-beta.36",
 		"@webiny/validation": "^5.0.0-beta.36",
 		"bytes": "^3.1.0",
