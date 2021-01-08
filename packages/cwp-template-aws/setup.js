@@ -1,6 +1,6 @@
 const fs = require("fs-extra");
 const path = require("path");
-// const execa = require("execa");
+const execa = require("execa");
 const crypto = require("crypto");
 const { withFields, string, boolean } = require("@commodo/fields");
 const { validation } = require("@webiny/validation");
@@ -8,6 +8,8 @@ const renames = require("./setup/renames");
 const merge = require("lodash/merge");
 const writeJsonFile = require("write-json-file");
 const loadJsonFile = require("load-json-file");
+
+const IS_TEST = process.env.NODE_ENV === "test";
 
 const ArgsModel = withFields({
     vpc: boolean(),
@@ -26,8 +28,11 @@ function random(length = 32) {
         .slice(0, length);
 }
 
-const setup = async args => {
-    await new ArgsModel(args).populate(args).validate();
+const setup = async rawArgs => {
+    const argsModel = new ArgsModel(rawArgs).populate(rawArgs);
+    await argsModel.validate();
+
+    const args = await argsModel.toJSON();
 
     const { projectRoot, projectName, vpc } = args;
 
@@ -62,9 +67,11 @@ const setup = async args => {
 
     const { name, version } = require("./package.json");
 
-    // Commit .gitignore.
-    // execa.sync("git", ["add", ".gitignore"], { cwd: root });
-    // execa.sync("git", ["commit", "-m", `chore: initialize .gitignore`], { cwd: root });
+    if (!IS_TEST) {
+        // Commit .gitignore.
+        execa.sync("git", ["add", ".gitignore"], { cwd: root });
+        execa.sync("git", ["commit", "-m", `chore: initialize .gitignore`], { cwd: root });
+    }
 
     const rootEnvFilePath = path.join(projectRoot, ".env");
     let content = fs.readFileSync(rootEnvFilePath).toString();
@@ -102,6 +109,29 @@ const setup = async args => {
         path.join(projectRoot, "api", "index.ts"),
         { overwrite: true }
     );
+
+    if (!IS_TEST) {
+        // Install dependencies.
+        const options = {
+            cwd: projectRoot,
+            maxBuffer: "500_000_000"
+        };
+
+        await execa("yarn", [], options);
+
+        /*
+        // TODO: finish logging.
+        let logStream;
+        if (log) {
+            logStream = fs.createWriteStream(context.logPath);
+            const runner = execa("yarn", [], options);
+            runner.stdout.pipe(logStream);
+            runner.stderr.pipe(logStream);
+            await runner;
+        } else {
+            await execa("yarn", [], options);
+        }*/
+    }
 };
 
 module.exports = setup;
