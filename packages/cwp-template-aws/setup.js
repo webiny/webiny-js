@@ -118,6 +118,8 @@ const setup = async args => {
     }
 
     if (!IS_TEST) {
+        console.log(`⏳  Installing dependencies....`);
+        console.log();
         // Install dependencies.
         const options = {
             cwd: projectRoot,
@@ -125,7 +127,7 @@ const setup = async args => {
             stdio: "inherit"
         };
 
-        // await execa("yarn", [], options);
+        await execa("yarn", [], options);
 
         /*
         // TODO: finish logging.
@@ -153,10 +155,8 @@ const setup = async args => {
                 "yarn webiny --help"
             )} in your ${green(projectName)} directory.`,
             "",
-            "For more information on setting up your database connection:\nhttps://docs.webiny.com/docs/get-started/quick-start#3-setup-database-connection",
-            "",
-            "Want to delve deeper into Webiny? Check out https://docs.webiny.com/docs/webiny/introduction",
-            "Like the project? Star us on Github! https://github.com/webiny/webiny-js",
+            "Want to delve deeper into Webiny? Check out https://docs.webiny.com!",
+            "Like the project? Star us on https://github.com/webiny/webiny-js!",
             "",
             "Need help? Join our Slack community! https://www.webiny.com/slack",
             "",
