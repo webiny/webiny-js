@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.50](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.49...v5.0.0-beta.50) (2021-01-08)
+
+
+### Bug Fixes
+
+* import `chalk` ([83949d2](https://github.com/webiny/webiny-js/commit/83949d217c020690ed2276f23b8bff491f864261))
+
+
+
+
+
 # [5.0.0-beta.49](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.48...v5.0.0-beta.49) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/cwp-template-aws
