@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.33](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.32...v5.0.0-beta.33) (2021-01-08)
+
+
+### Bug Fixes
+
+* add `fill="currentColor"` ([c04fb08](https://github.com/webiny/webiny-js/commit/c04fb08b6933d82733972f1491fe4b58f58198fa))
+* add `lineHeight: 1` ([ae4c8f2](https://github.com/webiny/webiny-js/commit/ae4c8f2eb3e846a5c811689397c4f53a99f17166))
+* reference does not need to set value to form ([#1363](https://github.com/webiny/webiny-js/issues/1363)) ([aebce24](https://github.com/webiny/webiny-js/commit/aebce24264c841565475e3eebb7abe197ae65178))
+* **app-admin:** add default placeholder to RTE ([94c0154](https://github.com/webiny/webiny-js/commit/94c0154afc907e2a97c3e4dd000e1a945d4a06fc))
+* **app-admin:** check for placeholder prop ([3ea49ff](https://github.com/webiny/webiny-js/commit/3ea49ff3ab5efbd931758b007f2b7278fc174a0e))
+* **app-admin:** improve clickable area of menu item link ([543655c](https://github.com/webiny/webiny-js/commit/543655c6896f5f73f16525dada07bc5769e4b7bf))
+* **app-admin:** move medium editor style import to admin app ([188ae1d](https://github.com/webiny/webiny-js/commit/188ae1de636ac9b17f86e76c0207e9249cea30d4))
+* **app-admin:** remove file from cache after "deleteFile" mutation ([80fdb88](https://github.com/webiny/webiny-js/commit/80fdb883325b0a85e831879649840653609acfeb))
+* **app-admin:** remove obsolete plugin ([4398277](https://github.com/webiny/webiny-js/commit/4398277fed5a204f9097c09586235fb6c2320f54))
+* **app-admin:** temporarily disable CMS tabs in the playground ([87c81f0](https://github.com/webiny/webiny-js/commit/87c81f09cf791360eaf1c37be8bc3cb856a9726e))
+* **app-admin:** update `OverlayLayoutWrapper` "zIndex" ([3e95e5b](https://github.com/webiny/webiny-js/commit/3e95e5b2f6cec1dad084d7162f4b178bd0cd4ac5))
+* replace overflow `scroll` with `auto` ([0c98e68](https://github.com/webiny/webiny-js/commit/0c98e68ca5d9385ab6c269451fa2a0e57773154e))
+
+
+### Features
+
+* **app-graphql-playground:** introduce a package to render graphql playground ([5f4ee4e](https://github.com/webiny/webiny-js/commit/5f4ee4e251a9facec25aad2b1f16e6e9d7bb4060))
+* add GraphQL Playground and improve fonts loading ([6fb560d](https://github.com/webiny/webiny-js/commit/6fb560d543419be0482fac567614926c0387df5c))
+* **app-admin:** format `tags` to lowercase before change ([8667690](https://github.com/webiny/webiny-js/commit/86676908f7127e8cb19af9bd5bd12811ec4ff6fa))
+* **app-admin:** update `.mdc-snackbar__action` style as per theme ([9915f2d](https://github.com/webiny/webiny-js/commit/9915f2d9efa77d643ba08c7a380d2412d304b0bf))
+
+
+
+
+
 # [5.0.0-beta.32](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.31...v5.0.0-beta.32) (2021-01-06)
 
 **Note:** Version bump only for package @webiny/app-admin

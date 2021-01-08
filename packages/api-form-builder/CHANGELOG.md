@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.33](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.32...v5.0.0-beta.33) (2021-01-08)
+
+
+### Bug Fixes
+
+* update permissions and permission keys across the board ([dbb134c](https://github.com/webiny/webiny-js/commit/dbb134c7b48f30e6fbe85decc7db51d17932608f))
+* **api-form-builder:** load settings without permission checks on form resolver ([3691e01](https://github.com/webiny/webiny-js/commit/3691e0140696b83fecc74b43ebedcb462704b347))
+* **api-form-builder:** load settings without permission checks on isInstalled resolver ([60deebb](https://github.com/webiny/webiny-js/commit/60deebb603140cbac9a52fd330af436fdbc45eca))
+* **form-builder:** remove FbLatestForm type and fix client cache update ([0677ea8](https://github.com/webiny/webiny-js/commit/0677ea8fdaae3b2cf9ab622d43e895804eac625e))
+
+
+
+
+
 # [5.0.0-beta.32](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.31...v5.0.0-beta.32) (2021-01-06)
 
 **Note:** Version bump only for package @webiny/api-form-builder

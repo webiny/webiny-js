@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.33](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.32...v5.0.0-beta.33) (2021-01-08)
+
+
+### Bug Fixes
+
+* do not cache `GetPreSignedPostPayload` query ([d1980b4](https://github.com/webiny/webiny-js/commit/d1980b48aba17c1dc5c8f21f1d99b9b3a6ac6845))
+
+
+
+
+
 # [5.0.0-beta.32](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.31...v5.0.0-beta.32) (2021-01-06)
 
 **Note:** Version bump only for package @webiny/app-file-manager-s3

@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.33](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.32...v5.0.0-beta.33) (2021-01-08)
+
+
+### Bug Fixes
+
+* remove any mention of MongoDb ([b3193cb](https://github.com/webiny/webiny-js/commit/b3193cb3016b58d8e6f95f7558af34a6f588b3c8))
+* rename `cwp-template-full` to `cwp-template-aws` ([9ad9e6c](https://github.com/webiny/webiny-js/commit/9ad9e6c3da732feba1e8292cc238fde606302227))
+* throw errors on missing args ([2c0b3a2](https://github.com/webiny/webiny-js/commit/2c0b3a21cb67e0caf415abe61f8d189410f4bbb9))
+
+
+
+
+
 # [5.0.0-beta.32](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.31...v5.0.0-beta.32) (2021-01-06)
 
 **Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi

@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.33](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.32...v5.0.0-beta.33) (2021-01-08)
+
+
+### Bug Fixes
+
+* add `renames` utility file ([6724b39](https://github.com/webiny/webiny-js/commit/6724b391aa80f0b0211b391877ab5359bfed7818))
+* correct import paths ([8fd3881](https://github.com/webiny/webiny-js/commit/8fd3881ee78f3bb30cec04d104ace959542e4077))
+* do not execute parts in test environment ([ebf2bd7](https://github.com/webiny/webiny-js/commit/ebf2bd7f22a2efe3115149b5c69be6b37c542f14))
+* move parts of the code to `cwp-template-aws` ([fd4d4db](https://github.com/webiny/webiny-js/commit/fd4d4db7462b9f820ed8bea56f2624aaa339657e))
+* reduce amount of logic in `index.js` ([10ee520](https://github.com/webiny/webiny-js/commit/10ee520be27ffdfa062893632bb5643c43ec50e7))
+* remove redundant file ([c748dcc](https://github.com/webiny/webiny-js/commit/c748dccff32024981985d5a899c16da0979ed8ff))
+* remove redundant file ([56c674c](https://github.com/webiny/webiny-js/commit/56c674c91e5a6a633d91bcd662978e042302b2d4))
+* rename `appName` to `projectName` ([69f97d4](https://github.com/webiny/webiny-js/commit/69f97d4fb3d4fa57e977e10c70047059358b049c))
+* rename `cwp-template-full` to `cwp-template-aws` ([9ad9e6c](https://github.com/webiny/webiny-js/commit/9ad9e6c3da732feba1e8292cc238fde606302227))
+* update deps ([635514f](https://github.com/webiny/webiny-js/commit/635514ff8a2715fae654d9127e9c34530b945126))
+* update project creation process ([fca232b](https://github.com/webiny/webiny-js/commit/fca232bd0ffea735c402bf15279bd1edbe611c54))
+
+
+### Features
+
+* add `vpc` and `no_vpc` stacks ([e581c94](https://github.com/webiny/webiny-js/commit/e581c94e1ddbdac09f0fa7ae41e96988fea1b413))
+
+
+
+
+
 # [5.0.0-beta.32](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.31...v5.0.0-beta.32) (2021-01-06)
 
 **Note:** Version bump only for package @webiny/cwp-template-aws

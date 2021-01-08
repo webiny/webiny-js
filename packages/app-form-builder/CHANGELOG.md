@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.33](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.32...v5.0.0-beta.33) (2021-01-08)
+
+
+### Bug Fixes
+
+* **app-form-builder:** use `autoFocus` prop instead of `inputRef` ([9531eaf](https://github.com/webiny/webiny-js/commit/9531eafea15d4a787b9e8d8dd63219be410ab9ef))
+* update permissions and permission keys across the board ([dbb134c](https://github.com/webiny/webiny-js/commit/dbb134c7b48f30e6fbe85decc7db51d17932608f))
+* update welcome screen permission checks and styles ([47a1fb1](https://github.com/webiny/webiny-js/commit/47a1fb1ca09421ce0bb393630e1a64cfaf982029))
+* **app-form-builder:** override inherited text color ([161bcaf](https://github.com/webiny/webiny-js/commit/161bcafe359672e1828021323992ffa23a479e76))
+* **app-form-builder:** update `EditTab` Container style ([3408da2](https://github.com/webiny/webiny-js/commit/3408da2baed9f2d21f799c98dc3842ed7d40ab4b))
+* **form-builder:** remove FbLatestForm type and fix client cache update ([0677ea8](https://github.com/webiny/webiny-js/commit/0677ea8fdaae3b2cf9ab622d43e895804eac625e))
+* replace overflow `scroll` with `auto` ([0c98e68](https://github.com/webiny/webiny-js/commit/0c98e68ca5d9385ab6c269451fa2a0e57773154e))
+* **app-form-builder:** pass security context to tabs plugins and hide submissions tab if necessary ([37ddc78](https://github.com/webiny/webiny-js/commit/37ddc78e75c9b33ab709d1983d42558513501256))
+
+
+
+
+
 # [5.0.0-beta.32](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.31...v5.0.0-beta.32) (2021-01-06)
 
 **Note:** Version bump only for package @webiny/app-form-builder

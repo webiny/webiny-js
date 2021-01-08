@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.33](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.32...v5.0.0-beta.33) (2021-01-08)
+
+
+### Bug Fixes
+
+* entry prepare for index on publish ([#1361](https://github.com/webiny/webiny-js/issues/1361)) ([7446628](https://github.com/webiny/webiny-js/commit/74466282f9a4abd97421d8cf8a3122b5957f4576))
+* **app-security-tenancy:** handle empty permissions when submitting a form ([9f27b98](https://github.com/webiny/webiny-js/commit/9f27b985f6041ad124ce8372cb577c90f73f05cc))
+* **app-security-tenancy:** protect full-access group ([7936c5e](https://github.com/webiny/webiny-js/commit/7936c5e3c9347f38fc5e96b1389d093cb24815d4))
+* **app-security-tenancy:** remove nullish coalescing operator usage ([7447c49](https://github.com/webiny/webiny-js/commit/7447c497222809f6c2f21532f98d17d5e6c1250e))
+* **app-security-tenancy:** update permission form state key ([d7b9a1a](https://github.com/webiny/webiny-js/commit/d7b9a1acc54db8be91b1d677c4c50c2c9967074f))
+* **app-security-tenancy:** update queries with new types ([64d8cd6](https://github.com/webiny/webiny-js/commit/64d8cd68582e760766c17bcc434a4a14d7d2e207))
+* **app-security-tenancy:** update validator name ([e727b45](https://github.com/webiny/webiny-js/commit/e727b45799c82a9aec394d623f11188aa41b1844))
+
+
+### Features
+
+* add `SnackbarAction` button style ([c9aed0d](https://github.com/webiny/webiny-js/commit/c9aed0dc2b3c02898e8b4cea8d24abe593f92fa9))
+
+
+
+
+
 # [5.0.0-beta.32](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.31...v5.0.0-beta.32) (2021-01-06)
 
 **Note:** Version bump only for package @webiny/app-security-tenancy

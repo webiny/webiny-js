@@ -3,6 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.33](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.32...v5.0.0-beta.33) (2021-01-08)
+
+
+### Bug Fixes
+
+* **app-headless-cms:** protect playground tabs with permission check ([6a9b2e7](https://github.com/webiny/webiny-js/commit/6a9b2e73d62b6570e95a18e070c5adeb9e8305d0))
+* update TS configs and deps ([12a5f67](https://github.com/webiny/webiny-js/commit/12a5f67721f61b4eefebf440f27fa57af19e7c36))
+* **app-headless-cms:** add createApolloClient to context ([4451675](https://github.com/webiny/webiny-js/commit/44516750dee4002edb79231f7cd3d9db5463228b))
+* **app-headless-cms:** disable `view content` action for empty models ([9650473](https://github.com/webiny/webiny-js/commit/9650473a078b510aa7defaa7a078ccc6dbe7e344))
+* **app-headless-cms:** reuse data hook and update data in cache ([d17b51f](https://github.com/webiny/webiny-js/commit/d17b51fb582b2d94b9c78b8e8f48f6e2a444e1e8))
+* **app-headless-cms:** update `view content` disabled message ([97a41ff](https://github.com/webiny/webiny-js/commit/97a41ffe5654eb00693eab435a98206f1ff2164c))
+* ref ui field and remove toMatchObject from cms tests ([#1362](https://github.com/webiny/webiny-js/issues/1362)) ([b8cd1a8](https://github.com/webiny/webiny-js/commit/b8cd1a8bfa44601117d6a0f33b0098e696b6e81f))
+* reference does not need to set value to form ([#1363](https://github.com/webiny/webiny-js/issues/1363)) ([aebce24](https://github.com/webiny/webiny-js/commit/aebce24264c841565475e3eebb7abe197ae65178))
+* **app-headless-cms:** update CMS editor form height ([a17c167](https://github.com/webiny/webiny-js/commit/a17c1678435c6f13cdba50dbc44fb643d3d47473))
+* **app-headless-cms:** update editor `Container` style ([5b1e039](https://github.com/webiny/webiny-js/commit/5b1e0390ddcbc0ca04985355079549edfa380766))
+* replace overflow `scroll` with `auto` ([0c98e68](https://github.com/webiny/webiny-js/commit/0c98e68ca5d9385ab6c269451fa2a0e57773154e))
+* update permissions and permission keys across the board ([dbb134c](https://github.com/webiny/webiny-js/commit/dbb134c7b48f30e6fbe85decc7db51d17932608f))
+* update welcome screen permission checks and styles ([47a1fb1](https://github.com/webiny/webiny-js/commit/47a1fb1ca09421ce0bb393630e1a64cfaf982029))
+
+
+### Features
+
+* **app-graphql-playground:** introduce a package to render graphql playground ([5f4ee4e](https://github.com/webiny/webiny-js/commit/5f4ee4e251a9facec25aad2b1f16e6e9d7bb4060))
+* update `revision` description text in `PB` & `CMS` ([a36c6a0](https://github.com/webiny/webiny-js/commit/a36c6a0b76d7d6526f01e46d45424aa56618434c))
+
+
+
+
+
 # [5.0.0-beta.32](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.31...v5.0.0-beta.32) (2021-01-06)
 
 **Note:** Version bump only for package @webiny/app-headless-cms

@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.33](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.32...v5.0.0-beta.33) (2021-01-08)
+
+
+### Bug Fixes
+
+* update permissions and permission keys across the board ([dbb134c](https://github.com/webiny/webiny-js/commit/dbb134c7b48f30e6fbe85decc7db51d17932608f))
+* **app-file-manager:** assign permission settings to UI ([9446f1d](https://github.com/webiny/webiny-js/commit/9446f1d58099f005ad13ceab590e14cbdbbc9e34))
+* **app-file-manager:** rename obsolete form state key ([5294343](https://github.com/webiny/webiny-js/commit/52943436abdd6a0e16e4abce8c9730943d7aeaca))
+
+
+
+
+
 # [5.0.0-beta.32](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.31...v5.0.0-beta.32) (2021-01-06)
 
 **Note:** Version bump only for package @webiny/app-file-manager

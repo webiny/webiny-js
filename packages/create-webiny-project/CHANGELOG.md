@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.33](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.32...v5.0.0-beta.33) (2021-01-08)
+
+
+### Bug Fixes
+
+* add `getPackageJson` utility function ([3b6e8c8](https://github.com/webiny/webiny-js/commit/3b6e8c8ca92cfc022a7fe10867a5bfff715036d9))
+* correct import statement ([b77d439](https://github.com/webiny/webiny-js/commit/b77d439eb6ce7a7831239a53ba3665d861b69cfd))
+* move parts of the code to `cwp-template-aws` ([fd4d4db](https://github.com/webiny/webiny-js/commit/fd4d4db7462b9f820ed8bea56f2624aaa339657e))
+* move version number into constants ([ed13609](https://github.com/webiny/webiny-js/commit/ed13609256aaaccbc1af101f2dd5a59bef5ce369))
+* prepend `yarn` ([31fc682](https://github.com/webiny/webiny-js/commit/31fc682e5b7fe4d2a4d0c33508315cbc947354b9))
+* rename `appName` to `projectName` ([69f97d4](https://github.com/webiny/webiny-js/commit/69f97d4fb3d4fa57e977e10c70047059358b049c))
+* rename `createApp` to `createProject` ([05a8712](https://github.com/webiny/webiny-js/commit/05a87129c5091554fa9f46f8868c9540fb76f93b))
+* rename `cwp-template-full` to `cwp-template-aws` ([9ad9e6c](https://github.com/webiny/webiny-js/commit/9ad9e6c3da732feba1e8292cc238fde606302227))
+
+
+
+
+
 # [5.0.0-beta.32](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.31...v5.0.0-beta.32) (2021-01-06)
 
 **Note:** Version bump only for package create-webiny-project

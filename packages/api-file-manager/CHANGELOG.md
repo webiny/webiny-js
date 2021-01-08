@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.33](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.32...v5.0.0-beta.33) (2021-01-08)
+
+
+### Bug Fixes
+
+* **api-file-manager:** include app prefix in settings PK ([8a220c4](https://github.com/webiny/webiny-js/commit/8a220c4a248d59ef318cd453083a9030f7fa5bdb))
+* **api-file-manager:** update `listTags` query resolver ([5bb2153](https://github.com/webiny/webiny-js/commit/5bb2153fd3a6632be84f36830ca06ec5ffcb7a09))
+
+
+
+
+
 # [5.0.0-beta.32](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.31...v5.0.0-beta.32) (2021-01-06)
 
 **Note:** Version bump only for package @webiny/api-file-manager

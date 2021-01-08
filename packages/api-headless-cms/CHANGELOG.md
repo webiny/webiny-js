@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.33](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.32...v5.0.0-beta.33) (2021-01-08)
+
+
+### Bug Fixes
+
+* entry prepare for index on publish ([#1361](https://github.com/webiny/webiny-js/issues/1361)) ([7446628](https://github.com/webiny/webiny-js/commit/74466282f9a4abd97421d8cf8a3122b5957f4576))
+* ref ui field and remove toMatchObject from cms tests ([#1362](https://github.com/webiny/webiny-js/issues/1362)) ([b8cd1a8](https://github.com/webiny/webiny-js/commit/b8cd1a8bfa44601117d6a0f33b0098e696b6e81f))
+* remove any mention of MongoDb ([b3193cb](https://github.com/webiny/webiny-js/commit/b3193cb3016b58d8e6f95f7558af34a6f588b3c8))
+* **api-headless-cms:** add wildcards to query ([2b21390](https://github.com/webiny/webiny-js/commit/2b21390af57004725d2a914ca825efe1f2dc360a))
+* **api-headless-cms:** return early on non-existing ref values ([3ebf68e](https://github.com/webiny/webiny-js/commit/3ebf68e96d1c2a9b923876926383952306e1d0d2))
+* missing commit with a test ([#1360](https://github.com/webiny/webiny-js/issues/1360)) ([8312fd6](https://github.com/webiny/webiny-js/commit/8312fd61d89ad3e6f60b8ef6bac82fd2f41e325f))
+* update permissions and permission keys across the board ([dbb134c](https://github.com/webiny/webiny-js/commit/dbb134c7b48f30e6fbe85decc7db51d17932608f))
+
+
+### Features
+
+* add more tests for ref field ([#1359](https://github.com/webiny/webiny-js/issues/1359)) ([4a8d3e9](https://github.com/webiny/webiny-js/commit/4a8d3e9b49e590742a14160d7d266f2985bea76e))
+
+
+
+
+
 # [5.0.0-beta.32](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.31...v5.0.0-beta.32) (2021-01-06)
 
 **Note:** Version bump only for package @webiny/api-headless-cms

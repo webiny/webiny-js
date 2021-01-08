@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.33](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.32...v5.0.0-beta.33) (2021-01-08)
+
+
+### Bug Fixes
+
+* **api-page-builder:** use query_string with wildcard to search for matches ([6a44f91](https://github.com/webiny/webiny-js/commit/6a44f914a30f649ca3eac95bd11026ddb8e1ce33))
+* update permissions and permission keys across the board ([dbb134c](https://github.com/webiny/webiny-js/commit/dbb134c7b48f30e6fbe85decc7db51d17932608f))
+* **api-page-builder:** sort revisions in descending order ([a10a8c1](https://github.com/webiny/webiny-js/commit/a10a8c18451f884162fc31608076cbe599df3f2a))
+
+
+
+
+
 # [5.0.0-beta.32](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.31...v5.0.0-beta.32) (2021-01-06)
 
 **Note:** Version bump only for package @webiny/api-page-builder

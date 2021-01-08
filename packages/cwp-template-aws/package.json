@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cwp-template-aws",
-  "version": "5.0.0-beta.0",
+  "version": "5.0.0-beta.33",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -11,18 +11,18 @@
     "directory": "."
   },
   "dependencies": {
-    "@webiny/cli-plugin-deploy-pulumi": "^5.0.0-beta.0",
-    "@webiny/validation": "^5.0.0-beta.0",
-    "create-webiny-project": "^5.0.0-beta.0",
     "@commodo/fields": "^1.2.1",
-    "lodash": "^4.17.20",
-    "load-json-file": "^6.2.0",
-    "write-json-file": "^4.3.0",
-    "inquirer": "^7.3.3",
+    "@webiny/cli-plugin-deploy-pulumi": "^5.0.0-beta.33",
+    "@webiny/validation": "^5.0.0-beta.33",
     "chalk": "^4.0.0",
+    "create-webiny-project": "^5.0.0-beta.33",
     "execa": "^4.0.0",
     "fs-extra": "^9.0.0",
-    "ora": "^4.0.4"
+    "inquirer": "^7.3.3",
+    "load-json-file": "^6.2.0",
+    "lodash": "^4.17.20",
+    "ora": "^4.0.4",
+    "write-json-file": "^4.3.0"
   },
   "adio": {
     "ignoreDirs": [

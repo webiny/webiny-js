@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.33](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.32...v5.0.0-beta.33) (2021-01-08)
+
+
+### Bug Fixes
+
+* **ui:** hide accordion item content when closed ([e031748](https://github.com/webiny/webiny-js/commit/e031748eab6d2f0dfb6b07122304d5eb883efa2c))
+* **ui:** make sure editor element ID never starts with a number ([15027c8](https://github.com/webiny/webiny-js/commit/15027c8f0e9bc8ac2705e896fa0f5dab03c923da))
+* **ui:** update `CircularProgress` styles ([abeb003](https://github.com/webiny/webiny-js/commit/abeb0039f90b4f83aa5f5f96b297d82a8b5c1ede))
+* **ui:** update Accordion content style ([d5cece5](https://github.com/webiny/webiny-js/commit/d5cece5bf9fe9610f257cb4bd1321b9a11973e44))
+* replace overflow `scroll` with `auto` ([0c98e68](https://github.com/webiny/webiny-js/commit/0c98e68ca5d9385ab6c269451fa2a0e57773154e))
+
+
+
+
+
 # [5.0.0-beta.32](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.31...v5.0.0-beta.32) (2021-01-06)
 
 **Note:** Version bump only for package @webiny/ui

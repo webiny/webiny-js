@@ -3,6 +3,50 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.33](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.32...v5.0.0-beta.33) (2021-01-08)
+
+
+### Bug Fixes
+
+* remove duplicate `website` word ([95ab5c5](https://github.com/webiny/webiny-js/commit/95ab5c5cd264ab86a168728f60b7c8ecf70f03e5))
+* **app-page-builder:** revert `BlockContainerInnerWrapStyled` style ([ff8a98c](https://github.com/webiny/webiny-js/commit/ff8a98cc6cc5f9be83cd2267537dc8e7cc99c0eb))
+* **app-page-builder:** set "div" as default tag value ([58e6aed](https://github.com/webiny/webiny-js/commit/58e6aed8ea1ecaa4ed7c13ea5c85ff6de46f21b5))
+* update `PagePreviewProps` type ([18cf65e](https://github.com/webiny/webiny-js/commit/18cf65e44c995f4ec8c6264060e7ea2436fedca1))
+* update permissions and permission keys across the board ([dbb134c](https://github.com/webiny/webiny-js/commit/dbb134c7b48f30e6fbe85decc7db51d17932608f))
+* **app-page-builder:** add list style to `List` component ([72fe531](https://github.com/webiny/webiny-js/commit/72fe53183ca03d2d501e58c91f27a2482c286783))
+* **app-page-builder:** fix page revision status icon ([b24394b](https://github.com/webiny/webiny-js/commit/b24394b06c6bf7604dd8049c68c971de2391402c))
+* **app-page-builder:** move medium editor style import to theme ([e68b45e](https://github.com/webiny/webiny-js/commit/e68b45e3de6c49f9c143af2d60c91ad6456b0436))
+* **app-page-builder:** replace category `slug` with `name` as form title ([2b6795e](https://github.com/webiny/webiny-js/commit/2b6795e4d29cbb53a59f70dfbc4fc53e5c9b7c75))
+* **app-page-builder:** set `active` as false in "useSiteStatus" hook ([2114688](https://github.com/webiny/webiny-js/commit/2114688f2f3d4274234909a06eea80071beaa6f6))
+* **app-page-builder:** update `BlockContainerInnerWrapStyled` style ([27c3e86](https://github.com/webiny/webiny-js/commit/27c3e862735b82f4241853075e3593bd83eaad18))
+* **app-page-builder:** update `createFile` GQL query ([07fd61b](https://github.com/webiny/webiny-js/commit/07fd61b6f505d43cfb4d095f71cc03ff336189e6))
+* **app-page-builder:** update `EditBlock` and `deleteBlock` icon style ([262cba0](https://github.com/webiny/webiny-js/commit/262cba0fe7049f6cb1f02a2f467d052ec2dae412))
+* **app-page-builder:** update `GET_MENU` cache after mutation ([e5b7e7e](https://github.com/webiny/webiny-js/commit/e5b7e7e486aaabab40deb0e1fc9306a16b10b8da))
+* **app-page-builder:** update `Menus` view layout to "3 x 9" ([5c7485f](https://github.com/webiny/webiny-js/commit/5c7485f589694c142d6180dfd9bb4e398f044fde))
+* **app-page-builder:** update `Page element` GQL queries ([af68bf8](https://github.com/webiny/webiny-js/commit/af68bf8bc47f784db0b3f86bf72759fdb986d70b))
+* **app-page-builder:** update `pageElement` GQL query and mutation ([5283f26](https://github.com/webiny/webiny-js/commit/5283f26d554bc9bab688b16b65e9006ac3a61783))
+* **app-page-builder:** update `SaveElement` ([436a9ca](https://github.com/webiny/webiny-js/commit/436a9cad16702e0bea87104f4d64bfb372b5f6b5))
+* **app-page-builder:** update cache after "UPDATE_CATEGORY" mutation ([9a24a0b](https://github.com/webiny/webiny-js/commit/9a24a0b4ce03287a901b5053b62ff0f24618ca80))
+* update welcome screen permission checks and styles ([47a1fb1](https://github.com/webiny/webiny-js/commit/47a1fb1ca09421ce0bb393630e1a64cfaf982029))
+* **app-page-builder:** update `PagesAutocomplete` component ([8b0afd8](https://github.com/webiny/webiny-js/commit/8b0afd856259f5fd817f4b94f8bb292a264b91cb))
+* **app-page-builder:** use `getPageUrl` for revision preview ([bf5c530](https://github.com/webiny/webiny-js/commit/bf5c5305b3a85d2cc7f52d45e017461fda18375a))
+* replace overflow `scroll` with `auto` ([0c98e68](https://github.com/webiny/webiny-js/commit/0c98e68ca5d9385ab6c269451fa2a0e57773154e))
+
+
+### Features
+
+* update `revision` description text in `PB` & `CMS` ([a36c6a0](https://github.com/webiny/webiny-js/commit/a36c6a0b76d7d6526f01e46d45424aa56618434c))
+* **app-page-builder:** add `EmptyElementGroupView` component ([7fde1a9](https://github.com/webiny/webiny-js/commit/7fde1a96605d45b830d0d25da4743c6135497a81))
+* **app-page-builder:** add `emptyView` in Saved element group ([1d66a89](https://github.com/webiny/webiny-js/commit/1d66a89e7b2eb7e9087f0c510e4586ec741b1cd7))
+* **app-page-builder:** add `useResponsiveClassName` hook ([256148d](https://github.com/webiny/webiny-js/commit/256148dd7489f1bbea8765f4dea054edcef9d329))
+* **app-page-builder:** add render empty element group view logic ([65fc5c4](https://github.com/webiny/webiny-js/commit/65fc5c434dcb3960634758db676cfa7795ede6e8))
+* **app-page-builder:** update `AddBlockContent`style ([e605b52](https://github.com/webiny/webiny-js/commit/e605b527f13a0da36928c7f65cf40dbe2a6aec0a))
+* **app-page-builder:** update PbEditorPageElementGroupPlugin type ([44cb75f](https://github.com/webiny/webiny-js/commit/44cb75f7b5ed9abe29a189d4ee201a4d4c58acc7))
+
+
+
+
+
 # [5.0.0-beta.32](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.31...v5.0.0-beta.32) (2021-01-06)
 
 **Note:** Version bump only for package @webiny/app-page-builder
