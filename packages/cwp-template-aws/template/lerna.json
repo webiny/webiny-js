@@ -1,16 +1,4 @@
 {
-  "version": "independent",
-  "packages": [
-    "apps/admin/code",
-    "apps/site/code",
-    "apps/theme",
-    "api/code/fileManager/*",
-    "api/code/graphqlPlayground",
-    "api/code/graphql",
-    "api/code/headlessCMS",
-    "api/code/pageBuilder/*",
-    "api/code/prerenderingService/render",
-    "api/code/prerenderingService/flush",
-    "api/code/prerenderingService/queue/*"
-  ]
+  "packages": ["packages/*"],
+  "version": "independent"
 }
