@@ -104,24 +104,6 @@ module.exports = async function createProject({ projectName, template, tag, log 
                     task.skip("Git repo not initialized", err);
                 }
             }
-        },
-        {
-            // Get the template path, require the `index.js` file, and execute it.
-            title: "Setup template",
-            task: async context => {
-                let templateName = context.templateName;
-                if (templateName.startsWith("file:")) {
-                    templateName = templateName.replace("file:", "");
-                }
-
-                const templatePath = path.dirname(
-                    require.resolve(path.join(templateName, "package.json"), {
-                        paths: [root]
-                    })
-                );
-
-                await require(templatePath)({ projectName, root });
-            }
         }
     ]);
 
@@ -130,39 +112,59 @@ module.exports = async function createProject({ projectName, template, tag, log 
         logPath = log;
     }
     const context = { logPath };
-    await tasks.run(context).catch(async err => {
-        await sendEvent({
-            event: "create-webiny-project-error",
-            data: {
-                errorMessage: err.message,
-                errorStack: err.stack
+    await tasks
+        .run(context)
+        .then(() => {
+            let templateName = context.templateName;
+            if (templateName.startsWith("file:")) {
+                templateName = templateName.replace("file:", "");
             }
+
+            const templatePath = path.dirname(
+                require.resolve(path.join(templateName, "package.json"), {
+                    paths: [root]
+                })
+            );
+
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    resolve();
+                    return require(templatePath)({ projectName, root });
+                }, 500);
+            });
+        })
+        .catch(async err => {
+            await sendEvent({
+                event: "create-webiny-project-error",
+                data: {
+                    errorMessage: err.message,
+                    errorStack: err.stack
+                }
+            });
+
+            console.log(
+                [
+                    "",
+                    "ERROR OUTPUT:",
+                    "----------------------------------------",
+                    err.message,
+                    "----------------------------------------",
+                    "",
+                    "Please open an issue including the error output at https://github.com/webiny/webiny-js/issues/new.",
+                    "You can also get in touch with us on our Slack Community: https://www.webiny.com/slack",
+                    ""
+                ]
+                    .map(line => indentString(line, 2))
+                    .join("\n")
+            );
+
+            console.log(`\nWriting log to ${green(path.resolve(logPath))}...`);
+            fs.writeFileSync(path.resolve(logPath), err.toString());
+            console.log("Cleaning up project...");
+            // rimraf.sync(root);
+            console.log("Project cleaned!");
+            process.exit(1);
         });
-
-        console.log(
-            [
-                "",
-                "ERROR OUTPUT:",
-                "----------------------------------------",
-                err.message,
-                "----------------------------------------",
-                "",
-                "Please open an issue including the error output at https://github.com/webiny/webiny-js/issues/new.",
-                "You can also get in touch with us on our Slack Community: https://www.webiny.com/slack",
-                ""
-            ]
-                .map(line => indentString(line, 2))
-                .join("\n")
-        );
-
-        console.log(`\nWriting log to ${green(path.resolve(logPath))}...`);
-        fs.writeFileSync(path.resolve(logPath), err.toString());
-        console.log("No cleanup.");
-        console.log("Cleaning up project...");
-        rimraf.sync(root);
-        console.log("Project cleaned!");
-        process.exit(1);
-    });
 
     await sendEvent({ event: "create-webiny-project-end" });
 };
