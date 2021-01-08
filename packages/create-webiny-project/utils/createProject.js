@@ -91,22 +91,7 @@ module.exports = async function createProject({ projectName, template, tag, log 
             }
         },
         {
-            // Sets up path to template, which is resolved via received template name.
-            title: "Create project folders",
-            task: context => {
-                let templateName = context.templateName;
-                if (templateName.startsWith("file:")) {
-                    templateName = templateName.replace("file:", "");
-                }
-
-                context.templatePath = path.dirname(
-                    require.resolve(path.join(templateName, "package.json"), {
-                        paths: [root]
-                    })
-                );
-            }
-        },
-        {
+            // Initialize `git` by executing `git init` in project directory.
             title: `Initialize git`,
             task: (ctx, task) => {
                 try {
@@ -119,32 +104,21 @@ module.exports = async function createProject({ projectName, template, tag, log 
             }
         },
         {
+            // Get the template path, require the `index.js` file, and execute it.
             title: "Setup template",
             task: async context => {
-                await require(context.templatePath)({ projectName, root });
-            }
-        },
-        {
-            title: "Install dependencies",
-            task: async context => {
-                try {
-                    const options = {
-                        cwd: root,
-                        maxBuffer: "500_000_000"
-                    };
-                    let logStream;
-                    if (log) {
-                        logStream = fs.createWriteStream(context.logPath);
-                        const runner = execa("yarn", [], options);
-                        runner.stdout.pipe(logStream);
-                        runner.stderr.pipe(logStream);
-                        await runner;
-                    } else {
-                        await execa("yarn", [], options);
-                    }
-                } catch (err) {
-                    throw new Error("Unable to install the necessary packages: " + err.message);
+                let templateName = context.templateName;
+                if (templateName.startsWith("file:")) {
+                    templateName = templateName.replace("file:", "");
                 }
+
+                const templatePath = path.dirname(
+                    require.resolve(path.join(templateName, "package.json"), {
+                        paths: [root]
+                    })
+                );
+
+                await require(templatePath)({ projectName, root });
             }
         }
     ]);
@@ -189,27 +163,4 @@ module.exports = async function createProject({ projectName, template, tag, log 
     });
 
     await sendEvent({ event: "create-webiny-project-end" });
-
-    console.log(
-        [
-            "",
-            `Your new Webiny project ${green(projectName)} is ready!`,
-            `Finish the setup by running the following command: ${green(
-                `cd ${projectName} && yarn webiny deploy`
-            )}`,
-            "",
-            `To see all of the available CLI commands, run ${green(
-                "webiny --help"
-            )} in your ${green(projectName)} directory.`,
-            "",
-            "For more information on setting up your database connection:\nhttps://docs.webiny.com/docs/get-started/quick-start#3-setup-database-connection",
-            "",
-            "Want to delve deeper into Webiny? Check out https://docs.webiny.com/docs/webiny/introduction",
-            "Like the project? Star us on Github! https://github.com/webiny/webiny-js",
-            "",
-            "Need help? Join our Slack community! https://www.webiny.com/slack",
-            "",
-            "🚀 Happy coding!"
-        ].join("\n")
-    );
 };
