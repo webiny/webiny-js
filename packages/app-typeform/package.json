@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-typeform",
-  "version": "5.0.0-beta.47",
+  "version": "5.0.0-beta.48",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -12,9 +12,9 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@emotion/styled": "^10.0.17",
-    "@webiny/app": "^5.0.0-beta.47",
-    "@webiny/app-page-builder": "^5.0.0-beta.47",
-    "@webiny/validation": "^5.0.0-beta.47",
+    "@webiny/app": "^5.0.0-beta.48",
+    "@webiny/app-page-builder": "^5.0.0-beta.48",
+    "@webiny/validation": "^5.0.0-beta.48",
     "lodash": "^4.17.4",
     "recoil": "^0.1.2"
   },
