@@ -1,38 +1,40 @@
-const fs = require("fs-extra");
-const path = require("path");
-const execa = require("execa");
-const crypto = require("crypto");
+const inquirer = require("inquirer");
+const setup = require("./setup");
 
-function random(length = 32) {
-    return crypto
-        .randomBytes(Math.ceil(length / 2))
-        .toString("hex")
-        .slice(0, length);
+function runInquirer({ appName, root } = {}) {
+    console.log(
+        "In order to setup your new Webiny project, please answer the following question."
+    );
+    console.log();
+    inquirer
+        .prompt([
+            {
+                type: "list",
+                message: "Do you want to have your API deployed into a Virtual Private Cloud (VPC)?",
+                name: "vpc",
+                choices: [
+                    {
+                        name: "Yes (more secure, includes a NAT Gateway, incurs cost)",
+                        value: true
+                    },
+                    {
+                        name: "No (less secure, all deployed resources are free tier eligible)",
+                        value: false
+                    }
+                ]
+            }
+        ])
+        .then(({ vpc }) => setup({ projectName: appName, projectRoot: root, vpc }))
+        .catch(e => {
+            if (e.isTtyError) {
+                console.log("Could not start setup wizard in current environment.");
+            } else {
+                console.log("Something went wrong:");
+                console.log(e);
+            }
+        });
 }
 
-module.exports = async ({ appName, root }) => {
-    const { name, version } = require("./package.json");
-    const filesToCopy = require("./filesToCopy");
-    for (let i = 0; i < filesToCopy.length; i++) {
-        fs.moveSync(
-            path.join(root, filesToCopy[i].dir, filesToCopy[i].oldFile),
-            path.join(root, filesToCopy[i].dir, filesToCopy[i].newFile),
-            { overwrite: true }
-        );
-    }
+module.exports = runInquirer;
 
-    // Commit .gitignore.
-    execa.sync("git", ["add", ".gitignore"], { cwd: root });
-    execa.sync("git", ["commit", "-m", `chore: initialize .gitignore`], { cwd: root });
-
-    const rootEnvFilePath = path.join(root, ".env");
-    let content = fs.readFileSync(rootEnvFilePath).toString();
-    content = content.replace("{REGION}", "us-east-1");
-    content = content.replace("{PULUMI_CONFIG_PASSPHRASE}", random());
-    fs.writeFileSync(rootEnvFilePath, content);
-
-    let webinyRoot = fs.readFileSync(path.join(root, "webiny.root.js"), "utf-8");
-    webinyRoot = webinyRoot.replace("[PROJECT_NAME]", appName);
-    webinyRoot = webinyRoot.replace("[TEMPLATE_VERSION]", `${name}@${version}`);
-    fs.writeFileSync(path.join(root, "webiny.root.js"), webinyRoot);
-};
+runInquirer();
