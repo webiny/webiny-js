@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const yargs = require("yargs");
 const packageJson = require("./package.json");
-const createApp = require("./utils/createApp");
+const createProject = require("./utils/createProject");
 
 process.on("unhandledRejection", err => {
     throw err;
@@ -58,5 +58,5 @@ yargs.command(
         yargs.example("$0 <project-name> --template=../path/to/template");
         yargs.example("$0 <project-name> --log=./my-logs.txt");
     },
-    argv => createApp(argv)
+    argv => createProject(argv)
 ).argv;

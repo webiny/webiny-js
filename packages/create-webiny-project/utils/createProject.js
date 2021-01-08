@@ -12,7 +12,8 @@ const loadJsonFile = require("load-json-file");
 const { sendEvent } = require("@webiny/tracking");
 const writeJsonFile = require("write-json-file");
 const rimraf = require("rimraf");
-const { getPackageVersion } = require("./utils");
+const getPackageVersion = require("./getPackageVersion");
+const getPackageJson = require("./getPackageJson");
 
 const checkAppName = require("./checkAppName");
 
@@ -62,16 +63,13 @@ module.exports = async function createApp({ projectName, template, tag, log }) {
 
     const tasks = new Listr([
         {
+            // Creates root package.json.
             title: "Pre-template setup",
             task: () => {
                 checkAppName(appName);
                 fs.ensureDirSync(projectName);
 
-                const packageJson = {
-                    name: appName,
-                    version: "0.1.0",
-                    private: true
-                };
+                const packageJson = getPackageJson(appName);
 
                 fs.writeFileSync(
                     path.join(root, "package.json"),
@@ -80,29 +78,24 @@ module.exports = async function createApp({ projectName, template, tag, log }) {
             }
         },
         {
+            // "yarn adds" given template which can be either a real package or a path of a local package.
             title: `Install template package`,
             task: async context => {
-                const dependencies = [];
                 let templateName = `@webiny/cwp-template-${template}`;
-
                 if (template.startsWith(".") || template.startsWith("file:")) {
                     templateName = "file:" + path.relative(appName, template.replace("file:", ""));
-                    dependencies.push(templateName);
                 } else {
-                    dependencies.push(`${templateName}@${tag}`);
+                    templateName = `${templateName}@${tag}`;
                 }
 
+                // Assign template name to context.
                 context.templateName = templateName;
 
-                const command = "yarn";
-                const args = ["add", "--exact"];
-                [].push.apply(args, dependencies);
-                args.push("--cwd");
-                args.push(root);
-                await execa(command, args);
+                await execa("yarn", ["add", "--exact", templateName, "--cwd", root]);
             }
         },
         {
+            // Sets up path to template, which is resolved via received template name.
             title: "Create project folders",
             task: context => {
                 let templateName = context.templateName;
@@ -110,23 +103,14 @@ module.exports = async function createApp({ projectName, template, tag, log }) {
                     templateName = templateName.replace("file:", "");
                 }
 
-                const templatePath = path.dirname(
+                context.templatePath = path.dirname(
                     require.resolve(path.join(templateName, "package.json"), {
                         paths: [root]
                     })
                 );
-
-                context.templatePath = templatePath;
-
-                const templateDir = path.join(templatePath, "template");
-                if (fs.existsSync(templateDir)) {
-                    fs.copySync(templateDir, root);
-                } else {
-                    throw new Error(`Could not resolve template: ${green(templateDir)}`);
-                }
             }
         },
-        {
+        /*{
             title: "Set up project dependencies",
             task: () => {
                 const appPackage = require(path.join(root, "package.json"));
@@ -158,8 +142,8 @@ module.exports = async function createApp({ projectName, template, tag, log }) {
                 );
                 fs.unlinkSync(path.join(root, "dependencies.json"));
             }
-        },
-        {
+        },*/
+        /* {
             title: `Initialize git`,
             task: (ctx, task) => {
                 try {
@@ -170,13 +154,13 @@ module.exports = async function createApp({ projectName, template, tag, log }) {
                     task.skip("Git repo not initialized", err);
                 }
             }
-        },
-        {
+        },*/
+        /* {
             title: "Get proper package versions",
             task: async () => {
                 // Set proper @webiny package versions
-                const workspaces = await fg(["**/package.json"], {
-                    ignore: ["**/dist/**", "**/node_modules/**", root],
+                const workspaces = await fg(["**!/package.json"], {
+                    ignore: ["**!/dist/!**", "**!/node_modules/!**", root],
                     cwd: root
                 });
                 const latestVersion = await getPackageVersion("@webiny/cli", tag);
@@ -239,7 +223,7 @@ module.exports = async function createApp({ projectName, template, tag, log }) {
                 // will be set up to use your local packages via symlinks, so you can develop and test immediately.
                 try {
                     if (tag.startsWith(".")) {
-                        const webinyPackages = await fg(["@webiny/*"], {
+                        const webinyPackages = await fg(["@webiny/!*"], {
                             cwd: path.join(process.cwd(), tag),
                             onlyDirectories: true
                         });
@@ -275,8 +259,8 @@ module.exports = async function createApp({ projectName, template, tag, log }) {
                     throw new Error("Unable to resolve packages: " + err.message);
                 }
             }
-        },
-        {
+        },*/
+        /*{
             title: "Install dependencies",
             task: async context => {
                 try {
@@ -298,7 +282,7 @@ module.exports = async function createApp({ projectName, template, tag, log }) {
                     throw new Error("Unable to install the necessary packages: " + err.message);
                 }
             }
-        },
+        },*/
         {
             title: "Run template-specific actions",
             task: async context => {
@@ -370,4 +354,4 @@ module.exports = async function createApp({ projectName, template, tag, log }) {
             "🚀 Happy coding!"
         ].join("\n")
     );
-}
+};
