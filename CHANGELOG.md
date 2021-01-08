@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.39](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.38...v5.0.0-beta.39) (2021-01-08)
+
+
+### Bug Fixes
+
+* rename `root` to `projectRoot` ([b559b43](https://github.com/webiny/webiny-js/commit/b559b43b9dbbd1b1476724f540b4d156b90cd9b8))
+
+
+
+
+
 # [5.0.0-beta.38](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.37...v5.0.0-beta.38) (2021-01-08)
 
 
