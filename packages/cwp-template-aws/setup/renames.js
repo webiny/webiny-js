@@ -4,6 +4,10 @@ module.exports = [
         next: ".env"
     },
     {
+        prev: "example.keep.env",
+        next: ".example.env"
+    },
+    {
         prev: "example.gitignore",
         next: ".gitignore"
     },
