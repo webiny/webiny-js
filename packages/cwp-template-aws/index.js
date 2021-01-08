@@ -2,6 +2,7 @@ const inquirer = require("inquirer");
 const setup = require("./setup");
 
 function runInquirer(cwp) {
+    console.log('dpboasdsad', cwp)
     console.log("In order to setup your new Webiny project, please answer the following question.");
     console.log();
     inquirer
