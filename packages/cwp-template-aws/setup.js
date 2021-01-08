@@ -2,24 +2,12 @@ const fs = require("fs-extra");
 const path = require("path");
 const execa = require("execa");
 const crypto = require("crypto");
-const { withFields, string, boolean } = require("@commodo/fields");
-const { validation } = require("@webiny/validation");
 const renames = require("./setup/renames");
 const merge = require("lodash/merge");
 const writeJsonFile = require("write-json-file");
 const loadJsonFile = require("load-json-file");
 
 const IS_TEST = process.env.NODE_ENV === "test";
-
-const ArgsModel = withFields({
-    vpc: boolean(),
-    projectName: string({
-        validation: validation.create("required,maxLength:100")
-    }),
-    projectRoot: string({
-        validation: validation.create("required")
-    })
-})();
 
 function random(length = 32) {
     return crypto
@@ -28,12 +16,7 @@ function random(length = 32) {
         .slice(0, length);
 }
 
-const setup = async rawArgs => {
-    const argsModel = new ArgsModel(rawArgs).populate(rawArgs);
-    await argsModel.validate();
-
-    const args = await argsModel.toJSON();
-
+const setup = async args => {
     const { projectRoot, projectName, vpc } = args;
 
     const packageJsonExists = fs.pathExistsSync(path.join(projectRoot, "package.json"));
