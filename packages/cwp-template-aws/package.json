@@ -12,6 +12,13 @@
   },
   "dependencies": {
     "@webiny/cli-plugin-deploy-pulumi": "^5.0.0-beta.0",
+    "@webiny/validation": "^5.0.0-beta.0",
+    "create-webiny-project": "^5.0.0-beta.0",
+    "@commodo/fields": "^1.2.1",
+    "lodash": "^4.17.20",
+    "load-json-file": "^6.2.0",
+    "write-json-file": "^4.3.0",
+    "inquirer": "^7.3.3",
     "chalk": "^4.0.0",
     "execa": "^4.0.0",
     "fs-extra": "^9.0.0",
