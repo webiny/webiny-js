@@ -1,6 +1,6 @@
 {
 	"name": "@webiny/react-graphql-client",
-	"version": "5.0.0-beta.35",
+	"version": "5.0.0-beta.36",
 	"main": "index.js",
 	"repository": {
 		"type": "git",
@@ -15,7 +15,7 @@
 	"license": "MIT",
 	"dependencies": {
 		"@babel/runtime": "^7.5.5",
-		"@webiny/graphql-client": "^5.0.0-beta.35"
+		"@webiny/graphql-client": "^5.0.0-beta.36"
 	},
 	"devDependencies": {
 		"@babel/cli": "^7.5.5",

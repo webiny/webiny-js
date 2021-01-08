@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.36](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.35...v5.0.0-beta.36) (2021-01-08)
+
+
+### Bug Fixes
+
+* add visual polishes ([c1993c0](https://github.com/webiny/webiny-js/commit/c1993c0c0f2086502e2a0560a07adcd7e08c558d))
+* add visual polishes ([b41efb9](https://github.com/webiny/webiny-js/commit/b41efb9d243d84401267b49b1413cf5fc5037675))
+* add visual polishes ([42575e1](https://github.com/webiny/webiny-js/commit/42575e12d3d3c6065e44bd3a78c0778b21a0683a))
+
+
+
+
+
 # [5.0.0-beta.35](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.34...v5.0.0-beta.35) (2021-01-08)
 
 
