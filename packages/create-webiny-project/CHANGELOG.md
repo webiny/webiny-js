@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.35](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.34...v5.0.0-beta.35) (2021-01-08)
+
+
+### Bug Fixes
+
+* correct templateName / dependencyName construction ([7def56d](https://github.com/webiny/webiny-js/commit/7def56d190232babebf44287b6a818570df2b930))
+* move template code execution into `then` callback ([34f0666](https://github.com/webiny/webiny-js/commit/34f066603f0d6584f4f65f36767ce6a286548165))
+* rename file ([b3d9c4a](https://github.com/webiny/webiny-js/commit/b3d9c4a927ee8e97403253ef82b2bcdbea987721))
+
+
+
+
+
 # [5.0.0-beta.34](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.33...v5.0.0-beta.34) (2021-01-08)
 
 **Note:** Version bump only for package create-webiny-project

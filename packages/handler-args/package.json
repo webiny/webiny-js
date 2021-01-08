@@ -1,6 +1,6 @@
 {
   "name": "@webiny/handler-args",
-  "version": "5.0.0-beta.34",
+  "version": "5.0.0-beta.35",
   "main": "index.js",
   "repository": {
     "type": "git",
