@@ -17,10 +17,10 @@ module.exports = async function createProject({ projectName, template, tag, log 
         throw Error("You must provide a name for the project to use.");
     }
 
-    const root = path.resolve(projectName).replace(/\\/g, "/");
-    projectName = path.basename(root);
+    const projectRoot = path.resolve(projectName).replace(/\\/g, "/");
+    projectName = path.basename(projectRoot);
 
-    if (fs.existsSync(root)) {
+    if (fs.existsSync(projectRoot)) {
         console.log(`\nSorry, target folder ${red(projectName)} already exists!`);
         process.exit(1);
     }
@@ -52,7 +52,7 @@ module.exports = async function createProject({ projectName, template, tag, log 
         // @webiny/cli is not installed globally
     }
 
-    console.log(`Initializing a new Webiny project in ${green(root)}:`);
+    console.log(`Initializing a new Webiny project in ${green(projectRoot)}:`);
 
     await sendEvent({ event: "create-webiny-project-start" });
 
@@ -67,7 +67,7 @@ module.exports = async function createProject({ projectName, template, tag, log 
                 const packageJson = getPackageJson(projectName);
 
                 fs.writeFileSync(
-                    path.join(root, "package.json"),
+                    path.join(projectRoot, "package.json"),
                     JSON.stringify(packageJson, null, 2) + os.EOL
                 );
             }
@@ -89,7 +89,7 @@ module.exports = async function createProject({ projectName, template, tag, log 
                 // Assign template name to context.
                 context.templateName = templateName;
 
-                await execa("yarn", ["add", "--exact", add, "--cwd", root]);
+                await execa("yarn", ["add", "--exact", add, "--cwd", projectRoot]);
             }
         },
         {
@@ -98,8 +98,8 @@ module.exports = async function createProject({ projectName, template, tag, log 
             task: (ctx, task) => {
                 try {
                     execa.sync("git", ["--version"]);
-                    execa.sync("git", ["init"], { cwd: root });
-                    fs.writeFileSync(path.join(root, ".gitignore"), "node_modules/");
+                    execa.sync("git", ["init"], { cwd: projectRoot });
+                    fs.writeFileSync(path.join(projectRoot, ".gitignore"), "node_modules/");
                 } catch (err) {
                     task.skip("Git repo not initialized", err);
                 }
@@ -125,7 +125,7 @@ module.exports = async function createProject({ projectName, template, tag, log 
 
             const templatePath = path.dirname(
                 require.resolve(path.join(templateName, "package.json"), {
-                    paths: [root]
+                    paths: [projectRoot]
                 })
             );
 
@@ -133,7 +133,7 @@ module.exports = async function createProject({ projectName, template, tag, log 
             return new Promise(resolve => {
                 setTimeout(() => {
                     resolve();
-                    return require(templatePath)({ projectName, root });
+                    return require(templatePath)({ projectName, projectRoot });
                 }, 500);
             });
         })
@@ -165,7 +165,7 @@ module.exports = async function createProject({ projectName, template, tag, log 
             console.log(`\nWriting log to ${green(path.resolve(logPath))}...`);
             fs.writeFileSync(path.resolve(logPath), err.toString());
             console.log("Cleaning up project...");
-            rimraf.sync(root);
+            rimraf.sync(projectRoot);
             console.log("Project cleaned!");
             process.exit(1);
         });
