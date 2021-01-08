@@ -55,7 +55,8 @@
     ]
   },
   "scripts": {
-    "postinstall": "node ./scripts/linkPackages.js",
+    "link-packages": "node ./scripts/linkPackages.js",
+    "postinstall": "yarn link-packages",
     "test": "jest --config jest.config.js"
   }
 }
