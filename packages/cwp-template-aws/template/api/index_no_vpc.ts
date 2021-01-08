@@ -1,13 +1,13 @@
-import Cognito from "./stack_no_vpc/cognito";
-import DynamoDB from "./stack_no_vpc/dynamoDb";
-import Graphql from "./stack_no_vpc/graphql";
-import HeadlessCMS from "./stack_no_vpc/headlessCMS";
-import ApiGateway from "./stack_no_vpc/apiGateway";
-import Cloudfront from "./stack_no_vpc/cloudfront";
-import ElasticSearch from "./stack_no_vpc/elasticSearch";
-import FileManager from "./stack_no_vpc/fileManager";
-import PageBuilder from "./stack_no_vpc/pageBuilder";
-import PrerenderingService from "./stack_no_vpc/prerenderingService";
+import Cognito from "./stack/cognito";
+import DynamoDB from "./stack/dynamoDb";
+import Graphql from "./stack/graphql";
+import HeadlessCMS from "./stack/headlessCMS";
+import ApiGateway from "./stack/apiGateway";
+import Cloudfront from "./stack/cloudfront";
+import ElasticSearch from "./stack/elasticSearch";
+import FileManager from "./stack/fileManager";
+import PageBuilder from "./stack/pageBuilder";
+import PrerenderingService from "./stack/prerenderingService";
 
 const dynamoDb = new DynamoDB();
 const cognito = new Cognito();
