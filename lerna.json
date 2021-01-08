@@ -17,7 +17,7 @@
       ],
       "allowBranch": [
         "master",
-        "v5-cwp-no-vpc-template",
+        "v5",
         "next",
         "develop",
         "release-*"
