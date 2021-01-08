@@ -41,7 +41,7 @@ export function usePublishRevisionHandler({ page }) {
                 // Write our data back to the cache.
                 cache.writeQuery({
                     query: GET_PAGE,
-                    data: set(pageFromCache, "pageBuilder.page.data", page)
+                    data: set(pageFromCache, "pageBuilder.getPage.data", page)
                 });
             }
         });
