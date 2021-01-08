@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { css } from "emotion";
 import { useApolloClient } from "react-apollo";
-import { get, cloneDeep } from "lodash";
+import set from "lodash/set";
+import get from "lodash/get";
+import cloneDeep from "lodash/cloneDeep";
 import { Chips, Chip } from "@webiny/ui/Chips";
 import { Tags as TagsComponent } from "@webiny/ui/Tags";
 import { UPDATE_FILE, LIST_FILES, LIST_TAGS } from "./../graphql";
@@ -41,7 +43,6 @@ function Tags({ file }) {
                             id: file.id,
                             data: { tags }
                         },
-                        refetchQueries: [{ query: LIST_TAGS }],
                         update: (cache, updated) => {
                             const newFileData = get(updated, "data.fileManager.updateFile.data");
 
@@ -64,6 +65,32 @@ function Tags({ file }) {
                                 variables: queryParams,
                                 data
                             });
+                            // 2. Update "LIST_TAGS" cache
+                            if (Array.isArray(newFileData.tags)) {
+                                // Get list tags data
+                                const listTagsData: any = cloneDeep(
+                                    cache.readQuery({
+                                        query: LIST_TAGS
+                                    })
+                                );
+                                // Add new tag in list
+                                const updatedTagsList = [...newFileData.tags];
+
+                                if (Array.isArray(listTagsData.fileManager.listTags)) {
+                                    listTagsData.fileManager.listTags.forEach(tag => {
+                                        if (!updatedTagsList.includes(tag)) {
+                                            updatedTagsList.push(tag);
+                                        }
+                                    });
+                                }
+
+                                set(listTagsData, "fileManager.listTags", updatedTagsList);
+                                // Write it to cache
+                                cache.writeQuery({
+                                    query: LIST_TAGS,
+                                    data: listTagsData
+                                });
+                            }
                         }
                     })
                     .then(() => {
