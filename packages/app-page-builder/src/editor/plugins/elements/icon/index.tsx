@@ -63,10 +63,7 @@ export default () => {
                             width: 50
                         },
                         settings: {
-                            horizontalAlign: createInitialPerDeviceSettingValue(
-                                "center",
-                                DisplayMode.DESKTOP
-                            ),
+                            horizontalAlign: "center",
                             margin: createInitialPerDeviceSettingValue(
                                 { all: "0px" },
                                 DisplayMode.DESKTOP
