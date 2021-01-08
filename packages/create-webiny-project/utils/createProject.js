@@ -80,7 +80,8 @@ module.exports = async function createProject({ projectName, template, tag, log 
                 let templateName = `@webiny/cwp-template-${template}`;
 
                 if (template.startsWith(".") || template.startsWith("file:")) {
-                    templateName = "file:" + path.relative(projectName, template.replace("file:", ""));
+                    templateName =
+                        "file:" + path.relative(projectName, template.replace("file:", ""));
                     add = templateName;
                 } else {
                     add = `${templateName}@${tag}`;

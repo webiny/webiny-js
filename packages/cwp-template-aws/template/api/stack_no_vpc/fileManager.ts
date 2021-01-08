@@ -62,7 +62,7 @@ class FileManager {
             layers: [getLayerArn("webiny-v4-sharp", String(process.env.AWS_REGION))],
             environment: {
                 variables: { S3_BUCKET: this.bucket.id }
-            },
+            }
         });
 
         const manage = new aws.lambda.Function("fm-manage", {
@@ -77,7 +77,7 @@ class FileManager {
             }),
             environment: {
                 variables: { S3_BUCKET: this.bucket.id }
-            },
+            }
         });
 
         const download = new aws.lambda.Function("fm-download", {
@@ -95,7 +95,7 @@ class FileManager {
                     S3_BUCKET: this.bucket.id,
                     IMAGE_TRANSFORMER_FUNCTION: transform.arn
                 }
-            },
+            }
         });
 
         this.functions = {

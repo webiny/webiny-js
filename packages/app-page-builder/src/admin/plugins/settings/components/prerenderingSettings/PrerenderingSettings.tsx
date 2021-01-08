@@ -58,7 +58,7 @@ const PrerenderingSettings = () => {
                                         description={
                                             <span>
                                                 The URL to access your app, which is used for
-                                                prerendering.&nbsp; 
+                                                prerendering.&nbsp;
                                                 {appUrl && (
                                                     <>
                                                         If not specified, the default one (
