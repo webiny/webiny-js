@@ -7,6 +7,7 @@ const merge = require("lodash/merge");
 const writeJsonFile = require("write-json-file");
 const loadJsonFile = require("load-json-file");
 const getPackages = require("get-yarn-workspaces");
+const { green } = require("chalk");
 
 const IS_TEST = process.env.NODE_ENV === "test";
 
