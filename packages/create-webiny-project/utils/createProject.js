@@ -15,15 +15,15 @@ const rimraf = require("rimraf");
 const getPackageVersion = require("./getPackageVersion");
 const getPackageJson = require("./getPackageJson");
 
-const checkAppName = require("./checkAppName");
+const checkProjectName = require("./checkProjectName");
 
-module.exports = async function createApp({ projectName, template, tag, log }) {
+module.exports = async function createProject({ projectName, template, tag, log }) {
     if (!projectName) {
         throw Error("You must provide a name for the project to use.");
     }
 
     const root = path.resolve(projectName).replace(/\\/g, "/");
-    const appName = path.basename(root);
+    projectName = path.basename(root);
 
     if (fs.existsSync(root)) {
         console.log(`\nSorry, target folder ${red(projectName)} already exists!`);
@@ -66,10 +66,10 @@ module.exports = async function createApp({ projectName, template, tag, log }) {
             // Creates root package.json.
             title: "Pre-template setup",
             task: () => {
-                checkAppName(appName);
+                checkProjectName(projectName);
                 fs.ensureDirSync(projectName);
 
-                const packageJson = getPackageJson(appName);
+                const packageJson = getPackageJson(projectName);
 
                 fs.writeFileSync(
                     path.join(root, "package.json"),
@@ -83,7 +83,7 @@ module.exports = async function createApp({ projectName, template, tag, log }) {
             task: async context => {
                 let templateName = `@webiny/cwp-template-${template}`;
                 if (template.startsWith(".") || template.startsWith("file:")) {
-                    templateName = "file:" + path.relative(appName, template.replace("file:", ""));
+                    templateName = "file:" + path.relative(projectName, template.replace("file:", ""));
                 } else {
                     templateName = `${templateName}@${tag}`;
                 }
@@ -286,7 +286,7 @@ module.exports = async function createApp({ projectName, template, tag, log }) {
         {
             title: "Run template-specific actions",
             task: async context => {
-                await require(context.templatePath)({ appName, root });
+                await require(context.templatePath)({ projectName, root });
             }
         }
     ]);
@@ -335,14 +335,14 @@ module.exports = async function createApp({ projectName, template, tag, log }) {
     console.log(
         [
             "",
-            `Your new Webiny project ${green(appName)} is ready!`,
+            `Your new Webiny project ${green(projectName)} is ready!`,
             `Finish the setup by running the following command: ${green(
-                `cd ${appName} && yarn webiny deploy`
+                `cd ${projectName} && yarn webiny deploy`
             )}`,
             "",
             `To see all of the available CLI commands, run ${green(
                 "webiny --help"
-            )} in your ${green(appName)} directory.`,
+            )} in your ${green(projectName)} directory.`,
             "",
             "For more information on setting up your database connection:\nhttps://docs.webiny.com/docs/get-started/quick-start#3-setup-database-connection",
             "",

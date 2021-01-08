@@ -1,13 +1,13 @@
 const { red, green } = require("chalk");
 const validateProjectName = require("validate-npm-package-name");
 
-module.exports = appName => {
-    const validationResult = validateProjectName(appName);
+module.exports = projectName => {
+    const validationResult = validateProjectName(projectName);
     if (!validationResult.validForNewPackages) {
         console.error(
             red(
                 `Cannot create a project named ${green(
-                    `"${appName}"`
+                    `"${projectName}"`
                 )} because of npm naming restrictions:\n`
             )
         );

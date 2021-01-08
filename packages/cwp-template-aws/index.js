@@ -1,7 +1,7 @@
 const inquirer = require("inquirer");
 const setup = require("./setup");
 
-function runInquirer({ appName, root } = {}) {
+function runInquirer({ projectName, root } = {}) {
     console.log(
         "In order to setup your new Webiny project, please answer the following question."
     );
@@ -24,7 +24,7 @@ function runInquirer({ appName, root } = {}) {
                 ]
             }
         ])
-        .then(({ vpc }) => setup({ projectName: appName, projectRoot: root, vpc }))
+        .then(({ vpc }) => setup({ projectName, projectRoot: root, vpc }))
         .catch(e => {
             if (e.isTtyError) {
                 console.log("Could not start setup wizard in current environment.");
