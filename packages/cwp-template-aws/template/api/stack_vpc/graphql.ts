@@ -5,7 +5,6 @@ import vpc from "./vpc";
 class Graphql {
     functions: {
         api: aws.lambda.Function;
-        graphqlPlayground: aws.lambda.Function;
     };
     role: aws.iam.Role;
     policy: aws.iam.RolePolicyAttachment;
@@ -46,20 +45,6 @@ class Graphql {
                         AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
                     }
                 },
-                vpcConfig: {
-                    subnetIds: vpc.subnets.private.map(subNet => subNet.id),
-                    securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
-                }
-            }),
-            graphqlPlayground: new aws.lambda.Function("graphql-playground", {
-                runtime: "nodejs12.x",
-                handler: "handler.handler",
-                role: this.role.arn,
-                timeout: 30,
-                memorySize: 128,
-                code: new pulumi.asset.AssetArchive({
-                    ".": new pulumi.asset.FileArchive("./code/graphqlPlayground/build")
-                }),
                 vpcConfig: {
                     subnetIds: vpc.subnets.private.map(subNet => subNet.id),
                     securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
