@@ -1,6 +1,6 @@
 {
 	"name": "@webiny/cwp-template-aws",
-	"version": "5.0.0-beta.41",
+	"version": "5.0.0-beta.42",
 	"main": "index.js",
 	"repository": {
 		"type": "git",
