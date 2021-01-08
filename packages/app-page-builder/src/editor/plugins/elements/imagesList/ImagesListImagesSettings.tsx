@@ -43,7 +43,7 @@ const ImagesListImagesSettings = props => {
                              * dragging a "SortableItem" started throwing TypeError: "Cannot assign to read only property"
                              * which means the state is being mutated by "Sortable" somehow.
                              */
-                            const value = [...images];
+                            const value = Array.isArray(images) ? [...images] : [];
                             return (
                                 <FileManager
                                     images
