@@ -40,14 +40,13 @@
   },
   "workspaces": {
     "packages": [
+      "packages/*",
       "apps/admin/code",
       "apps/site/code",
       "apps/theme",
       "api/code/fileManager/*",
-      "api/code/graphqlPlayground",
       "api/code/graphql",
       "api/code/headlessCMS",
-      "api/code/fileManager/*",
       "api/code/pageBuilder/*",
       "api/code/prerenderingService/render",
       "api/code/prerenderingService/flush",
