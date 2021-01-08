@@ -79,7 +79,7 @@ export default {
             data: {
                 settings: {
                     width: createInitialPerDeviceSettingValue(
-                        { value: "100%" },
+                        { value: "1100px" },
                         DisplayMode.DESKTOP
                     ),
                     margin: {
