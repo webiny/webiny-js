@@ -22,7 +22,6 @@
     "@typescript-eslint/parser": "^2.12.0",
     "babel-plugin-dynamic-import-node": "^2.3.3",
     "babel-plugin-lodash": "^3.3.4",
-    "env-cmd": "^10.1.0",
     "eslint": "^6.8.0",
     "eslint-config-standard": "^14.1.0",
     "eslint-import-resolver-babel-module": "^5.1.0",
@@ -54,6 +53,8 @@
     ]
   },
   "scripts": {
+    "setup-repo": "node ./scripts/setupRepository.js",
+    "setup-env-files": "node ./scripts/setupEnvFiles.js",
     "link-packages": "node ./scripts/linkPackages.js",
     "postinstall": "yarn link-packages",
     "test": "jest --config jest.config.js"
