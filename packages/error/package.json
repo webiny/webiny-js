@@ -1,6 +1,6 @@
 {
   "name": "@webiny/error",
-  "version": "5.0.0-beta.0",
+  "version": "5.0.0-beta.1",
   "main": "index.js",
   "types": "types.d.ts",
   "repository": {
