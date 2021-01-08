@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.44](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.43...v5.0.0-beta.44) (2021-01-08)
+
+
+### Bug Fixes
+
+* bring back force-publish ([56e712a](https://github.com/webiny/webiny-js/commit/56e712afc63e796d899dee8b7597e39213c0d655))
+* cleanup ([b425249](https://github.com/webiny/webiny-js/commit/b4252497f6f64c1958a9cdabccfbfef0d0a3b640))
+* rename leftover variable ([007a183](https://github.com/webiny/webiny-js/commit/007a183e7345b00ac5788940923f025b4104a4b4))
+
+
+
+
+
 # [5.0.0-beta.43](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.42...v5.0.0-beta.43) (2021-01-08)
 
 
