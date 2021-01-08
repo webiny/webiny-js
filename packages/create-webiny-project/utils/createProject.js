@@ -76,18 +76,20 @@ module.exports = async function createProject({ projectName, template, tag, log 
             // "yarn adds" given template which can be either a real package or a path of a local package.
             title: `Install template package`,
             task: async context => {
+                let add;
                 let templateName = `@webiny/cwp-template-${template}`;
+
                 if (template.startsWith(".") || template.startsWith("file:")) {
-                    templateName =
-                        "file:" + path.relative(projectName, template.replace("file:", ""));
+                    templateName = "file:" + path.relative(appName, template.replace("file:", ""));
+                    add = templateName;
                 } else {
-                    templateName = `${templateName}@${tag}`;
+                    add = `${templateName}@${tag}`;
                 }
 
                 // Assign template name to context.
                 context.templateName = templateName;
 
-                await execa("yarn", ["add", "--exact", templateName, "--cwd", root]);
+                await execa("yarn", ["add", "--exact", add, "--cwd", root]);
             }
         },
         {
