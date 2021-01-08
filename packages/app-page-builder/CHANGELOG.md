@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.51](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.50...v5.0.0-beta.51) (2021-01-08)
+
+
+### Bug Fixes
+
+* **app-page-builder:** fix `ImageList` element ([629edb5](https://github.com/webiny/webiny-js/commit/629edb59e0098b3db8efa6c184a7174adda350da))
+* **app-page-builder:** fix `onRemove` in ImagesListImagesSettings ([e326aed](https://github.com/webiny/webiny-js/commit/e326aed8be9509588616835e637c3ceea211067d))
+* **app-page-builder:** improve messaging ([4268003](https://github.com/webiny/webiny-js/commit/426800317d8b14aba883524ad383e77f7f8c331b))
+* **app-page-builder:** improve messaging ([6bc4c3f](https://github.com/webiny/webiny-js/commit/6bc4c3feb442e88a244c3ed113277c630f6d3c9f))
+* **app-page-builder:** remove `ImageList` preview from sidebar ([67c7dd8](https://github.com/webiny/webiny-js/commit/67c7dd8755b767275f66fac10def63997f380258))
+* **app-page-builder:** remove redundant style ([18ddc65](https://github.com/webiny/webiny-js/commit/18ddc6500863a9be83a5a16877ed31a3f68e2076))
+* **app-page-builder:** update `BlockPreview` actions icons ([2e95b29](https://github.com/webiny/webiny-js/commit/2e95b29207f74ba74866a7611478e9bdfb91dfa8))
+* **app-page-builder:** update `PublishPageButton` in "PB" editor bar ([490b0dd](https://github.com/webiny/webiny-js/commit/490b0ddc40a55fe907e0674c4713eb997edd3215))
+* **app-page-builder:** use clone value of "images" ([82233eb](https://github.com/webiny/webiny-js/commit/82233eb1e54899f9e8f5b9749ed1244d6e95e147))
+* **app-page-builder:** use empty array as fallback value for images ([29525bc](https://github.com/webiny/webiny-js/commit/29525bc0b061e29371dbde9fe6a5a3770413d6ae))
+
+
+
+
+
 # [5.0.0-beta.50](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.49...v5.0.0-beta.50) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/app-page-builder

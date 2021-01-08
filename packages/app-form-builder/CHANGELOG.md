@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.51](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.50...v5.0.0-beta.51) (2021-01-08)
+
+
+### Bug Fixes
+
+* **app-form-builder:** save title on input blur ([985a921](https://github.com/webiny/webiny-js/commit/985a9210e9b715961b58a54ad3f95110c8c37038))
+
+
+
+
+
 # [5.0.0-beta.50](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.49...v5.0.0-beta.50) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/app-form-builder

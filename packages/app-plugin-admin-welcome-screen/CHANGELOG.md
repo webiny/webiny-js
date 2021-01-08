@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.51](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.50...v5.0.0-beta.51) (2021-01-08)
+
+
+### Bug Fixes
+
+* **app-plugin-admin-welcome-screen:** hide `Code examples` temporarily ([a967e62](https://github.com/webiny/webiny-js/commit/a967e624dd68d02daca19fa9d1cfffabc1c7c28b))
+* **app-plugin-admin-welcome-screen:** icon path ([bdf0a24](https://github.com/webiny/webiny-js/commit/bdf0a24e94d8c36cc2386af1fbf0d739a1d8d90c))
+* **app-plugin-admin-welcome-screen:** make links open in new tab ([a23555d](https://github.com/webiny/webiny-js/commit/a23555d22fa47311120356f29712d08ddf2803c2))
+
+
+### Features
+
+* **app-plugin-admin-welcome-screen:** update icons ([a559ae1](https://github.com/webiny/webiny-js/commit/a559ae1c9a4ed29f40fe1a52d8968916844afe03))
+
+
+
+
+
 # [5.0.0-beta.50](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.49...v5.0.0-beta.50) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/app-plugin-admin-welcome-screen

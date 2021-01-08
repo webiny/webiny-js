@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.51](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.50...v5.0.0-beta.51) (2021-01-08)
+
+
+### Bug Fixes
+
+* **app-page-builder:** update "LIST_TAGS" cache after `DELETE_FILE` ([0febd54](https://github.com/webiny/webiny-js/commit/0febd54c85ee48d8916e08f162065ecb429c3d6d))
+* **app-page-builder:** update "LIST_TAGS" cache after `UPDATE_FILE` ([454812c](https://github.com/webiny/webiny-js/commit/454812c8b1200c4876c7e23a6827dc1e45a4c597))
+
+
+
+
+
 # [5.0.0-beta.50](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.49...v5.0.0-beta.50) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/app-admin

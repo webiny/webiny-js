@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.51](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.50...v5.0.0-beta.51) (2021-01-08)
+
+
+### Bug Fixes
+
+* **autocomplete:** clear input value on select ([db7821f](https://github.com/webiny/webiny-js/commit/db7821f891821731386b0664d657178e35629484))
+* publish entry on revisions page ([#1364](https://github.com/webiny/webiny-js/issues/1364)) ([542d1d4](https://github.com/webiny/webiny-js/commit/542d1d461403940c4a2fa71956c0c4ffd5fcf10f))
+* **ui:** pass `MosaicProps` to "Columned" component ([f62b56f](https://github.com/webiny/webiny-js/commit/f62b56fa6075f7d74b84ed87a97e5b29b742d58f))
+* **ui:** update `AccordionItem` style when visible ([bf6810b](https://github.com/webiny/webiny-js/commit/bf6810b9f9beb70659ad20412059135713e522d9))
+
+
+
+
+
 # [5.0.0-beta.50](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.49...v5.0.0-beta.50) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/ui

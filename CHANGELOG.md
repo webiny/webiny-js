@@ -3,6 +3,60 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.51](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.50...v5.0.0-beta.51) (2021-01-08)
+
+
+### Bug Fixes
+
+* add `execa` and `chalk` ([dd8625d](https://github.com/webiny/webiny-js/commit/dd8625d5e417d9749f8971f3ac43c8f4b031bbe9))
+* add `link-packages` script ([96bc7d0](https://github.com/webiny/webiny-js/commit/96bc7d06f27e1b7ea1eba344f7ef4ea418c6d0fd))
+* add `setupRepo` and `setupEnvFiles` script ([3669e5f](https://github.com/webiny/webiny-js/commit/3669e5f327eec362841cb63d0a63edfca961694b))
+* clean up `lerna.json` ([a7776e9](https://github.com/webiny/webiny-js/commit/a7776e9007a9febdccd827ad6025623bdb9f5f74))
+* keep `example.env` file for future use ([23d0c08](https://github.com/webiny/webiny-js/commit/23d0c08917a0a3fda30ff584bcc09bec4771e2f7))
+* only have `packages` folder ([c7b55e1](https://github.com/webiny/webiny-js/commit/c7b55e14948c537b5fde186e30792be3ed8728a7))
+* polish messaging ([f5cda7e](https://github.com/webiny/webiny-js/commit/f5cda7ee55f3ee2657fae7cf467d3fb57d47ef44))
+* prepend `yarn` ([5c8c9be](https://github.com/webiny/webiny-js/commit/5c8c9bea9cdd150a973c4f536f2449e4c8f3ba8a))
+* remove `env-cmd` ([de8bb51](https://github.com/webiny/webiny-js/commit/de8bb51be1c482ba71b0023e1012ca108ee6d0fc))
+* remove duplicate file-manager ([ed88cc3](https://github.com/webiny/webiny-js/commit/ed88cc3e51c8234c14e26390df0ce1afe95e4a1b))
+* remove irrelevant test ([9ba81bc](https://github.com/webiny/webiny-js/commit/9ba81bc137ee3c8ceb2a7f7b54532a5ae62531cd))
+* remove scripts ([27c6768](https://github.com/webiny/webiny-js/commit/27c6768ca2dd88b902999595acf3e82866e374d8))
+* remove scripts ([6359c36](https://github.com/webiny/webiny-js/commit/6359c36331327a620e025a8a9796eb3ee64f8f6f))
+* update packages ([f4e2c2e](https://github.com/webiny/webiny-js/commit/f4e2c2e9b127009988597b22e632b21f900efd20))
+* **app-form-builder:** save title on input blur ([985a921](https://github.com/webiny/webiny-js/commit/985a9210e9b715961b58a54ad3f95110c8c37038))
+* **app-headless-cms:** add query examples and improve styles ([6539fbc](https://github.com/webiny/webiny-js/commit/6539fbcdd696e8e8e4efed9e4378ba6fd74f4ffe))
+* **app-headless-cms:** save content model title on input blur ([067230f](https://github.com/webiny/webiny-js/commit/067230f1908eefccf2189211a0b0450f1f276778))
+* **app-page-builder:** fix `ImageList` element ([629edb5](https://github.com/webiny/webiny-js/commit/629edb59e0098b3db8efa6c184a7174adda350da))
+* **app-page-builder:** fix `onRemove` in ImagesListImagesSettings ([e326aed](https://github.com/webiny/webiny-js/commit/e326aed8be9509588616835e637c3ceea211067d))
+* **app-page-builder:** improve messaging ([4268003](https://github.com/webiny/webiny-js/commit/426800317d8b14aba883524ad383e77f7f8c331b))
+* **app-page-builder:** improve messaging ([6bc4c3f](https://github.com/webiny/webiny-js/commit/6bc4c3feb442e88a244c3ed113277c630f6d3c9f))
+* **app-page-builder:** remove `ImageList` preview from sidebar ([67c7dd8](https://github.com/webiny/webiny-js/commit/67c7dd8755b767275f66fac10def63997f380258))
+* **app-page-builder:** remove redundant style ([18ddc65](https://github.com/webiny/webiny-js/commit/18ddc6500863a9be83a5a16877ed31a3f68e2076))
+* **app-page-builder:** update "LIST_TAGS" cache after `DELETE_FILE` ([0febd54](https://github.com/webiny/webiny-js/commit/0febd54c85ee48d8916e08f162065ecb429c3d6d))
+* **app-page-builder:** update "LIST_TAGS" cache after `UPDATE_FILE` ([454812c](https://github.com/webiny/webiny-js/commit/454812c8b1200c4876c7e23a6827dc1e45a4c597))
+* **app-page-builder:** update `BlockPreview` actions icons ([2e95b29](https://github.com/webiny/webiny-js/commit/2e95b29207f74ba74866a7611478e9bdfb91dfa8))
+* **app-page-builder:** update `PublishPageButton` in "PB" editor bar ([490b0dd](https://github.com/webiny/webiny-js/commit/490b0ddc40a55fe907e0674c4713eb997edd3215))
+* **app-page-builder:** use clone value of "images" ([82233eb](https://github.com/webiny/webiny-js/commit/82233eb1e54899f9e8f5b9749ed1244d6e95e147))
+* **app-page-builder:** use empty array as fallback value for images ([29525bc](https://github.com/webiny/webiny-js/commit/29525bc0b061e29371dbde9fe6a5a3770413d6ae))
+* **app-plugin-admin-welcome-screen:** hide `Code examples` temporarily ([a967e62](https://github.com/webiny/webiny-js/commit/a967e624dd68d02daca19fa9d1cfffabc1c7c28b))
+* **app-plugin-admin-welcome-screen:** icon path ([bdf0a24](https://github.com/webiny/webiny-js/commit/bdf0a24e94d8c36cc2386af1fbf0d739a1d8d90c))
+* **app-plugin-admin-welcome-screen:** make links open in new tab ([a23555d](https://github.com/webiny/webiny-js/commit/a23555d22fa47311120356f29712d08ddf2803c2))
+* **autocomplete:** clear input value on select ([db7821f](https://github.com/webiny/webiny-js/commit/db7821f891821731386b0664d657178e35629484))
+* **cwp-template-full:** update with latest app changes ([92c1581](https://github.com/webiny/webiny-js/commit/92c158161c62173d82b83c74acb4d754b033e2f6))
+* **theme:** remove `margin-top` from `.webiny-pb-typography-body` ([9931f3f](https://github.com/webiny/webiny-js/commit/9931f3fcaac3fa40b91e82a9b9a37d8a6bd97e78))
+* **theme:** update dependencies ([923cfcd](https://github.com/webiny/webiny-js/commit/923cfcddd0f51fe681cf6881652bd65de749da19))
+* publish entry on revisions page ([#1364](https://github.com/webiny/webiny-js/issues/1364)) ([542d1d4](https://github.com/webiny/webiny-js/commit/542d1d461403940c4a2fa71956c0c4ffd5fcf10f))
+* **ui:** pass `MosaicProps` to "Columned" component ([f62b56f](https://github.com/webiny/webiny-js/commit/f62b56fa6075f7d74b84ed87a97e5b29b742d58f))
+* **ui:** update `AccordionItem` style when visible ([bf6810b](https://github.com/webiny/webiny-js/commit/bf6810b9f9beb70659ad20412059135713e522d9))
+
+
+### Features
+
+* **app-plugin-admin-welcome-screen:** update icons ([a559ae1](https://github.com/webiny/webiny-js/commit/a559ae1c9a4ed29f40fe1a52d8968916844afe03))
+
+
+
+
+
 # [5.0.0-beta.50](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.49...v5.0.0-beta.50) (2021-01-08)
 
 

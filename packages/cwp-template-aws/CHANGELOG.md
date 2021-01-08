@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.51](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.50...v5.0.0-beta.51) (2021-01-08)
+
+
+### Bug Fixes
+
+* add `execa` and `chalk` ([dd8625d](https://github.com/webiny/webiny-js/commit/dd8625d5e417d9749f8971f3ac43c8f4b031bbe9))
+* add `link-packages` script ([96bc7d0](https://github.com/webiny/webiny-js/commit/96bc7d06f27e1b7ea1eba344f7ef4ea418c6d0fd))
+* add `setupRepo` and `setupEnvFiles` script ([3669e5f](https://github.com/webiny/webiny-js/commit/3669e5f327eec362841cb63d0a63edfca961694b))
+* clean up `lerna.json` ([a7776e9](https://github.com/webiny/webiny-js/commit/a7776e9007a9febdccd827ad6025623bdb9f5f74))
+* keep `example.env` file for future use ([23d0c08](https://github.com/webiny/webiny-js/commit/23d0c08917a0a3fda30ff584bcc09bec4771e2f7))
+* only have `packages` folder ([c7b55e1](https://github.com/webiny/webiny-js/commit/c7b55e14948c537b5fde186e30792be3ed8728a7))
+* polish messaging ([f5cda7e](https://github.com/webiny/webiny-js/commit/f5cda7ee55f3ee2657fae7cf467d3fb57d47ef44))
+* prepend `yarn` ([5c8c9be](https://github.com/webiny/webiny-js/commit/5c8c9bea9cdd150a973c4f536f2449e4c8f3ba8a))
+* remove `env-cmd` ([de8bb51](https://github.com/webiny/webiny-js/commit/de8bb51be1c482ba71b0023e1012ca108ee6d0fc))
+* remove irrelevant test ([9ba81bc](https://github.com/webiny/webiny-js/commit/9ba81bc137ee3c8ceb2a7f7b54532a5ae62531cd))
+* remove scripts ([27c6768](https://github.com/webiny/webiny-js/commit/27c6768ca2dd88b902999595acf3e82866e374d8))
+* remove scripts ([6359c36](https://github.com/webiny/webiny-js/commit/6359c36331327a620e025a8a9796eb3ee64f8f6f))
+* update packages ([f4e2c2e](https://github.com/webiny/webiny-js/commit/f4e2c2e9b127009988597b22e632b21f900efd20))
+
+
+
+
+
 # [5.0.0-beta.50](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.49...v5.0.0-beta.50) (2021-01-08)
 
 
