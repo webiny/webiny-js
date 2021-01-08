@@ -57,7 +57,13 @@ const plugin: ContextPlugin<PbContext> = {
                         });
                     })
                 },
-                async get(slug: string) {
+                async get(slug, options = { auth: true }) {
+                    const { auth } = options;
+
+                    if (auth === false) {
+                        return await this.dataLoaders.get.load(slug);
+                    }
+
                     await context.i18nContent.checkI18NContentPermission();
 
                     let permission;

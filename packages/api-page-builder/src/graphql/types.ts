@@ -106,7 +106,7 @@ export type CategoriesCrud = {
     dataLoaders: {
         get: DataLoader<string, Category>;
     };
-    get(slug: string): Promise<Category>;
+    get(slug: string, options?: { auth: boolean }): Promise<Category>;
     list(): Promise<Category[]>;
     create(data: Record<string, any>): Promise<Category>;
     update(slug: string, data: Record<string, any>): Promise<Category>;

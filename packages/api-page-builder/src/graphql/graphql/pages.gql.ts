@@ -275,7 +275,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     return uniquePageId;
                 },
                 category: async (page: Page, args, context) => {
-                    return context.pageBuilder.categories.get(page.category);
+                    return context.pageBuilder.categories.get(page.category, { auth: false });
                 },
                 url: async (page: Page, args, context) => {
                     const settings = await context.pageBuilder.settings.default.get();
