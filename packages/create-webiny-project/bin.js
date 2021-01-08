@@ -4,7 +4,8 @@
 const chalk = require("chalk");
 const execa = require("execa");
 const semver = require("semver");
-const { verifyConfig } = require("./utils/verifyConfig");
+const verifyConfig = require("./utils/verifyConfig");
+
 const currentNodeVersion = process.versions.node;
 const majorVersion = parseInt(currentNodeVersion.split(".")[0]);
 const minorVersion = parseInt(currentNodeVersion.split(".")[1]);
