@@ -35,7 +35,9 @@
     "lerna": "^3.21.0",
     "merge": "^1.2.1",
     "typescript": "3.7.4",
-    "ts-jest": "^26.1.1"
+    "ts-jest": "^26.1.1",
+    "execa": "4.1.0",
+    "chalk": "^4.1.0"
   },
   "workspaces": {
     "packages": [
