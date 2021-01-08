@@ -1,0 +1,52 @@
+/**
+* Responsive style for "Webiny Form" using "media-query" classes.
+ */
+.webiny-pb-media-query--desktop .webiny-fb-form {
+  .webiny-fb-form-layout-column {
+    padding: 15px;
+
+    &:first-child {
+      padding-left: 0;
+    }
+
+    &:last-child {
+      padding-right: 0;
+    }
+  }
+
+  &-recaptcha {
+    padding: 0;
+  }
+
+  &-submit-button {
+    padding: 0;
+  }
+}
+
+.webiny-pb-media-query--mobile-landscape .webiny-fb-form,
+.webiny-pb-media-query--mobile-portrait .webiny-fb-form {
+  .webiny-fb-form-layout-row {
+    flex-direction: column;
+  }
+
+  .webiny-fb-form-layout-column {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  &-field {
+    &__label {
+      &.webiny-pb-typography-body {
+        text-align: left !important;
+      }
+    }
+
+    &__helper-text {
+      text-align: left !important;
+    }
+  }
+
+  .webiny-fb-form-page-element-button {
+    width: 100%;
+  }
+}
