@@ -1,13 +1,16 @@
 const STS = require("aws-sdk/clients/sts");
-const AWS = require("aws-sdk");
 const { green, red } = require("chalk");
 
 module.exports = {
     type: "hook-before-deploy",
     name: "hook-before-deploy-aws-credentials",
     async hook() {
+        process.env.AWS_SDK_LOAD_CONFIG = "true";
+
         // Check if AWS credentials are configured
         const sts = new STS();
+        const config = sts.config;
+
         try {
             await sts.getCallerIdentity({}).promise();
         } catch (err) {
@@ -22,21 +25,9 @@ module.exports = {
             process.exit(1);
         }
 
-        // Check if region is set
-        await new Promise(resolve => {
-            AWS.config.getCredentials(err => {
-                if (err) {
-                    throw err;
-                }
-                resolve();
-            });
-        });
+        const { profile } = config.credentials;
 
-        const profile = AWS.config.credentials.profile;
-
-        const region = process.env.AWS_REGION || AWS.config.region;
-
-        if (!region) {
+        if (!config.region) {
             console.log(
                 [
                     "",
@@ -49,8 +40,9 @@ module.exports = {
             process.exit(1);
         }
 
-        process.env.AWS_REGION = region;
+        // We assign the region to the appropriate ENV variable for easier access in the stack definition files.
+        process.env.AWS_REGION = config.region;
 
-        console.log(`💡 Using profile ${green(profile)} in ${green(region)} region.`);
+        console.log(`💡 Using profile ${green(profile)} in ${green(config.region)} region.`);
     }
 };
