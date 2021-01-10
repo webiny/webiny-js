@@ -40,6 +40,7 @@ function runInquirer(cwp) {
             {
                 type: "list",
                 name: "vpc",
+                default: false,
                 message:
                     "Do you want to have your API deployed into a Virtual Private Cloud (VPC)?",
                 choices: [
