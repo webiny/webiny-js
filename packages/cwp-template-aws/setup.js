@@ -19,7 +19,7 @@ function random(length = 32) {
 }
 
 const setup = async args => {
-    const { projectRoot, projectName, vpc } = args;
+    const { projectRoot, projectName, vpc, region } = args;
 
     const packageJsonExists = fs.pathExistsSync(path.join(projectRoot, "package.json"));
     if (!packageJsonExists) {
@@ -60,8 +60,9 @@ const setup = async args => {
 
     const rootEnvFilePath = path.join(projectRoot, ".env");
     let content = fs.readFileSync(rootEnvFilePath).toString();
-    content = content.replace("{REGION}", "us-east-1");
+    content = content.replace("{REGION}", region);
     content = content.replace("{PULUMI_CONFIG_PASSPHRASE}", random());
+    content = content.replace("{PULUMI_SECRETS_PROVIDER}", "passphrase");
     fs.writeFileSync(rootEnvFilePath, content);
 
     let webinyRoot = fs.readFileSync(path.join(projectRoot, "webiny.root.js"), "utf-8");
