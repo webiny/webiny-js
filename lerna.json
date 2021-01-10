@@ -17,7 +17,7 @@
       ],
       "allowBranch": [
         "master",
-        "v5",
+        "v5-cwp-aws-region-secrets",
         "next",
         "develop",
         "release-*"
