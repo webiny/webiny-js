@@ -7,17 +7,17 @@ module.exports = [
         type: "cli-command",
         name: "cli-command-stack",
         create({ yargs, context }) {
-            yargs.command("stack", `Run various commands on given stack.`, yargs => {
+            yargs.command("stack", `Run various commands on the given stack.`, yargs => {
                 yargs.example("$0 stack deploy api --env=dev");
                 yargs.example("$0 stack destroy api --env=dev");
                 yargs.example("$0 stack output api --env=dev");
                 yargs.command(
                     "deploy <stack>",
-                    `Deploys given stack`,
+                    `Deploys the given stack.`,
                     yargs => {
                         yargs.example("$0 stack deploy api --env=dev");
                         yargs.positional("stack", {
-                            describe: `Stack to deploy`,
+                            describe: `The stack to deploy`,
                             type: "string"
                         });
                         yargs.option("env", {
