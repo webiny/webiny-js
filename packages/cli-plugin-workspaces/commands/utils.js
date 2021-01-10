@@ -1,7 +1,7 @@
 const { Graph, alg } = require("graphlib");
 const { join, resolve } = require("path");
 const multimatch = require("multimatch");
-const { allPackages } = require("@webiny/project-utils/packages");
+const { allWorkspaces } = require("@webiny/project-utils/workspaces");
 
 const createGraph = packages => {
     const graph = new Graph();
@@ -46,7 +46,7 @@ const validateGraph = graph => {
 };
 
 const getPackages = ({ script, folders, scopes }) => {
-    return allPackages()
+    return allWorkspaces()
         .filter(pkgPath => {
             if (!folders.length) {
                 return true;

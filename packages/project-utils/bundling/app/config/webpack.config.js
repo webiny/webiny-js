@@ -360,7 +360,7 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
                             return false;
                         }
 
-                        return paths.allPackages.some(p => file.includes(p));
+                        return paths.allWorkspaces.some(p => file.includes(p));
                     },
                     exclude: /node_modules/
                 },
@@ -384,7 +384,7 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
                         // The preset includes JSX, Flow, TypeScript, and some ESnext features.
                         {
                             test: /\.(js|mjs|jsx|ts|tsx)$/,
-                            include: [paths.appSrc, paths.appIndexJs, ...paths.allPackages],
+                            include: [paths.appSrc, paths.appIndexJs, ...paths.allWorkspaces],
                             loader: require.resolve("babel-loader"),
                             options: babelCustomizer({
                                 sourceType: "unambiguous",

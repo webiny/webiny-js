@@ -122,7 +122,7 @@
     "webiny-versions": "node ./scripts/webinyVersions.js",
     "release-latest": "node ./scripts/releaseLatest.js",
     "lint-staged": "lint-staged",
-    "postinstall": "node ./scripts/linkPackages.js",
+    "postinstall": "node ./scripts/linkWorkspaces.js",
     "prepublishOnly": "node scripts/prepublishOnly.js",
     "prettier": "prettier \"**/**/*.{js,jsx,ts,tsx}\" --config .prettierrc.js",
     "prettier:check": "yarn prettier --check",
