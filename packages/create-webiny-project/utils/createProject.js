@@ -52,7 +52,7 @@ module.exports = async function createProject({ projectName, template, tag, log 
         // @webiny/cli is not installed globally
     }
 
-    console.log(`Initializing a new Webiny project in ${green(projectRoot)}:`);
+    console.log(`Initializing a new Webiny project in ${green(projectRoot)}...`);
 
     await sendEvent({ event: "create-webiny-project-start" });
 
