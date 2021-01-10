@@ -33,6 +33,8 @@ const processHooks = async (hook, { context, ...options }) => {
     }
 };
 
+const SECRETS_PROVIDER = process.env.PULUMI_SECRETS_PROVIDER;
+
 module.exports = async (inputs, context) => {
     const start = new Date();
     const getDuration = () => {
@@ -68,7 +70,7 @@ module.exports = async (inputs, context) => {
             { command: ["stack", "select", env] },
             {
                 args: {
-                    secretsProvider: "passphrase"
+                    secretsProvider: SECRETS_PROVIDER
                 }
             }
         );
@@ -81,7 +83,7 @@ module.exports = async (inputs, context) => {
             { command: ["stack", "init", env] },
             {
                 args: {
-                    secretsProvider: "passphrase"
+                    secretsProvider: SECRETS_PROVIDER
                 }
             }
         );
@@ -114,7 +116,7 @@ module.exports = async (inputs, context) => {
             args: {
                 yes: true,
                 skipPreview: true,
-                secretsProvider: "passphrase"
+                secretsProvider: SECRETS_PROVIDER
             },
             execa: {
                 stdio: "inherit"
