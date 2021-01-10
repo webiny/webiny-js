@@ -19,7 +19,7 @@ function random(length = 32) {
 }
 
 const setup = async args => {
-    const { projectRoot, projectName, vpc, region } = args;
+    const { projectRoot, projectName, vpc = false, region = "us-east-1" } = args;
 
     const packageJsonExists = fs.pathExistsSync(path.join(projectRoot, "package.json"));
     if (!packageJsonExists) {
