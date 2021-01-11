@@ -8,7 +8,7 @@ const getPackageJson = require("create-webiny-project/utils/getPackageJson");
 const PROJECT_NAME = "test-123";
 const PROJECT_ROOT = path.join(__dirname, PROJECT_NAME);
 
-describe("no VPC stack test", () => {
+describe("VPC stack test", () => {
     beforeAll(async () => {
         fs.ensureDirSync(PROJECT_ROOT);
 
@@ -18,7 +18,9 @@ describe("no VPC stack test", () => {
         await setup({
             projectName: PROJECT_NAME,
             projectRoot: PROJECT_ROOT,
-            vpc: true
+            templateOptions: {
+                vpc: true
+            }
         });
     });
 
@@ -26,7 +28,7 @@ describe("no VPC stack test", () => {
         fs.removeSync(PROJECT_ROOT);
     });
 
-    test("should not have the vpc.ts file", async () => {
+    test("should have the `vpc.ts` file", async () => {
         expect(fs.pathExistsSync(path.join(PROJECT_ROOT, "api/stack/vpc.ts"))).toBe(true);
     });
 
@@ -36,7 +38,6 @@ describe("no VPC stack test", () => {
         expect(packageJson.dependencies).toMatchObject({
             "@webiny/aws-layers": expect.stringMatching(/^\^5/),
             "@webiny/cli": expect.stringMatching(/^\^5/),
-            "@webiny/cli-plugin-build": expect.stringMatching(/^\^5/),
             "@webiny/cli-plugin-deploy-pulumi": expect.stringMatching(/^\^5/),
             "@webiny/project-utils": expect.stringMatching(/^\^5/)
         });

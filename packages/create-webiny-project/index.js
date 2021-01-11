@@ -32,11 +32,16 @@ yargs.command(
             describe: "Project name"
         });
         yargs.option("template", {
-            describe:
-                "Name of template to use, if no template is provided it will default to 'aws' template",
+            describe: `Name of template to use, if no template is provided it will default to "aws" template`,
             alias: "t",
             type: "string",
             default: "aws",
+            demandOption: false
+        });
+        yargs.option("template-options", {
+            describe: `A JSON containing template-specific options (usually used in non-interactive environments)`,
+            default: true,
+            type: "string",
             demandOption: false
         });
         yargs.option("tag", {
@@ -45,9 +50,15 @@ yargs.command(
             default: "latest",
             demandOption: false
         });
+        yargs.option("interactive", {
+            describe: "Enable interactive mode for all commands",
+            default: true,
+            type: "boolean",
+            demandOption: false
+        });
         yargs.option("log", {
             describe:
-                "Creates a log file to see output of installation. Defaults to creating cwp-logs.txt in current directory.",
+                "Creates a log file to see output of installation. Defaults to creating cwp-logs.txt in current directory",
             alias: "l",
             default: "",
             type: "string",

@@ -51,7 +51,17 @@ module.exports = async (inputs, context) => {
     if (build) {
         await execa(
             "webiny",
-            ["build", stackDir, "--env", inputs.env, "--debug", Boolean(inputs.debug)],
+            [
+                "workspaces",
+                "run",
+                "build",
+                "--folder",
+                stackDir,
+                "--env",
+                inputs.env,
+                "--debug",
+                Boolean(inputs.debug)
+            ],
             {
                 stdio: "inherit"
             }

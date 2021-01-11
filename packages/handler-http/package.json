@@ -35,5 +35,5 @@
     "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
     "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
   },
-  "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
+  "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f"
 }

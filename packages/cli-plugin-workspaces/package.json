@@ -5,18 +5,18 @@
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/webiny/webiny-js.git",
-		"directory": "packages/cli-plugin-build"
+		"directory": "packages/cli-plugin-workspaces"
 	},
 	"author": "Webiny Ltd.",
 	"description": "A CLI plugin for working with workspaces.",
 	"dependencies": {
 		"@webiny/project-utils": "^4.14.0",
-		"chalk": "^4.1.0",
-		"execa": "^5.0.0",
-		"graphlib": "^2.1.8",
-		"multimatch": "^5.0.0",
-		"p-map": "^4.0.0",
-		"random-color": "^1.0.1"
+		"chalk": "4.1.0",
+		"execa": "5.0.0",
+		"graphlib": "2.1.8",
+		"multimatch": "5.0.0",
+		"p-map": "2.1.0",
+		"random-color": "1.0.1"
 	},
 	"license": "MIT",
 	"publishConfig": {
@@ -37,5 +37,6 @@
 				"execa"
 			]
 		}
-	}
+	},
+	"gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f"
 }

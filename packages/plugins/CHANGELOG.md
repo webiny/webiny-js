@@ -3,6 +3,74 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.5...v5.0.0-beta.0) (2021-01-11)
+
+**Note:** Version bump only for package @webiny/plugins
+
+
+
+
+
+# [5.0.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.4...v5.0.0-beta.5) (2021-01-11)
+
+**Note:** Version bump only for package @webiny/plugins
+
+
+
+
+
+# [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-01-11)
+
+**Note:** Version bump only for package @webiny/plugins
+
+
+
+
+
+# [5.0.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.2...v5.0.0-beta.3) (2021-01-11)
+
+**Note:** Version bump only for package @webiny/plugins
+
+
+
+
+
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.2) (2021-01-11)
+
+
+### Bug Fixes
+
+* **code-format:** update configs for prettier and eslint ([#1237](https://github.com/webiny/webiny-js/issues/1237)) ([5ff6d22](https://github.com/webiny/webiny-js/commit/5ff6d22f427093a52560963770dadf96d8e6685b))
+* merge `new-security` into `master` ([da26908](https://github.com/webiny/webiny-js/commit/da269089ebaf18cc00c43919688fc4a005314d72))
+
+
+### Features
+
+* make `Plugin` type generic ([d137735](https://github.com/webiny/webiny-js/commit/d137735f73095a6e03f81102f1d2712acd65eeb8))
+* switch PageBuilder Slate to EditorJS ([#1338](https://github.com/webiny/webiny-js/issues/1338)) ([2710bea](https://github.com/webiny/webiny-js/commit/2710beac17d619a7eb7e55d3613a27833d3b6e04))
+
+
+
+
+
+# [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.1) (2021-01-11)
+
+
+### Bug Fixes
+
+* **code-format:** update configs for prettier and eslint ([#1237](https://github.com/webiny/webiny-js/issues/1237)) ([5ff6d22](https://github.com/webiny/webiny-js/commit/5ff6d22f427093a52560963770dadf96d8e6685b))
+* merge `new-security` into `master` ([da26908](https://github.com/webiny/webiny-js/commit/da269089ebaf18cc00c43919688fc4a005314d72))
+
+
+### Features
+
+* make `Plugin` type generic ([d137735](https://github.com/webiny/webiny-js/commit/d137735f73095a6e03f81102f1d2712acd65eeb8))
+* switch PageBuilder Slate to EditorJS ([#1338](https://github.com/webiny/webiny-js/issues/1338)) ([2710bea](https://github.com/webiny/webiny-js/commit/2710beac17d619a7eb7e55d3613a27833d3b6e04))
+
+
+
+
+
 # [5.0.0-beta.52](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.51...v5.0.0-beta.52) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/plugins

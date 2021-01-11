@@ -6,10 +6,8 @@
 .env.*
 .npmrc
 htpasswd
-lerna-debug.log
 npm-debug.log
 node_modules
-lerna-debug.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

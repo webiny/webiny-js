@@ -18,7 +18,9 @@ describe("root .env file generation test", () => {
         await setup({
             projectName: PROJECT_NAME,
             projectRoot: PROJECT_ROOT,
-            vpc: true
+            templateOptions: {
+                region: "eu-central-1"
+            }
         });
     });
 
@@ -33,7 +35,7 @@ describe("root .env file generation test", () => {
     test("should update root .env file correctly", async () => {
         const config = dotenv.parse(fs.readFileSync(path.join(PROJECT_ROOT, ".env")));
         expect(config).toMatchObject({
-            AWS_REGION: "us-east-1",
+            AWS_REGION: "eu-central-1",
             PULUMI_SECRETS_PROVIDER: "passphrase"
         });
 
