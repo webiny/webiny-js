@@ -2,7 +2,7 @@
   "packages": [
     "packages/*"
   ],
-  "version": "5.0.0-beta.3",
+  "version": "5.0.0-beta.0",
   "command": {
     "version": {
       "preid": "next",
@@ -17,7 +17,6 @@
       ],
       "allowBranch": [
         "master",
-        "v5-cwp-aws-region-secrets",
         "next",
         "develop",
         "release-*"
