@@ -1,8 +1,8 @@
 const fs = require("fs");
 const path = require("path");
-const { allPackages } = require("@webiny/project-utils/packages");
+const { allWorkspaces } = require("@webiny/project-utils/workspaces");
 
-const projects = allPackages()
+const projects = allWorkspaces()
     .map(pkg => {
         if (!fs.existsSync(path.join(pkg, "jest.config.js"))) {
             return null;

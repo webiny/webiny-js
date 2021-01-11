@@ -57,8 +57,8 @@
   "scripts": {
     "setup-repo": "node ./scripts/setupRepository.js",
     "setup-env-files": "node ./scripts/setupEnvFiles.js",
-    "link-packages": "node ./scripts/linkPackages.js",
-    "postinstall": "yarn link-packages",
+    "link-workspaces": "node ./scripts/linkWorkspaces.js",
+    "postinstall": "yarn link-workspaces",
     "test": "jest --config jest.config.js"
   }
 }
