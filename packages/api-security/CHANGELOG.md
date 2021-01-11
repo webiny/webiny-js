@@ -3,6 +3,92 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.2) (2021-01-11)
+
+
+### Bug Fixes
+
+* add `code` ([562aa17](https://github.com/webiny/webiny-js/commit/562aa173ff364fc8eaf4e6cd8d41ef9ab4e38329))
+* add `hasScope` function to `context.security` ([7c07bc0](https://github.com/webiny/webiny-js/commit/7c07bc0a0865c014ed3dbe8cd829a2b87456562f))
+* add `minimatch` lib ([b86a78f](https://github.com/webiny/webiny-js/commit/b86a78f09759cb9bb4467fa777d1dfd6b676ee90))
+* add `scopes: ["*"]` ([7873d24](https://github.com/webiny/webiny-js/commit/7873d24d756d7ac7f5c4fee4880b65b64daebc66))
+* add `scopes` getter property ([6d1843a](https://github.com/webiny/webiny-js/commit/6d1843a99e27b2ba997c1668d7af5f4d2afc98e2))
+* add `SecurityContext` type ([1f55e7e](https://github.com/webiny/webiny-js/commit/1f55e7e519fbcabd0e4e092426b465dffee71f2a))
+* add JWTAuthOptions to `context.security.jwt` ([875206e](https://github.com/webiny/webiny-js/commit/875206ed19a50ea29224a33d9e232a4d50f71ab9))
+* add missing `@webiny/error` dependency ([7168a42](https://github.com/webiny/webiny-js/commit/7168a4288e4404432ff50d3a2eb1b8b00056ce9e))
+* add missing `expiresIn` property ([6472c76](https://github.com/webiny/webiny-js/commit/6472c7642972f8dd3ea2ad0337fb54257855fd7d))
+* add missing types ([da388d5](https://github.com/webiny/webiny-js/commit/da388d5020c410cdf8dcb8ece7f5eb24232adee5))
+* adio errors ([a3d88e6](https://github.com/webiny/webiny-js/commit/a3d88e660f690745e92d77121f761ca7bae07dd2))
+* allow multiple `security-authorization` plugins ([ae6c117](https://github.com/webiny/webiny-js/commit/ae6c117c10f0dd083b21db674f7185eeca792f3a))
+* check if token was loaded before trying to access the user ([b7a878c](https://github.com/webiny/webiny-js/commit/b7a878ce7621fbdf954638bf839ff705a2cf9f51))
+* cleanup and small tweaks ([58aedcd](https://github.com/webiny/webiny-js/commit/58aedcdead2494b6ea012d19f72dfdf6a54795b7))
+* correct dependencies ([f77bd16](https://github.com/webiny/webiny-js/commit/f77bd161c7049212d55a05b1708f7053115f5638))
+* correct import path ([d6659c5](https://github.com/webiny/webiny-js/commit/d6659c5a52927dde3d08796749c0e95b55b2af7e))
+* correct JWT token data assignment ([79079ee](https://github.com/webiny/webiny-js/commit/79079eeef5fc202f508c85eee3d062da3282e0dc))
+* correct plugin type ([6d6a8b6](https://github.com/webiny/webiny-js/commit/6d6a8b6cfeececb194091919fd44c74510441f62))
+* create "authentication" plugin ([ec3a715](https://github.com/webiny/webiny-js/commit/ec3a71559c67be51f3edb3a72d870601a383c0fd))
+* delete obsolete testing utils ([59ea9f9](https://github.com/webiny/webiny-js/commit/59ea9f930315a80b23d9eaabd2c6b6b19dac91a9))
+* do not import from `@webiny/graphql` package root ([2087285](https://github.com/webiny/webiny-js/commit/208728583b47f5c873c73bb41d14d43e3eb0fb85))
+* do not make exceptions when testing, when it comes to authZ checks ([e10b519](https://github.com/webiny/webiny-js/commit/e10b51906ba671f83e842764509f8de0686df401))
+* ensure the `SecurityIdentity` instance is always returned ([7daea04](https://github.com/webiny/webiny-js/commit/7daea04b795b7b7ad5eeb3648a5bc705ced83de0))
+* extract `NotAuthorizedResponse` to a separate file ([0d18eaa](https://github.com/webiny/webiny-js/commit/0d18eaa6950da879cf383bd14a021705060738d5))
+* if authentication wasn't successful, continue with resolver execution still ([62426f9](https://github.com/webiny/webiny-js/commit/62426f933293e3ec8f42b7a02787c32b083b80ae))
+* import `ErrorResponse` from `@webiny/graphql` ([c954bfb](https://github.com/webiny/webiny-js/commit/c954bfb27d05c563373e4df416c6aa631f025aa2))
+* import `GraphQLFieldResolver` from `@webiny/handler-graphql` ([e232249](https://github.com/webiny/webiny-js/commit/e23224921b540b6f9393f4046bdfce156189d1bf))
+* imports, types and tsconfig path mapping ([ffddb01](https://github.com/webiny/webiny-js/commit/ffddb0191e5d429a87dca803e16a94a9958537c3))
+* introduce SecurityIdentity ([e204c09](https://github.com/webiny/webiny-js/commit/e204c09845cc283033d1696d31328d13e8d91a6a))
+* merge `new-security` into `master` ([da26908](https://github.com/webiny/webiny-js/commit/da269089ebaf18cc00c43919688fc4a005314d72))
+* move `authenticateJwt.ts` code into `index.ts` ([0ff5a0d](https://github.com/webiny/webiny-js/commit/0ff5a0dbb0954eb086208ab4717c380ea1709115))
+* only register "models" and "graphql" plugins ([54041b0](https://github.com/webiny/webiny-js/commit/54041b00564e4deac847dbdb3b479e6b39e4ffe4))
+* put code into a single `index.ts` file ([0fd8f05](https://github.com/webiny/webiny-js/commit/0fd8f05745b3e5b14bf934cd10da99b840953c2f))
+* read JWTAuthOptions from `context.security.jwt` ([0985136](https://github.com/webiny/webiny-js/commit/09851363f6784b4a8e59a8d79aedf8fbb3c7b620))
+* remove "authorization" plugin ([e0ff321](https://github.com/webiny/webiny-js/commit/e0ff3210434bd3db067460db95a20fab7f3d0196))
+* remove "SecurityIdentity" class ([8fe3c01](https://github.com/webiny/webiny-js/commit/8fe3c01df2094e0e2b0d63480d7925b352fa9781))
+* remove "SecurityIdentity" class usage ([4ec35b0](https://github.com/webiny/webiny-js/commit/4ec35b0e8ff36be432948ce4ebe3084d45ae54fc))
+* remove `@webiny/graphql` ([ce70fd5](https://github.com/webiny/webiny-js/commit/ce70fd581456ba56787c2e12fe8075592138a3b7))
+* remove `fullAccess` property ([12b592d](https://github.com/webiny/webiny-js/commit/12b592d327bac0077b9f98517381af24cbd7f70a))
+* remove `SecurityError` class ([4a35fbc](https://github.com/webiny/webiny-js/commit/4a35fbc74787442ca45d3b24fbf87e474be6727d))
+* remove default authorization plugin ([4d0ba9b](https://github.com/webiny/webiny-js/commit/4d0ba9bb9f1f38430a9cee5c37eced01b9d2642f))
+* remove Promise ([d2df3c3](https://github.com/webiny/webiny-js/commit/d2df3c3b39d437ec9bfb09b174d16130361efd37))
+* remove word `Handler` from context plugin type names ([277f0dd](https://github.com/webiny/webiny-js/commit/277f0dd300b7451a8a162678417e2b428cf002cf))
+* replace context.security.hasScope with identity.hasScope ([0b256c8](https://github.com/webiny/webiny-js/commit/0b256c81a5f9e76150a828f070b40354a0602079))
+* return the matched permission instead of a new object ([bd0df05](https://github.com/webiny/webiny-js/commit/bd0df052cb51c11a8e3da6f20829f11e3c6b847a))
+* setup set of plugins for the Security service ([d2a24cd](https://github.com/webiny/webiny-js/commit/d2a24cd5247a06d70093ae56c37ce1538dcc3122))
+* update dependencies ([2da7785](https://github.com/webiny/webiny-js/commit/2da77856bb535144d5f08f6408bba10716737d06))
+* update dependencies ([bc2de69](https://github.com/webiny/webiny-js/commit/bc2de69a768f2ddcfd2d56f38a16da4bd113db07))
+* update dependencies ([9e23d9d](https://github.com/webiny/webiny-js/commit/9e23d9d435c8e3993713d73123a7b93119893eb1))
+* update type names ([adfe49e](https://github.com/webiny/webiny-js/commit/adfe49ea525371877c971a8a25f2474a0d2feab2))
+* **code-format:** update configs for prettier and eslint ([#1237](https://github.com/webiny/webiny-js/issues/1237)) ([5ff6d22](https://github.com/webiny/webiny-js/commit/5ff6d22f427093a52560963770dadf96d8e6685b))
+* update identity and scope auth ([16b6d3d](https://github.com/webiny/webiny-js/commit/16b6d3d3d301babda9ad96ae25fb917a2c859393))
+* update types ([69e008d](https://github.com/webiny/webiny-js/commit/69e008d020ce94f77a69bba92afe3379cf2c20bc))
+* update types ([9c89246](https://github.com/webiny/webiny-js/commit/9c89246278ad583deef5e8ab48440c91057e2437))
+* use "getIdentity" instead of context property ([939c876](https://github.com/webiny/webiny-js/commit/939c876c39c53daaddda80813094e4fcf475d4b5))
+* use `context.security.hasScope` ([5597f4b](https://github.com/webiny/webiny-js/commit/5597f4b716ac56d02ca2d27e3b971c40d8652473))
+* use `hasScope` from `context.security` ([2ce1be4](https://github.com/webiny/webiny-js/commit/2ce1be41c36fa51d2229f94c3071919c23034876))
+* use context.security.hasScope ([ffeb161](https://github.com/webiny/webiny-js/commit/ffeb161c95fd9dde1e190d95b798e42cae2f583e))
+* use ErrorResponse instead of throwing the SecurityError error ([d376bde](https://github.com/webiny/webiny-js/commit/d376bde07ea45b3e22ba60fa6e174b0f70c5feca))
+
+
+### Features
+
+* `getPermission` can accept a type to tell the type of the permission we are about to receive ([4a11be1](https://github.com/webiny/webiny-js/commit/4a11be12894c47431ee75579a8cd8749cd9d6f6b))
+* add `NotAuthorizedError` ([1992c1b](https://github.com/webiny/webiny-js/commit/1992c1be74e24a22f9c4b162ab8560682e91390f))
+* add `NotAuthorizedResponse` ([fb91961](https://github.com/webiny/webiny-js/commit/fb91961a19218b30f142008b4741e9c9477f426a))
+* add createJwtToken testing util ([5ea62ec](https://github.com/webiny/webiny-js/commit/5ea62ec6bf3b577b16adb8c727a11fcf050c8fa6))
+* add personal access tokens ([37add76](https://github.com/webiny/webiny-js/commit/37add76fd40318e76c6364459da8b88d9ea78f96))
+* create "hasScope" and "SecurityIdentity" utils ([2c8c70d](https://github.com/webiny/webiny-js/commit/2c8c70db4f7d1df03879efbade2a4c50c83309ae))
+* via 1st argument, `SecurityPermission` type can be used to create new types ([f836f6b](https://github.com/webiny/webiny-js/commit/f836f6b5e7ef4ca65201aaf8236f6194832c99cc))
+* **api-security:** add `hasCmsPermission` helper ([80015a8](https://github.com/webiny/webiny-js/commit/80015a8a88303d5eea43f991f8ea99bddd559e60))
+* **api-security:** add AccessToken class & use it ([20eebd0](https://github.com/webiny/webiny-js/commit/20eebd0e245a11d205c02d286602ba96a23dad6b))
+* **api-security:** validate ATs for /read and /preview cms routes ([d72cb76](https://github.com/webiny/webiny-js/commit/d72cb76550e6932088373cec63cd49175b86d9f4))
+* **app-page-builder:** switch redux for recoil ([a1c5f18](https://github.com/webiny/webiny-js/commit/a1c5f18e271d27a6e65a912014de66dc048741a9))
+* remove preApply/postApply hooks ([c4275f8](https://github.com/webiny/webiny-js/commit/c4275f881647cd2cdde34cb5d8c304fc36db9ae3))
+* **api-security:** add jwt/pat authorization plugin ([0d1317b](https://github.com/webiny/webiny-js/commit/0d1317bf14f88e172d94edf74519d85786a7404f))
+
+
+
+
+
 # [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.1) (2021-01-11)
 
 

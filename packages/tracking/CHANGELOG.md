@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.2) (2021-01-11)
+
+
+### Bug Fixes
+
+* track only app-mount and add version to event ([a5ae748](https://github.com/webiny/webiny-js/commit/a5ae748af6e992da7e8aece6ce65c60cb63a461a))
+
+
+
+
+
 # [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.1) (2021-01-11)
 
 

@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.2) (2021-01-11)
+
+
+### Bug Fixes
+
+* add own `GraphQLFieldResolver` type ([2601aec](https://github.com/webiny/webiny-js/commit/2601aec617198be39fe0571113a93ae31e005ef5))
+* correct dependencies ([f77bd16](https://github.com/webiny/webiny-js/commit/f77bd161c7049212d55a05b1708f7053115f5638))
+* introduce `@webiny/handler-graphql` ([422eaed](https://github.com/webiny/webiny-js/commit/422eaed63255d8f6274650a5e6a082f58b356ea1))
+* move HTTP request data to `request` path ([3024cdb](https://github.com/webiny/webiny-js/commit/3024cdb662b106ca81d111460ea65c55ab511dce))
+* remove `@webiny/graphql` ([ce70fd5](https://github.com/webiny/webiny-js/commit/ce70fd581456ba56787c2e12fe8075592138a3b7))
+* remove obsolete options ([6bb3bac](https://github.com/webiny/webiny-js/commit/6bb3bacd7afbafa93dd5925ec73b7ba16bbb05a1))
+* reorganize files ([51b623e](https://github.com/webiny/webiny-js/commit/51b623efb78a9c431d743d7d631b1cfb72638fbe))
+* update dependencies ([80dc583](https://github.com/webiny/webiny-js/commit/80dc58319ac2d775665f0c4cf1637df1ce8fa4a4))
+
+
+### Features
+
+* add `NotFoundError` ([731cc0c](https://github.com/webiny/webiny-js/commit/731cc0c23d3c8de0cc44163a91047cb65f4839e3))
+* **app-page-builder:** switch redux for recoil ([a1c5f18](https://github.com/webiny/webiny-js/commit/a1c5f18e271d27a6e65a912014de66dc048741a9))
+* add `compose` / `pipe` functions ([b31dbb4](https://github.com/webiny/webiny-js/commit/b31dbb46b865d777045d110b7d5b3382c0a21ff6))
+
+
+
+
+
 # [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.1) (2021-01-11)
 
 

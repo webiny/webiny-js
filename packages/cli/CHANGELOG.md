@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.2) (2021-01-11)
+
+
+### Bug Fixes
+
+* **cli:** improve error logging and remove debug dependency ([4102830](https://github.com/webiny/webiny-js/commit/410283045d1f138fa801d606323eeec4d1d39578))
+* add default value ([6888d92](https://github.com/webiny/webiny-js/commit/6888d920255e81905df042479c059577294ca527))
+* do not reload ENV files if already loaded ([b223268](https://github.com/webiny/webiny-js/commit/b223268d9a1989e5ba4c0ac9f9592d9eeca31685))
+* merge `new-security` into `master` ([da26908](https://github.com/webiny/webiny-js/commit/da269089ebaf18cc00c43919688fc4a005314d72))
+* remove `info` command ([25f82fd](https://github.com/webiny/webiny-js/commit/25f82fd4580c8de7b0402f212542d0001c56ba55))
+* remove indenting ([771c1e6](https://github.com/webiny/webiny-js/commit/771c1e694730b42f58c2405f118d48f97816c870))
+* replace `env-cmd` with `dotenv` ([86662fc](https://github.com/webiny/webiny-js/commit/86662fcc82af8add6ffa73d270a239ac89cf280e))
+* update dependencies ([e32454c](https://github.com/webiny/webiny-js/commit/e32454c14c95f5a5f5ee4114126fd3b92020346c))
+* use dotenv ([c00fbe1](https://github.com/webiny/webiny-js/commit/c00fbe160587e50e429e452b759d66858061b866))
+
+
+### Features
+
+* add `getProjectRoot` utility function ([05eb94e](https://github.com/webiny/webiny-js/commit/05eb94e2d61b8be332c7b21c4e7b9cd33f8e9ea9))
+* improve error messaging when loading env files ([d48df8a](https://github.com/webiny/webiny-js/commit/d48df8a6e95e179d810ec89455e87849139417c6))
+
+
+
+
+
 # [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.1) (2021-01-11)
 
 

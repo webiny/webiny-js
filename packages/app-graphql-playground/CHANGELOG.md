@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.2) (2021-01-11)
+
+
+### Bug Fixes
+
+* **app-graphql-playground:** add local playground styles ([bf9fb49](https://github.com/webiny/webiny-js/commit/bf9fb496cb82cd1bb1937cc418c0fc18ce8c9ebc))
+* **app-headless-cms:** add query examples and improve styles ([6539fbc](https://github.com/webiny/webiny-js/commit/6539fbcdd696e8e8e4efed9e4378ba6fd74f4ffe))
+* update TS configs and deps ([12a5f67](https://github.com/webiny/webiny-js/commit/12a5f67721f61b4eefebf440f27fa57af19e7c36))
+
+
+### Features
+
+* **app-graphql-playground:** introduce a package to render graphql playground ([5f4ee4e](https://github.com/webiny/webiny-js/commit/5f4ee4e251a9facec25aad2b1f16e6e9d7bb4060))
+
+
+
+
+
 # [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.1) (2021-01-11)
 
 
