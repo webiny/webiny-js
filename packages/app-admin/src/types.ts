@@ -119,11 +119,6 @@ export type AdminInstallationPlugin = Plugin & {
     render({ onInstalled }): React.ReactNode;
 };
 
-export type ApiInformationDialogPlugin = Plugin & {
-    type: "admin-api-information-dialog";
-    render(): React.ReactNode;
-};
-
 export type AdminAppPermissionRendererPlugin = Plugin & {
     type: "admin-app-permissions-renderer";
     system?: boolean;

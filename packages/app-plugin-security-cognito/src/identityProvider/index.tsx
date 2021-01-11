@@ -8,12 +8,13 @@ import {
     SecurityUserAccountFormPlugin,
     SecurityUserFormPlugin
 } from "@webiny/app-security-tenancy/types";
+import { PluginCollection } from "@webiny/plugins/types";
 
 const t1 = i18n.ns("cognito/user-management/installation-form");
 const t2 = i18n.ns("cognito/user-management/user-account-form");
 const t3 = i18n.ns("cognito/user-management/user-form");
 
-export default () => [
+export default (): PluginCollection => [
     {
         type: "security-installation-form",
         render({ Bind }) {
