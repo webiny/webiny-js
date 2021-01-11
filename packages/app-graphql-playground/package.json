@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-graphql-playground",
-  "version": "5.0.0-beta.3",
+  "version": "5.0.0-beta.4",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -9,9 +9,9 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
-    "@webiny/app": "^5.0.0-beta.3",
-    "@webiny/app-admin": "^5.0.0-beta.3",
-    "@webiny/app-i18n": "^5.0.0-beta.3"
+    "@webiny/app": "^5.0.0-beta.4",
+    "@webiny/app-admin": "^5.0.0-beta.4",
+    "@webiny/app-i18n": "^5.0.0-beta.4"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
@@ -22,10 +22,10 @@
     "@babel/preset-typescript": "^7.8.3",
     "@emotion/core": "^10.0.17",
     "@emotion/styled": "^10.0.27",
-    "@webiny/app-security": "^5.0.0-beta.3",
-    "@webiny/plugins": "^5.0.0-beta.3",
-    "@webiny/react-router": "^5.0.0-beta.3",
-    "@webiny/ui": "^5.0.0-beta.3",
+    "@webiny/app-security": "^5.0.0-beta.4",
+    "@webiny/plugins": "^5.0.0-beta.4",
+    "@webiny/react-router": "^5.0.0-beta.4",
+    "@webiny/ui": "^5.0.0-beta.4",
     "apollo-client": "^2.6.10",
     "babel-plugin-emotion": "^9.2.8",
     "babel-plugin-lodash": "^3.3.4",
@@ -60,5 +60,5 @@
       ]
     }
   },
-  "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
+  "gitHead": "b49ebced238d95856e97675c6c614efa71b958df"
 }

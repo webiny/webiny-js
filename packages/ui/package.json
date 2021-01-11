@@ -1,6 +1,6 @@
 {
   "name": "@webiny/ui",
-  "version": "5.0.0-beta.3",
+  "version": "5.0.0-beta.4",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -74,9 +74,9 @@
     "@storybook/addon-knobs": "^5.0.5",
     "@storybook/addon-links": "^5.0.5",
     "@storybook/react": "^5.2.8",
-    "@webiny/form": "^5.0.0-beta.3",
-    "@webiny/storybook-utils": "^5.0.0-beta.3",
-    "@webiny/validation": "^5.0.0-beta.3",
+    "@webiny/form": "^5.0.0-beta.4",
+    "@webiny/storybook-utils": "^5.0.0-beta.4",
+    "@webiny/validation": "^5.0.0-beta.4",
     "awesome-typescript-loader": "^5.2.1",
     "babel-loader": "^8.0.0-beta.6",
     "babel-plugin-emotion": "^9.2.8",
@@ -125,5 +125,5 @@
       ]
     }
   },
-  "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
+  "gitHead": "b49ebced238d95856e97675c6c614efa71b958df"
 }
