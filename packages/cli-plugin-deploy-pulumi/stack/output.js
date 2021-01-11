@@ -11,7 +11,7 @@ const getStackName = folder => {
 
 module.exports = async (inputs, context) => {
     const { env, stack, json } = inputs;
-    const stacksDir = path.join(".", stack);
+    const stacksDir = path.join(".", stack).replace(/\\/g, "/");
 
     await loadEnvVariables(inputs, context);
 

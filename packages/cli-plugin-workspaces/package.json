@@ -11,11 +11,12 @@
 	"description": "A CLI plugin for working with workspaces.",
 	"dependencies": {
 		"@webiny/project-utils": "^4.14.0",
-		"graphlib": "^2.1.8",
 		"chalk": "^4.1.0",
-		"random-color": "^1.0.1",
+		"execa": "^5.0.0",
+		"graphlib": "^2.1.8",
 		"multimatch": "^5.0.0",
-		"execa": "^5.0.0"
+		"p-map": "^4.0.0",
+		"random-color": "^1.0.1"
 	},
 	"license": "MIT",
 	"publishConfig": {

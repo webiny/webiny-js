@@ -70,7 +70,7 @@ const CMSInstaller = ({ onInstalled }) => {
             {error}
         </Alert>
     ) : (
-        t`Installing CMS...`
+        t`Installing Headless CMS...`
     );
 
     return (
