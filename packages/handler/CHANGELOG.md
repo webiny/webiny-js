@@ -3,6 +3,88 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.5...v5.0.0-beta.0) (2021-01-11)
+
+**Note:** Version bump only for package @webiny/handler
+
+
+
+
+
+# [5.0.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.4...v5.0.0-beta.5) (2021-01-11)
+
+**Note:** Version bump only for package @webiny/handler
+
+
+
+
+
+# [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-01-11)
+
+**Note:** Version bump only for package @webiny/handler
+
+
+
+
+
+# [5.0.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.2...v5.0.0-beta.3) (2021-01-11)
+
+**Note:** Version bump only for package @webiny/handler
+
+
+
+
+
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.2) (2021-01-11)
+
+
+### Bug Fixes
+
+* make `HandlerContext` generic ([655f275](https://github.com/webiny/webiny-js/commit/655f27579a48a1a2cef93421d606d1c0e2980637))
+* merge `new-security` into `master` ([da26908](https://github.com/webiny/webiny-js/commit/da269089ebaf18cc00c43919688fc4a005314d72))
+* only send "context" to the context plugins ([c87e792](https://github.com/webiny/webiny-js/commit/c87e79267efd228e3ec2f3f694660293579a4ebe))
+* remove `createResponse` callback ([7c0b757](https://github.com/webiny/webiny-js/commit/7c0b75705eb82363451bc3caaa42d1dc855daccb))
+* remove old tests ([8418f1b](https://github.com/webiny/webiny-js/commit/8418f1bb4b30776d4c78154fde3e8f2d7b361340))
+* remove word `Handler` from context plugin type names ([277f0dd](https://github.com/webiny/webiny-js/commit/277f0dd300b7451a8a162678417e2b428cf002cf))
+* send received args in the "handler" context ([861c0dc](https://github.com/webiny/webiny-js/commit/861c0dc9a3c77abc4246246123df25e35420c72e))
+* set `any` as return type ([1b6787e](https://github.com/webiny/webiny-js/commit/1b6787e209f2fc5c638c7940dcabd7b4f05cb336))
+* spread all args to handlers ([a54d567](https://github.com/webiny/webiny-js/commit/a54d567c409a60972aeaf27186ba2b635a3b1d2f))
+* update `handle` function's args ([f0ffb37](https://github.com/webiny/webiny-js/commit/f0ffb37e5c95052e559f8ec854545fefbf84fbd7))
+
+
+### Features
+
+* enable easier context specifying ([ef16e56](https://github.com/webiny/webiny-js/commit/ef16e56d90086f91c7ec710ebc428b122ed3752e))
+
+
+
+
+
+# [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.1) (2021-01-11)
+
+
+### Bug Fixes
+
+* make `HandlerContext` generic ([655f275](https://github.com/webiny/webiny-js/commit/655f27579a48a1a2cef93421d606d1c0e2980637))
+* merge `new-security` into `master` ([da26908](https://github.com/webiny/webiny-js/commit/da269089ebaf18cc00c43919688fc4a005314d72))
+* only send "context" to the context plugins ([c87e792](https://github.com/webiny/webiny-js/commit/c87e79267efd228e3ec2f3f694660293579a4ebe))
+* remove `createResponse` callback ([7c0b757](https://github.com/webiny/webiny-js/commit/7c0b75705eb82363451bc3caaa42d1dc855daccb))
+* remove old tests ([8418f1b](https://github.com/webiny/webiny-js/commit/8418f1bb4b30776d4c78154fde3e8f2d7b361340))
+* remove word `Handler` from context plugin type names ([277f0dd](https://github.com/webiny/webiny-js/commit/277f0dd300b7451a8a162678417e2b428cf002cf))
+* send received args in the "handler" context ([861c0dc](https://github.com/webiny/webiny-js/commit/861c0dc9a3c77abc4246246123df25e35420c72e))
+* set `any` as return type ([1b6787e](https://github.com/webiny/webiny-js/commit/1b6787e209f2fc5c638c7940dcabd7b4f05cb336))
+* spread all args to handlers ([a54d567](https://github.com/webiny/webiny-js/commit/a54d567c409a60972aeaf27186ba2b635a3b1d2f))
+* update `handle` function's args ([f0ffb37](https://github.com/webiny/webiny-js/commit/f0ffb37e5c95052e559f8ec854545fefbf84fbd7))
+
+
+### Features
+
+* enable easier context specifying ([ef16e56](https://github.com/webiny/webiny-js/commit/ef16e56d90086f91c7ec710ebc428b122ed3752e))
+
+
+
+
+
 # [5.0.0-beta.52](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.51...v5.0.0-beta.52) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/handler

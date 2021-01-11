@@ -16,17 +16,20 @@
 		"create-webiny-project": "^5.0.0-beta.0",
 		"execa": "4.1.0",
 		"fs-extra": "9.0.1",
-		"get-yarn-workspaces": "^1.0.2",
+		"get-yarn-workspaces": "1.0.2",
 		"inquirer": "7.3.3",
 		"load-json-file": "6.2.0",
 		"lodash": "4.17.20",
 		"ora": "4.1.1",
 		"write-json-file": "4.3.0"
 	},
+	"devDependencies": {
+		"dotenv": "^8.2.0"
+	},
 	"adio": {
 		"ignoreDirs": [
 			"/template/"
 		]
 	},
-	"gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
+	"gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f"
 }
