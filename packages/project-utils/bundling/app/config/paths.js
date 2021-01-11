@@ -3,7 +3,7 @@
 const path = require("path");
 const fs = require("fs");
 const url = require("url");
-const { allPackages } = require("../../../packages");
+const { allWorkspaces } = require("../../../workspaces");
 
 // Make sure any symlinks in the project folder are resolved:
 // https://github.com/facebook/create-react-app/issues/637
@@ -81,6 +81,6 @@ module.exports = ({ appIndexJs }) => ({
     appNodeModules: resolveApp("node_modules"),
     publicUrl: getPublicUrl(resolveApp("package.json")),
     servedPath: getServedPath(resolveApp("package.json")),
-    allPackages: allPackages(),
+    allWorkspaces: allWorkspaces(),
     moduleFileExtensions
 });
