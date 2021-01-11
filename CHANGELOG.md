@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.4...v5.0.0-beta.5) (2021-01-11)
+
+
+### Bug Fixes
+
+* add `workspaces` plugins ([698c90f](https://github.com/webiny/webiny-js/commit/698c90f9c98690edfecdf8b13863ec15a5af6c61))
+* remove extra console.log ([717f166](https://github.com/webiny/webiny-js/commit/717f166a0f8e32711faae146f253f27832bec981))
+
+
+
+
+
 # [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-01-11)
 
 **Note:** Version bump only for package webiny-js
