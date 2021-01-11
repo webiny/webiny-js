@@ -3,6 +3,7 @@
   "dependencies": {
     "@webiny/aws-layers": "latest",
     "@webiny/cli": "latest",
+    "@webiny/cli-plugin-workspaces": "latest",
     "@webiny/cli-plugin-deploy-pulumi": "latest",
     "@webiny/project-utils": "latest"
   },
