@@ -28,8 +28,11 @@ describe("connection timeouts test", () => {
             error = e;
         }
 
-        expect(error.message).toBe(
-            "Inaccessible host: `invalid-table'. This service may not be available in the `local' region."
+        // Error must've been thrown. Different errors get thrown in local and CI, that's why
+        // we're just testing if an error was thrown.
+        const message = error.message;
+        expect(message.startsWith("getaddrinfo") || message.startsWith("Inaccessible host:")).toBe(
+            true
         );
     });
 });
