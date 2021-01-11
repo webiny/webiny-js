@@ -28,12 +28,13 @@ module.exports = {
                     stacksDeployedCount++;
                     console.log(
                         [
-                            `🔗 Main GraphQL API: ${green(output.apiUrl + "/graphql")}`,
-                            `🔗 CMS GraphQL API:`,
-                            `   - Content Delivery API: ${green(
-                                output.apiUrl + "/cms/read/{LOCALE_CODE}"
+                            `➜ Main GraphQL API: ${green(output.apiUrl + "/graphql")}`,
+                            `➜ Headless CMS GraphQL API:`,
+                            `   Manage API: ${green(
+                                output.apiUrl + "/cms/manage/{LOCALE_CODE}"
                             )}`,
-                            `   - Content Preview API: ${green(
+                            `   Read API: ${green(output.apiUrl + "/cms/read/{LOCALE_CODE}")}`,
+                            `   Preview API: ${green(
                                 output.apiUrl + "/cms/preview/{LOCALE_CODE}"
                             )}`
                         ].join("\n")
@@ -45,7 +46,7 @@ module.exports = {
                 output = await getStackOutput("apps/admin", env);
                 if (output) {
                     stacksDeployedCount++;
-                    console.log([`🔗 Admin app: ${green(output.appUrl)}`].join("\n"));
+                    console.log([`➜ Admin app: ${green(output.appUrl)}`].join("\n"));
                 } else {
                     console.log(`Stack ${green("apps/admin")} not deployed yet.`);
                 }
@@ -55,9 +56,9 @@ module.exports = {
                     stacksDeployedCount++;
                     console.log(
                         [
-                            `🔗 Public website: ${green(output.appUrl)}`,
-                            `   - App: ${green(output.appUrl)}`,
-                            `   - Delivery: ${green(output.deliveryUrl)}`
+                            `➜ Public website:`,
+                            `   Website URL: ${green(output.deliveryUrl)}`,
+                            `   Website preview URL: ${green(output.appUrl)}`
                         ].join("\n")
                     );
                 } else {
