@@ -7,7 +7,7 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
-  "description": "A DynamoDB driver for the @webin/data database client.",
+  "description": "A DynamoDB driver for the @webiny/db database client.",
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
