@@ -86,8 +86,8 @@ class PageBuilder {
             role: defaultLambdaRole.role.arn,
             runtime: "nodejs12.x",
             handler: "handler.handler",
-            timeout: 900, // 15 minutes.
-            memorySize: 4096,
+            timeout: 300, // 5 minutes.
+            memorySize: 1024,
             environment: {
                 variables: {
                     ...env,
