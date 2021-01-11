@@ -11,6 +11,11 @@ const { green } = require("chalk");
 
 const IS_TEST = process.env.NODE_ENV === "test";
 
+// Automatic detection could be added here.
+function getDefaultRegion() {
+    return "us-east-1";
+}
+
 function random(length = 32) {
     return crypto
         .randomBytes(Math.ceil(length / 2))
@@ -19,14 +24,8 @@ function random(length = 32) {
 }
 
 const setup = async args => {
-    const { projectRoot, projectName, vpc = false, region = "us-east-1" } = args;
-
-    const packageJsonExists = fs.pathExistsSync(path.join(projectRoot, "package.json"));
-    if (!packageJsonExists) {
-        throw new Error(
-            `Cannot continue, ${path.join(projectRoot, "package.json")} does not exist.`
-        );
-    }
+    const { projectRoot, projectName, templateOptions = {} } = args;
+    const { vpc = false, region = getDefaultRegion() } = templateOptions;
 
     fs.copySync(path.join(__dirname, "template"), projectRoot);
 
