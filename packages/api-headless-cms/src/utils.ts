@@ -220,7 +220,7 @@ export const toSlug = text => {
     });
 };
 
-export const encodeElasticSearchCursor = (cursor?: any) => {
+export const encodeElasticsearchCursor = (cursor?: any) => {
     if (!cursor) {
         return null;
     }
@@ -228,7 +228,7 @@ export const encodeElasticSearchCursor = (cursor?: any) => {
     return Buffer.from(JSON.stringify(cursor)).toString("base64");
 };
 
-export const decodeElasticSearchCursor = (cursor?: string) => {
+export const decodeElasticsearchCursor = (cursor?: string) => {
     if (!cursor) {
         return null;
     }

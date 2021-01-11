@@ -6,7 +6,7 @@ import { renderListFilterFields } from "../utils/renderListFilterFields";
 import { renderGetFilterFields } from "../utils/renderGetFilterFields";
 import { pluralizedTypeName } from "../utils/pluralizedTypeName";
 
-export interface CreateManageSDL {
+interface CreateManageSDL {
     (params: { model: CmsContentModel; fieldTypePlugins: CmsFieldTypePlugins }): string;
 }
 

@@ -14,7 +14,7 @@ import { createManageTypeName, createTypeName } from "../utils/createTypeName";
 import { pluralizedTypeName } from "../utils/pluralizedTypeName";
 import { entryFieldFromStorageTransform } from "../utils/entryStorage";
 
-export interface CreateManageResolvers {
+interface CreateManageResolvers {
     (params: {
         models: CmsContentModel[];
         model: CmsContentModel;

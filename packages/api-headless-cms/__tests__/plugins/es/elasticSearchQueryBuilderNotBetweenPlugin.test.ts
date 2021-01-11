@@ -1,6 +1,6 @@
 import { elasticSearchQueryBuilderNotBetweenPlugin } from "../../../src/content/plugins/es/elasticSearchQueryBuilderNotBetweenPlugin";
 import { createBlankQuery } from "./helpers";
-import { ElasticSearchQuery } from "@webiny/api-headless-cms/types";
+import { ElasticsearchQuery } from "@webiny/api-headless-cms/types";
 
 describe("elasticSearchQueryBuilderNotBetweenPlugin", () => {
     const plugin = elasticSearchQueryBuilderNotBetweenPlugin();
@@ -13,7 +13,7 @@ describe("elasticSearchQueryBuilderNotBetweenPlugin", () => {
             value: [100, 200]
         });
 
-        const expected: ElasticSearchQuery = {
+        const expected: ElasticsearchQuery = {
             mustNot: [
                 {
                     range: {

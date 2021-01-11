@@ -1,6 +1,6 @@
 import { elasticSearchQueryBuilderLtPlugin } from "../../../src/content/plugins/es/elasticSearchQueryBuilderLtPlugin";
 import { createBlankQuery } from "./helpers";
-import { ElasticSearchQuery } from "@webiny/api-headless-cms/types";
+import { ElasticsearchQuery } from "@webiny/api-headless-cms/types";
 
 describe("elasticSearchQueryBuilderLtPlugin", () => {
     const plugin = elasticSearchQueryBuilderLtPlugin();
@@ -12,7 +12,7 @@ describe("elasticSearchQueryBuilderLtPlugin", () => {
             field: "id"
         });
 
-        const expected: ElasticSearchQuery = {
+        const expected: ElasticsearchQuery = {
             mustNot: [],
             must: [
                 {
@@ -43,7 +43,7 @@ describe("elasticSearchQueryBuilderLtPlugin", () => {
             field: "date"
         });
 
-        const expected: ElasticSearchQuery = {
+        const expected: ElasticsearchQuery = {
             mustNot: [],
             must: [
                 {

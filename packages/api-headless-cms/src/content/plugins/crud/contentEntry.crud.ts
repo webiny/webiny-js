@@ -13,8 +13,8 @@ import {
 import * as utils from "../../../utils";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation";
 import {
-    createElasticSearchParams,
-    createElasticSearchLimit,
+    createElasticsearchParams,
+    createElasticsearchLimit,
     prepareEntryToIndex,
     extractEntriesFromIndex
 } from "./contentEntry/elasticSearchHelpers";
@@ -151,12 +151,12 @@ export default (): ContextPlugin<CmsContext> => ({
                 const permission = await checkPermissions({ rwd: "r" });
                 utils.checkModelAccess(context, permission, model);
 
-                const limit = createElasticSearchLimit(args.limit, 50);
+                const limit = createElasticsearchLimit(args.limit, 50);
 
                 // Possibly only get records which are owned by current user
                 const ownedBy = permission.own ? context.security.getIdentity().id : undefined;
 
-                const body = createElasticSearchParams({
+                const body = createElasticsearchParams({
                     model,
                     args: {
                         ...args,
@@ -202,7 +202,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     totalCount: total.value,
                     cursor:
                         items.length > 0
-                            ? utils.encodeElasticSearchCursor(hits[items.length - 1].sort)
+                            ? utils.encodeElasticsearchCursor(hits[items.length - 1].sort)
                             : null
                 };
 

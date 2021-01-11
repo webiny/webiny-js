@@ -7,7 +7,7 @@ import { resolveList } from "./resolvers/read/resolveList";
 import { pluralizedTypeName } from "../utils/pluralizedTypeName";
 import { entryFieldFromStorageTransform } from "../utils/entryStorage";
 
-export interface CreateReadResolvers {
+interface CreateReadResolvers {
     (params: {
         models: CmsContentModel[];
         model: CmsContentModel;

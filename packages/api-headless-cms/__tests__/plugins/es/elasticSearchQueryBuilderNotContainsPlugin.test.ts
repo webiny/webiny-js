@@ -1,6 +1,6 @@
 import { elasticSearchQueryBuilderNotContainsPlugin } from "../../../src/content/plugins/es/elasticSearchQueryBuilderNotContainsPlugin";
 import { createBlankQuery } from "./helpers";
-import { ElasticSearchQuery } from "@webiny/api-headless-cms/types";
+import { ElasticsearchQuery } from "@webiny/api-headless-cms/types";
 
 describe("elasticSearchQueryBuilderNotContainsPlugin", () => {
     const plugin = elasticSearchQueryBuilderNotContainsPlugin();
@@ -12,7 +12,7 @@ describe("elasticSearchQueryBuilderNotContainsPlugin", () => {
             field: "name",
             value: "John"
         });
-        const expected: ElasticSearchQuery = {
+        const expected: ElasticsearchQuery = {
             mustNot: [
                 {
                     // eslint-disable-next-line @typescript-eslint/camelcase

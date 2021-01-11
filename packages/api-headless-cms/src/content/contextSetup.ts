@@ -1,7 +1,7 @@
 import { Context, ContextPlugin } from "@webiny/handler/types";
 import { CmsContext } from "@webiny/api-headless-cms/types";
 
-export interface CmsHttpParameters {
+interface CmsHttpParameters {
     type: string;
     locale: string;
 }

@@ -1,6 +1,6 @@
-import { ElasticSearchQuery } from "@webiny/api-headless-cms/types";
+import { ElasticsearchQuery } from "@webiny/api-headless-cms/types";
 
-export const createBlankQuery = (): ElasticSearchQuery => ({
+export const createBlankQuery = (): ElasticsearchQuery => ({
     mustNot: [],
     must: [],
     match: [],

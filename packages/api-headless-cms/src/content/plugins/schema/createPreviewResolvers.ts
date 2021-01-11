@@ -7,7 +7,7 @@ import { createReadTypeName, createTypeName } from "../utils/createTypeName";
 import { pluralizedTypeName } from "../utils/pluralizedTypeName";
 import { entryFieldFromStorageTransform } from "../utils/entryStorage";
 
-export interface CreatePreviewResolvers {
+interface CreatePreviewResolvers {
     (params: {
         models: CmsContentModel[];
         model: CmsContentModel;
