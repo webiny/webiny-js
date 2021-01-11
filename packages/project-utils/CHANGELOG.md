@@ -3,6 +3,40 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.1) (2021-01-11)
+
+
+### Bug Fixes
+
+* fix eslint errors ([f559a57](https://github.com/webiny/webiny-js/commit/f559a57522ab893120d8c686a2dd4caeb0c1ccb6))
+* merge `new-security` into `master` ([da26908](https://github.com/webiny/webiny-js/commit/da269089ebaf18cc00c43919688fc4a005314d72))
+* remove `handler-files` ([c2193cd](https://github.com/webiny/webiny-js/commit/c2193cdc5e1bdc2bf5ca096510d1169c0ac252be))
+* remove `handler-files` package ([35412d2](https://github.com/webiny/webiny-js/commit/35412d299e85dd8d9b680533f50c27302b4d9250))
+* remove `handler-index` usage ([4fe5049](https://github.com/webiny/webiny-js/commit/4fe5049e5a481fcab24bb7b7b8017b6d6e6c6fdc))
+* remove `serverless-*` packages 🥳🎉 ([54368f2](https://github.com/webiny/webiny-js/commit/54368f2db6d7f3091ab66fbd448ac8980c07fed3))
+* remove everything SSR related 🙉🙉 ([5ea614d](https://github.com/webiny/webiny-js/commit/5ea614d2c183d52ddc3215625ba43f74d5ee0b3a))
+* remove handler-ssr package ([6634d10](https://github.com/webiny/webiny-js/commit/6634d10b6ef94736278130323e3eb2ace635ec8a))
+* remove redundant `z` letter ([01c06fe](https://github.com/webiny/webiny-js/commit/01c06fe10d5de0061d15ef29206792eae13e25b4))
+* remove SSR related code ([ce28bb0](https://github.com/webiny/webiny-js/commit/ce28bb0064eea07118fdd0f355ee87fce32dadbd))
+* rename linkPackages to linkWorkspaces ([74a834c](https://github.com/webiny/webiny-js/commit/74a834caaea83cff37d3c944c3992d622037d717))
+* revert to React 16.14.0 ([db2c17d](https://github.com/webiny/webiny-js/commit/db2c17df8dbcd33ce8518c9edcdc5db911571dd1))
+* set explicit sourceType config for babel-loader ([3474b59](https://github.com/webiny/webiny-js/commit/3474b597077d8fccb84af5fdff634c1fad34e110))
+* update dependencies ([e4aa675](https://github.com/webiny/webiny-js/commit/e4aa675c7946a92fcf3be49d7332b490bc4fe89f))
+* update dependencies ([2598deb](https://github.com/webiny/webiny-js/commit/2598deb9a72b50d0fa0674d0676da6b387ab40d6))
+* **code-format:** update configs for prettier and eslint ([#1237](https://github.com/webiny/webiny-js/issues/1237)) ([5ff6d22](https://github.com/webiny/webiny-js/commit/5ff6d22f427093a52560963770dadf96d8e6685b))
+* **project-utils:** pass explicit source to get-yarn-workspaces ([bdb54f0](https://github.com/webiny/webiny-js/commit/bdb54f0dbaf1be058343e573c4d62dd9296badc5))
+* **project-utils:** resolve package.json using cwd ([3c94c9d](https://github.com/webiny/webiny-js/commit/3c94c9dbae6eaaa1c45a4d10ac03730954785bc8))
+
+
+### Features
+
+* migrate security to v5 ([d8f2b76](https://github.com/webiny/webiny-js/commit/d8f2b76738de99772a5285b9ceae1f5969f793ed))
+* **app-page-builder:** switch redux for recoil ([a1c5f18](https://github.com/webiny/webiny-js/commit/a1c5f18e271d27a6e65a912014de66dc048741a9))
+
+
+
+
+
 # [5.0.0-beta.52](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.51...v5.0.0-beta.52) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/project-utils

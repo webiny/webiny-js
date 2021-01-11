@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.1) (2021-01-11)
+
+
+### Bug Fixes
+
+* merge `new-security` into `master` ([da26908](https://github.com/webiny/webiny-js/commit/da269089ebaf18cc00c43919688fc4a005314d72))
+* revert to React 16.14.0 ([db2c17d](https://github.com/webiny/webiny-js/commit/db2c17df8dbcd33ce8518c9edcdc5db911571dd1))
+* update dependencies ([9e23d9d](https://github.com/webiny/webiny-js/commit/9e23d9d435c8e3993713d73123a7b93119893eb1))
+* update references to user-management ([7275a4b](https://github.com/webiny/webiny-js/commit/7275a4b24968d661b37096141f8f471d0a907404))
+* **code-format:** update configs for prettier and eslint ([#1237](https://github.com/webiny/webiny-js/issues/1237)) ([5ff6d22](https://github.com/webiny/webiny-js/commit/5ff6d22f427093a52560963770dadf96d8e6685b))
+* update version of @webiny/packages ([4a02033](https://github.com/webiny/webiny-js/commit/4a02033bb47bd902631dba2634a141c1b060fde5))
+
+
+### Features
+
+* migrate security to v5 ([d8f2b76](https://github.com/webiny/webiny-js/commit/d8f2b76738de99772a5285b9ceae1f5969f793ed))
+* **app-page-builder:** switch redux for recoil ([a1c5f18](https://github.com/webiny/webiny-js/commit/a1c5f18e271d27a6e65a912014de66dc048741a9))
+* add default `getIdentityData` function ([67fd505](https://github.com/webiny/webiny-js/commit/67fd505055262241928155827dd96e77f6e9bd45))
+
+
+
+
+
 # [5.0.0-beta.52](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.51...v5.0.0-beta.52) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/app-plugin-security-cognito

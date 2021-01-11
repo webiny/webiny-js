@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.1) (2021-01-11)
+
+
+### Bug Fixes
+
+* correct arg name ([469bb08](https://github.com/webiny/webiny-js/commit/469bb08b70d29d13d9d4fcbd7cc3ff06019839a0))
+* restructure `createLog` method args ([00558bb](https://github.com/webiny/webiny-js/commit/00558bbdf1c5f67af4e763d8802809dd1a4d77e2))
+* **db-dynamodb:** replace "tableName" arg with "table" ([6acd65a](https://github.com/webiny/webiny-js/commit/6acd65a5ad6e54c80151f55bc032c8a15c1bb22b))
+* correct types ([11dac89](https://github.com/webiny/webiny-js/commit/11dac892d57490c4e6d3a015d5b5ba6d4c9f26f0))
+
+
+### Features
+
+* implement logging methods ([0579573](https://github.com/webiny/webiny-js/commit/05795737b659aaff321bc6701d01d518f3886ab6))
+* introduce `@webiny/db-dynamodb` package ([189a9f5](https://github.com/webiny/webiny-js/commit/189a9f59f3181bef37a9f9b9b2be8d6cce2c7cd7))
+
+
+
+
+
 # [5.0.0-beta.52](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.51...v5.0.0-beta.52) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/db-dynamodb

@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.1) (2021-01-11)
+
+
+### Bug Fixes
+
+* `InvokeResult` must be `Promise` ([32fccfc](https://github.com/webiny/webiny-js/commit/32fccfc5f7e5126987f67800567d1e3c7e26300c))
+* export plugin factory ([e79af61](https://github.com/webiny/webiny-js/commit/e79af610e6aa19f022f44cfa45e1ff17a8febf7c))
+* improve error messaging ([3a8a993](https://github.com/webiny/webiny-js/commit/3a8a99375a081881f3a6aa39f16fc9bc435becaf))
+* remove any mention of MongoDb ([b3193cb](https://github.com/webiny/webiny-js/commit/b3193cb3016b58d8e6f95f7558af34a6f588b3c8))
+* remove word `Handler` from context plugin type names ([277f0dd](https://github.com/webiny/webiny-js/commit/277f0dd300b7451a8a162678417e2b428cf002cf))
+* update dependencies ([573502c](https://github.com/webiny/webiny-js/commit/573502c066a3d76c8f23ca0a7914c3fae3ea1b05))
+
+
+### Features
+
+* add generic return type to `invoke` method ([96602ec](https://github.com/webiny/webiny-js/commit/96602ec151cdea8ce5d83c4916bb9f5196ea4a36))
+* enable passing type for invocation payload ([e949a76](https://github.com/webiny/webiny-js/commit/e949a76309506c83c9300a1a100c999d1087ec23))
+* introduce `handler-client` package ([3ea9f82](https://github.com/webiny/webiny-js/commit/3ea9f82aa1d46e0ef170ca6e1f6122246fa3bfb1))
+* introduce `handler-client` package ([468cc69](https://github.com/webiny/webiny-js/commit/468cc692abd18f63662664299c202bf00329fa3d))
+
+
+
+
+
 # [5.0.0-beta.52](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.51...v5.0.0-beta.52) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/handler-client
