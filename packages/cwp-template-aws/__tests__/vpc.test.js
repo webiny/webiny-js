@@ -17,8 +17,7 @@ describe("no VPC stack test", () => {
 
         await setup({
             projectName: PROJECT_NAME,
-            projectRoot: PROJECT_ROOT,
-            vpc: true
+            projectRoot: PROJECT_ROOT
         });
     });
 
