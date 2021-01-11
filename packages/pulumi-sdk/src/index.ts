@@ -1,3 +1,4 @@
+import os from "os";
 import execa from "execa";
 import * as path from "path";
 import { merge, kebabCase, set } from "lodash";
@@ -28,7 +29,7 @@ type InstallArgs = {
 };
 
 export const FLAG_NON_INTERACTIVE = "--non-interactive";
-export const PULUMI_FOLDER = path.join(__dirname, "pulumi");
+export const PULUMI_FOLDER = path.join(__dirname, "pulumi", os.platform());
 export const PULUMI_BINARY_PATH = path.join(PULUMI_FOLDER, "pulumi", "pulumi");
 
 // When updating versions, make sure to update it in three places:
