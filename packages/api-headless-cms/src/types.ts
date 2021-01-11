@@ -1338,14 +1338,14 @@ export type CmsContentModelPermission = SecurityPermission<{
     };
 }>;
 /**
- * A security permission for content model groups.
+ * The security permission for content model groups.
  */
 export type CmsContentModelGroupPermission = SecurityPermission<{
     own: boolean;
     rwd: string;
 }>;
 /**
- * A security permission for content entry.
+ * The security permission for content entry.
  */
 export type CmsContentEntryPermission = SecurityPermission<{
     own: boolean;

@@ -10,7 +10,8 @@ import {
     CmsModelFieldToElasticsearchPlugin,
     CmsModelFieldToGraphQLPlugin,
     ElasticsearchQueryBuilderPlugin,
-    ElasticsearchQuery
+    ElasticsearchQuery,
+    CmsContentEntryListArgs
 } from "@webiny/api-headless-cms/types";
 import { decodeElasticsearchCursor } from "@webiny/api-headless-cms/utils";
 import Error from "@webiny/error";
@@ -26,17 +27,10 @@ interface ModelField {
 
 type ModelFields = Record<string, ModelField>;
 
-interface CreateElasticsearchParamsArg {
-    where?: CmsContentEntryListWhere;
-    sort?: CmsContentEntryListSort;
-    limit: number;
-    after?: string;
-}
-
 interface CreateElasticsearchParams {
     context: CmsContext;
     model: CmsContentModel;
-    args: CreateElasticsearchParamsArg;
+    args: CmsContentEntryListArgs;
     ownedBy?: string;
     parentObject?: string;
     options?: CmsContentEntryListOptions;
