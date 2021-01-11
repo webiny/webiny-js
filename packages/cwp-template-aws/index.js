@@ -2,6 +2,10 @@ const inquirer = require("inquirer");
 const setup = require("./setup");
 
 function runInquirer(cwp) {
+    if (!cwp.interactive) {
+        return setup(cwp);
+    }
+
     console.log(
         "In order to setup your new Webiny project, please answer the following questions."
     );
@@ -12,8 +16,7 @@ function runInquirer(cwp) {
                 type: "list",
                 name: "region",
                 default: "us-east-1",
-                message:
-                    "Please choose the AWS region in which your new project will be deployed:",
+                message: "Please choose the AWS region in which your new project will be deployed:",
                 choices: [
                     { value: "us-east-1", name: "us-east-1 (US East, N. Virginia)" },
                     { value: "us-east-2", name: "us-east-2 (US East, Ohio)" },
@@ -55,7 +58,7 @@ function runInquirer(cwp) {
                 ]
             }
         ])
-        .then(answers => setup({ ...cwp, ...answers }))
+        .then(templateOptions => setup({ ...cwp, templateOptions }))
         .catch(e => {
             if (e.isTtyError) {
                 console.log("Could not start setup wizard in current environment.");
