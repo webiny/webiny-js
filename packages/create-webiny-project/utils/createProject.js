@@ -12,7 +12,7 @@ const getPackageJson = require("./getPackageJson");
 
 const checkProjectName = require("./checkProjectName");
 
-module.exports = async function createProject({ projectName, template, tag, log }) {
+module.exports = async function createProject({ projectName, template, tag, log, interactive }) {
     if (!projectName) {
         throw Error("You must provide a name for the project to use.");
     }
@@ -134,7 +134,7 @@ module.exports = async function createProject({ projectName, template, tag, log 
             return new Promise(resolve => {
                 setTimeout(() => {
                     resolve();
-                    return require(templatePath)({ projectName, projectRoot });
+                    return require(templatePath)({ projectName, projectRoot, interactive });
                 }, 500);
             });
         })
