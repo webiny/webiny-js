@@ -30,13 +30,9 @@ module.exports = {
                         [
                             `➜ Main GraphQL API: ${green(output.apiUrl + "/graphql")}`,
                             `➜ Headless CMS GraphQL API:`,
-                            `   Manage API: ${green(
-                                output.apiUrl + "/cms/manage/{LOCALE_CODE}"
-                            )}`,
+                            `   Manage API: ${green(output.apiUrl + "/cms/manage/{LOCALE_CODE}")}`,
                             `   Read API: ${green(output.apiUrl + "/cms/read/{LOCALE_CODE}")}`,
-                            `   Preview API: ${green(
-                                output.apiUrl + "/cms/preview/{LOCALE_CODE}"
-                            )}`
+                            `   Preview API: ${green(output.apiUrl + "/cms/preview/{LOCALE_CODE}")}`
                         ].join("\n")
                     );
                 } else {
