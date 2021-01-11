@@ -147,9 +147,7 @@ module.exports = async function createProject({
                             parsedTemplateOptions = JSON.parse(templateOptions);
                         } catch {
                             console.log(
-                                yellow(
-                                    "Warning: could not parse provided --template-options JSON."
-                                )
+                                yellow("Warning: could not parse provided --template-options JSON.")
                             );
                         }
                     }

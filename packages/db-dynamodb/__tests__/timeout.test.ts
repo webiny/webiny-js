@@ -16,13 +16,10 @@ describe("connection timeouts test", () => {
                     convertEmptyValues: true,
                     endpoint: "invalid-table",
                     sslEnabled: false,
-                    region: "local",
+                    region: "local"
                 })
             })
-
-
         });
-
 
         let error;
         try {
@@ -31,6 +28,8 @@ describe("connection timeouts test", () => {
             error = e;
         }
 
-        expect(error.message).toBe("Inaccessible host: `invalid-table'. This service may not be available in the `local' region.")
+        expect(error.message).toBe(
+            "Inaccessible host: `invalid-table'. This service may not be available in the `local' region."
+        );
     });
 });

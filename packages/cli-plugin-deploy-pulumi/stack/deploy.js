@@ -55,7 +55,7 @@ module.exports = async (inputs, context) => {
                 "workspaces",
                 "run",
                 "build",
-                '--folder',
+                "--folder",
                 stackDir,
                 "--env",
                 inputs.env,

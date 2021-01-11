@@ -16,7 +16,10 @@ const createGraph = packages => {
             return;
         }
 
-        [...Object.keys(json.dependencies || {}), ...Object.keys(json.devDependencies || {})].forEach(name => {
+        [
+            ...Object.keys(json.dependencies || {}),
+            ...Object.keys(json.devDependencies || {})
+        ].forEach(name => {
             if (packageNames.includes(name)) {
                 graph.setEdge(json.name, name);
             }

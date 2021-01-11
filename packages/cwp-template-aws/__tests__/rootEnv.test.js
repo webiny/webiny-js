@@ -19,7 +19,7 @@ describe("root .env file generation test", () => {
             projectName: PROJECT_NAME,
             projectRoot: PROJECT_ROOT,
             templateOptions: {
-                region: 'eu-central-1'
+                region: "eu-central-1"
             }
         });
     });
