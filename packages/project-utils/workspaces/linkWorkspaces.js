@@ -44,8 +44,8 @@ async function symlink(src, dest) {
 
 const defaults = { whitelist: ["packages"] };
 
-module.exports.linkPackages = async ({ whitelist } = defaults) => {
-    console.log(`Linking repo packages...`);
+module.exports.linkWorkspaces = async ({ whitelist } = defaults) => {
+    console.log(`Linking project workspaces...`);
 
     whitelist = whitelist.map(p => path.resolve(p));
 

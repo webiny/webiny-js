@@ -1,11 +1,12 @@
 import React from "react";
-import { Link } from "@webiny/react-router";
 import { css } from "emotion";
+import { Link } from "@webiny/react-router";
 import { useSecurity } from "@webiny/app-security/hooks/useSecurity";
 import { Image } from "@webiny/app/components";
 import { ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { Typography } from "@webiny/ui/Typography";
 import { Avatar } from "@webiny/ui/Avatar";
+import { AdminHeaderUserMenuUserInfoPlugin } from "@webiny/app-admin/types";
 
 const avatarImage = css({
     height: "40px !important",
@@ -95,4 +96,12 @@ const UserInfo = () => {
     );
 };
 
-export default UserInfo;
+export default (): AdminHeaderUserMenuUserInfoPlugin => {
+    return {
+        name: "admin-header-user-menu-user-info",
+        type: "admin-header-user-menu-user-info",
+        render() {
+            return <UserInfo />;
+        }
+    };
+};

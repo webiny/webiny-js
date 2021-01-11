@@ -1,9 +1,8 @@
 const fs = require("fs");
 const path = require("path");
-const { green, yellow, red } = require("chalk");
+const chalk = require("chalk");
 const findUp = require("find-up");
 const { PluginsContainer } = require("@webiny/plugins");
-const debug = require("debug")("webiny");
 
 const webinyRootPath = findUp.sync("webiny.root.js");
 if (!webinyRootPath) {
@@ -13,6 +12,17 @@ if (!webinyRootPath) {
     process.exit(1);
 }
 const projectRoot = path.dirname(webinyRootPath);
+
+// Create a random color prefix for the duration of the process
+const logPrefix = chalk.hex("#fa5a28").bold("webiny");
+
+const webinyLog = (first = "", ...args) => {
+    if (typeof first === "string") {
+        first = logPrefix + ": " + first;
+    }
+
+    console.log(first, ...args);
+};
 
 class Context {
     constructor() {
@@ -86,19 +96,19 @@ class Context {
     }
 
     log(...args) {
-        debug(...args);
+        webinyLog(...args);
     }
 
     info(...args) {
-        debug(...args);
+        webinyLog(...args);
     }
 
     debug(...args) {
-        debug(...args);
+        webinyLog(...args);
     }
 
     error(...args) {
-        debug(...args);
+        webinyLog(...args);
     }
 
     resolve(...dir) {
@@ -121,18 +131,18 @@ class Context {
         }
 
         if (!fs.existsSync(filePath)) {
-            debug && console.log(yellow(`ⅹ No environment file found on ${filePath}.`));
+            debug && console.log(chalk.yellow(`ⅹ No environment file found on ${filePath}.`));
             return;
         }
 
         try {
             require("dotenv").config({ path: filePath });
-            debug && console.log(green(`✔ Loaded environment variables from ${filePath}.`));
+            debug && console.log(chalk.green(`✔ Loaded environment variables from ${filePath}.`));
             this.loadedEnvFiles[filePath] = true;
         } catch (err) {
             if (debug) {
-                console.log(red(`ⅹ️ Could not load env variables from ${filePath}:`));
-                console.log(red(`   ${err.message}`));
+                console.log(chalk.red(`ⅹ️ Could not load env variables from ${filePath}:`));
+                console.log(chalk.red(`   ${err.message}`));
                 console.log();
             }
         }
