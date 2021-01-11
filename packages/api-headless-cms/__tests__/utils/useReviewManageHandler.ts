@@ -1,5 +1,5 @@
 import { useContentGqlHandler } from "./useContentGqlHandler";
-import { GQLHandlerCallableArgsType } from "./useGqlHandler";
+import { GQLHandlerCallableArgs } from "./useGqlHandler";
 
 const reviewFields = `
     id
@@ -145,7 +145,7 @@ const unpublishReviewMutation = /* GraphQL */ `
     }
 `;
 
-export const useReviewManageHandler = (options: GQLHandlerCallableArgsType) => {
+export const useReviewManageHandler = (options: GQLHandlerCallableArgs) => {
     const contentHandler = useContentGqlHandler(options);
 
     return {

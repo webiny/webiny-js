@@ -1,7 +1,7 @@
-import { GQLHandlerCallableArgsType, useGqlHandler } from "./useGqlHandler";
+import { GQLHandlerCallableArgs, useGqlHandler } from "./useGqlHandler";
 import contentPlugins from "../../src/content";
 
-export const useContentGqlHandler = (args: GQLHandlerCallableArgsType) => {
+export const useContentGqlHandler = (args: GQLHandlerCallableArgs) => {
     return useGqlHandler({
         ...args,
         plugins: contentPlugins({

@@ -1,8 +1,8 @@
-import { CmsContentModelFieldType, CmsContentModelType } from "@webiny/api-headless-cms/types";
+import { CmsContentModelField, CmsContentModel } from "@webiny/api-headless-cms/types";
 
 export const validateLayout = (
-    { layout }: CmsContentModelType,
-    fields: CmsContentModelFieldType[]
+    { layout }: CmsContentModel,
+    fields: CmsContentModelField[]
 ): void => {
     const flatLayoutIdList = layout.reduce((acc, id) => {
         return acc.concat(Array.isArray(id) ? id : [id]);

@@ -1,15 +1,12 @@
 import {
-    CmsContentModelType,
+    CmsContentModel,
     CmsContext,
     ContentModelManagerPlugin
 } from "@webiny/api-headless-cms/types";
 
 const defaultName = "content-model-manager-default";
 
-export const contentModelManagerFactory = async (
-    context: CmsContext,
-    model: CmsContentModelType
-) => {
+export const contentModelManagerFactory = async (context: CmsContext, model: CmsContentModel) => {
     const pluginsByType = context.plugins.byType<ContentModelManagerPlugin>(
         "content-model-manager"
     );

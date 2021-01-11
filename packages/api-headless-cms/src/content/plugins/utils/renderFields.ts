@@ -1,15 +1,15 @@
 import {
     CmsFieldTypePlugins,
-    CmsContentModelType,
-    CmsModelFieldDefinitionType
+    CmsContentModel,
+    CmsModelFieldDefinition
 } from "@webiny/api-headless-cms/types";
 
 interface RenderFields {
     (params: {
-        model: CmsContentModelType;
+        model: CmsContentModel;
         type: string;
         fieldTypePlugins: CmsFieldTypePlugins;
-    }): CmsModelFieldDefinitionType[];
+    }): CmsModelFieldDefinition[];
 }
 
 export const renderFields: RenderFields = ({ model, type, fieldTypePlugins }) => {

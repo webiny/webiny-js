@@ -1,6 +1,6 @@
 import { elasticSearchQueryBuilderEqualPlugin } from "../../../src/content/plugins/es/elasticSearchQueryBuilderEqualPlugin";
 import { createBlankQuery } from "./helpers";
-import { ElasticSearchQueryType } from "@webiny/api-headless-cms/types";
+import { ElasticSearchQuery } from "@webiny/api-headless-cms/types";
 
 describe("elasticSearchQueryBuilderEqualPlugin", () => {
     const plugin = elasticSearchQueryBuilderEqualPlugin();
@@ -18,7 +18,7 @@ describe("elasticSearchQueryBuilderEqualPlugin", () => {
             value: "Doe"
         });
 
-        const expected: ElasticSearchQueryType = {
+        const expected: ElasticSearchQuery = {
             mustNot: [],
             must: [
                 {

@@ -1,5 +1,5 @@
 import {
-    CmsContentModelType,
+    CmsContentModel,
     CmsContext,
     CmsModelFieldValidatorPlugin
 } from "@webiny/api-headless-cms/types";
@@ -8,7 +8,7 @@ import Error from "@webiny/error";
 
 export const validateModelEntryData = async (
     context: CmsContext,
-    contentModel: CmsContentModelType,
+    contentModel: CmsContentModel,
     data: Record<string, any>
 ) => {
     const plugins = context.plugins.byType<CmsModelFieldValidatorPlugin>(

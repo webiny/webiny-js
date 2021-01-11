@@ -1,8 +1,4 @@
-import {
-    CmsContentModelType,
-    CmsFieldTypePlugins,
-    CmsContext
-} from "@webiny/api-headless-cms/types";
+import { CmsContentModel, CmsFieldTypePlugins, CmsContext } from "@webiny/api-headless-cms/types";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { createReadTypeName, createTypeName } from "../utils/createTypeName";
 import { commonFieldResolvers } from "./resolvers/commonFieldResolvers";
@@ -13,8 +9,8 @@ import { entryFieldFromStorageTransform } from "../utils/entryStorage";
 
 export interface CreateReadResolvers {
     (params: {
-        models: CmsContentModelType[];
-        model: CmsContentModelType;
+        models: CmsContentModel[];
+        model: CmsContentModel;
         context: CmsContext;
         fieldTypePlugins: CmsFieldTypePlugins;
     }): any;

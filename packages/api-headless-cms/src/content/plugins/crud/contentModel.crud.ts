@@ -1,11 +1,11 @@
 import { ContextPlugin } from "@webiny/handler/types";
 import {
     CmsContext,
-    CmsContentModelType,
-    CmsContentModelContextType,
-    CmsContentModelManagerInterface,
+    CmsContentModel,
+    CmsContentModelContext,
+    CmsContentModelManager,
     DbItemTypes,
-    CmsContentModelPermissionType
+    CmsContentModelPermission
 } from "@webiny/api-headless-cms/types";
 import * as utils from "@webiny/api-headless-cms/utils";
 import DataLoader from "dataloader";
@@ -31,7 +31,7 @@ export default (): ContextPlugin<CmsContext> => ({
 
         const loaders = {
             listModels: new DataLoader(async () => {
-                const [models] = await db.read<CmsContentModelType>({
+                const [models] = await db.read<CmsContentModel>({
                     ...utils.defaults.db,
                     query: { PK: PK_CONTENT_MODEL(), SK: { $gt: " " } }
                 });
@@ -40,22 +40,22 @@ export default (): ContextPlugin<CmsContext> => ({
             })
         };
 
-        const managers = new Map<string, CmsContentModelManagerInterface>();
+        const managers = new Map<string, CmsContentModelManager>();
         const updateManager = async (
             context: CmsContext,
-            model: CmsContentModelType
-        ): Promise<CmsContentModelManagerInterface> => {
+            model: CmsContentModel
+        ): Promise<CmsContentModelManager> => {
             const manager = await contentModelManagerFactory(context, model);
             managers.set(model.modelId, manager);
             return manager;
         };
 
-        const checkPermissions = (check: string): Promise<CmsContentModelPermissionType> => {
+        const checkPermissions = (check: string): Promise<CmsContentModelPermission> => {
             return utils.checkPermissions(context, "cms.contentModel", { rwd: check });
         };
 
         const modelsGet = async (modelId: string) => {
-            const [[model]] = await db.read<CmsContentModelType>({
+            const [[model]] = await db.read<CmsContentModel>({
                 ...utils.defaults.db,
                 query: { PK: PK_CONTENT_MODEL(), SK: modelId }
             });
@@ -71,7 +71,7 @@ export default (): ContextPlugin<CmsContext> => ({
             return await loaders.listModels.load("listModels");
         };
 
-        const models: CmsContentModelContextType = {
+        const models: CmsContentModelContext = {
             noAuth: () => {
                 return {
                     get: modelsGet,
@@ -111,7 +111,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 }
 
                 const identity = context.security.getIdentity();
-                const model: CmsContentModelType = {
+                const model: CmsContentModel = {
                     ...createdDataJson,
                     group: {
                         id: group.id,
@@ -150,7 +150,7 @@ export default (): ContextPlugin<CmsContext> => ({
             /**
              * @internal
              */
-            async updateModel(model, data: Partial<CmsContentModelType>) {
+            async updateModel(model, data: Partial<CmsContentModel>) {
                 await beforeSaveHook({ context, model, data });
                 await db.update({
                     ...utils.defaults.db,
@@ -161,7 +161,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     data
                 });
 
-                const combinedModel: CmsContentModelType = {
+                const combinedModel: CmsContentModel = {
                     ...model,
                     ...data
                 };
@@ -195,7 +195,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 }
                 const updatedFields = await createFieldModels(model, data);
                 validateLayout(updatedDataJson, updatedFields);
-                const modelData: Partial<CmsContentModelType> = {
+                const modelData: Partial<CmsContentModel> = {
                     ...updatedDataJson,
                     fields: updatedFields,
                     savedOn: new Date().toISOString()
@@ -209,7 +209,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     data: modelData
                 });
 
-                const fullModel: CmsContentModelType = {
+                const fullModel: CmsContentModel = {
                     ...model,
                     ...modelData
                 };

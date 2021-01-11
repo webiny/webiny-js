@@ -7,25 +7,47 @@ import { ElasticSearchClientContext } from "@webiny/api-plugin-elastic-search-cl
 import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { SecurityPermission } from "@webiny/api-security/types";
 
-export type CmsValuesContext = {
+export interface CmsValuesContext {
+    /**
+     * context for contentAPI
+     */
     cms: {
-        // API type
+        /**
+         * API type
+         */
         type: string;
-        // Requested locale
+        /**
+         * Requested locale
+         */
         locale: string;
-        // returns an instance of current locale
+        /**
+         * returns an instance of current locale
+         */
         getLocale: () => I18NLocale;
-        // returns instance of app settings
-        getSettings: () => CmsSettingsType;
-        // This is a READ API
+        /**
+         * returns instance of app settings
+         */
+        getSettings: () => CmsSettings;
+        /**
+         * This is a READ API
+         */
         READ: boolean;
-        // This is a MANAGE API
+        /**
+         * This is a MANAGE API
+         */
         MANAGE: boolean;
-        // This is a PREVIEW API
+        /**
+         * This is a PREVIEW API
+         */
         PREVIEW: boolean;
+        /**
+         * @deprecated
+         *
+         * Which data manager to use
+         */
         dataManagerFunction?: string;
     };
-};
+}
 
 /**
  * This combines all contexts used in the CMS into a single type.
@@ -34,53 +56,53 @@ export type CmsContext = BaseContext<
     I18NContentContext,
     TenancyContext,
     CmsValuesContext,
-    CmsCrudContextType,
+    CmsCrudContext,
     ElasticSearchClientContext
 >;
 
-export type CmsContentModelFieldType = {
+export interface CmsContentModelField extends Plugin {
     id: string;
     type: string;
     fieldId: string;
     label: string;
     helpText: string;
     placeholderText: string;
-    predefinedValues: CmsContentModelFieldPredefinedValuesType;
-    renderer: CmsContentModelFieldRendererType;
-    validation: CmsContentModelFieldValidationType[];
+    predefinedValues: CmsContentModelFieldPredefinedValues;
+    renderer: CmsContentModelFieldRenderer;
+    validation: CmsContentModelFieldValidation[];
     multipleValues: boolean;
     settings?: { [key: string]: any };
-};
+}
 
-export type CmsModelFieldValidatorPlugin = Plugin & {
+export interface CmsModelFieldValidatorPlugin extends Plugin {
     type: "cms-model-field-validator";
     validator: {
         name: string;
         validate(params: {
             value: any;
-            validator: CmsContentModelFieldValidationType;
+            validator: CmsContentModelFieldValidation;
             context: CmsContext;
         }): Promise<boolean>;
     };
-};
+}
 
-export type CmsModelFieldPatternValidatorPlugin = Plugin & {
+export interface CmsModelFieldPatternValidatorPlugin extends Plugin {
     type: "cms-model-field-validator-pattern";
     pattern: {
         name: string;
         regex: string;
         flags: string;
     };
-};
+}
 
-export type LockedFieldType = {
+export interface LockedField {
     fieldId: string;
     multipleValues: boolean;
     type: string;
     [key: string]: any;
-};
+}
 
-export type CmsContentModelType = {
+export interface CmsContentModel {
     name: string;
     modelId: string;
     group: {
@@ -90,236 +112,203 @@ export type CmsContentModelType = {
     description?: string;
     createdOn: Date;
     savedOn: Date;
-    createdBy?: CreatedByType;
-    fields: CmsContentModelFieldType[];
+    createdBy?: CreatedBy;
+    fields: CmsContentModelField[];
     layout: string[][];
-    lockedFields: LockedFieldType[];
+    lockedFields: LockedField[];
     titleFieldId: string;
-};
+}
 
-export type ContextBeforeContentModelsPlugin<T = BaseContext> = Plugin & {
-    type: "context-before-content-models";
-    apply?: (context: T) => void | Promise<void>;
-};
-
-export type ContextAfterContentModelsPlugin<T = BaseContext> = Plugin & {
-    type: "context-after-content-models";
-    apply?: (context: T) => void | Promise<void>;
-};
-
-export type CmsModelFieldDefinitionType = {
+export interface CmsModelFieldDefinition {
     fields: string;
     typeDefs?: string;
-};
+}
 
-export type CmsModelFieldToGraphQLPlugin = Plugin & {
+export interface CmsModelFieldToGraphQLPlugin extends Plugin {
     type: "cms-model-field-to-graphql";
     fieldType: string;
     isSearchable: boolean;
     isSortable: boolean;
     read: {
-        createGetFilters?(params: {
-            model: CmsContentModelType;
-            field: CmsContentModelFieldType;
-        }): string;
-        createListFilters?(params: {
-            model: CmsContentModelType;
-            field: CmsContentModelFieldType;
-        }): string;
-        createTypeField(params: {
-            model: CmsContentModelType;
-            field: CmsContentModelFieldType;
-        }): string;
+        createGetFilters?(params: { model: CmsContentModel; field: CmsContentModelField }): string;
+        createListFilters?(params: { model: CmsContentModel; field: CmsContentModelField }): string;
+        createTypeField(params: { model: CmsContentModel; field: CmsContentModelField }): string;
         createResolver(params: {
-            models: CmsContentModelType[];
-            model: CmsContentModelType;
-            field: CmsContentModelFieldType;
+            models: CmsContentModel[];
+            model: CmsContentModel;
+            field: CmsContentModelField;
         }): GraphQLFieldResolver;
         createSchema?(params: {
-            models: CmsContentModelType[];
-            model: CmsContentModelType;
+            models: CmsContentModel[];
+            model: CmsContentModel;
         }): GraphQLSchemaDefinition<CmsContext>;
     };
     manage: {
-        createListFilters?(params: {
-            model: CmsContentModelType;
-            field: CmsContentModelFieldType;
-        }): string;
+        createListFilters?(params: { model: CmsContentModel; field: CmsContentModelField }): string;
         createSchema?(params: {
-            models: CmsContentModelType[];
-            model: CmsContentModelType;
+            models: CmsContentModel[];
+            model: CmsContentModel;
         }): GraphQLSchemaDefinition<CmsContext>;
         createTypeField(params: {
-            model: CmsContentModelType;
-            field: CmsContentModelFieldType;
-        }): CmsModelFieldDefinitionType | string;
-        createInputField(params: {
-            model: CmsContentModelType;
-            field: CmsContentModelFieldType;
-        }): string;
+            model: CmsContentModel;
+            field: CmsContentModelField;
+        }): CmsModelFieldDefinition | string;
+        createInputField(params: { model: CmsContentModel; field: CmsContentModelField }): string;
         createResolver(params: {
-            models: CmsContentModelType[];
-            model: CmsContentModelType;
-            field: CmsContentModelFieldType;
+            models: CmsContentModel[];
+            model: CmsContentModel;
+            field: CmsContentModelField;
         }): GraphQLFieldResolver;
     };
-};
+}
 
-export type CmsModelLockedFieldPlugin = Plugin & {
+export interface CmsModelLockedFieldPlugin extends Plugin {
     type: "cms-model-locked-field";
     fieldType: string;
-    checkLockedField?(params: {
-        lockedField: LockedFieldType;
-        field: CmsContentModelFieldType;
-    }): void;
-    getLockedFieldData?(params: { field: CmsContentModelFieldType }): { [key: string]: any };
-};
+    checkLockedField?(params: { lockedField: LockedField; field: CmsContentModelField }): void;
+    getLockedFieldData?(params: { field: CmsContentModelField }): { [key: string]: any };
+}
 
-export type CmsFieldTypePlugins = {
+export interface CmsFieldTypePlugins {
     [key: string]: CmsModelFieldToGraphQLPlugin;
-};
+}
 
-export type CreatedByType = {
+export interface CreatedBy {
     id: string;
     displayName: string;
     type: string;
-};
+}
 
-export type CmsSettingsType = {
+export interface CmsSettings {
     isInstalled: boolean;
     contentModelLastChange: Date;
-};
+}
 
-export type CmsSettingsContextType = {
+export interface CmsSettingsContext {
     // is a function so we can easily add params if required
     noAuth: () => {
-        get: () => Promise<CmsSettingsType | null>;
+        get: () => Promise<CmsSettings | null>;
     };
     contentModelLastChange: Date;
-    get: () => Promise<CmsSettingsType | null>;
-    install: () => Promise<CmsSettingsType>;
-    updateContentModelLastChange: () => Promise<CmsSettingsType>;
+    get: () => Promise<CmsSettings | null>;
+    install: () => Promise<CmsSettings>;
+    updateContentModelLastChange: () => Promise<CmsSettings>;
     getContentModelLastChange: () => Date;
-};
+}
 
-export type CmsContentModelGroupCreateInputType = {
+export interface CmsContentModelGroupCreateInput {
     name: string;
     slug?: string;
     description?: string;
     icon: string;
-};
+}
 
-export type CmsContentModelGroupUpdateInputType = {
+export interface CmsContentModelGroupUpdateInput {
     name?: string;
     slug?: string;
     description?: string;
     icon?: string;
-};
+}
 
-export type CmsContentModelGroupType = {
+export interface CmsContentModelGroup {
     id: string;
     name: string;
     slug: string;
     description: string;
     icon: string;
-    createdBy: CreatedByType;
+    createdBy: CreatedBy;
     createdOn: Date;
     savedOn: Date;
-};
-export type CmsContentModelGroupListArgsType = {
+}
+export interface CmsContentModelGroupListArgs {
     where?: Record<string, any>;
     limit?: number;
-};
-export type CmsContentModelGroupContextType = {
+}
+export interface CmsContentModelGroupContext {
     noAuth: () => {
-        get: (id: string) => Promise<CmsContentModelGroupType | null>;
-        list: (args?: CmsContentModelGroupListArgsType) => Promise<CmsContentModelGroupType[]>;
+        get: (id: string) => Promise<CmsContentModelGroup | null>;
+        list: (args?: CmsContentModelGroupListArgs) => Promise<CmsContentModelGroup[]>;
     };
-    get: (id: string) => Promise<CmsContentModelGroupType | null>;
-    list: (args?: CmsContentModelGroupListArgsType) => Promise<CmsContentModelGroupType[]>;
-    create: (data: CmsContentModelGroupCreateInputType) => Promise<CmsContentModelGroupType>;
-    update: (
-        id: string,
-        data: CmsContentModelGroupUpdateInputType
-    ) => Promise<CmsContentModelGroupType>;
+    get: (id: string) => Promise<CmsContentModelGroup | null>;
+    list: (args?: CmsContentModelGroupListArgs) => Promise<CmsContentModelGroup[]>;
+    create: (data: CmsContentModelGroupCreateInput) => Promise<CmsContentModelGroup>;
+    update: (id: string, data: CmsContentModelGroupUpdateInput) => Promise<CmsContentModelGroup>;
     delete: (id: string) => Promise<boolean>;
-};
+}
 
-export type CmsContentModelFieldValidationType = {
+export interface CmsContentModelFieldValidation {
     name: string;
     message: string;
     settings?: Record<string, any>;
-};
+}
 
-export type CmsContentModelCreateInputType = {
+export interface CmsContentModelCreateInput {
     name: string;
     modelId?: string;
     description?: string;
-};
+}
 
-export type CmsContentModelUpdateInputType = {
+export interface CmsContentModelUpdateInput {
     name?: string;
     description?: string;
-    fields: CmsContentModelFieldInputType[];
+    fields: CmsContentModelFieldInput[];
     layout: string[][];
     titleFieldId?: string;
-};
+}
 
-export type CmsContentModelManagerListArgsType = {
+export interface CmsContentModelManagerListArgs {
     where?: Record<string, any>;
     sort?: Record<string, any>;
     limit?: number;
     after?: number;
-};
+}
 
-export interface CmsContentModelManagerInterface {
+export interface CmsContentModelManager {
     list(
-        args?: CmsContentEntryListArgsType,
-        options?: CmsContentEntryListOptionsType
-    ): Promise<[CmsContentEntryType[], CmsContentEntryMetaType]>;
+        args?: CmsContentEntryListArgs,
+        options?: CmsContentEntryListOptions
+    ): Promise<[CmsContentEntry[], CmsContentEntryMeta]>;
     listPublished(
-        args?: CmsContentEntryListArgsType
-    ): Promise<[CmsContentEntryType[], CmsContentEntryMetaType]>;
-    listLatest(
-        args?: CmsContentEntryListArgsType
-    ): Promise<[CmsContentEntryType[], CmsContentEntryMetaType]>;
-    getPublishedByIds(ids: string[]): Promise<CmsContentEntryType[]>;
-    getLatestByIds(ids: string[]): Promise<CmsContentEntryType[]>;
-    get(args?: CmsContentEntryGetArgsType): Promise<CmsContentEntryType>;
-    create(data: Record<string, any>): Promise<CmsContentEntryType>;
-    update(id: string, data: Record<string, any>): Promise<CmsContentEntryType>;
+        args?: CmsContentEntryListArgs
+    ): Promise<[CmsContentEntry[], CmsContentEntryMeta]>;
+    listLatest(args?: CmsContentEntryListArgs): Promise<[CmsContentEntry[], CmsContentEntryMeta]>;
+    getPublishedByIds(ids: string[]): Promise<CmsContentEntry[]>;
+    getLatestByIds(ids: string[]): Promise<CmsContentEntry[]>;
+    get(args?: CmsContentEntryGetArgs): Promise<CmsContentEntry>;
+    create(data: Record<string, any>): Promise<CmsContentEntry>;
+    update(id: string, data: Record<string, any>): Promise<CmsContentEntry>;
     delete(id: string): Promise<void>;
 }
 
-export type CmsContentModelContextType = {
+export interface CmsContentModelContext {
     noAuth: () => {
-        get: (modelId: string) => Promise<CmsContentModelType | null>;
-        list: () => Promise<CmsContentModelType[]>;
+        get: (modelId: string) => Promise<CmsContentModel | null>;
+        list: () => Promise<CmsContentModel[]>;
     };
-    get: (modelId: string) => Promise<CmsContentModelType | null>;
-    list: () => Promise<CmsContentModelType[]>;
-    create: (data: CmsContentModelCreateInputType) => Promise<CmsContentModelType>;
+    get: (modelId: string) => Promise<CmsContentModel | null>;
+    list: () => Promise<CmsContentModel[]>;
+    create: (data: CmsContentModelCreateInput) => Promise<CmsContentModel>;
     /**
      * use only for directly updating model data with no validation
      * @internal
      */
-    updateModel: (model: CmsContentModelType, data: Partial<CmsContentModelType>) => Promise<void>;
-    update: (modelId: string, data: CmsContentModelUpdateInputType) => Promise<CmsContentModelType>;
+    updateModel: (model: CmsContentModel, data: Partial<CmsContentModel>) => Promise<void>;
+    update: (modelId: string, data: CmsContentModelUpdateInput) => Promise<CmsContentModel>;
     delete: (modelId: string) => Promise<void>;
-    getManager: (modelId: string) => Promise<CmsContentModelManagerInterface>;
-    getManagers: () => Map<string, CmsContentModelManagerInterface>;
-};
+    getManager: (modelId: string) => Promise<CmsContentModelManager>;
+    getManagers: () => Map<string, CmsContentModelManager>;
+}
 
-type CmsContentModelFieldPredefinedValuesType = {
+interface CmsContentModelFieldPredefinedValues {
     enabled: boolean;
     values: any[];
-};
+}
 
-type CmsContentModelFieldRendererType = {
+interface CmsContentModelFieldRenderer {
     name: string;
-};
+}
 
-export type CmsContentModelFieldInputType = {
+export interface CmsContentModelFieldInput {
     id: string;
     type: string;
     fieldId: string;
@@ -327,23 +316,23 @@ export type CmsContentModelFieldInputType = {
     helpText?: string;
     placeholderText?: string;
     multipleValues?: boolean;
-    predefinedValues?: CmsContentModelFieldPredefinedValuesType;
-    renderer?: CmsContentModelFieldRendererType;
-    validation?: CmsContentModelFieldValidationType[];
+    predefinedValues?: CmsContentModelFieldPredefinedValues;
+    renderer?: CmsContentModelFieldRenderer;
+    validation?: CmsContentModelFieldValidation[];
     settings?: Record<string, any>;
-};
+}
 
-type CmsContentEntryStatusType =
+type CmsContentEntryStatus =
     | "published"
     | "unpublished"
     | "reviewRequested"
     | "changesRequested"
     | "draft";
 
-export type CmsContentEntryType = {
+export interface CmsContentEntry {
     id: string;
-    createdBy: CreatedByType;
-    ownedBy: CreatedByType;
+    createdBy: CreatedBy;
+    ownedBy: CreatedBy;
     createdOn: string;
     savedOn: string;
     modelId: string;
@@ -351,111 +340,99 @@ export type CmsContentEntryType = {
     publishedOn?: string;
     version: number;
     locked: boolean;
-    status: CmsContentEntryStatusType;
+    status: CmsContentEntryStatus;
     values: Record<string, any>;
-};
+}
 
 // this is base list args
-export type CmsContentEntryListWhereType = {
+export interface CmsContentEntryListWhere {
     // id
     id?: string;
     id_in?: string[];
     id_not?: string;
     id_not_in?: string[];
     [key: string]: any;
-};
+}
 
-export type CmsContentEntryListSortType = string[];
+export type CmsContentEntryListSort = string[];
 
-export type CmsContentEntryGetArgsType = {
-    where?: CmsContentEntryListWhereType;
-    sort?: CmsContentEntryListSortType;
-};
+export interface CmsContentEntryGetArgs {
+    where?: CmsContentEntryListWhere;
+    sort?: CmsContentEntryListSort;
+}
 
-export type CmsContentEntryListArgsType = {
-    where?: CmsContentEntryListWhereType;
-    sort?: CmsContentEntryListSortType;
+export interface CmsContentEntryListArgs {
+    where?: CmsContentEntryListWhere;
+    sort?: CmsContentEntryListSort;
     limit?: number;
     after?: string;
-};
-export type CmsContentEntryListOptionsType = {
+}
+export interface CmsContentEntryListOptions {
     type?: string;
-};
+}
 
-export type CmsContentEntryMetaType = {
+export interface CmsContentEntryMeta {
     cursor: string;
     hasMoreItems: boolean;
     totalCount: number;
-};
+}
 
-export type CmsContentEntryContextType = {
-    get: (
-        model: CmsContentModelType,
-        args?: CmsContentEntryGetArgsType
-    ) => Promise<CmsContentEntryType | null>;
-    getByIds: (
-        model: CmsContentModelType,
-        revisions: string[]
-    ) => Promise<CmsContentEntryType[] | null>;
+export interface CmsContentEntryContext {
+    get: (model: CmsContentModel, args?: CmsContentEntryGetArgs) => Promise<CmsContentEntry | null>;
+    getByIds: (model: CmsContentModel, revisions: string[]) => Promise<CmsContentEntry[] | null>;
     list: (
-        model: CmsContentModelType,
-        args?: CmsContentEntryListArgsType,
-        options?: CmsContentEntryListOptionsType
-    ) => Promise<[CmsContentEntryType[], CmsContentEntryMetaType]>;
+        model: CmsContentModel,
+        args?: CmsContentEntryListArgs,
+        options?: CmsContentEntryListOptions
+    ) => Promise<[CmsContentEntry[], CmsContentEntryMeta]>;
     listLatest: (
-        model: CmsContentModelType,
-        args?: CmsContentEntryListArgsType
-    ) => Promise<[CmsContentEntryType[], CmsContentEntryMetaType]>;
+        model: CmsContentModel,
+        args?: CmsContentEntryListArgs
+    ) => Promise<[CmsContentEntry[], CmsContentEntryMeta]>;
     listPublished: (
-        model: CmsContentModelType,
-        args?: CmsContentEntryListArgsType
-    ) => Promise<[CmsContentEntryType[], CmsContentEntryMetaType]>;
-    getPublishedByIds: (
-        model: CmsContentModelType,
-        ids: string[]
-    ) => Promise<CmsContentEntryType[]>;
-    getLatestByIds: (model: CmsContentModelType, ids: string[]) => Promise<CmsContentEntryType[]>;
-    create: (model: CmsContentModelType, data: Record<string, any>) => Promise<CmsContentEntryType>;
+        model: CmsContentModel,
+        args?: CmsContentEntryListArgs
+    ) => Promise<[CmsContentEntry[], CmsContentEntryMeta]>;
+    getPublishedByIds: (model: CmsContentModel, ids: string[]) => Promise<CmsContentEntry[]>;
+    getLatestByIds: (model: CmsContentModel, ids: string[]) => Promise<CmsContentEntry[]>;
+    create: (model: CmsContentModel, data: Record<string, any>) => Promise<CmsContentEntry>;
     createRevisionFrom: (
-        model: CmsContentModelType,
+        model: CmsContentModel,
         id: string,
         data: Record<string, any>
-    ) => Promise<CmsContentEntryType>;
+    ) => Promise<CmsContentEntry>;
     update: (
-        model: CmsContentModelType,
+        model: CmsContentModel,
         id: string,
         data?: Record<string, any>
-    ) => Promise<CmsContentEntryType>;
-    deleteRevision: (model: CmsContentModelType, id: string) => Promise<void>;
-    deleteEntry: (model: CmsContentModelType, id: string) => Promise<void>;
-    publish(model: CmsContentModelType, id: string): Promise<CmsContentEntryType>;
-    unpublish(model: CmsContentModelType, id: string): Promise<CmsContentEntryType>;
-    requestReview(model: CmsContentModelType, id: string): Promise<CmsContentEntryType>;
-    requestChanges(model: CmsContentModelType, id: string): Promise<CmsContentEntryType>;
-    getEntryRevisions(id: string): Promise<CmsContentEntryType[]>;
-};
+    ) => Promise<CmsContentEntry>;
+    deleteRevision: (model: CmsContentModel, id: string) => Promise<void>;
+    deleteEntry: (model: CmsContentModel, id: string) => Promise<void>;
+    publish(model: CmsContentModel, id: string): Promise<CmsContentEntry>;
+    unpublish(model: CmsContentModel, id: string): Promise<CmsContentEntry>;
+    requestReview(model: CmsContentModel, id: string): Promise<CmsContentEntry>;
+    requestChanges(model: CmsContentModel, id: string): Promise<CmsContentEntry>;
+    getEntryRevisions(id: string): Promise<CmsContentEntry[]>;
+}
 
-export type CmsCrudContextType = {
+export interface CmsCrudContext {
     cms: {
-        settings: CmsSettingsContextType;
-        groups: CmsContentModelGroupContextType;
-        models: CmsContentModelContextType;
-        getModel: (modelId: string) => Promise<CmsContentModelManagerInterface>;
-        entries: CmsContentEntryContextType;
+        settings: CmsSettingsContext;
+        groups: CmsContentModelGroupContext;
+        models: CmsContentModelContext;
+        getModel: (modelId: string) => Promise<CmsContentModelManager>;
+        entries: CmsContentEntryContext;
     };
-};
+}
 
-export type ContentModelManagerPlugin = Plugin & {
+export interface ContentModelManagerPlugin extends Plugin {
     type: "content-model-manager";
     // if target (model) modelId is not set
     // content model manager plugin is used for everything
     // be aware that if you define multiple plugins without targetCode property only the first one will count
     targetCode?: string[] | string;
-    create<T>(
-        context: CmsContext,
-        model: CmsContentModelType
-    ): Promise<CmsContentModelManagerInterface>;
-};
+    create<T>(context: CmsContext, model: CmsContentModel): Promise<CmsContentModelManager>;
+}
 
 export enum DbItemTypes {
     CMS_CONTENT_MODEL_GROUP = "cms.group",
@@ -463,20 +440,12 @@ export enum DbItemTypes {
     CMS_SETTINGS = "cms.settings"
 }
 
-type CmsContentEntryResolverFactoryParamsType = {
-    model: CmsContentModelType;
-};
+interface CmsContentEntryResolverFactoryParams {
+    model: CmsContentModel;
+}
 
-export type CmsContentEntryResolverFactoryType<
-    TSource = any,
-    TArgs = any,
-    TContext = CmsContext
-> = {
-    (params: CmsContentEntryResolverFactoryParamsType): GraphQLFieldResolver<
-        TSource,
-        TArgs,
-        TContext
-    >;
+export type CmsContentEntryResolverFactory<TSource = any, TArgs = any, TContext = CmsContext> = {
+    (params: CmsContentEntryResolverFactoryParams): GraphQLFieldResolver<TSource, TArgs, TContext>;
 };
 
 export type ElasticSearchQueryOperator =
@@ -493,7 +462,7 @@ export type ElasticSearchQueryOperator =
     | "lt"
     | "lte";
 
-type ElasticSearchQueryRangeParamType = {
+type ElasticSearchQueryRangeParam = {
     [key: string]: {
         gt?: string | number | Date;
         gte?: string | number | Date;
@@ -501,83 +470,83 @@ type ElasticSearchQueryRangeParamType = {
         lte?: string | number | Date;
     };
 };
-type ElasticSearchQueryQueryParamType = {
+type ElasticSearchQueryQueryParam = {
     allow_leading_wildcard?: boolean;
     fields: string[];
     query: string;
 };
-type ElasticSearchQuerySimpleQueryParamType = {
+type ElasticSearchQuerySimpleQueryParam = {
     fields: string[];
     query: string;
 };
-type ElasticSearchQueryMustParamType = {
+type ElasticSearchQueryMustParam = {
     term?: {
         [key: string]: any;
     };
     terms?: {
         [key: string]: any[];
     };
-    range?: ElasticSearchQueryRangeParamType;
-    query_string?: ElasticSearchQueryQueryParamType;
-    simple_query_string?: ElasticSearchQuerySimpleQueryParamType;
+    range?: ElasticSearchQueryRangeParam;
+    query_string?: ElasticSearchQueryQueryParam;
+    simple_query_string?: ElasticSearchQuerySimpleQueryParam;
 };
-type ElasticSearchQueryMustParamListType = ElasticSearchQueryMustParamType[];
+type ElasticSearchQueryMustParamList = ElasticSearchQueryMustParam[];
 
-type ElasticSearchQueryMustNotParamType = {
+type ElasticSearchQueryMustNotParam = {
     term?: {
         [key: string]: any;
     };
     terms?: {
         [key: string]: any[];
     };
-    range?: ElasticSearchQueryRangeParamType;
-    query_string?: ElasticSearchQueryQueryParamType;
-    simple_query_string?: ElasticSearchQuerySimpleQueryParamType;
+    range?: ElasticSearchQueryRangeParam;
+    query_string?: ElasticSearchQueryQueryParam;
+    simple_query_string?: ElasticSearchQuerySimpleQueryParam;
 };
-type ElasticSearchQueryMustNotParamListType = ElasticSearchQueryMustNotParamType[];
+type ElasticSearchQueryMustNotParamList = ElasticSearchQueryMustNotParam[];
 
-type ElasticSearchQueryMatchParamType = {
+type ElasticSearchQueryMatchParam = {
     [key: string]: {
         query: string;
         // OR is default one in ES
         operator?: "AND" | "OR";
     };
 };
-type ElasticSearchQueryMatchParamListType = ElasticSearchQueryMatchParamType[];
+type ElasticSearchQueryMatchParamList = ElasticSearchQueryMatchParam[];
 
-type ElasticSearchQueryShouldParamType = {
+type ElasticSearchQueryShouldParam = {
     term: {
         [key: string]: any;
     };
 };
-type ElasticSearchQueryShouldParamListType = ElasticSearchQueryShouldParamType[];
+type ElasticSearchQueryShouldParamList = ElasticSearchQueryShouldParam[];
 
-export type ElasticSearchQueryType = {
-    must: ElasticSearchQueryMustParamListType;
-    mustNot: ElasticSearchQueryMustNotParamListType;
-    match: ElasticSearchQueryMatchParamListType;
-    should: ElasticSearchQueryShouldParamListType;
-};
+export interface ElasticSearchQuery {
+    must: ElasticSearchQueryMustParamList;
+    mustNot: ElasticSearchQueryMustNotParamList;
+    match: ElasticSearchQueryMatchParamList;
+    should: ElasticSearchQueryShouldParamList;
+}
 
-export type ElasticSearchQueryBuilderArgsPluginType = {
+export interface ElasticSearchQueryBuilderArgsPlugin {
     field: string;
     value: any;
     parentObject?: string;
     originalField?: string;
-};
+}
 
-export type ElasticSearchQueryBuilderPlugin = Plugin & {
+export interface ElasticSearchQueryBuilderPlugin extends Plugin {
     type: "elastic-search-query-builder";
     name: string;
     operator: ElasticSearchQueryOperator;
-    apply: (query: ElasticSearchQueryType, args: ElasticSearchQueryBuilderArgsPluginType) => void;
-};
+    apply: (query: ElasticSearchQuery, args: ElasticSearchQueryBuilderArgsPlugin) => void;
+}
 
 // Permission types
 
-export type CmsSettingsPermissionType = SecurityPermission;
+export type CmsSettingsPermission = SecurityPermission;
 
-export type CmsContentModelPermissionType = SecurityPermission<{
+export type CmsContentModelPermission = SecurityPermission<{
     own: boolean;
     rwd: string;
     models?: {
@@ -590,12 +559,12 @@ export type CmsContentModelPermissionType = SecurityPermission<{
     };
 }>;
 
-export type CmsContentModelGroupPermissionType = SecurityPermission<{
+export type CmsContentModelGroupPermission = SecurityPermission<{
     own: boolean;
     rwd: string;
 }>;
 
-export type CmsContentEntryPermissionType = SecurityPermission<{
+export type CmsContentEntryPermission = SecurityPermission<{
     own: boolean;
     rwd: string;
     pw: string;
@@ -609,53 +578,75 @@ export type CmsContentEntryPermissionType = SecurityPermission<{
     };
 }>;
 
-export type CmsContentIndexEntryType = CmsContentEntryType & {
+export interface CmsContentIndexEntry extends CmsContentEntry {
     rawValues: Record<string, any>;
     [key: string]: any;
-};
-export type CmsModelFieldToElasticSearchPlugin = Plugin & {
+}
+export interface CmsModelFieldToElasticSearchPlugin extends Plugin {
     type: "cms-model-field-to-elastic-search";
     fieldType: string;
     unmappedType?: string;
     /**
-     * { rawValues: { description: ["<p>blah-blah<p>"] }, search: { description: "blah-blah"} }
+     * @example { rawValues: { description: ["<p>blah-blah<p>"] }, search: { description: "blah-blah"} }
      */
     toIndex?(params: {
         fieldTypePlugin: CmsModelFieldToGraphQLPlugin;
-        field: CmsContentModelFieldType;
+        field: CmsContentModelField;
         context: CmsContext;
-        model: CmsContentModelType;
+        model: CmsContentModel;
         // This is the entry that will go into the index
         // It is exact copy of storageEntry at the beginning of the toIndex loop
         // Always return top level properties that you want to merge together, eg. {values: {...toIndexEntry.values, ...myValues}}
-        toIndexEntry: CmsContentIndexEntryType;
+        toIndexEntry: CmsContentIndexEntry;
         // This is the entry in the same form it gets stored to DB (processed, possibly compressed, etc.)
-        storageEntry: CmsContentEntryType;
+        storageEntry: CmsContentEntry;
         // This is the entry in the original form (the way it comes into the API)
-        originalEntry: CmsContentEntryType;
-    }): Partial<CmsContentIndexEntryType>;
+        originalEntry: CmsContentEntry;
+    }): Partial<CmsContentIndexEntry>;
     fromIndex?(params: {
         context: CmsContext;
-        model: CmsContentModelType;
+        model: CmsContentModel;
         fieldTypePlugin: CmsModelFieldToGraphQLPlugin;
-        field: CmsContentModelFieldType;
-        entry: CmsContentIndexEntryType;
-    }): Partial<CmsContentIndexEntryType>;
-};
+        field: CmsContentModelField;
+        entry: CmsContentIndexEntry;
+    }): Partial<CmsContentIndexEntry>;
+}
 
-export type CmsModelFieldToStoragePlugin = Plugin & {
+export interface CmsModelFieldToStoragePlugin extends Plugin {
+    /**
+     * plugin type
+     */
     type: "cms-model-field-to-storage";
+    /**
+     * {@description target field type}
+     */
     fieldType: string;
+    /**
+     * {@description a method that is being ran before storing the data to the database}
+     */
     toStorage?(params: {
-        field: CmsContentModelFieldType;
-        model: CmsContentModelType;
+        field: CmsContentModelField;
+        model: CmsContentModel;
         context: CmsContext;
         value: any;
     }): Promise<any>;
+    /**
+     * @description method that is being ran after retrieving the data from the database
+     *
+     * {@linkcode CmsModelFieldToElasticSearchPlugin}
+     *
+     * ```typescript
+     * fromStorage({field}) {
+     *     return field.value;
+     * }
+     * ```
+     *
+     * @returns Promise<number>
+     */
     fromStorage?(params: {
-        field: CmsContentModelFieldType;
-        model: CmsContentModelType;
+        field: CmsContentModelField;
+        model: CmsContentModel;
         context: CmsContext;
         value: any;
-    }): Promise<any>;
-};
+    }): Promise<string>;
+}

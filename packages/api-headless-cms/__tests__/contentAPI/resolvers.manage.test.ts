@@ -1,6 +1,6 @@
 /* eslint-disable */
 import Error from "@webiny/error";
-import { CmsContentEntryType, CmsContentModelGroupType } from "@webiny/api-headless-cms/types";
+import { CmsContentEntry, CmsContentModelGroup } from "@webiny/api-headless-cms/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
@@ -9,15 +9,15 @@ import modelsWithoutValidation from "./mocks/contentModels.noValidation";
 
 jest.setTimeout(10000);
 
-type CreateCategoriesResultType = {
-    fruits: CmsContentEntryType;
-    vegetables: CmsContentEntryType;
-    animals: CmsContentEntryType;
-    trees: CmsContentEntryType;
-};
+interface CreateCategoriesResult {
+    fruits: CmsContentEntry;
+    vegetables: CmsContentEntry;
+    animals: CmsContentEntry;
+    trees: CmsContentEntry;
+}
 
 describe("MANAGE - Resolvers", () => {
-    let contentModelGroup: CmsContentModelGroupType;
+    let contentModelGroup: CmsContentModelGroup;
 
     const esCmsIndex = "root-headless-cms";
 
@@ -76,7 +76,7 @@ describe("MANAGE - Resolvers", () => {
         }
     };
 
-    const createCategories = async (): Promise<CreateCategoriesResultType> => {
+    const createCategories = async (): Promise<CreateCategoriesResult> => {
         await setupContentModel();
         // Use "manage" API to create and publish entries
         const { createCategory, listCategories } = useCategoryManageHandler(manageOpts);
