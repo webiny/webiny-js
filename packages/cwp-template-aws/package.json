@@ -23,6 +23,9 @@
 		"ora": "4.1.1",
 		"write-json-file": "4.3.0"
 	},
+	"devDependencies": {
+		"dotenv": "^8.2.0"
+	},
 	"adio": {
 		"ignoreDirs": [
 			"/template/"
