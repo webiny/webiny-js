@@ -38,6 +38,12 @@ yargs.command(
             default: "aws",
             demandOption: false
         });
+        yargs.option("template-options", {
+            describe: `A JSON containing template-specific options (usually used in non-interactive environments)`,
+            default: true,
+            type: "string",
+            demandOption: false
+        });
         yargs.option("tag", {
             describe: "NPM tag to use for @webiny packages",
             type: "string",
