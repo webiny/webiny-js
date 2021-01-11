@@ -38,7 +38,6 @@ describe("VPC stack test", () => {
         expect(packageJson.dependencies).toMatchObject({
             "@webiny/aws-layers": expect.stringMatching(/^\^5/),
             "@webiny/cli": expect.stringMatching(/^\^5/),
-            "@webiny/cli-plugin-build": expect.stringMatching(/^\^5/),
             "@webiny/cli-plugin-deploy-pulumi": expect.stringMatching(/^\^5/),
             "@webiny/project-utils": expect.stringMatching(/^\^5/)
         });
