@@ -1,6 +1,6 @@
 {
 	"name": "@webiny/api-security",
-	"version": "5.0.0-beta.5",
+	"version": "5.0.0-beta.6",
 	"main": "index.js",
 	"repository": {
 		"type": "git",
@@ -15,10 +15,10 @@
 	"license": "MIT",
 	"dependencies": {
 		"@babel/runtime": "^7.5.5",
-		"@webiny/error": "^5.0.0-beta.5",
-		"@webiny/handler": "^5.0.0-beta.5",
-		"@webiny/handler-graphql": "^5.0.0-beta.5",
-		"@webiny/plugins": "^5.0.0-beta.5",
+		"@webiny/error": "^5.0.0-beta.6",
+		"@webiny/handler": "^5.0.0-beta.6",
+		"@webiny/handler-graphql": "^5.0.0-beta.6",
+		"@webiny/plugins": "^5.0.0-beta.6",
 		"minimatch": "^3.0.4"
 	},
 	"devDependencies": {
@@ -42,5 +42,5 @@
 			"src/install"
 		]
 	},
-	"gitHead": "b49ebced238d95856e97675c6c614efa71b958df"
+	"gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f"
 }

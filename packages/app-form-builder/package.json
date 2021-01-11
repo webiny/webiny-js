@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-form-builder",
-  "version": "5.0.0-beta.5",
+  "version": "5.0.0-beta.6",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -18,16 +18,16 @@
     "@emotion/styled": "^10.0.17",
     "@rmwc/menu": "^5.6.0",
     "@svgr/webpack": "^4.3.2",
-    "@webiny/app": "^5.0.0-beta.5",
-    "@webiny/app-admin": "^5.0.0-beta.5",
-    "@webiny/app-page-builder": "^5.0.0-beta.5",
-    "@webiny/app-plugin-admin-welcome-screen": "^5.0.0-beta.5",
-    "@webiny/app-security": "^5.0.0-beta.5",
-    "@webiny/form": "^5.0.0-beta.5",
-    "@webiny/plugins": "^5.0.0-beta.5",
-    "@webiny/react-router": "^5.0.0-beta.5",
-    "@webiny/ui": "^5.0.0-beta.5",
-    "@webiny/validation": "^5.0.0-beta.5",
+    "@webiny/app": "^5.0.0-beta.6",
+    "@webiny/app-admin": "^5.0.0-beta.6",
+    "@webiny/app-page-builder": "^5.0.0-beta.6",
+    "@webiny/app-plugin-admin-welcome-screen": "^5.0.0-beta.6",
+    "@webiny/app-security": "^5.0.0-beta.6",
+    "@webiny/form": "^5.0.0-beta.6",
+    "@webiny/plugins": "^5.0.0-beta.6",
+    "@webiny/react-router": "^5.0.0-beta.6",
+    "@webiny/ui": "^5.0.0-beta.6",
+    "@webiny/validation": "^5.0.0-beta.6",
     "apollo-client": "^2.2.8",
     "dot-prop-immutable": "^2.1.0",
     "emotion": "^10.0.17",
@@ -85,5 +85,5 @@
       ]
     }
   },
-  "gitHead": "b49ebced238d95856e97675c6c614efa71b958df"
+  "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f"
 }

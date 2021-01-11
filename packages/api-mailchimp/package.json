@@ -1,6 +1,6 @@
 {
 	"name": "@webiny/api-mailchimp",
-	"version": "5.0.0-beta.5",
+	"version": "5.0.0-beta.6",
 	"main": "index.js",
 	"repository": {
 		"type": "git",
@@ -12,10 +12,10 @@
 	"license": "MIT",
 	"dependencies": {
 		"@babel/runtime": "^7.5.5",
-		"@webiny/api-security": "^5.0.0-beta.5",
-		"@webiny/commodo": "^5.0.0-beta.5",
-		"@webiny/handler": "^5.0.0-beta.5",
-		"@webiny/handler-graphql": "^5.0.0-beta.5",
+		"@webiny/api-security": "^5.0.0-beta.6",
+		"@webiny/commodo": "^5.0.0-beta.6",
+		"@webiny/handler": "^5.0.0-beta.6",
+		"@webiny/handler-graphql": "^5.0.0-beta.6",
 		"got": "^9.6.0",
 		"lodash": "^4.17.4"
 	},
@@ -36,5 +36,5 @@
 		"watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
 		"postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
 	},
-	"gitHead": "b49ebced238d95856e97675c6c614efa71b958df"
+	"gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f"
 }

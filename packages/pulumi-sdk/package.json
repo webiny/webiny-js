@@ -1,6 +1,6 @@
 {
   "name": "@webiny/pulumi-sdk",
-  "version": "5.0.0-beta.5",
+  "version": "5.0.0-beta.6",
   "main": "index.js",
   "types": "types.d.ts",
   "repository": {
@@ -39,5 +39,5 @@
     "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
     "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
   },
-  "gitHead": "b49ebced238d95856e97675c6c614efa71b958df"
+  "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f"
 }
