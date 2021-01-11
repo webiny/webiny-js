@@ -131,7 +131,7 @@
     "setup-cypress": "node scripts/setupCypress",
     "test": "jest --config jest.config.js --runInBand --logHeapUsage",
     "validate-packages": "node scripts/validatePackages.js",
-    "ci:version": "yarn lerna version --conventional-prerelease --force-publish --preid beta --no-push",
+    "ci:version": "yarn lerna version --conventional-prerelease --force-publish --preid beta --no-push --no-changelog",
     "ci:publish": "yarn lerna publish from-package --force-publish --dist-tag beta --registry=\"http://localhost:4873\" --no-verify-access --no-verify-registry",
     "webiny-ui-build-storybook": "cd packages/ui && cross-env OUT=../../netlify-static yarn build-storybook"
   },
