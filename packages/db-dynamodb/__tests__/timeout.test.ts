@@ -5,10 +5,9 @@ import { Db } from "@webiny/db";
 jest.setTimeout(120000);
 
 describe("connection timeouts test", () => {
-    test("should stop connecting after 5 second", async () => {
-        // We just want to verify that if the connection params are invalid, the connection establishing
-        // eventually does end, and doesn't end up keeping a Lambda function alive until its timeout.
-
+    // We just want to verify that if the connection params are invalid, the connection establishing
+    // eventually does end, and doesn't end up keeping a Lambda function alive until its timeout.
+    test("should throw error if invalid endpoint specified", async () => {
         const db = new Db({
             table: "PageBuilder",
             driver: new DynamoDbDriver({
@@ -34,5 +33,27 @@ describe("connection timeouts test", () => {
         expect(message.startsWith("getaddrinfo") || message.startsWith("Inaccessible host:")).toBe(
             true
         );
+    });
+
+    test("should throw error if invalid table specified", async () => {
+        const db = new Db({
+            driver: new DynamoDbDriver({
+                documentClient: new DocumentClient({
+                    convertEmptyValues: true,
+                    endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
+                    sslEnabled: false,
+                    region: "local"
+                })
+            })
+        });
+
+        let error;
+        try {
+            await db.create({ table: "invalid-table", data: { PK: "pk", SK: "sk" } });
+        } catch (e) {
+            error = e;
+        }
+
+        expect(error.message).toBe("Requested resource not found");
     });
 });
