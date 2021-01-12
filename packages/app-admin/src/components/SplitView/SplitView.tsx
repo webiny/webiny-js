@@ -30,8 +30,9 @@ const leftPanel = css({
     ">.webiny-data-list": {
         display: "flex",
         flexDirection: "column",
-        maxHeight: "calc(100vh - 70px)",
+        height: "calc(100vh - 70px)",
         ".mdc-list": {
+            position: "relative",
             height: "100%",
             overflow: "auto"
         }
