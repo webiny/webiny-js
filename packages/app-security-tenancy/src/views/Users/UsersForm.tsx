@@ -130,7 +130,7 @@ const UsersForm = () => {
                         data-testid="new-record-button"
                         onClick={() => history.push("/security/users?new=true")}
                     >
-                        <ButtonIcon icon={<AddIcon />} /> Add User
+                        <ButtonIcon icon={<AddIcon />} /> {t`Add User`}
                     </ButtonDefault>
                 }
             />

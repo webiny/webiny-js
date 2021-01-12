@@ -119,7 +119,7 @@ const UsersDataList = () => {
                     data-testid="new-record-button"
                     onClick={() => history.push("/security/users?new=true")}
                 >
-                    <ButtonIcon icon={<AddIcon />} /> Add User
+                    <ButtonIcon icon={<AddIcon />} /> {t`Add User`}
                 </ButtonSecondary>
             }
             data={userList}
@@ -127,7 +127,9 @@ const UsersDataList = () => {
             refresh={usersRefetch}
             sorters={SORTERS}
             setSorters={sorter => setSort(sorter)}
-            search={<SearchUI value={filter} onChange={setFilter} />}
+            search={
+                <SearchUI value={filter} onChange={setFilter} inputPlaceholder={t`Search users`} />
+            }
         >
             {({ data }) => (
                 <ScrollList twoLine avatarList>
