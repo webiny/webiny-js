@@ -176,6 +176,8 @@ type Props = {
     showOptions?: { [key: string]: any };
 
     extraOptions?: React.ReactNode;
+    // Provide search UI that will be shown in the top left corner.
+    search?: React.ReactElement;
 };
 
 const MultiSelectAll = (props: Props) => {
@@ -323,6 +325,13 @@ const Pagination = (props: Props) => {
     );
 };
 
+const Search = (props: Props) => {
+    if (!props.search) {
+        return null;
+    }
+    return <Cell span={5}>{React.cloneElement(props.search, props)}</Cell>;
+};
+
 export const DataList = (props: Props) => {
     let render = null;
     if (props.loading) {
@@ -352,19 +361,15 @@ export const DataList = (props: Props) => {
 
             {Object.keys(props.showOptions).length > 0 && (
                 <Grid className={listSubHeader}>
-                    <Cell span={props.showOptions.pagination ? 5 : 12}>
+                    <Search {...props} />
+                    <Cell span={7} style={{ justifySelf: "end" }}>
                         <MultiSelectAll {...props} />
                         {props.showOptions.refresh && <RefreshButton {...props} />}
+                        {props.showOptions.pagination && <Pagination {...props} />}
                         {props.showOptions.sorters && <Sorters {...props} />}
                         {props.showOptions.filters && <Filters {...props} />}
                         <MultiSelectActions {...props} />
                     </Cell>
-
-                    {props.showOptions.pagination && (
-                        <Cell span={7} style={{ textAlign: "right" }}>
-                            <Pagination {...props} />
-                        </Cell>
-                    )}
                 </Grid>
             )}
 
