@@ -329,7 +329,7 @@ const Search = (props: Props) => {
     if (!props.search) {
         return null;
     }
-    return <Cell span={5}>{React.cloneElement(props.search, props)}</Cell>;
+    return <Cell span={6}>{React.cloneElement(props.search, props)}</Cell>;
 };
 
 export const DataList = (props: Props) => {
@@ -362,7 +362,7 @@ export const DataList = (props: Props) => {
             {Object.keys(props.showOptions).length > 0 && (
                 <Grid className={listSubHeader}>
                     <Search {...props} />
-                    <Cell span={7} style={{ justifySelf: "end" }}>
+                    <Cell span={props.search ? 6 : 12} style={{ justifySelf: "end" }}>
                         <MultiSelectAll {...props} />
                         {props.showOptions.refresh && <RefreshButton {...props} />}
                         {props.showOptions.pagination && <Pagination {...props} />}
