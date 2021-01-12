@@ -3,8 +3,8 @@ import styled from "@emotion/styled";
 import classNames from "classnames";
 import { IconButton } from "@webiny/ui/Button";
 import InputField from "@webiny/app-admin/components/SimpleUI/InputField";
-import { ReactComponent as SearchIcon } from "../../assets/icons/search-24px.svg";
-import { ReactComponent as ArrowDropDownIcon } from "../../assets/icons/arrow_drop_down-24px.svg";
+import { ReactComponent as SearchIcon } from "../assets/icons/search-24px.svg";
+import { ReactComponent as ArrowDropDownIcon } from "../assets/icons/arrow_drop_down-24px.svg";
 
 const SearchWrapper = styled("div")({
     width: "100%",
