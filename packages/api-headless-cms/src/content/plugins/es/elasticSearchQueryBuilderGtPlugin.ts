@@ -1,6 +1,6 @@
-import { ElasticSearchQueryBuilderPlugin } from "@webiny/api-headless-cms/types";
+import { ElasticsearchQueryBuilderPlugin } from "@webiny/api-headless-cms/types";
 
-export const elasticSearchQueryBuilderGtPlugin = (): ElasticSearchQueryBuilderPlugin => ({
+export const elasticSearchQueryBuilderGtPlugin = (): ElasticsearchQueryBuilderPlugin => ({
     type: "elastic-search-query-builder",
     name: "elastic-search-query-builder-gt",
     operator: "gt",

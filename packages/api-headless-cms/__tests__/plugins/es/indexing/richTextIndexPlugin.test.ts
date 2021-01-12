@@ -1,7 +1,7 @@
 import richTextIndexing from "../../../../src/content/plugins/es/indexing/richTextIndexing";
 import {
-    CmsContentEntryType,
-    CmsContentModelFieldType,
+    CmsContentEntry,
+    CmsContentModelField,
     CmsModelFieldToGraphQLPlugin
 } from "@webiny/api-headless-cms/types";
 import cloneDeep from "lodash/cloneDeep";
@@ -14,7 +14,7 @@ const mockValue = [
 ];
 const mockContext: any = {};
 const mockModel: any = {};
-const mockInputEntry: Partial<CmsContentEntryType> = {
+const mockInputEntry: Partial<CmsContentEntry> = {
     values: {
         notAffectedNumber: 1,
         notAffectedString: "some text",
@@ -25,7 +25,7 @@ const mockInputEntry: Partial<CmsContentEntryType> = {
         text: mockValue
     }
 };
-const mockIndexedEntry: Partial<CmsContentEntryType> & Record<string, any> = {
+const mockIndexedEntry: Partial<CmsContentEntry> & Record<string, any> = {
     values: {
         notAffectedNumber: 1,
         notAffectedString: "some text",
@@ -38,7 +38,7 @@ const mockIndexedEntry: Partial<CmsContentEntryType> & Record<string, any> = {
         text: mockValue
     }
 };
-const mockField: CmsContentModelFieldType = {
+const mockField: CmsContentModelField = {
     id: "textField",
     type: "text",
     label: "Text",

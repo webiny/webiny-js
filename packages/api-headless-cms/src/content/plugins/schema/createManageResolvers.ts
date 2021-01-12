@@ -1,8 +1,4 @@
-import {
-    CmsContentModelType,
-    CmsFieldTypePlugins,
-    CmsContext
-} from "@webiny/api-headless-cms/types";
+import { CmsContentModel, CmsFieldTypePlugins, CmsContext } from "@webiny/api-headless-cms/types";
 import { commonFieldResolvers } from "./resolvers/commonFieldResolvers";
 import { resolveGet } from "./resolvers/manage/resolveGet";
 import { resolveList } from "./resolvers/manage/resolveList";
@@ -18,10 +14,10 @@ import { createManageTypeName, createTypeName } from "../utils/createTypeName";
 import { pluralizedTypeName } from "../utils/pluralizedTypeName";
 import { entryFieldFromStorageTransform } from "../utils/entryStorage";
 
-export interface CreateManageResolvers {
+interface CreateManageResolvers {
     (params: {
-        models: CmsContentModelType[];
-        model: CmsContentModelType;
+        models: CmsContentModel[];
+        model: CmsContentModel;
         context: CmsContext;
         fieldTypePlugins: CmsFieldTypePlugins;
     }): any;

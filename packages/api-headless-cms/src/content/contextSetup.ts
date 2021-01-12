@@ -1,16 +1,16 @@
 import { Context, ContextPlugin } from "@webiny/handler/types";
 import { CmsContext } from "@webiny/api-headless-cms/types";
 
-export type CmsHttpParametersType = {
+interface CmsHttpParameters {
     type: string;
     locale: string;
-};
+}
 
 const throwPlainError = (type: string): void => {
     throw new Error(`Missing context.http.path.parameter "${type}".`);
 };
 
-export const extractHandlerHttpParameters = (context: Context): CmsHttpParametersType => {
+export const extractHandlerHttpParameters = (context: Context): CmsHttpParameters => {
     const { key = "" } = context.http.path.parameters || {};
     const [type, locale] = key.split("/");
     if (!type) {

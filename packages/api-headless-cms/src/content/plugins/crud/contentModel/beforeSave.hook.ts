@@ -1,18 +1,18 @@
 import {
-    CmsContentModelType,
+    CmsContentModel,
     CmsContext,
     CmsModelLockedFieldPlugin
 } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
 
-type ArgsType = {
+interface Args {
     context: CmsContext;
-    model: CmsContentModelType;
+    model: CmsContentModel;
     // data that is being updated in the database
     // modify it, not the model
-    data: Partial<CmsContentModelType>;
-};
-export const beforeSaveHook = async (args: ArgsType) => {
+    data: Partial<CmsContentModel>;
+}
+export const beforeSaveHook = async (args: Args) => {
     const { context, model, data } = args;
     const combinedModel = {
         ...model,

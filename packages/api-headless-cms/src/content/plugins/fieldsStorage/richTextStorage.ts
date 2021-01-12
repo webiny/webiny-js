@@ -2,10 +2,10 @@ import { CmsModelFieldToStoragePlugin } from "@webiny/api-headless-cms/types";
 import jsonpack from "jsonpack";
 import WebinyError from "@webiny/error";
 
-type StoragePackedValue = {
+interface StoragePackedValue {
     compression?: string;
     value: any;
-};
+}
 export default (): CmsModelFieldToStoragePlugin => ({
     type: "cms-model-field-to-storage",
     name: "cms-model-field-to-storage-rich-text",

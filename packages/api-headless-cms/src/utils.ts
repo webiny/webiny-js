@@ -1,10 +1,5 @@
 import slugify from "slugify";
-import {
-    CmsContentModelPermissionType,
-    CmsContentModelType,
-    CmsContext,
-    CreatedByType
-} from "./types";
+import { CmsContentModelPermission, CmsContentModel, CmsContext, CreatedBy } from "./types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { SecurityPermission } from "@webiny/api-security/types";
 
@@ -136,7 +131,7 @@ export const checkPermissions = async <TPermission = SecurityPermission>(
 export const checkOwnership = (
     context: CmsContext,
     permission: SecurityPermission,
-    record: { createdBy?: CreatedByType; ownedBy?: CreatedByType },
+    record: { createdBy?: CreatedBy; ownedBy?: CreatedBy },
     field = "createdBy"
 ): void => {
     if (!permission.own) {
@@ -157,7 +152,7 @@ export const checkOwnership = (
 export const validateOwnership = (
     context: CmsContext,
     permission: SecurityPermission,
-    record: { createdBy?: CreatedByType; ownedBy?: CreatedByType },
+    record: { createdBy?: CreatedBy; ownedBy?: CreatedBy },
     field = "createdBy"
 ): boolean => {
     try {
@@ -173,8 +168,8 @@ export const validateOwnership = (
  */
 export const checkModelAccess = (
     context: CmsContext,
-    permission: SecurityPermission<CmsContentModelPermissionType>,
-    model: CmsContentModelType
+    permission: SecurityPermission<CmsContentModelPermission>,
+    model: CmsContentModel
 ): void => {
     if (validateModelAccess(context, permission, model)) {
         return;
@@ -187,8 +182,8 @@ export const checkModelAccess = (
 };
 export const validateModelAccess = (
     context: CmsContext,
-    permission: SecurityPermission<CmsContentModelPermissionType>,
-    model: CmsContentModelType
+    permission: SecurityPermission<CmsContentModelPermission>,
+    model: CmsContentModel
 ): boolean => {
     const { models, groups } = permission;
     // when no models or groups defined on permission
@@ -225,7 +220,7 @@ export const toSlug = text => {
     });
 };
 
-export const encodeElasticSearchCursor = (cursor?: any) => {
+export const encodeElasticsearchCursor = (cursor?: any) => {
     if (!cursor) {
         return null;
     }
@@ -233,7 +228,7 @@ export const encodeElasticSearchCursor = (cursor?: any) => {
     return Buffer.from(JSON.stringify(cursor)).toString("base64");
 };
 
-export const decodeElasticSearchCursor = (cursor?: string) => {
+export const decodeElasticsearchCursor = (cursor?: string) => {
     if (!cursor) {
         return null;
     }

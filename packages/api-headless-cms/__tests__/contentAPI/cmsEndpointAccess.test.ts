@@ -1,11 +1,11 @@
-import { CmsContentModelGroupType } from "@webiny/api-headless-cms/types";
+import { CmsContentModelGroup } from "@webiny/api-headless-cms/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
 import models from "./mocks/contentModels";
 
 describe("Endpoint access", () => {
-    let contentModelGroup: CmsContentModelGroupType;
+    let contentModelGroup: CmsContentModelGroup;
 
     const esCmsIndex = "root-headless-cms";
 

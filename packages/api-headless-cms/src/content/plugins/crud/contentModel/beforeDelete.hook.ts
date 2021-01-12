@@ -1,11 +1,11 @@
-import { CmsContentModelType, CmsContext } from "@webiny/api-headless-cms/types";
+import { CmsContentModel, CmsContext } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
 
-type ArgsType = {
+interface Args {
     context: CmsContext;
-    model: CmsContentModelType;
-};
-export const beforeDeleteHook = async (args: ArgsType) => {
+    model: CmsContentModel;
+}
+export const beforeDeleteHook = async (args: Args) => {
     const { context, model } = args;
     const { modelId } = model;
     const manager = await context.cms.getModel(modelId);

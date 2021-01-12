@@ -1,5 +1,5 @@
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import { CmsContentEntryType, CmsContentModelGroupType } from "@webiny/api-headless-cms/types";
+import { CmsContentEntry, CmsContentModelGroup } from "@webiny/api-headless-cms/types";
 import models from "./mocks/contentModels";
 import { useReviewManageHandler } from "../utils/useReviewManageHandler";
 import { useProductManageHandler } from "../utils/useProductManageHandler";
@@ -22,7 +22,7 @@ describe("refField", () => {
 
     // This function is not directly within `beforeEach` as we don't always setup the same content model.
     // We call this function manually at the beginning of each test, where needed.
-    const setupContentModelGroup = async (): Promise<CmsContentModelGroupType> => {
+    const setupContentModelGroup = async (): Promise<CmsContentModelGroup> => {
         const [createCMG] = await createContentModelGroupMutation({
             data: {
                 name: "Group",
@@ -34,7 +34,7 @@ describe("refField", () => {
         return createCMG.data.createContentModelGroup.data;
     };
 
-    const setupContentModel = async (contentModelGroup: CmsContentModelGroupType, name: string) => {
+    const setupContentModel = async (contentModelGroup: CmsContentModelGroup, name: string) => {
         const model = models.find(m => m.modelId === name);
         // Create initial record
         const [create] = await createContentModelMutation({
@@ -62,7 +62,7 @@ describe("refField", () => {
         });
         return update.data.updateContentModel.data;
     };
-    const setupContentModels = async (contentModelGroup: CmsContentModelGroupType) => {
+    const setupContentModels = async (contentModelGroup: CmsContentModelGroup) => {
         const models = {
             category: null,
             product: null,
@@ -85,10 +85,10 @@ describe("refField", () => {
                 slug: "vegetables"
             }
         });
-        return createCategoryResponse.data.createCategory.data as CmsContentEntryType;
+        return createCategoryResponse.data.createCategory.data as CmsContentEntry;
     };
 
-    const createProduct = async (category: CmsContentEntryType) => {
+    const createProduct = async (category: CmsContentEntry) => {
         const { createProduct, publishProduct } = useProductManageHandler({
             ...manageOpts
         });
@@ -108,7 +108,7 @@ describe("refField", () => {
             }
         });
 
-        const product = createProductResponse.data.createProduct.data as CmsContentEntryType;
+        const product = createProductResponse.data.createProduct.data as CmsContentEntry;
 
         await publishProduct({
             revision: product.id

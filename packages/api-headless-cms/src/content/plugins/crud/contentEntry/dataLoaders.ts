@@ -1,9 +1,9 @@
 import DataLoader from "dataloader";
-import { CmsContentEntryType, CmsContext } from "@webiny/api-headless-cms/types";
+import { CmsContentEntry, CmsContext } from "@webiny/api-headless-cms/types";
 import * as utils from "../../../../utils";
 
 export const getAllEntryRevisions = (context: CmsContext, { PK_ENTRY }) => {
-    return new DataLoader<string, CmsContentEntryType[]>(async keys => {
+    return new DataLoader<string, CmsContentEntry[]>(async keys => {
         const results = [];
 
         for (let i = 0; i < keys.length; i++) {
@@ -23,7 +23,7 @@ export const getAllEntryRevisions = (context: CmsContext, { PK_ENTRY }) => {
 };
 
 export const getRevisionById = (context: CmsContext, { PK_ENTRY }) => {
-    return new DataLoader<string, CmsContentEntryType>(async keys => {
+    return new DataLoader<string, CmsContentEntry>(async keys => {
         const queries = keys.map(id => {
             const [entryId, version] = id.split("#");
             return {
@@ -38,7 +38,7 @@ export const getRevisionById = (context: CmsContext, { PK_ENTRY }) => {
         const results = (await context.db
             .batch()
             .read(...queries)
-            .execute()) as [CmsContentEntryType[]][];
+            .execute()) as [CmsContentEntry[]][];
 
         // We're not filtering empty values here as we must return the same amount of items as the number of "keys".
         const items = results.map(result => {
@@ -52,7 +52,7 @@ export const getRevisionById = (context: CmsContext, { PK_ENTRY }) => {
 };
 
 export const getPublishedRevisionByEntryId = (context: CmsContext, { PK_ENTRY, SK_PUBLISHED }) => {
-    return new DataLoader<string, CmsContentEntryType>(async keys => {
+    return new DataLoader<string, CmsContentEntry>(async keys => {
         const entries = await context.db
             .batch()
             .read(
@@ -71,7 +71,7 @@ export const getPublishedRevisionByEntryId = (context: CmsContext, { PK_ENTRY, S
 };
 
 export const getLatestRevisionByEntryId = (context: CmsContext, { PK_ENTRY, SK_LATEST }) => {
-    return new DataLoader<string, CmsContentEntryType>(async keys => {
+    return new DataLoader<string, CmsContentEntry>(async keys => {
         const entries = await context.db
             .batch()
             .read(

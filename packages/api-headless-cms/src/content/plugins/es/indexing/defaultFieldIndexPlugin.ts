@@ -1,6 +1,6 @@
-import { CmsModelFieldToElasticSearchPlugin } from "@webiny/api-headless-cms/types";
+import { CmsModelFieldToElasticsearchPlugin } from "@webiny/api-headless-cms/types";
 
-export default (): CmsModelFieldToElasticSearchPlugin => ({
+export default (): CmsModelFieldToElasticsearchPlugin => ({
     type: "cms-model-field-to-elastic-search",
     name: "cms-model-field-to-elastic-search-default",
     fieldType: "*",

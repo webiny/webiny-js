@@ -1,6 +1,6 @@
-import { ElasticSearchQueryBuilderPlugin } from "@webiny/api-headless-cms/types";
+import { ElasticsearchQueryBuilderPlugin } from "@webiny/api-headless-cms/types";
 
-export const elasticSearchQueryBuilderContainsPlugin = (): ElasticSearchQueryBuilderPlugin => ({
+export const elasticSearchQueryBuilderContainsPlugin = (): ElasticsearchQueryBuilderPlugin => ({
     type: "elastic-search-query-builder",
     name: "elastic-search-query-builder-contains",
     operator: "contains",

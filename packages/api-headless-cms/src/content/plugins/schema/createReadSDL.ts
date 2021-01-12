@@ -1,4 +1,4 @@
-import { CmsContentModelType, CmsFieldTypePlugins } from "@webiny/api-headless-cms/types";
+import { CmsContentModel, CmsFieldTypePlugins } from "@webiny/api-headless-cms/types";
 import { createReadTypeName, createTypeName } from "../utils/createTypeName";
 import { renderSortEnum } from "../utils/renderSortEnum";
 import { renderFields } from "../utils/renderFields";
@@ -6,8 +6,8 @@ import { renderListFilterFields } from "../utils/renderListFilterFields";
 import { renderGetFilterFields } from "../utils/renderGetFilterFields";
 import { pluralizedTypeName } from "../utils/pluralizedTypeName";
 
-export interface CreateManageSDL {
-    (params: { model: CmsContentModelType; fieldTypePlugins: CmsFieldTypePlugins }): string;
+interface CreateManageSDL {
+    (params: { model: CmsContentModel; fieldTypePlugins: CmsFieldTypePlugins }): string;
 }
 
 export const createReadSDL: CreateManageSDL = ({ model, fieldTypePlugins }): string => {
