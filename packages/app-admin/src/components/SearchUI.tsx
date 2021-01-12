@@ -56,13 +56,15 @@ export type SearchProps = {
     advancedSearch?: boolean;
     setAdvancedSearch?: (value: boolean) => void;
     showAdvanceSearch?: boolean;
+    inputPlaceholder?: string;
 };
 const Search = ({
     value,
     onChange,
     advancedSearch,
     showAdvanceSearch,
-    setAdvancedSearch
+    setAdvancedSearch,
+    inputPlaceholder = "Search..."
 }: SearchProps) => {
     return (
         <SearchWrapper>
@@ -71,7 +73,7 @@ const Search = ({
             </div>
             <InputField
                 className="search__input"
-                placeholder={"Search users"}
+                placeholder={inputPlaceholder}
                 value={value}
                 onChange={onChange}
                 autoComplete="off"
