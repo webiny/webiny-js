@@ -29,7 +29,7 @@ const EmptyViewWrapper = styled("div")({
     },
     "& .action__container": {
         "& .mdc-button": {
-            minWidth: 150,
+            padding: "0px 16px",
             backgroundColor: "var(--mdc-theme-surface)"
         }
     }
