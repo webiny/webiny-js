@@ -1,10 +1,10 @@
 import React, { useCallback, useState } from "react";
 import { useMutation, useQuery } from "react-apollo";
+import orderBy from "lodash/orderBy";
 import { i18n } from "@webiny/app/i18n";
 import { useSecurity } from "@webiny/app-security";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Image } from "@webiny/app/components";
-
 import {
     DataList,
     ScrollList,
@@ -15,20 +15,40 @@ import {
     ListActions,
     ListItemGraphic
 } from "@webiny/ui/List";
-
+import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
 import { Avatar } from "@webiny/ui/Avatar";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
-import { Input } from "@webiny/ui/Input";
+import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { DELETE_USER, LIST_USERS } from "./graphql";
-import { ReactComponent as SearchIcon } from "./search.svg";
+import { ReactComponent as AddIcon } from "../../assets/icons/add-18px.svg";
 
 const t = i18n.ns("app-identity/admin/users/data-list");
 
+const SORTERS = [
+    {
+        label: t`Newest to oldest`,
+        sorters: { createdOn: "desc" }
+    },
+    {
+        label: t`Oldest to newest`,
+        sorters: { createdOn: "asc" }
+    },
+    {
+        label: t`Login A-Z`,
+        sorters: { login: "asc" }
+    },
+    {
+        label: t`Login Z-A`,
+        sorters: { login: "desc" }
+    }
+];
+
 const UsersDataList = () => {
     const [filter, setFilter] = useState("");
+    const [sort, setSort] = useState(null);
     const { identity } = useSecurity();
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
@@ -45,6 +65,17 @@ const UsersDataList = () => {
         [filter]
     );
 
+    const sortUsers = useCallback(
+        users => {
+            if (!sort) {
+                return users;
+            }
+            const [[key, value]] = Object.entries(sort);
+            return orderBy(users, [key], [value]);
+        },
+        [sort]
+    );
+
     const { data: listUsers, loading: usersLoading, refetch: usersRefetch } = useQuery(LIST_USERS);
 
     const [deleteIt, { loading: deleteLoading }] = useMutation(DELETE_USER, {
@@ -53,7 +84,7 @@ const UsersDataList = () => {
 
     const data = usersLoading && !listUsers ? [] : listUsers.security.users.data || [];
     const filteredData = filter === "" ? data : data.filter(filterUsers);
-
+    const userList = sortUsers(filteredData);
     const login = new URLSearchParams(location.search).get("login");
 
     const deleteItem = useCallback(
@@ -83,18 +114,20 @@ const UsersDataList = () => {
     return (
         <DataList
             title={t`Security Users`}
-            data={filteredData}
+            actions={
+                <ButtonSecondary
+                    data-testid="new-record-button"
+                    onClick={() => history.push("/security/users?new=true")}
+                >
+                    <ButtonIcon icon={<AddIcon />} /> Add User
+                </ButtonSecondary>
+            }
+            data={userList}
             loading={loading}
             refresh={usersRefetch}
-            extraOptions={
-                <Input
-                    icon={<SearchIcon />}
-                    placeholder={"Type to filter"}
-                    value={filter}
-                    onChange={setFilter}
-                    autoComplete="off"
-                />
-            }
+            sorters={SORTERS}
+            setSorters={sorter => setSort(sorter)}
+            search={<SearchUI value={filter} onChange={setFilter} />}
         >
             {({ data }) => (
                 <ScrollList twoLine avatarList>
