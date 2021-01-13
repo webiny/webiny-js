@@ -39,6 +39,11 @@ export default ({ getIdentityData, ...amplify }: CognitoOptions): PluginCollecti
                         return { headers };
                     }
 
+                    // If "Authorization" header is already set, don't overwrite it.
+                    if (headers.Authorization) {
+                        return { headers };
+                    }
+
                     const idToken = user.getIdToken().getJwtToken();
                     return {
                         headers: {
