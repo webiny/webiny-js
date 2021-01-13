@@ -44,5 +44,5 @@ module.exports = async (inputs, context) => {
         return console.log(JSON.stringify(null));
     }
 
-    console.log(`ⅹ ${red(stackName)} does not exist!`);
+    context.error(`${red(stackName)} does not exist!`);
 };

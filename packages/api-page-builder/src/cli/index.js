@@ -1,7 +1,6 @@
 const { Pulumi } = require("@webiny/pulumi-sdk");
 const LambdaClient = require("aws-sdk/clients/lambda");
 const path = require("path");
-const { green } = require("chalk");
 
 module.exports = () => [
     {
@@ -88,10 +87,10 @@ module.exports = () => [
                     throw error;
                 }
 
-                console.log(`${green("✔")} Default Page Builder app's settings updated.`);
+                context.success(`Default Page Builder app's settings updated.`);
             } catch (e) {
-                console.log(
-                    `‼️  An error occurred while trying to update default Page Builder app's settings:`
+                context.error(
+                    `An error occurred while trying to update default Page Builder app's settings!`
                 );
                 console.log(e);
             }
