@@ -4,7 +4,6 @@ import {
     CmsContentModel,
     CmsContentModelContext,
     CmsContentModelManager,
-    DbItemTypes,
     CmsContentModelPermission
 } from "@webiny/api-headless-cms/types";
 import * as utils from "@webiny/api-headless-cms/utils";
@@ -136,7 +135,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     data: {
                         PK: PK_CONTENT_MODEL(),
                         SK: model.modelId,
-                        TYPE: DbItemTypes.CMS_CONTENT_MODEL,
+                        TYPE: "cms.model",
                         ...model
                     }
                 });

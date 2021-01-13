@@ -7,8 +7,7 @@ import {
     CmsContentModelGroupListArgs,
     CmsContentModelGroupPermission,
     CmsContentModelGroup,
-    CmsContext,
-    DbItemTypes
+    CmsContext
 } from "../../../types";
 import * as utils from "../../../utils";
 import { beforeDeleteHook } from "./contentModelGroup/beforeDelete.hook";
@@ -182,7 +181,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 const dbData = {
                     PK: PK_GROUP(),
                     SK: id,
-                    TYPE: DbItemTypes.CMS_CONTENT_MODEL_GROUP,
+                    TYPE: "cms.group",
                     ...model
                 };
 
