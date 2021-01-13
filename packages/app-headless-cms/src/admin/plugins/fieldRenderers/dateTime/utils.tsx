@@ -172,16 +172,6 @@ export const getCurrentDateString = () => {
     const date = today.getDate();
     return `${year}-${formattedMonth}-${date}`;
 };
-/**
- *
- * @param {Object} label - I18NString instance
- * @param {String} text - text to append
- *
- * @return new updated instance of I18NString
- */
-export const appendTextToLabel = (label, text) => {
-    return { values: label.values.map(el => ({ ...el, value: `${el.value}${text}` })) };
-};
 
 export const DEFAULT_TIME = "00:00:00";
 export const DEFAULT_DATE = getCurrentDateString();
