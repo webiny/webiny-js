@@ -30,7 +30,7 @@ const initScripts = () => {
         if (window.GraphQLPlayground) {
             return resolve();
         }
-        
+
         return loadScript(
             "https://cdn.jsdelivr.net/npm/@apollographql/graphql-playground-react@1.7.32/build/static/js/middleware.js",
             resolve
