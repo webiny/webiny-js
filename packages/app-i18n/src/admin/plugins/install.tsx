@@ -102,7 +102,7 @@ const I18NInstaller = ({ onInstalled }) => {
 export default {
     name: "admin-installation-i18n",
     type: "admin-installation",
-    title: "I18N app",
+    title: "I18N",
     dependencies: ["admin-installation-security"],
     secure: true,
     async isInstalled({ client }) {
