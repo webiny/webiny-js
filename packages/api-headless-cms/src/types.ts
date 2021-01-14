@@ -138,6 +138,8 @@ export interface CmsContentModelField {
 
 /**
  * @category Plugin
+ * @category ContentModelField
+ * @category FieldValidation
  */
 export interface CmsModelFieldValidatorPlugin extends Plugin {
     /**
@@ -164,6 +166,8 @@ export interface CmsModelFieldValidatorPlugin extends Plugin {
 }
 /**
  * @category Plugin
+ * @category ContentModelField
+ * @category FieldValidation
  */
 export interface CmsModelFieldPatternValidatorPlugin extends Plugin {
     /**
@@ -215,7 +219,7 @@ export interface LockedField {
 /**
  * Content model defining an entry.
  *
- * @category Model definition
+ * @category Database model
  */
 export interface CmsContentModel {
     /**
@@ -559,7 +563,7 @@ export interface CreatedBy {
 /**
  * Representation of settings database model
  *
- * @category Settings
+ * @category Database model
  */
 export interface CmsSettings {
     /**
@@ -612,6 +616,7 @@ export interface CmsSettingsContext {
 /**
  * A GraphQL args.data parameter received when creating content model group
  *
+ * @category ContentModelGroup
  * @category GraphQL args
  */
 export interface CmsContentModelGroupCreateInput {
@@ -623,6 +628,7 @@ export interface CmsContentModelGroupCreateInput {
 /**
  * A GraphQL args.data parameter received when updating content model group
  *
+ * @category ContentModelGroup
  * @category GraphQL args
  */
 export interface CmsContentModelGroupUpdateInput {
@@ -636,6 +642,7 @@ export interface CmsContentModelGroupUpdateInput {
  * A representation of content model group in the database.
  *
  * @category ContentModelGroup
+ * @category Database model
  */
 export interface CmsContentModelGroup {
     /**
@@ -675,6 +682,7 @@ export interface CmsContentModelGroup {
 /**
  * A data.where parameter received when listing content model groups.
  *
+ * @category ContentModelGroup
  * @category GraphQL args
  */
 export interface CmsContentModelGroupListArgs {
@@ -686,6 +694,7 @@ export interface CmsContentModelGroupListArgs {
  * Content model group in context.
  *
  * @category Context
+ * @category ContentModelGroup
  */
 export interface CmsContentModelGroupContext {
     /**
@@ -726,7 +735,8 @@ export interface CmsContentModelGroupContext {
 /**
  * Definition for content model field validator
  *
- * @category Field
+ * @category ContentModelField
+ * @category FieldValidation
  */
 export interface CmsContentModelFieldValidation {
     name: string;
@@ -738,6 +748,7 @@ export interface CmsContentModelFieldValidation {
  * A GraphQL args.data parameter received when creating content model.
  *
  * @category GraphQL args
+ * @category ContentModel
  */
 export interface CmsContentModelCreateInput {
     /**
@@ -761,6 +772,7 @@ export interface CmsContentModelCreateInput {
  * @see CmsContentModelField
  *
  * @category GraphQL args
+ * @category ContentModelField
  */
 export interface CmsContentModelFieldInput {
     /**
@@ -814,7 +826,7 @@ export interface CmsContentModelFieldInput {
  * A GraphQL args.data parameter received when updating content model.
  *
  * @category GraphQL args
- *
+ * @category ContentModel
  */
 export interface CmsContentModelUpdateInput {
     /**
@@ -853,6 +865,8 @@ export interface CmsContentModelUpdateInput {
  * @see CmsContentModelManager
  *
  * @category Plugin
+ * @category ContentModel
+ * @category Entry
  */
 export interface ContentModelManagerPlugin extends Plugin {
     /**
@@ -874,7 +888,8 @@ export interface ContentModelManagerPlugin extends Plugin {
 /**
  * A content entry definition for and from the database.
  *
- * @category Model definition
+ * @category Database model
+ * @category Entry
  */
 export interface CmsContentEntry {
     /**
@@ -941,6 +956,8 @@ export interface CmsContentEntry {
  * @see CmsContentEntryContext
  *
  * @category Context
+ * @category Entry
+ * @category ContentModel
  */
 export interface CmsContentModelManager {
     /**
@@ -989,6 +1006,7 @@ export interface CmsContentModelManager {
  * Content model in the context.
  *
  * @category Context
+ * @category ContentModel
  */
 export interface CmsContentModelContext {
     /**
@@ -1056,6 +1074,7 @@ type CmsContentEntryStatus =
 /**
  * Entry listing where args.
  *
+ * @category Entry
  * @category GraphQL args
  */
 export interface CmsContentEntryListWhere {
@@ -1069,6 +1088,7 @@ export interface CmsContentEntryListWhere {
 /**
  * Entry listing sort.
  *
+ * @category Entry
  * @category GraphQL args
  */
 export type CmsContentEntryListSort = string[];
@@ -1076,6 +1096,7 @@ export type CmsContentEntryListSort = string[];
 /**
  * Get entry GraphQL resolver args.
  *
+ * @category Entry
  * @category GraphQL args
  */
 export interface CmsContentEntryGetArgs {
@@ -1086,6 +1107,7 @@ export interface CmsContentEntryGetArgs {
 /**
  * List entries GraphQL resolver args.
  *
+ * @category Entry
  * @category GraphQL args
  */
 export interface CmsContentEntryListArgs {
@@ -1110,6 +1132,7 @@ export interface CmsContentEntryListOptions {
 /**
  * Meta information for GraphQL output.
  *
+ * @category Entry
  * @category GraphQL output
  */
 export interface CmsContentEntryMeta {
@@ -1128,6 +1151,7 @@ export interface CmsContentEntryMeta {
  * Content entry in the context.
  *
  * @category Context
+ * @category Entry
  */
 export interface CmsContentEntryContext {
     /**
@@ -1233,6 +1257,7 @@ interface CmsCrudContextObject {
  * Parameters for ContentEntryResolverFactory.
  *
  * @category GraphQL resolver
+ * @category Entry
  */
 interface CmsContentEntryResolverFactoryParams {
     model: CmsContentModel;
@@ -1242,6 +1267,7 @@ interface CmsContentEntryResolverFactoryParams {
  * A type for ContentEntryResolvers. Used when creating get, list, update, publish, ...etc.
  *
  * @category GraphQL resolver
+ * @category Entry
  */
 export type CmsContentEntryResolverFactory<TSource = any, TArgs = any, TContext = CmsContext> = {
     (params: CmsContentEntryResolverFactoryParams): GraphQLFieldResolver<TSource, TArgs, TContext>;
@@ -1369,6 +1395,7 @@ export interface ElasticsearchQuery {
  * @see ElasticsearchQueryBuilderPlugin.apply
  *
  * @category Plugin
+ * @category Elasticsearch
  */
 export interface ElasticsearchQueryBuilderArgsPlugin {
     field: string;
@@ -1381,6 +1408,7 @@ export interface ElasticsearchQueryBuilderArgsPlugin {
  * A plugin definition to build Elasticsearch query
  *
  * @category Plugin
+ * @category Elasticsearch
  */
 export interface ElasticsearchQueryBuilderPlugin extends Plugin {
     /**
@@ -1412,6 +1440,7 @@ export type CmsSettingsPermission = SecurityPermission;
  * A security permission for content model.
  *
  * @category SecurityPermission
+ * @category ContentModel
  */
 export type CmsContentModelPermission = SecurityPermission<{
     own: boolean;
@@ -1433,6 +1462,7 @@ export type CmsContentModelPermission = SecurityPermission<{
  * The security permission for content model groups.
  *
  * @category SecurityPermission
+ * @category ContentModelGroup
  */
 export type CmsContentModelGroupPermission = SecurityPermission<{
     own: boolean;
@@ -1442,6 +1472,7 @@ export type CmsContentModelGroupPermission = SecurityPermission<{
  * The security permission for content entry.
  *
  * @category SecurityPermission
+ * @category Entry
  */
 export type CmsContentEntryPermission = SecurityPermission<{
     own: boolean;
@@ -1465,6 +1496,7 @@ export type CmsContentEntryPermission = SecurityPermission<{
  * A definition of the entry that is being prepared for the Elasticsearch.
  *
  * @category Elasticsearch
+ * @category Entry
  */
 export interface CmsContentIndexEntry extends CmsContentEntry {
     /**
@@ -1481,6 +1513,8 @@ export interface CmsContentIndexEntry extends CmsContentEntry {
  * A plugin defining transformation of entry for Elasticsearch.
  *
  * @category Plugin
+ * @category ContentModelField
+ * @category Entry
  */
 export interface CmsModelFieldToElasticsearchPlugin extends Plugin {
     /**
@@ -1568,6 +1602,7 @@ export interface CmsModelFieldToElasticsearchPlugin extends Plugin {
  * @see CmsModelFieldToStoragePlugin.toStorage
  *
  * @category Plugin
+ * @category ContentModelField
  */
 export interface CmsModelFieldToStoragePluginToStorageArgs {
     field: CmsContentModelField;
@@ -1582,6 +1617,7 @@ export interface CmsModelFieldToStoragePluginToStorageArgs {
  * @see CmsModelFieldToStoragePlugin.fromStorage
  *
  * @category Plugin
+ * @category ContentModelField
  */
 export interface CmsModelFieldToStoragePluginFromStorageArgs {
     field: CmsContentModelField;
@@ -1594,6 +1630,8 @@ export interface CmsModelFieldToStoragePluginFromStorageArgs {
  * A plugin defining transformation of field value to and from storage.
  *
  * @category Plugin
+ * @category ContentModelField
+ * @category Entry
  */
 export interface CmsModelFieldToStoragePlugin extends Plugin {
     /**
