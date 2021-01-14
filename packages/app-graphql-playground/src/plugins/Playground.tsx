@@ -1,53 +1,45 @@
-import React, { useEffect, useRef, Fragment } from "react";
-import styled from "@emotion/styled";
+import React, { Fragment, useEffect, useRef, useCallback, useState } from "react";
+import { ApolloLink } from "apollo-link";
+import { setContext } from "apollo-link-context";
+import loadScript from "load-script";
 import { Global } from "@emotion/core";
 import { plugins } from "@webiny/plugins";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { useSecurity } from "@webiny/app-security";
+import { CircularProgress } from "@webiny/ui/Progress";
+import { playgroundDialog, PlaygroundContainer } from "./Playground.styles";
+import { settings } from "./settings";
 
-const sharedStyles = {
-    "p, a, h1, h2, h3, h4, ul, pre, code": {
-        margin: 0,
-        padding: 0,
-        color: "inherit"
-    },
-    "a:active, a:focus, button:focus, input:focus": {
-        outline: "none"
-    },
-    "input, button, submit": {
-        border: "none"
-    },
-    "input, button, pre": {
-        fontFamily: "'Open Sans', sans-serif"
-    },
-    code: {
-        fontFamily: "Consolas, monospace"
-    }
+const withHeaders = (link, headers) => {
+    return ApolloLink.from([
+        setContext(async (_, req) => {
+            return {
+                headers: {
+                    ...req.headers,
+                    ...headers
+                }
+            };
+        }),
+        link
+    ]);
 };
 
-const PlaygroundContainer = styled("div")({
-    marginTop: -3,
-    overflow: "hidden",
-    ".playground": {
-        height: "calc(100vh - 64px)",
-        margin: 0,
-        padding: 0,
-        fontFamily: "'Open Sans', sans-serif",
-        WebkitFontSmoothing: "antialiased",
-        MozOsxFontSmoothing: "grayscale",
-        color: "rgba(0,0,0,.8)",
-        lineHeight: 1.5,
-        letterSpacing: 0.53,
-        marginRight: "-1px !important",
-        ...sharedStyles
-    }
-});
+const initScripts = () => {
+    return new Promise(resolve => {
+        // @ts-ignore
+        if (window.GraphQLPlayground) {
+            return resolve();
+        }
 
-const playgroundDialog = {
-    ".ReactModalPortal": sharedStyles
+        return loadScript(
+            "https://cdn.jsdelivr.net/npm/@apollographql/graphql-playground-react@1.7.32/build/static/js/middleware.js",
+            resolve
+        );
+    });
 };
 
 const Playground = ({ createApolloClient }) => {
+    const [loading, setLoading] = useState(true);
     const { getCurrentLocale } = useI18N();
     const { identity } = useSecurity();
     const links = useRef({});
@@ -59,9 +51,10 @@ const Playground = ({ createApolloClient }) => {
         .map(pl => pl.tab({ locale, identity }))
         .filter(Boolean);
 
-    const createApolloLink = ({ endpoint }) => {
+    const createApolloLink = useCallback(({ endpoint, headers }) => {
+        // If the request endpoint is not know to us, return the first available
         if (!endpoint.includes(process.env.REACT_APP_API_URL)) {
-            return { link: Object.values(links.current)[0] };
+            return { link: withHeaders(Object.values(links.current)[0], headers) };
         }
 
         if (!links.current[endpoint]) {
@@ -69,21 +62,34 @@ const Playground = ({ createApolloClient }) => {
         }
 
         return {
-            link: links.current[endpoint]
+            link: withHeaders(links.current[endpoint], headers)
         };
-    };
+    }, []);
 
     useEffect(() => {
-        // @ts-ignore
-        window.GraphQLPlayground.init(document.getElementById("graphql-playground"), {
-            tabs,
-            createApolloLink
+        initScripts().then(() => {
+            setLoading(false);
         });
     }, []);
 
+    useEffect(() => {
+        if (!loading) {
+            // @ts-ignore
+            window.GraphQLPlayground.init(document.getElementById("graphql-playground"), {
+                tabs,
+                createApolloLink,
+                settings
+            });
+        }
+    }, [loading]);
+
     return (
         <Fragment>
-            <PlaygroundContainer id={"graphql-playground"} />
+            {loading ? (
+                <CircularProgress label={"Loading playground..."} />
+            ) : (
+                <PlaygroundContainer id={"graphql-playground"} />
+            )}
             <Global styles={playgroundDialog} />
         </Fragment>
     );

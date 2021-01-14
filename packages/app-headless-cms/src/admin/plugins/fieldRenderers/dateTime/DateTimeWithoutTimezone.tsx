@@ -1,6 +1,6 @@
 import React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { DEFAULT_DATE, DEFAULT_TIME, appendTextToLabel, RemoveFieldButton } from "./utils";
+import { DEFAULT_DATE, DEFAULT_TIME, RemoveFieldButton } from "./utils";
 import Input from "./Input";
 
 const DateTimeWithoutTimezone = props => {
@@ -43,7 +43,7 @@ const DateTimeWithoutTimezone = props => {
                     }}
                     field={{
                         ...props.field,
-                        label: appendTextToLabel(props.field.label, " date")
+                        label: `${props.field.label} date`
                     }}
                     type={"date"}
                 />
@@ -60,7 +60,7 @@ const DateTimeWithoutTimezone = props => {
                     }}
                     field={{
                         ...props.field,
-                        label: appendTextToLabel(props.field.label, " time")
+                        label: `${props.field.label} time`
                     }}
                     type={"time"}
                     step={5}

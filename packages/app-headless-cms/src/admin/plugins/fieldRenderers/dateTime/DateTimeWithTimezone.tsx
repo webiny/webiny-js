@@ -7,7 +7,6 @@ import {
     DEFAULT_TIME,
     DEFAULT_DATE,
     DEFAULT_TIMEZONE,
-    appendTextToLabel,
     RemoveFieldButton
 } from "./utils";
 
@@ -61,7 +60,7 @@ const DateTimeWithTimezone = props => {
                     }}
                     field={{
                         ...props.field,
-                        label: appendTextToLabel(props.field.label, " date")
+                        label: `${props.field.label} date`
                     }}
                     type={"date"}
                 />
@@ -78,7 +77,7 @@ const DateTimeWithTimezone = props => {
                     }}
                     field={{
                         ...props.field,
-                        label: appendTextToLabel(props.field.label, " time")
+                        label: `${props.field.label} time`
                     }}
                     type={"time"}
                     step={5}

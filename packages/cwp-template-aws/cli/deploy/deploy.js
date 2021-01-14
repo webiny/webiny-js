@@ -23,7 +23,7 @@ const deploy = (stack, inputs) => {
     );
 };
 
-module.exports = async inputs => {
+module.exports = async (inputs, context) => {
     const { env } = inputs;
 
     // 0. Let's just make sure Pulumi is installed.
@@ -36,8 +36,8 @@ module.exports = async inputs => {
     const siteStackOutput = await getStackOutput("apps/site", env);
     const isFirstDeployment = !siteStackOutput;
     if (isFirstDeployment) {
-        console.log(
-            `⏳  This is your first time deploying the project (${green(
+        context.info(
+            `This is your first time deploying the project (${green(
                 env
             )} environment). Note that the initial deployment can take up to 15 minutes, so please be patient.`
         );
@@ -48,56 +48,56 @@ module.exports = async inputs => {
     // Deploying `api` stack.
     if (isFirstDeployment) {
         console.log();
-        console.log(`🚀 Deploying your ${green("API")} (${green("api")} stack)...`);
+        context.info(`Deploying your ${green("API")} (${green("api")} stack)...`);
     } else {
-        console.log(`🚀 Deploying ${green("api")} stack...`);
+        context.info(`Deploying ${green("api")} stack...`);
     }
 
     await deploy("api", inputs);
 
     if (isFirstDeployment) {
-        console.log(
-            `🎉 Your ${green("API")} was deployed successfully! Continuing with the apps...`
+        context.success(
+            `Your ${green("API")} was deployed successfully! Continuing with the apps...`
         );
         await sleep(2000);
     } else {
-        console.log(`🎉 ${green("api")} stack deployed successfully.`);
+        context.success(`${green("api")} stack deployed successfully.`);
     }
 
     // Deploying `apps/admin` stack.
     console.log();
     if (isFirstDeployment) {
-        console.log(`🚀 Deploying your ${green("Admin")} app (${green("apps/admin")} stack)...`);
+        context.info(`Deploying your ${green("Admin")} app (${green("apps/admin")} stack)...`);
         await sleep();
     } else {
-        console.log(`🚀 Deploying ${green("apps/admin")} stack...`);
+        context.info(`Deploying ${green("apps/admin")} stack...`);
     }
 
     await deploy("apps/admin", inputs);
 
     if (isFirstDeployment) {
-        console.log(`🎉 Your ${green("Admin")} app was deployed successfully!`);
+        context.success(`Your ${green("Admin")} app was deployed successfully!`);
     } else {
-        console.log(`🎉 ${green("apps/admin")} stack deployed successfully.`);
+        context.success(`${green("apps/admin")} stack deployed successfully.`);
     }
 
     // Deploying `apps/admin` stack.
     console.log();
     if (isFirstDeployment) {
-        console.log(
-            `🚀 Deploying your ${green("public website")} app (${green("apps/site")} stack)...`
+        context.info(
+            `Deploying your ${green("public website")} app (${green("apps/site")} stack)...`
         );
         await sleep();
     } else {
-        console.log(`🚀 Deploying ${green("apps/site")} stack...`);
+        context.info(`Deploying ${green("apps/site")} stack...`);
     }
 
     await deploy("apps/site", inputs);
 
     if (isFirstDeployment) {
-        console.log(`🎉 Your ${green("public website")} app was deployed successfully!`);
+        context.success(`Your ${green("public website")} app was deployed successfully!`);
     } else {
-        console.log(`🎉 ${green("apps/site")} stack deployed successfully.`);
+        context.success(`${green("apps/site")} stack deployed successfully.`);
     }
 
     const outputs = {
@@ -112,7 +112,7 @@ module.exports = async inputs => {
     if (isFirstDeployment) {
         console.log(
             [
-                `🎉 Congratulations! You've just deployed a brand new project (${green(
+                `Congratulations! You've just deployed a brand new project (${green(
                     env
                 )} environment)!`,
                 "",
@@ -125,11 +125,11 @@ module.exports = async inputs => {
         );
     } else {
         const usefulLinks = [
-            `🔗 Main GraphQL API: ${green(outputs.api.apiUrl + "/graphql")}`,
-            `🔗 Admin app: ${green(outputs.apps.admin.appUrl)}`,
-            `🔗 Public website: ${green(outputs.apps.site.appUrl)}`,
-            `   - App: ${green(outputs.apps.site.appUrl)}`,
-            `   - Delivery: ${green(outputs.apps.site.deliveryUrl)}`
+            `➜ Main GraphQL API: ${green(outputs.api.apiUrl + "/graphql")}`,
+            `➜ Admin app: ${green(outputs.apps.admin.appUrl)}`,
+            `➜ Public website:`,
+            `   - Website URL: ${green(outputs.apps.site.deliveryUrl)}`,
+            `   - Website preview URL: ${green(outputs.apps.site.appUrl)}`
         ].join("\n");
 
         console.log(
