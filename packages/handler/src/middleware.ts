@@ -9,7 +9,7 @@ export default (functions: Array<Function> = []): Function => {
 
         // Create a clone of function chain to prevent modifying the original array with `shift()`
         const chain = [...functions];
-        return new Promise((parentResolve, parentReject) => {
+        return new Promise((parentResolve: any, parentReject) => {
             const next = async () => {
                 const fn = chain.shift();
                 if (!fn) {
