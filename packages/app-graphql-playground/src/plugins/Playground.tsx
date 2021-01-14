@@ -25,7 +25,7 @@ const withHeaders = (link, headers) => {
 };
 
 const initScripts = () => {
-    return new Promise(resolve => {
+    return new Promise((resolve: any) => {
         // @ts-ignore
         if (window.GraphQLPlayground) {
             return resolve();
