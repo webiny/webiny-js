@@ -131,7 +131,7 @@ The `yarn setup-cypress` can take the following args:
 ```
 Pass "--env" to specify against which environment you want your Cypress tests to run. Default: "dev".
 Pass "--force" if you want to allow overwriting existing cypress.json config file. Default: `false`.
-Pass "--local" to run Cypress tests against locally run apps. Ideal for development. Default: `false`.
+Pass "--localhost" to run Cypress tests against locally run apps. Ideal for development. Default: `false`.
 ```
 
 #### Opening the Cypress app

@@ -11,7 +11,7 @@ const PROJECT_FOLDER = ".";
 const params = {
     env: argv.env || "dev",
     force: argv.force || false,
-    local: argv.local || false
+    localhost: argv.localhost || false
 };
 
 /**
@@ -47,7 +47,7 @@ const params = {
     // If testing with "local" stack, use "localhost" for the app URLs, otherwise fetch from state files.
 
 
-    if (params.local) {
+    if (params.localhost) {
         const adminUrl = "http://localhost:3001";
         const siteUrl = "http://localhost:3000";
         cypressConfig.baseUrl = adminUrl;
