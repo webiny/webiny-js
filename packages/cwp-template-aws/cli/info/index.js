@@ -51,7 +51,7 @@ module.exports = {
                     context.info(`Stack ${green("apps/admin")} not deployed yet.`);
                 }
 
-                output = await getStackOutput("apps/site", env);
+                output = await getStackOutput("apps/website", env);
                 if (output) {
                     stacksDeployedCount++;
                     console.log(
@@ -62,7 +62,7 @@ module.exports = {
                         ].join("\n")
                     );
                 } else {
-                    context.info(`Stack ${green("apps/site")} not deployed yet.`);
+                    context.info(`Stack ${green("apps/website")} not deployed yet.`);
                 }
 
                 if (stacksDeployedCount === 0) {

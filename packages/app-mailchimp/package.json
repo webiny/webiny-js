@@ -6,7 +6,7 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
-  "description": "Enables inserting Mailchimp newsletter signup forms on your site.",
+  "description": "Enables inserting Mailchimp newsletter signup forms on your website.",
   "author": "Adrian Smijulj",
   "license": "MIT",
   "dependencies": {

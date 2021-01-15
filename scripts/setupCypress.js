@@ -48,14 +48,14 @@ const params = {
 
     if (params.localhost) {
         const adminUrl = "http://localhost:3001";
-        const siteUrl = "http://localhost:3000";
+        const websiteUrl = "http://localhost:3000";
         cypressConfig.baseUrl = adminUrl;
         cypressConfig.env.ADMIN_URL = adminUrl;
-        cypressConfig.env.WEBSITE_URL = siteUrl;
-        cypressConfig.env.WEBSITE_PREVIEW_URL = siteUrl;
+        cypressConfig.env.WEBSITE_URL = websiteUrl;
+        cypressConfig.env.WEBSITE_PREVIEW_URL = websiteUrl;
     } else {
         const adminOutput = await getStackOutput("apps/admin", params.env);
-        const websiteOutput = await getStackOutput("apps/site", params.env);
+        const websiteOutput = await getStackOutput("apps/website", params.env);
         cypressConfig.baseUrl = adminOutput.appUrl;
         cypressConfig.env.ADMIN_URL = adminOutput.appUrl;
         cypressConfig.env.WEBSITE_URL = websiteOutput.deliveryUrl;

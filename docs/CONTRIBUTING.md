@@ -100,7 +100,7 @@ The setup of the repo is identical to the one created by `create-webiny-project`
 
 > IMPORTANT: `webiny` should be run from the root of the Webiny project, and since `api` and `apps` folders are a `sandbox` present in the project root directory, this is the place to run your `webiny` commands from.
 
-6. Begin working on React apps by navigating to `apps/{admin|site}` and run `yarn start`. React apps are regular `create-react-app` apps, slightly modified, but all the CRA rules apply.
+6. Begin working on React apps by navigating to `apps/{admin|website}` and run `yarn start`. React apps are regular `create-react-app` apps, slightly modified, but all the CRA rules apply.
 
 7. Run `watch` on packages you are working on so that your changes are automatically built into the corresponding `dist` folder. React app build will automatically rebuild and hot-reload changes that happen in the `dist` folder of all related packages.
 
@@ -153,9 +153,9 @@ All the tests can be found in the `cypress/integration` folder (in the project r
 
 Try to follow the same structure if you're about to add a new test. Also, make sure to check other tests before creating a new one, just so you're familiar with how we approach writing tests (e.g. we use `@testing-library/cypress` lib to make them more clear).
 
-#### How to test `apps/site` app in the cloud?
+#### How to test `apps/website` app in the cloud?
 
-When deployed to the cloud, the `apps/site` app (which basically represents the public-facing website) is using prerendering and CDN caching in order to improve SEO compatibility and drastically speed up the site, respectively.
+When deployed to the cloud, the `apps/website` app (which basically represents the public-facing website) is using prerendering and CDN caching in order to improve SEO compatibility and drastically speed up the site, respectively.
 
 The problem occurs when you make changes in the Admin, and you want to test that these changes are actually visible on the website. Because of the CDN cache, changes won't be immediately there, but only after 5-10 seconds. In some cases it can take even longer for the page to refresh.
 

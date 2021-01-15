@@ -90,7 +90,7 @@ When you navigate to `packages` you will see around 70 packages.
 
 Now we have headless cms configured, which has its entry point, the one thing we care about is the main GraphQL API. It can take from 3 - 15 minutes to be available. 
 
-- Begin working on React apps by navigating to `apps/{admin|site}` and run `yarn start`.
+- Begin working on React apps by navigating to `apps/{admin|website}` and run `yarn start`.
 
 - React apps are regular `create-react-app` apps, modified, but all the CRA rules apply.
 

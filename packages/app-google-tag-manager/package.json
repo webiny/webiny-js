@@ -6,7 +6,7 @@
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
-  "description": "Initializes Google Tag Manager on your site.",
+  "description": "Initializes Google Tag Manager on your website.",
   "author": "Adrian Smijulj",
   "license": "MIT",
   "dependencies": {
