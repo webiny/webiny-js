@@ -95,7 +95,7 @@ const PBInstaller = ({ onInstalled }) => {
                                 <Bind name="name" validators={validation.create("required")}>
                                     <Input
                                         label={t`Site Name`}
-                                        description={t`Name of your site, eg: "My Site"`}
+                                        description={t`Name of your website, eg: "My Site"`}
                                     />
                                 </Bind>
                             </Cell>

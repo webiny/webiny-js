@@ -1,5 +1,5 @@
 /**
- * Plugins specific to our "site" app.
+ * Plugins specific to the "website" app.
  */
 import linkPreload from "./linkPreload";
 

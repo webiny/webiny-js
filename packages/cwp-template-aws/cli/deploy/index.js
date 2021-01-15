@@ -5,7 +5,7 @@ module.exports = () => ({
         yargs.example("$0 deploy");
         yargs.command(
             "deploy",
-            `Completely deploys the project by deploying the "api", "admin", and "site" stacks, as part of the given environment.`,
+            `Completely deploys the project by deploying the "api", "apps/admin", and "apps/website" applications, into the given environment.`,
             yargs => {
                 yargs.option("env", {
                     describe: `Environment`,

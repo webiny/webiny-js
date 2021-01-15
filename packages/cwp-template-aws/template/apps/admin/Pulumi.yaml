@@ -1,5 +1,5 @@
 name: admin
 runtime: nodejs
-description: The stack that hosts the Webiny Admin app.
+description: Represents cloud infrastructure that hosts your project's Admin area.
 backend:
   url: file://

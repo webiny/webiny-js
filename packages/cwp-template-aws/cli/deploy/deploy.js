@@ -33,7 +33,7 @@ module.exports = async (inputs, context) => {
     installed && console.log();
 
     // 1. Get exports from `site` stack, for `args.env` environment.
-    const siteStackOutput = await getStackOutput("apps/site", env);
+    const siteStackOutput = await getStackOutput("apps/website", env);
     const isFirstDeployment = !siteStackOutput;
     if (isFirstDeployment) {
         context.info(
@@ -85,26 +85,26 @@ module.exports = async (inputs, context) => {
     console.log();
     if (isFirstDeployment) {
         context.info(
-            `Deploying your ${green("public website")} app (${green("apps/site")} stack)...`
+            `Deploying your ${green("public website")} app (${green("apps/website")} stack)...`
         );
         await sleep();
     } else {
-        context.info(`Deploying ${green("apps/site")} stack...`);
+        context.info(`Deploying ${green("apps/website")} stack...`);
     }
 
-    await deploy("apps/site", inputs);
+    await deploy("apps/website", inputs);
 
     if (isFirstDeployment) {
         context.success(`Your ${green("public website")} app was deployed successfully!`);
     } else {
-        context.success(`${green("apps/site")} stack deployed successfully.`);
+        context.success(`${green("apps/website")} stack deployed successfully.`);
     }
 
     const outputs = {
         api: await getStackOutput("api", env),
         apps: {
             admin: await getStackOutput("apps/admin", env),
-            site: await getStackOutput("apps/site", env)
+            site: await getStackOutput("apps/website", env)
         }
     };
 
@@ -139,7 +139,7 @@ module.exports = async (inputs, context) => {
                 `💡 Tip: to deploy stacks separately, use the ${green(
                     "stack deploy"
                 )} command (e.g. ${green(
-                    `yarn webiny stack deploy apps/site --env ${env}`
+                    `yarn webiny stack deploy apps/website --env ${env}`
                 )}). For additional help, please run ${green("yarn webiny --help")}.`
             ].join("\n")
         );

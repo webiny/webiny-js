@@ -80,11 +80,11 @@ const setup = async args => {
         remove = "no_vpc";
     }
 
-    fs.removeSync(path.join(projectRoot, "api", `stack_${remove}`));
+    fs.removeSync(path.join(projectRoot, "api", `pulumi_${remove}`));
     fs.removeSync(path.join(projectRoot, "api", `index_${remove}.ts`));
 
     fs.moveSync(
-        path.join(projectRoot, "api", `stack_${move}`),
+        path.join(projectRoot, "api", `pulumi_${move}`),
         path.join(projectRoot, "api", "stack"),
         { overwrite: true }
     );

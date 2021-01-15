@@ -11,7 +11,7 @@
 context("Admin Installation", () => {
     it("should be able to complete the initial installation wizard", () => {
         // 1. Security installation.
-        cy.visit(Cypress.env("SITE_URL"))
+        cy.visit(Cypress.env("WEBSITE_URL"))
             .wait(2000)
             .findByText("Admin UI")
             .click()
@@ -63,7 +63,7 @@ context("Admin Installation", () => {
         cy.findByText("Value is required.").should("exist");
 
         cy.findByLabelText("Site Name")
-            .type(Cypress.env("SITE_NAME"))
+            .type(Cypress.env("WEBSITE_NAME"))
             .findByTestId("install-pb-button")
             .click()
             .wait(25000); // Wait for the Page Builder installation to finish.

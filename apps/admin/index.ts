@@ -1,5 +1,5 @@
-import App from "./stack/app";
-import Cloudfront from "./stack/cloudfront";
+import App from "./pulumi/app";
+import Cloudfront from "./pulumi/cloudfront";
 
 const app = new App();
 

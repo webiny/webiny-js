@@ -28,8 +28,12 @@ You can use `yarn commit` to commit via `commitizen` or you can commit manually,
 #### ❗️ IMPORTANT NOTE
 Always follow the specification (even though later down the road, your PR might get merged by squashing all commits). Otherwise, the PR will [automatically get rejected](https://github.com/webiny/action-conventional-commits), and you will have to change your commit messages, which can only be done by creating a new PR.
 
+
+![image](https://user-images.githubusercontent.com/5121148/89633328-f9c61a80-d8a3-11ea-9bae-a7dcae9fc60a.png)
+
+
 ##### Additional explanation
-When merging larger PRs, squashing all commits into a single one often doesn't make sense, and in those cases, we are doing a regular merge - without squash. And when that is about to happen, it's important that all commit messages were properly written.
+When merging larger PRs, squashing all commits into a single one often doesn't make sense, and in those cases, we are doing a regular merge or rebase - without squash. And when that is about to happen, it's important that all commit messages were properly written.
 
 ### Pull Requests (PRs)
 
@@ -96,7 +100,7 @@ The setup of the repo is identical to the one created by `create-webiny-project`
 
 > IMPORTANT: `webiny` should be run from the root of the Webiny project, and since `api` and `apps` folders are a `sandbox` present in the project root directory, this is the place to run your `webiny` commands from.
 
-6. Begin working on React apps by navigating to `apps/{admin|site}` and run `yarn start`. React apps are regular `create-react-app` apps, slightly modified, but all the CRA rules apply.
+6. Begin working on React apps by navigating to `apps/{admin|website}` and run `yarn start`. React apps are regular `create-react-app` apps, slightly modified, but all the CRA rules apply.
 
 7. Run `watch` on packages you are working on so that your changes are automatically built into the corresponding `dist` folder. React app build will automatically rebuild and hot-reload changes that happen in the `dist` folder of all related packages.
 
@@ -120,43 +124,42 @@ Before running the tests, make sure you have a working API and app deployed to t
 
 Once you have a working API and app deployed to the cloud, run `yarn setup-cypress --env {env}`. 
  
-This will create a copy of `example.cypress.json` and pull all of the necessary values from the deployment state files you have locally. So, if you open the config file once the command is run, you should have valid values in it (e.g. `SITE_URL` and `API_URL` should have valid URLs assigned).
+This will create a copy of `example.cypress.json` and pull all of the necessary values from the deployment state files you have locally. So, if you open the config file once the command is run, you should have valid values in it (e.g. `WEBSITE_URL` and `API_URL` should have valid URLs assigned).
  
 The `yarn setup-cypress` can take the following args:
 
 ```
-Pass "--env" to specify from which environment in the ".webiny" folder you want to read.
-Pass "--force" if you want to allow overwriting existing cypress.json config file.
+Pass "--env" to specify against which environment you want your Cypress tests to run. Default: "dev".
+Pass "--force" if you want to allow overwriting existing cypress.json config file. Default: `false`.
+Pass "--localhost" to run Cypress tests against locally run apps. Ideal for development. Default: `false`.
 ```
-
-Finally, by default, `prod` environment is used, but you can set it to `local` if you want to run test against locally hosted apps (read the following sections to learn more about running tests against locally hosted apps).
 
 #### Opening the Cypress app
 
-Once you've configured all of the variables, you can run the following command in the project root: `cypress open`. This will open the Cypress app, which will enable you to choose the test you wish to execute. You can run only your test, which is ideal if you're in the process of creating it.
+Once you've configured all the variables, you can run the following command in the project root: `cypress open`. This will open the Cypress app, which will enable you to choose the test you wish to execute. You can run only your test, which is ideal if you're in the process of creating it.
 
 #### Should I run the tests against a local development server or a project deployed to the cloud?
 
 In general, Cypress tests should be ran against a project deployed into the cloud, mainly because of the existing tests that
-are making assertions related to the server side rendering (SSR) and CDN cache invalidations, which is not active in local development.
+are making assertions related to prerendering and CDN cache invalidations, which is not available in local development.
 
 The only problem with this approach is that, if you're in process of creating a new test, and you need to change something in the UI in order to make it easier to test (e.g. adding a "data-testid" attribute to a HTML element), you'll need to redeploy the app, which might get a bit frustrating if your making a lot of changes (since a single deploy can take up to 180s).
 
-But, if your test doesn't involve assertions related to SSR and CDN cache invalidation (e.g. you're testing something in the Admin app), while creating the test, you can actually run it against a locally hosted app (use `--env local` when running `yarn setup-cypress`). This way you'll be able to iterate much faster because the code changes are immediatelly visible in the browser.
+But, if your test doesn't involve assertions related to SSR and CDN cache invalidation (e.g. you're testing something in the Admin app), while creating the test, you can actually run it against a locally hosted app (use `--local` when running `yarn setup-cypress`). This way you'll be able to iterate much faster because the code changes are immediately visible in the browser.
 
 #### Where are tests located?
 
-All of the tests can be found in the `cypress/integration` folder (in the project root). In there, we have two folders - `adminInstallation` and `admin`. The `adminInstallation` folder contains the initial test that clicks through the initial installation process and is always run first in CI. Once that's done, then we can proceed with other tests, located in the `admin` folder. This folder contains tests for apps like Page Builder, Form Builder, Headless CMS, etc.
+All the tests can be found in the `cypress/integration` folder (in the project root). In there, we have two folders - `adminInstallation` and `admin`. The `adminInstallation` folder contains the initial test which clicks through the initial installation process and is always run first in CI. Once that's done, then we can proceed with other tests, located in the `admin` folder. This folder contains tests for apps like Page Builder, Form Builder, Headless CMS, etc.
 
 Try to follow the same structure if you're about to add a new test. Also, make sure to check other tests before creating a new one, just so you're familiar with how we approach writing tests (e.g. we use `@testing-library/cypress` lib to make them more clear).
 
-#### How to test `site` app in the cloud?
+#### How to test `apps/website` app in the cloud?
 
-When deployed to the cloud, the `site` app (which basically represents the public-facing website) is using SSR and CDN caching in order to improve SEO compatibility and drastically speed up the site, respectively.
+When deployed to the cloud, the `apps/website` app (which basically represents the public-facing website) is using prerendering and CDN caching in order to improve SEO compatibility and drastically speed up the site, respectively.
 
 The problem occurs when you make changes in the Admin, and you want to test that these changes are actually visible on the website. Because of the CDN cache, changes won't be immediately there, but only after 5-10 seconds. In some cases it can take even longer for the page to refresh.
 
-The initial "quick" solution was to just use `.wait(30000)` commands in order to wait for the CDN cache to be invalidated. But as you might've noticed, this isn't very effective, since in some cases CDN could be invalidate way before 30 seconds. On the other hand, sometimes 30 seconds wasn't long enough, and the tests would continue making assertions on the old page content, which would result in a failed test.
+The initial "quick" solution was to just use `.wait(30000)` commands in order to wait for the CDN cache to be invalidated. But as you might've noticed, this isn't very effective, since in some cases CDN could be invalidated way before 30 seconds. On the other hand, sometimes 30 seconds wasn't long enough, and the tests would continue making assertions on the old page content, which would result in a failed test.
 
 That's why we've created a custom `reloadUntil` Cypress command. The following code shows a usage example:
 
@@ -173,5 +176,3 @@ The `reloadUntil` command will just reload the page until a condition is met. Af
 The page will be reloaded every ~3 seconds for 60 times. If there are no changes after that, the command will throw an error, and the test will fail.
 
 There are a couple of examples in the existing tests, so feel free to check them out to better understand how it works.
-
-![image](https://user-images.githubusercontent.com/5121148/89633328-f9c61a80-d8a3-11ea-9bae-a7dcae9fc60a.png)

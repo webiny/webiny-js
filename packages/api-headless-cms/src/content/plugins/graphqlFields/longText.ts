@@ -21,20 +21,10 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
 
             return `${field.fieldId}: String`;
         },
-        createListFilters,
-        createResolver({ field }) {
-            return instance => {
-                return instance.values[field.fieldId];
-            };
-        }
+        createListFilters
     },
     manage: {
         createListFilters,
-        createResolver({ field }) {
-            return instance => {
-                return instance.values[field.fieldId];
-            };
-        },
         createTypeField({ field }) {
             if (field.multipleValues) {
                 return field.fieldId + ": [String]";

@@ -7,13 +7,13 @@ module.exports = () => [
         type: "hook-after-deploy",
         name: "hook-after-deploy-pb-update-settings",
         async hook(args, context) {
-            if (args.stack !== "site") {
+            if (args.stack !== "website") {
                 return;
             }
 
             // When the "site" stack is deployed, let's make sure we update Page Builder app's settings
             // with necessary pieces of information. This way the user doesn't have to do this manually.
-            const siteStackDir = path.join(context.paths.projectRoot, "apps", "site");
+            const siteStackDir = path.join(context.paths.projectRoot, "apps", "website");
             const apiStackDir = path.join(context.paths.projectRoot, "api");
 
             const pulumi = new Pulumi();

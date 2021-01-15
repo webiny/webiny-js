@@ -72,11 +72,6 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                 resolvers: {}
             };
         },
-        createResolver({ field }) {
-            return instance => {
-                return instance.values[field.fieldId];
-            };
-        },
         createTypeField({ field }) {
             if (field.multipleValues) {
                 return `${field.fieldId}: [RefField]`;
