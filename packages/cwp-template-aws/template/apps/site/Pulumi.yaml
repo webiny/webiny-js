@@ -1,5 +1,5 @@
-name: site
+name: Public Website
 runtime: nodejs
-description: The stack that hosts your Site app.
+description: Represents cloud infrastructure that hosts your project's public website.
 backend:
   url: file://
