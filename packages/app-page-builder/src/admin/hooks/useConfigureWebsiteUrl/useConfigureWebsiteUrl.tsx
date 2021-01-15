@@ -44,7 +44,8 @@ export const ConfigureWebsiteUrlMessage = ({ websiteUrl }) => {
                 </span>
             ) : (
                 <span>
-                    {t`Either deploy the website by running`} <code>yarn webiny deploy apps/website</code>{" "}
+                    {t`Either deploy the website by running`}{" "}
+                    <code>yarn webiny deploy apps/website</code>{" "}
                 </span>
             )}
             <br />
