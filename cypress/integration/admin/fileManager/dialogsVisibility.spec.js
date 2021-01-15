@@ -2,9 +2,8 @@ context("Account Module", () => {
     beforeEach(() => cy.login());
 
     it("should be able to correctly show image editor and delete image dialogs", () => {
-        cy.visit("/account")
-            .findByText("Select an image")
-            .click();
+        cy.visit("/account");
+        cy.findByText("Select an image").click();
 
         cy.findByTestId("fm-list-wrapper").dropFile("sample.jpeg", "image/jpeg");
         cy.findByText("File upload complete.").should("exist");
