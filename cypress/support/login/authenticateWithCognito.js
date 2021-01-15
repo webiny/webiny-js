@@ -14,32 +14,27 @@ const userPool = new AmazonCognitoIdentity.CognitoUserPool({
     ClientId: AWS_COGNITO.CLIENT_ID
 });
 
-const ID_TOKEN_LOGIN = /* GraphQL */ `
-    mutation IdTokenLogin($idToken: String!) {
+const LOGIN = /* GraphQL */ `
+    mutation Login {
         security {
-            loginUsingIdToken(idToken: $idToken) {
+            login {
                 data {
-                    token
-                    user {
+                    login
+                    access {
                         id
-                        email
-                        fullName
-                        access {
-                            scopes
-                            roles
-                            fullAccess
-                            __typename
-                        }
-                        avatar {
-                            src
-                        }
+                        name
+                        permissions
+                        __typename
                     }
+                    firstName
+                    lastName
+                    avatar
+                    gravatar
+                    __typename
                 }
-                error {
-                    code
-                    message
-                }
+                __typename
             }
+            __typename
         }
     }
 `;
@@ -58,18 +53,9 @@ export default ({ username, password }) => {
     return new Promise((resolve, reject) => {
         const cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
         cognitoUser.authenticateUser(authenticationDetails, {
-            onSuccess: async function(result) {
-                const client = new GraphQLClient(GRAPHQL_API_URL);
-                const webinyToken = await client
-                    .request(ID_TOKEN_LOGIN, {
-                        idToken: result.getIdToken().getJwtToken()
-                    })
-                    .then(response => {
-                        return response.security.loginUsingIdToken.data.token;
-                    });
-                resolve(webinyToken);
-            },
+            onSuccess: resolve,
             onFailure: function(err) {
+                console.log(`An error occurred while executing login command ("cognitoUser.authenticateUser")`, err);
                 reject(err);
             }
         });
