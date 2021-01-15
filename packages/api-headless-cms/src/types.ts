@@ -349,7 +349,8 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          */
         createTypeField(params: { model: CmsContentModel; field: CmsContentModelField }): string;
         /**
-         * Definition for field resolver, which in most cases is simply returning a value from the instance.
+         * Definition for field resolver.
+         * By default it is simple return of the `instance.values[fieldId]` but if required, users can define their own.
          *
          * ```ts
          * read: {
@@ -361,7 +362,7 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          * }
          * ```
          */
-        createResolver(params: {
+        createResolver?(params: {
             models: CmsContentModel[];
             model: CmsContentModel;
             field: CmsContentModelField;
@@ -465,7 +466,8 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          */
         createInputField(params: { model: CmsContentModel; field: CmsContentModelField }): string;
         /**
-         * Definition for field resolver, which in most cases is simply returning a value. Probably the same as `read.createResolver`.
+         * Definition for field resolver.
+         * By default it is simple return of the `instance.values[fieldId]` but if required, users can define their own.
          *
          * ```ts
          * manage: {
@@ -477,7 +479,7 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          * }
          * ```
          */
-        createResolver(params: {
+        createResolver?(params: {
             models: CmsContentModel[];
             model: CmsContentModel;
             field: CmsContentModelField;

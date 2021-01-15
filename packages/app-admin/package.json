@@ -76,7 +76,8 @@
     "ignore": {
       "dependencies": [
         "@svgr/webpack",
-        "@emotion/core"
+        "@emotion/core",
+        "@types/mime"
       ],
       "peerDependencies": [
         "react-dom"
