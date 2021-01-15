@@ -10,7 +10,8 @@ const PROJECT_FOLDER = ".";
 
 const params = {
     env: argv.env || "dev",
-    force: argv.force || false
+    force: argv.force || false,
+    local: argv.local || false
 };
 
 /**
@@ -44,7 +45,9 @@ const params = {
     cypressConfig.env.AWS_COGNITO_CLIENT_ID = apiOutput.cognitoAppClientId;
 
     // If testing with "local" stack, use "localhost" for the app URLs, otherwise fetch from state files.
-    if (params.env === "local") {
+
+
+    if (params.local) {
         const adminUrl = "http://localhost:3001";
         const siteUrl = "http://localhost:3000";
         cypressConfig.env.SITE_URL = siteUrl;
