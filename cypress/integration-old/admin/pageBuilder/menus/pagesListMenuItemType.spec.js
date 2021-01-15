@@ -54,7 +54,7 @@ context("Menus Module", () => {
             .findByText("Save menu")
             .click()
             .findByText("Record saved successfully.")
-            .visit(Cypress.env("SITE_URL"))
+            .visit(Cypress.env("WEBSITE_URL"))
             .reloadUntil(() => {
                 // We wait until the document contains the newly added menu.
                 return Cypress.$(`:contains(${id})`).length;
@@ -97,7 +97,7 @@ context("Menus Module", () => {
             .findByText("Save menu")
             .click()
             .findByText("Record saved successfully.")
-            .visit(Cypress.env("SITE_URL"))
+            .visit(Cypress.env("WEBSITE_URL"))
             .reloadUntil(() => {
                 // We wait until the document contains the newly added menu.
                 return Cypress.$(`:contains(${idEdited})`).length;
@@ -129,7 +129,7 @@ context("Menus Module", () => {
         cy.findByText("Save menu")
             .click()
             .findByText("Record saved successfully.")
-            .visit(Cypress.env("SITE_URL"))
+            .visit(Cypress.env("WEBSITE_URL"))
             .reloadUntil(() => {
                 // We wait until the document contains the newly added menu.
                 return Cypress.$(`:contains(${idEdited})`).length === 0;
