@@ -55,7 +55,10 @@ export default ({ username, password }) => {
         cognitoUser.authenticateUser(authenticationDetails, {
             onSuccess: resolve,
             onFailure: function(err) {
-                console.log(`An error occurred while executing login command ("cognitoUser.authenticateUser")`, err);
+                console.log(
+                    `An error occurred while executing login command ("cognitoUser.authenticateUser")`,
+                    err
+                );
                 reject(err);
             }
         });

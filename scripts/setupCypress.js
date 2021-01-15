@@ -46,7 +46,6 @@ const params = {
 
     // If testing with "local" stack, use "localhost" for the app URLs, otherwise fetch from state files.
 
-
     if (params.localhost) {
         const adminUrl = "http://localhost:3001";
         const siteUrl = "http://localhost:3000";
@@ -66,7 +65,9 @@ const params = {
     await writeJson(cypressConfigPath, cypressConfig);
 
     console.log(
-        `${green('✔')} Created ${green('cypress.json')} config file! To open Cypress, just run ${green('cypress open')} in your terminal.`
+        `${green("✔")} Created ${green(
+            "cypress.json"
+        )} config file! To open Cypress, just run ${green("cypress open")} in your terminal.`
     );
 
     console.log(`Created config:`);
