@@ -19,10 +19,11 @@ export type SimpleModalWrapperProps = { showOverlay: boolean };
 export const SimpleModalWrapper = styled<"div", SimpleModalWrapperProps>("div")(
     ({ showOverlay }) => ({
         position: "absolute",
-        left: "0px",
         top: "0px",
-        width: "426px",
-        minHeight: "340px",
+        left: "50%",
+        width: "90%",
+        height: "auto",
+        maxWidth: "426px",
         maxHeight: "520px",
         overflow: "auto",
         backgroundColor: "var(--mdc-theme-surface)",
@@ -32,7 +33,7 @@ export const SimpleModalWrapper = styled<"div", SimpleModalWrapperProps>("div")(
         pointerEvents: showOverlay ? "auto" : "none",
         zIndex: showOverlay ? 5 : -1,
         opacity: showOverlay ? 1 : 0,
-        transform: showOverlay ? "translateX(64px)" : "none",
+        transform: showOverlay ? "translateX(-50%)" : "none",
 
         "& .input-wrapper": {
             paddingBottom: "16px"
