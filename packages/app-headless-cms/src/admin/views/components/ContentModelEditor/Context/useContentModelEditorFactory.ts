@@ -9,7 +9,7 @@ import {
     CmsEditorFieldsLayout,
     CmsEditorField,
     CmsEditorFieldId,
-    FieldLayoutPositionType,
+    FieldLayoutPosition,
     CmsEditorFieldTypePlugin
 } from "@webiny/app-headless-cms/types";
 
@@ -142,7 +142,7 @@ export default ContentModelEditorContext => {
              * @param data
              * @param position
              */
-            insertField(data: CmsEditorField, position: FieldLayoutPositionType) {
+            insertField(data: CmsEditorField, position: FieldLayoutPosition) {
                 const field = cloneDeep(data);
                 if (!field.id) {
                     field.id = shortid.generate();
@@ -181,7 +181,7 @@ export default ContentModelEditorContext => {
                 position
             }: {
                 field: CmsEditorFieldId | CmsEditorField;
-                position: FieldLayoutPositionType;
+                position: FieldLayoutPosition;
             }) {
                 self.setData(data => {
                     moveField({ field, position, data });

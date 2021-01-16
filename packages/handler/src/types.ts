@@ -2,6 +2,11 @@ import { Plugin, PluginsContainer } from "@webiny/plugins/types";
 
 export type HandlerArgs = any[];
 
+export interface ContextInterface {
+    plugins: PluginsContainer;
+    args: HandlerArgs;
+}
+
 export type Context<
     C0 = Record<string, any>,
     C1 = Record<string, any>,

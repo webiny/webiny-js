@@ -40,7 +40,7 @@ const setContextCmsVariables = async (context: CmsContext): Promise<void> => {
         contentModelLastChange: context.cms.settings.contentModelLastChange
     });
 };
-
+// eslint-disable-next-line
 export default (options: any = {}): ContextPlugin<CmsContext> => ({
     type: "context",
     apply: async context => {
@@ -54,7 +54,6 @@ export default (options: any = {}): ContextPlugin<CmsContext> => ({
             ...(context.cms || ({} as any)),
             type,
             locale,
-            dataManagerFunction: options.dataManagerFunction,
             READ: type === "read",
             PREVIEW: type === "preview",
             MANAGE: type === "manage"

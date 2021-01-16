@@ -7,8 +7,7 @@ import {
     CmsContext,
     CmsSettingsContext,
     CmsSettingsPermission,
-    CmsSettings,
-    DbItemTypes
+    CmsSettings
 } from "../../types";
 
 const initialContentModelGroup = {
@@ -106,7 +105,7 @@ export default {
                     data: {
                         PK: PK_SETTINGS(),
                         SK: SETTINGS_SECONDARY_KEY,
-                        TYPE: DbItemTypes.CMS_SETTINGS,
+                        TYPE: "cms.settings",
                         ...model
                     }
                 });
