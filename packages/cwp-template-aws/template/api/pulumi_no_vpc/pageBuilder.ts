@@ -6,7 +6,7 @@ class PageBuilder {
     functions: {
         updateSettings: aws.lambda.Function;
     };
-    constructor({ dbTable }: { dbTable: aws.dynamodb.Table }) {
+    constructor({ env }: { env: Record<string, any> }) {
         const updateSettings = new aws.lambda.Function("pb-update-settings", {
             role: defaultLambdaRole.role.arn,
             runtime: "nodejs12.x",
@@ -20,7 +20,7 @@ class PageBuilder {
             }),
             environment: {
                 variables: {
-                    DB_TABLE: dbTable.name
+                    ...env
                 }
             }
         });
