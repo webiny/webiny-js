@@ -32,6 +32,18 @@ import urlFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators
 import lowerCaseFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/patternPlugins/lowerCase";
 import upperCaseFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/patternPlugins/upperCase";
 
+import editorGteFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/gte";
+import editorInValidatorFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/in";
+import editorLteFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/lte";
+import editorRequiredFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/required";
+import editorMinLengthFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/minLength";
+import editorMaxLengthFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/maxLength";
+import editorPatternFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/pattern";
+import editorEmailFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/patternPlugins/email";
+import editorUrlFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/patternPlugins/url";
+import editorLowerCaseFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/patternPlugins/lowerCase";
+import editorUpperCaseFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/patternPlugins/upperCase";
+
 import welcomeScreenWidget from "@webiny/app-headless-cms/admin/plugins/welcomeScreenWidget";
 
 import richTextEditor from "./headlessCMS/richTextEditor";
@@ -69,5 +81,16 @@ export default [
     urlFieldValidator,
     lowerCaseFieldValidator,
     upperCaseFieldValidator,
+    editorGteFieldValidator,
+    editorInValidatorFieldValidator,
+    editorLteFieldValidator,
+    editorRequiredFieldValidator,
+    editorMinLengthFieldValidator,
+    editorMaxLengthFieldValidator,
+    editorPatternFieldValidator,
+    editorEmailFieldValidator,
+    editorUrlFieldValidator,
+    editorLowerCaseFieldValidator,
+    editorUpperCaseFieldValidator,
     welcomeScreenWidget
 ];

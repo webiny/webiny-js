@@ -6,8 +6,9 @@ import {
 } from "@webiny/app-headless-cms/types";
 import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
-import getValue from "./functions/getValue";
-import setValue from "./functions/setValue";
+import { getValue } from "./functions/getValue";
+import { setValue } from "./functions/setValue";
+import { createValidators } from "./functions/createValidators";
 import Label from "./components/Label";
 
 const t = i18n.ns("app-headless-cms/admin/components/content-form");
@@ -41,10 +42,10 @@ const RenderFieldElement = (props: {
                 defaultValue = [];
                 validators = field.multipleValuesValidation;
                 if (index >= 0) {
-                    validators = field.validation;
+                    validators = createValidators(field.validation);
                 }
             } else {
-                validators = field.validation;
+                validators = createValidators(field.validation);
             }
 
             memoizedBindComponents.current[memoKey] = function Bind({ children }) {
@@ -78,6 +79,9 @@ const RenderFieldElement = (props: {
                                             ];
 
                                             setValue({ value, bind, field, index: -1 });
+                                            
+                                            // To make sure the field is still valid, we must trigger validation. 
+                                            bind.form.validateInput(field.fieldId);
                                         }
                                     };
                                 } else {

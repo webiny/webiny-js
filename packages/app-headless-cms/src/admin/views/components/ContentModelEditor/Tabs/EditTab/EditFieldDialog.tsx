@@ -10,6 +10,7 @@ import { getPlugins } from "@webiny/plugins";
 import GeneralTab from "./EditFieldDialog/GeneralTab";
 import AppearanceTab from "./EditFieldDialog/AppearanceTab";
 import PredefinedValues from "./EditFieldDialog/PredefinedValues";
+import ValidatorsTab from "./EditFieldDialog/ValidatorsTab";
 import { useContentModelEditor } from "../../../../../views/components/ContentModelEditor/Context";
 
 const t = i18n.namespace("app-headless-cms/admin/components/editor");
@@ -100,17 +101,16 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
                                         )}
                                     </Tab>
 
-                                    {/* TODO: Add validators functionality.
-                                {Array.isArray(fieldPlugin.field.validators) &&
-                                    fieldPlugin.field.validators.length > 0 && (
-                                        <Tab label={"Validators"}>
-                                            <ValidatorsTab
-                                                form={form}
-                                                field={current}
-                                                fieldPlugin={fieldPlugin}
-                                            />
-                                        </Tab>
-                                    )}*/}
+                                    {Array.isArray(fieldPlugin.field.validators) &&
+                                        fieldPlugin.field.validators.length > 0 && (
+                                            <Tab label={"Validators"}>
+                                                <ValidatorsTab
+                                                    form={form}
+                                                    field={current}
+                                                    fieldPlugin={fieldPlugin}
+                                                />
+                                            </Tab>
+                                        )}
                                     <Tab label={t`Appearance`}>
                                         <AppearanceTab
                                             form={form}

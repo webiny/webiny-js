@@ -324,7 +324,7 @@ export interface CmsContentDetailsRevisionContentPlugin extends Plugin {
     render(params: any): ReactElement;
 }
 
-export interface CmsFormFieldPatternValidatorPlugin extends Plugin {
+export interface CmsEditorFieldValidatorPatternPlugin extends Plugin {
     type: "cms-editor-field-validator-pattern";
     pattern: {
         name: string;
@@ -333,17 +333,46 @@ export interface CmsFormFieldPatternValidatorPlugin extends Plugin {
     };
 }
 
-export interface CmsFormFieldValidator {
+export interface CmsFieldValidator {
     name: string;
     message: any;
     settings: any;
 }
 
-export interface CmsFormFieldValidatorPlugin extends Plugin {
-    type: "form-field-validator";
+export interface CmsModelFieldValidatorPlugin extends Plugin {
+    type: "cms-model-field-validator";
     validator: {
         name: string;
-        validate: (value: any, validator: CmsFormFieldValidator) => Promise<any>;
+        validate: (value: any, validator: CmsFieldValidator) => Promise<any>;
+    };
+}
+
+/**
+ * @category Plugin
+ * @category ContentModelField
+ * @category FieldValidation
+ */
+export interface CmsModelFieldValidatorPatternPlugin extends Plugin {
+    /**
+     * A plugin type
+     */
+    type: "cms-model-field-validator-pattern";
+    /**
+     * A pattern object for the validator.
+     */
+    pattern: {
+        /**
+         * name of the pattern.
+         */
+        name: string;
+        /**
+         * RegExp of the validator.
+         */
+        regex: string;
+        /**
+         * RegExp flags
+         */
+        flags: string;
     };
 }
 
@@ -353,7 +382,7 @@ export interface FieldLayoutPosition {
 }
 
 export interface CmsEditorFormSettingsPlugin extends Plugin {
-    type: "content-model-editor-form-settings";
+    type: "cms-editor-form-settings";
     title: string;
     description: string;
     icon: React.ReactElement;

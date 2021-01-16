@@ -1,12 +1,7 @@
 import React from "react";
 import { cloneDeep, pick } from "lodash";
-import { plugins } from "@webiny/plugins";
 import { ContentFormRender } from "./ContentFormRender";
-
-import {
-    CmsContentModelFormProps,
-    CmsFormFieldValidatorPlugin
-} from "@webiny/app-headless-cms/types";
+import { CmsContentModelFormProps } from "@webiny/app-headless-cms/types";
 
 export const ContentModelForm: React.FC<CmsContentModelFormProps> = props => {
     const { contentModel: contentModelRaw } = props;
@@ -27,47 +22,9 @@ export const ContentModelForm: React.FC<CmsContentModelFormProps> = props => {
             returnFields = [...fields.map(item => [item.id])];
         }
 
-        const validatorPlugins: CmsFormFieldValidatorPlugin[] = plugins.byType(
-            "form-field-validator"
-        );
-
         returnFields.forEach(row => {
             row.forEach((id, idIndex) => {
                 row[idIndex] = getFieldById(id);
-
-                if (Array.isArray(row[idIndex].validation)) {
-                    row[idIndex].validators = row[idIndex].validation
-                        .map(item => {
-                            const validatorPlugin = validatorPlugins.find(
-                                plugin => plugin.validator.name === item.name
-                            );
-
-                            if (
-                                !validatorPlugin ||
-                                typeof validatorPlugin.validator.validate !== "function"
-                            ) {
-                                return;
-                            }
-
-                            return async value => {
-                                let isInvalid;
-                                try {
-                                    const result = await validatorPlugin.validator.validate(
-                                        value,
-                                        item
-                                    );
-                                    isInvalid = result === false;
-                                } catch (e) {
-                                    isInvalid = true;
-                                }
-
-                                if (isInvalid) {
-                                    throw new Error(item.message);
-                                }
-                            };
-                        })
-                        .filter(Boolean);
-                }
             });
         });
 

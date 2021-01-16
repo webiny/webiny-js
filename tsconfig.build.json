@@ -148,7 +148,7 @@
     "**jest**",
     "./packages/cli**",
     "./packages/create-webiny-project",
-    "./packages/cwp-template-aws",
+    "./packages/cwp-template-aws/**",
     "./packages/project-utils",
     "./packages/tracking",
     "./webiny.root.js"
