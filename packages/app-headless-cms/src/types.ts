@@ -41,6 +41,17 @@ export interface CmsEditorFieldTypePlugin extends Plugin {
          */
         validators?: string[];
         /**
+         * A list of available validators when a model field accepts a list (array) of values.
+         *
+         * ```ts
+         * listValidators: [
+         *     "minLength",
+         *     "maxLength"
+         * ]
+         * ```
+         */
+        listValidators?: string[];
+        /**
          * An explanation of the field displayed beneath the label.
          *
          * ```ts
@@ -228,7 +239,7 @@ export type CmsEditorField<T = unknown> = T & {
     helpText?: string;
     placeholderText?: string;
     validation?: CmsEditorFieldValidator[];
-    multipleValuesValidation?: CmsEditorFieldValidator[];
+    listValidation?: CmsEditorFieldValidator[];
     multipleValues?: boolean;
     predefinedValues?: {
         enabled: boolean;

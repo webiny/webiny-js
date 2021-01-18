@@ -3,7 +3,7 @@ import { CmsModelFieldValidatorPatternPlugin } from "@webiny/app-headless-cms/ty
 
 export default {
     type: "cms-model-field-validator",
-    name: "cms-field-validator-pattern",
+    name: "cms-model-field-validator-pattern",
     validator: {
         name: "pattern",
         validate: (value, validator) => {

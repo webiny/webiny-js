@@ -127,6 +127,12 @@ export interface CmsContentModelField {
      */
     validation: CmsContentModelFieldValidation[];
     /**
+     * List of validations for the list of values, when a field is set to accept a list of values.
+     * These validations will be applied to the entire list, and `validation` (see above) will be applied 
+     * to each individual value in the list.
+     */
+    listValidation: CmsContentModelFieldValidation[];
+    /**
      * Are multiple values allowed?
      */
     multipleValues: boolean;

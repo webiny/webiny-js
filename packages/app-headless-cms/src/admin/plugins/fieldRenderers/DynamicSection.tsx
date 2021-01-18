@@ -4,6 +4,7 @@ import { i18n } from "@webiny/app/i18n";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { ButtonDefault } from "@webiny/ui/Button";
 import { CmsEditorField } from "@webiny/app-headless-cms/types";
+import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -22,7 +23,7 @@ type Props = {
     emptyValue?: any;
 };
 
-const DynamicListMultipleValues = ({ field, getBind, Label, children, emptyValue = "" }: Props) => {
+const DynamicSection = ({ field, getBind, Label, children, emptyValue = "" }: Props) => {
     const Bind = getBind();
     const FirstFieldBind = getBind(0);
 
@@ -35,7 +36,6 @@ const DynamicListMultipleValues = ({ field, getBind, Label, children, emptyValue
                     <Grid>
                         <Cell span={12}>
                             {field.label && <Label>{field.label}</Label>}
-
                             <FirstFieldBind>
                                 {bindIndex =>
                                     children({
@@ -64,6 +64,14 @@ const DynamicListMultipleValues = ({ field, getBind, Label, children, emptyValue
                                 </Cell>
                             );
                         })}
+
+                        {bindField.validation.isValid === false && (
+                            <Cell span={12}>
+                                <FormElementMessage error>
+                                    {bindField.validation.message}
+                                </FormElementMessage>
+                            </Cell>
+                        )}
                         <Cell span={12} className={style.addButton}>
                             <ButtonDefault
                                 disabled={value[0] === undefined}
@@ -77,4 +85,4 @@ const DynamicListMultipleValues = ({ field, getBind, Label, children, emptyValue
     );
 };
 
-export default DynamicListMultipleValues;
+export default DynamicSection;

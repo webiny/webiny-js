@@ -5,13 +5,21 @@ import { Dialog, DialogContent, DialogTitle, DialogActions, DialogButton } from 
 import { Form } from "@webiny/form";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
 import { i18n } from "@webiny/app/i18n";
-import { CmsEditorField, CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
-import { getPlugins } from "@webiny/plugins";
+import {
+    CmsEditorField,
+    CmsEditorFieldRendererPlugin,
+    CmsEditorFieldTypePlugin,
+    CmsEditorFieldValidatorPlugin
+} from "@webiny/app-headless-cms/types";
+import { getPlugins, plugins } from "@webiny/plugins";
 import GeneralTab from "./EditFieldDialog/GeneralTab";
 import AppearanceTab from "./EditFieldDialog/AppearanceTab";
 import PredefinedValues from "./EditFieldDialog/PredefinedValues";
 import ValidatorsTab from "./EditFieldDialog/ValidatorsTab";
 import { useContentModelEditor } from "../../../../../views/components/ContentModelEditor/Context";
+import { Grid, Cell } from "@webiny/ui/Grid";
+import { Typography } from "@webiny/ui/Typography";
+import { Elevation } from "@webiny/ui/Elevation";
 
 const t = i18n.namespace("app-headless-cms/admin/components/editor");
 
@@ -27,6 +35,62 @@ type EditFieldDialogProps = {
     onClose: Function;
     onSubmit: (data: any) => void;
 };
+
+const getValidators = (
+    fieldPlugin: CmsEditorFieldTypePlugin,
+    key: string,
+    defaultValidators: string[] = []
+) => {
+    return plugins
+        .byType<CmsEditorFieldValidatorPlugin>("cms-editor-field-validator")
+        .map(plugin => plugin.validator)
+        .map(validator => {
+            const allowedValidators = fieldPlugin.field[key] || defaultValidators;
+            if (allowedValidators.includes(validator.name)) {
+                return { optional: true, validator };
+            } else if (allowedValidators.includes(`!${validator.name}`)) {
+                return { optional: false, validator };
+            }
+
+            return null;
+        })
+        .filter(Boolean)
+        .sort((a, b) => {
+            if (!a.optional && b.optional) {
+                return -1;
+            }
+
+            if (a.optional && !b.optional) {
+                return 1;
+            }
+
+            return 0;
+        });
+};
+
+const getListValidators = (fieldPlugin: CmsEditorFieldTypePlugin) => {
+    return getValidators(fieldPlugin, "listValidators", ["minLength", "maxLength"]);
+};
+
+const getFieldValidators = (fieldPlugin: CmsEditorFieldTypePlugin) => {
+    return getValidators(fieldPlugin, "validators");
+};
+
+const fieldEditorDialog = css({
+    width: "100vw",
+    height: "100vh",
+    ".mdc-dialog__surface": {
+        maxWidth: "100% !important",
+        maxHeight: "100% !important",
+        ".webiny-ui-dialog__content": {
+            maxWidth: "100% !important",
+            maxHeight: "100% !important",
+            width: "100vw",
+            height: "calc(100vh - 155px)",
+            paddingTop: "0 !important"
+        }
+    }
+});
 
 const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) => {
     const [current, setCurrent] = useState(null);
@@ -101,13 +165,66 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
                                         )}
                                     </Tab>
 
-                                    {Array.isArray(fieldPlugin.field.validators) &&
+                                    {form.data.multipleValues && (
+                                        <Tab label={"Validators"}>
+                                            <Grid>
+                                                <Cell span={12}>
+                                                    <Typography use={"headline5"}>
+                                                        List validators
+                                                    </Typography>
+                                                    <br />
+                                                    <Typography use={"body2"}>
+                                                        These validators are applied to the entire
+                                                        list of values.
+                                                    </Typography>
+                                                </Cell>
+                                                <Cell span={12}>
+                                                    <Elevation z={2}>
+                                                        <ValidatorsTab
+                                                            name={"listValidation"}
+                                                            validators={getListValidators(
+                                                                fieldPlugin
+                                                            )}
+                                                            form={form}
+                                                        />
+                                                    </Elevation>
+                                                </Cell>
+                                            </Grid>
+
+                                            <Grid>
+                                                <Cell span={12}>
+                                                    <Typography use={"headline5"}>
+                                                        Individual value validators
+                                                    </Typography>
+                                                    <br />
+                                                    <Typography use={"body2"}>
+                                                        These validators are applied to each value
+                                                        in the list.
+                                                    </Typography>
+                                                </Cell>
+                                                <Cell span={12}>
+                                                    <Elevation z={2}>
+                                                        <ValidatorsTab
+                                                            form={form}
+                                                            name={"validation"}
+                                                            validators={getFieldValidators(
+                                                                fieldPlugin
+                                                            )}
+                                                        />
+                                                    </Elevation>
+                                                </Cell>
+                                            </Grid>
+                                        </Tab>
+                                    )}
+
+                                    {!form.data.multipleValues &&
+                                        Array.isArray(fieldPlugin.field.validators) &&
                                         fieldPlugin.field.validators.length > 0 && (
                                             <Tab label={"Validators"}>
                                                 <ValidatorsTab
                                                     form={form}
-                                                    field={current}
-                                                    fieldPlugin={fieldPlugin}
+                                                    name={"validation"}
+                                                    validators={getFieldValidators(fieldPlugin)}
                                                 />
                                             </Tab>
                                         )}
@@ -143,6 +260,7 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
             open={!!current}
             onClose={onClose}
             data-testid={"cms-editor-edit-fields-dialog"}
+            className={fieldEditorDialog}
         >
             <DialogTitle>{headerTitle}</DialogTitle>
             {render}

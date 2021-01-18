@@ -4,7 +4,7 @@ import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
 import { Input } from "@webiny/ui/Input";
 import { i18n } from "@webiny/app/i18n";
 import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/close.svg";
-import DynamicListMultipleValues from "./../DynamicListMultipleValues";
+import DynamicSection from "../DynamicSection";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -24,7 +24,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
         },
         render(props) {
             return (
-                <DynamicListMultipleValues {...props}>
+                <DynamicSection {...props}>
                     {({ bind, index }) => (
                         <Input
                             {...bind.index}
@@ -44,7 +44,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
                             }
                         />
                     )}
-                </DynamicListMultipleValues>
+                </DynamicSection>
             );
         }
     }

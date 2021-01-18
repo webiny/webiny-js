@@ -1,6 +1,6 @@
 export default {
-    type: "cms-field-validator-pattern",
-    name: "cms-field-validator-pattern-lower-case",
+    type: "cms-model-field-validator-pattern",
+    name: "cms-model-field-validator-pattern-lower-case",
     pattern: {
         name: "lowerCase",
         regex: `^([a-z]*)$`,

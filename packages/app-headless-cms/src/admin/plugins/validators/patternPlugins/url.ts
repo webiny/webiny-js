@@ -1,6 +1,6 @@
 export default {
-    type: "cms-field-validator-pattern",
-    name: "cms-field-validator-pattern-url",
+    type: "cms-model-field-validator-pattern",
+    name: "cms-model-field-validator-pattern-url",
     pattern: {
         name: "url",
         regex:
