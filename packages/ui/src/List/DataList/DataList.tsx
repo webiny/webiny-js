@@ -126,16 +126,7 @@ const scrollList = css({
 
 const dataListContent = css({
     position: "relative",
-    height: "100%",
-    "&.loading": {
-        paddingBottom: 95
-    }
-});
-
-const inlineLoaderText = css({
-    display: "block",
-    width: "100%",
-    textAlign: "center"
+    height: "100%"
 });
 
 // This was copied from "./types" so that it can be outputted in docs.
@@ -196,8 +187,6 @@ type Props = {
     modalOverlay?: React.ReactElement;
     // Provide an action element that handle toggling the "Modal overlay".
     modalOverlayAction?: React.ReactElement;
-    // A loading message for paginated list.
-    loadingMessage?: string;
 };
 
 const MultiSelectAll = (props: Props) => {
@@ -352,25 +341,11 @@ const Search = (props: Props) => {
     return <Cell span={7}>{React.cloneElement(props.search, props)}</Cell>;
 };
 
-const ListInlineLoader = ({ message }: { message: string }) => {
-    return (
-        <ListItem>
-            <Typography use={"overline"} className={inlineLoaderText}>
-                {message}
-            </Typography>
-        </ListItem>
-    );
-};
-
 export const DataList = (props: Props) => {
     let render = null;
-    let renderInlineLoader = null;
     const renderChildren = typeof props.children === "function" ? props.children(props) : null;
 
-    if (props.loading && props.data.length) {
-        render = renderChildren;
-        renderInlineLoader = <ListInlineLoader message={props.loadingMessage} />;
-    } else if (props.loading) {
+    if (props.loading) {
         render = props.loader;
     } else if (isEmpty(props.data)) {
         render = props.noData;
@@ -409,9 +384,8 @@ export const DataList = (props: Props) => {
                     </Grid>
                 )}
 
-                <div className={classNames(dataListContent, { loading: props.loading })}>
+                <div className={dataListContent}>
                     {render}
-                    {renderInlineLoader}
                     {props.modalOverlay}
                 </div>
             </ListContainer>
@@ -443,8 +417,7 @@ DataList.defaultProps = {
         pagination: true,
         sorters: true,
         filters: true
-    },
-    loadingMessage: "Loading..."
+    }
 };
 
 export type ScrollListProps = ListProps & {
