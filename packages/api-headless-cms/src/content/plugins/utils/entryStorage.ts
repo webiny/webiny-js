@@ -101,12 +101,6 @@ const entryFieldStorageTransformFactory = (
         const plugin = plugins[field.type];
         if (!plugin) {
             return value;
-        } else if (typeof plugin[operation] !== "function") {
-            throw new WebinyError(
-                `Missing function "${operation}" in plugin "${plugin.name ||
-                    "unknown"}" for field type "${plugin.fieldType}".`,
-                "STORAGE_MAPPING_ERROR"
-            );
         }
         return await plugin[operation]({
             field,
@@ -155,7 +149,6 @@ interface EntryFieldFromStorageTransformArgs {
 }
 /*
  * A function that is used to transform a single field from storage
- * in 99% cases this is going to be used since transformation is done when resolving the field
  */
 export const entryFieldFromStorageTransform = async (
     args: EntryFieldFromStorageTransformArgs
