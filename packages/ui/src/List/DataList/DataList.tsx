@@ -26,6 +26,7 @@ import { PaginationProp, SortersProp } from "./types";
 
 const ListContainer = styled("div")({
     position: "relative",
+    height: "100%",
     ".mdc-list": {
         paddingBottom: 0,
         paddingTop: 0
@@ -123,6 +124,11 @@ const scrollList = css({
     height: "calc(100vh - 235px)"
 });
 
+const dataListContent = css({
+    position: "relative",
+    height: "100%"
+});
+
 // This was copied from "./types" so that it can be outputted in docs.
 type Props = {
     // Pass a function to take full control of list render.
@@ -178,6 +184,10 @@ type Props = {
     extraOptions?: React.ReactNode;
     // Provide search UI that will be shown in the top left corner.
     search?: React.ReactElement;
+    // Provide simple modal UI that will be shown over the list content.
+    modalOverlay?: React.ReactElement;
+    // Provide an action element that handle toggling the "Modal overlay".
+    modalOverlayAction?: React.ReactElement;
 };
 
 const MultiSelectAll = (props: Props) => {
@@ -329,7 +339,7 @@ const Search = (props: Props) => {
     if (!props.search) {
         return null;
     }
-    return <Cell span={6}>{React.cloneElement(props.search, props)}</Cell>;
+    return <Cell span={7}>{React.cloneElement(props.search, props)}</Cell>;
 };
 
 export const DataList = (props: Props) => {
@@ -362,20 +372,25 @@ export const DataList = (props: Props) => {
             {Object.keys(props.showOptions).length > 0 && (
                 <Grid className={listSubHeader}>
                     <Search {...props} />
-                    <Cell span={props.search ? 6 : 12} style={{ justifySelf: "end" }}>
+                    <Cell span={props.search ? 5 : 12} style={{ justifySelf: "end" }}>
                         <MultiSelectAll {...props} />
                         {props.showOptions.refresh && <RefreshButton {...props} />}
                         {props.showOptions.pagination && <Pagination {...props} />}
                         {props.showOptions.sorters && <Sorters {...props} />}
                         {props.showOptions.filters && <Filters {...props} />}
+                        {props.modalOverlayAction ? (
+                            <ListHeaderItem>{props.modalOverlayAction}</ListHeaderItem>
+                        ) : null}
                         <MultiSelectActions {...props} />
                     </Cell>
                 </Grid>
             )}
 
             {props.extraOptions ? props.extraOptions : null}
-
-            {render}
+            <div className={dataListContent}>
+                {render}
+                {props.modalOverlay}
+            </div>
         </ListContainer>
     );
 };
