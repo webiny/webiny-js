@@ -33,7 +33,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
                     {({ bind, index }) => {
                         const trailingIcon = index > 0 && {
                             icon: <DeleteIcon />,
-                            onClick: bind.index.removeValue
+                            onClick: () => bind.field.removeValue(index)
                         };
 
                         if (field.settings.type === "dateTimeWithoutTimezone") {

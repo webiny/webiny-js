@@ -55,7 +55,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
                             {index > 0 && (
                                 <IconButton
                                     icon={<DeleteIcon />}
-                                    onClick={bind.index.removeValue}
+                                    onClick={() => bind.field.removeValue(index)}
                                 />
                             )}
                             <RichTextEditor

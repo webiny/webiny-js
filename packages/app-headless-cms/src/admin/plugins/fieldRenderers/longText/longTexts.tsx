@@ -34,7 +34,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
                             trailingIcon={
                                 index > 0 && {
                                     icon: <DeleteIcon />,
-                                    onClick: bind.index.removeValue
+                                    onClick: () => bind.field.removeValue(index)
                                 }
                             }
                         />
