@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import classNames from "classnames";
 import { i18n } from "@webiny/app/i18n";
 import { useRouter } from "@webiny/react-router";
@@ -12,26 +12,26 @@ import {
     DataList,
     DataListModalOverlay,
     DataListModalOverlayAction,
-    ScrollList,
     ListItem,
-    ListItemText,
     ListItemMeta,
-    ListTextOverline,
-    ListItemTextSecondary
+    ListItemText,
+    ListItemTextSecondary,
+    ListTextOverline
 } from "@webiny/ui/List";
 import { Typography } from "@webiny/ui/Typography";
 import { css } from "emotion";
 import { Form } from "@webiny/form";
 import { Select } from "@webiny/ui/Select";
 import { LIST_CATEGORIES } from "./../Categories/graphql";
-import { Grid, Cell } from "@webiny/ui/Grid";
+import { Cell, Grid } from "@webiny/ui/Grid";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
+import { Scrollbar } from "@webiny/ui/Scrollbar";
 import statusesLabels from "@webiny/app-page-builder/admin/constants/pageStatusesLabels";
 import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
-import { serializeSorters, deserializeSorters } from "../utils";
+import { deserializeSorters, serializeSorters } from "../utils";
 
 const t = i18n.ns("app-page-builder/admin/pages/data-list");
 const rightAlign = css({
@@ -61,18 +61,20 @@ const sorters = [
     }
 ];
 
+const removeDuplicates = (page, index, arr) => arr.findIndex(item => item.id === page.id) === index;
+
 type PagesDataListProps = {
     onCreatePage: (event?: React.SyntheticEvent) => void;
     canCreate: boolean;
 };
 const PagesDataList = ({ onCreatePage, canCreate }: PagesDataListProps) => {
+    const [pageList, setPageList] = useState([]);
     const [filter, setFilter] = useState("");
     const { history, location } = useRouter();
     const query = new URLSearchParams(location.search);
 
     const [where, setWhere] = useState({});
     const [sort, setSort] = useState({ createdOn: "desc" });
-    const [limit, setLimit] = useState(10);
     const [page, setPage] = useState(1);
     const search = {
         query: query.get("search") || undefined
@@ -101,7 +103,6 @@ const PagesDataList = ({ onCreatePage, canCreate }: PagesDataListProps) => {
     const variables = {
         where,
         sort,
-        limit,
         page,
         search
     };
@@ -114,14 +115,32 @@ const PagesDataList = ({ onCreatePage, canCreate }: PagesDataListProps) => {
     // Needs to be refactored. Possibly, with our own GQL client, this is going to be much easier to handle.
     localStorage.setItem("wby_pb_pages_list_latest_variables", JSON.stringify(variables));
 
-    const data = get(listQuery, "data.pageBuilder.listPages.data", []);
-    const meta = get(listQuery, "data.pageBuilder.listPages.meta", {});
+    const pageListData = get(listQuery, "data.pageBuilder.listPages.data", []);
+    // Update "page list"
+    useEffect(() => {
+        if (pageListData.length) {
+            setPageList(prevState => [...prevState, ...pageListData].filter(removeDuplicates));
+        }
+    }, [pageListData]);
+
     const selectedPageId = new URLSearchParams(location.search).get("id");
 
     const categoriesQuery = useQuery(LIST_CATEGORIES);
     const categoriesData = get(categoriesQuery, "data.pageBuilder.listCategories.data", []);
 
     const loading = [listQuery].find(item => item.loading);
+    // Load more pages on page list scroll
+    const loadMoreOnScroll = useCallback(
+        debounce(({ scrollFrame, page }) => {
+            if (scrollFrame.top > 0.9) {
+                const meta = get(listQuery, "data.pageBuilder.listPages.meta", {});
+                if (meta.nextPage) {
+                    setPage(page + 1);
+                }
+            }
+        }, 500),
+        [listQuery]
+    );
 
     const pagesDataListModalOverlay = useMemo(
         () => (
@@ -213,15 +232,7 @@ const PagesDataList = ({ onCreatePage, canCreate }: PagesDataListProps) => {
                     </ButtonSecondary>
                 ) : null
             }
-            data={data}
-            pagination={{
-                perPageOptions: [10, 25, 50],
-                setPerPage: setLimit,
-                hasNextPage: meta.nextPage,
-                hasPreviousPage: meta.previousPage,
-                setNextPage: () => setPage(page + 1),
-                setPreviousPage: () => setPage(page - 1)
-            }}
+            data={pageList}
             search={
                 <SearchUI value={filter} onChange={setFilter} inputPlaceholder={t`Search pages`} />
             }
@@ -231,9 +242,10 @@ const PagesDataList = ({ onCreatePage, canCreate }: PagesDataListProps) => {
                     icon={<FilterIcon className={classNames({ [activeIcon]: !isEmpty(sort) })} />}
                 />
             }
+            loadingMessage={t`Loading more pages...`}
         >
             {({ data }) => (
-                <ScrollList>
+                <Scrollbar onScrollFrame={scrollFrame => loadMoreOnScroll({ scrollFrame, page })}>
                     {data.map(page => (
                         <ListItem key={page.id} selected={page.id === selectedPageId}>
                             <ListItemText
@@ -260,7 +272,7 @@ const PagesDataList = ({ onCreatePage, canCreate }: PagesDataListProps) => {
                             </ListItemMeta>
                         </ListItem>
                     ))}
-                </ScrollList>
+                </Scrollbar>
             )}
         </DataList>
     );
