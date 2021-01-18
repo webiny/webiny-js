@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useContext } from "react";
 import styled from "@emotion/styled";
+import { DataListModalOverlayContext } from "./DataListModalOverlayContext";
 
 export type SimpleOverlayProps = { showOverlay: boolean };
 export const SimpleOverlay = styled<"div", SimpleOverlayProps>("div")(({ showOverlay }) => ({
@@ -60,31 +61,28 @@ export const DataListModalWrapper = styled<"div", DataListModalWrapperProps>("di
 
 export type DataListModalOverlayProps = {
     /*
-     * This function is called whenever the user hits "Escape" or clicks outside the dialog.
-     * It's important to close the dialog "onDismiss".
+     * This function is called after closing the modal overlay.
      */
     onDismiss?: (event?: React.SyntheticEvent) => void;
-    /*
-     * Controls whether or not the dialog is open.
-     */
-    isOpen: boolean;
     /*
      * Accepts any renderable content.
      */
     children: React.ReactNode;
 };
 
-export const DataListModalOverlay = ({
-    onDismiss,
-    isOpen,
-    children
-}: DataListModalOverlayProps) => {
+export const DataListModalOverlay = ({ onDismiss, children }: DataListModalOverlayProps) => {
+    const { isOpen, setIsOpen } = useContext(DataListModalOverlayContext);
     return (
         <React.Fragment>
             <SimpleOverlay
                 onClick={e => {
                     e.stopPropagation();
-                    onDismiss();
+                    // Close the modal.
+                    setIsOpen(false);
+
+                    if (typeof onDismiss === "function") {
+                        onDismiss();
+                    }
                 }}
                 showOverlay={isOpen}
             />
