@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import classNames from "classnames";
+import styled from "@emotion/styled";
 import { i18n } from "@webiny/app/i18n";
 import { useRouter } from "@webiny/react-router";
 import { useQuery } from "react-apollo";
@@ -42,6 +43,17 @@ const activeIcon = css({
         color: "var(--mdc-theme-primary)"
     }
 });
+const InlineLoaderWrapper = styled("div")({
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    height: 40,
+    backgroundColor: "var(--mdc-theme-surface)"
+});
 const sorters = [
     {
         label: t`Newest to oldest`,
@@ -61,21 +73,18 @@ const sorters = [
     }
 ];
 
-const removeDuplicates = (page, index, arr) => arr.findIndex(item => item.id === page.id) === index;
-
 type PagesDataListProps = {
     onCreatePage: (event?: React.SyntheticEvent) => void;
     canCreate: boolean;
 };
 const PagesDataList = ({ onCreatePage, canCreate }: PagesDataListProps) => {
-    const [pageList, setPageList] = useState([]);
     const [filter, setFilter] = useState("");
     const { history, location } = useRouter();
     const query = new URLSearchParams(location.search);
 
+    const [fetchMoreLoading, setFetchMoreLoading] = useState(false);
     const [where, setWhere] = useState({});
     const [sort, setSort] = useState({ createdOn: "desc" });
-    const [page, setPage] = useState(1);
     const search = {
         query: query.get("search") || undefined
     };
@@ -103,7 +112,6 @@ const PagesDataList = ({ onCreatePage, canCreate }: PagesDataListProps) => {
     const variables = {
         where,
         sort,
-        page,
         search
     };
 
@@ -115,14 +123,7 @@ const PagesDataList = ({ onCreatePage, canCreate }: PagesDataListProps) => {
     // Needs to be refactored. Possibly, with our own GQL client, this is going to be much easier to handle.
     localStorage.setItem("wby_pb_pages_list_latest_variables", JSON.stringify(variables));
 
-    const pageListData = get(listQuery, "data.pageBuilder.listPages.data", []);
-    // Update "page list"
-    useEffect(() => {
-        if (pageListData.length) {
-            setPageList(prevState => [...prevState, ...pageListData].filter(removeDuplicates));
-        }
-    }, [pageListData]);
-
+    const listPagesData = get(listQuery, "data.pageBuilder.listPages.data", []);
     const selectedPageId = new URLSearchParams(location.search).get("id");
 
     const categoriesQuery = useQuery(LIST_CATEGORIES);
@@ -131,11 +132,28 @@ const PagesDataList = ({ onCreatePage, canCreate }: PagesDataListProps) => {
     const loading = [listQuery].find(item => item.loading);
     // Load more pages on page list scroll
     const loadMoreOnScroll = useCallback(
-        debounce(({ scrollFrame, page }) => {
+        debounce(({ scrollFrame, fetchMore }) => {
             if (scrollFrame.top > 0.9) {
                 const meta = get(listQuery, "data.pageBuilder.listPages.meta", {});
                 if (meta.nextPage) {
-                    setPage(page + 1);
+                    setFetchMoreLoading(true);
+                    fetchMore({
+                        variables: { page: meta.page + 1 },
+                        updateQuery: (prev, { fetchMoreResult }) => {
+                            if (!fetchMoreResult) {
+                                return prev;
+                            }
+
+                            const next = { ...fetchMoreResult };
+
+                            next.pageBuilder.listPages.data = [
+                                ...prev.pageBuilder.listPages.data,
+                                ...fetchMoreResult.pageBuilder.listPages.data
+                            ];
+                            setFetchMoreLoading(false);
+                            return next;
+                        }
+                    });
                 }
             }
         }, 500),
@@ -232,7 +250,7 @@ const PagesDataList = ({ onCreatePage, canCreate }: PagesDataListProps) => {
                     </ButtonSecondary>
                 ) : null
             }
-            data={pageList}
+            data={listPagesData}
             search={
                 <SearchUI value={filter} onChange={setFilter} inputPlaceholder={t`Search pages`} />
             }
@@ -242,37 +260,47 @@ const PagesDataList = ({ onCreatePage, canCreate }: PagesDataListProps) => {
                     icon={<FilterIcon className={classNames({ [activeIcon]: !isEmpty(sort) })} />}
                 />
             }
-            loadingMessage={t`Loading more pages...`}
         >
             {({ data }) => (
-                <Scrollbar onScrollFrame={scrollFrame => loadMoreOnScroll({ scrollFrame, page })}>
-                    {data.map(page => (
-                        <ListItem key={page.id} selected={page.id === selectedPageId}>
-                            <ListItemText
-                                onClick={() => {
-                                    query.set("id", page.id);
-                                    history.push({ search: query.toString() });
-                                }}
-                            >
-                                {page.title}
-                                <ListTextOverline>
-                                    {page.category?.name || t`Unknown category`}
-                                </ListTextOverline>
-                                {page.createdBy && (
-                                    <ListItemTextSecondary>
-                                        Created by: {page.createdBy.firstName || "N/A"}. Last
-                                        modified: <TimeAgo datetime={page.savedOn} />.
-                                    </ListItemTextSecondary>
-                                )}
-                            </ListItemText>
-                            <ListItemMeta className={rightAlign}>
-                                <Typography use={"subtitle2"}>
-                                    {statusesLabels[page.status]} (v{page.version})
-                                </Typography>
-                            </ListItemMeta>
-                        </ListItem>
-                    ))}
-                </Scrollbar>
+                <>
+                    <Scrollbar
+                        onScrollFrame={scrollFrame =>
+                            loadMoreOnScroll({ scrollFrame, fetchMore: listQuery.fetchMore })
+                        }
+                    >
+                        {data.map(page => (
+                            <ListItem key={page.id} selected={page.id === selectedPageId}>
+                                <ListItemText
+                                    onClick={() => {
+                                        query.set("id", page.id);
+                                        history.push({ search: query.toString() });
+                                    }}
+                                >
+                                    {page.title}
+                                    <ListTextOverline>
+                                        {page.category?.name || t`Unknown category`}
+                                    </ListTextOverline>
+                                    {page.createdBy && (
+                                        <ListItemTextSecondary>
+                                            Created by: {page.createdBy.firstName || "N/A"}. Last
+                                            modified: <TimeAgo datetime={page.savedOn} />.
+                                        </ListItemTextSecondary>
+                                    )}
+                                </ListItemText>
+                                <ListItemMeta className={rightAlign}>
+                                    <Typography use={"subtitle2"}>
+                                        {statusesLabels[page.status]} (v{page.version})
+                                    </Typography>
+                                </ListItemMeta>
+                            </ListItem>
+                        ))}
+                    </Scrollbar>
+                    {fetchMoreLoading && (
+                        <InlineLoaderWrapper>
+                            <Typography use={"overline"}>{t`Loading more pages...`}</Typography>
+                        </InlineLoaderWrapper>
+                    )}
+                </>
             )}
         </DataList>
     );
