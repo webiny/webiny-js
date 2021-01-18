@@ -11,6 +11,8 @@ import orderBy from "lodash/orderBy";
 
 import {
     DataList,
+    DataListModalOverlay,
+    DataListModalOverlayAction,
     ScrollList,
     ListItem,
     ListItemText,
@@ -19,20 +21,20 @@ import {
     ListItemTextSecondary
 } from "@webiny/ui/List";
 
-import { DeleteIcon, FilterIcon } from "@webiny/ui/List/DataList/icons";
+import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
 import { Form } from "@webiny/form";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { useSecurity } from "@webiny/app-security";
 import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
-import { SimpleModal } from "@webiny/app-admin/components/SimpleModal";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
+import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import { serializeSorters, deserializeSorters } from "../utils";
 
 const t = i18n.ns("app-page-builder/admin/categories/data-list");
 const activeIcon = css({
-    "& svg": {
+    "&": {
         color: "var(--mdc-theme-primary)"
     }
 });
@@ -62,7 +64,6 @@ type PageBuilderCategoriesDataListProps = {
 const PageBuilderCategoriesDataList = ({ canCreate }: PageBuilderCategoriesDataListProps) => {
     const [filter, setFilter] = useState("");
     const [sort, setSort] = useState(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const listQuery = useQuery(LIST_CATEGORIES);
@@ -138,9 +139,9 @@ const PageBuilderCategoriesDataList = ({ canCreate }: PageBuilderCategoriesDataL
 
     const loading = [listQuery, deleteMutation].find(item => item.loading);
 
-    const renderModal = useMemo(
+    const categoriesDataListModalOverlay = useMemo(
         () => (
-            <SimpleModal isOpen={isModalOpen} onDismiss={() => setIsModalOpen(false)}>
+            <DataListModalOverlay>
                 <Form
                     data={{ sort: serializeSorters(sort) }}
                     onChange={({ sort }) => {
@@ -172,9 +173,9 @@ const PageBuilderCategoriesDataList = ({ canCreate }: PageBuilderCategoriesDataL
                         </Grid>
                     )}
                 </Form>
-            </SimpleModal>
+            </DataListModalOverlay>
         ),
-        [isModalOpen]
+        []
     );
 
     const filteredData = filter === "" ? data : data.filter(filterData);
@@ -202,11 +203,10 @@ const PageBuilderCategoriesDataList = ({ canCreate }: PageBuilderCategoriesDataL
                     inputPlaceholder={t`Search categories`}
                 />
             }
-            modal={renderModal}
-            modalAction={
-                <FilterIcon
-                    className={classNames({ [activeIcon]: sort })}
-                    onClick={() => setIsModalOpen(!isModalOpen)}
+            modalOverlay={categoriesDataListModalOverlay}
+            modalOverlayAction={
+                <DataListModalOverlayAction
+                    icon={<FilterIcon className={classNames({ [activeIcon]: sort })} />}
                 />
             }
         >

@@ -10,6 +10,8 @@ import { LIST_PAGES } from "@webiny/app-page-builder/admin/graphql/pages";
 import TimeAgo from "timeago-react";
 import {
     DataList,
+    DataListModalOverlay,
+    DataListModalOverlayAction,
     ScrollList,
     ListItem,
     ListItemText,
@@ -27,9 +29,8 @@ import { AutoComplete } from "@webiny/ui/AutoComplete";
 import statusesLabels from "@webiny/app-page-builder/admin/constants/pageStatusesLabels";
 import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
+import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
-import { SimpleModal } from "@webiny/app-admin/components/SimpleModal";
-import { FilterIcon } from "@webiny/ui/List/DataList/icons";
 import { serializeSorters, deserializeSorters } from "../utils";
 
 const t = i18n.ns("app-page-builder/admin/pages/data-list");
@@ -37,7 +38,7 @@ const rightAlign = css({
     alignItems: "flex-end !important"
 });
 const activeIcon = css({
-    "& svg": {
+    "&": {
         color: "var(--mdc-theme-primary)"
     }
 });
@@ -66,7 +67,6 @@ type PagesDataListProps = {
 };
 const PagesDataList = ({ onCreatePage, canCreate }: PagesDataListProps) => {
     const [filter, setFilter] = useState("");
-    const [isModalOpen, setIsModalOpen] = useState(false);
     const { history, location } = useRouter();
     const query = new URLSearchParams(location.search);
 
@@ -123,9 +123,9 @@ const PagesDataList = ({ onCreatePage, canCreate }: PagesDataListProps) => {
 
     const loading = [listQuery].find(item => item.loading);
 
-    const renderModal = useMemo(
+    const pagesDataListModalOverlay = useMemo(
         () => (
-            <SimpleModal isOpen={isModalOpen} onDismiss={() => setIsModalOpen(false)}>
+            <DataListModalOverlay>
                 <Form
                     data={{ ...where, sort: serializeSorters(sort) }}
                     onChange={({ status, category, sort }) => {
@@ -197,9 +197,9 @@ const PagesDataList = ({ onCreatePage, canCreate }: PagesDataListProps) => {
                         </Grid>
                     )}
                 </Form>
-            </SimpleModal>
+            </DataListModalOverlay>
         ),
-        [isModalOpen]
+        []
     );
 
     return (
@@ -225,11 +225,10 @@ const PagesDataList = ({ onCreatePage, canCreate }: PagesDataListProps) => {
             search={
                 <SearchUI value={filter} onChange={setFilter} inputPlaceholder={t`Search pages`} />
             }
-            modal={renderModal}
-            modalAction={
-                <FilterIcon
-                    className={classNames({ [activeIcon]: !isEmpty(sort) })}
-                    onClick={() => setIsModalOpen(!isModalOpen)}
+            modalOverlay={pagesDataListModalOverlay}
+            modalOverlayAction={
+                <DataListModalOverlayAction
+                    icon={<FilterIcon className={classNames({ [activeIcon]: !isEmpty(sort) })} />}
                 />
             }
         >
