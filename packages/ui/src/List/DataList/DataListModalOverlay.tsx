@@ -15,8 +15,8 @@ export const SimpleOverlay = styled<"div", SimpleOverlayProps>("div")(({ showOve
     opacity: showOverlay ? 1 : 0
 }));
 
-export type SimpleModalWrapperProps = { showOverlay: boolean };
-export const SimpleModalWrapper = styled<"div", SimpleModalWrapperProps>("div")(
+export type DataListModalWrapperProps = { showOverlay: boolean };
+export const DataListModalWrapper = styled<"div", DataListModalWrapperProps>("div")(
     ({ showOverlay }) => ({
         position: "absolute",
         top: "0px",
@@ -39,7 +39,7 @@ export const SimpleModalWrapper = styled<"div", SimpleModalWrapperProps>("div")(
             paddingBottom: "16px"
         },
 
-        "& .simple-modal__footer": {
+        "& .datalist-modal__footer": {
             padding: "24px",
             display: "flex",
             justifyContent: "space-between",
@@ -47,18 +47,18 @@ export const SimpleModalWrapper = styled<"div", SimpleModalWrapperProps>("div")(
                 borderRadius: 4,
                 padding: "0px 32px"
             },
-            "& .simple-modal__footer__action--secondary": {
+            "& .datalist-modal__footer__action--secondary": {
                 color: "var(--mdc-theme-text-primary-on-background)",
                 border: "1px solid var(--mdc-theme-on-background)"
             },
-            "& .simple-modal__footer__action--primary": {
+            "& .datalist-modal__footer__action--primary": {
                 backgroundColor: "var(--mdc-theme-secondary)"
             }
         }
     })
 );
 
-export type SimpleModalProps = {
+export type DataListModalOverlayProps = {
     /*
      * This function is called whenever the user hits "Escape" or clicks outside the dialog.
      * It's important to close the dialog "onDismiss".
@@ -74,7 +74,11 @@ export type SimpleModalProps = {
     children: React.ReactNode;
 };
 
-export const SimpleModal = ({ onDismiss, isOpen, children }: SimpleModalProps) => {
+export const DataListModalOverlay = ({
+    onDismiss,
+    isOpen,
+    children
+}: DataListModalOverlayProps) => {
     return (
         <React.Fragment>
             <SimpleOverlay
@@ -84,7 +88,7 @@ export const SimpleModal = ({ onDismiss, isOpen, children }: SimpleModalProps) =
                 }}
                 showOverlay={isOpen}
             />
-            <SimpleModalWrapper showOverlay={isOpen}>{children}</SimpleModalWrapper>
+            <DataListModalWrapper showOverlay={isOpen}>{children}</DataListModalWrapper>
         </React.Fragment>
     );
 };
