@@ -21,7 +21,7 @@ import {
     OptionsIcon
 } from "./icons";
 import { List, ListItem, ListProps } from "@webiny/ui/List";
-
+import { DataListModalOverlayProvider } from "./DataListModalOverlay";
 import { PaginationProp, SortersProp } from "./types";
 
 const ListContainer = styled("div")({
@@ -357,41 +357,43 @@ export const DataList = (props: Props) => {
     }
 
     return (
-        <ListContainer className={"webiny-data-list"}>
-            {(props.title || props.actions) && (
-                <Grid className={listHeader}>
-                    <Cell span={6} className={listTitle}>
-                        <Typography use="headline5">{props.title}</Typography>
-                    </Cell>
-                    <Cell span={6} className={listActions}>
-                        {props.actions}
-                    </Cell>
-                </Grid>
-            )}
+        <DataListModalOverlayProvider>
+            <ListContainer className={"webiny-data-list"}>
+                {(props.title || props.actions) && (
+                    <Grid className={listHeader}>
+                        <Cell span={6} className={listTitle}>
+                            <Typography use="headline5">{props.title}</Typography>
+                        </Cell>
+                        <Cell span={6} className={listActions}>
+                            {props.actions}
+                        </Cell>
+                    </Grid>
+                )}
 
-            {Object.keys(props.showOptions).length > 0 && (
-                <Grid className={listSubHeader}>
-                    <Search {...props} />
-                    <Cell span={props.search ? 5 : 12} style={{ justifySelf: "end" }}>
-                        <MultiSelectAll {...props} />
-                        {props.showOptions.refresh && <RefreshButton {...props} />}
-                        {props.showOptions.pagination && <Pagination {...props} />}
-                        {props.showOptions.sorters && <Sorters {...props} />}
-                        {props.showOptions.filters && <Filters {...props} />}
-                        {props.modalOverlayAction ? (
-                            <ListHeaderItem>{props.modalOverlayAction}</ListHeaderItem>
-                        ) : null}
-                        <MultiSelectActions {...props} />
-                    </Cell>
-                </Grid>
-            )}
+                {Object.keys(props.showOptions).length > 0 && (
+                    <Grid className={listSubHeader}>
+                        <Search {...props} />
+                        <Cell span={props.search ? 5 : 12} style={{ justifySelf: "end" }}>
+                            <MultiSelectAll {...props} />
+                            {props.showOptions.refresh && <RefreshButton {...props} />}
+                            {props.showOptions.pagination && <Pagination {...props} />}
+                            {props.showOptions.sorters && <Sorters {...props} />}
+                            {props.showOptions.filters && <Filters {...props} />}
+                            {props.modalOverlayAction ? (
+                                <ListHeaderItem>{props.modalOverlayAction}</ListHeaderItem>
+                            ) : null}
+                            <MultiSelectActions {...props} />
+                        </Cell>
+                    </Grid>
+                )}
 
-            {props.extraOptions ? props.extraOptions : null}
-            <div className={dataListContent}>
-                {render}
-                {props.modalOverlay}
-            </div>
-        </ListContainer>
+                {props.extraOptions ? props.extraOptions : null}
+                <div className={dataListContent}>
+                    {render}
+                    {props.modalOverlay}
+                </div>
+            </ListContainer>
+        </DataListModalOverlayProvider>
     );
 };
 
