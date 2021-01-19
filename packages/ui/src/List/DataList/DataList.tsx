@@ -384,7 +384,7 @@ export const DataList = (props: Props) => {
                     </Grid>
                 )}
 
-                <div className={dataListContent}>
+                <div className={classNames(dataListContent, "webiny-data-list__content")}>
                     {render}
                     {props.modalOverlay}
                 </div>
