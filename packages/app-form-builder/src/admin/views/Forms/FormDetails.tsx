@@ -16,7 +16,7 @@ import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-form-builder/admin/views/forms/form-details");
 
 const DetailsContainer = styled("div")({
-    height: "calc(100% - 10px)",
+    height: "100%",
     overflow: "hidden",
     position: "relative",
     nav: {

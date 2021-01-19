@@ -5,7 +5,6 @@ import { Typography } from "@webiny/ui/Typography";
 import { Elevation } from "@webiny/ui/Elevation";
 
 const BlockWrapper = styled("div")({
-    backgroundColor: "var(--mdc-theme-background)",
     padding: "0 0 25px 0"
 });
 
