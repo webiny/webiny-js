@@ -5,7 +5,6 @@ import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
 import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/close.svg";
 import DynamicSection from "../DynamicSection";
 import { Input } from "@webiny/ui/Input";
-import { Cell, Grid } from "@webiny/ui/Grid";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 

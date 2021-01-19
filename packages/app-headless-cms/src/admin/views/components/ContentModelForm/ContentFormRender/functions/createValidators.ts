@@ -5,7 +5,7 @@ export const createValidators = validation => {
     const validatorPlugins = plugins.byType<CmsModelFieldValidatorPlugin>(
         "cms-model-field-validator"
     );
-    
+
     return validation
         .map(item => {
             const validatorPlugin = validatorPlugins.find(

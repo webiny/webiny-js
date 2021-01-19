@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React from "react";
 import { css } from "emotion";
 import { cloneDeep, debounce } from "lodash";
 import { Switch } from "@webiny/ui/Switch";
@@ -11,8 +11,6 @@ import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { validation } from "@webiny/validation";
 import { Input } from "@webiny/ui/Input";
-import { Typography } from "@webiny/ui/Typography";
-import { Alert } from "@webiny/ui/Alert";
 
 const onEnabledChange = ({ data, validationValue, onChangeValidation, validator }) => {
     if (data) {

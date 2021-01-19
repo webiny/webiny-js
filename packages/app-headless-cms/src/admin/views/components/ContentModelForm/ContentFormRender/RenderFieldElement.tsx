@@ -35,7 +35,7 @@ const RenderFieldElement = (props: {
             const name = index >= 0 ? `${field.fieldId}.${index}` : field.fieldId;
             const validators = createValidators(field.validation || []);
             const listValidators = createValidators(field.listValidation || []);
-            const defaultValue = [];
+            const defaultValue = field.multipleValues ? [] : undefined;
 
             memoizedBindComponents.current[memoKey] = function Bind({ children }) {
                 return (
