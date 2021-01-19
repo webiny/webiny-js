@@ -23,6 +23,8 @@
 
 </p>
 
+![Webiny](./static/webiny-gh-hero.png)
+
 ## Getting started
 
 To get started with Webiny, simply [follow this link](https://docs.webiny.com) 🚀
