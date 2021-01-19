@@ -1,5 +1,7 @@
 import {
-    CmsContentModel, CmsContentModelField,
+    CmsContentModel,
+    CmsContentModelField,
+    CmsContentModelFieldValidation,
     CmsContext,
     CmsModelFieldValidatorPlugin,
     CmsModelFieldValidatorValidateParams
@@ -17,50 +19,72 @@ interface ValidateArgs {
     context: CmsContext;
 }
 
-
-const validateMultiple = async(args: ValidateArgs): Promise<string[]> => {
-    const {validatorList, field, data, context} = args;
-    const value = data[field.fieldId];
-    const errors = [];
-    
-    
-    return errors;
-};
-const validateSingle = async(args: ValidateArgs): Promise<string[]> => {
-    const {validatorList, field, data, context} = args;
-    const value = data[field.fieldId];
-    const errors = [];
-    for (const fieldValidator of field.validation) {
-        const name = fieldValidator.name;
-        /**
-         * A list of validations mapped from validator plugins
-         * @see CmsModelFieldValidatorPlugin.validator.validate
-         */
-        const validations = validatorList[name];
-        if (!validations || validations.length === 0) {
-            throw new WebinyError(`There are no "${name}" validators defined.`);
-        }
-        for (const validate of validations) {
-            try {
-                await validate({
+const validateValue = async (
+    args: ValidateArgs,
+    fieldValidators: CmsContentModelFieldValidation[],
+    value: any
+): Promise<string | null> => {
+    const { validatorList, context } = args;
+    try {
+        for (const fieldValidator of fieldValidators) {
+            const name = fieldValidator.name;
+            const validations = validatorList[name];
+            if (!validations || validations.length === 0) {
+                return `There are no "${name}" validators defined.`;
+            }
+            for (const validate of validations) {
+                const result = await validate({
                     value,
                     context,
-                    validator: fieldValidator,
-                })
-            } catch(ex) {
-                errors.push(fieldValidator.message || ex.message);
+                    validator: fieldValidator
+                });
+                if (!result) {
+                    return fieldValidator.message;
+                }
             }
         }
+    } catch (ex) {
+        return ex.message;
     }
-    return errors;
+
+    return null;
+};
+/**
+ * When multiple values is selected we must run validations on the array containing the values
+ * And then on each value in the array
+ */
+const runFieldMultipleValuesValidations = async (args: ValidateArgs): Promise<string | null> => {
+    const { field, data } = args;
+    const values = data[field.fieldId];
+    if (Array.isArray(values) === false) {
+        return `Value of the field "${field.fieldId}" is not an array.`;
+    }
+    const valuesError = await validateValue(args, field.listValidation, values);
+    if (valuesError) {
+        return valuesError;
+    }
+    for (const value of values) {
+        const valueError = await validateValue(args, field.validation, value);
+        if (valueError) {
+            return valueError;
+        }
+    }
+    return null;
+};
+/**
+ * Runs validation on given value.
+ */
+const runFieldValueValidations = async (args: ValidateArgs): Promise<string | null> => {
+    const { data, field } = args;
+    const value = data[field.fieldId];
+    return await validateValue(args, field.validation, value);
 };
 
-
-const runFieldValidation = async (args: ValidateArgs): Promise<string[]> => {
+const execValidation = async (args: ValidateArgs): Promise<string | null> => {
     if (args.field.multipleValues) {
-        return await validateMultiple(args);
+        return await runFieldMultipleValuesValidations(args);
     }
-    return await validateSingle(args);
+    return await runFieldValueValidations(args);
 };
 
 export const validateModelEntryData = async (
@@ -68,8 +92,11 @@ export const validateModelEntryData = async (
     contentModel: CmsContentModel,
     data: InputData
 ) => {
-    const validatorList: PluginValidationList = context
-        .plugins
+    /**
+     * To later simplify searching for the validations we map them to a name.
+     * @see CmsModelFieldValidatorPlugin.validator.validate
+     */
+    const validatorList: PluginValidationList = context.plugins
         .byType<CmsModelFieldValidatorPlugin>("cms-model-field-validator")
         .reduce((acc, plugin) => {
             const name = plugin.validator.name;
@@ -77,21 +104,23 @@ export const validateModelEntryData = async (
                 acc[name] = [];
             }
             acc[name].push(plugin.validator.validate);
-            
+
             return acc;
         }, {} as PluginValidationList);
 
-    // Loop through model fields, and validate the corresponding data.
-    // Run validation only if the field has validation configured.
+    /**
+     * Loop through model fields and validate the corresponding data.
+     * Run validation only if the field has validation configured.
+     */
     const invalidFields = [];
     for (const field of contentModel.fields) {
-        const errors = await runFieldValidation({validatorList, field, data, context});
-        if (errors.length === 0) {
+        const error = await execValidation({ validatorList, field, data, context });
+        if (!error) {
             continue;
         }
         invalidFields.push({
             fieldId: field.fieldId,
-            errors,
+            error
         });
     }
 

@@ -52,6 +52,15 @@ export const ContentModelFieldModel = withFields({
             settings: object({ value: {} })
         })()
     }),
+    listValidation: fields({
+        list: true,
+        value: [],
+        instanceOf: withFields({
+            name: string({ validation: requiredShortString }),
+            message: string({ validation: shortString }),
+            settings: object({ value: {} })
+        })()
+    }),
     settings: object({ value: {} })
 })();
 

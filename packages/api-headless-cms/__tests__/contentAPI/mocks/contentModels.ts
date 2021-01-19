@@ -3,8 +3,10 @@ import contentModelGroup from "./contentModelGroup";
 import { CmsContentModel } from "@webiny/api-headless-cms/types";
 
 const ids = {
+    // product category
     field11: shortId.generate(),
     field12: shortId.generate(),
+    // product
     field201: shortId.generate(),
     field202: shortId.generate(),
     field203: shortId.generate(),
@@ -15,14 +17,27 @@ const ids = {
     field208: shortId.generate(),
     field209: shortId.generate(),
     field210: shortId.generate(),
+    // product review
     field31: shortId.generate(),
     field32: shortId.generate(),
     field33: shortId.generate(),
     field34: shortId.generate(),
-    field40: shortId.generate()
+    // author
+    field40: shortId.generate(),
+    // fruit
+    field501: shortId.generate(),
+    field502: shortId.generate(),
+    field503: shortId.generate(),
+    field504: shortId.generate(),
+    field505: shortId.generate(),
+    field506: shortId.generate(),
+    field507: shortId.generate(),
+    field508: shortId.generate(),
+    field509: shortId.generate()
 };
 
 const models: CmsContentModel[] = [
+    // category
     {
         createdOn: new Date(),
         savedOn: new Date(),
@@ -57,6 +72,7 @@ const models: CmsContentModel[] = [
                         }
                     }
                 ],
+                listValidation: [],
                 placeholderText: "placeholder text",
                 predefinedValues: {
                     enabled: false,
@@ -79,6 +95,7 @@ const models: CmsContentModel[] = [
                         message: "This field is required"
                     }
                 ],
+                listValidation: [],
                 placeholderText: "placeholder text",
                 predefinedValues: {
                     enabled: false,
@@ -90,6 +107,7 @@ const models: CmsContentModel[] = [
             }
         ]
     },
+    // product
     {
         createdOn: new Date(),
         savedOn: new Date(),
@@ -128,6 +146,7 @@ const models: CmsContentModel[] = [
                         message: "Please enter a product name"
                     }
                 ],
+                listValidation: [],
                 placeholderText: "placeholder text",
                 predefinedValues: {
                     enabled: false,
@@ -150,6 +169,7 @@ const models: CmsContentModel[] = [
                         message: "Please select a category"
                     }
                 ],
+                listValidation: [],
                 settings: {
                     models: [{ modelId: "category" }]
                 },
@@ -176,6 +196,7 @@ const models: CmsContentModel[] = [
                         message: "Please enter a price"
                     }
                 ],
+                listValidation: [],
                 placeholderText: "placeholder text",
                 predefinedValues: {
                     enabled: false,
@@ -193,6 +214,7 @@ const models: CmsContentModel[] = [
                 fieldId: "inStock",
                 type: "boolean",
                 validation: [],
+                listValidation: [],
                 placeholderText: "placeholder text",
                 predefinedValues: {
                     enabled: false,
@@ -210,6 +232,7 @@ const models: CmsContentModel[] = [
                 fieldId: "itemsInStock",
                 type: "number",
                 validation: [],
+                listValidation: [],
                 placeholderText: "placeholder text",
                 predefinedValues: {
                     enabled: false,
@@ -235,6 +258,7 @@ const models: CmsContentModel[] = [
                         message: "Please enter a date"
                     }
                 ],
+                listValidation: [],
                 placeholderText: "placeholder text",
                 predefinedValues: {
                     enabled: false,
@@ -260,6 +284,7 @@ const models: CmsContentModel[] = [
                         message: "Please select a color"
                     }
                 ],
+                listValidation: [],
                 placeholderText: "placeholder text",
                 predefinedValues: {
                     enabled: true,
@@ -302,6 +327,7 @@ const models: CmsContentModel[] = [
                         message: "Please select from list of sizes"
                     }
                 ],
+                listValidation: [],
                 placeholderText: "placeholder text",
                 predefinedValues: {
                     enabled: true,
@@ -344,6 +370,7 @@ const models: CmsContentModel[] = [
                         message: "Please upload an image of the product"
                     }
                 ],
+                listValidation: [],
                 placeholderText: "placeholder text",
                 predefinedValues: {
                     enabled: false,
@@ -364,6 +391,7 @@ const models: CmsContentModel[] = [
                     type: "text"
                 },
                 validation: [],
+                listValidation: [],
                 placeholderText: "Rich text",
                 predefinedValues: {
                     enabled: false,
@@ -375,6 +403,7 @@ const models: CmsContentModel[] = [
             }
         ]
     },
+    // product review
     {
         createdOn: new Date(),
         savedOn: new Date(),
@@ -402,6 +431,7 @@ const models: CmsContentModel[] = [
                         message: "This field is required"
                     }
                 ],
+                listValidation: [],
                 placeholderText: "placeholder text",
                 predefinedValues: {
                     enabled: false,
@@ -419,6 +449,7 @@ const models: CmsContentModel[] = [
                 type: "ref",
                 fieldId: "product",
                 validation: [],
+                listValidation: [],
                 settings: {
                     models: [{ modelId: "product" }]
                 },
@@ -439,6 +470,7 @@ const models: CmsContentModel[] = [
                 type: "number",
                 fieldId: "rating",
                 validation: [],
+                listValidation: [],
                 placeholderText: "placeholder text",
                 predefinedValues: {
                     enabled: false,
@@ -456,6 +488,7 @@ const models: CmsContentModel[] = [
                 type: "ref",
                 fieldId: "author",
                 validation: [],
+                listValidation: [],
                 settings: {
                     models: [{ modelId: "author" }]
                 },
@@ -470,6 +503,7 @@ const models: CmsContentModel[] = [
             }
         ]
     },
+    // author
     {
         createdOn: new Date(),
         savedOn: new Date(),
@@ -497,6 +531,232 @@ const models: CmsContentModel[] = [
                         message: "This field is required"
                     }
                 ],
+                listValidation: [],
+                placeholderText: "placeholder text",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            }
+        ]
+    },
+    // fruit
+    {
+        createdOn: new Date(),
+        savedOn: new Date(),
+        titleFieldId: "name",
+        lockedFields: [],
+        name: "Fruit",
+        description: "Fruit",
+        modelId: "fruit",
+        group: {
+            id: contentModelGroup.id,
+            name: contentModelGroup.name
+        },
+        layout: [
+            [ids.field501],
+            [ids.field502],
+            [ids.field503],
+            [ids.field504],
+            [ids.field505],
+            [ids.field506]
+            // [ids.field507],
+            // [ids.field508],
+            // [ids.field509],
+        ],
+        fields: [
+            // required, minLength, maxLength
+            {
+                id: ids.field501,
+                multipleValues: false,
+                helpText: "",
+                label: "Name",
+                type: "text",
+                fieldId: "name",
+                validation: [
+                    {
+                        name: "required",
+                        message: "This field is required."
+                    },
+                    {
+                        name: "minLength",
+                        message: "Min length is 2.",
+                        settings: {
+                            value: 2
+                        }
+                    },
+                    {
+                        name: "maxLength",
+                        message: "Max length is 15.",
+                        settings: {
+                            value: 15
+                        }
+                    }
+                ],
+                listValidation: [],
+                placeholderText: "placeholder text",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            },
+            // multipleValues: required, gte, lte, minLength, maxLength
+            {
+                id: ids.field502,
+                multipleValues: true,
+                helpText: "",
+                label: "Numbers",
+                type: "number",
+                fieldId: "numbers",
+                validation: [
+                    {
+                        name: "required",
+                        message: "Number is required."
+                    },
+                    {
+                        name: "gte",
+                        message: "Number must be greater or equal 5.",
+                        settings: {
+                            value: 5
+                        }
+                    },
+                    {
+                        name: "lte",
+                        message: "Number be less or equal 15.",
+                        settings: {
+                            value: 15
+                        }
+                    }
+                ],
+                listValidation: [
+                    {
+                        name: "minLength",
+                        message: "Numbers must contain at least 2 items.",
+                        settings: {
+                            value: 2
+                        }
+                    },
+                    {
+                        name: "maxLength",
+                        message: "Numbers can contain at most 4 items.",
+                        settings: {
+                            value: 4
+                        }
+                    }
+                ],
+                placeholderText: "placeholder text",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            },
+            // email
+            {
+                id: ids.field503,
+                multipleValues: false,
+                helpText: "",
+                label: "E-mail",
+                type: "text",
+                fieldId: "email",
+                validation: [
+                    {
+                        name: "pattern",
+                        message: "Must be in a form of an email.",
+                        settings: {
+                            preset: "email"
+                        }
+                    }
+                ],
+                listValidation: [],
+                placeholderText: "placeholder text",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            },
+            // url
+            {
+                id: ids.field504,
+                multipleValues: false,
+                helpText: "",
+                label: "Url",
+                type: "text",
+                fieldId: "url",
+                validation: [
+                    {
+                        name: "pattern",
+                        message: "Must be in a form of a url.",
+                        settings: {
+                            preset: "url"
+                        }
+                    }
+                ],
+                listValidation: [],
+                placeholderText: "placeholder text",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            },
+            {
+                id: ids.field505,
+                multipleValues: false,
+                helpText: "",
+                label: "LowerCase",
+                type: "text",
+                fieldId: "lowerCase",
+                validation: [
+                    {
+                        name: "pattern",
+                        message: "Everything must be lowercase.",
+                        settings: {
+                            preset: "lowerCase"
+                        }
+                    }
+                ],
+                listValidation: [],
+                placeholderText: "placeholder text",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            },
+            // upperCase
+            {
+                id: ids.field506,
+                multipleValues: false,
+                helpText: "",
+                label: "UpperCase",
+                type: "text",
+                fieldId: "upperCase",
+                validation: [
+                    {
+                        name: "pattern",
+                        message: "Everything must be uppercase.",
+                        settings: {
+                            preset: "upperCase"
+                        }
+                    }
+                ],
+                listValidation: [],
                 placeholderText: "placeholder text",
                 predefinedValues: {
                     enabled: false,
