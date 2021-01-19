@@ -27,7 +27,7 @@ export default ({ getIdentityData, ...amplify }: CognitoOptions): PluginCollecti
             name: "apollo-link-cognito-context",
             type: "apollo-link",
             createLink() {
-                return setContext(async (_, { headers }) => {
+                return setContext(async (_, { headers = {} }) => {
                     let user;
                     try {
                         user = await Auth.currentSession();
