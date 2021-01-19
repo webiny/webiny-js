@@ -14,7 +14,9 @@ const EditRevision = ({ revision, form }) => {
             <Tooltip content={"Edit"} placement={"top"}>
                 <IconButton
                     icon={<EditIcon />}
-                    onClick={() => history.push(`/forms/${encodeURIComponent(revision.id)}`)}
+                    onClick={() =>
+                        history.push(`/form-builder/forms/${encodeURIComponent(revision.id)}`)
+                    }
                 />
             </Tooltip>
         );

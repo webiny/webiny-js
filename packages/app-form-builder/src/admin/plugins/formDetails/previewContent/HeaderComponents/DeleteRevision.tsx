@@ -55,7 +55,7 @@ const DeleteRevision = ({ revisions, form, revision, selectRevision }) => {
                                             removeFormFromListCache(cache, form);
 
                                             // Redirect
-                                            return history.push("/forms");
+                                            return history.push("/form-builder/forms");
                                         }
 
                                         // We have other revisions, update form's cache
@@ -72,7 +72,9 @@ const DeleteRevision = ({ revisions, form, revision, selectRevision }) => {
                                         selectRevision(firstRevision);
                                         if (revision.id === form.id) {
                                             return history.push(
-                                                "/forms?id=" + encodeURIComponent(firstRevision.id)
+                                                `/form-builder/forms?id=${encodeURIComponent(
+                                                    firstRevision.id
+                                                )}`
                                             );
                                         }
                                     }

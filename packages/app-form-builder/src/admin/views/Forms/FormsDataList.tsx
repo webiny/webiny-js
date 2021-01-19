@@ -86,7 +86,7 @@ const FormsDataList = (props: FormsDataListProps) => {
 
                     const query = new URLSearchParams(location.search);
                     if (item.id === query.get("id")) {
-                        return history.push("/forms");
+                        return history.push("/form-builder/forms");
                     }
                 }
             });
@@ -123,9 +123,9 @@ const FormsDataList = (props: FormsDataListProps) => {
                         return showSnackbar(error.message);
                     }
 
-                    history.push(`/forms/${encodeURIComponent(data.id)}`);
+                    history.push(`/form-builder/forms/${encodeURIComponent(data.id)}`);
                 } else {
-                    history.push(`/forms/${encodeURIComponent(form.id)}`);
+                    history.push(`/form-builder/forms/${encodeURIComponent(form.id)}`);
                 }
             };
         }

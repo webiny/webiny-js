@@ -50,10 +50,10 @@ export const useRevision = ({ revision, form }: UseRevisionProps) => {
                 return showSnackbar(error.message);
             }
 
-            history.push(`/forms/${encodeURIComponent(data.id)}`);
+            history.push(`/form-builder/forms/${encodeURIComponent(data.id)}`);
         },
         editRevision: () => () => {
-            history.push(`/forms/${encodeURIComponent(revision.id)}`);
+            history.push(`/form-builder/forms/${encodeURIComponent(revision.id)}`);
         },
         deleteRevision: () => async () => {
             await client.mutate({
@@ -71,7 +71,9 @@ export const useRevision = ({ revision, form }: UseRevisionProps) => {
                     if (revision.id === form.id) {
                         updateLatestRevisionInListCache(cache, revisions[0]);
                         // Redirect to the first revision in the list of all form revisions.
-                        return history.push("/forms?id=" + encodeURIComponent(revisions[0].id));
+                        return history.push(
+                            `/form-builder/forms?id=${encodeURIComponent(revisions[0].id)}`
+                        );
                     }
                 }
             });
