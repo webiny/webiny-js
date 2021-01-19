@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo } from "react";
+import { Cell } from "@webiny/ui/Grid";
 import { SplitView, LeftPanel } from "@webiny/app-admin/components/SplitView";
 import { useSecurity } from "@webiny/app-security";
 import ContentModelsDataList from "./ContentModelsDataList";
@@ -30,9 +31,11 @@ function ContentModels() {
             <NewContentModelDialog open={newContentModelDialogOpened} onClose={onClose} />
 
             <SplitView>
-                <LeftPanel span={12}>
+                <Cell span={3} />
+                <LeftPanel span={6}>
                     <ContentModelsDataList canCreate={canCreate} onCreate={onCreate} />
                 </LeftPanel>
+                <Cell span={3} />
             </SplitView>
         </>
     );
