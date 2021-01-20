@@ -133,7 +133,7 @@ const MenusForm = ({ canCreate }: MenusFormProps) => {
         return (
             <EmptyView
                 title={t`Click on the left side list to display menu details {message}`({
-                    message: canCreate ? "or..." : ""
+                    message: canCreate ? "or create a..." : ""
                 })}
                 action={
                     canCreate ? (
@@ -141,7 +141,7 @@ const MenusForm = ({ canCreate }: MenusFormProps) => {
                             data-testid="new-record-button"
                             onClick={() => history.push("/page-builder/menus?new=true")}
                         >
-                            <ButtonIcon icon={<AddIcon />} /> {t`Add Menu`}
+                            <ButtonIcon icon={<AddIcon />} /> {t`New Menu`}
                         </ButtonDefault>
                     ) : null
                 }

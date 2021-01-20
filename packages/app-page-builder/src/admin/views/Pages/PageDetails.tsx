@@ -38,13 +38,13 @@ type EmptyPageDetailsProps = {
 const EmptyPageDetails = ({ onCreatePage, canCreate }: EmptyPageDetailsProps) => {
     return (
         <EmptyView
-            title={t`Click on the left side list to display page details {message}`({
-                message: canCreate ? " or..." : ""
+            title={t`Click on the left side list to display page details {message} `({
+                message: canCreate ? "or create a..." : ""
             })}
             action={
                 canCreate ? (
                     <ButtonDefault data-testid="new-record-button" onClick={onCreatePage}>
-                        <ButtonIcon icon={<AddIcon />} /> {t`Create Page`}
+                        <ButtonIcon icon={<AddIcon />} /> {t`New Page`}
                     </ButtonDefault>
                 ) : null
             }

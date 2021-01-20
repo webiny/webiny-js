@@ -1,6 +1,4 @@
 import React, { useCallback, useMemo, useState } from "react";
-import classNames from "classnames";
-import { css } from "emotion";
 import orderBy from "lodash/orderBy";
 import { i18n } from "@webiny/app/i18n";
 import { useRouter } from "@webiny/react-router";
@@ -23,30 +21,15 @@ import {
 } from "@webiny/ui/List";
 
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
-import { ButtonDefault, ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
+import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
-import { Form } from "@webiny/form";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { serializeSorters, deserializeSorters } from "../utils";
 
 const t = i18n.ns("app-page-builder/admin/menus/data-list");
-const activeIcon = css({
-    "&": {
-        color: "var(--mdc-theme-primary)"
-    }
-});
-const resetButtonStyle = css({
-    "&.mdc-button:not(disabled)": {
-        color: "var(--mdc-theme-text-primary-on-background)",
-        border: "1px solid var(--mdc-theme-on-background)"
-    },
-    "&.mdc-button:disabled": {
-        color: "rgba(0, 0, 0, 0.37)"
-    }
-});
 
 const SORTERS = [
     {
@@ -72,7 +55,7 @@ type PageBuilderMenusDataListProps = {
 };
 const PageBuilderMenusDataList = ({ canCreate }: PageBuilderMenusDataListProps) => {
     const [filter, setFilter] = useState("");
-    const [sort, setSort] = useState(null);
+    const [sort, setSort] = useState(serializeSorters(SORTERS[0].sorters));
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const listQuery = useQuery(LIST_MENUS);
@@ -98,7 +81,7 @@ const PageBuilderMenusDataList = ({ canCreate }: PageBuilderMenusDataListProps) 
             if (!sort) {
                 return users;
             }
-            const [[key, value]] = Object.entries(sort);
+            const [[key, value]] = Object.entries(deserializeSorters(sort));
             return orderBy(users, [key], [value]);
         },
         [sort]
@@ -149,47 +132,24 @@ const PageBuilderMenusDataList = ({ canCreate }: PageBuilderMenusDataListProps) 
     const menusDataListModalOverlay = useMemo(
         () => (
             <DataListModalOverlay>
-                <Form
-                    data={{ sort: serializeSorters(sort) }}
-                    onChange={({ sort }) => {
-                        // Update "sort".
-                        if (typeof sort === "string") {
-                            const newSort = deserializeSorters(sort);
-                            // @ts-ignore
-                            setSort(newSort);
-                        }
-                    }}
-                >
-                    {({ Bind }) => (
-                        <Grid>
-                            <Cell span={12}>
-                                <Bind name={"sort"}>
-                                    <Select label={t`Sort by`} description={"Sort pages by"}>
-                                        {SORTERS.map(({ label, sorters }) => {
-                                            return (
-                                                <option
-                                                    key={label}
-                                                    value={serializeSorters(sorters)}
-                                                >
-                                                    {label}
-                                                </option>
-                                            );
-                                        })}
-                                    </Select>
-                                </Bind>
-                            </Cell>
-                            <Cell span={12}>
-                                <ButtonDefault
-                                    className={resetButtonStyle}
-                                    onClick={() => setSort(null)}
-                                    disabled={sort === null}
-                                >
-                                    Reset
-                                </ButtonDefault>
-                            </Cell>
-                        </Grid>
-                    )}
-                </Form>
+                <Grid>
+                    <Cell span={12}>
+                        <Select
+                            value={sort}
+                            onChange={setSort}
+                            label={t`Sort by`}
+                            description={"Sort pages by"}
+                        >
+                            {SORTERS.map(({ label, sorters }) => {
+                                return (
+                                    <option key={label} value={serializeSorters(sorters)}>
+                                        {label}
+                                    </option>
+                                );
+                            })}
+                        </Select>
+                    </Cell>
+                </Grid>
             </DataListModalOverlay>
         ),
         [sort]
@@ -211,7 +171,7 @@ const PageBuilderMenusDataList = ({ canCreate }: PageBuilderMenusDataListProps) 
                         data-testid="new-record-button"
                         onClick={() => history.push("/page-builder/menus?new=true")}
                     >
-                        <ButtonIcon icon={<AddIcon />} /> {t`Add Menu`}
+                        <ButtonIcon icon={<AddIcon />} /> {t`New Menu`}
                     </ButtonSecondary>
                 ) : null
             }
@@ -219,11 +179,7 @@ const PageBuilderMenusDataList = ({ canCreate }: PageBuilderMenusDataListProps) 
                 <SearchUI value={filter} onChange={setFilter} inputPlaceholder={t`Search menus`} />
             }
             modalOverlay={menusDataListModalOverlay}
-            modalOverlayAction={
-                <DataListModalOverlayAction
-                    icon={<FilterIcon className={classNames({ [activeIcon]: sort })} />}
-                />
-            }
+            modalOverlayAction={<DataListModalOverlayAction icon={<FilterIcon />} />}
         >
             {({ data }) => (
                 <ScrollList>
