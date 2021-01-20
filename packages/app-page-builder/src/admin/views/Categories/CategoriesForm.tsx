@@ -141,7 +141,7 @@ const CategoriesForm = ({ canCreate }: CategoriesFormProps) => {
         return (
             <EmptyView
                 title={t`Click on the left side list to display category details {message}`({
-                    message: canCreate ? "or..." : ""
+                    message: canCreate ? "or create a..." : ""
                 })}
                 action={
                     canCreate ? (
@@ -149,7 +149,7 @@ const CategoriesForm = ({ canCreate }: CategoriesFormProps) => {
                             data-testid="new-record-button"
                             onClick={() => history.push("/page-builder/categories?new=true")}
                         >
-                            <ButtonIcon icon={<AddIcon />} /> {t`Add Category`}
+                            <ButtonIcon icon={<AddIcon />} /> {t`New Category`}
                         </ButtonDefault>
                     ) : null
                 }
