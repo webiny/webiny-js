@@ -31,8 +31,14 @@ import emailFieldValidator from "@webiny/app-headless-cms/admin/plugins/validato
 import urlFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/patternPlugins/url";
 import lowerCaseFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/patternPlugins/lowerCase";
 import upperCaseFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/patternPlugins/upperCase";
+import dateGteFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/dateGte";
+import dateLteFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/dateLte";
+import timeGteFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/timeGte";
+import timeLteFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/timeLte";
 
 import editorGteFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/gte";
+import editorDateGteFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/dateGte";
+import editorDateLteFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/dateLte";
 import editorInValidatorFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/in";
 import editorLteFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/lte";
 import editorRequiredFieldValidator from "@webiny/app-headless-cms/admin/plugins/fieldValidators/required";
@@ -81,7 +87,13 @@ export default [
     urlFieldValidator,
     lowerCaseFieldValidator,
     upperCaseFieldValidator,
+    dateGteFieldValidator(),
+    dateLteFieldValidator(),
+    timeGteFieldValidator(),
+    timeLteFieldValidator(),
     editorGteFieldValidator,
+    editorDateGteFieldValidator(),
+    editorDateLteFieldValidator(),
     editorInValidatorFieldValidator,
     editorLteFieldValidator,
     editorRequiredFieldValidator,
