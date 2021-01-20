@@ -4,17 +4,17 @@ import cloneDeep from "lodash/cloneDeep";
 import { ContextPlugin } from "@webiny/handler/types";
 import { ErrorResponse, NotFoundError } from "@webiny/handler-graphql";
 import {
-    CmsContentEntryContextType,
-    CmsContentEntryPermissionType,
-    CmsContentEntryType,
-    CmsContentModelType,
+    CmsContentEntryContext,
+    CmsContentEntryPermission,
+    CmsContentEntry,
+    CmsContentModel,
     CmsContext
 } from "@webiny/api-headless-cms/types";
 import * as utils from "../../../utils";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation";
 import {
-    createElasticSearchParams,
-    createElasticSearchLimit,
+    createElasticsearchParams,
+    createElasticsearchLimit,
     prepareEntryToIndex,
     extractEntriesFromIndex
 } from "./contentEntry/elasticSearchHelpers";
@@ -43,11 +43,11 @@ type DbItem<T> = T & {
     TYPE: string;
 };
 
-const getESLatestEntryData = (entry: CmsContentEntryType) => {
+const getESLatestEntryData = (entry: CmsContentEntry) => {
     return { ...entry, latest: true, __type: TYPE_ENTRY_LATEST };
 };
 
-const getESPublishedEntryData = (entry: CmsContentEntryType) => {
+const getESPublishedEntryData = (entry: CmsContentEntry) => {
     return { ...entry, published: true, __type: TYPE_ENTRY_PUBLISHED };
 };
 
@@ -80,28 +80,28 @@ export default (): ContextPlugin<CmsContext> => ({
         const checkPermissions = (check: {
             rwd?: string;
             pw?: string;
-        }): Promise<CmsContentEntryPermissionType> => {
+        }): Promise<CmsContentEntryPermission> => {
             return utils.checkPermissions(context, "cms.contentEntry", check);
         };
 
-        const entries: CmsContentEntryContextType = {
+        const entries: CmsContentEntryContext = {
             /**
              * Get entries by exact revision IDs from the database.
              */
-            getByIds: async (model: CmsContentModelType, ids: string[]) => {
+            getByIds: async (model: CmsContentModel, ids: string[]) => {
                 const permission = await checkPermissions({ rwd: "r" });
                 utils.checkModelAccess(context, permission, model);
 
                 const { getRevisionById } = loaders;
 
-                const entries = (await getRevisionById.loadMany(ids)) as CmsContentEntryType[];
+                const entries = (await getRevisionById.loadMany(ids)) as CmsContentEntry[];
 
                 return entries.filter(entry => utils.validateOwnership(context, permission, entry));
             },
             /**
              * Get latest published revisions by entry IDs.
              */
-            getPublishedByIds: async (model: CmsContentModelType, ids: string[]) => {
+            getPublishedByIds: async (model: CmsContentModel, ids: string[]) => {
                 const permission = await checkPermissions({ rwd: "r" });
                 utils.checkModelAccess(context, permission, model);
                 const { getPublishedRevisionByEntryId } = loaders;
@@ -111,14 +111,14 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 const entries = (await getPublishedRevisionByEntryId.loadMany(
                     entryIds
-                )) as CmsContentEntryType[];
+                )) as CmsContentEntry[];
 
                 return entries.filter(entry => utils.validateOwnership(context, permission, entry));
             },
             /**
              * Get latest revisions by entry IDs.
              */
-            getLatestByIds: async (model: CmsContentModelType, ids: string[]) => {
+            getLatestByIds: async (model: CmsContentModel, ids: string[]) => {
                 const permission = await checkPermissions({ rwd: "r" });
                 utils.checkModelAccess(context, permission, model);
                 const { getLatestRevisionByEntryId } = loaders;
@@ -128,7 +128,7 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 const entries = (await getLatestRevisionByEntryId.loadMany(
                     entryIds
-                )) as CmsContentEntryType[];
+                )) as CmsContentEntry[];
 
                 return entries.filter(entry => utils.validateOwnership(context, permission, entry));
             },
@@ -147,16 +147,16 @@ export default (): ContextPlugin<CmsContext> => ({
                 }
                 return item;
             },
-            list: async (model: CmsContentModelType, args = {}, options = {}) => {
+            list: async (model: CmsContentModel, args = {}, options = {}) => {
                 const permission = await checkPermissions({ rwd: "r" });
                 utils.checkModelAccess(context, permission, model);
 
-                const limit = createElasticSearchLimit(args.limit, 50);
+                const limit = createElasticsearchLimit(args.limit, 50);
 
                 // Possibly only get records which are owned by current user
                 const ownedBy = permission.own ? context.security.getIdentity().id : undefined;
 
-                const body = createElasticSearchParams({
+                const body = createElasticsearchParams({
                     model,
                     args: {
                         ...args,
@@ -202,7 +202,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     totalCount: total.value,
                     cursor:
                         items.length > 0
-                            ? utils.encodeElasticSearchCursor(hits[items.length - 1].sort)
+                            ? utils.encodeElasticsearchCursor(hits[items.length - 1].sort)
                             : null
                 };
 
@@ -259,7 +259,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     type: identity.type
                 };
 
-                const entry: CmsContentEntryType = {
+                const entry: CmsContentEntry = {
                     id,
                     modelId: model.modelId,
                     locale: locale.code,
@@ -350,7 +350,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     values: data || {}
                 } as any);
 
-                const newEntry: CmsContentEntryType = {
+                const newEntry: CmsContentEntry = {
                     id,
                     version: nextVersion,
                     modelId: entry.modelId,
@@ -459,7 +459,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 } as any);
 
                 // we need full entry because of "before/after save" hooks
-                const updatedEntry: CmsContentEntryType = {
+                const updatedEntry: CmsContentEntry = {
                     ...entry,
                     savedOn: new Date().toISOString(),
                     values: {
@@ -586,7 +586,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 // If the entry is "latest", set the previous entry as the new latest.
                 // Updates must be made on both DB and ES side.
                 if (isLatest) {
-                    const [[prevLatestEntry]] = await db.read<DbItem<CmsContentEntryType>>({
+                    const [[prevLatestEntry]] = await db.read<DbItem<CmsContentEntry>>({
                         ...utils.defaults.db,
                         query: {
                             PK: PK_ENTRY(uniqueId),
@@ -733,7 +733,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     // entry's data to update its status within a batch operation. If, hopefully,
                     // they introduce a true update batch operation, remove this `read` call.
 
-                    const [[previouslyPublishedEntry]] = await db.read<CmsContentEntryType>({
+                    const [[previouslyPublishedEntry]] = await db.read<CmsContentEntry>({
                         ...utils.defaults.db,
                         query: {
                             PK: PK_ENTRY(uniqueId),
@@ -906,7 +906,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     })
                     .execute();
 
-                const entry: CmsContentEntryType = results[0][0];
+                const entry: CmsContentEntry = results[0][0];
                 const latestEntryData: { id: string } = results[1][0];
 
                 if (!entry) {

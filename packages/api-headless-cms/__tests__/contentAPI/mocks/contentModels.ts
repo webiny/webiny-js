@@ -1,6 +1,6 @@
 import shortId from "shortid";
 import contentModelGroup from "./contentModelGroup";
-import { CmsContentModelType } from "@webiny/api-headless-cms/types";
+import { CmsContentModel } from "@webiny/api-headless-cms/types";
 
 const ids = {
     field11: shortId.generate(),
@@ -22,7 +22,7 @@ const ids = {
     field40: shortId.generate()
 };
 
-const models: CmsContentModelType[] = [
+const models: CmsContentModel[] = [
     {
         createdOn: new Date(),
         savedOn: new Date(),

@@ -1,9 +1,9 @@
 import * as React from "react";
-import { FormSettingsPluginType } from "@webiny/app-headless-cms/types";
+import { CmsEditorFormSettingsPlugin } from "@webiny/app-headless-cms/types";
 import GeneralSettings from "./components/GeneralSettings";
 import { ReactComponent as SettingsIcon } from "./icons/round-settings-24px.svg";
 
-export default {
+const plugin: CmsEditorFormSettingsPlugin = {
     name: "content-model-editor-form-settings-general",
     type: "content-model-editor-form-settings",
     title: "General settings",
@@ -12,4 +12,6 @@ export default {
     render(props) {
         return <GeneralSettings {...props} />;
     }
-} as FormSettingsPluginType;
+};
+
+export default plugin;

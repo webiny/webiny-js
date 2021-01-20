@@ -1,5 +1,5 @@
 name: api
 runtime: nodejs
-description: The stack that represent's your app's API (GraphQL, REST, ...).
+description: Represents cloud infrastructure needed for supporting your project's (GraphQL) API.
 backend:
   url: file://

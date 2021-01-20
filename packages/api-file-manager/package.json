@@ -43,7 +43,7 @@
     "@elastic/elasticsearch": "^7.9.1",
     "@elastic/elasticsearch-mock": "0.3.0",
     "@shelf/jest-elasticsearch": "^1.0.0",
-    "jest-dynalite": "3.2.3"
+    "jest-dynalite": "^3.2.0"
   },
   "publishConfig": {
     "access": "public",
@@ -65,5 +65,5 @@
       ]
     }
   },
-  "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
+  "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f"
 }

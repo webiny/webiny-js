@@ -24,11 +24,6 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         createGetFilters({ field }) {
             return `${field.fieldId}: String`;
         },
-        createResolver({ field }) {
-            return instance => {
-                return instance.values[field.fieldId];
-            };
-        },
         createTypeField({ field }) {
             if (field.multipleValues) {
                 return `${field.fieldId}: [String]`;
@@ -39,11 +34,6 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
     },
     manage: {
         createListFilters,
-        createResolver({ field }) {
-            return instance => {
-                return instance.values[field.fieldId];
-            };
-        },
         createTypeField({ field }) {
             return field.fieldId + ": String";
         },

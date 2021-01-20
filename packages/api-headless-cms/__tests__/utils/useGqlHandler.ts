@@ -11,7 +11,7 @@ import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { Client } from "@elastic/elasticsearch";
-import { createIdentity, createPermissions, until, PermissionsArgType } from "./helpers";
+import { createIdentity, createPermissions, until, PermissionsArg } from "./helpers";
 import { INSTALL_MUTATION, IS_INSTALLED_QUERY } from "./graphql/settings";
 import {
     CREATE_CONTENT_MODEL_GROUP_MUTATION,
@@ -34,16 +34,16 @@ import { ApiKey } from "@webiny/api-security-tenancy/types";
 import elasticSearchPlugins from "../../src/content/plugins/es";
 import fieldsStoragePlugins from "../../src/content/plugins/fieldsStorage";
 
-export type GQLHandlerCallableArgsType = {
-    permissions?: PermissionsArgType[];
+export interface GQLHandlerCallableArgs {
+    permissions?: PermissionsArg[];
     identity?: SecurityIdentity;
     plugins?: any[];
     path: string;
-};
+}
 
 const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
 
-export const useGqlHandler = (args?: GQLHandlerCallableArgsType) => {
+export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
     const tenant = { id: "root", name: "Root", parent: null };
     const { permissions, identity, plugins = [], path } = args || {};
 

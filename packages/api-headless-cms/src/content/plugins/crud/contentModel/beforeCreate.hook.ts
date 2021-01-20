@@ -1,13 +1,13 @@
-import { CmsContentModelType, CmsContext } from "@webiny/api-headless-cms/types";
+import { CmsContentModel, CmsContext } from "@webiny/api-headless-cms/types";
 import camelCase from "lodash/camelCase";
 
 const MAX_MODEL_ID_SEARCH_AMOUNT = 50;
 
-type ArgsType = {
+interface Args {
     context: CmsContext;
-    model: CmsContentModelType;
-};
-export const beforeCreateHook = async (args: ArgsType) => {
+    model: CmsContentModel;
+}
+export const beforeCreateHook = async (args: Args) => {
     const { context, model } = args;
     const { name, modelId } = model;
     // If there is a modelId assigned, check if it's unique ...

@@ -25,5 +25,5 @@ module.exports = {
         peerDependencies: true
     },
     ignoreDirs: ["node_modules/", "dist/", "build/"],
-    packages: ["packages/*", "api/code/api", "apps/admin/code", "apps/site/code"]
+    packages: ["packages/*", "api/code/api", "apps/admin/code", "apps/website/code"]
 };

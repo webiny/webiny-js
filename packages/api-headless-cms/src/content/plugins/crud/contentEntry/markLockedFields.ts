@@ -1,17 +1,17 @@
 import {
-    CmsContentEntryType,
-    CmsContentModelType,
+    CmsContentEntry,
+    CmsContentModel,
     CmsContext,
     CmsModelLockedFieldPlugin
 } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
 
-type ArgsType = {
-    model: CmsContentModelType;
-    entry: CmsContentEntryType;
+interface Args {
+    model: CmsContentModel;
+    entry: CmsContentEntry;
     context: CmsContext;
-};
-export const markLockedFields = async ({ model, context }: ArgsType): Promise<void> => {
+}
+export const markLockedFields = async ({ model, context }: Args): Promise<void> => {
     const cmsLockedFieldPlugins = context.plugins.byType<CmsModelLockedFieldPlugin>(
         "cms-model-locked-field"
     );

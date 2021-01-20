@@ -34,17 +34,18 @@ export const ConfigureWebsiteUrlMessage = ({ websiteUrl }) => {
     const isLocalHost = websiteUrl && websiteUrl.includes("localhost");
     return (
         <span className={confirmationMessageStyles}>
-            {t`No site is running at`} <strong>{websiteUrl}</strong>.
+            {t`No website is running at`} <strong>{websiteUrl}</strong>.
             <br />
             <br />
             {isLocalHost ? (
                 <span>
                     {t`Either start the server by running`}{" "}
-                    <code>cd apps/site/code && yarn start</code>{" "}
+                    <code>cd apps/website/code && yarn start</code>{" "}
                 </span>
             ) : (
                 <span>
-                    {t`Either deploy the site by running`} <code>yarn webiny deploy apps/site</code>{" "}
+                    {t`Either deploy the website by running`}{" "}
+                    <code>yarn webiny deploy apps/website</code>{" "}
                 </span>
             )}
             <br />

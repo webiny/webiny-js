@@ -211,7 +211,7 @@ const PageBuilderCategoriesDataList = ({ canCreate }: PageBuilderCategoriesDataL
             }
         >
             {({ data }) => (
-                <ScrollList>
+                <ScrollList data-testid="default-data-list">
                     {data.map(item => (
                         <ListItem key={item.slug} selected={item.slug === slug}>
                             <ListItemText

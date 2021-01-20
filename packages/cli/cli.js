@@ -16,8 +16,8 @@ yargs
         if (msg) {
             if (msg.includes("Not enough non-option arguments")) {
                 console.log();
-                context.log(red("Command was not invoked as expected!"));
-                context.error(
+                context.error(red("Command was not invoked as expected!"));
+                context.info(
                     `Some non-optional arguments are missing. See the usage examples printed below.`
                 );
                 console.log();
@@ -32,17 +32,18 @@ yargs
                     .map(v => v.trim());
 
                 console.log();
-                context.log(red("Command was not invoked as expected!"));
-                context.error(
+                context.error(red("Command was not invoked as expected!"));
+                context.info(
                     `Missing required argument(s): ${args
                         .map(arg => red(arg))
                         .join(", ")}. See the usage examples printed below.`
                 );
                 console.log();
                 command.showHelp();
+                return;
             }
             console.log();
-            context.log(red("Command execution was aborted!"));
+            context.error(red("Command execution was aborted!"));
             context.error(msg);
             console.log();
 

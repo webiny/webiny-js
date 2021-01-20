@@ -28,10 +28,12 @@ const processHooks = async (hook, { context, ...options }) => {
         try {
             await plugins[i].hook(options, context);
         } catch (err) {
-            console.log(`🚨 Hook ${green(plugins[i].name)} encountered an error: ${err.message}`);
+            context.error(`Hook ${green(plugins[i].name)} encountered an error: ${err.message}`);
         }
     }
 };
+
+const SECRETS_PROVIDER = process.env.PULUMI_SECRETS_PROVIDER;
 
 module.exports = async (inputs, context) => {
     const start = new Date();
@@ -49,7 +51,17 @@ module.exports = async (inputs, context) => {
     if (build) {
         await execa(
             "webiny",
-            ["build", stackDir, "--env", inputs.env, "--debug", Boolean(inputs.debug)],
+            [
+                "workspaces",
+                "run",
+                "build",
+                "--folder",
+                stackDir,
+                "--env",
+                inputs.env,
+                "--debug",
+                Boolean(inputs.debug)
+            ],
             {
                 stdio: "inherit"
             }
@@ -68,7 +80,7 @@ module.exports = async (inputs, context) => {
             { command: ["stack", "select", env] },
             {
                 args: {
-                    secretsProvider: "passphrase"
+                    secretsProvider: SECRETS_PROVIDER
                 }
             }
         );
@@ -81,7 +93,7 @@ module.exports = async (inputs, context) => {
             { command: ["stack", "init", env] },
             {
                 args: {
-                    secretsProvider: "passphrase"
+                    secretsProvider: SECRETS_PROVIDER
                 }
             }
         );
@@ -92,13 +104,13 @@ module.exports = async (inputs, context) => {
     const hookDeployArgs = { isFirstDeploy, context, env, stack: stackName };
 
     if (inputs.preview) {
-        console.log(`Skipped "hook-before-deploy" hook.`);
+        context.info(`Skipped "hook-before-deploy" hook.`);
     } else {
-        console.log(`💡 Running "hook-before-deploy" hook...`);
+        context.info(`Running "hook-before-deploy" hook...`);
         await processHooks("hook-before-deploy", hookDeployArgs);
 
         const continuing = inputs.preview ? `Previewing stack...` : `Deploying stack...`;
-        console.log(`${green("✔")} Hook "hook-before-deploy" completed. ${continuing}\n`);
+        context.success(`Hook "hook-before-deploy" completed. ${continuing}`);
     }
 
     if (inputs.preview) {
@@ -114,7 +126,7 @@ module.exports = async (inputs, context) => {
             args: {
                 yes: true,
                 skipPreview: true,
-                secretsProvider: "passphrase"
+                secretsProvider: SECRETS_PROVIDER
             },
             execa: {
                 stdio: "inherit"
@@ -124,17 +136,19 @@ module.exports = async (inputs, context) => {
 
     const duration = getDuration();
     if (inputs.preview) {
-        console.log(`\n🎉 Done! Preview finished in ${green(duration + "s")}.\n`);
+        console.log();
+        context.success(`Done! Preview finished in ${green(duration + "s")}.`);
     } else {
-        console.log(`\n🎉 Done! Deploy finished in ${green(duration + "s")}.\n`);
+        console.log();
+        context.success(`Done! Deploy finished in ${green(duration + "s")}.`);
         notify({ message: `"${stack}" stack deployed in ${duration}s.` });
     }
 
     if (inputs.preview) {
-        console.log(`Skipped "hook-after-deploy" hook.`);
+        context.info(`Skipped "hook-after-deploy" hook.`);
     } else {
-        console.log(`💡 Running "hook-after-deploy" hook...`);
+        context.info(`Running "hook-after-deploy" hook...`);
         await processHooks("hook-after-deploy", hookDeployArgs);
-        console.log(`${green("✔")} Hook "hook-after-deploy" completed.\n`);
+        context.success(`Hook "hook-after-deploy" completed.`);
     }
 };

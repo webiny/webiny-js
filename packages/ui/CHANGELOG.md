@@ -3,6 +3,136 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.5...v5.0.0-beta.0) (2021-01-11)
+
+**Note:** Version bump only for package @webiny/ui
+
+
+
+
+
+# [5.0.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.4...v5.0.0-beta.5) (2021-01-11)
+
+**Note:** Version bump only for package @webiny/ui
+
+
+
+
+
+# [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-01-11)
+
+**Note:** Version bump only for package @webiny/ui
+
+
+
+
+
+# [5.0.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.2...v5.0.0-beta.3) (2021-01-11)
+
+**Note:** Version bump only for package @webiny/ui
+
+
+
+
+
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.2) (2021-01-11)
+
+
+### Bug Fixes
+
+* **autocomplete:** clear input value on select ([db7821f](https://github.com/webiny/webiny-js/commit/db7821f891821731386b0664d657178e35629484))
+* publish entry on revisions page ([#1364](https://github.com/webiny/webiny-js/issues/1364)) ([542d1d4](https://github.com/webiny/webiny-js/commit/542d1d461403940c4a2fa71956c0c4ffd5fcf10f))
+* **ui:** hide accordion item content when closed ([e031748](https://github.com/webiny/webiny-js/commit/e031748eab6d2f0dfb6b07122304d5eb883efa2c))
+* **ui:** make sure editor element ID never starts with a number ([15027c8](https://github.com/webiny/webiny-js/commit/15027c8f0e9bc8ac2705e896fa0f5dab03c923da))
+* **ui:** pass `MosaicProps` to "Columned" component ([f62b56f](https://github.com/webiny/webiny-js/commit/f62b56fa6075f7d74b84ed87a97e5b29b742d58f))
+* **ui:** remove `isNaN` usage ([fdf535b](https://github.com/webiny/webiny-js/commit/fdf535bc7a3d9f88efacfbeab18e51ff3e79f051))
+* **ui:** update `AccordionItem` style when visible ([bf6810b](https://github.com/webiny/webiny-js/commit/bf6810b9f9beb70659ad20412059135713e522d9))
+* **ui:** update `CircularProgress` styles ([abeb003](https://github.com/webiny/webiny-js/commit/abeb0039f90b4f83aa5f5f96b297d82a8b5c1ede))
+* **ui:** update Accordion content style ([d5cece5](https://github.com/webiny/webiny-js/commit/d5cece5bf9fe9610f257cb4bd1321b9a11973e44))
+* `activeIndex` logic ([0767f87](https://github.com/webiny/webiny-js/commit/0767f87316ca5990a5d1c87745d8e650b7dd42de))
+* add filtering icon ([0f88726](https://github.com/webiny/webiny-js/commit/0f88726f15d6526ca69deedcd264272666f11165))
+* add icon ([1f39d6f](https://github.com/webiny/webiny-js/commit/1f39d6f77e776d9db7b972a3073689d8d89166a8))
+* adjust `SortersProp` (allow `string`) ([1120766](https://github.com/webiny/webiny-js/commit/11207668196efcf5e69f773c30f7bff5ab42167c))
+* bring back next/previous page buttons ([4ef63e8](https://github.com/webiny/webiny-js/commit/4ef63e8ee01147eba5786b0cc999575b1dff6a6a))
+* fix eslint errors ([8ad44ab](https://github.com/webiny/webiny-js/commit/8ad44ab12cf1811e8c9d24d94fc34385e220069c))
+* hardcode `nuka-carousel` package version ([658d534](https://github.com/webiny/webiny-js/commit/658d53418e4825bdb5695e350db22abcfafc8795))
+* merge `new-security` into `master` ([da26908](https://github.com/webiny/webiny-js/commit/da269089ebaf18cc00c43919688fc4a005314d72))
+* move pagination props into a separate `pagination` ([6d944ea](https://github.com/webiny/webiny-js/commit/6d944eac291e893c819c0088610fca8828bd3b73))
+* prettier and eslint run for v5 ([3069a33](https://github.com/webiny/webiny-js/commit/3069a33ccef2fd3767818b274a730df28cecaf5b))
+* remove SSR related code ([ce28bb0](https://github.com/webiny/webiny-js/commit/ce28bb0064eea07118fdd0f355ee87fce32dadbd))
+* remove TS files and import types from original package ([cf33f14](https://github.com/webiny/webiny-js/commit/cf33f14db9b314d9f92d4d7f877ca8be4bb1d409))
+* replace overflow `scroll` with `auto` ([0c98e68](https://github.com/webiny/webiny-js/commit/0c98e68ca5d9385ab6c269451fa2a0e57773154e))
+* revert to React 16.14.0 ([db2c17d](https://github.com/webiny/webiny-js/commit/db2c17df8dbcd33ce8518c9edcdc5db911571dd1))
+* **code-format:** update configs for prettier and eslint ([#1237](https://github.com/webiny/webiny-js/issues/1237)) ([5ff6d22](https://github.com/webiny/webiny-js/commit/5ff6d22f427093a52560963770dadf96d8e6685b))
+
+
+### Features
+
+* **ui:** add `value` & `updateValue` props ([359f02b](https://github.com/webiny/webiny-js/commit/359f02be200275cb8e6b7c29350b7036a00faa0d))
+* **ui:** use `className` prop to root component ([f1c66d4](https://github.com/webiny/webiny-js/commit/f1c66d4020ab8ba9357a803867de7aca474dfed6))
+* add `themeColors` to "TextColor" tool config ([006b378](https://github.com/webiny/webiny-js/commit/006b37864f655e92a879066a209ad9432232cac2))
+* migrate security to v5 ([d8f2b76](https://github.com/webiny/webiny-js/commit/d8f2b76738de99772a5285b9ceae1f5969f793ed))
+* remove roles ([714a9de](https://github.com/webiny/webiny-js/commit/714a9de25fe30e29cfd4065cd6d2285bf4b6a44e))
+* RichTextEditor component ([9552955](https://github.com/webiny/webiny-js/commit/9552955600d77729fc0b814bb34ed4696d30e2f4))
+* switch PageBuilder Slate to EditorJS ([#1338](https://github.com/webiny/webiny-js/issues/1338)) ([2710bea](https://github.com/webiny/webiny-js/commit/2710beac17d619a7eb7e55d3613a27833d3b6e04))
+* **app-page-builder:** switch redux for recoil ([a1c5f18](https://github.com/webiny/webiny-js/commit/a1c5f18e271d27a6e65a912014de66dc048741a9))
+* **ui:** add `label` & `description` in "RichTextEditor" ([70769a3](https://github.com/webiny/webiny-js/commit/70769a3f6e50226158a067345542fa2eaf7b0ff4))
+* **ui:** mark `onChange` & `value` props as optional ([cca78d5](https://github.com/webiny/webiny-js/commit/cca78d50ba4668178aab0dbd48e5ef17821ce479))
+* **ui:** update `AccordionItem` content styles ([2ab8d9c](https://github.com/webiny/webiny-js/commit/2ab8d9c4b9cbe650976f2b82a488118c9b88c248))
+
+
+
+
+
+# [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.1) (2021-01-11)
+
+
+### Bug Fixes
+
+* **autocomplete:** clear input value on select ([db7821f](https://github.com/webiny/webiny-js/commit/db7821f891821731386b0664d657178e35629484))
+* publish entry on revisions page ([#1364](https://github.com/webiny/webiny-js/issues/1364)) ([542d1d4](https://github.com/webiny/webiny-js/commit/542d1d461403940c4a2fa71956c0c4ffd5fcf10f))
+* **ui:** hide accordion item content when closed ([e031748](https://github.com/webiny/webiny-js/commit/e031748eab6d2f0dfb6b07122304d5eb883efa2c))
+* **ui:** make sure editor element ID never starts with a number ([15027c8](https://github.com/webiny/webiny-js/commit/15027c8f0e9bc8ac2705e896fa0f5dab03c923da))
+* **ui:** pass `MosaicProps` to "Columned" component ([f62b56f](https://github.com/webiny/webiny-js/commit/f62b56fa6075f7d74b84ed87a97e5b29b742d58f))
+* **ui:** remove `isNaN` usage ([fdf535b](https://github.com/webiny/webiny-js/commit/fdf535bc7a3d9f88efacfbeab18e51ff3e79f051))
+* **ui:** update `AccordionItem` style when visible ([bf6810b](https://github.com/webiny/webiny-js/commit/bf6810b9f9beb70659ad20412059135713e522d9))
+* **ui:** update `CircularProgress` styles ([abeb003](https://github.com/webiny/webiny-js/commit/abeb0039f90b4f83aa5f5f96b297d82a8b5c1ede))
+* **ui:** update Accordion content style ([d5cece5](https://github.com/webiny/webiny-js/commit/d5cece5bf9fe9610f257cb4bd1321b9a11973e44))
+* `activeIndex` logic ([0767f87](https://github.com/webiny/webiny-js/commit/0767f87316ca5990a5d1c87745d8e650b7dd42de))
+* add filtering icon ([0f88726](https://github.com/webiny/webiny-js/commit/0f88726f15d6526ca69deedcd264272666f11165))
+* add icon ([1f39d6f](https://github.com/webiny/webiny-js/commit/1f39d6f77e776d9db7b972a3073689d8d89166a8))
+* adjust `SortersProp` (allow `string`) ([1120766](https://github.com/webiny/webiny-js/commit/11207668196efcf5e69f773c30f7bff5ab42167c))
+* bring back next/previous page buttons ([4ef63e8](https://github.com/webiny/webiny-js/commit/4ef63e8ee01147eba5786b0cc999575b1dff6a6a))
+* fix eslint errors ([8ad44ab](https://github.com/webiny/webiny-js/commit/8ad44ab12cf1811e8c9d24d94fc34385e220069c))
+* hardcode `nuka-carousel` package version ([658d534](https://github.com/webiny/webiny-js/commit/658d53418e4825bdb5695e350db22abcfafc8795))
+* merge `new-security` into `master` ([da26908](https://github.com/webiny/webiny-js/commit/da269089ebaf18cc00c43919688fc4a005314d72))
+* move pagination props into a separate `pagination` ([6d944ea](https://github.com/webiny/webiny-js/commit/6d944eac291e893c819c0088610fca8828bd3b73))
+* prettier and eslint run for v5 ([3069a33](https://github.com/webiny/webiny-js/commit/3069a33ccef2fd3767818b274a730df28cecaf5b))
+* remove SSR related code ([ce28bb0](https://github.com/webiny/webiny-js/commit/ce28bb0064eea07118fdd0f355ee87fce32dadbd))
+* remove TS files and import types from original package ([cf33f14](https://github.com/webiny/webiny-js/commit/cf33f14db9b314d9f92d4d7f877ca8be4bb1d409))
+* replace overflow `scroll` with `auto` ([0c98e68](https://github.com/webiny/webiny-js/commit/0c98e68ca5d9385ab6c269451fa2a0e57773154e))
+* revert to React 16.14.0 ([db2c17d](https://github.com/webiny/webiny-js/commit/db2c17df8dbcd33ce8518c9edcdc5db911571dd1))
+* **code-format:** update configs for prettier and eslint ([#1237](https://github.com/webiny/webiny-js/issues/1237)) ([5ff6d22](https://github.com/webiny/webiny-js/commit/5ff6d22f427093a52560963770dadf96d8e6685b))
+
+
+### Features
+
+* **ui:** add `value` & `updateValue` props ([359f02b](https://github.com/webiny/webiny-js/commit/359f02be200275cb8e6b7c29350b7036a00faa0d))
+* **ui:** use `className` prop to root component ([f1c66d4](https://github.com/webiny/webiny-js/commit/f1c66d4020ab8ba9357a803867de7aca474dfed6))
+* add `themeColors` to "TextColor" tool config ([006b378](https://github.com/webiny/webiny-js/commit/006b37864f655e92a879066a209ad9432232cac2))
+* migrate security to v5 ([d8f2b76](https://github.com/webiny/webiny-js/commit/d8f2b76738de99772a5285b9ceae1f5969f793ed))
+* remove roles ([714a9de](https://github.com/webiny/webiny-js/commit/714a9de25fe30e29cfd4065cd6d2285bf4b6a44e))
+* RichTextEditor component ([9552955](https://github.com/webiny/webiny-js/commit/9552955600d77729fc0b814bb34ed4696d30e2f4))
+* switch PageBuilder Slate to EditorJS ([#1338](https://github.com/webiny/webiny-js/issues/1338)) ([2710bea](https://github.com/webiny/webiny-js/commit/2710beac17d619a7eb7e55d3613a27833d3b6e04))
+* **app-page-builder:** switch redux for recoil ([a1c5f18](https://github.com/webiny/webiny-js/commit/a1c5f18e271d27a6e65a912014de66dc048741a9))
+* **ui:** add `label` & `description` in "RichTextEditor" ([70769a3](https://github.com/webiny/webiny-js/commit/70769a3f6e50226158a067345542fa2eaf7b0ff4))
+* **ui:** mark `onChange` & `value` props as optional ([cca78d5](https://github.com/webiny/webiny-js/commit/cca78d50ba4668178aab0dbd48e5ef17821ce479))
+* **ui:** update `AccordionItem` content styles ([2ab8d9c](https://github.com/webiny/webiny-js/commit/2ab8d9c4b9cbe650976f2b82a488118c9b88c248))
+
+
+
+
+
 # [5.0.0-beta.52](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.51...v5.0.0-beta.52) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/ui

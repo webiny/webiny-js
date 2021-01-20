@@ -14,7 +14,7 @@ context("Page Builder Settings", () => {
             .click()
             .findByText("Settings updated successfully.");
 
-        cy.visit(Cypress.env("SITE_URL"))
+        cy.visit(Cypress.env("WEBSITE_URL"))
             .reloadUntil(() => {
                 // We wait until the document contains the newly added menu.
                 return Cypress.$(`:contains(New-site-name-${id})`).length;
@@ -42,7 +42,7 @@ context("Page Builder Settings", () => {
             .click()
             .findByText("Settings updated successfully.");
 
-        cy.visit(Cypress.env("SITE_URL"))
+        cy.visit(Cypress.env("WEBSITE_URL"))
             .reloadUntil(() => {
                 // We wait until the document contains the newly added menu.
                 return Cypress.$(`a[href="${facebook}"]`).length;

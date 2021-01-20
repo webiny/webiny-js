@@ -12,7 +12,7 @@ const t = i18n.ns("app-headless-cms/admin/content");
 
 const ContentEntriesContainer = () => {
     const { match } = useRouter();
-    const [contentModel, setContentModel] = useState();
+    const [contentModel, setContentModel] = useState<any>();
     const { history } = useRouter();
     const modelId = get(match, "params.modelId");
     const { showSnackbar } = useSnackbar();

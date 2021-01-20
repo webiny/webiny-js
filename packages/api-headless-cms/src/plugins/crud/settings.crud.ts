@@ -3,12 +3,11 @@ import Error from "@webiny/error";
 import { NotAuthorizedError } from "@webiny/api-security";
 import * as utils from "../../utils";
 import {
-    CmsContentModelGroupType,
+    CmsContentModelGroup,
     CmsContext,
-    CmsSettingsContextType,
-    CmsSettingsPermissionType,
-    CmsSettingsType,
-    DbItemTypes
+    CmsSettingsContext,
+    CmsSettingsPermission,
+    CmsSettings
 } from "../../types";
 
 const initialContentModelGroup = {
@@ -28,12 +27,12 @@ export default {
 
         const PK_SETTINGS = () => `${utils.createCmsPK(context)}#SETTINGS`;
 
-        const checkPermissions = (): Promise<CmsSettingsPermissionType> => {
+        const checkPermissions = (): Promise<CmsSettingsPermission> => {
             return utils.checkPermissions(context, "cms.settings");
         };
 
         const settingsGet = async () => {
-            const [[settings]] = await db.read<CmsSettingsType>({
+            const [[settings]] = await db.read<CmsSettings>({
                 ...utils.defaults.db,
                 query: { PK: PK_SETTINGS(), SK: SETTINGS_SECONDARY_KEY }
             });
@@ -41,18 +40,18 @@ export default {
             return settings;
         };
 
-        const settings: CmsSettingsContextType = {
+        const settings: CmsSettingsContext = {
             contentModelLastChange: new Date(),
             noAuth: () => {
                 return {
                     get: settingsGet
                 };
             },
-            get: async (): Promise<CmsSettingsType | null> => {
+            get: async (): Promise<CmsSettings | null> => {
                 await checkPermissions();
                 return settingsGet();
             },
-            install: async (): Promise<CmsSettingsType> => {
+            install: async (): Promise<CmsSettings> => {
                 const identity = context.security.getIdentity();
                 if (!identity) {
                     throw new NotAuthorizedError({
@@ -85,14 +84,14 @@ export default {
                 }
 
                 // Add default content model group.
-                let contentModelGroup: CmsContentModelGroupType;
+                let contentModelGroup: CmsContentModelGroup;
                 try {
                     contentModelGroup = await context.cms.groups.create(initialContentModelGroup);
                 } catch (ex) {
                     throw new Error(ex.message, "CMS_INSTALLATION_CONTENT_MODEL_GROUP_ERROR");
                 }
 
-                const model: CmsSettingsType = {
+                const model: CmsSettings = {
                     isInstalled: true,
                     contentModelLastChange: contentModelGroup.savedOn
                 };
@@ -106,14 +105,14 @@ export default {
                     data: {
                         PK: PK_SETTINGS(),
                         SK: SETTINGS_SECONDARY_KEY,
-                        TYPE: DbItemTypes.CMS_SETTINGS,
+                        TYPE: "cms.settings",
                         ...model
                     }
                 });
 
                 return model;
             },
-            updateContentModelLastChange: async (): Promise<CmsSettingsType> => {
+            updateContentModelLastChange: async (): Promise<CmsSettings> => {
                 const updatedDate = new Date();
 
                 await db.update({

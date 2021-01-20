@@ -1,4 +1,4 @@
-import { CmsContentModelGroupType } from "@webiny/api-headless-cms/types";
+import { CmsContentModelGroup } from "@webiny/api-headless-cms/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
@@ -47,7 +47,7 @@ const categoryManagerHelper = async manageOpts => {
 };
 
 describe("READ - Resolvers", () => {
-    let contentModelGroup: CmsContentModelGroupType;
+    let contentModelGroup: CmsContentModelGroup;
 
     const esCmsIndex = "root-headless-cms";
 

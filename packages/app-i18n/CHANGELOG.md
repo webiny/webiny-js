@@ -3,6 +3,120 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.5...v5.0.0-beta.0) (2021-01-11)
+
+**Note:** Version bump only for package @webiny/app-i18n
+
+
+
+
+
+# [5.0.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.4...v5.0.0-beta.5) (2021-01-11)
+
+**Note:** Version bump only for package @webiny/app-i18n
+
+
+
+
+
+# [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-01-11)
+
+**Note:** Version bump only for package @webiny/app-i18n
+
+
+
+
+
+# [5.0.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.2...v5.0.0-beta.3) (2021-01-11)
+
+**Note:** Version bump only for package @webiny/app-i18n
+
+
+
+
+
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.2) (2021-01-11)
+
+
+### Bug Fixes
+
+* add `value` as dependency to `onFormChange` callback ([eb9b56c](https://github.com/webiny/webiny-js/commit/eb9b56cac1d00bbeec0c1d504573989b24e8e4af))
+* correct vertical padding ([0c0d46a](https://github.com/webiny/webiny-js/commit/0c0d46ad5e403c39530b06eea5ffd3b93d76ca96))
+* installation, operation names, etc. ([4b06551](https://github.com/webiny/webiny-js/commit/4b06551b2e29d8ea027c20ee6ded4e349121bdc9))
+* merge `feat/v5/i18n-locale-selector` into `feat/v5/security` ([a4a31b7](https://github.com/webiny/webiny-js/commit/a4a31b770676731adebec0f4243866f880e13675))
+* merge `new-security` into `master` ([da26908](https://github.com/webiny/webiny-js/commit/da269089ebaf18cc00c43919688fc4a005314d72))
+* parse locales from localStorage correctly ([55dc183](https://github.com/webiny/webiny-js/commit/55dc183cf1740e6c959608650129a22e66029568))
+* polish visually ([5b3cfd3](https://github.com/webiny/webiny-js/commit/5b3cfd32a275f329f33e50b3290361a83fad9543))
+* prettier and eslint run for v5 ([3069a33](https://github.com/webiny/webiny-js/commit/3069a33ccef2fd3767818b274a730df28cecaf5b))
+* remove `CrudProvider` / `useCrud` ([d90db4a](https://github.com/webiny/webiny-js/commit/d90db4a7080a8545861102b86e16f40930eb795f))
+* remove content permissions section ([cc1fb1b](https://github.com/webiny/webiny-js/commit/cc1fb1bbf38626a14bc39b836b36b2c67f4ef341))
+* remove unnecessary question marks ([b54a446](https://github.com/webiny/webiny-js/commit/b54a4466a4ecc94ee65a287e11f4df037ea7eee0))
+* rename `setLocale` to `setCurrentLocale` ([b3f4c0e](https://github.com/webiny/webiny-js/commit/b3f4c0e933cca0c5bbff0b68ad4ec5ace16bca76))
+* rename package ([db8cde1](https://github.com/webiny/webiny-js/commit/db8cde192ff023565e6df73632fc9df02f09694a))
+* render locales menu/route only if allowed ([73f0b44](https://github.com/webiny/webiny-js/commit/73f0b440152c10c3bf83ff4c4c8dbd16552616a6))
+* revert to React 16.14.0 ([db2c17d](https://github.com/webiny/webiny-js/commit/db2c17df8dbcd33ce8518c9edcdc5db911571dd1))
+* simplify `x-i18n-locale` header value ([40d7249](https://github.com/webiny/webiny-js/commit/40d724912d74b6920d3120393f124a9c7528af2d))
+* update dependencies ([02eaae3](https://github.com/webiny/webiny-js/commit/02eaae31b63f9aec755d9a9773b852486741dbe3))
+* update permission description ([0dca558](https://github.com/webiny/webiny-js/commit/0dca558a9c0338451cd3ef01a84c49cf17f25452))
+* update permission renderer to use "parent" instead of "securityGroup" ([9a0882c](https://github.com/webiny/webiny-js/commit/9a0882cccaee302c7a0635b4ab2a57b98eb5801b))
+* update tsconfig references and deps ([eec7eb0](https://github.com/webiny/webiny-js/commit/eec7eb00bc276a9d1496458315b3eb9ec0930f35))
+* update types ([c247856](https://github.com/webiny/webiny-js/commit/c2478565eace799b9590c03a85480ed3e9bda532))
+* **app-i18n:** add "selected" prop ([85c7316](https://github.com/webiny/webiny-js/commit/85c731664d909a90c5c7566ab07eb26327ef13e6))
+* **code-format:** update configs for prettier and eslint ([#1237](https://github.com/webiny/webiny-js/issues/1237)) ([5ff6d22](https://github.com/webiny/webiny-js/commit/5ff6d22f427093a52560963770dadf96d8e6685b))
+
+
+### Features
+
+* add `add-webiny-package` script ([1232623](https://github.com/webiny/webiny-js/commit/12326233758bbff047e8b96f24aadb1cbaf82c9c))
+* clean up permission generation ([3970453](https://github.com/webiny/webiny-js/commit/397045387e1adac86c220fb0837e53d6588e0e58))
+* introduce `app-security-content` package ([04f0764](https://github.com/webiny/webiny-js/commit/04f076488d748d4953b00702510fe37afef2f1f9))
+* RichTextEditor component ([9552955](https://github.com/webiny/webiny-js/commit/9552955600d77729fc0b814bb34ed4696d30e2f4))
+
+
+
+
+
+# [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.1) (2021-01-11)
+
+
+### Bug Fixes
+
+* add `value` as dependency to `onFormChange` callback ([eb9b56c](https://github.com/webiny/webiny-js/commit/eb9b56cac1d00bbeec0c1d504573989b24e8e4af))
+* correct vertical padding ([0c0d46a](https://github.com/webiny/webiny-js/commit/0c0d46ad5e403c39530b06eea5ffd3b93d76ca96))
+* installation, operation names, etc. ([4b06551](https://github.com/webiny/webiny-js/commit/4b06551b2e29d8ea027c20ee6ded4e349121bdc9))
+* merge `feat/v5/i18n-locale-selector` into `feat/v5/security` ([a4a31b7](https://github.com/webiny/webiny-js/commit/a4a31b770676731adebec0f4243866f880e13675))
+* merge `new-security` into `master` ([da26908](https://github.com/webiny/webiny-js/commit/da269089ebaf18cc00c43919688fc4a005314d72))
+* parse locales from localStorage correctly ([55dc183](https://github.com/webiny/webiny-js/commit/55dc183cf1740e6c959608650129a22e66029568))
+* polish visually ([5b3cfd3](https://github.com/webiny/webiny-js/commit/5b3cfd32a275f329f33e50b3290361a83fad9543))
+* prettier and eslint run for v5 ([3069a33](https://github.com/webiny/webiny-js/commit/3069a33ccef2fd3767818b274a730df28cecaf5b))
+* remove `CrudProvider` / `useCrud` ([d90db4a](https://github.com/webiny/webiny-js/commit/d90db4a7080a8545861102b86e16f40930eb795f))
+* remove content permissions section ([cc1fb1b](https://github.com/webiny/webiny-js/commit/cc1fb1bbf38626a14bc39b836b36b2c67f4ef341))
+* remove unnecessary question marks ([b54a446](https://github.com/webiny/webiny-js/commit/b54a4466a4ecc94ee65a287e11f4df037ea7eee0))
+* rename `setLocale` to `setCurrentLocale` ([b3f4c0e](https://github.com/webiny/webiny-js/commit/b3f4c0e933cca0c5bbff0b68ad4ec5ace16bca76))
+* rename package ([db8cde1](https://github.com/webiny/webiny-js/commit/db8cde192ff023565e6df73632fc9df02f09694a))
+* render locales menu/route only if allowed ([73f0b44](https://github.com/webiny/webiny-js/commit/73f0b440152c10c3bf83ff4c4c8dbd16552616a6))
+* revert to React 16.14.0 ([db2c17d](https://github.com/webiny/webiny-js/commit/db2c17df8dbcd33ce8518c9edcdc5db911571dd1))
+* simplify `x-i18n-locale` header value ([40d7249](https://github.com/webiny/webiny-js/commit/40d724912d74b6920d3120393f124a9c7528af2d))
+* update dependencies ([02eaae3](https://github.com/webiny/webiny-js/commit/02eaae31b63f9aec755d9a9773b852486741dbe3))
+* update permission description ([0dca558](https://github.com/webiny/webiny-js/commit/0dca558a9c0338451cd3ef01a84c49cf17f25452))
+* update permission renderer to use "parent" instead of "securityGroup" ([9a0882c](https://github.com/webiny/webiny-js/commit/9a0882cccaee302c7a0635b4ab2a57b98eb5801b))
+* update tsconfig references and deps ([eec7eb0](https://github.com/webiny/webiny-js/commit/eec7eb00bc276a9d1496458315b3eb9ec0930f35))
+* update types ([c247856](https://github.com/webiny/webiny-js/commit/c2478565eace799b9590c03a85480ed3e9bda532))
+* **app-i18n:** add "selected" prop ([85c7316](https://github.com/webiny/webiny-js/commit/85c731664d909a90c5c7566ab07eb26327ef13e6))
+* **code-format:** update configs for prettier and eslint ([#1237](https://github.com/webiny/webiny-js/issues/1237)) ([5ff6d22](https://github.com/webiny/webiny-js/commit/5ff6d22f427093a52560963770dadf96d8e6685b))
+
+
+### Features
+
+* add `add-webiny-package` script ([1232623](https://github.com/webiny/webiny-js/commit/12326233758bbff047e8b96f24aadb1cbaf82c9c))
+* clean up permission generation ([3970453](https://github.com/webiny/webiny-js/commit/397045387e1adac86c220fb0837e53d6588e0e58))
+* introduce `app-security-content` package ([04f0764](https://github.com/webiny/webiny-js/commit/04f076488d748d4953b00702510fe37afef2f1f9))
+* RichTextEditor component ([9552955](https://github.com/webiny/webiny-js/commit/9552955600d77729fc0b814bb34ed4696d30e2f4))
+
+
+
+
+
 # [5.0.0-beta.52](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.51...v5.0.0-beta.52) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/app-i18n

@@ -52,7 +52,7 @@ const plugins: PbEditorPageSettingsPlugin[] = [
         name: "pb-editor-page-settings-social",
         type: "pb-editor-page-settings",
         title: "Social media",
-        description: "Set share images and settings for social media sites.",
+        description: "Set share images and settings for social media websites.",
         icon: <SocialIcon />,
         fields: `
             social {

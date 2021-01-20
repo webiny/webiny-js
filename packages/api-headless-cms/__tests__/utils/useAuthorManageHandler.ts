@@ -1,5 +1,5 @@
 import { useContentGqlHandler } from "./useContentGqlHandler";
-import { GQLHandlerCallableArgsType } from "./useGqlHandler";
+import { GQLHandlerCallableArgs } from "./useGqlHandler";
 
 const authorFields = `
     id
@@ -136,7 +136,7 @@ const unpublishAuthorMutation = /* GraphQL */ `
     }
 `;
 
-export const useAuthorManageHandler = (options: GQLHandlerCallableArgsType) => {
+export const useAuthorManageHandler = (options: GQLHandlerCallableArgs) => {
     const contentHandler = useContentGqlHandler(options);
 
     return {

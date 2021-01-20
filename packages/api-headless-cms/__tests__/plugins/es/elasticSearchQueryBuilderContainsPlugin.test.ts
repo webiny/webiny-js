@@ -1,6 +1,6 @@
 import { elasticSearchQueryBuilderContainsPlugin } from "../../../src/content/plugins/es/elasticSearchQueryBuilderContainsPlugin";
 import { createBlankQuery } from "./helpers";
-import { ElasticSearchQueryType } from "@webiny/api-headless-cms/types";
+import { ElasticsearchQuery } from "@webiny/api-headless-cms/types";
 
 describe("elasticSearchQueryBuilderContainsPlugin", () => {
     const plugin = elasticSearchQueryBuilderContainsPlugin();
@@ -18,7 +18,7 @@ describe("elasticSearchQueryBuilderContainsPlugin", () => {
             value: "Doe"
         });
 
-        const expected: ElasticSearchQueryType = {
+        const expected: ElasticsearchQuery = {
             mustNot: [],
             must: [
                 {

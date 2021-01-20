@@ -7,7 +7,7 @@ const execa = require("execa");
     // Build all repo packages
     console.log(`🏗  Building packages...`);
     try {
-        await execa("lerna", ["run", "build", "--stream"], {
+        await execa("yarn", ["build"], {
             stdio: "inherit"
         });
         console.log(`✅️ Packages were built successfully!`);

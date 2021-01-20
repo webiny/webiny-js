@@ -1,69 +1,63 @@
 import {
-    CmsContentEntryListOptionsType,
-    CmsContentEntryListSortType,
-    CmsContentEntryListWhereType,
-    CmsContentEntryType,
-    CmsContentIndexEntryType,
-    CmsContentModelFieldType,
-    CmsContentModelType,
+    CmsContentEntryListOptions,
+    CmsContentEntryListSort,
+    CmsContentEntryListWhere,
+    CmsContentEntry,
+    CmsContentIndexEntry,
+    CmsContentModelField,
+    CmsContentModel,
     CmsContext,
-    CmsModelFieldToElasticSearchPlugin,
+    CmsModelFieldToElasticsearchPlugin,
     CmsModelFieldToGraphQLPlugin,
-    ElasticSearchQueryBuilderPlugin,
-    ElasticSearchQueryType
+    ElasticsearchQueryBuilderPlugin,
+    ElasticsearchQuery,
+    CmsContentEntryListArgs
 } from "@webiny/api-headless-cms/types";
-import { decodeElasticSearchCursor } from "@webiny/api-headless-cms/utils";
+import { decodeElasticsearchCursor } from "@webiny/api-headless-cms/utils";
 import Error from "@webiny/error";
 import lodashCloneDeep from "lodash/cloneDeep";
 
-type ModelFieldType = {
+interface ModelField {
     unmappedType?: string;
     isSearchable: boolean;
     isSortable: boolean;
     type: string;
     isSystemField?: boolean;
-};
+}
 
-type ModelFieldsType = Record<string, ModelFieldType>;
+type ModelFields = Record<string, ModelField>;
 
-type CreateElasticSearchParamsArgType = {
-    where?: CmsContentEntryListWhereType;
-    sort?: CmsContentEntryListSortType;
-    limit: number;
-    after?: string;
-};
-
-type CreateElasticSearchParamsType = {
+interface CreateElasticsearchParams {
     context: CmsContext;
-    model: CmsContentModelType;
-    args: CreateElasticSearchParamsArgType;
+    model: CmsContentModel;
+    args: CmsContentEntryListArgs;
     ownedBy?: string;
     parentObject?: string;
-    options?: CmsContentEntryListOptionsType;
-};
+    options?: CmsContentEntryListOptions;
+}
 
-type CreateElasticSearchSortParamsType = {
-    sort: CmsContentEntryListSortType;
-    modelFields: ModelFieldsType;
+interface CreateElasticsearchSortParams {
+    sort: CmsContentEntryListSort;
+    modelFields: ModelFields;
     parentObject?: string;
-    model: CmsContentModelType;
-};
+    model: CmsContentModel;
+}
 
-type CreateElasticSearchQueryArgsType = {
-    model: CmsContentModelType;
+interface CreateElasticsearchQueryArgs {
+    model: CmsContentModel;
     context: CmsContext;
-    where: CmsContentEntryListWhereType;
-    modelFields: ModelFieldsType;
+    where: CmsContentEntryListWhere;
+    modelFields: ModelFields;
     ownedBy?: string;
     parentObject?: string;
-    options?: CmsContentEntryListOptionsType;
-};
+    options?: CmsContentEntryListOptions;
+}
 
-type ElasticSearchSortParamType = {
+interface ElasticsearchSortParam {
     order: string;
-};
+}
 
-type ElasticSearchSortFieldsType = Record<string, ElasticSearchSortParamType>;
+type ElasticsearchSortFields = Record<string, ElasticsearchSortParam>;
 
 const parseWhereKeyRegExp = new RegExp(/^([a-zA-Z0-9]+)(_[a-zA-Z0-9_]+)?$/);
 
@@ -86,9 +80,9 @@ const parseWhereKey = (key: string) => {
 
 const sortRegExp = new RegExp(/^([a-zA-Z-0-9_]+)_(ASC|DESC)$/);
 
-const createElasticSearchSortParams = (
-    args: CreateElasticSearchSortParamsType
-): ElasticSearchSortFieldsType[] => {
+const createElasticsearchSortParams = (
+    args: CreateElasticsearchSortParams
+): ElasticsearchSortFields[] => {
     const { sort, modelFields, parentObject } = args;
 
     if (!sort) {
@@ -130,12 +124,10 @@ const createElasticSearchSortParams = (
     });
 };
 
-const createInitialQueryValue = (
-    args: CreateElasticSearchQueryArgsType
-): ElasticSearchQueryType => {
+const createInitialQueryValue = (args: CreateElasticsearchQueryArgs): ElasticsearchQuery => {
     const { ownedBy, options, model, context } = args;
 
-    const query: ElasticSearchQueryType = {
+    const query: ElasticsearchQuery = {
         match: [],
         must: [
             // always search by given model id
@@ -180,9 +172,9 @@ const createInitialQueryValue = (
 /*
  * Iterate through where keys and apply plugins where necessary
  */
-const execElasticSearchBuildQueryPlugins = (
-    args: CreateElasticSearchQueryArgsType
-): ElasticSearchQueryType => {
+const execElasticsearchBuildQueryPlugins = (
+    args: CreateElasticsearchQueryArgs
+): ElasticsearchQuery => {
     const { where, modelFields, parentObject, context } = args;
     const query = createInitialQueryValue(args);
 
@@ -193,7 +185,7 @@ const execElasticSearchBuildQueryPlugins = (
         return `${parentObject}.${field}`;
     };
 
-    const plugins = context.plugins.byType<ElasticSearchQueryBuilderPlugin>(
+    const plugins = context.plugins.byType<ElasticsearchQueryBuilderPlugin>(
         "elastic-search-query-builder"
     );
     if (!where || Object.keys(where).length === 0) {
@@ -232,7 +224,7 @@ const execElasticSearchBuildQueryPlugins = (
 const ES_LIMIT_MAX = 10000;
 const ES_LIMIT_DEFAULT = 50;
 
-export const createElasticSearchLimit = (
+export const createElasticsearchLimit = (
     limit: number,
     defaultValue = ES_LIMIT_DEFAULT
 ): number => {
@@ -248,11 +240,8 @@ export const createElasticSearchLimit = (
 /*
  * Create an object with key fieldType and options for that field
  */
-const createModelFieldOptions = (
-    context: CmsContext,
-    model: CmsContentModelType
-): ModelFieldsType => {
-    const systemFields: ModelFieldsType = {
+const createModelFieldOptions = (context: CmsContext, model: CmsContentModel): ModelFields => {
+    const systemFields: ModelFields = {
         id: {
             type: "text",
             isSystemField: true,
@@ -276,7 +265,7 @@ const createModelFieldOptions = (
     };
     // collect all unmappedType from elastic plugins
     const unmappedTypes = context.plugins
-        .byType<CmsModelFieldToElasticSearchPlugin>("cms-model-field-to-elastic-search")
+        .byType<CmsModelFieldToElasticsearchPlugin>("cms-model-field-to-elastic-search")
         .reduce((acc, plugin) => {
             if (!plugin.unmappedType) {
                 return acc;
@@ -315,13 +304,13 @@ const createModelFieldOptions = (
     }, systemFields);
 };
 
-export const createElasticSearchParams = (params: CreateElasticSearchParamsType) => {
+export const createElasticsearchParams = (params: CreateElasticsearchParams) => {
     const { context, model, args, ownedBy, parentObject = null, options } = params;
     const { where, after, limit, sort } = args;
 
     const modelFields = createModelFieldOptions(context, model);
 
-    const query = execElasticSearchBuildQueryPlugins({
+    const query = execElasticsearchBuildQueryPlugins({
         model,
         context,
         where,
@@ -341,38 +330,35 @@ export const createElasticSearchParams = (params: CreateElasticSearchParamsType)
                 should: query.should.length > 0 ? query.should : undefined
             }
         },
-        sort: createElasticSearchSortParams({ sort, modelFields, parentObject, model }),
+        sort: createElasticsearchSortParams({ sort, modelFields, parentObject, model }),
         size: limit + 1,
         // eslint-disable-next-line
-        search_after: decodeElasticSearchCursor(after) || undefined
+        search_after: decodeElasticsearchCursor(after) || undefined
     };
 };
 
-type SetupEntriesIndexHelpersArgsType = {
+interface SetupEntriesIndexHelpersArgs {
     context: CmsContext;
-    model: CmsContentModelType;
-};
-type PrepareElasticSearchDataArgsType = SetupEntriesIndexHelpersArgsType & {
-    storageEntry: CmsContentEntryType;
-    originalEntry: CmsContentEntryType;
-};
-type ExtractEntryFromIndexArgsType = SetupEntriesIndexHelpersArgsType & {
-    entry: CmsContentIndexEntryType;
-};
-type ExtractEntriesFromIndexArgsType = SetupEntriesIndexHelpersArgsType & {
-    entries: CmsContentIndexEntryType[];
-};
+    model: CmsContentModel;
+}
+interface PrepareElasticsearchDataArgs extends SetupEntriesIndexHelpersArgs {
+    storageEntry: CmsContentEntry;
+    originalEntry: CmsContentEntry;
+}
+interface ExtractEntriesFromIndexArgs extends SetupEntriesIndexHelpersArgs {
+    entries: CmsContentIndexEntry[];
+}
 
-const setupEntriesIndexHelpers = ({ context, model }: SetupEntriesIndexHelpersArgsType) => {
-    const plugins = context.plugins.byType<CmsModelFieldToElasticSearchPlugin>(
+const setupEntriesIndexHelpers = ({ context, model }: SetupEntriesIndexHelpersArgs) => {
+    const plugins = context.plugins.byType<CmsModelFieldToElasticsearchPlugin>(
         "cms-model-field-to-elastic-search"
     );
-    const fieldsAsObject: Record<string, CmsContentModelFieldType> = {};
+    const fieldsAsObject: Record<string, CmsContentModelField> = {};
     for (const field of model.fields) {
         fieldsAsObject[field.fieldId] = field;
     }
 
-    const fieldIndexPlugins: Record<string, CmsModelFieldToElasticSearchPlugin> = {};
+    const fieldIndexPlugins: Record<string, CmsModelFieldToElasticsearchPlugin> = {};
     for (const plugin of plugins.reverse()) {
         if (fieldIndexPlugins[plugin.fieldType]) {
             continue;
@@ -388,15 +374,13 @@ const setupEntriesIndexHelpers = ({ context, model }: SetupEntriesIndexHelpersAr
     };
 };
 
-export const prepareEntryToIndex = (
-    args: PrepareElasticSearchDataArgsType
-): CmsContentIndexEntryType => {
+export const prepareEntryToIndex = (args: PrepareElasticsearchDataArgs): CmsContentIndexEntry => {
     const { context, originalEntry, storageEntry, model } = args;
-    const fieldToElasticSearchPlugins = context.plugins.byType<CmsModelFieldToElasticSearchPlugin>(
+    const fieldToElasticsearchPlugins = context.plugins.byType<CmsModelFieldToElasticsearchPlugin>(
         "cms-model-field-to-elastic-search"
     );
     // we will use this plugin if no targeted plugin found
-    const defaultIndexFieldPlugin = fieldToElasticSearchPlugins.find(
+    const defaultIndexFieldPlugin = fieldToElasticsearchPlugins.find(
         plugin => plugin.fieldType === "*"
     );
 
@@ -408,23 +392,23 @@ export const prepareEntryToIndex = (
         mappedPluginFieldTypes[plugin.fieldType] = plugin;
     }
 
-    const fieldsAsObject: Record<string, CmsContentModelFieldType> = {};
+    const fieldsAsObject: Record<string, CmsContentModelField> = {};
     for (const field of model.fields) {
         fieldsAsObject[field.fieldId] = field;
     }
 
-    const mappedFieldToElasticSearchPlugins: Record<
+    const mappedFieldToElasticsearchPlugins: Record<
         string,
-        CmsModelFieldToElasticSearchPlugin
+        CmsModelFieldToElasticsearchPlugin
     > = {};
-    for (const plugin of fieldToElasticSearchPlugins.reverse()) {
-        if (mappedFieldToElasticSearchPlugins[plugin.fieldType]) {
+    for (const plugin of fieldToElasticsearchPlugins.reverse()) {
+        if (mappedFieldToElasticsearchPlugins[plugin.fieldType]) {
             continue;
         }
-        mappedFieldToElasticSearchPlugins[plugin.fieldType] = plugin;
+        mappedFieldToElasticsearchPlugins[plugin.fieldType] = plugin;
     }
 
-    let toIndexEntry: CmsContentIndexEntryType = {
+    let toIndexEntry: CmsContentIndexEntry = {
         ...lodashCloneDeep(storageEntry),
         rawValues: {}
     };
@@ -443,7 +427,7 @@ export const prepareEntryToIndex = (
         }
 
         const targetFieldPlugin =
-            mappedFieldToElasticSearchPlugins[field.type] || defaultIndexFieldPlugin;
+            mappedFieldToElasticsearchPlugins[field.type] || defaultIndexFieldPlugin;
         // we decided to take only last registered plugin for given field type
         if (targetFieldPlugin && targetFieldPlugin.toIndex) {
             const newEntryValues = targetFieldPlugin.toIndex({
@@ -468,7 +452,7 @@ export const extractEntriesFromIndex = ({
     context,
     entries,
     model
-}: ExtractEntriesFromIndexArgsType): CmsContentEntryType[] => {
+}: ExtractEntriesFromIndexArgs): CmsContentEntry[] => {
     const { fieldsAsObject, fieldIndexPlugins, defaultIndexFieldPlugin } = setupEntriesIndexHelpers(
         {
             context,
@@ -486,9 +470,9 @@ export const extractEntriesFromIndex = ({
             return plugins;
         }, {});
 
-    const list: CmsContentEntryType[] = [];
+    const list: CmsContentEntry[] = [];
     for (const entry of entries) {
-        let fromIndexEntry: CmsContentIndexEntryType = lodashCloneDeep(entry);
+        let fromIndexEntry: CmsContentIndexEntry = lodashCloneDeep(entry);
         for (const fieldId in fieldsAsObject) {
             if (fieldsAsObject.hasOwnProperty(fieldId) === false) {
                 continue;

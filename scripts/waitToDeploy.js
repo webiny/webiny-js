@@ -1,5 +1,6 @@
+// TODO: check if this script is needed
 const got = require("got");
-const getState = require("./getState");
+const getState = require("./getState"); // Doesn't exist anymore.
 
 const wait = (timeout = 10000) => {
     return new Promise(resolve => {

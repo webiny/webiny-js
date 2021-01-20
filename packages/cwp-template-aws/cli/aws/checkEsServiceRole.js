@@ -5,8 +5,8 @@ const { green } = require("chalk");
 module.exports = {
     type: "hook-before-deploy",
     name: "hook-before-deploy-es-service-role",
-    async hook(args) {
-        if (args.stack !== "api") {
+    async hook({ stack }, context) {
+        if (stack !== "api") {
             return;
         }
 
@@ -18,20 +18,18 @@ module.exports = {
                 .getRole({ RoleName: "AWSServiceRoleForAmazonElasticsearchService" })
                 .promise();
 
-            spinner.stopAndPersist({
+            spinner.stop({
                 symbol: green("✔"),
                 text: `Found Elastic Search service role!`
             });
+            context.success(`Found Elastic Search service role!`);
         } catch (err) {
             spinner.text = "Creating Elastic Search service role...";
 
             try {
                 await iam.createServiceLinkedRole({ AWSServiceName: "es.amazonaws.com" }).promise();
 
-                spinner.stopAndPersist({
-                    symbol: green("✔"),
-                    text: `Elastic Search service role created!`
-                });
+                spinner.stop();
             } catch (err) {
                 spinner.fail(err.message);
                 process.exit(1);

@@ -2,30 +2,30 @@ import { HandlerPlugin } from "@webiny/handler/types";
 import { boolean } from "boolean";
 import { graphql, GraphQLSchema } from "graphql";
 import { makeExecutableSchema } from "@graphql-tools/schema";
-import { CmsContext, CmsSettingsType } from "@webiny/api-headless-cms/types";
+import { CmsContext, CmsSettings } from "@webiny/api-headless-cms/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import buildSchemaPlugins from "./plugins/buildSchemaPlugins";
 import { NotAuthorizedError, NotAuthorizedResponse } from "@webiny/api-security";
 import { ErrorResponse } from "@webiny/handler-graphql";
 
-type CreateGraphQLHandlerOptionsType = {
+interface CreateGraphQLHandlerOptions {
     debug?: boolean;
-};
-type SchemaCacheType = {
+}
+interface SchemaCache {
     key: string;
     schema: GraphQLSchema;
-};
-type ArgsType = {
+}
+interface Args {
     context: CmsContext;
     type: string;
-    settings: CmsSettingsType;
+    settings: CmsSettings;
     locale: I18NLocale;
-};
-type ParsedBody = {
+}
+interface ParsedBody {
     query: string;
     variables: any;
     operationName: string;
-};
+}
 
 const DEFAULT_HEADERS = {
     "Access-Control-Allow-Origin": "*",
@@ -39,13 +39,13 @@ const respond = (http, result: unknown) => {
         headers: DEFAULT_HEADERS
     });
 };
-const schemaList = new Map<string, SchemaCacheType>();
-const generateCacheKey = (args: ArgsType): string => {
+const schemaList = new Map<string, SchemaCache>();
+const generateCacheKey = (args: Args): string => {
     const { settings, locale, type } = args;
     return [settings.contentModelLastChange.toISOString(), locale.code, type].join("#");
 };
 
-const generateSchema = async (args: ArgsType): Promise<GraphQLSchema> => {
+const generateSchema = async (args: Args): Promise<GraphQLSchema> => {
     const { context } = args;
 
     const schemaPlugins = await buildSchemaPlugins(context);
@@ -66,7 +66,7 @@ const generateSchema = async (args: ArgsType): Promise<GraphQLSchema> => {
 };
 // gets an existing schema or rewrites existing one or creates a completely new one
 // depending on the schemaId created from type and locale parameters
-const getSchema = async (args: ArgsType): Promise<GraphQLSchema> => {
+const getSchema = async (args: Args): Promise<GraphQLSchema> => {
     const { type, locale } = args;
     const id = `${type}#${locale.code}`;
 
@@ -104,7 +104,7 @@ const checkEndpointAccess = async (context: CmsContext): Promise<void> => {
 };
 
 export const graphQLHandlerFactory = (
-    options: CreateGraphQLHandlerOptionsType = {}
+    options: CreateGraphQLHandlerOptions = {}
 ): HandlerPlugin => ({
     type: "handler",
     name: "handler-graphql-content-model",

@@ -7,11 +7,6 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
     isSortable: false,
     isSearchable: false,
     read: {
-        createResolver({ field }) {
-            return instance => {
-                return instance.values[field.fieldId];
-            };
-        },
         createTypeField({ field }) {
             if (field.multipleValues) {
                 return `${field.fieldId}: [String]`;
@@ -21,11 +16,6 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         }
     },
     manage: {
-        createResolver({ field }) {
-            return instance => {
-                return instance.values[field.fieldId];
-            };
-        },
         createTypeField({ field }) {
             if (field.multipleValues) {
                 return field.fieldId + ": [String]";

@@ -3,12 +3,11 @@ import { ContextPlugin } from "@webiny/handler/types";
 import { validation } from "@webiny/validation";
 import mdbid from "mdbid";
 import {
-    CmsContentModelGroupContextType,
-    CmsContentModelGroupListArgsType,
-    CmsContentModelGroupPermissionType,
-    CmsContentModelGroupType,
-    CmsContext,
-    DbItemTypes
+    CmsContentModelGroupContext,
+    CmsContentModelGroupListArgs,
+    CmsContentModelGroupPermission,
+    CmsContentModelGroup,
+    CmsContext
 } from "../../../types";
 import * as utils from "../../../utils";
 import { beforeDeleteHook } from "./contentModelGroup/beforeDelete.hook";
@@ -95,12 +94,12 @@ export default (): ContextPlugin<CmsContext> => ({
 
         const PK_GROUP = () => `${utils.createCmsPK(context)}#CMG`;
 
-        const checkPermissions = (check: string): Promise<CmsContentModelGroupPermissionType> => {
+        const checkPermissions = (check: string): Promise<CmsContentModelGroupPermission> => {
             return utils.checkPermissions(context, "cms.contentModelGroup", { rwd: check });
         };
 
         const groupsGet = async (id: string) => {
-            const [[group]] = await db.read<CmsContentModelGroupType>({
+            const [[group]] = await db.read<CmsContentModelGroup>({
                 ...utils.defaults.db,
                 query: { PK: PK_GROUP(), SK: id }
             });
@@ -112,9 +111,9 @@ export default (): ContextPlugin<CmsContext> => ({
             return group;
         };
 
-        const groupsList = async (args?: CmsContentModelGroupListArgsType) => {
+        const groupsList = async (args?: CmsContentModelGroupListArgs) => {
             const { where, limit } = args || {};
-            const [groups] = await db.read<CmsContentModelGroupType>({
+            const [groups] = await db.read<CmsContentModelGroup>({
                 ...utils.defaults.db,
                 query: { PK: PK_GROUP(), SK: { $gt: " " } },
                 limit
@@ -128,7 +127,7 @@ export default (): ContextPlugin<CmsContext> => ({
             return groups.filter(whereFilterFactory(where));
         };
 
-        const groups: CmsContentModelGroupContextType = {
+        const groups: CmsContentModelGroupContext = {
             noAuth: () => {
                 return {
                     get: groupsGet,
@@ -167,7 +166,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 const identity = context.security.getIdentity();
 
                 const id = mdbid();
-                const model: CmsContentModelGroupType = {
+                const model: CmsContentModelGroup = {
                     ...createdDataJson,
                     id,
                     createdOn: new Date().toISOString(),
@@ -182,7 +181,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 const dbData = {
                     PK: PK_GROUP(),
                     SK: id,
-                    TYPE: DbItemTypes.CMS_CONTENT_MODEL_GROUP,
+                    TYPE: "cms.group",
                     ...model
                 };
 

@@ -53,7 +53,7 @@ const FormsSettings = () => {
                                     <Bind name={"domain"}>
                                         <Input
                                             label="Domain"
-                                            description={"E.g. https://www.mysite.com"}
+                                            description={"E.g. https://www.mywebsite.com"}
                                         />
                                     </Bind>
                                 </Cell>

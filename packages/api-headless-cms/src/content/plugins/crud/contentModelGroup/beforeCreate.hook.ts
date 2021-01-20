@@ -1,11 +1,11 @@
-import { CmsContentModelGroupType, CmsContext } from "@webiny/api-headless-cms/types";
+import { CmsContentModelGroup, CmsContext } from "@webiny/api-headless-cms/types";
 import { toSlug } from "@webiny/api-headless-cms/utils";
 import Error from "@webiny/error";
 import shortid from "shortid";
 
 export const beforeCreateHook = async (
     context: CmsContext,
-    model: CmsContentModelGroupType
+    model: CmsContentModelGroup
 ): Promise<void> => {
     const { name, slug = "" } = model;
     // If there is a slug assigned, check if it's unique ...

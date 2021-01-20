@@ -1,16 +1,16 @@
 import { ListResponse, ListErrorResponse } from "@webiny/handler-graphql/responses";
 import {
-    CmsContentEntryMetaType,
-    CmsContentEntryResolverFactoryType as ResolverFactory,
-    CmsContentEntryType
+    CmsContentEntryMeta,
+    CmsContentEntryResolverFactory as ResolverFactory,
+    CmsContentEntry
 } from "@webiny/api-headless-cms/types";
 
 export const resolveList: ResolverFactory = ({ model }) => async (root, args, { cms }) => {
     try {
-        const response: [
-            CmsContentEntryType[],
-            CmsContentEntryMetaType
-        ] = await cms.entries.listLatest(model, args);
+        const response: [CmsContentEntry[], CmsContentEntryMeta] = await cms.entries.listLatest(
+            model,
+            args
+        );
 
         return new ListResponse(...response);
     } catch (e) {

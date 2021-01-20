@@ -1,5 +1,5 @@
 import { useContentGqlHandler } from "./useContentGqlHandler";
-import { GQLHandlerCallableArgsType } from "./useGqlHandler";
+import { GQLHandlerCallableArgs } from "./useGqlHandler";
 
 const productFields = `
     id
@@ -59,7 +59,7 @@ const listProductsQuery = /* GraphQL */ `
     }
 `;
 
-export const useProductReadHandler = (options: GQLHandlerCallableArgsType) => {
+export const useProductReadHandler = (options: GQLHandlerCallableArgs) => {
     const contentHandler = useContentGqlHandler(options);
 
     return {

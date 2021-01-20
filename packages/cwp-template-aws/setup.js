@@ -11,6 +11,11 @@ const { green } = require("chalk");
 
 const IS_TEST = process.env.NODE_ENV === "test";
 
+// Automatic detection could be added here.
+function getDefaultRegion() {
+    return "us-east-1";
+}
+
 function random(length = 32) {
     return crypto
         .randomBytes(Math.ceil(length / 2))
@@ -19,14 +24,8 @@ function random(length = 32) {
 }
 
 const setup = async args => {
-    const { projectRoot, projectName, vpc } = args;
-
-    const packageJsonExists = fs.pathExistsSync(path.join(projectRoot, "package.json"));
-    if (!packageJsonExists) {
-        throw new Error(
-            `Cannot continue, ${path.join(projectRoot, "package.json")} does not exist.`
-        );
-    }
+    const { projectRoot, projectName, templateOptions = {} } = args;
+    const { vpc = false, region = getDefaultRegion() } = templateOptions;
 
     fs.copySync(path.join(__dirname, "template"), projectRoot);
 
@@ -60,8 +59,9 @@ const setup = async args => {
 
     const rootEnvFilePath = path.join(projectRoot, ".env");
     let content = fs.readFileSync(rootEnvFilePath).toString();
-    content = content.replace("{REGION}", "us-east-1");
+    content = content.replace("{REGION}", region);
     content = content.replace("{PULUMI_CONFIG_PASSPHRASE}", random());
+    content = content.replace("{PULUMI_SECRETS_PROVIDER}", "passphrase");
     fs.writeFileSync(rootEnvFilePath, content);
 
     let webinyRoot = fs.readFileSync(path.join(projectRoot, "webiny.root.js"), "utf-8");
@@ -80,11 +80,11 @@ const setup = async args => {
         remove = "no_vpc";
     }
 
-    fs.removeSync(path.join(projectRoot, "api", `stack_${remove}`));
+    fs.removeSync(path.join(projectRoot, "api", `pulumi_${remove}`));
     fs.removeSync(path.join(projectRoot, "api", `index_${remove}.ts`));
 
     fs.moveSync(
-        path.join(projectRoot, "api", `stack_${move}`),
+        path.join(projectRoot, "api", `pulumi_${move}`),
         path.join(projectRoot, "api", "stack"),
         { overwrite: true }
     );
@@ -118,7 +118,6 @@ const setup = async args => {
     }
 
     if (!IS_TEST) {
-        console.log();
         console.log(`⏳ Installing dependencies....`);
         console.log();
         // Install dependencies.

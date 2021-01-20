@@ -1,13 +1,13 @@
-import Cognito from "./stack/cognito";
-import DynamoDB from "./stack/dynamoDb";
-import Graphql from "./stack/graphql";
-import HeadlessCMS from "./stack/headlessCMS";
-import ApiGateway from "./stack/apiGateway";
-import Cloudfront from "./stack/cloudfront";
-import ElasticSearch from "./stack/elasticSearch";
-import FileManager from "./stack/fileManager";
-import PageBuilder from "./stack/pageBuilder";
-import PrerenderingService from "./stack/prerenderingService";
+import Cognito from "./pulumi/cognito";
+import DynamoDB from "./pulumi/dynamoDb";
+import Graphql from "./pulumi/graphql";
+import HeadlessCMS from "./pulumi/headlessCMS";
+import ApiGateway from "./pulumi/apiGateway";
+import Cloudfront from "./pulumi/cloudfront";
+import ElasticSearch from "./pulumi/elasticSearch";
+import FileManager from "./pulumi/fileManager";
+import PageBuilder from "./pulumi/pageBuilder";
+import PrerenderingService from "./pulumi/prerenderingService";
 
 const dynamoDb = new DynamoDB();
 const cognito = new Cognito();
@@ -16,37 +16,40 @@ const fileManager = new FileManager();
 
 const prerenderingService = new PrerenderingService({
     env: {
-        DEBUG: String(process.env.DEBUG),
-        DB_TABLE: dynamoDb.table.name
+        DB_TABLE: dynamoDb.table.name,
+        DEBUG: String(process.env.DEBUG)
     }
 });
 
 const pageBuilder = new PageBuilder({
-    dbTable: dynamoDb.table
+    env: {
+        DB_TABLE: dynamoDb.table.name,
+        DEBUG: String(process.env.DEBUG)
+    }
 });
 
 const api = new Graphql({
     env: {
-        DEBUG: String(process.env.DEBUG),
-        ELASTIC_SEARCH_ENDPOINT: elasticSearch.domain.endpoint,
         COGNITO_REGION: String(process.env.AWS_REGION),
         COGNITO_USER_POOL_ID: cognito.userPool.id,
-        S3_BUCKET: fileManager.bucket.id,
         DB_TABLE: dynamoDb.table.name,
-        PRERENDERING_RENDER_HANDLER: prerenderingService.functions.render.arn,
+        DEBUG: String(process.env.DEBUG),
+        ELASTIC_SEARCH_ENDPOINT: elasticSearch.domain.endpoint,
         PRERENDERING_FLUSH_HANDLER: prerenderingService.functions.flush.arn,
+        PRERENDERING_RENDER_HANDLER: prerenderingService.functions.render.arn,
         PRERENDERING_QUEUE_ADD_HANDLER: prerenderingService.functions.queue.add.arn,
-        PRERENDERING_QUEUE_PROCESS_HANDLER: prerenderingService.functions.queue.process.arn
+        PRERENDERING_QUEUE_PROCESS_HANDLER: prerenderingService.functions.queue.process.arn,
+        S3_BUCKET: fileManager.bucket.id
     }
 });
 
 const headlessCms = new HeadlessCMS({
-    dynamoDbTable: dynamoDb.table,
     env: {
-        ELASTIC_SEARCH_ENDPOINT: elasticSearch.domain.endpoint,
         COGNITO_REGION: String(process.env.AWS_REGION),
         COGNITO_USER_POOL_ID: cognito.userPool.id,
+        DB_TABLE: dynamoDb.table.name,
         DEBUG: String(process.env.DEBUG),
+        ELASTIC_SEARCH_ENDPOINT: elasticSearch.domain.endpoint,
         S3_BUCKET: fileManager.bucket.id
     }
 });

@@ -16,7 +16,7 @@ const processHooks = async (hook, { context, ...options }) => {
         try {
             await plugins[i].hook(options, context);
         } catch (err) {
-            console.log(`🚨 Hook ${green(plugins[i].name)} encountered an error: ${err.message}`);
+            context.error(`Hook ${green(plugins[i].name)} encountered an error: ${err.message}`);
         }
     }
 };
@@ -43,7 +43,7 @@ module.exports = async (inputs, context) => {
     }
 
     if (!stackExists) {
-        console.log(`⚠️ ${red(stackName)} does not exist!`);
+        context.error(`${red(stackName)} does not exist!`);
         return;
     }
 
@@ -60,7 +60,8 @@ module.exports = async (inputs, context) => {
         }
     });
 
-    console.log(`\n🎉 Done! Stack destroyed.`);
+    console.log();
+    context.success(`Done! Stack destroyed.`);
 
     await processHooks("hook-stack-after-destroy", hooksParams);
     await processHooks("hook-after-destroy", hooksParams);

@@ -12,14 +12,14 @@ const createContentModelGroupPrefix = (position: number) => {
     return `${TestHelperEnum.PREFIX}${position}`;
 };
 
-type CreateContentModelGroupModelCallableArgsType = {
+interface CreateContentModelGroupModelCallableArgs {
     prefix: string;
     suffix?: string;
-};
+}
 const createContentModelGroupData = ({
     prefix,
     suffix
-}: CreateContentModelGroupModelCallableArgsType) => {
+}: CreateContentModelGroupModelCallableArgs) => {
     const append = suffix || "";
     return {
         name: `${prefix}name${append}`,

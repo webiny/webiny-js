@@ -1,20 +1,19 @@
 const { Pulumi } = require("@webiny/pulumi-sdk");
 const LambdaClient = require("aws-sdk/clients/lambda");
 const path = require("path");
-const { green } = require("chalk");
 
 module.exports = () => [
     {
         type: "hook-after-deploy",
         name: "hook-after-deploy-pb-update-settings",
         async hook(args, context) {
-            if (args.stack !== "site") {
+            if (args.stack !== "website") {
                 return;
             }
 
             // When the "site" stack is deployed, let's make sure we update Page Builder app's settings
             // with necessary pieces of information. This way the user doesn't have to do this manually.
-            const siteStackDir = path.join(context.paths.projectRoot, "apps", "site");
+            const siteStackDir = path.join(context.paths.projectRoot, "apps", "website");
             const apiStackDir = path.join(context.paths.projectRoot, "api");
 
             const pulumi = new Pulumi();
@@ -88,10 +87,10 @@ module.exports = () => [
                     throw error;
                 }
 
-                console.log(`${green("✔")} Default Page Builder app's settings updated.`);
+                context.success(`Default Page Builder app's settings updated.`);
             } catch (e) {
-                console.log(
-                    `‼️  An error occurred while trying to update default Page Builder app's settings:`
+                context.error(
+                    `An error occurred while trying to update default Page Builder app's settings!`
                 );
                 console.log(e);
             }

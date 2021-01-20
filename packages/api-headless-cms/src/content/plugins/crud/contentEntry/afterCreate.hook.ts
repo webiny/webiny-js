@@ -1,15 +1,11 @@
-import {
-    CmsContentEntryType,
-    CmsContentModelType,
-    CmsContext
-} from "@webiny/api-headless-cms/types";
+import { CmsContentEntry, CmsContentModel, CmsContext } from "@webiny/api-headless-cms/types";
 
-type ArgsType = {
-    model: CmsContentModelType;
-    entry: CmsContentEntryType;
+interface Args {
+    model: CmsContentModel;
+    entry: CmsContentEntry;
     context: CmsContext;
-};
+}
 // eslint-disable-next-line
-export const afterCreateHook = async (args: ArgsType): Promise<void> => {
+export const afterCreateHook = async (args: Args): Promise<void> => {
     return;
 };

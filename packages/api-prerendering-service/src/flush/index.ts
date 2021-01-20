@@ -39,7 +39,7 @@ export default (configuration?: Configuration): HandlerPlugin => ({
                 const args = handlerArgs[i];
 
                 promises.push(
-                    new Promise(async resolve => {
+                    new Promise(async (resolve?: any) => {
                         const dbNamespace = getDbNamespace(args, configuration);
                         const url = getRenderUrl(args, configuration);
                         const PK = [dbNamespace, "PS", "RENDER"].filter(Boolean).join("#");
