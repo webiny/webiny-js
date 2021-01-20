@@ -7,7 +7,7 @@ context("Forms Creation", () => {
         const newFormTitle = `Test form ${uniqid()}`;
         const newFormTitle2 = `Test form ${uniqid()}`;
 
-        cy.visit("/forms")
+        cy.visit("/form-builder/forms")
             .findByTestId("new-record-button")
             .click()
             .findByTestId("fb-new-form-modal")

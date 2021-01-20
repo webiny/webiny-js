@@ -23,7 +23,7 @@ const plugins: RoutePlugin[] = [
         route: (
             <Route
                 exact
-                path={"/forms/:id"}
+                path={"/form-builder/forms/:id"}
                 render={() => (
                     <SecureRoute permission={Permission.Form}>
                         <Helmet>
@@ -43,7 +43,7 @@ const plugins: RoutePlugin[] = [
         route: (
             <Route
                 exact
-                path="/forms"
+                path="/form-builder/forms"
                 render={() => (
                     <SecureRoute permission={Permission.Form}>
                         <AdminLayout>

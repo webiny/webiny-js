@@ -41,7 +41,9 @@ const PublishFormButton = () => {
                                         return showSnackbar(error.message);
                                     }
 
-                                    history.push(`/forms?id=${encodeURIComponent(revision.id)}`);
+                                    history.push(
+                                        `/form-builder/forms?id=${encodeURIComponent(revision.id)}`
+                                    );
 
                                     // Let's wait a bit, because we are also redirecting the user.
                                     setTimeout(() => {

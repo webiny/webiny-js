@@ -1,4 +1,4 @@
 export * from "./List";
 
-export { DataList, ScrollList } from "./DataList";
+export { DataList, ScrollList, DataListModalOverlay, DataListModalOverlayAction } from "./DataList";
 export { CollapsibleList } from "./CollapsibleList";

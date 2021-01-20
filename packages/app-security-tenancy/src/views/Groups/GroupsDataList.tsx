@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { i18n } from "@webiny/app/i18n";
 import {
     DataList,
@@ -16,10 +16,35 @@ import { useQuery, useMutation } from "react-apollo";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import { LIST_GROUPS, DELETE_GROUP } from "./graphql";
 import { Tooltip } from "@webiny/ui/Tooltip";
+import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
+import SearchUI from "@webiny/app-admin/components/SearchUI";
+import { ReactComponent as AddIcon } from "../../assets/icons/add-18px.svg";
+import orderBy from "lodash/orderBy";
 
 const t = i18n.ns("app-security/admin/groups/data-list");
 
+const SORTERS = [
+    {
+        label: t`Newest to oldest`,
+        sorters: { createdOn: "desc" }
+    },
+    {
+        label: t`Oldest to newest`,
+        sorters: { createdOn: "asc" }
+    },
+    {
+        label: t`Name A-Z`,
+        sorters: { name: "asc" }
+    },
+    {
+        label: t`Name Z-A`,
+        sorters: { name: "desc" }
+    }
+];
+
 const GroupsDataList = () => {
+    const [filter, setFilter] = useState("");
+    const [sort, setSort] = useState(null);
     const { history, location } = useRouter();
     const { showSnackbar } = useSnackbar();
     const { showConfirmation } = useConfirmationDialog();
@@ -32,6 +57,28 @@ const GroupsDataList = () => {
 
     const data = listLoading && !listResponse ? [] : listResponse.security.groups.data;
     const slug = new URLSearchParams(location.search).get("slug");
+
+    const filterGroup = useCallback(
+        ({ name, slug, description }) => {
+            return (
+                name.toLowerCase().includes(filter) ||
+                slug.toLowerCase().includes(filter) ||
+                description.toLowerCase().includes(filter)
+            );
+        },
+        [filter]
+    );
+
+    const sortGroups = useCallback(
+        groups => {
+            if (!sort) {
+                return groups;
+            }
+            const [[key, value]] = Object.entries(sort);
+            return orderBy(groups, [key], [value]);
+        },
+        [sort]
+    );
 
     const deleteItem = useCallback(
         item => {
@@ -55,12 +102,28 @@ const GroupsDataList = () => {
         [slug]
     );
 
+    const filteredData = filter === "" ? data : data.filter(filterGroup);
+    const groupList = sortGroups(filteredData);
+
     return (
         <DataList
             title={t`Security Groups`}
-            data={data}
+            actions={
+                <ButtonSecondary
+                    data-testid="new-record-button"
+                    onClick={() => history.push("/security/groups?new=true")}
+                >
+                    <ButtonIcon icon={<AddIcon />} /> {t`Add Group`}
+                </ButtonSecondary>
+            }
+            data={groupList}
             refresh={refetch}
             loading={listLoading || deleteLoading}
+            search={
+                <SearchUI value={filter} onChange={setFilter} inputPlaceholder={t`Search Groups`} />
+            }
+            sorters={SORTERS}
+            setSorters={sorter => setSort(sorter)}
         >
             {({ data }) => (
                 <ScrollList data-testid="default-data-list">

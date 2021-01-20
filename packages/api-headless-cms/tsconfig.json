@@ -36,6 +36,9 @@
       "path": "../handler-graphql"
     },
     {
+      "path": "../handler-http"
+    },
+    {
       "path": "../validation"
     },
     {

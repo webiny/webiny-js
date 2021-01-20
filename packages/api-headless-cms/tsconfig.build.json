@@ -19,6 +19,7 @@
 		"../handler-http",
 		"../handler-db",
 		"../handler-graphql",
+		"../handler-http",
 		"../plugins",
 		"../validation",
 		"./jest.config.js"

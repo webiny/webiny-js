@@ -1,28 +1,34 @@
-import React from "react";
-import { useRouter } from "@webiny/react-router";
+import React, { useMemo } from "react";
+import { useSecurity } from "@webiny/app-security";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
-import { FloatingActionButton } from "@webiny/app-admin/components/FloatingActionButton";
 import ContentModelGroupsDataList from "./ContentModelGroupsDataList";
 import ContentModelGroupsForm from "./ContentModelGroupsForm";
 
 function ContentModelGroups() {
-    const { history } = useRouter();
+    const { identity } = useSecurity();
+
+    const canCreate = useMemo(() => {
+        const permission = identity.getPermission("cms.contentModelGroup");
+        if (!permission) {
+            return false;
+        }
+
+        if (typeof permission.rwd !== "string") {
+            return true;
+        }
+
+        return permission.rwd.includes("w");
+    }, []);
 
     return (
-        <>
-            <SplitView>
-                <LeftPanel span={4}>
-                    <ContentModelGroupsDataList />
-                </LeftPanel>
-                <RightPanel span={8}>
-                    <ContentModelGroupsForm />
-                </RightPanel>
-            </SplitView>
-            <FloatingActionButton
-                data-testid="new-record-button"
-                onClick={() => history.push("/cms/content-model-groups")}
-            />
-        </>
+        <SplitView>
+            <LeftPanel span={4}>
+                <ContentModelGroupsDataList canCreate={canCreate} />
+            </LeftPanel>
+            <RightPanel span={8}>
+                <ContentModelGroupsForm canCreate={canCreate} />
+            </RightPanel>
+        </SplitView>
     );
 }
 

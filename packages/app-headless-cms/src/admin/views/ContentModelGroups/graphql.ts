@@ -6,6 +6,7 @@ const fields = `
     slug
     description
     icon
+    createdOn
 `;
 
 export const LIST_CONTENT_MODEL_GROUPS = gql`

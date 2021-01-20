@@ -46,7 +46,9 @@ const Revisions = () => {
         <Menu
             className={menuList}
             onSelect={evt => {
-                history.push(`/forms/${encodeURIComponent(revisions[evt.detail.index].id)}`);
+                history.push(
+                    `/form-builder/forms/${encodeURIComponent(revisions[evt.detail.index].id)}`
+                );
             }}
             handle={
                 <ButtonDefault className={buttonStyle}>

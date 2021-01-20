@@ -22,7 +22,7 @@ const plugin: AdminWelcomeScreenWidgetPlugin = {
     permission: "fb.form",
     widget: {
         cta: (
-            <Link to="/forms" className={linkStyle}>
+            <Link to="/form-builder/forms" className={linkStyle}>
                 <ButtonSecondary className={buttonStyle}>Create a new Form</ButtonSecondary>
             </Link>
         ),

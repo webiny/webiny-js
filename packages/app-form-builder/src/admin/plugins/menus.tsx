@@ -15,7 +15,9 @@ const FormBuilderMenu = ({ Menu, Section, Item }) => {
 
     return (
         <Menu name="app-form-builder" label={t`Form Builder`} icon={<PagesIcon />}>
-            <Section label={t`Forms`}>{<Item label={t`Forms`} path="/forms" />}</Section>
+            <Section label={t`Forms`}>
+                {<Item label={t`Forms`} path="/form-builder/forms" />}
+            </Section>
         </Menu>
     );
 };
