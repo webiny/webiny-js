@@ -25,7 +25,6 @@ export default {
         };
 
         context.http = {
-            ...request,
             request,
             response({ statusCode = 200, body = "", headers = {} }) {
                 return {
