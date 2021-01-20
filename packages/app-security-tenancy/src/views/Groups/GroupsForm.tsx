@@ -119,14 +119,14 @@ const GroupForm = () => {
     if (showEmptyView) {
         return (
             <EmptyView
-                title={t`Click on the left side list to display group details or...`}
+                title={t`Click on the left side list to display group details or create a...`}
                 action={
                     <ButtonDefault
                         data-testid="new-record-button"
                         onClick={() => history.push("/security/groups?new=true")}
                     >
                         <ButtonIcon icon={<AddIcon />} />
-                        {t`Add Group`}
+                        {t`New Group`}
                     </ButtonDefault>
                 }
             />

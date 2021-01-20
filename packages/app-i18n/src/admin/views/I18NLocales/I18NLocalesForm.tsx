@@ -87,13 +87,13 @@ const I18NLocaleForm = () => {
     if (showEmptyView) {
         return (
             <EmptyView
-                title={t`Click on the left side list to display locale details or...`}
+                title={t`Click on the left side list to display locale details or create a...`}
                 action={
                     <ButtonDefault
                         data-testid="new-record-button"
                         onClick={() => history.push("/i18n/locales?new=true")}
                     >
-                        <ButtonIcon icon={<AddIcon />} /> {t`Add Locale`}
+                        <ButtonIcon icon={<AddIcon />} /> {t`New Locale`}
                     </ButtonDefault>
                 }
             />

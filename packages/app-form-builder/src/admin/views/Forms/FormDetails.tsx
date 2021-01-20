@@ -32,12 +32,12 @@ const EmptyFormDetails = ({ canCreate, onCreateForm }: EmptyFormDetailsProps) =>
     return (
         <EmptyView
             title={t`Click on the left side list to display form details {message}`({
-                message: canCreate ? " or..." : ""
+                message: canCreate ? " or create a..." : ""
             })}
             action={
                 canCreate ? (
                     <ButtonDefault data-testid="new-record-button" onClick={onCreateForm}>
-                        <ButtonIcon icon={<AddIcon />} /> {t`Create Form`}
+                        <ButtonIcon icon={<AddIcon />} /> {t`New Form`}
                     </ButtonDefault>
                 ) : null
             }

@@ -104,13 +104,13 @@ const ApiKeyForm = () => {
     if (showEmptyView) {
         return (
             <EmptyView
-                title={t`Click on the left side list to display user details or...`}
+                title={t`Click on the left side list to display API key details or create a...`}
                 action={
                     <ButtonDefault
                         data-testid="new-record-button"
                         onClick={() => history.push("/security/api-keys?new=true")}
                     >
-                        <ButtonIcon icon={<AddIcon />} /> {t`Add API Key`}
+                        <ButtonIcon icon={<AddIcon />} /> {t`New API Key`}
                     </ButtonDefault>
                 }
             />
