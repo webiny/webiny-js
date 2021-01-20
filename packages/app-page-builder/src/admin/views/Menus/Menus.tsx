@@ -1,14 +1,10 @@
 import React, { useMemo } from "react";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
-import { FloatingActionButton } from "@webiny/app-admin/components/FloatingActionButton";
 import MenusDataList from "./MenusDataList";
 import MenusForm from "./MenusForm";
-import { useRouter } from "@webiny/react-router";
 import { useSecurity } from "@webiny/app-security";
 
 const Menus = () => {
-    const { history } = useRouter();
-
     const { identity } = useSecurity();
     const pbMenuPermission = useMemo(() => {
         return identity.getPermission("pb.menu");
@@ -23,19 +19,14 @@ const Menus = () => {
     }, []);
 
     return (
-        <>
-            <SplitView>
-                <LeftPanel span={3}>
-                    <MenusDataList />
-                </LeftPanel>
-                <RightPanel span={9}>
-                    <MenusForm />
-                </RightPanel>
-            </SplitView>
-            {canCreate && (
-                <FloatingActionButton onClick={() => history.push("/page-builder/menus")} />
-            )}
-        </>
+        <SplitView>
+            <LeftPanel span={3}>
+                <MenusDataList canCreate={canCreate} />
+            </LeftPanel>
+            <RightPanel span={9}>
+                <MenusForm canCreate={canCreate} />
+            </RightPanel>
+        </SplitView>
     );
 };
 

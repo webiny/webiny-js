@@ -18,6 +18,7 @@
 		"../handler-aws",
 		"../handler-db",
 		"../handler-graphql",
+		"../handler-http",
 		"../plugins",
 		"../validation",
 		"./jest.config.js"
@@ -48,6 +49,9 @@
 		},
 		{
 			"path": "../handler-aws/tsconfig.build.json"
+		},
+		{
+			"path": "../handler-http/tsconfig.build.json"
 		},
 		{
 			"path": "../validation/tsconfig.build.json"

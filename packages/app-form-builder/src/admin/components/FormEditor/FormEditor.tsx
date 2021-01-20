@@ -18,7 +18,7 @@ const FormEditor = () => {
 
     React.useEffect(() => {
         getForm(id).catch(() => {
-            history.push(`/forms`);
+            history.push(`/form-builder/forms`);
             showSnackbar("Could not load form with given ID.");
         });
     }, [id]);

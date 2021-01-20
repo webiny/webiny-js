@@ -1,4 +1,7 @@
 import React, { useCallback } from "react";
+import pick from "lodash/pick";
+import isEmpty from "lodash/isEmpty";
+import styled from "@emotion/styled";
 import { plugins } from "@webiny/plugins";
 import { i18n } from "@webiny/app/i18n";
 import { Form } from "@webiny/form";
@@ -6,7 +9,7 @@ import { Input } from "@webiny/ui/Input";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
-import { ButtonPrimary } from "@webiny/ui/Button";
+import { ButtonDefault, ButtonPrimary, ButtonIcon } from "@webiny/ui/Button";
 import { SecurityUserFormPlugin } from "@webiny/app-security-tenancy/types";
 import { validation } from "@webiny/validation";
 import {
@@ -23,10 +26,23 @@ import { CREATE_USER, READ_USER, LIST_USERS, UPDATE_USER } from "./graphql";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useMutation, useQuery } from "react-apollo";
-
-import { pick } from "lodash";
+import EmptyView from "@webiny/app-admin/components/EmptyView";
+import { ReactComponent as AddIcon } from "../../assets/icons/add-18px.svg";
 
 const t = i18n.ns("app-security-tenancy/admin/users-form");
+
+const AvatarWrapper = styled("div")({
+    margin: "24px 100px 32px"
+});
+
+const FormWrapper = styled("div")({
+    margin: "0 100px"
+});
+
+const ButtonWrapper = styled("div")({
+    display: "flex",
+    justifyContent: "space-between"
+});
 
 const formatData = data =>
     pick(data, ["login", "password", "firstName", "lastName", "avatar", "group"]);
@@ -34,7 +50,7 @@ const formatData = data =>
 const UsersForm = () => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
-
+    const newUser = new URLSearchParams(location.search).get("new") === "true";
     const login = new URLSearchParams(location.search).get("login");
 
     const { data, loading: userLoading } = useQuery(READ_USER, {
@@ -104,75 +120,101 @@ const UsersForm = () => {
     const uiPlugins = plugins.byType<SecurityUserFormPlugin>("security-user-form");
     const fullName = `${user.firstName || ""} ${user.lastName || ""}`.trim();
 
+    const showEmptyView = !newUser && !userLoading && isEmpty(user);
+    if (showEmptyView) {
+        return (
+            <EmptyView
+                title={t`Click on the left side list to display user details or...`}
+                action={
+                    <ButtonDefault
+                        data-testid="new-record-button"
+                        onClick={() => history.push("/security/users?new=true")}
+                    >
+                        <ButtonIcon icon={<AddIcon />} /> {t`Add User`}
+                    </ButtonDefault>
+                }
+            />
+        );
+    }
+
     return (
         <Form data={user} onSubmit={onSubmit}>
             {({ data, form, Bind }) => (
                 <>
-                    <div style={{ marginBottom: "32px", marginTop: "24px" }}>
+                    <AvatarWrapper>
                         <Bind name="avatar">
                             <AvatarImage round />
                         </Bind>
-                    </div>
-                    <SimpleForm>
-                        {loading && <CircularProgress />}
-                        <SimpleFormHeader title={fullName || t`New User`} />
-                        <SimpleFormContent>
-                            <Accordion elevation={0}>
-                                <AccordionItem
-                                    description="Account information"
-                                    title="Bio"
-                                    icon={<SettingsIcon />}
-                                    open
-                                >
-                                    <Grid>
-                                        <Cell span={12}>
-                                            <Bind
-                                                name="firstName"
-                                                validators={validation.create("required")}
-                                            >
-                                                <Input label={t`First Name`} />
+                    </AvatarWrapper>
+                    <FormWrapper>
+                        <SimpleForm>
+                            {loading && <CircularProgress />}
+                            <SimpleFormHeader title={fullName || t`New User`} />
+                            <SimpleFormContent>
+                                <Accordion elevation={0}>
+                                    <AccordionItem
+                                        description="Account information"
+                                        title="Bio"
+                                        icon={<SettingsIcon />}
+                                        open
+                                    >
+                                        <Grid>
+                                            <Cell span={12}>
+                                                <Bind
+                                                    name="firstName"
+                                                    validators={validation.create("required")}
+                                                >
+                                                    <Input label={t`First Name`} />
+                                                </Bind>
+                                            </Cell>
+                                            <Cell span={12}>
+                                                <Bind
+                                                    name="lastName"
+                                                    validators={validation.create("required")}
+                                                >
+                                                    <Input label={t`Last name`} />
+                                                </Bind>
+                                            </Cell>
+                                            <Cell span={12}>
+                                                <Bind
+                                                    name="login"
+                                                    validators={validation.create("required,email")}
+                                                >
+                                                    <Input label={t`E-mail`} />
+                                                </Bind>
+                                            </Cell>
+                                            {uiPlugins.map(pl => (
+                                                <React.Fragment key={pl.name}>
+                                                    {pl.render({ Bind, data })}
+                                                </React.Fragment>
+                                            ))}
+                                        </Grid>
+                                    </AccordionItem>
+                                    <AccordionItem
+                                        description="Assign to security group"
+                                        title="Group"
+                                        icon={<SecurityIcon />}
+                                    >
+                                        <Cell span={12} style={{ marginBottom: "8px" }}>
+                                            <Bind name="group">
+                                                <GroupAutocomplete label={t`Group`} />
                                             </Bind>
                                         </Cell>
-                                        <Cell span={12}>
-                                            <Bind
-                                                name="lastName"
-                                                validators={validation.create("required")}
-                                            >
-                                                <Input label={t`Last name`} />
-                                            </Bind>
-                                        </Cell>
-                                        <Cell span={12}>
-                                            <Bind
-                                                name="login"
-                                                validators={validation.create("required,email")}
-                                            >
-                                                <Input label={t`E-mail`} />
-                                            </Bind>
-                                        </Cell>
-                                        {uiPlugins.map(pl => (
-                                            <React.Fragment key={pl.name}>
-                                                {pl.render({ Bind, data })}
-                                            </React.Fragment>
-                                        ))}
-                                    </Grid>
-                                </AccordionItem>
-                                <AccordionItem
-                                    description="Assign to security group"
-                                    title="Group"
-                                    icon={<SecurityIcon />}
-                                >
-                                    <Cell span={12} style={{ marginBottom: "8px" }}>
-                                        <Bind name="group">
-                                            <GroupAutocomplete label={t`Group`} />
-                                        </Bind>
-                                    </Cell>
-                                </AccordionItem>
-                            </Accordion>
-                        </SimpleFormContent>
-                        <SimpleFormFooter>
-                            <ButtonPrimary onClick={form.submit}>{t`Save user`}</ButtonPrimary>
-                        </SimpleFormFooter>
-                    </SimpleForm>
+                                    </AccordionItem>
+                                </Accordion>
+                            </SimpleFormContent>
+                            <SimpleFormFooter>
+                                <ButtonWrapper>
+                                    <ButtonDefault
+                                        onClick={() => history.push("/security/users")}
+                                    >{t`Cancel`}</ButtonDefault>
+                                    <ButtonPrimary
+                                        onClick={form.submit}
+                                    >{t`Save user`}</ButtonPrimary>
+                                </ButtonWrapper>
+                            </SimpleFormFooter>
+                        </SimpleForm>
+                    </FormWrapper>
                 </>
             )}
         </Form>
