@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Input from "./Input";
 import Select from "./Select";
 import { Grid, Cell } from "@webiny/ui/Grid";
@@ -10,57 +10,89 @@ import {
     RemoveFieldButton
 } from "./utils";
 
-const DateTimeWithTimezone = props => {
-    // "2020-05-18T09:00+10:00"
-    const [date, setDate] = React.useState("");
-    const [time, setTime] = React.useState("");
-    const [timezone, setTimezone] = React.useState("");
+interface DateTimeWithTimezoneProps {
+    bind: any;
+    trailingIcon?: any;
+    field: any;
+}
+interface DateTimeWithTimezoneState {
+    date: string;
+    time: string;
+    timezone: string;
+}
+const parseDateTime = (value?: string) => {
+    if (!value || typeof value !== "string") {
+        return {};
+    }
+    const [formattedDate, rest] = value.split("T");
+    if (!formattedDate || !rest) {
+        throw new Error(`Could not extract date and time from "${value}".`);
+    }
+    return {
+        formattedDate,
+        rest
+    };
+};
 
-    React.useEffect(() => {
-        if (props.bind.value === null) {
-            // Set initial values
-            setDate(DEFAULT_DATE);
-            setTime(DEFAULT_TIME);
-            setTimezone(DEFAULT_TIMEZONE);
+const parseTime = (value?: string) => {
+    if (!value) {
+        return {};
+    }
+    const sign = value.includes("+") ? "+" : "-";
+    const [fullTime, zone] = value.split(sign);
+
+    return {
+        formattedTime: fullTime,
+        formattedTimezone: sign + zone
+    };
+};
+
+const DateTimeWithTimezone: React.FunctionComponent<DateTimeWithTimezoneProps> = ({
+    bind,
+    trailingIcon,
+    field
+}) => {
+    // "2020-05-18T09:00+10:00"
+    const { formattedDate, rest } = parseDateTime(bind.value);
+    const { formattedTime, formattedTimezone } = parseTime(rest);
+    const [state, setState] = useState<DateTimeWithTimezoneState>({
+        date: formattedDate || DEFAULT_DATE,
+        time: formattedTime || DEFAULT_TIME,
+        timezone: formattedTimezone || DEFAULT_TIMEZONE
+    });
+    const { date, time, timezone } = state;
+
+    useEffect(() => {
+        if (!formattedDate || !formattedTime || !formattedTimezone) {
             return;
         }
-        const [isoDate, rest] = props.bind.value.split("T");
-        const sign = rest.includes("+") ? "+" : "-";
-        const [fullTime, zone] = rest.split(sign);
+        setState(() => ({
+            date: formattedDate,
+            time: formattedTime,
+            timezone: formattedTimezone
+        }));
+    }, [formattedDate, formattedTime, formattedTimezone]);
 
-        const formattedDate = isoDate;
-        const formattedTime = fullTime;
-        const formattedTimezone = sign + zone;
-
-        // Set previously saved values
-        if (date !== formattedDate) {
-            setDate(formattedDate);
-        }
-        if (time !== formattedTime) {
-            setTime(formattedTime);
-        }
-        if (timezone !== formattedTimezone) {
-            setTimezone(formattedTimezone);
-        }
-    }, [props.bind.value]);
-
-    const cellSize = props.trailingIcon ? 3 : 4;
+    const cellSize = trailingIcon ? 3 : 4;
 
     return (
         <Grid>
             <Cell span={4}>
                 <Input
                     bind={{
-                        ...props.bind,
+                        ...bind,
                         value: date,
                         onChange: value => {
-                            setDate(value);
-                            return props.bind.onChange(`${value}T${time}${timezone}`);
+                            setState(prev => ({
+                                ...prev,
+                                date: value
+                            }));
+                            return bind.onChange(`${value}T${time}${timezone}`);
                         }
                     }}
                     field={{
-                        ...props.field,
-                        label: `${props.field.label} date`
+                        ...field,
+                        label: `${field.label} date`
                     }}
                     type={"date"}
                 />
@@ -68,16 +100,19 @@ const DateTimeWithTimezone = props => {
             <Cell span={4}>
                 <Input
                     bind={{
-                        ...props.bind,
+                        ...bind,
                         value: time,
                         onChange: value => {
-                            setTime(value);
-                            return props.bind.onChange(`${date}T${value}${timezone}`);
+                            setState(prev => ({
+                                ...prev,
+                                time: value
+                            }));
+                            return bind.onChange(`${date}T${value}${timezone}`);
                         }
                     }}
                     field={{
-                        ...props.field,
-                        label: `${props.field.label} time`
+                        ...field,
+                        label: `${field.label} time`
                     }}
                     type={"time"}
                     step={5}
@@ -88,13 +123,16 @@ const DateTimeWithTimezone = props => {
                     label="Timezone"
                     value={timezone}
                     onChange={value => {
-                        setTimezone(value);
-                        return props.bind.onChange(`${date}T${time}${value}`);
+                        setState(prev => ({
+                            ...prev,
+                            timezone: value
+                        }));
+                        return bind.onChange(`${date}T${time}${value}`);
                     }}
                     options={UTC_TIMEZONES.map(t => ({ value: t.value, label: t.label }))}
                 />
             </Cell>
-            <RemoveFieldButton trailingIcon={props.trailingIcon} />
+            <RemoveFieldButton trailingIcon={trailingIcon} />
         </Grid>
     );
 };
