@@ -6,6 +6,8 @@ import minLength from "./minLength";
 import pattern from "./pattern";
 import required from "./required";
 import patternPlugins from "./patternPlugins";
+import dateLte from "./dateLte";
+import dateGte from "./dateGte";
 
 export default () => [
     gte,
@@ -15,5 +17,7 @@ export default () => [
     required,
     minLength,
     maxLength,
-    patternPlugins
+    patternPlugins,
+    dateLte(),
+    dateGte()
 ];
