@@ -300,6 +300,7 @@ export interface CmsEditorFieldValidatorPlugin extends Plugin {
         description: string;
         defaultMessage: string;
         renderSettings?: (props: {
+            field: CmsEditorField;
             Bind: BindComponent;
             setValue: (name: string, value: any) => void;
             setMessage: (message: string) => void;

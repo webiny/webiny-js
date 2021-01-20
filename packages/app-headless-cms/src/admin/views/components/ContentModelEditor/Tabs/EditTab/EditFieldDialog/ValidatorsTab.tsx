@@ -11,6 +11,7 @@ import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { validation } from "@webiny/validation";
 import { Input } from "@webiny/ui/Input";
+import { CmsEditorField } from "@webiny/app-headless-cms/types";
 
 const onEnabledChange = ({ data, validationValue, onChangeValidation, validator }) => {
     if (data) {
@@ -44,8 +45,16 @@ const noMargin = css({
     margin: "0 !important"
 });
 
-const ValidatorsTab = props => {
+interface ValidatorsTabProps {
+    name: string;
+    validators: any[];
+    form: any;
+    field: CmsEditorField;
+}
+
+const ValidatorsTab: React.FunctionComponent<ValidatorsTabProps> = props => {
     const {
+        field,
         name,
         validators,
         form: { Bind }
@@ -110,6 +119,7 @@ const ValidatorsTab = props => {
 
                                             {typeof validator.renderSettings === "function" &&
                                                 validator.renderSettings({
+                                                    field,
                                                     setValue,
                                                     setMessage: message => {
                                                         setValue("message", message);

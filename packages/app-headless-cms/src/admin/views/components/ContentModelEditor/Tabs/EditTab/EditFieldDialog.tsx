@@ -181,6 +181,7 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
                                                 <Cell span={12}>
                                                     <Elevation z={2}>
                                                         <ValidatorsTab
+                                                            field={field}
                                                             name={"listValidation"}
                                                             validators={getListValidators(
                                                                 fieldPlugin
@@ -205,6 +206,7 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
                                                 <Cell span={12}>
                                                     <Elevation z={2}>
                                                         <ValidatorsTab
+                                                            field={current}
                                                             form={form}
                                                             name={"validation"}
                                                             validators={getFieldValidators(
@@ -222,6 +224,7 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
                                         fieldPlugin.field.validators.length > 0 && (
                                             <Tab label={"Validators"}>
                                                 <ValidatorsTab
+                                                    field={current}
                                                     form={form}
                                                     name={"validation"}
                                                     validators={getFieldValidators(fieldPlugin)}
