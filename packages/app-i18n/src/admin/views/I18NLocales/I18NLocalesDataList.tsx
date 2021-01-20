@@ -106,7 +106,7 @@ const I18NLocalesDataList = () => {
                     data-testid="new-record-button"
                     onClick={() => history.push("/i18n/locales?new=true")}
                 >
-                    <ButtonIcon icon={<AddIcon />} /> {t`Add Locale`}
+                    <ButtonIcon icon={<AddIcon />} /> {t`New Locale`}
                 </ButtonSecondary>
             }
             data={localeList}

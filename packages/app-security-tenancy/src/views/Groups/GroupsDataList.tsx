@@ -113,7 +113,7 @@ const GroupsDataList = () => {
                     data-testid="new-record-button"
                     onClick={() => history.push("/security/groups?new=true")}
                 >
-                    <ButtonIcon icon={<AddIcon />} /> {t`Add Group`}
+                    <ButtonIcon icon={<AddIcon />} /> {t`New Group`}
                 </ButtonSecondary>
             }
             data={groupList}

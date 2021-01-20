@@ -106,18 +106,16 @@ function ContentModelGroupsForm({ canCreate }: ContentModelGroupsFormProps) {
     if (showEmptyView) {
         return (
             <EmptyView
-                title={t`Click on the left side list to display content model group details {message}`(
-                    {
-                        message: canCreate ? "or..." : ""
-                    }
-                )}
+                title={t`Click on the left side list to display group details {message}`({
+                    message: canCreate ? "or create a..." : ""
+                })}
                 action={
                     canCreate ? (
                         <ButtonDefault
                             data-testid="new-record-button"
                             onClick={() => history.push("/cms/content-model-groups?new=true")}
                         >
-                            <ButtonIcon icon={<AddIcon />} /> {t`Add Content Model Group`}
+                            <ButtonIcon icon={<AddIcon />} /> {t`New Group`}
                         </ButtonDefault>
                     ) : null
                 }

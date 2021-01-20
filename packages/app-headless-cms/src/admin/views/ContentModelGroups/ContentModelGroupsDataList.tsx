@@ -169,7 +169,7 @@ const ContentModelGroupsDataList = ({ canCreate }: ContentModelGroupsDataListPro
                         data-testid="new-record-button"
                         onClick={() => history.push("/cms/content-model-groups?new=true")}
                     >
-                        <ButtonIcon icon={<AddIcon />} /> {t`Add Content Model Group`}
+                        <ButtonIcon icon={<AddIcon />} /> {t`New Group`}
                     </ButtonSecondary>
                 ) : null
             }

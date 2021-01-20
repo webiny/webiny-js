@@ -90,7 +90,7 @@ const ContentDataList = ({ contentModel, canCreate }: ContentDataListProps) => {
                             history.push(`/cms/content-entries/${contentModel.modelId}?new=true`)
                         }
                     >
-                        <ButtonIcon icon={<AddIcon />} /> {t`Add Content Entry`}
+                        <ButtonIcon icon={<AddIcon />} /> {t`Add Entry`}
                     </ButtonSecondary>
                 ) : null
             }

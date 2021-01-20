@@ -110,7 +110,7 @@ const ApiKeysDataList = () => {
                     data-testid="new-record-button"
                     onClick={() => history.push("/security/api-keys?new=true")}
                 >
-                    <ButtonIcon icon={<AddIcon />} /> {t`Add API Key`}
+                    <ButtonIcon icon={<AddIcon />} /> {t`New API Key`}
                 </ButtonSecondary>
             }
             data={list}

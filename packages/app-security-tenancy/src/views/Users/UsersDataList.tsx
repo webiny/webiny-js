@@ -119,7 +119,7 @@ const UsersDataList = () => {
                     data-testid="new-record-button"
                     onClick={() => history.push("/security/users?new=true")}
                 >
-                    <ButtonIcon icon={<AddIcon />} /> {t`Add User`}
+                    <ButtonIcon icon={<AddIcon />} /> {t`New User`}
                 </ButtonSecondary>
             }
             data={userList}

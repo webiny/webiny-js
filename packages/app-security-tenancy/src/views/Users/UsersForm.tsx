@@ -124,13 +124,13 @@ const UsersForm = () => {
     if (showEmptyView) {
         return (
             <EmptyView
-                title={t`Click on the left side list to display user details or...`}
+                title={t`Click on the left side list to display user details or create a...`}
                 action={
                     <ButtonDefault
                         data-testid="new-record-button"
                         onClick={() => history.push("/security/users?new=true")}
                     >
-                        <ButtonIcon icon={<AddIcon />} /> {t`Add User`}
+                        <ButtonIcon icon={<AddIcon />} /> {t`New User`}
                     </ButtonDefault>
                 }
             />
