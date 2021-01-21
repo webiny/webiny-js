@@ -12,9 +12,16 @@ export type UseRevisionProps = {
     revision: CmsEditorContentEntry;
     entry: CmsEditorContentEntry;
     setLoading: (loading: boolean) => void;
+    listQueryVariables: any;
 };
 
-export const useRevision = ({ contentModel, revision, entry, setLoading }: UseRevisionProps) => {
+export const useRevision = ({
+    contentModel,
+    revision,
+    entry,
+    setLoading,
+    listQueryVariables
+}: UseRevisionProps) => {
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const client = useApolloClient();
@@ -51,7 +58,12 @@ export const useRevision = ({ contentModel, revision, entry, setLoading }: UseRe
                     update(cache, { data }) {
                         const newRevision = data.content.data;
 
-                        GQLCache.updateLatestRevisionInListCache(contentModel, cache, newRevision);
+                        GQLCache.updateLatestRevisionInListCache(
+                            contentModel,
+                            cache,
+                            newRevision,
+                            listQueryVariables
+                        );
                         GQLCache.addRevisionToRevisionsCache(contentModel, cache, newRevision);
                     }
                 });
@@ -93,7 +105,8 @@ export const useRevision = ({ contentModel, revision, entry, setLoading }: UseRe
                             GQLCache.updateLatestRevisionInListCache(
                                 contentModel,
                                 cache,
-                                revisions[0]
+                                revisions[0],
+                                listQueryVariables
                             );
                             // Redirect to the first revision in the list of all entry revisions.
                             return history.push(
