@@ -36,8 +36,9 @@ declare global {
 type ContentDetailsProps = {
     canCreate: boolean;
     contentModel: any;
+    listQueryVariables: any;
 };
-const ContentDetails = ({ contentModel, canCreate }: ContentDetailsProps) => {
+const ContentDetails = ({ contentModel, canCreate, listQueryVariables }: ContentDetailsProps) => {
     const { history, location } = useRouter();
     const { showSnackbar } = useSnackbar();
     const [state, setState] = useState({});
@@ -128,7 +129,8 @@ const ContentDetails = ({ contentModel, canCreate }: ContentDetailsProps) => {
                     refetchContent: getEntry.refetch,
                     contentModel,
                     state,
-                    setState
+                    setState,
+                    listQueryVariables
                 })}
             </test-id>
         </DetailsContainer>
