@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { i18n } from "@webiny/app/i18n";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import { useRouter } from "@webiny/react-router";
@@ -14,15 +14,37 @@ import {
     ListItemText,
     ListItemMeta,
     ListActions,
-    ListItemTextSecondary
+    ListItemTextSecondary,
+    DataListModalOverlay,
+    DataListModalOverlayAction
 } from "@webiny/ui/List";
 
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
 import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
+import { Cell, Grid } from "@webiny/ui/Grid";
+import { Select } from "@webiny/ui/Select";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
-import { ReactComponent as AddIcon } from "../../assets/icons/add-18px.svg";
+import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
+import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 
 const t = i18n.ns("app-i18n/admin/locales/data-list");
+
+const serializeSorters = data => {
+    if (!data) {
+        return data;
+    }
+    const [[key, value]] = Object.entries(data);
+    return `${key}:${value}`;
+};
+
+const deserializeSorters = (data: string) => {
+    if (typeof data !== "string") {
+        return data;
+    }
+
+    const [key, value] = data.split(":");
+    return { [key]: value };
+};
 
 const SORTERS = [
     {
@@ -37,7 +59,7 @@ const SORTERS = [
 
 const I18NLocalesDataList = () => {
     const [filter, setFilter] = useState("");
-    const [sort, setSort] = useState(null);
+    const [sort, setSort] = useState(serializeSorters(SORTERS[0].sorters));
     const { refetchLocales } = useI18N();
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
@@ -60,7 +82,7 @@ const I18NLocalesDataList = () => {
             if (!sort) {
                 return locales;
             }
-            const [[key, value]] = Object.entries(sort);
+            const [[key, value]] = Object.entries(deserializeSorters(sort));
             return orderBy(locales, [key], [value]);
         },
         [sort]
@@ -93,6 +115,27 @@ const I18NLocalesDataList = () => {
         [code]
     );
 
+    const localesDataListModalOverlay = useMemo(
+        () => (
+            <DataListModalOverlay>
+                <Grid>
+                    <Cell span={12}>
+                        <Select value={sort} onChange={setSort} label={t`Sort by`}>
+                            {SORTERS.map(({ label, sorters }) => {
+                                return (
+                                    <option key={label} value={serializeSorters(sorters)}>
+                                        {label}
+                                    </option>
+                                );
+                            })}
+                        </Select>
+                    </Cell>
+                </Grid>
+            </DataListModalOverlay>
+        ),
+        [sort]
+    );
+
     const loading = [listQuery, deleteMutation].find(item => item.loading);
 
     const filteredData = filter === "" ? data : data.filter(filterLocales);
@@ -111,7 +154,6 @@ const I18NLocalesDataList = () => {
             }
             data={localeList}
             title={t`Locales`}
-            refresh={listQuery.refetch}
             search={
                 <SearchUI
                     value={filter}
@@ -119,8 +161,8 @@ const I18NLocalesDataList = () => {
                     inputPlaceholder={t`Search locales`}
                 />
             }
-            sorters={SORTERS}
-            setSorters={sorter => setSort(sorter)}
+            modalOverlay={localesDataListModalOverlay}
+            modalOverlayAction={<DataListModalOverlayAction icon={<FilterIcon />} />}
         >
             {({ data }) => (
                 <ScrollList>
