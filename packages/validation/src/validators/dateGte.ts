@@ -9,6 +9,9 @@ export default (value: string, params: string[]) => {
     }
     // we need to join because validation params are being split by :
     const gteValue = params.join(":");
+    if (!gteValue) {
+        return;
+    }
 
     const date = new Date(value);
     const gteDate = new Date(gteValue);

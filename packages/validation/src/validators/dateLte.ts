@@ -9,6 +9,9 @@ export default (value: string, params: string[]) => {
     }
     // we need to join because validation params are being split by :
     const lteValue = params.join(":");
+    if (!lteValue) {
+        return;
+    }
 
     const date = new Date(value);
     const lteDate = new Date(lteValue);

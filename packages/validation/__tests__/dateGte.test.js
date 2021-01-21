@@ -21,10 +21,14 @@ describe("date gte test", () => {
         }
     );
 
-    it("should not get triggered if an empty value was set", async () => {
-        const result = await validation.validate(null, "dateGte");
-        expect(result).toEqual(true);
-    });
+    const emptyValues = [null, undefined, ""];
+    test.each(emptyValues)(
+        "should not get triggered if an empty value was set",
+        async emptyValue => {
+            const result = await validation.validate(null, `dateGte:${emptyValue}`);
+            expect(result).toEqual(true);
+        }
+    );
 
     test.each(gteValidationDateIncorrectValues)(
         "should fail to validate",

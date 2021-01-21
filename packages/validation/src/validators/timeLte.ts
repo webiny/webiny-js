@@ -10,6 +10,9 @@ export default (value: string, params: string[]) => {
     }
     // we need to join because validation params are being split by :
     const lteValue = params.join(":");
+    if (!lteValue) {
+        return;
+    }
 
     const compare = compareTime(value, lteValue);
     if (compare <= 0) {

@@ -31,10 +31,15 @@ describe("time lte test", () => {
         }
     );
 
-    it("should not get triggered if an empty value was set", async () => {
-        const result = await validation.validate(null, "timeLte");
-        expect(result).toEqual(true);
-    });
+    const emptyValues = [null, undefined, ""];
+
+    test.each(emptyValues)(
+        "should not get triggered if an empty value was set",
+        async emptyValue => {
+            const result = await validation.validate(null, `timeLte:${emptyValue}`);
+            expect(result).toEqual(true);
+        }
+    );
 
     test.each(lteValidationTimeIncorrectValues)(
         "should fail to validate",
