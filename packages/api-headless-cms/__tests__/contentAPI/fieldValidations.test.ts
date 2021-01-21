@@ -21,7 +21,11 @@ describe("fieldValidations", () => {
         email: "john@doe.com",
         url: "https://webiny.com",
         lowerCase: "lowercase",
-        upperCase: "UPPERCASE"
+        upperCase: "UPPERCASE",
+        date: "2020-12-15",
+        dateTime: "2020-12-15T12:01:01",
+        dateTimeZ: "2020-12-15T12:01:01+01:00",
+        time: "12:01:01"
     };
 
     // This function is not directly within `beforeEach` as we don't always setup the same content model.
@@ -510,6 +514,174 @@ describe("fieldValidations", () => {
         }
     );
 
+    const dateErrorValidations = [
+        ["2020-11-30", "Date must be greater or equal than 2020-12-01"],
+        ["2021-01-01", "Date must be lesser or equal than 2020-12-31"]
+    ];
+
+    test.each(dateErrorValidations)(
+        `should return error when validating "date" field`,
+        async (date, message) => {
+            const group = await setupContentModelGroup();
+            await setupContentModels(group);
+
+            const { createFruit } = useFruitManageHandler({
+                ...manageOpts
+            });
+
+            const [response] = await createFruit({
+                data: {
+                    ...defaultFruitData,
+                    date
+                }
+            });
+
+            expect(response).toEqual({
+                data: {
+                    createFruit: {
+                        data: null,
+                        error: {
+                            message: "Validation failed.",
+                            code: "VALIDATION_FAILED",
+                            data: [
+                                {
+                                    fieldId: "date",
+                                    error: message
+                                }
+                            ]
+                        }
+                    }
+                }
+            });
+        }
+    );
+
+    const dateTimeErrorValidations = [
+        ["2020-11-30 11:30:00", "Date must be greater or equal than 2020-12-01 11:30:00"],
+        ["2021-01-01 14:30:00", "Date must be lesser or equal than 2020-12-31 13:30:00"]
+    ];
+
+    test.each(dateTimeErrorValidations)(
+        `should return error when validating "dateTime" field`,
+        async (dateTime, message) => {
+            const group = await setupContentModelGroup();
+            await setupContentModels(group);
+
+            const { createFruit } = useFruitManageHandler({
+                ...manageOpts
+            });
+
+            const [response] = await createFruit({
+                data: {
+                    ...defaultFruitData,
+                    dateTime
+                }
+            });
+
+            expect(response).toEqual({
+                data: {
+                    createFruit: {
+                        data: null,
+                        error: {
+                            message: "Validation failed.",
+                            code: "VALIDATION_FAILED",
+                            data: [
+                                {
+                                    fieldId: "dateTime",
+                                    error: message
+                                }
+                            ]
+                        }
+                    }
+                }
+            });
+        }
+    );
+
+    const dateTimeZErrorValidations = [
+        ["2020-11-30T11:30:00+0100", "Date must be greater or equal than 2020-12-01T11:30:00+0100"],
+        ["2021-01-01T14:30:00+0100", "Date must be lesser or equal than 2020-12-31T13:30:00+0100"]
+    ];
+
+    test.each(dateTimeZErrorValidations)(
+        `should return error when validating "dateTimeZ" field`,
+        async (dateTimeZ, message) => {
+            const group = await setupContentModelGroup();
+            await setupContentModels(group);
+
+            const { createFruit } = useFruitManageHandler({
+                ...manageOpts
+            });
+
+            const [response] = await createFruit({
+                data: {
+                    ...defaultFruitData,
+                    dateTimeZ
+                }
+            });
+
+            expect(response).toEqual({
+                data: {
+                    createFruit: {
+                        data: null,
+                        error: {
+                            message: "Validation failed.",
+                            code: "VALIDATION_FAILED",
+                            data: [
+                                {
+                                    fieldId: "dateTimeZ",
+                                    error: message
+                                }
+                            ]
+                        }
+                    }
+                }
+            });
+        }
+    );
+
+    const timeErrorValidations = [
+        ["10:30:00", "Time must be greater or equal than 11:30:00"],
+        ["14:30:00", "Time must be lesser or equal than 13:30:00"]
+    ];
+
+    test.each(timeErrorValidations)(
+        `should return error when validating "time" field`,
+        async (time, message) => {
+            const group = await setupContentModelGroup();
+            await setupContentModels(group);
+
+            const { createFruit } = useFruitManageHandler({
+                ...manageOpts
+            });
+
+            const [response] = await createFruit({
+                data: {
+                    ...defaultFruitData,
+                    time
+                }
+            });
+
+            expect(response).toEqual({
+                data: {
+                    createFruit: {
+                        data: null,
+                        error: {
+                            message: "Validation failed.",
+                            code: "VALIDATION_FAILED",
+                            data: [
+                                {
+                                    fieldId: "time",
+                                    error: message
+                                }
+                            ]
+                        }
+                    }
+                }
+            });
+        }
+    );
+
     test("should create a fruit without validation errors", async () => {
         const group = await setupContentModelGroup();
         await setupContentModels(group);
@@ -550,7 +722,11 @@ describe("fieldValidations", () => {
                         name: defaultFruitData.name,
                         numbers: defaultFruitData.numbers,
                         upperCase: defaultFruitData.upperCase,
-                        url: defaultFruitData.url
+                        url: defaultFruitData.url,
+                        time: defaultFruitData.time,
+                        date: defaultFruitData.date,
+                        dateTime: defaultFruitData.dateTime,
+                        dateTimeZ: defaultFruitData.dateTimeZ
                     },
                     error: null
                 }

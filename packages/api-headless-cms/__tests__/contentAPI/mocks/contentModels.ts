@@ -33,7 +33,8 @@ const ids = {
     field506: shortId.generate(),
     field507: shortId.generate(),
     field508: shortId.generate(),
-    field509: shortId.generate()
+    field509: shortId.generate(),
+    field510: shortId.generate()
 };
 
 const models: CmsContentModel[] = [
@@ -562,10 +563,11 @@ const models: CmsContentModel[] = [
             [ids.field503],
             [ids.field504],
             [ids.field505],
-            [ids.field506]
-            // [ids.field507],
-            // [ids.field508],
-            // [ids.field509],
+            [ids.field506],
+            [ids.field507],
+            [ids.field508],
+            [ids.field509],
+            [ids.field510]
         ],
         fields: [
             // required, minLength, maxLength
@@ -756,6 +758,178 @@ const models: CmsContentModel[] = [
                         }
                     }
                 ],
+                listValidation: [],
+                placeholderText: "placeholder text",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            },
+            // date
+            {
+                id: ids.field507,
+                multipleValues: false,
+                helpText: "",
+                label: "Date",
+                type: "datetime",
+                fieldId: "date",
+                validation: [
+                    {
+                        name: "dateGte",
+                        message: "Date must be greater or equal than 2020-12-01",
+                        settings: {
+                            value: "2020-12-01",
+                            type: "date"
+                        }
+                    },
+                    {
+                        name: "dateLte",
+                        message: "Date must be lesser or equal than 2020-12-31",
+                        settings: {
+                            value: "2020-12-31",
+                            type: "date"
+                        }
+                    },
+                    {
+                        name: "required",
+                        message: "Date is required."
+                    }
+                ],
+                settings: {
+                    type: "date"
+                },
+                listValidation: [],
+                placeholderText: "placeholder text",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            },
+            // dateTime
+            {
+                id: ids.field508,
+                multipleValues: false,
+                helpText: "",
+                label: "DateTime",
+                type: "datetime",
+                fieldId: "dateTime",
+                validation: [
+                    {
+                        name: "dateGte",
+                        message: "Date must be greater or equal than 2020-12-01 11:30:00",
+                        settings: {
+                            value: "2020-12-01 11:30:00",
+                            type: "dateTimeWithoutTimezone"
+                        }
+                    },
+                    {
+                        name: "dateLte",
+                        message: "Date must be lesser or equal than 2020-12-31 13:30:00",
+                        settings: {
+                            value: "2020-12-31 13:30:00",
+                            type: "dateTimeWithoutTimezone"
+                        }
+                    },
+                    {
+                        name: "required",
+                        message: "DateTime is required."
+                    }
+                ],
+                settings: {
+                    type: "dateTimeWithoutTimezone"
+                },
+                listValidation: [],
+                placeholderText: "placeholder text",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            },
+            // dateTimeZ
+            {
+                id: ids.field509,
+                multipleValues: false,
+                helpText: "",
+                label: "DateTime",
+                type: "datetime",
+                fieldId: "dateTimeZ",
+                validation: [
+                    {
+                        name: "dateGte",
+                        message: "Date must be greater or equal than 2020-12-01T11:30:00+0100",
+                        settings: {
+                            value: "2020-12-01T11:30:00+0100",
+                            type: "dateTimeWithTimezone"
+                        }
+                    },
+                    {
+                        name: "dateLte",
+                        message: "Date must be lesser or equal than 2020-12-31T13:30:00+0100",
+                        settings: {
+                            value: "2020-12-31T13:30:00+0100",
+                            type: "dateTimeWithTimezone"
+                        }
+                    },
+                    {
+                        name: "required",
+                        message: "DateTimeZ is required."
+                    }
+                ],
+                settings: {
+                    type: "dateTimeWithTimezone"
+                },
+                listValidation: [],
+                placeholderText: "placeholder text",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            },
+            // time
+            {
+                id: ids.field510,
+                multipleValues: false,
+                helpText: "",
+                label: "Time",
+                type: "datetime",
+                fieldId: "time",
+                validation: [
+                    {
+                        name: "dateGte",
+                        message: "Time must be greater or equal than 11:30:00",
+                        settings: {
+                            value: "11:30:00",
+                            type: "time"
+                        }
+                    },
+                    {
+                        name: "dateLte",
+                        message: "Time must be lesser or equal than 13:30:00",
+                        settings: {
+                            value: "13:30:00",
+                            type: "time"
+                        }
+                    },
+                    {
+                        name: "required",
+                        message: "Time is required."
+                    }
+                ],
+                settings: {
+                    type: "time"
+                },
                 listValidation: [],
                 placeholderText: "placeholder text",
                 predefinedValues: {

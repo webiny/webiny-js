@@ -111,4 +111,68 @@ describe("time validators", () => {
             expect(result).toEqual(false);
         }
     );
+
+    const rangeValidationCorrectValues = [
+        ["11:22:33", "10:00:00", "22:00:00"],
+        ["10:00:00", "10:00:00", "22:00:00"],
+        ["22:00:00", "10:00:00", "22:00:00"]
+    ];
+
+    const validate = async ({ value, lteValidator, gteValidator }) => {
+        const lteValid = await ltePlugin.validator.validate({
+            value,
+            validator: lteValidator,
+            context
+        });
+        const gteValid = await gtePlugin.validator.validate({
+            value,
+            validator: gteValidator,
+            context
+        });
+        return lteValid && gteValid;
+    };
+
+    test.each(rangeValidationCorrectValues)(
+        "time should pass validation for being in given range",
+        async (value, gte, lte) => {
+            const lteValidator = createValidator({
+                value: lte
+            });
+            const gteValidator = createValidator({
+                value: gte
+            });
+
+            const result = await validate({
+                value,
+                lteValidator,
+                gteValidator
+            });
+
+            expect(result).toEqual(true);
+        }
+    );
+    const rangeValidationIncorrectValues = [
+        ["11:22:33", "12:00:00", "22:00:00"],
+        ["22:00:00", "10:00:00", "21:00:00"]
+    ];
+
+    test.each(rangeValidationIncorrectValues)(
+        "time should not pass validation because it is not in range",
+        async (value, gte, lte) => {
+            const lteValidator = createValidator({
+                value: lte
+            });
+            const gteValidator = createValidator({
+                value: gte
+            });
+
+            const result = await validate({
+                value,
+                lteValidator,
+                gteValidator
+            });
+
+            expect(result).toEqual(false);
+        }
+    );
 });

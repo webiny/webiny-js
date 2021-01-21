@@ -24,6 +24,10 @@ const fruitFields = `
     url
     lowerCase
     upperCase
+    date
+    dateTime
+    dateTimeZ
+    time
 `;
 
 const errorFields = `

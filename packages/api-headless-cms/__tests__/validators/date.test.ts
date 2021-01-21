@@ -7,6 +7,7 @@ const createValidator = (args): CmsContentModelFieldValidation => {
         name: "test-validator",
         message: "test validation message",
         settings: {
+            type: "date",
             ...args
         }
     };
@@ -94,6 +95,100 @@ describe("date validators", () => {
         async (value, lteValue) => {
             const validator = createValidator({
                 value: lteValue
+            });
+
+            const result = await ltePlugin.validator.validate({
+                value,
+                validator,
+                context
+            });
+            expect(result).toEqual(false);
+        }
+    );
+
+    const timeValidationGteCorrectValues = [
+        ["10:00:00", "10:00:00"],
+        ["10:00", "10:00:00"],
+        ["10:00:01", "10:00:00"],
+        ["10:00:01", "10:00"],
+        ["10:00", "10:00"]
+    ];
+    test.each(timeValidationGteCorrectValues)(
+        "gte - should pass validation when type is time",
+        async (value, gteValue) => {
+            const validator = createValidator({
+                value: gteValue,
+                type: "time"
+            });
+
+            const result = await gtePlugin.validator.validate({
+                value,
+                validator,
+                context
+            });
+            expect(result).toEqual(true);
+        }
+    );
+
+    const timeValidationGteIncorrectValues = [
+        ["10:00:00", "10:00:01"],
+        ["10:00", "10:00:01"],
+        ["10:00:00", "10:01"]
+    ];
+    test.each(timeValidationGteIncorrectValues)(
+        "gte - should fail validation when type is time",
+        async (value, gteValue) => {
+            const validator = createValidator({
+                value: gteValue,
+                type: "time"
+            });
+
+            const result = await gtePlugin.validator.validate({
+                value,
+                validator,
+                context
+            });
+            expect(result).toEqual(false);
+        }
+    );
+
+    const timeValidationLteCorrectValues = [
+        ["10:00:00", "10:00:01"],
+        ["10:00", "10:00:01"],
+        ["10:00:01", "10:01:00"],
+        ["10:00:01", "10:01"],
+        ["10:00", "10:00"]
+    ];
+    test.each(timeValidationLteCorrectValues)(
+        "lte - should pass validation when type is time",
+        async (value, lteValue) => {
+            const validator = createValidator({
+                value: lteValue,
+                type: "time"
+            });
+
+            const result = await ltePlugin.validator.validate({
+                value,
+                validator,
+                context
+            });
+            expect(result).toEqual(true);
+        }
+    );
+
+    const timeValidationLteIncorrectValues = [
+        ["10:00:02", "10:00:01"],
+        ["10:01", "10:00:01"],
+        ["10:01:01", "10:01:00"],
+        ["10:01:01", "10:01"],
+        ["10:01", "10:00"]
+    ];
+    test.each(timeValidationLteIncorrectValues)(
+        "lte - should not pass validation when type is time",
+        async (value, lteValue) => {
+            const validator = createValidator({
+                value: lteValue,
+                type: "time"
             });
 
             const result = await ltePlugin.validator.validate({
