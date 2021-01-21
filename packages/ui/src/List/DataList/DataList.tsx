@@ -126,7 +126,8 @@ const scrollList = css({
 
 const dataListContent = css({
     position: "relative",
-    height: "100%"
+    height: "100%",
+    overflow: "auto"
 });
 
 // This was copied from "./types" so that it can be outputted in docs.
