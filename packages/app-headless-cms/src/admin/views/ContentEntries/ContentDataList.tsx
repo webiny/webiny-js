@@ -16,6 +16,7 @@ import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/fil
 import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
 import { useRouter } from "@webiny/react-router";
+import { Form } from "@webiny/form";
 import { createListQuery } from "../components/ContentModelForm/graphql";
 
 const t = i18n.ns("app-headless-cms/admin/contents/data-list");
@@ -28,26 +29,23 @@ const rightAlign = css({
 const listItemMinHeight = css({
     minHeight: "66px !important"
 });
-
-const SORTERS = [
-    {
-        label: t`Newest to oldest`,
-        value: "createdOn_DESC"
-    },
-    {
-        label: t`Oldest to newest`,
-        value: "createdOn_ASC"
-    }
-];
-
+type Sorter = { label: string; value: string };
 type ContentDataListProps = {
     contentModel: any;
     canCreate: boolean;
+    listQueryVariables: any;
+    setListQueryVariables: (prevState?: any) => void;
+    sorters: Sorter[];
 };
-const ContentDataList = ({ contentModel, canCreate }: ContentDataListProps) => {
+const ContentDataList = ({
+    contentModel,
+    canCreate,
+    listQueryVariables,
+    setListQueryVariables,
+    sorters
+}: ContentDataListProps) => {
     const [filter, setFilter] = useState("");
-    const [sort, setSort] = useState(SORTERS[0].value);
-    const [status, setStatus] = useState("all");
+    const [formData, setFormData] = useState(listQueryVariables);
     const { history } = useRouter();
 
     // Get entry ID and search query (if any)
@@ -63,10 +61,16 @@ const ContentDataList = ({ contentModel, canCreate }: ContentDataListProps) => {
                 }
                 if (filter !== search) {
                     query.set("search", filter);
+                    // We use the title field with the "contains" operator for doing basic searches.
+                    const searchField = contentModel.titleFieldId + "_contains";
+                    setListQueryVariables(prevState => ({
+                        ...prevState,
+                        where: { [searchField]: filter }
+                    }));
                     history.push(`${baseURL}?${query.toString()}`);
                 }
             }, 250),
-        []
+        [contentModel]
     );
     // Set "filter" from search "query" on page load.
     useEffect(() => {
@@ -80,90 +84,75 @@ const ContentDataList = ({ contentModel, canCreate }: ContentDataListProps) => {
         updateSearch({ filter, query, baseURL });
     }, [filter, query, contentModel.modelId]);
 
-    let variables = {};
-    if (searchQuery) {
-        // We use the title field with the "contains" operator for doing basic searches.
-        const searchField = contentModel.titleFieldId + "_contains";
-        variables = { where: { [searchField]: searchQuery } };
-    }
-    if (sort) {
-        variables["sort"] = sort;
-    }
-
     // Generate a query based on current content model
     const LIST_QUERY = useMemo(() => createListQuery(contentModel), [contentModel.modelId]);
-    const { data, loading } = useQuery(LIST_QUERY, { variables });
-    // Generate sorters based on current content model
-    const sorters = useMemo(() => {
-        const titleField = contentModel.fields.find(
-            field => field.fieldId === contentModel.titleFieldId
-        );
-        const titleFieldLabel = titleField ? titleField.label : null;
-        if (!titleFieldLabel) {
-            return SORTERS;
-        }
-
-        return [
-            ...SORTERS,
-            {
-                label: t`{titleFieldLabel} A-Z`({ titleFieldLabel }),
-                value: `${contentModel.titleFieldId}_ASC`
-            },
-            {
-                label: t`{titleFieldLabel} Z-A`({ titleFieldLabel }),
-                value: `${contentModel.titleFieldId}_DESC`
-            }
-        ];
-    }, [contentModel]);
+    const { data, loading } = useQuery(LIST_QUERY, { variables: listQueryVariables });
 
     const entriesDataListModalOverlay = useMemo(
         () => (
             <UIList.DataListModalOverlay>
-                <Grid>
-                    <Cell span={12}>
-                        <Select value={sort} onChange={setSort} label={t`Sort by`}>
-                            {sorters.map(({ label, value }) => {
-                                return (
-                                    <option key={label} value={value}>
-                                        {label}
-                                    </option>
-                                );
-                            })}
-                        </Select>
-                    </Cell>
-                    <Cell span={12}>
-                        <Select
-                            value={status}
-                            onChange={setStatus}
-                            label={t`Filter by status`}
-                            description={"Filter by a specific page status."}
-                        >
-                            <option value={"all"}>{t`All`}</option>
-                            <option value={"draft"}>{t`Draft`}</option>
-                            <option value={"published"}>{t`Published`}</option>
-                            <option value={"unpublished"}>{t`Unpublished`}</option>
-                            <option value={"reviewRequested"}>{t`Review requested`}</option>
-                            <option value={"changesRequested"}>{t`Changes requested`}</option>
-                        </Select>
-                    </Cell>
-                </Grid>
+                <Form
+                    data={formData}
+                    onChange={({ status, sort }) => {
+                        setFormData({ status, sort });
+                        setListQueryVariables(prevState => ({ ...prevState, sort }));
+                    }}
+                >
+                    {({ Bind }) => (
+                        <Grid>
+                            <Cell span={12}>
+                                <Bind name={"sort"}>
+                                    <Select label={t`Sort by`}>
+                                        {sorters.map(({ label, value }) => {
+                                            return (
+                                                <option key={label} value={value}>
+                                                    {label}
+                                                </option>
+                                            );
+                                        })}
+                                    </Select>
+                                </Bind>
+                            </Cell>
+                            <Cell span={12}>
+                                <Bind name={"status"}>
+                                    <Select
+                                        label={t`Filter by status`}
+                                        description={"Filter by a specific page status."}
+                                    >
+                                        <option value={"all"}>{t`All`}</option>
+                                        <option value={"draft"}>{t`Draft`}</option>
+                                        <option value={"published"}>{t`Published`}</option>
+                                        <option value={"unpublished"}>{t`Unpublished`}</option>
+                                        <option
+                                            value={"reviewRequested"}
+                                        >{t`Review requested`}</option>
+                                        <option
+                                            value={"changesRequested"}
+                                        >{t`Changes requested`}</option>
+                                    </Select>
+                                </Bind>
+                            </Cell>
+                        </Grid>
+                    )}
+                </Form>
             </UIList.DataListModalOverlay>
         ),
-        [sort, status]
+        [formData]
     );
 
-    const filterByStatus = useCallback(
-        entries => {
-            if (status === "all") {
-                return entries;
-            }
-            return entries.filter(item => item.meta.status === status);
-        },
-        [status]
-    );
+    const onCreate = useCallback(() => {
+        history.push(`/cms/content-entries/${contentModel.modelId}?new=true`);
+    }, [contentModel]);
+
+    const filterByStatus = useCallback((entries, status) => {
+        if (!status || status === "all") {
+            return entries;
+        }
+        return entries.filter(item => item.meta.status === status);
+    }, []);
 
     const entries = get(data, "content.data", []);
-    const filteredData = filterByStatus(entries);
+    const filteredData = filterByStatus(entries, formData.status);
 
     return (
         <UIList.DataList
@@ -172,13 +161,8 @@ const ContentDataList = ({ contentModel, canCreate }: ContentDataListProps) => {
             title={pluralize(contentModel.name)}
             actions={
                 canCreate ? (
-                    <ButtonSecondary
-                        data-testid="new-record-button"
-                        onClick={() =>
-                            history.push(`/cms/content-entries/${contentModel.modelId}?new=true`)
-                        }
-                    >
-                        <ButtonIcon icon={<AddIcon />} /> {t`Add Entry`}
+                    <ButtonSecondary data-testid="new-record-button" onClick={onCreate}>
+                        <ButtonIcon icon={<AddIcon />} /> {t`New Entry`}
                     </ButtonSecondary>
                 ) : null
             }
@@ -193,7 +177,7 @@ const ContentDataList = ({ contentModel, canCreate }: ContentDataListProps) => {
             modalOverlayAction={<UIList.DataListModalOverlayAction icon={<FilterIcon />} />}
         >
             {({ data }) => (
-                <UIList.List data-testid="default-data-list">
+                <UIList.ScrollList data-testid="default-data-list">
                     {data.map(item => (
                         <UIList.ListItem
                             key={item.id}
@@ -224,7 +208,7 @@ const ContentDataList = ({ contentModel, canCreate }: ContentDataListProps) => {
                             </UIList.ListItemMeta>
                         </UIList.ListItem>
                     ))}
-                </UIList.List>
+                </UIList.ScrollList>
             )}
         </UIList.DataList>
     );
