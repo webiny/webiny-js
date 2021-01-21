@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import orderBy from "lodash/orderBy";
 import { i18n } from "@webiny/app/i18n";
 import {
@@ -8,17 +8,23 @@ import {
     ListItemText,
     ListItemTextSecondary,
     ListItemMeta,
-    ListActions
+    ListActions,
+    DataListModalOverlayAction,
+    DataListModalOverlay
 } from "@webiny/ui/List";
 import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
+import { Cell, Grid } from "@webiny/ui/Grid";
+import { Select } from "@webiny/ui/Select";
 import { useRouter } from "@webiny/react-router";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useQuery, useMutation } from "react-apollo";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import * as GQL from "./graphql";
-import { ReactComponent as AddIcon } from "../../assets/icons/add-18px.svg";
+import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
+import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
+import { serializeSorters, deserializeSorters } from "../utils";
 
 const t = i18n.ns("app-security/admin/groups/data-list");
 
@@ -43,7 +49,7 @@ const SORTERS = [
 
 const ApiKeysDataList = () => {
     const [filter, setFilter] = useState("");
-    const [sort, setSort] = useState(null);
+    const [sort, setSort] = useState(serializeSorters(SORTERS[0].sorters));
     const { history, location } = useRouter();
     const { showSnackbar } = useSnackbar();
     const { showConfirmation } = useConfirmationDialog();
@@ -62,13 +68,13 @@ const ApiKeysDataList = () => {
             if (!sort) {
                 return list;
             }
-            const [[key, value]] = Object.entries(sort);
+            const [[key, value]] = Object.entries(deserializeSorters(sort));
             return orderBy(list, [key], [value]);
         },
         [sort]
     );
 
-    const { data: listResponse, loading: listLoading, refetch } = useQuery(GQL.LIST_API_KEYS);
+    const { data: listResponse, loading: listLoading } = useQuery(GQL.LIST_API_KEYS);
 
     const [deleteIt, { loading: deleteLoading }] = useMutation(GQL.DELETE_API_KEY, {
         refetchQueries: [{ query: GQL.LIST_API_KEYS }]
@@ -99,6 +105,27 @@ const ApiKeysDataList = () => {
         [id]
     );
 
+    const groupsDataListModalOverlay = useMemo(
+        () => (
+            <DataListModalOverlay>
+                <Grid>
+                    <Cell span={12}>
+                        <Select value={sort} onChange={setSort} label={t`Sort by`}>
+                            {SORTERS.map(({ label, sorters }) => {
+                                return (
+                                    <option key={label} value={serializeSorters(sorters)}>
+                                        {label}
+                                    </option>
+                                );
+                            })}
+                        </Select>
+                    </Cell>
+                </Grid>
+            </DataListModalOverlay>
+        ),
+        [sort]
+    );
+
     const filteredData = filter === "" ? data : data.filter(filterAPIKey);
     const list = sortKeys(filteredData);
 
@@ -114,7 +141,6 @@ const ApiKeysDataList = () => {
                 </ButtonSecondary>
             }
             data={list}
-            refresh={refetch}
             loading={listLoading || deleteLoading}
             search={
                 <SearchUI
@@ -123,8 +149,8 @@ const ApiKeysDataList = () => {
                     inputPlaceholder={t`Search API keys`}
                 />
             }
-            sorters={SORTERS}
-            setSorters={sorter => setSort(sorter)}
+            modalOverlay={groupsDataListModalOverlay}
+            modalOverlayAction={<DataListModalOverlayAction icon={<FilterIcon />} />}
         >
             {({ data }) => (
                 <ScrollList data-testid="default-data-list">

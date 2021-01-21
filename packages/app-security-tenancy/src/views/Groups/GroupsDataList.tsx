@@ -1,4 +1,5 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
+import orderBy from "lodash/orderBy";
 import { i18n } from "@webiny/app/i18n";
 import {
     DataList,
@@ -7,7 +8,9 @@ import {
     ListItemText,
     ListItemTextSecondary,
     ListItemMeta,
-    ListActions
+    ListActions,
+    DataListModalOverlayAction,
+    DataListModalOverlay
 } from "@webiny/ui/List";
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
 import { useRouter } from "@webiny/react-router";
@@ -17,9 +20,12 @@ import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDi
 import { LIST_GROUPS, DELETE_GROUP } from "./graphql";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
+import { Cell, Grid } from "@webiny/ui/Grid";
+import { Select } from "@webiny/ui/Select";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
-import { ReactComponent as AddIcon } from "../../assets/icons/add-18px.svg";
-import orderBy from "lodash/orderBy";
+import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
+import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
+import { deserializeSorters, serializeSorters } from "../utils";
 
 const t = i18n.ns("app-security/admin/groups/data-list");
 
@@ -44,12 +50,12 @@ const SORTERS = [
 
 const GroupsDataList = () => {
     const [filter, setFilter] = useState("");
-    const [sort, setSort] = useState(null);
+    const [sort, setSort] = useState(serializeSorters(SORTERS[0].sorters));
     const { history, location } = useRouter();
     const { showSnackbar } = useSnackbar();
     const { showConfirmation } = useConfirmationDialog();
 
-    const { data: listResponse, loading: listLoading, refetch } = useQuery(LIST_GROUPS);
+    const { data: listResponse, loading: listLoading } = useQuery(LIST_GROUPS);
 
     const [deleteIt, { loading: deleteLoading }] = useMutation(DELETE_GROUP, {
         refetchQueries: [{ query: LIST_GROUPS }]
@@ -74,7 +80,7 @@ const GroupsDataList = () => {
             if (!sort) {
                 return groups;
             }
-            const [[key, value]] = Object.entries(sort);
+            const [[key, value]] = Object.entries(deserializeSorters(sort));
             return orderBy(groups, [key], [value]);
         },
         [sort]
@@ -102,6 +108,27 @@ const GroupsDataList = () => {
         [slug]
     );
 
+    const groupsDataListModalOverlay = useMemo(
+        () => (
+            <DataListModalOverlay>
+                <Grid>
+                    <Cell span={12}>
+                        <Select value={sort} onChange={setSort} label={t`Sort by`}>
+                            {SORTERS.map(({ label, sorters }) => {
+                                return (
+                                    <option key={label} value={serializeSorters(sorters)}>
+                                        {label}
+                                    </option>
+                                );
+                            })}
+                        </Select>
+                    </Cell>
+                </Grid>
+            </DataListModalOverlay>
+        ),
+        [sort]
+    );
+
     const filteredData = filter === "" ? data : data.filter(filterGroup);
     const groupList = sortGroups(filteredData);
 
@@ -117,13 +144,12 @@ const GroupsDataList = () => {
                 </ButtonSecondary>
             }
             data={groupList}
-            refresh={refetch}
             loading={listLoading || deleteLoading}
             search={
                 <SearchUI value={filter} onChange={setFilter} inputPlaceholder={t`Search Groups`} />
             }
-            sorters={SORTERS}
-            setSorters={sorter => setSort(sorter)}
+            modalOverlay={groupsDataListModalOverlay}
+            modalOverlayAction={<DataListModalOverlayAction icon={<FilterIcon />} />}
         >
             {({ data }) => (
                 <ScrollList data-testid="default-data-list">
