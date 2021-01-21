@@ -21,7 +21,7 @@ import { GET_LOCALE, CREATE_LOCALE, UPDATE_LOCALE, LIST_LOCALES } from "./graphq
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
-import { ReactComponent as AddIcon } from "../../assets/icons/add-18px.svg";
+import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 
 const t = i18n.ns("app-i18n/admin/locales/form");
 
