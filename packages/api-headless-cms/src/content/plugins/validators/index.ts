@@ -8,6 +8,8 @@ import required from "./required";
 import patternPlugins from "./patternPlugins";
 import dateLte from "./dateLte";
 import dateGte from "./dateGte";
+import timeLte from "./timeLte";
+import timeGte from "./timeGte";
 
 export default () => [
     gte,
@@ -19,5 +21,7 @@ export default () => [
     maxLength,
     patternPlugins,
     dateLte(),
-    dateGte()
+    dateGte(),
+    timeLte(),
+    timeGte()
 ];
