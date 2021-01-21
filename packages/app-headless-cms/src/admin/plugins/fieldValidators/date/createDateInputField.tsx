@@ -15,6 +15,5 @@ export const createInputField = (field: CmsEditorField, bind: any) => {
     if (field.settings.type === "time") {
         return <Time field={field} bind={bind} />;
     }
-
     return <Input bind={bind} field={field} type={field.settings.type} />;
 };

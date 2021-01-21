@@ -12,14 +12,22 @@ export default (): CmsEditorFieldValidatorPlugin => ({
     validator: {
         name: "dateGte",
         label: "Later or equal",
-        description: "Entered date/time must be equal or later than the provided date.",
-        defaultMessage: "Date/time is earlier or equal to provided one.",
+        description: "Entered date/time must be equal or later compared to the provided date.",
+        defaultMessage: `Date/time is earlier than the provided one.`,
         renderSettings({ Bind, field }) {
             const type = field.settings.type;
             const availableValidators = getAvailableValidators(type).join(",");
             return (
                 <Grid>
                     <Cell span={12}>
+                        <Bind name={"settings.type"}>
+                            {bind => {
+                                if (bind.value !== type) {
+                                    bind.onChange(type);
+                                }
+                                return null;
+                            }}
+                        </Bind>
                         <Bind
                             name={"settings.value"}
                             validators={validation.create(availableValidators)}
@@ -29,7 +37,7 @@ export default (): CmsEditorFieldValidatorPlugin => ({
                                     <>
                                         {createInputField(field, bind)}
                                         <FormElementMessage>
-                                            This is the latest date/time that will be allowed.
+                                            This is the earliest date/time that will be allowed.
                                         </FormElementMessage>
                                     </>
                                 );

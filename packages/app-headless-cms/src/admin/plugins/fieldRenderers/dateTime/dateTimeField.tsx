@@ -38,7 +38,6 @@ const plugin: CmsEditorFieldRendererPlugin = {
                         if (field.settings.type === "time") {
                             return <Time field={field} bind={bind} />;
                         }
-
                         return <Input bind={bind} field={field} type={field.settings.type} />;
                     }}
                 </Bind>

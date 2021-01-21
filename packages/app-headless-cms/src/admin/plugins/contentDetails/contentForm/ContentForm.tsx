@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import get from "lodash/get";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
@@ -28,6 +28,20 @@ const ContentForm = ({ contentModel, entry, setLoading, getLoading, setState }) 
     const [updateMutation] = useMutation(UPDATE_CONTENT);
     const [createFromMutation] = useMutation(CREATE_CONTENT_FROM);
 
+    const [invalidFields, setInvalidFields] = useState<Record<string, string>>({});
+
+    const setInvalidFieldValues = errors => {
+        const values = errors.reduce((acc, er) => {
+            acc[er.fieldId] = er.error;
+            return acc;
+        }, {});
+        setInvalidFields(() => values);
+    };
+
+    const resetInvalidFieldValues = () => {
+        setInvalidFields(() => ({}));
+    };
+
     const createContent = useCallback(
         async data => {
             setLoading(true);
@@ -36,21 +50,24 @@ const ContentForm = ({ contentModel, entry, setLoading, getLoading, setState }) 
                 update(cache, { data }) {
                     const { data: entry, error } = data.content;
                     if (error) {
+                        showSnackbar(error.message);
+                        setInvalidFieldValues(error.data);
                         return;
                     }
-
+                    resetInvalidFieldValues();
                     GQLCache.addEntryToListCache(contentModel, cache, entry);
                 }
             });
             setLoading(false);
 
-            if (response.data.content.error) {
-                showSnackbar(response.data.content.message);
+            const { error, data: entry } = response.data.content;
+            if (error) {
+                showSnackbar(error.message);
+                setInvalidFieldValues(error.data);
                 return null;
             }
-
+            resetInvalidFieldValues();
             showSnackbar(`${contentModel.name} entry created successfully!`);
-            const { data: entry } = response.data.content;
             goToRevision(entry.id);
             return entry;
         },
@@ -68,9 +85,11 @@ const ContentForm = ({ contentModel, entry, setLoading, getLoading, setState }) 
             const { error } = response.data.content;
             if (error) {
                 showSnackbar(error.message);
+                setInvalidFieldValues(error.data);
                 return null;
             }
 
+            resetInvalidFieldValues();
             showSnackbar("Content saved successfully.");
             const { data: entry } = response.data.content;
             return entry;
@@ -86,9 +105,11 @@ const ContentForm = ({ contentModel, entry, setLoading, getLoading, setState }) 
                 update(cache, { data }) {
                     const { data: newRevision, error } = data.content;
                     if (error) {
+                        showSnackbar(error.message);
+                        setInvalidFieldValues(error.data);
                         return;
                     }
-
+                    resetInvalidFieldValues();
                     GQLCache.updateLatestRevisionInListCache(contentModel, cache, newRevision);
                     GQLCache.addRevisionToRevisionsCache(contentModel, cache, newRevision);
 
@@ -105,8 +126,10 @@ const ContentForm = ({ contentModel, entry, setLoading, getLoading, setState }) 
             const { data, error } = response.data.content;
             if (error) {
                 showSnackbar(error.message);
+                setInvalidFieldValues(error.data);
                 return null;
             }
+            resetInvalidFieldValues();
 
             return data;
         },
@@ -128,6 +151,7 @@ const ContentForm = ({ contentModel, entry, setLoading, getLoading, setState }) 
                 }
                 return createContent(data);
             }}
+            invalidFields={invalidFields}
         />
     );
 };

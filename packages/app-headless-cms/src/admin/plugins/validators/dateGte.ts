@@ -7,9 +7,11 @@ export default (): CmsModelFieldValidatorPlugin => ({
     validator: {
         name: "dateGte",
         validate: (value, validator) => {
-            const gteValue = validator.settings.value;
+            const { value: gteValue, type } = validator.settings;
             if (typeof gteValue === "undefined") {
                 return;
+            } else if (type === "time") {
+                return validation.validate(value, `timeGte:${gteValue}`);
             }
             return validation.validate(value, `dateGte:${gteValue}`);
         }

@@ -320,6 +320,7 @@ export interface CmsContentModelFormProps {
     entry?: { [key: string]: any };
     onSubmit?: (data: { [key: string]: any }) => any;
     onChange?: (data: { [key: string]: any }) => any;
+    invalidFields?: Record<string, string>;
 }
 
 export interface CmsEditorFieldOptionPlugin extends Plugin {

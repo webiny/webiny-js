@@ -48,7 +48,7 @@ export const ContentModelForm: React.FC<CmsContentModelFormProps> = props => {
         return { ...values, ...overrides };
     };
 
-    const { entry, onSubmit, onChange, onForm } = props;
+    const { entry, onSubmit, onChange, onForm, invalidFields } = props;
 
     return (
         <ContentFormRender
@@ -62,6 +62,7 @@ export const ContentModelForm: React.FC<CmsContentModelFormProps> = props => {
                 const fieldsIds = contentModel.fields.map(item => item.fieldId);
                 return onSubmit(pick(data, [...fieldsIds]));
             }}
+            invalidFields={invalidFields}
         />
     );
 };
