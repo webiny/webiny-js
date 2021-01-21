@@ -76,18 +76,12 @@ export class Form extends React.Component<FormProps, State> {
             return { data, originalData: data, validation: {} };
         }
 
-        // Check for validation errors
-        let validation = _.cloneDeep(state.validation);
-        if (_.isPlainObject(invalidFields) && Object.keys(invalidFields).length) {
-            _.each(invalidFields, (message, name) => {
-                validation = {
-                    ...validation,
-                    [name]: {
-                        isValid: false,
-                        message
-                    }
-                };
-            });
+        const validation = {};
+        for (const name in invalidFields) {
+            validation[name] = {
+                isValid: false,
+                message: invalidFields[name]
+            };
         }
 
         // Return new state only if something has changed
