@@ -229,7 +229,7 @@ const PagesDataList = ({ onCreatePage, canCreate }: PagesDataListProps) => {
                 </Form>
             </DataListModalOverlay>
         ),
-        []
+        [categoriesData, where, sort]
     );
 
     return (
