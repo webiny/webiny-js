@@ -5,12 +5,14 @@ import debounce from "lodash/debounce";
 import { css } from "emotion";
 import TimeAgo from "timeago-react";
 import pluralize from "pluralize";
+import styled from "@emotion/styled";
 import { i18n } from "@webiny/app/i18n";
 import { Typography } from "@webiny/ui/Typography";
 import * as UIList from "@webiny/ui/List";
 import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
+import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
@@ -25,7 +27,17 @@ const rightAlign = css({
     alignItems: "flex-end !important",
     justifyContent: "center !important"
 });
-
+const InlineLoaderWrapper = styled("div")({
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    height: 40,
+    backgroundColor: "var(--mdc-theme-surface)"
+});
 const listItemMinHeight = css({
     minHeight: "66px !important"
 });
@@ -44,6 +56,7 @@ const ContentDataList = ({
     setListQueryVariables,
     sorters
 }: ContentDataListProps) => {
+    const [fetchMoreLoading, setFetchMoreLoading] = useState(false);
     const [filter, setFilter] = useState("");
     const [formData, setFormData] = useState(listQueryVariables);
     const { history } = useRouter();
@@ -86,7 +99,7 @@ const ContentDataList = ({
 
     // Generate a query based on current content model
     const LIST_QUERY = useMemo(() => createListQuery(contentModel), [contentModel.modelId]);
-    const { data, loading } = useQuery(LIST_QUERY, { variables: listQueryVariables });
+    const { data, loading, fetchMore } = useQuery(LIST_QUERY, { variables: listQueryVariables });
 
     const entriesDataListModalOverlay = useMemo(
         () => (
@@ -151,6 +164,36 @@ const ContentDataList = ({
         return entries.filter(item => item.meta.status === status);
     }, []);
 
+    // Load more entries on scroll
+    const loadMoreOnScroll = useCallback(
+        debounce(({ scrollFrame, fetchMore }) => {
+            if (scrollFrame.top > 0.9) {
+                const meta = get(data, "content.meta", {});
+                if (meta.hasMoreItems) {
+                    setFetchMoreLoading(true);
+                    fetchMore({
+                        variables: { after: meta.cursor },
+                        updateQuery: (prev, { fetchMoreResult }) => {
+                            if (!fetchMoreResult) {
+                                return prev;
+                            }
+
+                            const next = { ...fetchMoreResult };
+
+                            next.content.data = [
+                                ...prev.content.data,
+                                ...fetchMoreResult.content.data
+                            ];
+                            setFetchMoreLoading(false);
+                            return next;
+                        }
+                    });
+                }
+            }
+        }, 500),
+        [data]
+    );
+
     const entries = get(data, "content.data", []);
     const filteredData = filterByStatus(entries, formData.status);
 
@@ -177,38 +220,48 @@ const ContentDataList = ({
             modalOverlayAction={<UIList.DataListModalOverlayAction icon={<FilterIcon />} />}
         >
             {({ data }) => (
-                <UIList.ScrollList data-testid="default-data-list">
-                    {data.map(item => (
-                        <UIList.ListItem
-                            key={item.id}
-                            className={listItemMinHeight}
-                            selected={item.id === entryId}
-                        >
-                            <UIList.ListItemText
-                                onClick={() => {
-                                    history.push(
-                                        `/cms/content-entries/${
-                                            contentModel.modelId
-                                        }?id=${encodeURIComponent(item.id)}`
-                                    );
-                                }}
+                <>
+                    <Scrollbar
+                        data-testid="default-data-list"
+                        onScrollFrame={scrollFrame => loadMoreOnScroll({ scrollFrame, fetchMore })}
+                    >
+                        {data.map(item => (
+                            <UIList.ListItem
+                                key={item.id}
+                                className={listItemMinHeight}
+                                selected={item.id === entryId}
                             >
-                                {item.meta.title || "Untitled"}
-                                <UIList.ListItemTextSecondary>
-                                    {t`Last modified: {time}.`({
-                                        time: <TimeAgo datetime={item.savedOn} />
-                                    })}
-                                </UIList.ListItemTextSecondary>
-                            </UIList.ListItemText>
+                                <UIList.ListItemText
+                                    onClick={() => {
+                                        history.push(
+                                            `/cms/content-entries/${
+                                                contentModel.modelId
+                                            }?id=${encodeURIComponent(item.id)}`
+                                        );
+                                    }}
+                                >
+                                    {item.meta.title || "Untitled"}
+                                    <UIList.ListItemTextSecondary>
+                                        {t`Last modified: {time}.`({
+                                            time: <TimeAgo datetime={item.savedOn} />
+                                        })}
+                                    </UIList.ListItemTextSecondary>
+                                </UIList.ListItemText>
 
-                            <UIList.ListItemMeta className={rightAlign}>
-                                <Typography use={"subtitle2"}>
-                                    {upperFirst(item.meta.status)} (v{item.meta.version})
-                                </Typography>
-                            </UIList.ListItemMeta>
-                        </UIList.ListItem>
-                    ))}
-                </UIList.ScrollList>
+                                <UIList.ListItemMeta className={rightAlign}>
+                                    <Typography use={"subtitle2"}>
+                                        {upperFirst(item.meta.status)} (v{item.meta.version})
+                                    </Typography>
+                                </UIList.ListItemMeta>
+                            </UIList.ListItem>
+                        ))}
+                    </Scrollbar>
+                    {fetchMoreLoading && (
+                        <InlineLoaderWrapper>
+                            <Typography use={"overline"}>{t`Loading more entries...`}</Typography>
+                        </InlineLoaderWrapper>
+                    )}
+                </>
             )}
         </UIList.DataList>
     );
