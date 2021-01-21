@@ -34,7 +34,7 @@ export const DataListModalWrapper = styled<"div", DataListModalWrapperProps>("di
         pointerEvents: showOverlay ? "auto" : "none",
         zIndex: showOverlay ? 5 : -1,
         opacity: showOverlay ? 1 : 0,
-        transform: showOverlay ? "translateX(-50%)" : "none",
+        transform: showOverlay ? "translateX(-50%)" : "translateX(-1000px)",
 
         "& .input-wrapper": {
             paddingBottom: "16px"

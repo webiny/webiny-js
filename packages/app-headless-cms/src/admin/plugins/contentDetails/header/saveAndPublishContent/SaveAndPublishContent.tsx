@@ -11,8 +11,21 @@ const buttonStyles = css({
     marginLeft: 16
 });
 
-const SaveAndPublishButton = ({ entry, contentModel, getLoading, setLoading, state }) => {
-    const { publishRevision } = useRevision({ contentModel, entry, revision: entry, setLoading });
+const SaveAndPublishButton = ({
+    entry,
+    contentModel,
+    getLoading,
+    setLoading,
+    state,
+    listQueryVariables
+}) => {
+    const { publishRevision } = useRevision({
+        contentModel,
+        entry,
+        revision: entry,
+        setLoading,
+        listQueryVariables
+    });
 
     const { showConfirmation } = useConfirmationDialog({
         title: t`Publish content`,

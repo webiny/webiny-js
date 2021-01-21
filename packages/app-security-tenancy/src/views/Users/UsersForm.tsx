@@ -27,7 +27,7 @@ import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useMutation, useQuery } from "react-apollo";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
-import { ReactComponent as AddIcon } from "../../assets/icons/add-18px.svg";
+import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 
 const t = i18n.ns("app-security-tenancy/admin/users-form");
 
@@ -124,13 +124,13 @@ const UsersForm = () => {
     if (showEmptyView) {
         return (
             <EmptyView
-                title={t`Click on the left side list to display user details or...`}
+                title={t`Click on the left side list to display user details or create a...`}
                 action={
                     <ButtonDefault
                         data-testid="new-record-button"
                         onClick={() => history.push("/security/users?new=true")}
                     >
-                        <ButtonIcon icon={<AddIcon />} /> {t`Add User`}
+                        <ButtonIcon icon={<AddIcon />} /> {t`New User`}
                     </ButtonDefault>
                 }
             />

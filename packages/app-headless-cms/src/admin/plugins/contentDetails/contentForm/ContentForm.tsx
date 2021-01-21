@@ -7,7 +7,14 @@ import { ContentModelForm } from "../../../views/components/ContentModelForm";
 import * as GQL from "../../../views/components/ContentModelForm/graphql";
 import * as GQLCache from "../cache";
 
-const ContentForm = ({ contentModel, entry, setLoading, getLoading, setState }) => {
+const ContentForm = ({
+    contentModel,
+    entry,
+    setLoading,
+    getLoading,
+    setState,
+    listQueryVariables
+}) => {
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
 
@@ -55,7 +62,7 @@ const ContentForm = ({ contentModel, entry, setLoading, getLoading, setState }) 
                         return;
                     }
                     resetInvalidFieldValues();
-                    GQLCache.addEntryToListCache(contentModel, cache, entry);
+                    GQLCache.addEntryToListCache(contentModel, cache, entry, listQueryVariables);
                 }
             });
             setLoading(false);
@@ -71,7 +78,7 @@ const ContentForm = ({ contentModel, entry, setLoading, getLoading, setState }) 
             goToRevision(entry.id);
             return entry;
         },
-        [contentModel.modelId]
+        [contentModel.modelId, listQueryVariables]
     );
 
     const updateContent = useCallback(
@@ -110,7 +117,12 @@ const ContentForm = ({ contentModel, entry, setLoading, getLoading, setState }) 
                         return;
                     }
                     resetInvalidFieldValues();
-                    GQLCache.updateLatestRevisionInListCache(contentModel, cache, newRevision);
+                    GQLCache.updateLatestRevisionInListCache(
+                        contentModel,
+                        cache,
+                        newRevision,
+                        listQueryVariables
+                    );
                     GQLCache.addRevisionToRevisionsCache(contentModel, cache, newRevision);
 
                     showSnackbar("A new revision was created!");
@@ -133,7 +145,7 @@ const ContentForm = ({ contentModel, entry, setLoading, getLoading, setState }) 
 
             return data;
         },
-        [contentModel.modelId]
+        [contentModel.modelId, listQueryVariables]
     );
 
     return (

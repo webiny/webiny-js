@@ -1,6 +1,4 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { css } from "emotion";
-import classNames from "classnames";
 import { i18n } from "@webiny/app/i18n";
 import { useRouter } from "@webiny/react-router";
 import { useQuery, useMutation } from "react-apollo";
@@ -22,7 +20,6 @@ import {
 } from "@webiny/ui/List";
 
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
-import { Form } from "@webiny/form";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { useSecurity } from "@webiny/app-security";
@@ -33,11 +30,6 @@ import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/fil
 import { serializeSorters, deserializeSorters } from "../utils";
 
 const t = i18n.ns("app-page-builder/admin/categories/data-list");
-const activeIcon = css({
-    "&": {
-        color: "var(--mdc-theme-primary)"
-    }
-});
 
 const SORTERS = [
     {
@@ -63,7 +55,7 @@ type PageBuilderCategoriesDataListProps = {
 };
 const PageBuilderCategoriesDataList = ({ canCreate }: PageBuilderCategoriesDataListProps) => {
     const [filter, setFilter] = useState("");
-    const [sort, setSort] = useState(null);
+    const [sort, setSort] = useState(serializeSorters(SORTERS[0].sorters));
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const listQuery = useQuery(LIST_CATEGORIES);
@@ -87,7 +79,7 @@ const PageBuilderCategoriesDataList = ({ canCreate }: PageBuilderCategoriesDataL
             if (!sort) {
                 return users;
             }
-            const [[key, value]] = Object.entries(sort);
+            const [[key, value]] = Object.entries(deserializeSorters(sort));
             return orderBy(users, [key], [value]);
         },
         [sort]
@@ -142,37 +134,24 @@ const PageBuilderCategoriesDataList = ({ canCreate }: PageBuilderCategoriesDataL
     const categoriesDataListModalOverlay = useMemo(
         () => (
             <DataListModalOverlay>
-                <Form
-                    data={{ sort: serializeSorters(sort) }}
-                    onChange={({ sort }) => {
-                        if (typeof sort === "string") {
-                            const newSort = deserializeSorters(sort);
-                            // @ts-ignore
-                            setSort(newSort);
-                        }
-                    }}
-                >
-                    {({ Bind }) => (
-                        <Grid>
-                            <Cell span={12}>
-                                <Bind name={"sort"}>
-                                    <Select label={t`Sort by`} description={"Sort pages by"}>
-                                        {SORTERS.map(({ label, sorters }) => {
-                                            return (
-                                                <option
-                                                    key={label}
-                                                    value={serializeSorters(sorters)}
-                                                >
-                                                    {label}
-                                                </option>
-                                            );
-                                        })}
-                                    </Select>
-                                </Bind>
-                            </Cell>
-                        </Grid>
-                    )}
-                </Form>
+                <Grid>
+                    <Cell span={12}>
+                        <Select
+                            value={sort}
+                            onChange={setSort}
+                            label={t`Sort by`}
+                            description={"Sort pages by"}
+                        >
+                            {SORTERS.map(({ label, sorters }) => {
+                                return (
+                                    <option key={label} value={serializeSorters(sorters)}>
+                                        {label}
+                                    </option>
+                                );
+                            })}
+                        </Select>
+                    </Cell>
+                </Grid>
             </DataListModalOverlay>
         ),
         []
@@ -192,7 +171,7 @@ const PageBuilderCategoriesDataList = ({ canCreate }: PageBuilderCategoriesDataL
                         data-testid="new-record-button"
                         onClick={() => history.push("/page-builder/categories?new=true")}
                     >
-                        <ButtonIcon icon={<AddIcon />} /> {t`Add Category`}
+                        <ButtonIcon icon={<AddIcon />} /> {t`New Category`}
                     </ButtonSecondary>
                 ) : null
             }
@@ -204,11 +183,7 @@ const PageBuilderCategoriesDataList = ({ canCreate }: PageBuilderCategoriesDataL
                 />
             }
             modalOverlay={categoriesDataListModalOverlay}
-            modalOverlayAction={
-                <DataListModalOverlayAction
-                    icon={<FilterIcon className={classNames({ [activeIcon]: sort })} />}
-                />
-            }
+            modalOverlayAction={<DataListModalOverlayAction icon={<FilterIcon />} />}
         >
             {({ data }) => (
                 <ScrollList data-testid="default-data-list">

@@ -36,8 +36,9 @@ declare global {
 type ContentDetailsProps = {
     canCreate: boolean;
     contentModel: any;
+    listQueryVariables: any;
 };
-const ContentDetails = ({ contentModel, canCreate }: ContentDetailsProps) => {
+const ContentDetails = ({ contentModel, canCreate, listQueryVariables }: ContentDetailsProps) => {
     const { history, location } = useRouter();
     const { showSnackbar } = useSnackbar();
     const [state, setState] = useState({});
@@ -96,8 +97,8 @@ const ContentDetails = ({ contentModel, canCreate }: ContentDetailsProps) => {
     if (showEmptyView) {
         return (
             <EmptyView
-                title={t`Click on the left side list to display content entry details {message}`({
-                    message: canCreate ? "or..." : ""
+                title={t`Click on the left side list to display entry details {message}`({
+                    message: canCreate ? "or create a..." : ""
                 })}
                 action={
                     canCreate ? (
@@ -109,7 +110,7 @@ const ContentDetails = ({ contentModel, canCreate }: ContentDetailsProps) => {
                                 )
                             }
                         >
-                            <ButtonIcon icon={<AddIcon />} /> {t`Add Content Entry`}
+                            <ButtonIcon icon={<AddIcon />} /> {t`New Entry`}
                         </ButtonDefault>
                     ) : null
                 }
@@ -128,7 +129,8 @@ const ContentDetails = ({ contentModel, canCreate }: ContentDetailsProps) => {
                     refetchContent: getEntry.refetch,
                     contentModel,
                     state,
-                    setState
+                    setState,
+                    listQueryVariables
                 })}
             </test-id>
         </DetailsContainer>

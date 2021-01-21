@@ -192,7 +192,7 @@ const FormsDataList = (props: FormsDataListProps) => {
             actions={
                 props.canCreate ? (
                     <ButtonSecondary data-testid="new-record-button" onClick={props.onCreateForm}>
-                        <ButtonIcon icon={<AddIcon />} /> {t`Create Form`}
+                        <ButtonIcon icon={<AddIcon />} /> {t`New Form`}
                     </ButtonSecondary>
                 ) : null
             }

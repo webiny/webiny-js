@@ -67,10 +67,11 @@ type Props = {
     state: any;
     setState: (state: any) => void;
     switchTab: (index: number) => void;
+    listQueryVariables: any;
 };
 
 const Revision = (props: Props) => {
-    const { revision, setLoading, contentModel, entry, switchTab } = props;
+    const { revision, setLoading, contentModel, entry, switchTab, listQueryVariables } = props;
     const {
         createRevision,
         deleteRevision,
@@ -81,7 +82,8 @@ const Revision = (props: Props) => {
         contentModel,
         entry,
         revision,
-        setLoading
+        setLoading,
+        listQueryVariables
     });
     const { icon, text: tooltipText } = getIcon(revision);
 

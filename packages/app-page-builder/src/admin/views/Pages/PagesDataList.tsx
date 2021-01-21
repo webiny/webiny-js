@@ -1,12 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import classNames from "classnames";
 import styled from "@emotion/styled";
 import { i18n } from "@webiny/app/i18n";
 import { useRouter } from "@webiny/react-router";
 import { useQuery } from "react-apollo";
 import debounce from "lodash/debounce";
 import get from "lodash/get";
-import isEmpty from "lodash/isEmpty";
 import { LIST_PAGES } from "@webiny/app-page-builder/admin/graphql/pages";
 import TimeAgo from "timeago-react";
 import {
@@ -37,11 +35,6 @@ import { deserializeSorters, serializeSorters } from "../utils";
 const t = i18n.ns("app-page-builder/admin/pages/data-list");
 const rightAlign = css({
     alignItems: "flex-end !important"
-});
-const activeIcon = css({
-    "&": {
-        color: "var(--mdc-theme-primary)"
-    }
 });
 const InlineLoaderWrapper = styled("div")({
     position: "absolute",
@@ -236,7 +229,7 @@ const PagesDataList = ({ onCreatePage, canCreate }: PagesDataListProps) => {
                 </Form>
             </DataListModalOverlay>
         ),
-        []
+        [categoriesData, where, sort]
     );
 
     return (
@@ -246,7 +239,7 @@ const PagesDataList = ({ onCreatePage, canCreate }: PagesDataListProps) => {
             actions={
                 canCreate ? (
                     <ButtonSecondary data-testid="new-record-button" onClick={onCreatePage}>
-                        <ButtonIcon icon={<AddIcon />} /> {t`Create Page`}
+                        <ButtonIcon icon={<AddIcon />} /> {t`New Page`}
                     </ButtonSecondary>
                 ) : null
             }
@@ -255,11 +248,7 @@ const PagesDataList = ({ onCreatePage, canCreate }: PagesDataListProps) => {
                 <SearchUI value={filter} onChange={setFilter} inputPlaceholder={t`Search pages`} />
             }
             modalOverlay={pagesDataListModalOverlay}
-            modalOverlayAction={
-                <DataListModalOverlayAction
-                    icon={<FilterIcon className={classNames({ [activeIcon]: !isEmpty(sort) })} />}
-                />
-            }
+            modalOverlayAction={<DataListModalOverlayAction icon={<FilterIcon />} />}
         >
             {({ data }) => (
                 <>

@@ -95,7 +95,13 @@ export const createListQuery = model => {
                     meta {
                         ${CONTENT_META_FIELDS}
                     }
+                    ${model.titleFieldId}
                 }
+                meta {
+                    cursor
+                    hasMoreItems
+                    totalCount
+                }            
                 error ${ERROR_FIELD}
             }
         }
