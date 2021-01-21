@@ -12,8 +12,8 @@ export default (): CmsEditorFieldValidatorPlugin => ({
     validator: {
         name: "dateLte",
         label: "Earlier or equal",
-        description: "Entered dated must be equal or lesser than the provided max date.",
-        defaultMessage: "Date is greater or equal to provided one.",
+        description: "Entered date/time must be equal or lesser than the provided max date.",
+        defaultMessage: "Date/time is greater or equal to provided one.",
         renderSettings({ Bind, field }) {
             const type = field.settings.type;
             const availableValidators = getAvailableValidators(type).join(",");
@@ -29,7 +29,7 @@ export default (): CmsEditorFieldValidatorPlugin => ({
                                     <>
                                         {createInputField(field, bind)}
                                         <FormElementMessage>
-                                            This is the earliest date that will be allowed.
+                                            This is the earliest date/time that will be allowed.
                                         </FormElementMessage>
                                     </>
                                 );
