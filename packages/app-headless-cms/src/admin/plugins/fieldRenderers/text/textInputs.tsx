@@ -3,7 +3,7 @@ import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
 import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
 import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/close.svg";
-import DynamicListMultipleValues from "./../DynamicListMultipleValues";
+import DynamicSection from "../DynamicSection";
 import { Input } from "@webiny/ui/Input";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
@@ -24,7 +24,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
         },
         render(props) {
             return (
-                <DynamicListMultipleValues {...props}>
+                <DynamicSection {...props}>
                     {({ bind, index }) => (
                         <Input
                             {...bind.index}
@@ -34,12 +34,12 @@ const plugin: CmsEditorFieldRendererPlugin = {
                             trailingIcon={
                                 index > 0 && {
                                     icon: <DeleteIcon />,
-                                    onClick: bind.index.removeValue
+                                    onClick: () => bind.field.removeValue(index)
                                 }
                             }
                         />
                     )}
-                </DynamicListMultipleValues>
+                </DynamicSection>
             );
         }
     }

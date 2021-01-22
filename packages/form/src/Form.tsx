@@ -14,7 +14,6 @@ export type FormSetValue = (name: string, value: any) => void;
 
 export type FormChildrenFunctionParams = {
     data: { [key: string]: any };
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define
     form: Form;
     submit: FormChildrenFunctionParamsSubmit;
     Bind: BindComponent;
@@ -26,7 +25,6 @@ export type FormChildrenFunction = (params: FormChildrenFunctionParams) => React
 export type FormData = { [key: string]: any };
 export type Validation = { [key: string]: any };
 
-// eslint-disable-next-line @typescript-eslint/no-use-before-define
 export type FormOnSubmit = (data: FormData, form?: Form) => void;
 
 export type FormProps = {
@@ -176,33 +174,33 @@ export class Form extends React.Component<FormProps, State> {
     };
 
     validate = async () => {
-        let allIsValid = true;
-
-        // Inputs must be validated in a queue because we may have async validators
-        const inputNames = Object.keys(this.inputs);
-        for (let i = 0; i < inputNames.length; i++) {
-            const name = inputNames[i];
-            const { validators } = this.inputs[name];
-            if (!validators) {
-                continue;
-            }
-
-            const hasValue = !!_.get(this.state.data, name);
-            const isInputValid = _.get(this.state.validation[name], "isValid");
-
-            const shouldValidate = !hasValue || (hasValue && isInputValid !== true);
-
-            if (shouldValidate) {
-                if (isInputValid === false || _.isNil(isInputValid)) {
-                    const validationResult = await this.validateInput(name);
-                    if (validationResult === false) {
-                        allIsValid = false;
-                    }
+        const { data = {}, validation = {} } = this.state;
+        const promises = Object.keys(this.inputs).map(
+            async (name): Promise<boolean> => {
+                const { validators } = this.inputs[name];
+                if (!validators || validators.length === 0) {
+                    return true;
                 }
+                const hasValue = !!data[name];
+                const isInputValid = validation[name] ? validation[name].isValid : undefined;
+                const shouldValidate = !hasValue || (hasValue && isInputValid !== true);
+                if (!shouldValidate) {
+                    return true;
+                }
+                if (isInputValid) {
+                    return true;
+                }
+                const result = await this.validateInput(name);
+                if (result === false) {
+                    return false;
+                }
+                return true;
             }
-        }
+        );
 
-        return allIsValid;
+        const results = await Promise.all(promises);
+        // all values must be true to pass the validation
+        return results.every(value => value === true);
     };
 
     validateInput = async (name: string) => {

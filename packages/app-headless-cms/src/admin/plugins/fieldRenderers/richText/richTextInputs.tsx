@@ -3,7 +3,7 @@ import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
 import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
 import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/close.svg";
-import DynamicListMultipleValues from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/DynamicListMultipleValues";
+import DynamicSection from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/DynamicSection";
 import { RichTextEditor, createPropsFromConfig } from "@webiny/app-admin/components/RichTextEditor";
 import { IconButton } from "@webiny/ui/Button";
 import { plugins } from "@webiny/plugins";
@@ -49,13 +49,13 @@ const plugin: CmsEditorFieldRendererPlugin = {
             }, []);
 
             return (
-                <DynamicListMultipleValues {...props} emptyValue={emptyValue}>
+                <DynamicSection {...props} emptyValue={emptyValue}>
                     {({ bind, index }) => (
                         <EditorWrapper>
                             {index > 0 && (
                                 <IconButton
                                     icon={<DeleteIcon />}
-                                    onClick={bind.index.removeValue}
+                                    onClick={() => bind.field.removeValue(index)}
                                 />
                             )}
                             <RichTextEditor
@@ -68,7 +68,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
                             />
                         </EditorWrapper>
                     )}
-                </DynamicListMultipleValues>
+                </DynamicSection>
             );
         }
     }

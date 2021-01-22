@@ -21,7 +21,7 @@ type FormSettingsProps = {
 };
 
 const FormSettings = ({ onExited }: FormSettingsProps) => {
-    const plugins = getPlugins<CmsEditorFormSettingsPlugin>("content-model-editor-form-settings");
+    const plugins = getPlugins<CmsEditorFormSettingsPlugin>("cms-editor-form-settings");
     const { data, setData } = useContentModelEditor();
     const { showSnackbar } = useSnackbar();
 

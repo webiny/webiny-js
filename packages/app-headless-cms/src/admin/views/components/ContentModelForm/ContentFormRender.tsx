@@ -1,6 +1,9 @@
 import React, { useEffect, useRef, useMemo } from "react";
-import { Form } from "@webiny/form";
-import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
+import { Form, FormOnSubmit } from "@webiny/form";
+import {
+    CmsEditorContentModel,
+    CmsEditorFieldRendererPlugin
+} from "@webiny/app-headless-cms/types";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { getPlugins } from "@webiny/plugins";
@@ -11,8 +14,18 @@ const FormWrapper = styled("div")({
     height: "calc(100vh - 260px)",
     overflow: "auto"
 });
-
-export const ContentFormRender = ({
+interface ContentFormRenderProps {
+    getFields: Function;
+    getDefaultValues: Function;
+    loading?: boolean;
+    entry: any;
+    contentModel: CmsEditorContentModel;
+    onSubmit: FormOnSubmit;
+    onChange: FormOnSubmit;
+    onForm?: any;
+    invalidFields?: Record<string, string>;
+}
+export const ContentFormRender: React.FunctionComponent<ContentFormRenderProps> = ({
     getFields,
     getDefaultValues,
     loading = false,
@@ -20,7 +33,8 @@ export const ContentFormRender = ({
     contentModel,
     onSubmit,
     onChange,
-    onForm = null
+    onForm = null,
+    invalidFields = {}
 }) => {
     // All form fields - an array of rows where each row is an array that contain fields.
     const fields = getFields();
@@ -41,6 +55,7 @@ export const ContentFormRender = ({
             onSubmit={onSubmit}
             data={entry ? entry : getDefaultValues()}
             ref={ref}
+            invalidFields={invalidFields}
         >
             {({ Bind }) => (
                 <FormWrapper data-testid={"cms-content-form"}>

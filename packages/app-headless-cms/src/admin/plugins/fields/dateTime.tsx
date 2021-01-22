@@ -17,7 +17,7 @@ const plugin: CmsEditorFieldTypePlugin = {
         label: t`Date/Time`,
         description: t`Store date and time.`,
         icon: <DateTimeIcon />,
-        validators: ["required", "gte", "lte"],
+        validators: ["required", "dateGte", "dateLte"],
         allowMultipleValues: true,
         allowPredefinedValues: false, // TODO: implement "renderPredefinedValues" and set to true.
         multipleValuesLabel: t`Use as a list of dates and times`,

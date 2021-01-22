@@ -2,11 +2,11 @@ import React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { Select } from "@webiny/ui/Select";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { validation } from "@webiny/validation";
 import {
-    CmsFormFieldPatternValidatorPlugin,
-    CmsEditorFieldValidatorPlugin
+    CmsEditorFieldValidatorPlugin,
+    CmsEditorFieldValidatorPatternPlugin
 } from "@webiny/app-headless-cms/types";
 
 export default {
@@ -22,11 +22,10 @@ export default {
         },
         renderSettings({ Bind, setValue, setMessage, data }) {
             const inputsDisabled = data.settings.preset !== "custom";
-            const presetPlugins = getPlugins<CmsFormFieldPatternValidatorPlugin>(
+            const presetPlugins = plugins.byType<CmsEditorFieldValidatorPatternPlugin>(
                 "cms-editor-field-validator-pattern"
             );
 
-            // TODO: @ts-adrian neda mi da dolje posaljem
             const selectOptions: any = presetPlugins.map(item => (
                 <option key={item.pattern.name} value={item.pattern.name}>
                     {item.pattern.label}

@@ -16,6 +16,7 @@
 		"../db-dynamodb",
 		"../handler",
 		"../handler-aws",
+		"../handler-http",
 		"../handler-db",
 		"../handler-graphql",
 		"../handler-http",

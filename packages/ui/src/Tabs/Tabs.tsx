@@ -85,7 +85,7 @@ export class Tabs extends React.Component<TabsProps, State> {
                     this.props.onActivate && this.props.onActivate(evt.detail.index);
                 }}
             >
-                {tabs.map((item: TabProps) => {
+                {tabs.map((item: TabProps, index) => {
                     const style = item.style || {};
                     if (item.disabled) {
                         Object.assign(style, disabledStyles);
@@ -95,7 +95,7 @@ export class Tabs extends React.Component<TabsProps, State> {
                         <Tab
                             tag={"div"}
                             style={style}
-                            key={item.label}
+                            key={item.label + "-" + index}
                             {...(item.icon ? { icon: item.icon } : {})}
                             {...(item.label ? { label: item.label } : {})}
                         />

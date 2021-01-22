@@ -27,6 +27,9 @@
       "path": "../handler-aws"
     },
     {
+      "path": "../handler-http"
+    },
+    {
       "path": "../handler-db"
     },
     {

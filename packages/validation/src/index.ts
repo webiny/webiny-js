@@ -18,6 +18,10 @@ import password from "./validators/password";
 import phone from "./validators/phone";
 import required from "./validators/required";
 import url from "./validators/url";
+import dateGte from "./validators/dateGte";
+import dateLte from "./validators/dateLte";
+import timeGte from "./validators/timeGte";
+import timeLte from "./validators/timeLte";
 
 const validation = new Validation();
 validation.setValidator("creditCard", creditCard);
@@ -38,5 +42,9 @@ validation.setValidator("password", password);
 validation.setValidator("phone", phone);
 validation.setValidator("required", required);
 validation.setValidator("url", url);
+validation.setValidator("dateGte", dateGte);
+validation.setValidator("dateLte", dateLte);
+validation.setValidator("timeGte", timeGte);
+validation.setValidator("timeLte", timeLte);
 
 export { validation, Validation, ValidationError };

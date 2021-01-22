@@ -1,5 +1,4 @@
-import React, { useCallback, useMemo } from "react";
-import get from "lodash/get";
+import React, { useCallback, useMemo, useState } from "react";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useMutation } from "@webiny/app-headless-cms/admin/hooks";
@@ -35,6 +34,20 @@ const ContentForm = ({
     const [updateMutation] = useMutation(UPDATE_CONTENT);
     const [createFromMutation] = useMutation(CREATE_CONTENT_FROM);
 
+    const [invalidFields, setInvalidFields] = useState<Record<string, string>>({});
+
+    const setInvalidFieldValues = errors => {
+        const values = errors.reduce((acc, er) => {
+            acc[er.fieldId] = er.error;
+            return acc;
+        }, {});
+        setInvalidFields(() => values);
+    };
+
+    const resetInvalidFieldValues = () => {
+        setInvalidFields(() => ({}));
+    };
+
     const createContent = useCallback(
         async data => {
             setLoading(true);
@@ -43,21 +56,24 @@ const ContentForm = ({
                 update(cache, { data }) {
                     const { data: entry, error } = data.content;
                     if (error) {
+                        showSnackbar(error.message);
+                        setInvalidFieldValues(error.data);
                         return;
                     }
-
+                    resetInvalidFieldValues();
                     GQLCache.addEntryToListCache(contentModel, cache, entry, listQueryVariables);
                 }
             });
             setLoading(false);
 
-            if (response.data.content.error) {
-                showSnackbar(response.data.content.message);
+            const { error, data: entry } = response.data.content;
+            if (error) {
+                showSnackbar(error.message);
+                setInvalidFieldValues(error.data);
                 return null;
             }
-
+            resetInvalidFieldValues();
             showSnackbar(`${contentModel.name} entry created successfully!`);
-            const { data: entry } = response.data.content;
             goToRevision(entry.id);
             return entry;
         },
@@ -75,9 +91,11 @@ const ContentForm = ({
             const { error } = response.data.content;
             if (error) {
                 showSnackbar(error.message);
+                setInvalidFieldValues(error.data);
                 return null;
             }
 
+            resetInvalidFieldValues();
             showSnackbar("Content saved successfully.");
             const { data: entry } = response.data.content;
             return entry;
@@ -93,9 +111,11 @@ const ContentForm = ({
                 update(cache, { data }) {
                     const { data: newRevision, error } = data.content;
                     if (error) {
+                        showSnackbar(error.message);
+                        setInvalidFieldValues(error.data);
                         return;
                     }
-
+                    resetInvalidFieldValues();
                     GQLCache.updateLatestRevisionInListCache(
                         contentModel,
                         cache,
@@ -117,8 +137,10 @@ const ContentForm = ({
             const { data, error } = response.data.content;
             if (error) {
                 showSnackbar(error.message);
+                setInvalidFieldValues(error.data);
                 return null;
             }
+            resetInvalidFieldValues();
 
             return data;
         },
@@ -132,14 +154,17 @@ const ContentForm = ({
             entry={entry}
             onForm={contentForm => setState({ contentForm })}
             onSubmit={async data => {
-                if (entry.id) {
-                    if (get(entry, "meta.locked")) {
-                        return createContentFrom(entry.id, data);
-                    }
+                if (!entry.id) {
+                    return createContent(data);
+                }
+                const { meta } = entry;
+                const { locked: isLocked } = meta || {};
+                if (!isLocked) {
                     return updateContent(entry.id, data);
                 }
-                return createContent(data);
+                return createContentFrom(entry.id, data);
             }}
+            invalidFields={invalidFields}
         />
     );
 };

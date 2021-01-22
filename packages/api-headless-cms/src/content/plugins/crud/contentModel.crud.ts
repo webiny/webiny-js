@@ -192,11 +192,11 @@ export default (): ContextPlugin<CmsContext> => ({
                         name: group.name
                     };
                 }
-                const updatedFields = await createFieldModels(model, data);
-                validateLayout(updatedDataJson, updatedFields);
+                const modelFields = await createFieldModels(model, data);
+                validateLayout(updatedDataJson, modelFields);
                 const modelData: Partial<CmsContentModel> = {
                     ...updatedDataJson,
-                    fields: updatedFields,
+                    fields: modelFields,
                     savedOn: new Date().toISOString()
                 };
 

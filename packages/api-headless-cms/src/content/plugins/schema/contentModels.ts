@@ -106,6 +106,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 predefinedValues: CmsPredefinedValuesInput
                 renderer: CmsFieldRendererInput
                 validation: [CmsFieldValidationInput]
+                listValidation: [CmsFieldValidationInput]
                 settings: JSON
             }
 
@@ -173,6 +174,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                     predefinedValues: CmsPredefinedValues
                     renderer: CmsFieldRenderer
                     validation: [CmsFieldValidation!]
+                    listValidation: [CmsFieldValidation!]
                     settings: JSON
                 }
 

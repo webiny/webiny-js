@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Plugin } from "@webiny/plugins/types";
 import { ReactElement, ReactNode } from "react";
-import { BindComponent, FormChildrenFunctionParams, Form } from "@webiny/form";
+import { BindComponent, FormChildrenFunctionParams, Form, FormOnSubmit } from "@webiny/form";
 import { ApolloClient } from "apollo-client";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 import Label from "./admin/views/components/ContentModelForm/ContentFormRender/components/Label";
@@ -40,6 +40,17 @@ export interface CmsEditorFieldTypePlugin extends Plugin {
          * ```
          */
         validators?: string[];
+        /**
+         * A list of available validators when a model field accepts a list (array) of values.
+         *
+         * ```ts
+         * listValidators: [
+         *     "minLength",
+         *     "maxLength"
+         * ]
+         * ```
+         */
+        listValidators?: string[];
         /**
          * An explanation of the field displayed beneath the label.
          *
@@ -228,7 +239,7 @@ export type CmsEditorField<T = unknown> = T & {
     helpText?: string;
     placeholderText?: string;
     validation?: CmsEditorFieldValidator[];
-    multipleValuesValidation?: CmsEditorFieldValidator[];
+    listValidation?: CmsEditorFieldValidator[];
     multipleValues?: boolean;
     predefinedValues?: {
         enabled: boolean;
@@ -289,6 +300,7 @@ export interface CmsEditorFieldValidatorPlugin extends Plugin {
         description: string;
         defaultMessage: string;
         renderSettings?: (props: {
+            field: CmsEditorField;
             Bind: BindComponent;
             setValue: (name: string, value: any) => void;
             setMessage: (message: string) => void;
@@ -306,8 +318,9 @@ export interface CmsContentModelFormProps {
     onForm?: (form: any) => void;
     contentModel: CmsEditorContentModel;
     entry?: { [key: string]: any };
-    onSubmit?: (data: { [key: string]: any }) => any;
-    onChange?: (data: { [key: string]: any }) => any;
+    onSubmit?: FormOnSubmit;
+    onChange?: FormOnSubmit;
+    invalidFields?: Record<string, string>;
 }
 
 export interface CmsEditorFieldOptionPlugin extends Plugin {
@@ -324,7 +337,7 @@ export interface CmsContentDetailsRevisionContentPlugin extends Plugin {
     render(params: any): ReactElement;
 }
 
-export interface CmsFormFieldPatternValidatorPlugin extends Plugin {
+export interface CmsEditorFieldValidatorPatternPlugin extends Plugin {
     type: "cms-editor-field-validator-pattern";
     pattern: {
         name: string;
@@ -333,17 +346,46 @@ export interface CmsFormFieldPatternValidatorPlugin extends Plugin {
     };
 }
 
-export interface CmsFormFieldValidator {
+export interface CmsFieldValidator {
     name: string;
     message: any;
     settings: any;
 }
 
-export interface CmsFormFieldValidatorPlugin extends Plugin {
-    type: "form-field-validator";
+export interface CmsModelFieldValidatorPlugin extends Plugin {
+    type: "cms-model-field-validator";
     validator: {
         name: string;
-        validate: (value: any, validator: CmsFormFieldValidator) => Promise<any>;
+        validate: (value: any, validator: CmsFieldValidator) => Promise<any>;
+    };
+}
+
+/**
+ * @category Plugin
+ * @category ContentModelField
+ * @category FieldValidation
+ */
+export interface CmsModelFieldValidatorPatternPlugin extends Plugin {
+    /**
+     * A plugin type
+     */
+    type: "cms-model-field-validator-pattern";
+    /**
+     * A pattern object for the validator.
+     */
+    pattern: {
+        /**
+         * name of the pattern.
+         */
+        name: string;
+        /**
+         * RegExp of the validator.
+         */
+        regex: string;
+        /**
+         * RegExp flags
+         */
+        flags: string;
     };
 }
 
@@ -353,7 +395,7 @@ export interface FieldLayoutPosition {
 }
 
 export interface CmsEditorFormSettingsPlugin extends Plugin {
-    type: "content-model-editor-form-settings";
+    type: "cms-editor-form-settings";
     title: string;
     description: string;
     icon: React.ReactElement;

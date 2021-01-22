@@ -1,9 +1,10 @@
 import * as React from "react";
+import styled from "@emotion/styled";
+import { css } from "emotion";
+import classNames from "classnames";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
 import { Elevation } from "@webiny/ui/Elevation";
-import styled from "@emotion/styled";
-import { css } from "emotion";
 import { Icon } from "@webiny/ui/Icon";
 
 const SimpleFormContainer = styled("div")({
@@ -45,9 +46,13 @@ export const SimpleForm = (props: {
     "data-testid"?: string;
     children: React.ReactNode;
     noElevation?: boolean;
+    className?: string;
 }) => {
     return (
-        <SimpleFormContainer className={"webiny-data-list"} data-testid={props["data-testid"]}>
+        <SimpleFormContainer
+            className={classNames("webiny-data-list", props.className)}
+            data-testid={props["data-testid"]}
+        >
             {props.noElevation ? props.children : <Elevation z={1}>{props.children}</Elevation>}
         </SimpleFormContainer>
     );

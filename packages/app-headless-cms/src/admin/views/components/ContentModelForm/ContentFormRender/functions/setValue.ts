@@ -1,4 +1,4 @@
-const setValue = ({ value, bind, field, index }) => {
+export const setValue = ({ value, bind, field, index }) => {
     let newValue = field.multipleValues ? [...(bind.value || [])] : bind.value;
 
     if (field.multipleValues) {
@@ -13,5 +13,3 @@ const setValue = ({ value, bind, field, index }) => {
 
     bind.onChange(newValue);
 };
-
-export default setValue;

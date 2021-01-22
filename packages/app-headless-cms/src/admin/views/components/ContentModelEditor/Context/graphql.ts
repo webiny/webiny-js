@@ -23,6 +23,11 @@ export const FIELDS_FIELDS = `
         settings
         message
     }
+    listValidation {
+        name
+        settings
+        message
+    }
     settings
 `;
 

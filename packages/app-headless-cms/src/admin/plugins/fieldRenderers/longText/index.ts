@@ -1,4 +1,4 @@
-import longTextTextArea from "./longTextTextArea";
-import longTextLongTextAreas from "./longTextLongTextAreas";
+import longText from "./longText";
+import longTexts from "./longTexts";
 
-export default [longTextTextArea, longTextLongTextAreas];
+export default [longText, longTexts];

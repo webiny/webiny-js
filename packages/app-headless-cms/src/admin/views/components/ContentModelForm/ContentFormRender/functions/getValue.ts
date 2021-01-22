@@ -1,4 +1,4 @@
-const getValue = ({ bind, field, index }) => {
+export const getValue = ({ bind, field, index }) => {
     let value = bind.value || null;
 
     if (field.multipleValues) {
@@ -15,5 +15,3 @@ const getValue = ({ bind, field, index }) => {
 
     return value;
 };
-
-export default getValue;

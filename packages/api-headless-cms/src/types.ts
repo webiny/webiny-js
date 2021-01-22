@@ -127,7 +127,13 @@ export interface CmsContentModelField {
      */
     validation: CmsContentModelFieldValidation[];
     /**
-     * Are multiple values allowed?
+     * List of validations for the list of values, when a field is set to accept a list of values.
+     * These validations will be applied to the entire list, and `validation` (see above) will be applied
+     * to each individual value in the list.
+     */
+    listValidation: CmsContentModelFieldValidation[];
+    /**
+     * Is this a multiple values field?
      */
     multipleValues: boolean;
     /**
@@ -137,31 +143,50 @@ export interface CmsContentModelField {
 }
 
 /**
+ * @category ContentModelField
+ * @category FieldValidation
+ */
+export interface CmsModelFieldValidatorValidateParams {
+    /**
+     * A value to be validated.
+     */
+    value: any;
+    /**
+     * Options from the CmsContentModelField validations.
+     *
+     * @see CmsContentModelField.validation
+     * @see CmsContentModelField.listValidation
+     */
+    validator: CmsContentModelFieldValidation;
+    /**
+     * An instance of the current context.
+     */
+    context: CmsContext;
+}
+/**
+ * Definition for the field validator.
+ *
  * @category Plugin
  * @category ContentModelField
  * @category FieldValidation
  */
 export interface CmsModelFieldValidatorPlugin extends Plugin {
     /**
-     * A plugin type
+     * A plugin type.
      */
     type: "cms-model-field-validator";
     /**
-     * Validator object definition.
+     * Actual validator definition.
      */
     validator: {
         /**
-         * Name of the validator
+         * Name of the validator.
          */
         name: string;
         /**
          * Validation method.
          */
-        validate(params: {
-            value: any;
-            validator: CmsContentModelFieldValidation;
-            context: CmsContext;
-        }): Promise<boolean>;
+        validate(params: CmsModelFieldValidatorValidateParams): Promise<boolean>;
     };
 }
 /**
@@ -818,6 +843,10 @@ export interface CmsContentModelFieldInput {
      * List of validations for the field.
      */
     validation?: CmsContentModelFieldValidation[];
+    /**
+     * @see CmsContentModelField.listValidation
+     */
+    listValidation: CmsContentModelFieldValidation[];
     /**
      * User defined settings.
      */
@@ -1657,7 +1686,7 @@ export interface CmsModelFieldToStoragePlugin extends Plugin {
      * }
      * ```
      */
-    toStorage?(args: CmsModelFieldToStoragePluginToStorageArgs): Promise<any>;
+    toStorage(args: CmsModelFieldToStoragePluginToStorageArgs): Promise<any>;
     /**
      * A function that is ran when retrieving the data from the database. You either revert the action you did in the `toStorage` or handle it via some other way available to you.
      *
@@ -1667,5 +1696,5 @@ export interface CmsModelFieldToStoragePlugin extends Plugin {
      * }
      * ```
      */
-    fromStorage?(args: CmsModelFieldToStoragePluginFromStorageArgs): Promise<any>;
+    fromStorage(args: CmsModelFieldToStoragePluginFromStorageArgs): Promise<any>;
 }

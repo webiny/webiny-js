@@ -1,7 +1,7 @@
 # CONTRIBUTING
 
 This guide is for anyone who wants to contribute to the Webiny project.
-We have an active community on [slack](webiny.com/slack). Talk to the core-team, and get help. Webiny team is always there for any questions.
+We have an active community on [slack](webiny.com/slack). Talk to the core team, and get help. Webiny team is always there for any questions.
 
 ## Working on an issue
 
@@ -33,7 +33,7 @@ Always follow the specification (even though later down the road, your PR might 
 
 
 ##### Additional explanation
-When merging larger PRs, squashing all commits into a single one often doesn't make sense, and in those cases, we are doing a regular merge or rebase - without squash. And when that is about to happen, it's important that all commit messages were properly written.
+When merging larger PRs, squashing all commits into a single one often doesn't make sense, and in those cases, we are doing a regular merge or rebase - without squash. And when that happens, it's important that all commit messages were properly written.
 
 ### Pull Requests (PRs)
 
@@ -64,27 +64,18 @@ The setup of the repo is identical to the one created by `create-webiny-project`
 
 ## Prerequisites
 
-1. Node `10.14` or higher (to manage your Node versions we recommend [n](https://www.npmjs.com/package/n) for OSX/Linux, and [nvm-windows](https://github.com/coreybutler/nvm-windows) for Windows)
+1. Node `12` or higher (to manage your Node versions we recommend [n](https://www.npmjs.com/package/n) for OSX/Linux, and [nvm-windows](https://github.com/coreybutler/nvm-windows) for Windows)
 
-2. `yarn 1.0` or higher (because our project setup uses workspaces). Yarn `v2` is not yet supported.
-   If you don't already have `yarn`, visit [yarnpkg.com](https://yarnpkg.com/en/docs/install) to install it.
+2. `yarn 1.0` or higher (because our project setup uses workspaces). Yarn `v2` is not yet supported!
+   If you don't already have `yarn`, visit [https://classic.yarnpkg.com/](https://classic.yarnpkg.com/en/docs/install) to install it.
 
 3. A verified AWS account with an [IAM user for programmatic usage](https://www.youtube.com/watch?v=tgb_MRVylWw)
 
-4. Webiny uses MongoDB as its go-to database, so you'll need to have one ready. We recommend [Mongo Atlas](https://docs.atlas.mongodb.com/getting-started/) (there is a free tier for developers, so don't worry about having to pay for anything).
-
-> IMPORTANT: it's important to give the outside world access to your database because the database will be accessed from your cloud functions, thus you'll never have a fixed IP address. See the [Whitelist Your Connection IP Address](https://docs.atlas.mongodb.com/getting-started/#whitelist-your-connection-ip-address). Make sure you add a `0.0.0.0/0` entry.
-
-> The `MONGODB_SERVER` value should be in the format of a MongoDB connection string such as:
-> `mongodb+srv://{YOUR_USERNAME}:{YOUR_PASSWORD}@someclustername.mongodb.net`.
-
-> WINDOWS USERS: make sure you have installed [Visual C++ Redistributable for Visual Studio 2015](https://www.microsoft.com/en-in/download/details.aspx?id=48145). This is required to run tests using Jest [plugin for in-memory MongoDB server](https://github.com/shelfio/jest-mongodb).
-
-> WINDOWS USERS: it's best to use `git-bash` as a terminal to work with Webiny as `cmd` won't work. If you have `Git` installed, most likely you already have the `git-bash` installed. If you're using VSCode IDE, you will be able to easily switch to the `bash` terminal. Alternatively you can install the [cmder](https://cmder.net/) terminal emulator.
-
 ## Local setup
 
-1. Fork and clone the repo
+> IMPORTANT: The following commands should be executed from the root of your repository.
+ 
+1. Fork and clone the repo.
 
 2. Install all dependencies:
 
@@ -92,27 +83,41 @@ The setup of the repo is identical to the one created by `create-webiny-project`
    yarn
    ```
 
-3. Run `yarn setup-repo`. This will setup all the necessary environment config files and build all packages to generate `dist` folders and TS declarations. You need to manually update the DB connection string, edit your `.env.json` file.
+3. Prepare the repository:
+   ```
+   yarn setup-repo
+   ```
 
-4. Configure your MongoDB connection data in `.env.json`. See https://docs.webiny.com/docs/get-started/quick-start/#2-setup-database-connection for more details.
+4. Deploy you API to use with local React apps: 
+   ```
+   yarn webiny stack deploy api --env=dev
+   ```
 
-5. Deploy you API to use with local React apps by running `yarn webiny deploy api --env=local` from the project root directory. Once deployed, it will automatically update you React apps' `.env.json` files with the necessary variables.
+6. Begin working on the `admin` app:
+   ```
+   cd apps/admin/code
+   yarn start --env=dev
+   ```
+   
+7. Begin working on the `website` app (OPTIONAL):
+   ```
+   cd apps/website/code
+   yarn start --env=dev
+   ```
 
-> IMPORTANT: `webiny` should be run from the root of the Webiny project, and since `api` and `apps` folders are a `sandbox` present in the project root directory, this is the place to run your `webiny` commands from.
+8. Run `watch` on packages you are working on so that your changes are automatically built into the corresponding `dist` folder. React app build will automatically rebuild and hot-reload changes that happen in the `dist` folder of all related packages.
 
-6. Begin working on React apps by navigating to `apps/{admin|website}` and run `yarn start`. React apps are regular `create-react-app` apps, slightly modified, but all the CRA rules apply.
+The easiest way to run a watch is by running `yarn webiny ws run watch --scope=your-scope`. You can use glob patterns in the `--scope` parameter. For example, `yarn webiny ws run watch --scope=@webiny/app*` will run `watch` on all packages that start
 
-7. Run `watch` on packages you are working on so that your changes are automatically built into the corresponding `dist` folder. React app build will automatically rebuild and hot-reload changes that happen in the `dist` folder of all related packages.
-
-The easiest way to run a watch is by running `lerna run watch --scope=your-scope --stream --parallel`. For more details visit the [official lerna filtering docs](https://github.com/lerna/lerna/tree/master/core/filter-options).
+Another way is to use `--folder` parameter, which will run the `watch` command on all workspaces found within the given folder: `yarn webiny ws run watch --folder=./packages`. Keep in mind that `packages` folder contains over 60 packages so you don't want to watch all of them, all the time.
 
 ## Tests
 
 You can find examples of tests in some of the utility packages (`validation`, `i18n`, `plugins`).
 
-`api-file-manager` and `api-headless-cms` contain examples of testing your GraphQL API.
+`api-file-manager`, `api-i18n`, `api-page-builder`, `api-form-builder`, `api-security-tenancy` and `api-headless-cms` contain examples of testing your GraphQL API.
 
-We'll be strongly focusing on tests in the near future, and of course contributions of tests are most welcome :)
+We strongly recommend developing using the TDD approach, as it will allow you to use a proper debugger and avoid deploying your code to the cloud all the time. PR's without tests will not be accepted.
 
 ### [Cypress](https://www.cypress.io/) tests
 
