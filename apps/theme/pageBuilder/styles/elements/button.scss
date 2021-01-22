@@ -20,8 +20,8 @@
   background-color: transparent;
 }
 @mixin button-outline-secondary {
-  border: 2px solid var(--webiny-theme-color-primary, #ee896b);
-  color: var(--webiny-theme-color-primary, #ee896b);
+  border: 2px solid var(--webiny-theme-color-secondary, #ee896b);
+  color: var(--webiny-theme-color-secondary, #ee896b);
   padding: 10px 16px !important;
   background-color: transparent;
 }
