@@ -1,7 +1,4 @@
 {
   "extends": "../../tsconfig",
-  "references": [
-    { "path": "../handler" },
-    { "path": "../plugins" }
-  ]
+  "references": [{ "path": "../handler" }, { "path": "../plugins" }]
 }

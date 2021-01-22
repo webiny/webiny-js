@@ -1,25 +1,18 @@
 {
-	"extends": "../../tsconfig.build.json",
-	"include": [
-		"./src"
-	],
-	"exclude": [
-		"node_modules",
-		"./dist",
-		"../commodo",
-		"../handler-graphql"
-	],
-	"compilerOptions": {
-		"rootDir": "./src",
-		"outDir": "./dist",
-		"declarationDir": "./dist"
-	},
-	"references": [
-		{
-			"path": "../handler-graphql/tsconfig.build.json"
-		},
-		{
-			"path": "../commodo/tsconfig.build.json"
-		}
-	]
+  "extends": "../../tsconfig.build.json",
+  "include": ["./src"],
+  "exclude": ["node_modules", "./dist", "../commodo", "../handler-graphql"],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist"
+  },
+  "references": [
+    {
+      "path": "../handler-graphql/tsconfig.build.json"
+    },
+    {
+      "path": "../commodo/tsconfig.build.json"
+    }
+  ]
 }

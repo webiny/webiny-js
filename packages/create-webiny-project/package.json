@@ -1,42 +1,42 @@
 {
-	"name": "create-webiny-project",
-	"version": "5.0.0-beta.0",
-	"description": "local build tool to create webiny project with specific template",
-	"main": "index.js",
-	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
-	},
-	"bin": "./bin.js",
-	"keywords": [
-		"Webiny"
-	],
-	"author": "Webiny Ltd.",
-	"contributors": [
-		"Emil Kais <emil@webiny.com>",
-		"Pavel Denisjuk <pavel@webiny.com>"
-	],
-	"license": "MIT",
-	"dependencies": {
-		"@webiny/tracking": "^5.0.0-beta.0",
-		"chalk": "4.1.0",
-		"execa": "4.1.0",
-		"fs-extra": "9.0.1",
-		"indent-string": "4.0.0",
-		"listr": "0.14.3",
-		"load-json-file": "6.2.0",
-		"node-fetch": "2.6.1",
-		"os": "0.1.1",
-		"p-retry": "4.2.0",
-		"public-ip": "4.0.3",
-		"rimraf": "3.0.2",
-		"semver": "7.3.4",
-		"validate-npm-package-name": "3.0.0",
-		"write-json-file": "4.3.0",
-		"yargs": "15.4.1"
-	},
-	"publishConfig": {
-		"access": "public",
-		"directory": "."
-	},
-	"gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f"
+  "name": "create-webiny-project",
+  "version": "5.0.0-beta.0",
+  "description": "local build tool to create webiny project with specific template",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": "./bin.js",
+  "keywords": [
+    "Webiny"
+  ],
+  "author": "Webiny Ltd.",
+  "contributors": [
+    "Emil Kais <emil@webiny.com>",
+    "Pavel Denisjuk <pavel@webiny.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/tracking": "^5.0.0-beta.0",
+    "chalk": "4.1.0",
+    "execa": "4.1.0",
+    "fs-extra": "9.0.1",
+    "indent-string": "4.0.0",
+    "listr": "0.14.3",
+    "load-json-file": "6.2.0",
+    "node-fetch": "2.6.1",
+    "os": "0.1.1",
+    "p-retry": "4.2.0",
+    "public-ip": "4.0.3",
+    "rimraf": "3.0.2",
+    "semver": "7.3.4",
+    "validate-npm-package-name": "3.0.0",
+    "write-json-file": "4.3.0",
+    "yargs": "15.4.1"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "."
+  },
+  "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f"
 }

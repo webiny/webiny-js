@@ -17,11 +17,5 @@
     "paths": {},
     "typeRoots": ["node_modules/@types", "./types"]
   },
-  "exclude": [
-    "node_modules",
-    "**/__tests__/**",
-    "dist",
-    "**jest**",
-    "**resources.js"
-  ]
+  "exclude": ["node_modules", "**/__tests__/**", "dist", "**jest**", "**resources.js"]
 }

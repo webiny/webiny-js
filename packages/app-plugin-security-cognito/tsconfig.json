@@ -1,26 +1,26 @@
 {
-	"extends": "../../tsconfig.json",
-	"references": [
-		{
-			"path": "../app"
-		},
-		{
-			"path": "../app-security"
-		},
-		{
-			"path": "../app-security-tenancy"
-		},
-		{
-			"path": "../plugins"
-		},
-		{
-			"path": "../ui"
-		},
-		{
-			"path": "../validation"
-		},
-		{
-			"path": "../form"
-		}
-	]
+  "extends": "../../tsconfig.json",
+  "references": [
+    {
+      "path": "../app"
+    },
+    {
+      "path": "../app-security"
+    },
+    {
+      "path": "../app-security-tenancy"
+    },
+    {
+      "path": "../plugins"
+    },
+    {
+      "path": "../ui"
+    },
+    {
+      "path": "../validation"
+    },
+    {
+      "path": "../form"
+    }
+  ]
 }

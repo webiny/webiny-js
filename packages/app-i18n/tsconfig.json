@@ -1,26 +1,26 @@
 {
-	"extends": "../../tsconfig",
-	"references": [
-		{
-			"path": "../app"
-		},
-		{
-			"path": "../app-admin"
-		},
-		{
-			"path": "../app-security"
-		},
-		{
-			"path": "../form"
-		},
-		{
-			"path": "../react-router"
-		},
-		{
-			"path": "../ui"
-		},
-		{
-			"path": "../validation"
-		}
-	]
+  "extends": "../../tsconfig",
+  "references": [
+    {
+      "path": "../app"
+    },
+    {
+      "path": "../app-admin"
+    },
+    {
+      "path": "../app-security"
+    },
+    {
+      "path": "../form"
+    },
+    {
+      "path": "../react-router"
+    },
+    {
+      "path": "../ui"
+    },
+    {
+      "path": "../validation"
+    }
+  ]
 }
