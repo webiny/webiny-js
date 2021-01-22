@@ -32,11 +32,11 @@ const inputStyle = css({
     },
 
     "&::-webkit-inner-spin-button": {
-        "-webkit-appearance": "none",
+        WebkitAppearance: "none",
         margin: 0
     },
     "&::-webkit-outer-spin-button": {
-        "-webkit-appearance": "none",
+        WebkitAppearance: "none",
         margin: 0
     }
 });
