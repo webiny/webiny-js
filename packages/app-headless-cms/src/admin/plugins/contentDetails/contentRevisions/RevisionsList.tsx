@@ -41,6 +41,7 @@ export type Props = {
     state: any;
     setState: (state: any) => void;
     switchTab: (index: number) => void;
+    listQueryVariables: any;
 };
 
 const RevisionsList = (props: Props) => {
