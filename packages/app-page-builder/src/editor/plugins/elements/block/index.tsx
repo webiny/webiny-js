@@ -60,7 +60,7 @@ export default (): PbEditorPageElementPlugin => {
                             DisplayMode.DESKTOP
                         ),
                         horizontalAlignFlex: createInitialPerDeviceSettingValue(
-                            "flex-start",
+                            "center",
                             DisplayMode.DESKTOP
                         ),
                         verticalAlign: createInitialPerDeviceSettingValue(
