@@ -101,16 +101,18 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
             apply(context) {
                 if (!context.http) {
                     context.http = {
-                        path: {
-                            parameters: null
+                        request: {
+                            path: {
+                                parameters: null
+                            }
                         }
                     };
-                } else if (!context.http.path) {
-                    context.http.path = {
+                } else if (!context.http.request.path) {
+                    context.http.request.path = {
                         parameters: null
                     };
                 }
-                context.http.path.parameters = { key: path };
+                context.http.request.path.parameters = { key: path };
             }
         },
         securityPlugins(),
