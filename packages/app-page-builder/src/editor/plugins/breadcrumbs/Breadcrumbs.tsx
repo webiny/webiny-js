@@ -8,7 +8,7 @@ import {
     activeElementSelector,
     contentAtom,
     ContentAtomType,
-    highlightElementMutation,
+    highlightElementAtom,
     uiAtom
 } from "../../recoil/modules";
 import { COLORS } from "../elementSettings/components/StyledComponents";
@@ -106,6 +106,7 @@ const createBreadcrumbs = (content: ContentAtomType, element: PbShallowElement) 
 };
 
 const Breadcrumbs: React.FunctionComponent = () => {
+    const setHighlightElementValue = useSetRecoilState(highlightElementAtom);
     const setUiAtomValue = useSetRecoilState(uiAtom);
     const element = useRecoilValue(activeElementSelector);
     const contentAtomValue = useRecoilValue(contentAtom);
@@ -113,7 +114,7 @@ const Breadcrumbs: React.FunctionComponent = () => {
         return null;
     }
     const highlightElement = (id: string) => {
-        setUiAtomValue(prev => highlightElementMutation(prev, id));
+        setHighlightElementValue(id);
     };
     const activateElement = (id: string) => {
         setUiAtomValue(prev => activateElementMutation(prev, id));

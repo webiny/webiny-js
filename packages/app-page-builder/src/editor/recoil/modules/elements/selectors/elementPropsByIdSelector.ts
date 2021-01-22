@@ -2,6 +2,7 @@ import { PbElement, PbShallowElement } from "@webiny/app-page-builder/types";
 import { selectorFamily } from "recoil";
 import { elementByIdSelector } from "./elementByIdSelector";
 import { uiAtom, UiAtomType } from "../../ui/uiAtom";
+import { highlightElementAtom, HighlightElementAtomType } from "../../ui/highlightElementAtom";
 
 type ActiveElementPropsByIdSelector = {
     isActive: boolean;
@@ -18,7 +19,8 @@ export const elementPropsByIdSelector = selectorFamily<ActiveElementPropsByIdSel
                     isHighlighted: false
                 };
             }
-            const { isDragging, isResizing, activeElement, highlightElement } = get(uiAtom);
+            const { isDragging, isResizing, activeElement } = get(uiAtom);
+            const highlightElement = get(highlightElementAtom);
 
             const active = activeElement && activeElement === element.id;
             const highlight = active || highlightElement === id;
@@ -32,20 +34,25 @@ export const elementPropsByIdSelector = selectorFamily<ActiveElementPropsByIdSel
 });
 
 type GetElementPropsCallableType = (
+    highlightElementAtomValue: HighlightElementAtomType,
     state: UiAtomType,
     element?: PbElement | PbShallowElement
 ) => ActiveElementPropsByIdSelector;
-export const getElementProps: GetElementPropsCallableType = (state, element) => {
+export const getElementProps: GetElementPropsCallableType = (
+    highlightElementAtomValue,
+    state,
+    element
+) => {
     if (!element) {
         return {
             isActive: false,
             isHighlighted: false
         };
     }
-    const { isDragging, isResizing, activeElement, highlightElement } = state;
+    const { isDragging, isResizing, activeElement } = state;
 
     const active = activeElement && activeElement === element.id;
-    const highlight = active || highlightElement === element.id;
+    const highlight = active || highlightElementAtomValue === element.id;
 
     return {
         isActive: active,

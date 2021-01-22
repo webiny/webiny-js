@@ -7,14 +7,13 @@ import {
     elementByIdSelector,
     enableDraggingMutation,
     getElementProps,
-    highlightElementMutation,
     uiAtom,
-    unHighlightElementMutation
+    highlightElementAtom
 } from "@webiny/app-page-builder/editor/recoil/modules";
 import { Transition } from "react-transition-group";
 import { plugins } from "@webiny/plugins";
 import { renderPlugins } from "@webiny/app/plugins";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { PbEditorPageElementPlugin, PbElement } from "@webiny/app-page-builder/types";
 import {
     defaultStyle,
@@ -23,9 +22,25 @@ import {
     typeStyle
 } from "./Element/ElementStyled";
 
+const withHighlightElement = (Component: React.FunctionComponent) => {
+    return function withHighlightElementComponent(props) {
+        const highlightElementAtomValue = useRecoilValue(highlightElementAtom);
+
+        return (
+            <Component
+                {...props}
+                highlightElementId={
+                    highlightElementAtomValue === props.id ? highlightElementAtomValue : null
+                }
+            />
+        );
+    };
+};
+
 export type ElementPropsType = {
     id: string;
     className?: string;
+    highlightElementId: string | null;
 };
 
 const getElementPlugin = (element: PbElement): PbEditorPageElementPlugin => {
@@ -39,11 +54,13 @@ const getElementPlugin = (element: PbElement): PbEditorPageElementPlugin => {
 
 const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
     id: elementId,
-    className = ""
+    className = "",
+    highlightElementId
 }) => {
     const element = (useRecoilValue(elementByIdSelector(elementId)) as unknown) as PbElement;
     const [uiAtomValue, setUiAtomValue] = useRecoilState(uiAtom);
-    const { isActive, isHighlighted } = getElementProps(uiAtomValue, element);
+    const setHighlightElementAtomValue = useSetRecoilState(highlightElementAtom);
+    const { isActive, isHighlighted } = getElementProps(highlightElementId, uiAtomValue, element);
 
     const plugin = getElementPlugin(element);
 
@@ -75,7 +92,7 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
             if (isHighlighted) {
                 return;
             }
-            setUiAtomValue(prev => highlightElementMutation(prev, elementId));
+            setHighlightElementAtomValue(elementId);
         },
         [elementId]
     );
@@ -83,7 +100,7 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
         if (!element || element.type === "document") {
             return;
         }
-        setUiAtomValue(unHighlightElementMutation);
+        setHighlightElementAtomValue(null);
     }, [elementId]);
 
     const renderDraggable = ({ drag }): JSX.Element => {
@@ -131,4 +148,5 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
         </Transition>
     );
 };
-export default React.memo(ElementComponent);
+
+export default withHighlightElement(React.memo<any>(ElementComponent));
