@@ -32,6 +32,8 @@ const RenderFieldElement = (props: {
                 return memoizedBindComponents.current[memoKey];
             }
 
+            const isMultipleValues = index === -1 && field.multipleValues;
+
             const name = index >= 0 ? `${field.fieldId}.${index}` : field.fieldId;
             const validators = createValidators(field.validation || []);
             const listValidators = createValidators(field.listValidation || []);
@@ -41,7 +43,7 @@ const RenderFieldElement = (props: {
                 return (
                     <BaseFormBind
                         name={name}
-                        validators={index === -1 ? listValidators : validators}
+                        validators={isMultipleValues ? listValidators : validators}
                         defaultValue={index === -1 ? defaultValue : null}
                     >
                         {bind => {

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Plugin } from "@webiny/plugins/types";
 import { ReactElement, ReactNode } from "react";
-import { BindComponent, FormChildrenFunctionParams, Form } from "@webiny/form";
+import { BindComponent, FormChildrenFunctionParams, Form, FormOnSubmit } from "@webiny/form";
 import { ApolloClient } from "apollo-client";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 import Label from "./admin/views/components/ContentModelForm/ContentFormRender/components/Label";
@@ -318,8 +318,8 @@ export interface CmsContentModelFormProps {
     onForm?: (form: any) => void;
     contentModel: CmsEditorContentModel;
     entry?: { [key: string]: any };
-    onSubmit?: (data: { [key: string]: any }) => any;
-    onChange?: (data: { [key: string]: any }) => any;
+    onSubmit?: FormOnSubmit;
+    onChange?: FormOnSubmit;
     invalidFields?: Record<string, string>;
 }
 

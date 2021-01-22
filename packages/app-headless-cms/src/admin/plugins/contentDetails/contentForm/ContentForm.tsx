@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo, useState } from "react";
-import get from "lodash/get";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useMutation } from "@webiny/app-headless-cms/admin/hooks";
@@ -155,13 +154,15 @@ const ContentForm = ({
             entry={entry}
             onForm={contentForm => setState({ contentForm })}
             onSubmit={async data => {
-                if (entry.id) {
-                    if (get(entry, "meta.locked")) {
-                        return createContentFrom(entry.id, data);
-                    }
+                if (!entry.id) {
+                    return createContent(data);
+                }
+                const { meta } = entry;
+                const { locked: isLocked } = meta || {};
+                if (!isLocked) {
                     return updateContent(entry.id, data);
                 }
-                return createContent(data);
+                return createContentFrom(entry.id, data);
             }}
             invalidFields={invalidFields}
         />
