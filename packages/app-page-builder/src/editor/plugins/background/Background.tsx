@@ -1,9 +1,5 @@
 import React, { useCallback } from "react";
-import {
-    deactivateElementMutation,
-    uiAtom,
-    unHighlightElementMutation
-} from "@webiny/app-page-builder/editor/recoil/modules";
+import { deactivateElementMutation, uiAtom } from "@webiny/app-page-builder/editor/recoil/modules";
 import { css } from "emotion";
 import { useRecoilState } from "recoil";
 
@@ -22,7 +18,7 @@ const Background: React.FunctionComponent = () => {
         if (!activeElement) {
             return;
         }
-        setUiAtomValue(state => deactivateElementMutation(unHighlightElementMutation(state)));
+        setUiAtomValue(state => deactivateElementMutation(state));
     }, [activeElement]);
     return <div className={backgroundStyle} onClick={deactivateElement} />;
 };

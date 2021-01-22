@@ -2,7 +2,6 @@ import React from "react";
 import {
     uiAtom,
     deactivateElementMutation,
-    unHighlightElementMutation,
     UiAtomType
 } from "@webiny/app-page-builder/editor/recoil/modules";
 import Action from "../Action";
@@ -16,7 +15,7 @@ import { PbEditorToolbarBottomPlugin } from "@webiny/app-page-builder/types";
 const metaKey = platform.os.family === "OS X" ? "CMD" : "CTRL";
 
 const clearUiAtomValue = (prev: UiAtomType): UiAtomType => {
-    return deactivateElementMutation(unHighlightElementMutation(prev));
+    return deactivateElementMutation(prev);
 };
 
 export const undo: PbEditorToolbarBottomPlugin = {
