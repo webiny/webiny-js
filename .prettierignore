@@ -2,4 +2,5 @@
 **/dist/
 **/*.d.ts
 **/.out/
+**/.pulumi/
 packages/ui/src/RichTextEditor/editorjs/**
