@@ -34,7 +34,7 @@ const getLocaleFromHeaders = (http, localeContext = "default") => {
     if (!http) {
         return null;
     }
-    
+
     const { headers } = http.request;
 
     let acceptLanguageHeader, contextLocaleHeader;
