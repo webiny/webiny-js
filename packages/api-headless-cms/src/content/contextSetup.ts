@@ -7,11 +7,11 @@ interface CmsHttpParameters {
 }
 
 const throwPlainError = (type: string): void => {
-    throw new Error(`Missing context.http.path.parameter "${type}".`);
+    throw new Error(`Missing context.http.request.path parameter "${type}".`);
 };
 
 export const extractHandlerHttpParameters = (context: Context): CmsHttpParameters => {
-    const { key = "" } = context.http.path.parameters || {};
+    const { key = "" } = context.http.request.path.parameters || {};
     const [type, locale] = key.split("/");
     if (!type) {
         throwPlainError("type");
