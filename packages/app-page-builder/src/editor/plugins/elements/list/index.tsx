@@ -1,18 +1,10 @@
 import React from "react";
-import loremIpsum from "lorem-ipsum";
 import { DisplayMode, PbEditorPageElementPlugin } from "../../../../types";
 import List, { className } from "./List";
 import { createInitialTextValue } from "../utils/textUtils";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
 export default (): PbEditorPageElementPlugin => {
-    const defaultLipsum = {
-        count: 1,
-        units: "sentences",
-        sentenceLowerBound: 4,
-        sentenceUpperBound: 4
-    };
-
     return {
         name: "pb-editor-page-element-list",
         type: "pb-editor-page-element",
@@ -24,9 +16,9 @@ export default (): PbEditorPageElementPlugin => {
                 return (
                     <div className={className}>
                         <ul>
-                            <li>{loremIpsum(defaultLipsum)}</li>
-                            <li>{loremIpsum(defaultLipsum)}</li>
-                            <li>{loremIpsum(defaultLipsum)}</li>
+                            <li>List item 1</li>
+                            <li>List item 2</li>
+                            <li>List item 3</li>
                         </ul>
                     </div>
                 );
@@ -47,9 +39,9 @@ export default (): PbEditorPageElementPlugin => {
             const previewText =
                 content.text ||
                 `<ul>
-                    <li>Point 1</li>
-                    <li>Point 2</li>
-                    <li>Point 3</li>
+                    <li>List item 1</li>
+                    <li>List item 2</li>
+                    <li>List item 3</li>
                 </ul>`;
 
             return {

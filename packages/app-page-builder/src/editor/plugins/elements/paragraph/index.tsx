@@ -7,10 +7,12 @@ import { createInitialPerDeviceSettingValue } from "../../elementSettings/elemen
 
 export default (): PbEditorPageElementPlugin => {
     const defaultLipsum = {
-        count: 3,
-        units: "sentences",
-        sentenceLowerBound: 5,
-        sentenceUpperBound: 15
+        count: 1,
+        units: "paragraphs",
+        paragraphLowerBound: 2,
+        paragraphUpperBound: 2,
+        sentenceLowerBound: 10,
+        sentenceUpperBound: 10
     };
 
     return {

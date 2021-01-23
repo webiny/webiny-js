@@ -5,6 +5,7 @@ import { createInitialTextValue } from "../utils/textUtils";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
 export default (): PbEditorPageElementPlugin => {
+    const defaultText = "Block Quote";
     return {
         name: "pb-editor-page-element-quote",
         type: "pb-editor-page-element",
@@ -16,7 +17,7 @@ export default (): PbEditorPageElementPlugin => {
                 return (
                     <div className={className}>
                         <blockquote>
-                            <q>We Live In A Twilight World. There Are No Friends At Dusk.</q>
+                            <q>{defaultText}</q>
                         </blockquote>
                     </div>
                 );
@@ -34,9 +35,7 @@ export default (): PbEditorPageElementPlugin => {
         ],
         target: ["cell", "block"],
         create({ content = {}, ...options }) {
-            const previewText =
-                content.text ||
-                `<blockquote>We Live In A Twilight World. There Are No Friends At Dusk.</blockquote>`;
+            const previewText = content.text || `<blockquote><q>${defaultText}</q></blockquote>`;
 
             return {
                 type: "quote",
