@@ -16,7 +16,9 @@ const DeleteAction: React.FunctionComponent<DeleteActionPropsType> = ({ children
     const eventActionHandler = useEventActionHandler();
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
-
+    
+    console.log("DeleteAction activeElementId", activeElementId);
+    
     if (!element) {
         return null;
     }
