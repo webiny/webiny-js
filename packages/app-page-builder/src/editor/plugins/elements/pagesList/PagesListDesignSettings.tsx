@@ -1,5 +1,5 @@
 import * as React from "react";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { validation } from "@webiny/validation";
 import { PbPageElementPagesListComponentPlugin } from "@webiny/app-page-builder/types";
 import Accordion from "../../elementSettings/components/Accordion";
@@ -9,7 +9,7 @@ import SelectField from "../../elementSettings/components/SelectField";
 import { classes } from "../../elementSettings/components/StyledComponents";
 
 const PagesListDesignSettings = ({ Bind }) => {
-    const components = getPlugins<PbPageElementPagesListComponentPlugin>(
+    const components = plugins.byType<PbPageElementPagesListComponentPlugin>(
         "pb-page-element-pages-list-component"
     );
 

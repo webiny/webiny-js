@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import slugify from "slugify";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { TagsMultiAutocomplete } from "@webiny/app-page-builder/admin/components/TagsMultiAutocomplete";
 import { Input } from "@webiny/ui/Input";
@@ -17,7 +17,7 @@ const toSlug = (value, cb) => {
 
 const GeneralSettings = ({ form, data, Bind, setValue }) => {
     const layouts = React.useMemo(
-        () => getPlugins<PbPageLayoutPlugin>("pb-page-layout").map(pl => pl.layout),
+        () => plugins.byType<PbPageLayoutPlugin>("pb-page-layout").map(pl => pl.layout),
         []
     );
 

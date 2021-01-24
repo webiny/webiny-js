@@ -3,7 +3,7 @@ import shortid from "shortid";
 import { cloneDeep, pick } from "lodash";
 import { GET_FORM, UPDATE_REVISION } from "./graphql";
 import { getFieldPosition, moveField, moveRow, deleteField } from "./functions";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 
 import {
     FbFormModelFieldsLayout,
@@ -97,8 +97,9 @@ export default FormEditorContext => {
              * @returns {void|?FbFormModelField}
              */
             getFieldPlugin(query: object): FbBuilderFieldPlugin {
-                return getPlugins<FbBuilderFieldPlugin>("form-editor-field-type").find(
-                    ({ field }) => {
+                return plugins
+                    .byType<FbBuilderFieldPlugin>("form-editor-field-type")
+                    .find(({ field }) => {
                         for (const key in query) {
                             if (!(key in field)) {
                                 return null;
@@ -110,8 +111,7 @@ export default FormEditorContext => {
                         }
 
                         return true;
-                    }
-                );
+                    });
             },
 
             /**

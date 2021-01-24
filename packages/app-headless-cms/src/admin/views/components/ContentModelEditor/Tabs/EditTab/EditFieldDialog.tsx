@@ -11,7 +11,7 @@ import {
     CmsEditorFieldTypePlugin,
     CmsEditorFieldValidatorPlugin
 } from "@webiny/app-headless-cms/types";
-import { getPlugins, plugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import GeneralTab from "./EditFieldDialog/GeneralTab";
 import AppearanceTab from "./EditFieldDialog/AppearanceTab";
 import PredefinedValues from "./EditFieldDialog/PredefinedValues";
@@ -105,9 +105,9 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
         const clonedField = cloneDeep(field);
 
         if (!clonedField.renderer || !clonedField.renderer.name) {
-            const [renderPlugin] = getPlugins<CmsEditorFieldRendererPlugin>(
-                "cms-editor-field-renderer"
-            ).filter(item => item.renderer.canUse({ field }));
+            const [renderPlugin] = plugins
+                .byType<CmsEditorFieldRendererPlugin>("cms-editor-field-renderer")
+                .filter(item => item.renderer.canUse({ field }));
 
             if (renderPlugin) {
                 clonedField.renderer = { name: renderPlugin.renderer.rendererName };

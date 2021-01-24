@@ -1,6 +1,6 @@
 import React from "react";
 import { i18n } from "@webiny/app/i18n";
-import { registerPlugins, getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { ReactComponent as SettingsIcon } from "@webiny/app-admin/assets/icons/round-settings-24px.svg";
 import { WebinyInitPlugin } from "@webiny/app/types";
 import { AdminMenuSettingsPlugin } from "@webiny/app-admin/types";
@@ -15,7 +15,7 @@ const plugin: WebinyInitPlugin = {
         // Apps / integrations can register settings plugins and add menu items like the following.
         const settingsPlugins = getPlugins<AdminMenuSettingsPlugin>("admin-menu-settings");
 
-        registerPlugins({
+        plugins.register({
             name: "menu-settings",
             type: "admin-menu",
             order: 100,

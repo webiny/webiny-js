@@ -1,6 +1,6 @@
 import React from "react";
 import { css } from "emotion";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import {
     Dialog,
     DialogTitle,
@@ -51,8 +51,10 @@ type EditBlockDialogProps = {
 const EditBlockDialog = (props: EditBlockDialogProps) => {
     const { open, onClose, onSubmit, plugin, loading } = props;
 
-    const plugins = getPlugins<PbEditorBlockCategoryPlugin>("pb-editor-block-category");
-    const blockCategoriesOptions = plugins.map(item => ({
+    const blockCategoryPlugins = plugins.byType<PbEditorBlockCategoryPlugin>(
+        "pb-editor-block-category"
+    );
+    const blockCategoriesOptions = blockCategoryPlugins.map(item => ({
         value: item.name,
         label: item.title
     }));

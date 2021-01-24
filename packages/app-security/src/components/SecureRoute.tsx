@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useSecurity } from "..";
 import { SecureRouteErrorPlugin } from "@webiny/app-security/types";
-import { getPlugin } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 
 let warned = false;
 
@@ -30,7 +30,7 @@ export default ({
         return children;
     }
 
-    const plugin = getPlugin<SecureRouteErrorPlugin>("secure-route-error");
+    const plugin = plugins.byName<SecureRouteErrorPlugin>("secure-route-error");
     if (!plugin) {
         return null;
     }

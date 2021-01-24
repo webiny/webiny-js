@@ -2,7 +2,7 @@ import React from "react";
 import { Menu } from "@webiny/ui/Menu";
 import { IconButton } from "@webiny/ui/Button";
 import { ReactComponent as MoreVerticalIcon } from "@webiny/app-page-builder/editor/assets/icons/more_vert.svg";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { css } from "emotion";
 import { PbEditorDefaultBarRightPageOptionsPlugin } from "@webiny/app-page-builder/types";
 
@@ -17,7 +17,7 @@ const menuStyles = css({
 });
 
 export default function PageOptionsMenu() {
-    const plugins = getPlugins<PbEditorDefaultBarRightPageOptionsPlugin>(
+    const pageOptionPlugins = plugins.byType<PbEditorDefaultBarRightPageOptionsPlugin>(
         "pb-editor-default-bar-right-page-options"
     );
     return (
@@ -26,7 +26,7 @@ export default function PageOptionsMenu() {
             className={menuStyles}
             handle={<IconButton icon={<MoreVerticalIcon />} />}
         >
-            {plugins.map(pl => React.cloneElement(pl.render(), { key: pl.name }))}
+            {pageOptionPlugins.map(pl => React.cloneElement(pl.render(), { key: pl.name }))}
         </Menu>
     );
 }

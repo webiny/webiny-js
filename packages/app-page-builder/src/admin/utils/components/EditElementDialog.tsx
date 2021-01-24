@@ -1,6 +1,6 @@
 import React from "react";
 import { css } from "emotion";
-import { getPlugin } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import {
     Dialog,
     DialogTitle,
@@ -46,7 +46,7 @@ const EditElementDialog = React.memo(
     (props: Props) => {
         const { open, onClose, onSubmit, plugin: pluginName } = props;
 
-        const plugin: any = getPlugin(pluginName);
+        const plugin: any = plugins.byName(pluginName);
 
         return (
             <Dialog open={open} onClose={onClose} className={narrowDialog}>

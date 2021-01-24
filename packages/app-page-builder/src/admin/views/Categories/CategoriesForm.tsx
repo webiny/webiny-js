@@ -18,7 +18,7 @@ import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Input } from "@webiny/ui/Input";
 import { categoryUrlValidator } from "./validators";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { PbPageLayoutPlugin } from "@webiny/app-page-builder/types";
 import { Select } from "@webiny/ui/Select";
 import { useSecurity } from "@webiny/app-security";
@@ -44,7 +44,7 @@ const CategoriesForm = ({ canCreate }: CategoriesFormProps) => {
     const { showSnackbar } = useSnackbar();
 
     const layouts = React.useMemo(
-        () => getPlugins<PbPageLayoutPlugin>("pb-page-layout").map(pl => pl.layout),
+        () => plugins.byType<PbPageLayoutPlugin>("pb-page-layout").map(pl => pl.layout),
         []
     );
     const newEntry = new URLSearchParams(location.search).get("new") === "true";

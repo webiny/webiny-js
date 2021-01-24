@@ -6,7 +6,7 @@ import {
 } from "@webiny/app-headless-cms/types";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import RenderFieldElement from "./ContentFormRender/RenderFieldElement";
 import styled from "@emotion/styled";
 
@@ -45,7 +45,7 @@ export const ContentFormRender: React.FunctionComponent<ContentFormRenderProps> 
     }, []);
 
     const renderPlugins = useMemo(
-        () => getPlugins<CmsEditorFieldRendererPlugin>("cms-editor-field-renderer"),
+        () => plugins.byType<CmsEditorFieldRendererPlugin>("cms-editor-field-renderer"),
         []
     );
 

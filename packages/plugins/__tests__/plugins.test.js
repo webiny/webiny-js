@@ -1,4 +1,4 @@
-import { PluginsContainer, registerPlugins, unregisterPlugin, getPlugin, getPlugins } from "../src";
+import { PluginsContainer } from "../src";
 
 const mockPlugins = [
     {
@@ -69,8 +69,8 @@ describe("plugins", () => {
         jest.clearAllMocks();
     });
 
-    test("registerPlugins, unregisterPlugin, getPlugin, getPlugins", async () => {
-        registerPlugins(
+    test("plugins.register, plugins.unregister, plugins.byName, plugins.byType", async () => {
+        plugins.register(
             {
                 type: "test",
                 name: "test-1"
@@ -108,52 +108,52 @@ describe("plugins", () => {
             }
         );
 
-        expect(getPlugins("test").length).toBe(7);
-        expect(getPlugins("testXYZ").length).toBe(0);
+        expect(plugins.byType("test").length).toBe(7);
+        expect(plugins.byType("testXYZ").length).toBe(0);
 
-        expect(getPlugin("test-1")).toEqual({
+        expect(plugins.byName("test-1")).toEqual({
             type: "test",
             name: "test-1"
         });
 
-        expect(getPlugin("test-2")).toEqual({
+        expect(plugins.byName("test-2")).toEqual({
             type: "test",
             name: "test-2"
         });
 
-        expect(getPlugin("test-3")).toEqual({
+        expect(plugins.byName("test-3")).toEqual({
             type: "test",
             name: "test-3"
         });
 
-        unregisterPlugin("test-3");
+        plugins.unregister("test-3");
 
-        expect(getPlugins().length).toBe(6);
-        expect(getPlugins("test").length).toBe(6);
-        expect(getPlugins("testXYZ").length).toBe(0);
+        expect(plugins.all().length).toBe(6);
+        expect(plugins.byType("test").length).toBe(6);
+        expect(plugins.byType("testXYZ").length).toBe(0);
 
-        expect(getPlugin("test-1")).toEqual({
+        expect(plugins.byName("test-1")).toEqual({
             type: "test",
             name: "test-1"
         });
 
-        expect(getPlugin("test-2")).toEqual({
+        expect(plugins.byName("test-2")).toEqual({
             type: "test",
             name: "test-2"
         });
 
-        expect(getPlugin("test-4")).toEqual({
+        expect(plugins.byName("test-4")).toEqual({
             type: "test",
             name: "Something...",
             _name: "test-4"
         });
 
-        expect(getPlugin("test-3")).toEqual(undefined);
+        expect(plugins.byName("test-3")).toEqual(undefined);
     });
 
     test(`if present, "init" method must be executed upon adding`, async () => {
         let initialized = false;
-        registerPlugins({
+        plugins.register({
             type: "test",
             name: "test-1",
             init: () => (initialized = true)

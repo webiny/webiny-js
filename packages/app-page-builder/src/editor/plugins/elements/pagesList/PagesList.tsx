@@ -2,14 +2,14 @@ import * as React from "react";
 import { useQuery } from "react-apollo";
 import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
 import { LIST_PUBLISHED_PAGES } from "./graphql";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { get } from "lodash";
 import { PbPageElementPagesListComponentPlugin } from "@webiny/app-page-builder/types";
 import { useState } from "react";
 
 const PagesList = props => {
     const { component, ...vars } = props.data;
-    const components = getPlugins<PbPageElementPagesListComponentPlugin>(
+    const components = plugins.byType<PbPageElementPagesListComponentPlugin>(
         "pb-page-element-pages-list-component"
     );
     const pageList = components.find(cmp => cmp.componentName === component);

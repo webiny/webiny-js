@@ -1,7 +1,7 @@
 import { omit, omitBy, isNull } from "lodash";
 import uniqid from "uniqid";
 import { useHandlers } from "@webiny/app/hooks/useHandlers";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import findObject from "./findObject";
 import { PbMenuItemPlugin } from "@webiny/app-page-builder/types";
 
@@ -32,8 +32,8 @@ const MenuItemForm = props => {
     });
 
     const { currentMenuItem } = props;
-    const plugins = getPlugins<PbMenuItemPlugin>("pb-menu-item");
-    const plugin = plugins.find(pl => pl.menuItem.type === currentMenuItem.type);
+    const menuItemPlugins = plugins.byType<PbMenuItemPlugin>("pb-menu-item");
+    const plugin = menuItemPlugins.find(pl => pl.menuItem.type === currentMenuItem.type);
     if (!plugin) {
         return null;
     }

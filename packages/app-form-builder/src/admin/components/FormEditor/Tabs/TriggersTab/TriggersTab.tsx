@@ -4,7 +4,7 @@ import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
 import { Typography } from "@webiny/ui/Typography";
 import { Form } from "@webiny/form";
 import { useFormEditor } from "@webiny/app-form-builder/admin/components/FormEditor/Context";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { set } from "lodash";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
@@ -18,7 +18,7 @@ const Container = styled("div")({
 
 export const TriggersTab = () => {
     const { setData, data: formData } = useFormEditor();
-    const plugins = getPlugins<FbEditorTrigger>("form-editor-trigger");
+    const formEditorTriggerPlugins = plugins.byType<FbEditorTrigger>("form-editor-trigger");
     const { showSnackbar } = useSnackbar();
 
     return (
@@ -28,7 +28,7 @@ export const TriggersTab = () => {
             >{t`Which actions should be taken after submission`}</Typography>
 
             <Accordion>
-                {plugins.map(({ trigger }) => (
+                {formEditorTriggerPlugins.map(({ trigger }) => (
                     <AccordionItem
                         key={trigger.id}
                         icon={trigger.icon}
