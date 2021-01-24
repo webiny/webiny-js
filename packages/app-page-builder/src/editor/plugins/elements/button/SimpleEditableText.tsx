@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useRef } from "react";
 
 type SimpleTextPropsType = {
     value?: string;
@@ -17,10 +17,10 @@ const SimpleEditableText: React.FunctionComponent<SimpleTextPropsType> = ({
     onChange,
     options = {},
     element,
-    className,
-    focusInput
+    className
 }) => {
     const value = useRef<string>(defaultValue);
+    const inputRef = useRef(null);
 
     const onChangeHandler = useCallback(
         (ev: InputEvent) => {
