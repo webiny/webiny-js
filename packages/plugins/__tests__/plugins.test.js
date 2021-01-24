@@ -1,4 +1,4 @@
-import { registerPlugins, unregisterPlugin, getPlugin, getPlugins, plugins } from "../src";
+import { PluginsContainer, registerPlugins, unregisterPlugin, getPlugin, getPlugins } from "../src";
 
 const mockPlugins = [
     {
@@ -60,6 +60,11 @@ const mockPlugins = [
 ];
 
 describe("plugins", () => {
+    let plugins;
+
+    beforeEach(() => {
+        plugins = new PluginsContainer();
+    });
     afterEach(() => {
         jest.clearAllMocks();
     });
