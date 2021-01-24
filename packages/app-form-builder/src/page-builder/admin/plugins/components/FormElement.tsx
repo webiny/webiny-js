@@ -28,12 +28,10 @@ const renderContent = (form: PbElementDataSettingsFormType): JSX.Element => {
 
 export type FormElementPropsType = {
     element: PbElement;
+    isActive: boolean;
 };
 
-const FormElement: React.FunctionComponent<FormElementPropsType> = ({ element }) => {
-    const { activeElement } = useRecoilValue(uiAtom);
-    const isActive = activeElement === element.id;
-
+const FormElement: React.FunctionComponent<FormElementPropsType> = ({ element, isActive }) => {
     const { form = {} } = element.data?.settings || {};
 
     const renderEmpty = useRenderEmptyEmbed(element);
