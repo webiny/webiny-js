@@ -36,7 +36,7 @@ const List: React.FunctionComponent<ParagraphType> = ({ elementId }) => {
         <Text
             elementId={elementId}
             editorOptions={DEFAULT_EDITOR_OPTIONS}
-            rootClassName={editorClass}
+            rootClassName={className}
         />
     );
 };

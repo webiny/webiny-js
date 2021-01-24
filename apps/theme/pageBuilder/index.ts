@@ -42,10 +42,7 @@ export default [
                     ]
                 },
                 list: {
-                    types: [
-                        { className: "", label: "Default" },
-                        { className: "webiny-pb-element-list-basic", label: "Basic" }
-                    ]
+                    types: [{ className: "webiny-pb-typography-list", label: "Default" }]
                 },
                 quote: {
                     types: [
