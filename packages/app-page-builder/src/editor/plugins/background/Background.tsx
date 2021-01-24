@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
-import { deactivateElementMutation, uiAtom } from "@webiny/app-page-builder/editor/recoil/modules";
-import { css } from "emotion";
 import { useRecoilState } from "recoil";
+import { css } from "emotion";
+import { activeElementAtom } from "../../recoil/modules";
 
 const backgroundStyle = css({
     position: "fixed",
@@ -10,16 +10,17 @@ const backgroundStyle = css({
     width: "100%",
     minHeight: "100%"
 });
+
 const Background: React.FunctionComponent = () => {
-    const [uiAtomValue, setUiAtomValue] = useRecoilState(uiAtom);
-    const { activeElement } = uiAtomValue;
+    const [activeElement, setActiveElementAtomValue] = useRecoilState(activeElementAtom);
 
     const deactivateElement = useCallback(() => {
         if (!activeElement) {
             return;
         }
-        setUiAtomValue(state => deactivateElementMutation(state));
+        setActiveElementAtomValue(null);
     }, [activeElement]);
+
     return <div className={backgroundStyle} onClick={deactivateElement} />;
 };
 

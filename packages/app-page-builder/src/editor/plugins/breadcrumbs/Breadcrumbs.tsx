@@ -1,15 +1,14 @@
 import React from "react";
 import { css } from "emotion";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { PbShallowElement } from "../../../types";
 import { extrapolateContentElementHelper } from "../../helpers";
 import {
-    activateElementMutation,
-    activeElementSelector,
+    activeElementAtom,
     contentAtom,
     ContentAtomType,
-    highlightElementAtom,
-    uiAtom
+    elementByIdSelector,
+    highlightElementAtom
 } from "../../recoil/modules";
 import { COLORS } from "../elementSettings/components/StyledComponents";
 
@@ -106,9 +105,9 @@ const createBreadcrumbs = (content: ContentAtomType, element: PbShallowElement) 
 };
 
 const Breadcrumbs: React.FunctionComponent = () => {
+    const [activeElement, setActiveElementAtomValue] = useRecoilState(activeElementAtom);
     const setHighlightElementValue = useSetRecoilState(highlightElementAtom);
-    const setUiAtomValue = useSetRecoilState(uiAtom);
-    const element = useRecoilValue(activeElementSelector);
+    const element = useRecoilValue(elementByIdSelector(activeElement));
     const contentAtomValue = useRecoilValue(contentAtom);
     if (!element) {
         return null;
@@ -117,7 +116,7 @@ const Breadcrumbs: React.FunctionComponent = () => {
         setHighlightElementValue(id);
     };
     const activateElement = (id: string) => {
-        setUiAtomValue(prev => activateElementMutation(prev, id));
+        setActiveElementAtomValue(id);
     };
 
     const breadcrumbsList = createBreadcrumbs(contentAtomValue, element);

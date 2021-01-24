@@ -4,7 +4,7 @@ import { css } from "emotion";
 import get from "lodash/get";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { PbEditorPageElementSettingsRenderComponentProps } from "../../../../types";
-import { activeElementSelector } from "../../../recoil/modules";
+import { activeElementAtom, elementByIdSelector } from "../../../recoil/modules";
 import ElementAnimation from "../../../../render/components/ElementAnimation";
 import useUpdateHandlers from "../useUpdateHandlers";
 // Components
@@ -45,7 +45,8 @@ type SettingsPropsType = {
 };
 const Settings: React.FunctionComponent<SettingsPropsType &
     PbEditorPageElementSettingsRenderComponentProps> = ({ defaultAccordionValue }) => {
-    const element = useRecoilValue(activeElementSelector);
+    const activeElementId = useRecoilValue(activeElementAtom);
+    const element = useRecoilValue(elementByIdSelector(activeElementId));
 
     const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
         element,

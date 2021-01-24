@@ -1,8 +1,6 @@
 import React, { useCallback } from "react";
 import { useRecoilValue } from "recoil";
 import { css } from "emotion";
-import { PbEditorPageElementSettingsRenderComponentProps } from "../../../../types";
-import { activeElementSelector } from "../../../recoil/modules";
 // Components
 import Accordion from "../../elementSettings/components/Accordion";
 import Wrapper from "../../elementSettings/components/Wrapper";
@@ -10,6 +8,9 @@ import InputField from "../../elementSettings/components/InputField";
 import SpacingPicker from "../../elementSettings/components/SpacingPicker";
 import useUpdateHandlers from "../../elementSettings/useUpdateHandlers";
 import { justifySelfEndStyle } from "../../elementSettings/components/StyledComponents";
+import { PbEditorPageElementSettingsRenderComponentProps } from "../../../../types";
+import { activeElementAtom, elementByIdSelector } from "../../../recoil/modules";
+
 import {
     WIDTH_UNIT_OPTIONS,
     HEIGHT_UNIT_OPTIONS
@@ -34,7 +35,8 @@ const spacingPickerStyle = css({
 const ImageSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps> = ({
     defaultAccordionValue = false
 }) => {
-    const element = useRecoilValue(activeElementSelector);
+    const activeElementId = useRecoilValue(activeElementAtom);
+    const element = useRecoilValue(elementByIdSelector(activeElementId));
     const {
         data: { image }
     } = element;

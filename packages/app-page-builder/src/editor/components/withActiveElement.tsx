@@ -1,7 +1,8 @@
 import React from "react";
 import { getGlobalState } from "@webiny/app-page-builder/editor/provider";
 import {
-    activeElementSelector,
+    activeElementAtom,
+    elementByIdSelector,
     getElementWithChildrenById
 } from "@webiny/app-page-builder/editor/recoil/modules";
 import { PbState } from "@webiny/app-page-builder/editor/recoil/modules/types";
@@ -45,7 +46,8 @@ export function withActiveElement({ propName = "element", shallow = false, keys 
     return function decorator(Component: React.ComponentType<any>) {
         return function ActiveElementComponent(props: any) {
             const state = getGlobalState();
-            const element = useRecoilValue(activeElementSelector);
+            const activeElementId = useRecoilValue(activeElementAtom);
+            const element = useRecoilValue(elementByIdSelector(activeElementId));
             const activeElement = getActiveElement(state, element, propName, shallow, keys);
             return <Component {...props} {...activeElement} />;
         };

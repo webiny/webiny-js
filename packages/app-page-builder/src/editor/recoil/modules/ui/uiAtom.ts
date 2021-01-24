@@ -9,7 +9,6 @@ export type PagePreviewDimension = {
 export type UiAtomType = {
     isDragging: boolean;
     isResizing: boolean;
-    activeElement: string | null;
     isSaving: boolean;
     textEditorActive: boolean;
     sidebarActiveTabIndex: number;
@@ -22,7 +21,6 @@ export const uiAtom = connectedAtom<UiAtomType>({
     default: {
         isDragging: false,
         isResizing: false,
-        activeElement: null,
         isSaving: false,
         textEditorActive: false,
         sidebarActiveTabIndex: 0,

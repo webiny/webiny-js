@@ -68,10 +68,10 @@ export const deleteElementAction: EventActionCallableType<DeleteElementActionArg
     return {
         state: {
             ...result.state,
+            activeElement: null,
+            highlightElement: null,
             ui: {
-                ...(result.state?.ui || state.ui),
-                highlightElement: undefined,
-                activeElement: undefined
+                ...(result.state?.ui || state.ui)
             }
         },
         actions: result.actions

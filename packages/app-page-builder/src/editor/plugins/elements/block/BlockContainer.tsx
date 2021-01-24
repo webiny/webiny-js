@@ -9,7 +9,7 @@ import Element from "../../../components/Element";
 import { DragObjectWithTypeWithTargetType } from "../../../components/Droppable";
 import { useEventActionHandler } from "../../../provider";
 import { DropElementActionEvent, TogglePluginActionEvent } from "../../../recoil/actions";
-import { elementByIdSelector, uiAtom } from "../../../recoil/modules";
+import { elementByIdSelector, uiAtom, highlightElementAtom } from "../../../recoil/modules";
 import { ReactComponent as AddCircleOutline } from "../../../assets/icons/baseline-add_circle-24px.svg";
 
 const addIcon = css({
@@ -45,6 +45,7 @@ const BlockContainer: React.FunctionComponent<BlockContainerPropsType> = ({
     const { displayMode } = useRecoilValue(uiAtom);
     const handler = useEventActionHandler();
     const element = useRecoilValue(elementByIdSelector(elementId));
+    const highlightedElement = useRecoilValue(highlightElementAtom);
     const { id, path, type, elements } = element;
 
     const containerStyle = elementStyle;
@@ -97,6 +98,7 @@ const BlockContainer: React.FunctionComponent<BlockContainerPropsType> = ({
                 {totalElements === 0 && (
                     <DropZone.Center
                         id={id}
+                        isHighlighted={highlightedElement === id}
                         type={type}
                         onDrop={source => dropElementAction(source, 0)}
                     >

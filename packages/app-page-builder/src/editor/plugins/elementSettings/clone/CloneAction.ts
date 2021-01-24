@@ -3,7 +3,8 @@ import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider"
 import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { cloneElementHelper } from "@webiny/app-page-builder/editor/helpers";
 import {
-    activeElementWithChildrenSelector,
+    activeElementAtom,
+    elementWithChildrenByIdSelector,
     elementParentWithChildrenByIdSelector
 } from "@webiny/app-page-builder/editor/recoil/modules";
 import { plugins } from "@webiny/plugins";
@@ -15,7 +16,8 @@ type CloneActionPropsType = {
 };
 const CloneAction: React.FunctionComponent<CloneActionPropsType> = ({ children }) => {
     const eventActionHandler = useEventActionHandler();
-    const element = useRecoilValue(activeElementWithChildrenSelector);
+    const activeElementId = useRecoilValue(activeElementAtom);
+    const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
     const parent = useRecoilValue(elementParentWithChildrenByIdSelector(element?.id));
 
     if (!element || !parent) {

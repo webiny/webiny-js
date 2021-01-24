@@ -1,5 +1,8 @@
 import React from "react";
-import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import {
+    elementWithChildrenByIdSelector,
+    activeElementAtom
+} from "@webiny/app-page-builder/editor/recoil/modules";
 import lodashGet from "lodash/get";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Icon } from "@webiny/ui/Icon";
@@ -29,7 +32,8 @@ const SliderWithInput: React.FunctionComponent<SliderWithInputPropsType> = ({
     max = 100,
     step = 1
 }) => {
-    const element = useRecoilValue(activeElementWithChildrenSelector);
+    const activeElementId = useRecoilValue(activeElementAtom);
+    const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
     const value = lodashGet(element, valueKey, 0);
     return (
         <Grid className={className}>

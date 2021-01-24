@@ -1,14 +1,10 @@
-import { useEffect } from "react";
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import {
-    activeElementSelector,
-    deactivateElementMutation,
-    uiAtom
-} from "@webiny/app-page-builder/editor/recoil/modules";
+import { useEffect, useCallback } from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { plugins } from "@webiny/plugins";
 import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
 import { userElementSettingsPluginsHelper } from "@webiny/app-page-builder/editor/helpers";
+import { activeElementAtom, elementByIdSelector } from "../../../recoil/modules";
 
 const getElementActions = plugin => {
     if (!plugin || !plugin.settings) {
@@ -44,21 +40,21 @@ const getElementActions = plugin => {
                 return pl && pl.plugin;
             })
             // Eliminate duplicate plugins
-            .filter(
-                (pl, index, array) =>
-                    array.findIndex(item => item.plugin.name === pl.plugin.name) === index
-            )
+            .filter((pl, index, array) => {
+                return array.findIndex(item => item.plugin.name === pl.plugin.name) === index;
+            })
     );
 };
 
 const useElementSettings = () => {
-    const element = useRecoilValue(activeElementSelector);
-    const elementType = element?.type;
+    const [activeElement, setActiveElementAtomValue] = useRecoilState(activeElementAtom);
+    const element = useRecoilValue(elementByIdSelector(activeElement));
+    const elementType = element ? element.type : undefined;
 
-    const setUiAtomValue = useSetRecoilState(uiAtom);
-    const deactivateElement = () => {
-        setUiAtomValue(deactivateElementMutation);
-    };
+    const deactivateElement = useCallback(() => {
+        3;
+        setActiveElementAtomValue(null);
+    }, []);
 
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
 

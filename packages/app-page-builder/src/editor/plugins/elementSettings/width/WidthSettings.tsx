@@ -14,7 +14,11 @@ import {
 } from "../../../../types";
 import { useEventActionHandler } from "../../../../editor";
 import { UpdateElementActionEvent } from "../../../../editor/recoil/actions";
-import { activeElementWithChildrenSelector, uiAtom } from "../../../../editor/recoil/modules";
+import {
+    activeElementAtom,
+    elementWithChildrenByIdSelector,
+    uiAtom
+} from "../../../../editor/recoil/modules";
 // Components
 import Accordion from "../components/Accordion";
 import Wrapper from "../components/Wrapper";
@@ -97,7 +101,8 @@ const Settings: React.FunctionComponent<PbEditorPageElementSettingsRenderCompone
     defaultAccordionValue
 }) => {
     const { displayMode } = useRecoilValue(uiAtom);
-    const element = useRecoilValue(activeElementWithChildrenSelector);
+    const activeElementId = useRecoilValue(activeElementAtom);
+    const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
 
     const handler = useEventActionHandler();
     const updateSettings = async (data, form) => {

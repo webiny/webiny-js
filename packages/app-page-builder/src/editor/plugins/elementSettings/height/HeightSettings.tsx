@@ -14,7 +14,11 @@ import {
 } from "../../../../types";
 import { useEventActionHandler } from "../../../../editor";
 import { UpdateElementActionEvent } from "../../../recoil/actions";
-import { uiAtom, activeElementWithChildrenSelector } from "../../../recoil/modules";
+import {
+    uiAtom,
+    activeElementAtom,
+    elementWithChildrenByIdSelector
+} from "../../../recoil/modules";
 import { applyFallbackDisplayMode } from "../elementSettingsUtils";
 // Components
 import { classes } from "../components/StyledComponents";
@@ -98,7 +102,8 @@ const Settings: React.FunctionComponent<PbEditorPageElementSettingsRenderCompone
 }) => {
     const { displayMode } = useRecoilValue(uiAtom);
     const handler = useEventActionHandler();
-    const element = useRecoilValue(activeElementWithChildrenSelector);
+    const activeElementId = useRecoilValue(activeElementAtom);
+    const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
     const updateSettings = async (data, form) => {
         const valid = await form.validate();
         if (!valid) {

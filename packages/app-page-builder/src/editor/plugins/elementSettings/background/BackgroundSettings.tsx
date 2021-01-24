@@ -13,7 +13,11 @@ import {
     PbEditorPageElementSettingsRenderComponentProps,
     PbEditorResponsiveModePlugin
 } from "../../../../types";
-import { activeElementWithChildrenSelector, uiAtom } from "../../../recoil/modules";
+import {
+    activeElementAtom,
+    elementWithChildrenByIdSelector,
+    uiAtom
+} from "../../../recoil/modules";
 import useUpdateHandlers from "../useUpdateHandlers";
 // Components
 import Wrapper from "../components/Wrapper";
@@ -50,7 +54,8 @@ type SettingsPropsType = {
 const BackgroundSettings: React.FunctionComponent<SettingsPropsType &
     PbEditorPageElementSettingsRenderComponentProps> = ({ options, defaultAccordionValue }) => {
     const { displayMode } = useRecoilValue(uiAtom);
-    const element = useRecoilValue(activeElementWithChildrenSelector);
+    const activeElementId = useRecoilValue(activeElementAtom);
+    const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
     const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
         element,
         dataNamespace: DATA_NAMESPACE,

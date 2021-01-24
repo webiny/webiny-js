@@ -5,8 +5,9 @@ import merge from "lodash/merge";
 import { PbConfigPluginType, PbConfigType } from "../types";
 import { EventActionHandler } from "@webiny/app-page-builder/editor/recoil/eventActions";
 import {
+    activeElementAtom,
     contentAtom,
-    elementsAtom,
+    elementsAtom, highlightElementAtom,
     pageAtom,
     pluginsAtom,
     revisionsAtom,
@@ -52,6 +53,8 @@ export const EditorProvider: React.FunctionComponent<any> = props => {
 };
 
 export const getGlobalState = (): PbState => ({
+    activeElement: connectedAtomValue(activeElementAtom),
+    highlightElement: connectedAtomValue(highlightElementAtom),
     ui: connectedAtomValue(uiAtom),
     plugins: connectedAtomValue(pluginsAtom),
     elements: connectedAtomValue(elementsAtom),

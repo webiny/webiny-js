@@ -30,16 +30,19 @@ type ElementRootProps = {
 
 const ElementRootComponent: React.FunctionComponent<ElementRootProps> = ({
     element,
-    style = {},
+    style,
     children,
     className = null
 }) => {
-    const shallowElement = {
-        id: element?.id,
-        type: element?.type,
-        data: element?.data,
-        elements: []
-    };
+    const shallowElement = useMemo(
+        () => ({
+            id: element ? element.id : null,
+            type: element ? element.type : null,
+            data: element ? element.data : null,
+            elements: []
+        }),
+        [element.id]
+    );
 
     const finalStyle = useMemo(() => {
         const stylePlugins = plugins.byType<PbRenderElementStylePlugin>(
@@ -48,8 +51,8 @@ const ElementRootComponent: React.FunctionComponent<ElementRootProps> = ({
         // Reduce style
         return stylePlugins.reduce((accumulatedStyles, plugin) => {
             return plugin.renderStyle({ element: shallowElement, style: accumulatedStyles });
-        }, style);
-    }, [style, shallowElement]);
+        }, style || {});
+    }, [style, element.id]);
 
     const attributes = useMemo(() => {
         const attributePlugins = plugins.byType<PbRenderElementAttributesPlugin>(
@@ -61,7 +64,7 @@ const ElementRootComponent: React.FunctionComponent<ElementRootProps> = ({
                 attributes: accumulatedAttributes
             });
         }, {});
-    }, [shallowElement]);
+    }, [element.id]);
 
     // required due to re-rendering when set content atom and still nothing in elements atom
     if (!element) {

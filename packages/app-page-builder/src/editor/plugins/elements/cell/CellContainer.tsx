@@ -39,8 +39,10 @@ const addIcon = css({
 
 type CellPropsType = {
     elementId: string;
+    isHighlighted: boolean;
 };
-const CellContainer: React.FunctionComponent<CellPropsType> = ({ elementId }) => {
+const CellContainer: React.FunctionComponent<CellPropsType> = props => {
+    const { elementId, isHighlighted } = props;
     const handler = useEventActionHandler();
     const element = useRecoilValue(elementByIdSelector(elementId));
     // TODO remove when state is fully switched to use content instead of flat elements
@@ -71,6 +73,7 @@ const CellContainer: React.FunctionComponent<CellPropsType> = ({ elementId }) =>
             })
         );
     };
+
     return (
         <ElementRoot element={element}>
             {({ getAllClasses, elementStyle }) => (
@@ -82,6 +85,7 @@ const CellContainer: React.FunctionComponent<CellPropsType> = ({ elementId }) =>
                         <DropZone.Center
                             id={id}
                             type={type}
+                            isHighlighted={isHighlighted}
                             onDrop={source => dropElementAction(source, 0)}
                         >
                             <IconButton

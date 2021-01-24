@@ -11,7 +11,11 @@ import {
     PbEditorResponsiveModePlugin,
     PbThemePlugin
 } from "../../../../types";
-import { activeElementWithChildrenSelector, uiAtom } from "../../../recoil/modules";
+import {
+    activeElementAtom,
+    elementWithChildrenByIdSelector,
+    uiAtom
+} from "../../../recoil/modules";
 // Components
 import Accordion from "../../elementSettings/components/Accordion";
 import Wrapper from "../../elementSettings/components/Wrapper";
@@ -45,7 +49,8 @@ const TextSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderCom
     options: any;
 }> = ({ defaultAccordionValue, options }) => {
     const { displayMode } = useRecoilValue(uiAtom);
-    const element = useRecoilValue(activeElementWithChildrenSelector);
+    const activeElementId = useRecoilValue(activeElementAtom);
+    const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
     const [{ theme }] = plugins.byType<PbThemePlugin>("pb-theme");
 
     const { config: activeDisplayModeConfig } = useMemo(() => {
@@ -108,6 +113,10 @@ const TextSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderCom
     );
 
     const text = get(element, `${DATA_NAMESPACE}.${displayMode}`, fallbackValue);
+    
+    if (!text) {
+        return null;
+    }
 
     return (
         <Accordion

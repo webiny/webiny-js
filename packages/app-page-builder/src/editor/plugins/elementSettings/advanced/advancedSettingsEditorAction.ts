@@ -27,9 +27,9 @@ export const advancedSettingsEditorAction: CreateElementEventActionCallableType 
         if (onCreate && onCreate === "open-settings") {
             return {
                 state: {
+                    activeElement: element.id,
                     ui: {
                         ...state.ui,
-                        activeElement: element.id,
                         // Mark "Element" settings tab active in sidebar.
                         sidebarActiveTabIndex: 1,
                         // Highlight "Element" settings tab in sidebar.

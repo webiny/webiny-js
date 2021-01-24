@@ -1,16 +1,13 @@
 import { BaseEventAction } from "./BaseEventAction";
 import {
+    activeElementAtom,
     contentAtom,
-    ContentAtomType,
     elementsAtom,
-    ElementsAtomType,
+    highlightElementAtom,
     pageAtom,
-    PageAtomType,
     pluginsAtom,
-    PluginsAtomType,
     revisionsAtom,
-    uiAtom,
-    UiAtomType
+    uiAtom
 } from "../modules";
 import {
     connectedAtomValue,
@@ -25,15 +22,9 @@ export type EventActionHandlerMetaType = {
     client: any;
 };
 export type EventActionHandlerConfigType = { maxEventActionsNesting: number };
-type CallableStateType = {
-    ui?: UiAtomType;
-    plugins?: PluginsAtomType;
-    page?: PageAtomType;
-    elements?: ElementsAtomType;
-    content?: ContentAtomType;
-};
+
 export type EventActionHandlerActionCallableResponseType = {
-    state?: CallableStateType;
+    state?: Partial<PbState>;
     actions?: BaseEventAction[];
 };
 export type MutationActionCallable<T, A extends any = any> = (state: T, args?: A) => T;
@@ -120,7 +111,7 @@ export class EventActionHandler {
     }
 
     public constructor(
-        trackedStates: (keyof CallableStateType)[] = [],
+        trackedStates: (keyof Partial<PbState>)[] = [],
         meta: EventActionHandlerMetaType,
         config: EventActionHandlerConfigType
     ) {
@@ -150,7 +141,7 @@ export class EventActionHandler {
 
     public async trigger<T extends CallableArgsType>(
         ev: EventAction<T>
-    ): Promise<CallableStateType> {
+    ): Promise<Partial<PbState>> {
         const results = await this.triggerEventAction(ev, {} as any, []);
 
         this.saveCallablesResults(results.state);
@@ -203,7 +194,7 @@ export class EventActionHandler {
         return name;
     }
 
-    private saveCallablesResults(state: CallableStateType): void {
+    private saveCallablesResults(state: Partial<PbState>): void {
         if (Object.values(state).length === 0) {
             return;
         }
@@ -229,18 +220,26 @@ export class EventActionHandler {
         if (state.elements) {
             updateConnectedValue(elementsAtom, state.elements);
         }
+        if (state.activeElement) {
+            updateConnectedValue(activeElementAtom, state.activeElement);
+        }
+        if (state.highlightElement) {
+            updateConnectedValue(highlightElementAtom, state.highlightElement);
+        }
 
         if (setInBatch) {
             connectedBatchEnd();
         }
     }
 
-    private isTrackedStateChanged(state: CallableStateType): boolean {
+    private isTrackedStateChanged(state: Partial<PbState>): boolean {
         return this._trackedStates.some(key => state[key] !== undefined);
     }
 
-    private getCallableState(state: CallableStateType): PbState {
+    private getCallableState(state: Partial<PbState>): PbState {
         return {
+            activeElement: connectedAtomValue(activeElementAtom),
+            highlightElement: connectedAtomValue(highlightElementAtom),
             elements: connectedAtomValue(elementsAtom),
             page: connectedAtomValue(pageAtom),
             plugins: connectedAtomValue(pluginsAtom),

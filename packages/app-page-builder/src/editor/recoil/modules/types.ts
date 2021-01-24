@@ -3,9 +3,14 @@ import { ElementsAtomType } from "@webiny/app-page-builder/editor/recoil/modules
 import { PageAtomType } from "@webiny/app-page-builder/editor/recoil/modules/page";
 import { PluginsAtomType } from "@webiny/app-page-builder/editor/recoil/modules/plugins";
 import { RevisionsAtomType } from "@webiny/app-page-builder/editor/recoil/modules/revisions";
-import { UiAtomType } from "@webiny/app-page-builder/editor/recoil/modules/ui";
+import {
+    ActiveElementAtomType, HighlightElementAtomType,
+    UiAtomType
+} from "@webiny/app-page-builder/editor/recoil/modules/ui";
 
 export type PbState = {
+    activeElement: ActiveElementAtomType;
+    highlightElement: HighlightElementAtomType;
     elements: ElementsAtomType;
     page: PageAtomType;
     plugins: PluginsAtomType;

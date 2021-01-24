@@ -16,7 +16,11 @@ import {
 } from "../../../../types";
 import { useEventActionHandler } from "../../../../editor";
 import { UpdateElementActionEvent } from "../../../recoil/actions";
-import { activeElementWithChildrenSelector, uiAtom } from "../../../recoil/modules";
+import {
+    activeElementAtom,
+    elementWithChildrenByIdSelector,
+    uiAtom
+} from "../../../recoil/modules";
 import { applyFallbackDisplayMode } from "../elementSettingsUtils";
 // Components
 import { ContentWrapper } from "../components/StyledComponents";
@@ -69,7 +73,8 @@ const HorizontalAlignFlexSettings: React.FunctionComponent<PbEditorPageElementSe
     const { displayMode } = useRecoilValue(uiAtom);
     const propName = `${DATA_NAMESPACE}.${displayMode}`;
     const handler = useEventActionHandler();
-    const element = useRecoilValue(activeElementWithChildrenSelector);
+    const activeElementId = useRecoilValue(activeElementAtom);
+    const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
     const fallbackValue = useMemo(
         () =>
             applyFallbackDisplayMode(displayMode, mode =>

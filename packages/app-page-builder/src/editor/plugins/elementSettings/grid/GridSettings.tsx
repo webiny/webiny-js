@@ -12,7 +12,7 @@ import { useEventActionHandler } from "../../../../editor";
 import { createElementHelper } from "../../../helpers";
 import { calculatePresetPluginCells, getPresetPlugins } from "../../../plugins/gridPresets";
 import { UpdateElementActionEvent } from "../../../recoil/actions";
-import { activeElementWithChildrenSelector } from "../../../recoil/modules";
+import { activeElementAtom, elementWithChildrenByIdSelector } from "../../../recoil/modules";
 // Components
 import CellSize from "./CellSize";
 import { ContentWrapper } from "../components/StyledComponents";
@@ -95,7 +95,8 @@ export const GridSettings: React.FunctionComponent<PbEditorPageElementSettingsRe
     defaultAccordionValue
 }) => {
     const handler = useEventActionHandler();
-    const element = useRecoilValue(activeElementWithChildrenSelector);
+    const activeElementId = useRecoilValue(activeElementAtom);
+    const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
     const currentCellsType = element.data.settings?.grid?.cellsType;
     const presetPlugins = getPresetPlugins();
 

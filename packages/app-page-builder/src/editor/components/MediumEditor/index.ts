@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, createElement } from "react";
 import MediumEditor from "medium-editor";
 import { css } from "emotion";
 
@@ -36,12 +36,25 @@ const ReactMediumEditor = ({
     onChange,
     options,
     onSelect,
+    elementId,
     ...props
 }: ReactMediumEditorProps) => {
     const elementRef = React.useRef();
     const editorRef = React.useRef<MediumEditor.MediumEditor>();
 
-    React.useEffect(() => {
+    const handleChange = (data, editable) => {
+        if (typeof onChange === "function") {
+            onChange(editable.innerHTML);
+        }
+    };
+
+    const handleSelect = () => {
+        if (typeof onSelect === "function") {
+            onSelect();
+        }
+    };
+
+    useEffect(() => {
         if (!elementRef && !elementRef.current) {
             return;
         }
@@ -59,28 +72,16 @@ const ReactMediumEditor = ({
             }
         });
 
-        const handleChange = (data, editable) => {
-            if (typeof onChange === "function") {
-                onChange(editable.innerHTML);
-            }
-        };
-
-        const handleSelect = () => {
-            if (typeof onSelect === "function") {
-                onSelect();
-            }
-        };
-
         editorRef.current.subscribe("blur", handleChange);
-
         editorRef.current.subscribe("editableInput", handleSelect);
 
         return () => {
+            console.log("Destroying editor", elementId);
             editorRef.current.destroy();
         };
-    }, [onChange, options, onSelect]);
+    }, [options]);
 
-    return React.createElement(tag, {
+    return createElement(tag, {
         ...props,
         dangerouslySetInnerHTML: { __html: value },
         ref: elementRef,

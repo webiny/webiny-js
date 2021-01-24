@@ -1,7 +1,10 @@
 import React from "react";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
 import { DeleteElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
-import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import {
+    activeElementAtom,
+    elementWithChildrenByIdSelector
+} from "@webiny/app-page-builder/editor/recoil/modules";
 import { plugins } from "@webiny/plugins";
 import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 import { useRecoilValue } from "recoil";
@@ -11,7 +14,8 @@ type DeleteActionPropsType = {
 };
 const DeleteAction: React.FunctionComponent<DeleteActionPropsType> = ({ children }) => {
     const eventActionHandler = useEventActionHandler();
-    const element = useRecoilValue(activeElementWithChildrenSelector);
+    const activeElementId = useRecoilValue(activeElementAtom);
+    const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
 
     if (!element) {
         return null;

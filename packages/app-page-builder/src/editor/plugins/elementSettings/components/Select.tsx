@@ -1,5 +1,8 @@
 import React from "react";
-import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import {
+    activeElementAtom,
+    elementWithChildrenByIdSelector
+} from "@webiny/app-page-builder/editor/recoil/modules";
 import { get } from "lodash";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
@@ -37,7 +40,8 @@ const Select = ({
     children,
     className
 }: SelectProps) => {
-    const element = useRecoilValue(activeElementWithChildrenSelector);
+    const activeElementId = useRecoilValue(activeElementAtom);
+    const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
     const keyValue = valueKey ? get(element, valueKey, defaultValue) : value;
     return (
         <Grid className={className}>

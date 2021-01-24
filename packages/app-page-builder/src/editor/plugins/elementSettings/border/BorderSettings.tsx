@@ -9,7 +9,11 @@ import {
     PbEditorPageElementSettingsRenderComponentProps,
     PbEditorResponsiveModePlugin
 } from "../../../../types";
-import { activeElementSelector, uiAtom } from "../../../recoil/modules";
+import {
+    activeElementAtom,
+    elementByIdSelector,
+    uiAtom
+} from "../../../recoil/modules";
 import useUpdateHandlers from "../useUpdateHandlers";
 import { applyFallbackDisplayMode } from "../elementSettingsUtils";
 // Components
@@ -28,7 +32,8 @@ const BorderSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderC
     defaultAccordionValue
 }) => {
     const { displayMode } = useRecoilValue(uiAtom);
-    const element = useRecoilValue(activeElementSelector);
+    const activeElementId = useRecoilValue(activeElementAtom);
+    const element = useRecoilValue(elementByIdSelector(activeElementId));
     const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
         element,
         dataNamespace: DATA_NAMESPACE,

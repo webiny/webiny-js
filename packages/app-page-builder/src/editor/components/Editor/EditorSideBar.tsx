@@ -5,7 +5,8 @@ import { useRecoilValue, useRecoilState } from "recoil";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
 import {
-    activeElementWithChildrenSelector,
+    elementWithChildrenByIdSelector,
+    activeElementAtom,
     highlightElementTabMutation,
     sidebarActiveTabIndexSelector,
     uiAtom,
@@ -44,7 +45,8 @@ const PanelHighLight = styled("div")({
 });
 
 const EditorSideBar = () => {
-    const element = useRecoilValue(activeElementWithChildrenSelector);
+    const activeElementId = useRecoilValue(activeElementAtom);
+    const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
     const activeTabIndex = useRecoilValue(sidebarActiveTabIndexSelector);
     const [uiAtomValue, setUiAtomValue] = useRecoilState(uiAtom);
 

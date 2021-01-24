@@ -1,14 +1,10 @@
-import { useEffect } from "react";
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import {
-    activeElementSelector,
-    deactivateElementMutation,
-    uiAtom
-} from "@webiny/app-page-builder/editor/recoil/modules";
+import { useCallback, useEffect } from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { plugins } from "@webiny/plugins";
 import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
 import { userElementStyleSettingsPluginsHelper } from "@webiny/app-page-builder/editor/helpers";
+import { activeElementAtom, elementByIdSelector } from "../../../recoil/modules";
 
 const getElementActions = plugin => {
     if (!plugin || !plugin.settings) {
@@ -53,13 +49,13 @@ const getElementActions = plugin => {
 };
 
 const useElementStyleSettings = () => {
-    const element = useRecoilValue(activeElementSelector);
+    const [activeElement, setActiveElementAtomValue] = useRecoilState(activeElementAtom);
+    const element = useRecoilValue(elementByIdSelector(activeElement));
     const elementType = element?.type;
 
-    const setUiAtomValue = useSetRecoilState(uiAtom);
-    const deactivateElement = () => {
-        setUiAtomValue(deactivateElementMutation);
-    };
+    const deactivateElement = useCallback(() => {
+        setActiveElementAtomValue(null);
+    }, []);
 
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
 

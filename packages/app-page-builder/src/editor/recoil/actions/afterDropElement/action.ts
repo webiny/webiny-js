@@ -32,11 +32,11 @@ export const afterDropElementAction: EventActionCallableType<AfterDropElementAct
     return {
         state: {
             ...state,
+            activeElement: element.id,
             ui: {
                 ...state.ui,
                 sidebarActiveTabIndex: 0,
-                highlightElementTab: true,
-                activeElement: element.id
+                highlightElementTab: true
             }
         }
     };

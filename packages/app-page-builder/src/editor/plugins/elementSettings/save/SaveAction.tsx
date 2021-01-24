@@ -5,7 +5,10 @@ import pick from "lodash.pick";
 import get from "lodash/get";
 import createElementPlugin from "@webiny/app-page-builder/admin/utils/createElementPlugin";
 import createBlockPlugin from "@webiny/app-page-builder/admin/utils/createBlockPlugin";
-import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import {
+    activeElementAtom,
+    elementWithChildrenByIdSelector
+} from "@webiny/app-page-builder/editor/recoil/modules";
 import { useApolloClient } from "react-apollo";
 import { cloneDeep } from "lodash";
 import { plugins } from "@webiny/plugins";
@@ -66,7 +69,8 @@ const pluginOnSave = (element: PbElement): PbElement => {
 };
 
 const SaveAction: React.FunctionComponent = ({ children }) => {
-    const element = useRecoilValue(activeElementWithChildrenSelector);
+    const activeElementId = useRecoilValue(activeElementAtom);
+    const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
     const { showSnackbar } = useSnackbar();
     const [isDialogOpened, setOpenDialog] = useState<boolean>(false);

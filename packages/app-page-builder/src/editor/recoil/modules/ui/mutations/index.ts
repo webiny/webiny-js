@@ -1,5 +1,3 @@
-export * from "./activateElementMutation";
-export * from "./deactivateElementMutation";
 export * from "./resizingMutation";
 export * from "./enableDraggingMutation";
 export * from "./disableDraggingMutation";
