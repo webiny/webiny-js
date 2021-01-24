@@ -60,7 +60,7 @@ export default {
                 const borderRadiusSide = borderRadiusSides[index];
                 const fallbackRadiusValue = get(
                     style,
-                    `--${kebabCase(fallbackMode)}-border-${side}-radius`,
+                    `--${kebabCase(fallbackMode)}-border-${kebabCase(borderRadiusSide)}-radius`,
                     0
                 );
                 const allRadius = get(
