@@ -7,6 +7,8 @@ type SimpleTextPropsType = {
     onChange: (value: string) => void;
     options?: Record<keyof HTMLElement, any>;
     element?: string;
+    className?: string;
+    focusInput?: boolean;
 };
 const SimpleEditableText: React.FunctionComponent<SimpleTextPropsType> = ({
     value: defaultValue = "",
@@ -14,9 +16,11 @@ const SimpleEditableText: React.FunctionComponent<SimpleTextPropsType> = ({
     onBlur,
     onChange,
     options = {},
-    element
+    element,
+    className
 }) => {
     const value = useRef<string>(defaultValue);
+    const inputRef = useRef(null);
 
     const onChangeHandler = useCallback(
         (ev: InputEvent) => {
@@ -49,6 +53,7 @@ const SimpleEditableText: React.FunctionComponent<SimpleTextPropsType> = ({
     }, [onFocus]);
 
     return React.createElement(element || "div", {
+        className: className,
         contentEditable: true,
         onInput: onChangeHandler,
         onBlur: onBlurHandler,
@@ -56,6 +61,7 @@ const SimpleEditableText: React.FunctionComponent<SimpleTextPropsType> = ({
         dangerouslySetInnerHTML: {
             __html: value.current
         },
+        ref: inputRef,
         ...options
     });
 };

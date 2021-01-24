@@ -1,18 +1,11 @@
 import React from "react";
-import loremIpsum from "lorem-ipsum";
 import { DisplayMode, PbEditorPageElementPlugin } from "../../../../types";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 import Heading, { headingClassName } from "./Heading";
 import { createInitialTextValue } from "../utils/textUtils";
 
 export default (): PbEditorPageElementPlugin => {
-    const defaultLipsum = {
-        count: 3,
-        units: "sentences",
-        sentenceLowerBound: 5,
-        sentenceUpperBound: 15
-    };
-
+    const defaultText = "Heading";
     return {
         name: "pb-editor-page-element-heading",
         type: "pb-editor-page-element",
@@ -21,10 +14,7 @@ export default (): PbEditorPageElementPlugin => {
             title: "Heading",
             group: "pb-editor-element-group-basic",
             preview() {
-                const previewText =
-                    "The Easiest Way To Adopt  Serverless" || loremIpsum(defaultLipsum);
-
-                return <h2 className={headingClassName}>{previewText}</h2>;
+                return <h2 className={headingClassName}>{defaultText}</h2>;
             }
         },
         settings: [
@@ -42,7 +32,7 @@ export default (): PbEditorPageElementPlugin => {
         ],
         target: ["cell", "block"],
         create({ content = {}, ...options }) {
-            const previewText = content.text || loremIpsum(content.lipsum || defaultLipsum);
+            const previewText = content.text || defaultText;
 
             return {
                 type: "heading",

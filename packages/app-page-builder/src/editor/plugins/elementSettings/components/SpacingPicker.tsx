@@ -73,7 +73,9 @@ const SpacingPicker = ({
 }: SpacingPickerProps) => {
     const formData = useMemo(() => {
         const parsedValue = parseInt(value);
-        const unit = value.replace(parsedValue, "");
+        const regx = new RegExp(`${parsedValue}`, "g");
+        const unit = value.replace(regx, "");
+
         if (Number.isNaN(parsedValue) && unit === "auto") {
             return {
                 value: "",

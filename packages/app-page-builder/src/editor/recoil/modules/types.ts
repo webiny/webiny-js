@@ -4,7 +4,8 @@ import { PageAtomType } from "@webiny/app-page-builder/editor/recoil/modules/pag
 import { PluginsAtomType } from "@webiny/app-page-builder/editor/recoil/modules/plugins";
 import { RevisionsAtomType } from "@webiny/app-page-builder/editor/recoil/modules/revisions";
 import {
-    ActiveElementAtomType, HighlightElementAtomType,
+    ActiveElementAtomType,
+    HighlightElementAtomType,
     UiAtomType
 } from "@webiny/app-page-builder/editor/recoil/modules/ui";
 

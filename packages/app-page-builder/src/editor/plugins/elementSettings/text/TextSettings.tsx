@@ -113,7 +113,7 @@ const TextSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderCom
     );
 
     const text = get(element, `${DATA_NAMESPACE}.${displayMode}`, fallbackValue);
-    
+
     if (!text) {
         return null;
     }

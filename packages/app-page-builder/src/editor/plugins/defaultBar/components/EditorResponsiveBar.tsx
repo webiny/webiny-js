@@ -123,7 +123,7 @@ const EditorResponsiveBar = () => {
                 </Tooltip>
             );
         });
-    }, [setEditorMode]);
+    }, [setEditorMode, displayMode]);
 
     return (
         <div className={classes.wrapper}>

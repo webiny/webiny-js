@@ -7,7 +7,8 @@ import { EventActionHandler } from "@webiny/app-page-builder/editor/recoil/event
 import {
     activeElementAtom,
     contentAtom,
-    elementsAtom, highlightElementAtom,
+    elementsAtom,
+    highlightElementAtom,
     pageAtom,
     pluginsAtom,
     revisionsAtom,

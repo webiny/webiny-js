@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo} from "react";
+import React, { useCallback, useMemo } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import get from "lodash/get";
 import classNames from "classnames";
@@ -29,7 +29,7 @@ const Text: React.FunctionComponent<TextElementProps> = ({
         element,
         dataNamespace: DATA_NAMESPACE
     });
-    
+
     const fallbackValue = useMemo(
         () =>
             applyFallbackDisplayMode(displayMode, mode =>
@@ -37,7 +37,7 @@ const Text: React.FunctionComponent<TextElementProps> = ({
             ),
         [displayMode]
     );
-    
+
     const value = get(element, `${DATA_NAMESPACE}.${displayMode}`, fallbackValue);
 
     const onChange = useCallback(
@@ -46,7 +46,7 @@ const Text: React.FunctionComponent<TextElementProps> = ({
         },
         [getUpdateValue]
     );
-    
+
     const onSelect = useCallback(() => {
         // Mark element active on editor element selection
         if (elementId && activeElementId !== elementId) {
