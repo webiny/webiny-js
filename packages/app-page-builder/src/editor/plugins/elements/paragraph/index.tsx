@@ -1,19 +1,14 @@
 import React from "react";
-import loremIpsum from "lorem-ipsum";
 import { DisplayMode, PbEditorPageElementPlugin } from "../../../../types";
 import Text, { textClassName } from "./Paragraph";
 import { createInitialTextValue } from "../utils/textUtils";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
 export default (): PbEditorPageElementPlugin => {
-    const defaultLipsum = {
-        count: 1,
-        units: "paragraphs",
-        paragraphLowerBound: 2,
-        paragraphUpperBound: 2,
-        sentenceLowerBound: 10,
-        sentenceUpperBound: 10
-    };
+    const defaultText = `Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+     Suspendisse varius enim in eros elementum tristique.
+     Duis cursus, mi quis viverra ornare, eros dolor interdum nulla, ut commodo diam libero vitae erat.
+     Aenean faucibus nibh et justo cursus id rutrum lorem imperdiet. Nunc ut sem vitae risus tristique posuere.`;
 
     return {
         name: "pb-editor-page-element-paragraph",
@@ -23,9 +18,7 @@ export default (): PbEditorPageElementPlugin => {
             title: "Paragraph",
             group: "pb-editor-element-group-basic",
             preview() {
-                const previewText = loremIpsum(defaultLipsum);
-
-                return <p className={textClassName}>{previewText}</p>;
+                return <p className={textClassName}>{defaultText}</p>;
             }
         },
         settings: [
@@ -40,7 +33,7 @@ export default (): PbEditorPageElementPlugin => {
         ],
         target: ["cell", "block"],
         create({ content = {}, ...options }) {
-            const previewText = content.text || loremIpsum(content.lipsum || defaultLipsum);
+            const previewText = content.text || defaultText;
 
             return {
                 type: "paragraph",
