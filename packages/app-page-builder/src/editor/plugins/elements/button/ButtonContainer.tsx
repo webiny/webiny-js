@@ -1,5 +1,6 @@
 import React, { CSSProperties, useCallback, useRef } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
+import classNames from "classnames";
 import kebabCase from "lodash/kebabCase";
 import merge from "lodash/merge";
 import set from "lodash/set";
@@ -13,6 +14,16 @@ import {
     uiAtom
 } from "../../../recoil/modules";
 import SimpleEditableText from "./SimpleEditableText";
+import { css } from "emotion";
+
+const buttonEditStyle = css({
+    "&.button__content--empty": {
+        minWidth: 64,
+        lineHeight: "20px",
+        marginTop: "-3px",
+        marginBottom: "-3px"
+    }
+});
 
 const DATA_NAMESPACE = "data.buttonText";
 type ButtonContainerPropsType = {
@@ -90,6 +101,9 @@ const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = ({
             >
                 {svg && <span dangerouslySetInnerHTML={{ __html: svg }} />}
                 <SimpleEditableText
+                    className={classNames(buttonEditStyle, {
+                        "button__content--empty": !value.current
+                    })}
                     value={value.current}
                     onChange={onChange}
                     onFocus={onFocus}
