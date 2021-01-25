@@ -2,7 +2,6 @@ import { SaveRevisionActionEvent } from "@webiny/app-page-builder/editor/recoil/
 import { UpdateElementActionArgsType } from "./types";
 import { EventActionCallableType } from "@webiny/app-page-builder/editor/recoil/eventActions";
 import { PbElement } from "@webiny/app-page-builder/types";
-import lodashCloneDeep from "lodash/cloneDeep";
 import lodashMerge from "lodash/merge";
 import { ContentAtomType } from "@webiny/app-page-builder/editor/recoil/modules";
 import {
@@ -40,7 +39,7 @@ const buildNewPageContentState = (content: ContentAtomType, element: PbElement, 
         return saveElementToContentHelper(
             content,
             element.path,
-            lodashMerge(existingElement, newElement)
+            lodashMerge({}, existingElement, newElement)
         );
     }
     return saveElementToContentHelper(content, element.path, newElement);
@@ -57,7 +56,7 @@ export const updateElementAction: EventActionCallableType<UpdateElementActionArg
     { client },
     { element, merge, history }
 ) => {
-    const content = createContentState(lodashCloneDeep(state.content), element, merge);
+    const content = createContentState(state.content, element, merge);
     const actions = [];
     if (history === true) {
         if (!client) {
@@ -67,10 +66,13 @@ export const updateElementAction: EventActionCallableType<UpdateElementActionArg
         }
         actions.push(new SaveRevisionActionEvent());
     }
+
+    const flattenedContent = flattenElementsHelper(content);
+
     return {
         state: {
             content,
-            elements: flattenElementsHelper(lodashCloneDeep(content))
+            elements: flattenedContent
         },
         actions
     };

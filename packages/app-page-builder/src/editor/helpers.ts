@@ -1,7 +1,7 @@
 import { DragObjectWithTypeWithTargetType } from "@webiny/app-page-builder/editor/components/Droppable";
 import invariant from "invariant";
 import shortid from "shortid";
-import lodashCloneDeep from "lodash/cloneDeep";
+import { set } from "dot-prop-immutable";
 import { plugins } from "@webiny/plugins";
 import {
     PbEditorBlockPlugin,
@@ -43,26 +43,20 @@ type FlattenElementsType = {
     [id: string]: PbShallowElement;
 };
 export const flattenElementsHelper = (el): FlattenElementsType => {
-    let els = {};
-    el.elements = (el.elements || []).map(child => {
-        els = { ...els, ...flattenElementsHelper(child) };
-        return child.id;
-    });
+    const els = {};
+    els[el.id] = set(
+        el,
+        "elements",
+        (el.elements || []).map(child => {
+            const children = flattenElementsHelper(child);
+            Object.keys(children).forEach(id => {
+                els[id] = children[id];
+            });
+            return child.id;
+        })
+    );
 
-    els[el.id] = el;
     return els;
-};
-
-const setElementInPath = (elements: PbElement[], paths: number[], element: PbElement): void => {
-    if (paths.length === 0) {
-        throw new Error("There are no paths sent.");
-    }
-    const path = paths.shift();
-    if (paths.length === 0) {
-        elements[path] = element;
-        return;
-    }
-    setElementInPath(elements[path].elements, paths, element);
 };
 
 export const saveElementToContentHelper = (
@@ -70,11 +64,10 @@ export const saveElementToContentHelper = (
     path: string,
     element: PbElement
 ): PbElement => {
-    const clonedContent = lodashCloneDeep(content);
     const paths = path.split(".").map(Number);
     paths.shift();
-    setElementInPath(clonedContent.elements, paths, element);
-    return clonedContent;
+    const elements = set(content.elements, paths.join(".elements."), element);
+    return set(content, "elements", elements);
 };
 
 const findElementByPath = (elements: PbElement[], paths: number[]): PbElement => {
