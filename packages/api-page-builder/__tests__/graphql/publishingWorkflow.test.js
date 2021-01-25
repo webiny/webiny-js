@@ -1,7 +1,7 @@
 import useGqlHandler from "./useGqlHandler";
 import { identityA, identityB, NOT_AUTHORIZED_RESPONSE } from "./mocks";
 
-jest.setTimeout(15000);
+jest.setTimeout(25000);
 
 describe("publishing workflow", () => {
     const {
