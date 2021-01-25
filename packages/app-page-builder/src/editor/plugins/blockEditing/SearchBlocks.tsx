@@ -9,7 +9,7 @@ import { contentSelector } from "@webiny/app-page-builder/editor/recoil/modules"
 import { useMutation } from "react-apollo";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { getPlugins, unregisterPlugin } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { OverlayLayout } from "@webiny/app-admin/components/OverlayLayout";
 import { LeftPanel, RightPanel, SplitView } from "@webiny/app-admin/components/SplitView";
 import { List, ListItem, ListItemGraphic } from "@webiny/ui/List";
@@ -79,12 +79,12 @@ const SearchBar = () => {
     const allCategories = useMemo(
         () => [
             allBlockCategory,
-            ...getPlugins<PbEditorBlockCategoryPlugin>("pb-editor-block-category")
+            ...plugins.byType<PbEditorBlockCategoryPlugin>("pb-editor-block-category")
         ],
         []
     );
 
-    const allBlocks = getPlugins<PbEditorBlockPlugin>("pb-editor-block");
+    const allBlocks = plugins.byType<PbEditorBlockPlugin>("pb-editor-block");
 
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
 
@@ -179,7 +179,7 @@ const SearchBar = () => {
             return;
         }
 
-        unregisterPlugin(plugin.name);
+        plugins.unregister(plugin.name);
         showSnackbar(
             <span>
                 Block <strong>{plugin.title}</strong> was deleted!

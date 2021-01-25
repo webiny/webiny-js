@@ -1,7 +1,5 @@
-// TODO remove
-// @ts-nocheck
 import React, { useMemo } from "react";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { Switch } from "@webiny/ui/Switch";
 import {
     SimpleForm,
@@ -54,7 +52,8 @@ const ValidatorsTab = props => {
     const fieldPlugin = getFieldPlugin({ name: field.name });
 
     const validators = useMemo(() => {
-        return getPlugins<FbBuilderFormFieldValidatorPlugin>("form-editor-field-validator")
+        return plugins
+            .byType<FbBuilderFormFieldValidatorPlugin>("form-editor-field-validator")
             .map(plugin => plugin.validator)
             .map(validator => {
                 if (fieldPlugin.field.validators.includes(validator.name)) {

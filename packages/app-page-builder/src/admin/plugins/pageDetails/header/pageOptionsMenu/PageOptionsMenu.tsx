@@ -13,7 +13,7 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import classNames from "classnames";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import { useConfigureWebsiteUrlDialog } from "@webiny/app-page-builder/admin/hooks/useConfigureWebsiteUrl";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { PbPageDetailsHeaderRightOptionsMenuItemPlugin } from "@webiny/app-page-builder/types";
 import gql from "graphql-tag";
 import { useMutation } from "react-apollo";
@@ -152,11 +152,13 @@ const PageOptionsMenu = props => {
                 </MenuItem>
             </SecureView>
 
-            {getPlugins<PbPageDetailsHeaderRightOptionsMenuItemPlugin>(
-                "pb-page-details-header-right-options-menu-item"
-            ).map(plugin => (
-                <React.Fragment key={plugin.name}>{plugin.render(props)}</React.Fragment>
-            ))}
+            {plugins
+                .byType<PbPageDetailsHeaderRightOptionsMenuItemPlugin>(
+                    "pb-page-details-header-right-options-menu-item"
+                )
+                .map(plugin => (
+                    <React.Fragment key={plugin.name}>{plugin.render(props)}</React.Fragment>
+                ))}
         </Menu>
     );
 };

@@ -9,7 +9,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { useHandler } from "@webiny/app/hooks/useHandler";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { Form } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";
 import { ButtonPrimary } from "@webiny/ui/Button";
@@ -122,16 +122,16 @@ const MailchimpElementAdvancedSettings = ({ Bind }) => {
                                             validators={validation.create("required")}
                                         >
                                             {({ onChange, value: name, ...rest }) => {
-                                                const options = getPlugins<
-                                                    PbPageElementMailchimpComponentPlugin
-                                                >("pb-page-element-mailchimp-component").map(
-                                                    ({ componentName, title }) => {
+                                                const options = plugins
+                                                    .byType<PbPageElementMailchimpComponentPlugin>(
+                                                        "pb-page-element-mailchimp-component"
+                                                    )
+                                                    .map(({ componentName, title }) => {
                                                         return {
                                                             name: componentName,
                                                             title
                                                         };
-                                                    }
-                                                );
+                                                    });
 
                                                 const value = options.find(
                                                     item => item.name === name

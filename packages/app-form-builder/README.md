@@ -25,11 +25,11 @@ plugins, please visit [Webiny documentation](https://docs.webiny.com/docs/develo
 
 #### Admin
 ```
-import { registerPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import formsPlugins from "@webiny/app-form-builder/admin/plugins";
 import formsCmsPlugins from "@webiny/app-form-builder/page-builder/admin/plugins";
 
-registerPlugins(formsPlugins);
+plugins.register(formsPlugins);
 ```
 
 Note: the `formsCmsPlugins` contains plugins for the Page Builder, which will
@@ -37,9 +37,9 @@ enable you to embed forms in your pages.
     
 #### Site
 ```
-import { registerPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import formsSitePlugins from "@webiny/app-form-builder/site/plugins";
 import formsCmsPlugins from "@webiny/app-form-builder/page-builder/site/plugins";
 
-registerPlugins(formsPlugins);
+plugins.register(formsPlugins);
 ```

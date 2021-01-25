@@ -1,6 +1,6 @@
 import React, { ReactNode, FunctionComponentElement } from "react";
 import warning from "warning";
-import { getPlugin, getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { Plugin } from "@webiny/plugins/types";
 import imagePlugin from "./image";
 
@@ -33,7 +33,7 @@ const PluginsComponent = (props: { [key: string]: any }): FunctionComponentEleme
 export const renderPlugin: RenderPlugin = (name, params = {}, options = {}) => {
     const { wrapper = true, fn = "render" } = options;
 
-    const plugin = getPlugin(name);
+    const plugin = plugins.byName(name);
     warning(plugin, `No such plugin "${name}"`);
 
     if (!plugin) {
@@ -56,7 +56,8 @@ export const renderPlugin: RenderPlugin = (name, params = {}, options = {}) => {
 export const renderPlugins: RenderPlugins = (type, params = {}, options = {}) => {
     const { wrapper = true, fn = "render", filter = v => v, reverse } = options;
 
-    const content = getPlugins(type)
+    const content = plugins
+        .byType(type)
         .filter(filter)
         .map(plugin => renderPlugin(plugin.name, params, { wrapper, fn }))
         .filter(Boolean);

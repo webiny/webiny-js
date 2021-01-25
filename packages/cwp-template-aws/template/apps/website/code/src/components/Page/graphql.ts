@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { PbPageSettingsFieldsPlugin } from "@webiny/app-page-builder/types";
 
 /**
@@ -8,7 +8,8 @@ import { PbPageSettingsFieldsPlugin } from "@webiny/app-page-builder/types";
  * https://github.com/webiny/webiny-js/blob/master/packages/app-page-builder/src/render/plugins/pageSettings/index.ts
  */
 export const GET_PUBLISHED_PAGE = () => {
-    const pageSettingsFields = getPlugins("pb-page-settings-fields")
+    const pageSettingsFields = plugins
+        .byType("pb-page-settings-fields")
         .map((pl: PbPageSettingsFieldsPlugin) => pl.fields)
         .join("\n");
 

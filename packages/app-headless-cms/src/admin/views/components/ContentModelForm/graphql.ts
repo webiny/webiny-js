@@ -1,7 +1,7 @@
 import upperFirst from "lodash/upperFirst";
 import gql from "graphql-tag";
 import pluralize from "pluralize";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { CmsEditorFieldTypePlugin } from "@webiny/app-headless-cms/types";
 
 const ERROR_FIELD = /* GraphQL */ `
@@ -22,9 +22,9 @@ const CONTENT_META_FIELDS = /* GraphQL */ `
 
 const createFieldsList = contentModel => {
     const fields = contentModel.fields.map(field => {
-        const fieldPlugin = getPlugins<CmsEditorFieldTypePlugin>("cms-editor-field-type").find(
-            item => item.field.type === field.type
-        );
+        const fieldPlugin = plugins
+            .byType<CmsEditorFieldTypePlugin>("cms-editor-field-type")
+            .find(item => item.field.type === field.type);
 
         const { graphql } = fieldPlugin.field;
 

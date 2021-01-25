@@ -3,7 +3,7 @@ import { sortBy } from "lodash";
 import { Drawer, DrawerContent, DrawerHeader } from "@webiny/ui/Drawer";
 import { List, ListItem } from "@webiny/ui/List";
 import { IconButton } from "@webiny/ui/Button";
-import { getPlugin, getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import {
     AdminMenuLogoPlugin,
     AdminMenuPlugin,
@@ -18,7 +18,7 @@ const Navigation = () => {
 
     useEffect(initSections, []);
     const logo = useMemo(() => {
-        const logoPlugin = getPlugin<AdminMenuLogoPlugin>("admin-menu-logo");
+        const logoPlugin = plugins.byName<AdminMenuLogoPlugin>("admin-menu-logo");
         if (logoPlugin) {
             return React.cloneElement(logoPlugin.render(), { className: logoStyle });
         }
@@ -26,7 +26,7 @@ const Navigation = () => {
     }, []);
 
     const menus = [];
-    const menuPlugins = getPlugins<AdminMenuPlugin>("admin-menu");
+    const menuPlugins = plugins.byType<AdminMenuPlugin>("admin-menu");
 
     // First we sort by order (default: 50), and then by plugin name. In other words, if order isn't defined,
     // then we just sort by plugin name.
@@ -40,7 +40,9 @@ const Navigation = () => {
         });
 
     const footerMenus = [];
-    const footerMenuPlugins = getPlugins<AdminDrawerFooterMenuPlugin>("admin-drawer-footer-menu");
+    const footerMenuPlugins = plugins.byType<AdminDrawerFooterMenuPlugin>(
+        "admin-drawer-footer-menu"
+    );
 
     footerMenuPlugins &&
         footerMenuPlugins.forEach(plugin => {

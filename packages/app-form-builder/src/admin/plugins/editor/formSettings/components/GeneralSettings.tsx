@@ -3,14 +3,14 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { get } from "lodash";
 import { Input } from "@webiny/ui/Input";
-import { getPlugins, plugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { FbFormLayoutPlugin } from "@webiny/app-form-builder/types";
 import { PbThemePlugin } from "@webiny/app-page-builder/types";
 import { RichTextEditor, createPropsFromConfig } from "@webiny/app-admin/components/RichTextEditor";
 
 const GeneralSettings = ({ Bind }) => {
     const theme = useMemo(
-        () => Object.assign({}, ...getPlugins("pb-theme").map((pl: PbThemePlugin) => pl.theme)),
+        () => Object.assign({}, ...plugins.byType("pb-theme").map((pl: PbThemePlugin) => pl.theme)),
         []
     );
 
@@ -18,7 +18,7 @@ const GeneralSettings = ({ Bind }) => {
         () =>
             [
                 ...(get(theme, "formBuilder.layouts") || []),
-                ...getPlugins<FbFormLayoutPlugin>("form-layout").map(pl => pl.layout)
+                ...plugins.byType<FbFormLayoutPlugin>("form-layout").map(pl => pl.layout)
             ].reduce((acc, item) => {
                 if (!acc.find(l => l.name === item.name)) {
                     acc.push(item);

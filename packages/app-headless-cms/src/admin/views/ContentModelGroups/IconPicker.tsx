@@ -1,6 +1,6 @@
 import * as React from "react";
 import { css } from "emotion";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid } from "react-virtualized";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -109,8 +109,8 @@ const IconPicker = ({
     );
 
     const allIcons: CmsIcon[] = useMemo(() => {
-        const plugins = getPlugins<CmsIconsPlugin>("cms-icons");
-        return plugins.reduce((icons: Array<CmsIcon>, pl) => {
+        const iconPlugins = plugins.byType<CmsIconsPlugin>("cms-icons");
+        return iconPlugins.reduce((icons: Array<CmsIcon>, pl) => {
             return icons.concat(pl.getIcons());
         }, []);
     }, []);

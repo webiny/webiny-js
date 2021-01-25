@@ -2,7 +2,7 @@ import React from "react";
 import { css } from "emotion";
 import styled from "@emotion/styled";
 import uniqid from "uniqid";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Icon } from "@webiny/ui/Icon";
 import { Menu } from "@webiny/ui/Menu";
@@ -74,7 +74,7 @@ class MenuItems extends React.Component<Props, State> {
     render() {
         const { value: items, onChange, canSave } = this.props;
         const { currentMenuItem } = this.state;
-        const plugins = getPlugins<PbMenuItemPlugin>("pb-menu-item");
+        const pbMenuItemPlugins = plugins.byType<PbMenuItemPlugin>("pb-menu-item");
 
         return (
             <>
@@ -104,7 +104,7 @@ class MenuItems extends React.Component<Props, State> {
                                             anchor={"topEnd"}
                                         >
                                             <List className={menuItems}>
-                                                {plugins.map(pl => (
+                                                {pbMenuItemPlugins.map(pl => (
                                                     <ListItem
                                                         key={pl.name}
                                                         onClick={() => this.addItem(pl)}

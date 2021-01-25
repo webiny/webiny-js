@@ -1,5 +1,7 @@
 import useGqlHandler from "./useGqlHandler";
 
+jest.setTimeout(15000);
+
 describe("Prepared Menus Test", () => {
     const {
         createMenu,
@@ -123,75 +125,75 @@ describe("Prepared Menus Test", () => {
             }
         });
 
-        await getPublicMenu({ slug: "test" }).then(([response]) => {
-            expect(response).toMatchObject({
-                data: {
-                    pageBuilder: {
-                        getPublicMenu: {
-                            data: {
-                                items: [
-                                    {
-                                        id: "kj2vizx6",
-                                        title: "A link",
-                                        type: "link",
-                                        url: "https://www.google.com"
-                                    },
-                                    {
-                                        children: [
-                                            {
-                                                id: "kj2vjcuu",
-                                                title: "A link in folder",
-                                                type: "link",
-                                                url: "https://www.webiny.com"
-                                            }
-                                        ],
-                                        id: "kj2vj8cg",
-                                        title: "A folder",
-                                        type: "folder"
-                                    },
-                                    {
-                                        path: /^\/some-url\/untitled/,
-                                        title: "Page A",
-                                        type: "page"
-                                    },
-                                    {
-                                        path: /^\/some-url\/untitled/,
-                                        title: "Page B",
-                                        type: "page"
-                                    },
-                                    {
-                                        path: /^\/some-url\/untitled/,
-                                        title: "page-c",
-                                        type: "page"
-                                    },
-                                    {
-                                        children: [
-                                            {
-                                                path: /^\/some-url\/untitled/,
-                                                title: "page-a"
-                                            },
-                                            {
-                                                path: /^\/some-url\/untitled/,
-                                                title: "page-b"
-                                            },
-                                            {
-                                                path: /^\/some-url\/untitled/,
-                                                title: "page-c"
-                                            }
-                                        ],
-                                        id: "kj2vjz7r",
-                                        title: "Pages List",
-                                        type: "pages-list"
-                                    }
-                                ],
-                                slug: "test",
-                                title: "test"
-                            },
-                            error: null
-                        }
+        const [response] = await getPublicMenu({ slug: "test" });
+
+        expect(response).toMatchObject({
+            data: {
+                pageBuilder: {
+                    getPublicMenu: {
+                        data: {
+                            items: [
+                                {
+                                    id: "kj2vizx6",
+                                    title: "A link",
+                                    type: "link",
+                                    url: "https://www.google.com"
+                                },
+                                {
+                                    children: [
+                                        {
+                                            id: "kj2vjcuu",
+                                            title: "A link in folder",
+                                            type: "link",
+                                            url: "https://www.webiny.com"
+                                        }
+                                    ],
+                                    id: "kj2vj8cg",
+                                    title: "A folder",
+                                    type: "folder"
+                                },
+                                {
+                                    path: /^\/some-url\/untitled/,
+                                    title: "Page A",
+                                    type: "page"
+                                },
+                                {
+                                    path: /^\/some-url\/untitled/,
+                                    title: "Page B",
+                                    type: "page"
+                                },
+                                {
+                                    path: /^\/some-url\/untitled/,
+                                    title: "page-c",
+                                    type: "page"
+                                },
+                                {
+                                    children: [
+                                        {
+                                            path: /^\/some-url\/untitled/,
+                                            title: "page-a"
+                                        },
+                                        {
+                                            path: /^\/some-url\/untitled/,
+                                            title: "page-b"
+                                        },
+                                        {
+                                            path: /^\/some-url\/untitled/,
+                                            title: "page-c"
+                                        }
+                                    ],
+                                    id: "kj2vjz7r",
+                                    title: "Pages List",
+                                    type: "pages-list"
+                                }
+                            ],
+                            slug: "test",
+                            title: "test"
+                        },
+                        error: null
                     }
                 }
-            });
+            }
         });
     });
 });

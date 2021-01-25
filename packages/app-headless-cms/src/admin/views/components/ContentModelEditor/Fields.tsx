@@ -1,5 +1,5 @@
 import React from "react";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import styled from "@emotion/styled";
 import { Icon } from "@webiny/ui/Icon";
 import Draggable from "./Draggable";
@@ -68,7 +68,7 @@ const Field = ({ onFieldDragStart, fieldType: { type, label, icon, description }
 };
 
 export const Fields = ({ onFieldDragStart }) => {
-    const fieldTypePlugin = getPlugins<CmsEditorFieldTypePlugin>("cms-editor-field-type");
+    const fieldTypePlugin = plugins.byType<CmsEditorFieldTypePlugin>("cms-editor-field-type");
 
     return (
         <React.Fragment>

@@ -1,6 +1,6 @@
 import React from "react";
 import SortableTree from "react-sortable-tree";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import MenuItemRenderer from "./MenuItemRenderer";
 import { Typography } from "@webiny/ui/Typography";
 import styled from "@emotion/styled";
@@ -25,8 +25,8 @@ const EmptyTree = styled("div")({
 
 class MenuItemsList extends React.Component<any> {
     static canHaveChildren(node) {
-        const plugins = getPlugins<PbMenuItemPlugin>("pb-menu-item");
-        const plugin = plugins.find(pl => pl.menuItem.type === node.type);
+        const pbMenuItemPlugins = plugins.byType<PbMenuItemPlugin>("pb-menu-item");
+        const plugin = pbMenuItemPlugins.find(pl => pl.menuItem.type === node.type);
         return plugin ? plugin.menuItem.canHaveChildren : false;
     }
 

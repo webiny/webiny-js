@@ -28,8 +28,8 @@ plugins, please visit [Webiny documentation](https://docs.webiny.com/docs/develo
 
 #### Admin
 ```
-import { registerPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import securityPlugins from "@webiny/app-i18n-content/admin/plugins";
 
-registerPlugins(securityPlugins);
+plugins.register(securityPlugins);
 ```

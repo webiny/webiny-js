@@ -24,10 +24,10 @@ plugins, please visit [Webiny documentation](https://docs.webiny.com/docs/develo
 
 #### Admin
 ```
-import { registerPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import i18nPlugins from "@webiny/app-i18n/admin/plugins";
 
-registerPlugins(i18nPlugins);
+plugins.register(i18nPlugins);
 ```
 
 Note: the `i18nCmsPlugins` contains plugins for the Page Builder, which will
@@ -35,8 +35,8 @@ enable you to embed i18n in your pages.
     
 #### Site
 ```
-import { registerPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import i18nPlugins from "@webiny/app-i18n/site/plugins";
 
-registerPlugins(i18nPlugins);
+plugins.register(i18nPlugins);
 ```
