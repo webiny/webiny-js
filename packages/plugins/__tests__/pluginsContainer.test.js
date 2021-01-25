@@ -161,13 +161,15 @@ describe("plugins", () => {
 
         plugins.register(mockPlugins);
 
+        const mockUiPlugins = plugins.byType("ui-plugin");
+
         const register = [13, 17, 24, 42, 47];
         let registeredAmount = 0;
 
         for (let i = 0; i < 50; i++) {
             const found = plugins.byType("ui-plugin");
             // found plugins is initially registered amount + newly registered amount
-            expect(found).toHaveLength(5 + registeredAmount);
+            expect(found).toHaveLength(mockUiPlugins.length + registeredAmount);
             // at given numbers we will register ui-plugin-${number}
             if (register.includes(i)) {
                 plugins.register([
@@ -184,7 +186,7 @@ describe("plugins", () => {
         }
 
         expect(findByTypeSpy).toBeCalledTimes(register.length + 1);
-        expect(byTypeSpy).toBeCalledTimes(50);
+        expect(byTypeSpy).toBeCalledTimes(51);
 
         jest.restoreAllMocks();
     });
@@ -218,7 +220,6 @@ describe("plugins", () => {
         for (let i = 0; i < endId; i++) {
             const found = plugins.byType("ui-plugin");
             // found plugins is always initial registered amount reduced by unregistered amount of plugins
-            //console.log(createdPlugins - unregisteredAmount);
             expect(found).toHaveLength(totalPlugins - unregisteredAmount);
             // at given number we will unregister ui-plugin-${i}
             if (unregister.includes(i)) {
