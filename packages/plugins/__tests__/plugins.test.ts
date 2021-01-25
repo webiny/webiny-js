@@ -3,64 +3,40 @@ import { PluginsContainer } from "../src";
 const mockPlugins = [
     {
         type: "ui-plugin",
-        name: "ui-plugin-1",
-        init: () => {
-            return true;
-        }
+        name: "ui-plugin-1"
     },
     {
         type: "ui-plugin",
-        name: "ui-plugin-2",
-        init: () => {
-            return true;
-        }
+        name: "ui-plugin-2"
     },
     {
         type: "ui-plugin",
-        name: "ui-plugin-3",
-        init: () => {
-            return true;
-        }
+        name: "ui-plugin-3"
     },
     {
         type: "ui-plugin",
-        name: "ui-plugin-4",
-        init: () => {
-            return true;
-        }
+        name: "ui-plugin-4"
     },
     {
         type: "ui-plugin",
-        name: "ui-plugin-5",
-        init: () => {
-            return true;
-        }
+        name: "ui-plugin-5"
     },
     {
         type: "api-plugin",
-        name: "api-plugin-1",
-        init: () => {
-            return true;
-        }
+        name: "api-plugin-1"
     },
     {
         type: "api-plugin",
-        name: "api-plugin-2",
-        init: () => {
-            return true;
-        }
+        name: "api-plugin-2"
     },
     {
         type: "api-plugin",
-        name: "api-plugin-3",
-        init: () => {
-            return true;
-        }
+        name: "api-plugin-3"
     }
 ];
 
 describe("plugins", () => {
-    let plugins;
+    let plugins: PluginsContainer;
 
     beforeEach(() => {
         plugins = new PluginsContainer();
@@ -219,24 +195,31 @@ describe("plugins", () => {
 
         plugins.register(mockPlugins);
 
-        const unregister = [23, 28, 33, 34, 39];
+        const mockUiPlugins = plugins.byType("ui-plugin");
+
+        const unregister = [21, 23, 25, 27, 29];
+        const startId = 10;
+        const endId = 50;
+
+        let dynamicallyRegistered = 0;
+
+        for (let i = startId; i < endId; i++) {
+            plugins.register({
+                type: "ui-plugin",
+                name: `ui-plugin-${i}`
+            });
+            dynamicallyRegistered++;
+        }
+        // mock plugins + test registered
+        const totalPlugins = dynamicallyRegistered + mockUiPlugins.length;
 
         let unregisteredAmount = 0;
 
-        for (let i = 20; i < 40; i++) {
-            plugins.register({
-                type: "ui-plugin",
-                name: `ui-plugin-${i}`,
-                init: () => {
-                    return true;
-                }
-            });
-        }
-
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < endId; i++) {
             const found = plugins.byType("ui-plugin");
             // found plugins is always initial registered amount reduced by unregistered amount of plugins
-            expect(found).toHaveLength(25 - unregisteredAmount);
+            //console.log(createdPlugins - unregisteredAmount);
+            expect(found).toHaveLength(totalPlugins - unregisteredAmount);
             // at given number we will unregister ui-plugin-${i}
             if (unregister.includes(i)) {
                 plugins.unregister(`ui-plugin-${i}`);
@@ -244,8 +227,9 @@ describe("plugins", () => {
             }
         }
 
-        expect(findByTypeSpy).toBeCalledTimes(unregister.length + 1);
-        expect(byTypeSpy).toBeCalledTimes(50);
+        // we have mock registration and then first search
+        expect(findByTypeSpy).toBeCalledTimes(unregister.length + 2);
+        expect(byTypeSpy).toBeCalledTimes(endId + 1);
 
         jest.restoreAllMocks();
     });

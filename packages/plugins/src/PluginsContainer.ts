@@ -36,7 +36,7 @@ const assign = (plugins: any, options, target: Object): void => {
 
 export class PluginsContainer {
     private plugins: Record<string, Plugin> = {};
-    private _byTypeCache: Map<string, Plugin[]> = new Map();
+    private _byTypeCache: Record<string, Plugin[]> = {};
 
     constructor(...args) {
         this.register(...args);
@@ -47,11 +47,11 @@ export class PluginsContainer {
     }
 
     public byType<T extends Plugin>(type: string): T[] {
-        if (this._byTypeCache.has(type)) {
-            return this._byTypeCache.get(type) as T[];
+        if (this._byTypeCache[type]) {
+            return this._byTypeCache[type] as T[];
         }
         const plugins = this.findByType<T>(type);
-        this._byTypeCache.set(type, plugins);
+        this._byTypeCache[type] = plugins;
         return plugins;
     }
 
@@ -79,14 +79,14 @@ export class PluginsContainer {
 
     public register(...args: any): void {
         // reset the cache when adding new plugins
-        this._byTypeCache.clear();
+        this._byTypeCache = {};
         const [plugins, options] = normalizeArgs(args);
         assign(plugins, options, this.plugins);
     }
 
     public unregister(name: string): void {
         // reset the cache when removing a plugin
-        this._byTypeCache.clear();
+        this._byTypeCache = {};
         delete this.plugins[name];
     }
 
