@@ -36,7 +36,7 @@ const mockPlugins = [
 ];
 
 describe("plugins", () => {
-    let plugins: PluginsContainer;
+    let plugins;
 
     beforeEach(() => {
         plugins = new PluginsContainer();
