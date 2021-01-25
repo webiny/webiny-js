@@ -25,9 +25,9 @@ plugins, please visit [Webiny documentation](https://docs.webiny.com/docs/develo
 #### Admin
 ```
 import mailchimpPlugins from "@webiny/app-mailchimp/admin"
-import { registerPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 
-registerPlugins(...mailchimpPlugins);
+plugins.register(...mailchimpPlugins);
 ```
 
 Enables management of Mailchimp settings, which can be accessed via 
@@ -53,9 +53,9 @@ An example component can be found [here](src/render/components/MailchimpDefaultF
 #### Site
 ```
 import mailchimpPlugins from "@webiny/app-mailchimp/render"
-import { registerPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 
-registerPlugins(mailchimpPlugins);
+plugins.register(mailchimpPlugins);
 ```
 
 This enables rendering of Mailchimp newsletter signup form in your public website.

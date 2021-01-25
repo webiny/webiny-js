@@ -26,10 +26,10 @@ plugins, please visit [Webiny documentation](https://docs.webiny.com/docs/develo
 
 #### Admin
 ```
-import { registerPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import gtmPlugins from "@webiny/app-google-tag-manager/admin"
 
-registerPlugins(gtmPlugins);
+plugins.register(gtmPlugins);
 ```
 
 Enables management of GTM settings, which can be accessed via Settings 
@@ -38,10 +38,10 @@ section in the main menu. You will paste your GTM "Container ID" here
     
 #### Site
 ```
-import { registerPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import gtmPlugins from "@webiny/app-google-tag-manager/render"
 
-registerPlugins(gtmPlugins);
+plugins.register(gtmPlugins);
 ```
 
 Initializes Google Tag Manager on your site.

@@ -13,7 +13,7 @@ const plugin: WebinyInitPlugin = {
     init() {
         // Settings
         // Apps / integrations can register settings plugins and add menu items like the following.
-        const settingsPlugins = getPlugins<AdminMenuSettingsPlugin>("admin-menu-settings");
+        const settingsPlugins = plugins.byType<AdminMenuSettingsPlugin>("admin-menu-settings");
 
         plugins.register({
             name: "menu-settings",
