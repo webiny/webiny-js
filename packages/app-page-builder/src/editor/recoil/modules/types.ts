@@ -6,6 +6,7 @@ import { RevisionsAtomType } from "@webiny/app-page-builder/editor/recoil/module
 import {
     ActiveElementAtomType,
     HighlightElementAtomType,
+    SidebarAtomType,
     UiAtomType
 } from "@webiny/app-page-builder/editor/recoil/modules/ui";
 
@@ -18,4 +19,5 @@ export type PbState = {
     ui: UiAtomType;
     content: ContentAtomType;
     revisions: RevisionsAtomType;
+    sidebar: SidebarAtomType;
 };

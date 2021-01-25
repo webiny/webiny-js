@@ -1,12 +1,12 @@
 import { MutationActionCallable } from "@webiny/app-page-builder/editor/recoil/eventActions";
-import { UiAtomType } from "@webiny/app-page-builder/editor/recoil/modules";
+import { SidebarAtomType } from "../sidebarAtom";
 
-export const updateSidebarActiveTabIndexMutation: MutationActionCallable<UiAtomType, number> = (
-    state,
-    index
-) => {
+export const updateSidebarActiveTabIndexMutation: MutationActionCallable<
+    SidebarAtomType,
+    number
+> = (state, index) => {
     return {
         ...state,
-        sidebarActiveTabIndex: index
+        activeTabIndex: index
     };
 };

@@ -33,10 +33,9 @@ export const afterDropElementAction: EventActionCallableType<AfterDropElementAct
         state: {
             ...state,
             activeElement: element.id,
-            ui: {
-                ...state.ui,
-                sidebarActiveTabIndex: 0,
-                highlightElementTab: true
+            sidebar: {
+                activeTabIndex: 0,
+                highlightTab: true
             }
         }
     };

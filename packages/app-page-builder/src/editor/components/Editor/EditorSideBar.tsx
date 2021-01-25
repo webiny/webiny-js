@@ -7,9 +7,8 @@ import { Tabs, Tab } from "@webiny/ui/Tabs";
 import {
     elementWithChildrenByIdSelector,
     activeElementAtom,
-    highlightElementTabMutation,
-    sidebarActiveTabIndexSelector,
-    uiAtom,
+    sidebarAtom,
+    highlightSidebarTabMutation,
     updateSidebarActiveTabIndexMutation
 } from "../../recoil/modules";
 import StyleSettingsTabContent from "./Sidebar/StyleSettingsTabContent";
@@ -47,26 +46,25 @@ const PanelHighLight = styled("div")({
 const EditorSideBar = () => {
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
-    const activeTabIndex = useRecoilValue(sidebarActiveTabIndexSelector);
-    const [uiAtomValue, setUiAtomValue] = useRecoilState(uiAtom);
+    const [sidebarAtomValue, setSidebarAtomValue] = useRecoilState(sidebarAtom);
 
     const setActiveTabIndex = useCallback(index => {
-        setUiAtomValue(prev => updateSidebarActiveTabIndexMutation(prev, index));
+        setSidebarAtomValue(prev => updateSidebarActiveTabIndexMutation(prev, index));
     }, []);
 
     const unHighlightElementTab = useCallback(() => {
-        setUiAtomValue(prev => highlightElementTabMutation(prev, false));
+        setSidebarAtomValue(prev => highlightSidebarTabMutation(prev, false));
     }, []);
 
     useEffect(() => {
-        if (uiAtomValue.highlightElementTab) {
+        if (sidebarAtomValue.highlightTab) {
             setTimeout(unHighlightElementTab, 1000);
         }
-    }, [uiAtomValue.highlightElementTab]);
+    }, [sidebarAtomValue.highlightTab]);
 
     return (
         <Elevation z={1} className={rightSideBar}>
-            <Tabs value={activeTabIndex} updateValue={setActiveTabIndex}>
+            <Tabs value={sidebarAtomValue.activeTabIndex} updateValue={setActiveTabIndex}>
                 <Tab label={"style"}>
                     <StyleSettingsTabContent element={element} />
                 </Tab>
@@ -74,7 +72,7 @@ const EditorSideBar = () => {
                     <ElementSettingsTabContent element={element} />
                 </Tab>
             </Tabs>
-            {uiAtomValue.highlightElementTab && <PanelHighLight />}
+            {sidebarAtomValue.highlightTab && <PanelHighLight />}
         </Elevation>
     );
 };

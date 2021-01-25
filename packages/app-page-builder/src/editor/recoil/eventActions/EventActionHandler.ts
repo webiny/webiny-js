@@ -7,6 +7,7 @@ import {
     pageAtom,
     pluginsAtom,
     revisionsAtom,
+    sidebarAtom,
     uiAtom
 } from "../modules";
 import {
@@ -226,6 +227,9 @@ export class EventActionHandler {
         if (state.highlightElement) {
             updateConnectedValue(highlightElementAtom, state.highlightElement);
         }
+        if (state.sidebar) {
+            updateConnectedValue(sidebarAtom, state.sidebar);
+        }
 
         if (setInBatch) {
             connectedBatchEnd();
@@ -238,6 +242,7 @@ export class EventActionHandler {
 
     private getCallableState(state: Partial<PbState>): PbState {
         return {
+            sidebar: connectedAtomValue(sidebarAtom),
             activeElement: connectedAtomValue(activeElementAtom),
             highlightElement: connectedAtomValue(highlightElementAtom),
             elements: connectedAtomValue(elementsAtom),

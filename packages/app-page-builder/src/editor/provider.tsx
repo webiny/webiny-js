@@ -12,6 +12,7 @@ import {
     pageAtom,
     pluginsAtom,
     revisionsAtom,
+    sidebarAtom,
     uiAtom
 } from "@webiny/app-page-builder/editor/recoil/modules";
 import { connectedAtomValue } from "@webiny/app-page-builder/editor/recoil/modules/connected";
@@ -61,7 +62,8 @@ export const getGlobalState = (): PbState => ({
     elements: connectedAtomValue(elementsAtom),
     page: connectedAtomValue(pageAtom),
     content: connectedAtomValue(contentAtom),
-    revisions: connectedAtomValue(revisionsAtom)
+    revisions: connectedAtomValue(revisionsAtom),
+    sidebar: connectedAtomValue(sidebarAtom)
 });
 
 (window as any).getGlobalState = getGlobalState;
