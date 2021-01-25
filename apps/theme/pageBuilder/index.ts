@@ -30,10 +30,7 @@ export default [
                     ]
                 },
                 heading: {
-                    types: [
-                        { className: "", label: "Default" },
-                        { className: "webiny-pb-element-heading-basic", label: "Basic" }
-                    ]
+                    types: [{ className: "webiny-pb-typography-heading", label: "Default" }]
                 },
                 paragraph: {
                     types: [
@@ -45,10 +42,7 @@ export default [
                     types: [{ className: "webiny-pb-typography-list", label: "Default" }]
                 },
                 quote: {
-                    types: [
-                        { className: "", label: "Default" },
-                        { className: "webiny-pb-element-quote-basic", label: "Basic" }
-                    ]
+                    types: [{ className: "webiny-pb-typography-quote", label: "Default" }]
                 }
             },
             typography: {

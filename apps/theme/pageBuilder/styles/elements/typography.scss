@@ -35,8 +35,6 @@ a {
 
 blockquote {
   line-height: $leading;
-  margin-top: $leading;
-  margin-bottom: $leading;
 }
 // Default heading styles
 h1 {
@@ -69,14 +67,33 @@ h6 {
   line-height: 1.75rem;
 }
 
-.webiny-pb-element-heading-basic {
-  font-weight: 600;
+// Blockquote default typography styles
+.webiny-pb-typography-quote {
+  color: var(--desktop-color, var(--webiny-theme-color-text-primary, rgb(10, 10, 10)));
+  blockquote {
+    quotes: "“" "”";
+
+    &::before {
+      content: open-quote;
+    }
+
+    &::after {
+      content: close-quote;
+    }
+  }
 }
-.webiny-pb-element-quote-basic {
-  font-size: 1.5rem;
-  line-height: 2rem;
-  color: #4b5563;
+.webiny-pb-media-query--tablet .webiny-pb-typography-quote {
+  color: var(--tablet-color, var(--webiny-theme-color-text-primary, rgb(10, 10, 10)));
 }
+.webiny-pb-media-query--mobile-landscape .webiny-pb-typography-quote {
+  color: var(--mobile-landscape-color, var(--webiny-theme-color-text-primary, rgb(10, 10, 10)));
+}
+.webiny-pb-media-query--mobile-portrait .webiny-pb-typography-quote {
+  color: var(--mobile-portrait-color, var(--webiny-theme-color-text-primary, rgb(10, 10, 10)));
+}
+
+// Heading default typography styles
+.webiny-pb-typography-heading,
 .webiny-pb-typography-h1,
 .webiny-pb-typography-h2,
 .webiny-pb-typography-h3,
@@ -84,14 +101,21 @@ h6 {
 .webiny-pb-typography-h5,
 .webiny-pb-typography-h6 {
   font-family: var(--webiny-theme-typography-secondary-font-family, "Lato, sans-serif");
-  color: var(--webiny-theme-color-text-primary, rgb(10, 10, 10));
+  color: var(--desktop-color, var(--webiny-theme-color-text-primary, rgb(10, 10, 10)));
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   text-decoration: inherit;
   text-transform: inherit;
-  margin-top: $leading;
-  margin-bottom: 0;
   line-height: 2rem;
+}
+.webiny-pb-media-query--tablet .webiny-pb-typography-heading {
+  color: var(--tablet-color, var(--webiny-theme-color-text-primary, rgb(10, 10, 10)));
+}
+.webiny-pb-media-query--mobile-landscape .webiny-pb-typography-heading {
+  color: var(--mobile-landscape-color, var(--webiny-theme-color-text-primary, rgb(10, 10, 10)));
+}
+.webiny-pb-media-query--mobile-portrait .webiny-pb-typography-heading {
+  color: var(--mobile-portrait-color, var(--webiny-theme-color-text-primary, rgb(10, 10, 10)));
 }
 
 .webiny-pb-typography-h1 {
@@ -227,15 +251,6 @@ h6 {
   line-height: 1.2rem;
   font-weight: 400;
   letter-spacing: 0.03125em;
-}
-.webiny-pb-media-query--tablet .webiny-pb-typography-body {
-  color: var(--tablet-color, var(--webiny-theme-color-text-secondary, #616161));
-}
-.webiny-pb-media-query--mobile-landscape .webiny-pb-typography-body {
-  color: var(--mobile-landscape-color, var(--webiny-theme-color-text-secondary, #616161));
-}
-.webiny-pb-media-query--mobile-portrait .webiny-pb-typography-body {
-  color: var(--mobile-portrait-color, var(--webiny-theme-color-text-secondary, #616161));
 }
 
 .webiny-pb-typography--white {
