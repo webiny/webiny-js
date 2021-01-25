@@ -1,25 +1,9 @@
 import React from "react";
-import { css } from "emotion";
 import classNames from "classnames";
 import Text from "../../../components/Text";
 
-const editorClass = css({
-    "&": {
-        ol: {
-            listStyle: "revert"
-        },
-        ul: {
-            listStyle: "disc"
-        },
-        li: {
-            marginLeft: "1.5em"
-        }
-    }
-});
-
 export const className = classNames(
-    "webiny-pb-base-page-element-style webiny-pb-page-element-text",
-    editorClass
+    "webiny-pb-base-page-element-style webiny-pb-page-element-text"
 );
 
 const DEFAULT_EDITOR_OPTIONS = {
