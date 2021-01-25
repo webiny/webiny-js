@@ -7,14 +7,14 @@ export type PagePreviewDimension = {
 };
 
 export type UiAtomType = {
-    isDragging: boolean;
-    isResizing: boolean;
-    isSaving: boolean;
-    textEditorActive: boolean;
-    sidebarActiveTabIndex: number;
-    highlightElementTab: boolean;
-    displayMode: DisplayMode;
-    pagePreviewDimension: PagePreviewDimension;
+    isDragging: boolean; // TODO: separate atom: InteractionAtom
+    isResizing: boolean; // TODO: remove
+    isSaving: boolean; // TODO: separate atom: NetworkAtom
+    textEditorActive: boolean; // TODO: remove
+    sidebarActiveTabIndex: number; // TODO: separate atom: SidebarAtom
+    highlightElementTab: boolean; // TODO: separate atom: SidebarAtom
+    displayMode: DisplayMode; // TODO: separate atom: DisplayAtom
+    pagePreviewDimension: PagePreviewDimension; // TODO: separate atom: DisplayAtom
 };
 export const uiAtom = connectedAtom<UiAtomType>({
     key: "uiAtom",

@@ -96,7 +96,7 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
                 <div className={"element-holder"} onClick={onClick}>
                     {renderPlugins("pb-editor-page-element-action", { element, plugin })}
                     <span>
-                        {plugin.elementType} - {elementId}
+                        {plugin.elementType}
                     </span>
                 </div>
             </div>

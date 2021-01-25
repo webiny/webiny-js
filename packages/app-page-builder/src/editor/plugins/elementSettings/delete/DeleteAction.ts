@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
 import { DeleteElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import {
@@ -17,23 +17,22 @@ const DeleteAction: React.FunctionComponent<DeleteActionPropsType> = ({ children
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
 
-    console.log("DeleteAction activeElementId", activeElementId);
-
     if (!element) {
         return null;
     }
 
-    const onClick = () => {
+    const onClick = useCallback(() => {
         eventActionHandler.trigger(
             new DeleteElementActionEvent({
                 element
             })
         );
-    };
+    }, [activeElementId]);
 
     const plugin = plugins
         .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
         .find(pl => pl.elementType === element.type);
+    
     if (!plugin) {
         return null;
     }

@@ -76,7 +76,6 @@ const ReactMediumEditor = ({
         editorRef.current.subscribe("editableInput", handleSelect);
 
         return () => {
-            console.log("Destroying editor", elementId);
             editorRef.current.destroy();
         };
     }, [options]);

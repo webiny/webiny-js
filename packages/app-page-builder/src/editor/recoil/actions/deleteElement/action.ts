@@ -61,9 +61,6 @@ export const deleteElementAction: EventActionCallableType<DeleteElementActionArg
 ) => {
     const { element } = args;
     const parent = getElementParentWithChildrenById(state, element.id);
-    console.log("deleteElementAction");
-    console.log("element", element);
-    console.log("parent", parent);
     const newParent = removeElementHelper(parent, element.id);
     const result = runUpdateElementAction(state, meta, newParent, element);
 

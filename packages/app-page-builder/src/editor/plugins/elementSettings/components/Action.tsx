@@ -75,7 +75,7 @@ const Action: React.FunctionComponent<ActionProps> = ({
                 removeKeyHandler(short);
             });
         };
-    }, []);
+    }, [onClick]);
 
     return (
         <Tooltip

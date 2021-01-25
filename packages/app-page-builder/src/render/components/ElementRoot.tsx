@@ -41,7 +41,7 @@ const ElementRootComponent: React.FunctionComponent<ElementRootProps> = ({
             data: element ? element.data : null,
             elements: []
         }),
-        [element.id]
+        [element.id, element.data]
     );
 
     const finalStyle = useMemo(() => {
@@ -52,7 +52,7 @@ const ElementRootComponent: React.FunctionComponent<ElementRootProps> = ({
         return stylePlugins.reduce((accumulatedStyles, plugin) => {
             return plugin.renderStyle({ element: shallowElement, style: accumulatedStyles });
         }, style || {});
-    }, [style, element.id]);
+    }, [style, shallowElement.id, shallowElement.data]);
 
     const attributes = useMemo(() => {
         const attributePlugins = plugins.byType<PbRenderElementAttributesPlugin>(
@@ -64,7 +64,7 @@ const ElementRootComponent: React.FunctionComponent<ElementRootProps> = ({
                 attributes: accumulatedAttributes
             });
         }, {});
-    }, [element.id]);
+    }, [shallowElement.id]);
 
     // required due to re-rendering when set content atom and still nothing in elements atom
     if (!element) {

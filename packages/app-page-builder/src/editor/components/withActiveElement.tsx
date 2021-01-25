@@ -24,14 +24,14 @@ const getActiveElement = (
     element: PbShallowElement | undefined,
     propName: string,
     shallow: boolean,
-    keys?: string[]
+    keys: string[] = []
 ) => {
     if (!element) {
         return {
             [propName]: null
         };
     }
-    if (shallow || (keys?.length > 0 && keys.includes("elements") === false)) {
+    if (shallow || (keys.length > 0 && keys.includes("elements") === false)) {
         return {
             [propName]: pickKeys(element, keys)
         };
