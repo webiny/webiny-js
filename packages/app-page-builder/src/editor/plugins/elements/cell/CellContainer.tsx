@@ -15,7 +15,7 @@ import { IconButton } from "@webiny/ui/Button";
 import { css } from "emotion";
 import { useRecoilValue } from "recoil";
 
-const CellContainerStyle = styled("div")({
+const CellContainerStyle = styled<"div", { active }>("div")(({ active }) => ({
     position: "relative",
     color: "#666",
     boxSizing: "border-box",
@@ -27,13 +27,15 @@ const CellContainerStyle = styled("div")({
     "&::after": {
         content: '""',
         position: "absolute",
+        zIndex: -1,
         top: 0,
         left: 0,
         width: "100%",
         height: "100%",
-        border: "1px dashed gray"
+        transition: "border 250ms ease-in-out",
+        border: active ? "none" : "1px dashed gray"
     }
-});
+}));
 const addIcon = css({
     color: "var(--mdc-theme-secondary)",
     transition: "transform 0.2s",
@@ -48,9 +50,13 @@ const addIcon = css({
 type CellPropsType = {
     elementId: string;
     isHighlighted: boolean;
+    isActive: boolean;
 };
-const CellContainer: React.FunctionComponent<CellPropsType> = props => {
-    const { elementId, isHighlighted } = props;
+const CellContainer: React.FunctionComponent<CellPropsType> = ({
+    elementId,
+    isHighlighted,
+    isActive
+}) => {
     const handler = useEventActionHandler();
     const element = useRecoilValue(elementByIdSelector(elementId));
     // TODO remove when state is fully switched to use content instead of flat elements
@@ -86,6 +92,7 @@ const CellContainer: React.FunctionComponent<CellPropsType> = props => {
         <ElementRoot element={element}>
             {({ getAllClasses, elementStyle }) => (
                 <CellContainerStyle
+                    active={isHighlighted || isActive}
                     style={elementStyle}
                     className={getAllClasses("webiny-pb-base-page-element-style")}
                 >
