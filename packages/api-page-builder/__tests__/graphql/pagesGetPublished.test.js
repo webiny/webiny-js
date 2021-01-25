@@ -1,5 +1,7 @@
 import useGqlHandler from "./useGqlHandler";
 
+jest.setTimeout(15000);
+
 describe("getting published pages", () => {
     const {
         deleteElasticSearchIndex,
