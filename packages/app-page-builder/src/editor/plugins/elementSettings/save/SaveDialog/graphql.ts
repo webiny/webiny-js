@@ -11,6 +11,7 @@ const FILE_FIELDS = /* GraphQL */ `
         type
         tags
         createdOn
+        meta
     }
 `;
 
