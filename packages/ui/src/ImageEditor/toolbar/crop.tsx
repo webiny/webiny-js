@@ -31,7 +31,7 @@ const tool: ImageEditorTool = {
     },
     cancel: () => cropper && cropper.destroy(),
     apply: ({ canvas }) => {
-        return new Promise(resolve => {
+        return new Promise((resolve: any) => {
             if (!cropper) {
                 resolve();
                 return;

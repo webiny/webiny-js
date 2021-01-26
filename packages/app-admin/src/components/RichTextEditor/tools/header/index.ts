@@ -20,6 +20,13 @@ type HeaderConfig = {
     typography: Typography;
 };
 
+interface HeaderArgs {
+    data: HeaderData;
+    config: HeaderConfig;
+    api: any;
+    readOnly: boolean;
+}
+
 class Header {
     api: API;
     readOnly: boolean;
@@ -39,7 +46,7 @@ class Header {
      *   api - Editor.js API
      *   readOnly - read only mode flag
      */
-    constructor({ data, config, api, readOnly }) {
+    constructor({ data, config, api, readOnly }: HeaderArgs) {
         this.api = api;
         this.readOnly = readOnly;
 

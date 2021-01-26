@@ -36,7 +36,6 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                         return [];
                     }
 
-                    // eslint-disable-next-line @typescript-eslint/camelcase
                     const entries = cms.READ
                         ? // `read` API works with `published` data
                           await model.getPublishedByIds(ids)

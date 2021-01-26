@@ -913,7 +913,7 @@ export interface ContentModelManagerPlugin extends Plugin {
      * Create a CmsContentModelManager for specific type - or new default one.
      * For reference in how is this plugin run check [contentModelManagerFactory](https://github.com/webiny/webiny-js/blob/f15676/packages/api-headless-cms/src/content/plugins/crud/contentModel/contentModelManagerFactory.ts)
      */
-    create<T>(context: CmsContext, model: CmsContentModel): Promise<CmsContentModelManager>;
+    create(context: CmsContext, model: CmsContentModel): Promise<CmsContentModelManager>;
 }
 
 /**

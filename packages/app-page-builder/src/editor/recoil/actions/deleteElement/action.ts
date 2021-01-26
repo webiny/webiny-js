@@ -22,6 +22,7 @@ const updateParentElement = (
     if (!plugin || typeof plugin.onChildDeleted !== "function") {
         return {
             state,
+            // @ts-ignore
             actions: [new UpdateElementActionEvent({ element: parent, history: true })]
         };
     }
@@ -29,6 +30,7 @@ const updateParentElement = (
     if (!mutatedParent) {
         return {
             state,
+            // @ts-ignore
             actions: [new UpdateElementActionEvent({ element: parent, history: true })]
         };
     }

@@ -11,6 +11,7 @@ declare global {
     // eslint-disable-next-line
     namespace JSX {
         interface IntrinsicElements {
+            // @ts-ignore
             "ps-tag": {
                 key?: string;
                 value?: string;

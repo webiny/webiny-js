@@ -7,6 +7,7 @@ export default () => {
         type: "pb-editor-event-action-plugin",
         name: "pb-editor-event-action-drop-basic-element",
         onEditorMount: handler => {
+            // @ts-ignore
             return handler.on(AfterDropElementActionEvent, afterDropElementAction);
         }
     } as PbEditorEventActionPlugin;

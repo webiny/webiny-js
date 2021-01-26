@@ -54,10 +54,9 @@ const getQuery = (args: ListPagesArgs) => {
 
     if (search && search.query) {
         query.bool.must = {
-            // eslint-disable-next-line @typescript-eslint/camelcase
             query_string: {
                 query: `*${search.query}*`,
-                // eslint-disable-next-line @typescript-eslint/camelcase
+
                 allow_leading_wildcard: true,
                 fields: ["title", "snippet"]
             }
@@ -76,7 +75,7 @@ const getSort = sort => {
     if (sort.createdOn) {
         normalizedSort["createdOn"] = {
             order: sort.createdOn,
-            // eslint-disable-next-line @typescript-eslint/camelcase
+
             unmapped_type: "date"
         };
     }
@@ -84,7 +83,7 @@ const getSort = sort => {
     if (sort.publishedOn) {
         normalizedSort["publishedOn"] = {
             order: sort.publishedOn,
-            // eslint-disable-next-line @typescript-eslint/camelcase
+
             unmapped_type: "date"
         };
     }
@@ -92,7 +91,7 @@ const getSort = sort => {
     if (sort.title) {
         normalizedSort["titleLC.keyword"] = {
             order: sort.title,
-            // eslint-disable-next-line @typescript-eslint/camelcase
+
             unmapped_type: "text"
         };
     }

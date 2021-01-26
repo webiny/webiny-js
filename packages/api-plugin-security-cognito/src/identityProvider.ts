@@ -2,7 +2,6 @@ import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityservi
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { SecurityIdentityProviderPlugin } from "@webiny/api-security-tenancy/types";
 
-// eslint-disable-next-line @typescript-eslint/camelcase
 const updateAttributes = { family_name: "lastName", given_name: "firstName" };
 
 export default ({ region, userPoolId }) => {

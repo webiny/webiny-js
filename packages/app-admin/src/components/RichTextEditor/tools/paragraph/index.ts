@@ -9,6 +9,7 @@ import { Alignment, ALIGNMENTS, TextAlign, ALIGNMENT_ICONS } from "../utils";
 type ParagraphConfig = {
     placeholder: string;
     preserveBlank: boolean;
+    typography?: Typography;
 };
 /**
  * @typedef {Object} ParagraphData
@@ -27,6 +28,13 @@ type Typography = {
         className: string;
     };
 };
+
+interface ParagraphArgs {
+    data: ParagraphData;
+    config: ParagraphConfig;
+    api: any;
+    readOnly: boolean;
+}
 class Paragraph {
     api: API;
     readOnly: boolean;
@@ -49,7 +57,7 @@ class Paragraph {
      * @param {object} params.api - editor.js api
      * @param {boolean} readOnly - read only mode flag
      */
-    constructor({ data, config, api, readOnly }) {
+    constructor({ data, config, api, readOnly }: ParagraphArgs) {
         this.api = api;
         this.readOnly = readOnly;
         this.typography = config.typography || null;

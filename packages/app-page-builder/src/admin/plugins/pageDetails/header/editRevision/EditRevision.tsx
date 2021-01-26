@@ -14,7 +14,7 @@ const EditRevision = props => {
     const { identity } = useSecurity();
     const { page } = props;
     const { history } = useRouter();
-    const [inProgress, setInProgress] = useState();
+    const [inProgress, setInProgress] = useState<boolean>();
     const { showSnackbar } = useSnackbar();
     const [createPageFrom] = useMutation(CREATE_PAGE);
 

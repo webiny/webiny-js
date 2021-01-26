@@ -132,7 +132,7 @@ export default {
                             {
                                 savedOn: {
                                     order: "desc",
-                                    // eslint-disable-next-line @typescript-eslint/camelcase
+
                                     unmapped_type: "date"
                                 }
                             }
@@ -954,7 +954,6 @@ export default {
 
                     const body: Record<string, any> = {
                         query: {
-                            // eslint-disable-next-line @typescript-eslint/camelcase
                             constant_score: {
                                 filter: { bool: { must } }
                             }
