@@ -22,18 +22,14 @@ describe("elasticSearchQueryBuilderContainsPlugin", () => {
             mustNot: [],
             must: [
                 {
-                    // eslint-disable-next-line @typescript-eslint/camelcase
                     query_string: {
-                        // eslint-disable-next-line @typescript-eslint/camelcase
                         allow_leading_wildcard: true,
                         fields: ["name"],
                         query: "*John*"
                     }
                 },
                 {
-                    // eslint-disable-next-line @typescript-eslint/camelcase
                     query_string: {
-                        // eslint-disable-next-line @typescript-eslint/camelcase
                         allow_leading_wildcard: true,
                         fields: ["name"],
                         query: "*Doe*"

@@ -131,7 +131,11 @@ describe("Forms Security Test", () => {
 
         await handlerA.until(
             () => handlerA.listFormSubmissions({ form: formA.id }).then(([data]) => data),
-            ({ data }) => data.formBuilder.listFormSubmissions.data.length > 0
+            ({ data }) => data.formBuilder.listFormSubmissions.data.length === 3
+        );
+        await handlerA.until(
+            () => handlerA.listFormSubmissions({ form: formB.id }).then(([data]) => data),
+            ({ data }) => data.formBuilder.listFormSubmissions.data.length === 2
         );
 
         // Identity A should have access to submissions in Form A

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import fetch from "node-fetch";
 import providerList from "./providers";
 
@@ -23,7 +22,6 @@ type ProviderItem = {
 
 const providers = providerList
     .map((item: ProviderItem) => {
-        // eslint-disable-next-line camelcase,@typescript-eslint/camelcase
         const { provider_name, provider_url, endpoints } = item;
 
         const endpoint = endpoints[0];
@@ -31,7 +29,6 @@ const providers = providerList
 
         const hostname = getHostname(url);
         const domain = hostname ? hostname.replace("www.", "") : "";
-        // eslint-disable-next-line camelcase,@typescript-eslint/camelcase
         return { provider_name, provider_url, schemes, domain, url };
     })
     .filter(item => {

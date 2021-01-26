@@ -106,7 +106,7 @@ export const useReferences = ({ bind, field }) => {
 
         if (missingData.length) {
             setLoading(true);
-            // eslint-disable-next-line @typescript-eslint/camelcase
+
             client.query({ query: GET_BY_IDS, variables: { revisions: missingData } }).then(res => {
                 setLoading(false);
                 const entries = res.data.content.data;

@@ -6,9 +6,7 @@ export const elasticSearchQueryBuilderNotContainsPlugin = (): ElasticsearchQuery
     operator: "not_contains",
     apply(query, { field, value }) {
         query.mustNot.push({
-            // eslint-disable-next-line @typescript-eslint/camelcase
             query_string: {
-                // eslint-disable-next-line @typescript-eslint/camelcase
                 allow_leading_wildcard: true,
                 fields: [field],
                 query: `*${value}*`

@@ -238,7 +238,7 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 managers.delete(model.modelId);
             },
-            async getManager<T = any>(modelId) {
+            async getManager(modelId) {
                 if (managers.has(modelId)) {
                     return managers.get(modelId);
                 }
