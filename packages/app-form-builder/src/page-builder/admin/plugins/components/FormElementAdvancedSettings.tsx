@@ -85,6 +85,8 @@ const FormElementAdvancedSettings = ({ Bind, submit, data }) => {
 
         return output;
     }, [getQuery, selectedForm]);
+    // required so ts build does not break
+    const buttonProps: any = {};
 
     return (
         <Accordion title={"Form"} defaultValue={true}>
@@ -144,8 +146,10 @@ const FormElementAdvancedSettings = ({ Bind, submit, data }) => {
                         </Bind>
                     </Cell>
                     <Cell span={12}>
-                        <ButtonContainer>
-                            <SimpleButton onClick={submit}>Save</SimpleButton>
+                        <ButtonContainer {...buttonProps}>
+                            <SimpleButton onClick={submit} {...buttonProps}>
+                                Save
+                            </SimpleButton>
                         </ButtonContainer>
                     </Cell>
                 </Grid>

@@ -36,7 +36,7 @@ const ApplyCancelActions = styled("div")({
 });
 
 const initScripts = () => {
-    return new Promise(resolve => {
+    return new Promise((resolve: any) => {
         // @ts-ignore
         if (window.Caman) {
             return resolve();
