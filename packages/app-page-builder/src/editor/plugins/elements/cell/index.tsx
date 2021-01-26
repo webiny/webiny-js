@@ -57,7 +57,7 @@ const cellPlugin: PbEditorPageElementPlugin = {
                         )
                     },
                     padding: createInitialPerDeviceSettingValue(
-                        { all: "10px" },
+                        { all: "0px" },
                         DisplayMode.DESKTOP
                     ),
                     grid: {
