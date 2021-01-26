@@ -26,21 +26,19 @@ type ImagePropsType = {
     element: PbElement;
 };
 const Image: React.FunctionComponent<ImagePropsType> = ({ element }) => {
-    const { image = {}, link = {}, settings = {} } = element.data || {};
+    const { image = {}, link = {} } = element.data || {};
     if (!image || !image.file) {
         return null;
     }
 
     const { width, height, title } = image;
 
-    const { horizontalAlign = "center" } = settings;
-
     const style = { width, height };
 
     return (
         <ElementRoot
             element={element}
-            style={{ textAlign: horizontalAlign }}
+            style={{ display: "flex" }}
             className={"webiny-pb-base-page-element-style webiny-pb-page-element-image"}
         >
             <Link link={link}>
