@@ -268,14 +268,3 @@ h6 {
 .webiny-pb-typography--primary {
   color: var(--webiny-theme-color-primary, #ee896b);
 }
-
-// force center align on mobile
-@include mobile {
-  .webiny-pb-page-element-text,
-  .webiny-pb-page-element-icon {
-    text-align: center !important;
-    > div > * {
-      text-align: center !important;
-    }
-  }
-}
