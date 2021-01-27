@@ -6,7 +6,7 @@ const Document = ({ element }: { element: PbElement }) => {
     if (!element || Array.isArray(element)) {
         return null;
     }
-    
+
     return (
         <div className={"webiny-pb-page-document"}>
             {(element.elements as PbElement[]).map(element => (

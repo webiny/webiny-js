@@ -19,7 +19,7 @@ export const afterDropElementAction: EventActionCallable<AfterDropElementActionA
     args
 ) => {
     const { element } = args;
-    
+
     const plugin = getElementTypePlugin(element.type);
     if (plugin.onCreate && plugin.onCreate === "open-settings") {
         return {};

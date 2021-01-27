@@ -17,9 +17,9 @@ export const updateElementAction: EventActionCallable<UpdateElementActionArgsTyp
         }
         actions.push(new SaveRevisionActionEvent());
     }
-    
+
     const flattenedContent = flattenElements(element);
-    
+
     return {
         state: {
             elements: flattenedContent

@@ -6,9 +6,7 @@ const EditorContext = createContext(null);
 export const EditorProvider: React.FunctionComponent<any> = props => {
     return (
         <EventActionHandlerProvider>
-            <EditorContext.Provider {...props}>
-                {props.children}
-            </EditorContext.Provider>
+            <EditorContext.Provider {...props}>{props.children}</EditorContext.Provider>
         </EventActionHandlerProvider>
     );
 };

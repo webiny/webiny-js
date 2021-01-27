@@ -1,6 +1,6 @@
 import { EventActionCallable, PbEditorElement } from "../../../../types";
 import { DeleteElementActionArgsType } from "@webiny/app-page-builder/editor/recoil/actions/deleteElement/types";
-import {SaveRevisionActionEvent} from "@webiny/app-page-builder/editor/recoil/actions";
+import { SaveRevisionActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 
 const removeElementFromParent = (parent: PbEditorElement, id: string): PbEditorElement => {
     return {
@@ -22,7 +22,7 @@ export const deleteElementAction: EventActionCallable<DeleteElementActionArgsTyp
     const { element } = args;
     const parent = await getElementParentById(state, element.id);
     const newParent = removeElementFromParent(parent, element.id);
-    
+
     return {
         state: {
             ...state,

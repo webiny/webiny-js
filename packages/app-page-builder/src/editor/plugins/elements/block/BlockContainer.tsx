@@ -42,7 +42,7 @@ const BlockContainer: React.FunctionComponent<BlockContainerPropsType> = ({
     const element = useRecoilValue(elementByIdSelector(elementId));
     const highlightedElement = useRecoilValue(highlightElementAtom);
     const { id, path, type, elements } = element;
-    
+
     const containerStyle = elementStyle;
     // Use per-device style
     const width = elementStyle[`--${kebabCase(displayMode)}-width`];

@@ -78,7 +78,9 @@ export const saveRevisionAction: EventActionCallable<SaveRevisionActionArgsType>
 
     debouncedSave = lodashDebounce(() => {
         (async () => {
-            meta.eventActionHandler.trigger(new ToggleSaveRevisionStateActionEvent({ saving: true }));
+            meta.eventActionHandler.trigger(
+                new ToggleSaveRevisionStateActionEvent({ saving: true })
+            );
 
             await meta.client.mutate({
                 mutation: updatePage,
@@ -88,7 +90,9 @@ export const saveRevisionAction: EventActionCallable<SaveRevisionActionArgsType>
                 }
             });
 
-            meta.eventActionHandler.trigger(new ToggleSaveRevisionStateActionEvent({ saving: false }));
+            meta.eventActionHandler.trigger(
+                new ToggleSaveRevisionStateActionEvent({ saving: false })
+            );
             triggerOnFinish(args);
         })();
     }, 2000);

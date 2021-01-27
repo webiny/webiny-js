@@ -11,10 +11,7 @@ const getElementActions = plugin => {
         return [];
     }
 
-    const pluginSettings = [
-        ...userElementSettingsPlugins(plugin.elementType),
-        ...plugin.settings
-    ];
+    const pluginSettings = [...userElementSettingsPlugins(plugin.elementType), ...plugin.settings];
 
     const actions = pluginSettings.map(pl => {
         if (typeof pl === "string") {

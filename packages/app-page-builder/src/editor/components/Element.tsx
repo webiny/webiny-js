@@ -106,7 +106,6 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
     const renderedPlugin = tryRenderingPlugin(() =>
         plugin.render({
             element,
-            isHighlighted,
             isActive
         })
     );

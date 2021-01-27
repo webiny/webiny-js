@@ -1,6 +1,6 @@
 // @ts-nocheck
-import {EventActionHandlerConfig, EventActionHandlerMeta} from "@webiny/app-page-builder/types";
-import {PbState} from "@webiny/app-page-builder/editor/recoil/modules/types";
+import { EventActionHandlerConfig, EventActionHandlerMeta } from "@webiny/app-page-builder/types";
+import { PbState } from "@webiny/app-page-builder/editor/recoil/modules/types";
 
 /**
  * Usages

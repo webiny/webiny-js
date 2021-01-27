@@ -5,7 +5,12 @@ import { css } from "emotion";
 import kebabCase from "lodash/kebabCase";
 import { plugins } from "@webiny/plugins";
 import { Elevation } from "@webiny/ui/Elevation";
-import { PbEditorContentPlugin, PbPageLayout, PbPageLayoutPlugin, PbEditorElement } from "../../../types";
+import {
+    PbEditorContentPlugin,
+    PbPageLayout,
+    PbPageLayoutPlugin,
+    PbEditorElement
+} from "../../../types";
 import {
     isPluginActiveSelector,
     layoutSelector,

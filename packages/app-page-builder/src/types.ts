@@ -45,22 +45,22 @@ export type PbElementDataSettingsBorderType = {
     width?:
         | number
         | {
-        all?: number;
-        top?: number;
-        right?: number;
-        bottom?: number;
-        left?: number;
-    };
+              all?: number;
+              top?: number;
+              right?: number;
+              bottom?: number;
+              left?: number;
+          };
     style?: "none" | "solid" | "dashed" | "dotted";
     radius?:
         | number
         | {
-        all?: number;
-        topLeft?: number;
-        topRight?: number;
-        bottomLeft?: number;
-        bottomRight?: number;
-    };
+              all?: number;
+              topLeft?: number;
+              topRight?: number;
+              bottomLeft?: number;
+              bottomRight?: number;
+          };
     borders?: {
         top?: boolean;
         right?: boolean;
@@ -350,12 +350,7 @@ export type PbEditorPageElementPlugin = Plugin & {
         parent?: PbEditorElement
     ) => Omit<PbEditorElement, "id">;
     // A function to render an element in the editor.
-    render: (params: {
-        theme?: PbTheme;
-        element: PbEditorElement;
-        isHighlighted: boolean;
-        isActive: boolean;
-    }) => ReactNode;
+    render: (params: { theme?: PbTheme; element: PbEditorElement; isActive: boolean }) => ReactNode;
     // A function to check if an element can be deleted.
     canDelete?: (params: { element: PbEditorElement }) => boolean;
     // Executed when another element is dropped on the drop zones of current element.
@@ -617,7 +612,7 @@ export interface EventActionHandlerUnregister {
 
 export interface EventActionHandlerMeta {
     client: any;
-    eventActionHandler: EventActionHandler
+    eventActionHandler: EventActionHandler;
 }
 
 export interface EventActionHandlerConfig {

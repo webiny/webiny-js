@@ -49,16 +49,12 @@ const addIcon = css({
 
 type CellPropsType = {
     elementId: string;
-    isHighlighted: boolean;
     isActive: boolean;
 };
-const CellContainer: React.FunctionComponent<CellPropsType> = ({
-    elementId,
-    isHighlighted,
-    isActive
-}) => {
+const CellContainer: React.FunctionComponent<CellPropsType> = ({ elementId, isActive }) => {
     const handler = useEventActionHandler();
     const element = useRecoilValue(elementByIdSelector(elementId));
+    const { isHighlighted } = element;
     // TODO remove when state is fully switched to use content instead of flat elements
     if (!element) {
         return null;
