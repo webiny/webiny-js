@@ -1,10 +1,9 @@
-import { connectedAtom } from "@webiny/app-page-builder/editor/recoil/modules/connected";
-import { PbShallowElement } from "@webiny/app-page-builder/types";
+import { PbElement } from "@webiny/app-page-builder/types";
+import { atomFamily } from "recoil";
 
-export type ElementsAtomType = {
-    [id: string]: PbShallowElement;
-};
-export const elementsAtom = connectedAtom<ElementsAtomType>({
+export type ElementsAtomType = PbElement;
+
+export const elementsAtom = atomFamily<ElementsAtomType, string>({
     key: "elementsAtom",
-    default: {}
+    default: () => null
 });

@@ -1,5 +1,5 @@
-import React from "react";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import React, { useCallback } from "react";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { Transition } from "react-transition-group";
 import { plugins } from "@webiny/plugins";
 import { renderPlugins } from "@webiny/app/plugins";
@@ -43,14 +43,14 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
     isHighlighted,
     isActive
 }) => {
-    const element = (useRecoilValue(elementByIdSelector(elementId)) as unknown) as PbElement;
+    const element = useRecoilValue(elementByIdSelector(elementId));
     const setUiAtomValue = useSetRecoilState(uiAtom);
     const setHighlightElementAtomValue = useSetRecoilState(highlightElementAtom);
     const setActiveElementAtomValue = useSetRecoilState(activeElementAtom);
 
     const plugin = getElementPlugin(element);
 
-    const beginDrag = React.useCallback(() => {
+    const beginDrag = useCallback(() => {
         const data = { id: element.id, type: element.type, path: element.path };
         setTimeout(() => {
             setUiAtomValue(enableDraggingMutation);
@@ -58,18 +58,18 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
         return { ...data, target: plugin.target };
     }, [elementId]);
 
-    const endDrag = React.useCallback(() => {
+    const endDrag = useCallback(() => {
         setUiAtomValue(disableDraggingMutation);
     }, [elementId]);
 
-    const onClick = React.useCallback((): void => {
+    const onClick = useCallback((): void => {
         if (!element || element.type === "document" || isActive) {
             return;
         }
         setActiveElementAtomValue(elementId);
     }, [elementId, isActive]);
 
-    const onMouseOver = React.useCallback(
+    const onMouseOver = useCallback(
         (ev): void => {
             if (!element || element.type === "document") {
                 return;
@@ -82,7 +82,7 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
         },
         [elementId]
     );
-    const onMouseOut = React.useCallback(() => {
+    const onMouseOut = useCallback(() => {
         if (!element || element.type === "document") {
             return;
         }
@@ -95,9 +95,7 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
                 <div className="background" onClick={onClick} />
                 <div className={"element-holder"} onClick={onClick}>
                     {renderPlugins("pb-editor-page-element-action", { element, plugin })}
-                    <span>
-                        {plugin.elementType}
-                    </span>
+                    <span>{plugin.elementType}</span>
                 </div>
             </div>
         );

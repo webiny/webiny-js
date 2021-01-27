@@ -2,7 +2,7 @@ import React from "react";
 import { useRecoilValue } from "recoil";
 import kebabCase from "lodash/kebabCase";
 import styled from "@emotion/styled";
-import { PbElement, PbShallowElement } from "../../../../types";
+import { PbElement } from "../../../../types";
 import { elementWithChildrenByIdSelector, uiAtom } from "../../../recoil/modules";
 import ElementAnimation from "../../../../render/components/ElementAnimation";
 import { ElementRoot } from "../../../../render/components/ElementRoot";
@@ -17,7 +17,7 @@ const GridContainerStyle = styled("div")({
 });
 
 type GridContainerPropsType = {
-    element: PbShallowElement | PbElement;
+    element: PbElement;
 };
 const GridContainer: React.FunctionComponent<GridContainerPropsType> = ({ element: { id } }) => {
     const element = useRecoilValue(elementWithChildrenByIdSelector(id));

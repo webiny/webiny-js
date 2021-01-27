@@ -1,15 +1,13 @@
 import React from "react";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
-import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
-import { cloneElementHelper } from "@webiny/app-page-builder/editor/helpers";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
 import {
     activeElementAtom,
-    elementWithChildrenByIdSelector,
-    elementParentWithChildrenByIdSelector
+    elementByIdSelector
 } from "@webiny/app-page-builder/editor/recoil/modules";
 import { plugins } from "@webiny/plugins";
-import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
+import { PbEditorPageElementPlugin, PbElement } from "@webiny/app-page-builder/types";
 import { useRecoilValue } from "recoil";
+import { CloneElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions/cloneElement";
 
 type CloneActionPropsType = {
     children: React.ReactElement;
@@ -17,28 +15,15 @@ type CloneActionPropsType = {
 const CloneAction: React.FunctionComponent<CloneActionPropsType> = ({ children }) => {
     const eventActionHandler = useEventActionHandler();
     const activeElementId = useRecoilValue(activeElementAtom);
-    const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
-    const parent = useRecoilValue(elementParentWithChildrenByIdSelector(element?.id));
+    const element: PbElement = useRecoilValue(elementByIdSelector(activeElementId));
 
-    if (!element || !parent) {
+    if (!element) {
         return null;
     }
     const onClick = () => {
-        const position = parent.elements.findIndex(el => el.id === element.id) + 1;
-
         eventActionHandler.trigger(
-            new UpdateElementActionEvent({
-                element: {
-                    ...parent,
-                    elements: [
-                        ...parent.elements.slice(0, position),
-                        cloneElementHelper(element),
-                        ...(position < parent.elements.length
-                            ? parent.elements.slice(position)
-                            : [])
-                    ]
-                },
-                history: true
+            new CloneElementActionEvent({
+                element
             })
         );
     };

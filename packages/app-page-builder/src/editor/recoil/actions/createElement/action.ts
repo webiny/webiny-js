@@ -1,6 +1,6 @@
 import { CreateElementEventActionArgsType } from "./types";
-import { EventActionCallableType } from "@webiny/app-page-builder/editor/recoil/eventActions";
+import { EventActionCallable } from "@webiny/app-page-builder/types";
 
-export const createElementAction: EventActionCallableType<CreateElementEventActionArgsType> = () => {
+export const createElementAction: EventActionCallable<CreateElementEventActionArgsType> = () => {
     return {};
 };

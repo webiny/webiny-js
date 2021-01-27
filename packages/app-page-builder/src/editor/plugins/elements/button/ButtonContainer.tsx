@@ -5,14 +5,9 @@ import kebabCase from "lodash/kebabCase";
 import merge from "lodash/merge";
 import set from "lodash/set";
 import { PbElement } from "../../../../types";
-import { useEventActionHandler } from "../../../provider";
+import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
 import { UpdateElementActionEvent } from "../../../recoil/actions";
-import {
-    elementByIdSelector,
-    textEditorIsActiveMutation,
-    textEditorIsNotActiveMutation,
-    uiAtom
-} from "../../../recoil/modules";
+import { elementByIdSelector, uiAtom } from "../../../recoil/modules";
 import SimpleEditableText from "./SimpleEditableText";
 import { css } from "emotion";
 
@@ -40,7 +35,6 @@ const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = ({
 }) => {
     const eventActionHandler = useEventActionHandler();
     const [uiAtomValue, setUiAtomValue] = useRecoilState(uiAtom);
-    const { textEditorActive } = uiAtomValue;
     const element = useRecoilValue(elementByIdSelector(elementId));
     const { type = "default", icon = {}, buttonText } = element.data || {};
     const defaultValue = typeof buttonText === "string" ? buttonText : "Click me";
@@ -54,15 +48,10 @@ const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = ({
         (received: string) => {
             value.current = received;
         },
-        [element.id, textEditorActive]
+        [element.id]
     );
 
-    const onFocus = useCallback(() => {
-        setUiAtomValue(textEditorIsActiveMutation);
-    }, [elementId]);
-
     const onBlur = useCallback(() => {
-        setUiAtomValue(textEditorIsNotActiveMutation);
         if (value.current === defaultValue) {
             return;
         }
@@ -76,8 +65,7 @@ const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = ({
         eventActionHandler.trigger(
             new UpdateElementActionEvent({
                 element: newElement,
-                history: true,
-                merge: true
+                history: true
             })
         );
     }, [elementId]);
@@ -106,7 +94,6 @@ const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = ({
                     })}
                     value={value.current}
                     onChange={onChange}
-                    onFocus={onFocus}
                     onBlur={onBlur}
                 />
             </a>

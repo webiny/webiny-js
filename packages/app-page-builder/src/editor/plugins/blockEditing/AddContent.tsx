@@ -4,7 +4,7 @@ import { keyframes } from "emotion";
 import styled from "@emotion/styled";
 import { Elevation } from "@webiny/ui/Elevation";
 import { ButtonFloating } from "@webiny/ui/Button";
-import { useEventActionHandler } from "../../provider";
+import { useEventActionHandler } from "../../hooks/useEventActionHandler";
 import { ReactComponent as AddIcon } from "../../assets/icons/add.svg";
 import { TogglePluginActionEvent } from "../../recoil/actions";
 import { uiAtom } from "../../recoil/modules";

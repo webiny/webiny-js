@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { cloneDeep } from "lodash";
 import { merge } from "dot-prop-immutable";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
 import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { plugins } from "@webiny/plugins";
 import { renderPlugins } from "@webiny/app/plugins";
@@ -71,4 +71,4 @@ const AdvancedSettings: React.FunctionComponent<AdvancedSettingsPropsType> = ({ 
 
 const AdvancedSettingsMemoized = React.memo(AdvancedSettings);
 
-export default withActiveElement({ shallow: true })(AdvancedSettingsMemoized);
+export default withActiveElement()(AdvancedSettingsMemoized);

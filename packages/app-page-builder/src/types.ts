@@ -1,10 +1,6 @@
 import React, { ComponentType, ReactElement, ReactNode } from "react";
-import { DragObjectWithTypeWithTargetType } from "@webiny/app-page-builder/editor/components/Droppable";
-import {
-    EventActionHandler,
-    EventActionHandlerActionCallableResponseType,
-    EventActionHandlerMetaType
-} from "@webiny/app-page-builder/editor/recoil/eventActions";
+import { DragObjectWithTypeWithTarget } from "@webiny/app-page-builder/editor/components/Droppable";
+import { BaseEventAction, EventAction } from "@webiny/app-page-builder/editor/recoil/eventActions";
 import { PluginsAtomType } from "@webiny/app-page-builder/editor/recoil/modules";
 import { PbState } from "@webiny/app-page-builder/editor/recoil/modules/types";
 import { Plugin } from "@webiny/app/types";
@@ -161,17 +157,13 @@ export type PbElementDataType = {
 };
 type PbBaseElement = {
     id: string;
-    path: string;
     type: string;
     data: PbElementDataType;
+    parent?: string;
     [key: string]: any;
 };
 export type PbElement = PbBaseElement & {
-    elements: PbElement[];
-};
-
-export type PbShallowElement = PbBaseElement & {
-    elements: string[];
+    elements: (string | PbElement)[];
 };
 
 export type PbTheme = {
@@ -202,11 +194,6 @@ export type PbPageLayoutPlugin = Plugin & {
 
 export type PbDefaultPagePlugin = Plugin & {
     type: "pb-default-page";
-    component: React.ComponentType<any>;
-};
-
-export type PbPageLayoutComponentPlugin = Plugin & {
-    componentType: string;
     component: React.ComponentType<any>;
 };
 
@@ -352,7 +339,7 @@ export type PbEditorPageElementPlugin = Plugin & {
     // Array of element settings plugin names.
     settings?: Array<string | Array<string | any>>;
     // A function to create an element data structure.
-    create: (options: { [key: string]: any }, parent?: PbElement) => Omit<PbElement, "id" | "path">;
+    create: (options: { [key: string]: any }, parent?: PbElement) => Omit<PbElement, "id">;
     // A function to render an element in the editor.
     render: (params: {
         theme?: PbTheme;
@@ -364,12 +351,12 @@ export type PbEditorPageElementPlugin = Plugin & {
     canDelete?: (params: { element: PbElement }) => boolean;
     // Executed when another element is dropped on the drop zones of current element.
     onReceived?: (params: {
-        state?: PbState;
-        meta: EventActionHandlerMetaType;
-        source: PbElement | DragObjectWithTypeWithTargetType;
+        state?: EventActionHandlerCallableState;
+        meta: EventActionHandlerMeta;
+        source: PbElement | DragObjectWithTypeWithTarget;
         target: PbElement;
         position: number | null;
-    }) => EventActionHandlerActionCallableResponseType;
+    }) => EventActionHandlerActionCallableResponse;
     // Executed when an immediate child element is deleted
     onChildDeleted?: (params: { element: PbElement; child: PbElement }) => PbElement | undefined;
     // Executed after element was created
@@ -592,3 +579,53 @@ export type PbRenderResponsiveModePlugin = Plugin & {
         minWidth: number;
     };
 };
+
+// ============== EVENT ACTION HANDLER ================= //
+export interface EventActionHandlerCallableState extends PbState {
+    getElementById(id: string): Promise<PbElement>;
+    getElementTree(element?: PbElement): Promise<any>;
+}
+
+export interface EventActionHandler {
+    on(
+        target: EventActionHandlerTarget,
+        callable: EventActionCallable
+    ): EventActionHandlerUnregister;
+    trigger<T extends EventActionHandlerCallableArgs>(
+        ev: EventAction<T>
+    ): Promise<Partial<PbState>>;
+}
+
+export interface EventActionHandlerTarget {
+    new (...args: any[]): EventAction<any>;
+}
+export interface EventActionHandlerUnregister {
+    (): boolean;
+}
+
+export interface EventActionHandlerMeta {
+    client: any;
+}
+
+export interface EventActionHandlerConfig {
+    maxEventActionsNesting: number;
+}
+
+export interface EventActionHandlerActionCallableResponse {
+    state?: Partial<EventActionHandlerCallableState>;
+    actions?: BaseEventAction[];
+}
+
+export interface EventActionHandlerMutationActionCallable<T, A extends any = any> {
+    (state: T, args?: A): T;
+}
+
+export interface EventActionHandlerCallableArgs {
+    [key: string]: any;
+}
+
+export interface EventActionCallable<T extends EventActionHandlerCallableArgs = any> {
+    (state: EventActionHandlerCallableState, meta: EventActionHandlerMeta, args?: T):
+        | EventActionHandlerActionCallableResponse
+        | Promise<EventActionHandlerActionCallableResponse>;
+}

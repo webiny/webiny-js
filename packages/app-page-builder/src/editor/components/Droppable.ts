@@ -31,13 +31,12 @@ export type DroppableIsVisiblePropType = (params: {
     item: any;
     isDragging: boolean;
 }) => boolean;
-export type DragObjectWithTypeWithTargetType = DragObjectWithType & {
+export type DragObjectWithTypeWithTarget = DragObjectWithType & {
     id?: string;
-    path?: string;
     type: string;
     target: string[];
 };
-export type DroppableOnDropPropType = (item: DragObjectWithTypeWithTargetType) => void;
+export type DroppableOnDropPropType = (item: DragObjectWithTypeWithTarget) => void;
 export type DroppableProps = {
     type: string;
     children: DroppableChildrenFunction;

@@ -2,10 +2,9 @@ import React, { useEffect } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { plugins } from "@webiny/plugins";
 import domToImage from "./domToImage";
-import { PbElement } from "@webiny/app-page-builder/types";
 import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 
-const replaceContent = (element: PbElement, doc: Document): Document => {
+const replaceContent = (element: any, doc: Document): Document => {
     const pl = plugins
         .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
         .find(pl => pl.elementType === element.type);
@@ -52,10 +51,7 @@ const replaceContent = (element: PbElement, doc: Document): Document => {
     return doc;
 };
 
-const generateImage = async (
-    element: PbElement,
-    onChange: (value: string) => void
-): Promise<void> => {
+const generateImage = async (element: any, onChange: (value: string) => void): Promise<void> => {
     const node = document.getElementById(element.id);
     if (!node) {
         return;
@@ -76,7 +72,7 @@ const generateImage = async (
 };
 
 type ElementPreviewPropsType = {
-    element: PbElement;
+    element: any;
     onChange: (value: string) => void;
 };
 const ElementPreview: React.FunctionComponent<ElementPreviewPropsType> = ({

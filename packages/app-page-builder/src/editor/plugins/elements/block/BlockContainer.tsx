@@ -5,8 +5,8 @@ import kebabCase from "lodash/kebabCase";
 import { IconButton } from "@webiny/ui/Button";
 import DropZone from "../../../components/DropZone";
 import Element from "../../../components/Element";
-import { DragObjectWithTypeWithTargetType } from "../../../components/Droppable";
-import { useEventActionHandler } from "../../../provider";
+import { DragObjectWithTypeWithTarget } from "../../../components/Droppable";
+import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
 import { DropElementActionEvent, TogglePluginActionEvent } from "../../../recoil/actions";
 import { elementByIdSelector, uiAtom, highlightElementAtom } from "../../../recoil/modules";
 import { ReactComponent as AddCircleOutline } from "../../../assets/icons/baseline-add_circle-24px.svg";
@@ -42,7 +42,7 @@ const BlockContainer: React.FunctionComponent<BlockContainerPropsType> = ({
     const element = useRecoilValue(elementByIdSelector(elementId));
     const highlightedElement = useRecoilValue(highlightElementAtom);
     const { id, path, type, elements } = element;
-
+    
     const containerStyle = elementStyle;
     // Use per-device style
     const width = elementStyle[`--${kebabCase(displayMode)}-width`];
@@ -62,7 +62,7 @@ const BlockContainer: React.FunctionComponent<BlockContainerPropsType> = ({
         );
     };
 
-    const dropElementAction = (source: DragObjectWithTypeWithTargetType, position: number) => {
+    const dropElementAction = (source: DragObjectWithTypeWithTarget, position: number) => {
         handler.trigger(
             new DropElementActionEvent({
                 source,

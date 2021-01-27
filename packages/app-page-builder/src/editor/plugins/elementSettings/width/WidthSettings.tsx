@@ -12,7 +12,7 @@ import {
     PbEditorResponsiveModePlugin,
     PbElement
 } from "../../../../types";
-import { useEventActionHandler } from "../../../../editor";
+import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
 import { UpdateElementActionEvent } from "../../../../editor/recoil/actions";
 import {
     activeElementAtom,

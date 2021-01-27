@@ -1,8 +1,8 @@
-import { CreateElementEventActionCallableType } from "@webiny/app-page-builder/editor/recoil/actions/createElement/types";
+import { CreateElementEventActionCallable } from "@webiny/app-page-builder/editor/recoil/actions/createElement/types";
 import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 import { plugins } from "@webiny/plugins";
 
-export const advancedSettingsEditorAction: CreateElementEventActionCallableType = (
+export const advancedSettingsEditorAction: CreateElementEventActionCallable = (
     state,
     meta,
     { element, source }

@@ -1,10 +1,10 @@
-import { connectedAtom } from "../connected";
+import { atom } from "recoil";
 
 export type SidebarAtomType = {
     activeTabIndex: number;
     highlightTab: boolean;
 };
-export const sidebarAtom = connectedAtom<SidebarAtomType>({
+export const sidebarAtom = atom<SidebarAtomType>({
     key: "sidebarAtom",
     default: {
         activeTabIndex: 0,

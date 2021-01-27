@@ -10,7 +10,7 @@ import {
 } from "@webiny/app-page-builder/types";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { IconButton } from "@webiny/ui/Button";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
 import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import {
     activeElementAtom,

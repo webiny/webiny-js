@@ -1,11 +1,13 @@
-import { DragObjectWithTypeWithTargetType } from "@webiny/app-page-builder/editor/components/Droppable";
-import { PbState } from "@webiny/app-page-builder/editor/recoil/modules/types";
-import { DropElementActionArgsType } from "./types";
-import { EventActionCallableType } from "@webiny/app-page-builder/editor/recoil/eventActions";
 import invariant from "invariant";
-import { getElementWithChildrenById } from "@webiny/app-page-builder/editor/recoil/modules";
-import { PbEditorPageElementPlugin, PbElement } from "@webiny/app-page-builder/types";
+import { DragObjectWithTypeWithTarget } from "@webiny/app-page-builder/editor/components/Droppable";
+import {
+    PbEditorPageElementPlugin,
+    EventActionCallable,
+    EventActionHandlerCallableState,
+    PbElement
+} from "@webiny/app-page-builder/types";
 import { plugins } from "@webiny/plugins";
+import { DropElementActionArgsType } from "./types";
 
 const elementPluginType = "pb-editor-page-element";
 
@@ -18,30 +20,26 @@ const getElementTypePlugin = (type: string): PbEditorPageElementPlugin => {
     return plugin;
 };
 
-const getSourceElement = (
-    state: PbState,
-    source: DragObjectWithTypeWithTargetType
-): PbElement | DragObjectWithTypeWithTargetType => {
-    if (!source.path) {
-        return (source as unknown) as PbElement;
-    } else if (!source.id) {
-        throw new Error(`There is no "id" property on source object.`);
+const getSourceElement = async (
+    state: EventActionHandlerCallableState,
+    source: DragObjectWithTypeWithTarget
+): Promise<PbElement | DragObjectWithTypeWithTarget> => {
+    if (source.id) {
+        return await state.getElementById(source.id);
     }
-    const element = getElementWithChildrenById(state, source.id);
-    if (!element) {
-        throw new Error(`There is no element with id "${source.id}"`);
-    }
-    return element;
+
+    return source;
 };
 
-export const dropElementAction: EventActionCallableType<DropElementActionArgsType> = (
+export const dropElementAction: EventActionCallable<DropElementActionArgsType> = async (
     state,
     meta,
     args
 ) => {
+    console.log("dropElement", args);
     const { source, target } = args;
     const { id, type, position } = target;
-    const targetElement = getElementWithChildrenById(state, id);
+    const targetElement = await state.getElementById(id);
     if (!targetElement) {
         throw new Error(`There is no element with id "${id}"`);
     }
@@ -51,7 +49,7 @@ export const dropElementAction: EventActionCallableType<DropElementActionArgsTyp
         "To accept drops, element plugin must implement `onReceived` function"
     );
 
-    const sourceElement = getSourceElement(state, source);
+    const sourceElement = await getSourceElement(state, source);
 
     return plugin.onReceived({
         state,

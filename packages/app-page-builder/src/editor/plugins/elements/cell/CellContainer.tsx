@@ -3,9 +3,9 @@ import Cell from "./Cell";
 import DropZone from "@webiny/app-page-builder/editor/components/DropZone";
 import styled from "@emotion/styled";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
 import { ReactComponent as AddCircleOutline } from "@webiny/app-page-builder/editor/assets/icons/baseline-add_circle-24px.svg";
-import { DragObjectWithTypeWithTargetType } from "@webiny/app-page-builder/editor/components/Droppable";
+import { DragObjectWithTypeWithTarget } from "@webiny/app-page-builder/editor/components/Droppable";
 import {
     DropElementActionEvent,
     TogglePluginActionEvent
@@ -75,7 +75,7 @@ const CellContainer: React.FunctionComponent<CellPropsType> = ({
         );
     };
 
-    const dropElementAction = (source: DragObjectWithTypeWithTargetType, position: number) => {
+    const dropElementAction = (source: DragObjectWithTypeWithTarget, position: number) => {
         handler.trigger(
             new DropElementActionEvent({
                 source,
@@ -113,12 +113,12 @@ const CellContainer: React.FunctionComponent<CellPropsType> = ({
                     {elements.map((childId, index) => {
                         return (
                             <Cell
-                                key={childId}
+                                key={childId as string}
                                 dropElement={dropElementAction}
                                 index={index}
                                 type={type}
                                 isLast={index === totalElements - 1}
-                                id={childId}
+                                id={childId as string}
                             />
                         );
                     })}

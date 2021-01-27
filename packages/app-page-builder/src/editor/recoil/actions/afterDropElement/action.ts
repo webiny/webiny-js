@@ -1,6 +1,5 @@
 import { plugins } from "@webiny/plugins";
-import { PbEditorPageElementPlugin } from "../../../../types";
-import { EventActionCallableType } from "../../eventActions";
+import { EventActionCallable, PbEditorPageElementPlugin } from "../../../../types";
 import { AfterDropElementActionArgsType } from "./types";
 
 const elementPluginType = "pb-editor-page-element";
@@ -14,12 +13,14 @@ const getElementTypePlugin = (type: string): PbEditorPageElementPlugin => {
     return plugin;
 };
 
-export const afterDropElementAction: EventActionCallableType<AfterDropElementActionArgsType> = (
+export const afterDropElementAction: EventActionCallable<AfterDropElementActionArgsType> = (
     state,
     meta,
     args
 ) => {
     const { element } = args;
+    
+    console.log("args", args);
 
     const plugin = getElementTypePlugin(element.type);
     if (plugin.onCreate && plugin.onCreate === "open-settings") {

@@ -3,7 +3,7 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import { plugins } from "@webiny/plugins";
 import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
-import { userElementStyleSettingsPluginsHelper } from "@webiny/app-page-builder/editor/helpers";
+import { userElementStyleSettingsPlugins } from "@webiny/app-page-builder/editor/helpers";
 import { activeElementAtom, elementByIdSelector } from "../../../recoil/modules";
 
 const getElementActions = plugin => {
@@ -12,7 +12,7 @@ const getElementActions = plugin => {
     }
 
     const pluginSettings = [
-        ...userElementStyleSettingsPluginsHelper(plugin.elementType),
+        ...userElementStyleSettingsPlugins(plugin.elementType),
         ...plugin.settings
     ];
 

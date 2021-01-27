@@ -1,7 +1,7 @@
-import { MutationActionCallable } from "@webiny/app-page-builder/editor/recoil/eventActions";
+import { EventActionHandlerMutationActionCallable } from "@webiny/app-page-builder/types";
 import { SidebarAtomType } from "../sidebarAtom";
 
-export const updateSidebarActiveTabIndexMutation: MutationActionCallable<
+export const updateSidebarActiveTabIndexMutation: EventActionHandlerMutationActionCallable<
     SidebarAtomType,
     number
 > = (state, index) => {

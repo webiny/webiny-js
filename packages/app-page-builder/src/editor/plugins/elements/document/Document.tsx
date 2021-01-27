@@ -1,8 +1,8 @@
 import React from "react";
 import Element from "@webiny/app-page-builder/editor/components/Element";
-import { PbShallowElement } from "@webiny/app-page-builder/types";
+import { PbElement } from "@webiny/app-page-builder/types";
 
-type DocumentProps = { element: PbShallowElement };
+type DocumentProps = { element: PbElement };
 
 const Document = ({ element }: DocumentProps) => {
     return (

@@ -1,7 +1,6 @@
 import { SaveRevisionActionArgsType } from "@webiny/app-page-builder/editor/recoil/actions/saveRevision/types";
-import { EventActionCallableType } from "@webiny/app-page-builder/editor/recoil/eventActions";
-import { PageAtomType, uiAtom } from "@webiny/app-page-builder/editor/recoil/modules";
-import { updateConnectedValue } from "@webiny/app-page-builder/editor/recoil/modules/connected";
+import { EventActionCallable } from "@webiny/app-page-builder/types";
+import { PageAtomType } from "@webiny/app-page-builder/editor/recoil/modules";
 import { setIsNotSavingMutation } from "@webiny/app-page-builder/editor/recoil/modules/ui/mutations/setIsNotSavingMutation";
 import { setIsSavingMutation } from "@webiny/app-page-builder/editor/recoil/modules/ui/mutations/setIsSavingMutation";
 import { PbElement } from "@webiny/app-page-builder/types";
@@ -11,7 +10,7 @@ import lodashDebounce from "lodash/debounce";
 
 type PageRevisionType = Pick<PageAtomType, "title" | "snippet" | "path" | "settings"> & {
     category: string;
-    content: PbElement;
+    content: any;
 };
 
 let lastSavedRevisionData: any = {};
@@ -29,7 +28,7 @@ const triggerOnFinish = (args?: SaveRevisionActionArgsType): void => {
 
 let debouncedSave = null;
 
-export const saveRevisionAction: EventActionCallableType<SaveRevisionActionArgsType> = async (
+export const saveRevisionAction: EventActionCallable<SaveRevisionActionArgsType> = async (
     state,
     meta,
     args
@@ -43,9 +42,10 @@ export const saveRevisionAction: EventActionCallableType<SaveRevisionActionArgsT
         snippet: state.page.snippet,
         path: state.page.path,
         settings: state.page.settings,
-        content: state.content,
+        content: await state.getElementTree(),
         category: state.page.category.slug
     };
+
     if (isDataEqualToLastSavedData(data)) {
         triggerOnFinish(args);
         return {};
@@ -80,9 +80,11 @@ export const saveRevisionAction: EventActionCallableType<SaveRevisionActionArgsT
 
     debouncedSave = lodashDebounce(() => {
         (async () => {
+            /* TODO: @bruno
             updateConnectedValue(uiAtom, prev => {
                 return setIsSavingMutation(prev);
             });
+            */
             await meta.client.mutate({
                 mutation: updatePage,
                 variables: {
@@ -90,9 +92,12 @@ export const saveRevisionAction: EventActionCallableType<SaveRevisionActionArgsT
                     data
                 }
             });
-            updateConnectedValue(uiAtom, prev => {
-                return setIsNotSavingMutation(prev);
-            });
+
+            /* TODO: @bruno
+             updateConnectedValue(uiAtom, prev => {
+                 return setIsNotSavingMutation(prev);
+             });
+             */
             triggerOnFinish(args);
         })();
     }, 2000);

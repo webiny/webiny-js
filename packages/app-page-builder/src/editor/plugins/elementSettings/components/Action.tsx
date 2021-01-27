@@ -1,4 +1,4 @@
-import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
 import { TogglePluginActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import React, { useEffect, useCallback, ReactElement } from "react";
 import {
@@ -40,7 +40,6 @@ const Action: React.FunctionComponent<ActionProps> = ({
 }) => {
     const eventActionHandler = useEventActionHandler();
     const isPluginActive = useRecoilValue(isPluginActiveSelector(plugin));
-    const { textEditorActive } = useRecoilValue(uiAtom);
     const settingsActive =
         useRecoilValue(activePluginsByTypeTotalSelector(editorPageElementSettingsPluginType)) > 0;
 
@@ -61,7 +60,7 @@ const Action: React.FunctionComponent<ActionProps> = ({
     useEffect(() => {
         shortcut.map(short => {
             addKeyHandler(short, e => {
-                if (textEditorActive || settingsActive) {
+                if (settingsActive) {
                     return;
                 }
 

@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import SliderWithInput from "./SliderWithInput";
 import Footer from "./Footer";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
 import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import {
     activeElementAtom,
@@ -61,8 +61,7 @@ const PMSettings: React.FunctionComponent<PMSettingsPropsType> = ({ styleAttribu
         handler.trigger(
             new UpdateElementActionEvent({
                 element: newElement,
-                history,
-                merge: true
+                history
             })
         );
     };

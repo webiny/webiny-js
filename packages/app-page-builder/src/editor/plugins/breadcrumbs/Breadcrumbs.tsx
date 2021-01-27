@@ -1,15 +1,8 @@
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { css } from "emotion";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { PbShallowElement } from "../../../types";
-import { extrapolateContentElementHelper } from "../../helpers";
-import {
-    activeElementAtom,
-    contentAtom,
-    ContentAtomType,
-    elementByIdSelector,
-    highlightElementAtom
-} from "../../recoil/modules";
+import { useRecoilSnapshot, useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { PbElement } from "../../../types";
+import { activeElementAtom, elementByIdSelector, highlightElementAtom } from "../../recoil/modules";
 import { COLORS } from "../elementSettings/components/StyledComponents";
 
 const breadcrumbs = css({
@@ -80,51 +73,53 @@ const breadcrumbs = css({
     }
 });
 
-const createBreadcrumbs = (content: ContentAtomType, element: PbShallowElement) => {
-    const path = element.path;
-    const list = [
-        {
-            id: element.id,
-            type: element.type
-        }
-    ];
-    const paths = path.split(".");
-    paths.pop();
-    while (paths.length > 0) {
-        const el = extrapolateContentElementHelper(content, paths.join("."));
-        if (!el) {
-            return list.reverse();
-        }
-        list.push({
-            id: el.id,
-            type: el.type
-        });
-        paths.pop();
-    }
-    return list.reverse();
-};
-
 const Breadcrumbs: React.FunctionComponent = () => {
+    const [items, setItems] = useState([]);
     const [activeElement, setActiveElementAtomValue] = useRecoilState(activeElementAtom);
     const setHighlightElementValue = useSetRecoilState(highlightElementAtom);
     const element = useRecoilValue(elementByIdSelector(activeElement));
-    const contentAtomValue = useRecoilValue(contentAtom);
+
+    const highlightElement = useCallback((id: string) => {
+        setHighlightElementValue(id);
+    }, []);
+
+    const activateElement = useCallback((id: string) => {
+        setActiveElementAtomValue(id);
+    }, []);
+
+    const snapshot = useRecoilSnapshot();
+
+    const createBreadCrumbs = async (activeElement: PbElement) => {
+        const list = [];
+        let element = activeElement;
+        while (element.parent) {
+            list.push({
+                id: element.id,
+                type: element.type
+            });
+
+            if (!element.parent) {
+                break;
+            }
+
+            element = await snapshot.getPromise(elementByIdSelector(element.parent));
+        }
+        setItems(list.reverse());
+    };
+
+    useEffect(() => {
+        if (element) {
+            createBreadCrumbs(element);
+        }
+    }, [element]);
+
     if (!element) {
         return null;
     }
-    const highlightElement = (id: string) => {
-        setHighlightElementValue(id);
-    };
-    const activateElement = (id: string) => {
-        setActiveElementAtomValue(id);
-    };
-
-    const breadcrumbsList = createBreadcrumbs(contentAtomValue, element);
-    breadcrumbsList.shift();
 
     return (
         <ul className={breadcrumbs}>
-            {breadcrumbsList.map(({ id, type }, index) => (
+            {items.map(({ id, type }, index) => (
                 <li
                     key={id}
                     onMouseOver={() => highlightElement(id)}

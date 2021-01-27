@@ -2,7 +2,7 @@ import { selectorFamily } from "recoil";
 import { pluginsAtom } from "../pluginsAtom";
 
 export const activePluginsByTypeNamesSelector = selectorFamily<string[], string>({
-    key: `activePluginsByTypeNamesSelector`,
+    key: "activePluginsByTypeNamesSelector",
     get: type => {
         return ({ get }) => {
             const activePlugins = get(pluginsAtom);

@@ -1,6 +1,6 @@
 import React from "react";
 import preview from "./preview.png";
-import { createElementHelper } from "@webiny/app-page-builder/editor/helpers";
+import { createElement } from "@webiny/app-page-builder/editor/helpers";
 import { PbEditorBlockPlugin } from "@webiny/app-page-builder/types";
 
 const width = 500;
@@ -13,8 +13,8 @@ export default {
     category: "general",
     title: "Grid block",
     create() {
-        return createElementHelper("block", {
-            elements: [createElementHelper("grid")]
+        return createElement("block", {
+            elements: [createElement("grid")]
         });
     },
     image: {

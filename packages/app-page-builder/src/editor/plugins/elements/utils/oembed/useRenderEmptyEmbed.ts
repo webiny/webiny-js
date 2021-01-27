@@ -1,8 +1,8 @@
 import { useCallback } from "react";
 import { plugins } from "@webiny/plugins";
-import { PbElement, PbShallowElement } from "../../../../../types";
+import { PbElement } from "../../../../../types";
 
-export default (element: PbElement | PbShallowElement) => {
+export default (element: PbElement) => {
     return useCallback(() => {
         if (!element) {
             return () => null;

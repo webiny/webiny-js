@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from "react";
 import { css } from "emotion";
 import { isEqual } from "lodash";
 import { get } from "lodash";
-import { PbShallowElement } from "@webiny/app-page-builder/types";
+import { PbElement } from "@webiny/app-page-builder/types";
 import useRenderEmptyEmbed from "../../../elements/utils/oembed/useRenderEmptyEmbed";
 
 declare global {
@@ -51,7 +51,7 @@ const getHTML = data => {
 };
 
 export default React.memo(
-    (props: { element: PbShallowElement }) => {
+    (props: { element: PbElement }) => {
         const { element } = props;
 
         useEffect(() => {

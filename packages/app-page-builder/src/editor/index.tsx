@@ -1,25 +1,40 @@
 import React from "react";
-import { ConnectedStoreComponent } from "@webiny/app-page-builder/editor/recoil/modules/connected";
 import { Editor as EditorComponent } from "./components/Editor";
-import { EditorProvider } from "./provider";
+import { EditorProvider } from "./contexts/EditorProvider";
 import { RecoilRoot } from "recoil";
 import { RecoilUndoRoot } from "recoil-undo";
 import {
-    contentAtom,
-    PageAtomType,
-    RevisionsAtomType
+    rootElementAtom,
+    RevisionsAtomType,
+    pageAtom,
+    elementsAtom,
+    PageAtomType
 } from "@webiny/app-page-builder/editor/recoil/modules";
+import { flattenElements } from "@webiny/app-page-builder/editor/helpers";
+import { PbElement } from "@webiny/app-page-builder/types";
 
 type EditorPropsType = {
-    page: PageAtomType;
+    page: PageAtomType & PbElement;
     revisions: RevisionsAtomType;
 };
 
 export const Editor: React.FunctionComponent<EditorPropsType> = ({ page, revisions }) => {
     return (
-        <RecoilRoot>
-            <RecoilUndoRoot trackingByDefault={false} trackedAtoms={[contentAtom]}>
-                <ConnectedStoreComponent />
+        <RecoilRoot
+            initializeState={({ set }) => {
+                /* Here we initialize elementsAtom and rootElement if it exists */
+                set(rootElementAtom, page.content.id);
+
+                const elements = flattenElements(page.content);
+                Object.keys(elements).forEach(key => {
+                    set(elementsAtom(key), elements[key]);
+                });
+
+                const pageData = { ...page, content: undefined };
+                set(pageAtom, pageData);
+            }}
+        >
+            <RecoilUndoRoot trackingByDefault={false} trackedAtoms={[]}>
                 <EditorProvider>
                     <EditorComponent page={page} revisions={revisions} />
                 </EditorProvider>
@@ -27,4 +42,3 @@ export const Editor: React.FunctionComponent<EditorPropsType> = ({ page, revisio
         </RecoilRoot>
     );
 };
-export { useEventActionHandler } from "./provider";

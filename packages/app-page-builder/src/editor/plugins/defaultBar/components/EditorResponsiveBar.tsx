@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from "react";
-import { useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import { css } from "emotion";
 import classNames from "classnames";
 import { plugins } from "@webiny/plugins";
@@ -8,7 +8,6 @@ import { Tooltip } from "@webiny/ui/Tooltip";
 import { Typography } from "@webiny/ui/Typography";
 import { PbEditorResponsiveModePlugin } from "../../../../types";
 import { uiAtom, setDisplayModeMutation } from "../../../recoil/modules";
-import { updateConnectedValue } from "../../../recoil/modules/connected";
 
 const classes = {
     wrapper: css({
@@ -84,10 +83,10 @@ const classes = {
 };
 
 const EditorResponsiveBar = () => {
-    const { displayMode, pagePreviewDimension } = useRecoilValue(uiAtom);
+    const [{ displayMode, pagePreviewDimension }, setUiAtomValue] = useRecoilState(uiAtom);
     const setEditorMode = useCallback(
         displayMode => {
-            updateConnectedValue(uiAtom, prev => setDisplayModeMutation(prev, displayMode));
+            setUiAtomValue(prev => setDisplayModeMutation(prev, displayMode));
         },
         [uiAtom]
     );

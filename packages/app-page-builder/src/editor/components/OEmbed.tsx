@@ -3,7 +3,7 @@ import gql from "graphql-tag";
 import { css } from "emotion";
 import { useQuery } from "react-apollo";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
 import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { PbElement } from "@webiny/app-page-builder/types";
 import useRenderEmptyEmbed from "../plugins/elements/utils/oembed/useRenderEmptyEmbed";
@@ -87,7 +87,7 @@ const OEmbedComponent = (props: OEmbedProps) => {
             if (skip) {
                 return;
             }
-            const { data: oembed, error } = data?.pageBuilder?.oembedData || {};
+            const { data: oembed, error } = data.pageBuilder.oembedData || {};
             if (oembed) {
                 const newElement: PbElement = {
                     ...element,

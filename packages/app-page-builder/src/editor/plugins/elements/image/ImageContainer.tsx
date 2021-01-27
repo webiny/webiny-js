@@ -3,7 +3,7 @@ import { useRecoilValue } from "recoil";
 import styled from "@emotion/styled";
 import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
 import { PbElement } from "../../../../types";
-import { useEventActionHandler } from "../../../../editor";
+import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
 import { UpdateElementActionEvent } from "../../../recoil/actions";
 import { uiAtom } from "../../../recoil/modules";
 
@@ -51,7 +51,6 @@ const ImageContainer: React.FunctionComponent<ImageContainerType> = ({ element }
                             }
                         }
                     },
-                    merge: true,
                     history: true
                 })
             );

@@ -6,7 +6,7 @@ import { Form } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { withActiveElement } from "@webiny/app-page-builder/editor/components";
 import { DelayedOnChange } from "@webiny/app-page-builder/editor/components/DelayedOnChange";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
 import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import {
     PbEditorPageElementSettingsRenderComponentProps,

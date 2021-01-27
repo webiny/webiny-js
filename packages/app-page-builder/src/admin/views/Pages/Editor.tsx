@@ -1,9 +1,6 @@
 import React, { useCallback } from "react";
 import editorMock from "@webiny/app-page-builder/admin/assets/editor-mock.png";
-import {
-    createElementHelper,
-    updateChildPathsHelper
-} from "@webiny/app-page-builder/editor/helpers";
+import { createElement } from "@webiny/app-page-builder/editor/helpers";
 import { useRouter } from "@webiny/react-router";
 import { Query } from "react-apollo";
 import { Editor as PbEditor } from "@webiny/app-page-builder/editor";
@@ -135,7 +132,7 @@ const Editor: React.FunctionComponent = () => {
             const { revisions = [], content, ...restOfPageData } = pageData;
             const page = {
                 ...restOfPageData,
-                content: content || updateChildPathsHelper(createElementHelper("document"))
+                content: content || createElement("document")
             };
 
             return (

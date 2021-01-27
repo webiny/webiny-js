@@ -1,5 +1,5 @@
 import React from "react";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
 import { TogglePluginActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { IconButton } from "@webiny/ui/Button";
 import { ReactComponent as SettingsIcon } from "./icons/settings.svg";
