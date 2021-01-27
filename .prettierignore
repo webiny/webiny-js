@@ -4,3 +4,4 @@
 **/.out/
 **/.pulumi/
 packages/ui/src/RichTextEditor/editorjs/**
+packages/ui/rmwc/textfield/**
