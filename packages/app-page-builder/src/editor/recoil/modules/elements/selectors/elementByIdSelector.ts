@@ -8,5 +8,11 @@ export const elementByIdSelector = selectorFamily<PbEditorElement, string>({
         return ({ get }) => {
             return get(elementsAtom(id));
         };
+    },
+    set: id => ({ set }, newValue) => {
+        set(elementsAtom(id), prevState => ({
+            ...prevState,
+            ...newValue
+        }));
     }
 });

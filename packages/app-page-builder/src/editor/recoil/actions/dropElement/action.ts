@@ -36,7 +36,6 @@ export const dropElementAction: EventActionCallable<DropElementActionArgsType> =
     meta,
     args
 ) => {
-    console.log("dropElement", args);
     const { source, target } = args;
     const { id, type, position } = target;
     const targetElement = await state.getElementById(id);

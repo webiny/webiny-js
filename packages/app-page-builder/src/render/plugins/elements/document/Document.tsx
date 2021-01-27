@@ -7,8 +7,6 @@ const Document = ({ element }: { element: PbElement }) => {
         return null;
     }
     
-    console.log("Document", element);
-    
     return (
         <div className={"webiny-pb-page-document"}>
             {(element.elements as PbElement[]).map(element => (

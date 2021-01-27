@@ -70,9 +70,6 @@ const cellPlugin: PbEditorPageElementPlugin = {
         const element = createDroppedElement(source as any, target);
         const parent = addElementToParent(element, target, position);
 
-        console.log("new element", element.id);
-        console.log("updated parent", parent);
-
         const result = executeAction<UpdateElementActionArgsType>(
             state,
             meta,

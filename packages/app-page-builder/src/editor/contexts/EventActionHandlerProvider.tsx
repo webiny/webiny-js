@@ -281,7 +281,6 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
         }
 
         const name = ev.getName();
-        console.groupCollapsed(name);
         if (!has(name)) {
             throw new Error(`There is no event action that is registered with name "${name}".`);
         }
@@ -323,7 +322,6 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
                 ...(r.state || {})
             };
         }
-        console.groupEnd();
         return results;
     };
 

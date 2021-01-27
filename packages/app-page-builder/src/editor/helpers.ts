@@ -16,9 +16,6 @@ type FlattenElementsType = {
     [id: string]: PbEditorElement;
 };
 export const flattenElements = (el, parent = undefined): FlattenElementsType => {
-    if (!el.id) {
-        console.log("no id", el);
-    }
     const els = {};
     els[el.id] = set(
         el,

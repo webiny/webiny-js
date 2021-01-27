@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { Transition } from "react-transition-group";
 import { plugins } from "@webiny/plugins";
 import { renderPlugins } from "@webiny/app/plugins";
@@ -11,7 +11,6 @@ import {
     elementByIdSelector,
     enableDraggingMutation,
     uiAtom,
-    highlightElementAtom,
     activeElementAtom
 } from "../recoil/modules";
 import {
@@ -40,13 +39,12 @@ const getElementPlugin = (element: PbEditorElement): PbEditorPageElementPlugin =
 const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
     id: elementId,
     className = "",
-    isHighlighted,
     isActive
 }) => {
-    const element = useRecoilValue(elementByIdSelector(elementId));
+    const [element, setElementAtomValue] = useRecoilState(elementByIdSelector(elementId));
     const setUiAtomValue = useSetRecoilState(uiAtom);
-    const setHighlightElementAtomValue = useSetRecoilState(highlightElementAtom);
     const setActiveElementAtomValue = useSetRecoilState(activeElementAtom);
+    const { isHighlighted } = element;
 
     const plugin = getElementPlugin(element);
 
@@ -78,7 +76,7 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
             if (isHighlighted) {
                 return;
             }
-            setHighlightElementAtomValue(elementId);
+            setElementAtomValue({ ...element, isHighlighted: true });
         },
         [elementId]
     );
@@ -86,7 +84,7 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
         if (!element || element.type === "document") {
             return;
         }
-        setHighlightElementAtomValue(null);
+        setElementAtomValue({ ...element, isHighlighted: false });
     }, [elementId]);
 
     const renderDraggable = ({ drag }): JSX.Element => {
@@ -139,16 +137,9 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
 
 const withHighlightElement = (Component: React.FunctionComponent) => {
     return function withHighlightElementComponent(props) {
-        const highlightElementAtomValue = useRecoilValue(highlightElementAtom);
         const activeElementAtomValue = useRecoilValue(activeElementAtom);
 
-        return (
-            <Component
-                {...props}
-                isHighlighted={highlightElementAtomValue === props.id}
-                isActive={activeElementAtomValue === props.id}
-            />
-        );
+        return <Component {...props} isActive={activeElementAtomValue === props.id} />;
     };
 };
 
