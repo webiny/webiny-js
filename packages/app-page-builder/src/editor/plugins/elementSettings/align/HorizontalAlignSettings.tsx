@@ -5,7 +5,7 @@ import classNames from "classnames";
 import { plugins } from "@webiny/plugins";
 import {
     PbEditorPageElementPlugin,
-    PbElement,
+    PbEditorElement,
     PbEditorPageElementSettingsRenderComponentProps
 } from "@webiny/app-page-builder/types";
 import { Tooltip } from "@webiny/ui/Tooltip";
@@ -59,7 +59,7 @@ const iconDescriptions = {
 const defaultAlignValue = "left";
 const DEFAULT_ALIGNMENTS = Object.keys(icons);
 
-const getAlignValue = (element: PbElement, defaultAlign: string): string => {
+const getAlignValue = (element: PbEditorElement, defaultAlign: string): string => {
     return element.data.settings?.horizontalAlign || defaultAlign;
 };
 
@@ -80,7 +80,7 @@ const HorizontalAlignSettings: React.FunctionComponent<HorizontalAlignActionProp
     const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
     const align = getAlignValue(element, defaultAlignValue);
 
-    const updateElement = (element: PbElement) => {
+    const updateElement = (element: PbEditorElement) => {
         handler.trigger(
             new UpdateElementActionEvent({
                 element,

@@ -9,11 +9,11 @@ import {
     PbEditorPageElementPlugin,
     PbEditorPageElementSettingsPlugin,
     PbEditorPageElementStyleSettingsPlugin,
-    PbElement
+    PbEditorElement
 } from "@webiny/app-page-builder/types";
 
 type FlattenElementsType = {
-    [id: string]: PbElement;
+    [id: string]: PbEditorElement;
 };
 export const flattenElements = (el, parent = undefined): FlattenElementsType => {
     if (!el.id) {
@@ -41,7 +41,7 @@ export const flattenElements = (el, parent = undefined): FlattenElementsType => 
 };
 
 interface CreateElement {
-    (type: string, options?: { [key: string]: any }, parent?: PbElement): PbElement;
+    (type: string, options?: { [key: string]: any }, parent?: PbEditorElement): PbEditorElement;
 }
 
 export const createElement: CreateElement = (type, options = {}, parent) => {
@@ -64,10 +64,10 @@ export const createElement: CreateElement = (type, options = {}, parent) => {
 };
 
 export const addElementToParent = (
-    element: PbElement,
-    parent: PbElement,
+    element: PbEditorElement,
+    parent: PbEditorElement,
     position?: number
-): PbElement => {
+): PbEditorElement => {
     if (position === undefined || position === null) {
         return {
             ...parent,
@@ -87,8 +87,8 @@ export const addElementToParent = (
 
 export const createDroppedElement = (
     source: DragObjectWithTypeWithTarget,
-    target: PbElement
-): PbElement => {
+    target: PbEditorElement
+): PbEditorElement => {
     if (source.id) {
         return {
             id: shortid.generate(),
@@ -148,8 +148,8 @@ export const userElementStyleSettingsPlugins = (elementType: string) => {
 };
 
 type CreateEmptyElementCallableType = (
-    args: Pick<PbElement, "id" | "type">
-) => PbElement;
+    args: Pick<PbEditorElement, "id" | "type">
+) => PbEditorElement;
 
 export const createEmptyElement: CreateEmptyElementCallableType = ({ id, type }) => {
     return {

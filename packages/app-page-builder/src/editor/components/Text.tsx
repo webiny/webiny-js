@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import get from "lodash/get";
 import classNames from "classnames";
-import { PbElement } from "../../types";
+import { PbEditorElement } from "../../types";
 import { elementWithChildrenByIdSelector, activeElementAtom, uiAtom } from "../recoil/modules";
 import { ElementRoot } from "../../render/components/ElementRoot";
 import useUpdateHandlers from "../plugins/elementSettings/useUpdateHandlers";
@@ -22,7 +22,7 @@ const Text: React.FunctionComponent<TextElementProps> = ({
     editorOptions,
     rootClassName
 }) => {
-    const element: PbElement = useRecoilValue(elementWithChildrenByIdSelector(elementId));
+    const element: PbEditorElement = useRecoilValue(elementWithChildrenByIdSelector(elementId));
     const [{ displayMode }] = useRecoilState(uiAtom);
     const [activeElementId, setActiveElementAtomValue] = useRecoilState(activeElementAtom);
     const { getUpdateValue } = useUpdateHandlers({

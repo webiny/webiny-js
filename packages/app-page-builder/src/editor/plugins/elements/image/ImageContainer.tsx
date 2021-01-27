@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import { useRecoilValue } from "recoil";
 import styled from "@emotion/styled";
 import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
-import { PbElement } from "../../../../types";
+import { PbEditorElement } from "../../../../types";
 import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
 import { UpdateElementActionEvent } from "../../../recoil/actions";
 import { uiAtom } from "../../../recoil/modules";
@@ -14,7 +14,7 @@ const AlignImage = styled("div")((props: any) => ({
 }));
 
 type ImageContainerType = {
-    element: PbElement;
+    element: PbEditorElement;
 };
 const ImageContainer: React.FunctionComponent<ImageContainerType> = ({ element }) => {
     const { displayMode } = useRecoilValue(uiAtom);

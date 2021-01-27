@@ -10,7 +10,7 @@ import { Tooltip } from "@webiny/ui/Tooltip";
 import { IconButton } from "@webiny/ui/Button";
 import {
     PbEditorPageElementPlugin,
-    PbElement,
+    PbEditorElement,
     PbEditorPageElementSettingsRenderComponentProps,
     PbEditorResponsiveModePlugin
 } from "../../../../types";
@@ -92,7 +92,7 @@ const VerticalAlignSettings: React.FunctionComponent<PbEditorPageElementSettings
             .find(pl => pl.config.displayMode === displayMode);
     }, [displayMode]);
 
-    const updateElement = (element: PbElement) => {
+    const updateElement = (element: PbEditorElement) => {
         handler.trigger(
             new UpdateElementActionEvent({
                 element,

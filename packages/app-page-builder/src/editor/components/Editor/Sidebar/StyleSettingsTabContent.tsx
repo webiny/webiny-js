@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { PbElement } from "../../../../types";
+import { PbEditorElement } from "../../../../types";
 import useElementStyleSettings from "../../../plugins/elementSettings/hooks/useElementStyleSettings";
 import NoActiveElement from "./NoActiveElement";
 import { ReactComponent as TouchIcon } from "./icons/touch_app.svg";
@@ -22,7 +22,7 @@ const RootElement = styled("div")({
     }
 });
 
-type StyleSettingsTabContentProps = { element: PbElement };
+type StyleSettingsTabContentProps = { element: PbEditorElement };
 
 const StyleSettingsTabContent: React.FunctionComponent<StyleSettingsTabContentProps> = ({
     element

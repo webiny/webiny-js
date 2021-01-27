@@ -5,7 +5,7 @@ import { useQuery } from "react-apollo";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
 import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
-import { PbElement } from "@webiny/app-page-builder/types";
+import { PbEditorElement } from "@webiny/app-page-builder/types";
 import useRenderEmptyEmbed from "../plugins/elements/utils/oembed/useRenderEmptyEmbed";
 
 function appendSDK(props) {
@@ -59,7 +59,7 @@ const centerAlign = css({
 });
 
 export type OEmbedProps = {
-    element: PbElement;
+    element: PbEditorElement;
     onData?: (data: { [key: string]: any }) => { [key: string]: any };
     renderEmbed?: (props: OEmbedProps) => ReactElement;
     data?: any;
@@ -89,7 +89,7 @@ const OEmbedComponent = (props: OEmbedProps) => {
             }
             const { data: oembed, error } = data.pageBuilder.oembedData || {};
             if (oembed) {
-                const newElement: PbElement = {
+                const newElement: PbEditorElement = {
                     ...element,
                     data: {
                         ...element.data,
@@ -112,7 +112,7 @@ const OEmbedComponent = (props: OEmbedProps) => {
     const renderEmpty = useRenderEmptyEmbed(element);
 
     const renderEmbed = useCallback(
-        (targetElement: PbElement, isLoading: boolean) => {
+        (targetElement: PbEditorElement, isLoading: boolean) => {
             if (typeof props.renderEmbed === "function") {
                 return props.renderEmbed(props);
             }

@@ -16,7 +16,7 @@ import {
     DisplayMode,
     PbEditorPageElementPlugin,
     PbEditorPageElementSaveActionPlugin,
-    PbElement
+    PbEditorElement
 } from "@webiny/app-page-builder/types";
 import { Plugin } from "@webiny/plugins/types";
 import { AfterDropElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions/afterDropElement";
@@ -89,7 +89,7 @@ const cellPlugin: PbEditorPageElementPlugin = {
             // Delete source element
             result.actions.push(
                 new DeleteElementActionEvent({
-                    element: source as PbElement
+                    element: source as PbEditorElement
                 })
             );
 
@@ -99,7 +99,7 @@ const cellPlugin: PbEditorPageElementPlugin = {
         result.actions.push(
             new CreateElementActionEvent({
                 element,
-                source: source as PbElement
+                source: source as PbEditorElement
             })
         );
 

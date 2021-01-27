@@ -1,10 +1,10 @@
 import React from "react";
 import cloneDeep from "lodash/cloneDeep";
 import { registerPlugins, getPlugins } from "@webiny/plugins";
-import { PbElement, PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
+import { PbEditorElement, PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 import Title from "./components/Title";
 
-export default (el: PbElement) => {
+export default (el: PbEditorElement) => {
     const plugins = getPlugins<PbEditorPageElementPlugin>("pb-editor-page-element");
     const rootPlugin: PbEditorPageElementPlugin = plugins.find(
         pl => pl.elementType === el.content.type

@@ -10,7 +10,7 @@ import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/use
 import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import {
     PbEditorPageElementSettingsRenderComponentProps,
-    PbElement
+    PbEditorElement
 } from "@webiny/app-page-builder/types";
 // Components
 import Accordion from "../components/Accordion";
@@ -30,7 +30,7 @@ const classes = {
 };
 
 type LinkSettingsPropsType = {
-    element: PbElement;
+    element: PbEditorElement;
 };
 const LinkSettingsComponent: React.FunctionComponent<LinkSettingsPropsType &
     PbEditorPageElementSettingsRenderComponentProps> = ({ element, defaultAccordionValue }) => {
@@ -38,7 +38,7 @@ const LinkSettingsComponent: React.FunctionComponent<LinkSettingsPropsType &
 
     const { href, newTab } = element.data?.link || {};
 
-    const updateElement = (element: PbElement) => {
+    const updateElement = (element: PbEditorElement) => {
         handler.trigger(
             new UpdateElementActionEvent({
                 element,
@@ -49,7 +49,7 @@ const LinkSettingsComponent: React.FunctionComponent<LinkSettingsPropsType &
 
     const updateSettings = data => {
         const attrKey = `data.link`;
-        const newElement: PbElement = merge(element, attrKey, data);
+        const newElement: PbEditorElement = merge(element, attrKey, data);
         updateElement(newElement);
     };
 

@@ -1,11 +1,11 @@
 import shortid from "shortid";
 import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
-import { EventActionCallable, PbElement } from "@webiny/app-page-builder/types";
+import { EventActionCallable, PbEditorElement } from "@webiny/app-page-builder/types";
 import { CloneElementActionArgsType } from "@webiny/app-page-builder/editor/recoil/actions/cloneElement/types";
 
-export const cloneElement = async (state, element: PbElement): Promise<PbElement> => {
+export const cloneElement = async (state, element: PbEditorElement): Promise<PbEditorElement> => {
     return {
-        ...(element as PbElement),
+        ...(element as PbEditorElement),
         id: shortid.generate(),
         elements: await Promise.all(
             element.elements.map(async el => {

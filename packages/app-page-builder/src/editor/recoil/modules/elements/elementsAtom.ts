@@ -1,7 +1,7 @@
-import { PbElement } from "@webiny/app-page-builder/types";
+import { PbEditorElement } from "@webiny/app-page-builder/types";
 import { atomFamily } from "recoil";
 
-export type ElementsAtomType = PbElement;
+export type ElementsAtomType = PbEditorElement;
 
 export const elementsAtom = atomFamily<ElementsAtomType, string>({
     key: "elementsAtom",

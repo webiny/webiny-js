@@ -1,8 +1,8 @@
 import { selectorFamily } from "recoil";
 import { elementByIdSelector } from "./elementByIdSelector";
-import { PbElement } from "@webiny/app-page-builder/types";
+import { PbEditorElement } from "@webiny/app-page-builder/types";
 
-export const elementWithChildrenByIdSelector = selectorFamily<PbElement | undefined, string>({
+export const elementWithChildrenByIdSelector = selectorFamily<PbEditorElement | undefined, string>({
     key: "elementWithChildrenByIdSelector",
     get: id => {
         return ({ get }) => {
@@ -13,8 +13,8 @@ export const elementWithChildrenByIdSelector = selectorFamily<PbElement | undefi
 
             return ({
                 ...element,
-                elements: element.elements.map(id => get(elementByIdSelector(id)))
-            } as any) as PbElement;
+                elements: element.elements.map((id: string) => get(elementByIdSelector(id)))
+            } as any) as PbEditorElement;
         };
     }
 });

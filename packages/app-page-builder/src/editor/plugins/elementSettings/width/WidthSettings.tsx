@@ -10,7 +10,7 @@ import { Tooltip } from "@webiny/ui/Tooltip";
 import {
     PbEditorPageElementSettingsRenderComponentProps,
     PbEditorResponsiveModePlugin,
-    PbElement
+    PbEditorElement
 } from "../../../../types";
 import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
 import { UpdateElementActionEvent } from "../../../../editor/recoil/actions";
@@ -111,7 +111,7 @@ const Settings: React.FunctionComponent<PbEditorPageElementSettingsRenderCompone
             return;
         }
 
-        const newElement: PbElement = merge(
+        const newElement: PbEditorElement = merge(
             {},
             element,
             set({}, `${DATA_NAMESPACE}.${displayMode}`, data)

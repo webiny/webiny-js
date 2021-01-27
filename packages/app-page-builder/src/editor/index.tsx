@@ -11,10 +11,10 @@ import {
     PageAtomType
 } from "@webiny/app-page-builder/editor/recoil/modules";
 import { flattenElements } from "@webiny/app-page-builder/editor/helpers";
-import { PbElement } from "@webiny/app-page-builder/types";
+import { PbEditorElement } from "@webiny/app-page-builder/types";
 
 type EditorPropsType = {
-    page: PageAtomType & PbElement;
+    page: PageAtomType & PbEditorElement;
     revisions: RevisionsAtomType;
 };
 

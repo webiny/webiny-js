@@ -45,22 +45,22 @@ export type PbElementDataSettingsBorderType = {
     width?:
         | number
         | {
-              all?: number;
-              top?: number;
-              right?: number;
-              bottom?: number;
-              left?: number;
-          };
+        all?: number;
+        top?: number;
+        right?: number;
+        bottom?: number;
+        left?: number;
+    };
     style?: "none" | "solid" | "dashed" | "dotted";
     radius?:
         | number
         | {
-              all?: number;
-              topLeft?: number;
-              topRight?: number;
-              bottomLeft?: number;
-              bottomRight?: number;
-          };
+        all?: number;
+        topLeft?: number;
+        topRight?: number;
+        bottomLeft?: number;
+        bottomRight?: number;
+    };
     borders?: {
         top?: boolean;
         right?: boolean;
@@ -155,15 +155,21 @@ export type PbElementDataType = {
     width?: number;
     [key: string]: any;
 };
-type PbBaseElement = {
+
+export type PbEditorElement = {
     id: string;
     type: string;
     data: PbElementDataType;
     parent?: string;
+    elements: (string | PbEditorElement)[];
     [key: string]: any;
 };
-export type PbElement = PbBaseElement & {
-    elements: (string | PbElement)[];
+
+export type PbElement = {
+    id: string;
+    type: string;
+    data: PbElementDataType;
+    elements: PbElement[];
 };
 
 export type PbTheme = {
@@ -339,32 +345,38 @@ export type PbEditorPageElementPlugin = Plugin & {
     // Array of element settings plugin names.
     settings?: Array<string | Array<string | any>>;
     // A function to create an element data structure.
-    create: (options: { [key: string]: any }, parent?: PbElement) => Omit<PbElement, "id">;
+    create: (
+        options: { [key: string]: any },
+        parent?: PbEditorElement
+    ) => Omit<PbEditorElement, "id">;
     // A function to render an element in the editor.
     render: (params: {
         theme?: PbTheme;
-        element: PbElement;
+        element: PbEditorElement;
         isHighlighted: boolean;
         isActive: boolean;
     }) => ReactNode;
     // A function to check if an element can be deleted.
-    canDelete?: (params: { element: PbElement }) => boolean;
+    canDelete?: (params: { element: PbEditorElement }) => boolean;
     // Executed when another element is dropped on the drop zones of current element.
     onReceived?: (params: {
         state?: EventActionHandlerCallableState;
         meta: EventActionHandlerMeta;
-        source: PbElement | DragObjectWithTypeWithTarget;
-        target: PbElement;
+        source: PbEditorElement | DragObjectWithTypeWithTarget;
+        target: PbEditorElement;
         position: number | null;
     }) => EventActionHandlerActionCallableResponse;
     // Executed when an immediate child element is deleted
-    onChildDeleted?: (params: { element: PbElement; child: PbElement }) => PbElement | undefined;
+    onChildDeleted?: (params: {
+        element: PbEditorElement;
+        child: PbEditorElement;
+    }) => PbEditorElement | undefined;
     // Executed after element was created
     onCreate?: string;
     // Render element preview (used when creating element screenshots; not all elements have a simple DOM representation
     // so this callback is used to customize the look of the element in a PNG image)
     renderElementPreview?: (params: {
-        element: PbElement;
+        element: PbEditorElement;
         width: number;
         height: number;
     }) => ReactElement;
@@ -372,7 +384,7 @@ export type PbEditorPageElementPlugin = Plugin & {
 
 export type PbEditorPageElementActionPlugin = Plugin & {
     type: "pb-editor-page-element-action";
-    render: (params: { element: PbElement; plugin: PbEditorPageElementPlugin }) => ReactNode;
+    render: (params: { element: PbEditorElement; plugin: PbEditorPageElementPlugin }) => ReactNode;
 };
 
 export type PbPageDetailsPlugin = Plugin & {
@@ -480,7 +492,7 @@ export type PbEditorBlockPlugin = Plugin & {
             aspectRatio: number;
         };
     };
-    create(): PbElement;
+    create(): PbEditorElement;
     preview(): ReactElement;
 };
 
@@ -534,7 +546,7 @@ export type PbEditorGridPresetPluginType = Plugin & {
 export type PbEditorPageElementSaveActionPlugin = Plugin & {
     type: "pb-editor-page-element-save-action";
     elementType: string;
-    onSave: (element: PbElement) => PbElement;
+    onSave: (element: PbEditorElement) => PbEditorElement;
 };
 
 export type PbEditorPageElementSettingsRenderComponentProps = {
@@ -582,8 +594,8 @@ export type PbRenderResponsiveModePlugin = Plugin & {
 
 // ============== EVENT ACTION HANDLER ================= //
 export interface EventActionHandlerCallableState extends PbState {
-    getElementById(id: string): Promise<PbElement>;
-    getElementTree(element?: PbElement): Promise<any>;
+    getElementById(id: string): Promise<PbEditorElement>;
+    getElementTree(element?: PbEditorElement): Promise<any>;
 }
 
 export interface EventActionHandler {
@@ -605,6 +617,7 @@ export interface EventActionHandlerUnregister {
 
 export interface EventActionHandlerMeta {
     client: any;
+    eventActionHandler: EventActionHandler
 }
 
 export interface EventActionHandlerConfig {

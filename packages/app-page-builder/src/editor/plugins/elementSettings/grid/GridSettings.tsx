@@ -6,7 +6,7 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import {
     PbEditorGridPresetPluginType,
     PbEditorPageElementSettingsRenderComponentProps,
-    PbElement
+    PbEditorElement
 } from "../../../../types";
 import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
 import { createElement } from "../../../helpers";
@@ -55,13 +55,13 @@ const StyledIconButton = styled("button")(({ active }: any) => ({
     }
 }));
 
-const createCells = (amount: number): PbElement[] => {
+const createCells = (amount: number): PbEditorElement[] => {
     return Array(amount)
         .fill(0)
         .map(() => createElement("cell", {}));
 };
 
-const resizeCells = (elements: PbElement[], cells: number[]): PbElement[] => {
+const resizeCells = (elements: PbEditorElement[], cells: number[]): PbEditorElement[] => {
     return elements.map((element, index) => {
         return {
             ...element,
@@ -78,16 +78,16 @@ const resizeCells = (elements: PbElement[], cells: number[]): PbElement[] => {
     });
 };
 
-const updateChildrenWithPreset = (target: PbElement, pl: PbEditorGridPresetPluginType) => {
+const updateChildrenWithPreset = (target: PbEditorElement, pl: PbEditorGridPresetPluginType) => {
     const cells = calculatePresetPluginCells(pl);
     const total = target.elements.length;
     const max = cells.length;
     if (total === max) {
-        return resizeCells(target.elements as PbElement[], cells);
+        return resizeCells(target.elements as PbEditorElement[], cells);
     } else if (total > max) {
-        return resizeCells(target.elements.slice(0, max) as PbElement[], cells);
+        return resizeCells(target.elements.slice(0, max) as PbEditorElement[], cells);
     }
-    const created = [...(target.elements as PbElement[]), ...createCells(max - total)];
+    const created = [...(target.elements as PbEditorElement[]), ...createCells(max - total)];
     return resizeCells(created, cells);
 };
 
@@ -98,12 +98,12 @@ export const GridSettings: React.FunctionComponent<PbEditorPageElementSettingsRe
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = (useRecoilValue(
         elementWithChildrenByIdSelector(activeElementId)
-    ) as unknown) as PbElement;
+    ) as unknown) as PbEditorElement;
     const currentCellsType = element.data.settings?.grid?.cellsType;
     const presetPlugins = getPresetPlugins();
 
     const onInputSizeChange = (value: number, index: number) => {
-        const cellElement = element.elements[index] as PbElement;
+        const cellElement = element.elements[index] as PbEditorElement;
         if (!cellElement) {
             throw new Error(`There is no element on index ${index}.`);
         }
@@ -151,7 +151,7 @@ export const GridSettings: React.FunctionComponent<PbEditorPageElementSettingsRe
         );
     };
     const totalCellsUsed = element.elements.reduce((total, cell) => {
-        return total + ((cell as PbElement).data.settings?.grid?.size || 1);
+        return total + ((cell as PbEditorElement).data.settings?.grid?.size || 1);
     }, 0);
 
     return (
@@ -175,7 +175,7 @@ export const GridSettings: React.FunctionComponent<PbEditorPageElementSettingsRe
 
                 <Grid className={classes.grid}>
                     {element.elements.map((cell, index) => {
-                        const size = (cell as PbElement).data.settings?.grid?.size || 1;
+                        const size = (cell as PbEditorElement).data.settings?.grid?.size || 1;
                         return (
                             <Cell span={12} key={`cell-size-${index}`}>
                                 <CellSize

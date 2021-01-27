@@ -4,7 +4,7 @@ import {
     PbEditorPageElementPlugin,
     EventActionCallable,
     EventActionHandlerCallableState,
-    PbElement
+    PbEditorElement
 } from "@webiny/app-page-builder/types";
 import { plugins } from "@webiny/plugins";
 import { DropElementActionArgsType } from "./types";
@@ -23,7 +23,7 @@ const getElementTypePlugin = (type: string): PbEditorPageElementPlugin => {
 const getSourceElement = async (
     state: EventActionHandlerCallableState,
     source: DragObjectWithTypeWithTarget
-): Promise<PbElement | DragObjectWithTypeWithTarget> => {
+): Promise<PbEditorElement | DragObjectWithTypeWithTarget> => {
     if (source.id) {
         return await state.getElementById(source.id);
     }

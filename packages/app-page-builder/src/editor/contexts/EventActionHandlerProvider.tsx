@@ -24,7 +24,7 @@ import {
     EventActionHandlerConfig,
     PbConfigPluginType,
     PbConfigType,
-    PbElement,
+    PbEditorElement,
     EventActionHandler,
     EventActionHandlerTarget,
     EventActionHandlerCallableState
@@ -105,7 +105,7 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
         createConfiguration(plugins.byType("pb-config"))
     );
 
-    const updateElements = useRecoilCallback(({ set }) => (elements: PbElement[] = []) => {
+    const updateElements = useRecoilCallback(({ set }) => (elements: PbEditorElement[] = []) => {
         elements.forEach(item => {
             set(elementsAtom(item.id), prevValue => {
                 return {
@@ -233,6 +233,35 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
         // }
     };
 
+    const eventActionHandler = useMemo<EventActionHandler>(
+        () => ({
+            on: (target, callable) => {
+                const name = getEventActionClassName(target);
+                if (!has(name)) {
+                    set(name, new Map());
+                }
+                const events = get(name);
+                if (hasCb(events, callable)) {
+                    throw new Error(
+                        `You cannot register event action "${name}" with identical function that already is registered.`
+                    );
+                }
+
+                const id = Symbol(`eventActionCb:${name}`);
+                events.set(id, callable);
+                return () => {
+                    return off(id);
+                };
+            },
+            trigger: async ev => {
+                const results = await triggerEventAction(ev, {} as any, []);
+                saveCallablesResults(results.state);
+                return results.state;
+            }
+        }),
+        []
+    );
+
     const triggerEventAction = async <T extends EventActionHandlerCallableArgs>(
         ev: EventAction<T>,
         initialState: PbState,
@@ -270,7 +299,7 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
             const r =
                 (await cb(
                     getCallableState({ ...initialState, ...results.state }),
-                    { client: apolloClient },
+                    { client: apolloClient, eventActionHandler },
                     args
                 )) || {};
             results.state = {
@@ -298,37 +327,8 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
         return results;
     };
 
-    const value = useMemo<EventActionHandler>(
-        () => ({
-            on: (target, callable) => {
-                const name = getEventActionClassName(target);
-                if (!has(name)) {
-                    set(name, new Map());
-                }
-                const events = get(name);
-                if (hasCb(events, callable)) {
-                    throw new Error(
-                        `You cannot register event action "${name}" with identical function that already is registered.`
-                    );
-                }
-
-                const id = Symbol(`eventActionCb:${name}`);
-                events.set(id, callable);
-                return () => {
-                    return off(id);
-                };
-            },
-            trigger: async ev => {
-                const results = await triggerEventAction(ev, {} as any, []);
-                saveCallablesResults(results.state);
-                return results.state;
-            }
-        }),
-        []
-    );
-
     return (
-        <EventActionHandlerContext.Provider value={value}>
+        <EventActionHandlerContext.Provider value={eventActionHandler}>
             {children}
         </EventActionHandlerContext.Provider>
     );

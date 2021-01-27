@@ -1,5 +1,5 @@
-import { PbElement } from "../../../../types";
+import { PbEditorElement } from "../../../../types";
 
 export type AfterDropElementActionArgsType = {
-    element: PbElement;
+    element: PbEditorElement;
 };

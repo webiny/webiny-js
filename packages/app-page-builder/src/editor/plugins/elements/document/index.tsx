@@ -1,6 +1,6 @@
 import React from "react";
 import Document from "./Document";
-import { PbEditorPageElementPlugin, PbElement } from "@webiny/app-page-builder/types";
+import { PbEditorPageElementPlugin, PbEditorElement } from "@webiny/app-page-builder/types";
 
 export default (): PbEditorPageElementPlugin => {
     return {
@@ -16,7 +16,7 @@ export default (): PbEditorPageElementPlugin => {
         },
         render({ element }) {
             // TODO figure out if we can change this on the plugin type level
-            return <Document element={(element as unknown) as PbElement} />;
+            return <Document element={(element as unknown) as PbEditorElement} />;
         }
     };
 };

@@ -7,12 +7,12 @@ import {
     SidebarAtomType,
     UiAtomType
 } from "@webiny/app-page-builder/editor/recoil/modules/ui";
-import { PbElement } from "@webiny/app-page-builder/types";
+import { PbEditorElement } from "@webiny/app-page-builder/types";
 
 export type PbState = {
     activeElement?: ActiveElementAtomType;
     highlightElement?: HighlightElementAtomType;
-    elements?: { [id: string]: PbElement };
+    elements?: { [id: string]: PbEditorElement };
     page: PageAtomType;
     plugins: PluginsAtomType;
     ui: UiAtomType;

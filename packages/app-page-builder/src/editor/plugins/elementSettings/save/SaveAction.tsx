@@ -24,7 +24,7 @@ import { FileUploaderPlugin } from "@webiny/app/types";
 import {
     PbEditorPageElementPlugin,
     PbEditorPageElementSaveActionPlugin,
-    PbElement
+    PbEditorElement
 } from "@webiny/app-page-builder/types";
 
 const removeIdsAndPaths = el => {
@@ -58,7 +58,7 @@ function getDataURLImageDimensions(dataURL: string): Promise<ImageDimensionsType
     });
 }
 
-const pluginOnSave = (element: PbElement): PbElement => {
+const pluginOnSave = (element: PbEditorElement): PbEditorElement => {
     const plugin = plugins
         .byType<PbEditorPageElementSaveActionPlugin>("pb-editor-page-element-save-action")
         .find(pl => pl.elementType === element.type);

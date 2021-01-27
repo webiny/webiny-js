@@ -4,7 +4,7 @@ import {
     PbRenderElementStylePlugin,
     PbRenderElementAttributesPlugin,
     PbElement,
-    PbShallowElement
+    PbEditorElement
 } from "@webiny/app-page-builder/types";
 
 type CombineClassNamesType = (...styles) => string;
@@ -22,7 +22,7 @@ type ElementRootChildrenFunctionParamsType = {
 type ElementRootChildrenFunction = (params: ElementRootChildrenFunctionParamsType) => ReactElement;
 
 type ElementRootProps = {
-    element: PbElement | PbShallowElement;
+    element: PbElement | PbEditorElement;
     style?: CSSProperties;
     className?: string;
     children?: ReactElement | ReactElement[] | ElementRootChildrenFunction;

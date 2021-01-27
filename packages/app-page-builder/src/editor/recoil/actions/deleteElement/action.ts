@@ -1,15 +1,15 @@
-import { EventActionCallable, PbElement } from "../../../../types";
+import { EventActionCallable, PbEditorElement } from "../../../../types";
 import { DeleteElementActionArgsType } from "@webiny/app-page-builder/editor/recoil/actions/deleteElement/types";
 import {SaveRevisionActionEvent} from "@webiny/app-page-builder/editor/recoil/actions";
 
-const removeElementFromParent = (parent: PbElement, id: string): PbElement => {
+const removeElementFromParent = (parent: PbEditorElement, id: string): PbEditorElement => {
     return {
         ...parent,
         elements: parent.elements.filter(child => child !== id)
     };
 };
 
-const getElementParentById = async (state, id): Promise<PbElement> => {
+const getElementParentById = async (state, id): Promise<PbEditorElement> => {
     const element = await state.getElementById(id);
     return await state.getElementById(element.parent);
 };

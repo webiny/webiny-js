@@ -15,7 +15,7 @@ export default () => [
     createElementPlugin(),
     updateElementPlugin(),
     togglePluginPlugin(),
-    saveRevisionPlugin(),
+    ...saveRevisionPlugin(),
     dropElementPlugin(),
     afterDropElementPlugin(),
     deactivatePluginPlugin(),

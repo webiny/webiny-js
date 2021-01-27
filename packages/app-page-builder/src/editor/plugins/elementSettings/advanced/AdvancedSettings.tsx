@@ -9,13 +9,13 @@ import { withActiveElement } from "@webiny/app-page-builder/editor/components";
 import { Form } from "@webiny/form";
 import {
     PbEditorPageElementAdvancedSettingsPlugin,
-    PbElement
+    PbEditorElement
 } from "@webiny/app-page-builder/types";
 
 const emptyElement = { data: {}, type: null };
 
 type AdvancedSettingsPropsType = {
-    element: PbElement;
+    element: PbEditorElement;
 };
 const AdvancedSettings: React.FunctionComponent<AdvancedSettingsPropsType> = ({ element }) => {
     const { data, type } = element || cloneDeep(emptyElement);

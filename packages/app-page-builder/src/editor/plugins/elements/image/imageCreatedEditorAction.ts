@@ -1,11 +1,11 @@
 import { CreateElementEventActionCallable } from "@webiny/app-page-builder/editor/recoil/actions/createElement/types";
-import { PbEditorPageElementPlugin, PbElement } from "@webiny/app-page-builder/types";
+import { PbEditorPageElementPlugin, PbEditorElement } from "@webiny/app-page-builder/types";
 import { plugins } from "@webiny/plugins";
 
 const MAX_ELEMENT_FIND_RETRIES = 10;
 const ELEMENT_FIND_RETRY_TIMEOUT = 100;
 
-const clickOnImageWithRetries = (element: PbElement, retryNumber: number) => {
+const clickOnImageWithRetries = (element: PbEditorElement, retryNumber: number) => {
     const image: HTMLElement = document.querySelector(
         `#${window.CSS.escape(element.id)} [data-role="select-image"]`
     );

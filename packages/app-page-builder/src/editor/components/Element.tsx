@@ -3,7 +3,7 @@ import { useRecoilValue, useSetRecoilState } from "recoil";
 import { Transition } from "react-transition-group";
 import { plugins } from "@webiny/plugins";
 import { renderPlugins } from "@webiny/app/plugins";
-import { PbEditorPageElementPlugin, PbElement } from "@webiny/app-page-builder/types";
+import { PbEditorPageElementPlugin, PbEditorElement } from "@webiny/app-page-builder/types";
 import Draggable from "./Draggable";
 import tryRenderingPlugin from "../../utils/tryRenderingPlugin";
 import {
@@ -28,7 +28,7 @@ export type ElementPropsType = {
     isActive: boolean;
 };
 
-const getElementPlugin = (element: PbElement): PbEditorPageElementPlugin => {
+const getElementPlugin = (element: PbEditorElement): PbEditorPageElementPlugin => {
     if (!element) {
         return null;
     }
@@ -51,7 +51,7 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
     const plugin = getElementPlugin(element);
 
     const beginDrag = useCallback(() => {
-        const data = { id: element.id, type: element.type, path: element.path };
+        const data = { id: element.id, type: element.type };
         setTimeout(() => {
             setUiAtomValue(enableDraggingMutation);
         });

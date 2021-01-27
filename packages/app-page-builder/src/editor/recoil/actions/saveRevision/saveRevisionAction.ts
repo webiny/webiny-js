@@ -1,9 +1,7 @@
-import { SaveRevisionActionArgsType } from "@webiny/app-page-builder/editor/recoil/actions/saveRevision/types";
+import { SaveRevisionActionArgsType } from "./types";
+import { ToggleSaveRevisionStateActionEvent } from "./event";
 import { EventActionCallable } from "@webiny/app-page-builder/types";
 import { PageAtomType } from "@webiny/app-page-builder/editor/recoil/modules";
-import { setIsNotSavingMutation } from "@webiny/app-page-builder/editor/recoil/modules/ui/mutations/setIsNotSavingMutation";
-import { setIsSavingMutation } from "@webiny/app-page-builder/editor/recoil/modules/ui/mutations/setIsSavingMutation";
-import { PbElement } from "@webiny/app-page-builder/types";
 import gql from "graphql-tag";
 import lodashIsEqual from "lodash/isEqual";
 import lodashDebounce from "lodash/debounce";
@@ -80,11 +78,8 @@ export const saveRevisionAction: EventActionCallable<SaveRevisionActionArgsType>
 
     debouncedSave = lodashDebounce(() => {
         (async () => {
-            /* TODO: @bruno
-            updateConnectedValue(uiAtom, prev => {
-                return setIsSavingMutation(prev);
-            });
-            */
+            meta.eventActionHandler.trigger(new ToggleSaveRevisionStateActionEvent({ saving: true }));
+
             await meta.client.mutate({
                 mutation: updatePage,
                 variables: {
@@ -93,11 +88,7 @@ export const saveRevisionAction: EventActionCallable<SaveRevisionActionArgsType>
                 }
             });
 
-            /* TODO: @bruno
-             updateConnectedValue(uiAtom, prev => {
-                 return setIsNotSavingMutation(prev);
-             });
-             */
+            meta.eventActionHandler.trigger(new ToggleSaveRevisionStateActionEvent({ saving: false }));
             triggerOnFinish(args);
         })();
     }, 2000);

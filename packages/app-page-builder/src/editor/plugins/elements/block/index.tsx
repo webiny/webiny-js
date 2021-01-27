@@ -10,7 +10,7 @@ import {
     DisplayMode,
     EventActionHandlerActionCallableResponse,
     PbEditorPageElementPlugin,
-    PbElement
+    PbEditorElement
 } from "@webiny/app-page-builder/types";
 import { AfterDropElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions/afterDropElement";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
@@ -97,7 +97,7 @@ export default (): PbEditorPageElementPlugin => {
                 // Delete source element
                 result.actions.push(
                     new DeleteElementActionEvent({
-                        element: source as PbElement
+                        element: source as PbEditorElement
                     })
                 );
 

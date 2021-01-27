@@ -5,7 +5,7 @@ import { css } from "emotion";
 import kebabCase from "lodash/kebabCase";
 import { plugins } from "@webiny/plugins";
 import { Elevation } from "@webiny/ui/Elevation";
-import { PbEditorContentPlugin, PbPageLayout, PbPageLayoutPlugin, PbElement } from "../../../types";
+import { PbEditorContentPlugin, PbPageLayout, PbPageLayoutPlugin, PbEditorElement } from "../../../types";
 import {
     isPluginActiveSelector,
     layoutSelector,
@@ -45,7 +45,7 @@ const BaseContainer = styled("div")({
     left: 52,
     margin: "0 auto"
 });
-const renderContent = (layout: PbPageLayout, rootElement: PbElement, render: boolean) => {
+const renderContent = (layout: PbPageLayout, rootElement: PbEditorElement, render: boolean) => {
     const content = <Element id={rootElement.id} />;
     if (!render) {
         return content;

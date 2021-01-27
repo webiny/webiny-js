@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { css } from "emotion";
 import { useRecoilSnapshot, useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { PbElement } from "../../../types";
+import { PbEditorElement } from "../../../types";
 import { activeElementAtom, elementByIdSelector, highlightElementAtom } from "../../recoil/modules";
 import { COLORS } from "../elementSettings/components/StyledComponents";
 
@@ -89,7 +89,7 @@ const Breadcrumbs: React.FunctionComponent = () => {
 
     const snapshot = useRecoilSnapshot();
 
-    const createBreadCrumbs = async (activeElement: PbElement) => {
+    const createBreadCrumbs = async (activeElement: PbEditorElement) => {
         const list = [];
         let element = activeElement;
         while (element.parent) {

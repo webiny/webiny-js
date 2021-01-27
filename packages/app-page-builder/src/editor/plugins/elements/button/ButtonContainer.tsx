@@ -4,7 +4,7 @@ import classNames from "classnames";
 import kebabCase from "lodash/kebabCase";
 import merge from "lodash/merge";
 import set from "lodash/set";
-import { PbElement } from "../../../../types";
+import { PbEditorElement } from "../../../../types";
 import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
 import { UpdateElementActionEvent } from "../../../recoil/actions";
 import { elementByIdSelector, uiAtom } from "../../../recoil/modules";
@@ -56,7 +56,7 @@ const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = ({
             return;
         }
 
-        const newElement: PbElement = merge(
+        const newElement: PbEditorElement = merge(
             {},
             element,
             set({ elements: [] }, DATA_NAMESPACE, value.current)

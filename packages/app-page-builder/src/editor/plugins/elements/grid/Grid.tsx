@@ -2,7 +2,7 @@ import React, { CSSProperties } from "react";
 import kebabCase from "lodash/kebabCase";
 import styled from "@emotion/styled";
 import { css } from "emotion";
-import { PbElement, DisplayMode } from "../../../../types";
+import { PbEditorElement, DisplayMode } from "../../../../types";
 import Element from "../../../components/Element";
 
 const StyledGrid = styled("div")({
@@ -18,7 +18,7 @@ type GridPropsType = {
     elementStyle: CSSProperties;
     elementAttributes: { [key: string]: string };
     customClasses: string[];
-    element: PbElement;
+    element: PbEditorElement;
     displayMode: DisplayMode;
 };
 const Grid: React.FunctionComponent<GridPropsType> = ({
@@ -43,7 +43,7 @@ const Grid: React.FunctionComponent<GridPropsType> = ({
                 alignItems
             }}
         >
-            {element.elements.map(child => {
+            {element.elements.map((child: PbEditorElement) => {
                 return (
                     <div
                         key={`cell-${child.id}`}

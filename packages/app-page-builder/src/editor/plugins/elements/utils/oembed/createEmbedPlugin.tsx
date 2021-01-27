@@ -2,7 +2,7 @@ import * as React from "react";
 import { BindComponent } from "@webiny/form";
 import OEmbed, { OEmbedProps } from "@webiny/app-page-builder/editor/components/OEmbed";
 import {
-    PbElement,
+    PbEditorElement,
     PbEditorPageElementPlugin,
     PbEditorPageElementAdvancedSettingsPlugin,
     DisplayMode
@@ -29,7 +29,7 @@ type EmbedPluginConfig = {
     target?: Array<string>;
     onCreate?: string;
     renderElementPreview?: (params: {
-        element: PbElement;
+        element: PbEditorElement;
         width: number;
         height: number;
     }) => React.ReactElement;
