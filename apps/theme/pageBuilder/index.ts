@@ -39,7 +39,11 @@ export default [
                     ]
                 },
                 list: {
-                    types: [{ className: "webiny-pb-typography-list", label: "Default" }]
+                    types: [
+                        { className: "", label: "Default" },
+                        { className: "webiny-pb-typography-list--primary", label: "Primary" },
+                        { className: "webiny-pb-typography-list--secondary", label: "Secondary" }
+                    ]
                 },
                 quote: {
                     types: [{ className: "webiny-pb-typography-quote", label: "Default" }]

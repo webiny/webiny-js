@@ -1,5 +1,5 @@
 /*! Based on Typebase.scss v0.1.0 | MIT License https://github.com/devinhunt/typebase.css */
-
+@import "../mixins/pb-list-element";
 // Typesetting variables. Edit here or override in main file prior to import of this.
 $baseFontSize: 22 !default; // in pixels. This would result in 22px on desktop
 $baseLineHeight: 1.5 !default; // how large the line height is as a multiple of font size
@@ -231,6 +231,14 @@ h6 {
       opacity: 0.8;
     }
   }
+}
+
+// Additional "list" element styles
+.webiny-pb-typography-list--primary {
+  @include pb-lis-element($leading, #fa5a28, #ffffff);
+}
+.webiny-pb-typography-list--secondary {
+  @include pb-lis-element($leading, #90c418, #ffffff);
 }
 
 .webiny-pb-typography-code {
