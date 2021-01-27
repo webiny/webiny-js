@@ -76,7 +76,7 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
             if (isHighlighted) {
                 return;
             }
-            setElementAtomValue({ ...element, isHighlighted: true });
+            setElementAtomValue({ isHighlighted: true } as any);
         },
         [elementId]
     );
@@ -84,7 +84,7 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
         if (!element || element.type === "document") {
             return;
         }
-        setElementAtomValue({ ...element, isHighlighted: false });
+        setElementAtomValue({ isHighlighted: false } as any);
     }, [elementId]);
 
     const renderDraggable = ({ drag }): JSX.Element => {
