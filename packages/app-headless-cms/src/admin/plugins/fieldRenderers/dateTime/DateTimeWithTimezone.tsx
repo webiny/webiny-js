@@ -9,11 +9,12 @@ import {
     DEFAULT_TIMEZONE,
     RemoveFieldButton
 } from "./utils";
+import { CmsEditorField } from "@webiny/app-headless-cms/types";
 
 interface DateTimeWithTimezoneProps {
     bind: any;
     trailingIcon?: any;
-    field: any;
+    field: CmsEditorField;
 }
 interface DateTimeWithTimezoneState {
     date: string;
