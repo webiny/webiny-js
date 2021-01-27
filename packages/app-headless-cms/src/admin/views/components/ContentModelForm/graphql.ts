@@ -2,7 +2,7 @@ import upperFirst from "lodash/upperFirst";
 import gql from "graphql-tag";
 import pluralize from "pluralize";
 import { plugins } from "@webiny/plugins";
-import { CmsEditorFieldTypePlugin } from "@webiny/app-headless-cms/types";
+import { CmsEditorContentModel, CmsEditorFieldTypePlugin } from "@webiny/app-headless-cms/types";
 
 const ERROR_FIELD = /* GraphQL */ `
     {
@@ -77,7 +77,13 @@ export const createRevisionsQuery = model => {
     `;
 };
 
-export const createListQuery = model => {
+const getModelTitleFieldId = (model: CmsEditorContentModel): string => {
+    if (!model.titleFieldId || model.titleFieldId === "id") {
+        return "";
+    }
+    return model.titleFieldId;
+};
+export const createListQuery = (model: CmsEditorContentModel) => {
     const ucFirstPluralizedModelId = upperFirst(pluralize(model.modelId));
     const ucFirstModelId = upperFirst(model.modelId);
 
@@ -95,7 +101,7 @@ export const createListQuery = model => {
                     meta {
                         ${CONTENT_META_FIELDS}
                     }
-                    ${model.titleFieldId}
+                    ${getModelTitleFieldId(model)}
                 }
                 meta {
                     cursor

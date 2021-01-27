@@ -112,6 +112,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 const identity = context.security.getIdentity();
                 const model: CmsContentModel = {
                     ...createdDataJson,
+                    titleFieldId: "id",
                     group: {
                         id: group.id,
                         name: group.name

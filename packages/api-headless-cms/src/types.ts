@@ -1067,6 +1067,8 @@ export interface CmsContentModelContext {
     create: (data: CmsContentModelCreateInput) => Promise<CmsContentModel>;
     /**
      * Update content model without data validation. Used internally.
+     *
+     * @hidden
      */
     updateModel: (model: CmsContentModel, data: Partial<CmsContentModel>) => Promise<void>;
     /**
