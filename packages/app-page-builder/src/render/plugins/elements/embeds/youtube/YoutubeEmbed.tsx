@@ -3,7 +3,8 @@ import { css } from "emotion";
 import { get } from "dot-prop-immutable";
 
 const outerWrapper = css({
-    boxSizing: "border-box"
+    boxSizing: "border-box",
+    width: "100%"
 });
 
 const innerWrapper = css({
