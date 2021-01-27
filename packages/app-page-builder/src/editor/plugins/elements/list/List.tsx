@@ -3,7 +3,7 @@ import classNames from "classnames";
 import Text from "../../../components/Text";
 
 export const className = classNames(
-    "webiny-pb-base-page-element-style webiny-pb-page-element-text"
+    "webiny-pb-base-page-element-style webiny-pb-page-element-text webiny-pb-typography-list"
 );
 
 const DEFAULT_EDITOR_OPTIONS = {

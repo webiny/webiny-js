@@ -9,7 +9,9 @@ const List: React.FunctionComponent<TextPropsType> = ({ element }) => {
     return (
         <Text
             element={element}
-            rootClassName={"webiny-pb-base-page-element-style webiny-pb-page-element-text"}
+            rootClassName={
+                "webiny-pb-base-page-element-style webiny-pb-page-element-text webiny-pb-typography-list"
+            }
         />
     );
 };
