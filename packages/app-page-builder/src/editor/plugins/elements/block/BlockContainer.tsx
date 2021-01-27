@@ -1,6 +1,5 @@
 import React, { CSSProperties } from "react";
 import { useRecoilValue } from "recoil";
-import styled from "@emotion/styled";
 import { css } from "emotion";
 import kebabCase from "lodash/kebabCase";
 import { IconButton } from "@webiny/ui/Button";
@@ -11,6 +10,7 @@ import { useEventActionHandler } from "../../../provider";
 import { DropElementActionEvent, TogglePluginActionEvent } from "../../../recoil/actions";
 import { elementByIdSelector, uiAtom, highlightElementAtom } from "../../../recoil/modules";
 import { ReactComponent as AddCircleOutline } from "../../../assets/icons/baseline-add_circle-24px.svg";
+import BlockContainerInnerWrapper from "./BlockContainerInnerWrapper";
 
 const addIcon = css({
     color: "var(--mdc-theme-secondary)",
@@ -21,11 +21,6 @@ const addIcon = css({
     "&::before, &::after": {
         display: "none"
     }
-});
-
-const BlockContainerInnerWrapStyled = styled("div")({
-    position: "relative",
-    maxWidth: "100%"
 });
 
 type BlockContainerPropsType = {
@@ -110,7 +105,11 @@ const BlockContainer: React.FunctionComponent<BlockContainerPropsType> = ({
                     </DropZone.Center>
                 )}
                 {elements.map((childId, index) => (
-                    <BlockContainerInnerWrapStyled key={childId}>
+                    <BlockContainerInnerWrapper
+                        key={childId}
+                        elementId={childId}
+                        displayMode={displayMode}
+                    >
                         <DropZone.Above
                             type={type}
                             onDrop={source => dropElementAction(source, index)}
@@ -122,7 +121,7 @@ const BlockContainer: React.FunctionComponent<BlockContainerPropsType> = ({
                                 onDrop={source => dropElementAction(source, totalElements)}
                             />
                         )}
-                    </BlockContainerInnerWrapStyled>
+                    </BlockContainerInnerWrapper>
                 ))}
             </div>
         </div>
