@@ -15,7 +15,7 @@ import { SignInChildrenProps } from "../cognito/states/SignIn";
 const SignIn: React.FC<SignInChildrenProps> = ({ signIn, error, loading, authProps }) => {
     return (
         <StateContainer>
-            <Form onSubmit={signIn} submitOnEnter>
+            <Form onSubmit={signIn} submitOnEnter onChange={console.log}>
                 {({ Bind, submit }) => (
                     <Elevation z={2}>
                         <InnerContent>

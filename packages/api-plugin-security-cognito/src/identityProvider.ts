@@ -34,7 +34,10 @@ export default ({ region, userPoolId }) => {
             async createUser({ data, permanent = false }) {
                 try {
                     await cognito
-                        .adminGetUser({ Username: data.login, UserPoolId: userPoolId })
+                        .adminGetUser({
+                            Username: data.login.toLowerCase(),
+                            UserPoolId: userPoolId
+                        })
                         .promise();
 
                     // User exists
@@ -45,7 +48,7 @@ export default ({ region, userPoolId }) => {
 
                 const params = {
                     UserPoolId: userPoolId,
-                    Username: data.login,
+                    Username: data.login.toLowerCase(),
                     DesiredDeliveryMediums: [],
                     ForceAliasCreation: false,
                     MessageAction: "SUPPRESS",
@@ -67,7 +70,7 @@ export default ({ region, userPoolId }) => {
 
                 const verify = {
                     UserPoolId: userPoolId,
-                    Username: data.login,
+                    Username: data.login.toLowerCase(),
                     UserAttributes: [
                         {
                             Name: "email_verified",
@@ -83,7 +86,7 @@ export default ({ region, userPoolId }) => {
                         .adminSetUserPassword({
                             Permanent: true,
                             Password: data.password,
-                            Username: data.login,
+                            Username: data.login.toLowerCase(),
                             UserPoolId: userPoolId
                         })
                         .promise();
@@ -95,7 +98,7 @@ export default ({ region, userPoolId }) => {
                         return { Name: attr, Value: user[updateAttributes[attr]] };
                     }),
                     UserPoolId: userPoolId,
-                    Username: user.login
+                    Username: user.login.toLowerCase()
                 };
 
                 await cognito.adminUpdateUserAttributes(params).promise();
@@ -104,7 +107,7 @@ export default ({ region, userPoolId }) => {
                     const pass = {
                         Permanent: true,
                         Password: data.password,
-                        Username: user.login,
+                        Username: user.login.toLowerCase(),
                         UserPoolId: userPoolId
                     };
 
@@ -113,7 +116,7 @@ export default ({ region, userPoolId }) => {
             },
             async deleteUser({ user }) {
                 await cognito
-                    .adminDeleteUser({ UserPoolId: userPoolId, Username: user.login })
+                    .adminDeleteUser({ UserPoolId: userPoolId, Username: user.login.toLowerCase() })
                     .promise();
             }
         } as SecurityIdentityProviderPlugin<{ password: string }>

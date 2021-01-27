@@ -118,7 +118,11 @@ const Install = ({ onInstalled }) => {
                                 </Bind>
                             </Cell>
                             <Cell span={12}>
-                                <Bind name="login" validators={validation.create("required,email")}>
+                                <Bind
+                                    name="login"
+                                    validators={validation.create("required,email")}
+                                    beforeChange={(value: string, cb) => cb(value.toLowerCase())}
+                                >
                                     <Input label={t`E-mail`} />
                                 </Bind>
                             </Cell>
