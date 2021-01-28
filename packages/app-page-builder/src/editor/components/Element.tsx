@@ -110,6 +110,8 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
         })
     );
 
+    const isDraggable = Array.isArray(plugin.target) && plugin.target.length > 0;
+
     return (
         <Transition in={true} timeout={250} appear={true}>
             {state => (
@@ -123,9 +125,15 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
                     className={"webiny-pb-page-element-container"}
                 >
                     <div className={["innerWrapper", className].filter(c => c).join(" ")}>
-                        <Draggable target={plugin.target} beginDrag={beginDrag} endDrag={endDrag}>
+                        <Draggable
+                            enabled={isDraggable}
+                            target={plugin.target}
+                            beginDrag={beginDrag}
+                            endDrag={endDrag}
+                        >
                             {renderDraggable}
                         </Draggable>
+
                         {renderedPlugin}
                     </div>
                 </ElementContainer>
