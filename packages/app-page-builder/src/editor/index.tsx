@@ -2,7 +2,6 @@ import React from "react";
 import { Editor as EditorComponent } from "./components/Editor";
 import { EditorProvider } from "./contexts/EditorProvider";
 import { RecoilRoot } from "recoil";
-import { RecoilUndoRoot } from "recoil-undo";
 import {
     rootElementAtom,
     RevisionsAtomType,
@@ -34,11 +33,9 @@ export const Editor: React.FunctionComponent<EditorPropsType> = ({ page, revisio
                 set(pageAtom, pageData);
             }}
         >
-            <RecoilUndoRoot trackingByDefault={false} trackedAtoms={[]}>
-                <EditorProvider>
-                    <EditorComponent page={page} revisions={revisions} />
-                </EditorProvider>
-            </RecoilUndoRoot>
+            <EditorProvider>
+                <EditorComponent page={page} revisions={revisions} />
+            </EditorProvider>
         </RecoilRoot>
     );
 };

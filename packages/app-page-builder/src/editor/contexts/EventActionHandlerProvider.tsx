@@ -30,6 +30,8 @@ import {
     EventActionHandlerCallableState
 } from "@webiny/app-page-builder/types";
 import {
+    Snapshot,
+    useGotoRecoilSnapshot,
     useRecoilCallback,
     useRecoilSnapshot,
     useRecoilState,
@@ -39,6 +41,11 @@ import {
 
 type ListType = Map<symbol, EventActionCallable>;
 type RegistryType = Map<string, ListType>;
+
+interface StateHistoryInfo {
+    busy: boolean;
+    key: number | null;
+}
 
 export const EventActionHandlerContext = createContext<EventActionHandler>(null);
 
@@ -58,6 +65,17 @@ const getEventActionClassName = (target: EventActionHandlerTarget): string => {
         throw new Error("Could not find class name.");
     }
     return name;
+};
+
+const trackedAtoms = ["elements"];
+const isTrackedAtomChanged = (state: Partial<PbState>): boolean => {
+    for (const atom of trackedAtoms) {
+        if (!state[atom]) {
+            continue;
+        }
+        return true;
+    }
+    return false;
 };
 
 export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ children }) => {
@@ -80,6 +98,14 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
     const revisionsAtomValueRef = useRef(null);
     const snapshotRef = useRef(null);
     const eventElements = useRef({});
+    // elements history used to track elementsAtom changes
+    const stateHistory = useRef<Snapshot[]>([]);
+    const stateHistoryInfo = useRef<StateHistoryInfo>({
+        busy: false,
+        key: null
+    });
+    const isBatching = useRef<boolean>(false);
+    const goToSnapshot = useGotoRecoilSnapshot();
 
     useEffect(() => {
         sidebarAtomValueRef.current = sidebarAtomValue;
@@ -89,6 +115,8 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
         uiAtomValueRef.current = uiAtomValue;
         revisionsAtomValueRef.current = revisionsAtomValue;
         snapshotRef.current = snapshot;
+        stateHistory.current;
+        stateHistoryInfo.current;
     }, [
         sidebarAtomValue,
         rootElementAtomValue,
@@ -100,7 +128,6 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
 
     const registry = useRef<RegistryType>(new Map());
 
-    // const trackedStates = useRef<string[]>([]);
     const config = useRef<EventActionHandlerConfig>(
         createConfiguration(plugins.byType("pb-config"))
     );
@@ -114,8 +141,17 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
                     parent: item.parent !== undefined ? item.parent : prevValue.parent
                 };
             });
+            return item.id;
         });
     });
+
+    const takeSnapshot = useRecoilCallback(({ snapshot }) => () => {
+        return snapshot;
+    });
+
+    const getSnapshot = (index: number): Snapshot | null => {
+        return stateHistory.current[index] || null;
+    };
 
     const getElementTree = async element => {
         if (!element) {
@@ -188,17 +224,32 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
         };
     };
 
-    const saveCallablesResults = (state: Partial<PbState>): void => {
-        if (Object.values(state).length === 0) {
+    const createStateHistorySnapshot = async (): Promise<void> => {
+        if (stateHistoryInfo.current.busy === true) {
             return;
         }
-        // this is required because if we start the batch
-        // there will be extra state in the undo
-        // does not matter that tracked state did not change
-        //const setInBatch = this.isTrackedStateChanged(state);
-        //if (setInBatch) {
-        //    connectedBatchStart();
-        //}
+        stateHistoryInfo.current.busy = true;
+        const key = stateHistoryInfo.current.key;
+        // when saving new state history we must remove everything after the current one
+        // since this is the new starting point of the state history
+        if (key !== null) {
+            stateHistory.current.splice(key + 1);
+        }
+        const atIndex = key === null ? 0 : key + 1;
+        stateHistory.current[atIndex] = takeSnapshot();
+        stateHistoryInfo.current = {
+            key: atIndex,
+            busy: false
+        };
+    };
+
+    const saveCallablesResults = (state: Partial<PbState>, history = true): void => {
+        if (Object.values(state).length === 0) {
+            return;
+        } else if (history && isBatching.current === false && isTrackedAtomChanged(state)) {
+            // fn is async but we do not need to wait for it to end, just let it save the history
+            createStateHistorySnapshot();
+        }
 
         if (state.ui) {
             setUiAtomValue(state.ui);
@@ -227,10 +278,6 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
         if (state.sidebar) {
             setSidebarAtomValue(state.sidebar);
         }
-
-        // if (setInBatch) {
-        //     //connectedBatchEnd();
-        // }
     };
 
     const eventActionHandler = useMemo<EventActionHandler>(
@@ -257,10 +304,55 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
                 const results = await triggerEventAction(ev, {} as any, []);
                 saveCallablesResults(results.state);
                 return results.state;
+            },
+            undo: () => {
+                const current = stateHistoryInfo.current;
+                if (current.busy === true || current.key === null || current.key < 0) {
+                    return;
+                }
+                const snapshot = getSnapshot(current.key);
+                if (!snapshot) {
+                    return;
+                }
+                const nextKey = current.key - 1;
+                setSnapshot({
+                    snapshot,
+                    key: nextKey
+                });
+            },
+            redo: () => {
+                const current = stateHistoryInfo.current;
+                if (current.busy === true || current.key === null) {
+                    return;
+                }
+                const nextKey = current.key === -1 ? 1 : current.key + 1;
+                const snapshot = getSnapshot(nextKey);
+                if (!snapshot) {
+                    return;
+                }
+                setSnapshot({
+                    snapshot,
+                    key: nextKey
+                });
+            },
+            startBatch: () => {
+                isBatching.current = true;
+            },
+            endBatch: () => {
+                isBatching.current = false;
             }
         }),
         []
     );
+
+    const setSnapshot = ({ snapshot, key }): void => {
+        stateHistoryInfo.current.busy = true;
+        goToSnapshot(snapshot);
+        stateHistoryInfo.current = {
+            busy: false,
+            key
+        };
+    };
 
     const triggerEventAction = async <T extends EventActionHandlerCallableArgs>(
         ev: EventAction<T>,
