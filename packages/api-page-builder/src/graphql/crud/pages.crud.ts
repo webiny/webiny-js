@@ -1212,16 +1212,16 @@ const createPlugin = (configuration: HandlerConfiguration): ContextPlugin<PbCont
 
                         if (page.status !== STATUS_REVIEW_REQUESTED) {
                             throw new Error(
-                                `Cannot request changes on a page that's not in review.`,
-                                "REQUESTED_CHANGES_ON_NOT_IN_REVIEW_PAGE"
+                                `Cannot request changes on a page that's not under review.`,
+                                "REQUESTED_CHANGES_ON_PAGE_REVISION_NOT_UNDER_REVIEW"
                             );
                         }
 
                         const identity = context.security.getIdentity();
-                        if (page.ownedBy.id === identity.id) {
+                        if (page.createdBy.id === identity.id) {
                             throw new Error(
-                                "Cannot request changes on own page.",
-                                "REQUEST_CHANGES_ON_OWN_PAGE"
+                                "Cannot request changes on page revision you created.",
+                                "REQUESTED_CHANGES_ON_PAGE_REVISION_YOU_CREATED"
                             );
                         }
 

@@ -41,11 +41,9 @@ const RequestReview = props => {
         title: t`Request Review`,
         message: (
             <p>
-                {t`You are about to request review for {title} page. Are you sure you want to continue?`(
-                    {
-                        title: <strong>{page.title}</strong>
-                    }
-                )}
+                {t`You are about to request review of the {title} page. Are you sure you want to continue?`({
+                    title: <strong>{page.title}</strong>
+                })}
             </p>
         )
     });

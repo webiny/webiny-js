@@ -19,7 +19,7 @@ const PublishRevision = props => {
         title: t`Publish page`,
         message: (
             <p>
-                {t`You are about to publish {title} page. Are you sure you want to continue?`({
+                {t`You are about to publish the {title} page. Are you sure you want to continue?`({
                     title: <strong>{page.title}</strong>
                 })}
             </p>

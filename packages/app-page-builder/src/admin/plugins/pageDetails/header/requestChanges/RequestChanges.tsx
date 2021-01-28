@@ -41,9 +41,9 @@ const RequestChanges = props => {
         title: t`Request Changes`,
         message: (
             <p>
-                {t`You are about to request changes for {title} page. Are you sure you want to continue?`(
+                {t`You are about to request changes to the {title} page. Are you sure you want to continue?`(
                     {
-                        title: <b>{page.title}</b>
+                        title: <strong>{page.title}</strong>
                     }
                 )}
             </p>
@@ -54,8 +54,10 @@ const RequestChanges = props => {
     if (!pbPagePermission) {
         return null;
     }
-
-    if (pbPagePermission.own && page?.createdBy?.id !== identity.login) {
+    
+    // You can't request changes on the page you created (this is different from `ownedBy`).
+    // Owner of the page CAN request changes on revisions that were created by other users.
+    if (page.createdBy && page.createdBy.id === identity.login) {
         return null;
     }
 
