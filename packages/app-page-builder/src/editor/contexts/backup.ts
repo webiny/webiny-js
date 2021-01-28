@@ -10,6 +10,7 @@ import { PbState } from "@webiny/app-page-builder/editor/recoil/modules/types";
  *
  * removing all subscriptions: handler.clearRegistry()
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 class EventActionHandler {
     private readonly _registry: RegistryType = new Map();
     private readonly _trackedStates: string[];

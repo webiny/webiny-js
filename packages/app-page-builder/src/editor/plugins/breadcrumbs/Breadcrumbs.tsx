@@ -31,8 +31,8 @@ const Breadcrumbs: React.FunctionComponent = () => {
 
             // Set the new highlighted element
             setHighlightElementAtomValue(id);
-            
-            // Update the element that is about to be highlighted 
+
+            // Update the element that is about to be highlighted
             set(elementsAtom(id), prevValue => {
                 return {
                     ...prevValue,

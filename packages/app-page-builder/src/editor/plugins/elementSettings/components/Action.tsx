@@ -3,8 +3,7 @@ import { TogglePluginActionEvent } from "@webiny/app-page-builder/editor/recoil/
 import React, { useEffect, useCallback, ReactElement } from "react";
 import {
     isPluginActiveSelector,
-    activePluginsByTypeTotalSelector,
-    uiAtom
+    activePluginsByTypeTotalSelector
 } from "@webiny/app-page-builder/editor/recoil/modules";
 import { css } from "emotion";
 import { IconButton } from "@webiny/ui/Button";
