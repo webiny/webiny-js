@@ -15,7 +15,7 @@ const RenderFieldElement = (props: {
     field: CmsEditorField;
     Bind: any;
     contentModel: CmsEditorContentModel;
-    renderPlugins: CmsEditorFieldRendererPlugin[];
+    renderPlugins: readonly CmsEditorFieldRendererPlugin[];
 }) => {
     const { renderPlugins, field, Bind: BaseFormBind, contentModel } = props;
 
