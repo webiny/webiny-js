@@ -605,6 +605,8 @@ export interface EventActionHandler {
     redo: () => void;
     startBatch: () => void;
     endBatch: () => void;
+    enableHistory: () => void;
+    disableHistory: () => void;
 }
 
 export interface EventActionHandlerTarget {

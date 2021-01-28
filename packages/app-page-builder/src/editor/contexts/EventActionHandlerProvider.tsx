@@ -42,9 +42,18 @@ import {
 type ListType = Map<symbol, EventActionCallable>;
 type RegistryType = Map<string, ListType>;
 
-interface StateHistoryInfo {
+// interface StateHistoryInfo {
+//     busy: boolean;
+//     key: number | null;
+// }
+
+interface SnapshotHistory {
+    past: Snapshot[];
+    future: Snapshot[];
     busy: boolean;
-    key: number | null;
+    present: Snapshot | null;
+    isBatching: boolean;
+    isDisabled: boolean;
 }
 
 export const EventActionHandlerContext = createContext<EventActionHandler>(null);
@@ -99,12 +108,19 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
     const snapshotRef = useRef(null);
     const eventElements = useRef({});
     // elements history used to track elementsAtom changes
-    const stateHistory = useRef<Snapshot[]>([]);
-    const stateHistoryInfo = useRef<StateHistoryInfo>({
+    const snapshotsHistory = useRef<SnapshotHistory>({
+        past: [],
+        future: [],
+        present: null,
         busy: false,
-        key: null
+        isBatching: false,
+        isDisabled: false
     });
-    const isBatching = useRef<boolean>(false);
+    // const stateHistory = useRef<Snapshot[]>([]);
+    // const stateHistoryInfo = useRef<StateHistoryInfo>({
+    //     busy: false,
+    //     key: null
+    // });
     const goToSnapshot = useGotoRecoilSnapshot();
 
     useEffect(() => {
@@ -115,8 +131,6 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
         uiAtomValueRef.current = uiAtomValue;
         revisionsAtomValueRef.current = revisionsAtomValue;
         snapshotRef.current = snapshot;
-        stateHistory.current;
-        stateHistoryInfo.current;
     }, [
         sidebarAtomValue,
         rootElementAtomValue,
@@ -148,10 +162,6 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
     const takeSnapshot = useRecoilCallback(({ snapshot }) => () => {
         return snapshot;
     });
-
-    const getSnapshot = (index: number): Snapshot | null => {
-        return stateHistory.current[index] || null;
-    };
 
     const getElementTree = async element => {
         if (!element) {
@@ -225,28 +235,27 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
     };
 
     const createStateHistorySnapshot = async (): Promise<void> => {
-        if (stateHistoryInfo.current.busy === true) {
+        if (snapshotsHistory.current.busy === true) {
             return;
         }
-        stateHistoryInfo.current.busy = true;
-        const key = stateHistoryInfo.current.key;
+        snapshotsHistory.current.busy = true;
         // when saving new state history we must remove everything after the current one
         // since this is the new starting point of the state history
-        if (key !== null) {
-            stateHistory.current.splice(key + 1);
-        }
-        const atIndex = key === null ? 0 : key + 1;
-        stateHistory.current[atIndex] = takeSnapshot();
-        stateHistoryInfo.current = {
-            key: atIndex,
-            busy: false
-        };
+        snapshotsHistory.current.future = [];
+        snapshotsHistory.current.past.push(takeSnapshot());
+        snapshotsHistory.current.present = null;
+        snapshotsHistory.current.busy = false;
     };
 
     const saveCallablesResults = (state: Partial<PbState>, history = true): void => {
         if (Object.values(state).length === 0) {
             return;
-        } else if (history && isBatching.current === false && isTrackedAtomChanged(state)) {
+        } else if (
+            history &&
+            snapshotsHistory.current.isBatching === false &&
+            snapshotsHistory.current.isDisabled === false &&
+            isTrackedAtomChanged(state)
+        ) {
             // fn is async but we do not need to wait for it to end, just let it save the history
             createStateHistorySnapshot();
         }
@@ -306,53 +315,56 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
                 return results.state;
             },
             undo: () => {
-                const current = stateHistoryInfo.current;
-                if (current.busy === true || current.key === null || current.key < 0) {
+                if (snapshotsHistory.current.busy === true) {
                     return;
                 }
-                const snapshot = getSnapshot(current.key);
-                if (!snapshot) {
+                snapshotsHistory.current.busy = true;
+                const previousSnapshot = snapshotsHistory.current.past.pop();
+                if (!previousSnapshot) {
+                    snapshotsHistory.current.busy = false;
                     return;
                 }
-                const nextKey = current.key - 1;
-                setSnapshot({
-                    snapshot,
-                    key: nextKey
-                });
+                const futureSnapshot = snapshotsHistory.current.present || takeSnapshot();
+                snapshotsHistory.current.future.unshift(futureSnapshot);
+
+                snapshotsHistory.current.present = previousSnapshot;
+
+                goToSnapshot(previousSnapshot);
+                snapshotsHistory.current.busy = false;
             },
             redo: () => {
-                const current = stateHistoryInfo.current;
-                if (current.busy === true || current.key === null) {
+                if (snapshotsHistory.current.busy === true) {
                     return;
                 }
-                const nextKey = current.key === -1 ? 1 : current.key + 1;
-                const snapshot = getSnapshot(nextKey);
-                if (!snapshot) {
+                snapshotsHistory.current.busy = true;
+                const nextSnapshot = snapshotsHistory.current.future.shift();
+                if (!nextSnapshot) {
+                    snapshotsHistory.current.present = null;
+                    snapshotsHistory.current.busy = false;
                     return;
+                } else if (snapshotsHistory.current.present) {
+                    snapshotsHistory.current.past.push(snapshotsHistory.current.present);
                 }
-                setSnapshot({
-                    snapshot,
-                    key: nextKey
-                });
+                snapshotsHistory.current.present = nextSnapshot;
+
+                goToSnapshot(nextSnapshot);
+                snapshotsHistory.current.busy = false;
             },
             startBatch: () => {
-                isBatching.current = true;
+                snapshotsHistory.current.isBatching = true;
             },
             endBatch: () => {
-                isBatching.current = false;
+                snapshotsHistory.current.isBatching = false;
+            },
+            disableHistory: () => {
+                snapshotsHistory.current.isDisabled = true;
+            },
+            enableHistory: () => {
+                snapshotsHistory.current.isDisabled = false;
             }
         }),
         []
     );
-
-    const setSnapshot = ({ snapshot, key }): void => {
-        stateHistoryInfo.current.busy = true;
-        goToSnapshot(snapshot);
-        stateHistoryInfo.current = {
-            busy: false,
-            key
-        };
-    };
 
     const triggerEventAction = async <T extends EventActionHandlerCallableArgs>(
         ev: EventAction<T>,

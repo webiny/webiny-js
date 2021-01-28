@@ -54,7 +54,7 @@ const RequestChanges = props => {
     if (!pbPagePermission) {
         return null;
     }
-    
+
     // You can't request changes on the page you created (this is different from `ownedBy`).
     // Owner of the page CAN request changes on revisions that were created by other users.
     if (page.createdBy && page.createdBy.id === identity.login) {
