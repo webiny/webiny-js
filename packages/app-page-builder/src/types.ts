@@ -601,6 +601,10 @@ export interface EventActionHandler {
     trigger<T extends EventActionHandlerCallableArgs>(
         ev: EventAction<T>
     ): Promise<Partial<PbState>>;
+    undo: () => void;
+    redo: () => void;
+    startBatch: () => void;
+    endBatch: () => void;
 }
 
 export interface EventActionHandlerTarget {

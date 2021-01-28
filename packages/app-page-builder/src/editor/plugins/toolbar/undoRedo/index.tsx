@@ -7,6 +7,7 @@ import { ReactComponent as RedoIcon } from "@webiny/app-page-builder/editor/asse
 import { PbEditorToolbarBottomPlugin } from "@webiny/app-page-builder/types";
 import { activeElementAtom } from "../../../recoil/modules";
 import Action from "../Action";
+import {useEventActionHandler} from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
 
 const metaKey = platform.os.family === "OS X" ? "CMD" : "CTRL";
 
@@ -14,7 +15,7 @@ export const undo: PbEditorToolbarBottomPlugin = {
     name: "pb-editor-toolbar-undo",
     type: "pb-editor-toolbar-bottom",
     renderAction() {
-        const undo = useUndo();
+        const {undo} = useEventActionHandler();
         const setActiveElementAtomValue = useSetRecoilState(activeElementAtom);
 
         const onClick = () => {
@@ -36,7 +37,7 @@ export const redo: PbEditorToolbarBottomPlugin = {
     name: "pb-editor-toolbar-redo",
     type: "pb-editor-toolbar-bottom",
     renderAction() {
-        const redo = useRedo();
+        const {redo} = useEventActionHandler();
         const setActiveElementAtomValue = useSetRecoilState(activeElementAtom);
 
         const onClick = () => {

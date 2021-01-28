@@ -8,7 +8,7 @@ import {
     RevisionsAtomType,
     pageAtom,
     elementsAtom,
-    PageAtomType
+    PageAtomType, elementsIdListAtom
 } from "@webiny/app-page-builder/editor/recoil/modules";
 import { flattenElements } from "@webiny/app-page-builder/editor/helpers";
 import { PbEditorElement } from "@webiny/app-page-builder/types";
@@ -29,16 +29,16 @@ export const Editor: React.FunctionComponent<EditorPropsType> = ({ page, revisio
                 Object.keys(elements).forEach(key => {
                     set(elementsAtom(key), elements[key]);
                 });
+                
+                set(elementsIdListAtom, Object.keys(elements));
 
                 const pageData = { ...page, content: undefined };
                 set(pageAtom, pageData);
             }}
         >
-            <RecoilUndoRoot trackingByDefault={false} trackedAtoms={[]}>
-                <EditorProvider>
-                    <EditorComponent page={page} revisions={revisions} />
-                </EditorProvider>
-            </RecoilUndoRoot>
+            <EditorProvider>
+                <EditorComponent page={page} revisions={revisions} />
+            </EditorProvider>
         </RecoilRoot>
     );
 };
