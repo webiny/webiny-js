@@ -106,7 +106,7 @@ export const until = async (execute, until, options: UntilOptions = {}) => {
         }
 
         // Wait.
-        await new Promise(resolve => {
+        await new Promise((resolve: any) => {
             setTimeout(() => resolve(), wait);
         });
     }

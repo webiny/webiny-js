@@ -11,7 +11,6 @@ import {
     uiAtom
 } from "../../recoil/modules";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import { useIsTrackingHistory } from "recoil-undo";
 import { DndProvider } from "react-dnd";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
 import { plugins } from "@webiny/plugins";
@@ -74,14 +73,9 @@ export const Editor: React.FunctionComponent<EditorPropsType> = ({ revisions }) 
 
     const setRevisionsAtomValue = useSetRecoilState(revisionsAtom);
     const rootElementId = useRecoilValue(rootElementAtom);
-    const { getIsTrackingHistory, setIsTrackingHistory } = useIsTrackingHistory();
 
     const firstRender = React.useRef<boolean>(true);
     const registeredPlugins = React.useRef<PluginRegistryType>();
-
-    if (rootElementId && getIsTrackingHistory() === false) {
-        setIsTrackingHistory(true);
-    }
 
     useEffect(() => {
         addKeyHandler("mod+z", e => {

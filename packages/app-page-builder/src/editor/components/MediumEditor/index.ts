@@ -21,23 +21,29 @@ const editorClass = css({
     }
 });
 
-type ReactMediumEditorProps = {
+const excludeProps = ["elementId"];
+
+const isPropAllowed = (key: string): boolean => {
+    return excludeProps.includes(key) !== true;
+};
+
+interface ReactMediumEditorProps {
     value: string;
     onChange: (value: string) => void;
     onSelect: () => void;
     tag: string;
     options?: any;
     [key: string]: any;
-};
+}
 
-const ReactMediumEditor = ({
+const ReactMediumEditor: React.FunctionComponent<ReactMediumEditorProps> = ({
     tag = "div",
     value,
     onChange,
     options,
     onSelect,
     ...props
-}: ReactMediumEditorProps) => {
+}) => {
     const elementRef = React.useRef();
     const editorRef = React.useRef<MediumEditor.MediumEditor>();
 
@@ -82,8 +88,15 @@ const ReactMediumEditor = ({
         };
     }, [options, tag]);
 
+    const cleanedProps = Object.keys(props).reduce((acc, key) => {
+        if (!isPropAllowed(key)) {
+            return acc;
+        }
+        acc[key] = props[key];
+        return acc;
+    }, {});
     return createElement(tag, {
-        ...props,
+        ...cleanedProps,
         dangerouslySetInnerHTML: { __html: value },
         ref: elementRef,
         className: editorClass

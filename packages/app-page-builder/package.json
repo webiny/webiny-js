@@ -54,7 +54,6 @@
     "react-transition-group": "^4.3.0",
     "react-virtualized": "^9.21.0",
     "recoil": "^0.1.2",
-    "recoil-undo": "^0.0.7",
     "shortid": "^2.2.8",
     "slugify": "^1.2.9",
     "store": "^2.0.12",
