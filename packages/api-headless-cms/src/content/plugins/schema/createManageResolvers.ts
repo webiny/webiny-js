@@ -6,6 +6,8 @@ import { resolveGetRevisions } from "./resolvers/manage/resolveGetRevisions";
 import { resolveGetByIds } from "./resolvers/manage/resolveGetByIds";
 import { resolveCreate } from "./resolvers/manage/resolveCreate";
 import { resolveUpdate } from "./resolvers/manage/resolveUpdate";
+import { resolveRequestReview } from "./resolvers/manage/resolveRequestReview";
+import { resolveRequestChanges } from "./resolvers/manage/resolveRequestChanges";
 import { resolveDelete } from "./resolvers/manage/resolveDelete";
 import { resolvePublish } from "./resolvers/manage/resolvePublish";
 import { resolveUnpublish } from "./resolvers/manage/resolveUnpublish";
@@ -44,7 +46,9 @@ export const createManageResolvers: CreateManageResolvers = ({
             [`delete${typeName}`]: resolveDelete({ model }),
             [`publish${typeName}`]: resolvePublish({ model }),
             [`unpublish${typeName}`]: resolveUnpublish({ model }),
-            [`create${typeName}From`]: resolveCreateFrom({ model })
+            [`create${typeName}From`]: resolveCreateFrom({ model }),
+            [`request${typeName}Review`]: resolveRequestReview({ model }),
+            [`request${typeName}Changes`]: resolveRequestChanges({ model })
         },
         [mTypeName]: model.fields.reduce(
             (resolvers, field) => {

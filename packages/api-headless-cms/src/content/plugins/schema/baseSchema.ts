@@ -51,6 +51,12 @@ const baseSchema = (context: CmsContext): GraphQLSchemaPlugin => {
                     data: Boolean
                     error: CmsError
                 }
+
+                type CmsCreatedBy {
+                    id: String
+                    displayName: String
+                    type: String
+                }
             `,
             resolvers: {
                 ...scalars.reduce((acc, s) => {

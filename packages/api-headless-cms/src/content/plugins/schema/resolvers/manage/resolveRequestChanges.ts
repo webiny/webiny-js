@@ -1,0 +1,18 @@
+import { Response, ErrorResponse } from "@webiny/handler-graphql/responses";
+import { CmsContentEntryResolverFactory as ResolverFactory } from "@webiny/api-headless-cms/types";
+
+type ResolveRequestChanges = ResolverFactory<any, { revision: string }>;
+
+export const resolveRequestChanges: ResolveRequestChanges = ({ model }) => async (
+    root,
+    args,
+    { cms }
+) => {
+    try {
+        const entry = await cms.entries.requestChanges(model, args.revision);
+
+        return new Response(entry);
+    } catch (e) {
+        return new ErrorResponse(e);
+    }
+};

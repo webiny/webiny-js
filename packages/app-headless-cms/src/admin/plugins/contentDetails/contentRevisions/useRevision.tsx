@@ -31,13 +31,17 @@ export const useRevision = ({
         CREATE_REVISION,
         DELETE_REVISION,
         PUBLISH_REVISION,
-        UNPUBLISH_REVISION
+        UNPUBLISH_REVISION,
+        REQUEST_REVIEW,
+        REQUEST_CHANGES
     } = useMemo(() => {
         return {
             CREATE_REVISION: GQL.createCreateFromMutation(contentModel),
             DELETE_REVISION: GQL.createDeleteMutation(contentModel),
             PUBLISH_REVISION: GQL.createPublishMutation(contentModel),
-            UNPUBLISH_REVISION: GQL.createUnpublishMutation(contentModel)
+            UNPUBLISH_REVISION: GQL.createUnpublishMutation(contentModel),
+            REQUEST_REVIEW: GQL.createRequestReviewMutation(contentModel),
+            REQUEST_CHANGES: GQL.createRequestChangesMutation(contentModel)
         };
     }, [modelId]);
 
@@ -46,7 +50,9 @@ export const useRevision = ({
         editRevision,
         deleteRevision,
         publishRevision,
-        unpublishRevision
+        unpublishRevision,
+        requestReview,
+        requestChanges
     } = useHandlers(
         { entry },
         {
@@ -166,9 +172,51 @@ export const useRevision = ({
                         Successfully unpublished revision <strong>#{revision.version}</strong>!
                     </span>
                 );
+            },
+            requestReview: () => async id => {
+                setLoading(true);
+                await client.mutate({
+                    mutation: REQUEST_REVIEW,
+                    variables: { revision: id || revision.id },
+                    update(cache, { data }) {
+                        const { error } = data.content;
+                        if (error) {
+                            return showSnackbar(error.message);
+                        }
+
+                        showSnackbar(<span>Review requested successfully!</span>);
+                    }
+                });
+
+                setLoading(false);
+            },
+            requestChanges: () => async id => {
+                setLoading(true);
+                await client.mutate({
+                    mutation: REQUEST_CHANGES,
+                    variables: { revision: id || revision.id },
+                    update(cache, { data }) {
+                        const { error } = data.content;
+                        if (error) {
+                            return showSnackbar(error.message);
+                        }
+
+                        showSnackbar(<span>Changes requested successfully!</span>);
+                    }
+                });
+
+                setLoading(false);
             }
         }
     );
 
-    return { createRevision, editRevision, deleteRevision, publishRevision, unpublishRevision };
+    return {
+        createRevision,
+        editRevision,
+        deleteRevision,
+        publishRevision,
+        unpublishRevision,
+        requestReview,
+        requestChanges
+    };
 };
