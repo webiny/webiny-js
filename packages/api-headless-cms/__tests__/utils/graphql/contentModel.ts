@@ -32,6 +32,11 @@ const DATA_FIELD = /* GraphQL*/ `
                 message
                 settings
             }
+            listValidation {
+                name
+                message
+                settings
+            }
             settings
         }
         createdOn
