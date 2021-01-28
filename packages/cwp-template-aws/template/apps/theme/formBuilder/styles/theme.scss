@@ -6,6 +6,7 @@
 
   .webiny-fb-form-layout-row,
   .webiny-fb-form-layout-column {
+    display: flex;
     width: 100%;
     padding: 0;
   }

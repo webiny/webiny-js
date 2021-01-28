@@ -52,11 +52,12 @@
 }
 .webiny-pb-media-query--mobile-landscape .webiny-pb-page-document,
 .webiny-pb-media-query--mobile-portrait .webiny-pb-page-document {
-  min-height: calc(100vh + 150px);
+  min-height: calc(100vh - 230px);
 }
 
 // base css class that applies to all elements created by the page editor
 .webiny-pb-base-page-element-style {
+  box-sizing: border-box;
   max-width: var(--desktop-width);
   height: var(--desktop-height);
 
