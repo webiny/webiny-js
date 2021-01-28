@@ -8,9 +8,7 @@ module.exports = async (inputs, context) => {
     await getPulumi().install();
 
     const [, command] = inputs._;
-    context.info(
-        `Running command ${green(command)} ${gray(`(via ${PULUMI_BINARY_PATH}`)}`
-    );
+    context.info(`Running command ${green(command)} ${gray(`(via ${PULUMI_BINARY_PATH}`)}`);
     console.log();
 
     await execa(PULUMI_BINARY_PATH, command.split(" "), {
