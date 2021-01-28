@@ -35,8 +35,7 @@ const ReactMediumEditor = ({
     value,
     onChange,
     options,
-    onSelect,
-    ...props
+    onSelect
 }: ReactMediumEditorProps) => {
     const elementRef = React.useRef();
     const editorRef = React.useRef<MediumEditor.MediumEditor>();
@@ -53,8 +52,7 @@ const ReactMediumEditor = ({
         }
     };
     /**
-     * Here we're re-creating the "Medium editor" whenever the "tag" changes because
-     * the editor toolbar stops working/responding due to dynamically changed "tag" prop.
+     * Here we're recreating the "Medium editor" whenever the "tag" changes because that's the element editor is mounted on.
      */
     useEffect(() => {
         if (!elementRef && !elementRef.current) {
@@ -83,7 +81,6 @@ const ReactMediumEditor = ({
     }, [options, tag]);
 
     return createElement(tag, {
-        ...props,
         dangerouslySetInnerHTML: { __html: value },
         ref: elementRef,
         className: editorClass
