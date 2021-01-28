@@ -9,10 +9,10 @@ import { useMutation } from "react-apollo";
 import gql from "graphql-tag";
 import { useSecurity } from "@webiny/app-security";
 
-const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/request Review");
+const t = i18n.ns("app-page-builder/page-details/header/request-review");
 
 const REQUEST_REVIEW = gql`
-    mutation updateMenu($id: ID!) {
+    mutation PbPageRequestReview($id: ID!) {
         pageBuilder {
             requestReview(id: $id) {
                 data {

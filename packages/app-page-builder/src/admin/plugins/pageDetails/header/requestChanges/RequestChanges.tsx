@@ -9,10 +9,10 @@ import { useMutation } from "react-apollo";
 import gql from "graphql-tag";
 import { useSecurity } from "@webiny/app-security";
 
-const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/request-changes");
+const t = i18n.ns("app-page-builder/page-details/header/request-changes");
 
 const REQUEST_CHANGES = gql`
-    mutation updateMenu($id: ID!) {
+    mutation PbPageRequestChanges($id: ID!) {
         pageBuilder {
             requestChanges(id: $id) {
                 data {
