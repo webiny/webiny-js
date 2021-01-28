@@ -42,11 +42,6 @@ import {
 type ListType = Map<symbol, EventActionCallable>;
 type RegistryType = Map<string, ListType>;
 
-// interface StateHistoryInfo {
-//     busy: boolean;
-//     key: number | null;
-// }
-
 interface SnapshotHistory {
     past: Snapshot[];
     future: Snapshot[];
@@ -107,7 +102,6 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
     const revisionsAtomValueRef = useRef(null);
     const snapshotRef = useRef(null);
     const eventElements = useRef({});
-    // elements history used to track elementsAtom changes
     const snapshotsHistory = useRef<SnapshotHistory>({
         past: [],
         future: [],
@@ -116,11 +110,6 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
         isBatching: false,
         isDisabled: false
     });
-    // const stateHistory = useRef<Snapshot[]>([]);
-    // const stateHistoryInfo = useRef<StateHistoryInfo>({
-    //     busy: false,
-    //     key: null
-    // });
     const goToSnapshot = useGotoRecoilSnapshot();
 
     useEffect(() => {
@@ -234,7 +223,7 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
         };
     };
 
-    const createStateHistorySnapshot = async (): Promise<void> => {
+    const createStateHistorySnapshot = (): void => {
         if (snapshotsHistory.current.busy === true) {
             return;
         }
@@ -256,7 +245,6 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
             snapshotsHistory.current.isDisabled === false &&
             isTrackedAtomChanged(state)
         ) {
-            // fn is async but we do not need to wait for it to end, just let it save the history
             createStateHistorySnapshot();
         }
 
