@@ -107,6 +107,7 @@ const AddElement: React.FunctionComponent = () => {
 
         return (
             <Draggable
+                enabled={true}
                 key={plugin.name}
                 target={plugin.target}
                 beginDrag={props => {
