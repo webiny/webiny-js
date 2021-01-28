@@ -207,6 +207,4 @@
   &--simple {
     @include button-simple();
   }
-  // force center align on mobile
-  margin: 0 auto !important;
 }
