@@ -906,7 +906,6 @@ export default (): ContextPlugin<CmsContext> => ({
                     })
                     .execute();
 
-
                 if (!entry) {
                     throw new NotFoundError(
                         `Entry "${id}" of model "${model.modelId}" was not found.`
