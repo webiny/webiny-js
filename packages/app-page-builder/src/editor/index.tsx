@@ -2,13 +2,12 @@ import React from "react";
 import { Editor as EditorComponent } from "./components/Editor";
 import { EditorProvider } from "./contexts/EditorProvider";
 import { RecoilRoot } from "recoil";
-import { RecoilUndoRoot } from "recoil-undo";
 import {
     rootElementAtom,
     RevisionsAtomType,
     pageAtom,
     elementsAtom,
-    PageAtomType, elementsIdListAtom
+    PageAtomType
 } from "@webiny/app-page-builder/editor/recoil/modules";
 import { flattenElements } from "@webiny/app-page-builder/editor/helpers";
 import { PbEditorElement } from "@webiny/app-page-builder/types";
@@ -29,8 +28,6 @@ export const Editor: React.FunctionComponent<EditorPropsType> = ({ page, revisio
                 Object.keys(elements).forEach(key => {
                     set(elementsAtom(key), elements[key]);
                 });
-                
-                set(elementsIdListAtom, Object.keys(elements));
 
                 const pageData = { ...page, content: undefined };
                 set(pageAtom, pageData);

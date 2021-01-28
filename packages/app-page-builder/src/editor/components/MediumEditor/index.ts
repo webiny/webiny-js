@@ -21,9 +21,7 @@ const editorClass = css({
     }
 });
 
-const excludeProps = [
-    "elementId",
-];
+const excludeProps = ["elementId"];
 
 const isPropAllowed = (key: string): boolean => {
     return excludeProps.includes(key) !== true;
