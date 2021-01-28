@@ -1,5 +1,6 @@
 import React, { CSSProperties, useCallback, useRef } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilValue } from "recoil";
+import { css } from "emotion";
 import classNames from "classnames";
 import kebabCase from "lodash/kebabCase";
 import merge from "lodash/merge";
@@ -9,7 +10,6 @@ import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
 import { UpdateElementActionEvent } from "../../../recoil/actions";
 import { elementByIdSelector, uiAtom } from "../../../recoil/modules";
 import SimpleEditableText from "./SimpleEditableText";
-import { css } from "emotion";
 
 const buttonEditStyle = css({
     "&.button__content--empty": {
@@ -34,7 +34,7 @@ const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = ({
     elementId
 }) => {
     const eventActionHandler = useEventActionHandler();
-    const [uiAtomValue, setUiAtomValue] = useRecoilState(uiAtom);
+    const uiAtomValue = useRecoilValue(uiAtom);
     const element = useRecoilValue(elementByIdSelector(elementId));
     const { type = "default", icon = {}, buttonText } = element.data || {};
     const defaultValue = typeof buttonText === "string" ? buttonText : "Click me";
@@ -68,7 +68,7 @@ const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = ({
                 history: true
             })
         );
-    }, [elementId]);
+    }, [elementId, element.data]);
 
     return (
         <div
