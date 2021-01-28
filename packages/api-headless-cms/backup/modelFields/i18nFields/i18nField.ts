@@ -1,5 +1,3 @@
-// TODO remove
-// @ts-nocheck
 import { pipe, onGet, fields, withFields, withProps, withName } from "@webiny/commodo";
 import { validation } from "@webiny/validation";
 import { I18NContext } from "@webiny/api-i18n/types";
@@ -32,8 +30,6 @@ export const getI18NValueItem = (value: { [key: string]: any }[], i18n: I18NCont
 
     return output;
 };
-
-type I18NValues = { [key: string]: any }[];
 
 export const i18nField = ({
     field = null,

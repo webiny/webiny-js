@@ -30,9 +30,7 @@ module.exports.sendEvent = async ({ event, data }) => {
     }
 
     const payload = {
-        // eslint-disable-next-line @typescript-eslint/camelcase
         api_key: API_KEY,
-        // eslint-disable-next-line @typescript-eslint/camelcase
         distinct_id: config.id,
         event,
         properties: data,

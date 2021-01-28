@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { css } from "emotion";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import ElementPreview from "./SaveDialog/ElementPreview";
 import { CircularProgress } from "@webiny/ui/Progress";
 
@@ -55,14 +55,14 @@ const SaveDialog = (props: Props) => {
     const { element, open, onClose, onSubmit, type } = props;
     const [loading, setLoading] = useState(false);
 
-    const blockCategoriesOptions = getPlugins<PbEditorBlockCategoryPlugin>(
-        "pb-editor-block-category"
-    ).map(item => {
-        return {
-            value: item.categoryName,
-            label: item.title
-        };
-    });
+    const blockCategoriesOptions = plugins
+        .byType<PbEditorBlockCategoryPlugin>("pb-editor-block-category")
+        .map(item => {
+            return {
+                value: item.categoryName,
+                label: item.title
+            };
+        });
 
     return (
         <Dialog open={open} onClose={onClose} className={narrowDialog}>

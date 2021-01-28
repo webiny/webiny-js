@@ -1,6 +1,6 @@
 import React from "react";
 import { useFormEditor } from "@webiny/app-form-builder/admin/components/FormEditor/Context";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import styled from "@emotion/styled";
 import { css } from "emotion";
 import { Icon } from "@webiny/ui/Icon";
@@ -87,7 +87,8 @@ export const Fields = ({ onFieldDragStart }) => {
     const { getField } = useFormEditor();
 
     function getGroups() {
-        const presetFieldPlugins = getPlugins<FbBuilderFieldPlugin>("form-editor-field-type")
+        const presetFieldPlugins = plugins
+            .byType<FbBuilderFieldPlugin>("form-editor-field-type")
             .filter(pl => pl.field.group)
             .filter(pl => {
                 if (pl.field.unique) {
@@ -96,7 +97,7 @@ export const Fields = ({ onFieldDragStart }) => {
                 return true;
             });
 
-        return getPlugins<FbEditorFieldGroup>("form-editor-field-group").map(pl => ({
+        return plugins.byType<FbEditorFieldGroup>("form-editor-field-group").map(pl => ({
             ...pl.group,
             name: pl.name,
             fields: presetFieldPlugins.filter(f => f.field.group === pl.name).map(pl => pl.field)

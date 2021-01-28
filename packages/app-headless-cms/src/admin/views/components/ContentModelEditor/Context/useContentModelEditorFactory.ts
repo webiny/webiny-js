@@ -3,7 +3,7 @@ import shortid from "shortid";
 import { get, cloneDeep, pick } from "lodash";
 import { GET_CONTENT_MODEL, UPDATE_CONTENT_MODEL } from "./graphql";
 import { getFieldPosition, moveField, moveRow, deleteField } from "./functions";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 
 import {
     CmsEditorFieldsLayout,
@@ -99,8 +99,9 @@ export default ContentModelEditorContext => {
              * @returns {void|?CmsEditorField}
              */
             getFieldPlugin(query: object): CmsEditorFieldTypePlugin {
-                return getPlugins<CmsEditorFieldTypePlugin>("cms-editor-field-type").find(
-                    ({ field }) => {
+                return plugins
+                    .byType<CmsEditorFieldTypePlugin>("cms-editor-field-type")
+                    .find(({ field }) => {
                         for (const key in query) {
                             if (!(key in field)) {
                                 return null;
@@ -112,8 +113,7 @@ export default ContentModelEditorContext => {
                         }
 
                         return true;
-                    }
-                );
+                    });
             },
 
             /**

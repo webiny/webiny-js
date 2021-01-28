@@ -78,10 +78,6 @@ const transitionStyles = {
     }
 };
 
-type State = {
-    closed: boolean;
-};
-
 export type AccordionItemProps = {
     /**
      * Left side icon

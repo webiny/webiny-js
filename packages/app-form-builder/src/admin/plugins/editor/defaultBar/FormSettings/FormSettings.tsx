@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { OverlayLayout } from "@webiny/app-admin/components/OverlayLayout";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
 import { Typography } from "@webiny/ui/Typography";
@@ -27,11 +27,13 @@ type FormSettingsProps = {
 };
 
 const FormSettings = ({ onExited }: FormSettingsProps) => {
-    const plugins = getPlugins<FbEditorFormSettingsPlugin>("form-editor-form-settings");
+    const formEditorSettingsPlugins = plugins.byType<FbEditorFormSettingsPlugin>(
+        "form-editor-form-settings"
+    );
     const { data, setData } = useFormEditor();
     const { showSnackbar } = useSnackbar();
 
-    const [activePlugin, setActivePlugin] = useState(plugins[0]);
+    const [activePlugin, setActivePlugin] = useState(formEditorSettingsPlugins[0]);
 
     return (
         <OverlayLayout
@@ -42,7 +44,7 @@ const FormSettings = ({ onExited }: FormSettingsProps) => {
             <SplitView>
                 <LeftPanel span={5}>
                     <List twoLine className={listStyle}>
-                        {plugins.map(pl => (
+                        {formEditorSettingsPlugins.map(pl => (
                             <ListItem
                                 key={pl.name}
                                 className={listItem}

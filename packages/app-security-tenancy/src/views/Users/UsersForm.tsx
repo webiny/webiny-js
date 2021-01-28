@@ -178,9 +178,10 @@ const UsersForm = () => {
                                             <Cell span={12}>
                                                 <Bind
                                                     name="login"
+                                                    beforeChange={(value: string, cb) => cb(value.toLowerCase())}
                                                     validators={validation.create("required,email")}
                                                 >
-                                                    <Input label={t`E-mail`} />
+                                                    <Input label={t`E-mail`} disabled={Boolean(login)}/>
                                                 </Bind>
                                             </Cell>
                                             {uiPlugins.map(pl => (

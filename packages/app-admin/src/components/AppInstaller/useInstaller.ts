@@ -1,7 +1,7 @@
 import { useCallback, useReducer, useEffect } from "react";
 import { Graph, alg } from "graphlib";
 import { useApolloClient } from "react-apollo";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { AdminInstallationPlugin } from "@webiny/app-admin/types";
 
 export const useInstaller = () => {
@@ -102,7 +102,7 @@ export const useInstaller = () => {
         (async () => {
             const allInstallers = [];
             await Promise.all(
-                getPlugins<AdminInstallationPlugin>("admin-installation").map(async pl => {
+                plugins.byType<AdminInstallationPlugin>("admin-installation").map(async pl => {
                     const installed = await pl.isInstalled({ client });
                     allInstallers.push({ plugin: pl, installed });
                 })

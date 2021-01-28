@@ -9,7 +9,7 @@ import { ReactComponent as TitleIcon } from "@webiny/app-headless-cms/admin/icon
 import { useContentModelEditor } from "../../Context";
 import { ReactComponent as MoreVerticalIcon } from "@webiny/app-headless-cms/admin/icons/more_vert.svg";
 import { Menu, MenuItem } from "@webiny/ui/Menu";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { CmsEditorFieldOptionPlugin } from "@webiny/app-headless-cms/types";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
@@ -59,7 +59,9 @@ const Field = props => {
     const { getFieldPlugin, setData, data } = useContentModelEditor();
 
     const fieldPlugin = getFieldPlugin({ type: field.type });
-    const plugins = getPlugins<CmsEditorFieldOptionPlugin>("cms-editor-field-option");
+    const editorFieldOptionPlugins = plugins.byType<CmsEditorFieldOptionPlugin>(
+        "cms-editor-field-option"
+    );
 
     const lockedFields = data.lockedFields || [];
     return (
@@ -75,7 +77,9 @@ const Field = props => {
             <Actions>
                 <IconButton icon={<EditIcon />} onClick={() => onEdit(field)} />
                 <Menu className={menuStyles} handle={<IconButton icon={<MoreVerticalIcon />} />}>
-                    {plugins.map(pl => React.cloneElement(pl.render(), { key: pl.name }))}
+                    {editorFieldOptionPlugins.map(pl =>
+                        React.cloneElement(pl.render(), { key: pl.name })
+                    )}
                     <MenuItem
                         disabled={field.multipleValues || field.type !== "text"}
                         onClick={async () => {

@@ -45,7 +45,7 @@ const LIST_PUBLISHED_PAGES = gql`
 `;
 
 export function PagesAutocomplete(props) {
-    const [query, setQuery] = useState();
+    const [query, setQuery] = useState<string>();
     const listPublishedPagesQuery = useQuery(LIST_PUBLISHED_PAGES, {
         variables: {
             search: {

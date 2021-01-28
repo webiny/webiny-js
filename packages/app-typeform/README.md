@@ -23,10 +23,10 @@ To setup, you must register a set of [plugins](https://docs.webiny.com/docs/deve
 #### Admin
 
 ```
-import { registerPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import typeformPlugins from "@webiny/app-typeform/admin";
 
-registerPlugins(typeformPlugins);
+plugins.register(typeformPlugins);
 ```
 
 Registers Typeform element in CMS editor, which will enable you to embed forms in your pages. 
@@ -34,10 +34,10 @@ The element will be registered under the "Form" element category.
 
 #### Site
 ```
-import { registerPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import typeformPlugins from "@webiny/app-typeform/render";
 
-registerPlugins(typeformPlugins);
+plugins.register(typeformPlugins);
 ```
 
 Enables Typeform form render in your public website.

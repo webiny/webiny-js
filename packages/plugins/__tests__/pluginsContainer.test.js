@@ -1,71 +1,52 @@
-import { registerPlugins, unregisterPlugin, getPlugin, getPlugins, plugins } from "../src";
+import { PluginsContainer } from "../src";
 
 const mockPlugins = [
     {
         type: "ui-plugin",
-        name: "ui-plugin-1",
-        init: () => {
-            return true;
-        }
+        name: "ui-plugin-1"
     },
     {
         type: "ui-plugin",
-        name: "ui-plugin-2",
-        init: () => {
-            return true;
-        }
+        name: "ui-plugin-2"
     },
     {
         type: "ui-plugin",
-        name: "ui-plugin-3",
-        init: () => {
-            return true;
-        }
+        name: "ui-plugin-3"
     },
     {
         type: "ui-plugin",
-        name: "ui-plugin-4",
-        init: () => {
-            return true;
-        }
+        name: "ui-plugin-4"
     },
     {
         type: "ui-plugin",
-        name: "ui-plugin-5",
-        init: () => {
-            return true;
-        }
+        name: "ui-plugin-5"
     },
     {
         type: "api-plugin",
-        name: "api-plugin-1",
-        init: () => {
-            return true;
-        }
+        name: "api-plugin-1"
     },
     {
         type: "api-plugin",
-        name: "api-plugin-2",
-        init: () => {
-            return true;
-        }
+        name: "api-plugin-2"
     },
     {
         type: "api-plugin",
-        name: "api-plugin-3",
-        init: () => {
-            return true;
-        }
+        name: "api-plugin-3"
     }
 ];
 
 describe("plugins", () => {
+    let plugins;
+
+    beforeEach(() => {
+        plugins = new PluginsContainer();
+    });
     afterEach(() => {
         jest.clearAllMocks();
     });
 
-    test("registerPlugins, unregisterPlugin, getPlugin, getPlugins", async () => {
-        registerPlugins(
+    test("plugins.register, plugins.unregister, plugins.byName, plugins.byType", async () => {
+        plugins.register(
             {
                 type: "test",
                 name: "test-1"
@@ -103,52 +84,52 @@ describe("plugins", () => {
             }
         );
 
-        expect(getPlugins("test").length).toBe(7);
-        expect(getPlugins("testXYZ").length).toBe(0);
+        expect(plugins.byType("test").length).toBe(7);
+        expect(plugins.byType("testXYZ").length).toBe(0);
 
-        expect(getPlugin("test-1")).toEqual({
+        expect(plugins.byName("test-1")).toEqual({
             type: "test",
             name: "test-1"
         });
 
-        expect(getPlugin("test-2")).toEqual({
+        expect(plugins.byName("test-2")).toEqual({
             type: "test",
             name: "test-2"
         });
 
-        expect(getPlugin("test-3")).toEqual({
+        expect(plugins.byName("test-3")).toEqual({
             type: "test",
             name: "test-3"
         });
 
-        unregisterPlugin("test-3");
+        plugins.unregister("test-3");
 
-        expect(getPlugins().length).toBe(6);
-        expect(getPlugins("test").length).toBe(6);
-        expect(getPlugins("testXYZ").length).toBe(0);
+        expect(plugins.all().length).toBe(6);
+        expect(plugins.byType("test").length).toBe(6);
+        expect(plugins.byType("testXYZ").length).toBe(0);
 
-        expect(getPlugin("test-1")).toEqual({
+        expect(plugins.byName("test-1")).toEqual({
             type: "test",
             name: "test-1"
         });
 
-        expect(getPlugin("test-2")).toEqual({
+        expect(plugins.byName("test-2")).toEqual({
             type: "test",
             name: "test-2"
         });
 
-        expect(getPlugin("test-4")).toEqual({
+        expect(plugins.byName("test-4")).toEqual({
             type: "test",
             name: "Something...",
             _name: "test-4"
         });
 
-        expect(getPlugin("test-3")).toEqual(undefined);
+        expect(plugins.byName("test-3")).toEqual(undefined);
     });
 
     test(`if present, "init" method must be executed upon adding`, async () => {
         let initialized = false;
-        registerPlugins({
+        plugins.register({
             type: "test",
             name: "test-1",
             init: () => (initialized = true)
@@ -180,13 +161,15 @@ describe("plugins", () => {
 
         plugins.register(mockPlugins);
 
+        const mockUiPlugins = plugins.byType("ui-plugin");
+
         const register = [13, 17, 24, 42, 47];
         let registeredAmount = 0;
 
         for (let i = 0; i < 50; i++) {
             const found = plugins.byType("ui-plugin");
             // found plugins is initially registered amount + newly registered amount
-            expect(found).toHaveLength(5 + registeredAmount);
+            expect(found).toHaveLength(mockUiPlugins.length + registeredAmount);
             // at given numbers we will register ui-plugin-${number}
             if (register.includes(i)) {
                 plugins.register([
@@ -203,7 +186,7 @@ describe("plugins", () => {
         }
 
         expect(findByTypeSpy).toBeCalledTimes(register.length + 1);
-        expect(byTypeSpy).toBeCalledTimes(50);
+        expect(byTypeSpy).toBeCalledTimes(51);
 
         jest.restoreAllMocks();
     });
@@ -214,24 +197,30 @@ describe("plugins", () => {
 
         plugins.register(mockPlugins);
 
-        const unregister = [23, 28, 33, 34, 39];
+        const mockUiPlugins = plugins.byType("ui-plugin");
+
+        const unregister = [21, 23, 25, 27, 29];
+        const startId = 10;
+        const endId = 50;
+
+        let dynamicallyRegistered = 0;
+
+        for (let i = startId; i < endId; i++) {
+            plugins.register({
+                type: "ui-plugin",
+                name: `ui-plugin-${i}`
+            });
+            dynamicallyRegistered++;
+        }
+        // mock plugins + test registered
+        const totalPlugins = dynamicallyRegistered + mockUiPlugins.length;
 
         let unregisteredAmount = 0;
 
-        for (let i = 20; i < 40; i++) {
-            plugins.register({
-                type: "ui-plugin",
-                name: `ui-plugin-${i}`,
-                init: () => {
-                    return true;
-                }
-            });
-        }
-
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < endId; i++) {
             const found = plugins.byType("ui-plugin");
             // found plugins is always initial registered amount reduced by unregistered amount of plugins
-            expect(found).toHaveLength(25 - unregisteredAmount);
+            expect(found).toHaveLength(totalPlugins - unregisteredAmount);
             // at given number we will unregister ui-plugin-${i}
             if (unregister.includes(i)) {
                 plugins.unregister(`ui-plugin-${i}`);
@@ -239,8 +228,9 @@ describe("plugins", () => {
             }
         }
 
-        expect(findByTypeSpy).toBeCalledTimes(unregister.length + 1);
-        expect(byTypeSpy).toBeCalledTimes(50);
+        // we have mock registration and then first search
+        expect(findByTypeSpy).toBeCalledTimes(unregister.length + 2);
+        expect(byTypeSpy).toBeCalledTimes(endId + 1);
 
         jest.restoreAllMocks();
     });

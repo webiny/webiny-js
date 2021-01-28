@@ -32,6 +32,7 @@ const DynamicSection = ({ field, getBind, Label, children, emptyValue = "" }: Pr
             {bindField => {
                 const { value, appendValue } = bindField;
 
+                const bindFieldValue = value || [];
                 return (
                     <Grid>
                         <Cell span={12}>
@@ -47,7 +48,7 @@ const DynamicSection = ({ field, getBind, Label, children, emptyValue = "" }: Pr
                             </FirstFieldBind>
                         </Cell>
 
-                        {bindField.value.slice(1).map((item, index) => {
+                        {bindFieldValue.slice(1).map((item, index) => {
                             const realIndex = index + 1;
                             const BindField = getBind(realIndex);
                             return (
@@ -74,7 +75,7 @@ const DynamicSection = ({ field, getBind, Label, children, emptyValue = "" }: Pr
                         )}
                         <Cell span={12} className={style.addButton}>
                             <ButtonDefault
-                                disabled={value[0] === undefined}
+                                disabled={bindFieldValue[0] === undefined}
                                 onClick={() => appendValue(emptyValue)}
                             >{t`+ Add value`}</ButtonDefault>
                         </Cell>

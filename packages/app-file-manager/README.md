@@ -22,10 +22,10 @@ plugins, please visit [Webiny documentation](https://docs.webiny.com/docs/develo
 
 #### Admin
 ```
-import { registerPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import appFileManagerPlugin from "@webiny/app-file-manager/admin"
 
-registerPlugins(appFileManagerPlugin);
+plugins.register(appFileManagerPlugin);
 ```
 
 Enables the file manager settings components which can be accessed via Settings 

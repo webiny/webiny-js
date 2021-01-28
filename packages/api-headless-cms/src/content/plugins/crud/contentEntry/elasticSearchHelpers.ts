@@ -117,7 +117,7 @@ const createElasticsearchSortParams = (
         return {
             [fieldName]: {
                 order: order.toLowerCase() === "asc" ? "asc" : "desc",
-                // eslint-disable-next-line @typescript-eslint/camelcase
+
                 unmapped_type: unmappedType
             }
         };
@@ -324,7 +324,7 @@ export const createElasticsearchParams = (params: CreateElasticsearchParams) => 
         query: {
             bool: {
                 must: query.must.length > 0 ? query.must : undefined,
-                // eslint-disable-next-line @typescript-eslint/camelcase
+
                 must_not: query.mustNot.length > 0 ? query.mustNot : undefined,
                 match: query.match.length > 0 ? query.match : undefined,
                 should: query.should.length > 0 ? query.should : undefined

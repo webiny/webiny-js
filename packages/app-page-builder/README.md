@@ -24,19 +24,19 @@ plugins, please visit [Webiny documentation](https://docs.webiny.com/docs/develo
 
 #### Admin
 ```
-import { registerPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import pageBuilderPlugins from "@webiny/app-page-builder/admin/plugins";
 
-registerPlugins(pageBuilderPlugins);
+plugins.register(pageBuilderPlugins);
 ```
 
 Note that, once deployed, when you open your Admin interface for the first time, you will be prompted with a short installation wizard.
      
 #### Site
 ```
-import { registerPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import pageBuilderPlugins from "@webiny/app-page-builder/site/plugins";
 
-registerPlugins(pageBuilderPlugins);
+plugins.register(pageBuilderPlugins);
 ```
 

@@ -2,7 +2,7 @@ import * as React from "react";
 import { set } from "dot-prop-immutable";
 import { useRouter, UseRouter } from "@webiny/react-router";
 import Downshift from "downshift";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import {
     AdminGlobalSearchPlugin,
     AdminGlobalSearchPreventHotkeyPlugin
@@ -50,9 +50,9 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
         plugins: {
             // List of all registered "admin-global-search" plugins.
             get list() {
-                return getPlugins<AdminGlobalSearchPlugin>("admin-global-search");
+                return plugins.byType<AdminGlobalSearchPlugin>("admin-global-search");
             },
-            hotKeys: getPlugins<AdminGlobalSearchPreventHotkeyPlugin>(
+            hotKeys: plugins.byType<AdminGlobalSearchPreventHotkeyPlugin>(
                 "admin-global-search-prevent-hotkey"
             ),
             // Current plugin - set by examining current route and its query params (on construct).

@@ -11,7 +11,7 @@ import {
     DialogButton
 } from "@webiny/ui/Dialog";
 import { Form } from "@webiny/form";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
 import GeneralTab from "./EditFieldDialog/GeneralTab";
 import ValidatorsTab from "./EditFieldDialog/ValidatorsTab";
@@ -45,8 +45,8 @@ type EditFieldDialogProps = {
 
 const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) => {
     const [current, setCurrent] = useState(null);
-    const [isNewField, setIsNewField] = useState(false);
-    const [screen, setScreen] = useState();
+    const [isNewField, setIsNewField] = useState<boolean>(false);
+    const [screen, setScreen] = useState<string>();
 
     const { getFieldPlugin } = useFormEditor();
 
@@ -119,7 +119,8 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
                     <>
                         <DialogContent className={dialogBody}>
                             <FbFormModelFieldList>
-                                {getPlugins<FbBuilderFieldPlugin>("form-editor-field-type")
+                                {plugins
+                                    .byType<FbBuilderFieldPlugin>("form-editor-field-type")
                                     .filter(pl => !pl.field.group)
                                     .map(pl => (
                                         <FieldTypeSelector

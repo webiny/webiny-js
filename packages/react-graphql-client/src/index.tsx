@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
+// @ts-ignore
 import { GraphQLClient } from "@webiny/graphql-client";
 import { DocumentNode } from "graphql/language/ast";
 
@@ -55,7 +56,7 @@ export function useQuery<TResult = Record<string, any>, TVariables = Record<stri
     options: UseQueryOptions<TResult, TVariables> = {}
 ) {
     const { client, cacheChangedOn } = useGraphQLClient();
-    const [data, setData] = useState();
+    const [data, setData] = useState<any>();
     const [loading, setLoading] = useState(false);
 
     const { skip, onCompleted, ...clientArgs } = options;

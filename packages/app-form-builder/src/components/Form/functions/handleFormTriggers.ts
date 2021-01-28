@@ -3,7 +3,7 @@ import {
     FbFormTriggerHandlerPlugin,
     FormSubmitResponseType
 } from "@webiny/app-form-builder/types";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { get } from "lodash";
 
 type HandleFormTriggersArgs = {
@@ -19,9 +19,11 @@ export default async (args: HandleFormTriggersArgs) => {
 
     const { data, props } = args;
 
-    const plugins = getPlugins<FbFormTriggerHandlerPlugin>("form-trigger-handler");
-    for (let i = 0; i < plugins.length; i++) {
-        const plugin = plugins[i];
+    const formTriggerHandlerPlugins = plugins.byType<FbFormTriggerHandlerPlugin>(
+        "form-trigger-handler"
+    );
+    for (let i = 0; i < formTriggerHandlerPlugins.length; i++) {
+        const plugin = formTriggerHandlerPlugins[i];
         await plugin.trigger.handle({
             trigger: get(props.data, `triggers.${plugin.trigger.id}`) || {},
             data,

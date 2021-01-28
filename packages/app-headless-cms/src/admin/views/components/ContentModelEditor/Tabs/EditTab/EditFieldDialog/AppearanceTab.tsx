@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
 import { i18n } from "@webiny/app/i18n";
@@ -28,9 +28,9 @@ const style = {
 const AppearanceTab = props => {
     const { field, form } = props;
 
-    const renderPlugins = getPlugins<CmsEditorFieldRendererPlugin>(
-        "cms-editor-field-renderer"
-    ).filter(item => item.renderer.canUse({ field }));
+    const renderPlugins = plugins
+        .byType<CmsEditorFieldRendererPlugin>("cms-editor-field-renderer")
+        .filter(item => item.renderer.canUse({ field }));
 
     useEffect(() => {
         // If the currently selected render plugin is no longer available, select the first available one.

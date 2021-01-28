@@ -139,9 +139,8 @@ describe("Settings Test", () => {
     test("ensure we don't overload settings when listing pages", async () => {
         // Let's create five pages and publish them.
         for (let i = 0; i < 5; i++) {
-            createPage({ category: "category" }).then(([res]) =>
-                publishPage({ id: res.data.pageBuilder.createPage.data.id })
-            );
+            const [createPageResponse] = await createPage({ category: "category" });
+            await publishPage({ id: createPageResponse.data.pageBuilder.createPage.data.id });
         }
 
         // Wait until all are created.

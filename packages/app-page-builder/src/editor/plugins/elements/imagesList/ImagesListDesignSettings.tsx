@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { PbPageElementImagesListComponentPlugin } from "../../../../types";
 import Accordion from "../../elementSettings/components/Accordion";
 import Wrapper from "../../elementSettings/components/Wrapper";
@@ -12,7 +12,7 @@ import {
 } from "../../elementSettings/components/StyledComponents";
 
 const ImagesListDesignSettings = ({ Bind, submit }) => {
-    const components = getPlugins<PbPageElementImagesListComponentPlugin>(
+    const components = plugins.byType<PbPageElementImagesListComponentPlugin>(
         "pb-page-element-images-list-component"
     );
 
