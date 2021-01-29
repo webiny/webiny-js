@@ -14,7 +14,7 @@ export function EditorPluginsLoader({ children, location }) {
     );
 
     async function loadPlugins() {
-        const { loadEditorPlugins, loadRenderPlugins } = plugins.byType("pb-plugins-loader").pop();
+        const [{ loadEditorPlugins, loadRenderPlugins }] = plugins.byType("pb-plugins-loader");
 
         // If we are on pages list route, import plugins required to render the page content.
         if (location.pathname.startsWith("/page-builder/pages") && !loaded.render) {

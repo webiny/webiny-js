@@ -34,8 +34,8 @@ type SearchBarState = {
     active: boolean;
     searchTerm: { previous: string; current: string };
     plugins: {
-        list: Array<AdminGlobalSearchPlugin>;
-        hotKeys: Array<AdminGlobalSearchPreventHotkeyPlugin>;
+        list: ReadonlyArray<AdminGlobalSearchPlugin>;
+        hotKeys: ReadonlyArray<AdminGlobalSearchPreventHotkeyPlugin>;
         current?: AdminGlobalSearchPlugin;
     };
 };

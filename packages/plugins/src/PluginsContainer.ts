@@ -48,11 +48,11 @@ export class PluginsContainer {
 
     public byType<T extends Plugin>(type: string): T[] {
         if (this._byTypeCache[type]) {
-            return this._byTypeCache[type] as T[];
+            return Array.from(this._byTypeCache[type]) as T[];
         }
         const plugins = this.findByType<T>(type);
         this._byTypeCache[type] = plugins;
-        return plugins;
+        return Array.from(plugins);
     }
 
     public atLeastOneByType<T extends Plugin>(type: string): T[] {

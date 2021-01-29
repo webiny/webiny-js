@@ -234,4 +234,28 @@ describe("plugins", () => {
 
         jest.restoreAllMocks();
     });
+
+    test("plugins should remain same after shift and pop", () => {
+        plugins.register(mockPlugins);
+
+        const uiPlugins = plugins.byType("ui-plugin");
+
+        expect(uiPlugins).toHaveLength(5);
+
+        // remove first plugin
+        uiPlugins.shift();
+        // remove last plugin
+        uiPlugins.pop();
+
+        const afterShiftUiPlugins = plugins.byType("ui-plugin");
+        expect(afterShiftUiPlugins).toHaveLength(5);
+
+        plugins.register({
+            type: "ui-plugin",
+            name: "new-ui-plugin"
+        });
+
+        const afterRegisterUiPlugins = plugins.byType("ui-plugin");
+        expect(afterRegisterUiPlugins).toHaveLength(6);
+    });
 });

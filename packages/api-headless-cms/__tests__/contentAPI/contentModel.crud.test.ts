@@ -109,7 +109,7 @@ describe("content model test", () => {
                     data: {
                         name: "Content model",
                         description: null,
-                        titleFieldId: null,
+                        titleFieldId: "id",
                         modelId: "contentModel",
                         createdBy: helpers.identity,
                         createdOn: expect.stringMatching(/^20/),
@@ -430,7 +430,8 @@ describe("content model test", () => {
             },
             settings: {},
             type: "text",
-            validation: []
+            validation: [],
+            listValidation: []
         };
         const numberField: CmsContentModelFieldInput = {
             id: mdbid(),
@@ -448,7 +449,8 @@ describe("content model test", () => {
             },
             settings: {},
             type: "number",
-            validation: []
+            validation: [],
+            listValidation: []
         };
 
         const fields = [textField, numberField];
@@ -517,7 +519,8 @@ describe("content model test", () => {
             },
             settings: {},
             type: "text",
-            validation: []
+            validation: [],
+            listValidation: []
         };
         const [response] = await updateContentModelMutation({
             modelId: contentModel.modelId,
@@ -535,8 +538,10 @@ describe("content model test", () => {
                     data: null,
                     error: {
                         code: "VALIDATION_ERROR",
-                        message: `Field "nonExistingTitleFieldId" does not exist in the model!`,
-                        data: null
+                        message: `Field does not exist in the model.`,
+                        data: {
+                            fieldId: "nonExistingTitleFieldId"
+                        }
                     }
                 }
             }

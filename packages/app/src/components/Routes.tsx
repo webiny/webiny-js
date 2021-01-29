@@ -4,7 +4,8 @@ import { Switch } from "@webiny/react-router";
 import { RoutePlugin } from "@webiny/app/types";
 
 export const Routes = () => {
-    const routes = plugins.byType<RoutePlugin>("route").sort((a, b) => {
+    // We cannot call `sort` on the array returned by the `plugins.byType` call - it is read-only.
+    const routes = [...plugins.byType<RoutePlugin>("route")].sort((a, b) => {
         const pathA = a.route.props.path || "*";
         const pathB = b.route.props.path || "*";
 

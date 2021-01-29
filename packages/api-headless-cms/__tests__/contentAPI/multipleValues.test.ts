@@ -118,6 +118,7 @@ describe("multiple values in field", () => {
                         settings: {}
                     }
                 ],
+                listValidation: [],
                 placeholderText: "placeholder text",
                 predefinedValues: {
                     enabled: true,
@@ -176,8 +177,12 @@ describe("multiple values in field", () => {
                     data: null,
                     error: {
                         code: "ENTRY_TITLE_FIELD_TYPE",
-                        data: null,
-                        message: `Fields that accept multiple values cannot be used as the entry title (tried to use "availableSizes" field)`
+                        message:
+                            "Fields that accept multiple values cannot be used as the entry title.",
+                        data: {
+                            fieldId: "availableSizes",
+                            type: "text"
+                        }
                     }
                 }
             }
