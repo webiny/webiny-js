@@ -1,21 +1,18 @@
-import React from "react";
-import Draggable from "./Draggable";
-import tryRenderingPlugin from "./../../utils/tryRenderingPlugin";
-import {
-    activateElementMutation,
-    disableDraggingMutation,
-    elementByIdSelector,
-    enableDraggingMutation,
-    getElementProps,
-    highlightElementMutation,
-    uiAtom,
-    unHighlightElementMutation
-} from "@webiny/app-page-builder/editor/recoil/modules";
+import React, { useCallback } from "react";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { Transition } from "react-transition-group";
 import { plugins } from "@webiny/plugins";
 import { renderPlugins } from "@webiny/app/plugins";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { PbEditorPageElementPlugin, PbElement } from "@webiny/app-page-builder/types";
+import { PbEditorPageElementPlugin, PbEditorElement } from "@webiny/app-page-builder/types";
+import Draggable from "./Draggable";
+import tryRenderingPlugin from "../../utils/tryRenderingPlugin";
+import {
+    disableDraggingMutation,
+    elementByIdSelector,
+    enableDraggingMutation,
+    uiAtom,
+    activeElementAtom
+} from "../recoil/modules";
 import {
     defaultStyle,
     ElementContainer,
@@ -26,9 +23,11 @@ import {
 export type ElementPropsType = {
     id: string;
     className?: string;
+    isHighlighted: boolean;
+    isActive: boolean;
 };
 
-const getElementPlugin = (element: PbElement): PbEditorPageElementPlugin => {
+const getElementPlugin = (element: PbEditorElement): PbEditorPageElementPlugin => {
     if (!element) {
         return null;
     }
@@ -39,34 +38,36 @@ const getElementPlugin = (element: PbElement): PbEditorPageElementPlugin => {
 
 const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
     id: elementId,
-    className = ""
+    className = "",
+    isActive
 }) => {
-    const element = (useRecoilValue(elementByIdSelector(elementId)) as unknown) as PbElement;
-    const [uiAtomValue, setUiAtomValue] = useRecoilState(uiAtom);
-    const { isActive, isHighlighted } = getElementProps(uiAtomValue, element);
+    const [element, setElementAtomValue] = useRecoilState(elementByIdSelector(elementId));
+    const setUiAtomValue = useSetRecoilState(uiAtom);
+    const setActiveElementAtomValue = useSetRecoilState(activeElementAtom);
+    const { isHighlighted } = element;
 
     const plugin = getElementPlugin(element);
 
-    const beginDrag = React.useCallback(() => {
-        const data = { id: element.id, type: element.type, path: element.path };
+    const beginDrag = useCallback(() => {
+        const data = { id: element.id, type: element.type };
         setTimeout(() => {
             setUiAtomValue(enableDraggingMutation);
         });
         return { ...data, target: plugin.target };
     }, [elementId]);
 
-    const endDrag = React.useCallback(() => {
+    const endDrag = useCallback(() => {
         setUiAtomValue(disableDraggingMutation);
     }, [elementId]);
 
-    const onClick = React.useCallback((): void => {
+    const onClick = useCallback((): void => {
         if (!element || element.type === "document" || isActive) {
             return;
         }
-        setUiAtomValue(prev => activateElementMutation(prev, elementId));
+        setActiveElementAtomValue(elementId);
     }, [elementId, isActive]);
 
-    const onMouseOver = React.useCallback(
+    const onMouseOver = useCallback(
         (ev): void => {
             if (!element || element.type === "document") {
                 return;
@@ -75,15 +76,15 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
             if (isHighlighted) {
                 return;
             }
-            setUiAtomValue(prev => highlightElementMutation(prev, elementId));
+            setElementAtomValue({ isHighlighted: true } as any);
         },
         [elementId]
     );
-    const onMouseOut = React.useCallback(() => {
+    const onMouseOut = useCallback(() => {
         if (!element || element.type === "document") {
             return;
         }
-        setUiAtomValue(unHighlightElementMutation);
+        setElementAtomValue({ isHighlighted: false } as any);
     }, [elementId]);
 
     const renderDraggable = ({ drag }): JSX.Element => {
@@ -104,9 +105,12 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
 
     const renderedPlugin = tryRenderingPlugin(() =>
         plugin.render({
-            element
+            element,
+            isActive
         })
     );
+
+    const isDraggable = Array.isArray(plugin.target) && plugin.target.length > 0;
 
     return (
         <Transition in={true} timeout={250} appear={true}>
@@ -115,15 +119,21 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
                     id={element.id}
                     onMouseOver={onMouseOver}
                     onMouseOut={onMouseOut}
-                    highlight={isHighlighted}
+                    highlight={isActive ? true : isHighlighted}
                     active={isActive}
                     style={{ ...defaultStyle, ...transitionStyles[state] }}
                     className={"webiny-pb-page-element-container"}
                 >
                     <div className={["innerWrapper", className].filter(c => c).join(" ")}>
-                        <Draggable target={plugin.target} beginDrag={beginDrag} endDrag={endDrag}>
+                        <Draggable
+                            enabled={isDraggable}
+                            target={plugin.target}
+                            beginDrag={beginDrag}
+                            endDrag={endDrag}
+                        >
                             {renderDraggable}
                         </Draggable>
+
                         {renderedPlugin}
                     </div>
                 </ElementContainer>
@@ -131,4 +141,13 @@ const ElementComponent: React.FunctionComponent<ElementPropsType> = ({
         </Transition>
     );
 };
-export default React.memo(ElementComponent);
+
+const withHighlightElement = (Component: React.FunctionComponent) => {
+    return function withHighlightElementComponent(props) {
+        const activeElementAtomValue = useRecoilValue(activeElementAtom);
+
+        return <Component {...props} isActive={activeElementAtomValue === props.id} />;
+    };
+};
+
+export default withHighlightElement(React.memo<any>(ElementComponent));

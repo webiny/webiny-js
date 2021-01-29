@@ -1,6 +1,6 @@
 import React from "react";
 import preview from "./preview.png";
-import { createElementHelper } from "@webiny/app-page-builder/editor/helpers";
+import { createElement } from "@webiny/app-page-builder/editor/helpers";
 import { PbEditorBlockPlugin } from "@webiny/app-page-builder/types";
 
 export default {
@@ -9,7 +9,7 @@ export default {
     category: "general",
     title: "Empty block",
     create(options = {}, parent) {
-        return createElementHelper("block", options, parent);
+        return createElement("block", options, parent);
     },
     image: {
         meta: {

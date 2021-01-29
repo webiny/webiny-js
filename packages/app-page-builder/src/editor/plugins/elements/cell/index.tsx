@@ -8,16 +8,15 @@ import {
     updateElementAction
 } from "@webiny/app-page-builder/editor/recoil/actions";
 import {
-    addElementToParentHelper,
-    createDroppedElementHelper,
-    createElementHelper,
-    createEmptyElementHelper
+    addElementToParent,
+    createDroppedElement,
+    createElement
 } from "@webiny/app-page-builder/editor/helpers";
 import {
     DisplayMode,
     PbEditorPageElementPlugin,
     PbEditorPageElementSaveActionPlugin,
-    PbElement
+    PbEditorElement
 } from "@webiny/app-page-builder/types";
 import { Plugin } from "@webiny/plugins/types";
 import { AfterDropElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions/afterDropElement";
@@ -57,7 +56,7 @@ const cellPlugin: PbEditorPageElementPlugin = {
                         )
                     },
                     padding: createInitialPerDeviceSettingValue(
-                        { all: "10px" },
+                        { all: "0px" },
                         DisplayMode.DESKTOP
                     ),
                     grid: {
@@ -68,11 +67,8 @@ const cellPlugin: PbEditorPageElementPlugin = {
         };
     },
     onReceived({ source, position, target, state, meta }) {
-        const { element, dispatchCreateElementAction = false } = createDroppedElementHelper(
-            source as any,
-            target
-        );
-        const parent = addElementToParentHelper(element, target, position);
+        const element = createDroppedElement(source as any, target);
+        const parent = addElementToParent(element, target, position);
 
         const result = executeAction<UpdateElementActionArgsType>(
             state,
@@ -84,35 +80,23 @@ const cellPlugin: PbEditorPageElementPlugin = {
             }
         );
 
-        result.actions.push(
-            new AfterDropElementActionEvent({
-                element
-            })
-        );
+        result.actions.push(new AfterDropElementActionEvent({ element }));
 
-        // if source has path it means that source is a PbElement or similar
-        // so we can use path and id from the source to represent the element
-        // and execute the delete element action
-        if (source.path) {
+        if (source.id) {
+            // Delete source element
             result.actions.push(
                 new DeleteElementActionEvent({
-                    element: createEmptyElementHelper({
-                        id: source.id as string,
-                        path: source.path as string,
-                        type: source.type
-                    })
+                    element: source as PbEditorElement
                 })
             );
-        }
-        // at this point we think we know source is PbElement
-        // so we can dispatch create element action to be ran after this
-        if (!dispatchCreateElementAction) {
+
             return result;
         }
+
         result.actions.push(
             new CreateElementActionEvent({
                 element,
-                source: source as PbElement
+                source: source as PbEditorElement
             })
         );
 
@@ -128,7 +112,7 @@ const saveActionPlugin = {
     name: "pb-editor-page-element-save-action-cell",
     elementType: "cell",
     onSave(element) {
-        return createElementHelper("grid", {
+        return createElement("grid", {
             data: {
                 settings: {
                     grid: {

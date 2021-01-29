@@ -5,12 +5,13 @@ import {
     DeleteElementActionEvent,
     updateElementAction
 } from "@webiny/app-page-builder/editor/recoil/actions";
-import { EventActionHandlerActionCallableResponseType } from "@webiny/app-page-builder/editor/recoil/eventActions";
+import { addElementToParent, createDroppedElement } from "@webiny/app-page-builder/editor/helpers";
 import {
-    addElementToParentHelper,
-    createDroppedElementHelper
-} from "@webiny/app-page-builder/editor/helpers";
-import { DisplayMode, PbEditorPageElementPlugin, PbElement } from "@webiny/app-page-builder/types";
+    DisplayMode,
+    EventActionHandlerActionCallableResponse,
+    PbEditorPageElementPlugin,
+    PbEditorElement
+} from "@webiny/app-page-builder/types";
 import { AfterDropElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions/afterDropElement";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
@@ -60,7 +61,7 @@ export default (): PbEditorPageElementPlugin => {
                             DisplayMode.DESKTOP
                         ),
                         horizontalAlignFlex: createInitialPerDeviceSettingValue(
-                            "flex-start",
+                            "center",
                             DisplayMode.DESKTOP
                         ),
                         verticalAlign: createInitialPerDeviceSettingValue(
@@ -77,17 +78,14 @@ export default (): PbEditorPageElementPlugin => {
         },
         // This callback is executed when another element is dropped on the drop zones with type "block"
         onReceived({ source, target, position = null, state, meta }) {
-            const { element, dispatchCreateElementAction = false } = createDroppedElementHelper(
-                source as any,
-                target
-            );
+            const element = createDroppedElement(source as any, target);
 
-            const block = addElementToParentHelper(element, target, position);
+            const block = addElementToParent(element, target, position);
 
             const result = updateElementAction(state, meta, {
                 element: block,
                 history: true
-            }) as EventActionHandlerActionCallableResponseType;
+            }) as EventActionHandlerActionCallableResponse;
 
             result.actions.push(
                 new AfterDropElementActionEvent({
@@ -95,21 +93,21 @@ export default (): PbEditorPageElementPlugin => {
                 })
             );
 
-            if (source.path) {
+            if (source.id) {
+                // Delete source element
                 result.actions.push(
                     new DeleteElementActionEvent({
-                        element: source as PbElement
+                        element: source as PbEditorElement
                     })
                 );
-            }
 
-            if (!dispatchCreateElementAction) {
                 return result;
             }
+
             result.actions.push(
                 new CreateElementActionEvent({
                     element,
-                    source: source as PbElement
+                    source: source as any
                 })
             );
             return result;

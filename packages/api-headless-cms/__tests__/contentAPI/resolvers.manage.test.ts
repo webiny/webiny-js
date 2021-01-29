@@ -141,6 +141,11 @@ describe("MANAGE - Resolvers", () => {
         expect(response.data.getCategory.data).toEqual({
             id,
             createdOn: expect.stringMatching(/^20/),
+            createdBy: {
+                id: "123",
+                displayName: "User 123",
+                type: "admin"
+            },
             savedOn: expect.stringMatching(/^20/),
             title: "Hardware",
             slug: "hardware",
@@ -200,6 +205,11 @@ describe("MANAGE - Resolvers", () => {
                             title: category.title,
                             slug: category.slug,
                             createdOn: category.createdOn,
+                            createdBy: {
+                                id: "123",
+                                displayName: "User 123",
+                                type: "admin"
+                            },
                             savedOn: category.savedOn,
                             meta: {
                                 locked: true,
@@ -327,6 +337,11 @@ describe("MANAGE - Resolvers", () => {
         expect(category1).toEqual({
             id: expect.any(String),
             createdOn: expect.stringMatching(/^20/),
+            createdBy: {
+                id: "123",
+                displayName: "User 123",
+                type: "admin"
+            },
             savedOn: expect.stringMatching(/^20/),
             title: "Hardware",
             slug: "hardware",
@@ -390,6 +405,11 @@ describe("MANAGE - Resolvers", () => {
         expect(category).toEqual({
             id: expect.any(String),
             createdOn: expect.stringMatching(/^20/),
+            createdBy: {
+                id: "123",
+                displayName: "User 123",
+                type: "admin"
+            },
             savedOn: expect.stringMatching(/^20/),
             title: "Hardware",
             slug: "hardware",
@@ -445,6 +465,11 @@ describe("MANAGE - Resolvers", () => {
                         id: expect.any(String),
                         savedOn: expect.stringMatching(/^20/),
                         createdOn: expect.stringMatching(/^20/),
+                        createdBy: {
+                            id: "123",
+                            displayName: "User 123",
+                            type: "admin"
+                        },
                         title: "Hardware",
                         slug: "hardware",
                         meta: {
@@ -514,6 +539,11 @@ describe("MANAGE - Resolvers", () => {
                     data: {
                         id: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
+                        createdBy: {
+                            id: "123",
+                            displayName: "User 123",
+                            type: "admin"
+                        },
                         savedOn: expect.stringMatching(/^20/),
                         title: "New title",
                         slug: "hardware-store",

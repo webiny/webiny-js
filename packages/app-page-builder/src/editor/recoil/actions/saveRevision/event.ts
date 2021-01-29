@@ -1,8 +1,16 @@
-import { SaveRevisionActionArgsType } from "./types";
-import { BaseEventAction } from "@webiny/app-page-builder/editor/recoil/eventActions";
+import { SaveRevisionActionArgsType, ToggleSaveRevisionStateActionArgsType } from "./types";
+import { BaseEventAction } from "../../eventActions";
 
 export class SaveRevisionActionEvent extends BaseEventAction<SaveRevisionActionArgsType> {
     public getName(): string {
         return "SaveRevisionActionEvent";
+    }
+}
+
+export class ToggleSaveRevisionStateActionEvent extends BaseEventAction<
+    ToggleSaveRevisionStateActionArgsType
+> {
+    public getName(): string {
+        return "ToggleSaveRevisionStateActionEvent";
     }
 }

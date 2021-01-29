@@ -1,5 +1,8 @@
 import React from "react";
-import { activeElementSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import {
+    activeElementAtom,
+    elementByIdSelector
+} from "@webiny/app-page-builder/editor/recoil/modules";
 import { get } from "lodash";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
@@ -33,7 +36,8 @@ const Input: React.FunctionComponent<InputPropsType> = ({
     className,
     containerClassName
 }) => {
-    const element = useRecoilValue(activeElementSelector);
+    const activeElementId = useRecoilValue(activeElementAtom);
+    const element = useRecoilValue(elementByIdSelector(activeElementId));
     const keyValue = valueKey ? get(element, valueKey, defaultValue) : value;
     return (
         <Grid className={containerClassName}>

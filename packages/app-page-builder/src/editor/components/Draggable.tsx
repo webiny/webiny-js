@@ -19,6 +19,7 @@ export type DraggableProps = {
     beginDrag(props: DraggableProps, monitor: DragSourceMonitor): any;
     endDrag(item: any, monitor: DragSourceMonitor): void;
     target: string[];
+    enabled: boolean;
 };
 
 export type DraggableItem = DragObjectWithType & {
@@ -26,7 +27,7 @@ export type DraggableItem = DragObjectWithType & {
 };
 
 const Draggable = React.memo((props: DraggableProps) => {
-    const { children, beginDrag, endDrag, target } = props;
+    const { children, beginDrag, endDrag, target, enabled = true } = props;
 
     const [{ isDragging }, drag, preview] = useDrag({
         item: { type: "element", target } as DraggableItem,
@@ -45,6 +46,10 @@ const Draggable = React.memo((props: DraggableProps) => {
             }
         }
     });
+
+    if (!enabled) {
+        return children({ isDragging: false, drag: null });
+    }
 
     return (
         <>

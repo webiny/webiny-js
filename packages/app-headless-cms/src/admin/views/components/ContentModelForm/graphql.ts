@@ -46,6 +46,9 @@ export const createReadQuery = model => {
             content: get${ucFirstModelId}(revision: $revision) {
                 data {
                     id
+                    createdBy {
+                        id
+                    }
                     ${createFieldsList(model)}
                     savedOn
                     meta {
@@ -209,6 +212,40 @@ export const createUnpublishMutation = model => {
     return gql`
         mutation CmsUnpublish${ucFirstModelId}($revision: ID!) {
             content: unpublish${ucFirstModelId}(revision: $revision) {
+                data {
+                    id
+                    meta {
+                        ${CONTENT_META_FIELDS}
+                    }
+                }
+                error ${ERROR_FIELD}
+            }
+        }`;
+};
+
+export const createRequestReviewMutation = model => {
+    const ucFirstModelId = upperFirst(model.modelId);
+
+    return gql`
+        mutation CmsRequest${ucFirstModelId}Review($revision: ID!) {
+            content: request${ucFirstModelId}Review(revision: $revision) {
+                data {
+                    id
+                    meta {
+                        ${CONTENT_META_FIELDS}
+                    }
+                }
+                error ${ERROR_FIELD}
+            }
+        }`;
+};
+
+export const createRequestChangesMutation = model => {
+    const ucFirstModelId = upperFirst(model.modelId);
+
+    return gql`
+        mutation CmsRequest${ucFirstModelId}Changes($revision: ID!) {
+            content: request${ucFirstModelId}Changes(revision: $revision) {
                 data {
                     id
                     meta {

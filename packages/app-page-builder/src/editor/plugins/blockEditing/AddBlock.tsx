@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
 import { TogglePluginActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { ButtonFloating } from "@webiny/ui/Button";
 import { ReactComponent as AddIcon } from "@webiny/app-page-builder/editor/assets/icons/add.svg";

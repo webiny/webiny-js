@@ -1,33 +1,25 @@
 import React from "react";
-import {
-    uiAtom,
-    deactivateElementMutation,
-    unHighlightElementMutation,
-    UiAtomType
-} from "@webiny/app-page-builder/editor/recoil/modules";
-import Action from "../Action";
 import platform from "platform";
 import { useSetRecoilState } from "recoil";
-import { useRedo, useUndo } from "recoil-undo";
 import { ReactComponent as UndoIcon } from "@webiny/app-page-builder/editor/assets/icons/undo-icon.svg";
 import { ReactComponent as RedoIcon } from "@webiny/app-page-builder/editor/assets/icons/redo-icon.svg";
 import { PbEditorToolbarBottomPlugin } from "@webiny/app-page-builder/types";
+import { activeElementAtom } from "../../../recoil/modules";
+import Action from "../Action";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
 
 const metaKey = platform.os.family === "OS X" ? "CMD" : "CTRL";
-
-const clearUiAtomValue = (prev: UiAtomType): UiAtomType => {
-    return deactivateElementMutation(unHighlightElementMutation(prev));
-};
 
 export const undo: PbEditorToolbarBottomPlugin = {
     name: "pb-editor-toolbar-undo",
     type: "pb-editor-toolbar-bottom",
     renderAction() {
-        const undo = useUndo();
-        const setUiAtomValue = useSetRecoilState(uiAtom);
+        const { undo } = useEventActionHandler();
+        const setActiveElementAtomValue = useSetRecoilState(activeElementAtom);
+
         const onClick = () => {
             undo();
-            setUiAtomValue(clearUiAtomValue);
+            setActiveElementAtomValue(null);
         };
         return (
             <Action
@@ -44,12 +36,14 @@ export const redo: PbEditorToolbarBottomPlugin = {
     name: "pb-editor-toolbar-redo",
     type: "pb-editor-toolbar-bottom",
     renderAction() {
-        const redo = useRedo();
-        const setUiAtomValue = useSetRecoilState(uiAtom);
+        const { redo } = useEventActionHandler();
+        const setActiveElementAtomValue = useSetRecoilState(activeElementAtom);
+
         const onClick = () => {
-            setUiAtomValue(clearUiAtomValue);
+            setActiveElementAtomValue(null);
             redo();
         };
+
         return (
             <Action
                 id={"action-redo"}

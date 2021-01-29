@@ -9,7 +9,7 @@ import {
     PbEditorPageElementSettingsRenderComponentProps,
     PbEditorResponsiveModePlugin
 } from "../../../../types";
-import { activeElementSelector, uiAtom } from "../../../recoil/modules";
+import { activeElementAtom, elementByIdSelector, uiAtom } from "../../../recoil/modules";
 import useUpdateHandlers from "../useUpdateHandlers";
 import { applyFallbackDisplayMode } from "../elementSettingsUtils";
 // Components
@@ -28,7 +28,21 @@ const BorderSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderC
     defaultAccordionValue
 }) => {
     const { displayMode } = useRecoilValue(uiAtom);
-    const element = useRecoilValue(activeElementSelector);
+    const activeElementId = useRecoilValue(activeElementAtom);
+    const element = useRecoilValue(elementByIdSelector(activeElementId));
+
+    const fallbackValue = useMemo(() => {
+        return applyFallbackDisplayMode(displayMode, mode =>
+            get(element, `${DATA_NAMESPACE}.${mode}`)
+        );
+    }, [displayMode]);
+
+    const { config: activeDisplayModeConfig } = useMemo(() => {
+        return plugins
+            .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
+            .find(pl => pl.config.displayMode === displayMode);
+    }, [displayMode]);
+
     const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
         element,
         dataNamespace: DATA_NAMESPACE,
@@ -41,13 +55,7 @@ const BorderSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderC
         }
     });
 
-    const { config: activeDisplayModeConfig } = useMemo(() => {
-        return plugins
-            .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
-            .find(pl => pl.config.displayMode === displayMode);
-    }, [displayMode]);
-
-    const getUpdateValueWidthDisplayMode = useCallback(
+    const getUpdateValueWithDisplayMode = useCallback(
         name => value => getUpdateValue(`${displayMode}.${name}`)(value),
         [getUpdateValue, displayMode]
     );
@@ -60,14 +68,6 @@ const BorderSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderC
     const updateColorPreview = useCallback(
         value => getUpdatePreview(`${displayMode}.color`)(value),
         [getUpdatePreview, displayMode]
-    );
-
-    const fallbackValue = useMemo(
-        () =>
-            applyFallbackDisplayMode(displayMode, mode =>
-                get(element, `${DATA_NAMESPACE}.${mode}`)
-            ),
-        [displayMode]
     );
 
     const border = get(element, `${DATA_NAMESPACE}.${displayMode}`, fallbackValue || {});
@@ -107,13 +107,13 @@ const BorderSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderC
                     label={"Width"}
                     value={border}
                     valueKey={"width"}
-                    getUpdateValue={getUpdateValueWidthDisplayMode}
+                    getUpdateValue={getUpdateValueWithDisplayMode}
                 />
                 <BoxInputs
                     label={"Radius"}
                     value={border}
                     valueKey={"radius"}
-                    getUpdateValue={getUpdateValueWidthDisplayMode}
+                    getUpdateValue={getUpdateValueWithDisplayMode}
                     sides={[
                         {
                             label: "Top left",

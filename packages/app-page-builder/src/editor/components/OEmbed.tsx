@@ -1,11 +1,12 @@
-import React, { useCallback, useEffect, ReactElement } from "react";
+import React, { useCallback, useEffect, ReactElement, useState } from "react";
 import gql from "graphql-tag";
 import { css } from "emotion";
 import { useQuery } from "react-apollo";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
+import { Typography } from "@webiny/ui/Typography";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
 import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
-import { PbElement } from "@webiny/app-page-builder/types";
+import { PbEditorElement } from "@webiny/app-page-builder/types";
 import useRenderEmptyEmbed from "../plugins/elements/utils/oembed/useRenderEmptyEmbed";
 
 function appendSDK(props) {
@@ -58,13 +59,21 @@ const centerAlign = css({
     }
 });
 
+const errorElementStyle = css({
+    color: "var(--mdc-theme-text-primary-on-background)",
+    "& .component-name": {
+        fontWeight: "bold"
+    }
+});
+
 export type OEmbedProps = {
-    element: PbElement;
+    element: PbEditorElement;
     onData?: (data: { [key: string]: any }) => { [key: string]: any };
     renderEmbed?: (props: OEmbedProps) => ReactElement;
     data?: any;
 };
 const OEmbedComponent = (props: OEmbedProps) => {
+    const [errorMessage, setErrorMessage] = useState(null);
     const eventActionHandler = useEventActionHandler();
     const { showSnackbar } = useSnackbar();
     const { element, onData = d => d } = props;
@@ -87,9 +96,9 @@ const OEmbedComponent = (props: OEmbedProps) => {
             if (skip) {
                 return;
             }
-            const { data: oembed, error } = data?.pageBuilder?.oembedData || {};
+            const { data: oembed, error } = data.pageBuilder.oembedData || {};
             if (oembed) {
-                const newElement: PbElement = {
+                const newElement: PbEditorElement = {
                     ...element,
                     data: {
                         ...element.data,
@@ -104,6 +113,7 @@ const OEmbedComponent = (props: OEmbedProps) => {
                 );
             }
             if (error) {
+                setErrorMessage(error.message);
                 showSnackbar(error.message);
             }
         }
@@ -112,13 +122,27 @@ const OEmbedComponent = (props: OEmbedProps) => {
     const renderEmpty = useRenderEmptyEmbed(element);
 
     const renderEmbed = useCallback(
-        (targetElement: PbElement, isLoading: boolean) => {
+        (targetElement: PbEditorElement, isLoading: boolean) => {
             if (typeof props.renderEmbed === "function") {
                 return props.renderEmbed(props);
             }
 
             if (isLoading) {
                 return <div>Loading embed data...</div>;
+            }
+            if (errorMessage) {
+                return (
+                    <details className={errorElementStyle}>
+                        <summary>
+                            <Typography use={"overline"}>
+                                We couldn&apos;t embed your{" "}
+                                <span className={"component-name"}>{element.type}</span> URL! See
+                                the detailed error below.
+                            </Typography>
+                        </summary>
+                        <Typography use={"body2"}>{errorMessage}</Typography>
+                    </details>
+                );
             }
             return (
                 <div
@@ -130,7 +154,7 @@ const OEmbedComponent = (props: OEmbedProps) => {
                 />
             );
         },
-        [element, loading]
+        [element, loading, errorMessage]
     );
 
     return sourceUrl ? renderEmbed(element, loading) : renderEmpty();

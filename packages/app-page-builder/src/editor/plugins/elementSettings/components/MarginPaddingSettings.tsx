@@ -10,7 +10,11 @@ import {
     PbEditorPageElementSettingsRenderComponentProps,
     PbEditorResponsiveModePlugin
 } from "../../../../types";
-import { activeElementWithChildrenSelector, uiAtom } from "../../../recoil/modules";
+import {
+    activeElementAtom,
+    elementWithChildrenByIdSelector,
+    uiAtom
+} from "../../../recoil/modules";
 import useUpdateHandlers, { PostModifyElementArgs } from "../useUpdateHandlers";
 // Icons
 import { ReactComponent as LinkIcon } from "../../../assets/icons/link.svg";
@@ -144,7 +148,8 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
 }) => {
     const valueKey = `data.settings.${styleAttribute}`;
     const { displayMode } = useRecoilValue(uiAtom);
-    const element = useRecoilValue(activeElementWithChildrenSelector);
+    const activeElementId = useRecoilValue(activeElementAtom);
+    const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
     const advanced = get(element, `${valueKey}.${displayMode}.advanced`, false);
 
     const { config: activeEditorModeConfig } = useMemo(() => {

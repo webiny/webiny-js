@@ -5,14 +5,17 @@ import classNames from "classnames";
 import { plugins } from "@webiny/plugins";
 import {
     PbEditorPageElementPlugin,
-    PbElement,
+    PbEditorElement,
     PbEditorPageElementSettingsRenderComponentProps
 } from "@webiny/app-page-builder/types";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { IconButton } from "@webiny/ui/Button";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
 import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
-import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import {
+    activeElementAtom,
+    elementWithChildrenByIdSelector
+} from "@webiny/app-page-builder/editor/recoil/modules";
 // Components
 import { ContentWrapper } from "../components/StyledComponents";
 import Accordion from "../components/Accordion";
@@ -56,7 +59,7 @@ const iconDescriptions = {
 const defaultAlignValue = "left";
 const DEFAULT_ALIGNMENTS = Object.keys(icons);
 
-const getAlignValue = (element: PbElement, defaultAlign: string): string => {
+const getAlignValue = (element: PbEditorElement, defaultAlign: string): string => {
     return element.data.settings?.horizontalAlign || defaultAlign;
 };
 
@@ -73,10 +76,11 @@ const HorizontalAlignSettings: React.FunctionComponent<HorizontalAlignActionProp
     defaultAccordionValue
 }) => {
     const handler = useEventActionHandler();
-    const element = useRecoilValue(activeElementWithChildrenSelector);
+    const activeElementId = useRecoilValue(activeElementAtom);
+    const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
     const align = getAlignValue(element, defaultAlignValue);
 
-    const updateElement = (element: PbElement) => {
+    const updateElement = (element: PbEditorElement) => {
         handler.trigger(
             new UpdateElementActionEvent({
                 element,

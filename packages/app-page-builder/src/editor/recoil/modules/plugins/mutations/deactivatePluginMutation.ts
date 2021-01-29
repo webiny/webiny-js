@@ -1,12 +1,12 @@
-import { MutationActionCallable } from "@webiny/app-page-builder/editor/recoil/eventActions";
 import { Plugin } from "@webiny/plugins/types";
 import { PluginsAtomType } from "../pluginsAtom";
 import { plugins } from "@webiny/plugins";
+import { EventActionHandlerMutationActionCallable } from "@webiny/app-page-builder/types";
 
-export const deactivatePluginByNameMutation: MutationActionCallable<PluginsAtomType, string> = (
-    state,
-    name
-) => {
+export const deactivatePluginByNameMutation: EventActionHandlerMutationActionCallable<
+    PluginsAtomType,
+    string
+> = (state, name) => {
     const target = plugins.byName(name);
     if (!target) {
         return state;
@@ -14,10 +14,10 @@ export const deactivatePluginByNameMutation: MutationActionCallable<PluginsAtomT
     return deactivatePluginMutation(state, target);
 };
 
-export const deactivatePluginMutation: MutationActionCallable<PluginsAtomType, Plugin> = (
-    state,
-    target
-) => {
+export const deactivatePluginMutation: EventActionHandlerMutationActionCallable<
+    PluginsAtomType,
+    Plugin
+> = (state, target) => {
     const { type, name } = target;
     const allPluginsByType = state[type];
     if (!allPluginsByType || allPluginsByType.length === 0) {

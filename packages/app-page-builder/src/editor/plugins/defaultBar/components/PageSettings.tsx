@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
 import {
     DeactivatePluginActionEvent,
     UpdatePageRevisionActionEvent

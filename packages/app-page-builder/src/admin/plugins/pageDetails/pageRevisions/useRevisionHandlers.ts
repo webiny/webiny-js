@@ -11,7 +11,7 @@ export function useRevisionHandlers(props) {
     const { history } = useRouter();
     const client = useApolloClient();
     const { page, revision } = props;
-    const { publishRevision } = usePublishRevisionHandler({ page });
+    const { publishRevision, unpublishRevision } = usePublishRevisionHandler({ page });
 
     const createRevision = useCallback(async () => {
         const { data: res } = await client.mutate({
@@ -79,6 +79,7 @@ export function useRevisionHandlers(props) {
 
     return {
         publishRevision,
+        unpublishRevision,
         createRevision,
         editRevision,
         deleteRevision

@@ -9,7 +9,11 @@ import {
     PbEditorPageElementSettingsRenderComponentProps,
     PbEditorResponsiveModePlugin
 } from "../../../../types";
-import { activeElementWithChildrenSelector, uiAtom } from "../../../recoil/modules";
+import {
+    activeElementAtom,
+    elementWithChildrenByIdSelector,
+    uiAtom
+} from "../../../recoil/modules";
 import { applyFallbackDisplayMode } from "../elementSettingsUtils";
 // Components
 import Accordion from "../../elementSettings/components/Accordion";
@@ -38,7 +42,8 @@ const VisibilitySettings: React.FunctionComponent<PbEditorPageElementSettingsRen
     options: any;
 }> = ({ defaultAccordionValue }) => {
     const { displayMode } = useRecoilValue(uiAtom);
-    const element = useRecoilValue(activeElementWithChildrenSelector);
+    const activeElementId = useRecoilValue(activeElementAtom);
+    const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
 
     const { config: activeDisplayModeConfig } = useMemo(() => {
         return plugins

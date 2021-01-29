@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState, useMemo } from "react";
 import * as Styled from "./StyledComponents";
 import { activePluginParamsByNameSelector } from "@webiny/app-page-builder/editor/recoil/modules";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
 import {
     DeactivatePluginActionEvent,
     DragEndActionEvent,
@@ -107,6 +107,7 @@ const AddElement: React.FunctionComponent = () => {
 
         return (
             <Draggable
+                enabled={true}
                 key={plugin.name}
                 target={plugin.target}
                 beginDrag={props => {

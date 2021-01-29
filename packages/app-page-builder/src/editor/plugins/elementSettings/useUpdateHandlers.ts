@@ -1,7 +1,7 @@
-import { useEventActionHandler } from "@webiny/app-page-builder/editor";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
 import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { UpdateElementActionArgsType } from "@webiny/app-page-builder/editor/recoil/actions/updateElement/types";
-import { PbElement, PbShallowElement } from "@webiny/app-page-builder/types";
+import { PbEditorElement } from "@webiny/app-page-builder/types";
 import { useMemo } from "react";
 import lodashSet from "lodash/set";
 import lodashMerge from "lodash/merge";
@@ -9,11 +9,11 @@ import { useHandler } from "@webiny/app/hooks/useHandler";
 export type PostModifyElementArgs = {
     name: string;
     newValue: any;
-    element: PbShallowElement | PbElement;
-    newElement: PbShallowElement | PbElement;
+    element: PbEditorElement;
+    newElement: PbEditorElement;
 };
 type UpdateHandlersPropsType = {
-    element: PbShallowElement | PbElement;
+    element: PbEditorElement;
     dataNamespace: string;
     postModifyElement?: (args: PostModifyElementArgs) => void;
 };
@@ -43,8 +43,7 @@ const useUpdateHandlers: UseUpdateHandlersType = props => {
             if (!history) {
                 updateElement({
                     element: newElement,
-                    history: false,
-                    merge: true
+                    history: false
                 });
                 return;
             }
@@ -53,7 +52,6 @@ const useUpdateHandlers: UseUpdateHandlersType = props => {
                 historyUpdated[propName] = newValue;
                 updateElement({
                     element: newElement,
-                    merge: true,
                     history: true
                 });
             }

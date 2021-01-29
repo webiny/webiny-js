@@ -1,0 +1,55 @@
+@mixin pb-lis-element($leading, $marker-outer-color, $marker-inner-color) {
+  $list-marker-outer-size: 1.25rem !default;
+  $list-marker-inner-size: 0.5rem !default;
+  $list-marker-outer-offset-top: ($leading - $list-marker-outer-size) / 2;
+  $list-marker-inner-offset-top: ($list-marker-outer-offset-top + 0.375rem);
+
+  $list-item-spacing-left: 1.875rem;
+  $list-item-spacing-bottom: 0.75rem;
+
+  & ul {
+    list-style: none;
+    margin: unset;
+    padding: unset;
+    & li {
+      position: relative;
+      margin-bottom: 12px;
+      margin-left: $list-item-spacing-left;
+
+      &::before {
+        content: "";
+        position: absolute;
+        top: $list-marker-outer-offset-top;
+        left: -$list-item-spacing-left;
+        width: $list-marker-outer-size;
+        height: $list-marker-outer-size;
+        background-color: $marker-outer-color;
+        border-radius: 50%;
+      }
+      &::after {
+        content: "";
+        position: absolute;
+        top: $list-marker-inner-offset-top;
+        left: -($list-item-spacing-left - 0.375rem);
+        width: $list-marker-inner-size;
+        height: $list-marker-inner-size;
+        background-color: $marker-inner-color;
+        border-radius: 50%;
+      }
+    }
+  }
+
+  & ol {
+    list-style: decimal;
+    margin: unset;
+    padding: unset;
+    & li {
+      position: relative;
+      margin-bottom: 12px;
+      margin-left: $list-item-spacing-left;
+      &::marker {
+        color: $marker-outer-color;
+      }
+    }
+  }
+}

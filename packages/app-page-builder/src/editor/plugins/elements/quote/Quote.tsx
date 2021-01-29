@@ -1,25 +1,9 @@
 import React from "react";
-import { css } from "emotion";
 import classNames from "classnames";
 import Text from "../../../components/Text";
 
-const editorClass = css({
-    "&": {
-        blockquote: {
-            quotes: `"“" "”"`,
-            "&::before": {
-                content: "open-quote"
-            },
-            "&::after": {
-                content: "close-quote"
-            }
-        }
-    }
-});
-
 export const className = classNames(
-    "webiny-pb-base-page-element-style webiny-pb-page-element-text",
-    editorClass
+    "webiny-pb-base-page-element-style webiny-pb-page-element-text"
 );
 
 const DEFAULT_EDITOR_OPTIONS = {
@@ -36,7 +20,7 @@ const Quote: React.FunctionComponent<ParagraphType> = ({ elementId }) => {
         <Text
             elementId={elementId}
             editorOptions={DEFAULT_EDITOR_OPTIONS}
-            rootClassName={editorClass}
+            rootClassName={className}
         />
     );
 };

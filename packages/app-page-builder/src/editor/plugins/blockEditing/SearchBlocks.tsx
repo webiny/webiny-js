@@ -3,9 +3,8 @@ import {
     DeactivatePluginActionEvent,
     UpdateElementActionEvent
 } from "@webiny/app-page-builder/editor/recoil/actions";
-import { createBlockElementsHelper } from "@webiny/app-page-builder/editor/helpers";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
-import { contentSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import { createBlockElements } from "@webiny/app-page-builder/editor/helpers";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
 import { useMutation } from "react-apollo";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
@@ -33,6 +32,10 @@ import EditBlockDialog from "./EditBlockDialog";
 import { listItem, ListItemTitle, listStyle, TitleContent } from "./SearchBlocksStyled";
 import * as Styled from "./StyledComponents";
 import { PbEditorBlockCategoryPlugin, PbEditorBlockPlugin } from "@webiny/app-page-builder/types";
+import {
+    elementWithChildrenByIdSelector,
+    rootElementAtom
+} from "@webiny/app-page-builder/editor/recoil/modules";
 
 const allBlockCategory: PbEditorBlockCategoryPlugin = {
     type: "pb-editor-block-category",
@@ -64,7 +67,8 @@ const sortBlocks = blocks => {
 };
 
 const SearchBar = () => {
-    const content = useRecoilValue(contentSelector);
+    const rootElementId = useRecoilValue(rootElementAtom);
+    const content = useRecoilValue(elementWithChildrenByIdSelector(rootElementId));
     const eventActionHandler = useEventActionHandler();
 
     const [search, setSearch] = useState<string>("");
@@ -107,9 +111,9 @@ const SearchBar = () => {
 
     const addBlockToContent = useCallback(
         plugin => {
-            const element = {
+            const element: any = {
                 ...content,
-                elements: [...content.elements, createBlockElementsHelper(plugin.name)]
+                elements: [...content.elements, createBlockElements(plugin.name)]
             };
             eventActionHandler.trigger(
                 new UpdateElementActionEvent({

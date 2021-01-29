@@ -9,12 +9,16 @@ import { Tooltip } from "@webiny/ui/Tooltip";
 import { Form } from "@webiny/form";
 import {
     PbEditorPageElementSettingsRenderComponentProps,
-    PbElement,
+    PbEditorElement,
     PbEditorResponsiveModePlugin
 } from "../../../../types";
-import { useEventActionHandler } from "../../../../editor";
+import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
 import { UpdateElementActionEvent } from "../../../recoil/actions";
-import { uiAtom, activeElementWithChildrenSelector } from "../../../recoil/modules";
+import {
+    uiAtom,
+    activeElementAtom,
+    elementWithChildrenByIdSelector
+} from "../../../recoil/modules";
 import { applyFallbackDisplayMode } from "../elementSettingsUtils";
 // Components
 import { classes } from "../components/StyledComponents";
@@ -98,14 +102,15 @@ const Settings: React.FunctionComponent<PbEditorPageElementSettingsRenderCompone
 }) => {
     const { displayMode } = useRecoilValue(uiAtom);
     const handler = useEventActionHandler();
-    const element = useRecoilValue(activeElementWithChildrenSelector);
+    const activeElementId = useRecoilValue(activeElementAtom);
+    const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
     const updateSettings = async (data, form) => {
         const valid = await form.validate();
         if (!valid) {
             return;
         }
 
-        const newElement: PbElement = merge(
+        const newElement: PbEditorElement = merge(
             {},
             element,
             set({}, `${DATA_NAMESPACE}.${displayMode}`, data)

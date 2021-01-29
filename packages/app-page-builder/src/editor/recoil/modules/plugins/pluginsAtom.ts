@@ -1,4 +1,4 @@
-import { connectedAtom } from "@webiny/app-page-builder/editor/recoil/modules/connected";
+import { atom } from "recoil";
 
 export type PluginsAtomPluginParamsType = {
     [key: string]: any;
@@ -8,7 +8,7 @@ export type PluginsAtomPluginType = {
     params?: PluginsAtomPluginParamsType;
 };
 export type PluginsAtomType = Record<string, PluginsAtomPluginType[]>;
-export const pluginsAtom = connectedAtom<PluginsAtomType>({
+export const pluginsAtom = atom<PluginsAtomType>({
     key: "pluginsAtom",
     default: {}
 });

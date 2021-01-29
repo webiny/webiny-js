@@ -1,63 +1,13 @@
 import { SaveRevisionActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { UpdateElementActionArgsType } from "./types";
-import { EventActionCallableType } from "@webiny/app-page-builder/editor/recoil/eventActions";
-import { PbElement } from "@webiny/app-page-builder/types";
-import lodashCloneDeep from "lodash/cloneDeep";
-import lodashMerge from "lodash/merge";
-import { ContentAtomType } from "@webiny/app-page-builder/editor/recoil/modules";
-import {
-    extrapolateContentElementHelper,
-    flattenElementsHelper,
-    saveElementToContentHelper,
-    updateChildPathsHelper
-} from "@webiny/app-page-builder/editor/helpers";
+import { EventActionCallable } from "@webiny/app-page-builder/types";
+import { flattenElements } from "@webiny/app-page-builder/editor/helpers";
 
-const createElementWithoutElementsAsString = (element: PbElement): PbElement => {
-    if (!element.elements || typeof element.elements[0] !== "string") {
-        return element;
-    }
-    return {
-        ...element,
-        elements: []
-    };
-};
-const cloneAndMergeContentState = (
-    content: ContentAtomType,
-    element: PbElement,
-    merge: boolean
-) => {
-    const newContent = updateChildPathsHelper(createElementWithoutElementsAsString(element));
-    if (!merge) {
-        return newContent;
-    }
-    return lodashMerge(content, newContent);
-};
-
-const buildNewPageContentState = (content: ContentAtomType, element: PbElement, merge: boolean) => {
-    const newElement = updateChildPathsHelper(createElementWithoutElementsAsString(element));
-    const existingElement = extrapolateContentElementHelper(content, element.path);
-    if (merge) {
-        return saveElementToContentHelper(
-            content,
-            element.path,
-            lodashMerge(existingElement, newElement)
-        );
-    }
-    return saveElementToContentHelper(content, element.path, newElement);
-};
-const createContentState = (content: ContentAtomType, element: PbElement, merge: boolean) => {
-    if (element.type === "document") {
-        return cloneAndMergeContentState(content, element, merge);
-    }
-    return buildNewPageContentState(content, element, merge);
-};
-
-export const updateElementAction: EventActionCallableType<UpdateElementActionArgsType> = (
+export const updateElementAction: EventActionCallable<UpdateElementActionArgsType> = (
     state,
     { client },
-    { element, merge, history }
+    { element, history }
 ) => {
-    const content = createContentState(lodashCloneDeep(state.content), element, merge);
     const actions = [];
     if (history === true) {
         if (!client) {
@@ -67,10 +17,12 @@ export const updateElementAction: EventActionCallableType<UpdateElementActionArg
         }
         actions.push(new SaveRevisionActionEvent());
     }
+
+    const flattenedContent = flattenElements(element);
+
     return {
         state: {
-            content,
-            elements: flattenElementsHelper(lodashCloneDeep(content))
+            elements: flattenedContent
         },
         actions
     };

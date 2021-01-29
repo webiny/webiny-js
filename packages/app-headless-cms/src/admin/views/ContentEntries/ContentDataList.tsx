@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import get from "lodash/get";
-import upperFirst from "lodash/upperFirst";
 import debounce from "lodash/debounce";
 import { css } from "emotion";
 import TimeAgo from "timeago-react";
@@ -20,6 +19,7 @@ import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
 import { useRouter } from "@webiny/react-router";
 import { Form } from "@webiny/form";
 import { createListQuery } from "../components/ContentModelForm/graphql";
+import statusLabels from "../../constants/statusLabels";
 
 const t = i18n.ns("app-headless-cms/admin/contents/data-list");
 
@@ -250,7 +250,7 @@ const ContentDataList = ({
 
                                 <UIList.ListItemMeta className={rightAlign}>
                                     <Typography use={"subtitle2"}>
-                                        {upperFirst(item.meta.status)} (v{item.meta.version})
+                                        {statusLabels[item.meta.status]} (v{item.meta.version})
                                     </Typography>
                                 </UIList.ListItemMeta>
                             </UIList.ListItem>

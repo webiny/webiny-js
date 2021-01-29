@@ -1,10 +1,9 @@
-import { EventActionCallableType } from "@webiny/app-page-builder/editor/recoil/eventActions";
-import { PbElement } from "@webiny/app-page-builder/types";
+import { EventActionCallable, PbEditorElement } from "@webiny/app-page-builder/types";
 
 export type CreateElementEventActionArgsType = {
-    element: PbElement;
-    source: PbElement;
+    element: PbEditorElement;
+    source: PbEditorElement;
 };
-export type CreateElementEventActionCallableType = EventActionCallableType<
+export type CreateElementEventActionCallable = EventActionCallable<
     CreateElementEventActionArgsType
 >;

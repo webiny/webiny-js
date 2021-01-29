@@ -1,18 +1,24 @@
 import React, { CSSProperties, useCallback, useRef } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilValue } from "recoil";
+import { css } from "emotion";
+import classNames from "classnames";
 import kebabCase from "lodash/kebabCase";
 import merge from "lodash/merge";
 import set from "lodash/set";
-import { PbElement } from "../../../../types";
-import { useEventActionHandler } from "../../../provider";
+import { PbEditorElement } from "../../../../types";
+import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
 import { UpdateElementActionEvent } from "../../../recoil/actions";
-import {
-    elementByIdSelector,
-    textEditorIsActiveMutation,
-    textEditorIsNotActiveMutation,
-    uiAtom
-} from "../../../recoil/modules";
+import { elementByIdSelector, uiAtom } from "../../../recoil/modules";
 import SimpleEditableText from "./SimpleEditableText";
+
+const buttonEditStyle = css({
+    "&.button__content--empty": {
+        minWidth: 64,
+        lineHeight: "20px",
+        marginTop: "-3px",
+        marginBottom: "-3px"
+    }
+});
 
 const DATA_NAMESPACE = "data.buttonText";
 type ButtonContainerPropsType = {
@@ -28,8 +34,7 @@ const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = ({
     elementId
 }) => {
     const eventActionHandler = useEventActionHandler();
-    const [uiAtomValue, setUiAtomValue] = useRecoilState(uiAtom);
-    const { textEditorActive } = uiAtomValue;
+    const uiAtomValue = useRecoilValue(uiAtom);
     const element = useRecoilValue(elementByIdSelector(elementId));
     const { type = "default", icon = {}, buttonText } = element.data || {};
     const defaultValue = typeof buttonText === "string" ? buttonText : "Click me";
@@ -43,20 +48,15 @@ const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = ({
         (received: string) => {
             value.current = received;
         },
-        [element.id, textEditorActive]
+        [element.id]
     );
 
-    const onFocus = useCallback(() => {
-        setUiAtomValue(textEditorIsActiveMutation);
-    }, [elementId]);
-
     const onBlur = useCallback(() => {
-        setUiAtomValue(textEditorIsNotActiveMutation);
         if (value.current === defaultValue) {
             return;
         }
 
-        const newElement: PbElement = merge(
+        const newElement: PbEditorElement = merge(
             {},
             element,
             set({ elements: [] }, DATA_NAMESPACE, value.current)
@@ -65,11 +65,10 @@ const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = ({
         eventActionHandler.trigger(
             new UpdateElementActionEvent({
                 element: newElement,
-                history: true,
-                merge: true
+                history: true
             })
         );
-    }, [elementId]);
+    }, [elementId, element.data]);
 
     return (
         <div
@@ -90,9 +89,11 @@ const ButtonContainer: React.FunctionComponent<ButtonContainerPropsType> = ({
             >
                 {svg && <span dangerouslySetInnerHTML={{ __html: svg }} />}
                 <SimpleEditableText
+                    className={classNames(buttonEditStyle, {
+                        "button__content--empty": !value.current
+                    })}
                     value={value.current}
                     onChange={onChange}
-                    onFocus={onFocus}
                     onBlur={onBlur}
                 />
             </a>

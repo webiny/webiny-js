@@ -257,6 +257,11 @@ describe("multiple values in field", () => {
                     data: {
                         id: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
+                        createdBy: {
+                            id: "123",
+                            displayName: "User 123",
+                            type: "admin"
+                        },
                         savedOn: expect.stringMatching(/^20/),
                         category: {
                             modelId: categoryContentModel.modelId,

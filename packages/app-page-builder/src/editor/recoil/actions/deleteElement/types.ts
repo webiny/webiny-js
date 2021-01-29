@@ -1,5 +1,5 @@
-import { PbElement } from "@webiny/app-page-builder/types";
+import { PbEditorElement } from "@webiny/app-page-builder/types";
 
 export type DeleteElementActionArgsType = {
-    element: PbElement;
+    element: PbEditorElement;
 };

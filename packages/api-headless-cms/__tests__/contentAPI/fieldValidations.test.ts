@@ -702,6 +702,11 @@ describe("fieldValidations", () => {
                     data: {
                         id: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
+                        createdBy: {
+                            displayName: "User 123",
+                            id: "123",
+                            type: "admin"
+                        },
                         savedOn: expect.stringMatching(/^20/),
                         email: defaultFruitData.email,
                         lowerCase: defaultFruitData.lowerCase,

@@ -7,6 +7,7 @@ export default /* GraphQL */ `
     type Category {
         id: ID
         createdOn: DateTime
+        createdBy: CmsCreatedBy
         savedOn: DateTime
         meta: CategoryMeta
         title: String
@@ -126,5 +127,9 @@ export default /* GraphQL */ `
         publishCategory(revision: ID!): CategoryResponse
 
         unpublishCategory(revision: ID!): CategoryResponse
+        
+        requestCategoryReview(revision: ID!): CategoryResponse
+        
+        requestCategoryChanges(revision: ID!): CategoryResponse
     }
 `;

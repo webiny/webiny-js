@@ -1,7 +1,10 @@
 import React from "react";
 import lodashGet from "lodash/get";
 import ColorPickerCmp from "@webiny/app-page-builder/editor/components/ColorPicker/ColorPicker";
-import { activeElementSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import {
+    activeElementAtom,
+    elementByIdSelector
+} from "@webiny/app-page-builder/editor/recoil/modules";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { useRecoilValue } from "recoil";
@@ -14,7 +17,8 @@ const extrapolateActiveElementValue = (
     if (!valueKey) {
         return value;
     }
-    const element = useRecoilValue(activeElementSelector);
+    const activeElementId = useRecoilValue(activeElementAtom);
+    const element = useRecoilValue(elementByIdSelector(activeElementId));
     if (!element) {
         throw new Error("There is no active element.");
     }

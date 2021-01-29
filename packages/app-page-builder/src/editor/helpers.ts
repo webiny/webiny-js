@@ -1,131 +1,47 @@
-import { DragObjectWithTypeWithTargetType } from "@webiny/app-page-builder/editor/components/Droppable";
 import invariant from "invariant";
 import shortid from "shortid";
-import lodashCloneDeep from "lodash/cloneDeep";
+import { set } from "dot-prop-immutable";
+import omit from "lodash/omit";
+import { DragObjectWithTypeWithTarget } from "@webiny/app-page-builder/editor/components/Droppable";
 import { plugins } from "@webiny/plugins";
 import {
     PbEditorBlockPlugin,
     PbEditorPageElementPlugin,
     PbEditorPageElementSettingsPlugin,
-    PbElement,
-    PbShallowElement,
-    PbEditorPageElementStyleSettingsPlugin
+    PbEditorPageElementStyleSettingsPlugin,
+    PbEditorElement
 } from "@webiny/app-page-builder/types";
 
-const updateElementsPaths = (elements: PbElement[], parentPath: string): PbElement[] => {
-    return elements.map((element, index) => {
-        const path = `${parentPath}.${index}`;
-        const id = element.id || shortid.generate();
-        return updateElementPaths({
-            ...element,
-            id,
-            path
-        });
-    });
-};
-const updateElementPaths = (element: PbElement): PbElement => {
-    const { id = shortid.generate(), path = "0", type, data } = element;
-    return {
-        ...element,
-        id,
-        path,
-        type,
-        data,
-        elements: updateElementsPaths(element.elements, path)
-    };
-};
-
-export const updateChildPathsHelper = (element: PbElement): PbElement => {
-    return updateElementPaths(element);
-};
-
 type FlattenElementsType = {
-    [id: string]: PbShallowElement;
+    [id: string]: PbEditorElement;
 };
-export const flattenElementsHelper = (el): FlattenElementsType => {
-    let els = {};
-    el.elements = (el.elements || []).map(child => {
-        els = { ...els, ...flattenElementsHelper(child) };
-        return child.id;
-    });
+export const flattenElements = (el, parent = undefined): FlattenElementsType => {
+    const els = {};
+    els[el.id] = set(
+        el,
+        "elements",
+        (el.elements || []).map(child => {
+            if (typeof child === "string") {
+                return child;
+            }
+            const children = flattenElements(child, el.id);
+            Object.keys(children).forEach(id => {
+                els[id] = omit(children[id], ["path"]);
+            });
+            return child.id;
+        })
+    );
 
-    els[el.id] = el;
+    els[el.id].parent = parent;
+
     return els;
 };
 
-const setElementInPath = (elements: PbElement[], paths: number[], element: PbElement): void => {
-    if (paths.length === 0) {
-        throw new Error("There are no paths sent.");
-    }
-    const path = paths.shift();
-    if (paths.length === 0) {
-        elements[path] = element;
-        return;
-    }
-    setElementInPath(elements[path].elements, paths, element);
-};
+interface CreateElement {
+    (type: string, options?: { [key: string]: any }, parent?: PbEditorElement): PbEditorElement;
+}
 
-export const saveElementToContentHelper = (
-    content: PbElement,
-    path: string,
-    element: PbElement
-): PbElement => {
-    const clonedContent = lodashCloneDeep(content);
-    const paths = path.split(".").map(Number);
-    paths.shift();
-    setElementInPath(clonedContent.elements, paths, element);
-    return clonedContent;
-};
-
-const findElementByPath = (elements: PbElement[], paths: number[]): PbElement => {
-    if (paths.length === 0) {
-        throw new Error("There are no paths sent.");
-    }
-    const path = paths.shift();
-    if (paths.length === 0) {
-        return elements[path];
-    } else if (!elements[path]) {
-        return undefined;
-    }
-    return findElementByPath(elements[path].elements, paths);
-};
-
-export const extrapolateContentElementHelper = (
-    content: PbElement,
-    path: string
-): PbElement | undefined => {
-    const paths = path.split(".").map(Number);
-    // always remove the first one because that is the content
-    paths.shift();
-    if (paths.length === 0) {
-        return content;
-    }
-    return findElementByPath(content.elements, paths);
-};
-
-export const removeElementHelper = (parent: PbElement, id: string): PbElement => {
-    return {
-        ...parent,
-        elements: parent.elements.filter(target => target.id !== id)
-    };
-};
-
-export const cloneElementHelper = (target: PbElement): PbElement => {
-    return {
-        ...target,
-        id: undefined,
-        path: undefined,
-        elements: target.elements.map(cloneElementHelper)
-    };
-};
-
-type CreateElementHelperType = (
-    type: string,
-    options?: { [key: string]: any },
-    parent?: PbElement
-) => PbElement;
-
-export const createElementHelper: CreateElementHelperType = (type, options = {}, parent) => {
+export const createElement: CreateElement = (type, options = {}, parent) => {
     const plugin = plugins
         .byType<PbEditorPageElementPlugin>("pb-editor-page-element")
         .find(pl => pl.elementType === type);
@@ -138,56 +54,52 @@ export const createElementHelper: CreateElementHelperType = (type, options = {},
             settings: {}
         },
         elements: [],
-        path: undefined,
+        parent: parent ? parent.id : undefined,
         type,
         ...plugin.create(options, parent)
     };
 };
 
-export const addElementToParentHelper = (
-    element: PbElement,
-    parent: PbElement,
+export const addElementToParent = (
+    element: PbEditorElement,
+    parent: PbEditorElement,
     position?: number
-) => {
+): PbEditorElement => {
     if (position === undefined || position === null) {
-        return updateChildPathsHelper({
+        return {
             ...parent,
-            elements: parent.elements.concat([element])
-        });
+            elements: [...parent.elements, { ...element, parent: parent.id }]
+        };
     }
 
-    return updateChildPathsHelper({
+    return {
         ...parent,
         elements: [
             ...parent.elements.slice(0, position),
-            element,
+            { ...element, parent: parent.id },
             ...parent.elements.slice(position)
         ]
-    });
-};
-
-export const createDroppedElementHelper = (
-    source: DragObjectWithTypeWithTargetType,
-    target: PbElement
-): { element: PbElement; dispatchCreateElementAction?: boolean } => {
-    if (source.path) {
-        return {
-            element: cloneElementHelper({
-                id: source.id,
-                path: source.path,
-                type: source.type as string,
-                elements: (source as any).elements || [],
-                data: (source as any).data || {}
-            })
-        };
-    }
-    return {
-        element: createElementHelper(source.type, {}, target),
-        dispatchCreateElementAction: true
     };
 };
 
-export const createBlockElementsHelper = (name: string) => {
+export const createDroppedElement = (
+    source: DragObjectWithTypeWithTarget,
+    target: PbEditorElement
+): PbEditorElement => {
+    if (source.id) {
+        return {
+            id: shortid.generate(),
+            type: source.type,
+            elements: (source as any).elements || [],
+            data: (source as any).data || {},
+            parent: target.id
+        };
+    }
+
+    return createElement(source.type, {}, target);
+};
+
+export const createBlockElements = (name: string) => {
     const plugin = plugins.byName<PbEditorBlockPlugin>(name);
 
     invariant(plugin, `Missing block plugin "${name}"!`);
@@ -196,12 +108,11 @@ export const createBlockElementsHelper = (name: string) => {
         id: shortid.generate(),
         data: {},
         elements: [],
-        path: "",
         ...plugin.create()
     };
 };
 
-export const userElementSettingsPluginsHelper = (elementType: string) => {
+export const userElementSettingsPlugins = (elementType: string) => {
     return plugins
         .byType<PbEditorPageElementSettingsPlugin>("pb-editor-page-element-settings")
         .filter(pl => {
@@ -217,7 +128,7 @@ export const userElementSettingsPluginsHelper = (elementType: string) => {
         .map(pl => pl.name);
 };
 
-export const userElementStyleSettingsPluginsHelper = (elementType: string) => {
+export const userElementStyleSettingsPlugins = (elementType: string) => {
     return plugins
         .byType<PbEditorPageElementStyleSettingsPlugin>("pb-editor-page-element-style-settings")
         .filter(pl => {
@@ -233,17 +144,13 @@ export const userElementStyleSettingsPluginsHelper = (elementType: string) => {
         .map(pl => pl.name);
 };
 
-type CreateEmptyElementHelperCallableType = (
-    args: Pick<PbElement, "id" | "path" | "type">
-) => PbElement;
-export const createEmptyElementHelper: CreateEmptyElementHelperCallableType = ({
-    id,
-    path,
-    type
-}) => {
+type CreateEmptyElementCallableType = (
+    args: Pick<PbEditorElement, "id" | "type">
+) => PbEditorElement;
+
+export const createEmptyElement: CreateEmptyElementCallableType = ({ id, type }) => {
     return {
         id,
-        path,
         type,
         data: {
             settings: {}

@@ -1,3 +1,3 @@
 export * from "./BaseEventAction";
 export * from "./EventAction";
-export * from "./EventActionHandler";
+export * from "./executeAction";

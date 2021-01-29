@@ -10,9 +10,7 @@ import heading from "@webiny/app-page-builder/render/plugins/elements/heading";
 import list from "@webiny/app-page-builder/render/plugins/elements/list";
 import quote from "@webiny/app-page-builder/render/plugins/elements/quote";
 import button from "@webiny/app-page-builder/render/plugins/elements/button";
-import codepen from "@webiny/app-page-builder/render/plugins/elements/embeds/codepen";
 import codesandbox from "@webiny/app-page-builder/render/plugins/elements/embeds/codesandbox";
-import instagram from "@webiny/app-page-builder/render/plugins/elements/embeds/instagram";
 import soundcloud from "@webiny/app-page-builder/render/plugins/elements/embeds/soundcloud";
 import youtube from "@webiny/app-page-builder/render/plugins/elements/embeds/youtube";
 import vimeo from "@webiny/app-page-builder/render/plugins/elements/embeds/vimeo";
@@ -49,9 +47,7 @@ export default [
     list(),
     quote(),
     button(),
-    codepen(),
     codesandbox(),
-    instagram(),
     soundcloud(),
     youtube(),
     vimeo(),

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { Carousel } from "@webiny/ui/Carousel";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
 import { isPluginActiveSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { DeactivatePluginActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";

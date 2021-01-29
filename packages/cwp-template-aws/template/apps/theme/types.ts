@@ -1,16 +1,15 @@
 import React from "react";
 import { OutputBlockData } from "@editorjs/editorjs";
 import { Plugin } from "@webiny/plugins/types";
-import { BlockType } from "./richTextEditor/dataRenderer";
 
 export type RTEDataRendererPlugin = Plugin & {
     type: "rte-data-renderer";
-    outputType: "jsx" | "html";
+    outputType: string;
     render(data: OutputBlockData[]): React.ReactNode;
 };
-
 export type RTEDataBlockRendererPlugin = Plugin & {
     type: "rte-data-block-renderer";
-    blockType: BlockType;
+    outputType: string;
+    blockType: string;
     render(block: OutputBlockData): React.ReactElement;
 };

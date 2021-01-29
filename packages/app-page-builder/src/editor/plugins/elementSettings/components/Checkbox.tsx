@@ -1,5 +1,8 @@
 import React from "react";
-import { activeElementSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import {
+    activeElementAtom,
+    elementByIdSelector
+} from "@webiny/app-page-builder/editor/recoil/modules";
 import { get } from "lodash";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
@@ -23,7 +26,8 @@ const Checkbox = ({
     updateValue,
     children
 }: CheckboxProps) => {
-    const element = useRecoilValue(activeElementSelector);
+    const activeElementId = useRecoilValue(activeElementAtom);
+    const element = useRecoilValue(elementByIdSelector(activeElementId));
     const value = valueKey ? get(element, valueKey, defaultValue) : defaultValue;
     return (
         <Grid>

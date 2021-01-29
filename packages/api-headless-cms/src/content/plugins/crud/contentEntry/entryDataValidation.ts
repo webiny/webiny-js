@@ -59,12 +59,12 @@ const runFieldMultipleValuesValidations = async (args: ValidateArgs): Promise<st
     if (Array.isArray(values) === false) {
         return `Value of the field "${field.fieldId}" is not an array.`;
     }
-    const valuesError = await validateValue(args, field.listValidation, values);
+    const valuesError = await validateValue(args, field.listValidation || [], values);
     if (valuesError) {
         return valuesError;
     }
     for (const value of values) {
-        const valueError = await validateValue(args, field.validation, value);
+        const valueError = await validateValue(args, field.validation || [], value);
         if (valueError) {
             return valueError;
         }

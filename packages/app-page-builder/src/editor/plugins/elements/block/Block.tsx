@@ -2,7 +2,7 @@ import React from "react";
 import BlockContainer from "./BlockContainer";
 import ElementAnimation from "@webiny/app-page-builder/render/components/ElementAnimation";
 import styled from "@emotion/styled";
-import { PbElement } from "@webiny/app-page-builder/types";
+import { PbEditorElement } from "@webiny/app-page-builder/types";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
 
 const BlockStyle = styled("div")({
@@ -12,7 +12,7 @@ const BlockStyle = styled("div")({
     boxSizing: "border-box"
 });
 type BlockType = {
-    element: PbElement;
+    element: PbEditorElement;
 };
 const Block: React.FunctionComponent<BlockType> = ({ element }) => {
     const { id } = element;

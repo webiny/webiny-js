@@ -1,11 +1,10 @@
-import { DisplayMode } from "../../../../../types";
-import { MutationActionCallable } from "../../../eventActions";
+import { DisplayMode, EventActionHandlerMutationActionCallable } from "../../../../../types";
 import { UiAtomType } from "../uiAtom";
 
-export const setDisplayModeMutation: MutationActionCallable<UiAtomType, DisplayMode> = (
-    state,
-    displayMode
-) => {
+export const setDisplayModeMutation: EventActionHandlerMutationActionCallable<
+    UiAtomType,
+    DisplayMode
+> = (state, displayMode) => {
     return {
         ...state,
         displayMode

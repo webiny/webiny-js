@@ -824,7 +824,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 const [uniqueId, version] = id.split("#");
 
                 const [[[entry]], [[latestEntryData]]] = await db
-                    .batch()
+                    .batch<[[CmsContentEntry]], [[{ id: string }]]>()
                     .read({
                         ...utils.defaults.db,
                         query: { PK: PK_ENTRY(uniqueId), SK: SK_REVISION(version) }
@@ -894,8 +894,8 @@ export default (): ContextPlugin<CmsContext> => ({
                 const permission = await checkPermissions({ pw: "r" });
                 const [uniqueId, version] = id.split("#");
 
-                const results = await db
-                    .batch()
+                const [[[entry]], [[latestEntryData]]] = await db
+                    .batch<[[CmsContentEntry]], [[{ id: string }]]>()
                     .read({
                         ...utils.defaults.db,
                         query: { PK: PK_ENTRY(uniqueId), SK: SK_REVISION(version) }
@@ -905,9 +905,6 @@ export default (): ContextPlugin<CmsContext> => ({
                         query: { PK: PK_ENTRY(uniqueId), SK: SK_LATEST() }
                     })
                     .execute();
-
-                const entry: CmsContentEntry = results[0][0];
-                const latestEntryData: { id: string } = results[1][0];
 
                 if (!entry) {
                     throw new NotFoundError(

@@ -7,7 +7,7 @@ import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 const createIdentity = (permissions: any[] = []): SecurityIdentity => {
     return {
         id: "api123",
-        displayName: "API",
+        displayName: "a1234567890",
         type: "api-key",
         permissions: [
             {
@@ -137,6 +137,11 @@ describe("MANAGE - resolvers - api key", () => {
                         title: "Vegetables",
                         slug: "vegetables",
                         createdOn: expect.stringMatching(/^20/),
+                        createdBy: {
+                            id: "a1234567890",
+                            displayName: "a1234567890",
+                            type: "api-key"
+                        },
                         savedOn: expect.stringMatching(/^20/),
                         meta: {
                             locked: false,
@@ -183,6 +188,11 @@ describe("MANAGE - resolvers - api key", () => {
                         title: category.title,
                         slug: category.slug,
                         createdOn: category.createdOn,
+                        createdBy: {
+                            id: "a1234567890",
+                            displayName: "a1234567890",
+                            type: "api-key"
+                        },
                         savedOn: category.savedOn,
                         meta: {
                             locked: false,
@@ -224,6 +234,11 @@ describe("MANAGE - resolvers - api key", () => {
                         title: "Green vegetables",
                         slug: "green-vegetables",
                         createdOn: expect.stringMatching(/^20/),
+                        createdBy: {
+                            id: "a1234567890",
+                            displayName: "a1234567890",
+                            type: "api-key"
+                        },
                         savedOn: expect.stringMatching(/^20/),
                         meta: {
                             locked: false,
@@ -264,6 +279,11 @@ describe("MANAGE - resolvers - api key", () => {
                             title: updatedCategory.title,
                             slug: updatedCategory.slug,
                             createdOn: updatedCategory.createdOn,
+                            createdBy: {
+                                id: "a1234567890",
+                                displayName: "a1234567890",
+                                type: "api-key"
+                            },
                             savedOn: updatedCategory.savedOn,
                             meta: {
                                 locked: false,

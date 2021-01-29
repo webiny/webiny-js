@@ -11,9 +11,12 @@ import list from "@webiny/app-page-builder/editor/plugins/elements/list";
 import quote from "@webiny/app-page-builder/editor/plugins/elements/quote";
 import icon from "@webiny/app-page-builder/editor/plugins/elements/icon";
 import button from "@webiny/app-page-builder/editor/plugins/elements/button";
-import media from "@webiny/app-page-builder/editor/plugins/elements/media";
-import social from "@webiny/app-page-builder/editor/plugins/elements/social";
-import code from "@webiny/app-page-builder/editor/plugins/elements/code";
+import soundcloud from "@webiny/app-page-builder/editor/plugins/elements/media/soundcloud";
+import vimeo from "@webiny/app-page-builder/editor/plugins/elements/media/vimeo";
+import youtube from "@webiny/app-page-builder/editor/plugins/elements/media/youtube";
+import pinterest from "@webiny/app-page-builder/editor/plugins/elements/social/pinterest";
+import twitter from "@webiny/app-page-builder/editor/plugins/elements/social/twitter";
+import codesandbox from "@webiny/app-page-builder/editor/plugins/elements/code/codesandbox";
 import pagesList from "@webiny/app-page-builder/editor/plugins/elements/pagesList";
 import imagesList from "@webiny/app-page-builder/editor/plugins/elements/imagesList";
 import heading from "@webiny/app-page-builder/editor/plugins/elements/heading";
@@ -75,7 +78,7 @@ export default [
     grid,
     block(),
     gridBlock,
-    ...cell(),
+    cell(),
     heading(),
     paragraph(),
     list(),
@@ -84,9 +87,12 @@ export default [
     image(),
     imagesList(),
     button(),
-    media,
-    social,
-    code,
+    soundcloud(),
+    vimeo(),
+    youtube(),
+    pinterest(),
+    twitter(),
+    codesandbox(),
     pagesList(),
     // grid presets
     ...gridPresets,
