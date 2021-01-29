@@ -7,7 +7,7 @@ const deploy = (stack, inputs) => {
     return execa(
         "webiny",
         [
-            "stack",
+            "app",
             "deploy",
             stack,
             "--env",
