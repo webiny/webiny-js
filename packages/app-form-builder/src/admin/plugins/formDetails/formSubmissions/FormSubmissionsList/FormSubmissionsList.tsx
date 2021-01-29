@@ -6,6 +6,7 @@ import * as ListComponents from "@webiny/ui/List";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { IconButton } from "@webiny/ui/Button";
 import { Typography } from "@webiny/ui/Typography";
+import { Scrollbar } from "@webiny/ui/Scrollbar";
 import FormSubmissionDialog from "./FormSubmissionDialog";
 import { ReactComponent as ImportExport } from "./icons/round-cloud_download-24px.svg";
 import Block from "../Block";
@@ -13,6 +14,12 @@ import useSubmissions from "@webiny/app-form-builder/admin/plugins/formDetails/f
 
 const t = i18n.namespace("FormsApp.FormsDataList");
 
+const TOP = 490;
+const blockWrapper = css({
+    "& .webiny-data-list__content": {
+        height: `calc(100vh - ${TOP}px)`
+    }
+});
 const rightAlign = css({
     alignItems: "flex-end !important"
 });
@@ -36,7 +43,7 @@ type Props = {
     };
 };
 
-const { DataList, List, ListItem, ListItemMeta, ListItemText, ListTextOverline } = ListComponents;
+const { DataList, ListItem, ListItemMeta, ListItemText, ListTextOverline } = ListComponents;
 
 const sorters = [
     {
@@ -67,7 +74,7 @@ export const FormSubmissionsList = ({ form }: Props) => {
 
     return (
         <>
-            <Block title="Submissions">
+            <Block title="Submissions" className={blockWrapper}>
                 <DataList
                     loading={loading}
                     refresh={refresh}
@@ -98,7 +105,7 @@ export const FormSubmissionsList = ({ form }: Props) => {
                     }}
                 >
                     {({ data = [] }) => (
-                        <List>
+                        <Scrollbar>
                             {data.map(submission => {
                                 const submittedOn = submission.meta
                                     ? submission.meta.submittedOn
@@ -127,7 +134,7 @@ export const FormSubmissionsList = ({ form }: Props) => {
                                     </ListItem>
                                 );
                             })}
-                        </List>
+                        </Scrollbar>
                     )}
                 </DataList>
             </Block>

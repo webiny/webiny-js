@@ -6,9 +6,10 @@ const Document = ({ element }: { element: PbElement }) => {
     if (!element || Array.isArray(element)) {
         return null;
     }
+
     return (
         <div className={"webiny-pb-page-document"}>
-            {element.elements.map(element => (
+            {(element.elements as PbElement[]).map(element => (
                 <RenderElement key={element.id} element={element} />
             ))}
         </div>

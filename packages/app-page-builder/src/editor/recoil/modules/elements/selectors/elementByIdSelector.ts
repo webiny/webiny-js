@@ -1,25 +1,18 @@
-import { PbState } from "@webiny/app-page-builder/editor/recoil/modules/types";
-import { PbShallowElement } from "@webiny/app-page-builder/types";
+import { PbEditorElement } from "@webiny/app-page-builder/types";
 import { selectorFamily } from "recoil";
-import { elementsAtom, ElementsAtomType } from "../elementsAtom";
+import { elementsAtom } from "../elementsAtom";
 
-const findOneElement = (elements: ElementsAtomType, id: string) => {
-    if (elements.hasOwnProperty(id)) {
-        return elements[id];
-    }
-    return Object.values(elements).find(el => el.path === id);
-};
-
-export const elementByIdSelector = selectorFamily<PbShallowElement, string>({
+export const elementByIdSelector = selectorFamily<PbEditorElement, string>({
     key: "elementByIdSelector",
     get: id => {
         return ({ get }) => {
-            const elements = get(elementsAtom);
-            return findOneElement(elements, id);
+            return get(elementsAtom(id));
         };
+    },
+    set: id => ({ set }, newValue) => {
+        set(elementsAtom(id), prevState => ({
+            ...prevState,
+            ...newValue
+        }));
     }
 });
-
-export const getElementById = (state: PbState, id: string): PbShallowElement | undefined => {
-    return findOneElement(state.elements, id);
-};

@@ -307,7 +307,6 @@ export default (context: FileManagerContext) => {
 
             const body = {
                 query: {
-                    // eslint-disable-next-line @typescript-eslint/camelcase
                     constant_score: {
                         filter: {
                             bool: {

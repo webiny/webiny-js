@@ -1,7 +1,4 @@
-import {
-    CmsContentModelFieldInputType,
-    CmsContentModelGroupType
-} from "@webiny/api-headless-cms/types";
+import { CmsContentModelFieldInput, CmsContentModelGroup } from "@webiny/api-headless-cms/types";
 import mdbid from "mdbid";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import * as helpers from "../utils/helpers";
@@ -30,7 +27,7 @@ describe("content model test", () => {
         elasticSearch
     } = useContentGqlHandler(manageHandlerOpts);
 
-    let contentModelGroup: CmsContentModelGroupType;
+    let contentModelGroup: CmsContentModelGroup;
 
     beforeEach(async () => {
         const [createCMG] = await createContentModelGroupMutation({
@@ -112,7 +109,7 @@ describe("content model test", () => {
                     data: {
                         name: "Content model",
                         description: null,
-                        titleFieldId: null,
+                        titleFieldId: "id",
                         modelId: "contentModel",
                         createdBy: helpers.identity,
                         createdOn: expect.stringMatching(/^20/),
@@ -417,7 +414,7 @@ describe("content model test", () => {
 
         const contentModel = createResponse.data.createContentModel.data;
 
-        const textField: CmsContentModelFieldInputType = {
+        const textField: CmsContentModelFieldInput = {
             id: mdbid(),
             fieldId: "textField",
             label: "Text field",
@@ -433,9 +430,10 @@ describe("content model test", () => {
             },
             settings: {},
             type: "text",
-            validation: []
+            validation: [],
+            listValidation: []
         };
-        const numberField: CmsContentModelFieldInputType = {
+        const numberField: CmsContentModelFieldInput = {
             id: mdbid(),
             fieldId: "numberField",
             label: "Number field",
@@ -451,7 +449,8 @@ describe("content model test", () => {
             },
             settings: {},
             type: "number",
-            validation: []
+            validation: [],
+            listValidation: []
         };
 
         const fields = [textField, numberField];
@@ -504,7 +503,7 @@ describe("content model test", () => {
 
         const contentModel = createResponse.data.createContentModel.data;
 
-        const field: CmsContentModelFieldInputType = {
+        const field: CmsContentModelFieldInput = {
             id: mdbid(),
             fieldId: "field1",
             label: "Field 1",
@@ -520,7 +519,8 @@ describe("content model test", () => {
             },
             settings: {},
             type: "text",
-            validation: []
+            validation: [],
+            listValidation: []
         };
         const [response] = await updateContentModelMutation({
             modelId: contentModel.modelId,
@@ -538,8 +538,10 @@ describe("content model test", () => {
                     data: null,
                     error: {
                         code: "VALIDATION_ERROR",
-                        message: `Field "nonExistingTitleFieldId" does not exist in the model!`,
-                        data: null
+                        message: `Field does not exist in the model.`,
+                        data: {
+                            fieldId: "nonExistingTitleFieldId"
+                        }
                     }
                 }
             }

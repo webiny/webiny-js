@@ -1,7 +1,7 @@
 import {
-    CmsContentEntryType,
-    CmsContentModelFieldType,
-    CmsContentModelType,
+    CmsContentEntry,
+    CmsContentModelField,
+    CmsContentModel,
     CmsContext,
     CmsModelFieldToStoragePlugin
 } from "@webiny/api-headless-cms/types";
@@ -35,14 +35,14 @@ const getStoragePlugins = (context: CmsContext): Record<string, CmsModelFieldToS
  */
 const entryStorageTransformFactory = (
     context: CmsContext,
-    model: CmsContentModelType,
+    model: CmsContentModel,
     operation: "toStorage" | "fromStorage"
-): null | ((entry: CmsContentEntryType) => Promise<CmsContentEntryType>) => {
+): null | ((entry: CmsContentEntry) => Promise<CmsContentEntry>) => {
     const plugins = getStoragePlugins(context);
     // we map plugins to each field so we basically can go through plugins object
     // and iterate only those fields that have plugins
     const fieldByIdToPluginMap: Record<string, CmsModelFieldToStoragePlugin> = {};
-    const modelFieldIdToFieldMap: Record<string, CmsContentModelFieldType> = {};
+    const modelFieldIdToFieldMap: Record<string, CmsContentModelField> = {};
     for (const field of model.fields) {
         if (!plugins[field.type]) {
             continue;
@@ -62,7 +62,7 @@ const entryStorageTransformFactory = (
         return null;
     }
 
-    return async (entry: CmsContentEntryType) => {
+    return async (entry: CmsContentEntry) => {
         const values: Record<string, any> = {};
         for (const fieldId in fieldByIdToPluginMap) {
             if (fieldByIdToPluginMap.hasOwnProperty(fieldId) === false || !entry.values[fieldId]) {
@@ -89,24 +89,18 @@ const entryStorageTransformFactory = (
 
 const entryFieldStorageTransformFactory = (
     context: CmsContext,
-    model: CmsContentModelType,
+    model: CmsContentModel,
     operation: "toStorage" | "fromStorage"
 ) => {
     const plugins = getStoragePlugins(context);
     return async (
-        entry: CmsContentEntryType,
-        field: CmsContentModelFieldType,
+        entry: CmsContentEntry,
+        field: CmsContentModelField,
         value: any
     ): Promise<any> => {
         const plugin = plugins[field.type];
         if (!plugin) {
             return value;
-        } else if (typeof plugin[operation] !== "function") {
-            throw new WebinyError(
-                `Missing function "${operation}" in plugin "${plugin.name ||
-                    "unknown"}" for field type "${plugin.fieldType}".`,
-                "STORAGE_MAPPING_ERROR"
-            );
         }
         return await plugin[operation]({
             field,
@@ -121,9 +115,9 @@ const entryFieldStorageTransformFactory = (
  */
 export const entryToStorageTransform = async (
     context: CmsContext,
-    model: CmsContentModelType,
-    entry: CmsContentEntryType
-): Promise<CmsContentEntryType> => {
+    model: CmsContentModel,
+    entry: CmsContentEntry
+): Promise<CmsContentEntry> => {
     const transform = entryStorageTransformFactory(context, model, "toStorage");
     if (!transform) {
         return entry;
@@ -136,9 +130,9 @@ export const entryToStorageTransform = async (
  */
 export const entryFromStorageTransform = async (
     context: CmsContext,
-    model: CmsContentModelType,
-    entry: CmsContentEntryType & Record<string, any>
-): Promise<CmsContentEntryType> => {
+    model: CmsContentModel,
+    entry: CmsContentEntry & Record<string, any>
+): Promise<CmsContentEntry> => {
     const transform = entryStorageTransformFactory(context, model, "fromStorage");
     if (!transform) {
         return entry;
@@ -146,19 +140,18 @@ export const entryFromStorageTransform = async (
     return await transform(entry);
 };
 
-type EntryFieldFromStorageTransformArgsType = {
+interface EntryFieldFromStorageTransformArgs {
     context: CmsContext;
-    model: CmsContentModelType;
-    entry: CmsContentEntryType & Record<string, any>;
-    field: CmsContentModelFieldType;
+    model: CmsContentModel;
+    entry: CmsContentEntry & Record<string, any>;
+    field: CmsContentModelField;
     value: any;
-};
+}
 /*
  * A function that is used to transform a single field from storage
- * in 99% cases this is going to be used since transformation is done when resolving the field
  */
 export const entryFieldFromStorageTransform = async (
-    args: EntryFieldFromStorageTransformArgsType
+    args: EntryFieldFromStorageTransformArgs
 ): Promise<any> => {
     const { context, model, entry, field, value } = args;
     const transform = entryFieldStorageTransformFactory(context, model, "fromStorage");

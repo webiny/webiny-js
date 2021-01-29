@@ -3,7 +3,7 @@ import gql from "graphql-tag";
 import { Form } from "@webiny/form";
 import { Mutation } from "react-apollo";
 import React from "react";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { PbPageElementMailchimpComponentPlugin } from "../../types";
 
 const mutation = gql`
@@ -24,9 +24,9 @@ export class RenderMailchimpForm extends React.Component<any, { processing: bool
     render() {
         const { element } = this.props;
         const selected = get(element, "data.settings.component") || "";
-        const component = getPlugins<PbPageElementMailchimpComponentPlugin>(
-            "pb-page-element-mailchimp-component"
-        ).find(cmp => cmp.componentName === selected);
+        const component = plugins
+            .byType<PbPageElementMailchimpComponentPlugin>("pb-page-element-mailchimp-component")
+            .find(cmp => cmp.componentName === selected);
 
         if (component) {
             const Component = component.component;

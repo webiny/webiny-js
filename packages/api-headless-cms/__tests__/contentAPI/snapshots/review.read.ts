@@ -5,6 +5,7 @@ export default /* GraphQL */ `
     type Review {
         id: ID
         createdOn: DateTime
+        createdBy: CmsCreatedBy
         savedOn: DateTime
         text: String
         product: Product

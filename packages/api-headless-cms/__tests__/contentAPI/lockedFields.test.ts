@@ -1,8 +1,8 @@
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import {
-    CmsContentEntryType,
-    CmsContentModelGroupType,
-    CmsContentModelType
+    CmsContentEntry,
+    CmsContentModelGroup,
+    CmsContentModel
 } from "@webiny/api-headless-cms/types";
 import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
@@ -22,7 +22,7 @@ describe("Content model locked fields", () => {
 
     // This function is not directly within `beforeEach` as we don't always setup the same content model.
     // We call this function manually at the beginning of each test, where needed.
-    const setupContentModelGroup = async (): Promise<CmsContentModelGroupType> => {
+    const setupContentModelGroup = async (): Promise<CmsContentModelGroup> => {
         const [createCMG] = await createContentModelGroupMutation({
             data: {
                 name: "Group",
@@ -34,7 +34,7 @@ describe("Content model locked fields", () => {
         return createCMG.data.createContentModelGroup.data;
     };
 
-    const setupCategoryModel = async (contentModelGroup: CmsContentModelGroupType) => {
+    const setupCategoryModel = async (contentModelGroup: CmsContentModelGroup) => {
         const model = models.find(m => m.modelId === "category");
         // Create initial record
         const [create] = await createContentModelMutation({
@@ -86,7 +86,7 @@ describe("Content model locked fields", () => {
                 slug: "vegetables"
             }
         });
-        const category = createCategoryResponse.data.createCategory.data as CmsContentEntryType;
+        const category = createCategoryResponse.data.createCategory.data as CmsContentEntry;
 
         const productModel = models.find(m => m.modelId === "product");
         const [createResponse] = await createContentModelMutation({
@@ -97,7 +97,7 @@ describe("Content model locked fields", () => {
             }
         });
 
-        const contentModel = createResponse.data.createContentModel.data as CmsContentModelType;
+        const contentModel = createResponse.data.createContentModel.data as CmsContentModel;
 
         await updateContentModelMutation({
             modelId: contentModel.modelId,

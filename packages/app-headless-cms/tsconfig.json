@@ -1,38 +1,38 @@
 {
-	"extends": "../../tsconfig",
-	"references": [
-		{
-			"path": "../app"
-		},
-		{
-			"path": "../app-admin"
-		},
-		{
-			"path": "../app-graphql-playground"
-		},
-		{
-			"path": "../app-plugin-admin-welcome-screen"
-		},
-		{
-			"path": "../app-i18n"
-		},
-		{
-			"path": "../form"
-		},
-		{
-			"path": "../plugins"
-		},
-		{
-			"path": "../app-security"
-		},
-		{
-			"path": "../react-router"
-		},
-		{
-			"path": "../ui"
-		},
-		{
-			"path": "../validation"
-		}
-	]
+  "extends": "../../tsconfig",
+  "references": [
+    {
+      "path": "../app"
+    },
+    {
+      "path": "../app-admin"
+    },
+    {
+      "path": "../app-graphql-playground"
+    },
+    {
+      "path": "../app-plugin-admin-welcome-screen"
+    },
+    {
+      "path": "../app-i18n"
+    },
+    {
+      "path": "../form"
+    },
+    {
+      "path": "../plugins"
+    },
+    {
+      "path": "../app-security"
+    },
+    {
+      "path": "../react-router"
+    },
+    {
+      "path": "../ui"
+    },
+    {
+      "path": "../validation"
+    }
+  ]
 }

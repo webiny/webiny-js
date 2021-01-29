@@ -86,7 +86,7 @@ const FMInstaller = ({ onInstalled }) => {
 const plugin: AdminInstallationPlugin = {
     name: "admin-installation-fm",
     type: "admin-installation",
-    title: t`File Manager app`,
+    title: t`File Manager`,
     dependencies: ["admin-installation-security", "admin-installation-i18n"],
     secure: true,
     async isInstalled({ client }) {

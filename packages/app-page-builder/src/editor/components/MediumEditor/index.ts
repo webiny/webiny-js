@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, createElement } from "react";
 import MediumEditor from "medium-editor";
 import { css } from "emotion";
 
@@ -35,13 +35,26 @@ const ReactMediumEditor = ({
     value,
     onChange,
     options,
-    onSelect,
-    ...props
+    onSelect
 }: ReactMediumEditorProps) => {
     const elementRef = React.useRef();
     const editorRef = React.useRef<MediumEditor.MediumEditor>();
 
-    React.useEffect(() => {
+    const handleChange = (data, editable) => {
+        if (typeof onChange === "function") {
+            onChange(editable.innerHTML);
+        }
+    };
+
+    const handleSelect = () => {
+        if (typeof onSelect === "function") {
+            onSelect();
+        }
+    };
+    /**
+     * Here we're recreating the "Medium editor" whenever the "tag" changes because that's the element editor is mounted on.
+     */
+    useEffect(() => {
         if (!elementRef && !elementRef.current) {
             return;
         }
@@ -59,29 +72,15 @@ const ReactMediumEditor = ({
             }
         });
 
-        const handleChange = (data, editable) => {
-            if (typeof onChange === "function") {
-                onChange(editable.innerHTML);
-            }
-        };
-
-        const handleSelect = () => {
-            if (typeof onSelect === "function") {
-                onSelect();
-            }
-        };
-
         editorRef.current.subscribe("blur", handleChange);
-
         editorRef.current.subscribe("editableInput", handleSelect);
 
         return () => {
             editorRef.current.destroy();
         };
-    }, [onChange, options, onSelect]);
+    }, [options, tag]);
 
-    return React.createElement(tag, {
-        ...props,
+    return createElement(tag, {
         dangerouslySetInnerHTML: { __html: value },
         ref: elementRef,
         className: editorClass

@@ -68,7 +68,7 @@ export const AppInstaller = ({ children }) => {
     }, [identity]);
 
     const renderSecurity = useCallback(content => {
-        const plugin = plugins.byType("app-installer-security").pop();
+        const [plugin] = plugins.byType("app-installer-security");
         if (!plugin) {
             throw Error(`You must register an "app-installer-security" plugin!`);
         }

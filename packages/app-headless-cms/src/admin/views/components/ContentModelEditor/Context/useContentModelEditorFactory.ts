@@ -3,13 +3,13 @@ import shortid from "shortid";
 import { get, cloneDeep, pick } from "lodash";
 import { GET_CONTENT_MODEL, UPDATE_CONTENT_MODEL } from "./graphql";
 import { getFieldPosition, moveField, moveRow, deleteField } from "./functions";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 
 import {
     CmsEditorFieldsLayout,
     CmsEditorField,
     CmsEditorFieldId,
-    FieldLayoutPositionType,
+    FieldLayoutPosition,
     CmsEditorFieldTypePlugin
 } from "@webiny/app-headless-cms/types";
 
@@ -99,8 +99,9 @@ export default ContentModelEditorContext => {
              * @returns {void|?CmsEditorField}
              */
             getFieldPlugin(query: object): CmsEditorFieldTypePlugin {
-                return getPlugins<CmsEditorFieldTypePlugin>("cms-editor-field-type").find(
-                    ({ field }) => {
+                return plugins
+                    .byType<CmsEditorFieldTypePlugin>("cms-editor-field-type")
+                    .find(({ field }) => {
                         for (const key in query) {
                             if (!(key in field)) {
                                 return null;
@@ -112,8 +113,7 @@ export default ContentModelEditorContext => {
                         }
 
                         return true;
-                    }
-                );
+                    });
             },
 
             /**
@@ -142,7 +142,7 @@ export default ContentModelEditorContext => {
              * @param data
              * @param position
              */
-            insertField(data: CmsEditorField, position: FieldLayoutPositionType) {
+            insertField(data: CmsEditorField, position: FieldLayoutPosition) {
                 const field = cloneDeep(data);
                 if (!field.id) {
                     field.id = shortid.generate();
@@ -181,7 +181,7 @@ export default ContentModelEditorContext => {
                 position
             }: {
                 field: CmsEditorFieldId | CmsEditorField;
-                position: FieldLayoutPositionType;
+                position: FieldLayoutPosition;
             }) {
                 self.setData(data => {
                     moveField({ field, position, data });

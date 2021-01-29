@@ -10,11 +10,11 @@ import validatorsPlugins from "./plugins/validators";
 import elasticSearchPlugins from "./plugins/es";
 import fieldsStoragePlugins from "./plugins/fieldsStorage";
 
-type CmsContentPluginsIndexArgsType = {
+interface CmsContentPluginsIndexArgs {
     debug?: boolean;
-};
+}
 
-export default (options: CmsContentPluginsIndexArgsType = {}) => [
+export default (options: CmsContentPluginsIndexArgs = {}) => [
     modelManager(),
     pluginsCrudSetup(),
     contextSetup(options),

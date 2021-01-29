@@ -1,9 +1,12 @@
 import React, { useMemo, useState } from "react";
 import SliderWithInput from "./SliderWithInput";
 import Footer from "./Footer";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
 import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
-import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import {
+    activeElementAtom,
+    elementWithChildrenByIdSelector
+} from "@webiny/app-page-builder/editor/recoil/modules";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
 import { get } from "lodash";
 import { set, merge } from "dot-prop-immutable";
@@ -29,7 +32,8 @@ const PMSettings: React.FunctionComponent<PMSettingsPropsType> = ({ styleAttribu
     const handler = useEventActionHandler();
 
     const valueKey = `data.settings.${styleAttribute}`;
-    const element = useRecoilValue(activeElementWithChildrenSelector);
+    const activeElementId = useRecoilValue(activeElementAtom);
+    const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
     const advanced = get(element, `${valueKey}.advanced`, false);
 
     const [tabIndex, setTabIndex] = useState<number>(0);
@@ -57,8 +61,7 @@ const PMSettings: React.FunctionComponent<PMSettingsPropsType> = ({ styleAttribu
         handler.trigger(
             new UpdateElementActionEvent({
                 element: newElement,
-                history,
-                merge: true
+                history
             })
         );
     };

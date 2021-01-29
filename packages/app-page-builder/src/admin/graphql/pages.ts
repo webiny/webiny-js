@@ -26,7 +26,7 @@ export const DATA_FIELDS = `
 `;
 
 export const CREATE_PAGE = gql`
-    mutation CreatePage($from: ID, $category: String) {
+    mutation PbCreatePage($from: ID, $category: String) {
         pageBuilder {
             createPage(from: $from, category: $category) {
                 data {
@@ -39,7 +39,7 @@ export const CREATE_PAGE = gql`
 `;
 
 export const LIST_PAGES = gql`
-    query ListPages(
+    query PbListPages(
         $where: PbListPagesWhereInput
         $sort: PbListPagesSortInput
         $search: PbListPagesSearchInput
@@ -85,7 +85,7 @@ export const LIST_PAGES = gql`
 `;
 
 export const GET_PAGE = gql`
-    query GetPage($id: ID!) {
+    query PbGetPage($id: ID!) {
         pageBuilder {
             getPage(id: $id) {
                 data {
@@ -103,9 +103,22 @@ export const GET_PAGE = gql`
 `;
 
 export const PUBLISH_PAGE = gql`
-    mutation PublishPage($id: ID!) {
+    mutation PbPublishPage($id: ID!) {
         pageBuilder {
             publishPage(id: $id) {
+                data {
+                    ${DATA_FIELDS}
+                }
+                ${error}
+            }
+        }
+    }
+`;
+
+export const UNPUBLISH_PAGE = gql`
+    mutation PbUnpublishPage($id: ID!) {
+        pageBuilder {
+            unpublishPage(id: $id) {
                 data {
                     ${DATA_FIELDS}
                 }

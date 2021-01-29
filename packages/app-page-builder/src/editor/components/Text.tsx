@@ -2,17 +2,12 @@ import React, { useCallback, useMemo } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import get from "lodash/get";
 import classNames from "classnames";
-import { PbElement } from "../../types";
-import {
-    elementWithChildrenByIdSelector,
-    activeElementIdSelector,
-    activateElementMutation,
-    uiAtom
-} from "../recoil/modules";
+import { PbEditorElement } from "../../types";
+import { elementWithChildrenByIdSelector, activeElementAtom, uiAtom } from "../recoil/modules";
 import { ElementRoot } from "../../render/components/ElementRoot";
 import useUpdateHandlers from "../plugins/elementSettings/useUpdateHandlers";
 import ReactMediumEditor from "../components/MediumEditor";
-import { applyFallbackDisplayMode } from "@webiny/app-page-builder/editor/plugins/elementSettings/elementSettingsUtils";
+import { applyFallbackDisplayMode } from "../plugins/elementSettings/elementSettingsUtils";
 
 export const textClassName = "webiny-pb-base-page-element-style webiny-pb-page-element-text";
 const DATA_NAMESPACE = "data.text";
@@ -27,9 +22,9 @@ const Text: React.FunctionComponent<TextElementProps> = ({
     editorOptions,
     rootClassName
 }) => {
-    const [{ displayMode }, setUiAtomValue] = useRecoilState(uiAtom);
-    const element: PbElement = useRecoilValue(elementWithChildrenByIdSelector(elementId));
-    const activeElementId = useRecoilValue(activeElementIdSelector);
+    const element: PbEditorElement = useRecoilValue(elementWithChildrenByIdSelector(elementId));
+    const [{ displayMode }] = useRecoilState(uiAtom);
+    const [activeElementId, setActiveElementAtomValue] = useRecoilState(activeElementAtom);
     const { getUpdateValue } = useUpdateHandlers({
         element,
         dataNamespace: DATA_NAMESPACE
@@ -42,6 +37,7 @@ const Text: React.FunctionComponent<TextElementProps> = ({
             ),
         [displayMode]
     );
+
     const value = get(element, `${DATA_NAMESPACE}.${displayMode}`, fallbackValue);
 
     const onChange = useCallback(
@@ -50,12 +46,14 @@ const Text: React.FunctionComponent<TextElementProps> = ({
         },
         [getUpdateValue]
     );
+
     const onSelect = useCallback(() => {
         // Mark element active on editor element selection
         if (elementId && activeElementId !== elementId) {
-            setUiAtomValue(prev => activateElementMutation(prev, elementId));
+            setActiveElementAtomValue(elementId);
         }
     }, [activeElementId, elementId]);
+
     // required due to re-rendering when set content atom and still nothing in elements atom
     if (!element) {
         return null;
@@ -71,6 +69,7 @@ const Text: React.FunctionComponent<TextElementProps> = ({
             className={classNames(textClassName, rootClassName, typography)}
         >
             <ReactMediumEditor
+                elementId={elementId}
                 tag={tag}
                 value={textContent}
                 onChange={onChange}

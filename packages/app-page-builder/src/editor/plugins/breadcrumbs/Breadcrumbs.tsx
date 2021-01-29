@@ -1,130 +1,90 @@
-import React from "react";
-import { css } from "emotion";
-import { useRecoilValue, useSetRecoilState } from "recoil";
-import { PbShallowElement } from "../../../types";
-import { extrapolateContentElementHelper } from "../../helpers";
+import React, { useCallback, useEffect, useState } from "react";
+import { useRecoilCallback, useRecoilSnapshot, useRecoilState, useRecoilValue } from "recoil";
+import { PbEditorElement } from "../../../types";
 import {
-    activateElementMutation,
-    activeElementSelector,
-    contentAtom,
-    ContentAtomType,
-    highlightElementMutation,
-    uiAtom
+    activeElementAtom,
+    elementByIdSelector,
+    elementsAtom,
+    highlightElementAtom
 } from "../../recoil/modules";
-import { COLORS } from "../elementSettings/components/StyledComponents";
-
-const breadcrumbs = css({
-    display: "flex",
-    zIndex: 20,
-    flexDirection: "row",
-    padding: 0,
-    position: "fixed",
-    left: 55,
-    bottom: 0,
-    width: "calc(100% - 55px)",
-    backgroundColor: "var(--mdc-theme-surface)",
-    borderTop: "1px solid var(--mdc-theme-background)",
-    fontSize: "12px",
-    overflow: "hidden",
-    "> li": {
-        cursor: "pointer",
-        display: "flex",
-        "& .element": {
-            color: COLORS.darkestGray,
-            textDecoration: "none",
-            textTransform: "capitalize",
-            padding: "10px 0 10px 45px",
-            background: "hsla(300, 2%, calc(92% - var(--element-count) * 1%), 1)",
-            position: "relative",
-            display: "block"
-        },
-        "& .element::after": {
-            content: '" "',
-            display: "block",
-            width: "0",
-            height: "0",
-            borderTop: "50px solid transparent",
-            borderBottom: "50px solid transparent",
-            borderLeft: "30px solid hsla(300, 2%, calc(92% - var(--element-count) * 1%), 1)   ",
-            position: "absolute",
-            top: "50%",
-            marginTop: "-50px",
-            left: "100%",
-            zIndex: 2
-        },
-        "& .element::before": {
-            content: '" "',
-            display: "block",
-            width: "0",
-            height: "0",
-            borderTop: "50px solid transparent",
-            borderBottom: "50px solid transparent",
-            borderLeft: "30px solid hsla(0, 0%, 100%, 1)",
-            position: "absolute",
-            top: "50%",
-            marginTop: "-50px",
-            marginLeft: "1px",
-            left: "100%",
-            zIndex: 1
-        }
-    },
-    "& li:first-child .element": { paddingLeft: "10px" },
-
-    // Handle active state
-    "& li .element:hover": {
-        color: "var(--mdc-theme-surface)",
-        background: "var(--mdc-theme-secondary)"
-    },
-    "& li .element:hover:after": {
-        color: "var(--mdc-theme-surface)",
-        borderLeftColor: "var(--mdc-theme-secondary) !important"
-    }
-});
-
-const createBreadcrumbs = (content: ContentAtomType, element: PbShallowElement) => {
-    const path = element.path;
-    const list = [
-        {
-            id: element.id,
-            type: element.type
-        }
-    ];
-    const paths = path.split(".");
-    paths.pop();
-    while (paths.length > 0) {
-        const el = extrapolateContentElementHelper(content, paths.join("."));
-        if (!el) {
-            return list.reverse();
-        }
-        list.push({
-            id: el.id,
-            type: el.type
-        });
-        paths.pop();
-    }
-    return list.reverse();
-};
+import { breadcrumbs } from "./styles";
 
 const Breadcrumbs: React.FunctionComponent = () => {
-    const setUiAtomValue = useSetRecoilState(uiAtom);
-    const element = useRecoilValue(activeElementSelector);
-    const contentAtomValue = useRecoilValue(contentAtom);
+    const [items, setItems] = useState([]);
+    const [activeElement, setActiveElementAtomValue] = useRecoilState(activeElementAtom);
+    const element = useRecoilValue(elementByIdSelector(activeElement));
+    const [highlightElementAtomValue, setHighlightElementAtomValue] = useRecoilState(
+        highlightElementAtom
+    );
+    const snapshot = useRecoilSnapshot();
+    const lazyHighlight = useRecoilCallback(
+        ({ set }) => async (id: string) => {
+            if (highlightElementAtomValue) {
+                // Update the element that is currently highlighted
+                set(elementsAtom(highlightElementAtomValue), prevValue => {
+                    return {
+                        ...prevValue,
+                        isHighlighted: false
+                    };
+                });
+            }
+
+            // Set the new highlighted element
+            setHighlightElementAtomValue(id);
+
+            // Update the element that is about to be highlighted
+            set(elementsAtom(id), prevValue => {
+                return {
+                    ...prevValue,
+                    isHighlighted: true
+                };
+            });
+        },
+        [highlightElementAtomValue]
+    );
+
+    const highlightElement = useCallback(
+        (id: string) => {
+            lazyHighlight(id);
+        },
+        [lazyHighlight]
+    );
+
+    const activateElement = useCallback((id: string) => {
+        setActiveElementAtomValue(id);
+    }, []);
+
+    const createBreadCrumbs = async (activeElement: PbEditorElement) => {
+        const list = [];
+        let element = activeElement;
+        while (element.parent) {
+            list.push({
+                id: element.id,
+                type: element.type
+            });
+
+            if (!element.parent) {
+                break;
+            }
+
+            element = await snapshot.getPromise(elementByIdSelector(element.parent));
+        }
+        setItems(list.reverse());
+    };
+
+    useEffect(() => {
+        if (element) {
+            createBreadCrumbs(element);
+        }
+    }, [element]);
+
     if (!element) {
         return null;
     }
-    const highlightElement = (id: string) => {
-        setUiAtomValue(prev => highlightElementMutation(prev, id));
-    };
-    const activateElement = (id: string) => {
-        setUiAtomValue(prev => activateElementMutation(prev, id));
-    };
-
-    const breadcrumbsList = createBreadcrumbs(contentAtomValue, element);
-    breadcrumbsList.shift();
 
     return (
         <ul className={breadcrumbs}>
-            {breadcrumbsList.map(({ id, type }, index) => (
+            {items.map(({ id, type }, index) => (
                 <li
                     key={id}
                     onMouseOver={() => highlightElement(id)}

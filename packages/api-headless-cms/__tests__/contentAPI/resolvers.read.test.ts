@@ -1,4 +1,4 @@
-import { CmsContentModelGroupType } from "@webiny/api-headless-cms/types";
+import { CmsContentModelGroup } from "@webiny/api-headless-cms/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
@@ -47,7 +47,7 @@ const categoryManagerHelper = async manageOpts => {
 };
 
 describe("READ - Resolvers", () => {
-    let contentModelGroup: CmsContentModelGroupType;
+    let contentModelGroup: CmsContentModelGroup;
 
     const esCmsIndex = "root-headless-cms";
 
@@ -541,7 +541,6 @@ describe("READ - Resolvers", () => {
             () =>
                 listCategories({
                     where: {
-                        // eslint-disable-next-line @typescript-eslint/camelcase
                         title_contains: "*NIMal*"
                     }
                 }).then(([data]) => data),
@@ -582,7 +581,6 @@ describe("READ - Resolvers", () => {
             () =>
                 listCategories({
                     where: {
-                        // eslint-disable-next-line @typescript-eslint/camelcase
                         title_not_contains: "fruits"
                     }
                 }).then(([data]) => data),
@@ -630,7 +628,6 @@ describe("READ - Resolvers", () => {
             () =>
                 listCategories({
                     where: {
-                        // eslint-disable-next-line @typescript-eslint/camelcase
                         slug_in: [vegetables.slug, animals.slug]
                     }
                 }).then(([data]) => data),
@@ -678,7 +675,6 @@ describe("READ - Resolvers", () => {
             () =>
                 listCategories({
                     where: {
-                        // eslint-disable-next-line @typescript-eslint/camelcase
                         slug_not_in: [vegetables.slug, animals.slug]
                     }
                 }).then(([data]) => data),
@@ -721,7 +717,6 @@ describe("READ - Resolvers", () => {
             () =>
                 listCategories({
                     where: {
-                        // eslint-disable-next-line @typescript-eslint/camelcase
                         createdOn_gt: date
                     },
                     sort: ["createdOn_ASC"]
@@ -776,7 +771,6 @@ describe("READ - Resolvers", () => {
             () =>
                 listCategories({
                     where: {
-                        // eslint-disable-next-line @typescript-eslint/camelcase
                         createdOn_gte: animals.createdOn
                     },
                     sort: ["createdOn_ASC"]
@@ -820,7 +814,6 @@ describe("READ - Resolvers", () => {
             () =>
                 listCategories({
                     where: {
-                        // eslint-disable-next-line @typescript-eslint/camelcase
                         createdOn_lt: date
                     },
                     sort: ["createdOn_ASC"]
@@ -854,7 +847,6 @@ describe("READ - Resolvers", () => {
             () =>
                 listCategories({
                     where: {
-                        // eslint-disable-next-line @typescript-eslint/camelcase
                         savedOn_lte: vegetables.savedOn
                     },
                     sort: ["savedOn_ASC"]
@@ -907,7 +899,6 @@ describe("READ - Resolvers", () => {
             () =>
                 listCategories({
                     where: {
-                        // eslint-disable-next-line @typescript-eslint/camelcase
                         savedOn_not_between: [from, to]
                     },
                     sort: ["savedOn_ASC"]

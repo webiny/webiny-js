@@ -6,13 +6,13 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import {
     PbEditorGridPresetPluginType,
     PbEditorPageElementSettingsRenderComponentProps,
-    PbElement
+    PbEditorElement
 } from "../../../../types";
-import { useEventActionHandler } from "../../../../editor";
-import { createElementHelper } from "../../../helpers";
+import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
+import { createElement } from "../../../helpers";
 import { calculatePresetPluginCells, getPresetPlugins } from "../../../plugins/gridPresets";
 import { UpdateElementActionEvent } from "../../../recoil/actions";
-import { activeElementWithChildrenSelector } from "../../../recoil/modules";
+import { activeElementAtom, elementWithChildrenByIdSelector } from "../../../recoil/modules";
 // Components
 import CellSize from "./CellSize";
 import { ContentWrapper } from "../components/StyledComponents";
@@ -55,13 +55,13 @@ const StyledIconButton = styled("button")(({ active }: any) => ({
     }
 }));
 
-const createCells = (amount: number) => {
+const createCells = (amount: number): PbEditorElement[] => {
     return Array(amount)
         .fill(0)
-        .map(() => createElementHelper("cell", {}));
+        .map(() => createElement("cell", {}));
 };
 
-const resizeCells = (elements: PbElement[], cells: number[]): PbElement[] => {
+const resizeCells = (elements: PbEditorElement[], cells: number[]): PbEditorElement[] => {
     return elements.map((element, index) => {
         return {
             ...element,
@@ -78,16 +78,16 @@ const resizeCells = (elements: PbElement[], cells: number[]): PbElement[] => {
     });
 };
 
-const updateChildrenWithPreset = (target: PbElement, pl: PbEditorGridPresetPluginType) => {
+const updateChildrenWithPreset = (target: PbEditorElement, pl: PbEditorGridPresetPluginType) => {
     const cells = calculatePresetPluginCells(pl);
     const total = target.elements.length;
     const max = cells.length;
     if (total === max) {
-        return resizeCells(target.elements, cells);
+        return resizeCells(target.elements as PbEditorElement[], cells);
     } else if (total > max) {
-        return resizeCells(target.elements.slice(0, max), cells);
+        return resizeCells(target.elements.slice(0, max) as PbEditorElement[], cells);
     }
-    const created = target.elements.concat(createCells(max - total));
+    const created = [...(target.elements as PbEditorElement[]), ...createCells(max - total)];
     return resizeCells(created, cells);
 };
 
@@ -95,12 +95,15 @@ export const GridSettings: React.FunctionComponent<PbEditorPageElementSettingsRe
     defaultAccordionValue
 }) => {
     const handler = useEventActionHandler();
-    const element = useRecoilValue(activeElementWithChildrenSelector);
+    const activeElementId = useRecoilValue(activeElementAtom);
+    const element = (useRecoilValue(
+        elementWithChildrenByIdSelector(activeElementId)
+    ) as unknown) as PbEditorElement;
     const currentCellsType = element.data.settings?.grid?.cellsType;
     const presetPlugins = getPresetPlugins();
 
     const onInputSizeChange = (value: number, index: number) => {
-        const cellElement = element.elements[index];
+        const cellElement = element.elements[index] as PbEditorElement;
         if (!cellElement) {
             throw new Error(`There is no element on index ${index}.`);
         }
@@ -117,7 +120,7 @@ export const GridSettings: React.FunctionComponent<PbEditorPageElementSettingsRe
                             }
                         }
                     }
-                },
+                } as any,
                 history: true
             })
         );
@@ -141,14 +144,14 @@ export const GridSettings: React.FunctionComponent<PbEditorPageElementSettingsRe
                             }
                         }
                     },
-                    elements: updateChildrenWithPreset(element, pl)
+                    elements: updateChildrenWithPreset(element, pl) as any
                 },
                 history: true
             })
         );
     };
     const totalCellsUsed = element.elements.reduce((total, cell) => {
-        return total + (cell.data.settings?.grid?.size || 1);
+        return total + ((cell as PbEditorElement).data.settings?.grid?.size || 1);
     }, 0);
 
     return (
@@ -172,7 +175,7 @@ export const GridSettings: React.FunctionComponent<PbEditorPageElementSettingsRe
 
                 <Grid className={classes.grid}>
                     {element.elements.map((cell, index) => {
-                        const size = cell.data.settings?.grid?.size || 1;
+                        const size = (cell as PbEditorElement).data.settings?.grid?.size || 1;
                         return (
                             <Cell span={12} key={`cell-size-${index}`}>
                                 <CellSize

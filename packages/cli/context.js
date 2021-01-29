@@ -1,9 +1,8 @@
 const fs = require("fs");
 const path = require("path");
-const { green, yellow, red } = require("chalk");
+const chalk = require("chalk");
 const findUp = require("find-up");
 const { PluginsContainer } = require("@webiny/plugins");
-const debug = require("debug")("webiny");
 
 const webinyRootPath = findUp.sync("webiny.root.js");
 if (!webinyRootPath) {
@@ -13,6 +12,29 @@ if (!webinyRootPath) {
     process.exit(1);
 }
 const projectRoot = path.dirname(webinyRootPath);
+
+const getLogType = type => {
+    switch (type) {
+        case "log":
+            return type;
+        case "info":
+            return `${chalk.blue(type)}`;
+        case "error":
+            return `${chalk.red(type)}`;
+        case "debug":
+            return `${chalk.gray(type)}`;
+        case "success":
+            return `${chalk.green(type)}`;
+    }
+};
+
+const webinyLog = (type, first = "", ...args) => {
+    if (typeof first === "string") {
+        first = "webiny " + getLogType(type) + ": " + first;
+    }
+
+    console.log(first, ...args);
+};
 
 class Context {
     constructor() {
@@ -86,19 +108,23 @@ class Context {
     }
 
     log(...args) {
-        debug(...args);
+        webinyLog("log", ...args);
     }
 
     info(...args) {
-        debug(...args);
+        webinyLog("info", ...args);
+    }
+
+    success(...args) {
+        webinyLog("success", ...args);
     }
 
     debug(...args) {
-        debug(...args);
+        webinyLog("debug", ...args);
     }
 
     error(...args) {
-        debug(...args);
+        webinyLog("error", ...args);
     }
 
     resolve(...dir) {
@@ -121,18 +147,18 @@ class Context {
         }
 
         if (!fs.existsSync(filePath)) {
-            debug && console.log(yellow(`ⅹ No environment file found on ${filePath}.`));
+            debug && this.info(chalk.yellow(`No environment file found on ${filePath}.`));
             return;
         }
 
         try {
             require("dotenv").config({ path: filePath });
-            debug && console.log(green(`✔ Loaded environment variables from ${filePath}.`));
+            debug && this.success(`Loaded environment variables from ${filePath}.`);
             this.loadedEnvFiles[filePath] = true;
         } catch (err) {
             if (debug) {
-                console.log(red(`ⅹ️ Could not load env variables from ${filePath}:`));
-                console.log(red(`   ${err.message}`));
+                this.error(`Could not load env variables from ${filePath}:`);
+                this.error(err.message);
                 console.log();
             }
         }

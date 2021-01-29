@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback } from "react";
 import { get } from "lodash";
 import classNames from "classnames";
 import { css } from "emotion";
@@ -100,22 +100,21 @@ const BoxInputs: React.FunctionComponent<PMSettingsPropsType> = ({
     getUpdateValue,
     sides = defaultCorners
 }) => {
-    const [linked, setLinked] = useState(true);
-
+    const advanced = get(value, `${valueKey}.advanced`, false);
     const all = get(value, `${valueKey}.all`, 0);
-
     const [top, right, bottom, left] = sides.map(({ key, label }) => ({
         label,
         key,
         value: get(value, `${valueKey}.${key}`, 0)
     }));
 
-    useEffect(() => {
-        if (all !== 0 && linked === false) {
-            // Reset "all" value.
-            getUpdateValue(valueKey + ".all")(top.value);
-        }
-    }, [linked]);
+    const toggleLinked = useCallback(
+        e => {
+            e.stopPropagation();
+            getUpdateValue(`${valueKey}.advanced`)(!advanced);
+        },
+        [advanced]
+    );
 
     return (
         <Grid className={classes.gridWrapper}>
@@ -127,9 +126,9 @@ const BoxInputs: React.FunctionComponent<PMSettingsPropsType> = ({
                     <InputField
                         className={classes.input}
                         description={top.label}
-                        value={linked ? all : top.value}
+                        value={!advanced ? all : top.value}
                         onChange={
-                            linked
+                            !advanced
                                 ? getUpdateValue(valueKey + ".all")
                                 : getUpdateValue(`${valueKey}.${top.key}`)
                         }
@@ -137,36 +136,36 @@ const BoxInputs: React.FunctionComponent<PMSettingsPropsType> = ({
                 </div>
                 <div className={classes.inputWrapper}>
                     <InputField
-                        disabled={linked}
+                        disabled={!advanced}
                         className={classes.input}
                         description={right.label}
-                        value={right.value}
+                        value={advanced ? right.value : ""}
                         onChange={getUpdateValue(`${valueKey}.${right.key}`)}
                     />
                 </div>
                 <div className={classes.inputWrapper}>
                     <InputField
-                        disabled={linked}
+                        disabled={!advanced}
                         className={classes.input}
                         description={bottom.label}
-                        value={bottom.value}
+                        value={advanced ? bottom.value : ""}
                         onChange={getUpdateValue(`${valueKey}.${bottom.key}`)}
                     />
                 </div>
                 <div className={classes.inputWrapper}>
                     <InputField
-                        disabled={linked}
+                        disabled={!advanced}
                         className={classes.input}
                         description={left.label}
-                        value={left.value}
+                        value={advanced ? left.value : ""}
                         onChange={getUpdateValue(`${valueKey}.${left.key}`)}
                     />
                 </div>
                 <button
                     className={classNames(classes.linkSettings, {
-                        [classes.linkSettingsActive]: linked
+                        [classes.linkSettingsActive]: !advanced
                     })}
-                    onClick={() => setLinked(!linked)}
+                    onClick={toggleLinked}
                 >
                     <LinkIcon />
                 </button>

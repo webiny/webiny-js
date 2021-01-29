@@ -12,9 +12,16 @@ export type UseRevisionProps = {
     revision: CmsEditorContentEntry;
     entry: CmsEditorContentEntry;
     setLoading: (loading: boolean) => void;
+    listQueryVariables: any;
 };
 
-export const useRevision = ({ contentModel, revision, entry, setLoading }: UseRevisionProps) => {
+export const useRevision = ({
+    contentModel,
+    revision,
+    entry,
+    setLoading,
+    listQueryVariables
+}: UseRevisionProps) => {
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const client = useApolloClient();
@@ -24,13 +31,17 @@ export const useRevision = ({ contentModel, revision, entry, setLoading }: UseRe
         CREATE_REVISION,
         DELETE_REVISION,
         PUBLISH_REVISION,
-        UNPUBLISH_REVISION
+        UNPUBLISH_REVISION,
+        REQUEST_REVIEW,
+        REQUEST_CHANGES
     } = useMemo(() => {
         return {
             CREATE_REVISION: GQL.createCreateFromMutation(contentModel),
             DELETE_REVISION: GQL.createDeleteMutation(contentModel),
             PUBLISH_REVISION: GQL.createPublishMutation(contentModel),
-            UNPUBLISH_REVISION: GQL.createUnpublishMutation(contentModel)
+            UNPUBLISH_REVISION: GQL.createUnpublishMutation(contentModel),
+            REQUEST_REVIEW: GQL.createRequestReviewMutation(contentModel),
+            REQUEST_CHANGES: GQL.createRequestChangesMutation(contentModel)
         };
     }, [modelId]);
 
@@ -39,7 +50,9 @@ export const useRevision = ({ contentModel, revision, entry, setLoading }: UseRe
         editRevision,
         deleteRevision,
         publishRevision,
-        unpublishRevision
+        unpublishRevision,
+        requestReview,
+        requestChanges
     } = useHandlers(
         { entry },
         {
@@ -51,7 +64,12 @@ export const useRevision = ({ contentModel, revision, entry, setLoading }: UseRe
                     update(cache, { data }) {
                         const newRevision = data.content.data;
 
-                        GQLCache.updateLatestRevisionInListCache(contentModel, cache, newRevision);
+                        GQLCache.updateLatestRevisionInListCache(
+                            contentModel,
+                            cache,
+                            newRevision,
+                            listQueryVariables
+                        );
                         GQLCache.addRevisionToRevisionsCache(contentModel, cache, newRevision);
                     }
                 });
@@ -93,7 +111,8 @@ export const useRevision = ({ contentModel, revision, entry, setLoading }: UseRe
                             GQLCache.updateLatestRevisionInListCache(
                                 contentModel,
                                 cache,
-                                revisions[0]
+                                revisions[0],
+                                listQueryVariables
                             );
                             // Redirect to the first revision in the list of all entry revisions.
                             return history.push(
@@ -153,9 +172,51 @@ export const useRevision = ({ contentModel, revision, entry, setLoading }: UseRe
                         Successfully unpublished revision <strong>#{revision.version}</strong>!
                     </span>
                 );
+            },
+            requestReview: () => async id => {
+                setLoading(true);
+                await client.mutate({
+                    mutation: REQUEST_REVIEW,
+                    variables: { revision: id || revision.id },
+                    update(cache, { data }) {
+                        const { error } = data.content;
+                        if (error) {
+                            return showSnackbar(error.message);
+                        }
+
+                        showSnackbar(<span>Review requested successfully!</span>);
+                    }
+                });
+
+                setLoading(false);
+            },
+            requestChanges: () => async id => {
+                setLoading(true);
+                await client.mutate({
+                    mutation: REQUEST_CHANGES,
+                    variables: { revision: id || revision.id },
+                    update(cache, { data }) {
+                        const { error } = data.content;
+                        if (error) {
+                            return showSnackbar(error.message);
+                        }
+
+                        showSnackbar(<span>Changes requested successfully!</span>);
+                    }
+                });
+
+                setLoading(false);
             }
         }
     );
 
-    return { createRevision, editRevision, deleteRevision, publishRevision, unpublishRevision };
+    return {
+        createRevision,
+        editRevision,
+        deleteRevision,
+        publishRevision,
+        unpublishRevision,
+        requestReview,
+        requestChanges
+    };
 };

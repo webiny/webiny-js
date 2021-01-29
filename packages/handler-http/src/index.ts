@@ -5,7 +5,35 @@ export default () => [
     {
         type: "context",
         apply(context) {
-            context.http = null;
+            const { invocationArgs } = context;
+            if (!invocationArgs.method) {
+                return;
+            }
+
+            const path = invocationArgs.path ?? {};
+
+            const request = {
+                method: invocationArgs.method,
+                body: invocationArgs.body,
+                headers: invocationArgs.headers,
+                cookies: invocationArgs.cookies,
+                path: {
+                    base: path.base,
+                    parameters: path.parameters,
+                    query: path.query
+                }
+            };
+
+            context.http = {
+                request,
+                response({ statusCode = 200, body = "", headers = {} }) {
+                    return {
+                        statusCode,
+                        body,
+                        headers
+                    };
+                }
+            };
         }
     } as ContextPlugin<HttpContext>,
     {

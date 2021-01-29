@@ -25,10 +25,10 @@ const Header = props => {
     return (
         <React.Fragment>
             <Grid className={toolbarGrid}>
-                <Cell span={6} className={classNames(headerActions, headerActionsRight)}>
+                <Cell span={4} className={classNames(headerActions, headerActionsRight)}>
                     {renderPlugins("cms-content-details-header-left", props)}
                 </Cell>
-                <Cell span={6} className={classNames(headerActions, headerActionsLeft)}>
+                <Cell span={8} className={classNames(headerActions, headerActionsLeft)}>
                     {renderPlugins("cms-content-details-header-right", props)}
                 </Cell>
             </Grid>

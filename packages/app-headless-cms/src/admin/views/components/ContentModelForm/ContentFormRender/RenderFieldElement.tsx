@@ -6,8 +6,7 @@ import {
 } from "@webiny/app-headless-cms/types";
 import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
-import getValue from "./functions/getValue";
-import setValue from "./functions/setValue";
+import { createValidators } from "./functions/createValidators";
 import Label from "./components/Label";
 
 const t = i18n.ns("app-headless-cms/admin/components/content-form");
@@ -33,64 +32,48 @@ const RenderFieldElement = (props: {
                 return memoizedBindComponents.current[memoKey];
             }
 
-            const name = field.fieldId;
-            let validators = undefined;
-            let defaultValue = undefined;
+            const isMultipleValues = index === -1 && field.multipleValues;
 
-            if (field.multipleValues) {
-                defaultValue = [];
-                validators = field.multipleValuesValidation;
-                if (index >= 0) {
-                    validators = field.validation;
-                }
-            } else {
-                validators = field.validation;
-            }
+            const name = index >= 0 ? `${field.fieldId}.${index}` : field.fieldId;
+            const validators = createValidators(field.validation || []);
+            const listValidators = createValidators(field.listValidation || []);
+            const defaultValue = field.multipleValues ? [] : undefined;
 
             memoizedBindComponents.current[memoKey] = function Bind({ children }) {
                 return (
-                    <BaseFormBind name={name} validators={validators} defaultValue={defaultValue}>
+                    <BaseFormBind
+                        name={name}
+                        validators={isMultipleValues ? listValidators : validators}
+                        defaultValue={index === -1 ? defaultValue : null}
+                    >
                         {bind => {
-                            const value = getValue({ bind, field, index });
-                            const onChange = value => {
-                                setValue({ value, bind, field, index });
-                            };
-
-                            const props = {
-                                ...bind,
-                                value,
-                                onChange
-                            };
-
                             // Multiple-values functions below.
-                            if (field.multipleValues) {
-                                if (index >= 0) {
-                                    props.removeValue = () => {
-                                        if (index >= 0) {
-                                            let value = getValue({
-                                                bind,
-                                                field,
-                                                index: -1
-                                            });
-                                            value = [
-                                                ...value.slice(0, index),
-                                                ...value.slice(index + 1)
-                                            ];
+                            const props = { ...bind };
+                            if (field.multipleValues && index === -1) {
+                                props.appendValue = newValue => {
+                                    bind.onChange([...bind.value, newValue]);
+                                };
+                                props.prependValue = newValue => {
+                                    bind.onChange([newValue, ...bind.value]);
+                                };
+                                props.appendValues = newValues => {
+                                    bind.onChange([...bind.value, ...newValues]);
+                                };
 
-                                            setValue({ value, bind, field, index: -1 });
-                                        }
-                                    };
-                                } else {
-                                    props.appendValue = newValue => {
-                                        onChange([...value, newValue]);
-                                    };
-                                    props.prependValue = newValue => {
-                                        onChange([newValue, ...value]);
-                                    };
-                                    props.appendValues = newValues => {
-                                        onChange([...value, ...newValues]);
-                                    };
-                                }
+                                props.removeValue = index => {
+                                    if (index >= 0) {
+                                        let value = bind.value;
+                                        value = [
+                                            ...value.slice(0, index),
+                                            ...value.slice(index + 1)
+                                        ];
+
+                                        bind.onChange(value);
+
+                                        // To make sure the field is still valid, we must trigger validation.
+                                        bind.form.validateInput(field.fieldId);
+                                    }
+                                };
                             }
 
                             if (typeof children === "function") {

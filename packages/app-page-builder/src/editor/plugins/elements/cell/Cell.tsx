@@ -2,14 +2,14 @@ import React from "react";
 import styled from "@emotion/styled";
 import DropZone from "@webiny/app-page-builder/editor/components/DropZone";
 import Element from "@webiny/app-page-builder/editor/components/Element";
-import { DragObjectWithTypeWithTargetType } from "@webiny/app-page-builder/editor/components/Droppable";
+import { DragObjectWithTypeWithTarget } from "@webiny/app-page-builder/editor/components/Droppable";
 
 const CellStyle = styled("div")({
     position: "relative"
 });
 type CellPropsType = {
     id: string;
-    dropElement: (source: DragObjectWithTypeWithTargetType, index: number) => void;
+    dropElement: (source: DragObjectWithTypeWithTarget, index: number) => void;
     type: string;
     index: number;
     isLast?: boolean;

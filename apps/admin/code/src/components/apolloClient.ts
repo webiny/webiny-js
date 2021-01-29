@@ -3,7 +3,11 @@ import { ApolloLink } from "apollo-link";
 import { BatchHttpLink } from "apollo-link-batch-http";
 import { ErrorLink } from "apollo-link-error";
 import { InMemoryCache } from "apollo-cache-inmemory";
-import { createOmitTypenameLink, createSetContextLink } from "@webiny/app/graphql";
+import {
+    createOmitTypenameLink,
+    createSetContextLink,
+    createConsoleLink
+} from "@webiny/app/graphql";
 import { plugins } from "@webiny/plugins";
 import { GET_ERROR } from "./NetworkError";
 import { CacheGetObjectIdPlugin } from "@webiny/app/types";
@@ -26,6 +30,10 @@ export const createApolloClient = ({ uri }) => {
                     });
                 }
             }),
+            /**
+             * This link checks for `extensions.console` in the response, and logs it to browser console.
+             */
+            createConsoleLink(),
             /**
              * This link removes `__typename` from the variables being sent to the API.
              */

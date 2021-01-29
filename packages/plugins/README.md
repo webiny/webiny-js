@@ -27,16 +27,16 @@ yarn add @webiny/plugins
 
 ### Adding a plugin
 ```
-import { registerPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 
 // Add a plugin
-registerPlugins({
+plugins.register({
     name: "my-plugin",
     type: "say-hi",
     salute: () => "Hi!"
 });
 
-registerPlugins({
+plugins.register({
     name: "my-second-plugin",
     type: "say-hi",
     salute: () => "Yo!"
@@ -46,10 +46,10 @@ registerPlugins({
 ### Getting plugins by type
 ```
 // anywhere in your app
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 
-const plugins = getPlugins("say-hi");
-plugins.forEach(plugin => {
+const pluginList = plugins.byType("say-hi");
+pluginList.forEach(plugin => {
     // Call "salute" function
     plugin.salute();
 });
@@ -58,9 +58,9 @@ plugins.forEach(plugin => {
 ### Getting a single plugin by name
 ```
 // anywhere in your app
-import { getPlugin } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 
-const plugin = getPlugin("my-plugin");
+const plugin = plugins.byName("my-plugin");
 // Call "salute" function
 plugin.salute();
 ```
@@ -68,7 +68,7 @@ plugin.salute();
 ### Removing a plugin
 ```
 // anywhere in your app
-import { unregisterPlugin } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 
-unregisterPlugin("my-plugin");
+plugins.unregister("my-plugin");
 ```

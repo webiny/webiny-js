@@ -7,7 +7,7 @@ const deploy = (stack, inputs) => {
     return execa(
         "webiny",
         [
-            "stack",
+            "app",
             "deploy",
             stack,
             "--env",
@@ -23,7 +23,7 @@ const deploy = (stack, inputs) => {
     );
 };
 
-module.exports = async inputs => {
+module.exports = async (inputs, context) => {
     const { env } = inputs;
 
     // 0. Let's just make sure Pulumi is installed.
@@ -33,11 +33,11 @@ module.exports = async inputs => {
     installed && console.log();
 
     // 1. Get exports from `site` stack, for `args.env` environment.
-    const siteStackOutput = await getStackOutput("apps/site", env);
+    const siteStackOutput = await getStackOutput("apps/website", env);
     const isFirstDeployment = !siteStackOutput;
     if (isFirstDeployment) {
-        console.log(
-            `⏳  This is your first time deploying the project (${green(
+        context.info(
+            `This is your first time deploying the project (${green(
                 env
             )} environment). Note that the initial deployment can take up to 15 minutes, so please be patient.`
         );
@@ -45,66 +45,35 @@ module.exports = async inputs => {
         await sleep();
     }
 
-    // Deploying `api` stack.
-    if (isFirstDeployment) {
-        console.log();
-        console.log(`🚀 Deploying your ${green("API")} (${green("api")} stack)...`);
-    } else {
-        console.log(`🚀 Deploying ${green("api")} stack...`);
-    }
+    // Deploying `api` project application.
+    isFirstDeployment && console.log();
+    context.info(`Deploying ${green("api")} project application...`);
 
     await deploy("api", inputs);
+    context.success(`${green("api")} project application was deployed successfully!`);
+    isFirstDeployment && (await sleep(2000));
 
-    if (isFirstDeployment) {
-        console.log(
-            `🎉 Your ${green("API")} was deployed successfully! Continuing with the apps...`
-        );
-        await sleep(2000);
-    } else {
-        console.log(`🎉 ${green("api")} stack deployed successfully.`);
-    }
-
-    // Deploying `apps/admin` stack.
+    // Deploying `apps/admin` project application.
     console.log();
-    if (isFirstDeployment) {
-        console.log(`🚀 Deploying your ${green("Admin")} app (${green("apps/admin")} stack)...`);
-        await sleep();
-    } else {
-        console.log(`🚀 Deploying ${green("apps/admin")} stack...`);
-    }
+    context.info(`Deploying ${green("apps/admin")} project application...`);
+    isFirstDeployment && (await sleep());
 
     await deploy("apps/admin", inputs);
+    context.success(`${green("apps/admin")} project application was deployed successfully!`);
 
-    if (isFirstDeployment) {
-        console.log(`🎉 Your ${green("Admin")} app was deployed successfully!`);
-    } else {
-        console.log(`🎉 ${green("apps/admin")} stack deployed successfully.`);
-    }
-
-    // Deploying `apps/admin` stack.
+    // Deploying `apps/admin` project application.
     console.log();
-    if (isFirstDeployment) {
-        console.log(
-            `🚀 Deploying your ${green("public website")} app (${green("apps/site")} stack)...`
-        );
-        await sleep();
-    } else {
-        console.log(`🚀 Deploying ${green("apps/site")} stack...`);
-    }
+    context.info(`Deploying ${green("apps/website")} stack...`);
+    isFirstDeployment && (await sleep());
 
-    await deploy("apps/site", inputs);
-
-    if (isFirstDeployment) {
-        console.log(`🎉 Your ${green("public website")} app was deployed successfully!`);
-    } else {
-        console.log(`🎉 ${green("apps/site")} stack deployed successfully.`);
-    }
+    await deploy("apps/website", inputs);
+    context.success(`${green("apps/website")} project application was deployed successfully!`);
 
     const outputs = {
         api: await getStackOutput("api", env),
         apps: {
             admin: await getStackOutput("apps/admin", env),
-            site: await getStackOutput("apps/site", env)
+            site: await getStackOutput("apps/website", env)
         }
     };
 
@@ -112,7 +81,7 @@ module.exports = async inputs => {
     if (isFirstDeployment) {
         console.log(
             [
-                `🎉 Congratulations! You've just deployed a brand new project (${green(
+                `Congratulations! You've just deployed a brand new project (${green(
                     env
                 )} environment)!`,
                 "",
@@ -125,11 +94,11 @@ module.exports = async inputs => {
         );
     } else {
         const usefulLinks = [
-            `🔗 Main GraphQL API: ${green(outputs.api.apiUrl + "/graphql")}`,
-            `🔗 Admin app: ${green(outputs.apps.admin.appUrl)}`,
-            `🔗 Public website: ${green(outputs.apps.site.appUrl)}`,
-            `   - App: ${green(outputs.apps.site.appUrl)}`,
-            `   - Delivery: ${green(outputs.apps.site.deliveryUrl)}`
+            `➜ Main GraphQL API: ${green(outputs.api.apiUrl + "/graphql")}`,
+            `➜ Admin app: ${green(outputs.apps.admin.appUrl)}`,
+            `➜ Public website:`,
+            `   - Website URL: ${green(outputs.apps.site.deliveryUrl)}`,
+            `   - Website preview URL: ${green(outputs.apps.site.appUrl)}`
         ].join("\n");
 
         console.log(
@@ -139,7 +108,7 @@ module.exports = async inputs => {
                 `💡 Tip: to deploy stacks separately, use the ${green(
                     "stack deploy"
                 )} command (e.g. ${green(
-                    `yarn webiny stack deploy apps/site --env ${env}`
+                    `yarn webiny stack deploy apps/website --env ${env}`
                 )}). For additional help, please run ${green("yarn webiny --help")}.`
             ].join("\n")
         );

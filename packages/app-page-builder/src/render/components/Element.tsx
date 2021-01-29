@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { PbElement, PbRenderElementPlugin, PbThemePlugin } from "@webiny/app-page-builder/types";
 
 import tryRenderingPlugin from "./../../utils/tryRenderingPlugin";
@@ -13,7 +13,7 @@ const Element = (props: ElementProps) => {
     const { element } = props;
 
     const theme = useMemo(
-        () => Object.assign({}, ...getPlugins("pb-theme").map((pl: PbThemePlugin) => pl.theme)),
+        () => Object.assign({}, ...plugins.byType("pb-theme").map((pl: PbThemePlugin) => pl.theme)),
         []
     );
 
@@ -21,9 +21,9 @@ const Element = (props: ElementProps) => {
         return null;
     }
 
-    const plugin = getPlugins<PbRenderElementPlugin>("pb-render-page-element").find(
-        pl => pl.elementType === element.type
-    );
+    const plugin = plugins
+        .byType<PbRenderElementPlugin>("pb-render-page-element")
+        .find(pl => pl.elementType === element.type);
 
     if (!plugin) {
         return null;

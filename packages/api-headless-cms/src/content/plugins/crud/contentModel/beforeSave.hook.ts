@@ -1,68 +1,80 @@
 import {
-    CmsContentModelType,
+    CmsContentModel,
+    CmsContentModelField,
     CmsContext,
     CmsModelLockedFieldPlugin
 } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
 
-type ArgsType = {
+interface Args {
     context: CmsContext;
-    model: CmsContentModelType;
+    model: CmsContentModel;
     // data that is being updated in the database
     // modify it, not the model
-    data: Partial<CmsContentModelType>;
+    data: Partial<CmsContentModel>;
+}
+
+const defaultTitleFieldId = "id";
+
+const getContentModelTitleFieldId = (
+    fields: CmsContentModelField[],
+    titleFieldId?: string
+): string => {
+    // if there is no title field defined either in input data or existing content model data
+    // we will take first text field that has no multiple values enabled
+    // or if initial titleFieldId is the default one also try to find first available text field
+    if (!titleFieldId || titleFieldId === defaultTitleFieldId) {
+        const titleField = fields.find(field => {
+            return field.type === "text" && !field.multipleValues;
+        });
+        return titleField ? titleField.fieldId : defaultTitleFieldId;
+    }
+    // check existing titleFieldId for existence in the model
+    // for correct type
+    // and that it is not multiple values field
+    const target = fields.find(f => f.fieldId === titleFieldId);
+    if (!target) {
+        throw new WebinyError(`Field does not exist in the model.`, "VALIDATION_ERROR", {
+            fieldId: titleFieldId
+        });
+    }
+
+    if (target.type !== "text") {
+        throw new WebinyError(
+            "Only text and id fields can be used as an entry title.",
+            "ENTRY_TITLE_FIELD_TYPE",
+            {
+                fieldId: target.fieldId,
+                type: target.type
+            }
+        );
+    }
+
+    if (target.multipleValues) {
+        throw new WebinyError(
+            `Fields that accept multiple values cannot be used as the entry title.`,
+            "ENTRY_TITLE_FIELD_TYPE",
+            {
+                fieldId: target.fieldId,
+                type: target.type
+            }
+        );
+    }
+
+    return target.fieldId;
 };
-export const beforeSaveHook = async (args: ArgsType) => {
+
+export const beforeSaveHook = async (args: Args) => {
     const { context, model, data } = args;
     const combinedModel = {
         ...model,
         ...data
     };
-    let { titleFieldId } = combinedModel;
+    const { titleFieldId } = combinedModel;
     // there should be fields/locked fields in either model or data to be updated
     const { fields = [], lockedFields = [] } = combinedModel;
 
-    if (titleFieldId) {
-        const target = fields.find(f => f.fieldId === titleFieldId);
-        if (!target) {
-            throw new WebinyError(
-                `Field "${titleFieldId}" does not exist in the model!`,
-                "VALIDATION_ERROR"
-            );
-        }
-    }
-
-    // If no title field set, just use the first "text" field.
-    const hasTitleFieldId = titleFieldId && fields.find(item => item.fieldId === titleFieldId);
-
-    if (!hasTitleFieldId) {
-        const titleField = fields.find(field => {
-            return field.type === "text" && !field.multipleValues;
-        });
-        if (titleField) {
-            titleFieldId = titleField.fieldId;
-        }
-    }
-    // there is still a possibility that title field does not exist
-    // that is mostly at points where there are no fields
-    if (titleFieldId) {
-        const field = fields.find(item => item.fieldId === titleFieldId);
-        if (field.type !== "text") {
-            throw new WebinyError(
-                "Only text fields can be used as an entry title.",
-                "ENTRY_TITLE_FIELD_TYPE"
-            );
-        }
-
-        if (field.multipleValues) {
-            throw new WebinyError(
-                `Fields that accept multiple values cannot be used as the entry title (tried to use "${titleFieldId}" field)`,
-                "ENTRY_TITLE_FIELD_TYPE"
-            );
-        }
-    }
-    // must assign titleFieldId to data to be updated into the db
-    data.titleFieldId = titleFieldId || null;
+    data.titleFieldId = getContentModelTitleFieldId(fields, titleFieldId);
 
     const cmsLockedFieldPlugins = context.plugins.byType<CmsModelLockedFieldPlugin>(
         "cms-model-locked-field"

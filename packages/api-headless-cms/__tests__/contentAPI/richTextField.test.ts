@@ -1,5 +1,5 @@
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import { CmsContentEntryType, CmsContentModelGroupType } from "@webiny/api-headless-cms/types";
+import { CmsContentEntry, CmsContentModelGroup } from "@webiny/api-headless-cms/types";
 import models from "./mocks/contentModels";
 import { useProductManageHandler } from "../utils/useProductManageHandler";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
@@ -31,7 +31,7 @@ describe("refField", () => {
 
     // This function is not directly within `beforeEach` as we don't always setup the same content model.
     // We call this function manually at the beginning of each test, where needed.
-    const setupContentModelGroup = async (): Promise<CmsContentModelGroupType> => {
+    const setupContentModelGroup = async (): Promise<CmsContentModelGroup> => {
         const [createCMG] = await createContentModelGroupMutation({
             data: {
                 name: "Group",
@@ -43,7 +43,7 @@ describe("refField", () => {
         return createCMG.data.createContentModelGroup.data;
     };
 
-    const setupContentModel = async (contentModelGroup: CmsContentModelGroupType, name: string) => {
+    const setupContentModel = async (contentModelGroup: CmsContentModelGroup, name: string) => {
         const model = models.find(m => m.modelId === name);
         // Create initial record
         const [create] = await createContentModelMutation({
@@ -68,7 +68,7 @@ describe("refField", () => {
         });
         return update.data.updateContentModel.data;
     };
-    const setupContentModels = async (contentModelGroup: CmsContentModelGroupType) => {
+    const setupContentModels = async (contentModelGroup: CmsContentModelGroup) => {
         const models = {
             category: null,
             product: null,
@@ -91,7 +91,7 @@ describe("refField", () => {
                 slug: "vegetables"
             }
         });
-        const category = createCategoryResponse.data.createCategory.data as CmsContentEntryType;
+        const category = createCategoryResponse.data.createCategory.data as CmsContentEntry;
 
         await publishCategory({
             revision: category.id
@@ -148,6 +148,11 @@ describe("refField", () => {
                     data: {
                         id: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
+                        createdBy: {
+                            id: "123",
+                            displayName: "User 123",
+                            type: "admin"
+                        },
                         savedOn: expect.stringMatching(/^20/),
                         title: "Potato",
                         price: 100,

@@ -2,7 +2,7 @@ import React from "react";
 import styled from "@emotion/styled";
 import useElementSettings from "../../../plugins/elementSettings/hooks/useElementSettings";
 import AdvancedSettings from "../../../plugins/elementSettings/advanced/AdvancedSettings";
-import { PbElement } from "../../../../types";
+import { PbEditorElement } from "../../../../types";
 import { COLORS } from "../../../plugins/elementSettings/components/StyledComponents";
 import NoActiveElement from "./NoActiveElement";
 import { ReactComponent as TouchIcon } from "./icons/touch_app.svg";
@@ -33,7 +33,7 @@ const SidebarActionsWrapper = styled("div")({
 });
 
 type ElementSettingsTabContentProps = {
-    element: PbElement;
+    element: PbEditorElement;
 };
 const ElementSettingsTabContent = ({ element }: ElementSettingsTabContentProps) => {
     const elementSettings = useElementSettings();

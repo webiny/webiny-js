@@ -242,10 +242,21 @@ describe("Security User CRUD Test", () => {
         });
     });
 
+    test("should not allow creation of user without a group", async () => {
+        const [{ errors }] = await securityUser.create({
+            data: { ...mocks.userA, login: "admin@webiny.com" }
+        });
+
+        expect(errors.length).toBe(1);
+        expect(
+            errors[0].message.includes("Field group of required type String! was not provided.")
+        ).toBe(true);
+    });
+
     test("should not allow creating a user if login is taken", async () => {
         // Creating a user with same "email" should not be allowed
         const [response] = await securityUser.create({
-            data: { ...mocks.userA, login: "admin@webiny.com" }
+            data: { ...mocks.userA, login: "admin@webiny.com", group: groupA.slug }
         });
 
         expect(response).toEqual({

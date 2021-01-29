@@ -1,4 +1,4 @@
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { FbFormFieldPatternValidatorPlugin } from "@webiny/app-form-builder/types";
 
 export default {
@@ -17,9 +17,9 @@ export default {
             if (settings.preset === "custom") {
                 pattern = settings;
             } else {
-                const patternPlugin = getPlugins<FbFormFieldPatternValidatorPlugin>(
-                    "fb-form-field-validator-pattern"
-                ).find(item => item.pattern.name === settings.preset);
+                const patternPlugin = plugins
+                    .byType<FbFormFieldPatternValidatorPlugin>("fb-form-field-validator-pattern")
+                    .find(item => item.pattern.name === settings.preset);
                 if (patternPlugin) {
                     pattern = patternPlugin.pattern;
                 }

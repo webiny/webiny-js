@@ -14,11 +14,6 @@ import { FormSubmissionsList } from "./FormSubmissionsList";
 const t = i18n.namespace("FormsApp.FormDetails.PreviewContent");
 
 const RenderBlock = styled("div")({
-    position: "relative",
-    zIndex: 0,
-    backgroundColor: "var(--mdc-theme-background)",
-    height: "100%",
-    overflow: "auto",
     padding: 25
 });
 

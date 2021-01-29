@@ -6,8 +6,6 @@
 
 A simple Pulumi Node.JS SDK - programmatically execute Pulumi CLI commands within your Node.js scripts.
   
-Note that the package is not published to the NPM yet, it's still kinda experimental / work in progress. And probably, once the Pulumi Automation API hits the scene, this package probably won't be needed anymore. 🤞
-
 ### Example
 
 ```ts

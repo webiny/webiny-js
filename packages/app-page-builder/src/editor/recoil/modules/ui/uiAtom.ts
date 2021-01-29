@@ -1,5 +1,5 @@
+import { atom } from "recoil";
 import { DisplayMode } from "../../../../types";
-import { connectedAtom } from "../connected";
 
 export type PagePreviewDimension = {
     width: number;
@@ -9,26 +9,16 @@ export type PagePreviewDimension = {
 export type UiAtomType = {
     isDragging: boolean;
     isResizing: boolean;
-    activeElement: string | null;
-    highlightElement: string | null;
     isSaving: boolean;
-    textEditorActive: boolean;
-    sidebarActiveTabIndex: number;
-    highlightElementTab: boolean;
     displayMode: DisplayMode;
     pagePreviewDimension: PagePreviewDimension;
 };
-export const uiAtom = connectedAtom<UiAtomType>({
+export const uiAtom = atom<UiAtomType>({
     key: "uiAtom",
     default: {
         isDragging: false,
         isResizing: false,
-        activeElement: null,
-        highlightElement: null,
         isSaving: false,
-        textEditorActive: false,
-        sidebarActiveTabIndex: 0,
-        highlightElementTab: false,
         displayMode: DisplayMode.DESKTOP,
         pagePreviewDimension: {
             width: 100,

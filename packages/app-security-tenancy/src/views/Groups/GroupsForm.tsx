@@ -1,5 +1,6 @@
 import React, { useCallback } from "react";
 import { useMutation, useQuery } from "react-apollo";
+import styled from "@emotion/styled";
 import pick from "lodash/pick";
 import get from "lodash/get";
 import { useRouter } from "@webiny/react-router";
@@ -8,7 +9,7 @@ import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { Alert } from "@webiny/ui/Alert";
-import { ButtonPrimary } from "@webiny/ui/Button";
+import { ButtonDefault, ButtonIcon, ButtonPrimary } from "@webiny/ui/Button";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { validation } from "@webiny/validation";
 import {
@@ -22,13 +23,21 @@ import { Permissions } from "@webiny/app-admin/components/Permissions";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CREATE_GROUP, LIST_GROUPS, READ_GROUP, UPDATE_GROUP } from "./graphql";
 import { SnackbarAction } from "@webiny/ui/Snackbar";
+import isEmpty from "lodash/isEmpty";
+import EmptyView from "@webiny/app-admin/components/EmptyView";
+import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 
 const t = i18n.ns("app-security/admin/groups/form");
+
+const ButtonWrapper = styled("div")({
+    display: "flex",
+    justifyContent: "space-between"
+});
 
 const GroupForm = () => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
-
+    const newGroup = new URLSearchParams(location.search).get("new") === "true";
     const slug = new URLSearchParams(location.search).get("slug");
 
     const getQuery = useQuery(READ_GROUP, {
@@ -105,6 +114,25 @@ const GroupForm = () => {
 
     const systemGroup = data.slug === "full-access";
 
+    const showEmptyView = !newGroup && !loading && isEmpty(data);
+    // Render "No content" selected view.
+    if (showEmptyView) {
+        return (
+            <EmptyView
+                title={t`Click on the left side list to display group details or create a...`}
+                action={
+                    <ButtonDefault
+                        data-testid="new-record-button"
+                        onClick={() => history.push("/security/groups?new=true")}
+                    >
+                        <ButtonIcon icon={<AddIcon />} />
+                        {t`New Group`}
+                    </ButtonDefault>
+                }
+            />
+        );
+    }
+
     return (
         <Form data={data} onSubmit={onSubmit}>
             {({ data, form, Bind }) => {
@@ -172,7 +200,14 @@ const GroupForm = () => {
                         </SimpleFormContent>
                         {systemGroup ? null : (
                             <SimpleFormFooter>
-                                <ButtonPrimary onClick={form.submit}>{t`Save group`}</ButtonPrimary>
+                                <ButtonWrapper>
+                                    <ButtonDefault
+                                        onClick={() => history.push("/security/groups")}
+                                    >{t`Cancel`}</ButtonDefault>
+                                    <ButtonPrimary
+                                        onClick={form.submit}
+                                    >{t`Save group`}</ButtonPrimary>
+                                </ButtonWrapper>
                             </SimpleFormFooter>
                         )}
                     </SimpleForm>

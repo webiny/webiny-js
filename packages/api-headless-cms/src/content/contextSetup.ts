@@ -1,17 +1,17 @@
 import { Context, ContextPlugin } from "@webiny/handler/types";
 import { CmsContext } from "@webiny/api-headless-cms/types";
 
-export type CmsHttpParametersType = {
+interface CmsHttpParameters {
     type: string;
     locale: string;
-};
+}
 
 const throwPlainError = (type: string): void => {
-    throw new Error(`Missing context.http.path.parameter "${type}".`);
+    throw new Error(`Missing context.http.request.path parameter "${type}".`);
 };
 
-export const extractHandlerHttpParameters = (context: Context): CmsHttpParametersType => {
-    const { key = "" } = context.http.path.parameters || {};
+export const extractHandlerHttpParameters = (context: Context): CmsHttpParameters => {
+    const { key = "" } = context.http.request.path.parameters || {};
     const [type, locale] = key.split("/");
     if (!type) {
         throwPlainError("type");
@@ -40,7 +40,7 @@ const setContextCmsVariables = async (context: CmsContext): Promise<void> => {
         contentModelLastChange: context.cms.settings.contentModelLastChange
     });
 };
-
+// eslint-disable-next-line
 export default (options: any = {}): ContextPlugin<CmsContext> => ({
     type: "context",
     apply: async context => {
@@ -54,7 +54,6 @@ export default (options: any = {}): ContextPlugin<CmsContext> => ({
             ...(context.cms || ({} as any)),
             type,
             locale,
-            dataManagerFunction: options.dataManagerFunction,
             READ: type === "read",
             PREVIEW: type === "preview",
             MANAGE: type === "manage"

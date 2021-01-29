@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { OverlayLayout } from "@webiny/app-admin/components/OverlayLayout";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
 import { Typography } from "@webiny/ui/Typography";
@@ -21,18 +21,20 @@ type FormSettingsProps = {
 };
 
 const FormSettings = ({ onExited }: FormSettingsProps) => {
-    const plugins = getPlugins<CmsEditorFormSettingsPlugin>("content-model-editor-form-settings");
+    const cmsEditorFormSettingsPlugins = plugins.byType<CmsEditorFormSettingsPlugin>(
+        "cms-editor-form-settings"
+    );
     const { data, setData } = useContentModelEditor();
     const { showSnackbar } = useSnackbar();
 
-    const [activePlugin, setActivePlugin] = useState(plugins[0]);
+    const [activePlugin, setActivePlugin] = useState(cmsEditorFormSettingsPlugins[0]);
 
     return (
         <OverlayLayout barMiddle={Title} onExited={onExited}>
             <SplitView>
                 <LeftPanel span={5}>
                     <List twoLine className={listStyle}>
-                        {plugins.map(pl => (
+                        {cmsEditorFormSettingsPlugins.map(pl => (
                             <ListItem
                                 key={pl.name}
                                 className={listItem}

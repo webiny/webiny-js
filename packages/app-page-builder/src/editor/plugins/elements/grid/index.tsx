@@ -2,7 +2,7 @@ import React from "react";
 import GridContainer from "./GridContainer";
 import styled from "@emotion/styled";
 import { ReactComponent as GridIcon } from "@webiny/app-page-builder/editor/assets/icons/view_quilt.svg";
-import { createElementHelper } from "@webiny/app-page-builder/editor/helpers";
+import { createElement } from "@webiny/app-page-builder/editor/helpers";
 import { PbEditorPageElementPlugin, DisplayMode } from "@webiny/app-page-builder/types";
 import {
     getDefaultPresetCellsTypePluginType,
@@ -22,7 +22,7 @@ const PreviewBox = styled("div")({
 const createDefaultCells = (cellsType: string) => {
     const cells = calculatePresetCells(cellsType);
     return cells.map(size => {
-        return createElementHelper("cell", {
+        return createElement("cell", {
             data: {
                 settings: {
                     grid: {

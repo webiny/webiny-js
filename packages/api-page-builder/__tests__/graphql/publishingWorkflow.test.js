@@ -1,6 +1,8 @@
 import useGqlHandler from "./useGqlHandler";
 import { identityA, identityB, NOT_AUTHORIZED_RESPONSE } from "./mocks";
 
+jest.setTimeout(25000);
+
 describe("publishing workflow", () => {
     const {
         deleteElasticSearchIndex,
@@ -176,9 +178,9 @@ describe("publishing workflow", () => {
                         requestChanges: {
                             data: null,
                             error: {
-                                code: "REQUEST_CHANGES_ON_OWN_PAGE",
+                                code: "REQUESTED_CHANGES_ON_PAGE_REVISION_YOU_CREATED",
                                 data: null,
-                                message: "Cannot request changes on own page."
+                                message: "Cannot request changes on page revision you created."
                             }
                         }
                     }
@@ -196,9 +198,9 @@ describe("publishing workflow", () => {
                         requestChanges: {
                             data: null,
                             error: {
-                                code: "REQUEST_CHANGES_ON_OWN_PAGE",
+                                code: "REQUESTED_CHANGES_ON_PAGE_REVISION_YOU_CREATED",
                                 data: null,
-                                message: "Cannot request changes on own page."
+                                message: "Cannot request changes on page revision you created."
                             }
                         }
                     }

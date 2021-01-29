@@ -1,6 +1,5 @@
 import React, { useMemo, useState, useCallback } from "react";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
-import { FloatingActionButton } from "@webiny/app-admin/components/FloatingActionButton";
 import PagesDataList from "./PagesDataList";
 import PageDetails from "./PageDetails";
 import { useSecurity } from "@webiny/app-security";
@@ -69,15 +68,12 @@ const Pages = () => {
             </CategoriesDialog>
             <SplitView>
                 <LeftPanel>
-                    <PagesDataList />
+                    <PagesDataList canCreate={canCreate} onCreatePage={openDialog} />
                 </LeftPanel>
                 <RightPanel>
-                    <PageDetails />
+                    <PageDetails canCreate={canCreate} onCreatePage={openDialog} />
                 </RightPanel>
             </SplitView>
-            {canCreate && (
-                <FloatingActionButton data-testid="new-record-button" onClick={openDialog} />
-            )}
         </>
     );
 };

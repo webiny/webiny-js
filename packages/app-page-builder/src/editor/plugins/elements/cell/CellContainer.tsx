@@ -3,9 +3,9 @@ import Cell from "./Cell";
 import DropZone from "@webiny/app-page-builder/editor/components/DropZone";
 import styled from "@emotion/styled";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
 import { ReactComponent as AddCircleOutline } from "@webiny/app-page-builder/editor/assets/icons/baseline-add_circle-24px.svg";
-import { DragObjectWithTypeWithTargetType } from "@webiny/app-page-builder/editor/components/Droppable";
+import { DragObjectWithTypeWithTarget } from "@webiny/app-page-builder/editor/components/Droppable";
 import {
     DropElementActionEvent,
     TogglePluginActionEvent
@@ -15,17 +15,27 @@ import { IconButton } from "@webiny/ui/Button";
 import { css } from "emotion";
 import { useRecoilValue } from "recoil";
 
-const CellContainerStyle = styled("div")({
+const CellContainerStyle = styled<"div", { active }>("div")(({ active }) => ({
     position: "relative",
     color: "#666",
     boxSizing: "border-box",
     flexGrow: 1,
     width: `100%`,
-    border: "1px dashed gray",
     " > div": {
         width: "100%"
+    },
+    "&::after": {
+        content: '""',
+        position: "absolute",
+        zIndex: -1,
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        transition: "border 250ms ease-in-out",
+        border: active ? "none" : "1px dashed gray"
     }
-});
+}));
 const addIcon = css({
     color: "var(--mdc-theme-secondary)",
     transition: "transform 0.2s",
@@ -39,10 +49,12 @@ const addIcon = css({
 
 type CellPropsType = {
     elementId: string;
+    isActive: boolean;
 };
-const CellContainer: React.FunctionComponent<CellPropsType> = ({ elementId }) => {
+const CellContainer: React.FunctionComponent<CellPropsType> = ({ elementId, isActive }) => {
     const handler = useEventActionHandler();
     const element = useRecoilValue(elementByIdSelector(elementId));
+    const { isHighlighted } = element;
     // TODO remove when state is fully switched to use content instead of flat elements
     if (!element) {
         return null;
@@ -59,7 +71,7 @@ const CellContainer: React.FunctionComponent<CellPropsType> = ({ elementId }) =>
         );
     };
 
-    const dropElementAction = (source: DragObjectWithTypeWithTargetType, position: number) => {
+    const dropElementAction = (source: DragObjectWithTypeWithTarget, position: number) => {
         handler.trigger(
             new DropElementActionEvent({
                 source,
@@ -71,10 +83,12 @@ const CellContainer: React.FunctionComponent<CellPropsType> = ({ elementId }) =>
             })
         );
     };
+
     return (
         <ElementRoot element={element}>
             {({ getAllClasses, elementStyle }) => (
                 <CellContainerStyle
+                    active={isHighlighted || isActive}
                     style={elementStyle}
                     className={getAllClasses("webiny-pb-base-page-element-style")}
                 >
@@ -82,6 +96,7 @@ const CellContainer: React.FunctionComponent<CellPropsType> = ({ elementId }) =>
                         <DropZone.Center
                             id={id}
                             type={type}
+                            isHighlighted={isHighlighted}
                             onDrop={source => dropElementAction(source, 0)}
                         >
                             <IconButton
@@ -94,12 +109,12 @@ const CellContainer: React.FunctionComponent<CellPropsType> = ({ elementId }) =>
                     {elements.map((childId, index) => {
                         return (
                             <Cell
-                                key={childId}
+                                key={childId as string}
                                 dropElement={dropElementAction}
                                 index={index}
                                 type={type}
                                 isLast={index === totalElements - 1}
-                                id={childId}
+                                id={childId as string}
                             />
                         );
                     })}

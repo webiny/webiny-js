@@ -75,6 +75,8 @@ export default () => [
         type: "pb-editor-page-element-advanced-settings",
         elementType: "typeform",
         render({ Bind, submit }) {
+            // needed so ts build does not break
+            const props: any = {};
             return (
                 <Accordion title={t`Typeform`} defaultValue={true}>
                     <React.Fragment>
@@ -84,8 +86,10 @@ export default () => [
                                 placeholder={"https://typeform.com"}
                             />
                         </Bind>
-                        <ButtonContainer>
-                            <SimpleButton onClick={submit}>Save</SimpleButton>
+                        <ButtonContainer {...props}>
+                            <SimpleButton onClick={submit} {...props}>
+                                Save
+                            </SimpleButton>
                         </ButtonContainer>
                     </React.Fragment>
                 </Accordion>

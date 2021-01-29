@@ -1,11 +1,11 @@
 import * as React from "react";
 import invariant from "invariant";
-import { getPlugin } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { get } from "lodash";
 import { ImageComponentPlugin, ImageProps } from "@webiny/app/types";
 
 export const Image: React.FC<ImageProps> = ({ preset: presetName, ...props }) => {
-    const plugin = getPlugin<ImageComponentPlugin>("image-component");
+    const plugin = plugins.byName<ImageComponentPlugin>("image-component");
     if (!plugin) {
         throw new Error(`Image component plugin (type "image-component") not defined.`);
     }

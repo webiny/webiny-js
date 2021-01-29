@@ -63,7 +63,7 @@ const NewFormDialog: React.FC<NewFormDialogProps> = ({ open, onClose }) => {
 
                             addFormToListCache(cache, revision);
 
-                            history.push("/forms/" + encodeURIComponent(revision.id));
+                            history.push(`/form-builder/forms/${encodeURIComponent(revision.id)}`);
                         }
                     });
                 }}

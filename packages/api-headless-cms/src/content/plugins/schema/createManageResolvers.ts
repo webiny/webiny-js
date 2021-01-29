@@ -1,8 +1,4 @@
-import {
-    CmsContentModelType,
-    CmsFieldTypePlugins,
-    CmsContext
-} from "@webiny/api-headless-cms/types";
+import { CmsContentModel, CmsFieldTypePlugins, CmsContext } from "@webiny/api-headless-cms/types";
 import { commonFieldResolvers } from "./resolvers/commonFieldResolvers";
 import { resolveGet } from "./resolvers/manage/resolveGet";
 import { resolveList } from "./resolvers/manage/resolveList";
@@ -10,6 +6,8 @@ import { resolveGetRevisions } from "./resolvers/manage/resolveGetRevisions";
 import { resolveGetByIds } from "./resolvers/manage/resolveGetByIds";
 import { resolveCreate } from "./resolvers/manage/resolveCreate";
 import { resolveUpdate } from "./resolvers/manage/resolveUpdate";
+import { resolveRequestReview } from "./resolvers/manage/resolveRequestReview";
+import { resolveRequestChanges } from "./resolvers/manage/resolveRequestChanges";
 import { resolveDelete } from "./resolvers/manage/resolveDelete";
 import { resolvePublish } from "./resolvers/manage/resolvePublish";
 import { resolveUnpublish } from "./resolvers/manage/resolveUnpublish";
@@ -18,10 +16,10 @@ import { createManageTypeName, createTypeName } from "../utils/createTypeName";
 import { pluralizedTypeName } from "../utils/pluralizedTypeName";
 import { entryFieldFromStorageTransform } from "../utils/entryStorage";
 
-export interface CreateManageResolvers {
+interface CreateManageResolvers {
     (params: {
-        models: CmsContentModelType[];
-        model: CmsContentModelType;
+        models: CmsContentModel[];
+        model: CmsContentModel;
         context: CmsContext;
         fieldTypePlugins: CmsFieldTypePlugins;
     }): any;
@@ -48,24 +46,31 @@ export const createManageResolvers: CreateManageResolvers = ({
             [`delete${typeName}`]: resolveDelete({ model }),
             [`publish${typeName}`]: resolvePublish({ model }),
             [`unpublish${typeName}`]: resolveUnpublish({ model }),
-            [`create${typeName}From`]: resolveCreateFrom({ model })
+            [`create${typeName}From`]: resolveCreateFrom({ model }),
+            [`request${typeName}Review`]: resolveRequestReview({ model }),
+            [`request${typeName}Changes`]: resolveRequestChanges({ model })
         },
         [mTypeName]: model.fields.reduce(
             (resolvers, field) => {
                 const { manage } = fieldTypePlugins[field.type];
 
-                const resolver = manage.createResolver({ models, model, field });
+                const resolver = manage.createResolver
+                    ? manage.createResolver({ models, model, field })
+                    : null;
 
                 resolvers[field.fieldId] = async (entry, args, context: CmsContext, info) => {
-                    const value = await resolver(entry, args, context, info);
                     // Get transformed value (eg. data decompression)
-                    return entryFieldFromStorageTransform({
+                    entry.values[field.fieldId] = await entryFieldFromStorageTransform({
                         context,
                         model,
                         entry,
                         field,
-                        value
+                        value: entry.values[field.fieldId]
                     });
+                    if (!resolver) {
+                        return entry.values[field.fieldId];
+                    }
+                    return await resolver(entry, args, context, info);
                 };
 
                 return resolvers;

@@ -1,49 +1,75 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { DEFAULT_DATE, DEFAULT_TIME, appendTextToLabel, RemoveFieldButton } from "./utils";
+import { DEFAULT_DATE, DEFAULT_TIME, RemoveFieldButton } from "./utils";
 import Input from "./Input";
 
-const DateTimeWithoutTimezone = props => {
+interface DateTimeWithoutTimezoneProps {
+    bind: any;
+    trailingIcon?: any;
+    field: any;
+}
+
+interface DateTimeWithoutTimezoneState {
+    date: string;
+    time: string;
+}
+
+const parseDateTime = (value?: string) => {
+    if (!value) {
+        return {};
+    }
+    const [formattedDate, formattedTime] = value.split(" ");
+    if (!formattedDate || !formattedTime) {
+        throw new Error(`Could not extract date and time from "${value}".`);
+    }
+    return {
+        formattedDate,
+        formattedTime
+    };
+};
+
+const DateTimeWithoutTimezone: React.FunctionComponent<DateTimeWithoutTimezoneProps> = ({
+    field,
+    bind,
+    trailingIcon
+}) => {
     // "2020-05-18 09:00:00"
-    const [date, setDate] = React.useState("");
-    const [time, setTime] = React.useState("");
-    React.useEffect(() => {
-        if (props.bind.value === null) {
-            setDate(DEFAULT_DATE);
-            setTime(DEFAULT_TIME);
+    const { formattedDate, formattedTime } = parseDateTime(bind.value);
+    const [state, setState] = useState<DateTimeWithoutTimezoneState>({
+        date: formattedDate || DEFAULT_DATE,
+        time: formattedTime || DEFAULT_TIME
+    });
+    const { date, time } = state;
+    useEffect(() => {
+        if (!formattedDate || !formattedTime) {
             return;
         }
-        const [isoDate, fullTime] = props.bind.value.split(" ");
+        setState(() => ({
+            date: formattedDate,
+            time: formattedTime
+        }));
+    }, [formattedDate, formattedTime]);
 
-        const formattedDate = isoDate;
-        const formattedTime = fullTime;
-
-        // Set previously saved values
-        if (date !== formattedDate) {
-            setDate(formattedDate);
-        }
-        if (time !== formattedTime) {
-            setTime(formattedTime);
-        }
-    }, [props.bind.value]);
-
-    const cellSize = props.trailingIcon ? 5 : 6;
+    const cellSize = trailingIcon ? 5 : 6;
 
     return (
         <Grid>
             <Cell span={6}>
                 <Input
                     bind={{
-                        ...props.bind,
+                        ...bind,
                         value: date,
                         onChange: value => {
-                            setDate(value);
-                            return props.bind.onChange(`${value} ${time}`);
+                            setState(prev => ({
+                                ...prev,
+                                date: value
+                            }));
+                            return bind.onChange(`${value} ${time}`);
                         }
                     }}
                     field={{
-                        ...props.field,
-                        label: appendTextToLabel(props.field.label, " date")
+                        ...field,
+                        label: `${field.label} date`
                     }}
                     type={"date"}
                 />
@@ -51,22 +77,25 @@ const DateTimeWithoutTimezone = props => {
             <Cell span={cellSize}>
                 <Input
                     bind={{
-                        ...props.bind,
+                        ...bind,
                         value: time,
                         onChange: value => {
-                            setTime(value);
-                            return props.bind.onChange(`${date} ${value}`);
+                            setState(prev => ({
+                                ...prev,
+                                time: value
+                            }));
+                            return bind.onChange(`${date} ${value}`);
                         }
                     }}
                     field={{
-                        ...props.field,
-                        label: appendTextToLabel(props.field.label, " time")
+                        ...field,
+                        label: `${field.label} time`
                     }}
                     type={"time"}
                     step={5}
                 />
             </Cell>
-            <RemoveFieldButton trailingIcon={props.trailingIcon} />
+            <RemoveFieldButton trailingIcon={trailingIcon} />
         </Grid>
     );
 };

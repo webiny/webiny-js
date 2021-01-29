@@ -10,8 +10,6 @@ describe("page full URL test", () => {
         updatePage,
         until
     } = useGqlHandler();
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    let initialCategory;
 
     beforeEach(async () => {
         await deleteElasticSearchIndex();
@@ -25,7 +23,7 @@ describe("page full URL test", () => {
                 url: `/some-url/`,
                 layout: `layout`
             }
-        }).then(([res]) => (initialCategory = res.data.pageBuilder.createCategory.data));
+        });
 
         const letters = ["a", "z", "b"];
         for (let i = 0; i < letters.length; i++) {

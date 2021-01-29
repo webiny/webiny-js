@@ -1,8 +1,9 @@
 import React, { useCallback, useMemo } from "react";
+import styled from "@emotion/styled";
 import { i18n } from "@webiny/app/i18n";
 import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { ButtonPrimary } from "@webiny/ui/Button";
+import { ButtonDefault, ButtonIcon, ButtonPrimary } from "@webiny/ui/Button";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { useMutation, useQuery } from "react-apollo";
 import {
@@ -17,25 +18,36 @@ import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Input } from "@webiny/ui/Input";
 import { categoryUrlValidator } from "./validators";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { PbPageLayoutPlugin } from "@webiny/app-page-builder/types";
 import { Select } from "@webiny/ui/Select";
 import { useSecurity } from "@webiny/app-security";
 import pick from "object.pick";
 import get from "lodash/get";
 import set from "lodash/set";
+import isEmpty from "lodash/isEmpty";
+import EmptyView from "@webiny/app-admin/components/EmptyView";
+import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 
 const t = i18n.ns("app-page-builder/admin/categories/form");
 
-const CategoriesForm = () => {
+const ButtonWrapper = styled("div")({
+    display: "flex",
+    justifyContent: "space-between"
+});
+
+type CategoriesFormProps = {
+    canCreate: boolean;
+};
+const CategoriesForm = ({ canCreate }: CategoriesFormProps) => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
 
     const layouts = React.useMemo(
-        () => getPlugins<PbPageLayoutPlugin>("pb-page-layout").map(pl => pl.layout),
+        () => plugins.byType<PbPageLayoutPlugin>("pb-page-layout").map(pl => pl.layout),
         []
     );
-
+    const newEntry = new URLSearchParams(location.search).get("new") === "true";
     const slug = new URLSearchParams(location.search).get("slug");
 
     const getQuery = useQuery(GET_CATEGORY, {
@@ -123,6 +135,28 @@ const CategoriesForm = () => {
         return true;
     }, [loadedCategory.slug]);
 
+    const showEmptyView = !newEntry && !loading && isEmpty(data);
+    // Render "No content selected" view.
+    if (showEmptyView) {
+        return (
+            <EmptyView
+                title={t`Click on the left side list to display category details {message}`({
+                    message: canCreate ? "or create a..." : ""
+                })}
+                action={
+                    canCreate ? (
+                        <ButtonDefault
+                            data-testid="new-record-button"
+                            onClick={() => history.push("/page-builder/categories?new=true")}
+                        >
+                            <ButtonIcon icon={<AddIcon />} /> {t`New Category`}
+                        </ButtonDefault>
+                    ) : null
+                }
+            />
+        );
+    }
+
     return (
         <Form data={data} onSubmit={onSubmit}>
             {({ data, form, Bind }) => (
@@ -166,9 +200,16 @@ const CategoriesForm = () => {
                         </Grid>
                     </SimpleFormContent>
                     <SimpleFormFooter>
-                        {canSave && (
-                            <ButtonPrimary onClick={form.submit}>{t`Save category`}</ButtonPrimary>
-                        )}
+                        <ButtonWrapper>
+                            <ButtonDefault
+                                onClick={() => history.push("/page-builder/categories")}
+                            >{t`Cancel`}</ButtonDefault>
+                            {canSave && (
+                                <ButtonPrimary
+                                    onClick={form.submit}
+                                >{t`Save category`}</ButtonPrimary>
+                            )}
+                        </ButtonWrapper>
                     </SimpleFormFooter>
                 </SimpleForm>
             )}

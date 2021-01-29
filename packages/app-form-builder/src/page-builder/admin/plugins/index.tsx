@@ -41,8 +41,8 @@ export default () => [
         ],
         target: ["block", "cell"],
         onCreate: "open-settings",
-        render({ element }) {
-            return <FormElement element={element} />;
+        render(props) {
+            return <FormElement {...props} />;
         },
         create() {
             return {

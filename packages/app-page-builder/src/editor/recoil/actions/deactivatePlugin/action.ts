@@ -1,10 +1,10 @@
 import { PluginsAtomType } from "@webiny/app-page-builder/editor/recoil/modules";
 import { DeactivatePluginActionArgsType } from "./types";
-import {
-    EventActionCallableType,
-    EventActionHandlerActionCallableResponseType
-} from "@webiny/app-page-builder/editor/recoil/eventActions";
 import { plugins } from "@webiny/plugins";
+import {
+    EventActionCallable,
+    EventActionHandlerActionCallableResponse
+} from "@webiny/app-page-builder/types";
 
 const removePlugin = (state: PluginsAtomType, name: string): PluginsAtomType => {
     const plugin = plugins.byName(name);
@@ -22,7 +22,7 @@ const removePlugin = (state: PluginsAtomType, name: string): PluginsAtomType => 
 const deactivatePluginByName = (
     state: PluginsAtomType,
     name: string
-): EventActionHandlerActionCallableResponseType => {
+): EventActionHandlerActionCallableResponse => {
     const newState = removePlugin(state, name);
 
     return {
@@ -35,7 +35,7 @@ const deactivatePluginByName = (
 const deactivatePluginByType = (
     state: PluginsAtomType,
     type: string
-): EventActionHandlerActionCallableResponseType => {
+): EventActionHandlerActionCallableResponse => {
     return {
         state: {
             plugins: {
@@ -49,7 +49,7 @@ const deactivatePluginByType = (
 const deactivatePluginsByName = (
     state: PluginsAtomType,
     names: string[]
-): EventActionHandlerActionCallableResponseType => {
+): EventActionHandlerActionCallableResponse => {
     let newState = {
         ...state
     };
@@ -63,7 +63,7 @@ const deactivatePluginsByName = (
     };
 };
 
-export const deactivatePluginAction: EventActionCallableType<DeactivatePluginActionArgsType> = (
+export const deactivatePluginAction: EventActionCallable<DeactivatePluginActionArgsType> = (
     { plugins: pluginsState },
     meta,
     { name, names, type }

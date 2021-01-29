@@ -1,8 +1,8 @@
-import { CreateElementEventActionCallableType } from "@webiny/app-page-builder/editor/recoil/actions/createElement/types";
+import { CreateElementEventActionCallable } from "@webiny/app-page-builder/editor/recoil/actions/createElement/types";
 import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
 import { plugins } from "@webiny/plugins";
 
-export const advancedSettingsEditorAction: CreateElementEventActionCallableType = (
+export const advancedSettingsEditorAction: CreateElementEventActionCallable = (
     state,
     meta,
     { element, source }
@@ -27,13 +27,13 @@ export const advancedSettingsEditorAction: CreateElementEventActionCallableType 
         if (onCreate && onCreate === "open-settings") {
             return {
                 state: {
-                    ui: {
-                        ...state.ui,
-                        activeElement: element.id,
+                    ...state,
+                    activeElement: element.id,
+                    sidebar: {
                         // Mark "Element" settings tab active in sidebar.
-                        sidebarActiveTabIndex: 1,
+                        activeTabIndex: 1,
                         // Highlight "Element" settings tab in sidebar.
-                        highlightElementTab: true
+                        highlightTab: true
                     }
                 }
             };

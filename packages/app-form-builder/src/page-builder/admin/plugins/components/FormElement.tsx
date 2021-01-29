@@ -1,10 +1,8 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { uiAtom } from "@webiny/app-page-builder/editor/recoil/modules";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
 import { Form as FormsForm } from "@webiny/app-form-builder/components/Form";
-import { PbElement, PbElementDataSettingsFormType } from "@webiny/app-page-builder/types";
-import { useRecoilValue } from "recoil";
+import { PbEditorElement, PbElementDataSettingsFormType } from "@webiny/app-page-builder/types";
 import useRenderEmptyEmbed from "@webiny/app-page-builder/editor/plugins/elements/utils/oembed/useRenderEmptyEmbed";
 
 const Overlay = styled("div")({
@@ -27,13 +25,11 @@ const renderContent = (form: PbElementDataSettingsFormType): JSX.Element => {
 };
 
 export type FormElementPropsType = {
-    element: PbElement;
+    element: PbEditorElement;
+    isActive: boolean;
 };
 
-const FormElement: React.FunctionComponent<FormElementPropsType> = ({ element }) => {
-    const { activeElement } = useRecoilValue(uiAtom);
-    const isActive = activeElement === element.id;
-
+const FormElement: React.FunctionComponent<FormElementPropsType> = ({ element, isActive }) => {
     const { form = {} } = element.data?.settings || {};
 
     const renderEmpty = useRenderEmptyEmbed(element);

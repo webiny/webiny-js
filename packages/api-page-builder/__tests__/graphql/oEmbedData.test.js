@@ -10,13 +10,12 @@ describe("oEmbed test", () => {
                 pageBuilder: {
                     oembedData: {
                         data: {
-                            // eslint-disable-next-line @typescript-eslint/camelcase
                             author_name: "Webiny",
-                            // eslint-disable-next-line @typescript-eslint/camelcase
+
                             author_url: /^https:\/\/www.youtube.com/,
-                            // eslint-disable-next-line @typescript-eslint/camelcase
+
                             provider_name: "YouTube",
-                            // eslint-disable-next-line @typescript-eslint/camelcase
+
                             provider_url: "https://www.youtube.com/",
                             source: {
                                 url: "https://www.youtube.com/watch?v=sF4HRS9nE3s"

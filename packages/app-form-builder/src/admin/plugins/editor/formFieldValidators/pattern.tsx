@@ -2,7 +2,7 @@ import React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { Select } from "@webiny/ui/Select";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { validation } from "@webiny/validation";
 import {
     FbFormFieldPatternValidatorPlugin,
@@ -22,7 +22,7 @@ export default {
         },
         renderSettings({ Bind, setValue, setMessage, data }) {
             const inputsDisabled = data.settings.preset !== "custom";
-            const presetPlugins = getPlugins<FbFormFieldPatternValidatorPlugin>(
+            const presetPlugins = plugins.byType<FbFormFieldPatternValidatorPlugin>(
                 "form-editor-field-validator-pattern"
             );
 

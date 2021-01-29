@@ -35,6 +35,7 @@ export default () => {
                 "pb-editor-page-element-style-settings-button",
                 "pb-editor-page-element-style-settings-link",
                 "pb-editor-page-element-style-settings-horizontal-align-flex",
+                "pb-editor-page-element-style-settings-margin",
                 "pb-editor-page-element-settings-clone",
                 "pb-editor-page-element-settings-delete"
             ],
@@ -47,10 +48,6 @@ export default () => {
                         buttonText: "Click me",
                         settings: {
                             margin: createInitialPerDeviceSettingValue(
-                                { all: "0px" },
-                                DisplayMode.DESKTOP
-                            ),
-                            padding: createInitialPerDeviceSettingValue(
                                 { all: "0px" },
                                 DisplayMode.DESKTOP
                             ),

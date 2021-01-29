@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import { useApolloClient } from "react-apollo";
 import styled from "@emotion/styled";
 import { useHandlers } from "@webiny/app/hooks/useHandlers";
-import { unregisterPlugin } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { Typography } from "@webiny/ui/Typography";
 import { IconButton } from "@webiny/ui/Button";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
@@ -109,7 +109,7 @@ const Title = props => {
                                         return showSnackbar(error.message);
                                     }
 
-                                    unregisterPlugin(plugin);
+                                    plugins.unregister(plugin);
 
                                     refresh();
 

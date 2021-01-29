@@ -2,11 +2,16 @@ import React from "react";
 import { useQuery } from "react-apollo";
 import { useRouter } from "@webiny/react-router";
 import styled from "@emotion/styled";
-import { Elevation } from "@webiny/ui/Elevation";
 import { renderPlugins } from "@webiny/app/plugins";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { GET_PAGE } from "../../graphql/pages";
 import ElementAnimation from "../../../render/components/ElementAnimation";
+import { ButtonDefault, ButtonIcon } from "@webiny/ui/Button";
+import EmptyView from "@webiny/app-admin/components/EmptyView";
+import { i18n } from "@webiny/app/i18n";
+import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
+
+const t = i18n.ns("app-page-builder/admin/views/pages/page-details");
 
 declare global {
     // eslint-disable-next-line
@@ -18,24 +23,6 @@ declare global {
         }
     }
 }
-
-const EmptySelect = styled("div")({
-    width: "100%",
-    height: "100%",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    color: "var(--mdc-theme-on-surface)",
-    ".select-page": {
-        maxWidth: 400,
-        padding: "50px 100px",
-        textAlign: "center",
-        display: "block",
-        borderRadius: 2,
-        backgroundColor: "var(--mdc-theme-surface)"
-    }
-});
-
 const DetailsContainer = styled("div")({
     height: "calc(100% - 10px)",
     overflow: "hidden",
@@ -44,18 +31,31 @@ const DetailsContainer = styled("div")({
         backgroundColor: "var(--mdc-theme-surface)"
     }
 });
-
-const EmptyPageDetails = () => {
+type EmptyPageDetailsProps = {
+    onCreatePage: (event?: React.SyntheticEvent) => void;
+    canCreate: boolean;
+};
+const EmptyPageDetails = ({ onCreatePage, canCreate }: EmptyPageDetailsProps) => {
     return (
-        <EmptySelect>
-            <Elevation z={2} className={"select-page"}>
-                Select a page on the left side, or click the green button to create a new one.
-            </Elevation>
-        </EmptySelect>
+        <EmptyView
+            title={t`Click on the left side list to display page details {message} `({
+                message: canCreate ? "or create a..." : ""
+            })}
+            action={
+                canCreate ? (
+                    <ButtonDefault data-testid="new-record-button" onClick={onCreatePage}>
+                        <ButtonIcon icon={<AddIcon />} /> {t`New Page`}
+                    </ButtonDefault>
+                ) : null
+            }
+        />
     );
 };
-
-const PageDetails = () => {
+type PageDetailsProps = {
+    onCreatePage: (event?: React.SyntheticEvent) => void;
+    canCreate: boolean;
+};
+const PageDetails = ({ onCreatePage, canCreate }: PageDetailsProps) => {
     const { history, location } = useRouter();
     const { showSnackbar } = useSnackbar();
 
@@ -75,7 +75,7 @@ const PageDetails = () => {
     });
 
     if (!pageId) {
-        return <EmptyPageDetails />;
+        return <EmptyPageDetails canCreate={canCreate} onCreatePage={onCreatePage} />;
     }
 
     const page = getPageQuery.data?.pageBuilder?.getPage?.data || {};

@@ -95,7 +95,7 @@ const PBInstaller = ({ onInstalled }) => {
                                 <Bind name="name" validators={validation.create("required")}>
                                     <Input
                                         label={t`Site Name`}
-                                        description={t`Name of your site, eg: "My Site"`}
+                                        description={t`Name of your website, eg: "My Site"`}
                                     />
                                 </Bind>
                             </Cell>
@@ -116,7 +116,7 @@ const PBInstaller = ({ onInstalled }) => {
 export default {
     name: "admin-installation-pb",
     type: "admin-installation",
-    title: t`Page Builder app`,
+    title: t`Page Builder`,
     dependencies: [],
     secure: true,
     async isInstalled({ client }) {

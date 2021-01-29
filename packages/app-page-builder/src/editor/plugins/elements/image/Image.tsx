@@ -1,10 +1,10 @@
 import React from "react";
 import ImageContainer from "./ImageContainer";
-import { PbElement } from "@webiny/app-page-builder/types";
+import { PbEditorElement } from "@webiny/app-page-builder/types";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
 
 type ImagePropsType = {
-    element: PbElement;
+    element: PbEditorElement;
 };
 const Image: React.FunctionComponent<ImagePropsType> = ({ element }) => {
     return (

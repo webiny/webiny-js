@@ -9,10 +9,10 @@ import { useMutation } from "react-apollo";
 import gql from "graphql-tag";
 import { useSecurity } from "@webiny/app-security";
 
-const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/request-changes");
+const t = i18n.ns("app-page-builder/page-details/header/request-changes");
 
 const REQUEST_CHANGES = gql`
-    mutation updateMenu($id: ID!) {
+    mutation PbPageRequestChanges($id: ID!) {
         pageBuilder {
             requestChanges(id: $id) {
                 data {
@@ -41,9 +41,9 @@ const RequestChanges = props => {
         title: t`Request Changes`,
         message: (
             <p>
-                {t`You are about to request changes for {title} page. Are you sure you want to continue?`(
+                {t`You are about to request changes to the {title} page. Are you sure you want to continue?`(
                     {
-                        title: <b>{page.title}</b>
+                        title: <strong>{page.title}</strong>
                     }
                 )}
             </p>
@@ -55,7 +55,9 @@ const RequestChanges = props => {
         return null;
     }
 
-    if (pbPagePermission.own && page?.createdBy?.id !== identity.login) {
+    // You can't request changes on the page you created (this is different from `ownedBy`).
+    // Owner of the page CAN request changes on revisions that were created by other users.
+    if (page.createdBy && page.createdBy.id === identity.login) {
         return null;
     }
 

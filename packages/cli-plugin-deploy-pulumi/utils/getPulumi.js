@@ -16,7 +16,7 @@ module.exports = (args = {}) => {
                 },
                 beforePulumiInstall: () => {
                     console.log(
-                        `💡 It looks like this is your first time using ${green(
+                        `It looks like this is your first time using ${green(
                             "@webiny/pulumi-sdk"
                         )}.`
                     );

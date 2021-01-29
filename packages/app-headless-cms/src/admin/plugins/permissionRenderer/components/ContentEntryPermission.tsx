@@ -12,9 +12,9 @@ const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
 const pwOptions = [
     { id: "p", name: t`Publish` },
-    { id: "u", name: t`Unpublish` }
-    // { id: "r", name: t`Request review` },
-    // { id: "c", name: t`Request changes` }
+    { id: "u", name: t`Unpublish` },
+    { id: "r", name: t`Request review` },
+    { id: "c", name: t`Request changes` }
 ];
 
 export const ContentEntryPermission = ({ Bind, data, entity, setValue, title, locales }) => {

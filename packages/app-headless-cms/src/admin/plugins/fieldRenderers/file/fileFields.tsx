@@ -7,6 +7,7 @@ import { imageWrapperStyles } from "@webiny/app-headless-cms/admin/plugins/field
 import { FileManager } from "@webiny/app-admin/components";
 import styled from "@emotion/styled";
 import File from "./File";
+import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 
 const t = i18n.ns("app-headless-cms/admin/fields/file");
 
@@ -26,7 +27,7 @@ function FieldRenderer({ getBind, Label, field }) {
 
     return (
         <Bind>
-            {({ value, onChange }) => (
+            {({ value, onChange, validation }) => (
                 <FileUploadWrapper className={imageWrapperStyles}>
                     <FileManager multiple={true}>
                         {({ showFileManager }) => {
@@ -73,6 +74,13 @@ function FieldRenderer({ getBind, Label, field }) {
                                             placeholder={t`Select a file"`}
                                         />
                                     </Cell>
+                                    {validation.isValid === false && (
+                                        <Cell span={12}>
+                                            <FormElementMessage error>
+                                                {validation.message}
+                                            </FormElementMessage>
+                                        </Cell>
+                                    )}
                                 </GridInner>
                             );
                         }}

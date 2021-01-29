@@ -1,5 +1,6 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import get from "lodash/get";
+import orderBy from "lodash/orderBy";
 import dotProp from "dot-prop-immutable";
 import { i18n } from "@webiny/app/i18n";
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
@@ -10,23 +11,74 @@ import {
     ListItemText,
     ListItemTextSecondary,
     ListItemMeta,
-    ListActions
+    ListActions,
+    DataListModalOverlay,
+    DataListModalOverlayAction
 } from "@webiny/ui/List";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useQuery, useApolloClient } from "@webiny/app-headless-cms/admin/hooks";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import * as GQL from "./graphql";
+import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
+import { Cell, Grid } from "@webiny/ui/Grid";
+import { Select } from "@webiny/ui/Select";
+import SearchUI from "@webiny/app-admin/components/SearchUI";
+import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
+import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
+import { serializeSorters, deserializeSorters } from "../utils";
 
 const t = i18n.ns("app-headless-cms/admin/content-model-groups/data-list");
 
-const ContentModelGroupsDataList = () => {
+const SORTERS = [
+    {
+        label: t`Newest to oldest`,
+        sorters: { createdOn: "desc" }
+    },
+    {
+        label: t`Oldest to newest`,
+        sorters: { createdOn: "asc" }
+    },
+    {
+        label: t`Name A-Z`,
+        sorters: { name: "asc" }
+    },
+    {
+        label: t`Name Z-A`,
+        sorters: { name: "desc" }
+    }
+];
+
+type ContentModelGroupsDataListProps = {
+    canCreate: boolean;
+};
+const ContentModelGroupsDataList = ({ canCreate }: ContentModelGroupsDataListProps) => {
+    const [filter, setFilter] = useState("");
+    const [sort, setSort] = useState(serializeSorters(SORTERS[0].sorters));
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const client = useApolloClient();
     const listQuery = useQuery(GQL.LIST_CONTENT_MODEL_GROUPS);
 
     const { showConfirmation } = useConfirmationDialog();
+
+    const filterData = useCallback(
+        ({ name }) => {
+            return name.toLowerCase().includes(filter);
+        },
+        [filter]
+    );
+
+    const sortData = useCallback(
+        list => {
+            if (!sort) {
+                return list;
+            }
+            const [[key, value]] = Object.entries(deserializeSorters(sort));
+            return orderBy(list, [key], [value]);
+        },
+        [sort]
+    );
 
     const data = listQuery.loading ? [] : get(listQuery, "data.listContentModelGroups.data", []);
     const groupId = new URLSearchParams(location.search).get("id");
@@ -77,12 +129,59 @@ const ContentModelGroupsDataList = () => {
         [groupId]
     );
 
+    const contentModelGroupsDataListModalOverlay = useMemo(
+        () => (
+            <DataListModalOverlay>
+                <Grid>
+                    <Cell span={12}>
+                        <Select
+                            value={sort}
+                            onChange={setSort}
+                            label={t`Sort by`}
+                            description={"Sort pages by"}
+                        >
+                            {SORTERS.map(({ label, sorters }) => {
+                                return (
+                                    <option key={label} value={serializeSorters(sorters)}>
+                                        {label}
+                                    </option>
+                                );
+                            })}
+                        </Select>
+                    </Cell>
+                </Grid>
+            </DataListModalOverlay>
+        ),
+        [sort]
+    );
+
+    const filteredData = filter === "" ? data : data.filter(filterData);
+    const contentModelGroups = sortData(filteredData);
+
     return (
         <DataList
             loading={listQuery.loading}
-            data={data}
+            data={contentModelGroups}
             title={t`Content Model Groups`}
-            refresh={listQuery.refetch}
+            actions={
+                canCreate ? (
+                    <ButtonSecondary
+                        data-testid="new-record-button"
+                        onClick={() => history.push("/cms/content-model-groups?new=true")}
+                    >
+                        <ButtonIcon icon={<AddIcon />} /> {t`New Group`}
+                    </ButtonSecondary>
+                ) : null
+            }
+            search={
+                <SearchUI
+                    value={filter}
+                    onChange={setFilter}
+                    inputPlaceholder={t`Search content model group`}
+                />
+            }
+            modalOverlay={contentModelGroupsDataListModalOverlay}
+            modalOverlayAction={<DataListModalOverlayAction icon={<FilterIcon />} />}
         >
             {({ data }) => (
                 <List data-testid="default-data-list">

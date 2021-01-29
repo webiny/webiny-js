@@ -1,4 +1,4 @@
-import { CmsFieldTypePlugins, CmsContentModelType } from "@webiny/api-headless-cms/types";
+import { CmsFieldTypePlugins, CmsContentModel } from "@webiny/api-headless-cms/types";
 import { createManageTypeName, createTypeName } from "../utils/createTypeName";
 import { renderInputFields } from "../utils/renderInputFields";
 import { renderSortEnum } from "../utils/renderSortEnum";
@@ -7,8 +7,8 @@ import { renderListFilterFields } from "../utils/renderListFilterFields";
 import { renderGetFilterFields } from "../utils/renderGetFilterFields";
 import { pluralizedTypeName } from "../utils/pluralizedTypeName";
 
-export interface CreateManageSDL {
-    (params: { model: CmsContentModelType; fieldTypePlugins: CmsFieldTypePlugins }): string;
+interface CreateManageSDL {
+    (params: { model: CmsContentModel; fieldTypePlugins: CmsFieldTypePlugins }): string;
 }
 
 export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): string => {
@@ -35,6 +35,7 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
         type ${mTypeName} {
             id: ID
             createdOn: DateTime
+            createdBy: CmsCreatedBy
             savedOn: DateTime
             meta: ${mTypeName}Meta
             ${fields.map(f => f.fields).join("\n")}
@@ -118,6 +119,10 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
             publish${typeName}(revision: ID!): ${mTypeName}Response
 
             unpublish${typeName}(revision: ID!): ${mTypeName}Response
+            
+            request${typeName}Review(revision: ID!): ${mTypeName}Response
+            
+            request${typeName}Changes(revision: ID!): ${mTypeName}Response
         }
     `;
 };

@@ -1,4 +1,4 @@
-import { connectedAtom } from "@webiny/app-page-builder/editor/recoil/modules/connected";
+import { atom } from "recoil";
 
 export type RevisionItemAtomType = {
     id: string;
@@ -11,7 +11,7 @@ export type RevisionItemAtomType = {
     savedOn?: Date;
 };
 export type RevisionsAtomType = RevisionItemAtomType[];
-export const revisionsAtom = connectedAtom<RevisionsAtomType>({
+export const revisionsAtom = atom<RevisionsAtomType>({
     key: "revisionsAtom",
     default: []
 });

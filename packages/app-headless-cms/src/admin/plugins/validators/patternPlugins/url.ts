@@ -1,11 +1,10 @@
-import { CmsFormFieldPatternValidatorPlugin } from "@webiny/app-headless-cms/types";
-
 export default {
-    type: "cms-editor-field-validator-pattern",
-    name: "cms-editor-field-validator-pattern-url",
+    type: "cms-model-field-validator-pattern",
+    name: "cms-model-field-validator-pattern-url",
     pattern: {
-        message: "Please enter a valid URL.",
         name: "url",
-        label: "URL"
+        regex:
+            "^(ftp|http|https):\\/\\/(\\w+:{0,1}\\w*@)?(\\S+)(:[0-9]+)?(\\/|\\/([\\w#!:.?+=&%@!\\-\\/]))?$",
+        flags: "i"
     }
-} as CmsFormFieldPatternValidatorPlugin;
+};

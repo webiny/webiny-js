@@ -30,10 +30,7 @@ export default [
                     ]
                 },
                 heading: {
-                    types: [
-                        { className: "", label: "Default" },
-                        { className: "webiny-pb-element-heading-basic", label: "Basic" }
-                    ]
+                    types: [{ className: "webiny-pb-typography-heading", label: "Default" }]
                 },
                 paragraph: {
                     types: [
@@ -44,14 +41,12 @@ export default [
                 list: {
                     types: [
                         { className: "", label: "Default" },
-                        { className: "webiny-pb-element-list-basic", label: "Basic" }
+                        { className: "webiny-pb-typography-list--primary", label: "Primary" },
+                        { className: "webiny-pb-typography-list--secondary", label: "Secondary" }
                     ]
                 },
                 quote: {
-                    types: [
-                        { className: "", label: "Default" },
-                        { className: "webiny-pb-element-quote-basic", label: "Basic" }
-                    ]
+                    types: [{ className: "webiny-pb-typography-quote", label: "Default" }]
                 }
             },
             typography: {

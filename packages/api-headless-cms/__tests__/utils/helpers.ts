@@ -1,12 +1,12 @@
 import { pick } from "lodash";
 import { SecurityIdentity } from "@webiny/api-security";
 
-export type PermissionsArgType = {
+export interface PermissionsArg {
     name: string;
     locales?: string[];
     rwd?: string;
     pw?: string;
-};
+}
 
 export const identity = {
     id: "123",
@@ -18,7 +18,7 @@ const getSecurityIdentity = () => {
     return new SecurityIdentity(identity);
 };
 
-export const createPermissions = (permissions: PermissionsArgType[]): PermissionsArgType[] => {
+export const createPermissions = (permissions: PermissionsArg[]): PermissionsArg[] => {
     if (permissions) {
         return permissions;
     }
@@ -106,7 +106,7 @@ export const until = async (execute, until, options: UntilOptions = {}) => {
         }
 
         // Wait.
-        await new Promise(resolve => {
+        await new Promise((resolve: any) => {
             setTimeout(() => resolve(), wait);
         });
     }

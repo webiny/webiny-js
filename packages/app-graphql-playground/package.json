@@ -27,6 +27,9 @@
     "@webiny/react-router": "^5.0.0-beta.1",
     "@webiny/ui": "^5.0.0-beta.1",
     "apollo-client": "^2.6.10",
+    "apollo-link": "^1.2.14",
+    "apollo-link-context": "^1.0.20",
+    "load-script": "^1.0.0",
     "babel-plugin-emotion": "^9.2.8",
     "babel-plugin-lodash": "^3.3.4",
     "emotion": "^10.0.17",
@@ -60,5 +63,5 @@
       ]
     }
   },
-  "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
+  "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f"
 }

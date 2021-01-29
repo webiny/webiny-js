@@ -6,6 +6,7 @@
 
   .webiny-fb-form-layout-row,
   .webiny-fb-form-layout-column {
+    display: flex;
     width: 100%;
     padding: 0;
   }
@@ -97,9 +98,6 @@
         margin-left: 10px;
         padding-top: 2px;
         line-height: 100%;
-        .webiny-rich-typography-body:first-child {
-          margin-top: 0;
-        }
       }
       &-input {
         font-size: 1.5rem;

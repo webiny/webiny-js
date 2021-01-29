@@ -1,4 +1,4 @@
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { cloneDeep, get } from "lodash";
 import React, { useEffect, useRef, useMemo } from "react";
 import { useApolloClient } from "react-apollo";
@@ -26,6 +26,7 @@ declare global {
     // eslint-disable-next-line
     namespace JSX {
         interface IntrinsicElements {
+            // @ts-ignore
             "ps-tag": {
                 class?: string;
                 id?: string;
@@ -36,7 +37,7 @@ declare global {
 
 const FormRender = (props: FbFormRenderComponentProps) => {
     const theme = useMemo(
-        () => Object.assign({}, ...getPlugins("pb-theme").map((pl: PbThemePlugin) => pl.theme)),
+        () => Object.assign({}, ...plugins.byType("pb-theme").map((pl: PbThemePlugin) => pl.theme)),
         []
     );
 
@@ -69,7 +70,9 @@ const FormRender = (props: FbFormRenderComponentProps) => {
 
     const getFields = () => {
         const fields: any = cloneDeep(layout);
-        const validatorPlugins = getPlugins<FbFormFieldValidatorPlugin>("fb-form-field-validator");
+        const validatorPlugins = plugins.byType<FbFormFieldValidatorPlugin>(
+            "fb-form-field-validator"
+        );
 
         fields.forEach(row => {
             row.forEach((id, idIndex) => {
@@ -164,7 +167,7 @@ const FormRender = (props: FbFormRenderComponentProps) => {
         () =>
             [
                 ...(get(theme, "formBuilder.layouts") || []),
-                ...getPlugins<FbFormLayoutPlugin>("form-layout").map(pl => pl.layout)
+                ...plugins.byType<FbFormLayoutPlugin>("form-layout").map(pl => pl.layout)
             ].reduce((acc, item) => {
                 if (!acc.find(l => l.name === item.name)) {
                     acc.push(item);

@@ -234,16 +234,13 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
                             safari10: true
                         },
                         // Added for profiling in devtools
-                        /* eslint-disable-next-line @typescript-eslint/camelcase */
                         keep_classnames: isEnvProductionProfile,
-                        /* eslint-disable-next-line @typescript-eslint/camelcase */
                         keep_fnames: isEnvProductionProfile,
                         output: {
                             ecma: 5,
                             comments: false,
                             // Turned on because emoji and regex is not minified properly using default
                             // https://github.com/facebook/create-react-app/issues/2488
-                            /* eslint-disable-next-line @typescript-eslint/camelcase */
                             ascii_only: true
                         }
                     },
@@ -348,8 +345,7 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
                             options: {
                                 cache: true,
                                 formatter: require.resolve("react-dev-utils/eslintFormatter"),
-                                eslintPath: require.resolve("eslint"),
-                                resolvePluginsRelativeTo: __dirname
+                                eslintPath: require.resolve("eslint")
                             },
                             loader: require.resolve("eslint-loader")
                         }
@@ -360,7 +356,7 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
                             return false;
                         }
 
-                        return paths.allPackages.some(p => file.includes(p));
+                        return paths.allWorkspaces.some(p => file.includes(p));
                     },
                     exclude: /node_modules/
                 },
@@ -384,7 +380,7 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
                         // The preset includes JSX, Flow, TypeScript, and some ESnext features.
                         {
                             test: /\.(js|mjs|jsx|ts|tsx)$/,
-                            include: [paths.appSrc, paths.appIndexJs, ...paths.allPackages],
+                            include: [paths.appSrc, paths.appIndexJs, ...paths.allWorkspaces],
                             loader: require.resolve("babel-loader"),
                             options: babelCustomizer({
                                 sourceType: "unambiguous",
@@ -663,7 +659,6 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
             http2: "empty",
             net: "empty",
             tls: "empty",
-            /* eslint-disable-next-line @typescript-eslint/camelcase */
             child_process: "empty"
         },
         // Turn off performance processing because we utilize

@@ -1,5 +1,6 @@
 import { get } from "lodash";
 import kebabCase from "lodash/kebabCase";
+import camelCase from "lodash/camelCase";
 import { PbRenderElementStylePlugin } from "../../../../types";
 import { applyPerDeviceStyleWithFallback } from "../../../utils";
 
@@ -36,6 +37,7 @@ export default {
                     get(style, `--${kebabCase(fallbackMode)}-border-${side}-color`)
                 );
                 // Set "border-width"
+                const advancedWidth = get(border, `${displayMode}.width.advanced`, false);
                 const fallbackWidthValue = get(
                     style,
                     `--${kebabCase(fallbackMode)}-border-${side}-width`,
@@ -52,12 +54,13 @@ export default {
                     removeUnitFromEnd(fallbackWidthValue)
                 );
                 style[`--${kebabCase(displayMode)}-border-${side}-width`] =
-                    (allWidth ? allWidth : sideWidth) + "px";
+                    (advancedWidth ? sideWidth : allWidth) + "px";
                 // Set "border-radius".
+                const advancedRadius = get(border, `${displayMode}.radius.advanced`, false);
                 const borderRadiusSide = borderRadiusSides[index];
                 const fallbackRadiusValue = get(
                     style,
-                    `--${kebabCase(fallbackMode)}-border-${side}-radius`,
+                    `--${kebabCase(fallbackMode)}-border-${kebabCase(borderRadiusSide)}-radius`,
                     0
                 );
                 const allRadius = get(
@@ -67,11 +70,11 @@ export default {
                 );
                 const sideRadius = get(
                     border,
-                    `${displayMode}.radius.${side}`,
+                    `${displayMode}.radius.${camelCase(borderRadiusSide)}`,
                     removeUnitFromEnd(fallbackRadiusValue)
                 );
                 style[`--${kebabCase(displayMode)}-border-${kebabCase(borderRadiusSide)}-radius`] =
-                    (allRadius ? allRadius : sideRadius) + "px";
+                    (advancedRadius ? sideRadius : allRadius) + "px";
             });
         });
 

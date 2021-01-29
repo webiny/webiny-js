@@ -35,13 +35,15 @@ const getLocaleFromHeaders = (http, localeContext = "default") => {
         return null;
     }
 
+    const { headers } = http.request;
+
     let acceptLanguageHeader, contextLocaleHeader;
-    for (const key in http.headers) {
+    for (const key in headers) {
         const lcKey = key.toLowerCase();
         if (lcKey === "accept-language") {
-            acceptLanguageHeader = http.headers[key];
+            acceptLanguageHeader = headers[key];
         } else if (lcKey === "x-i18n-locale") {
-            const parsed = parseXI18NLocaleHeader(http.headers[key]);
+            const parsed = parseXI18NLocaleHeader(headers[key]);
             contextLocaleHeader = parsed[localeContext];
         }
 

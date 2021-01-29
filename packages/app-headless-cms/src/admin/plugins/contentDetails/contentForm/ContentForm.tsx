@@ -1,5 +1,4 @@
-import React, { useCallback, useMemo } from "react";
-import get from "lodash/get";
+import React, { useCallback, useMemo, useState } from "react";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useMutation } from "@webiny/app-headless-cms/admin/hooks";
@@ -7,7 +6,14 @@ import { ContentModelForm } from "../../../views/components/ContentModelForm";
 import * as GQL from "../../../views/components/ContentModelForm/graphql";
 import * as GQLCache from "../cache";
 
-const ContentForm = ({ contentModel, entry, setLoading, getLoading, setState }) => {
+const ContentForm = ({
+    contentModel,
+    entry,
+    setLoading,
+    getLoading,
+    setState,
+    listQueryVariables
+}) => {
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
 
@@ -28,6 +34,20 @@ const ContentForm = ({ contentModel, entry, setLoading, getLoading, setState }) 
     const [updateMutation] = useMutation(UPDATE_CONTENT);
     const [createFromMutation] = useMutation(CREATE_CONTENT_FROM);
 
+    const [invalidFields, setInvalidFields] = useState<Record<string, string>>({});
+
+    const setInvalidFieldValues = errors => {
+        const values = errors.reduce((acc, er) => {
+            acc[er.fieldId] = er.error;
+            return acc;
+        }, {});
+        setInvalidFields(() => values);
+    };
+
+    const resetInvalidFieldValues = () => {
+        setInvalidFields(() => ({}));
+    };
+
     const createContent = useCallback(
         async data => {
             setLoading(true);
@@ -36,25 +56,28 @@ const ContentForm = ({ contentModel, entry, setLoading, getLoading, setState }) 
                 update(cache, { data }) {
                     const { data: entry, error } = data.content;
                     if (error) {
+                        showSnackbar(error.message);
+                        setInvalidFieldValues(error.data);
                         return;
                     }
-
-                    GQLCache.addEntryToListCache(contentModel, cache, entry);
+                    resetInvalidFieldValues();
+                    GQLCache.addEntryToListCache(contentModel, cache, entry, listQueryVariables);
                 }
             });
             setLoading(false);
 
-            if (response.data.content.error) {
-                showSnackbar(response.data.content.message);
+            const { error, data: entry } = response.data.content;
+            if (error) {
+                showSnackbar(error.message);
+                setInvalidFieldValues(error.data);
                 return null;
             }
-
+            resetInvalidFieldValues();
             showSnackbar(`${contentModel.name} entry created successfully!`);
-            const { data: entry } = response.data.content;
             goToRevision(entry.id);
             return entry;
         },
-        [contentModel.modelId]
+        [contentModel.modelId, listQueryVariables]
     );
 
     const updateContent = useCallback(
@@ -68,9 +91,11 @@ const ContentForm = ({ contentModel, entry, setLoading, getLoading, setState }) 
             const { error } = response.data.content;
             if (error) {
                 showSnackbar(error.message);
+                setInvalidFieldValues(error.data);
                 return null;
             }
 
+            resetInvalidFieldValues();
             showSnackbar("Content saved successfully.");
             const { data: entry } = response.data.content;
             return entry;
@@ -86,10 +111,17 @@ const ContentForm = ({ contentModel, entry, setLoading, getLoading, setState }) 
                 update(cache, { data }) {
                     const { data: newRevision, error } = data.content;
                     if (error) {
+                        showSnackbar(error.message);
+                        setInvalidFieldValues(error.data);
                         return;
                     }
-
-                    GQLCache.updateLatestRevisionInListCache(contentModel, cache, newRevision);
+                    resetInvalidFieldValues();
+                    GQLCache.updateLatestRevisionInListCache(
+                        contentModel,
+                        cache,
+                        newRevision,
+                        listQueryVariables
+                    );
                     GQLCache.addRevisionToRevisionsCache(contentModel, cache, newRevision);
 
                     showSnackbar("A new revision was created!");
@@ -105,12 +137,14 @@ const ContentForm = ({ contentModel, entry, setLoading, getLoading, setState }) 
             const { data, error } = response.data.content;
             if (error) {
                 showSnackbar(error.message);
+                setInvalidFieldValues(error.data);
                 return null;
             }
+            resetInvalidFieldValues();
 
             return data;
         },
-        [contentModel.modelId]
+        [contentModel.modelId, listQueryVariables]
     );
 
     return (
@@ -120,14 +154,17 @@ const ContentForm = ({ contentModel, entry, setLoading, getLoading, setState }) 
             entry={entry}
             onForm={contentForm => setState({ contentForm })}
             onSubmit={async data => {
-                if (entry.id) {
-                    if (get(entry, "meta.locked")) {
-                        return createContentFrom(entry.id, data);
-                    }
+                if (!entry.id) {
+                    return createContent(data);
+                }
+                const { meta } = entry;
+                const { locked: isLocked } = meta || {};
+                if (!isLocked) {
                     return updateContent(entry.id, data);
                 }
-                return createContent(data);
+                return createContentFrom(entry.id, data);
             }}
+            invalidFields={invalidFields}
         />
     );
 };

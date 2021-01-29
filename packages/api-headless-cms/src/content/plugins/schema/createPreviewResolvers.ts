@@ -1,8 +1,4 @@
-import {
-    CmsContentModelType,
-    CmsFieldTypePlugins,
-    CmsContext
-} from "@webiny/api-headless-cms/types";
+import { CmsContentModel, CmsFieldTypePlugins, CmsContext } from "@webiny/api-headless-cms/types";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { commonFieldResolvers } from "./resolvers/commonFieldResolvers";
 import { resolveGet } from "./resolvers/preview/resolveGet";
@@ -11,10 +7,10 @@ import { createReadTypeName, createTypeName } from "../utils/createTypeName";
 import { pluralizedTypeName } from "../utils/pluralizedTypeName";
 import { entryFieldFromStorageTransform } from "../utils/entryStorage";
 
-export interface CreatePreviewResolvers {
+interface CreatePreviewResolvers {
     (params: {
-        models: CmsContentModelType[];
-        model: CmsContentModelType;
+        models: CmsContentModel[];
+        model: CmsContentModel;
         context: CmsContext;
         fieldTypePlugins: CmsFieldTypePlugins;
     }): any;
@@ -37,19 +33,24 @@ export const createPreviewResolvers: CreatePreviewResolvers = ({
         },
         [rTypeName]: model.fields.reduce((resolvers, field) => {
             const { read } = fieldTypePlugins[field.type];
-            const resolver = read.createResolver({ models, model, field });
 
-            resolvers[field.fieldId] = async (entry, args, ctx: CmsContext, info) => {
-                const value = await resolver(entry, args, ctx, info);
+            const resolver = read.createResolver
+                ? read.createResolver({ models, model, field })
+                : null;
 
+            resolvers[field.fieldId] = async (entry, args, context: CmsContext, info) => {
                 // Get transformed value (eg. data decompression)
-                return entryFieldFromStorageTransform({
-                    context: ctx,
+                entry.values[field.fieldId] = await entryFieldFromStorageTransform({
+                    context,
                     model,
                     entry,
                     field,
-                    value
+                    value: entry.values[field.fieldId]
                 });
+                if (!resolver) {
+                    return entry.values[field.fieldId];
+                }
+                return await resolver(entry, args, context, info);
             };
 
             return resolvers;

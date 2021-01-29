@@ -1,19 +1,24 @@
 import React, { useEffect, useRef, useMemo, useCallback } from "react";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import styled from "@emotion/styled";
 import { css } from "emotion";
 import kebabCase from "lodash/kebabCase";
 import { plugins } from "@webiny/plugins";
 import { Elevation } from "@webiny/ui/Elevation";
-import { PbEditorContentPlugin, PbElement, PbPageLayout, PbPageLayoutPlugin } from "../../../types";
 import {
-    contentSelector,
+    PbEditorContentPlugin,
+    PbPageLayout,
+    PbPageLayoutPlugin,
+    PbEditorElement
+} from "../../../types";
+import {
     isPluginActiveSelector,
     layoutSelector,
     uiAtom,
-    setPagePreviewDimensionMutation
+    setPagePreviewDimensionMutation,
+    rootElementAtom,
+    elementsAtom
 } from "../../recoil/modules";
-import { updateConnectedValue } from "../../recoil/modules/connected";
 
 import { usePageBuilder } from "../../../hooks/usePageBuilder";
 import Element from "../Element";
@@ -45,7 +50,7 @@ const BaseContainer = styled("div")({
     left: 52,
     margin: "0 auto"
 });
-const renderContent = (layout: PbPageLayout, rootElement: PbElement, render: boolean) => {
+const renderContent = (layout: PbPageLayout, rootElement: PbEditorElement, render: boolean) => {
     const content = <Element id={rootElement.id} />;
     if (!render) {
         return content;
@@ -54,17 +59,16 @@ const renderContent = (layout: PbPageLayout, rootElement: PbElement, render: boo
 };
 
 const Content = () => {
-    const rootElement = useRecoilValue(contentSelector);
+    const rootElementId = useRecoilValue(rootElementAtom);
+    const rootElement = useRecoilValue(elementsAtom(rootElementId));
     const renderLayout = useRecoilValue(isPluginActiveSelector("pb-editor-toolbar-preview"));
     const layout = useRecoilValue(layoutSelector);
-    const { displayMode } = useRecoilValue(uiAtom);
+    const [{ displayMode }, setUiAtomValue] = useRecoilState(uiAtom);
     const pagePreviewRef = useRef();
 
     const setPagePreviewDimension = useCallback(
         pagePreviewDimension => {
-            updateConnectedValue(uiAtom, prev =>
-                setPagePreviewDimensionMutation(prev, pagePreviewDimension)
-            );
+            setUiAtomValue(prev => setPagePreviewDimensionMutation(prev, pagePreviewDimension));
         },
         [uiAtom]
     );

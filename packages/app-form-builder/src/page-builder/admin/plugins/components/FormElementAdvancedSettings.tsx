@@ -40,10 +40,18 @@ const FormElementAdvancedSettings = ({ Bind, submit, data }) => {
             value: null
         };
         if (listQuery.data) {
-            const parentsList = get(listQuery, "data.formBuilder.listForms.data") || [];
+            const latestFormRevisionsList = get(listQuery, "data.formBuilder.listForms.data") || [];
 
-            output.options = parentsList.map(({ id, name }) => ({ id, name }));
-            output.value = output.options.find(item => item.id === selectedForm.parent) || null;
+            output.options = latestFormRevisionsList.map(({ id, name }) => ({ id, name }));
+            output.value =
+                output.options.find(item => {
+                    if (typeof item.id !== "string" || typeof selectedForm.parent !== "string") {
+                        return;
+                    }
+                    // Get selected form's "baseId", i.e without the revision number suffix.
+                    const [baseId] = selectedForm.parent.split("#");
+                    return item.id.includes(baseId);
+                }) || null;
         }
 
         return output;
@@ -77,6 +85,8 @@ const FormElementAdvancedSettings = ({ Bind, submit, data }) => {
 
         return output;
     }, [getQuery, selectedForm]);
+    // required so ts build does not break
+    const buttonProps: any = {};
 
     return (
         <Accordion title={"Form"} defaultValue={true}>
@@ -136,8 +146,10 @@ const FormElementAdvancedSettings = ({ Bind, submit, data }) => {
                         </Bind>
                     </Cell>
                     <Cell span={12}>
-                        <ButtonContainer>
-                            <SimpleButton onClick={submit}>Save</SimpleButton>
+                        <ButtonContainer {...buttonProps}>
+                            <SimpleButton onClick={submit} {...buttonProps}>
+                                Save
+                            </SimpleButton>
                         </ButtonContainer>
                     </Cell>
                 </Grid>

@@ -16,19 +16,9 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         },
         createGetFilters({ field }) {
             return `${field.fieldId}: JSON`;
-        },
-        createResolver({ field }) {
-            return instance => {
-                return instance.values[field.fieldId];
-            };
         }
     },
     manage: {
-        createResolver({ field }) {
-            return instance => {
-                return instance.values[field.fieldId];
-            };
-        },
         createTypeField({ field }) {
             if (field.multipleValues) {
                 return `${field.fieldId}: [JSON]`;

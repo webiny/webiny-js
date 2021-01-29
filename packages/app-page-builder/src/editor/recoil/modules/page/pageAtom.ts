@@ -1,4 +1,4 @@
-import { connectedAtom } from "@webiny/app-page-builder/editor/recoil/modules/connected";
+import { atom } from "recoil";
 
 type PageCategoryType = {
     slug: string;
@@ -27,7 +27,7 @@ export type PageAtomType = {
     };
 };
 
-export const pageAtom = connectedAtom<PageAtomType>({
+export const pageAtom = atom<PageAtomType>({
     key: "pageAtom",
     default: {
         locked: false,

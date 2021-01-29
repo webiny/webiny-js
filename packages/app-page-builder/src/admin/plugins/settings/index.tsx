@@ -5,7 +5,7 @@ import PrerenderingSettings from "./components/prerenderingSettings/Prerendering
 import WebsiteSettings from "./components/websiteSettings/WebsiteSettings";
 import { SecureRoute, SecureView } from "@webiny/app-security/components";
 import { i18n } from "@webiny/app/i18n";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import Helmet from "react-helmet";
 import { PbMenuSettingsItemPlugin } from "@webiny/app-page-builder/types";
 import { RoutePlugin } from "@webiny/app/types";
@@ -13,7 +13,7 @@ import { AdminMenuSettingsPlugin } from "@webiny/app-admin/types";
 
 const t = i18n.ns("app-page-builder/admin/menus");
 
-const plugins = [
+const allPlugins = [
     {
         type: "route",
         name: "route-settings-website",
@@ -55,13 +55,13 @@ const plugins = [
             return (
                 <SecureView permission={"pb.settings"}>
                     <Section label={t`Page Builder`}>
-                        {getPlugins<PbMenuSettingsItemPlugin>("menu-settings-page-builder").map(
-                            plugin => (
+                        {plugins
+                            .byType<PbMenuSettingsItemPlugin>("menu-settings-page-builder")
+                            .map(plugin => (
                                 <React.Fragment key={plugin.name + new Date()}>
                                     {plugin.render({ Item })}
                                 </React.Fragment>
-                            )
-                        )}
+                            ))}
                     </Section>
                 </SecureView>
             );
@@ -83,4 +83,4 @@ const plugins = [
     } as PbMenuSettingsItemPlugin
 ];
 
-export default plugins;
+export default allPlugins;

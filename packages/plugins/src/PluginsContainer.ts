@@ -35,7 +35,8 @@ const assign = (plugins: any, options, target: Object): void => {
 };
 
 export class PluginsContainer {
-    plugins: Record<string, Plugin> = {};
+    private plugins: Record<string, Plugin> = {};
+    private _byTypeCache: Record<string, Plugin[]> = {};
 
     constructor(...args) {
         this.register(...args);
@@ -46,7 +47,12 @@ export class PluginsContainer {
     }
 
     public byType<T extends Plugin>(type: string): T[] {
-        return Object.values(this.plugins).filter((pl: Plugin) => pl.type === type) as T[];
+        if (this._byTypeCache[type]) {
+            return Array.from(this._byTypeCache[type]) as T[];
+        }
+        const plugins = this.findByType<T>(type);
+        this._byTypeCache[type] = plugins;
+        return Array.from(plugins);
     }
 
     public atLeastOneByType<T extends Plugin>(type: string): T[] {
@@ -72,11 +78,19 @@ export class PluginsContainer {
     }
 
     public register(...args: any): void {
+        // reset the cache when adding new plugins
+        this._byTypeCache = {};
         const [plugins, options] = normalizeArgs(args);
         assign(plugins, options, this.plugins);
     }
 
     public unregister(name: string): void {
+        // reset the cache when removing a plugin
+        this._byTypeCache = {};
         delete this.plugins[name];
+    }
+
+    private findByType<T extends Plugin>(type: string): T[] {
+        return Object.values(this.plugins).filter((pl: Plugin) => pl.type === type) as T[];
     }
 }

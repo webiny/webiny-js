@@ -1,56 +1,46 @@
 const STS = require("aws-sdk/clients/sts");
-const AWS = require("aws-sdk");
-const { green, red } = require("chalk");
+const { green } = require("chalk");
 
 module.exports = {
     type: "hook-before-deploy",
     name: "hook-before-deploy-aws-credentials",
-    async hook() {
+    async hook(_, context) {
+        process.env.AWS_SDK_LOAD_CONFIG = "true";
+
         // Check if AWS credentials are configured
         const sts = new STS();
+        const config = sts.config;
+
         try {
             await sts.getCallerIdentity({}).promise();
         } catch (err) {
-            console.log(
-                [
-                    "",
-                    red("  Looks like your AWS credentials are not configured correctly!"),
-                    "  To learn how to configure your AWS credentials, visit https://docs.webiny.com/docs/guides/aws-credentials",
-                    ""
-                ].join("\n")
+            console.log();
+            context.error("Looks like your AWS credentials are not configured correctly!");
+            context.info(
+                "To learn how to configure your AWS credentials, visit https://docs.webiny.com/docs/guides/aws-credentials"
             );
+            console.log();
             process.exit(1);
         }
 
-        // Check if region is set
-        await new Promise(resolve => {
-            AWS.config.getCredentials(err => {
-                if (err) {
-                    throw err;
-                }
-                resolve();
-            });
-        });
+        const { profile } = config.credentials;
 
-        const profile = AWS.config.credentials.profile;
-
-        const region = process.env.AWS_REGION || AWS.config.region;
-
-        if (!region) {
-            console.log(
-                [
-                    "",
-                    red("  You must define an AWS Region to deploy to!"),
-                    "  Either define an AWS_REGION environment variable, or configure a region for your AWS profile:",
-                    "  https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html",
-                    ""
-                ].join("\n")
+        if (!config.region) {
+            console.log();
+            context.error("You must define an AWS Region to deploy to!");
+            context.info(
+                "Either define an AWS_REGION environment variable, or configure a region for your AWS profile:"
             );
+            context.info(
+                "https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html"
+            );
+            console.log();
             process.exit(1);
         }
 
-        process.env.AWS_REGION = region;
+        // We assign the region to the appropriate ENV variable for easier access in the stack definition files.
+        process.env.AWS_REGION = config.region;
 
-        console.log(`💡 Using profile ${green(profile)} in ${green(region)} region.`);
+        context.info(`Using profile ${green(profile)} in ${green(config.region)} region.`);
     }
 };

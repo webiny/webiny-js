@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer } from "react";
-import { plugins, registerPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { CircularProgress } from "@webiny/ui/Progress";
 
 const globalState = { render: false, editor: false };
@@ -14,14 +14,14 @@ export function EditorPluginsLoader({ children, location }) {
     );
 
     async function loadPlugins() {
-        const { loadEditorPlugins, loadRenderPlugins } = plugins.byType("pb-plugins-loader").pop();
+        const [{ loadEditorPlugins, loadRenderPlugins }] = plugins.byType("pb-plugins-loader");
 
         // If we are on pages list route, import plugins required to render the page content.
         if (location.pathname.startsWith("/page-builder/pages") && !loaded.render) {
             const renderPlugins = await loadRenderPlugins();
 
             // "skipExisting" will ensure existing plugins (with the same name) are not overridden.
-            registerPlugins(renderPlugins, { skipExisting: true });
+            plugins.register(renderPlugins, { skipExisting: true });
 
             globalState.render = true;
             setLoaded({ render: true });
@@ -29,12 +29,12 @@ export function EditorPluginsLoader({ children, location }) {
 
         // If we are on the Editor route, import plugins required to render both editor and preview.
         if (location.pathname.startsWith("/page-builder/editor") && !loaded.editor) {
-            const plugins = await Promise.all(
+            const editorPlugins = await Promise.all(
                 [loadEditorPlugins(), !loaded.render ? loadRenderPlugins() : null].filter(Boolean)
             );
 
             // "skipExisting" will ensure existing plugins (with the same name) are not overridden.
-            registerPlugins(plugins, { skipExisting: true });
+            plugins.register(editorPlugins, { skipExisting: true });
 
             globalState.editor = true;
             globalState.render = true;

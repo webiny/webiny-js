@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { red, green } = require("chalk");
+const { yellow, red, green } = require("chalk");
 const execa = require("execa");
 const fs = require("fs-extra");
 const Listr = require("listr");
@@ -12,7 +12,14 @@ const getPackageJson = require("./getPackageJson");
 
 const checkProjectName = require("./checkProjectName");
 
-module.exports = async function createProject({ projectName, template, tag, log }) {
+module.exports = async function createProject({
+    projectName,
+    template,
+    tag,
+    log,
+    interactive,
+    templateOptions
+}) {
     if (!projectName) {
         throw Error("You must provide a name for the project to use.");
     }
@@ -52,7 +59,7 @@ module.exports = async function createProject({ projectName, template, tag, log 
         // @webiny/cli is not installed globally
     }
 
-    console.log(`Initializing a new Webiny project in ${green(projectRoot)}:`);
+    console.log(`Initializing a new Webiny project in ${green(projectRoot)}...`);
 
     await sendEvent({ event: "create-webiny-project-start" });
 
@@ -134,7 +141,23 @@ module.exports = async function createProject({ projectName, template, tag, log 
             return new Promise(resolve => {
                 setTimeout(() => {
                     resolve();
-                    return require(templatePath)({ projectName, projectRoot });
+                    let parsedTemplateOptions = {};
+                    if (templateOptions) {
+                        try {
+                            parsedTemplateOptions = JSON.parse(templateOptions);
+                        } catch {
+                            console.log(
+                                yellow("Warning: could not parse provided --template-options JSON.")
+                            );
+                        }
+                    }
+
+                    return require(templatePath)({
+                        projectName,
+                        projectRoot,
+                        interactive,
+                        templateOptions: parsedTemplateOptions
+                    });
                 }, 500);
             });
         })

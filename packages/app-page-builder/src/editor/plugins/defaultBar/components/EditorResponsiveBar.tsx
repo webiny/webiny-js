@@ -1,5 +1,5 @@
-import React, { useCallback } from "react";
-import { useRecoilValue } from "recoil";
+import React, { useCallback, useMemo } from "react";
+import { useRecoilState } from "recoil";
 import { css } from "emotion";
 import classNames from "classnames";
 import { plugins } from "@webiny/plugins";
@@ -8,7 +8,6 @@ import { Tooltip } from "@webiny/ui/Tooltip";
 import { Typography } from "@webiny/ui/Typography";
 import { PbEditorResponsiveModePlugin } from "../../../../types";
 import { uiAtom, setDisplayModeMutation } from "../../../recoil/modules";
-import { updateConnectedValue } from "../../../recoil/modules/connected";
 
 const classes = {
     wrapper: css({
@@ -84,45 +83,50 @@ const classes = {
 };
 
 const EditorResponsiveBar = () => {
-    const { displayMode, pagePreviewDimension } = useRecoilValue(uiAtom);
+    const [{ displayMode, pagePreviewDimension }, setUiAtomValue] = useRecoilState(uiAtom);
     const setEditorMode = useCallback(
         displayMode => {
-            updateConnectedValue(uiAtom, prev => setDisplayModeMutation(prev, displayMode));
+            setUiAtomValue(prev => setDisplayModeMutation(prev, displayMode));
         },
         [uiAtom]
     );
 
-    const editorModes = plugins.byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode");
+    const responsiveBarContent = useMemo(() => {
+        const editorModes = plugins.byType<PbEditorResponsiveModePlugin>(
+            "pb-editor-responsive-mode"
+        );
+        return editorModes.map(({ config: { displayMode: mode, icon, toolTip } }) => {
+            return (
+                <Tooltip
+                    key={mode}
+                    content={
+                        <div className={classes.tooltip}>
+                            <div className={"tooltip__title"}>
+                                <Typography use={"subtitle1"}>{toolTip.title}</Typography>
+                            </div>
+                            <div className={"tooltip__info"}>
+                                {toolTip.subTitleIcon}
+                                <Typography use={"body2"}>{toolTip.subTitle}</Typography>
+                            </div>
+                            <div className={"tooltip__body"}>
+                                <Typography use={"body2"}>{toolTip.body}</Typography>
+                            </div>
+                        </div>
+                    }
+                    placement={"bottom"}
+                    className={classNames("action-wrapper", {
+                        active: mode === displayMode
+                    })}
+                >
+                    <IconButton icon={icon} onClick={() => setEditorMode(mode)} />
+                </Tooltip>
+            );
+        });
+    }, [setEditorMode, displayMode]);
 
     return (
         <div className={classes.wrapper}>
-            {editorModes.map(({ config: { displayMode: mode, icon, toolTip } }) => {
-                return (
-                    <Tooltip
-                        key={mode}
-                        content={
-                            <div className={classes.tooltip}>
-                                <div className={"tooltip__title"}>
-                                    <Typography use={"subtitle1"}>{toolTip.title}</Typography>
-                                </div>
-                                <div className={"tooltip__info"}>
-                                    {toolTip.subTitleIcon}
-                                    <Typography use={"body2"}>{toolTip.subTitle}</Typography>
-                                </div>
-                                <div className={"tooltip__body"}>
-                                    <Typography use={"body2"}>{toolTip.body}</Typography>
-                                </div>
-                            </div>
-                        }
-                        placement={"bottom"}
-                        className={classNames("action-wrapper", {
-                            active: mode === displayMode
-                        })}
-                    >
-                        <IconButton icon={icon} onClick={() => setEditorMode(mode)} />
-                    </Tooltip>
-                );
-            })}
+            {responsiveBarContent}
             <div className={classes.dimensionIndicator}>
                 <span className="width">
                     <Typography use={"subtitle2"}>{pagePreviewDimension.width}</Typography>
@@ -137,4 +141,4 @@ const EditorResponsiveBar = () => {
     );
 };
 
-export default React.memo(EditorResponsiveBar);
+export default EditorResponsiveBar;

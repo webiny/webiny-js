@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import TimeAgo from "timeago-react";
 import { css } from "emotion";
 import get from "lodash/get";
@@ -8,14 +8,40 @@ import { ReactComponent as ViewListIcon } from "@webiny/app-headless-cms/admin/i
 import { useApolloClient, useQuery } from "@webiny/app-headless-cms/admin/hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import * as UIL from "@webiny/ui/List";
-import { IconButton } from "@webiny/ui/Button";
+import { ButtonIcon, ButtonSecondary, IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { i18n } from "@webiny/app/i18n";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import { removeModelFromGroupCache, removeModelFromListCache } from "./cache";
 import * as GQL from "../../viewsGraphql";
+import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
+import SearchUI from "@webiny/app-admin/components/SearchUI";
+import { deserializeSorters, serializeSorters } from "../utils";
+import orderBy from "lodash/orderBy";
+import { Cell, Grid } from "@webiny/ui/Grid";
+import { Select } from "@webiny/ui/Select";
+import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 
 const t = i18n.namespace("FormsApp.ContentModelsDataList");
+
+const SORTERS = [
+    {
+        label: t`Newest to oldest`,
+        sorters: { savedOn: "desc" }
+    },
+    {
+        label: t`Oldest to newest`,
+        sorters: { savedOn: "asc" }
+    },
+    {
+        label: t`Name A-Z`,
+        sorters: { name: "asc" }
+    },
+    {
+        label: t`Name Z-A`,
+        sorters: { name: "desc" }
+    }
+];
 
 const rightAlign = css({
     alignItems: "flex-end !important",
@@ -26,12 +52,36 @@ const listItemMinHeight = css({
     minHeight: "66px !important"
 });
 
-const ContentModelsDataList = () => {
+type ContentModelsDataListProps = {
+    canCreate: boolean;
+    onCreate: () => void;
+};
+const ContentModelsDataList = ({ canCreate, onCreate }: ContentModelsDataListProps) => {
+    const [filter, setFilter] = useState("");
+    const [sort, setSort] = useState(serializeSorters(SORTERS[0].sorters));
     const { history } = useRouter();
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
     const { showConfirmation } = useConfirmationDialog();
-    const { data, loading, refetch } = useQuery(GQL.LIST_CONTENT_MODELS);
+    const { data, loading } = useQuery(GQL.LIST_CONTENT_MODELS);
+
+    const filterData = useCallback(
+        ({ name }) => {
+            return name.toLowerCase().includes(filter);
+        },
+        [filter]
+    );
+
+    const sortData = useCallback(
+        list => {
+            if (!sort) {
+                return list;
+            }
+            const [[key, value]] = Object.entries(deserializeSorters(sort));
+            return orderBy(list, [key], [value]);
+        },
+        [sort]
+    );
 
     const models = loading ? [] : get(data, "listContentModels.data", []);
 
@@ -68,8 +118,57 @@ const ContentModelsDataList = () => {
         return () => history.push("/cms/content-entries/" + contentModel.modelId);
     }, undefined);
 
+    const contentModelsDataListModalOverlay = useMemo(
+        () => (
+            <UIL.DataListModalOverlay>
+                <Grid>
+                    <Cell span={12}>
+                        <Select
+                            value={sort}
+                            onChange={setSort}
+                            label={t`Sort by`}
+                            description={"Sort content models by"}
+                        >
+                            {SORTERS.map(({ label, sorters }) => {
+                                return (
+                                    <option key={label} value={serializeSorters(sorters)}>
+                                        {label}
+                                    </option>
+                                );
+                            })}
+                        </Select>
+                    </Cell>
+                </Grid>
+            </UIL.DataListModalOverlay>
+        ),
+        [sort]
+    );
+
+    const filteredData = filter === "" ? models : models.filter(filterData);
+    const contentModels = sortData(filteredData);
+
     return (
-        <UIL.DataList loading={loading} data={models} title={t`Content Models`} refresh={refetch}>
+        <UIL.DataList
+            loading={loading}
+            data={contentModels}
+            title={t`Content Models`}
+            actions={
+                canCreate ? (
+                    <ButtonSecondary data-testid="new-record-button" onClick={onCreate}>
+                        <ButtonIcon icon={<AddIcon />} /> {t`New Model`}
+                    </ButtonSecondary>
+                ) : null
+            }
+            search={
+                <SearchUI
+                    value={filter}
+                    onChange={setFilter}
+                    inputPlaceholder={t`Search content models`}
+                />
+            }
+            modalOverlay={contentModelsDataListModalOverlay}
+            modalOverlayAction={<UIL.DataListModalOverlayAction icon={<FilterIcon />} />}
+        >
             {({ data = [] }) => (
                 <UIL.List data-testid="default-data-list">
                     {data.map(contentModel => {

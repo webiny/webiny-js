@@ -1,9 +1,14 @@
 import { useContentGqlHandler } from "./useContentGqlHandler";
-import { GQLHandlerCallableArgsType } from "./useGqlHandler";
+import { GQLHandlerCallableArgs } from "./useGqlHandler";
 
 const productFields = `
     id
     createdOn
+    createdBy {
+        id
+        displayName
+        type
+    }
     savedOn
     meta {
         title
@@ -147,7 +152,7 @@ const unpublishProductMutation = /* GraphQL */ `
     }
 `;
 
-export const useProductManageHandler = (options: GQLHandlerCallableArgsType) => {
+export const useProductManageHandler = (options: GQLHandlerCallableArgs) => {
     const contentHandler = useContentGqlHandler(options);
 
     return {

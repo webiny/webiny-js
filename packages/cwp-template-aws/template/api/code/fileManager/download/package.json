@@ -1,11 +1,11 @@
 {
-	"name": "api-file-manager-download",
-	"version": "0.1.0",
-	"scripts": {
-		"build": "webiny run build"
-	},
-	"dependencies": {
-		"@webiny/handler-aws": "latest",
-		"@webiny/api-file-manager": "latest"
-	}
+  "name": "api-file-manager-download",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "webiny run build"
+  },
+  "dependencies": {
+    "@webiny/handler-aws": "latest",
+    "@webiny/api-file-manager": "latest"
+  }
 }

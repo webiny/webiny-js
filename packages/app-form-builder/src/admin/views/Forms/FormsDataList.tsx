@@ -1,7 +1,8 @@
-import React, { useRef, useCallback, useReducer } from "react";
+import React, { useRef, useCallback, useState, useMemo } from "react";
 import TimeAgo from "timeago-react";
 import { css } from "emotion";
-import { upperFirst } from "lodash";
+import orderBy from "lodash/orderBy";
+import upperFirst from "lodash/upperFirst";
 import { useRouter } from "@webiny/react-router";
 import { Typography } from "@webiny/ui/Typography";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
@@ -16,13 +17,21 @@ import {
     ListItemText,
     ListItemTextSecondary,
     ListItemMeta,
-    ListActions
+    ListActions,
+    DataListModalOverlayAction,
+    DataListModalOverlay
 } from "@webiny/ui/List";
 import { i18n } from "@webiny/app/i18n";
 import { removeFormFromListCache, updateLatestRevisionInListCache } from "../cache";
+import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
+import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
+import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
+import SearchUI from "@webiny/app-admin/components/SearchUI";
+import { deserializeSorters, serializeSorters } from "@webiny/app-page-builder/admin/views/utils";
+import { Cell, Grid } from "@webiny/ui/Grid";
+import { Select } from "@webiny/ui/Select";
 
 const t = i18n.namespace("FormsApp.FormsDataList");
-
 const rightAlign = css({
     alignItems: "flex-end !important"
 });
@@ -33,34 +42,33 @@ const listItemMinHeight = css({
 
 export type FormsDataListProps = {
     listQuery: any;
+    onCreateForm: () => void;
+    canCreate: boolean;
 };
 
-const compareString = (a, b, dir) => {
-    a = a.toLowerCase();
-    b = b.toLowerCase();
-
-    if (a < b) {
-        return -1 * dir;
+const SORTERS = [
+    {
+        label: t`Newest to oldest`,
+        sorters: { savedOn: "desc" }
+    },
+    {
+        label: t`Oldest to newest`,
+        sorters: { savedOn: "asc" }
+    },
+    {
+        label: t`Name A-Z`,
+        sorters: { name: "asc" }
+    },
+    {
+        label: t`Name Z-A`,
+        sorters: { name: "desc" }
     }
-    if (a > b) {
-        return 1 * dir;
-    }
-
-    return 0;
-};
-
-const compareDate = (a, b, dir) => {
-    const date1 = new Date(a).getTime();
-    const date2 = new Date(b).getTime();
-
-    return (date1 - date2) * dir;
-};
+];
 
 const FormsDataList = (props: FormsDataListProps) => {
-    const [state, setState] = useReducer((prev, next) => ({ ...prev, ...next }), {
-        sort: { savedOn: -1 }
-    });
     const editHandlers = useRef({});
+    const [filter, setFilter] = useState("");
+    const [sort, setSort] = useState(serializeSorters({ savedOn: "desc" }));
 
     const { listQuery } = props;
 
@@ -78,7 +86,7 @@ const FormsDataList = (props: FormsDataListProps) => {
 
                     const query = new URLSearchParams(location.search);
                     if (item.id === query.get("id")) {
-                        return history.push("/forms");
+                        return history.push("/form-builder/forms");
                     }
                 }
             });
@@ -115,9 +123,9 @@ const FormsDataList = (props: FormsDataListProps) => {
                         return showSnackbar(error.message);
                     }
 
-                    history.push(`/forms/${encodeURIComponent(data.id)}`);
+                    history.push(`/form-builder/forms/${encodeURIComponent(data.id)}`);
                 } else {
-                    history.push(`/forms/${encodeURIComponent(form.id)}`);
+                    history.push(`/form-builder/forms/${encodeURIComponent(form.id)}`);
                 }
             };
         }
@@ -125,47 +133,74 @@ const FormsDataList = (props: FormsDataListProps) => {
         return editHandlers.current[handlerKey];
     }, []);
 
+    const filterData = useCallback(
+        ({ name }) => {
+            return name.toLowerCase().includes(filter);
+        },
+        [filter]
+    );
+
+    const sortData = useCallback(
+        list => {
+            if (!sort) {
+                return list;
+            }
+            const [[key, value]] = Object.entries(deserializeSorters(sort));
+            return orderBy(list, [key], [value]);
+        },
+        [sort]
+    );
+
+    const formsDataListModalOverlay = useMemo(
+        () => (
+            <DataListModalOverlay>
+                <Grid>
+                    <Cell span={12}>
+                        <Select
+                            value={sort}
+                            onChange={setSort}
+                            label={t`Sort by`}
+                            description={"Sort pages by"}
+                        >
+                            {SORTERS.map(({ label, sorters }) => {
+                                return (
+                                    <option key={label} value={serializeSorters(sorters)}>
+                                        {label}
+                                    </option>
+                                );
+                            })}
+                        </Select>
+                    </Cell>
+                </Grid>
+            </DataListModalOverlay>
+        ),
+        [sort]
+    );
+
     const query = new URLSearchParams(location.search);
 
     const listFormsData = listQuery.loading ? [] : listQuery.data.formBuilder.listForms.data;
 
-    const forms = listFormsData.sort((a, b) => {
-        if (state.sort.name) {
-            return compareString(a.name, b.name, state.sort.name);
-        }
-
-        if (state.sort.savedOn) {
-            return compareDate(a.savedOn, b.savedOn, state.sort.savedOn);
-        }
-
-        return 0;
-    });
+    const filteredData = filter === "" ? listFormsData : listFormsData.filter(filterData);
+    const forms = sortData(filteredData);
 
     return (
         <DataList
+            title={t`Forms`}
             data={forms}
             loading={listQuery.loading}
-            refresh={listQuery.refetch}
-            title={t`Forms`}
-            sorters={[
-                {
-                    label: t`Newest to oldest`,
-                    sorters: { savedOn: -1 }
-                },
-                {
-                    label: t`Oldest to newest`,
-                    sorters: { savedOn: 1 }
-                },
-                {
-                    label: t`Name A-Z`,
-                    sorters: { name: 1 }
-                },
-                {
-                    label: t`Name Z-A`,
-                    sorters: { name: -1 }
-                }
-            ]}
-            setSorters={sort => setState({ sort })}
+            actions={
+                props.canCreate ? (
+                    <ButtonSecondary data-testid="new-record-button" onClick={props.onCreateForm}>
+                        <ButtonIcon icon={<AddIcon />} /> {t`New Form`}
+                    </ButtonSecondary>
+                ) : null
+            }
+            search={
+                <SearchUI value={filter} onChange={setFilter} inputPlaceholder={t`Search forms`} />
+            }
+            modalOverlay={formsDataListModalOverlay}
+            modalOverlayAction={<DataListModalOverlayAction icon={<FilterIcon />} />}
         >
             {({ data = [] }) => (
                 <List data-testid="default-data-list">

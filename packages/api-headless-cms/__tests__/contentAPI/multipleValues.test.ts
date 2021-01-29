@@ -1,7 +1,7 @@
 import {
-    CmsContentEntryType,
-    CmsContentModelGroupType,
-    CmsContentModelType
+    CmsContentEntry,
+    CmsContentModelGroup,
+    CmsContentModel
 } from "@webiny/api-headless-cms/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import models from "./mocks/contentModels";
@@ -22,7 +22,7 @@ describe("multiple values in field", () => {
 
     // This function is not directly within `beforeEach` as we don't always setup the same content model.
     // We call this function manually at the beginning of each test, where needed.
-    const setupContentModelGroup = async (): Promise<CmsContentModelGroupType> => {
+    const setupContentModelGroup = async (): Promise<CmsContentModelGroup> => {
         const [createCMG] = await createContentModelGroupMutation({
             data: {
                 name: "Group",
@@ -34,7 +34,7 @@ describe("multiple values in field", () => {
         return createCMG.data.createContentModelGroup.data;
     };
 
-    const setupCategoryModel = async (contentModelGroup: CmsContentModelGroupType) => {
+    const setupCategoryModel = async (contentModelGroup: CmsContentModelGroup) => {
         const model = models.find(m => m.modelId === "category");
         // Create initial record
         const [create] = await createContentModelMutation({
@@ -118,6 +118,7 @@ describe("multiple values in field", () => {
                         settings: {}
                     }
                 ],
+                listValidation: [],
                 placeholderText: "placeholder text",
                 predefinedValues: {
                     enabled: true,
@@ -176,8 +177,12 @@ describe("multiple values in field", () => {
                     data: null,
                     error: {
                         code: "ENTRY_TITLE_FIELD_TYPE",
-                        data: null,
-                        message: `Fields that accept multiple values cannot be used as the entry title (tried to use "availableSizes" field)`
+                        message:
+                            "Fields that accept multiple values cannot be used as the entry title.",
+                        data: {
+                            fieldId: "availableSizes",
+                            type: "text"
+                        }
                     }
                 }
             }
@@ -198,7 +203,7 @@ describe("multiple values in field", () => {
                 slug: "vegetables"
             }
         });
-        const category = createCategoryResponse.data.createCategory.data as CmsContentEntryType;
+        const category = createCategoryResponse.data.createCategory.data as CmsContentEntry;
 
         const productModel = models.find(m => m.modelId === "product");
         const [createResponse] = await createContentModelMutation({
@@ -209,7 +214,7 @@ describe("multiple values in field", () => {
             }
         });
 
-        const contentModel = createResponse.data.createContentModel.data as CmsContentModelType;
+        const contentModel = createResponse.data.createContentModel.data as CmsContentModel;
 
         await updateContentModelMutation({
             modelId: contentModel.modelId,
@@ -252,6 +257,11 @@ describe("multiple values in field", () => {
                     data: {
                         id: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
+                        createdBy: {
+                            id: "123",
+                            displayName: "User 123",
+                            type: "admin"
+                        },
                         savedOn: expect.stringMatching(/^20/),
                         category: {
                             modelId: categoryContentModel.modelId,

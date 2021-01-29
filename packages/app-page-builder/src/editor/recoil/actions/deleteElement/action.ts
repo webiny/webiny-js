@@ -1,79 +1,38 @@
-import { plugins } from "@webiny/plugins";
-import { PbEditorPageElementPlugin, PbElement } from "../../../../types";
-import { removeElementHelper } from "../../../helpers";
-import { getElementParentWithChildrenById } from "../../modules";
-import {
-    EventActionCallableType,
-    EventActionHandlerActionCallableResponseType,
-    EventActionHandlerMetaType
-} from "../../eventActions";
-import { PbState } from "../../modules/types";
-import { updateElementAction, UpdateElementActionEvent } from "../updateElement";
-import { DeleteElementActionArgsType } from "./types";
+import { EventActionCallable, PbEditorElement } from "../../../../types";
+import { DeleteElementActionArgsType } from "@webiny/app-page-builder/editor/recoil/actions/deleteElement/types";
+import { SaveRevisionActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 
-const updateParentElement = (
-    state: PbState,
-    meta: EventActionHandlerMetaType,
-    parent: PbElement,
-    child: PbElement
-): EventActionHandlerActionCallableResponseType => {
-    const pluginsByType = plugins.byType<PbEditorPageElementPlugin>("pb-editor-page-element");
-    const plugin = pluginsByType.find(pl => pl.elementType === parent.type);
-    if (!plugin || typeof plugin.onChildDeleted !== "function") {
-        return {
-            state,
-            actions: [new UpdateElementActionEvent({ element: parent, history: true })]
-        };
-    }
-    const mutatedParent = plugin.onChildDeleted({ element: parent, child });
-    if (!mutatedParent) {
-        return {
-            state,
-            actions: [new UpdateElementActionEvent({ element: parent, history: true })]
-        };
-    }
-    return updateElementAction(state, meta, {
-        element: mutatedParent,
-        history: true
-    }) as EventActionHandlerActionCallableResponseType;
-};
-const runUpdateElementAction = (
-    state: PbState,
-    meta: EventActionHandlerMetaType,
-    parent: PbElement,
-    child: PbElement
-): EventActionHandlerActionCallableResponseType => {
-    const result = updateElementAction(state, meta, {
-        element: parent,
-        history: true
-    }) as EventActionHandlerActionCallableResponseType;
-    const parentResult = updateParentElement({ ...state, ...result.state }, meta, parent, child);
+const removeElementFromParent = (parent: PbEditorElement, id: string): PbEditorElement => {
     return {
-        state: parentResult.state,
-        actions: (result?.actions || []).concat(parentResult?.actions || [])
+        ...parent,
+        elements: parent.elements.filter(child => child !== id)
     };
 };
 
-export const deleteElementAction: EventActionCallableType<DeleteElementActionArgsType> = (
+const getElementParentById = async (state, id): Promise<PbEditorElement> => {
+    const element = await state.getElementById(id);
+    return await state.getElementById(element.parent);
+};
+
+export const deleteElementAction: EventActionCallable<DeleteElementActionArgsType> = async (
     state,
     meta,
     args
 ) => {
     const { element } = args;
-
-    const parent = getElementParentWithChildrenById(state, element.id);
-    const newParent = removeElementHelper(parent, element.id);
-    const result = runUpdateElementAction(state, meta, newParent, element);
+    const parent = await getElementParentById(state, element.id);
+    const newParent = removeElementFromParent(parent, element.id);
 
     return {
         state: {
-            ...result.state,
-            ui: {
-                ...(result.state?.ui || state.ui),
-                highlightElement: undefined,
-                activeElement: undefined
-            }
+            ...state,
+            elements: {
+                ...state.elements,
+                [newParent.id]: newParent
+            },
+            activeElement: null,
+            highlightElement: null
         },
-        actions: result.actions
+        actions: [new SaveRevisionActionEvent()]
     };
 };

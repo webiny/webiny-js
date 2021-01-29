@@ -1,9 +1,11 @@
 import React, { useCallback } from "react";
+import styled from "@emotion/styled";
+import isEmpty from "lodash/isEmpty";
 import get from "lodash/get";
 import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
-import { ButtonPrimary } from "@webiny/ui/Button";
+import { ButtonDefault, ButtonIcon, ButtonPrimary } from "@webiny/ui/Button";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { i18n } from "@webiny/app/i18n";
 import { validation } from "@webiny/validation";
@@ -17,15 +19,25 @@ import {
 import IconPicker from "./IconPicker";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+import EmptyView from "@webiny/app-admin/components/EmptyView";
+import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { useMutation, useQuery } from "@webiny/app-headless-cms/admin/hooks";
 import * as GQL from "./graphql";
 
 const t = i18n.ns("app-headless-cms/admin/content-model-groups/form");
+const ButtonWrapper = styled("div")({
+    display: "flex",
+    justifyContent: "space-between"
+});
 
-function ContentModelGroupsForm() {
+type ContentModelGroupsFormProps = {
+    canCreate: boolean;
+};
+function ContentModelGroupsForm({ canCreate }: ContentModelGroupsFormProps) {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
 
+    const newEntry = new URLSearchParams(location.search).get("new") === "true";
     const id = new URLSearchParams(location.search).get("id");
 
     const getQuery = useQuery(GQL.GET_CONTENT_MODEL_GROUP, {
@@ -89,6 +101,28 @@ function ContentModelGroupsForm() {
 
     const data = getQuery.loading ? null : get(getQuery, "data.contentModelGroup.data", null);
 
+    const showEmptyView = !newEntry && !loading && isEmpty(data);
+    // Render "No content selected" view.
+    if (showEmptyView) {
+        return (
+            <EmptyView
+                title={t`Click on the left side list to display group details {message}`({
+                    message: canCreate ? "or create a..." : ""
+                })}
+                action={
+                    canCreate ? (
+                        <ButtonDefault
+                            data-testid="new-record-button"
+                            onClick={() => history.push("/cms/content-model-groups?new=true")}
+                        >
+                            <ButtonIcon icon={<AddIcon />} /> {t`New Group`}
+                        </ButtonDefault>
+                    ) : null
+                }
+            />
+        );
+    }
+
     return (
         <Form onSubmit={onSubmit} data={data || { icon: "fas/star" }}>
             {({ data, form, Bind }) => (
@@ -122,9 +156,14 @@ function ContentModelGroupsForm() {
                         </Grid>
                     </SimpleFormContent>
                     <SimpleFormFooter>
-                        <ButtonPrimary
-                            onClick={form.submit}
-                        >{t`Save content model group`}</ButtonPrimary>
+                        <ButtonWrapper>
+                            <ButtonDefault
+                                onClick={() => history.push("/cms/content-model-groups")}
+                            >{t`Cancel`}</ButtonDefault>
+                            <ButtonPrimary
+                                onClick={form.submit}
+                            >{t`Save content model group`}</ButtonPrimary>
+                        </ButtonWrapper>
                     </SimpleFormFooter>
                 </SimpleForm>
             )}

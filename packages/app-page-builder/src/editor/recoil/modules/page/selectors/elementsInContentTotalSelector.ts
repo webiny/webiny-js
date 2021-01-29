@@ -1,10 +1,11 @@
-import { contentSelector } from "@webiny/app-page-builder/editor/recoil/modules";
-import { connectedReadSelector } from "@webiny/app-page-builder/editor/recoil/modules/connected";
+import { elementsAtom, rootElementAtom } from "@webiny/app-page-builder/editor/recoil/modules";
+import { selector } from "recoil";
+import { PbEditorElement } from "@webiny/app-page-builder/types";
 
-export const elementsInContentTotalSelector = connectedReadSelector({
+export const elementsInContentTotalSelector = selector({
     key: "elementsInContentTotalSelector",
     get: ({ get }) => {
-        const content = get(contentSelector);
-        return Number(content.elements?.length);
+        const rootElement = get(rootElementAtom);
+        return (get(elementsAtom(rootElement)) as PbEditorElement).elements.length;
     }
 });

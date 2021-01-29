@@ -1,8 +1,8 @@
 import upperFirst from "lodash/upperFirst";
 import gql from "graphql-tag";
 import pluralize from "pluralize";
-import { getPlugins } from "@webiny/plugins";
-import { CmsEditorFieldTypePlugin } from "@webiny/app-headless-cms/types";
+import { plugins } from "@webiny/plugins";
+import { CmsEditorContentModel, CmsEditorFieldTypePlugin } from "@webiny/app-headless-cms/types";
 
 const ERROR_FIELD = /* GraphQL */ `
     {
@@ -22,9 +22,9 @@ const CONTENT_META_FIELDS = /* GraphQL */ `
 
 const createFieldsList = contentModel => {
     const fields = contentModel.fields.map(field => {
-        const fieldPlugin = getPlugins<CmsEditorFieldTypePlugin>("cms-editor-field-type").find(
-            item => item.field.type === field.type
-        );
+        const fieldPlugin = plugins
+            .byType<CmsEditorFieldTypePlugin>("cms-editor-field-type")
+            .find(item => item.field.type === field.type);
 
         const { graphql } = fieldPlugin.field;
 
@@ -46,6 +46,9 @@ export const createReadQuery = model => {
             content: get${ucFirstModelId}(revision: $revision) {
                 data {
                     id
+                    createdBy {
+                        id
+                    }
                     ${createFieldsList(model)}
                     savedOn
                     meta {
@@ -77,7 +80,13 @@ export const createRevisionsQuery = model => {
     `;
 };
 
-export const createListQuery = model => {
+const getModelTitleFieldId = (model: CmsEditorContentModel): string => {
+    if (!model.titleFieldId || model.titleFieldId === "id") {
+        return "";
+    }
+    return model.titleFieldId;
+};
+export const createListQuery = (model: CmsEditorContentModel) => {
     const ucFirstPluralizedModelId = upperFirst(pluralize(model.modelId));
     const ucFirstModelId = upperFirst(model.modelId);
 
@@ -95,7 +104,13 @@ export const createListQuery = model => {
                     meta {
                         ${CONTENT_META_FIELDS}
                     }
+                    ${getModelTitleFieldId(model)}
                 }
+                meta {
+                    cursor
+                    hasMoreItems
+                    totalCount
+                }            
                 error ${ERROR_FIELD}
             }
         }
@@ -197,6 +212,40 @@ export const createUnpublishMutation = model => {
     return gql`
         mutation CmsUnpublish${ucFirstModelId}($revision: ID!) {
             content: unpublish${ucFirstModelId}(revision: $revision) {
+                data {
+                    id
+                    meta {
+                        ${CONTENT_META_FIELDS}
+                    }
+                }
+                error ${ERROR_FIELD}
+            }
+        }`;
+};
+
+export const createRequestReviewMutation = model => {
+    const ucFirstModelId = upperFirst(model.modelId);
+
+    return gql`
+        mutation CmsRequest${ucFirstModelId}Review($revision: ID!) {
+            content: request${ucFirstModelId}Review(revision: $revision) {
+                data {
+                    id
+                    meta {
+                        ${CONTENT_META_FIELDS}
+                    }
+                }
+                error ${ERROR_FIELD}
+            }
+        }`;
+};
+
+export const createRequestChangesMutation = model => {
+    const ucFirstModelId = upperFirst(model.modelId);
+
+    return gql`
+        mutation CmsRequest${ucFirstModelId}Changes($revision: ID!) {
+            content: request${ucFirstModelId}Changes(revision: $revision) {
                 data {
                     id
                     meta {

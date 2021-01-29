@@ -1,7 +1,7 @@
 import React from "react";
 import get from "lodash/get";
 import { useRecoilValue } from "recoil";
-import { activeElementWithChildrenSelector } from "../../../recoil/modules";
+import { activeElementAtom, elementWithChildrenByIdSelector } from "../../../recoil/modules";
 import useUpdateHandlers from "../useUpdateHandlers";
 // Components
 import InputField from "../components/InputField";
@@ -13,7 +13,8 @@ import Accordion from "../components/Accordion";
 const DATA_NAMESPACE = "data.settings.shadow";
 
 const Settings: React.FunctionComponent = () => {
-    const element = useRecoilValue(activeElementWithChildrenSelector);
+    const activeElementId = useRecoilValue(activeElementAtom);
+    const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
     const { getUpdateValue, getUpdatePreview } = useUpdateHandlers({
         element,
         dataNamespace: DATA_NAMESPACE

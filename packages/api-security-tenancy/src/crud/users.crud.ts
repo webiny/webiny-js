@@ -80,9 +80,10 @@ export default (context: DbContext & SecurityContext & TenancyContext): UsersCRU
             return results.map(res => res[0][0]);
         },
         async createUser(data) {
+            const login = data.login.toLowerCase();
             const identity = context.security.getIdentity();
 
-            if (await this.getUser(data.login)) {
+            if (await this.getUser(login)) {
                 throw {
                     message: "User with that login already exists.",
                     code: "USER_EXISTS"
@@ -94,6 +95,7 @@ export default (context: DbContext & SecurityContext & TenancyContext): UsersCRU
 
             const user: User = {
                 ...(await model.toJSON({ onlyDirty: true })),
+                login,
                 createdOn: new Date().toISOString(),
                 createdBy: identity
                     ? {

@@ -23,3 +23,6 @@ Or if you prefer yarn:
 ```
 yarn add @webiny/ui
 ```
+
+### Note on @rmwc/textfield
+The package `@rmwc/textfield` is being pulled directly from our github due to its typings being broken on typescript versions that are greater than `3.7.4`. 

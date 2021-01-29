@@ -1,9 +1,23 @@
 import dotProp from "dot-prop-immutable";
+import orderBy from "lodash/orderBy";
 import { CmsEditorContentEntry } from "@webiny/app-headless-cms/types";
 import * as GQL from "../../views/components/ContentModelForm/graphql";
 
-export const addEntryToListCache = (model, cache, entry: CmsEditorContentEntry) => {
-    const gqlParams = { query: GQL.createListQuery(model) };
+/*
+ * We need to preserve the order of entries with new entry addition
+ * because we're not re-fetching the list but updating it directly inside cache.
+ * */
+const sortEntries = (list, sort) => {
+    if (!sort || typeof sort !== "string") {
+        return list;
+    }
+    const [key, value] = sort.split("_");
+    const order = value.toLowerCase();
+    return orderBy(list, [key], [order]);
+};
+
+export const addEntryToListCache = (model, cache, entry: CmsEditorContentEntry, variables) => {
+    const gqlParams = { query: GQL.createListQuery(model), variables };
     const { content } = cache.readQuery(gqlParams);
 
     cache.writeQuery({
@@ -11,19 +25,22 @@ export const addEntryToListCache = (model, cache, entry: CmsEditorContentEntry) 
         data: {
             content: {
                 ...content,
-                data: [entry, ...content.data]
+                data: sortEntries([entry, ...content.data], variables.sort)
             }
         }
     });
 };
 
-export const updateLatestRevisionInListCache = (model, cache, revision) => {
-    const gqlParams = { query: GQL.createListQuery(model) };
+export const updateLatestRevisionInListCache = (model, cache, revision, variables) => {
+    const gqlParams = { query: GQL.createListQuery(model), variables };
 
     const [uniqueId] = revision.id.split("#");
 
     const { content } = cache.readQuery(gqlParams);
     const index = content.data.findIndex(item => item.id.startsWith(uniqueId));
+    if (index === -1) {
+        return;
+    }
 
     cache.writeQuery({
         ...gqlParams,
@@ -33,12 +50,15 @@ export const updateLatestRevisionInListCache = (model, cache, revision) => {
     });
 };
 
-export const removeEntryFromListCache = (model, cache, revision) => {
+export const removeEntryFromListCache = (model, cache, revision, variables) => {
     // Delete the item from list cache
-    const gqlParams = { query: GQL.createListQuery(model) };
+    const gqlParams = { query: GQL.createListQuery(model), variables };
     const { content } = cache.readQuery(gqlParams);
     const entryId = revision.id.split("#")[0];
     const index = content.data.findIndex(item => item.id.startsWith(entryId));
+    if (index === -1) {
+        return;
+    }
 
     cache.writeQuery({
         ...gqlParams,

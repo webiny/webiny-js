@@ -5,6 +5,7 @@ export default /* GraphQL */ `
     type Product {
         id: ID
         createdOn: DateTime
+        createdBy: CmsCreatedBy
         savedOn: DateTime
         title: String
         category: Category

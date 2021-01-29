@@ -6,7 +6,7 @@ import { i18n } from "@webiny/app/i18n";
 import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
-import { ButtonPrimary, CopyButton } from "@webiny/ui/Button";
+import { ButtonDefault, ButtonIcon, ButtonPrimary, CopyButton } from "@webiny/ui/Button";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 import { Permissions } from "@webiny/app-admin/components/Permissions";
@@ -22,13 +22,22 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { pickDataForAPI } from "./utils";
 import * as GQL from "./graphql";
 import { SnackbarAction } from "@webiny/ui/Snackbar";
+import isEmpty from "lodash/isEmpty";
+import EmptyView from "@webiny/app-admin/components/EmptyView";
+import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
+import styled from "@emotion/styled";
 
 const t = i18n.ns("app-security-tenancy/admin/api-keys/form");
+
+const ButtonWrapper = styled("div")({
+    display: "flex",
+    justifyContent: "space-between"
+});
 
 const ApiKeyForm = () => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
-
+    const newEntry = new URLSearchParams(location.search).get("new") === "true";
     const id = new URLSearchParams(location.search).get("id");
 
     const getQuery = useQuery(GQL.READ_API_KEY, {
@@ -89,6 +98,24 @@ const ApiKeyForm = () => {
     );
 
     const data = get(getQuery, "data.security.apiKey.data", {});
+
+    const showEmptyView = !newEntry && !loading && isEmpty(data);
+    // Render "No content" selected view.
+    if (showEmptyView) {
+        return (
+            <EmptyView
+                title={t`Click on the left side list to display API key details or create a...`}
+                action={
+                    <ButtonDefault
+                        data-testid="new-record-button"
+                        onClick={() => history.push("/security/api-keys?new=true")}
+                    >
+                        <ButtonIcon icon={<AddIcon />} /> {t`New API Key`}
+                    </ButtonDefault>
+                }
+            />
+        );
+    }
 
     return (
         <Form data={data} onSubmit={onSubmit}>
@@ -166,7 +193,14 @@ const ApiKeyForm = () => {
                             </Grid>
                         </SimpleFormContent>
                         <SimpleFormFooter>
-                            <ButtonPrimary onClick={form.submit}>{t`Save API key`}</ButtonPrimary>
+                            <ButtonWrapper>
+                                <ButtonDefault
+                                    onClick={() => history.push("/security/api-keys")}
+                                >{t`Cancel`}</ButtonDefault>
+                                <ButtonPrimary
+                                    onClick={form.submit}
+                                >{t`Save API key`}</ButtonPrimary>
+                            </ButtonWrapper>
                         </SimpleFormFooter>
                     </SimpleForm>
                 );

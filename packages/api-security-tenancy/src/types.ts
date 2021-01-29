@@ -190,6 +190,10 @@ export type TenancyContextObject = {
     apiKeys?: ApiKeysCRUD;
 };
 
+export interface BaseTenancyContextInterface {
+    security: TenancyContextObject;
+}
+
 export type TenancyContext = Context<
     HttpContext,
     DbContext,

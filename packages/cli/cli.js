@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 const yargs = require("yargs");
-const { blue } = require("chalk");
-
+const { blue, red } = require("chalk");
 const { createCommands } = require("./commands");
 const context = require("./context");
 
@@ -13,13 +12,48 @@ yargs
         `To find more information, docs and tutorials, see ${blue("https://docs.webiny.com")}.`
     )
     .epilogue(`Want to contribute? ${blue("https://github.com/webiny/webiny-js")}.`)
-    .fail(function(msg, err) {
+    .fail(function(msg, err, command) {
         if (msg) {
-            console.log(msg);
+            if (msg.includes("Not enough non-option arguments")) {
+                console.log();
+                context.error(red("Command was not invoked as expected!"));
+                context.info(
+                    `Some non-optional arguments are missing. See the usage examples printed below.`
+                );
+                console.log();
+                command.showHelp();
+                return;
+            }
+
+            if (msg.includes("Missing required argument")) {
+                const args = msg
+                    .split(":")[1]
+                    .split(",")
+                    .map(v => v.trim());
+
+                console.log();
+                context.error(red("Command was not invoked as expected!"));
+                context.info(
+                    `Missing required argument(s): ${args
+                        .map(arg => red(arg))
+                        .join(", ")}. See the usage examples printed below.`
+                );
+                console.log();
+                command.showHelp();
+                return;
+            }
+            console.log();
+            context.error(red("Command execution was aborted!"));
+            context.error(msg);
+            console.log();
+
+            process.exit(1);
         }
+
         if (err) {
             console.log(err);
         }
+
         process.exit(1);
     });
 

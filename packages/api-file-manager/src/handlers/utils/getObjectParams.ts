@@ -1,7 +1,7 @@
 import getEnvironment from "./getEnvironment";
 
 /**
- * Returns site's Bucket and file's Key values.
+ * Returns website's Bucket and file's Key values.
  * @param filename
  * @returns {{Bucket: string, Key: string}}
  */

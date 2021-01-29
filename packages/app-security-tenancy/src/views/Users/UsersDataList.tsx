@@ -1,10 +1,10 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useMutation, useQuery } from "react-apollo";
+import orderBy from "lodash/orderBy";
 import { i18n } from "@webiny/app/i18n";
 import { useSecurity } from "@webiny/app-security";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Image } from "@webiny/app/components";
-
 import {
     DataList,
     ScrollList,
@@ -13,22 +13,48 @@ import {
     ListItemTextSecondary,
     ListItemMeta,
     ListActions,
-    ListItemGraphic
+    ListItemGraphic,
+    DataListModalOverlayAction,
+    DataListModalOverlay
 } from "@webiny/ui/List";
-
+import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
 import { Avatar } from "@webiny/ui/Avatar";
+import { Cell, Grid } from "@webiny/ui/Grid";
+import { Select } from "@webiny/ui/Select";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
-import { Input } from "@webiny/ui/Input";
+import SearchUI from "@webiny/app-admin/components/SearchUI";
+import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
+import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import { DELETE_USER, LIST_USERS } from "./graphql";
-import { ReactComponent as SearchIcon } from "./search.svg";
+import { serializeSorters, deserializeSorters } from "../utils";
 
 const t = i18n.ns("app-identity/admin/users/data-list");
 
+const SORTERS = [
+    {
+        label: t`Newest to oldest`,
+        sorters: { createdOn: "desc" }
+    },
+    {
+        label: t`Oldest to newest`,
+        sorters: { createdOn: "asc" }
+    },
+    {
+        label: t`Login A-Z`,
+        sorters: { login: "asc" }
+    },
+    {
+        label: t`Login Z-A`,
+        sorters: { login: "desc" }
+    }
+];
+
 const UsersDataList = () => {
     const [filter, setFilter] = useState("");
+    const [sort, setSort] = useState(serializeSorters(SORTERS[0].sorters));
     const { identity } = useSecurity();
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
@@ -45,7 +71,18 @@ const UsersDataList = () => {
         [filter]
     );
 
-    const { data: listUsers, loading: usersLoading, refetch: usersRefetch } = useQuery(LIST_USERS);
+    const sortUsers = useCallback(
+        users => {
+            if (!sort) {
+                return users;
+            }
+            const [[key, value]] = Object.entries(deserializeSorters(sort));
+            return orderBy(users, [key], [value]);
+        },
+        [sort]
+    );
+
+    const { data: listUsers, loading: usersLoading } = useQuery(LIST_USERS);
 
     const [deleteIt, { loading: deleteLoading }] = useMutation(DELETE_USER, {
         refetchQueries: [{ query: LIST_USERS }]
@@ -53,7 +90,7 @@ const UsersDataList = () => {
 
     const data = usersLoading && !listUsers ? [] : listUsers.security.users.data || [];
     const filteredData = filter === "" ? data : data.filter(filterUsers);
-
+    const userList = sortUsers(filteredData);
     const login = new URLSearchParams(location.search).get("login");
 
     const deleteItem = useCallback(
@@ -78,23 +115,47 @@ const UsersDataList = () => {
         [login]
     );
 
+    const usersDataListModalOverlay = useMemo(
+        () => (
+            <DataListModalOverlay>
+                <Grid>
+                    <Cell span={12}>
+                        <Select value={sort} onChange={setSort} label={t`Sort by`}>
+                            {SORTERS.map(({ label, sorters }) => {
+                                return (
+                                    <option key={label} value={serializeSorters(sorters)}>
+                                        {label}
+                                    </option>
+                                );
+                            })}
+                        </Select>
+                    </Cell>
+                </Grid>
+            </DataListModalOverlay>
+        ),
+        [sort]
+    );
+
     const loading = usersLoading || deleteLoading;
 
     return (
         <DataList
             title={t`Security Users`}
-            data={filteredData}
-            loading={loading}
-            refresh={usersRefetch}
-            extraOptions={
-                <Input
-                    icon={<SearchIcon />}
-                    placeholder={"Type to filter"}
-                    value={filter}
-                    onChange={setFilter}
-                    autoComplete="off"
-                />
+            actions={
+                <ButtonSecondary
+                    data-testid="new-record-button"
+                    onClick={() => history.push("/security/users?new=true")}
+                >
+                    <ButtonIcon icon={<AddIcon />} /> {t`New User`}
+                </ButtonSecondary>
             }
+            data={userList}
+            loading={loading}
+            search={
+                <SearchUI value={filter} onChange={setFilter} inputPlaceholder={t`Search users`} />
+            }
+            modalOverlay={usersDataListModalOverlay}
+            modalOverlayAction={<DataListModalOverlayAction icon={<FilterIcon />} />}
         >
             {({ data }) => (
                 <ScrollList twoLine avatarList>

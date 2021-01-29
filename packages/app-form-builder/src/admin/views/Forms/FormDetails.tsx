@@ -3,32 +3,20 @@ import { useQuery } from "react-apollo";
 import { renderPlugins } from "@webiny/app/plugins";
 import { useRouter } from "@webiny/react-router";
 import styled from "@emotion/styled";
-import { Elevation } from "@webiny/ui/Elevation";
 import { GET_FORM, GET_FORM_REVISIONS } from "@webiny/app-form-builder/admin/graphql";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Tabs } from "@webiny/ui/Tabs";
 import { CircularProgress } from "@webiny/ui/Progress";
+import { ButtonDefault, ButtonIcon } from "@webiny/ui/Button";
 import { useSecurity } from "@webiny/app-security";
+import EmptyView from "@webiny/app-admin/components/EmptyView";
+import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
+import { i18n } from "@webiny/app/i18n";
 
-const EmptySelect = styled("div")({
-    width: "100%",
-    height: "100%",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    color: "var(--mdc-theme-on-surface)",
-    ".select-form": {
-        maxWidth: 400,
-        padding: "50px 100px",
-        textAlign: "center",
-        display: "block",
-        borderRadius: 2,
-        backgroundColor: "var(--mdc-theme-surface)"
-    }
-});
+const t = i18n.ns("app-form-builder/admin/views/forms/form-details");
 
 const DetailsContainer = styled("div")({
-    height: "calc(100% - 10px)",
+    height: "100%",
     overflow: "hidden",
     position: "relative",
     nav: {
@@ -36,21 +24,34 @@ const DetailsContainer = styled("div")({
     }
 });
 
-const EmptyFormDetails = () => {
+type EmptyFormDetailsProps = {
+    onCreateForm: () => void;
+    canCreate: boolean;
+};
+const EmptyFormDetails = ({ canCreate, onCreateForm }: EmptyFormDetailsProps) => {
     return (
-        <EmptySelect>
-            <Elevation z={2} className={"select-form"}>
-                Select a form on the left side, or click the green button to create a new one.
-            </Elevation>
-        </EmptySelect>
+        <EmptyView
+            title={t`Click on the left side list to display form details {message}`({
+                message: canCreate ? " or create a..." : ""
+            })}
+            action={
+                canCreate ? (
+                    <ButtonDefault data-testid="new-record-button" onClick={onCreateForm}>
+                        <ButtonIcon icon={<AddIcon />} /> {t`New Form`}
+                    </ButtonDefault>
+                ) : null
+            }
+        />
     );
 };
 
 export type FormDetailsProps = {
     refreshForms: () => void;
+    onCreateForm: () => void;
+    canCreate: boolean;
 };
 
-const FormDetails = ({ refreshForms }: FormDetailsProps) => {
+const FormDetails = ({ refreshForms, onCreateForm, canCreate }: FormDetailsProps) => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const security = useSecurity();
@@ -67,11 +68,16 @@ const FormDetails = ({ refreshForms }: FormDetailsProps) => {
                 return;
             }
 
-            const { error } = data.formBuilder.form;
+            const { error, data: formData } = data.formBuilder.form;
             if (error) {
                 query.delete("id");
                 history.push({ search: query.toString() });
                 showSnackbar(error.message);
+            }
+            if (!formData) {
+                query.delete("id");
+                history.push({ search: query.toString() });
+                showSnackbar(t`Could not load form with given ID.`);
             }
         }
     });
@@ -84,7 +90,7 @@ const FormDetails = ({ refreshForms }: FormDetailsProps) => {
     });
 
     if (!formId) {
-        return <EmptyFormDetails />;
+        return <EmptyFormDetails canCreate={canCreate} onCreateForm={onCreateForm} />;
     }
 
     const form = getForm.loading ? null : getForm.data.formBuilder.form.data;

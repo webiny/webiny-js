@@ -10,7 +10,6 @@ const inputStyle = css({
     boxSizing: "border-box",
     border: "1px solid var(--mdc-theme-on-background)",
     width: "100%",
-    height: "100%",
     padding: "4px 8px",
     textAlign: "left",
     minHeight: 32,
@@ -32,11 +31,11 @@ const inputStyle = css({
     },
 
     "&::-webkit-inner-spin-button": {
-        "-webkit-appearance": "none",
+        WebkitAppearance: "none",
         margin: 0
     },
     "&::-webkit-outer-spin-button": {
-        "-webkit-appearance": "none",
+        WebkitAppearance: "none",
         margin: 0
     }
 });

@@ -2,7 +2,10 @@ import React, { useCallback } from "react";
 import { useRecoilValue } from "recoil";
 import { css } from "emotion";
 import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
-import { activeElementWithChildrenSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import {
+    activeElementAtom,
+    elementWithChildrenByIdSelector
+} from "@webiny/app-page-builder/editor/recoil/modules";
 import { PbEditorPageElementSettingsRenderComponentProps } from "../../../../types";
 // Components
 import IconPickerComponent from "../../../components/IconPicker";
@@ -51,7 +54,8 @@ const classes = {
 const ButtonSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps> = ({
     defaultAccordionValue
 }) => {
-    const element = useRecoilValue(activeElementWithChildrenSelector);
+    const activeElementId = useRecoilValue(activeElementAtom);
+    const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
     const { theme } = usePageBuilder();
     const { types } = theme?.elements?.button || [];
     const defaultType = types?.[0]?.name || "";

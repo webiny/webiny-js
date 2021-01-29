@@ -27,10 +27,10 @@ plugins, please visit [Webiny documentation](https://docs.webiny.com/docs/develo
 
 #### Admin
 ```
-import { registerPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import cookiePolicyPlugins from "@webiny/app-cookie-policy/admin";
 
-registerPlugins(cookiePolicyPlugins);
+plugins.register(cookiePolicyPlugins);
 ```
 
 Enables management of cookie policy settings, which can be accessed via 
@@ -40,10 +40,10 @@ position, colors and labels.
 
 #### Site
 ```
-import { registerPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import cookiePolicyPlugins from "@webiny/app-cookie-policy/render"
 
-registerPlugins(cookiePolicyPlugins);
+plugins.register(cookiePolicyPlugins);
 ```
 
 Renders cookie policy banner. Use in your public website.

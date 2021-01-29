@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import styled from "@emotion/styled";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor/provider";
+import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
 import { DeactivatePluginActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
 import { activePluginsByTypeNamesSelector } from "@webiny/app-page-builder/editor/recoil/modules";
 import { css } from "emotion";

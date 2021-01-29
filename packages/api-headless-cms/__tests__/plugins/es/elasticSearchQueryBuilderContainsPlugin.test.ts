@@ -1,6 +1,6 @@
 import { elasticSearchQueryBuilderContainsPlugin } from "../../../src/content/plugins/es/elasticSearchQueryBuilderContainsPlugin";
 import { createBlankQuery } from "./helpers";
-import { ElasticSearchQueryType } from "@webiny/api-headless-cms/types";
+import { ElasticsearchQuery } from "@webiny/api-headless-cms/types";
 
 describe("elasticSearchQueryBuilderContainsPlugin", () => {
     const plugin = elasticSearchQueryBuilderContainsPlugin();
@@ -18,22 +18,18 @@ describe("elasticSearchQueryBuilderContainsPlugin", () => {
             value: "Doe"
         });
 
-        const expected: ElasticSearchQueryType = {
+        const expected: ElasticsearchQuery = {
             mustNot: [],
             must: [
                 {
-                    // eslint-disable-next-line @typescript-eslint/camelcase
                     query_string: {
-                        // eslint-disable-next-line @typescript-eslint/camelcase
                         allow_leading_wildcard: true,
                         fields: ["name"],
                         query: "*John*"
                     }
                 },
                 {
-                    // eslint-disable-next-line @typescript-eslint/camelcase
                     query_string: {
-                        // eslint-disable-next-line @typescript-eslint/camelcase
                         allow_leading_wildcard: true,
                         fields: ["name"],
                         query: "*Doe*"

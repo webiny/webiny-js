@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { css } from "emotion";
-import { getPlugins } from "@webiny/plugins";
+import { plugins } from "@webiny/plugins";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid } from "react-virtualized";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -185,9 +185,9 @@ const IconPicker: React.FunctionComponent<IconPickerPropsType> = ({
     }, [value]);
 
     const allIcons: PbIcon[] = useMemo(() => {
-        const plugins = getPlugins<PbIconsPlugin>("pb-icons");
+        const iconPlugins = plugins.byType<PbIconsPlugin>("pb-icons");
         let selectedIconItem = null;
-        const allIconItems = plugins.reduce((icons: Array<PbIcon>, pl) => {
+        const allIconItems = iconPlugins.reduce((icons: Array<PbIcon>, pl) => {
             const pluginIcons = pl.getIcons().filter(({ id }) => {
                 const [prefix, name] = id;
                 if (!selectedIconPrefix || !selectedIconName || prefix !== selectedIconPrefix) {

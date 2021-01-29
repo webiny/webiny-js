@@ -1,31 +1,33 @@
-import { HandlerPlugin } from "@webiny/handler/types";
 import { boolean } from "boolean";
-import { graphql, GraphQLSchema } from "graphql";
+import { GraphQLSchema } from "graphql";
 import { makeExecutableSchema } from "@graphql-tools/schema";
-import { CmsContext, CmsSettingsType } from "@webiny/api-headless-cms/types";
+import { CmsContext, CmsSettings } from "@webiny/api-headless-cms/types";
 import { I18NLocale } from "@webiny/api-i18n/types";
-import buildSchemaPlugins from "./plugins/buildSchemaPlugins";
 import { NotAuthorizedError, NotAuthorizedResponse } from "@webiny/api-security";
 import { ErrorResponse } from "@webiny/handler-graphql";
+import { PluginCollection } from "@webiny/plugins/types";
+import debugPlugins from "@webiny/handler-graphql/debugPlugins";
+import processRequestBody from "@webiny/handler-graphql/processRequestBody";
+import buildSchemaPlugins from "./plugins/buildSchemaPlugins";
 
-type CreateGraphQLHandlerOptionsType = {
+interface CreateGraphQLHandlerOptions {
     debug?: boolean;
-};
-type SchemaCacheType = {
+}
+interface SchemaCache {
     key: string;
     schema: GraphQLSchema;
-};
-type ArgsType = {
+}
+interface Args {
     context: CmsContext;
     type: string;
-    settings: CmsSettingsType;
+    settings: CmsSettings;
     locale: I18NLocale;
-};
-type ParsedBody = {
+}
+interface ParsedBody {
     query: string;
     variables: any;
     operationName: string;
-};
+}
 
 const DEFAULT_HEADERS = {
     "Access-Control-Allow-Origin": "*",
@@ -39,13 +41,13 @@ const respond = (http, result: unknown) => {
         headers: DEFAULT_HEADERS
     });
 };
-const schemaList = new Map<string, SchemaCacheType>();
-const generateCacheKey = (args: ArgsType): string => {
+const schemaList = new Map<string, SchemaCache>();
+const generateCacheKey = (args: Args): string => {
     const { settings, locale, type } = args;
     return [settings.contentModelLastChange.toISOString(), locale.code, type].join("#");
 };
 
-const generateSchema = async (args: ArgsType): Promise<GraphQLSchema> => {
+const generateSchema = async (args: Args): Promise<GraphQLSchema> => {
     const { context } = args;
 
     const schemaPlugins = await buildSchemaPlugins(context);
@@ -66,7 +68,7 @@ const generateSchema = async (args: ArgsType): Promise<GraphQLSchema> => {
 };
 // gets an existing schema or rewrites existing one or creates a completely new one
 // depending on the schemaId created from type and locale parameters
-const getSchema = async (args: ArgsType): Promise<GraphQLSchema> => {
+const getSchema = async (args: Args): Promise<GraphQLSchema> => {
     const { type, locale } = args;
     const id = `${type}#${locale.code}`;
 
@@ -104,89 +106,85 @@ const checkEndpointAccess = async (context: CmsContext): Promise<void> => {
 };
 
 export const graphQLHandlerFactory = (
-    options: CreateGraphQLHandlerOptionsType = {}
-): HandlerPlugin => ({
-    type: "handler",
-    name: "handler-graphql-content-model",
-    async handle(context: CmsContext, next) {
-        const { http } = context;
+    options: CreateGraphQLHandlerOptions = {}
+): PluginCollection => {
+    const debug = boolean(options.debug);
 
-        if (!http || !http.request || !http.request.path || !http.request.path.parameters) {
-            return next();
-        }
+    return [
+        ...(debug ? debugPlugins() : []),
+        {
+            type: "handler",
+            name: "handler-graphql-content-model",
+            async handle(context: CmsContext, next) {
+                const { http } = context;
 
-        if (http.request.method === "OPTIONS") {
-            return http.response({
-                statusCode: 204,
-                headers: DEFAULT_HEADERS
-            });
-        }
-
-        if (http.request.method !== "POST") {
-            return next();
-        }
-
-        try {
-            await checkEndpointAccess(context);
-        } catch (ex) {
-            return respond(http, new NotAuthorizedResponse(ex));
-        }
-
-        try {
-            const schema = await getSchema({
-                context,
-                locale: context.cms.getLocale(),
-                settings: context.cms.getSettings(),
-                type: context.cms.type
-            });
-
-            const body: ParsedBody | ParsedBody[] = JSON.parse(http.request.body);
-
-            if (Array.isArray(body)) {
-                const promises = [];
-                for (const { query, variables, operationName } of body) {
-                    promises.push(graphql(schema, query, {}, context, variables, operationName));
+                if (!http || !http.request || !http.request.path || !http.request.path.parameters) {
+                    return next();
                 }
 
-                const result = await Promise.all(promises);
-                return respond(http, result);
-            }
-
-            const { query, variables, operationName } = body;
-            const result = await graphql(schema, query, {}, context, variables, operationName);
-            return respond(http, result);
-        } catch (ex) {
-            const report = {
-                error: {
-                    name: ex.constructor.name,
-                    message: ex.message,
-                    data: ex.data || {},
-                    stack: ex.stack
+                if (http.request.method === "OPTIONS") {
+                    return http.response({
+                        statusCode: 204,
+                        headers: DEFAULT_HEADERS
+                    });
                 }
-            };
-            const body = JSON.stringify(report);
-            console.log("[@webiny/api-headless-cms] An error occurred: ", body);
 
-            if (boolean(options.debug)) {
-                return context.http.response({
-                    statusCode: 500,
-                    body,
-                    headers: {
-                        ...DEFAULT_HEADERS,
-                        "Cache-Control": "no-store",
-                        "Content-Type": "text/json"
+                if (http.request.method !== "POST") {
+                    return next();
+                }
+
+                try {
+                    await checkEndpointAccess(context);
+                } catch (ex) {
+                    return respond(http, new NotAuthorizedResponse(ex));
+                }
+
+                try {
+                    const schema = await getSchema({
+                        context,
+                        locale: context.cms.getLocale(),
+                        settings: context.cms.getSettings(),
+                        type: context.cms.type
+                    });
+
+                    const body: ParsedBody | ParsedBody[] = JSON.parse(http.request.body);
+
+                    const result = await processRequestBody(body, schema, context);
+                    return respond(http, result);
+                } catch (ex) {
+                    const report = {
+                        error: {
+                            name: ex.constructor.name,
+                            message: ex.message,
+                            data: ex.data || {},
+                            stack: ex.stack
+                        }
+                    };
+                    const body = JSON.stringify(report);
+                    console.log("[@webiny/api-headless-cms] An error occurred: ", body);
+
+                    if (boolean(options.debug)) {
+                        return context.http.response({
+                            statusCode: 500,
+                            body,
+                            headers: {
+                                ...DEFAULT_HEADERS,
+                                "Cache-Control": "no-store",
+                                "Content-Type": "text/json"
+                            }
+                        });
                     }
-                });
-            }
 
-            return respond(
-                http,
-                new ErrorResponse({
-                    message: ex.message,
-                    code: ex.code || "GENERAL_ERROR",
-                    data: ex.data || {}
-                })
-            );
+                    return respond(
+                        http,
+                        new ErrorResponse({
+                            message: ex.message,
+                            code: ex.code || "GENERAL_ERROR",
+                            data: ex.data || {}
+                        })
+                    );
+                }
+            }
         }
-    }
-});
+    ];
+};

@@ -31,7 +31,13 @@ const menuStyles = css({
     }
 });
 
-const ContentFormOptionsMenu = ({ contentModel, entry, getLoading, setLoading }) => {
+const ContentFormOptionsMenu = ({
+    contentModel,
+    entry,
+    getLoading,
+    setLoading,
+    listQueryVariables
+}) => {
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
     const { showDialog } = useDialog();
@@ -69,7 +75,7 @@ const ContentFormOptionsMenu = ({ contentModel, entry, getLoading, setLoading })
                         return showDialog(error.message, { title: t`Could not delete content` });
                     }
 
-                    removeEntryFromListCache(contentModel, cache, entry);
+                    removeEntryFromListCache(contentModel, cache, entry, listQueryVariables);
 
                     showSnackbar(
                         t`{title} was deleted successfully!`({ title: <strong>{title}</strong> })

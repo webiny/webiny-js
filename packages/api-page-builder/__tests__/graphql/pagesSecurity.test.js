@@ -1,6 +1,8 @@
 import useGqlHandler from "./useGqlHandler";
 import { identityA, identityB, NOT_AUTHORIZED_RESPONSE } from "./mocks";
 
+jest.setTimeout(15000);
+
 const defaultHandler = useGqlHandler({
     permissions: [{ name: "content.i18n" }, { name: "pb.*" }],
     identity: identityA
