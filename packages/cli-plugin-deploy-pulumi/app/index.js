@@ -5,19 +5,19 @@ const output = require("./output");
 module.exports = [
     {
         type: "cli-command",
-        name: "cli-command-stack",
+        name: "cli-command-app",
         create({ yargs, context }) {
-            yargs.command("stack", `Run various commands on the given stack.`, yargs => {
-                yargs.example("$0 stack deploy api --env=dev");
-                yargs.example("$0 stack destroy api --env=dev");
-                yargs.example("$0 stack output api --env=dev");
+            yargs.command("app", `Run various commands on given project application.`, yargs => {
+                yargs.example("$0 app deploy api --env=dev");
+                yargs.example("$0 app destroy api --env=dev");
+                yargs.example("$0 app output api --env=dev");
                 yargs.command(
-                    "deploy <stack>",
-                    `Deploys the given stack.`,
+                    "deploy <folder>",
+                    `Deploys cloud infrastructure for given project application`,
                     yargs => {
-                        yargs.example("$0 stack deploy api --env=dev");
-                        yargs.positional("stack", {
-                            describe: `The stack to deploy`,
+                        yargs.example("$0 app deploy api --env=dev");
+                        yargs.positional("folder", {
+                            describe: `Project application folder`,
                             type: "string"
                         });
                         yargs.option("env", {
@@ -51,12 +51,12 @@ module.exports = [
                 );
 
                 yargs.command(
-                    "destroy <stack>",
-                    `Destroys given stack`,
+                    "destroy <folder>",
+                    `Destroys deployed cloud infrastructure for given project application`,
                     yargs => {
-                        yargs.example("$0 stack destroy api --env=dev");
-                        yargs.positional("stack", {
-                            describe: `Stack to deploy`,
+                        yargs.example("$0 app destroy api --env=dev");
+                        yargs.positional("folder", {
+                            describe: `Project application folder`,
                             type: "string"
                         });
                         yargs.option("env", {
@@ -78,12 +78,12 @@ module.exports = [
                 );
 
                 yargs.command(
-                    "output <stack>",
-                    `Prints stack output`,
+                    "output <folder>",
+                    `Prints deployed cloud infrastructure' output for given project application and environment`,
                     yargs => {
-                        yargs.example("$0 stack output api --env=dev --json");
-                        yargs.positional("stack", {
-                            describe: `Stack to print`,
+                        yargs.example("$0 app output api --env=dev --json");
+                        yargs.positional("folder", {
+                            describe: `Project application folder`,
                             type: "string"
                         });
                         yargs.option("env", {

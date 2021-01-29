@@ -41,12 +41,12 @@ module.exports = async (inputs, context) => {
         return (new Date() - start) / 1000;
     };
 
-    const { env, stack, build } = inputs;
-    const stackName = getStackName(stack);
+    const { env, folder, build } = inputs;
+    const stackName = getStackName(folder);
 
     await loadEnvVariables(inputs, context);
 
-    const stackDir = path.join(".", stack);
+    const stackDir = path.join(".", folder);
 
     if (build) {
         await execa(
@@ -109,7 +109,7 @@ module.exports = async (inputs, context) => {
         context.info(`Running "hook-before-deploy" hook...`);
         await processHooks("hook-before-deploy", hookDeployArgs);
 
-        const continuing = inputs.preview ? `Previewing stack...` : `Deploying stack...`;
+        const continuing = inputs.preview ? `Previewing deployment...` : `Deploying...`;
         context.success(`Hook "hook-before-deploy" completed. ${continuing}`);
     }
 
@@ -141,7 +141,7 @@ module.exports = async (inputs, context) => {
     } else {
         console.log();
         context.success(`Done! Deploy finished in ${green(duration + "s")}.`);
-        notify({ message: `"${stack}" stack deployed in ${duration}s.` });
+        notify({ message: `"${folder}" stack deployed in ${duration}s.` });
     }
 
     if (inputs.preview) {

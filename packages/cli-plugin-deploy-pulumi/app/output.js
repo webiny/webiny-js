@@ -10,8 +10,8 @@ const getStackName = folder => {
 };
 
 module.exports = async (inputs, context) => {
-    const { env, stack, json } = inputs;
-    const stacksDir = path.join(".", stack).replace(/\\/g, "/");
+    const { env, folder, json } = inputs;
+    const stacksDir = path.join(".", folder).replace(/\\/g, "/");
 
     await loadEnvVariables(inputs, context);
 
@@ -21,7 +21,7 @@ module.exports = async (inputs, context) => {
         }
     });
 
-    const stackName = getStackName(stack);
+    const stackName = getStackName(folder);
 
     let stackExists = true;
     try {

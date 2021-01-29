@@ -22,8 +22,8 @@ const processHooks = async (hook, { context, ...options }) => {
 };
 
 module.exports = async (inputs, context) => {
-    const { env, stack } = inputs;
-    const stacksDir = path.join(".", stack);
+    const { env, folder } = inputs;
+    const stacksDir = path.join(".", folder);
 
     await loadEnvVariables(inputs, context);
 
@@ -33,7 +33,7 @@ module.exports = async (inputs, context) => {
         }
     });
 
-    const stackName = getStackName(stack);
+    const stackName = getStackName(folder);
 
     let stackExists = true;
     try {

@@ -1,1 +1,1 @@
-module.exports = () => [require("./pulumi"), require("./stack")];
+module.exports = () => [require("./pulumi"), require("./app")];
