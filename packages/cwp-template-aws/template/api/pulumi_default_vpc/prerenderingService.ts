@@ -84,7 +84,9 @@ class PageBuilder {
             },
             description: "Processes all jobs added to the prerendering queue.",
             code: new pulumi.asset.AssetArchive({
-                ".": new pulumi.asset.FileArchive("./../code/prerenderingService/queue/process/build")
+                ".": new pulumi.asset.FileArchive(
+                    "./../code/prerenderingService/queue/process/build"
+                )
             })
         });
 
