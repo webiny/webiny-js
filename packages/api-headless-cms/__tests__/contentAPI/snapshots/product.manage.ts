@@ -7,6 +7,7 @@ export default /* GraphQL */ `
     type Product {
         id: ID
         createdOn: DateTime
+        createdBy: CmsCreatedBy
         savedOn: DateTime
         meta: ProductMeta
         title: String
@@ -195,5 +196,9 @@ export default /* GraphQL */ `
         publishProduct(revision: ID!): ProductResponse
 
         unpublishProduct(revision: ID!): ProductResponse
+        
+        requestProductReview(revision: ID!): ProductResponse
+        
+        requestProductChanges(revision: ID!): ProductResponse
     }
 `;

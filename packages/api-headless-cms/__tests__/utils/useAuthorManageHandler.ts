@@ -4,6 +4,11 @@ import { GQLHandlerCallableArgs } from "./useGqlHandler";
 const authorFields = `
     id
     createdOn
+    createdBy {
+        id
+        displayName
+        type
+    }
     savedOn
     meta {
         title

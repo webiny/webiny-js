@@ -148,6 +148,11 @@ describe("refField", () => {
                     data: {
                         id: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
+                        createdBy: {
+                            id: "123",
+                            displayName: "User 123",
+                            type: "admin"
+                        },
                         savedOn: expect.stringMatching(/^20/),
                         title: "Potato",
                         price: 100,

@@ -199,6 +199,11 @@ describe("refField", () => {
                     data: {
                         id: review.id,
                         createdOn: review.createdOn,
+                        createdBy: {
+                            id: "123",
+                            displayName: "User 123",
+                            type: "admin"
+                        },
                         savedOn: review.savedOn,
                         text: "review text",
                         rating: 5,
@@ -249,6 +254,11 @@ describe("refField", () => {
                                 modelId: "author"
                             },
                             createdOn: review.createdOn,
+                            createdBy: {
+                                id: "123",
+                                displayName: "User 123",
+                                type: "admin"
+                            },
                             id: review.id,
                             meta: {
                                 locked: true,

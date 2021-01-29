@@ -5,6 +5,7 @@ export default /* GraphQL */ `
     type Category {
         id: ID
         createdOn: DateTime
+        createdBy: CmsCreatedBy
         savedOn: DateTime
         title: String
         slug: String

@@ -7,6 +7,7 @@ export default /* GraphQL */ `
     type Review {
         id: ID
         createdOn: DateTime
+        createdBy: CmsCreatedBy
         savedOn: DateTime
         meta: ReviewMeta
         text: String
@@ -132,5 +133,9 @@ export default /* GraphQL */ `
         publishReview(revision: ID!): ReviewResponse
 
         unpublishReview(revision: ID!): ReviewResponse
+        
+        requestReviewReview(revision: ID!): ReviewResponse
+        
+        requestReviewChanges(revision: ID!): ReviewResponse
     }
 `;

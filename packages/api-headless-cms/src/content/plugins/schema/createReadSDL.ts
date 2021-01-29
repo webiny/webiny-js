@@ -30,6 +30,7 @@ export const createReadSDL: CreateManageSDL = ({ model, fieldTypePlugins }): str
         type ${rTypeName} {
             id: ID
             createdOn: DateTime
+            createdBy: CmsCreatedBy
             savedOn: DateTime
             ${fieldsRender.map(f => f.fields).join("\n")}
         }
