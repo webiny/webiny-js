@@ -1,5 +1,5 @@
-import App from "./pulumi/app";
-import Cloudfront from "./pulumi/cloudfront";
+import App from "./app";
+import Cloudfront from "./cloudfront";
 
 const app = new App();
 

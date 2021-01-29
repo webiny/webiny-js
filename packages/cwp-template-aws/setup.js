@@ -69,29 +69,21 @@ const setup = async args => {
     webinyRoot = webinyRoot.replace("[TEMPLATE_VERSION]", `${name}@${version}`);
     fs.writeFileSync(path.join(projectRoot, "webiny.root.js"), webinyRoot);
 
-    // Keep the needed stack.
+    // Keep the needed Pulumi program.
     // Note: this approach most probably won't work when additional variables are added into the mix (e.g. ability
     // to choose a different default database, choose exact apps, backend for Pulumi, etc.) For now it works.
-    let move = "no_vpc",
-        remove = "vpc";
+    let move = "default_vpc",
+        remove = "custom_vpc";
 
     if (vpc) {
-        move = "vpc";
-        remove = "no_vpc";
+        move = "custom_vpc";
+        remove = "default_vpc";
     }
 
     fs.removeSync(path.join(projectRoot, "api", `pulumi_${remove}`));
-    fs.removeSync(path.join(projectRoot, "api", `index_${remove}.ts`));
-
     fs.moveSync(
         path.join(projectRoot, "api", `pulumi_${move}`),
-        path.join(projectRoot, "api", "stack"),
-        { overwrite: true }
-    );
-
-    fs.moveSync(
-        path.join(projectRoot, "api", `index_${move}.ts`),
-        path.join(projectRoot, "api", "index.ts"),
+        path.join(projectRoot, "api", "pulumi"),
         { overwrite: true }
     );
 

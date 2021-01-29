@@ -1,13 +1,13 @@
-import Cognito from "./pulumi/cognito";
-import DynamoDB from "./pulumi/dynamoDb";
-import Graphql from "./pulumi/graphql";
-import HeadlessCMS from "./pulumi/headlessCMS";
-import ApiGateway from "./pulumi/apiGateway";
-import Cloudfront from "./pulumi/cloudfront";
-import ElasticSearch from "./pulumi/elasticSearch";
-import FileManager from "./pulumi/fileManager";
-import PageBuilder from "./pulumi/pageBuilder";
-import PrerenderingService from "./pulumi/prerenderingService";
+import Cognito from "./cognito";
+import DynamoDB from "./dynamoDb";
+import Graphql from "./graphql";
+import HeadlessCMS from "./headlessCMS";
+import ApiGateway from "./apiGateway";
+import Cloudfront from "./cloudfront";
+import ElasticSearch from "./elasticSearch";
+import FileManager from "./fileManager";
+import PageBuilder from "./pageBuilder";
+import PrerenderingService from "./prerenderingService";
 
 const dynamoDb = new DynamoDB();
 const cognito = new Cognito();

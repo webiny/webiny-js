@@ -1,5 +1,5 @@
-import App from "./pulumi/app";
-import Delivery from "./pulumi/delivery";
+import App from "./app";
+import Delivery from "./delivery";
 
 const app = new App();
 const delivery = new Delivery({ appS3Bucket: app.bucket });
