@@ -58,7 +58,7 @@ class FileManager {
             role: this.role.arn,
             description: "Performs image optimization, resizing, etc.",
             code: new pulumi.asset.AssetArchive({
-                ".": new pulumi.asset.FileArchive("./code/fileManager/transform/build")
+                ".": new pulumi.asset.FileArchive("./../code/fileManager/transform/build")
             }),
             layers: [getLayerArn("webiny-v4-sharp", String(process.env.AWS_REGION))],
             environment: {
@@ -78,7 +78,7 @@ class FileManager {
             memorySize: 512,
             description: "Triggered when a file is deleted.",
             code: new pulumi.asset.AssetArchive({
-                ".": new pulumi.asset.FileArchive("./code/fileManager/manage/build")
+                ".": new pulumi.asset.FileArchive("./../code/fileManager/manage/build")
             }),
             environment: {
                 variables: { S3_BUCKET: this.bucket.id }
@@ -97,7 +97,7 @@ class FileManager {
             memorySize: 512,
             description: "Serves previously uploaded files.",
             code: new pulumi.asset.AssetArchive({
-                ".": new pulumi.asset.FileArchive("./code/fileManager/download//build")
+                ".": new pulumi.asset.FileArchive("./../code/fileManager/download//build")
             }),
             environment: {
                 variables: {

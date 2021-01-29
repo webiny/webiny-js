@@ -37,7 +37,7 @@ class Graphql {
                 timeout: 30,
                 memorySize: 512,
                 code: new pulumi.asset.AssetArchive({
-                    ".": new pulumi.asset.FileArchive("./code/graphql/build")
+                    ".": new pulumi.asset.FileArchive("./../code/graphql/build")
                 }),
                 environment: {
                     variables: {
