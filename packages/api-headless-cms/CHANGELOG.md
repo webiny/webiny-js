@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.1...v5.0.0-beta.2) (2021-01-29)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** add listValidation to content model graphql ([#1391](https://github.com/webiny/webiny-js/issues/1391)) ([9c15abd](https://github.com/webiny/webiny-js/commit/9c15abdb8b70171bb3e29be03996c5cf36df9bfa))
+* **api-headless-cms:** update context.http usage ([e195700](https://github.com/webiny/webiny-js/commit/e1957006417f7d8d90431c4a55d7a89b910a2af0))
+* **headless-cms:** default titleFieldId set to id ([#1390](https://github.com/webiny/webiny-js/issues/1390)) ([b1c23a6](https://github.com/webiny/webiny-js/commit/b1c23a60442926acdbf3a0e14c91bb68792d7669))
+* **page-builder:** optimize and improve PB editor ([#1393](https://github.com/webiny/webiny-js/issues/1393)) ([286de88](https://github.com/webiny/webiny-js/commit/286de88cf1d416105f4d1c5254556cbd9f0526a4))
+
+
+### Features
+
+* **api-headless-cms:** use context.http.request object ([c83854d](https://github.com/webiny/webiny-js/commit/c83854da4774d919f39d3f4eee32180173c8e258))
+* **headless-cms:** implement field validation ([d856cc7](https://github.com/webiny/webiny-js/commit/d856cc7345fea429f8167e92cd55b3e09df153d1))
+
+
+
+
+
 # [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.0...v5.0.0-beta.1) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/api-headless-cms

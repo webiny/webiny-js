@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.1...v5.0.0-beta.2) (2021-01-29)
+
+
+### Bug Fixes
+
+* sort an a new array, instead directly ([65bf887](https://github.com/webiny/webiny-js/commit/65bf8870cdef71a190add2656855ffa7d97067f9))
+
+
+### Features
+
+* **app:** add createConsoleLink to apollo client ([936b4a2](https://github.com/webiny/webiny-js/commit/936b4a29e557093f057888f77badfeb437a8e4a1))
+
+
+
+
+
 # [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.0...v5.0.0-beta.1) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/app

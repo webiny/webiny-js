@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.1...v5.0.0-beta.2) (2021-01-29)
+
+
+### Bug Fixes
+
+* **admin:** import user menu items individually ([6d82fae](https://github.com/webiny/webiny-js/commit/6d82fae7599b022b63d16fbd615d5b5b4abbbb7d))
+* **app-security-tenancy:** update `imagePreview` style ([79bb8f9](https://github.com/webiny/webiny-js/commit/79bb8f94a9abd8f4250893e95a2b0ba58f0d521b))
+* **headless-cms:** default titleFieldId set to id ([#1390](https://github.com/webiny/webiny-js/issues/1390)) ([b1c23a6](https://github.com/webiny/webiny-js/commit/b1c23a60442926acdbf3a0e14c91bb68792d7669))
+* **security:** always convert username to lower case ([8f81455](https://github.com/webiny/webiny-js/commit/8f8145574b474701435d17314bd5c95e1c47eef5))
+* **security-tenancy:** make group a mandatory input ([305fb1d](https://github.com/webiny/webiny-js/commit/305fb1d2c71658741329e3418084a58f8518a5d2))
+
+
+### Features
+
+* **app-security-tenancy:** add new `sort and filter` UI "GroupDataList" ([2d6323c](https://github.com/webiny/webiny-js/commit/2d6323ca99b6f99f71a84d400aa273b115ee7b5d))
+* **app-security-tenancy:** move sort options to DataList `modalOverlay` ([5a7aabc](https://github.com/webiny/webiny-js/commit/5a7aabc62d16462b319b4f34108709323f177591))
+* **app-security-tenancy:** remove `FloatingActionButton` ([f03bf02](https://github.com/webiny/webiny-js/commit/f03bf02e1b2b465b064c0f68974d1b08e39b5f4b))
+* **app-security-tenancy:** update "GroupForm" ([955abbc](https://github.com/webiny/webiny-js/commit/955abbc61bdf490a1d1174803226f4e679a54ef0))
+* **app-security-tenancy:** update "UserDataList" styles ([b03629f](https://github.com/webiny/webiny-js/commit/b03629f2fbdafb91c267f0a0196edbf7257a411d))
+* **app-security-tenancy:** update `ApiKeyForm` ([40a54db](https://github.com/webiny/webiny-js/commit/40a54db3d0ea7aff768270125035a62a1eef98d4))
+* **app-security-tenancy:** update `APiKeysDataList` component ([512a12b](https://github.com/webiny/webiny-js/commit/512a12b28975e759ec3ac052c10c514a979f20be))
+* **app-security-tenancy:** update `UsersForm` layout ([402969d](https://github.com/webiny/webiny-js/commit/402969d4a6cdc6a74f67a49ff89fb50e0532ef1e))
+
+
+
+
+
 # [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.0...v5.0.0-beta.1) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/app-security-tenancy

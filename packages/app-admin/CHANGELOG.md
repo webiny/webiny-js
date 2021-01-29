@@ -3,6 +3,40 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.1...v5.0.0-beta.2) (2021-01-29)
+
+
+### Bug Fixes
+
+* replace `pop` with destructuring operation ([8c2f5be](https://github.com/webiny/webiny-js/commit/8c2f5becb1e7d3e0ad299bd070906564eecc7bc8))
+* use `ReadonlyArray` instead of regular `Array` ([35e94a1](https://github.com/webiny/webiny-js/commit/35e94a1c256b15d5ede4186840db9fe6ef5993e8))
+* **admin:** import user menu items individually ([6d82fae](https://github.com/webiny/webiny-js/commit/6d82fae7599b022b63d16fbd615d5b5b4abbbb7d))
+* **app-admin:** add missing @types/mime dependency ([a452399](https://github.com/webiny/webiny-js/commit/a452399fdcfe797a2e69667ea9d6dad08e304cb3))
+* **app-admin:** fix icon imports ([d750720](https://github.com/webiny/webiny-js/commit/d7507205466f6e6f34de56cc12563ab4f5f48f99))
+* **app-admin:** replace -webkit-appearance with WebkitAppearance ([d4d24f6](https://github.com/webiny/webiny-js/commit/d4d24f6fdfd53015e21a2e284ce5ad731dc45ce6))
+* **app-admin:** revert `leftPanel` styles ([66ca1df](https://github.com/webiny/webiny-js/commit/66ca1df937f30e51cc92cc92c8fbdd43f0029e81))
+* **app-admin:** update `leftPanel` styles ([714a217](https://github.com/webiny/webiny-js/commit/714a21721c2a48713d77212cea9bd23acd90b2de))
+* **app-graphql-playground:** update icon and label ([1f86c65](https://github.com/webiny/webiny-js/commit/1f86c659643e01724eda21a18e008ebb1147293b))
+
+
+### Features
+
+* **app-admin:** add `EmptyView` component ([87ddb0d](https://github.com/webiny/webiny-js/commit/87ddb0de688f627e35ff15592c95c0d56383c488))
+* **app-admin:** add `filter icon` to assets ([dd03f04](https://github.com/webiny/webiny-js/commit/dd03f04d50096df6d0625b4ff6ac3013adf177b1))
+* **app-admin:** add `InputField` component ([7ff52c6](https://github.com/webiny/webiny-js/commit/7ff52c65e09e3552ef5ad07eb2f29d1cb6d83396))
+* **app-admin:** add `inputPlaceholder` prop to "SearchUI" component ([fd95d28](https://github.com/webiny/webiny-js/commit/fd95d2802fceedc6a7bef98ad7346b6dda5bcb71))
+* **app-admin:** add `SearchUI` component ([d7772f9](https://github.com/webiny/webiny-js/commit/d7772f96e4e6c63eb512f7e73cbbe3aefd8249de))
+* **app-admin:** add `SimpleModal` component ([3e194a3](https://github.com/webiny/webiny-js/commit/3e194a363a8e9baac450a7884c34a92de1444ae0))
+* **app-admin:** make `SimpleModal` align center ([c4cb15d](https://github.com/webiny/webiny-js/commit/c4cb15d26ffff122c2189ae7f0f51a0ba5c1a99b))
+* **app-admin:** update `leftPanel` styles in "SplitView" component ([da134e8](https://github.com/webiny/webiny-js/commit/da134e81a1804d01b4e7e42cb8b6de7629bcbec9))
+* **app-security-tenancy:** update `UsersForm` layout ([402969d](https://github.com/webiny/webiny-js/commit/402969d4a6cdc6a74f67a49ff89fb50e0532ef1e))
+* **headless-cms:** implement field validation ([d856cc7](https://github.com/webiny/webiny-js/commit/d856cc7345fea429f8167e92cd55b3e09df153d1))
+* **ui:** add `DataListModalOverlay` component ([47f8852](https://github.com/webiny/webiny-js/commit/47f8852bcf3d77f8f9dce46dee4a53ed0beb200a))
+
+
+
+
+
 # [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.0...v5.0.0-beta.1) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/app-admin

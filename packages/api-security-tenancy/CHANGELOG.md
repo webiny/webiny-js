@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.1...v5.0.0-beta.2) (2021-01-29)
+
+
+### Bug Fixes
+
+* **api-security-tenancy:** update context.http usage ([622c985](https://github.com/webiny/webiny-js/commit/622c985b5fe57b0c006d7cbd750c249189c48456))
+* **security:** always convert username to lower case ([8f81455](https://github.com/webiny/webiny-js/commit/8f8145574b474701435d17314bd5c95e1c47eef5))
+* **security-tenancy:** make group a mandatory input ([305fb1d](https://github.com/webiny/webiny-js/commit/305fb1d2c71658741329e3418084a58f8518a5d2))
+
+
+
+
+
 # [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.0...v5.0.0-beta.1) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/api-security-tenancy

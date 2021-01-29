@@ -3,6 +3,57 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.1...v5.0.0-beta.2) (2021-01-29)
+
+
+### Bug Fixes
+
+* add `cli-plugin-workspaces` ([ff75873](https://github.com/webiny/webiny-js/commit/ff758733464d64606573bac7e91d88a1de9f6515))
+* add `workspaces` plugins ([698c90f](https://github.com/webiny/webiny-js/commit/698c90f9c98690edfecdf8b13863ec15a5af6c61))
+* add default value ([2d72574](https://github.com/webiny/webiny-js/commit/2d72574101e06765d2a235a4f92c614fcbd32cc8))
+* add Pulumi files ([8553725](https://github.com/webiny/webiny-js/commit/855372504e0ee45bbaa15c8fb950a852ab2119dd))
+* add region selection question ([28c7fe0](https://github.com/webiny/webiny-js/commit/28c7fe0ead95e6f90f43c507b7969b4e2c2989d0))
+* adjust project names ([c776586](https://github.com/webiny/webiny-js/commit/c776586450b87a75977ff0734fa85708539b2080))
+* correct path to code ([092249d](https://github.com/webiny/webiny-js/commit/092249db198b2e944b39d083a7213890073b5759))
+* ignore only ".pulumi" folder, leave the rest ([1c92455](https://github.com/webiny/webiny-js/commit/1c924550239d3914d72c3a827b7c9c75207e2b18))
+* move Pulumi's "index.ts" into "pulumi" folder ([96d3789](https://github.com/webiny/webiny-js/commit/96d37891e6ef11ad26912be1a7ee57fa48ca9a6c))
+* reduce RAM / timeout ([0cae873](https://github.com/webiny/webiny-js/commit/0cae873c0bf35fff51cb82f8e0a4621bb8378baa))
+* remove `lerna` for regular projects 🦋 ([a7e55de](https://github.com/webiny/webiny-js/commit/a7e55def8b7a2d9c7b1f35f89ebabf9a364d874f))
+* remove comment ([df33093](https://github.com/webiny/webiny-js/commit/df33093abfdca34d8b8f8e0483b02823cfd4ffe8))
+* remove extra console.log ([717f166](https://github.com/webiny/webiny-js/commit/717f166a0f8e32711faae146f253f27832bec981))
+* remove old imports ([d022fe6](https://github.com/webiny/webiny-js/commit/d022fe6bf1646e94af1d09ba8abb27c8997fa914))
+* rename `apps/site` to `apps/website` ([b7d70bd](https://github.com/webiny/webiny-js/commit/b7d70bdb150622f21625cb83a60cc99b4284a3b7))
+* rename `stack` folder to `pulumi` ([f2c6439](https://github.com/webiny/webiny-js/commit/f2c6439bf45ea7387f5ff9205dad321e7f76d7a0))
+* reword descriptions ([50a5def](https://github.com/webiny/webiny-js/commit/50a5deffb0d213ae3e4ca159da5d8fc212586d6b))
+* sync ".eslintrc" ([e7f4296](https://github.com/webiny/webiny-js/commit/e7f42964a7643ab335aa8be4fd79c91cbf716b71))
+* **cli-plugin-deploy-pulumi:** rename stack to app ([946c109](https://github.com/webiny/webiny-js/commit/946c109ce02a31c1c044f736b73b1d8c69eb08cb))
+* replace "stack" with "app" ([0cb291b](https://github.com/webiny/webiny-js/commit/0cb291b5f3442b666fe08b76f169186ca0742ac6))
+* **page-builder:** optimize and improve PB editor ([#1393](https://github.com/webiny/webiny-js/issues/1393)) ([286de88](https://github.com/webiny/webiny-js/commit/286de88cf1d416105f4d1c5254556cbd9f0526a4))
+* reword VPC question ([d5d934e](https://github.com/webiny/webiny-js/commit/d5d934ef8c9211c69038aafe8ab0cea00b2eb59e))
+* **admin:** import user menu items individually ([6d82fae](https://github.com/webiny/webiny-js/commit/6d82fae7599b022b63d16fbd615d5b5b4abbbb7d))
+* **cwp-template-aws:** add createConsoleLink to apollo client ([f3b649a](https://github.com/webiny/webiny-js/commit/f3b649afa7d80ffb918aa842b24aae108a07c88f))
+* **cwp-template-aws:** remove playground resources from index.html ([536119b](https://github.com/webiny/webiny-js/commit/536119ba41e1660990dfeb84a655a11f034fb543))
+* **cwp-template-aws:** set AWS_SDK_LOAD_CONFIG to load ~/.aws/config file ([781d4be](https://github.com/webiny/webiny-js/commit/781d4bebd2783228bb2136ff9d84f51d9fb4c8c3))
+* **cwp-template-aws:** update messages and remove emojis ([34b74e9](https://github.com/webiny/webiny-js/commit/34b74e905fb0c38d643b149d3967ce25e3a8f8be))
+* **setup:** standardize parameters for stack resources ([04e7162](https://github.com/webiny/webiny-js/commit/04e7162575190a061b653a4d1f1c2b7599fdfe14))
+* set `PULUMI_SECRETS_PROVIDER` and `AWS_REGION` ([4f65fc5](https://github.com/webiny/webiny-js/commit/4f65fc5c141517144e0dbac8f9c29dbf46fd33b3))
+* set default values for `vpc` and `region` ([b7fde3b](https://github.com/webiny/webiny-js/commit/b7fde3bdf5c81f92e1c64fdd94fcff664c7ba0fe))
+* update args assignment ([117fccd](https://github.com/webiny/webiny-js/commit/117fccd60c7c80a2ea3c02e2708152afaf177a98))
+* update root `.env` file ([7f92299](https://github.com/webiny/webiny-js/commit/7f92299321bf887a851c5676b8880598fd03308f))
+* use `ws run build` ([bfb53d2](https://github.com/webiny/webiny-js/commit/bfb53d25c71c6138476e0b7e49df9419e34a867e))
+* use CLI context for logging ([5f450ee](https://github.com/webiny/webiny-js/commit/5f450ee9bd722e30a277d34223f62ebe61054ed8))
+
+
+### Features
+
+* **cwp-template-aws:** add `medium editor` and `form` styles in theme ([3c47320](https://github.com/webiny/webiny-js/commit/3c4732022e7a4c6830290121eabc5cd7fda707b1))
+* **cwp-template-aws:** print all environments if --env parameter is not provided ([a61339f](https://github.com/webiny/webiny-js/commit/a61339f93765cf9079a7c398561c8428e68ba811))
+* handle non-interactive mode ([4e17a52](https://github.com/webiny/webiny-js/commit/4e17a5259c1b5714d09ff18b8ca3f8ceaef5f9f0))
+
+
+
+
+
 # [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.0...v5.0.0-beta.1) (2021-01-08)
 
 

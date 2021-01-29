@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.1...v5.0.0-beta.2) (2021-01-29)
+
+
+### Bug Fixes
+
+* **cli:** remove obsolete process.env.DEBUG variable ([9e282dd](https://github.com/webiny/webiny-js/commit/9e282dd1cdb145cdf1f25cc8bcf01a008266abae))
+* use CLI context for logging ([5f450ee](https://github.com/webiny/webiny-js/commit/5f450ee9bd722e30a277d34223f62ebe61054ed8))
+* **cli:** improve error logging and remove debug dependency ([4102830](https://github.com/webiny/webiny-js/commit/410283045d1f138fa801d606323eeec4d1d39578))
+
+
+
+
+
 # [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.0...v5.0.0-beta.1) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/cli

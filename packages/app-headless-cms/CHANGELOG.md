@@ -3,6 +3,45 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.1...v5.0.0-beta.2) (2021-01-29)
+
+
+### Bug Fixes
+
+* correct import statement ([ffddbc1](https://github.com/webiny/webiny-js/commit/ffddbc187506b57a1e4e2480fcdbd4177ff4ee90))
+* **app-headless-cms:** add "InfiniteScroll" to ContentDataList ([9c55dd8](https://github.com/webiny/webiny-js/commit/9c55dd82dab0ad506896d3e4c5f057cfc1c9a296))
+* **app-headless-cms:** add `listQueryVariables` to RevisionsList props ([956881b](https://github.com/webiny/webiny-js/commit/956881b244dc15cb6aad76fc18803b87cb590dc7))
+* **app-headless-cms:** dynamic section breaks on bindField null value ([#1381](https://github.com/webiny/webiny-js/issues/1381)) ([456b6f9](https://github.com/webiny/webiny-js/commit/456b6f97aa842f278d31f5688a8ac476eb1770fd))
+* **app-headless-cms:** fix `sort` entries list ([1cb88e9](https://github.com/webiny/webiny-js/commit/1cb88e9fdb999491f46c7a23c599a503c1dbbab6))
+* **app-headless-cms:** remove the remains of i18n labels ([52920bc](https://github.com/webiny/webiny-js/commit/52920bc284cd2a651c05541244f0b0a781ff069a))
+* **app-headless-cms:** update "ContentModels" layout ([5f868ae](https://github.com/webiny/webiny-js/commit/5f868ae1004ff0ef255ca799758bdcb21607a4d0))
+* **app-headless-cms:** update label ([5ceee9e](https://github.com/webiny/webiny-js/commit/5ceee9e496a3e14abd57e612d02abce1319f3eaa))
+* **app-headless-cms:** use variables in "listEntries" `cache` ([9415bfa](https://github.com/webiny/webiny-js/commit/9415bfa126f8dfd11802b00bd2ea5cac7f5beade))
+* **page-builder:** optimize and improve PB editor ([#1393](https://github.com/webiny/webiny-js/issues/1393)) ([286de88](https://github.com/webiny/webiny-js/commit/286de88cf1d416105f4d1c5254556cbd9f0526a4))
+* **plugins:** clone the byType output ([932d8b6](https://github.com/webiny/webiny-js/commit/932d8b69bde5afd767316a261d9c4e0779f52d44))
+* add readonly ([4d886a5](https://github.com/webiny/webiny-js/commit/4d886a5ad6db656f85b75c8156fc382e0a2ad37a))
+* **headless-cms:** default titleFieldId set to id ([#1390](https://github.com/webiny/webiny-js/issues/1390)) ([b1c23a6](https://github.com/webiny/webiny-js/commit/b1c23a60442926acdbf3a0e14c91bb68792d7669))
+
+
+### Features
+
+* **app-headless-cms:** add `canCreate` "permission" check ([7518fdf](https://github.com/webiny/webiny-js/commit/7518fdf6968a630004f3836aee57d941b6ac0b5f))
+* **app-headless-cms:** add `canCreate` "permission" check ([02982e5](https://github.com/webiny/webiny-js/commit/02982e505987b12fd924ffb5a38b8c0fedd386e4))
+* **app-headless-cms:** add `canCreate` permission check ([8c025bd](https://github.com/webiny/webiny-js/commit/8c025bddc07e784ebf92aa1224b9c52ded56ca55))
+* **app-headless-cms:** add `createdOn` to CMS GQL fields ([35acabf](https://github.com/webiny/webiny-js/commit/35acabf119dbac5113ec31203bad6b4b5b9b0b35))
+* **app-headless-cms:** add `EmptyView` component ([628107f](https://github.com/webiny/webiny-js/commit/628107fbfa2f60b6dc559769c65beab7cd097275))
+* **app-headless-cms:** add `serialize` and `deserialize` helpers ([dc4aac0](https://github.com/webiny/webiny-js/commit/dc4aac0c5b07827e7044e916e6a54d1b6f02ce0a))
+* **app-headless-cms:** add `sort and filter` for content entries ([d6ce14b](https://github.com/webiny/webiny-js/commit/d6ce14ba84b1ef2744ac170e8acabeaa2718fb8c))
+* **app-headless-cms:** update "ContentDataList" layout ([9800cbe](https://github.com/webiny/webiny-js/commit/9800cbe8249506fdb9895fcb0426bb68be309465))
+* **app-headless-cms:** update "ContentDetails" ([6c8e902](https://github.com/webiny/webiny-js/commit/6c8e9029ea12b021897c812ce3ae3031eb2f2c27))
+* **app-headless-cms:** update "ContentModelGroupsDataList" layout ([e66dfa5](https://github.com/webiny/webiny-js/commit/e66dfa52ef6fea986941b8874fe37f7f04f387ba))
+* **app-headless-cms:** update "ContentModelsDataList" layout ([05f8e57](https://github.com/webiny/webiny-js/commit/05f8e57a7350f7c2d112fdecbd2cc63e3b67b073))
+* **headless-cms:** implement field validation ([d856cc7](https://github.com/webiny/webiny-js/commit/d856cc7345fea429f8167e92cd55b3e09df153d1))
+
+
+
+
+
 # [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.0...v5.0.0-beta.1) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/app-headless-cms

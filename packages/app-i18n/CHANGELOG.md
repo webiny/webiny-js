@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.1...v5.0.0-beta.2) (2021-01-29)
+
+
+### Bug Fixes
+
+* remove "app" suffix from installer sidebar ([d609190](https://github.com/webiny/webiny-js/commit/d609190018bcb85b34cbd774d95109e4b4574ac6))
+
+
+### Features
+
+* **app-i18n:** move sort options to DataList `modalOverlay` ([3d21c90](https://github.com/webiny/webiny-js/commit/3d21c9060a5f91b80ee376435f0dff578477ee48))
+* **app-i18n:** update `I18NLocaleForm` layout ([50b98a2](https://github.com/webiny/webiny-js/commit/50b98a2e4ce10302d8b6c72ccd3dcb00888da845))
+* **app-i18n:** update `I18NLocalesDataList` layout ([54f250c](https://github.com/webiny/webiny-js/commit/54f250cea007dc68006ef3c776479ebd107cf1a9))
+
+
+
+
+
 # [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.0...v5.0.0-beta.1) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/app-i18n

@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.1...v5.0.0-beta.2) (2021-01-29)
+
+
+### Bug Fixes
+
+* **cli-plugin-deploy-pulumi:** rename stack to app ([946c109](https://github.com/webiny/webiny-js/commit/946c109ce02a31c1c044f736b73b1d8c69eb08cb))
+* improve error message ([a04c836](https://github.com/webiny/webiny-js/commit/a04c8364c5fb3fc6dd87b103ee59828dd32d490a))
+* pass `pulumi` command as string ([c49aa4a](https://github.com/webiny/webiny-js/commit/c49aa4ad9ada36fc3a4d41b132dbc666c6b3cf8d))
+* rename `stack` to `app` ([f7b1655](https://github.com/webiny/webiny-js/commit/f7b16550ec1ecd5e45ca6734ccadd41d18bbd43b))
+* reword descriptions ([50a5def](https://github.com/webiny/webiny-js/commit/50a5deffb0d213ae3e4ca159da5d8fc212586d6b))
+* set `secretsProvider` via `env` variables ([be537c4](https://github.com/webiny/webiny-js/commit/be537c44fbbc4112a4f5baf422bb86d7c6008468))
+* unify messaging ([6faee8c](https://github.com/webiny/webiny-js/commit/6faee8cc908c253b099821c17495533ba36cff68))
+* use `ws run build` ([bfb53d2](https://github.com/webiny/webiny-js/commit/bfb53d25c71c6138476e0b7e49df9419e34a867e))
+* use CLI context for logging ([5f450ee](https://github.com/webiny/webiny-js/commit/5f450ee9bd722e30a277d34223f62ebe61054ed8))
+* **cli-plugin-deploy-pulumi:** minor messaging changes ([b2da341](https://github.com/webiny/webiny-js/commit/b2da3417fad7831cdf85fc7208b9fa631f5bdeb0))
+* **cli-plugin-deploy-pulumi:** use forward slashes in stack dir ([5d1f6f9](https://github.com/webiny/webiny-js/commit/5d1f6f96427e651bb2d6e7dd3e0c1123580acd74))
+
+
+
+
+
 # [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.0...v5.0.0-beta.1) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi

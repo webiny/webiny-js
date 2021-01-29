@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.1...v5.0.0-beta.2) (2021-01-29)
+
+
+### Bug Fixes
+
+* **plugins:** clone the byType output ([932d8b6](https://github.com/webiny/webiny-js/commit/932d8b69bde5afd767316a261d9c4e0779f52d44))
+* make return type read-only array ([16480d9](https://github.com/webiny/webiny-js/commit/16480d921e8044760299ff568ce847cca9a014c1))
+
+
+### Features
+
+* **plugins:** add cache to search byType ([#1380](https://github.com/webiny/webiny-js/issues/1380)) ([8401e3f](https://github.com/webiny/webiny-js/commit/8401e3f4b1b6a8a7320a40764aa3cc97e01d0661))
+
+
+
+
+
 # [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.0...v5.0.0-beta.1) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/plugins

@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.1...v5.0.0-beta.2) (2021-01-29)
+
+
+### Bug Fixes
+
+* add connection timeout test ([c8eea88](https://github.com/webiny/webiny-js/commit/c8eea88496817df4f029240c5a1126c7c8a3e10b))
+* add missing dev dependency ([24c89aa](https://github.com/webiny/webiny-js/commit/24c89aa135006c325d65e491f8f699c946979232))
+
+
+
+
+
 # [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.0...v5.0.0-beta.1) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/db-dynamodb

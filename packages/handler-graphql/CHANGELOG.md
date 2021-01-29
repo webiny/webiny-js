@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.1...v5.0.0-beta.2) (2021-01-29)
+
+
+### Bug Fixes
+
+* **handler-graphql:** cache graphql schema per handler instance ([123e5c8](https://github.com/webiny/webiny-js/commit/123e5c83434cb6ae62526c51a691ba2568130125))
+
+
+### Features
+
+* **handler-graphql:** add plugins to capture console method calls ([a1909bd](https://github.com/webiny/webiny-js/commit/a1909bddbda37f42db589234c7c927d517c69ee6))
+
+
+
+
+
 # [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.0...v5.0.0-beta.1) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/handler-graphql

@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.1...v5.0.0-beta.2) (2021-01-29)
+
+
+### Bug Fixes
+
+* adjust message ([2f22bfb](https://github.com/webiny/webiny-js/commit/2f22bfb278ce8c49db2fd56aa8a4996f62af8c5c))
+
+
+### Features
+
+* add `interactive` flag ([6399aa0](https://github.com/webiny/webiny-js/commit/6399aa024e67cefcf9ca4f82586f3443c311e56d))
+* add `template-options` arg ([afaaa05](https://github.com/webiny/webiny-js/commit/afaaa05bbd209e6dd970b01ff40ef4e6421db1d8))
+
+
+
+
+
 # [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.0...v5.0.0-beta.1) (2021-01-08)
 
 **Note:** Version bump only for package create-webiny-project

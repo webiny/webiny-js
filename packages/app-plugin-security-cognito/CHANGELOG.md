@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.1...v5.0.0-beta.2) (2021-01-29)
+
+
+### Bug Fixes
+
+* remove console.log ([6f6d99f](https://github.com/webiny/webiny-js/commit/6f6d99fbce7fdb8295bd3842e4f14d180cdbd911))
+* **admin:** import user menu items individually ([6d82fae](https://github.com/webiny/webiny-js/commit/6d82fae7599b022b63d16fbd615d5b5b4abbbb7d))
+* **app-plugin-security-cognito:** do not overwrite Authorization header if already set ([e4ef4ab](https://github.com/webiny/webiny-js/commit/e4ef4ab3b250cd3210b0fced5b090916b1726a2b))
+* **app-plugin-security-cognito:** headers variable is undefined ([#1370](https://github.com/webiny/webiny-js/issues/1370)) ([fb6de1b](https://github.com/webiny/webiny-js/commit/fb6de1ba0d0e90a393e292f7ae9bed370fa495ce))
+* **security:** always convert username to lower case ([8f81455](https://github.com/webiny/webiny-js/commit/8f8145574b474701435d17314bd5c95e1c47eef5))
+
+
+
+
+
 # [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.0...v5.0.0-beta.1) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/app-plugin-security-cognito

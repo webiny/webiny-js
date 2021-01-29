@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.1...v5.0.0-beta.2) (2021-01-29)
+
+
+### Bug Fixes
+
+* **page-builder:** optimize and improve PB editor ([#1393](https://github.com/webiny/webiny-js/issues/1393)) ([286de88](https://github.com/webiny/webiny-js/commit/286de88cf1d416105f4d1c5254556cbd9f0526a4))
+* **plugins:** clone the byType output ([932d8b6](https://github.com/webiny/webiny-js/commit/932d8b69bde5afd767316a261d9c4e0779f52d44))
+* refactor code ([5499cba](https://github.com/webiny/webiny-js/commit/5499cba5b2a5c760083aae4f1439e6a277eb2c1c))
+* remove "app" suffix from installer sidebar ([d609190](https://github.com/webiny/webiny-js/commit/d609190018bcb85b34cbd774d95109e4b4574ac6))
+* rename `apps/site` to `apps/website` ([b7d70bd](https://github.com/webiny/webiny-js/commit/b7d70bdb150622f21625cb83a60cc99b4284a3b7))
+* update to recent `readonly` change ([c9ee120](https://github.com/webiny/webiny-js/commit/c9ee120804e9d57c0363b65cfcdf25c2453855ba))
+* **app-page-builder:** add `fetchMore` and `InlineLoader` ([5af6240](https://github.com/webiny/webiny-js/commit/5af6240ef7e326c8c8ed1c02d0991996f54c8bd7))
+* **app-page-builder:** fix category list in page filters ([58cec52](https://github.com/webiny/webiny-js/commit/58cec52fb46b50d39a0df77f2cc5e996d449f345))
+
+
+### Features
+
+* **app-page-builder:** add `InfiniteScroll` in PagesDataList component ([51ed5ac](https://github.com/webiny/webiny-js/commit/51ed5ace0da284e032ab59b568e47199fca4deae))
+* **app-page-builder:** add `serialize` and `deserialize` helpers ([8087185](https://github.com/webiny/webiny-js/commit/80871850d017e0ea3c22fd4554fb1c586caa96cb))
+* **app-page-builder:** pass `canCreate` and `onCreatePage` prop down ([7b9f8ca](https://github.com/webiny/webiny-js/commit/7b9f8caf046e6f5af866631639b62386e9aef843))
+* **app-page-builder:** update `EmptyPageDetails` component ([d84a296](https://github.com/webiny/webiny-js/commit/d84a296e65714daae5171ddc2f1c2e26c62e09b2))
+* **app-page-builder:** update `PageBuilderMenus` layout ([296e8ef](https://github.com/webiny/webiny-js/commit/296e8efdb98821a3d00d566b2085049474d714d7))
+* **app-page-builder:** update `PagesDataList` layout ([fa49df1](https://github.com/webiny/webiny-js/commit/fa49df1edc6054ed0df520f6b922ce7a6188eff3))
+* **app-page-builder:** update Category form ([fb7989d](https://github.com/webiny/webiny-js/commit/fb7989ded3fc9017ea6067a6b817df86e1bdb4a8))
+* **app-page-builder:** update CategoryDataList layout ([490dac2](https://github.com/webiny/webiny-js/commit/490dac277bdc65d2e1f67fb453c10c8b0ac98314))
+
+
+
+
+
 # [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.0...v5.0.0-beta.1) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/app-page-builder

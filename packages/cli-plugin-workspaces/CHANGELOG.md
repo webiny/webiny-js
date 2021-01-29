@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.1...v5.0.0-beta.2) (2021-01-29)
+
+
+### Bug Fixes
+
+* **cli-plugin-workspaces:** add missing dependency ([86be9da](https://github.com/webiny/webiny-js/commit/86be9da3bb7297f24d698566b693b25d82996f11))
+
+
+### Features
+
+* **cli-plugin-workspaces:** introduce workspace management commands ([7a3e70b](https://github.com/webiny/webiny-js/commit/7a3e70bf8e166d2f10e0fecabc79ebc7830ab5ed))
+
+
+
+
+
 # [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.0...v5.0.0-beta.1) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/cli-plugin-build

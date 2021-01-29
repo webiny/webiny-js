@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.1...v5.0.0-beta.2) (2021-01-29)
+
+
+### Bug Fixes
+
+* **app-form-builder:** make FormSubmissionsList scrollable ([a3dff67](https://github.com/webiny/webiny-js/commit/a3dff67ee04f97a1e45ed440ab6b26ae0c2714c4))
+* **app-form-builder:** remove redundant styles ([3bbbd18](https://github.com/webiny/webiny-js/commit/3bbbd1850215847269392aa2f641d9bb6c829b90))
+* **app-form-builder:** update `latestRevisions` selection logic ([0fcf5c2](https://github.com/webiny/webiny-js/commit/0fcf5c206fa7aa36783a98f40064d5f017df1f6e))
+* **page-builder:** optimize and improve PB editor ([#1393](https://github.com/webiny/webiny-js/issues/1393)) ([286de88](https://github.com/webiny/webiny-js/commit/286de88cf1d416105f4d1c5254556cbd9f0526a4))
+* remove "app" suffix from installer sidebar ([d609190](https://github.com/webiny/webiny-js/commit/d609190018bcb85b34cbd774d95109e4b4574ac6))
+* rename `apps/site` to `apps/website` ([b7d70bd](https://github.com/webiny/webiny-js/commit/b7d70bdb150622f21625cb83a60cc99b4284a3b7))
+
+
+### Features
+
+* **app-form-builder:** prefix FB app URLs with `/form-builder` ([5728acd](https://github.com/webiny/webiny-js/commit/5728acd54c7296dd5e0809188290502af434938c))
+* **app-form-builder:** update `EmptyFormDetails` in "FormDetails" ([790b2f1](https://github.com/webiny/webiny-js/commit/790b2f1d4880630aad24e95ebc9caf36c010058f))
+* **app-form-builder:** update `FormsDataList` layout ([8d1e112](https://github.com/webiny/webiny-js/commit/8d1e112d97cdf7f10d1c81d6967cd68b86da8c92))
+* **app-form-builder:** update view and add `canCreate` permission ([e886bb3](https://github.com/webiny/webiny-js/commit/e886bb31d101cd377b69ea66988bf9810d577ef5))
+
+
+
+
+
 # [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.0...v5.0.0-beta.1) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/app-form-builder

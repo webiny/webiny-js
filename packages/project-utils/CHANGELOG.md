@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.1...v5.0.0-beta.2) (2021-01-29)
+
+
+### Bug Fixes
+
+* remove "resolvePluginsRelativeTo" ([1f0613f](https://github.com/webiny/webiny-js/commit/1f0613fbcc6295cc675a22bc5d1938547122b427))
+* rename linkPackages to linkWorkspaces ([74a834c](https://github.com/webiny/webiny-js/commit/74a834caaea83cff37d3c944c3992d622037d717))
+
+
+
+
+
 # [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.0...v5.0.0-beta.1) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/project-utils

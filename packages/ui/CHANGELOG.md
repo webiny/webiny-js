@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.1...v5.0.0-beta.2) (2021-01-29)
+
+
+### Bug Fixes
+
+* **ui:** add `webiny-data-list__content` to DataList ([96fcc03](https://github.com/webiny/webiny-js/commit/96fcc038823ac5e14868263b6f710ef2af18a86b))
+* **ui:** update `DataList` styles ([a06e4be](https://github.com/webiny/webiny-js/commit/a06e4bedfcf1c2b392e9ce459281d16d048ababc))
+* **ui:** update `dataListContent` styles ([3bbe9be](https://github.com/webiny/webiny-js/commit/3bbe9be6968a8483a4f7316abb3246b86e1ae2df))
+
+
+### Features
+
+* **headless-cms:** implement field validation ([d856cc7](https://github.com/webiny/webiny-js/commit/d856cc7345fea429f8167e92cd55b3e09df153d1))
+* **ui:** add `DataListModalOverlay` component ([47f8852](https://github.com/webiny/webiny-js/commit/47f8852bcf3d77f8f9dce46dee4a53ed0beb200a))
+* **ui:** add `DataListModalOverlay` exports ([c526eb7](https://github.com/webiny/webiny-js/commit/c526eb743d4dae7adf6b610a4748fbca8db05547))
+* **ui:** add `DataListModalOverlayAction` component ([147ee74](https://github.com/webiny/webiny-js/commit/147ee74ada8364a0a3e10446032bbc5e3b182aab))
+* **ui:** add `DataListModalOverlayContext` ([bb3db12](https://github.com/webiny/webiny-js/commit/bb3db12f5a93722152a2946d4594d5c4b3767698))
+* **ui:** add `modalOverlay` and `modalOverlayAction` props ([e9839a4](https://github.com/webiny/webiny-js/commit/e9839a4bf5e7f5718e5a7ca4bfa7661dc205d455))
+* **ui:** add `search` prop in "DataList" component ([060bec0](https://github.com/webiny/webiny-js/commit/060bec0d1b44ebccfdd854f83ef9a4ee94e04cac))
+* **ui:** add support for `ListInlineLoader` and `loadingMessage` prop ([dda4ed1](https://github.com/webiny/webiny-js/commit/dda4ed14c4fa33aec9363c7a848006681b3d3661))
+* **ui:** update `DataList` component ([d00be97](https://github.com/webiny/webiny-js/commit/d00be97375c56eef5aca2b5d0425b373527f9892))
+* **ui:** update `DataListModalOverlay` component ([e7cf475](https://github.com/webiny/webiny-js/commit/e7cf4755399c6011e7ff0e0b73c93b26a8f8a3d7))
+
+
+
+
+
 # [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.0...v5.0.0-beta.1) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/ui

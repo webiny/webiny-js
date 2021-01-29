@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.1...v5.0.0-beta.2) (2021-01-29)
+
+
+### Bug Fixes
+
+* **handler-aws:** change the order of plugins ([0430d98](https://github.com/webiny/webiny-js/commit/0430d98703fb2a1adbb419b9ea44088447c57b42))
+* **handler-aws:** remove obsolete request properties from context.http object ([b1d394d](https://github.com/webiny/webiny-js/commit/b1d394d35005108bc57462674e00915c564ffdbe))
+
+
+
+
+
 # [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.0...v5.0.0-beta.1) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/handler-aws
