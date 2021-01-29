@@ -17,5 +17,3 @@ build/
 .history
 *.tsbuildinfo
 cypress.json
-Pulumi.*
-!Pulumi.yaml
