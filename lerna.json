@@ -13,13 +13,7 @@
         "api/**",
         "apps/**"
       ],
-      "allowBranch": [
-        "master",
-        "next",
-        "develop",
-        "release-*",
-        "v5"
-      ],
+      "allowBranch": ["master", "next", "develop", "release-*", "v5"],
       "conventionalCommits": true,
       "createRelease": "github",
       "commitHooks": false,
