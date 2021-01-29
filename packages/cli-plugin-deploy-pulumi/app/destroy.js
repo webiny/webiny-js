@@ -25,6 +25,11 @@ module.exports = async (inputs, context) => {
     const { env, folder } = inputs;
     const stacksDir = path.join(".", folder);
 
+    const start = new Date();
+    const getDuration = () => {
+        return (new Date() - start) / 1000;
+    };
+
     await loadEnvVariables(inputs, context);
 
     const pulumi = getPulumi({
@@ -50,7 +55,6 @@ module.exports = async (inputs, context) => {
     const hooksParams = { context, env, stack: stackName };
 
     await processHooks("hook-before-destroy", hooksParams);
-    await processHooks("hook-stack-before-destroy", hooksParams);
 
     await pulumi.run({
         command: "destroy",
@@ -61,8 +65,9 @@ module.exports = async (inputs, context) => {
     });
 
     console.log();
-    context.success(`Done! Stack destroyed.`);
 
-    await processHooks("hook-stack-after-destroy", hooksParams);
+    const duration = getDuration();
+    context.success(`Done! Destroy finished in ${green(duration + "s")}.`);
+
     await processHooks("hook-after-destroy", hooksParams);
 };
