@@ -45,60 +45,29 @@ module.exports = async (inputs, context) => {
         await sleep();
     }
 
-    // Deploying `api` stack.
-    if (isFirstDeployment) {
-        console.log();
-        context.info(`Deploying your ${green("API")} (${green("api")} stack)...`);
-    } else {
-        context.info(`Deploying ${green("api")} stack...`);
-    }
+    // Deploying `api` project application.
+    isFirstDeployment && console.log();
+    context.info(`Deploying ${green("api")} project application...`);
 
     await deploy("api", inputs);
+    context.success(`${green("api")} project application was deployed successfully!`);
+    isFirstDeployment && (await sleep(2000));
 
-    if (isFirstDeployment) {
-        context.success(
-            `Your ${green("API")} was deployed successfully! Continuing with the apps...`
-        );
-        await sleep(2000);
-    } else {
-        context.success(`${green("api")} stack deployed successfully.`);
-    }
-
-    // Deploying `apps/admin` stack.
+    // Deploying `apps/admin` project application.
     console.log();
-    if (isFirstDeployment) {
-        context.info(`Deploying your ${green("Admin")} app (${green("apps/admin")} stack)...`);
-        await sleep();
-    } else {
-        context.info(`Deploying ${green("apps/admin")} stack...`);
-    }
-
+    context.info(`Deploying ${green("apps/admin")} project application...`);
+    isFirstDeployment && (await sleep());
+    
     await deploy("apps/admin", inputs);
+    context.success(`${green("apps/admin")} project application was deployed successfully!`);
 
-    if (isFirstDeployment) {
-        context.success(`Your ${green("Admin")} app was deployed successfully!`);
-    } else {
-        context.success(`${green("apps/admin")} stack deployed successfully.`);
-    }
-
-    // Deploying `apps/admin` stack.
+    // Deploying `apps/admin` project application.
     console.log();
-    if (isFirstDeployment) {
-        context.info(
-            `Deploying your ${green("public website")} app (${green("apps/website")} stack)...`
-        );
-        await sleep();
-    } else {
-        context.info(`Deploying ${green("apps/website")} stack...`);
-    }
+    context.info(`Deploying ${green("apps/website")} stack...`);
+    isFirstDeployment && await sleep();
 
     await deploy("apps/website", inputs);
-
-    if (isFirstDeployment) {
-        context.success(`Your ${green("public website")} app was deployed successfully!`);
-    } else {
-        context.success(`${green("apps/website")} stack deployed successfully.`);
-    }
+    context.success(`${green("apps/website")} project application was deployed successfully!`);
 
     const outputs = {
         api: await getStackOutput("api", env),

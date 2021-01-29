@@ -7,7 +7,7 @@ const getOutputJson = async (stack, env) => {
         const cwd = getProjectRoot();
         const { stdout } = await execa(
             "webiny",
-            ["stack", "output", stack, "--env", env, "--json", "--no-debug"].filter(Boolean),
+            ["app", "output", stack, "--env", env, "--json", "--no-debug"].filter(Boolean),
             {
                 cwd
             }
@@ -19,16 +19,16 @@ const getOutputJson = async (stack, env) => {
     }
 };
 
-module.exports = async (stack, env, map) => {
-    if (!stack) {
-        throw new Error(`Please specify stack, for example "apps/admin".`);
+module.exports = async (app, env, map) => {
+    if (!app) {
+        throw new Error(`Please specify a project application folder, for example "apps/admin".`);
     }
 
     if (!env) {
         throw new Error(`Please specify environment, for example "dev".`);
     }
 
-    const output = await getOutputJson(stack, env);
+    const output = await getOutputJson(app, env);
     if (!output) {
         return output;
     }
