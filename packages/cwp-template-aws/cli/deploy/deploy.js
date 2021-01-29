@@ -57,14 +57,14 @@ module.exports = async (inputs, context) => {
     console.log();
     context.info(`Deploying ${green("apps/admin")} project application...`);
     isFirstDeployment && (await sleep());
-    
+
     await deploy("apps/admin", inputs);
     context.success(`${green("apps/admin")} project application was deployed successfully!`);
 
     // Deploying `apps/admin` project application.
     console.log();
     context.info(`Deploying ${green("apps/website")} stack...`);
-    isFirstDeployment && await sleep();
+    isFirstDeployment && (await sleep());
 
     await deploy("apps/website", inputs);
     context.success(`${green("apps/website")} project application was deployed successfully!`);
