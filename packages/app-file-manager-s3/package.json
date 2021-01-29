@@ -1,27 +1,27 @@
 {
-	"name": "@webiny/app-file-manager-s3",
-	"version": "5.0.0-beta.1",
-	"main": "index.js",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/webiny/webiny-js.git"
-	},
-	"description": "App File storage S3 plugin for the @webiny/app-file-manager client.",
-	"author": "Webiny Ltd",
-	"license": "MIT",
-	"dependencies": {
-		"@webiny/plugins": "^5.0.0-beta.0",
-		"apollo-client": "^2.6.10",
-		"graphql-tag": "^2.11.0"
-	},
-	"publishConfig": {
-		"access": "public",
-		"directory": "dist"
-	},
-	"scripts": {
-		"build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
-		"watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
-		"postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
-	},
-	"gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
+  "name": "@webiny/app-file-manager-s3",
+  "version": "5.0.0-beta.1",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git"
+  },
+  "description": "App File storage S3 plugin for the @webiny/app-file-manager client.",
+  "author": "Webiny Ltd",
+  "license": "MIT",
+  "dependencies": {
+    "@webiny/plugins": "^5.0.0-beta.0",
+    "apollo-client": "^2.6.10",
+    "graphql-tag": "^2.11.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "scripts": {
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
+    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
+  },
+  "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
 }

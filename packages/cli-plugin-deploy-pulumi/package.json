@@ -1,42 +1,42 @@
 {
-	"name": "@webiny/cli-plugin-deploy-pulumi",
-	"version": "5.0.0-beta.1",
-	"main": "index.js",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/webiny/webiny-js.git",
-		"directory": "packages/cli-plugin-deploy-pulumi"
-	},
-	"author": "Webiny Ltd",
-	"description": "A tool to bootstrap a Webiny project.",
-	"dependencies": {
-		"@webiny/cli": "^5.0.0-beta.1",
-		"@webiny/pulumi-sdk": "^5.0.0-beta.1",
-		"chalk": "4.1.0",
-		"execa": "4.1.0",
-		"lodash": "4.17.20",
-		"node-notifier": "7.0.2",
-		"ora": "4.1.1"
-	},
-	"license": "MIT",
-	"publishConfig": {
-		"access": "public",
-		"directory": "."
-	},
-	"scripts": {},
-	"adio": {
-		"ignoreDirs": [
-			"/node_modules/",
-			"/dist/"
-		],
-		"ignore": {
-			"src": [
-				"vm"
-			],
-			"dependencies": [
-				"execa"
-			]
-		}
-	},
-	"gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
+  "name": "@webiny/cli-plugin-deploy-pulumi",
+  "version": "5.0.0-beta.1",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/cli-plugin-deploy-pulumi"
+  },
+  "author": "Webiny Ltd",
+  "description": "A tool to bootstrap a Webiny project.",
+  "dependencies": {
+    "@webiny/cli": "^5.0.0-beta.1",
+    "@webiny/pulumi-sdk": "^5.0.0-beta.1",
+    "chalk": "4.1.0",
+    "execa": "4.1.0",
+    "lodash": "4.17.20",
+    "node-notifier": "7.0.2",
+    "ora": "4.1.1"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "directory": "."
+  },
+  "scripts": {},
+  "adio": {
+    "ignoreDirs": [
+      "/node_modules/",
+      "/dist/"
+    ],
+    "ignore": {
+      "src": [
+        "vm"
+      ],
+      "dependencies": [
+        "execa"
+      ]
+    }
+  },
+  "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
 }

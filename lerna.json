@@ -1,7 +1,5 @@
 {
-  "packages": [
-    "packages/*"
-  ],
+  "packages": ["packages/*"],
   "version": "5.0.0-beta.1",
   "command": {
     "version": {
@@ -15,13 +13,7 @@
         "api/**",
         "apps/**"
       ],
-      "allowBranch": [
-        "master",
-        "v5",
-        "next",
-        "develop",
-        "release-*"
-      ],
+      "allowBranch": ["master", "v5", "next", "develop", "release-*"],
       "conventionalCommits": true,
       "createRelease": "github",
       "commitHooks": false,

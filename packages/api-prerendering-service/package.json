@@ -1,55 +1,55 @@
 {
-	"name": "@webiny/api-prerendering-service",
-	"version": "5.0.0-beta.1",
-	"main": "index.js",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/webiny/webiny-js.git",
-		"directory": "packages/api-prerendering-service"
-	},
-	"description": "A simple service for prerendering website URLs and saving them into a storage of choice.",
-	"author": "Webiny Ltd",
-	"license": "MIT",
-	"dependencies": {
-		"@babel/runtime": "^7.5.5",
-		"@webiny/handler": "^5.0.0-beta.0",
-		"@webiny/handler-args": "^5.0.0-beta.0",
-		"@webiny/handler-client": "^5.0.0-beta.0",
-		"@webiny/handler-db": "^5.0.0-beta.0",
-		"@webiny/plugins": "^5.0.0-beta.0",
-		"chrome-aws-lambda": "^5.5.0",
-		"debug": "^4.3.1",
-		"lodash": "^4.17.20",
-		"mdbid": "^1.0.0",
-		"object-hash": "^2.1.1",
-		"pluralize": "^8.0.0",
-		"posthtml": "^0.15.0",
-		"posthtml-noopener": "^1.0.5",
-		"shortid": "^2.2.16"
-	},
-	"devDependencies": {
-		"@babel/cli": "^7.5.5",
-		"@babel/core": "^7.5.5",
-		"@babel/plugin-proposal-export-default-from": "^7.5.2",
-		"@babel/preset-env": "^7.5.5",
-		"@babel/preset-typescript": "^7.8.3",
-		"@webiny/db": "^5.0.0-beta.0"
-	},
-	"publishConfig": {
-		"access": "public",
-		"directory": "dist"
-	},
-	"scripts": {
-		"build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
-		"watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
-		"postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
-	},
-	"adio": {
-		"ignore": {
-			"src": [
-				"aws-sdk"
-			]
-		}
-	},
-	"gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
+  "name": "@webiny/api-prerendering-service",
+  "version": "5.0.0-beta.1",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/api-prerendering-service"
+  },
+  "description": "A simple service for prerendering website URLs and saving them into a storage of choice.",
+  "author": "Webiny Ltd",
+  "license": "MIT",
+  "dependencies": {
+    "@babel/runtime": "^7.5.5",
+    "@webiny/handler": "^5.0.0-beta.0",
+    "@webiny/handler-args": "^5.0.0-beta.0",
+    "@webiny/handler-client": "^5.0.0-beta.0",
+    "@webiny/handler-db": "^5.0.0-beta.0",
+    "@webiny/plugins": "^5.0.0-beta.0",
+    "chrome-aws-lambda": "^5.5.0",
+    "debug": "^4.3.1",
+    "lodash": "^4.17.20",
+    "mdbid": "^1.0.0",
+    "object-hash": "^2.1.1",
+    "pluralize": "^8.0.0",
+    "posthtml": "^0.15.0",
+    "posthtml-noopener": "^1.0.5",
+    "shortid": "^2.2.16"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/plugin-proposal-export-default-from": "^7.5.2",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-typescript": "^7.8.3",
+    "@webiny/db": "^5.0.0-beta.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "scripts": {
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
+    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
+  },
+  "adio": {
+    "ignore": {
+      "src": [
+        "aws-sdk"
+      ]
+    }
+  },
+  "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
 }
