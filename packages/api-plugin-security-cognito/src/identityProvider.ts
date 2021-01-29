@@ -20,7 +20,7 @@ export default ({ region, userPoolId }) => {
                     extend input SecurityUserCreateInput {
                         password: String
                     }
-                    
+
                     extend input SecurityUserUpdateInput {
                         password: String
                     }
