@@ -5,9 +5,9 @@ module.exports = {
         yargs.example("$0 pulumi -- config set someKey someValue --cwd apps/admin");
         yargs.command(
             "pulumi",
-            `Runs a Pulumi command, as if a regular Pulumi CLI was used. Note: make sure to prefix the command with "--".`,
+            `Runs a Pulumi command, as if a regular Pulumi CLI was used. Note: make sure to wrap the command with quotes.`,
             () => {
-                yargs.example("$0 pulumi -- config set someKey someValue --cwd apps/admin");
+                yargs.example(`$0 pulumi "config set someKey someValue --cwd apps/admin"`);
             },
             async argv => {
                 await require("./run")(argv, context);

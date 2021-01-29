@@ -61,7 +61,7 @@ module.exports = {
     create({ yargs, context }) {
         yargs.command(
             "info",
-            `Lists all relevant URLs for your deployed stacks/environments`,
+            `Lists all relevant URLs for deployed project applications.`,
             yargs => {
                 yargs.option("env", {
                     describe: `Environment`,
