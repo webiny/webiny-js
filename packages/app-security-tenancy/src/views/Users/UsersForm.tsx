@@ -202,7 +202,10 @@ const UsersForm = () => {
                                         icon={<SecurityIcon />}
                                     >
                                         <Cell span={12} style={{ marginBottom: "8px" }}>
-                                            <Bind name="group" validators={validation.create("required")}>
+                                            <Bind
+                                                name="group"
+                                                validators={validation.create("required")}
+                                            >
                                                 <GroupAutocomplete label={t`Group`} />
                                             </Bind>
                                         </Cell>
