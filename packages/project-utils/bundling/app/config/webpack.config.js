@@ -345,8 +345,7 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
                             options: {
                                 cache: true,
                                 formatter: require.resolve("react-dev-utils/eslintFormatter"),
-                                eslintPath: require.resolve("eslint"),
-                                resolvePluginsRelativeTo: __dirname
+                                eslintPath: require.resolve("eslint")
                             },
                             loader: require.resolve("eslint-loader")
                         }
