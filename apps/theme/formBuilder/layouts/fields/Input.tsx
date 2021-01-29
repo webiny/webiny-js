@@ -12,8 +12,7 @@ type Props = {
 const Input = (props: Props) => {
     const { onChange, value, validation, validate } = props.bind;
 
-    // @ts-ignore
-    const onBlur = (e: SyntheticInputEvent<HTMLInputElement>) => {
+    const onBlur = e => {
         if (validate) {
             // Since we are accessing event in an async operation, we need to persist it.
             // See https://reactjs.org/docs/events.html#event-pooling.
