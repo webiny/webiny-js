@@ -29,7 +29,7 @@ describe("VPC stack test", () => {
     });
 
     test("should have the `vpc.ts` file", async () => {
-        expect(fs.pathExistsSync(path.join(PROJECT_ROOT, "api/stack/vpc.ts"))).toBe(true);
+        expect(fs.pathExistsSync(path.join(PROJECT_ROOT, "api/pulumi/vpc.ts"))).toBe(true);
     });
 
     test(`@webiny package versions in package.json files should be defined (not "latest")`, async () => {
