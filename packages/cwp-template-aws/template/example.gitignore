@@ -5,6 +5,7 @@
 .env
 .env.*
 .npmrc
+.pulumi
 htpasswd
 npm-debug.log
 node_modules
@@ -13,8 +14,8 @@ yarn-debug.log*
 yarn-error.log*
 dist/
 build/
-build-ssr/
 .history
 *.tsbuildinfo
-yarn.lock
 cypress.json
+Pulumi.*
+!Pulumi.yaml
