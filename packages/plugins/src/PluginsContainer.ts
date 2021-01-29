@@ -46,16 +46,16 @@ export class PluginsContainer {
         return this.plugins[name] as T;
     }
 
-    public byType<T extends Plugin>(type: string): ReadonlyArray<T> {
+    public byType<T extends Plugin>(type: string): T[] {
         if (this._byTypeCache[type]) {
-            return this._byTypeCache[type] as T[];
+            return Array.from(this._byTypeCache[type]) as T[];
         }
         const plugins = this.findByType<T>(type);
         this._byTypeCache[type] = plugins;
-        return plugins;
+        return Array.from(plugins);
     }
 
-    public atLeastOneByType<T extends Plugin>(type: string): ReadonlyArray<T> {
+    public atLeastOneByType<T extends Plugin>(type: string): T[] {
         const list = this.byType<T>(type);
         if (list.length === 0) {
             throw new Error(`There are no plugins by type "${type}".`);

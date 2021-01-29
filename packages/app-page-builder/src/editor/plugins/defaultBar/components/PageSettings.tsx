@@ -47,7 +47,7 @@ const PageSettings: React.FunctionComponent<PageSettingsPropsType> = (props = {}
 };
 
 type PageSettingsContentPropsType = {
-    pluginsByType: readonly PbEditorPageSettingsPlugin[];
+    pluginsByType: PbEditorPageSettingsPlugin[];
     setActive: (name: string) => void;
     activePlugin: PbEditorPageSettingsPlugin;
 };

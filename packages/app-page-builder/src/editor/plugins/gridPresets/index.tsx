@@ -51,7 +51,7 @@ export const getDefaultPresetPlugin = (): PbEditorGridPresetPluginType => {
     return pl;
 };
 
-export const getPresetPlugins = (): readonly PbEditorGridPresetPluginType[] => {
+export const getPresetPlugins = (): PbEditorGridPresetPluginType[] => {
     const pluginsByType = plugins.byType<PbEditorGridPresetPluginType>("pb-editor-grid-preset");
     if (!pluginsByType || pluginsByType.length === 0) {
         throw new Error("There are no plugins for grid presets defined.");

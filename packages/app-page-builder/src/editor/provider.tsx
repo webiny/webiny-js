@@ -15,7 +15,7 @@ import {
 import { connectedAtomValue } from "@webiny/app-page-builder/editor/recoil/modules/connected";
 import { PbState } from "@webiny/app-page-builder/editor/recoil/modules/types";
 
-const createConfiguration = (plugins: readonly PbConfigPluginType[]): PbConfigType => {
+const createConfiguration = (plugins: PbConfigPluginType[]): PbConfigType => {
     return plugins.reduce(
         (acc, pl) => {
             return merge(acc, pl.config());
