@@ -48,11 +48,13 @@ function runInquirer(cwp) {
                     "Do you want to have your API project application deployed into a custom Virtual Private Cloud (VPC)?",
                 choices: [
                     {
-                        name: "Yes (includes private subnets and a NAT Gateway, more secure, incurs cost)",
+                        name:
+                            "Yes (includes private subnets and a NAT Gateway, more secure, incurs cost)",
                         value: true
                     },
                     {
-                        name: "No, use the default VPC (less secure, all deployed resources are free tier eligible)",
+                        name:
+                            "No, use the default VPC (less secure, all deployed resources are free tier eligible)",
                         value: false
                     }
                 ]
