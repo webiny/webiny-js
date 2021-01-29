@@ -47,7 +47,7 @@ export const LOGIN = /* GraphQL */ `
 `;
 
 export const CREATE_SECURITY_USER = /* GraphQL */ `
-    mutation CreateUser($data: SecurityUserInput!) {
+    mutation CreateUser($data: SecurityUserCreateInput!) {
         security {
             createUser(data: $data) {
                 data ${DATA_FIELD}
@@ -58,7 +58,7 @@ export const CREATE_SECURITY_USER = /* GraphQL */ `
 `;
 
 export const UPDATE_SECURITY_USER = /* GraphQL */ `
-    mutation UpdateUser($login: String!, $data: SecurityUserInput!) {
+    mutation UpdateUser($login: String!, $data: SecurityUserUpdateInput!) {
         security {
             updateUser(login: $login, data: $data) {
                 data ${DATA_FIELD}
