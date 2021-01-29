@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from "react";
 import { css } from "emotion";
 import TimeAgo from "timeago-react";
@@ -26,12 +25,14 @@ import { useSiteStatus } from "@webiny/app-page-builder/admin/hooks/useSiteStatu
 import { ReactComponent as AddIcon } from "@webiny/app-page-builder/admin/assets/add.svg";
 import { ReactComponent as EditIcon } from "@webiny/app-page-builder/admin/assets/edit.svg";
 import { ReactComponent as PublishIcon } from "@webiny/app-page-builder/admin/assets/round-publish-24px.svg";
+import { ReactComponent as UnpublishIcon } from "@webiny/app-page-builder/admin/assets/unpublish.svg";
 import { ReactComponent as DeleteIcon } from "@webiny/app-page-builder/admin/assets/delete.svg";
 import { ReactComponent as PreviewIcon } from "@webiny/app-page-builder/admin/assets/visibility.svg";
-import { PbPageRevision } from "@webiny/app-page-builder/types";
+import { PbPageData, PbPageRevision } from "@webiny/app-page-builder/types";
 
 type RevisionProps = {
     revision: PbPageRevision;
+    page: PbPageData;
 };
 
 const primaryColor = css({ color: "var(--mdc-theme-primary)" });
@@ -72,7 +73,13 @@ const Revision = ({ revision, page }: RevisionProps) => {
     const { getWebsiteUrl, getPageUrl } = usePageBuilderSettings();
     const [isSiteRunning, refreshSiteStatus] = useSiteStatus(getWebsiteUrl());
 
-    const { deleteRevision, createRevision, publishRevision, editRevision } = useRevisionHandlers({
+    const {
+        deleteRevision,
+        createRevision,
+        publishRevision,
+        unpublishRevision,
+        editRevision
+    } = useRevisionHandlers({
         revision,
         page
     });
@@ -105,7 +112,6 @@ const Revision = ({ revision, page }: RevisionProps) => {
                         <Menu
                             handle={<IconButton icon={<MoreVerticalIcon />} />}
                             className={revisionsMenu}
-                            /*openSide={"left"} TODO: @adrian */
                         >
                             <MenuItem onClick={createRevision}>
                                 <ListItemGraphic>
@@ -131,6 +137,15 @@ const Revision = ({ revision, page }: RevisionProps) => {
                                 </MenuItem>
                             )}
 
+                            {revision.status === "published" && (
+                                <MenuItem onClick={() => unpublishRevision(revision)}>
+                                    <ListItemGraphic>
+                                        <Icon icon={<UnpublishIcon />} />
+                                    </ListItemGraphic>
+                                    Unpublish
+                                </MenuItem>
+                            )}
+
                             <MenuItem
                                 onClick={() => {
                                     if (isSiteRunning) {
@@ -153,7 +168,7 @@ const Revision = ({ revision, page }: RevisionProps) => {
                                 Preview
                             </MenuItem>
 
-                            {!revision.locked && revision.id !== revision.parent && (
+                            {!revision.locked && (
                                 <Div>
                                     <MenuDivider />
                                     <MenuItem onClick={() => showConfirmation(deleteRevision)}>

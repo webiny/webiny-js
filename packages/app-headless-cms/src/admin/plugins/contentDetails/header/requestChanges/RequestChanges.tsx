@@ -32,8 +32,6 @@ const RequestChanges = ({ entry, contentModel, setLoading, listQueryVariables })
         return null;
     }
 
-    console.log(entry, identity);
-
     if (entry.createdBy && entry.createdBy.id === identity.login) {
         return null;
     }

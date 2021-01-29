@@ -228,6 +228,15 @@ export type PbPageData = {
     };
 };
 
+export type PbPageRevision = {
+    id: string;
+    locked: boolean;
+    savedOn: string;
+    status: string;
+    title: string;
+    version: number;
+};
+
 export type PbRenderElementPlugin = Plugin & {
     type: "pb-render-page-element";
     // Name of the pb-element plugin this render plugin is handling.
