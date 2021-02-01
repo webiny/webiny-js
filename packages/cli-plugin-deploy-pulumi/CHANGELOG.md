@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.2...v5.0.0-beta.3) (2021-02-01)
+
+
+### Bug Fixes
+
+* execute Webiny CLI with "yarn" ([5e7e44f](https://github.com/webiny/webiny-js/commit/5e7e44f43a6b42b362dc52789843a1dd6f249bd2))
+
+
+
+
+
 # [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.1...v5.0.0-beta.2) (2021-01-29)
 
 

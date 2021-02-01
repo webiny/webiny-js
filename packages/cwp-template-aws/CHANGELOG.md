@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.2...v5.0.0-beta.3) (2021-02-01)
+
+
+### Bug Fixes
+
+* **cwp-template-aws:** update headlessCMS plugins for admin app ([bbea073](https://github.com/webiny/webiny-js/commit/bbea073f79b7d2b53721826c986622148a2c9202))
+* **cwp-template-aws:** update Page Render component in website ([bfae7af](https://github.com/webiny/webiny-js/commit/bfae7afbb106f670b78778aa81e85996371fab09))
+* **cwp-template-aws:** update PB style and plugins for admin app ([e720418](https://github.com/webiny/webiny-js/commit/e7204182aea5b6a3babc126719972773784acd52))
+* add prettier to devDependencies ([519a30a](https://github.com/webiny/webiny-js/commit/519a30a34236fc472642fe802ad556c2bb5b3c8d))
+* do not check with "latest", we already have all required packages that need to have its version updated ([4ccd276](https://github.com/webiny/webiny-js/commit/4ccd27601c1a87a064488636dc7c8b96834d66d0))
+* execute Webiny CLI with "yarn" ([45a0eef](https://github.com/webiny/webiny-js/commit/45a0eef392184233a9f45cb512914032e98fc491))
+* make first deployment only if nothing is deployed ([f8d9aee](https://github.com/webiny/webiny-js/commit/f8d9aeed0d8145971d782be418b2b170e45f02c0))
+
+
+
+
+
 # [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.1...v5.0.0-beta.2) (2021-01-29)
 
 
