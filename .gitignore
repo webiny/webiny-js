@@ -32,3 +32,10 @@ globalConfig.json
 .graphqlconfig
 schema.graphql
 .statis.json
+# yarn2 files
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
