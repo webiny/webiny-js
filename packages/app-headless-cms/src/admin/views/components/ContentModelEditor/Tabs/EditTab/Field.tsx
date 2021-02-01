@@ -101,7 +101,7 @@ const Field = props => {
                         {t`Use as title`}
                     </MenuItem>
                     <MenuItem
-                        disabled={lockedFields.find(
+                        disabled={lockedFields.some(
                             lockedField => lockedField.fieldId === field.fieldId
                         )}
                         onClick={() => onDelete(field)}
