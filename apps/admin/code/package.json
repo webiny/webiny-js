@@ -26,6 +26,7 @@
     "@webiny/project-utils": "^5.0.0-beta.0",
     "@webiny/react-router": "^5.0.0-beta.0",
     "@webiny/ui": "^5.0.0-beta.0",
+    "@webiny/cli-plugin-deploy-pulumi": "^5.0.0-beta.0",
     "@webiny/tracking": "^5.0.0-beta.0",
     "apollo-client": "^2.2.8",
     "apollo-link": "^1.2.14",
