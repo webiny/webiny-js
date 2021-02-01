@@ -2,9 +2,10 @@
   "name": "api-page-builder-flush",
   "version": "0.1.0",
   "scripts": {
-    "build": "webiny run build"
+    "build": "yarn webiny run build"
   },
   "dependencies": {
+    "@webiny/cli": "5.0.0-beta.4",
     "chrome-aws-lambda": "^5.5.0",
     "puppeteer-core": "^5.5.0"
   }

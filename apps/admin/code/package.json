@@ -22,6 +22,7 @@
     "@webiny/app-plugin-security-cognito": "^5.0.0-beta.0",
     "@webiny/app-security": "^5.0.0-beta.0",
     "@webiny/app-security-tenancy": "^5.0.0-beta.0",
+    "@webiny/cli": "^5.0.0-beta.0",
     "@webiny/cli-plugin-deploy-pulumi": "^5.0.0-beta.0",
     "@webiny/plugins": "^5.0.0-beta.0",
     "@webiny/project-utils": "^5.0.0-beta.0",
@@ -48,8 +49,8 @@
   },
   "scripts": {
     "analyze": "source-map-explorer build/static/js/main.*",
-    "start": "cross-env PORT=3001 webiny run start",
-    "build": "webiny run build"
+    "start": "cross-env PORT=3001 yarn webiny run start",
+    "build": "yarn webiny run build"
   },
   "browserslist": {
     "development": [
@@ -66,6 +67,13 @@
   "svgo": {
     "plugins": {
       "removeViewBox": false
+    }
+  },
+  "adio": {
+    "ignore": {
+      "dependencies": [
+        "@webiny/cli"
+      ]
     }
   }
 }
