@@ -1,5 +1,6 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import bytes from "bytes";
+import classNames from "classnames";
 import { css } from "emotion";
 import { Drawer, DrawerContent } from "@webiny/ui/Drawer";
 import { IconButton } from "@webiny/ui/Button";
@@ -19,6 +20,7 @@ import { ReactComponent as DeleteIcon } from "./icons/delete.svg";
 import { ReactComponent as ImageIcon } from "../../assets/icons/insert_photo-24px.svg";
 import { ReactComponent as FileIcon } from "../../assets/icons/insert_drive_file-24px.svg";
 import { ReactComponent as CalendarIcon } from "../../assets/icons/today-24px.svg";
+import { ReactComponent as HighlightIcon } from "../../assets/icons/highlight-24px.svg";
 import { useFileManager } from "./FileManagerContext";
 import { useMutation } from "react-apollo";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
@@ -76,12 +78,20 @@ const style: any = {
             width: "100%",
             position: "static",
             transform: "none"
+        },
+        "&.dark": {
+            backgroundColor: "var(--mdc-theme-background)"
         }
     }),
     download: css({
         textAlign: "center",
         margin: "0 auto",
-        width: "100%"
+        width: "100%",
+        "& .icon--active": {
+            "&.mdc-icon-button": {
+                color: "var(--mdc-theme-text-on-primary)"
+            }
+        }
     }),
     list: css({
         textAlign: "left",
@@ -125,6 +135,7 @@ export default function FileDetails(props) {
     const actions = get(filePlugin, "fileDetails.actions") || [];
 
     const { hideFileDetails, queryParams } = useFileManager();
+    const [darkImageBackground, setDarkImageBackground] = useState(false);
 
     useHotkeys({
         zIndex: 55,
@@ -225,7 +236,11 @@ export default function FileDetails(props) {
                     <div className={style.header}>
                         <Typography use={"headline5"}>{t`File details`}</Typography>
                     </div>
-                    <div className={style.preview}>
+                    <div
+                        className={classNames(style.preview, {
+                            dark: darkImageBackground
+                        })}
+                    >
                         {filePlugin.render({ file, uploadFile, validateFiles })}
                     </div>
                     <div className={style.download}>
@@ -240,7 +255,6 @@ export default function FileDetails(props) {
                             {actions.map((Component, index) => (
                                 <Component key={index} {...props} />
                             ))}
-
                             <ConfirmationDialog
                                 {...fileDeleteConfirmationProps}
                                 data-testid={"fm-delete-file-confirmation-dialog"}
@@ -272,6 +286,14 @@ export default function FileDetails(props) {
                                     );
                                 }}
                             </ConfirmationDialog>
+                            {/* Render background switcher */}
+                            <Tooltip content={t`Toggle background`} placement={"bottom"}>
+                                <IconButton
+                                    icon={<HighlightIcon />}
+                                    onClick={() => setDarkImageBackground(!darkImageBackground)}
+                                    className={classNames({ "icon--active": darkImageBackground })}
+                                />
+                            </Tooltip>
                         </>
                     </div>
                     <DrawerContent dir="ltr">
