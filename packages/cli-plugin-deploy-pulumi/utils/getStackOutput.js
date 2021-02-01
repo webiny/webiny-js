@@ -16,7 +16,7 @@ const getOutputJson = async (stack, env) => {
         );
 
         // Let's get the output after the first line break. Everything before is just yarn stuff.
-        const extractedJSON = stdout.substring(stdout.indexOf("\n"));
+        const extractedJSON = stdout.substring(stdout.indexOf("{"));
         return JSON.parse(extractedJSON);
     } catch (e) {
         return null;
