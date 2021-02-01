@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-02-01)
+
+
+### Bug Fixes
+
+* skip first line when parsing stack JSON output ([a53d9ce](https://github.com/webiny/webiny-js/commit/a53d9ce6c79c99445d0962b2af91de0dc69dea70))
+* use first "{" as the delimiter ([cd33904](https://github.com/webiny/webiny-js/commit/cd33904e85ac3ee50afbbdcff33b7cda3dec985f))
+
+
+
+
+
 # [5.0.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.2...v5.0.0-beta.3) (2021-02-01)
 
 
