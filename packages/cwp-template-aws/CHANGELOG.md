@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-02-01)
+
+
+### Bug Fixes
+
+* change word "stack" to "project application" ([ecf3b6c](https://github.com/webiny/webiny-js/commit/ecf3b6c508871a55cc7def1b45d1773c77121689))
+
+
+
+
+
 # [5.0.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.2...v5.0.0-beta.3) (2021-02-01)
 
 
