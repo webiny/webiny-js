@@ -66,7 +66,7 @@ module.exports = async (inputs, context) => {
 
     // Deploying `apps/admin` project application.
     console.log();
-    context.info(`Deploying ${green("apps/website")} stack...`);
+    context.info(`Deploying ${green("apps/website")} project application...`);
     isFirstDeployment && (await sleep());
 
     await deploy("apps/website", inputs);
@@ -108,10 +108,10 @@ module.exports = async (inputs, context) => {
             [
                 usefulLinks,
                 "",
-                `💡 Tip: to deploy stacks separately, use the ${green(
-                    "stack deploy"
+                `💡 Tip: to deploy project applications separately, use the ${green(
+                    "app deploy"
                 )} command (e.g. ${green(
-                    `yarn webiny stack deploy apps/website --env ${env}`
+                    `yarn webiny app deploy apps/website --env ${env}`
                 )}). For additional help, please run ${green("yarn webiny --help")}.`
             ].join("\n")
         );
