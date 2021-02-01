@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.2...v5.0.0-beta.3) (2021-02-01)
+
+
+### Bug Fixes
+
+* bring back "@webiny/cli-plugin-deploy-pulumi" ([163d489](https://github.com/webiny/webiny-js/commit/163d4892096f1c5237f53af6c25d9a81649d0f01))
+* execute Webiny CLI with "yarn" ([5e7e44f](https://github.com/webiny/webiny-js/commit/5e7e44f43a6b42b362dc52789843a1dd6f249bd2))
+* **apps/admin:** remove @webiny/cli-plugin-deploy-pulumi from dependency ([58c72ea](https://github.com/webiny/webiny-js/commit/58c72ea3337d2f0da78156f4bafa86c3351a660d))
+* **cwp-template-aws:** update headlessCMS plugins for admin app ([bbea073](https://github.com/webiny/webiny-js/commit/bbea073f79b7d2b53721826c986622148a2c9202))
+* **cwp-template-aws:** update Page Render component in website ([bfae7af](https://github.com/webiny/webiny-js/commit/bfae7afbb106f670b78778aa81e85996371fab09))
+* **cwp-template-aws:** update PB style and plugins for admin app ([e720418](https://github.com/webiny/webiny-js/commit/e7204182aea5b6a3babc126719972773784acd52))
+* add prettier to devDependencies ([519a30a](https://github.com/webiny/webiny-js/commit/519a30a34236fc472642fe802ad556c2bb5b3c8d))
+* correct project-utils version ([06219b6](https://github.com/webiny/webiny-js/commit/06219b6be5bd7ebd47a1ea84cbc065905583018f))
+* do not check with "latest", we already have all required packages that need to have its version updated ([4ccd276](https://github.com/webiny/webiny-js/commit/4ccd27601c1a87a064488636dc7c8b96834d66d0))
+* execute Webiny CLI with "yarn" ([45a0eef](https://github.com/webiny/webiny-js/commit/45a0eef392184233a9f45cb512914032e98fc491))
+* make "statusCode" not required ([a1c2a03](https://github.com/webiny/webiny-js/commit/a1c2a030a414f53c392ad02b4392d2f039b12372))
+* make first deployment only if nothing is deployed ([f8d9aee](https://github.com/webiny/webiny-js/commit/f8d9aeed0d8145971d782be418b2b170e45f02c0))
+
+
+
+
+
 # [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.1...v5.0.0-beta.2) (2021-01-29)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.2...v5.0.0-beta.3) (2021-02-01)
+
+
+### Bug Fixes
+
+* make "statusCode" not required ([a1c2a03](https://github.com/webiny/webiny-js/commit/a1c2a030a414f53c392ad02b4392d2f039b12372))
+
+
+
+
+
 # [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.1...v5.0.0-beta.2) (2021-01-29)
 
 
