@@ -50,8 +50,9 @@ module.exports = async (inputs, context) => {
 
     if (build) {
         await execa(
-            "webiny",
+            "yarn",
             [
+                "webiny",
                 "workspaces",
                 "run",
                 "build",

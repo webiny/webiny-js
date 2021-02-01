@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet";
 import { PbPageData } from "@webiny/app-page-builder/types";
 import Layout from "./Layout";
 import Element from "@webiny/app-page-builder/render/components/Element";
+import useResponsiveClassName from "@webiny/app-page-builder/hooks/useResponsiveClassName";
 import DefaultNotFoundPage from "theme/pageBuilder/components/defaultPages/DefaultNotFoundPage";
 import DefaultErrorPage from "theme/pageBuilder/components/defaultPages/DefaultErrorPage";
 
@@ -21,6 +22,8 @@ function Render({
     error: Record<string, any>;
     settings: Record<string, any>;
 }) {
+    const { pageElementRef, responsiveClassName } = useResponsiveClassName();
+
     if (error) {
         if (error.code === "NOT_FOUND") {
             return <DefaultNotFoundPage />;
@@ -92,9 +95,11 @@ function Render({
                     return <meta key={index} property={preparedProperty} content={content} />;
                 })}
             </Helmet>
-            <Layout page={page} settings={settings}>
-                <Element element={page.content} />
-            </Layout>
+            <div className={responsiveClassName} ref={pageElementRef}>
+                <Layout page={page} settings={settings}>
+                    <Element element={page.content} />
+                </Layout>
+            </div>
         </div>
     );
 }

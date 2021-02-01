@@ -1,5 +1,5 @@
 type ResponseArgs = {
-    statusCode: number;
+    statusCode?: number;
     headers?: {};
     body?: string;
 };
