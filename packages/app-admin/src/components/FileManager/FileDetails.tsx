@@ -1,19 +1,24 @@
-import React from "react";
+import React, { useMemo } from "react";
 import bytes from "bytes";
 import { css } from "emotion";
 import { Drawer, DrawerContent } from "@webiny/ui/Drawer";
 import { IconButton } from "@webiny/ui/Button";
 import getFileTypePlugin from "./getFileTypePlugin";
+import dayjs from "dayjs";
 import get from "lodash/get";
 import set from "lodash/set";
 import cloneDeep from "lodash/cloneDeep";
 import Tags from "./FileDetails/Tags";
 import Name from "./FileDetails/Name";
 import { Tooltip } from "@webiny/ui/Tooltip";
+import { Icon } from "@webiny/ui/Icon";
+import { Typography } from "@webiny/ui/Typography";
 import { useHotkeys } from "react-hotkeyz";
 import { ReactComponent as DownloadIcon } from "./icons/round-cloud_download-24px.svg";
 import { ReactComponent as DeleteIcon } from "./icons/delete.svg";
-import TimeAgo from "timeago-react";
+import { ReactComponent as ImageIcon } from "../../assets/icons/insert_photo-24px.svg";
+import { ReactComponent as FileIcon } from "../../assets/icons/insert_drive_file-24px.svg";
+import { ReactComponent as CalendarIcon } from "../../assets/icons/today-24px.svg";
 import { useFileManager } from "./FileManagerContext";
 import { useMutation } from "react-apollo";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
@@ -21,6 +26,12 @@ import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { DELETE_FILE, LIST_FILES, LIST_TAGS } from "./graphql";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-admin/file-manager/file-details");
+
+const fileDetailsSidebar = css({
+    "&.mdc-drawer": {
+        width: 360
+    }
+});
 
 declare global {
     // eslint-disable-next-line
@@ -38,34 +49,33 @@ declare global {
 }
 
 const style: any = {
-    wrapper: css({
-        padding: 10,
-        height: "100%",
-        overflow: "auto"
-    }),
+    wrapper: css({}),
     header: css({
-        fontSize: 18,
         textAlign: "center",
-        padding: 10,
-        fontWeight: 600,
-        color: "var(--mdc-theme-on-surface)"
+        marginBottom: 24,
+        paddingTop: 16,
+        "& span": {
+            textTransform: "capitalize",
+            color: "var(--mdc-theme-on-surface)",
+            fontWeight: 600
+        }
     }),
     preview: css({
-        backgroundColor: "var(--mdc-theme-background)",
-        padding: 10,
+        boxSizing: "border-box",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
         position: "relative",
-        width: 200,
-        height: 200,
-        margin: "0 auto",
+        width: "100%",
+        height: 300,
+        margin: "0 auto 24px",
         img: {
-            maxHeight: 200,
-            maxWidth: 200,
-            width: "auto",
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translateX(-50%) translateY(-50%)",
-            backgroundColor: "#fff"
+            objectFit: "contain",
+            maxHeight: 300,
+            maxWidth: 300,
+            width: "100%",
+            position: "static",
+            transform: "none"
         }
     }),
     download: css({
@@ -77,18 +87,33 @@ const style: any = {
         textAlign: "left",
         color: "var(--mdc-theme-on-surface)",
         li: {
-            padding: 10,
+            padding: "12px 16px",
             lineHeight: "22px",
             "li-title": {
-                fontWeight: 600,
-                display: "block"
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "flex-start",
+                minHeight: 48,
+                "& .list-item__title": {
+                    fontWeight: 600
+                },
+                "& .list-item__icon": {
+                    marginRight: 24
+                },
+                "& .list-item__content": {
+                    flex: "1 0 200px"
+                }
             },
             "li-content": {
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
                 width: "100%",
-                display: "block"
+                display: "block",
+                "& .list-item__truncate": {
+                    display: "block",
+                    width: "100%",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis"
+                }
             }
         }
     })
@@ -180,11 +205,26 @@ export default function FileDetails(props) {
         )
     };
 
+    const fileTypeIcon = useMemo(() => {
+        if (file && typeof file.type === "string") {
+            return file.type.includes("image") ? <ImageIcon /> : <FileIcon />;
+        }
+        return <ImageIcon />;
+    }, [file]);
+
     return (
-        <Drawer dir="rtl" modal open={file} onClose={hideFileDetails}>
+        <Drawer
+            className={fileDetailsSidebar}
+            dir="rtl"
+            modal
+            open={file}
+            onClose={hideFileDetails}
+        >
             {file && (
                 <div className={style.wrapper} dir="ltr">
-                    <div className={style.header}>File details</div>
+                    <div className={style.header}>
+                        <Typography use={"headline5"}>{t`File details`}</Typography>
+                    </div>
                     <div className={style.preview}>
                         {filePlugin.render({ file, uploadFile, validateFiles })}
                     </div>
@@ -237,26 +277,32 @@ export default function FileDetails(props) {
                     <DrawerContent dir="ltr">
                         <ul className={style.list}>
                             <li>
-                                <li-title>{t`Name:`}</li-title>
                                 <Name {...props} />
                             </li>
                             <li>
-                                <li-title>{t`Size:`}</li-title>
-                                <li-content>{bytes.format(file.size)}</li-content>
+                                <li-title>
+                                    <Icon className={"list-item__icon"} icon={fileTypeIcon} />
+                                    <div>
+                                        <Typography use={"subtitle1"}>{file.type}</Typography>{" "}
+                                        {" - "}
+                                        <Typography use={"subtitle1"}>
+                                            {bytes.format(file.size, { unitSeparator: " " })}
+                                        </Typography>
+                                    </div>
+                                </li-title>
                             </li>
                             <li>
-                                <li-title>{t`Type:`}</li-title>
-                                <li-content>{file.type}</li-content>
+                                <li-title>
+                                    <Icon className={"list-item__icon"} icon={<CalendarIcon />} />
+                                    <div>
+                                        <Typography use={"subtitle1"}>
+                                            {dayjs(file.createdOn).format("DD MMM YYYY [at] HH:mm")}
+                                        </Typography>
+                                    </div>
+                                </li-title>
                             </li>
                             <li>
-                                <li-title>{t`Tags:`}</li-title>
                                 <Tags key={props.file.id} {...props} />
-                            </li>
-                            <li>
-                                <li-title>{t`Created:`}</li-title>
-                                <li-content>
-                                    <TimeAgo datetime={file.createdOn} />
-                                </li-content>
                             </li>
                         </ul>
                     </DrawerContent>
