@@ -5,8 +5,9 @@ const execa = require("execa");
 
 const deploy = (stack, inputs) => {
     return execa(
-        "webiny",
+        "yarn",
         [
+            "webiny",
             "app",
             "deploy",
             stack,
