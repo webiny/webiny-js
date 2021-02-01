@@ -5,7 +5,7 @@
     "build": "webiny run build"
   },
   "dependencies": {
-    "puppeteer-core": "^5.5.0",
-    "chrome-aws-lambda": "^5.5.0"
+    "chrome-aws-lambda": "^5.5.0",
+    "puppeteer-core": "^5.5.0"
   }
 }
