@@ -7,13 +7,11 @@ export function init(props: UseContentModelEditorReducerState) {
 }
 
 export function contentModelEditorReducer(state: any, action: { data: any; type: string }) {
-    const next = { ...state };
     switch (action.type) {
-        case "data": {
-            next.data = action.data;
-            break;
-        }
-    }
+        case "state":
+            return { ...state, ...action.data };
 
-    return next;
+        case "data":
+            return { ...state, data: action.data };
+    }
 }

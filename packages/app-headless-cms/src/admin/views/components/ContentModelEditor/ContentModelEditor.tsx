@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useRouter } from "@webiny/react-router";
+import { useRouter, Prompt } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 // Components
 import EditorBar from "./Bar";
@@ -8,12 +8,15 @@ import DragPreview from "./DragPreview";
 import { useContentModelEditor } from "./Context";
 
 import { i18n } from "@webiny/app/i18n";
+import { CircularProgress } from "@webiny/ui/Progress";
 const t = i18n.ns("app-headless-cms/admin/editor");
+
+const prompt = t`There are some unsaved changes! Are you sure you want to navigate away and discard all changes?`;
 
 const ContentModelEditor = () => {
     const {
         getContentModel,
-        state: { data, modelId }
+        state: { data, modelId, isPristine }
     } = useContentModelEditor();
 
     const { history } = useRouter();
@@ -27,11 +30,12 @@ const ContentModelEditor = () => {
     }, [modelId]);
 
     if (!data) {
-        return null;
+        return <CircularProgress label={"Loading content model..."} />;
     }
 
     return (
         <div className={"content-model-editor"}>
+            <Prompt when={!isPristine} message={prompt} />
             <EditorBar />
             <EditorContent />
             <DragPreview />

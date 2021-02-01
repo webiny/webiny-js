@@ -25,6 +25,10 @@ export default ContentModelEditorContext => {
 
         const { state, dispatch } = context;
 
+        const setPristine = flag => {
+            dispatch({ type: "state", data: { isPristine: flag } });
+        };
+
         const self = {
             apollo: state.apollo,
             data: state.data,
@@ -40,7 +44,10 @@ export default ContentModelEditorContext => {
                     throw new Error(error);
                 }
 
-                self.setData(() => cloneDeep(data), false);
+                self.setData(() => {
+                    setPristine(true);
+                    return cloneDeep(data);
+                }, false);
                 return response;
             },
             saveContentModel: async (data = state.data) => {
@@ -59,6 +66,8 @@ export default ContentModelEditorContext => {
                     }
                 });
 
+                setPristine(true);
+
                 return get(response, "data.updateContentModel");
             },
             /**
@@ -68,6 +77,7 @@ export default ContentModelEditorContext => {
              * @param saveContentModel
              */
             setData(setter: Function, saveContentModel = false) {
+                setPristine(false);
                 const data = setter(cloneDeep(self.data));
                 dispatch({ type: "data", data });
                 return saveContentModel !== false && self.saveContentModel(data);
