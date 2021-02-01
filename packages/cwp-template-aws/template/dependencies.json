@@ -36,6 +36,7 @@
     "typescript": "^4.1.3",
     "ts-jest": "^26.1.1",
     "execa": "4.1.0",
+    "prettier": "^1.14.2",
     "chalk": "^4.1.0"
   },
   "workspaces": {
