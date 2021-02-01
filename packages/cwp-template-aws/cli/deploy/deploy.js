@@ -33,8 +33,10 @@ module.exports = async (inputs, context) => {
     installed && console.log();
 
     // 1. Get exports from `site` stack, for `args.env` environment.
-    const siteStackOutput = await getStackOutput("apps/website", env);
-    const isFirstDeployment = !siteStackOutput;
+    const apiStackOutput = await getStackOutput("api", env);
+    const appsAdmin = await getStackOutput("apps/admin", env);
+    const appsWebsite = await getStackOutput("apps/website", env);
+    const isFirstDeployment = !apiStackOutput && !appsAdmin && !appsWebsite;
     if (isFirstDeployment) {
         context.info(
             `This is your first time deploying the project (${green(
