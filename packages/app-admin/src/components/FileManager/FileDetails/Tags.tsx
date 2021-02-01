@@ -40,7 +40,10 @@ const addTagsStyle = css({
     }
 });
 const actionWrapperStyle = css({
-    marginTop: 10
+    marginTop: 16,
+    "& button:first-child": {
+        marginRight: 16
+    }
 });
 
 function Tags({ file }) {

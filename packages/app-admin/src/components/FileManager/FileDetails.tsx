@@ -51,7 +51,10 @@ declare global {
 }
 
 const style: any = {
-    wrapper: css({}),
+    wrapper: css({
+        height: "100vh",
+        overflowY: "auto"
+    }),
     header: css({
         textAlign: "center",
         marginBottom: 24,
@@ -125,6 +128,12 @@ const style: any = {
                     textOverflow: "ellipsis"
                 }
             }
+        }
+    }),
+    drawerContent: css({
+        "&.mdc-drawer__content": {
+            height: "auto",
+            overflowY: "inherit"
         }
     })
 };
@@ -296,7 +305,7 @@ export default function FileDetails(props) {
                             </Tooltip>
                         </>
                     </div>
-                    <DrawerContent dir="ltr">
+                    <DrawerContent dir="ltr" className={style.drawerContent}>
                         <ul className={style.list}>
                             <li>
                                 <Name {...props} />
