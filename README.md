@@ -29,7 +29,7 @@ To get started with Webiny, simply [follow this link](https://docs.webiny.com) ð
 
 ## Webiny is the easiest way to adopt serverless!
 
-Want to build an API? A React app? A full administration app for your product, website or mobile app? With Webiny you can do all that and then some! Your project will be bootstrapped and prepared for development of your next project in just a few moments. With the tools that come out of the box you'll be able to immediately deploy your project to the cloud (for now only AWS).
+Want to build an API? A React app? A full administration app for your product, website or mobile app? With Webiny, you can do all that and then some! Your project will be bootstrapped and prepared for development of your next project in just a few moments. With the tools that come out of the box you'll be able to immediately deploy your project to the cloud (for now only AWS).
 
 Our plugin-based approach to the whole system will make it easy for you to override, upgrade and tweak the system to fit your needs.
 
