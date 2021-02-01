@@ -74,10 +74,20 @@ const plugin: GraphQLSchemaPlugin = {
             }
 
             """
+            This input type is used by administrators to create other user's accounts within the same tenant.
+            """
+            input SecurityUserCreateInput {
+                login: String!
+                firstName: String!
+                lastName: String!
+                avatar: JSON
+                group: String!
+            }
+            
+            """
             This input type is used by administrators to update other user's accounts within the same tenant.
             """
-            input SecurityUserInput {
-                login: String
+            input SecurityUserUpdateInput {
                 firstName: String
                 lastName: String
                 avatar: JSON
@@ -126,9 +136,9 @@ const plugin: GraphQLSchemaPlugin = {
                 "Update current user"
                 updateCurrentUser(data: SecurityCurrentUserInput!): SecurityUserResponse
 
-                createUser(data: SecurityUserInput!): SecurityUserResponse
+                createUser(data: SecurityUserCreateInput!): SecurityUserResponse
 
-                updateUser(login: String!, data: SecurityUserInput!): SecurityUserResponse
+                updateUser(login: String!, data: SecurityUserUpdateInput!): SecurityUserResponse
 
                 deleteUser(login: String!): SecurityBooleanResponse
             }
@@ -301,18 +311,16 @@ const plugin: GraphQLSchemaPlugin = {
                             // Now we can store the user in our DB
                             const user = await context.security.users.createUser(data);
 
-                            if (data.group) {
-                                const tenant = context.security.getTenant();
-                                const group = await context.security.groups.getGroup(
-                                    tenant,
-                                    data.group
-                                );
-                                await context.security.users.linkUserToTenant(
-                                    user.login,
-                                    tenant,
-                                    group
-                                );
-                            }
+                            const tenant = context.security.getTenant();
+                            const group = await context.security.groups.getGroup(
+                                tenant,
+                                data.group
+                            );
+                            await context.security.users.linkUserToTenant(
+                                user.login,
+                                tenant,
+                                group
+                            );
 
                             return new Response(user);
                         } catch (e) {

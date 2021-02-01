@@ -19,7 +19,7 @@ import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { deserializeSorters, serializeSorters } from "../utils";
 import orderBy from "lodash/orderBy";
 import { Cell, Grid } from "@webiny/ui/Grid";
-import { Select } from "../../../../../ui/src/Select/Select";
+import { Select } from "@webiny/ui/Select";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 
 const t = i18n.namespace("FormsApp.ContentModelsDataList");

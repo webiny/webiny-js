@@ -9,7 +9,7 @@ module.exports = {
         ecmaVersion: 2018,
         sourceType: "module"
     },
-    plugins: ["@typescript-eslint", "jest", "import", "react", "webiny-i18n"],
+    plugins: ["@typescript-eslint", "jest", "import", "react"],
     env: {
         jest: true,
         commonjs: true,

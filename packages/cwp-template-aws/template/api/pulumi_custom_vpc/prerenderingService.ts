@@ -32,7 +32,7 @@ class PageBuilder {
             },
             description: "Renders pages and stores output in an S3 bucket of choice.",
             code: new pulumi.asset.AssetArchive({
-                ".": new pulumi.asset.FileArchive("./code/prerenderingService/render/build")
+                ".": new pulumi.asset.FileArchive("./../code/prerenderingService/render/build")
             }),
             vpcConfig: {
                 subnetIds: vpc.subnets.private.map(subNet => subNet.id),
@@ -53,7 +53,7 @@ class PageBuilder {
             },
             description: "Flushes previously render pages.",
             code: new pulumi.asset.AssetArchive({
-                ".": new pulumi.asset.FileArchive("./code/prerenderingService/flush/build")
+                ".": new pulumi.asset.FileArchive("./../code/prerenderingService/flush/build")
             }),
             vpcConfig: {
                 subnetIds: vpc.subnets.private.map(subNet => subNet.id),
@@ -74,7 +74,7 @@ class PageBuilder {
             },
             description: "Adds a prerendering task to the prerendering queue.",
             code: new pulumi.asset.AssetArchive({
-                ".": new pulumi.asset.FileArchive("./code/prerenderingService/queue/add/build")
+                ".": new pulumi.asset.FileArchive("./../code/prerenderingService/queue/add/build")
             }),
             vpcConfig: {
                 subnetIds: vpc.subnets.private.map(subNet => subNet.id),
@@ -97,7 +97,9 @@ class PageBuilder {
             },
             description: "Processes all jobs added to the prerendering queue.",
             code: new pulumi.asset.AssetArchive({
-                ".": new pulumi.asset.FileArchive("./code/prerenderingService/queue/process/build")
+                ".": new pulumi.asset.FileArchive(
+                    "./../code/prerenderingService/queue/process/build"
+                )
             }),
             vpcConfig: {
                 subnetIds: vpc.subnets.private.map(subNet => subNet.id),

@@ -47,7 +47,7 @@ export const READ_USER: any = gql`
 `;
 
 export const CREATE_USER: any = gql`
-    mutation CreateUser($data: SecurityUserInput!){
+    mutation CreateUser($data: SecurityUserCreateInput!){
         security {
             user: createUser(data: $data) {
                 data ${fields}
@@ -62,7 +62,7 @@ export const CREATE_USER: any = gql`
 `;
 
 export const UPDATE_USER: any = gql`
-    mutation UpdateUser($login: String!, $data: SecurityUserInput!){
+    mutation UpdateUser($login: String!, $data: SecurityUserUpdateInput!){
         security {
             user: updateUser(login: $login, data: $data) {
                 data ${fields}
