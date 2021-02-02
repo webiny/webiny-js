@@ -4,7 +4,7 @@ import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import * as helpers from "../utils/helpers";
 import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
-import { contentModelHooks, hooksTracker } from "./mocks/contentModelHooks";
+import { contentModelHooks, hooksTracker } from "./mocks/lifecycleHooks";
 
 const getTypeFields = type => {
     return type.fields.filter(f => f.name !== "_empty").map(f => f.name);
