@@ -27,8 +27,9 @@
     "directory": "dist"
   },
   "scripts": {
-    "build": "yarn pkg:clean && yarn pkg:babel && cp package.json LICENSE README.md dist/ && yarn pkg:tsc",
-    "watch": "yarn pkg:babel --watch"
+    "build": "rimraf ./dist '*.tsbuildinfo' && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" && yarn postbuild",
+    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" --watch",
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
   },
   "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f"
 }

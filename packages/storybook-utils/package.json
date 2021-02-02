@@ -37,8 +37,8 @@
     "react": "16.14.0"
   },
   "scripts": {
-    "build": "yarn pkg:clean && yarn pkg:babel && cp package.json dist/ && yarn pkg:tsc",
-    "watch": "yarn pkg:babel --watch"
+    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" && yarn postbuild",
+    "postbuild": "cp package.json dist/ && tsc -p tsconfig.build.json"
   },
   "publishConfig": {
     "directory": "dist"

@@ -50,5 +50,12 @@
     "plugins": {
       "removeViewBox": false
     }
+  },
+  "adio": {
+    "ignore": {
+      "dependencies": [
+        "@webiny/cli"
+      ]
+    }
   }
 }
