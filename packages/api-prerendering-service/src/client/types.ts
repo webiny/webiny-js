@@ -9,7 +9,7 @@ export type PrerenderingServiceClientContext = {
         queue: {
             add(args: QueueHandlerArgs): Promise<void>;
             process(): Promise<void>;
-        }
+        };
     };
 };
 
