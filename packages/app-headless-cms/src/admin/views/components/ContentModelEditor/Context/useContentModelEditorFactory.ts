@@ -10,13 +10,78 @@ import {
     CmsEditorField,
     CmsEditorFieldId,
     FieldLayoutPosition,
-    CmsEditorFieldTypePlugin
+    CmsEditorFieldTypePlugin,
+    CmsEditorContentModel
 } from "@webiny/app-headless-cms/types";
+import ApolloClient from "apollo-client";
+
+/**
+ * cleanup is required because backend always expects string value in predefined values entries
+ */
+const cleanupModelDataFields = (fields: CmsEditorField[]): CmsEditorField[] => {
+    return fields.map(field => {
+        const { predefinedValues } = field;
+        const { enabled = false, values = [] } = predefinedValues || {};
+        return {
+            ...field,
+            predefinedValues: {
+                enabled,
+                values: values.map(({ label, value }) => {
+                    return {
+                        label,
+                        value: String(value)
+                    };
+                })
+            }
+        };
+    });
+};
+
+const cleanupModelData = (data: CmsEditorContentModel): CmsEditorContentModel => {
+    return {
+        ...data,
+        fields: cleanupModelDataFields(data.fields)
+    };
+};
+
+interface InternalContext {
+    state: {
+        apollo: ApolloClient<any>;
+        data: Record<string, any>;
+    };
+    dispatch: (values: Record<string, any>) => void;
+}
+
+interface MoveFieldArgs {
+    field: CmsEditorFieldId | CmsEditorField;
+    position: FieldLayoutPosition;
+}
+
+/**
+ * @internal
+ * @hidden
+ */
+export interface ContentModelEditorFactoryContext {
+    apollo: ApolloClient<any>;
+    data: CmsEditorContentModel;
+    state: Record<string, any>;
+    getContentModel: (modelId: string) => Promise<any>;
+    saveContentModel: (data?: Record<string, any>) => Promise<any>;
+    setData: (setter: Function, saveContentModel?: boolean) => Promise<any>;
+    getFields: (layout: boolean) => any;
+    getFieldPlugin: (query: object) => any;
+    getField: (query: object) => any;
+    insertField: (data: CmsEditorField, position: FieldLayoutPosition) => void;
+    moveField: (args: MoveFieldArgs) => void;
+    moveRow: (source: number, destination: number) => void;
+    updateField: (field: CmsEditorField) => void;
+    deleteField: (field: CmsEditorField) => void;
+    getFieldPosition: (field: CmsEditorFieldId | CmsEditorField) => FieldLayoutPosition;
+}
 
 export default ContentModelEditorContext => {
-    return () => {
-        // TODO: @ts-adrian add proper type
-        const context = React.useContext<any>(ContentModelEditorContext);
+    return (): ContentModelEditorFactoryContext => {
+        const context = React.useContext<InternalContext>(ContentModelEditorContext);
         if (!context) {
             throw new Error(
                 "useContentModelEditor must be used within a ContentModelEditorProvider"
@@ -29,9 +94,9 @@ export default ContentModelEditorContext => {
             dispatch({ type: "state", data: { isPristine: flag } });
         };
 
-        const self = {
+        const self: ContentModelEditorFactoryContext = {
             apollo: state.apollo,
-            data: state.data,
+            data: state.data as any,
             state,
             async getContentModel(modelId: string) {
                 const response = await self.apollo.query({
@@ -51,18 +116,19 @@ export default ContentModelEditorContext => {
                 return response;
             },
             saveContentModel: async (data = state.data) => {
+                const modelData: CmsEditorContentModel = pick(data, [
+                    "layout",
+                    "fields",
+                    "name",
+                    "settings",
+                    "description",
+                    "titleFieldId"
+                ]);
                 const response = await self.apollo.mutate({
                     mutation: UPDATE_CONTENT_MODEL,
                     variables: {
                         modelId: data.modelId,
-                        data: pick(data, [
-                            "layout",
-                            "fields",
-                            "name",
-                            "settings",
-                            "description",
-                            "titleFieldId"
-                        ])
+                        data: cleanupModelData(modelData)
                     }
                 });
 
