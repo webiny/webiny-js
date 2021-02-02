@@ -8,6 +8,7 @@ import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import elasticSearch from "@webiny/api-plugin-elastic-search-client";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
+import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
 
 // File storage S3 plugin for API file manager.
 import fileManagerS3 from "@webiny/api-file-manager-s3";
@@ -33,18 +34,17 @@ export const handler = createHandler(
     fileManagerPlugins(),
     // Add File storage S3 plugin for API file manager.
     fileManagerS3(),
-    pageBuilderPlugins({
-        prerendering: {
-            handlers: {
-                render: process.env.PRERENDERING_RENDER_HANDLER,
-                flush: process.env.PRERENDERING_FLUSH_HANDLER,
-                queue: {
-                    add: process.env.PRERENDERING_QUEUE_ADD_HANDLER,
-                    process: process.env.PRERENDERING_QUEUE_PROCESS_HANDLER
-                }
+    prerenderingServicePlugins({
+        handlers: {
+            render: process.env.PRERENDERING_RENDER_HANDLER,
+            flush: process.env.PRERENDERING_FLUSH_HANDLER,
+            queue: {
+                add: process.env.PRERENDERING_QUEUE_ADD_HANDLER,
+                process: process.env.PRERENDERING_QUEUE_PROCESS_HANDLER
             }
         }
     }),
+    pageBuilderPlugins(),
     formBuilderPlugins(),
     headlessCmsPlugins()
 );
