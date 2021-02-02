@@ -110,6 +110,8 @@ const I18NLocalesDataList = () => {
                 }
 
                 refetchLocales();
+                // Reload page
+                window.location.reload();
             });
         },
         [code]
