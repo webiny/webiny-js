@@ -1024,15 +1024,15 @@ const models: CmsContentModel[] = [
                     enabled: true,
                     values: [
                         {
-                            label: "Low value",
+                            label: "Low bug value",
                             value: "1"
                         },
                         {
-                            label: "Medium value",
+                            label: "Medium bug value",
                             value: "2"
                         },
                         {
-                            label: "High value",
+                            label: "High bug value",
                             value: "3"
                         }
                     ]
