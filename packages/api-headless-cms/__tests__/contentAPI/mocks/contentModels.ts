@@ -34,7 +34,11 @@ const ids = {
     field507: shortId.generate(),
     field508: shortId.generate(),
     field509: shortId.generate(),
-    field510: shortId.generate()
+    field510: shortId.generate(),
+    // bug
+    field601: shortId.generate(),
+    field602: shortId.generate(),
+    field603: shortId.generate()
 };
 
 const models: CmsContentModel[] = [
@@ -935,6 +939,103 @@ const models: CmsContentModel[] = [
                 predefinedValues: {
                     enabled: false,
                     values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            }
+        ]
+    },
+    // bug
+    {
+        createdOn: new Date(),
+        savedOn: new Date(),
+        titleFieldId: "name",
+        lockedFields: [],
+        name: "Bug",
+        description: "Debuggable bugs",
+        modelId: "bug",
+        group: {
+            id: contentModelGroup.id,
+            name: contentModelGroup.name
+        },
+        layout: [[ids.field601], [ids.field602], [ids.field603]],
+        fields: [
+            {
+                id: ids.field601,
+                multipleValues: false,
+                helpText: "",
+                label: "Name",
+                type: "text",
+                fieldId: "name",
+                validation: [],
+                listValidation: [],
+                placeholderText: "placeholder text",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            },
+            {
+                id: ids.field602,
+                multipleValues: false,
+                helpText: "",
+                label: "Bug type",
+                type: "text",
+                fieldId: "bugType",
+                validation: [],
+                listValidation: [],
+                placeholderText: "A bug type selectable field",
+                predefinedValues: {
+                    enabled: true,
+                    values: [
+                        {
+                            label: "Critical bug!",
+                            value: "critical"
+                        },
+                        {
+                            label: "Mediocre bug",
+                            value: "mediocre"
+                        },
+                        {
+                            label: "When you have time bug",
+                            value: "when-you-have-time"
+                        }
+                    ]
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            },
+            {
+                id: ids.field603,
+                multipleValues: false,
+                helpText: "",
+                label: "Bug developer value",
+                type: "number",
+                fieldId: "bugValue",
+                validation: [],
+                listValidation: [],
+                placeholderText: "A bug developer value selectable field",
+                predefinedValues: {
+                    enabled: true,
+                    values: [
+                        {
+                            label: "Low value",
+                            value: "1"
+                        },
+                        {
+                            label: "Medium value",
+                            value: "2"
+                        },
+                        {
+                            label: "High value",
+                            value: "3"
+                        }
+                    ]
                 },
                 renderer: {
                     name: "renderer"
