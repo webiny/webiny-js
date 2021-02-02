@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [5.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.5...v5.0.0-beta.0) (2021-01-11)
+# [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-02-01)
 
 **Note:** Version bump only for package @webiny/validation
 
@@ -11,7 +11,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [5.0.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.4...v5.0.0-beta.5) (2021-01-11)
+# [5.0.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.2...v5.0.0-beta.3) (2021-02-01)
 
 **Note:** Version bump only for package @webiny/validation
 
@@ -19,7 +19,18 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-01-11)
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.1...v5.0.0-beta.2) (2021-01-29)
+
+
+### Features
+
+* **headless-cms:** implement field validation ([d856cc7](https://github.com/webiny/webiny-js/commit/d856cc7345fea429f8167e92cd55b3e09df153d1))
+
+
+
+
+
+# [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.0...v5.0.0-beta.1) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/validation
 
@@ -27,29 +38,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [5.0.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.2...v5.0.0-beta.3) (2021-01-11)
-
-**Note:** Version bump only for package @webiny/validation
-
-
-
-
-
-# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.2) (2021-01-11)
-
-
-### Bug Fixes
-
-* remove any mention of MongoDb ([b3193cb](https://github.com/webiny/webiny-js/commit/b3193cb3016b58d8e6f95f7558af34a6f588b3c8))
-* **code-format:** update configs for prettier and eslint ([#1237](https://github.com/webiny/webiny-js/issues/1237)) ([5ff6d22](https://github.com/webiny/webiny-js/commit/5ff6d22f427093a52560963770dadf96d8e6685b))
-* **validation:** make empty string be an invalid value ([ec29cc4](https://github.com/webiny/webiny-js/commit/ec29cc4bf8757bda5bbcf25bd51ddf5dcc9d426d))
-* merge `new-security` into `master` ([da26908](https://github.com/webiny/webiny-js/commit/da269089ebaf18cc00c43919688fc4a005314d72))
-
-
-
-
-
-# [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.1) (2021-01-11)
+# [5.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.0) (2021-01-08)
 
 
 ### Bug Fixes

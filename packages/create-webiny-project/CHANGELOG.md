@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [5.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.5...v5.0.0-beta.0) (2021-01-11)
+# [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-02-01)
 
 **Note:** Version bump only for package create-webiny-project
 
@@ -11,7 +11,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [5.0.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.4...v5.0.0-beta.5) (2021-01-11)
+# [5.0.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.2...v5.0.0-beta.3) (2021-02-01)
 
 **Note:** Version bump only for package create-webiny-project
 
@@ -19,7 +19,24 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-01-11)
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.1...v5.0.0-beta.2) (2021-01-29)
+
+
+### Bug Fixes
+
+* adjust message ([2f22bfb](https://github.com/webiny/webiny-js/commit/2f22bfb278ce8c49db2fd56aa8a4996f62af8c5c))
+
+
+### Features
+
+* add `interactive` flag ([6399aa0](https://github.com/webiny/webiny-js/commit/6399aa024e67cefcf9ca4f82586f3443c311e56d))
+* add `template-options` arg ([afaaa05](https://github.com/webiny/webiny-js/commit/afaaa05bbd209e6dd970b01ff40ef4e6421db1d8))
+
+
+
+
+
+# [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.0...v5.0.0-beta.1) (2021-01-08)
 
 **Note:** Version bump only for package create-webiny-project
 
@@ -27,15 +44,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [5.0.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.2...v5.0.0-beta.3) (2021-01-11)
-
-**Note:** Version bump only for package create-webiny-project
-
-
-
-
-
-# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.2) (2021-01-11)
+# [5.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.0) (2021-01-08)
 
 
 ### Bug Fixes
@@ -45,7 +54,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * add visual polishes ([c1993c0](https://github.com/webiny/webiny-js/commit/c1993c0c0f2086502e2a0560a07adcd7e08c558d))
 * add visual polishes ([b41efb9](https://github.com/webiny/webiny-js/commit/b41efb9d243d84401267b49b1413cf5fc5037675))
 * add visual polishes ([42575e1](https://github.com/webiny/webiny-js/commit/42575e12d3d3c6065e44bd3a78c0778b21a0683a))
-* adjust message ([2f22bfb](https://github.com/webiny/webiny-js/commit/2f22bfb278ce8c49db2fd56aa8a4996f62af8c5c))
 * bring back project-cleanup ([dcbbcaa](https://github.com/webiny/webiny-js/commit/dcbbcaa5867f69ed16da69eac2ce2a662d4cb162))
 * correct import statement ([b77d439](https://github.com/webiny/webiny-js/commit/b77d439eb6ce7a7831239a53ba3665d861b69cfd))
 * correct templateName / dependencyName construction ([7def56d](https://github.com/webiny/webiny-js/commit/7def56d190232babebf44287b6a818570df2b930))
@@ -64,52 +72,6 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * temporary remove project deletion ([4b79acf](https://github.com/webiny/webiny-js/commit/4b79acf7f0e3a8c2063fc910ba1ea6c12a7caeda))
 * update deps ([bffcefd](https://github.com/webiny/webiny-js/commit/bffcefd38ec76c8b276c8e308f9daa11f5bb044a))
 * **code-format:** update configs for prettier and eslint ([#1237](https://github.com/webiny/webiny-js/issues/1237)) ([5ff6d22](https://github.com/webiny/webiny-js/commit/5ff6d22f427093a52560963770dadf96d8e6685b))
-
-
-### Features
-
-* add `interactive` flag ([6399aa0](https://github.com/webiny/webiny-js/commit/6399aa024e67cefcf9ca4f82586f3443c311e56d))
-* add `template-options` arg ([afaaa05](https://github.com/webiny/webiny-js/commit/afaaa05bbd209e6dd970b01ff40ef4e6421db1d8))
-
-
-
-
-
-# [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.1) (2021-01-11)
-
-
-### Bug Fixes
-
-* add `cd` ([5ccaf4b](https://github.com/webiny/webiny-js/commit/5ccaf4bd6f440ddab5d60ee7641eceb0e546afef))
-* add `getPackageJson` utility function ([3b6e8c8](https://github.com/webiny/webiny-js/commit/3b6e8c8ca92cfc022a7fe10867a5bfff715036d9))
-* add visual polishes ([c1993c0](https://github.com/webiny/webiny-js/commit/c1993c0c0f2086502e2a0560a07adcd7e08c558d))
-* add visual polishes ([b41efb9](https://github.com/webiny/webiny-js/commit/b41efb9d243d84401267b49b1413cf5fc5037675))
-* add visual polishes ([42575e1](https://github.com/webiny/webiny-js/commit/42575e12d3d3c6065e44bd3a78c0778b21a0683a))
-* adjust message ([2f22bfb](https://github.com/webiny/webiny-js/commit/2f22bfb278ce8c49db2fd56aa8a4996f62af8c5c))
-* bring back project-cleanup ([dcbbcaa](https://github.com/webiny/webiny-js/commit/dcbbcaa5867f69ed16da69eac2ce2a662d4cb162))
-* correct import statement ([b77d439](https://github.com/webiny/webiny-js/commit/b77d439eb6ce7a7831239a53ba3665d861b69cfd))
-* correct templateName / dependencyName construction ([7def56d](https://github.com/webiny/webiny-js/commit/7def56d190232babebf44287b6a818570df2b930))
-* merge `new-security` into `master` ([da26908](https://github.com/webiny/webiny-js/commit/da269089ebaf18cc00c43919688fc4a005314d72))
-* move parts of the code to `cwp-template-aws` ([fd4d4db](https://github.com/webiny/webiny-js/commit/fd4d4db7462b9f820ed8bea56f2624aaa339657e))
-* move template code execution into `then` callback ([34f0666](https://github.com/webiny/webiny-js/commit/34f066603f0d6584f4f65f36767ce6a286548165))
-* move version number into constants ([ed13609](https://github.com/webiny/webiny-js/commit/ed13609256aaaccbc1af101f2dd5a59bef5ce369))
-* prepend `yarn` ([31fc682](https://github.com/webiny/webiny-js/commit/31fc682e5b7fe4d2a4d0c33508315cbc947354b9))
-* rename `appName` to `projectName` ([69f97d4](https://github.com/webiny/webiny-js/commit/69f97d4fb3d4fa57e977e10c70047059358b049c))
-* rename `createApp` to `createProject` ([05a8712](https://github.com/webiny/webiny-js/commit/05a87129c5091554fa9f46f8868c9540fb76f93b))
-* rename `cwp-template-full` to `cwp-template-aws` ([9ad9e6c](https://github.com/webiny/webiny-js/commit/9ad9e6c3da732feba1e8292cc238fde606302227))
-* rename `root` to `projectRoot` ([b559b43](https://github.com/webiny/webiny-js/commit/b559b43b9dbbd1b1476724f540b4d156b90cd9b8))
-* rename file ([b3d9c4a](https://github.com/webiny/webiny-js/commit/b3d9c4a927ee8e97403253ef82b2bcdbea987721))
-* rename leftover variable ([007a183](https://github.com/webiny/webiny-js/commit/007a183e7345b00ac5788940923f025b4104a4b4))
-* temporary remove project deletion ([f66f1be](https://github.com/webiny/webiny-js/commit/f66f1bea90e392d6c743a8a55e3ccc013879c71e))
-* temporary remove project deletion ([4b79acf](https://github.com/webiny/webiny-js/commit/4b79acf7f0e3a8c2063fc910ba1ea6c12a7caeda))
-* update deps ([bffcefd](https://github.com/webiny/webiny-js/commit/bffcefd38ec76c8b276c8e308f9daa11f5bb044a))
-* **code-format:** update configs for prettier and eslint ([#1237](https://github.com/webiny/webiny-js/issues/1237)) ([5ff6d22](https://github.com/webiny/webiny-js/commit/5ff6d22f427093a52560963770dadf96d8e6685b))
-
-
-### Features
-
-* add `interactive` flag ([6399aa0](https://github.com/webiny/webiny-js/commit/6399aa024e67cefcf9ca4f82586f3443c311e56d))
-* add `template-options` arg ([afaaa05](https://github.com/webiny/webiny-js/commit/afaaa05bbd209e6dd970b01ff40ef4e6421db1d8))
 
 
 

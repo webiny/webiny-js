@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [5.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.5...v5.0.0-beta.0) (2021-01-11)
+# [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-02-01)
 
 **Note:** Version bump only for package @webiny/app-security-tenancy
 
@@ -11,7 +11,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [5.0.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.4...v5.0.0-beta.5) (2021-01-11)
+# [5.0.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.2...v5.0.0-beta.3) (2021-02-01)
 
 **Note:** Version bump only for package @webiny/app-security-tenancy
 
@@ -19,52 +19,42 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-01-11)
-
-**Note:** Version bump only for package @webiny/app-security-tenancy
-
-
-
-
-
-# [5.0.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.2...v5.0.0-beta.3) (2021-01-11)
-
-**Note:** Version bump only for package @webiny/app-security-tenancy
-
-
-
-
-
-# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.2) (2021-01-11)
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.1...v5.0.0-beta.2) (2021-01-29)
 
 
 ### Bug Fixes
 
-* entry prepare for index on publish ([#1361](https://github.com/webiny/webiny-js/issues/1361)) ([7446628](https://github.com/webiny/webiny-js/commit/74466282f9a4abd97421d8cf8a3122b5957f4576))
-* **app-security-tenancy:** handle empty permissions when submitting a form ([9f27b98](https://github.com/webiny/webiny-js/commit/9f27b985f6041ad124ce8372cb577c90f73f05cc))
-* **app-security-tenancy:** protect full-access group ([7936c5e](https://github.com/webiny/webiny-js/commit/7936c5e3c9347f38fc5e96b1389d093cb24815d4))
-* **app-security-tenancy:** remove nullish coalescing operator usage ([7447c49](https://github.com/webiny/webiny-js/commit/7447c497222809f6c2f21532f98d17d5e6c1250e))
-* **app-security-tenancy:** update permission form state key ([d7b9a1a](https://github.com/webiny/webiny-js/commit/d7b9a1acc54db8be91b1d677c4c50c2c9967074f))
-* **app-security-tenancy:** update queries with new types ([64d8cd6](https://github.com/webiny/webiny-js/commit/64d8cd68582e760766c17bcc434a4a14d7d2e207))
-* **app-security-tenancy:** update validator name ([e727b45](https://github.com/webiny/webiny-js/commit/e727b45799c82a9aec394d623f11188aa41b1844))
-* fix eslint errors ([8ad44ab](https://github.com/webiny/webiny-js/commit/8ad44ab12cf1811e8c9d24d94fc34385e220069c))
-* installation, operation names, etc. ([4b06551](https://github.com/webiny/webiny-js/commit/4b06551b2e29d8ea027c20ee6ded4e349121bdc9))
-* revert to React 16.14.0 ([db2c17d](https://github.com/webiny/webiny-js/commit/db2c17df8dbcd33ce8518c9edcdc5db911571dd1))
-* synchronize validators between UI and API ([e1db8dd](https://github.com/webiny/webiny-js/commit/e1db8dd8ad6d2371936c16bff2e8fa208399252b))
-* update tsconfig references and deps ([eec7eb0](https://github.com/webiny/webiny-js/commit/eec7eb00bc276a9d1496458315b3eb9ec0930f35))
+* **admin:** import user menu items individually ([6d82fae](https://github.com/webiny/webiny-js/commit/6d82fae7599b022b63d16fbd615d5b5b4abbbb7d))
+* **app-security-tenancy:** update `imagePreview` style ([79bb8f9](https://github.com/webiny/webiny-js/commit/79bb8f94a9abd8f4250893e95a2b0ba58f0d521b))
+* **headless-cms:** default titleFieldId set to id ([#1390](https://github.com/webiny/webiny-js/issues/1390)) ([b1c23a6](https://github.com/webiny/webiny-js/commit/b1c23a60442926acdbf3a0e14c91bb68792d7669))
+* **security:** always convert username to lower case ([8f81455](https://github.com/webiny/webiny-js/commit/8f8145574b474701435d17314bd5c95e1c47eef5))
+* **security-tenancy:** make group a mandatory input ([305fb1d](https://github.com/webiny/webiny-js/commit/305fb1d2c71658741329e3418084a58f8518a5d2))
 
 
 ### Features
 
-* add `SnackbarAction` button style ([c9aed0d](https://github.com/webiny/webiny-js/commit/c9aed0dc2b3c02898e8b4cea8d24abe593f92fa9))
-* implement API keys UI ([e600ad0](https://github.com/webiny/webiny-js/commit/e600ad07955680c88252f1b6a968782213b90bb2))
-* migrate security to v5 ([d8f2b76](https://github.com/webiny/webiny-js/commit/d8f2b76738de99772a5285b9ceae1f5969f793ed))
+* **app-security-tenancy:** add new `sort and filter` UI "GroupDataList" ([2d6323c](https://github.com/webiny/webiny-js/commit/2d6323ca99b6f99f71a84d400aa273b115ee7b5d))
+* **app-security-tenancy:** move sort options to DataList `modalOverlay` ([5a7aabc](https://github.com/webiny/webiny-js/commit/5a7aabc62d16462b319b4f34108709323f177591))
+* **app-security-tenancy:** remove `FloatingActionButton` ([f03bf02](https://github.com/webiny/webiny-js/commit/f03bf02e1b2b465b064c0f68974d1b08e39b5f4b))
+* **app-security-tenancy:** update "GroupForm" ([955abbc](https://github.com/webiny/webiny-js/commit/955abbc61bdf490a1d1174803226f4e679a54ef0))
+* **app-security-tenancy:** update "UserDataList" styles ([b03629f](https://github.com/webiny/webiny-js/commit/b03629f2fbdafb91c267f0a0196edbf7257a411d))
+* **app-security-tenancy:** update `ApiKeyForm` ([40a54db](https://github.com/webiny/webiny-js/commit/40a54db3d0ea7aff768270125035a62a1eef98d4))
+* **app-security-tenancy:** update `APiKeysDataList` component ([512a12b](https://github.com/webiny/webiny-js/commit/512a12b28975e759ec3ac052c10c514a979f20be))
+* **app-security-tenancy:** update `UsersForm` layout ([402969d](https://github.com/webiny/webiny-js/commit/402969d4a6cdc6a74f67a49ff89fb50e0532ef1e))
 
 
 
 
 
-# [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.1) (2021-01-11)
+# [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.0...v5.0.0-beta.1) (2021-01-08)
+
+**Note:** Version bump only for package @webiny/app-security-tenancy
+
+
+
+
+
+# [5.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.0) (2021-01-08)
 
 
 ### Bug Fixes

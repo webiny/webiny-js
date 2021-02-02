@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [5.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.5...v5.0.0-beta.0) (2021-01-11)
+# [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-02-01)
 
 **Note:** Version bump only for package @webiny/app-file-manager-s3
 
@@ -11,7 +11,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [5.0.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.4...v5.0.0-beta.5) (2021-01-11)
+# [5.0.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.2...v5.0.0-beta.3) (2021-02-01)
 
 **Note:** Version bump only for package @webiny/app-file-manager-s3
 
@@ -19,41 +19,26 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-01-11)
-
-**Note:** Version bump only for package @webiny/app-file-manager-s3
-
-
-
-
-
-# [5.0.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.2...v5.0.0-beta.3) (2021-01-11)
-
-**Note:** Version bump only for package @webiny/app-file-manager-s3
-
-
-
-
-
-# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.2) (2021-01-11)
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.1...v5.0.0-beta.2) (2021-01-29)
 
 
 ### Bug Fixes
 
-* do not cache `GetPreSignedPostPayload` query ([d1980b4](https://github.com/webiny/webiny-js/commit/d1980b48aba17c1dc5c8f21f1d99b9b3a6ac6845))
-* update File Manager to use the new cursor pagination ([fff7306](https://github.com/webiny/webiny-js/commit/fff7306ea4dff054b2622730a6236a4f4265a155))
-* **app-file-storage-s3:** replace `files` with `fileManager` ([846dd93](https://github.com/webiny/webiny-js/commit/846dd93494139100c605c670c537b16cb60ee477))
-
-
-### Features
-
-* add `app-file-manager-s3` package ([3230cc5](https://github.com/webiny/webiny-js/commit/3230cc5861cd9f303f05e6b32ede142e29adcb46))
+* remove "types" property ([4dce94f](https://github.com/webiny/webiny-js/commit/4dce94f6e385036aac62aec7ad53302e71ec28bd))
 
 
 
 
 
-# [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.1) (2021-01-11)
+# [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.0...v5.0.0-beta.1) (2021-01-08)
+
+**Note:** Version bump only for package @webiny/app-file-manager-s3
+
+
+
+
+
+# [5.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.0) (2021-01-08)
 
 
 ### Bug Fixes

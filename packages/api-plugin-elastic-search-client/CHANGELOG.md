@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [5.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.5...v5.0.0-beta.0) (2021-01-11)
+# [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-02-01)
 
 **Note:** Version bump only for package @webiny/api-plugin-elastic-search-client
 
@@ -11,7 +11,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [5.0.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.4...v5.0.0-beta.5) (2021-01-11)
+# [5.0.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.2...v5.0.0-beta.3) (2021-02-01)
 
 **Note:** Version bump only for package @webiny/api-plugin-elastic-search-client
 
@@ -19,7 +19,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-01-11)
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.1...v5.0.0-beta.2) (2021-01-29)
 
 **Note:** Version bump only for package @webiny/api-plugin-elastic-search-client
 
@@ -27,7 +27,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [5.0.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.2...v5.0.0-beta.3) (2021-01-11)
+# [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.0...v5.0.0-beta.1) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/api-plugin-elastic-search-client
 
@@ -35,25 +35,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.2) (2021-01-11)
-
-
-### Bug Fixes
-
-* remove word `Handler` from context plugin type names ([277f0dd](https://github.com/webiny/webiny-js/commit/277f0dd300b7451a8a162678417e2b428cf002cf))
-* update dependencies ([9e23d9d](https://github.com/webiny/webiny-js/commit/9e23d9d435c8e3993713d73123a7b93119893eb1))
-* use `HandlerContext` instead of `Context` ([3a89366](https://github.com/webiny/webiny-js/commit/3a893664a5da8ada02386723ced22b38f0f1b58c))
-
-
-### Features
-
-* add Elastic domain setup ([2205343](https://github.com/webiny/webiny-js/commit/220534345830ce216bc82667f2d3d6390df8d9e8))
-
-
-
-
-
-# [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.1) (2021-01-11)
+# [5.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.0) (2021-01-08)
 
 
 ### Bug Fixes
