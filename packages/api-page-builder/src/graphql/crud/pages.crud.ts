@@ -31,17 +31,10 @@ import {
     getESPublishedPageData,
     getESUpdateLatestPageData
 } from "./pages/esPageData";
-import {
-    HandlerArgs as RenderHandlerArgs,
-    Args as RenderArgs
-} from "@webiny/api-prerendering-service/render/types";
 
 import {
-    HandlerArgs as FlushHandlerArgs,
     Args as FlushArgs
 } from "@webiny/api-prerendering-service/flush/types";
-
-import { HandlerArgs as QueueAddHandlerArgs } from "@webiny/api-prerendering-service/queue/add/types";
 
 import { TYPE } from "@webiny/api-page-builder/types";
 
