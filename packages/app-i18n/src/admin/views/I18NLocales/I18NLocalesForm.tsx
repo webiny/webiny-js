@@ -76,6 +76,8 @@ const I18NLocaleForm = () => {
             !isUpdate && history.push(`/i18n/locales?code=${data.code}`);
             showSnackbar(t`Locale saved successfully.`);
             refetchLocales();
+            // Reload page
+            window.location.reload();
         },
         [code]
     );
