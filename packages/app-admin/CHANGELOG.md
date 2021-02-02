@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [5.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.5...v5.0.0-beta.0) (2021-01-11)
+# [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-02-01)
 
 **Note:** Version bump only for package @webiny/app-admin
 
@@ -11,7 +11,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [5.0.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.4...v5.0.0-beta.5) (2021-01-11)
+# [5.0.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.2...v5.0.0-beta.3) (2021-02-01)
 
 **Note:** Version bump only for package @webiny/app-admin
 
@@ -19,90 +19,49 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-01-11)
-
-**Note:** Version bump only for package @webiny/app-admin
-
-
-
-
-
-# [5.0.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.2...v5.0.0-beta.3) (2021-01-11)
-
-**Note:** Version bump only for package @webiny/app-admin
-
-
-
-
-
-# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.2) (2021-01-11)
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.1...v5.0.0-beta.2) (2021-01-29)
 
 
 ### Bug Fixes
 
-* **app-admin:** fix "DELETE_FILE" update cache ([1e083a3](https://github.com/webiny/webiny-js/commit/1e083a34edb76249768a07bc59c0bd0d3d5f1b15))
-* **app-page-builder:** update "LIST_TAGS" cache after `DELETE_FILE` ([0febd54](https://github.com/webiny/webiny-js/commit/0febd54c85ee48d8916e08f162065ecb429c3d6d))
-* **app-page-builder:** update "LIST_TAGS" cache after `UPDATE_FILE` ([454812c](https://github.com/webiny/webiny-js/commit/454812c8b1200c4876c7e23a6827dc1e45a4c597))
-* add `fill="currentColor"` ([c04fb08](https://github.com/webiny/webiny-js/commit/c04fb08b6933d82733972f1491fe4b58f58198fa))
-* add `lineHeight: 1` ([ae4c8f2](https://github.com/webiny/webiny-js/commit/ae4c8f2eb3e846a5c811689397c4f53a99f17166))
-* reference does not need to set value to form ([#1363](https://github.com/webiny/webiny-js/issues/1363)) ([aebce24](https://github.com/webiny/webiny-js/commit/aebce24264c841565475e3eebb7abe197ae65178))
-* **app-admin:** add `error` field in GQL schema ([64de0c3](https://github.com/webiny/webiny-js/commit/64de0c30d8972eb6949a643c337a992e857f776b))
-* **app-admin:** add default placeholder to RTE ([94c0154](https://github.com/webiny/webiny-js/commit/94c0154afc907e2a97c3e4dd000e1a945d4a06fc))
-* **app-admin:** check for placeholder prop ([3ea49ff](https://github.com/webiny/webiny-js/commit/3ea49ff3ab5efbd931758b007f2b7278fc174a0e))
-* **app-admin:** improve clickable area of menu item link ([543655c](https://github.com/webiny/webiny-js/commit/543655c6896f5f73f16525dada07bc5769e4b7bf))
-* **app-admin:** move medium editor style import to admin app ([188ae1d](https://github.com/webiny/webiny-js/commit/188ae1de636ac9b17f86e76c0207e9249cea30d4))
-* **app-admin:** remove file from cache after "deleteFile" mutation ([80fdb88](https://github.com/webiny/webiny-js/commit/80fdb883325b0a85e831879649840653609acfeb))
-* **app-admin:** remove obsolete plugin ([4398277](https://github.com/webiny/webiny-js/commit/4398277fed5a204f9097c09586235fb6c2320f54))
-* **app-admin:** temporarily disable CMS tabs in the playground ([87c81f0](https://github.com/webiny/webiny-js/commit/87c81f09cf791360eaf1c37be8bc3cb856a9726e))
-* **app-admin:** update `OverlayLayoutWrapper` "zIndex" ([3e95e5b](https://github.com/webiny/webiny-js/commit/3e95e5b2f6cec1dad084d7162f4b178bd0cd4ac5))
-* change button label ([5195cbd](https://github.com/webiny/webiny-js/commit/5195cbdbd86f69b2c47cdef43776d3016eb02ea3))
-* merge `new-security` into `master` ([da26908](https://github.com/webiny/webiny-js/commit/da269089ebaf18cc00c43919688fc4a005314d72))
-* merge latest changes from `feat/v5/file-storage` ([a60b944](https://github.com/webiny/webiny-js/commit/a60b9443484fbc3187dc834902030477ba88aea0))
-* preserve `header` tool settings ([e06c1b2](https://github.com/webiny/webiny-js/commit/e06c1b2a556a2c777f3403ce4c48d801daf01fbd))
-* preserve `paragraph` tool settings ([e4cbc22](https://github.com/webiny/webiny-js/commit/e4cbc222913d0a28ca2450236d7acbe246b3ee4f))
-* prettier and eslint run for v5 ([3069a33](https://github.com/webiny/webiny-js/commit/3069a33ccef2fd3767818b274a730df28cecaf5b))
-* render `admin-header-right` plugins in reverse ([703d6eb](https://github.com/webiny/webiny-js/commit/703d6eb432738a24dc7506efe194205aa0377e61))
-* replace overflow `scroll` with `auto` ([0c98e68](https://github.com/webiny/webiny-js/commit/0c98e68ca5d9385ab6c269451fa2a0e57773154e))
-* revert to React 16.14.0 ([db2c17d](https://github.com/webiny/webiny-js/commit/db2c17df8dbcd33ce8518c9edcdc5db911571dd1))
-* save `color tool` settings ([fe4ae58](https://github.com/webiny/webiny-js/commit/fe4ae5873c3ffd0ef5161d5f775325320692e5e3))
-* skip installers if the system is already installed ([b2e3ff6](https://github.com/webiny/webiny-js/commit/b2e3ff68f018dc86483ccb1a9cc600f9a3bb1919))
-* throw error for missing Installer ([91cbd65](https://github.com/webiny/webiny-js/commit/91cbd6561b874865ab59414dfe3d3f362b98f641))
-* update `text color` tool to use theme color only ([6ee13bc](https://github.com/webiny/webiny-js/commit/6ee13bce9e136bab30ca853913b4605c3478a3dd))
-* update File Manager to use the new cursor pagination ([fff7306](https://github.com/webiny/webiny-js/commit/fff7306ea4dff054b2622730a6236a4f4265a155))
-* update permission renderer ([d070d74](https://github.com/webiny/webiny-js/commit/d070d7401301c08f5e6647421ce2034110cdb274))
-* update RTE output renderer style ([410be1e](https://github.com/webiny/webiny-js/commit/410be1e22d143a9e2dc3b977728ba73385668cf9))
-* **app-admin:** update icon style ([ee74765](https://github.com/webiny/webiny-js/commit/ee747655d837fa5aa1cf03c7ec7e29b636905e6b))
-* **code-format:** update configs for prettier and eslint ([#1237](https://github.com/webiny/webiny-js/issues/1237)) ([5ff6d22](https://github.com/webiny/webiny-js/commit/5ff6d22f427093a52560963770dadf96d8e6685b))
+* replace `pop` with destructuring operation ([8c2f5be](https://github.com/webiny/webiny-js/commit/8c2f5becb1e7d3e0ad299bd070906564eecc7bc8))
+* use `ReadonlyArray` instead of regular `Array` ([35e94a1](https://github.com/webiny/webiny-js/commit/35e94a1c256b15d5ede4186840db9fe6ef5993e8))
+* **admin:** import user menu items individually ([6d82fae](https://github.com/webiny/webiny-js/commit/6d82fae7599b022b63d16fbd615d5b5b4abbbb7d))
+* **app-admin:** add missing @types/mime dependency ([a452399](https://github.com/webiny/webiny-js/commit/a452399fdcfe797a2e69667ea9d6dad08e304cb3))
+* **app-admin:** fix icon imports ([d750720](https://github.com/webiny/webiny-js/commit/d7507205466f6e6f34de56cc12563ab4f5f48f99))
+* **app-admin:** replace -webkit-appearance with WebkitAppearance ([d4d24f6](https://github.com/webiny/webiny-js/commit/d4d24f6fdfd53015e21a2e284ce5ad731dc45ce6))
+* **app-admin:** revert `leftPanel` styles ([66ca1df](https://github.com/webiny/webiny-js/commit/66ca1df937f30e51cc92cc92c8fbdd43f0029e81))
+* **app-admin:** update `leftPanel` styles ([714a217](https://github.com/webiny/webiny-js/commit/714a21721c2a48713d77212cea9bd23acd90b2de))
+* **app-graphql-playground:** update icon and label ([1f86c65](https://github.com/webiny/webiny-js/commit/1f86c659643e01724eda21a18e008ebb1147293b))
 
 
 ### Features
 
-* **app-graphql-playground:** introduce a package to render graphql playground ([5f4ee4e](https://github.com/webiny/webiny-js/commit/5f4ee4e251a9facec25aad2b1f16e6e9d7bb4060))
-* add GraphQL Playground and improve fonts loading ([6fb560d](https://github.com/webiny/webiny-js/commit/6fb560d543419be0482fac567614926c0387df5c))
-* **app-admin:** format `tags` to lowercase before change ([8667690](https://github.com/webiny/webiny-js/commit/86676908f7127e8cb19af9bd5bd12811ec4ff6fa))
-* **app-admin:** remove `reset` styles ([8109d9f](https://github.com/webiny/webiny-js/commit/8109d9fbcec67f599e36578625dea5217ff64bef))
-* **app-admin:** update `.mdc-snackbar__action` style as per theme ([9915f2d](https://github.com/webiny/webiny-js/commit/9915f2d9efa77d643ba08c7a380d2412d304b0bf))
-* add "paragraph" tool ([9f1a9db](https://github.com/webiny/webiny-js/commit/9f1a9db04321610d230b41938e53a89a99dc6b55))
-* add `alignment` helpers as utils ([355db43](https://github.com/webiny/webiny-js/commit/355db438ee5264841db5712d31b6e48235ece5af))
-* add `Header` block tool for "RTE" ([f2cfd22](https://github.com/webiny/webiny-js/commit/f2cfd22307a5d2bb102035363368897c3432f081))
-* add `onChangePick` prop ([9cc4b85](https://github.com/webiny/webiny-js/commit/9cc4b8573ff057097c4a02e99109f4c651e25f1e))
-* add `TextColor` inline tool for "RTE" ([5dd57b4](https://github.com/webiny/webiny-js/commit/5dd57b4ac8a9bd1123e7e78a47eb00822e1d84d9))
-* add `Typography` settings in paragraph block ([1e50418](https://github.com/webiny/webiny-js/commit/1e50418d73bce4fbd88fac59a59db65f67e88a42))
-* add default values ([dcd2dbd](https://github.com/webiny/webiny-js/commit/dcd2dbd637a46ea8ad5d08bae5b7640723cd7d1e))
-* create ES indexes per tenant ([caf87e8](https://github.com/webiny/webiny-js/commit/caf87e87e4040beb48c94b62dfb1709646b6734e))
-* remove roles ([714a9de](https://github.com/webiny/webiny-js/commit/714a9de25fe30e29cfd4065cd6d2285bf4b6a44e))
-* RichTextEditor component ([9552955](https://github.com/webiny/webiny-js/commit/9552955600d77729fc0b814bb34ed4696d30e2f4))
-* save `className` on data ([72a76c3](https://github.com/webiny/webiny-js/commit/72a76c34a94a36b77870690ce0e0f70cbb56b77c))
-* update "TextColor" tool style ([a4a4bea](https://github.com/webiny/webiny-js/commit/a4a4bea6262bf27eb0255815eae8ffd7ab3c4892))
-* **app-admin:** add "ListFilesSort" ([ed15875](https://github.com/webiny/webiny-js/commit/ed15875ae81d4970961d041c94059dc49e45d1c3))
-* **app-admin:** use `AppFileManagerStoragePlugin` plugin ([c7a6d49](https://github.com/webiny/webiny-js/commit/c7a6d49046b4761b4c6b0eb0dd026cd10af430d1))
-* **app-page-builder:** switch redux for recoil ([a1c5f18](https://github.com/webiny/webiny-js/commit/a1c5f18e271d27a6e65a912014de66dc048741a9))
+* **app-admin:** add `EmptyView` component ([87ddb0d](https://github.com/webiny/webiny-js/commit/87ddb0de688f627e35ff15592c95c0d56383c488))
+* **app-admin:** add `filter icon` to assets ([dd03f04](https://github.com/webiny/webiny-js/commit/dd03f04d50096df6d0625b4ff6ac3013adf177b1))
+* **app-admin:** add `InputField` component ([7ff52c6](https://github.com/webiny/webiny-js/commit/7ff52c65e09e3552ef5ad07eb2f29d1cb6d83396))
+* **app-admin:** add `inputPlaceholder` prop to "SearchUI" component ([fd95d28](https://github.com/webiny/webiny-js/commit/fd95d2802fceedc6a7bef98ad7346b6dda5bcb71))
+* **app-admin:** add `SearchUI` component ([d7772f9](https://github.com/webiny/webiny-js/commit/d7772f96e4e6c63eb512f7e73cbbe3aefd8249de))
+* **app-admin:** add `SimpleModal` component ([3e194a3](https://github.com/webiny/webiny-js/commit/3e194a363a8e9baac450a7884c34a92de1444ae0))
+* **app-admin:** make `SimpleModal` align center ([c4cb15d](https://github.com/webiny/webiny-js/commit/c4cb15d26ffff122c2189ae7f0f51a0ba5c1a99b))
+* **app-admin:** update `leftPanel` styles in "SplitView" component ([da134e8](https://github.com/webiny/webiny-js/commit/da134e81a1804d01b4e7e42cb8b6de7629bcbec9))
+* **app-security-tenancy:** update `UsersForm` layout ([402969d](https://github.com/webiny/webiny-js/commit/402969d4a6cdc6a74f67a49ff89fb50e0532ef1e))
+* **headless-cms:** implement field validation ([d856cc7](https://github.com/webiny/webiny-js/commit/d856cc7345fea429f8167e92cd55b3e09df153d1))
+* **ui:** add `DataListModalOverlay` component ([47f8852](https://github.com/webiny/webiny-js/commit/47f8852bcf3d77f8f9dce46dee4a53ed0beb200a))
 
 
 
 
 
-# [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.1) (2021-01-11)
+# [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.0...v5.0.0-beta.1) (2021-01-08)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.0) (2021-01-08)
 
 
 ### Bug Fixes

@@ -5,8 +5,17 @@ import { useMutation } from "@webiny/app-headless-cms/admin/hooks";
 import { ContentModelForm } from "../../../views/components/ContentModelForm";
 import * as GQL from "../../../views/components/ContentModelForm/graphql";
 import * as GQLCache from "../cache";
+import { CmsEditorContentEntry, CmsEditorContentModel } from "@webiny/app-headless-cms/types";
 
-const ContentForm = ({
+interface ContentFormProps {
+    contentModel: CmsEditorContentModel;
+    entry: CmsEditorContentEntry;
+    setLoading: (value: boolean) => void;
+    getLoading: () => boolean;
+    setState: (value: any) => void;
+    listQueryVariables: Record<string, any>;
+}
+const ContentForm: React.FunctionComponent<ContentFormProps> = ({
     contentModel,
     entry,
     setLoading,

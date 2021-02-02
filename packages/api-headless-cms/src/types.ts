@@ -55,6 +55,10 @@ export interface CmsContext
     cms: BaseCmsValuesObject & CmsCrudContextObject;
 }
 
+interface CmsContentModelFieldPredefinedValuesValue {
+    value: string;
+    label: string;
+}
 /**
  * Object containing content model field predefined options and values.
  *
@@ -66,9 +70,9 @@ export interface CmsContentModelFieldPredefinedValues {
      */
     enabled: boolean;
     /**
-     * Predefined values. Can be array of anything, it depends on the dev.
+     * Predefined values array.
      */
-    values: any[];
+    values: CmsContentModelFieldPredefinedValuesValue[];
 }
 
 /**

@@ -6,14 +6,18 @@ const getOutputJson = async (stack, env) => {
     try {
         const cwd = getProjectRoot();
         const { stdout } = await execa(
-            "webiny",
-            ["app", "output", stack, "--env", env, "--json", "--no-debug"].filter(Boolean),
+            "yarn",
+            ["webiny", "app", "output", stack, "--env", env, "--json", "--no-debug"].filter(
+                Boolean
+            ),
             {
                 cwd
             }
         );
 
-        return JSON.parse(stdout);
+        // Let's get the output after the first line break. Everything before is just yarn stuff.
+        const extractedJSON = stdout.substring(stdout.indexOf("{"));
+        return JSON.parse(extractedJSON);
     } catch (e) {
         return null;
     }

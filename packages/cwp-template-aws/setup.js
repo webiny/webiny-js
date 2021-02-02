@@ -100,10 +100,7 @@ const setup = async args => {
         );
 
         depsList.forEach(name => {
-            if (packageJson.dependencies[name] === "latest") {
-                // Use version of @webiny/cli package (we have fixed package versioning)
-                packageJson.dependencies[name] = `^` + latestVersion;
-            }
+            packageJson.dependencies[name] = `^` + latestVersion;
         });
 
         await writeJsonFile(packageJsonPath, packageJson);

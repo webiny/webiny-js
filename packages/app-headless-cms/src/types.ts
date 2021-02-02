@@ -231,6 +231,16 @@ export interface CmsEditorFieldRendererPlugin extends Plugin {
     };
 }
 
+export interface CmsEditorFieldPredefinedValuesEntry {
+    label: string;
+    value: string;
+}
+
+export interface CmsEditorFieldPredefinedValues {
+    enabled: boolean;
+    values: CmsEditorFieldPredefinedValuesEntry[];
+}
+
 export type CmsEditorField<T = unknown> = T & {
     id?: string;
     type: string;
@@ -241,10 +251,7 @@ export type CmsEditorField<T = unknown> = T & {
     validation?: CmsEditorFieldValidator[];
     listValidation?: CmsEditorFieldValidator[];
     multipleValues?: boolean;
-    predefinedValues?: {
-        enabled: boolean;
-        values: { label: string; value: string }[];
-    };
+    predefinedValues?: CmsEditorFieldPredefinedValues;
     settings?: { [key: string]: any };
     renderer: {
         name: string;

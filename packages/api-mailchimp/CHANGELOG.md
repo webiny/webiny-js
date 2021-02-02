@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [5.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.5...v5.0.0-beta.0) (2021-01-11)
+# [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-02-01)
 
 **Note:** Version bump only for package @webiny/api-mailchimp
 
@@ -11,7 +11,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [5.0.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.4...v5.0.0-beta.5) (2021-01-11)
+# [5.0.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.2...v5.0.0-beta.3) (2021-02-01)
 
 **Note:** Version bump only for package @webiny/api-mailchimp
 
@@ -19,7 +19,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-01-11)
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.1...v5.0.0-beta.2) (2021-01-29)
 
 **Note:** Version bump only for package @webiny/api-mailchimp
 
@@ -27,7 +27,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [5.0.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.2...v5.0.0-beta.3) (2021-01-11)
+# [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.0...v5.0.0-beta.1) (2021-01-08)
 
 **Note:** Version bump only for package @webiny/api-mailchimp
 
@@ -35,28 +35,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.2) (2021-01-11)
-
-
-### Bug Fixes
-
-* cleanup and small tweaks ([58aedcd](https://github.com/webiny/webiny-js/commit/58aedcdead2494b6ea012d19f72dfdf6a54795b7))
-* correct dependencies ([f77bd16](https://github.com/webiny/webiny-js/commit/f77bd161c7049212d55a05b1708f7053115f5638))
-* merge `new-security` into `master` ([da26908](https://github.com/webiny/webiny-js/commit/da269089ebaf18cc00c43919688fc4a005314d72))
-* remove `@webiny/graphql` ([ce70fd5](https://github.com/webiny/webiny-js/commit/ce70fd581456ba56787c2e12fe8075592138a3b7))
-* remove `api-settings-manager` ([547d686](https://github.com/webiny/webiny-js/commit/547d68600132b28950ce6574041bd639f0e752ff))
-* remove no-longer-existing `resolveUpdateSettings` ([5493b75](https://github.com/webiny/webiny-js/commit/5493b7525c0159e864c2c86008f0f5e22eb3d192))
-* remove use of `gql` in `graphql-schema` plugins ([101e8fe](https://github.com/webiny/webiny-js/commit/101e8fe782e38644d686a1670cf938e3aa6a0c0c))
-* remove word `Handler` from context plugin type names ([277f0dd](https://github.com/webiny/webiny-js/commit/277f0dd300b7451a8a162678417e2b428cf002cf))
-* update dependencies ([2da7785](https://github.com/webiny/webiny-js/commit/2da77856bb535144d5f08f6408bba10716737d06))
-* update dependencies ([9e23d9d](https://github.com/webiny/webiny-js/commit/9e23d9d435c8e3993713d73123a7b93119893eb1))
-* **code-format:** update configs for prettier and eslint ([#1237](https://github.com/webiny/webiny-js/issues/1237)) ([5ff6d22](https://github.com/webiny/webiny-js/commit/5ff6d22f427093a52560963770dadf96d8e6685b))
-
-
-
-
-
-# [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.1) (2021-01-11)
+# [5.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.0) (2021-01-08)
 
 
 ### Bug Fixes

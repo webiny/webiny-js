@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [5.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.5...v5.0.0-beta.0) (2021-01-11)
+# [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-02-01)
 
 **Note:** Version bump only for package @webiny/app
 
@@ -11,7 +11,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [5.0.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.4...v5.0.0-beta.5) (2021-01-11)
+# [5.0.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.2...v5.0.0-beta.3) (2021-02-01)
 
 **Note:** Version bump only for package @webiny/app
 
@@ -19,46 +19,31 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-01-11)
-
-**Note:** Version bump only for package @webiny/app
-
-
-
-
-
-# [5.0.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.2...v5.0.0-beta.3) (2021-01-11)
-
-**Note:** Version bump only for package @webiny/app
-
-
-
-
-
-# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.2) (2021-01-11)
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.1...v5.0.0-beta.2) (2021-01-29)
 
 
 ### Bug Fixes
 
-* **app:** filter out falsy content after plugins are processed. ([b65bc59](https://github.com/webiny/webiny-js/commit/b65bc59182f96391255d65608b3648e1f059616d))
-* remove `Addons` ([3436c47](https://github.com/webiny/webiny-js/commit/3436c47b306b685b9b1b544e0f5943d0be11a46f))
-* revert to React 16.14.0 ([db2c17d](https://github.com/webiny/webiny-js/commit/db2c17df8dbcd33ce8518c9edcdc5db911571dd1))
-* **code-format:** update configs for prettier and eslint ([#1237](https://github.com/webiny/webiny-js/issues/1237)) ([5ff6d22](https://github.com/webiny/webiny-js/commit/5ff6d22f427093a52560963770dadf96d8e6685b))
-* merge `new-security` into `master` ([da26908](https://github.com/webiny/webiny-js/commit/da269089ebaf18cc00c43919688fc4a005314d72))
+* sort an a new array, instead directly ([65bf887](https://github.com/webiny/webiny-js/commit/65bf8870cdef71a190add2656855ffa7d97067f9))
 
 
 ### Features
 
-* add `AppFileManagerStoragePlugin` type ([d364ed1](https://github.com/webiny/webiny-js/commit/d364ed18675b2a94d8ce6db4b1054060724e81ec))
-* add `reverse` option ([4b8e5f7](https://github.com/webiny/webiny-js/commit/4b8e5f7dd2fff9ee3a2187a81f380d14149f30d8))
-* create ES indexes per tenant ([caf87e8](https://github.com/webiny/webiny-js/commit/caf87e87e4040beb48c94b62dfb1709646b6734e))
-* migrate security to v5 ([d8f2b76](https://github.com/webiny/webiny-js/commit/d8f2b76738de99772a5285b9ceae1f5969f793ed))
+* **app:** add createConsoleLink to apollo client ([936b4a2](https://github.com/webiny/webiny-js/commit/936b4a29e557093f057888f77badfeb437a8e4a1))
 
 
 
 
 
-# [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.1) (2021-01-11)
+# [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.0...v5.0.0-beta.1) (2021-01-08)
+
+**Note:** Version bump only for package @webiny/app
+
+
+
+
+
+# [5.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.0) (2021-01-08)
 
 
 ### Bug Fixes

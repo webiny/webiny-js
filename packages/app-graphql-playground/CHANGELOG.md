@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [5.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.5...v5.0.0-beta.0) (2021-01-11)
+# [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-02-01)
 
 **Note:** Version bump only for package @webiny/app-graphql-playground
 
@@ -11,7 +11,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [5.0.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.4...v5.0.0-beta.5) (2021-01-11)
+# [5.0.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.2...v5.0.0-beta.3) (2021-02-01)
 
 **Note:** Version bump only for package @webiny/app-graphql-playground
 
@@ -19,41 +19,27 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-01-11)
-
-**Note:** Version bump only for package @webiny/app-graphql-playground
-
-
-
-
-
-# [5.0.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.2...v5.0.0-beta.3) (2021-01-11)
-
-**Note:** Version bump only for package @webiny/app-graphql-playground
-
-
-
-
-
-# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.2) (2021-01-11)
+# [5.0.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.1...v5.0.0-beta.2) (2021-01-29)
 
 
 ### Bug Fixes
 
-* **app-graphql-playground:** add local playground styles ([bf9fb49](https://github.com/webiny/webiny-js/commit/bf9fb496cb82cd1bb1937cc418c0fc18ce8c9ebc))
-* **app-headless-cms:** add query examples and improve styles ([6539fbc](https://github.com/webiny/webiny-js/commit/6539fbcdd696e8e8e4efed9e4378ba6fd74f4ffe))
-* update TS configs and deps ([12a5f67](https://github.com/webiny/webiny-js/commit/12a5f67721f61b4eefebf440f27fa57af19e7c36))
-
-
-### Features
-
-* **app-graphql-playground:** introduce a package to render graphql playground ([5f4ee4e](https://github.com/webiny/webiny-js/commit/5f4ee4e251a9facec25aad2b1f16e6e9d7bb4060))
+* **app-graphql-playground:** lazy load playground assets and attach headers ([e217470](https://github.com/webiny/webiny-js/commit/e2174708dee04673edae0aec2ea707d33b0eebb3))
+* **app-graphql-playground:** update icon and label ([1f86c65](https://github.com/webiny/webiny-js/commit/1f86c659643e01724eda21a18e008ebb1147293b))
 
 
 
 
 
-# [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.1) (2021-01-11)
+# [5.0.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.0...v5.0.0-beta.1) (2021-01-08)
+
+**Note:** Version bump only for package @webiny/app-graphql-playground
+
+
+
+
+
+# [5.0.0-beta.0](https://github.com/webiny/webiny-js/compare/v4.14.0...v5.0.0-beta.0) (2021-01-08)
 
 
 ### Bug Fixes

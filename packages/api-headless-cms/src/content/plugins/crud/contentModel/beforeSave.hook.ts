@@ -16,6 +16,8 @@ interface Args {
 
 const defaultTitleFieldId = "id";
 
+const allowedTitleFieldTypes = ["text", "number"];
+
 const getContentModelTitleFieldId = (
     fields: CmsContentModelField[],
     titleFieldId?: string
@@ -39,9 +41,11 @@ const getContentModelTitleFieldId = (
         });
     }
 
-    if (target.type !== "text") {
+    if (allowedTitleFieldTypes.includes(target.type) === false) {
         throw new WebinyError(
-            "Only text and id fields can be used as an entry title.",
+            `Only ${allowedTitleFieldTypes.join(
+                ", "
+            )} and id fields can be used as an entry title.`,
             "ENTRY_TITLE_FIELD_TYPE",
             {
                 fieldId: target.fieldId,
