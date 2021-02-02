@@ -10,7 +10,7 @@ import { useContentModelEditor } from "../../Context";
 import { ReactComponent as MoreVerticalIcon } from "@webiny/app-headless-cms/admin/icons/more_vert.svg";
 import { Menu, MenuItem } from "@webiny/ui/Menu";
 import { plugins } from "@webiny/plugins";
-import { CmsEditorFieldOptionPlugin } from "@webiny/app-headless-cms/types";
+import { CmsEditorField, CmsEditorFieldOptionPlugin } from "@webiny/app-headless-cms/types";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { i18n } from "@webiny/app/i18n";
@@ -53,6 +53,17 @@ const menuStyles = css({
     }
 });
 
+const allowedTitleFieldTypes = ["text", "number"];
+
+const isFieldAllowedToBeTitle = (field: CmsEditorField) => {
+    if (field.multipleValues) {
+        return false;
+    } else if (allowedTitleFieldTypes.includes(field.type) === false) {
+        return false;
+    }
+    return true;
+};
+
 const Field = props => {
     const { field, onEdit, onDelete } = props;
     const { showSnackbar } = useSnackbar();
@@ -81,7 +92,7 @@ const Field = props => {
                         React.cloneElement(pl.render(), { key: pl.name })
                     )}
                     <MenuItem
-                        disabled={field.multipleValues || field.type !== "text"}
+                        disabled={!isFieldAllowedToBeTitle(field)}
                         onClick={async () => {
                             const response = await setData(data => {
                                 data.titleFieldId = field.fieldId;
