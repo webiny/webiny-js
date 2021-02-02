@@ -32,9 +32,7 @@ import {
     getESUpdateLatestPageData
 } from "./pages/esPageData";
 
-import {
-    Args as FlushArgs
-} from "@webiny/api-prerendering-service/flush/types";
+import { Args as FlushArgs } from "@webiny/api-prerendering-service/flush/types";
 
 import { TYPE } from "@webiny/api-page-builder/types";
 
