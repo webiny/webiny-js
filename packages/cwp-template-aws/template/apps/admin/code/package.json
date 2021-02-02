@@ -7,6 +7,7 @@
     "@editorjs/list": "^1.6.0",
     "@editorjs/underline": "^1.0.0",
     "@editorjs/quote": "^2.4.0",
+    "@emotion/core": "^10.0.17",
     "@emotion/styled": "^10.0.17",
     "@webiny/app": "latest",
     "@webiny/app-admin": "latest",
@@ -34,14 +35,15 @@
     "core-js": "^3.0.1",
     "cross-fetch": "^3.0.4",
     "emotion": "^10.0.17",
+    "graphql": "^14.7.0",
     "graphql-tag": "^2.10.1",
     "react": "16.14.0",
-    "react-apollo": "^3.1.0",
     "react-dom": "16.14.0",
     "regenerator-runtime": "^0.13.5",
     "theme": "^0.1.0"
   },
   "devDependencies": {
+    "@types/react": "^16.14.2",
     "cross-env": "^5.0.2"
   },
   "scripts": {

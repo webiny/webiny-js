@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useQuery, QueryResult } from "react-apollo";
+import { useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 
 export const GET_I18N_INFORMATION = gql`
@@ -33,7 +33,7 @@ type I18NContextState = {
 };
 
 export type I18NContextValue = {
-    refetchLocales(variables?: Record<string, any>): Promise<QueryResult>;
+    refetchLocales(variables?: Record<string, any>): Promise<any>;
     updateLocaleStorage: (currentLocales: CurrentLocale[]) => void;
     state: I18NContextState;
     setState: typeof useState;

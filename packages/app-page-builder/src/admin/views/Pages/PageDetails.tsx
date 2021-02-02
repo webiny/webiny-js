@@ -1,5 +1,5 @@
 import React from "react";
-import { useQuery } from "react-apollo";
+import { useQuery } from "@apollo/react-hooks";
 import { useRouter } from "@webiny/react-router";
 import styled from "@emotion/styled";
 import { renderPlugins } from "@webiny/app/plugins";

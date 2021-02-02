@@ -12,10 +12,12 @@
   "dependencies": {
     "@webiny/plugins": "^5.0.0-beta.4",
     "apollo-client": "^2.6.10",
+    "graphql": "^14.7.0",
     "graphql-tag": "^2.11.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
     "rimraf": "^3.0.2",
     "typescript": "^4.1.3"
   },

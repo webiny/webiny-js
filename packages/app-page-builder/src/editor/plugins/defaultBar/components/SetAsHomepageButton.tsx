@@ -7,7 +7,7 @@ import { MenuItem } from "@webiny/ui/Menu";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as HomeIcon } from "@webiny/app-page-builder/admin/assets/round-home-24px.svg";
-import { useMutation } from "react-apollo";
+import { useMutation } from "@apollo/react-hooks";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { useRecoilValue } from "recoil";
 import { usePageBuilderSettings } from "@webiny/app-page-builder/admin/hooks/usePageBuilderSettings";

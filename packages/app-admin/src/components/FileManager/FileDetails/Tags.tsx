@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { css } from "emotion";
-import { useApolloClient } from "react-apollo";
+import { useApolloClient } from "@apollo/react-hooks";
 import set from "lodash/set";
 import get from "lodash/get";
 import cloneDeep from "lodash/cloneDeep";

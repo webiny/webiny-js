@@ -15,7 +15,7 @@ import { ReactComponent as DownloadIcon } from "./icons/round-cloud_download-24p
 import { ReactComponent as DeleteIcon } from "./icons/delete.svg";
 import TimeAgo from "timeago-react";
 import { useFileManager } from "./FileManagerContext";
-import { useMutation } from "react-apollo";
+import { useMutation } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { DELETE_FILE, LIST_FILES, LIST_TAGS } from "./graphql";

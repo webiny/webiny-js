@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { useApolloClient } from "react-apollo";
+import { useApolloClient } from "@apollo/react-hooks";
 import { set } from "dot-prop-immutable";
 import { ButtonDefault, IconButton } from "@webiny/ui/Button";
 import { Typography } from "@webiny/ui/Typography";

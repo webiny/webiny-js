@@ -15,6 +15,8 @@
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "jest": "^26.6.3",
     "jest-dynalite": "^3.2.0",
     "rimraf": "^3.0.2",
     "typescript": "^4.1.3"

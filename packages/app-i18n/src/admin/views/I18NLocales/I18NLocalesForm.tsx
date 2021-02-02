@@ -8,7 +8,7 @@ import { ButtonDefault, ButtonIcon, ButtonPrimary } from "@webiny/ui/Button";
 import { Switch } from "@webiny/ui/Switch";
 import { CircularProgress } from "@webiny/ui/Progress";
 import LocaleCodesAutoComplete from "./LocaleCodesAutoComplete";
-import { useMutation, useQuery } from "react-apollo";
+import { useMutation, useQuery } from "@apollo/react-hooks";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 import {
     SimpleForm,

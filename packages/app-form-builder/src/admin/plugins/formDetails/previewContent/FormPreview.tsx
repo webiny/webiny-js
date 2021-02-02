@@ -2,7 +2,7 @@ import * as React from "react";
 import { css } from "emotion";
 import { Form } from "@webiny/app-form-builder/components/Form";
 import { DATA_FIELDS } from "@webiny/app-form-builder/components/Form/graphql";
-import { useQuery } from "react-apollo";
+import { useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 import { FbFormModel, FbRevisionModel } from "@webiny/app-form-builder/types";
 import CircularProgress from "@webiny/ui/Progress/CircularProgress";

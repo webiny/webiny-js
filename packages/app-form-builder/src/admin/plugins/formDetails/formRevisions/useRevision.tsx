@@ -1,6 +1,6 @@
 import React from "react";
 import { useRouter } from "@webiny/react-router";
-import { useApolloClient } from "react-apollo";
+import { useApolloClient } from "@apollo/react-hooks";
 import { useHandlers } from "@webiny/app/hooks/useHandlers";
 import {
     CREATE_REVISION_FROM,

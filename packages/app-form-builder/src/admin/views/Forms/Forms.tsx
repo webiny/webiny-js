@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from "react";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
-import { useQuery } from "react-apollo";
+import { useQuery } from "@apollo/react-hooks";
 import FormsDataList from "./FormsDataList";
 import FormDetails from "./FormDetails";
 import NewFormDialog from "./NewFormDialog";

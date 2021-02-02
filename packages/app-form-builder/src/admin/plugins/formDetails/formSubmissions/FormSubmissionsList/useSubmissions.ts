@@ -1,4 +1,4 @@
-import { useApolloClient, useMutation } from "react-apollo";
+import { useApolloClient, useMutation } from "@apollo/react-hooks";
 import { useCallback, useEffect, useReducer } from "react";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import * as GQL from "@webiny/app-form-builder/admin/graphql";

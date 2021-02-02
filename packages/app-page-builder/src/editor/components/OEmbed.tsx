@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, ReactElement, useState } from "react";
 import gql from "graphql-tag";
 import { css } from "emotion";
-import { useQuery } from "react-apollo";
+import { useQuery } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Typography } from "@webiny/ui/Typography";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
