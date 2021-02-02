@@ -19,16 +19,17 @@
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
-    "@babel/core": "^7.5.5"
+    "@babel/core": "^7.5.5",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.1.3"
   },
   "publishConfig": {
     "access": "public",
     "directory": "dist"
   },
   "scripts": {
-    "build": "rimraf ./dist *.tsbuildinfo && babel src -d dist --source-maps --copy-files --extensions \".ts\"",
-    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
-    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
+    "build": "yarn pkg:clean && yarn pkg:babel && cp package.json LICENSE README.md dist/ && yarn pkg:tsc",
+    "watch": "yarn pkg:babel --watch"
   },
   "adio": {
     "ignore": {
