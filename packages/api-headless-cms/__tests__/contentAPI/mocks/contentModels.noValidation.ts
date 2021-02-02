@@ -30,6 +30,7 @@ const models: CmsContentModel[] = [
                 type: "text",
                 fieldId: "title",
                 validation: [],
+                listValidation: [],
                 placeholderText: "placeholder text",
                 predefinedValues: {
                     enabled: false,
@@ -47,6 +48,7 @@ const models: CmsContentModel[] = [
                 type: "text",
                 fieldId: "slug",
                 validation: [],
+                listValidation: [],
                 placeholderText: "placeholder text",
                 predefinedValues: {
                     enabled: false,

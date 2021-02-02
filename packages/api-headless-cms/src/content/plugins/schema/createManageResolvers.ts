@@ -42,12 +42,13 @@ const getModelTitle = (model: CmsContentModel, entry: CmsContentEntry): string =
     if (!field) {
         return titleValue;
     }
-    const { enabled = false, values = [] } = field.predefinedValues;
+    const { enabled = false, values } = field.predefinedValues;
     if (!enabled || Array.isArray(values) === false) {
         return titleValue;
     }
     for (const value of values) {
-        if (value.value === titleValue) {
+        // needs to be loose because titleValue can be a number and value can be a string - but it must match
+        if (value.value == titleValue) {
             return value.label;
         }
     }

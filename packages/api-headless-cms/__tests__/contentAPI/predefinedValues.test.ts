@@ -275,4 +275,52 @@ describe("predefined values", () => {
             }
         });
     });
+
+    test("title should be a selected predefined number value label", async () => {
+        const contentModelGroup = await setupContentModelGroup();
+        await setupBugModel(contentModelGroup, {
+            titleFieldId: "bugValue"
+        });
+
+        const { createBug } = useBugManageHandler({
+            ...manageOpts
+        });
+
+        const [response] = await createBug({
+            data: {
+                name: "A hard debuggable bug",
+                bugType: "critical",
+                bugValue: 3
+            }
+        });
+
+        expect(response).toEqual({
+            data: {
+                createBug: {
+                    data: {
+                        id: expect.any(String),
+                        createdOn: expect.stringMatching(/^20/),
+                        savedOn: expect.stringMatching(/^20/),
+                        createdBy: {
+                            id: "123",
+                            displayName: "User 123",
+                            type: "admin"
+                        },
+                        meta: {
+                            locked: false,
+                            modelId: "bug",
+                            publishedOn: null,
+                            status: "draft",
+                            title: "High bug value",
+                            version: 1
+                        },
+                        name: "A hard debuggable bug",
+                        bugType: "critical",
+                        bugValue: 3
+                    },
+                    error: null
+                }
+            }
+        });
+    });
 });
