@@ -901,7 +901,7 @@ export interface CmsContentModelUpdateInput {
  *
  * @category Plugin
  * @category ContentModel
- * @category Entry
+ * @category ContentEntry
  */
 export interface ContentModelManagerPlugin extends Plugin {
     /**
@@ -924,7 +924,7 @@ export interface ContentModelManagerPlugin extends Plugin {
  * A content entry definition for and from the database.
  *
  * @category Database model
- * @category Entry
+ * @category ContentEntry
  */
 export interface CmsContentEntry {
     /**
@@ -991,7 +991,7 @@ export interface CmsContentEntry {
  * @see CmsContentEntryContext
  *
  * @category Context
- * @category Entry
+ * @category ContentEntry
  * @category ContentModel
  */
 export interface CmsContentModelManager {
@@ -1099,7 +1099,7 @@ export interface CmsContentModelContext {
 /**
  * Available statuses for content entry.
  *
- * @category Entry
+ * @category ContentEntry
  */
 type CmsContentEntryStatus =
     | "published"
@@ -1111,7 +1111,7 @@ type CmsContentEntryStatus =
 /**
  * Entry listing where args.
  *
- * @category Entry
+ * @category ContentEntry
  * @category GraphQL args
  */
 export interface CmsContentEntryListWhere {
@@ -1125,7 +1125,7 @@ export interface CmsContentEntryListWhere {
 /**
  * Entry listing sort.
  *
- * @category Entry
+ * @category ContentEntry
  * @category GraphQL args
  */
 export type CmsContentEntryListSort = string[];
@@ -1133,7 +1133,7 @@ export type CmsContentEntryListSort = string[];
 /**
  * Get entry GraphQL resolver args.
  *
- * @category Entry
+ * @category ContentEntry
  * @category GraphQL args
  */
 export interface CmsContentEntryGetArgs {
@@ -1144,7 +1144,7 @@ export interface CmsContentEntryGetArgs {
 /**
  * List entries GraphQL resolver args.
  *
- * @category Entry
+ * @category ContentEntry
  * @category GraphQL args
  */
 export interface CmsContentEntryListArgs {
@@ -1157,7 +1157,7 @@ export interface CmsContentEntryListArgs {
 /**
  * List entries options.
  *
- * @category Entry
+ * @category ContentEntry
  */
 export interface CmsContentEntryListOptions {
     /**
@@ -1169,7 +1169,7 @@ export interface CmsContentEntryListOptions {
 /**
  * Meta information for GraphQL output.
  *
- * @category Entry
+ * @category ContentEntry
  * @category GraphQL output
  */
 export interface CmsContentEntryMeta {
@@ -1188,7 +1188,7 @@ export interface CmsContentEntryMeta {
  * Content entry in the context.
  *
  * @category Context
- * @category Entry
+ * @category ContentEntry
  */
 export interface CmsContentEntryContext {
     /**
@@ -1294,7 +1294,7 @@ interface CmsCrudContextObject {
  * Parameters for ContentEntryResolverFactory.
  *
  * @category GraphQL resolver
- * @category Entry
+ * @category ContentEntry
  */
 interface CmsContentEntryResolverFactoryParams {
     model: CmsContentModel;
@@ -1304,7 +1304,7 @@ interface CmsContentEntryResolverFactoryParams {
  * A type for ContentEntryResolvers. Used when creating get, list, update, publish, ...etc.
  *
  * @category GraphQL resolver
- * @category Entry
+ * @category ContentEntry
  */
 export type CmsContentEntryResolverFactory<TSource = any, TArgs = any, TContext = CmsContext> = {
     (params: CmsContentEntryResolverFactoryParams): GraphQLFieldResolver<TSource, TArgs, TContext>;
@@ -1509,7 +1509,7 @@ export type CmsContentModelGroupPermission = SecurityPermission<{
  * The security permission for content entry.
  *
  * @category SecurityPermission
- * @category Entry
+ * @category ContentEntry
  */
 export type CmsContentEntryPermission = SecurityPermission<{
     own: boolean;
@@ -1533,7 +1533,7 @@ export type CmsContentEntryPermission = SecurityPermission<{
  * A definition of the entry that is being prepared for the Elasticsearch.
  *
  * @category Elasticsearch
- * @category Entry
+ * @category ContentEntry
  */
 export interface CmsContentIndexEntry extends CmsContentEntry {
     /**
@@ -1551,7 +1551,7 @@ export interface CmsContentIndexEntry extends CmsContentEntry {
  *
  * @category Plugin
  * @category ContentModelField
- * @category Entry
+ * @category ContentEntry
  */
 export interface CmsModelFieldToElasticsearchPlugin extends Plugin {
     /**
@@ -1668,7 +1668,7 @@ export interface CmsModelFieldToStoragePluginFromStorageArgs {
  *
  * @category Plugin
  * @category ContentModelField
- * @category Entry
+ * @category ContentEntry
  */
 export interface CmsModelFieldToStoragePlugin extends Plugin {
     /**
@@ -1703,4 +1703,56 @@ export interface CmsModelFieldToStoragePlugin extends Plugin {
      * ```
      */
     fromStorage(args: CmsModelFieldToStoragePluginFromStorageArgs): Promise<any>;
+}
+
+/**
+ * @category LifecycleHook
+ * @category ContentModel
+ *
+ * @hidden
+ */
+export interface CmsContentModelHookPluginArgs {
+    model: CmsContentModel;
+    context: CmsContext;
+}
+/**
+ * @category LifecycleHook
+ * @category ContentModel
+ *
+ * @hidden
+ */
+export interface CmsContentModelSaveHookPluginArgs extends CmsContentModelHookPluginArgs {
+    data: Partial<CmsContentModel>;
+}
+/**
+ * @category Plugin
+ * @category ContentModel
+ * @category LifecycleHook
+ */
+export interface CmsContentModelHookPlugin extends Plugin {
+    type: "content-model-hook";
+    beforeCreate?: (args: CmsContentModelHookPluginArgs) => void;
+    afterCreate?: (args: CmsContentModelHookPluginArgs) => void;
+    beforeSave?: (args: CmsContentModelSaveHookPluginArgs) => void;
+    afterSave?: (args: CmsContentModelHookPluginArgs) => void;
+    beforeDelete?: (args: CmsContentModelHookPluginArgs) => void;
+    afterDelete?: (args: CmsContentModelHookPluginArgs) => void;
+}
+/**
+ * @category Plugin
+ * @category ContentEntry
+ * @category LifecycleHook
+ */
+export interface CmsContentEntryHookPlugin extends Plugin {
+    type: "content-entry-hook";
+    beforeCreate?: (entry: CmsContentEntry) => void;
+    afterCreate?: (entry: CmsContentEntry) => void;
+    beforeSave?: (entry: CmsContentEntry) => void;
+    afterSave?: (entry: CmsContentEntry) => void;
+    beforeDelete?: (entry: CmsContentEntry) => void;
+    afterDelete?: (entry: CmsContentEntry) => void;
+    beforePublish?: (entry: CmsContentEntry) => void;
+    afterPublish?: (entry: CmsContentEntry) => void;
+    beforeUnpublish?: (entry: CmsContentEntry) => void;
+    afterUnpublish?: (entry: CmsContentEntry) => void;
 }
