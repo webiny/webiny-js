@@ -1,4 +1,5 @@
 import { CmsContentModel, CmsContext } from "@webiny/api-headless-cms/types";
+import { runContentModelLifecycleHooks } from "./hooks";
 
 interface Args {
     context: CmsContext;
@@ -7,4 +8,5 @@ interface Args {
 export const afterSaveHook = async (args: Args) => {
     const { context } = args;
     await context.cms.settings.updateContentModelLastChange();
+    await runContentModelLifecycleHooks("afterSave", args);
 };

@@ -4,6 +4,7 @@ import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import * as helpers from "../utils/helpers";
 import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
+import { contentModelHooks, hooksTracker } from "./mocks/lifecycleHooks";
 
 const getTypeFields = type => {
     return type.fields.filter(f => f.name !== "_empty").map(f => f.name);
@@ -20,12 +21,9 @@ describe("content model test", () => {
     const readHandlerOpts = { path: "read/en-US" };
     const manageHandlerOpts = { path: "manage/en-US" };
 
-    const {
-        createContentModelMutation,
-        updateContentModelMutation,
-        createContentModelGroupMutation,
-        elasticSearch
-    } = useContentGqlHandler(manageHandlerOpts);
+    const { createContentModelGroupMutation, elasticSearch } = useContentGqlHandler(
+        manageHandlerOpts
+    );
 
     let contentModelGroup: CmsContentModelGroup;
 
@@ -44,6 +42,8 @@ describe("content model test", () => {
         } catch {
             // Ignore errors
         }
+        // we need to reset this since we are using a singleton
+        hooksTracker.reset();
     });
 
     afterEach(async () => {
@@ -243,7 +243,11 @@ describe("content model test", () => {
     });
 
     test("cannot delete content model that has entries", async () => {
-        const { deleteContentModelMutation } = useContentGqlHandler(manageHandlerOpts);
+        const {
+            createContentModelMutation,
+            updateContentModelMutation,
+            deleteContentModelMutation
+        } = useContentGqlHandler(manageHandlerOpts);
         const { createCategory, until, listCategories } = useCategoryManageHandler(
             manageHandlerOpts
         );
@@ -546,5 +550,115 @@ describe("content model test", () => {
                 }
             }
         });
+    });
+
+    test("should execute hooks on create", async () => {
+        const { createContentModelMutation } = useContentGqlHandler(manageHandlerOpts, [
+            contentModelHooks()
+        ]);
+
+        const [response] = await createContentModelMutation({
+            data: {
+                name: "Content model",
+                modelId: "content-model",
+                group: contentModelGroup.id
+            }
+        });
+
+        expect(response).toEqual({
+            data: {
+                createContentModel: {
+                    data: expect.any(Object),
+                    error: null
+                }
+            }
+        });
+        expect(hooksTracker.isExecuted("contentModel:beforeCreate")).toEqual(true);
+        expect(hooksTracker.isExecuted("contentModel:afterCreate")).toEqual(true);
+        expect(hooksTracker.isExecuted("contentModel:beforeSave")).toEqual(false);
+        expect(hooksTracker.isExecuted("contentModel:afterSave")).toEqual(false);
+        expect(hooksTracker.isExecuted("contentModel:beforeDelete")).toEqual(false);
+        expect(hooksTracker.isExecuted("contentModel:afterDelete")).toEqual(false);
+    });
+
+    test("should execute hooks on update", async () => {
+        const {
+            createContentModelMutation,
+            updateContentModelMutation
+        } = useContentGqlHandler(manageHandlerOpts, [contentModelHooks()]);
+
+        const [createResponse] = await createContentModelMutation({
+            data: {
+                name: "Content model",
+                modelId: "content-model",
+                group: contentModelGroup.id
+            }
+        });
+        const { modelId } = createResponse.data.createContentModel.data;
+        // need to reset because hooks for create have been fired
+        hooksTracker.reset();
+
+        const [response] = await updateContentModelMutation({
+            modelId,
+            data: {
+                name: "Updated content model",
+                fields: [],
+                layout: []
+            }
+        });
+
+        expect(response).toEqual({
+            data: {
+                updateContentModel: {
+                    data: expect.any(Object),
+                    error: null
+                }
+            }
+        });
+
+        expect(hooksTracker.isExecuted("contentModel:beforeCreate")).toEqual(false);
+        expect(hooksTracker.isExecuted("contentModel:afterCreate")).toEqual(false);
+        expect(hooksTracker.isExecuted("contentModel:beforeSave")).toEqual(true);
+        expect(hooksTracker.isExecuted("contentModel:afterSave")).toEqual(true);
+        expect(hooksTracker.isExecuted("contentModel:beforeDelete")).toEqual(false);
+        expect(hooksTracker.isExecuted("contentModel:afterDelete")).toEqual(false);
+    });
+
+    test("should execute hooks on delete", async () => {
+        const {
+            createContentModelMutation,
+            deleteContentModelMutation
+        } = useContentGqlHandler(manageHandlerOpts, [contentModelHooks()]);
+
+        const [createResponse] = await createContentModelMutation({
+            data: {
+                name: "Content model",
+                modelId: "content-model",
+                group: contentModelGroup.id
+            }
+        });
+        const { modelId } = createResponse.data.createContentModel.data;
+        // need to reset because hooks for create have been fired
+        hooksTracker.reset();
+
+        const [response] = await deleteContentModelMutation({
+            modelId
+        });
+
+        expect(response).toEqual({
+            data: {
+                deleteContentModel: {
+                    data: true,
+                    error: null
+                }
+            }
+        });
+
+        expect(hooksTracker.isExecuted("contentModel:beforeCreate")).toEqual(false);
+        expect(hooksTracker.isExecuted("contentModel:afterCreate")).toEqual(false);
+        expect(hooksTracker.isExecuted("contentModel:beforeSave")).toEqual(false);
+        expect(hooksTracker.isExecuted("contentModel:afterSave")).toEqual(false);
+        expect(hooksTracker.isExecuted("contentModel:beforeDelete")).toEqual(true);
+        expect(hooksTracker.isExecuted("contentModel:afterDelete")).toEqual(true);
     });
 });

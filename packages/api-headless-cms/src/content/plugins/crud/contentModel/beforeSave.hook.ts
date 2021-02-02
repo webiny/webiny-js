@@ -5,6 +5,7 @@ import {
     CmsModelLockedFieldPlugin
 } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
+import { runContentModelLifecycleHooks } from "./hooks";
 
 interface Args {
     context: CmsContext;
@@ -122,4 +123,5 @@ export const beforeSaveHook = async (args: Args) => {
             });
         }
     }
+    await runContentModelLifecycleHooks("beforeSave", args);
 };

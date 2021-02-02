@@ -1,8 +1,11 @@
 import { CmsContentModel, CmsContext } from "@webiny/api-headless-cms/types";
+import { runContentModelLifecycleHooks } from "./hooks";
 
 interface Args {
     context: CmsContext;
     model: CmsContentModel;
 }
-// eslint-disable-next-line
-export const afterCreateHook = async (args: Args) => {};
+
+export const afterCreateHook = async (args: Args): Promise<void> => {
+    await runContentModelLifecycleHooks("afterCreate", args);
+};
