@@ -60,8 +60,10 @@ function LeftSidebar({ toggleTag, queryParams: { tags } }) {
 
     if (list.length === 0) {
         return (
-            <div className={style.noTagged}>
-                Once you tag an image, the tag will be displayed here.
+            <div className={style.leftDrawer}>
+                <div className={style.noTagged}>
+                    Once you tag an image, the tag will be displayed here.
+                </div>
             </div>
         );
     }
