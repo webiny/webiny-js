@@ -1721,7 +1721,7 @@ export interface CmsContentModelHookPluginArgs {
  *
  * @hidden
  */
-export interface CmsContentModelSaveHookPluginArgs extends CmsContentModelHookPluginArgs {
+export interface CmsContentModelUpdateHookPluginArgs extends CmsContentModelHookPluginArgs {
     data: Partial<CmsContentModel>;
 }
 /**
@@ -1733,8 +1733,8 @@ export interface CmsContentModelHookPlugin extends Plugin {
     type: "content-model-hook";
     beforeCreate?: (args: CmsContentModelHookPluginArgs) => void;
     afterCreate?: (args: CmsContentModelHookPluginArgs) => void;
-    beforeSave?: (args: CmsContentModelSaveHookPluginArgs) => void;
-    afterSave?: (args: CmsContentModelHookPluginArgs) => void;
+    beforeUpdate?: (args: CmsContentModelUpdateHookPluginArgs) => void;
+    afterUpdate?: (args: CmsContentModelHookPluginArgs) => void;
     beforeDelete?: (args: CmsContentModelHookPluginArgs) => void;
     afterDelete?: (args: CmsContentModelHookPluginArgs) => void;
 }
@@ -1768,14 +1768,22 @@ export interface CmsContentEntryHookPlugin extends Plugin {
      */
     afterCreate?: (args: CmsContentEntryHookPluginArgs) => void;
     /**
+     * @see CmsContentEntryHookPlugin.beforeCreate
+     */
+    beforeCreateRevisionFrom?: (args: CmsContentEntryHookPluginArgs) => void;
+    /**
+     * @see CmsContentEntryHookPlugin.afterCreate
+     */
+    afterCreateRevisionFrom?: (args: CmsContentEntryHookPluginArgs) => void;
+    /**
      * A hook triggered before entry is updated in the database.
      * It can be modified but we do not recommend it.
      */
-    beforeSave?: (args: CmsContentEntryHookPluginArgs) => void;
+    beforeUpdate?: (args: CmsContentEntryHookPluginArgs) => void;
     /**
      * A hook triggered after entry is updated in the database and Elasticsearch.
      */
-    afterSave?: (args: CmsContentEntryHookPluginArgs) => void;
+    afterUpdate?: (args: CmsContentEntryHookPluginArgs) => void;
     /**
      * A hook triggered before deleting a certain revision (id#revision).
      */

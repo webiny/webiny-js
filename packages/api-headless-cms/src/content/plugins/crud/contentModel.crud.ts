@@ -13,12 +13,14 @@ import { contentModelManagerFactory } from "./contentModel/contentModelManagerFa
 import { CreateContentModelModel, UpdateContentModelModel } from "./contentModel/models";
 import { createFieldModels } from "./contentModel/createFieldModels";
 import { validateLayout } from "./contentModel/validateLayout";
-import { beforeSaveHook } from "./contentModel/beforeSave.hook";
-import { afterSaveHook } from "./contentModel/afterSave.hook";
-import { beforeDeleteHook } from "./contentModel/beforeDelete.hook";
-import { afterDeleteHook } from "./contentModel/afterDelete.hook";
-import { beforeCreateHook } from "./contentModel/beforeCreate.hook";
-import { afterCreateHook } from "./contentModel/afterCreate.hook";
+import {
+    beforeCreateHook,
+    afterCreateHook,
+    beforeUpdateHook,
+    afterUpdateHook,
+    beforeDeleteHook,
+    afterDeleteHook
+} from "./contentModel/hooks";
 
 export default (): ContextPlugin<CmsContext> => ({
     type: "context",
@@ -151,7 +153,7 @@ export default (): ContextPlugin<CmsContext> => ({
              * @internal
              */
             async updateModel(model, data: Partial<CmsContentModel>) {
-                await beforeSaveHook({ context, model, data });
+                await beforeUpdateHook({ context, model, data });
                 await db.update({
                     ...utils.defaults.db,
                     query: {
@@ -166,7 +168,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     ...data
                 };
 
-                await afterSaveHook({ context, model: combinedModel });
+                await afterUpdateHook({ context, model: combinedModel });
 
                 await updateManager(context, combinedModel);
             },
@@ -201,7 +203,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     savedOn: new Date().toISOString()
                 };
 
-                await beforeSaveHook({ context, model, data: modelData });
+                await beforeUpdateHook({ context, model, data: modelData });
 
                 await db.update({
                     ...utils.defaults.db,
@@ -216,7 +218,7 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 await updateManager(context, fullModel);
 
-                await afterSaveHook({ context, model: fullModel });
+                await afterUpdateHook({ context, model: fullModel });
 
                 return fullModel;
             },
