@@ -3,7 +3,6 @@
 
 const chalk = require("chalk");
 const execa = require("execa");
-const semver = require("semver");
 const verifyConfig = require("./utils/verifyConfig");
 
 const currentNodeVersion = process.versions.node;

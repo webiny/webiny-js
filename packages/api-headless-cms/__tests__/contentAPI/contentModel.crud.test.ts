@@ -575,8 +575,8 @@ describe("content model test", () => {
         });
         expect(hooksTracker.isExecutedOnce("contentModel:beforeCreate")).toEqual(true);
         expect(hooksTracker.isExecutedOnce("contentModel:afterCreate")).toEqual(true);
-        expect(hooksTracker.isExecutedOnce("contentModel:beforeSave")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentModel:afterSave")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentModel:beforeUpdate")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentModel:afterUpdate")).toEqual(false);
         expect(hooksTracker.isExecutedOnce("contentModel:beforeDelete")).toEqual(false);
         expect(hooksTracker.isExecutedOnce("contentModel:afterDelete")).toEqual(false);
     });
@@ -618,8 +618,8 @@ describe("content model test", () => {
 
         expect(hooksTracker.isExecutedOnce("contentModel:beforeCreate")).toEqual(false);
         expect(hooksTracker.isExecutedOnce("contentModel:afterCreate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentModel:beforeSave")).toEqual(true);
-        expect(hooksTracker.isExecutedOnce("contentModel:afterSave")).toEqual(true);
+        expect(hooksTracker.isExecutedOnce("contentModel:beforeUpdate")).toEqual(true);
+        expect(hooksTracker.isExecutedOnce("contentModel:afterUpdate")).toEqual(true);
         expect(hooksTracker.isExecutedOnce("contentModel:beforeDelete")).toEqual(false);
         expect(hooksTracker.isExecutedOnce("contentModel:afterDelete")).toEqual(false);
     });
@@ -656,8 +656,8 @@ describe("content model test", () => {
 
         expect(hooksTracker.isExecutedOnce("contentModel:beforeCreate")).toEqual(false);
         expect(hooksTracker.isExecutedOnce("contentModel:afterCreate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentModel:beforeSave")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentModel:afterSave")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentModel:beforeUpdate")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentModel:afterUpdate")).toEqual(false);
         expect(hooksTracker.isExecutedOnce("contentModel:beforeDelete")).toEqual(true);
         expect(hooksTracker.isExecutedOnce("contentModel:afterDelete")).toEqual(true);
     });

@@ -37,11 +37,11 @@ export const contentModelHooks = (): CmsContentModelHookPlugin => ({
     afterCreate: async () => {
         hooksTracker.track("contentModel:afterCreate");
     },
-    beforeSave: async () => {
-        hooksTracker.track("contentModel:beforeSave");
+    beforeUpdate: async () => {
+        hooksTracker.track("contentModel:beforeUpdate");
     },
-    afterSave: async () => {
-        hooksTracker.track("contentModel:afterSave");
+    afterUpdate: async () => {
+        hooksTracker.track("contentModel:afterUpdate");
     },
     beforeDelete: async () => {
         hooksTracker.track("contentModel:beforeDelete");
@@ -60,11 +60,17 @@ export const contentEntryHooks = (): CmsContentEntryHookPlugin => ({
     afterCreate: async () => {
         hooksTracker.track("contentEntry:afterCreate");
     },
-    beforeSave: async () => {
-        hooksTracker.track("contentEntry:beforeSave");
+    beforeCreateRevisionFrom: async () => {
+        hooksTracker.track("contentEntry:beforeCreateRevisionFrom");
     },
-    afterSave: async () => {
-        hooksTracker.track("contentEntry:afterSave");
+    afterCreateRevisionFrom: async () => {
+        hooksTracker.track("contentEntry:afterCreateRevisionFrom");
+    },
+    beforeUpdate: async () => {
+        hooksTracker.track("contentEntry:beforeUpdate");
+    },
+    afterUpdate: async () => {
+        hooksTracker.track("contentEntry:afterUpdate");
     },
     beforeDeleteRevision: async () => {
         hooksTracker.track("contentEntry:beforeDeleteRevision");

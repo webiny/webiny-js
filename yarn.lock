@@ -7576,7 +7576,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/app-admin@workspace:packages/app-admin"
   dependencies:
-    "@apollo/react-components": ^3.1.5
     "@apollo/react-hooks": ^3.1.5
     "@babel/cli": ^7.5.5
     "@babel/core": ^7.5.5

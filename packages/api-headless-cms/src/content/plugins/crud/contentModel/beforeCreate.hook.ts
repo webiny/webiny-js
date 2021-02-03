@@ -1,6 +1,6 @@
 import { CmsContentModel, CmsContext } from "@webiny/api-headless-cms/types";
 import camelCase from "lodash/camelCase";
-import { runContentModelLifecycleHooks } from "./hooks";
+import { runContentModelLifecycleHooks } from "./runContentModelLifecycleHooks";
 
 const MAX_MODEL_ID_SEARCH_AMOUNT = 50;
 
