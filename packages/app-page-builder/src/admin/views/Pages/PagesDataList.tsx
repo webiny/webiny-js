@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import styled from "@emotion/styled";
 import { i18n } from "@webiny/app/i18n";
 import { useRouter } from "@webiny/react-router";
-import { useQuery } from "react-apollo";
+import { useQuery } from "@apollo/react-hooks";
 import debounce from "lodash/debounce";
 import get from "lodash/get";
 import { LIST_PAGES } from "@webiny/app-page-builder/admin/graphql/pages";

@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import classNames from "classnames";
 import { css } from "emotion";
-import { useApolloClient, useQuery } from "react-apollo";
+import { useApolloClient, useQuery } from "@apollo/react-hooks";
 import set from "lodash/set";
 import get from "lodash/get";
 import cloneDeep from "lodash/cloneDeep";

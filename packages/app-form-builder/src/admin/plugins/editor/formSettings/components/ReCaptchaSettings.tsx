@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Switch } from "@webiny/ui/Switch";
-import { useQuery } from "react-apollo";
+import { useQuery } from "@apollo/react-hooks";
 import { GET_RECAPTCHA_SETTINGS } from "./graphql";
 import ReCaptchaSettingsDialog from "./ReCaptchaSettingsDialog";
 import { Alert } from "@webiny/ui/Alert";

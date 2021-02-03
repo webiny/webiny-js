@@ -25,7 +25,7 @@ import { ReactComponent as SecurityIcon } from "../../assets/icons/security-24px
 import { CREATE_USER, READ_USER, LIST_USERS, UPDATE_USER } from "./graphql";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { useMutation, useQuery } from "react-apollo";
+import { useMutation, useQuery } from "@apollo/react-hooks";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 

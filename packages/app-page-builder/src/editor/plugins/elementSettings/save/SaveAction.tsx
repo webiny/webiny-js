@@ -9,7 +9,7 @@ import {
     activeElementAtom,
     elementWithChildrenByIdSelector
 } from "@webiny/app-page-builder/editor/recoil/modules";
-import { useApolloClient } from "react-apollo";
+import { useApolloClient } from "@apollo/react-hooks";
 import { cloneDeep } from "lodash";
 import { plugins } from "@webiny/plugins";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";

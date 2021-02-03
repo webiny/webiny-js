@@ -2,7 +2,9 @@
   "name": "api-prerendering-service-queue-process",
   "version": "0.1.0",
   "scripts": {
-    "build": "webiny run build"
+    "build": "yarn webiny run build"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@webiny/cli": "5.0.0-beta.4"
+  }
 }

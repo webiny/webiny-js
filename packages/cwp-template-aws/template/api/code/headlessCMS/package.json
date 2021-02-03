@@ -2,7 +2,7 @@
   "name": "api-headless-cms",
   "version": "0.1.0",
   "scripts": {
-    "build": "webiny run build"
+    "build": "yarn webiny run build"
   },
   "dependencies": {
     "@webiny/api-file-manager": "latest",
@@ -16,6 +16,7 @@
     "@webiny/api-plugin-security-cognito": "latest",
     "@webiny/api-security": "latest",
     "@webiny/api-security-tenancy": "latest",
+    "@webiny/cli": "latest",
     "@webiny/handler-aws": "latest",
     "@webiny/handler-db": "latest",
     "@webiny/handler-graphql": "latest",

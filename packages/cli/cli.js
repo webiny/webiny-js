@@ -8,6 +8,7 @@ yargs
     .usage("Usage: $0 <command> [options]")
     .demandCommand(1)
     .recommendCommands()
+    .scriptName("webiny")
     .epilogue(
         `To find more information, docs and tutorials, see ${blue("https://docs.webiny.com")}.`
     )

@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import orderBy from "lodash/orderBy";
 import { i18n } from "@webiny/app/i18n";
 import { useRouter } from "@webiny/react-router";
-import { useQuery, useMutation } from "react-apollo";
+import { useQuery, useMutation } from "@apollo/react-hooks";
 import { LIST_MENUS, DELETE_MENU } from "./graphql";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
 import gql from "graphql-tag";
 import { get } from "lodash";
-import { useQuery } from "react-apollo";
+import { useQuery } from "@apollo/react-hooks";
 import { debounce } from "lodash";
 
 // We utilize the same "listPages" GraphQL field.

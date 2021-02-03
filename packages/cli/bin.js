@@ -25,19 +25,13 @@ const minorVersion = parseInt(currentNodeVersion.split(".")[1]);
 
     try {
         const { stdout } = await execa("yarn", ["--version"]);
-        if (!semver.satisfies(stdout, "^1")) {
-            console.error(
-                chalk.red(
-                    `"@webiny/cli" currently only works with yarn@^1. yarn@^2 will be supported when the stable release is out.`
-                )
-            );
+        if (!semver.satisfies(stdout, "^2")) {
+            console.error(chalk.red(`"@webiny/cli" requires yarn@^2 to be installed!`));
             process.exit(1);
         }
     } catch (err) {
-        console.error(
-            chalk.red(`"@webiny/cli" depends on "yarn@^1" and its built-in support for workspaces.`)
-        );
-        console.log(`Please visit https://classic.yarnpkg.com to install "yarn@^1".`);
+        console.error(chalk.red(`"@webiny/cli" requires yarn@^2 to be installed!`));
+        console.log(`Please visit https://yarnpkg.com/ to install "yarn@^2".`);
         process.exit(1);
     }
 

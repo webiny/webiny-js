@@ -5,7 +5,7 @@ import { ReactComponent as RequestReviewIcon } from "@webiny/app-page-builder/ad
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import { i18n } from "@webiny/app/i18n";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { useMutation } from "react-apollo";
+import { useMutation } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 import { useSecurity } from "@webiny/app-security";
 

@@ -1,4 +1,4 @@
-import { useApolloClient } from "react-apollo";
+import { useApolloClient } from "@apollo/react-hooks";
 import React, { createContext, useEffect, useMemo, useRef } from "react";
 import merge from "lodash/merge";
 import { plugins } from "@webiny/plugins";

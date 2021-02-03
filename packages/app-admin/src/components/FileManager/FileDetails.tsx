@@ -22,7 +22,7 @@ import { ReactComponent as FileIcon } from "../../assets/icons/insert_drive_file
 import { ReactComponent as CalendarIcon } from "../../assets/icons/today-24px.svg";
 import { ReactComponent as HighlightIcon } from "../../assets/icons/highlight-24px.svg";
 import { useFileManager } from "./FileManagerContext";
-import { useMutation } from "react-apollo";
+import { useMutation } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { DELETE_FILE, LIST_FILES, LIST_TAGS } from "./graphql";
