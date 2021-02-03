@@ -1,9 +1,4 @@
 {
   "extends": "../../tsconfig.json",
-  "references": [
-    { "path": "../app" },
-    { "path": "../plugins" },
-    { "path": "../react-router" },
-    { "path": "../ui" }
-  ]
+  "references": [{ "path": "../app" }, { "path": "../plugins" }]
 }

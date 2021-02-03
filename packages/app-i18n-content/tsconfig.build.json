@@ -9,9 +9,7 @@
     "../app-i18n",
     "../app-admin",
     "../form",
-    "../ui",
-    "../react-router",
-    "../plugins"
+    "../ui"
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -33,12 +31,6 @@
     },
     {
       "path": "../ui/tsconfig.build.json"
-    },
-    {
-      "path": "../react-router/tsconfig.build.json"
-    },
-    {
-      "path": "../plugins/tsconfig.build.json"
     }
   ]
 }
