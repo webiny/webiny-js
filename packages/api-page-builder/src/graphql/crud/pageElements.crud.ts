@@ -27,7 +27,7 @@ const UpdateDataModel = withFields({
 })();
 
 const TYPE = "pb.pageElement";
-const PERMISSION_NAME = TYPE;
+const PERMISSION_NAME = "pb.page";
 
 const plugin: ContextPlugin<PbContext> = {
     type: "context",
