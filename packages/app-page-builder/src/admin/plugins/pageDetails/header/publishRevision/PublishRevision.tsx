@@ -71,7 +71,10 @@ const PublishRevision = props => {
     }
 
     // Check "publish" permission
-    if (typeof pbPagePermission.pw === "string" && !pbPagePermission.pw.includes("p")) {
+    if (
+        !pbPagePermission.pw ||
+        (typeof pbPagePermission.pw === "string" && !pbPagePermission.pw.includes("p"))
+    ) {
         return null;
     }
 
