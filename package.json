@@ -60,7 +60,7 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-react": "^7.22.0",
     "eslint-plugin-standard": "^5.0.0",
-    "eslint-plugin-webiny-i18n": "file:./eslint/webiny-i18n",
+    "eslint-plugin-webiny-i18n": "link:./eslint/webiny-i18n",
     "execa": "^1.0.0",
     "flatten": "^1.0.2",
     "fs-extra": "^7.0.0",
@@ -192,6 +192,6 @@
     "react-dom": "16.14.0",
     "pretty-format": "25.5.0",
     "apollo-server-core": "2.17.0",
-    "@rmwc/textfield": "file:./packages/ui/rmwc/textfield"
+    "@rmwc/textfield": "link:./packages/ui/rmwc/textfield"
   }
 }
