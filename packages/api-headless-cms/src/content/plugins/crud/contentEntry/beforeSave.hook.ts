@@ -1,11 +1,8 @@
-import { CmsContentEntry, CmsContentModel, CmsContext } from "@webiny/api-headless-cms/types";
+import { CmsContentEntryHookPluginArgs } from "@webiny/api-headless-cms/types";
 import { markLockedFields } from "./markLockedFields";
+import { runContentEntryLifecycleHooks } from "./runContentEntryLifecycleHooks";
 
-interface Args {
-    model: CmsContentModel;
-    entry: CmsContentEntry;
-    context: CmsContext;
-}
-export const beforeSaveHook = async (args: Args): Promise<void> => {
+export const beforeSaveHook = async (args: CmsContentEntryHookPluginArgs): Promise<void> => {
     await markLockedFields(args);
+    await runContentEntryLifecycleHooks("beforeSave", args);
 };

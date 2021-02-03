@@ -573,12 +573,12 @@ describe("content model test", () => {
                 }
             }
         });
-        expect(hooksTracker.isExecuted("contentModel:beforeCreate")).toEqual(true);
-        expect(hooksTracker.isExecuted("contentModel:afterCreate")).toEqual(true);
-        expect(hooksTracker.isExecuted("contentModel:beforeSave")).toEqual(false);
-        expect(hooksTracker.isExecuted("contentModel:afterSave")).toEqual(false);
-        expect(hooksTracker.isExecuted("contentModel:beforeDelete")).toEqual(false);
-        expect(hooksTracker.isExecuted("contentModel:afterDelete")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentModel:beforeCreate")).toEqual(true);
+        expect(hooksTracker.isExecutedOnce("contentModel:afterCreate")).toEqual(true);
+        expect(hooksTracker.isExecutedOnce("contentModel:beforeSave")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentModel:afterSave")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentModel:beforeDelete")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentModel:afterDelete")).toEqual(false);
     });
 
     test("should execute hooks on update", async () => {
@@ -616,12 +616,12 @@ describe("content model test", () => {
             }
         });
 
-        expect(hooksTracker.isExecuted("contentModel:beforeCreate")).toEqual(false);
-        expect(hooksTracker.isExecuted("contentModel:afterCreate")).toEqual(false);
-        expect(hooksTracker.isExecuted("contentModel:beforeSave")).toEqual(true);
-        expect(hooksTracker.isExecuted("contentModel:afterSave")).toEqual(true);
-        expect(hooksTracker.isExecuted("contentModel:beforeDelete")).toEqual(false);
-        expect(hooksTracker.isExecuted("contentModel:afterDelete")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentModel:beforeCreate")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentModel:afterCreate")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentModel:beforeSave")).toEqual(true);
+        expect(hooksTracker.isExecutedOnce("contentModel:afterSave")).toEqual(true);
+        expect(hooksTracker.isExecutedOnce("contentModel:beforeDelete")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentModel:afterDelete")).toEqual(false);
     });
 
     test("should execute hooks on delete", async () => {
@@ -654,11 +654,11 @@ describe("content model test", () => {
             }
         });
 
-        expect(hooksTracker.isExecuted("contentModel:beforeCreate")).toEqual(false);
-        expect(hooksTracker.isExecuted("contentModel:afterCreate")).toEqual(false);
-        expect(hooksTracker.isExecuted("contentModel:beforeSave")).toEqual(false);
-        expect(hooksTracker.isExecuted("contentModel:afterSave")).toEqual(false);
-        expect(hooksTracker.isExecuted("contentModel:beforeDelete")).toEqual(true);
-        expect(hooksTracker.isExecuted("contentModel:afterDelete")).toEqual(true);
+        expect(hooksTracker.isExecutedOnce("contentModel:beforeCreate")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentModel:afterCreate")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentModel:beforeSave")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentModel:afterSave")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentModel:beforeDelete")).toEqual(true);
+        expect(hooksTracker.isExecutedOnce("contentModel:afterDelete")).toEqual(true);
     });
 });
