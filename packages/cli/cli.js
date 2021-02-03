@@ -12,7 +12,7 @@ yargs
         `To find more information, docs and tutorials, see ${blue("https://docs.webiny.com")}.`
     )
     .epilogue(`Want to contribute? ${blue("https://github.com/webiny/webiny-js")}.`)
-    .fail(function(msg, err, command) {
+    .fail(function(msg, err, yargs) {
         if (msg) {
             if (msg.includes("Not enough non-option arguments")) {
                 console.log();
@@ -21,7 +21,7 @@ yargs
                     `Some non-optional arguments are missing. See the usage examples printed below.`
                 );
                 console.log();
-                command.showHelp();
+                yargs.showHelp();
                 return;
             }
 
@@ -39,7 +39,7 @@ yargs
                         .join(", ")}. See the usage examples printed below.`
                 );
                 console.log();
-                command.showHelp();
+                yargs.showHelp();
                 return;
             }
             console.log();
@@ -51,7 +51,11 @@ yargs
         }
 
         if (err) {
-            console.log(err);
+            context.error(err.message);
+            // Unfortunately, yargs doesn't provide passed args here, so we had to do it via process.argv.
+            if (process.argv.includes("--debug")) {
+                context.debug(err);
+            }
         }
 
         process.exit(1);
