@@ -1,0 +1,214 @@
+import { useContentGqlHandler } from "./useContentGqlHandler";
+import { GQLHandlerCallableArgs } from "./useGqlHandler";
+
+const bugFields = `
+    id
+    createdOn
+    createdBy {
+        id
+        displayName
+        type
+    }
+    savedOn
+    meta {
+        title
+        modelId
+        version
+        locked
+        publishedOn
+        status
+    }
+    # user defined fields
+    name
+    bugType
+    bugValue
+`;
+
+const errorFields = `
+    error {
+        code
+        message
+        data
+    }
+`;
+
+const getBugQuery = /* GraphQL */ `
+    query GetBug($revision: ID!) {
+        getBug(revision: $revision) {
+            data {
+                ${bugFields}
+            }
+            ${errorFields}
+        }
+    }
+`;
+
+const getBugsByIdsQuery = /* GraphQL */ `
+    query GetBugs($revisions: [ID!]!) {
+        getBugsByIds(revisions: $revisions) {
+            data {
+                ${bugFields}
+            }
+            ${errorFields}
+        }
+    }
+`;
+
+const listBugsQuery = /* GraphQL */ `
+    query ListBugs(
+        $where: BugListWhereInput
+        $sort: [BugListSorter]
+        $limit: Int
+        $after: String
+    ) {
+        listBugs(where: $where, sort: $sort, limit: $limit, after: $after) {
+            data {
+                ${bugFields}
+            }
+            meta {
+                cursor
+                hasMoreItems
+                totalCount
+            }
+            ${errorFields}
+        }
+    }
+`;
+
+const createBugMutation = /* GraphQL */ `
+    mutation CreateBug($data: BugInput!) {
+        createBug(data: $data) {
+            data {
+                ${bugFields}
+            }
+            ${errorFields}
+        }
+    }
+`;
+
+const createBugFromMutation = /* GraphQL */ `
+    mutation CreateBugFrom($revision: ID!) {
+        createBugFrom(revision: $revision) {
+            data {
+                ${bugFields}
+            }
+            ${errorFields}
+        }
+    }
+`;
+
+const updateBugMutation = /* GraphQL */ `
+    mutation UpdateBug($revision: ID!, $data: BugInput!) {
+        updateBug(revision: $revision, data: $data) {
+            data {
+                ${bugFields}
+            }
+            ${errorFields}
+        }
+    }
+`;
+
+const deleteBugMutation = /* GraphQL */ `
+    mutation DeleteBug($revision: ID!) {
+        deleteBug(revision: $revision) {
+            data
+            ${errorFields}
+        }
+    }
+`;
+
+const publishBugMutation = /* GraphQL */ `
+    mutation PublishBug($revision: ID!) {
+        publishBug(revision: $revision) {
+            data {
+                ${bugFields}
+            }
+            ${errorFields}
+        }
+    }
+`;
+
+const unpublishBugMutation = /* GraphQL */ `
+    mutation UnpublishBug($revision: ID!) {
+        unpublishBug(revision: $revision) {
+            data {
+                ${bugFields}
+            }
+            ${errorFields}
+        }
+    }
+`;
+
+export const useBugManageHandler = (options: GQLHandlerCallableArgs) => {
+    const contentHandler = useContentGqlHandler(options);
+
+    return {
+        ...contentHandler,
+        async getBug(variables, headers: Record<string, any> = {}) {
+            return await contentHandler.invoke({
+                body: { query: getBugQuery, variables },
+                headers
+            });
+        },
+        async getBugsByIds(variables, headers: Record<string, any> = {}) {
+            return await contentHandler.invoke({
+                body: { query: getBugsByIdsQuery, variables },
+                headers
+            });
+        },
+        async listBugs(variables, headers: Record<string, any> = {}) {
+            return await contentHandler.invoke({
+                body: { query: listBugsQuery, variables },
+                headers
+            });
+        },
+        async createBug(variables, headers: Record<string, any> = {}) {
+            return await contentHandler.invoke({
+                body: { query: createBugMutation, variables },
+                headers
+            });
+        },
+        async createBugFrom(variables, headers: Record<string, any> = {}) {
+            return await contentHandler.invoke({
+                body: { query: createBugFromMutation, variables },
+                headers
+            });
+        },
+        async updateBug(variables, headers: Record<string, any> = {}) {
+            return await contentHandler.invoke({
+                body: {
+                    query: updateBugMutation,
+                    variables
+                },
+                headers
+            });
+        },
+        async deleteBug(variables, headers: Record<string, any> = {}) {
+            return await contentHandler.invoke({
+                body: {
+                    query: deleteBugMutation,
+                    variables
+                },
+                headers
+            });
+        },
+        async publishBug(variables, headers: Record<string, any> = {}) {
+            return await contentHandler.invoke({
+                body: {
+                    query: publishBugMutation,
+                    variables
+                },
+                headers
+            });
+        },
+        async unpublishBug(variables, headers: Record<string, any> = {}) {
+            return await contentHandler.invoke({
+                body: {
+                    query: unpublishBugMutation,
+                    variables
+                },
+                headers
+            });
+        }
+    };
+};

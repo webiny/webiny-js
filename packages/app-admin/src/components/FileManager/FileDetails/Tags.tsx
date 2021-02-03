@@ -1,24 +1,50 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
+import classNames from "classnames";
 import { css } from "emotion";
-import { useApolloClient } from "@apollo/react-hooks";
+import { useApolloClient, useQuery } from "@apollo/react-hooks";
 import set from "lodash/set";
 import get from "lodash/get";
 import cloneDeep from "lodash/cloneDeep";
 import { Chips, Chip } from "@webiny/ui/Chips";
-import { Tags as TagsComponent } from "@webiny/ui/Tags";
+import { ButtonSecondary, ButtonPrimary, ButtonDefault, IconButton } from "@webiny/ui/Button";
+import { MultiAutoComplete } from "@webiny/ui/AutoComplete";
+import { Icon } from "@webiny/ui/Icon";
+import { Form } from "@webiny/form";
+import { useSnackbar } from "../../../hooks/useSnackbar";
+import { useFileManager } from "./../FileManagerContext";
 import { UPDATE_FILE, LIST_FILES, LIST_TAGS } from "./../graphql";
 import { ReactComponent as EditIcon } from "./../icons/round-edit-24px.svg";
-import { useFileManager } from "./../FileManagerContext";
-import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { ButtonSecondary, ButtonPrimary } from "@webiny/ui/Button";
-import { Form } from "@webiny/form";
+import { ReactComponent as LabelIcon } from "./../icons/round-label-24px.svg";
 
-const style = {
-    editTag: css({
-        cursor: "pointer",
-        display: "inline-block"
-    })
-};
+const chipsStyle = css({
+    "&.mdc-chip-set": {
+        padding: 0,
+        marginLeft: -4,
+        "& .mdc-chip": {
+            backgroundColor: "var(--mdc-theme-background)"
+        }
+    }
+});
+const iconButtonStyle = css({
+    "&.mdc-icon-button svg": {
+        width: 20,
+        height: 20
+    }
+});
+const addTagsStyle = css({
+    "&.mdc-button:not(:disabled)": {
+        color: "var(--mdc-theme-text-secondary-on-background)",
+        textTransform: "capitalize",
+        letterSpacing: "initial",
+        marginLeft: -8
+    }
+});
+const actionWrapperStyle = css({
+    marginTop: 16,
+    "& button:first-child": {
+        marginRight: 16
+    }
+});
 
 function Tags({ file }) {
     const client = useApolloClient();
@@ -28,6 +54,44 @@ function Tags({ file }) {
     const [initialTags, setInitialTags] = useState(Array.isArray(file.tags) ? [...file.tags] : []);
     const { showSnackbar } = useSnackbar();
     const { queryParams } = useFileManager();
+    const handleEdit = useCallback(() => setEdit(true), []);
+    const listTagsQuery = useQuery(LIST_TAGS);
+    const allTags = get(listTagsQuery, "data.fileManager.listTags") || [];
+
+    const renderHeaderContent = useCallback(
+        ({ data }) => {
+            if (editing) {
+                return null;
+            }
+            const hasTags = data.tags.length > 0;
+
+            if (hasTags) {
+                // Render existing tags and "edit tags" action.
+                return (
+                    <>
+                        <Chips className={classNames("list-item__content", chipsStyle)}>
+                            {data.tags.map((tag, index) => {
+                                const label = typeof tag === "string" ? tag : tag.name;
+                                return <Chip key={label + index} label={label} />;
+                            })}
+                        </Chips>
+                        <IconButton
+                            className={iconButtonStyle}
+                            icon={<EditIcon />}
+                            onClick={handleEdit}
+                        />
+                    </>
+                );
+            }
+            // Render "add tags" action.
+            return (
+                <ButtonDefault className={addTagsStyle} onClick={handleEdit}>
+                    Add tags...
+                </ButtonDefault>
+            );
+        },
+        [editing]
+    );
 
     return (
         <Form
@@ -103,8 +167,12 @@ function Tags({ file }) {
         >
             {({ Bind, data, setValue, submit }) => (
                 <React.Fragment>
-                    {editing ? (
-                        <>
+                    <li-title>
+                        <Icon className={"list-item__icon"} icon={<LabelIcon />} />
+                        {renderHeaderContent({ data })}
+                    </li-title>
+                    {editing && (
+                        <li-content>
                             <Bind
                                 name={"tags"}
                                 beforeChange={(tags, baseOnChange) => {
@@ -112,16 +180,20 @@ function Tags({ file }) {
                                     baseOnChange(formattedTags);
                                 }}
                             >
-                                <TagsComponent
+                                <MultiAutoComplete
+                                    options={allTags}
+                                    placeholder={"homepage asset"}
+                                    description={"Type in a new tag or select an existing one."}
+                                    unique={true}
+                                    allowFreeInput={true}
+                                    useSimpleValues={true}
                                     disabled={saving}
-                                    autoFocus
-                                    placeholder={"Enter a tag and press enter"}
                                 />
                             </Bind>
-                            <div style={{ marginTop: "10px" }}>
+                            <div className={actionWrapperStyle}>
                                 <ButtonPrimary small onClick={submit}>
                                     Submit
-                                </ButtonPrimary>{" "}
+                                </ButtonPrimary>
                                 <ButtonSecondary
                                     small
                                     onClick={() => {
@@ -132,24 +204,7 @@ function Tags({ file }) {
                                     Cancel
                                 </ButtonSecondary>
                             </div>
-                        </>
-                    ) : (
-                        <>
-                            {data.tags.length > 0 ? (
-                                <Chips>
-                                    {data.tags.map((tag, index) => (
-                                        <Chip key={tag + index} label={tag} />
-                                    ))}
-                                </Chips>
-                            ) : (
-                                <div>No tags assigned.</div>
-                            )}
-                            <div className={style.editTag}>
-                                <a onClick={() => setEdit(true)}>
-                                    <EditIcon /> Edit
-                                </a>
-                            </div>
-                        </>
+                        </li-content>
                     )}
                 </React.Fragment>
             )}

@@ -1,11 +1,12 @@
 import React from "react";
-import { Query } from "@apollo/react-components";
-import { LIST_TAGS } from "./graphql";
-import { get } from "lodash";
+import { useQuery } from "@apollo/react-components";
+import get from "lodash/get";
+import sortBy from "lodash/sortBy";
 import { css } from "emotion";
-import { Icon } from "@webiny/ui/Icon";
 import styled from "@emotion/styled";
+import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as TagIcon } from "./icons/round-label-24px.svg";
+import { LIST_TAGS } from "./graphql";
 
 const style = {
     leftDrawer: css({
@@ -53,35 +54,35 @@ const Tag = styled("div")({
 function LeftSidebar({ toggleTag, queryParams: { tags } }) {
     const activeTags = Array.isArray(tags) ? tags : [];
 
+    const { data } = useQuery(LIST_TAGS);
+
+    const list = get(data, "fileManager.listTags") || [];
+
+    if (list.length === 0) {
+        return (
+            <div className={style.leftDrawer}>
+                <div className={style.noTagged}>
+                    Once you tag an image, the tag will be displayed here.
+                </div>
+            </div>
+        );
+    }
+    // Sort "tags" list in "ASC" order.
+    const tagList = sortBy(list);
+
     return (
         <div className={style.leftDrawer}>
-            <Query query={LIST_TAGS}>
-                {({ data }) => {
-                    const list = get(data, "fileManager.listTags") || [];
-
-                    if (!list.length) {
-                        return (
-                            <div className={style.noTagged}>
-                                Once you tag an image, the tag will be displayed here.
-                            </div>
-                        );
-                    }
-
-                    return (
-                        <TagList>
-                            {list.map((item, index) => (
-                                <Tag
-                                    className={activeTags.includes(item) && "active"}
-                                    key={item + index}
-                                    onClick={() => toggleTag(item)}
-                                >
-                                    <Icon icon={<TagIcon />} /> {item}
-                                </Tag>
-                            ))}
-                        </TagList>
-                    );
-                }}
-            </Query>
+            <TagList>
+                {tagList.map((item, index) => (
+                    <Tag
+                        className={activeTags.includes(item) && "active"}
+                        key={item + index}
+                        onClick={() => toggleTag(item)}
+                    >
+                        <Icon icon={<TagIcon />} /> {item}
+                    </Tag>
+                ))}
+            </TagList>
         </div>
     );
 }

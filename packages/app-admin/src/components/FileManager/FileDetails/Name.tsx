@@ -1,40 +1,32 @@
-/* eslint-disable */
-import React, { useState } from "react";
+import React, { useMemo } from "react";
 import { get, cloneDeep } from "lodash";
 import { useApolloClient } from "@apollo/react-hooks";
-import { css } from "emotion";
-import { ButtonSecondary, ButtonPrimary } from "@webiny/ui/Button";
 import { Input } from "@webiny/ui/Input";
 import { Form } from "@webiny/form";
-import { ReactComponent as EditIcon } from "./../icons/round-edit-24px.svg";
+import { validation } from "@webiny/validation";
+import { useSnackbar } from "../../../hooks/useSnackbar";
 import { UPDATE_FILE, LIST_FILES } from "./../graphql";
-import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useFileManager } from "./../FileManagerContext";
 
-const style = {
-    editTag: css({
-        cursor: "pointer",
-        display: "inline-block"
-    })
-};
-
 function Name({ file }) {
-    const [editing, setEdit] = useState(false);
     const name = file.name || "";
-
     const { showSnackbar } = useSnackbar();
     const client = useApolloClient();
 
     const { queryParams } = useFileManager();
 
-    if (editing) {
+    const editContent = useMemo(() => {
         return (
             <Form
                 data={{
                     name
                 }}
                 onSubmit={async ({ name }) => {
-                    setEdit(false);
+                    // Bail out if name is same as the current file name.
+                    if (name === file.name) {
+                        return;
+                    }
+                    // Update file.
                     await client.mutate({
                         mutation: UPDATE_FILE,
                         variables: {
@@ -68,35 +60,21 @@ function Name({ file }) {
                 }}
             >
                 {({ Bind, submit }) => (
-                    <>
-                        <Bind name={"name"}>
-                            <Input autoFocus placeholder={"Enter name"} />
-                        </Bind>
-                        <div style={{ marginTop: "10px" }}>
-                            <ButtonPrimary small onClick={submit}>
-                                Submit
-                            </ButtonPrimary>{" "}
-                            <ButtonSecondary small onClick={() => setEdit(false)}>
-                                Cancel
-                            </ButtonSecondary>
-                        </div>
-                    </>
+                    <Bind name={"name"} validators={validation.create("required")}>
+                        <Input
+                            autoFocus
+                            placeholder={"Enter name"}
+                            fullwidth={true}
+                            onBlur={submit}
+                            description={"A descriptive name is easier to remember."}
+                        />
+                    </Bind>
                 )}
             </Form>
         );
-    }
+    }, [name, file.name]);
 
-    return (
-        <>
-            <div className={style.editTag}>
-                {name}
-                <br />
-                <a onClick={() => setEdit(true)}>
-                    <EditIcon /> Edit
-                </a>
-            </div>
-        </>
-    );
+    return <li-content>{editContent}</li-content>;
 }
 
 export default Name;

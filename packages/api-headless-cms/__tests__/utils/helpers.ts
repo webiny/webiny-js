@@ -37,7 +37,7 @@ export const createPermissions = (permissions: PermissionsArg[]): PermissionsArg
         {
             name: "cms.contentEntry",
             rwd: "rwd",
-            pw: "pu"
+            pw: "rcpu"
         },
         {
             name: "cms.endpoint.read"
