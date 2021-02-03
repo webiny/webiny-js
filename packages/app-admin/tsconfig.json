@@ -2,11 +2,26 @@
   "extends": "../../tsconfig",
   "include": ["src", "./custom.d.ts"],
   "references": [
-    { "path": "../ui" },
-    { "path": "../app" },
-    { "path": "../app-security" },
-    { "path": "../plugins" },
-    { "path": "../react-router" },
-    { "path": "../form" }
+    {
+      "path": "../ui"
+    },
+    {
+      "path": "../app"
+    },
+    {
+      "path": "../app-security"
+    },
+    {
+      "path": "../plugins"
+    },
+    {
+      "path": "../react-router"
+    },
+    {
+      "path": "../form"
+    },
+    {
+      "path": "../validation"
+    }
   ]
 }
