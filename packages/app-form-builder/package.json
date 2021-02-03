@@ -32,7 +32,6 @@
     "@webiny/validation": "^5.0.0-beta.4",
     "apollo-cache": "^1.3.5",
     "apollo-client": "^2.2.8",
-    "apollo-link": "^1.2.14",
     "apollo-utilities": "^1.3.4",
     "dot-prop-immutable": "^2.1.0",
     "emotion": "^10.0.17",

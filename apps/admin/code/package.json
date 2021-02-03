@@ -11,7 +11,7 @@
     "@editorjs/underline": "^1.0.0",
     "@emotion/core": "^10.0.17",
     "@emotion/styled": "^10.0.17",
-    "@types/react": "^16.9.56",
+    "@types/react": "^16.14.2",
     "@webiny/app": "^5.0.0-beta.0",
     "@webiny/app-admin": "^5.0.0-beta.0",
     "@webiny/app-file-manager": "^5.0.0-beta.0",
