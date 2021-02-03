@@ -1,11 +1,6 @@
-import { CmsContentEntry, CmsContentModel, CmsContext } from "@webiny/api-headless-cms/types";
+import { CmsContentEntryHookPluginArgs } from "@webiny/api-headless-cms/types";
+import { runContentEntryLifecycleHooks } from "./runContentEntryLifecycleHooks";
 
-interface Args {
-    model: CmsContentModel;
-    entry: CmsContentEntry;
-    context: CmsContext;
-}
-// eslint-disable-next-line
-export const afterSaveHook = async (args: Args): Promise<void> => {
-    return;
+export const afterSaveHook = async (args: CmsContentEntryHookPluginArgs): Promise<void> => {
+    await runContentEntryLifecycleHooks("afterSave", args);
 };

@@ -1,6 +1,6 @@
 import { CmsContentEntryHookPluginArgs } from "@webiny/api-headless-cms/types";
 import { runContentEntryLifecycleHooks } from "./runContentEntryLifecycleHooks";
 
-export const afterCreateHook = async (args: CmsContentEntryHookPluginArgs): Promise<void> => {
-    await runContentEntryLifecycleHooks("afterCreate", args);
+export const afterUnpublishHook = async (args: CmsContentEntryHookPluginArgs): Promise<void> => {
+    await runContentEntryLifecycleHooks("afterUnpublish", args);
 };

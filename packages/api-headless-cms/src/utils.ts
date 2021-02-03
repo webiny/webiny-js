@@ -50,8 +50,8 @@ export const hasPw = (permission, pw) => {
 };
 
 const PW = {
-    // r: "request review",
-    // c: "request change",
+    r: "request review",
+    c: "request change",
     p: "publish",
     u: "unpublish"
 };
