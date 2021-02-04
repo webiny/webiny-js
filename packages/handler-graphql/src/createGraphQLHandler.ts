@@ -8,6 +8,7 @@ import debugPlugins from "./debugPlugins";
 import processRequestBody from "./processRequestBody";
 
 const DEFAULT_HEADERS = {
+    "Content-Type": "application/json",
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "*",
     "Access-Control-Allow-Methods": "OPTIONS,POST"
@@ -73,8 +74,7 @@ export default (options: HandlerGraphQLOptions = {}): PluginCollection => {
                             body: JSON.stringify(report, null, 2),
                             headers: {
                                 ...DEFAULT_HEADERS,
-                                "Cache-Control": "no-store",
-                                "Content-Type": "text/json"
+                                "Cache-Control": "no-store"
                             }
                         });
                     }
