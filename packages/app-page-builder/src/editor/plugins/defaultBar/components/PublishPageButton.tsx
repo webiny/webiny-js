@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { useRecoilValue } from "recoil";
-import { useMutation } from "react-apollo";
+import { useMutation } from "@apollo/react-hooks";
 import set from "lodash/set";
 import get from "lodash/get";
 import cloneDeep from "lodash/cloneDeep";

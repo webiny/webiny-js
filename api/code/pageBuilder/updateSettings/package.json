@@ -2,12 +2,13 @@
   "name": "api-page-builder-update-settings",
   "version": "0.1.0",
   "scripts": {
-    "build": "webiny run build"
+    "build": "yarn webiny run build"
   },
   "dependencies": {
-    "@webiny/handler-aws": "^5.0.0-beta.0",
-    "@webiny/handler-db": "^5.0.0-beta.0",
     "@webiny/api-i18n": "^5.0.0-beta.0",
-    "@webiny/api-page-builder": "^5.0.0-beta.0"
+    "@webiny/api-page-builder": "^5.0.0-beta.0",
+    "@webiny/cli": "5.0.0-beta.4",
+    "@webiny/handler-aws": "^5.0.0-beta.0",
+    "@webiny/handler-db": "^5.0.0-beta.0"
   }
 }

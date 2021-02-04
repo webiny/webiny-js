@@ -1,7 +1,7 @@
 import React from "react";
 import { css } from "emotion";
 import { useRouter } from "@webiny/react-router";
-import { useMutation } from "react-apollo";
+import { useMutation } from "@apollo/react-hooks";
 import { Form } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";
 import { CREATE_FORM } from "../../graphql";

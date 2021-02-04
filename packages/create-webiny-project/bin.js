@@ -3,7 +3,6 @@
 
 const chalk = require("chalk");
 const execa = require("execa");
-const semver = require("semver");
 const verifyConfig = require("./utils/verifyConfig");
 
 const currentNodeVersion = process.versions.node;
@@ -31,20 +30,12 @@ const NODE_VERSION_MIN_MINOR = 14;
     }
 
     try {
-        const { stdout } = await execa("yarn", ["--version"]);
-        if (!semver.satisfies(stdout, "^1")) {
-            console.error(
-                chalk.red(
-                    `Webiny currently only works with yarn@^1. yarn@^2 will be supported when the stable release is out.`
-                )
-            );
-            process.exit(1);
-        }
+        await execa("yarn", ["--version"]);
     } catch (err) {
         console.error(
-            chalk.red(`Webiny depends on "yarn@^1" and its built-in support for workspaces.`)
+            chalk.red(`Webiny depends on "yarn" and its built-in support for workspaces.`)
         );
-        console.log(`Please visit https://classic.yarnpkg.com to install "yarn@^1".`);
+        console.log(`Please visit https://yarnpkg.com/ to install ${chalk.green("yarn")}.`);
         process.exit(1);
     }
 

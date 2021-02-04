@@ -1,5 +1,5 @@
 import React from "react";
-import { useQuery } from "react-apollo";
+import { useQuery } from "@apollo/react-hooks";
 import get from "lodash/get";
 import sortBy from "lodash/sortBy";
 import { css } from "emotion";

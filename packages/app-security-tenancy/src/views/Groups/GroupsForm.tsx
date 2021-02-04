@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { useMutation, useQuery } from "react-apollo";
+import { useMutation, useQuery } from "@apollo/react-hooks";
 import styled from "@emotion/styled";
 import pick from "lodash/pick";
 import get from "lodash/get";

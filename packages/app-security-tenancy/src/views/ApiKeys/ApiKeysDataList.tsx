@@ -19,7 +19,7 @@ import { Select } from "@webiny/ui/Select";
 import { useRouter } from "@webiny/react-router";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { useQuery, useMutation } from "react-apollo";
+import { useQuery, useMutation } from "@apollo/react-hooks";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import * as GQL from "./graphql";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";

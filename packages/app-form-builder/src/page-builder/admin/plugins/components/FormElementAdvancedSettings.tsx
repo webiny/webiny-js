@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { useLazyQuery, useQuery } from "react-apollo";
+import { useLazyQuery, useQuery } from "@apollo/react-hooks";
 import get from "lodash/get";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Alert } from "@webiny/ui/Alert";

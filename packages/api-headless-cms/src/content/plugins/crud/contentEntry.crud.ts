@@ -27,7 +27,7 @@ import {
     afterPublishHook,
     afterRequestChangesHook,
     afterRequestReviewHook,
-    afterSaveHook,
+    afterUpdateHook,
     afterUnpublishHook,
     beforeCreateHook,
     beforeDeleteHook,
@@ -35,8 +35,10 @@ import {
     beforePublishHook,
     beforeRequestChangesHook,
     beforeRequestReviewHook,
-    beforeSaveHook,
-    beforeUnpublishHook
+    beforeUpdateHook,
+    beforeUnpublishHook,
+    beforeCreateRevisionFromHook,
+    afterCreateRevisionFromHook
 } from "./contentEntry/hooks";
 import WebinyError from "@webiny/error";
 import { entryFromStorageTransform, entryToStorageTransform } from "../utils/entryStorage";
@@ -359,9 +361,9 @@ export default (): ContextPlugin<CmsContext> => ({
                 const nextVersion = parseInt(latestEntry.id.split("#")[1]) + 1;
                 const id = `${uniqueId}#${utils.zeroPad(nextVersion)}`;
 
-                const storageEntry = await entryToStorageTransform(context, model, {
+                const storageEntry = await entryToStorageTransform(context, model, ({
                     values: data || {}
-                } as any);
+                } as unknown) as CmsContentEntry);
 
                 const newEntry: CmsContentEntry = {
                     id,
@@ -381,6 +383,12 @@ export default (): ContextPlugin<CmsContext> => ({
                     status: STATUS_DRAFT,
                     values: { ...entry.values, ...data, ...storageEntry.values }
                 };
+
+                await beforeCreateRevisionFromHook({
+                    context,
+                    model,
+                    entry
+                });
 
                 await db
                     .batch()
@@ -420,6 +428,12 @@ export default (): ContextPlugin<CmsContext> => ({
                     ...utils.defaults.es(context),
                     id: `CME#L#${uniqueId}`,
                     body: getESLatestEntryData(esEntry)
+                });
+
+                await afterCreateRevisionFromHook({
+                    context,
+                    model,
+                    entry
                 });
 
                 return newEntry;
@@ -467,9 +481,9 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 utils.checkOwnership(context, permission, entry, "ownedBy");
 
-                const storageEntry = await entryToStorageTransform(context, model, {
+                const preparedForStorageEntry = await entryToStorageTransform(context, model, ({
                     values: data || {}
-                } as any);
+                } as unknown) as CmsContentEntry);
 
                 // we need full entry because of "before/after save" hooks
                 const updatedEntry: CmsContentEntry = {
@@ -479,37 +493,43 @@ export default (): ContextPlugin<CmsContext> => ({
                         // Values from DB
                         ...entry.values,
                         // New values
-                        ...data,
-                        // Transformed values
-                        ...storageEntry.values
+                        ...data
                     }
                 };
 
-                // We need to convert data from DB to its original form before constructing ES index data.
-                const originalEntry = await entryFromStorageTransform(context, model, updatedEntry);
+                const updatedStorageEntry = {
+                    ...updatedEntry,
+                    values: {
+                        ...updatedEntry.values,
+                        // Transformed values
+                        ...preparedForStorageEntry.values
+                    }
+                };
 
-                const esEntry = prepareEntryToIndex({
-                    context,
-                    model,
-                    originalEntry: cloneDeep(originalEntry),
-                    storageEntry: cloneDeep(updatedEntry)
-                });
-
-                await beforeSaveHook({ model, entry: updatedEntry, context });
+                await beforeUpdateHook({ model, entry: updatedEntry, context });
 
                 await db.update({
                     ...utils.defaults.db,
                     query: { PK: PK_ENTRY(uniqueId), SK: SK_REVISION(version) },
                     data: {
-                        values: updatedEntry.values,
-                        savedOn: updatedEntry.savedOn
+                        values: updatedStorageEntry.values,
+                        savedOn: updatedStorageEntry.savedOn
                     }
                 });
 
                 if (latestEntry.id === id) {
+                    // We need to convert data from DB to its original form before constructing ES index data.
+                    const originalEntry = await entryFromStorageTransform(context, model, entry);
+                    // and then prepare the entry for indexing
+                    const esEntry = prepareEntryToIndex({
+                        context,
+                        model,
+                        originalEntry: cloneDeep(originalEntry),
+                        storageEntry: cloneDeep(updatedStorageEntry)
+                    });
                     const esDoc = {
                         ...esEntry,
-                        savedOn: updatedEntry.savedOn
+                        savedOn: updatedStorageEntry.savedOn
                     };
                     try {
                         await elasticSearch.update({
@@ -524,9 +544,9 @@ export default (): ContextPlugin<CmsContext> => ({
                     }
                 }
 
-                await afterSaveHook({ model, entry: updatedEntry, context });
+                await afterUpdateHook({ model, entry: updatedEntry, context });
 
-                return updatedEntry;
+                return updatedStorageEntry;
             },
             deleteRevision: async (model, revisionId) => {
                 const permission = await checkPermissions({ rwd: "d" });

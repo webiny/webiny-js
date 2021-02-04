@@ -5,7 +5,7 @@ import {
 } from "@webiny/app-page-builder/editor/recoil/actions";
 import { createBlockElements } from "@webiny/app-page-builder/editor/helpers";
 import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
-import { useMutation } from "react-apollo";
+import { useMutation } from "@apollo/react-hooks";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { plugins } from "@webiny/plugins";

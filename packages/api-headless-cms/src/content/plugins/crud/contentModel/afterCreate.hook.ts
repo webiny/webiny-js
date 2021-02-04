@@ -1,5 +1,5 @@
 import { CmsContentModel, CmsContext } from "@webiny/api-headless-cms/types";
-import { runContentModelLifecycleHooks } from "./hooks";
+import { runContentModelLifecycleHooks } from "./runContentModelLifecycleHooks";
 
 interface Args {
     context: CmsContext;

@@ -40,6 +40,8 @@
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^26.6.3",
+    "babel-plugin-macros": "^3.0.1",
+    "babel-plugin-module-resolver": "^4.1.0",
     "bufferutil": "^4.0.1",
     "chalk": "^2.4.1",
     "commitizen": "^2.10.1",
@@ -58,7 +60,7 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-react": "^7.22.0",
     "eslint-plugin-standard": "^5.0.0",
-    "eslint-plugin-webiny-i18n": "file:./eslint/webiny-i18n",
+    "eslint-plugin-webiny-i18n": "link:./eslint/webiny-i18n",
     "execa": "^1.0.0",
     "flatten": "^1.0.2",
     "fs-extra": "^7.0.0",
@@ -68,6 +70,7 @@
     "glob": "^7.1.3",
     "globby": "^8.0.1",
     "got": "^9.6.0",
+    "graphql": "^14.7.0",
     "graphql-request": "^3.3.0",
     "husky": "^4.2.5",
     "inquirer": "^7.0.0",
@@ -85,7 +88,7 @@
     "minimatch": "^3.0.4",
     "node-fetch": "^2.6.1",
     "prettier": "^1.14.2",
-    "rimraf": "^2.6.2",
+    "rimraf": "^3.0.2",
     "rxjs": "^6.5.5",
     "semver": "^6.3.0",
     "source-map-support": "^0.5.0",
@@ -107,10 +110,10 @@
     "eslint": "eslint \"**/*.{js,jsx,ts,tsx}\" --max-warnings=0",
     "eslint:fix": "yarn eslint --fix",
     "build": "lerna run build --stream",
-    "build:apps": "yarn webiny ws run build --scope=@webiny/app*",
-    "build:api": "yarn webiny ws run build --scope=@webiny/api* --scope=@webiny/handler*",
-    "watch:apps": "yarn webiny ws run watch --scope=@webiny/app*",
-    "watch:api": "yarn webiny ws run watch --scope=@webiny/api*",
+    "build:apps": "yarn webiny ws run build --scope='@webiny/app*'",
+    "build:api": "yarn webiny ws run build --scope='@webiny/api*' --scope='@webiny/handler*'",
+    "watch:apps": "yarn webiny ws run watch --scope='@webiny/app*'",
+    "watch:api": "yarn webiny ws run watch --scope='@webiny/api*'",
     "clear-dist": "yarn rimraf packages/*/dist",
     "contributors:add": "contreebutors add --username",
     "contributors:generate": "contreebutors render",
@@ -120,8 +123,8 @@
     "webiny-versions": "node ./scripts/webinyVersions.js",
     "release-latest": "node ./scripts/releaseLatest.js",
     "lint-staged": "lint-staged",
-    "postinstall": "node ./scripts/linkWorkspaces.js",
-    "prepublishOnly": "node scripts/prepublishOnly.js",
+    "postinstall": "yarn node ./scripts/linkWorkspaces.js",
+    "prepublishOnly": "yarn node scripts/prepublishOnly.js",
     "prettier": "prettier \"**/**/*.{js,jsx,ts,tsx,json}\" --config .prettierrc.js",
     "prettier:check": "yarn prettier --check",
     "prettier:fix": "yarn prettier --write",
@@ -133,6 +136,7 @@
     "validate-packages": "node scripts/validatePackages.js",
     "ci:version": "yarn lerna version --conventional-prerelease --force-publish --preid beta --no-push --no-changelog",
     "ci:publish": "yarn lerna publish from-package --force-publish --dist-tag beta --registry=\"http://localhost:4873\" --no-verify-access --no-verify-registry",
+    "webiny": "./node_modules/.bin/webiny",
     "webiny-ui-build-storybook": "cd packages/ui && cross-env OUT=../../netlify-static yarn build-storybook"
   },
   "husky": {
@@ -183,10 +187,11 @@
     }
   },
   "resolutions": {
+    "@types/react": "^16.14.2",
     "react": "16.14.0",
     "react-dom": "16.14.0",
     "pretty-format": "25.5.0",
     "apollo-server-core": "2.17.0",
-    "@rmwc/textfield": "file:./packages/ui/rmwc/textfield"
+    "@rmwc/textfield": "link:./packages/ui/rmwc/textfield"
   }
 }

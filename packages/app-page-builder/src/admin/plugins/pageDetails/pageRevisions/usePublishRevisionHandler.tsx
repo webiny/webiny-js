@@ -1,6 +1,6 @@
 import React from "react";
 import { set } from "dot-prop-immutable";
-import { useApolloClient } from "react-apollo";
+import { useApolloClient } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import {
     PUBLISH_PAGE,

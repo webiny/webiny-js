@@ -94,8 +94,57 @@ describe("contentEntryHooks", () => {
 
         expect(hooksTracker.isExecutedOnce("contentEntry:beforeCreate")).toEqual(true);
         expect(hooksTracker.isExecutedOnce("contentEntry:afterCreate")).toEqual(true);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeSave")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterSave")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:beforeCreateRevisionFrom")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:afterCreateRevisionFrom")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:beforeUpdate")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:afterUpdate")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:beforeDelete")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:afterDelete")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:beforePublish")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:afterPublish")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:beforeUnpublish")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:afterUnpublish")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:beforeRequestChanges")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:afterRequestChanges")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:beforeRequestReview")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:afterRequestReview")).toEqual(false);
+    });
+
+    test("should execute hooks on create from revision", async () => {
+        const { createCategory, createCategoryFrom } = useCategoryManageHandler(manageOpts, [
+            contentEntryHooks()
+        ]);
+
+        const [createResponse] = await createCategory({
+            data: {
+                title: "category",
+                slug: "category"
+            }
+        });
+
+        const { id } = createResponse.data.createCategory.data;
+
+        hooksTracker.reset();
+
+        const [response] = await createCategoryFrom({
+            revision: id
+        });
+
+        expect(response).toEqual({
+            data: {
+                createCategoryFrom: {
+                    data: expect.any(Object),
+                    error: null
+                }
+            }
+        });
+
+        expect(hooksTracker.isExecutedOnce("contentEntry:beforeCreate")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:afterCreate")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:beforeCreateRevisionFrom")).toEqual(true);
+        expect(hooksTracker.isExecutedOnce("contentEntry:afterCreateRevisionFrom")).toEqual(true);
+        expect(hooksTracker.isExecutedOnce("contentEntry:beforeUpdate")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:afterUpdate")).toEqual(false);
         expect(hooksTracker.isExecutedOnce("contentEntry:beforeDelete")).toEqual(false);
         expect(hooksTracker.isExecutedOnce("contentEntry:afterDelete")).toEqual(false);
         expect(hooksTracker.isExecutedOnce("contentEntry:beforePublish")).toEqual(false);
@@ -143,8 +192,10 @@ describe("contentEntryHooks", () => {
 
         expect(hooksTracker.isExecutedOnce("contentEntry:beforeCreate")).toEqual(false);
         expect(hooksTracker.isExecutedOnce("contentEntry:afterCreate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeSave")).toEqual(true);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterSave")).toEqual(true);
+        expect(hooksTracker.isExecutedOnce("contentEntry:beforeCreateRevisionFrom")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:afterCreateRevisionFrom")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:beforeUpdate")).toEqual(true);
+        expect(hooksTracker.isExecutedOnce("contentEntry:afterUpdate")).toEqual(true);
         expect(hooksTracker.isExecutedOnce("contentEntry:beforeDelete")).toEqual(false);
         expect(hooksTracker.isExecutedOnce("contentEntry:afterDelete")).toEqual(false);
         expect(hooksTracker.isExecutedOnce("contentEntry:beforePublish")).toEqual(false);
@@ -188,8 +239,10 @@ describe("contentEntryHooks", () => {
 
         expect(hooksTracker.isExecutedOnce("contentEntry:beforeCreate")).toEqual(false);
         expect(hooksTracker.isExecutedOnce("contentEntry:afterCreate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeSave")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterSave")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:beforeCreateRevisionFrom")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:afterCreateRevisionFrom")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:beforeUpdate")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:afterUpdate")).toEqual(false);
         expect(hooksTracker.isExecutedOnce("contentEntry:beforeDeleteRevision")).toEqual(true);
         expect(hooksTracker.isExecutedOnce("contentEntry:afterDeleteRevision")).toEqual(true);
         expect(hooksTracker.isExecutedOnce("contentEntry:beforeDelete")).toEqual(false);
@@ -237,8 +290,10 @@ describe("contentEntryHooks", () => {
 
         expect(hooksTracker.isExecutedOnce("contentEntry:beforeCreate")).toEqual(false);
         expect(hooksTracker.isExecutedOnce("contentEntry:afterCreate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeSave")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterSave")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:beforeCreateRevisionFrom")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:afterCreateRevisionFrom")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:beforeUpdate")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:afterUpdate")).toEqual(false);
         expect(hooksTracker.isExecutedOnce("contentEntry:beforeDeleteRevision")).toEqual(false);
         expect(hooksTracker.isExecutedOnce("contentEntry:afterDeleteRevision")).toEqual(false);
         expect(hooksTracker.isExecutedOnce("contentEntry:beforeDelete")).toEqual(true);
@@ -284,8 +339,10 @@ describe("contentEntryHooks", () => {
 
         expect(hooksTracker.isExecutedOnce("contentEntry:beforeCreate")).toEqual(false);
         expect(hooksTracker.isExecutedOnce("contentEntry:afterCreate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeSave")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterSave")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:beforeCreateRevisionFrom")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:afterCreateRevisionFrom")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:beforeUpdate")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:afterUpdate")).toEqual(false);
         expect(hooksTracker.isExecutedOnce("contentEntry:beforeDeleteRevision")).toEqual(false);
         expect(hooksTracker.isExecutedOnce("contentEntry:afterDeleteRevision")).toEqual(false);
         expect(hooksTracker.isExecutedOnce("contentEntry:beforeDelete")).toEqual(false);
@@ -337,8 +394,10 @@ describe("contentEntryHooks", () => {
 
         expect(hooksTracker.isExecutedOnce("contentEntry:beforeCreate")).toEqual(false);
         expect(hooksTracker.isExecutedOnce("contentEntry:afterCreate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeSave")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterSave")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:beforeCreateRevisionFrom")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:afterCreateRevisionFrom")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:beforeUpdate")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:afterUpdate")).toEqual(false);
         expect(hooksTracker.isExecutedOnce("contentEntry:beforeDeleteRevision")).toEqual(false);
         expect(hooksTracker.isExecutedOnce("contentEntry:afterDeleteRevision")).toEqual(false);
         expect(hooksTracker.isExecutedOnce("contentEntry:beforeDelete")).toEqual(false);
@@ -395,8 +454,10 @@ describe("contentEntryHooks", () => {
 
         expect(hooksTracker.isExecutedOnce("contentEntry:beforeCreate")).toEqual(false);
         expect(hooksTracker.isExecutedOnce("contentEntry:afterCreate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeSave")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterSave")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:beforeCreateRevisionFrom")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:afterCreateRevisionFrom")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:beforeUpdate")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:afterUpdate")).toEqual(false);
         expect(hooksTracker.isExecutedOnce("contentEntry:beforeDeleteRevision")).toEqual(false);
         expect(hooksTracker.isExecutedOnce("contentEntry:afterDeleteRevision")).toEqual(false);
         expect(hooksTracker.isExecutedOnce("contentEntry:beforeDelete")).toEqual(false);
@@ -441,8 +502,10 @@ describe("contentEntryHooks", () => {
 
         expect(hooksTracker.isExecutedOnce("contentEntry:beforeCreate")).toEqual(false);
         expect(hooksTracker.isExecutedOnce("contentEntry:afterCreate")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:beforeSave")).toEqual(false);
-        expect(hooksTracker.isExecutedOnce("contentEntry:afterSave")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:beforeCreateRevisionFrom")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:afterCreateRevisionFrom")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:beforeUpdate")).toEqual(false);
+        expect(hooksTracker.isExecutedOnce("contentEntry:afterUpdate")).toEqual(false);
         expect(hooksTracker.isExecutedOnce("contentEntry:beforeDeleteRevision")).toEqual(false);
         expect(hooksTracker.isExecutedOnce("contentEntry:afterDeleteRevision")).toEqual(false);
         expect(hooksTracker.isExecutedOnce("contentEntry:beforeDelete")).toEqual(false);

@@ -7,7 +7,7 @@ import { Icon } from "@webiny/ui/Icon";
 import { Typography } from "@webiny/ui/Typography";
 import { ReactComponent as DownButton } from "./icons/round-arrow_drop_down-24px.svg";
 import { i18n } from "@webiny/app/i18n";
-import { useQuery } from "react-apollo";
+import { useQuery } from "@apollo/react-hooks";
 import { GET_FORM_REVISIONS } from "../../../graphql";
 import { useFormEditor } from "@webiny/app-form-builder/admin/components/FormEditor";
 const t = i18n.namespace("FormEditor.RevisionsMenu");

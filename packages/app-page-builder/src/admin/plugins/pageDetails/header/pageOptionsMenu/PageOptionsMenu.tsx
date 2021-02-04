@@ -16,7 +16,7 @@ import { useConfigureWebsiteUrlDialog } from "@webiny/app-page-builder/admin/hoo
 import { plugins } from "@webiny/plugins";
 import { PbPageDetailsHeaderRightOptionsMenuItemPlugin } from "@webiny/app-page-builder/types";
 import gql from "graphql-tag";
-import { useMutation } from "react-apollo";
+import { useMutation } from "@apollo/react-hooks";
 import { SecureView } from "@webiny/app-security";
 
 const PUBLISH_PAGE = gql`

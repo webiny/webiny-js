@@ -1,4 +1,4 @@
-import { useQuery as apolloUseQuery } from "react-apollo";
+import { useQuery as apolloUseQuery } from "@apollo/react-hooks";
 import useCms from "./useCms";
 
 const useQuery = function(query, options = {}) {

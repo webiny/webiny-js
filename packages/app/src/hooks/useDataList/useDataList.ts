@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useQuery } from "react-apollo";
+import { useQuery } from "@apollo/react-hooks";
 import { useRouter } from "@webiny/react-router";
 import { get, isEqual } from "lodash";
 import { prepareLoadListParams } from "./utils";
