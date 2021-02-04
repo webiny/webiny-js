@@ -168,7 +168,7 @@ const PageBuilderMenusDataList = ({ canCreate }: PageBuilderMenusDataListProps) 
             actions={
                 canCreate ? (
                     <ButtonSecondary
-                        data-testid="new-record-button"
+                        data-testid="data-list-new-record-button"
                         onClick={() => history.push("/page-builder/menus?new=true")}
                     >
                         <ButtonIcon icon={<AddIcon />} /> {t`New Menu`}
@@ -182,7 +182,7 @@ const PageBuilderMenusDataList = ({ canCreate }: PageBuilderMenusDataListProps) 
             modalOverlayAction={<DataListModalOverlayAction icon={<FilterIcon />} />}
         >
             {({ data }) => (
-                <ScrollList>
+                <ScrollList data-testid="default-data-list">
                     {data.map(item => (
                         <ListItem key={item.slug} selected={item.slug === slug}>
                             <ListItemText
