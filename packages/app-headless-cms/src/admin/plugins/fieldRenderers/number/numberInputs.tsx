@@ -29,7 +29,6 @@ const plugin: CmsEditorFieldRendererPlugin = {
                         <Input
                             {...bind.index}
                             onChange={value => {
-                                value = parseFloat(value);
                                 return bind.index.onChange(value);
                             }}
                             autoFocus
