@@ -50,7 +50,6 @@ export default withFields({
         instanceOf: withFields({
             home: onSet(extractPid)(string()),
             notFound: onSet(extractPid)(string()),
-            error: onSet(extractPid)(string())
         })()
     })
 })();
