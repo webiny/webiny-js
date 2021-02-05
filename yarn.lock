@@ -6261,6 +6261,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/ncp@npm:^2.0.4":
+  version: 2.0.4
+  resolution: "@types/ncp@npm:2.0.4"
+  dependencies:
+    "@types/node": "*"
+  checksum: 9d5f5b6eb74ebd712783eaf1c30517800a1378edee7c02a128fec0b084ad9df1d76e4b118a5a6606f34ec6114d305ae3eb55ecd01b9e8506cc4f34d0800d656c
+  languageName: node
+  linkType: hard
+
 "@types/node-fetch@npm:2.5.7":
   version: 2.5.7
   resolution: "@types/node-fetch@npm:2.5.7"
@@ -6320,7 +6329,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/prettier@npm:^2.0.0":
+"@types/pluralize@npm:^0.0.29":
+  version: 0.0.29
+  resolution: "@types/pluralize@npm:0.0.29"
+  checksum: e800d731c76ca1506e4570fbdcc802df48cb002bce23e10059a77023cbdbd0093728f56d5b762214571b8f12db5014cc3afc55a7f6c0814152b3b2f1b6f711f1
+  languageName: node
+  linkType: hard
+
+"@types/prettier@npm:^2.0.0, @types/prettier@npm:^2.1.6":
   version: 2.1.6
   resolution: "@types/prettier@npm:2.1.6"
   checksum: c78a6406b0b0d167c3285c84ca63308028517bc772b16960d959ae0ab8947f58c33aac4ba4485ac878f114be230764f7d5582a43115727ba68e5fb59360d5f37
@@ -8339,7 +8355,40 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/cli-plugin-scaffold@workspace:packages/cli-plugin-scaffold":
+"@webiny/cli-plugin-scaffold-graphql-service@workspace:packages/cli-plugin-scaffold-graphql-service":
+  version: 0.0.0-use.local
+  resolution: "@webiny/cli-plugin-scaffold-graphql-service@workspace:packages/cli-plugin-scaffold-graphql-service"
+  dependencies:
+    "@babel/cli": ^7.5.5
+    "@babel/core": ^7.5.5
+    "@babel/preset-env": ^7.5.5
+    "@babel/preset-flow": ^7.0.0
+    "@types/inquirer": ^7.3.1
+    "@types/ncp": ^2.0.4
+    "@types/pluralize": ^0.0.29
+    "@types/prettier": ^2.1.6
+    "@webiny/cli-plugin-scaffold": ^4.14.0
+    "@webiny/handler": ^5.0.0-beta.4
+    "@webiny/plugins": ^5.0.0-beta.4
+    case: ^1.6.3
+    chalk: ^4.1.0
+    execa: ^5.0.0
+    find-up: ^5.0.0
+    indent-string: ^4.0.0
+    load-json-file: ^6.2.0
+    lodash.camelcase: ^4.3.0
+    lodash.kebabcase: ^4.1.1
+    ncp: ^2.0.0
+    pluralize: ^8.0.0
+    prettier: ^2.2.1
+    replace-in-path: ^1.0.4
+    rimraf: ^3.0.2
+    typescript: ^4.1.3
+    write-json-file: ^4.3.0
+  languageName: unknown
+  linkType: soft
+
+"@webiny/cli-plugin-scaffold@^4.14.0, @webiny/cli-plugin-scaffold@workspace:packages/cli-plugin-scaffold":
   version: 0.0.0-use.local
   resolution: "@webiny/cli-plugin-scaffold@workspace:packages/cli-plugin-scaffold"
   dependencies:
@@ -11937,6 +11986,13 @@ __metadata:
   version: 2.3.0
   resolution: "case-sensitive-paths-webpack-plugin@npm:2.3.0"
   checksum: 45d85caef4dfc3cacb1461912dee18cfcae74f35cdbeaf564484ed3c82266a5d9305883b86d9537bd57d07ba2a64fb716c2ff98a88a4bf97619ab7b130cbb68e
+  languageName: node
+  linkType: hard
+
+"case@npm:^1.6.3":
+  version: 1.6.3
+  resolution: "case@npm:1.6.3"
+  checksum: 439692e51188256a6b065860070046b4c1b15b56237fd2948bfb8c093f55cbc95eedec8c3855bbf922d0209c42ec979ee8eb5a53cabb656075af22e97e32f20d
   languageName: node
   linkType: hard
 
@@ -16147,7 +16203,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"execa@npm:5.0.0":
+"execa@npm:5.0.0, execa@npm:^5.0.0":
   version: 5.0.0
   resolution: "execa@npm:5.0.0"
   dependencies:
@@ -22236,6 +22292,13 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"lodash.camelcase@npm:^4.3.0":
+  version: 4.3.0
+  resolution: "lodash.camelcase@npm:4.3.0"
+  checksum: 3cb674ed3b37bb698f2ec5a1c3f607d157279f3015877132e8be5c22cf8048988cb9bf1e61c90dbefea3895a459c095773cc266a5b1a9f4202bcd062b3983e37
+  languageName: node
+  linkType: hard
+
 "lodash.chunk@npm:^4.2.0":
   version: 4.2.0
   resolution: "lodash.chunk@npm:4.2.0"
@@ -22331,6 +22394,13 @@ fsevents@^1.2.7:
   version: 4.0.1
   resolution: "lodash.isstring@npm:4.0.1"
   checksum: 20c46960b74fd63c27b534f1725cd4141ac19b35c7250affee37c8b7899b1a4c5e9820becfafe571a4d48cd4c86206ee03c2e93fe943dbeab82ddd5cab710540
+  languageName: node
+  linkType: hard
+
+"lodash.kebabcase@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "lodash.kebabcase@npm:4.1.1"
+  checksum: cee7b365bf62c9ae357d8c5cbd1dc767ce626fecea31b8ff7919cb15adaf2c36652fb07688bf8d55e71c456ac8e5dc7c85bf12f88716114bde232645714d538f
   languageName: node
   linkType: hard
 
@@ -23724,7 +23794,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"ncp@npm:~2.0.0":
+"ncp@npm:^2.0.0, ncp@npm:~2.0.0":
   version: 2.0.0
   resolution: "ncp@npm:2.0.0"
   bin:
@@ -26569,6 +26639,15 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"prettier@npm:^2.2.1":
+  version: 2.2.1
+  resolution: "prettier@npm:2.2.1"
+  bin:
+    prettier: bin-prettier.js
+  checksum: 92c6c9f4b87eba1f28466edee57dd18c80d00b858edda77d46d1950d20e6e302b68ee255fc91133ba931e63c4577b5ae30da194d9626a8f3c0177778b91bf056
+  languageName: node
+  linkType: hard
+
 "pretty-bytes@npm:^5.4.1":
   version: 5.5.0
   resolution: "pretty-bytes@npm:5.5.0"
@@ -28595,6 +28674,17 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"replace-in-path@npm:^1.0.4":
+  version: 1.0.4
+  resolution: "replace-in-path@npm:1.0.4"
+  dependencies:
+    globby: ^11.0.1
+  bin:
+    replace-in-path: dist/bin/replace-in-path.js
+  checksum: 0385d861f3c73d5e8b45df451c9baa633fb2e670cda302d52b3b10eefcec0de217da3cd256c2d162ffd234244b14af0d8a41cf4beea43f6190c7de193a13423b
+  languageName: node
+  linkType: hard
+
 "repropose@npm:^1.0.2":
   version: 1.0.2
   resolution: "repropose@npm:1.0.2"
@@ -29080,7 +29170,7 @@ resolve@1.12.2:
     "@types/jest": ^24.0.24
     "@types/jquery": ^3.3.31
     "@types/node": ^12.12.22
-    "@types/react": ^17.0.0
+    "@types/react": ^16.14.3
     "@types/react-dom": ^17.0.0
     "@typescript-eslint/eslint-plugin": ^4.14.1
     "@typescript-eslint/parser": ^4.14.1
