@@ -27,7 +27,7 @@ interface CliCommandScaffoldCallableArgs {
         [key: string]: any;
     };
     context: ContextInterface;
-    wait: (ms: number) => Promise<any>;
+    wait: (ms?: number) => Promise<void>;
     oraSpinner: Ora;
 }
 
@@ -39,8 +39,8 @@ interface CliCommandScaffold<T extends Answers> {
     name: string;
     questions: QuestionCollection<T> | CliCommandScaffoldQuestionsCallable<T>;
     generate: (args: CliCommandScaffoldCallableArgs) => Promise<any>;
-    onSuccess: (args: CliCommandScaffoldCallableArgs) => Promise<void>;
-    onError: (args: CliCommandScaffoldCallableWithErrorArgs) => Promise<void>;
+    onSuccess: (args: CliCommandScaffoldCallableArgs) => void;
+    onError?: (args: CliCommandScaffoldCallableWithErrorArgs) => Promise<void>;
 }
 
 export interface CliCommandScaffoldTemplate<T extends Answers = Answers> extends Plugin {
