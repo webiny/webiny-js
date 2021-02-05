@@ -8,6 +8,7 @@ import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { useApolloClient } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { FbRevisionModel } from "@webiny/app-form-builder/types";
+import usePermission from "../../../../../hooks/usePermission";
 
 type PublishRevisionProps = {
     revision: FbRevisionModel;
@@ -16,10 +17,11 @@ type PublishRevisionProps = {
 const PublishRevision = ({ revision }: PublishRevisionProps) => {
     const { showSnackbar } = useSnackbar();
     const client = useApolloClient();
+    const { canPublish, canUnpublish } = usePermission();
 
     return (
         <React.Fragment>
-            {revision.status !== "published" ? (
+            {revision.status !== "published" && canPublish() && (
                 <Tooltip content={"Publish"} placement={"top"}>
                     <ConfirmationDialog
                         title={"Publish form"}
@@ -54,7 +56,8 @@ const PublishRevision = ({ revision }: PublishRevisionProps) => {
                         )}
                     </ConfirmationDialog>
                 </Tooltip>
-            ) : (
+            )}
+            {revision.status === "published" && canUnpublish() && (
                 <Tooltip content={"Unpublish"} placement={"top"}>
                     <ConfirmationDialog
                         title={"Un-publish form"}

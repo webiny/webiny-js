@@ -7,6 +7,7 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
 import { useFormEditor } from "@webiny/app-form-builder/admin/components/FormEditor/Context";
 import { PUBLISH_REVISION } from "../../../graphql";
+import usePermission from "../../../../hooks/usePermission";
 
 const t = i18n.namespace("FormEditor.PublishPageButton");
 
@@ -19,6 +20,12 @@ const PublishFormButton = () => {
     const { history } = useRouter();
 
     const [publish] = useMutation(PUBLISH_REVISION);
+    const { canPublish } = usePermission();
+
+    // Render nothing if required permission is missing.
+    if (!canPublish()) {
+        return null;
+    }
 
     return (
         <ConfirmationDialog
