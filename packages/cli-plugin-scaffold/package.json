@@ -1,0 +1,43 @@
+{
+  "name": "@webiny/cli-plugin-scaffold",
+  "version": "4.14.0",
+  "main": "dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/webiny/webiny-js.git",
+    "directory": "packages/cli-plugin-scaffold"
+  },
+  "author": "Webiny Ltd.",
+  "contributors": [
+    "Pavel Denisjuk <pavel@webiny.com>"
+  ],
+  "description": "A tool to bootstrap a Webiny project.",
+  "dependencies": {
+    "@babel/runtime": "^7.5.5",
+    "inquirer": "^7.3.3",
+    "ora": "4.1.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-flow": "^7.0.0",
+    "@types/inquirer": "^7.3.1",
+    "@webiny/handler": "^5.0.0-beta.4",
+    "@webiny/plugins": "^5.0.0-beta.4",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.1.3"
+  },
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "scripts": {
+    "build": "rimraf ./dist '*.tsbuildinfo' && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" && yarn postbuild",
+    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" --watch",
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
+  },
+  "adio": {},
+  "gitHead": "2cd812f1b150c10df088a5b2f75a62c9e376c1a4"
+}
