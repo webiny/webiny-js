@@ -137,7 +137,8 @@
       "@webiny/react-graphql-client/*": ["./packages/react-graphql-client/src/*"],
       "@webiny/validation": ["./packages/validation/src"],
       "@webiny/validation/*": ["./packages/validation/src/*"],
-      "@webiny/ui/*": ["./packages/ui/src/*"]
+      "@webiny/ui/*": ["./packages/ui/src/*"],
+      "@webiny/cli-plugin-scaffold/*": ["./packages/cli-plugin-scaffold/src/*"]
     },
     "typeRoots": ["./typings", "./node_modules/@types", "@types/testing-library__cypress"]
   },
@@ -146,7 +147,9 @@
     "dist",
     "./scripts/**",
     "**jest**",
-    "./packages/cli**",
+    "./packages/cli-plugin-workspaces",
+    "./packages/cli-plugin-deploy-pulumi",
+    "./packages/cli",
     "./packages/create-webiny-project",
     "./packages/cwp-template-aws/**",
     "./packages/project-utils",
