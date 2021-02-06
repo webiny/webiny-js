@@ -146,11 +146,25 @@ const plugin: ContextPlugin<PbContext> = {
                     const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                         rwd: "r"
                     });
-                    const [[page]] = await db.read<Page>({
-                        ...defaults.db,
-                        query: { PK: PK_PAGE(pid), SK: `REV#${rev}` },
-                        limit: 1
-                    });
+
+                    let page;
+                    if (rev) {
+                        const [[exactRevision]] = await db.read<Page>({
+                            ...defaults.db,
+                            query: { PK: PK_PAGE(pid), SK: `REV#${rev}` }
+                        });
+                        page = exactRevision;
+                    } else {
+                        const [[latestRevision]] = await db.read<Page>({
+                            ...defaults.db,
+                            query: { PK: PK_PAGE(pid), SK: `L` }
+                        });
+                        page = latestRevision;
+                    }
+
+                    if (!page) {
+                        throw new NotFoundError("Page not found.");
+                    }
 
                     const identity = context.security.getIdentity();
                     checkOwnPermissions(identity, permission, page, "ownedBy");
@@ -838,7 +852,7 @@ const plugin: ContextPlugin<PbContext> = {
                     if (pathTakenByAnotherPage) {
                         // Note two things here...
                         // 1) It is possible that this call is about to try to unpublish a page that is set as
-                        // a special page (home/404/error). In that case, this whole process will fail, and that
+                        // a special page (home / 404). In that case, this whole process will fail, and that
                         // is to be expected. Maybe we could think of a better solution in the future, but for
                         // now, it works like this. If there was only more ⏱.
                         // 2) If a user doesn't have the unpublish permission, again, the whole action will fail.
