@@ -102,10 +102,10 @@ const plugin: ContextPlugin<PbContext> = {
                             let tenant = undefined,
                                 locale = undefined;
                             if (options?.tenant !== false) {
-                                tenant = options.tenant || security.getTenant().id;
+                                tenant = options?.tenant || security.getTenant().id;
                             }
                             if (options?.locale !== false) {
-                                locale = options.locale || i18nContent.getLocale().code;
+                                locale = options?.locale || i18nContent.getLocale().code;
                             }
 
                             await db.create({
