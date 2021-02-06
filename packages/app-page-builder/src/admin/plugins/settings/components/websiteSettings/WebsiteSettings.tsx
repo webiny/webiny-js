@@ -2,7 +2,7 @@ import * as React from "react";
 import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
-import { ButtonPrimary } from "@webiny/ui/Button";
+import { ButtonIcon, ButtonPrimary } from "@webiny/ui/Button";
 import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
 import { PagesAutocomplete } from "@webiny/app-page-builder/admin/components/PagesAutocomplete";
 import { useQuery, useMutation } from "react-apollo";
@@ -12,6 +12,8 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import { get, set } from "lodash";
 import { validation } from "@webiny/validation";
 import { sendEvent, setProperties } from "@webiny/tracking/react";
+import { ReactComponent as EditIcon } from "@webiny/app-page-builder/admin/assets/edit.svg";
+import { useRouter } from "@webiny/react-router";
 
 import {
     SimpleForm,
@@ -20,9 +22,11 @@ import {
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
 import { GET_SETTINGS as SETTINGS_QUERY } from "@webiny/app-page-builder/admin/hooks/usePageBuilderSettings";
+import { useCallback } from "react";
 
 const WebsiteSettings = () => {
     const { showSnackbar } = useSnackbar();
+    const { history } = useRouter();
 
     const { data, loading: queryInProgress } = useQuery(GET_SETTINGS);
     const settings = get(data, "pageBuilder.getSettings.data") || {};
@@ -44,6 +48,8 @@ const WebsiteSettings = () => {
             }
         }
     });
+
+    const editPage = useCallback(id => history.push(`/page-builder/editor/${id}`), []);
 
     return (
         <Form
@@ -68,7 +74,7 @@ const WebsiteSettings = () => {
                 showSnackbar("Settings updated successfully.");
             }}
         >
-            {({ Bind, form }) => (
+            {({ Bind, form, data }) => (
                 <SimpleForm>
                     {(queryInProgress || mutationInProgress) && <CircularProgress />}
                     <SimpleFormHeader title={`General`} />
@@ -132,21 +138,22 @@ const WebsiteSettings = () => {
                             <Cell span={6}>
                                 <Grid>
                                     <Cell span={12}>
-                                        <SimpleFormHeader title={`Default pages`} />
+                                        <SimpleFormHeader title={"Default pages"} />
                                     </Cell>
                                     <Cell span={12}>
                                         <Bind name={"pages.home"}>
                                             <PagesAutocomplete
                                                 label={"Homepage"}
-                                                description={`This is the homepage of your website.`}
-                                            />
-                                        </Bind>
-                                    </Cell>
-                                    <Cell span={12}>
-                                        <Bind name={"pages.error"}>
-                                            <PagesAutocomplete
-                                                label={"Error page"}
-                                                description={`Shown when an error occurs during a page load.`}
+                                                description={`To set a different page, start typing its title and select it from the dropdown menu. Note that the page must be published in order to appear.`}
+                                                trailingIcon={
+                                                    <ButtonPrimary
+                                                        small
+                                                        onClick={() => editPage(data.pages.home)}
+                                                    >
+                                                        <ButtonIcon icon={<EditIcon />} />
+                                                        Edit
+                                                    </ButtonPrimary>
+                                                }
                                             />
                                         </Bind>
                                     </Cell>
@@ -154,7 +161,16 @@ const WebsiteSettings = () => {
                                         <Bind name={"pages.notFound"}>
                                             <PagesAutocomplete
                                                 label={"Not found (404) page"}
-                                                description={`Shown when the requested page is not found.`}
+                                                description={`To set a different page, start typing its title and select it from the dropdown menu. Note that the page must be published in order to appear.`}
+                                                trailingIcon={
+                                                    <ButtonPrimary
+                                                        small
+                                                        onClick={() => editPage(data.pages.notFound)}
+                                                    >
+                                                        <ButtonIcon icon={<EditIcon />} />
+                                                        Edit
+                                                    </ButtonPrimary>
+                                                }
                                             />
                                         </Bind>
                                     </Cell>
