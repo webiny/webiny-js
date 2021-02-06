@@ -10,78 +10,7 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { DialogContainer } from "@webiny/app-admin/plugins/dialog/Dialog";
 import { Typography } from "@webiny/ui/Typography";
 import { LoadingEditor, LoadingTitle } from "./EditorStyled.js";
-
-import gql from "graphql-tag";
-
-const GET_PAGE = gql`
-    query GetPage($id: ID!) {
-        pageBuilder {
-            getPage(id: $id) {
-                data {
-                    id
-                    pid
-                    title
-                    path
-                    version
-                    locked
-                    status
-                    category {
-                        url
-                        name
-                        slug
-                    }
-                    revisions {
-                        id
-                        title
-                        status
-                        locked
-                        version
-                    }
-                    settings {
-                        general {
-                            snippet
-                            tags
-                            layout
-                            image {
-                                id
-                                src
-                            }
-                        }
-                        social {
-                            meta {
-                                property
-                                content
-                            }
-                            title
-                            description
-                            image {
-                                id
-                                src
-                            }
-                        }
-                        seo {
-                            title
-                            description
-                            meta {
-                                name
-                                content
-                            }
-                        }
-                    }
-                    createdBy {
-                        id
-                    }
-                    content
-                }
-                error {
-                    message
-                    data
-                    code
-                }
-            }
-        }
-    }
-`;
+import { GET_PAGE, CREATE_PAGE_FROM } from "./graphql";
 
 const extractPageGetPage = (data: any): any => {
     return data.pageBuilder?.getPage || {};
