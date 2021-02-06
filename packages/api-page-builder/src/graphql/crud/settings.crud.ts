@@ -97,6 +97,16 @@ const plugin: ContextPlugin<PbContext> = {
                         let previous = await this.get(options);
                         if (!previous) {
                             previous = await new DefaultSettingsModel().populate({}).toJSON();
+
+                            let tenant = undefined,
+                                locale = undefined;
+                            if (options?.tenant !== false) {
+                                tenant = options.tenant || security.getTenant().id;
+                            }
+                            if (options?.locale !== false) {
+                                locale = options.locale || i18nContent.getLocale().code;
+                            }
+
                             await db.create({
                                 ...defaults.db,
                                 data: {
@@ -105,8 +115,8 @@ const plugin: ContextPlugin<PbContext> = {
                                     SK: this.SK,
                                     TYPE,
                                     type: "default",
-                                    tenant: security.getTenant().id,
-                                    locale: i18nContent.getLocale().code
+                                    tenant,
+                                    locale
                                 }
                             });
                         }
