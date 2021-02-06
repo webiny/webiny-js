@@ -879,6 +879,18 @@ const plugin: ContextPlugin<PbContext> = {
                         data: page
                     });
 
+                    // If we just published the latest version, update the latest revision entry too.
+                    if (latestPage.id === pageId) {
+                        batch.update({
+                            ...defaults.db,
+                            query: {
+                                PK: PK_PAGE(pid),
+                                SK: "L"
+                            },
+                            data: { ...page, PK: PK_PAGE(pid), SK: "L" }
+                        });
+                    }
+
                     if (publishedPage) {
                         const [, publishedRev] = publishedPage.id.split("#");
                         batch
