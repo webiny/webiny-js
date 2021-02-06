@@ -73,8 +73,7 @@ describe("page visibility test", () => {
             return data.length === 0;
         });
 
-        const a =123;
-        const [aa] = await updatePage({
+        await updatePage({
             id: p1v2.id,
             data: {
                 visibility: {

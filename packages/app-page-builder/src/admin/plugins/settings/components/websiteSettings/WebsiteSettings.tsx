@@ -165,7 +165,9 @@ const WebsiteSettings = () => {
                                                 trailingIcon={
                                                     <ButtonPrimary
                                                         small
-                                                        onClick={() => editPage(data.pages.notFound)}
+                                                        onClick={() =>
+                                                            editPage(data.pages.notFound)
+                                                        }
                                                     >
                                                         <ButtonIcon icon={<EditIcon />} />
                                                         Edit
