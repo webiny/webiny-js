@@ -13,5 +13,6 @@ const projects = allWorkspaces()
 
 module.exports = {
     projects,
-    modulePathIgnorePatterns: ["dist"]
+    modulePathIgnorePatterns: ["dist"],
+    testTimeout: 30000
 };
