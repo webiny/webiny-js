@@ -88,7 +88,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                         { title: "Not Found", path: "/not-found" }
                     ];
 
-                    await Promise.all(
+                    const [homePage, notFoundPage] = await Promise.all(
                         initialPages.map(data =>
                             pages
                                 .create(staticCategory.slug)
@@ -96,6 +96,13 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                                 .then(page => pages.publish(page.id))
                         )
                     );
+
+                    await context.pageBuilder.settings.default.update({
+                        pages: {
+                            home: homePage.id,
+                            notFound: notFoundPage.id
+                        }
+                    });
 
                     // 6. Mark the Page Builder app as installed.
                     const settings = await context.pageBuilder.settings.install.get();
