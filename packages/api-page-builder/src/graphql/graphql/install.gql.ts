@@ -82,10 +82,17 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     // 5. Create sample pages.
                     const { pages } = context.pageBuilder;
 
-                    // Home page.
                     const initialPages = [
                         { title: "Welcome to Webiny", path: "/welcome-to-webiny" },
-                        { title: "Not Found", path: "/not-found" }
+                        {
+                            title: "Not Found",
+                            path: "/not-found",
+                            // Do not show the page in page lists, only direct get is possible.
+                            visibility: {
+                                get: { latest: true, published: true },
+                                list: { latest: false, published: false }
+                            }
+                        }
                     ];
 
                     const [homePage, notFoundPage] = await Promise.all(
@@ -99,8 +106,8 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
 
                     await context.pageBuilder.settings.default.update({
                         pages: {
-                            home: homePage.id,
-                            notFound: notFoundPage.id
+                            home: homePage.pid,
+                            notFound: notFoundPage.pid
                         }
                     });
 
