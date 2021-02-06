@@ -85,8 +85,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     // Home page.
                     const initialPages = [
                         { title: "Welcome to Webiny", path: "/welcome-to-webiny" },
-                        { title: "Not Found", path: "/not-found" },
-                        { title: "Error", path: "/error" }
+                        { title: "Not Found", path: "/not-found" }
                     ];
 
                     await Promise.all(
