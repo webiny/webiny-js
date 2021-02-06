@@ -94,7 +94,7 @@ const plugin: ContextPlugin<PbContext> = {
                     async update(rawData, options) {
                         options?.auth !== false && (await checkBasePermissions(context));
 
-                        let previous = await this.get();
+                        let previous = await this.get(options);
                         if (!previous) {
                             previous = await new DefaultSettingsModel().populate({}).toJSON();
                             await db.create({
