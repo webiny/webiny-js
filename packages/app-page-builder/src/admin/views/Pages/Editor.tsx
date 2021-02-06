@@ -1,8 +1,8 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import editorMock from "@webiny/app-page-builder/admin/assets/editor-mock.png";
 import { createElement } from "@webiny/app-page-builder/editor/helpers";
 import { useRouter } from "@webiny/react-router";
-import { Query } from "react-apollo";
+import { useQuery, useMutation } from "react-apollo";
 import { Editor as PbEditor } from "@webiny/app-page-builder/editor";
 import { useSavedElements } from "@webiny/app-page-builder/admin/hooks/useSavedElements";
 import Snackbar from "@webiny/app-admin/plugins/snackbar/Snackbar";
@@ -30,6 +30,8 @@ const Editor: React.FunctionComponent = () => {
     const { match, history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const ready = useSavedElements();
+    const [loading, setLoading] = useState(true);
+    const [data, setData] = useState(null);
 
     const params: { id: string } = match.params as any;
 
@@ -49,16 +51,12 @@ const Editor: React.FunctionComponent = () => {
                     </LoadingEditor>
                 );
             }
+
             if (!data) {
                 return null;
             }
 
-            const pageData = extractPageData(data);
-            if (!pageData) {
-                return null;
-            }
-
-            const { revisions = [], content, ...restOfPageData } = pageData;
+            const { revisions = [], content, ...restOfPageData } = data;
             const page = {
                 ...restOfPageData,
                 content: content || createElement("document")
@@ -79,23 +77,41 @@ const Editor: React.FunctionComponent = () => {
         [ready]
     );
 
-    return (
-        <Query
-            query={GET_PAGE}
-            variables={{ id: decodeURIComponent(params.id) }}
-            onCompleted={data => {
-                const errorData = extractPageErrorData(data);
-                const error = errorData.message;
-                if (!error) {
-                    return;
-                }
+    const [createPageFrom] = useMutation(CREATE_PAGE_FROM);
+
+    useQuery(GET_PAGE, {
+        variables: { id: decodeURIComponent(params.id) },
+        fetchPolicy: "network-only",
+        onCompleted: async data => {
+            const errorData = extractPageErrorData(data);
+            const error = errorData.message;
+            if (error) {
+                setLoading(false);
                 history.push(`/page-builder/pages`);
                 showSnackbar(error);
-            }}
-        >
-            {renderEditor}
-        </Query>
-    );
+                return;
+            }
+
+            const page = extractPageData(data);
+            if (page.status === "draft") {
+                setData(page);
+            } else {
+                const response = await createPageFrom({
+                    variables: { from: page.id }
+                });
+
+                history.push(
+                    `/page-builder/editor/${encodeURIComponent(
+                        response.data.pageBuilder.createPage.data.id
+                    )}`
+                );
+                setTimeout(() => showSnackbar("New revision created."), 1500);
+            }
+            setLoading(false);
+        }
+    });
+
+    return renderEditor({ loading, data });
 };
 
 export default Editor;
