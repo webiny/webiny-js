@@ -377,6 +377,10 @@ const plugin: ContextPlugin<PbContext> = {
                         path: pagePath,
                         version: 1,
                         status: STATUS_DRAFT,
+                        visibility: {
+                            list: { latest: true, published: true },
+                            get: { latest: true, published: true }
+                        },
                         locked: false,
                         publishedOn: null,
                         createdFrom: null,
@@ -490,12 +494,15 @@ const plugin: ContextPlugin<PbContext> = {
                         })
                         .execute();
 
-                    // Replace existing `"L#" + fromParent` entry with the new one.
-                    await elasticSearch.index({
-                        ...ES_DEFAULTS(),
-                        id: "L#" + fromPid,
-                        body: getESLatestPageData(context, data)
-                    });
+                    // If the new revision is visible in "latest" page lists, then update the ES index.
+                    if (data?.visibility?.list?.latest !== false) {
+                        // Replace existing `"L#" + fromParent` entry with the new one.
+                        await elasticSearch.index({
+                            ...ES_DEFAULTS(),
+                            id: "L#" + fromPid,
+                            body: getESLatestPageData(context, data)
+                        });
+                    }
 
                     await executeHookCallbacks(hookPlugins, "afterCreate", context, data);
 
@@ -570,14 +577,19 @@ const plugin: ContextPlugin<PbContext> = {
                             data: updateData
                         });
 
-                        // Index file in "Elastic Search"
-                        await elasticSearch.update({
-                            ...ES_DEFAULTS(),
-                            id: `L#${pid}`,
-                            body: {
-                                doc: getESUpdateLatestPageData(updateData)
-                            }
-                        });
+                        // Update the ES index according to the value of the "latest pages lists" visibility setting.
+                        if (updateData?.visibility?.list?.latest !== false) {
+                            await elasticSearch.index({
+                                ...ES_DEFAULTS(),
+                                id: `L#${pid}`,
+                                body: getESLatestPageData(context, { ...page, ...data })
+                            });
+                        } else {
+                            await elasticSearch.delete({
+                                ...ES_DEFAULTS(),
+                                id: `L#${pid}`
+                            });
+                        }
                     }
 
                     await executeHookCallbacks(hookPlugins, "afterUpdate", context, page);
@@ -973,35 +985,39 @@ const plugin: ContextPlugin<PbContext> = {
                     // Update data in ES.
                     const esOperations = [];
 
-                    // If we are publishing the latest revision, let's also update the latest revision entry's status in ES.
-                    if (latestPage?.id === pageId) {
+                    // If we are publishing the latest revision, let's also update the latest revision entry's
+                    // status in ES. Also, if we are publishing the latest revision and the "LATEST page lists
+                    // visibility" is not false, then we need to update the latest page revision entry in ES.
+                    if (latestPage?.id === pageId && page?.visibility?.list?.latest !== false) {
                         esOperations.push(
                             {
-                                update: {
+                                index: {
                                     _id: `L#${pid}`,
                                     _index: ES_DEFAULTS().index
                                 }
                             },
-                            {
-                                doc: {
-                                    status: STATUS_PUBLISHED,
-                                    locked: true,
-                                    publishedOn: page.publishedOn
-                                }
-                            }
+                            getESLatestPageData(context, page)
                         );
                     }
 
-                    // And of course, update the published revision entry in ES.
-                    esOperations.push(
-                        { index: { _id: `P#${pid}`, _index: ES_DEFAULTS().index } },
-                        getESPublishedPageData(context, {
-                            ...page,
-                            id: pageId,
-                            status: STATUS_PUBLISHED,
-                            locked: true
-                        })
-                    );
+                    // And of course, update the published revision entry in ES. This time, if the "PUBLISHED page
+                    // lists visibility" setting is not explicitly set to false.
+                    if (page?.visibility?.list?.published !== false) {
+                        esOperations.push(
+                            { index: { _id: `P#${pid}`, _index: ES_DEFAULTS().index } },
+                            getESPublishedPageData(context, {
+                                ...page,
+                                id: pageId,
+                                status: STATUS_PUBLISHED,
+                                locked: true
+                            })
+                        );
+                    } else {
+                        // If the page should not be visible in published pages lists, then delete the entry.
+                        esOperations.push({
+                            delete: { _id: `P#${pid}`, _index: ES_DEFAULTS().index }
+                        });
+                    }
 
                     await elasticSearch.bulk({ body: esOperations });
 
@@ -1102,8 +1118,10 @@ const plugin: ContextPlugin<PbContext> = {
                     // Update data in ES.
                     const esOperations = [];
 
-                    // If we are unpublishing the latest revision, let's also update the latest revision entry's status in ES.
-                    if (latestPage.id === pageId) {
+                    // If we are unpublishing the latest revision, let's also update the latest revision entry's
+                    // status in ES. We can only do that if the entry actually exists, or in other words, if the
+                    // published page's "LATEST pages lists visibility" setting is not set to false.
+                    if (latestPage.id === pageId && page?.visibility?.list?.latest !== false) {
                         esOperations.push(
                             {
                                 update: {
@@ -1116,11 +1134,15 @@ const plugin: ContextPlugin<PbContext> = {
                     }
 
                     // And of course, delete the published revision entry in ES.
-                    esOperations.push({
-                        delete: { _id: `P#${pid}`, _index: ES_DEFAULTS().index }
-                    });
+                    if (page?.visibility?.list?.published !== false) {
+                        esOperations.push({
+                            delete: { _id: `P#${pid}`, _index: ES_DEFAULTS().index }
+                        });
+                    }
 
-                    await elasticSearch.bulk({ body: esOperations });
+                    if (esOperations.length) {
+                        await elasticSearch.bulk({ body: esOperations });
+                    }
 
                     await executeHookCallbacks(hookPlugins, "afterUnpublish", context, page);
 
@@ -1178,18 +1200,21 @@ const plugin: ContextPlugin<PbContext> = {
 
                     // If we updated the latest version, then make sure the changes are propagated to ES too.
                     if (latestPageData.id === pageId) {
-                        const [uniqueId] = pageId.split("#");
-                        // Index file in "Elastic Search"
-                        await elasticSearch.update({
-                            ...ES_DEFAULTS(),
-                            id: `L#${uniqueId}`,
-                            body: {
-                                doc: {
-                                    status: STATUS_REVIEW_REQUESTED,
-                                    locked: true
+                        // 0nly update if the "LATEST pages lists visibility" is not set to false.
+                        if (page?.visibility?.list?.latest !== false) {
+                            const [uniqueId] = pageId.split("#");
+                            // Index file in "Elastic Search"
+                            await elasticSearch.update({
+                                ...ES_DEFAULTS(),
+                                id: `L#${uniqueId}`,
+                                body: {
+                                    doc: {
+                                        status: STATUS_REVIEW_REQUESTED,
+                                        locked: true
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
                     }
 
                     return page;
@@ -1253,18 +1278,21 @@ const plugin: ContextPlugin<PbContext> = {
 
                     // If we updated the latest version, then make sure the changes are propagated to ES too.
                     if (latestPageData.id === pageId) {
-                        const [uniqueId] = pageId.split("#");
-                        // Index file in "Elastic Search"
-                        await elasticSearch.update({
-                            ...ES_DEFAULTS(),
-                            id: `L#${uniqueId}`,
-                            body: {
-                                doc: {
-                                    status: STATUS_CHANGES_REQUESTED,
-                                    locked: false
+                        // 0nly update if the "LATEST pages lists visibility" is not set to false.
+                        if (page?.visibility?.list?.latest !== false) {
+                            const [uniqueId] = pageId.split("#");
+                            // Index file in "Elastic Search"
+                            await elasticSearch.update({
+                                ...ES_DEFAULTS(),
+                                id: `L#${uniqueId}`,
+                                body: {
+                                    doc: {
+                                        status: STATUS_CHANGES_REQUESTED,
+                                        locked: false
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
                     }
 
                     return page;
