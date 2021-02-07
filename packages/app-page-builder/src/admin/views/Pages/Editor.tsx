@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 import editorMock from "@webiny/app-page-builder/admin/assets/editor-mock.png";
 import { createElement } from "@webiny/app-page-builder/editor/helpers";
 import { useRouter } from "@webiny/react-router";
-import { useQuery, useMutation } from "react-apollo";
+import { useQuery, useMutation } from "@apollo/react-hooks";
 import { Editor as PbEditor } from "@webiny/app-page-builder/editor";
 import { useSavedElements } from "@webiny/app-page-builder/admin/hooks/useSavedElements";
 import Snackbar from "@webiny/app-admin/plugins/snackbar/Snackbar";
