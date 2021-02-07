@@ -9,7 +9,7 @@ import {
 } from "@webiny/ui/Dialog";
 import { UPDATE_PAT } from "./graphql";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { useApolloClient } from "react-apollo";
+import { useApolloClient } from "@apollo/react-hooks";
 import { i18n } from "@webiny/app/i18n";
 import { Input } from "@webiny/ui/Input";
 import { Form } from "@webiny/form";

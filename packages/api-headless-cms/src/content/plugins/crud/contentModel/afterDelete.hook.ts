@@ -1,4 +1,5 @@
 import { CmsContentModel, CmsContext } from "@webiny/api-headless-cms/types";
+import { runContentModelLifecycleHooks } from "./runContentModelLifecycleHooks";
 
 interface Args {
     context: CmsContext;
@@ -7,4 +8,6 @@ interface Args {
 export const afterDeleteHook = async (args: Args) => {
     const { context } = args;
     await context.cms.settings.updateContentModelLastChange();
+
+    await runContentModelLifecycleHooks("afterDelete", args);
 };

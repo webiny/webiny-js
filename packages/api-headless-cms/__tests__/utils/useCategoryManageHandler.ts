@@ -1,5 +1,6 @@
 import { useContentGqlHandler } from "./useContentGqlHandler";
 import { GQLHandlerCallableArgs } from "./useGqlHandler";
+import { Plugin } from "@webiny/plugins/types";
 
 const categoryFields = `
     id
@@ -143,8 +144,33 @@ const unpublishCategoryMutation = /* GraphQL */ `
     }
 `;
 
-export const useCategoryManageHandler = (options: GQLHandlerCallableArgs) => {
-    const contentHandler = useContentGqlHandler(options);
+const requestCategoryChangesMutation = /* GraphQL */ `
+    mutation RequestCategoryChanges($revision: ID!) {
+        requestCategoryChanges(revision: $revision) {
+            data {
+                ${categoryFields}
+            }
+            ${errorFields}
+        }
+    }
+`;
+
+const requestCategoryReviewMutation = /* GraphQL */ `
+    mutation RequestCategoryReview($revision: ID!) {
+        requestCategoryReview(revision: $revision) {
+            data {
+                ${categoryFields}
+            }
+            ${errorFields}
+        }
+    }
+`;
+
+export const useCategoryManageHandler = (
+    options: GQLHandlerCallableArgs,
+    plugins: Plugin[] = []
+) => {
+    const contentHandler = useContentGqlHandler(options, plugins);
 
     return {
         ...contentHandler,
@@ -209,6 +235,24 @@ export const useCategoryManageHandler = (options: GQLHandlerCallableArgs) => {
             return await contentHandler.invoke({
                 body: {
                     query: unpublishCategoryMutation,
+                    variables
+                },
+                headers
+            });
+        },
+        async requestCategoryChanges(variables, headers: Record<string, any> = {}) {
+            return await contentHandler.invoke({
+                body: {
+                    query: requestCategoryChangesMutation,
+                    variables
+                },
+                headers
+            });
+        },
+        async requestCategoryReview(variables, headers: Record<string, any> = {}) {
+            return await contentHandler.invoke({
+                body: {
+                    query: requestCategoryReviewMutation,
                     variables
                 },
                 headers

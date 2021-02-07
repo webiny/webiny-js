@@ -5,7 +5,7 @@ import { ReactComponent as PublishIcon } from "@webiny/app-form-builder/admin/ic
 import { ReactComponent as UnpublishIcon } from "@webiny/app-form-builder/admin/icons/unpublish.svg";
 import { PUBLISH_REVISION, UNPUBLISH_REVISION } from "@webiny/app-form-builder/admin/graphql";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
-import { useApolloClient } from "react-apollo";
+import { useApolloClient } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { FbRevisionModel } from "@webiny/app-form-builder/types";
 

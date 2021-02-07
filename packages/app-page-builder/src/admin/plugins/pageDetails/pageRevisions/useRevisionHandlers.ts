@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useApolloClient } from "react-apollo";
+import { useApolloClient } from "@apollo/react-hooks";
 import { useRouter } from "@webiny/react-router";
 import { CREATE_PAGE, DELETE_PAGE, LIST_PAGES } from "@webiny/app-page-builder/admin/graphql/pages";
 import { usePublishRevisionHandler } from "./usePublishRevisionHandler";

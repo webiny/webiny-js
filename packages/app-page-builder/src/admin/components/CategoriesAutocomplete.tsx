@@ -2,7 +2,7 @@ import React from "react";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
 import gql from "graphql-tag";
 import { get } from "lodash";
-import { useQuery } from "react-apollo";
+import { useQuery } from "@apollo/react-hooks";
 
 const GET_CATEGORY = gql`
     query GetCategory($slug: String!) {

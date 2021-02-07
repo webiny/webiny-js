@@ -7,7 +7,7 @@ import CategoriesDialog from "../Categories/CategoriesDialog";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { useMutation } from "react-apollo";
+import { useMutation } from "@apollo/react-hooks";
 import { CREATE_PAGE } from "@webiny/app-page-builder/admin/graphql/pages";
 
 const Pages = () => {

@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { useMutation, useQuery } from "react-apollo";
+import { useMutation, useQuery } from "@apollo/react-hooks";
 import orderBy from "lodash/orderBy";
 import { i18n } from "@webiny/app/i18n";
 import { useSecurity } from "@webiny/app-security";

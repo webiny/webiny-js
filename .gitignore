@@ -1,7 +1,6 @@
 .idea
 .webpack
 .webiny
-.serverless
 .env*
 .npmrc
 htpasswd
@@ -22,7 +21,6 @@ build/
 .verdaccio
 .history
 *.tsbuildinfo
-yarn.lock
 cypress.json
 .pulumi
 Pulumi.*
@@ -32,3 +30,10 @@ globalConfig.json
 .graphqlconfig
 schema.graphql
 .statis.json
+# yarn2 files
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*

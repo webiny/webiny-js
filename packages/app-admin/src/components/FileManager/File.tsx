@@ -1,13 +1,25 @@
 import React from "react";
-import { css } from "emotion";
-import { ReactComponent as Checked } from "./icons/round-check_box-24px.svg";
-import { ReactComponent as InfoIcon } from "./icons/round-info-24px.svg";
-import { Ripple } from "@webiny/ui/Ripple";
 import LazyLoad from "react-lazy-load";
+import { css, keyframes } from "emotion";
+import { Ripple } from "@webiny/ui/Ripple";
+import { IconButton } from "@webiny/ui/Button";
+import { ReactComponent as Checked } from "./icons/round-check_box-24px.svg";
+import { ReactComponent as SettingsIcon } from "../../assets/icons/round-settings-24px.svg";
 
 const COMPONENT_WIDTH = 200;
 const COMPONENT_HEIGHT = 200;
 
+const grow = keyframes`
+  0% {
+    transform: scale(1)
+  }
+  50% {
+    transform: scale(1.2)
+  }
+  100% {
+    transform: scale(1)
+  }
+`;
 const styles = css({
     display: "inline-block",
     float: "left",
@@ -33,12 +45,14 @@ const styles = css({
         },
         ".infoIcon": {
             opacity: 0,
-            color: "var(--icon-color)",
             position: "absolute",
-            top: 4,
-            right: 4,
+            top: 0,
+            right: 0,
             zIndex: 10,
-            transition: "all 150ms ease-in"
+            transition: "all 150ms ease-in",
+            "& .mdc-icon-button svg": {
+                color: "var(--mdc-theme-secondary)"
+            }
         },
         ".filePreview": {
             textAlign: "center",
@@ -57,7 +71,10 @@ const styles = css({
         },
         "&:hover .infoIcon": {
             opacity: 1,
-            "--icon-color": "var(--mdc-theme-secondary)"
+            animationName: grow,
+            animationDuration: ".4s",
+            animationTimingFunction: "ease-in-out",
+            animationDelay: ".2s"
         }
     },
     "> .label": {
@@ -93,7 +110,8 @@ export default React.memo(
                         {selected ? <Checked /> : null}
                     </div>
                     <div className={"infoIcon"}>
-                        <InfoIcon
+                        <IconButton
+                            icon={<SettingsIcon />}
                             onClick={showFileDetails}
                             data-testid={"fm-file-wrapper-file-info-icon"}
                         />

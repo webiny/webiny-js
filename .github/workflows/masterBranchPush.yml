@@ -23,7 +23,7 @@ jobs:
           node-version: 12
 
       - name: Install dependencies
-        run: yarn --frozen-lockfile
+        run: yarn --immutable
 
       - name: Check dependencies
         run: yarn adio
@@ -45,7 +45,7 @@ jobs:
           node-version: 12
 
       - name: Install dependencies
-        run: yarn --frozen-lockfile
+        run: yarn --immutable
 
       - name: Setup config files
         run: yarn setup-ci-cypress

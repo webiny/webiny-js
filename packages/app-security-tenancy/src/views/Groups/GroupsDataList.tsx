@@ -15,7 +15,7 @@ import {
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { useQuery, useMutation } from "react-apollo";
+import { useQuery, useMutation } from "@apollo/react-hooks";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import { LIST_GROUPS, DELETE_GROUP } from "./graphql";
 import { Tooltip } from "@webiny/ui/Tooltip";

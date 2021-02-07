@@ -8,7 +8,7 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useSecurity } from "@webiny/app-security";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/edit");
-import { useMutation } from "react-apollo";
+import { useMutation } from "@apollo/react-hooks";
 
 const EditRevision = props => {
     const { identity } = useSecurity();

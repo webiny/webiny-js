@@ -1,33 +1,16 @@
 import { CmsContentModel, CmsContext } from "@webiny/api-headless-cms/types";
 import camelCase from "lodash/camelCase";
+import { runContentModelLifecycleHooks } from "./runContentModelLifecycleHooks";
 
 const MAX_MODEL_ID_SEARCH_AMOUNT = 50;
 
-interface Args {
-    context: CmsContext;
-    model: CmsContentModel;
-}
-export const beforeCreateHook = async (args: Args) => {
-    const { context, model } = args;
-    const { name, modelId } = model;
-    // If there is a modelId assigned, check if it's unique ...
-    if (modelId) {
-        const modelIdCamelCase = camelCase(modelId);
-        const models = (await context.cms.models.list()).filter(model => {
-            return model.modelId === modelIdCamelCase;
-        });
-
-        if (models.length === 0) {
-            model.modelId = modelIdCamelCase;
-            return;
-        }
-        throw Error(`Content model with modelId "${modelIdCamelCase}" already exists.`);
-    }
-
-    // ... otherwise, assign a unique modelId automatically.
-    const modelIdCamelCase = camelCase(name);
+const createNewModelId = async (
+    context: CmsContext,
+    models: string[],
+    model: CmsContentModel
+): Promise<string> => {
+    const modelIdCamelCase = camelCase(model.name);
     let counter = 0;
-
     while (true) {
         if (counter > MAX_MODEL_ID_SEARCH_AMOUNT) {
             throw new Error(
@@ -35,14 +18,37 @@ export const beforeCreateHook = async (args: Args) => {
             );
         }
         const modelIdCheck = `${modelIdCamelCase}${counter || ""}`;
-        const models = (await context.cms.models.list()).filter(model => {
-            return model.modelId === modelIdCheck;
-        });
-        if (models.length === 0) {
-            model.modelId = modelIdCheck;
-            return;
+        if (models.includes(modelIdCheck) === false) {
+            return modelIdCheck;
         }
-
         counter++;
     }
+};
+
+interface Args {
+    context: CmsContext;
+    model: CmsContentModel;
+}
+
+export const beforeCreateHook = async (args: Args): Promise<void> => {
+    const { context, model } = args;
+    const { modelId } = model;
+    const models = (await context.cms.models.noAuth().list()).map(m => m.modelId);
+    // If there is a modelId assigned, check if it's unique ...
+    if (modelId) {
+        const modelIdCamelCase = camelCase(modelId);
+        if (models.includes(modelIdCamelCase) === true) {
+            throw Error(`Content model with modelId "${modelIdCamelCase}" already exists.`);
+        }
+        model.modelId = modelIdCamelCase;
+    }
+    // ... otherwise, assign a unique modelId automatically.
+    else {
+        model.modelId = await createNewModelId(context, models, model);
+    }
+
+    await runContentModelLifecycleHooks("beforeCreate", {
+        context,
+        model
+    });
 };

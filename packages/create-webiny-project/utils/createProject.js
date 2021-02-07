@@ -3,13 +3,12 @@ const { yellow, red, green } = require("chalk");
 const execa = require("execa");
 const fs = require("fs-extra");
 const Listr = require("listr");
-const os = require("os");
 const path = require("path");
+const writeJson = require("write-json-file");
 const indentString = require("indent-string");
-const { sendEvent } = require("@webiny/tracking");
 const rimraf = require("rimraf");
+const { sendEvent } = require("@webiny/tracking");
 const getPackageJson = require("./getPackageJson");
-
 const checkProjectName = require("./checkProjectName");
 
 module.exports = async function createProject({
@@ -70,12 +69,18 @@ module.exports = async function createProject({
             task: () => {
                 checkProjectName(projectName);
                 fs.ensureDirSync(projectName);
-
-                const packageJson = getPackageJson(projectName);
-
-                fs.writeFileSync(
-                    path.join(projectRoot, "package.json"),
-                    JSON.stringify(packageJson, null, 2) + os.EOL
+                writeJson.sync(path.join(projectRoot, "package.json"), getPackageJson(projectName));
+            }
+        },
+        {
+            // Setup yarn@2
+            title: "Setup yarn@^2",
+            task: async () => {
+                await execa("yarn", ["set", "version", "berry"], { cwd: projectRoot });
+                fs.copySync(
+                    path.join(__dirname, "files", "example.yarnrc.yml"),
+                    path.join(projectRoot, ".yarnrc.yml"),
+                    { overwrite: true }
                 );
             }
         },
@@ -97,7 +102,7 @@ module.exports = async function createProject({
                 // Assign template name to context.
                 context.templateName = templateName;
 
-                await execa("yarn", ["add", "--exact", add, "--cwd", projectRoot]);
+                await execa("yarn", ["add", add], { cwd: projectRoot });
             }
         },
         {
@@ -123,7 +128,6 @@ module.exports = async function createProject({
     await tasks
         .run(context)
         .then(() => {
-            console.log();
             let templateName = context.templateName;
 
             console.log(`Starting ${green(templateName)} template ...`);

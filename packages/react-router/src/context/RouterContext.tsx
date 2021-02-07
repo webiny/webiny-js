@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { plugins } from "@webiny/plugins";
-import { useApolloClient } from "react-apollo";
+import { useApolloClient } from "@apollo/react-hooks";
 import { ReactRouterOnLinkPlugin } from "../types";
 
 export type ReactRouterContextValue = {

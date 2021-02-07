@@ -23,7 +23,7 @@ jobs:
           node-version: "12"
 
       - name: Install dependencies
-        run: yarn --frozen-lockfile
+        run: yarn --immutable
 
       - name: Check code formatting
         run: yarn prettier:check
@@ -49,7 +49,7 @@ jobs:
           node-version: "12"
 
       - name: Install dependencies
-        run: yarn --frozen-lockfile
+        run: yarn --immutable
 
       - name: Build packages
         run: yarn build
@@ -68,7 +68,7 @@ jobs:
           node-version: 12
 
       - name: Install dependencies
-        run: yarn --frozen-lockfile
+        run: yarn --immutable
 
       - name: Setup config files
         run: yarn setup-ci-cypress

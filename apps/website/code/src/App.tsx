@@ -1,5 +1,5 @@
 import React from "react";
-import { ApolloProvider } from "react-apollo";
+import { ApolloProvider } from "@apollo/react-components";
 import { BrowserRouter, Switch, Route } from "@webiny/react-router";
 import { PageBuilderProvider } from "@webiny/app-page-builder/contexts/PageBuilder";
 import { createApolloClient } from "./components/apolloClient";

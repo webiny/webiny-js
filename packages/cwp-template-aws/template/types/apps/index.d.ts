@@ -1,5 +1,3 @@
-// TODO remove
-// @ts-nocheck
 /**
  * Use this file to add type declarations shared by your React apps and packages.
  */

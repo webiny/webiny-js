@@ -1,5 +1,5 @@
 import React from "react";
-import { ApolloProvider } from "react-apollo";
+import { ApolloProvider } from "@apollo/react-components";
 import { UiProvider } from "@webiny/app/contexts/Ui";
 import { Routes } from "@webiny/app/components/Routes";
 import { I18NProvider } from "@webiny/app-i18n/contexts/I18N";

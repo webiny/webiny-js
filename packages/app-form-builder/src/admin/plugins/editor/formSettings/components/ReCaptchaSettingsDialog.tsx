@@ -1,5 +1,5 @@
 import React from "react";
-import { useMutation } from "react-apollo";
+import { useMutation } from "@apollo/react-hooks";
 import { Form } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";

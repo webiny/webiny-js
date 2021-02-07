@@ -4,11 +4,11 @@ import {
     CmsContentModelFieldValidation,
     CmsContext,
     CmsModelFieldValidatorPlugin,
-    CmsModelFieldValidatorValidateParams
+    CmsModelFieldValidatorValidateArgs
 } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
 
-type PluginValidationCallable = (params: CmsModelFieldValidatorValidateParams) => Promise<boolean>;
+type PluginValidationCallable = (params: CmsModelFieldValidatorValidateArgs) => Promise<boolean>;
 type PluginValidationList = Record<string, PluginValidationCallable[]>;
 type InputData = Record<string, any>;
 
@@ -49,6 +49,25 @@ const validateValue = async (
 
     return null;
 };
+
+const validatePredefinedValue = (
+    field: CmsContentModelField,
+    value: any | any[]
+): string | null => {
+    const { enabled = false, values: predefinedValues = [] } = field.predefinedValues;
+    if (!enabled) {
+        return null;
+    } else if (Array.isArray(predefinedValues) === false || predefinedValues.length === 0) {
+        return "Missing predefined values to validate against.";
+    }
+    for (const predefinedValue of predefinedValues) {
+        // console.log(field.fieldId, predefinedValue.value, value, predefinedValue.value == value);
+        if (predefinedValue.value == value) {
+            return null;
+        }
+    }
+    return "Value sent does not match any of the available predefined values.";
+};
 /**
  * When multiple values is selected we must run validations on the array containing the values
  * And then on each value in the array
@@ -68,6 +87,10 @@ const runFieldMultipleValuesValidations = async (args: ValidateArgs): Promise<st
         if (valueError) {
             return valueError;
         }
+        const predefinedValueError = validatePredefinedValue(field, value);
+        if (predefinedValueError) {
+            return predefinedValueError;
+        }
     }
     return null;
 };
@@ -77,7 +100,11 @@ const runFieldMultipleValuesValidations = async (args: ValidateArgs): Promise<st
 const runFieldValueValidations = async (args: ValidateArgs): Promise<string | null> => {
     const { data, field } = args;
     const value = data[field.fieldId];
-    return await validateValue(args, field.validation, value);
+    const error = await validateValue(args, field.validation, value);
+    if (error) {
+        return error;
+    }
+    return validatePredefinedValue(field, value);
 };
 
 const execValidation = async (args: ValidateArgs): Promise<string | null> => {

@@ -3,7 +3,7 @@ import Files from "react-butterfiles";
 import { ButtonPrimary, ButtonIcon } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
 import File from "./File";
-import { useQuery, useMutation, useApolloClient } from "react-apollo";
+import { useQuery, useMutation, useApolloClient } from "@apollo/react-hooks";
 import { FilesRules } from "react-butterfiles";
 import { LIST_FILES, CREATE_FILE, GET_FILE_SETTINGS } from "./graphql";
 import getFileTypePlugin from "./getFileTypePlugin";
@@ -18,6 +18,7 @@ import BottomInfoBar from "./BottomInfoBar";
 import { OverlayLayout } from "@webiny/app-admin/components/OverlayLayout";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
+import { CircularProgress } from "@webiny/ui/Progress";
 import { css } from "emotion";
 import styled from "@emotion/styled";
 import { useHotkeys } from "react-hotkeyz";
@@ -257,7 +258,7 @@ function FileManagerView(props: FileManagerViewProps) {
         [gqlQuery]
     );
 
-    const { data, fetchMore } = gqlQuery;
+    const { data, fetchMore, loading } = gqlQuery;
 
     const list = get(data, "fileManager.listFiles.data") || [];
     const [createFile] = useMutation(CREATE_FILE, { update: updateCacheAfterCreateFile });
@@ -382,6 +383,12 @@ function FileManagerView(props: FileManagerViewProps) {
                         />
 
                         <FileListWrapper data-testid={"fm-list-wrapper"}>
+                            {loading && (
+                                <CircularProgress
+                                    label={t`Loading Files...`}
+                                    style={{ opacity: 1 }}
+                                />
+                            )}
                             <Scrollbar
                                 onScrollFrame={scrollFrame =>
                                     refreshOnScroll({

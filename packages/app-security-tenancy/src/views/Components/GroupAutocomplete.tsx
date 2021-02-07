@@ -1,7 +1,7 @@
 import React from "react";
 import { AutoComplete } from "@webiny/ui/AutoComplete";
 import { LIST_GROUPS } from "../Groups/graphql";
-import { useQuery } from "react-apollo";
+import { useQuery } from "@apollo/react-hooks";
 
 export default function GroupAutocomplete(props) {
     const { data, loading } = useQuery(LIST_GROUPS);

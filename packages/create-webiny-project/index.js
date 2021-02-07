@@ -8,11 +8,12 @@ process.on("unhandledRejection", err => {
 });
 
 yargs
-    .usage("Usage: $0 <project-name> [options]")
+    .usage("Usage: create-webiny-project <project-name> [options]")
     .version(packageJson.version)
     .demandCommand(1)
     .help()
     .alias("help", "h")
+    .scriptName("create-webiny-project")
     .fail(function(msg, err) {
         if (msg) {
             console.log(msg);
