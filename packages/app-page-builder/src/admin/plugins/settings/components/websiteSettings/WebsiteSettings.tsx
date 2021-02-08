@@ -24,6 +24,16 @@ import {
 import { GET_SETTINGS as SETTINGS_QUERY } from "@webiny/app-page-builder/admin/hooks/usePageBuilderSettings";
 import { useCallback } from "react";
 
+import { css } from "emotion";
+
+const style = {
+    moveTrailingIcon: css({
+        ".rmwc-icon": {
+            top: "11px !important"
+        }
+    })
+};
+
 const WebsiteSettings = () => {
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
@@ -143,6 +153,7 @@ const WebsiteSettings = () => {
                                     <Cell span={12}>
                                         <Bind name={"pages.home"}>
                                             <PagesAutocomplete
+                                                className={style.moveTrailingIcon}
                                                 label={"Homepage"}
                                                 description={`To set a different page, start typing its title and select it from the dropdown menu. Note that the page must be published in order to appear.`}
                                                 trailingIcon={
@@ -160,6 +171,7 @@ const WebsiteSettings = () => {
                                     <Cell span={12}>
                                         <Bind name={"pages.notFound"}>
                                             <PagesAutocomplete
+                                                className={style.moveTrailingIcon}
                                                 label={"Not found (404) page"}
                                                 description={`To set a different page, start typing its title and select it from the dropdown menu. Note that the page must be published in order to appear.`}
                                                 trailingIcon={
