@@ -27,12 +27,18 @@ const PublishPageButton: React.FunctionComponent = () => {
             }
 
             // Update revisions
-            const pageFromCache = cloneDeep(
-                cache.readQuery({
-                    query: GET_PAGE,
-                    variables: { id: page.id }
-                })
-            );
+            let pageFromCache;
+            try {
+                pageFromCache = cloneDeep(
+                    cache.readQuery({
+                        query: GET_PAGE,
+                        variables: { id: page.id }
+                    })
+                );
+            } catch {
+                // This means page could not be found in the cache. Exiting...
+                return;
+            }
 
             const revisions = get(pageFromCache, "pageBuilder.getPage.data.revisions", []);
             revisions.forEach(r => {

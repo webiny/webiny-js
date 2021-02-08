@@ -277,4 +277,54 @@ describe("CRUD Test", () => {
             }
         });
     });
+
+    test("get latest page with parent ID", async () => {
+        await createCategory({
+            data: {
+                slug: `slug`,
+                name: `name`,
+                url: `/some-url/`,
+                layout: `layout`
+            }
+        });
+
+        let page = await createPage({ category: "slug" }).then(([res]) => {
+            return res.data.pageBuilder.createPage.data;
+        });
+
+        const [response] = await getPage({ id: page.pid });
+        expect(response).toMatchObject({
+            data: {
+                pageBuilder: {
+                    getPage: {
+                        data: {
+                            id: page.id,
+                            editor: "page-builder",
+                            createdOn: /^20.*/,
+                            createdBy: { displayName: "m", id: "mocked" }
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+    });
+
+    test("get page with an invalid ID", async () => {
+        const [response] = await getPage({ id: "invalid" });
+        expect(response).toEqual({
+            data: {
+                pageBuilder: {
+                    getPage: {
+                        data: null,
+                        error: {
+                            code: "NOT_FOUND",
+                            data: null,
+                            message: "Page not found."
+                        }
+                    }
+                }
+            }
+        });
+    });
 });

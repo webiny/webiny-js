@@ -74,6 +74,7 @@ const plugin: ContextPlugin<PbContext> = {
                         // We did this because of the public website pages which need to access the settings.
                         // It's possible we'll create another GraphQL field, made for this exact purpose.
                         // auth !== false && (await checkBasePermissions(context));
+
                         return context.pageBuilder.settings.dataLoaders.get.load({
                             PK: this.PK(options),
                             SK: this.SK
@@ -94,9 +95,19 @@ const plugin: ContextPlugin<PbContext> = {
                     async update(rawData, options) {
                         options?.auth !== false && (await checkBasePermissions(context));
 
-                        let previous = await this.get();
+                        let previous = await this.get(options);
                         if (!previous) {
                             previous = await new DefaultSettingsModel().populate({}).toJSON();
+
+                            let tenant = undefined,
+                                locale = undefined;
+                            if (options?.tenant !== false) {
+                                tenant = options?.tenant || security.getTenant().id;
+                            }
+                            if (options?.locale !== false) {
+                                locale = options?.locale || i18nContent.getLocale().code;
+                            }
+
                             await db.create({
                                 ...defaults.db,
                                 data: {
@@ -105,8 +116,8 @@ const plugin: ContextPlugin<PbContext> = {
                                     SK: this.SK,
                                     TYPE,
                                     type: "default",
-                                    tenant: security.getTenant().id,
-                                    locale: i18nContent.getLocale().code
+                                    tenant,
+                                    locale
                                 }
                             });
                         }
@@ -120,10 +131,10 @@ const plugin: ContextPlugin<PbContext> = {
 
                         // Before continuing, let's check for differences that matter.
 
-                        // 1. Check differences in `pages` property (`home`, `notFound`, `error`). If there are
+                        // 1. Check differences in `pages` property (`home`, `notFound`). If there are
                         // differences, check if the pages can be set as the new `specialType` page, and then,
                         // after save, make sure to trigger events, on which other plugins can do their tasks.
-                        const specialTypes = ["home", "error", "notFound"];
+                        const specialTypes = ["home", "notFound"];
 
                         const changedPages = [];
                         for (let i = 0; i < specialTypes.length; i++) {

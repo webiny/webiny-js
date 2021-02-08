@@ -1,4 +1,4 @@
-import { withFields, string, fields, onSet } from "@commodo/fields";
+import { withFields, string, fields, boolean, onSet } from "@commodo/fields";
 import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
 import Error from "@webiny/error";
@@ -6,6 +6,11 @@ import normalizePath from "./normalizePath";
 
 export const CreateDataModel = withFields({
     category: string({ validation: validation.create("required,maxLength:100") })
+})();
+
+export const VisibilityModel = withFields({
+    get: fields({ instanceOf: withFields({ latest: boolean(), published: boolean() })() }),
+    list: fields({ instanceOf: withFields({ latest: boolean(), published: boolean() })() })
 })();
 
 export const UpdateDataModel = withFields({
@@ -17,6 +22,7 @@ export const UpdateDataModel = withFields({
             validation: validation.create("minLength:2,maxLength:100")
         })
     ),
+    visibility: fields({ instanceOf: VisibilityModel }),
     category: string({ validation: validation.create("maxLength:100") }),
     content: object()
 })();

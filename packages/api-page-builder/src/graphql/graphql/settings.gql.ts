@@ -60,7 +60,6 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
             type PbSettingsPages {
                 home: ID
                 notFound: ID
-                error: ID
             }
 
             type PbDefaultPage {
@@ -108,7 +107,6 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
             input PbSettingsPagesInput {
                 home: ID
                 notFound: ID
-                error: ID
             }
 
             extend type PbQuery {

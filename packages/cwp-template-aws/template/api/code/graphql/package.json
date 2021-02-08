@@ -12,6 +12,7 @@
     "@webiny/api-i18n": "latest",
     "@webiny/api-i18n-content": "latest",
     "@webiny/api-page-builder": "latest",
+    "@webiny/api-prerendering-service": "latest",
     "@webiny/handler-db": "latest",
     "@webiny/db-dynamodb": "latest",
     "@webiny/api-plugin-elastic-search-client": "latest",
