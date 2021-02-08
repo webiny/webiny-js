@@ -98,11 +98,19 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                         )
                     );
 
-                    // 6. Mark the Page Builder app as installed.
+                    // 6(a). Mark the Page Builder app as installed.
                     const settings = await context.pageBuilder.settings.install.get();
                     if (!settings?.installed) {
                         await context.pageBuilder.settings.install.update({
                             installed: true
+                        });
+                    }
+
+                    // 6(b). Save site "name" in Page Builder default settings.
+                    const defaultSettings = await context.pageBuilder.settings.default.get();
+                    if (!defaultSettings || !defaultSettings.name) {
+                        await context.pageBuilder.settings.default.update({
+                            name: args.data.name
                         });
                     }
 

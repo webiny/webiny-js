@@ -1,7 +1,13 @@
 import useGqlHandler from "./useGqlHandler";
 
 describe("Install Test", () => {
-    const { isInstalled, install, listCategories, deleteElasticSearchIndex } = useGqlHandler();
+    const {
+        isInstalled,
+        install,
+        listCategories,
+        getSettings,
+        deleteElasticSearchIndex
+    } = useGqlHandler();
 
     beforeEach(async () => {
         // Let's ensure installation works without any indexes in the ElasticSearch.
@@ -70,7 +76,7 @@ describe("Install Test", () => {
 
         await install({
             data: {
-                name: "My Site"
+                name: "My Website"
             }
         }).then(([res]) =>
             expect(res).toEqual({
@@ -117,6 +123,21 @@ describe("Install Test", () => {
                                 }
                             ],
                             error: null
+                        }
+                    }
+                }
+            })
+        );
+
+        // 2. Installation must set the "Website" name.
+        await getSettings().then(([res]) =>
+            expect(res).toMatchObject({
+                data: {
+                    pageBuilder: {
+                        getSettings: {
+                            data: {
+                                name: "My Website"
+                            }
                         }
                     }
                 }
