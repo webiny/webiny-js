@@ -72,20 +72,20 @@ jobs:
       - name: Install dependencies
         run: yarn --immutable
 
-      - name: Build packages
-        run: yarn build
+      - name: Start Verdaccio local server
+        run: yarn pm2 start "yarn verdaccio"
 
       - name: Configure NPM to use local registry
         run: npm config set registry http://localhost:4873
-
-      - name: Start Verdaccio local server
-        run: pm2 start verdaccio
 
       - name: Set git email
         run: git config --global user.email "info@webiny.com"
 
       - name: Set git username
         run: git config --global user.name "webiny"
+
+      - name: Build packages (move up)
+        run: yarn build
 
       - name: Version packages (no push, no changelog)
         run: yarn lerna version --conventional-prerelease --force-publish --preid beta --no-push --no-changelog
