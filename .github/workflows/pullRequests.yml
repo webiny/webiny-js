@@ -58,3 +58,37 @@ jobs:
 
       - name: Run tests
         run: yarn test
+
+  cwp-test:
+    name: Test "create-webiny-project"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: "12"
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - name: Build packages
+        run: yarn build
+
+      - name: Configure NPM to use local registry
+        run: npm config set registry http://localhost:4873
+
+      - name: Start Verdaccio local server
+        run: pm2 start verdaccio
+
+      - name: Version packages (no push, no changelog)
+        run: yarn lerna version --conventional-prerelease --force-publish --preid beta --no-push --no-changelog
+
+      - name: Release to Verdaccio
+        run: yarn lerna publish from-package --force-publish --dist-tag beta --registry="http://localhost:4873" --no-verify-access --no-verify-registry
+
+      - name: Create a new Webiny project
+        run: npx create-webiny-project@beta test-project --tag beta --no-interactive --template-options '{"region":"eu-central-1","vpc":false}'
+
+      - name: Execute some tests
+        run: echo 'TODO'
