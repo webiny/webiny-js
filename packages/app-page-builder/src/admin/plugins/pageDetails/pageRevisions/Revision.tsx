@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React from "react";
 import { css } from "emotion";
 import TimeAgo from "timeago-react";
 import {
@@ -29,7 +29,7 @@ import { ReactComponent as UnpublishIcon } from "@webiny/app-page-builder/admin/
 import { ReactComponent as DeleteIcon } from "@webiny/app-page-builder/admin/assets/delete.svg";
 import { ReactComponent as PreviewIcon } from "@webiny/app-page-builder/admin/assets/visibility.svg";
 import { PbPageData, PbPageRevision } from "@webiny/app-page-builder/types";
-import { useSecurity } from "@webiny/app-security";
+import usePermission from "../../../../hooks/usePermission";
 
 type RevisionProps = {
     revision: PbPageRevision;
@@ -90,38 +90,7 @@ const Revision = ({ revision, page }: RevisionProps) => {
         refreshSiteStatus
     );
 
-    const { identity } = useSecurity();
-    const pbPagePermission = useMemo(() => {
-        return identity.getPermission("pb.page");
-    }, []);
-
-    const canDelete = useCallback(item => {
-        if (pbPagePermission.own) {
-            return item.createdBy.id === identity.login;
-        }
-
-        if (typeof pbPagePermission.rwd === "string") {
-            return pbPagePermission.rwd.includes("d");
-        }
-
-        return true;
-    }, []);
-
-    const canPublish = useCallback(item => {
-        if (pbPagePermission.own) {
-            return item.createdBy.id === identity.login;
-        }
-        // TODO: "pw" can be null
-        if (!pbPagePermission.pw) {
-            return false;
-        }
-
-        if (typeof pbPagePermission.pw === "string") {
-            return pbPagePermission.pw.includes("p");
-        }
-
-        return true;
-    }, []);
+    const { canPublish, canUnpublish, canDelete } = usePermission();
 
     return (
         <ConfirmationDialog
@@ -162,7 +131,7 @@ const Revision = ({ revision, page }: RevisionProps) => {
                                 </MenuItem>
                             )}
 
-                            {revision.status !== "published" && canPublish(page) && (
+                            {revision.status !== "published" && canPublish() && (
                                 <MenuItem onClick={() => publishRevision(revision)}>
                                     <ListItemGraphic>
                                         <Icon icon={<PublishIcon />} />
@@ -171,7 +140,7 @@ const Revision = ({ revision, page }: RevisionProps) => {
                                 </MenuItem>
                             )}
 
-                            {revision.status === "published" && (
+                            {revision.status === "published" && canUnpublish() && (
                                 <MenuItem onClick={() => unpublishRevision(revision)}>
                                     <ListItemGraphic>
                                         <Icon icon={<UnpublishIcon />} />

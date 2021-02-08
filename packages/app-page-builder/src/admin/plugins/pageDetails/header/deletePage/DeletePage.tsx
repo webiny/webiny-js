@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
@@ -10,7 +10,7 @@ import { ReactComponent as DeleteIcon } from "@webiny/app-page-builder/admin/ass
 import { DELETE_PAGE, LIST_PAGES } from "@webiny/app-page-builder/admin/graphql/pages";
 import { i18n } from "@webiny/app/i18n";
 import cloneDeep from "lodash/cloneDeep";
-import { useSecurity } from "@webiny/app-security";
+import usePermission from "../../../../../hooks/usePermission";
 
 const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/delete-page");
 
@@ -20,23 +20,7 @@ const DeletePage = props => {
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
     const { showDialog } = useDialog();
-    const { identity } = useSecurity();
-
-    const pbPagePermission = useMemo(() => {
-        return identity.getPermission("pb.page");
-    }, []);
-
-    const canDelete = useCallback(item => {
-        if (pbPagePermission.own) {
-            return item.createdBy.id === identity.login;
-        }
-
-        if (typeof pbPagePermission.rwd === "string") {
-            return pbPagePermission.rwd.includes("d");
-        }
-
-        return true;
-    }, []);
+    const { canDelete } = usePermission();
 
     const { showConfirmation } = useConfirmationDialog({
         title: t`Delete page`,
