@@ -171,7 +171,7 @@ export const graphQLHandlerFactory = (
                             body,
                             headers: {
                                 ...DEFAULT_HEADERS,
-                                "Cache-Control": "no-store",
+                                "Cache-Control": "no-store"
                             }
                         });
                     }

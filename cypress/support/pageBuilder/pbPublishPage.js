@@ -1,7 +1,7 @@
 import { GraphQLClient } from "graphql-request";
 import { PUBLISH_PAGE } from "./graphql";
 
-Cypress.Commands.add("pbPublishPage", (variables) => {
+Cypress.Commands.add("pbPublishPage", variables => {
     cy.login().then(user => {
         const client = new GraphQLClient(Cypress.env("GRAPHQL_API_URL"), {
             headers: {

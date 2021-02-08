@@ -15,7 +15,7 @@ export const CREATE_PAGE = gql`
 export const UPDATE_PAGE = gql`
     mutation UpdatePage($id: ID!, $data: PbUpdatePageInput!) {
         pageBuilder {
-            updatePage(id :$id, data: $data) {
+            updatePage(id: $id, data: $data) {
                 data {
                     id
                 }
@@ -24,11 +24,10 @@ export const UPDATE_PAGE = gql`
     }
 `;
 
-
 export const PUBLISH_PAGE = gql`
     mutation PublishPage($id: ID!) {
         pageBuilder {
-            publishPage(id :$id) {
+            publishPage(id: $id) {
                 data {
                     id
                 }
