@@ -81,6 +81,12 @@ jobs:
       - name: Start Verdaccio local server
         run: pm2 start verdaccio
 
+      - name: Set git email
+        run: git config --global user.email "info@webiny.com"
+
+      - name: Set git username
+        run: git config --global user.name "webiny"
+
       - name: Version packages (no push, no changelog)
         run: yarn lerna version --conventional-prerelease --force-publish --preid beta --no-push --no-changelog
 
