@@ -1074,6 +1074,15 @@ export interface CmsContentModelContext {
         list: () => Promise<CmsContentModel[]>;
     };
     /**
+     * A function defining usage of a method with authenticating the user but not throwing an error.
+     */
+    silentAuth: () => {
+        /**
+         * Get all content models.
+         */
+        list: () => Promise<CmsContentModel[]>;
+    };
+    /**
      * Get a single content model.
      */
     get: (modelId: string) => Promise<CmsContentModel | null>;
