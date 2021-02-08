@@ -2,13 +2,10 @@ name: Pull Request (v5)
 
 on:
   pull_request:
-    branches: [v5]
+    branches: [next]
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  WEBINY_TRACKING_PREFIX: ${{ secrets.WEBINY_TRACKING_PREFIX }}
 
 jobs:
   initial-checks:
