@@ -26,11 +26,7 @@ import path from "path";
 import normalizePath from "./pages/normalizePath";
 import { compressContent, extractContent } from "./pages/contentCompression";
 import { CreateDataModel, UpdateSettingsModel, UpdateDataModel } from "./pages/models";
-import {
-    getESLatestPageData,
-    getESPublishedPageData,
-    getESUpdateLatestPageData
-} from "./pages/esPageData";
+import { getESLatestPageData, getESPublishedPageData } from "./pages/esPageData";
 
 import { Args as FlushArgs } from "@webiny/api-prerendering-service/flush/types";
 

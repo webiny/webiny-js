@@ -9,6 +9,7 @@ describe("Menus Module", () => {
 
     it(`Step 1: create a pages list menu item in the "Main Menu" menu`, () => {
         for (let i = 0; i < 3; i++) {
+            // eslint-disable-next-line
             cy.pbCreatePage({ category: "static" }).then(page => {
                 cy.pbUpdatePage({
                     id: page.id,

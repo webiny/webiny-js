@@ -2,7 +2,6 @@ import useGqlHandler from "./useGqlHandler";
 
 describe("page visibility test", () => {
     const {
-        getPage,
         createCategory,
         createPage,
         updatePage,
