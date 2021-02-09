@@ -67,6 +67,8 @@ jobs:
         run: pwd
 
       - uses: actions/checkout@v2
+        with:
+          path: dev-repo
 
       - uses: actions/setup-node@v2-beta
         with:
