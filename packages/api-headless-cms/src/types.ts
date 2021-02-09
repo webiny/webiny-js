@@ -92,6 +92,7 @@ interface CmsContentModelFieldRenderer {
  * A definition for content model field. This type exists on the app side as well.
  *
  * @category ContentModelField
+ * @category Database model
  */
 export interface CmsContentModelField {
     /**
@@ -128,29 +129,38 @@ export interface CmsContentModelField {
     renderer: CmsContentModelFieldRenderer;
     /**
      * List of validations for the field
+     *
+     * @default []
      */
     validation: CmsContentModelFieldValidation[];
     /**
      * List of validations for the list of values, when a field is set to accept a list of values.
      * These validations will be applied to the entire list, and `validation` (see above) will be applied
      * to each individual value in the list.
+     *
+     * @default []
      */
     listValidation: CmsContentModelFieldValidation[];
     /**
      * Is this a multiple values field?
+     *
      */
     multipleValues: boolean;
     /**
      * Any user defined settings.
+     *
+     * @default {}
      */
     settings?: { [key: string]: any };
 }
 
 /**
+ * Arguments for the field validator validate method.
+ *
  * @category ContentModelField
  * @category FieldValidation
  */
-export interface CmsModelFieldValidatorValidateParams {
+export interface CmsModelFieldValidatorValidateArgs {
     /**
      * A value to be validated.
      */
@@ -190,10 +200,12 @@ export interface CmsModelFieldValidatorPlugin extends Plugin {
         /**
          * Validation method.
          */
-        validate(params: CmsModelFieldValidatorValidateParams): Promise<boolean>;
+        validate(params: CmsModelFieldValidatorValidateArgs): Promise<boolean>;
     };
 }
 /**
+ * A pattern validator for the content entry field value.
+ *
  * @category Plugin
  * @category ContentModelField
  * @category FieldValidation
@@ -249,6 +261,7 @@ export interface LockedField {
  * Content model defining an entry.
  *
  * @category Database model
+ * @category ContentModel
  */
 export interface CmsContentModel {
     /**
@@ -324,6 +337,8 @@ export interface CmsModelFieldDefinition {
 
 /**
  * @category Plugin
+ * @category ContentModelField
+ * @category GraphQL
  */
 export interface CmsModelFieldToGraphQLPlugin extends Plugin {
     /**
@@ -543,6 +558,7 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
  * Check for content model locked field.
  * A custom plugin definable by the user.
  *
+ * @category ContentModel
  * @category Plugin
  */
 export interface CmsModelLockedFieldPlugin extends Plugin {
@@ -592,7 +608,7 @@ export interface CreatedBy {
 }
 
 /**
- * Representation of settings database model
+ * Representation of settings database model.
  *
  * @category Database model
  */
@@ -645,7 +661,7 @@ export interface CmsSettingsContext {
 }
 
 /**
- * A GraphQL args.data parameter received when creating content model group
+ * A GraphQL args.data parameter received when creating content model group.
  *
  * @category ContentModelGroup
  * @category GraphQL args
@@ -657,7 +673,7 @@ export interface CmsContentModelGroupCreateInput {
     icon: string;
 }
 /**
- * A GraphQL args.data parameter received when updating content model group
+ * A GraphQL args.data parameter received when updating content model group.
  *
  * @category ContentModelGroup
  * @category GraphQL args
@@ -764,7 +780,7 @@ export interface CmsContentModelGroupContext {
 }
 
 /**
- * Definition for content model field validator
+ * Definition for content model field validator.
  *
  * @category ContentModelField
  * @category FieldValidation
@@ -1058,6 +1074,15 @@ export interface CmsContentModelContext {
         list: () => Promise<CmsContentModel[]>;
     };
     /**
+     * A function defining usage of a method with authenticating the user but not throwing an error.
+     */
+    silentAuth: () => {
+        /**
+         * Get all content models.
+         */
+        list: () => Promise<CmsContentModel[]>;
+    };
+    /**
      * Get a single content model.
      */
     get: (modelId: string) => Promise<CmsContentModel | null>;
@@ -1155,7 +1180,7 @@ export interface CmsContentEntryListArgs {
 }
 
 /**
- * List entries options.
+ * List entries crud options.
  *
  * @category ContentEntry
  */
@@ -1185,7 +1210,7 @@ export interface CmsContentEntryMeta {
 }
 
 /**
- * Content entry in the context.
+ * Content entry crud methods in the context.
  *
  * @category Context
  * @category ContentEntry
@@ -1280,13 +1305,30 @@ export interface CmsContentEntryContext {
 }
 
 /**
+ * A cms part of the context that has all the crud operations.
+ *
  * @category Context
  */
 interface CmsCrudContextObject {
+    /**
+     * Settings crud methods.
+     */
     settings: CmsSettingsContext;
+    /**
+     * Content model group crud methods.
+     */
     groups: CmsContentModelGroupContext;
+    /**
+     * Content model crud methods.
+     */
     models: CmsContentModelContext;
+    /**
+     * Fetch the content entry manager. It calls content entry methods internally, with given model as the target.
+     */
     getModel: (modelId: string) => Promise<CmsContentModelManager>;
+    /**
+     * Content entry crud methods.
+     */
     entries: CmsContentEntryContext;
 }
 
@@ -1547,11 +1589,55 @@ export interface CmsContentIndexEntry extends CmsContentEntry {
 }
 
 /**
+ * Arguments for the method that is transforming content entry in its original form to the one we are storing to the Elasticsearch.
+ *
+ * @category Elasticsearch
+ * @category ContentEntry
+ */
+interface CmsModelFieldToElasticsearchToArgs {
+    fieldTypePlugin: CmsModelFieldToGraphQLPlugin;
+    field: CmsContentModelField;
+    context: CmsContext;
+    model: CmsContentModel;
+    /**
+     * This is the entry that will go into the index
+     * It is exact copy of storageEntry at the beginning of the toIndex loop
+     * Always return top level properties that you want to merge together, eg. {values: {...toIndexEntry.values, ...myValues}}
+     */
+    toIndexEntry: CmsContentIndexEntry;
+    /**
+     * This is the entry in the same form it gets stored to DB (processed, possibly compressed, etc.)
+     */
+    storageEntry: CmsContentEntry;
+    /**
+     * This is the entry in the original form (the way it comes into the API)
+     */
+    originalEntry: CmsContentEntry;
+}
+
+/**
+ * Arguments for the method that is transforming content entry from Elasticsearch into the original one.
+ *
+ * @category Elasticsearch
+ * @category ContentEntry
+ */
+interface CmsModelFieldToElasticsearchFromArgs {
+    context: CmsContext;
+    model: CmsContentModel;
+    fieldTypePlugin: CmsModelFieldToGraphQLPlugin;
+    field: CmsContentModelField;
+    /**
+     * The entry that is received from Elasticsearch.
+     */
+    entry: CmsContentIndexEntry;
+}
+/**
  * A plugin defining transformation of entry for Elasticsearch.
  *
  * @category Plugin
  * @category ContentModelField
  * @category ContentEntry
+ * @category Elasticsearch
  */
 export interface CmsModelFieldToElasticsearchPlugin extends Plugin {
     /**
@@ -1593,20 +1679,7 @@ export interface CmsModelFieldToElasticsearchPlugin extends Plugin {
      * }
      * ```
      */
-    toIndex?(params: {
-        fieldTypePlugin: CmsModelFieldToGraphQLPlugin;
-        field: CmsContentModelField;
-        context: CmsContext;
-        model: CmsContentModel;
-        // This is the entry that will go into the index
-        // It is exact copy of storageEntry at the beginning of the toIndex loop
-        // Always return top level properties that you want to merge together, eg. {values: {...toIndexEntry.values, ...myValues}}
-        toIndexEntry: CmsContentIndexEntry;
-        // This is the entry in the same form it gets stored to DB (processed, possibly compressed, etc.)
-        storageEntry: CmsContentEntry;
-        // This is the entry in the original form (the way it comes into the API)
-        originalEntry: CmsContentEntry;
-    }): Partial<CmsContentIndexEntry>;
+    toIndex?(params: CmsModelFieldToElasticsearchToArgs): Partial<CmsContentIndexEntry>;
     /**
      * This is meant to revert a transformation done in the `toIndex` method. Again, you can transform any field but try to keep things separated. It returns `Partial<CmsContentIndexEntryType>`. Always return a top-level property of the entry since it is merged via spread operator.
      *
@@ -1624,13 +1697,7 @@ export interface CmsModelFieldToElasticsearchPlugin extends Plugin {
      * }
      * ```
      */
-    fromIndex?(params: {
-        context: CmsContext;
-        model: CmsContentModel;
-        fieldTypePlugin: CmsModelFieldToGraphQLPlugin;
-        field: CmsContentModelField;
-        entry: CmsContentIndexEntry;
-    }): Partial<CmsContentIndexEntry>;
+    fromIndex?(params: CmsModelFieldToElasticsearchFromArgs): Partial<CmsContentIndexEntry>;
 }
 
 /**
@@ -1640,11 +1707,15 @@ export interface CmsModelFieldToElasticsearchPlugin extends Plugin {
  *
  * @category Plugin
  * @category ContentModelField
+ * @category Storage
  */
 export interface CmsModelFieldToStoragePluginToStorageArgs {
     field: CmsContentModelField;
     model: CmsContentModel;
     context: CmsContext;
+    /**
+     * The value to be transformed to storage type from the original one.
+     */
     value: any;
 }
 
@@ -1655,11 +1726,15 @@ export interface CmsModelFieldToStoragePluginToStorageArgs {
  *
  * @category Plugin
  * @category ContentModelField
+ * @category Storage
  */
 export interface CmsModelFieldToStoragePluginFromStorageArgs {
     field: CmsContentModelField;
     model: CmsContentModel;
     context: CmsContext;
+    /**
+     * The value to be transformed from storage type into the original one.
+     */
     value: any;
 }
 
@@ -1669,6 +1744,7 @@ export interface CmsModelFieldToStoragePluginFromStorageArgs {
  * @category Plugin
  * @category ContentModelField
  * @category ContentEntry
+ * @category Storage
  */
 export interface CmsModelFieldToStoragePlugin extends Plugin {
     /**
@@ -1708,8 +1784,6 @@ export interface CmsModelFieldToStoragePlugin extends Plugin {
 /**
  * @category LifecycleHook
  * @category ContentModel
- *
- * @hidden
  */
 export interface CmsContentModelHookPluginArgs {
     model: CmsContentModel;
@@ -1718,31 +1792,47 @@ export interface CmsContentModelHookPluginArgs {
 /**
  * @category LifecycleHook
  * @category ContentModel
- *
- * @hidden
  */
 export interface CmsContentModelUpdateHookPluginArgs extends CmsContentModelHookPluginArgs {
     data: Partial<CmsContentModel>;
 }
 /**
+ * A plugin type that defines lifecycle hooks for content model.
+ *
  * @category Plugin
  * @category ContentModel
  * @category LifecycleHook
  */
 export interface CmsContentModelHookPlugin extends Plugin {
     type: "content-model-hook";
+    /**
+     * A hook triggered before the content model is created.
+     */
     beforeCreate?: (args: CmsContentModelHookPluginArgs) => void;
+    /**
+     * A hook triggered after the content model is created.
+     */
     afterCreate?: (args: CmsContentModelHookPluginArgs) => void;
+    /**
+     * A hook triggered before the content model is updated.
+     */
     beforeUpdate?: (args: CmsContentModelUpdateHookPluginArgs) => void;
+    /**
+     * A hook triggered after the content model is updated.
+     */
     afterUpdate?: (args: CmsContentModelHookPluginArgs) => void;
+    /**
+     * A hook triggered before the content model is deleted.
+     */
     beforeDelete?: (args: CmsContentModelHookPluginArgs) => void;
+    /**
+     * A hook triggered after the content model is deleted.
+     */
     afterDelete?: (args: CmsContentModelHookPluginArgs) => void;
 }
 /**
  * @category ContentEntry
  * @category LifecycleHook
- *
- * @hidden
  */
 export interface CmsContentEntryHookPluginArgs {
     model: CmsContentModel;
@@ -1750,7 +1840,7 @@ export interface CmsContentEntryHookPluginArgs {
     context: CmsContext;
 }
 /**
- * A plugin that defines lifecycle hooks for content entry.
+ * A plugin type that defines lifecycle hooks for content entry.
  *
  * @category Plugin
  * @category ContentEntry

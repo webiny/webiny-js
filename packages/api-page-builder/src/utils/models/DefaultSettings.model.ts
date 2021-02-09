@@ -49,8 +49,7 @@ export default withFields({
         value: {},
         instanceOf: withFields({
             home: onSet(extractPid)(string()),
-            notFound: onSet(extractPid)(string()),
-            error: onSet(extractPid)(string())
+            notFound: onSet(extractPid)(string())
         })()
     })
 })();

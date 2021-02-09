@@ -32,8 +32,10 @@ interface ParsedBody {
 const DEFAULT_HEADERS = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "*",
-    "Access-Control-Allow-Methods": "OPTIONS,POST"
+    "Access-Control-Allow-Methods": "OPTIONS,POST",
+    "Content-Type": "application/json"
 };
+
 const respond = (http, result: unknown) => {
     return http.response({
         body: JSON.stringify(result),
@@ -169,8 +171,7 @@ export const graphQLHandlerFactory = (
                             body,
                             headers: {
                                 ...DEFAULT_HEADERS,
-                                "Cache-Control": "no-store",
-                                "Content-Type": "text/json"
+                                "Cache-Control": "no-store"
                             }
                         });
                     }

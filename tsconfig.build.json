@@ -98,8 +98,6 @@
       "@webiny/db-dynamodb": ["./packages/db-dynamodb/src"],
       "@webiny/graphql/*": ["./packages/graphql/src/*"],
       "@webiny/graphql": ["./packages/graphql/src"],
-      "@webiny/graphql-client/*": ["./packages/graphql-client/src/*"],
-      "@webiny/graphql-client": ["./packages/graphql-client/src"],
       "@webiny/handler/*": ["./packages/handler/src/*"],
       "@webiny/handler": ["./packages/handler/src"],
       "@webiny/handler-apollo-gateway": ["./packages/handler-apollo-gateway/src"],
@@ -133,11 +131,10 @@
       "@webiny/storybook-utils/*": ["./packages/storybook-utils/src/*"],
       "@webiny/react-router": ["./packages/react-router/src"],
       "@webiny/react-router/*": ["./packages/react-router/src/*"],
-      "@webiny/react-graphql-client": ["./packages/react-graphql-client/src"],
-      "@webiny/react-graphql-client/*": ["./packages/react-graphql-client/src/*"],
       "@webiny/validation": ["./packages/validation/src"],
       "@webiny/validation/*": ["./packages/validation/src/*"],
-      "@webiny/ui/*": ["./packages/ui/src/*"]
+      "@webiny/ui/*": ["./packages/ui/src/*"],
+      "@webiny/cli-plugin-scaffold/*": ["./packages/cli-plugin-scaffold/src/*"]
     },
     "typeRoots": ["./typings", "./node_modules/@types", "@types/testing-library__cypress"]
   },
@@ -146,7 +143,9 @@
     "dist",
     "./scripts/**",
     "**jest**",
-    "./packages/cli**",
+    "./packages/cli-plugin-workspaces",
+    "./packages/cli-plugin-deploy-pulumi",
+    "./packages/cli",
     "./packages/create-webiny-project",
     "./packages/cwp-template-aws/**",
     "./packages/project-utils",

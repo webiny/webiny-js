@@ -18,16 +18,10 @@ export type Configuration = {
     meta?: Record<string, any>;
 };
 
-export type Tag = { key: string; value?: string };
-
 export type Args = {
-    queue?: boolean;
     configuration?: Configuration;
     url?: string;
     path?: string;
-
-    // Can only be used when adding a new rendering queue job.
-    tag?: Tag;
 };
 
 export type HandlerArgs = Args | Args[];

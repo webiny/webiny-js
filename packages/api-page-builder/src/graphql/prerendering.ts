@@ -1,7 +1,6 @@
 import { MenuHookPlugin, PageHookPlugin, SettingsHookPlugin } from "@webiny/api-page-builder/types";
 
 const NOT_FOUND_FOLDER = "_NOT_FOUND_PAGE_";
-const ERROR_FOLDER = "_ERROR_PAGE_";
 
 export default [
     {
@@ -20,7 +19,7 @@ export default [
                 })
             );
 
-            // Note: special pages (404/home/error) cannot be unpublished, that's why
+            // Note: special pages (404 / home) cannot be unpublished, that's why
             // there is no special handling in regards to that here.
             await Promise.all(promises);
         }
@@ -48,7 +47,7 @@ export default [
                 });
             }
 
-            // Note: special pages (404/home/error) cannot be deleted, that's why
+            // Note: special pages (404 / home) cannot be deleted, that's why
             // there is no special handling in regards to that here.
         }
     } as PageHookPlugin,
@@ -67,23 +66,6 @@ export default [
             if (settings?.pages?.home === page.pid) {
                 promises.push(
                     context.pageBuilder.pages.prerendering.render({ paths: [{ path: "/" }] })
-                );
-            }
-
-            // If we just published a page that is set as current error page, let's do another
-            // rerender and save that into the ERROR_FOLDER.
-            if (settings?.pages?.error === page.pid) {
-                promises.push(
-                    context.pageBuilder.pages.prerendering.render({
-                        paths: [
-                            {
-                                path: page.path,
-                                configuration: {
-                                    storage: { folder: ERROR_FOLDER }
-                                }
-                            }
-                        ]
-                    })
                 );
             }
 
@@ -138,25 +120,13 @@ export default [
                 tags: [{ tag: { key: "pb-page" } }]
             });
 
-            // If a change on pages settings (home, error, notFound) has been made, let's rerender accordingly.
+            // If a change on pages settings (home, notFound) has been made, let's rerender accordingly.
             for (let i = 0; i < meta.diff.pages.length; i++) {
                 const [type, , , page] = meta.diff.pages[i];
                 switch (type) {
                     case "home":
                         await context.pageBuilder.pages.prerendering.render({
                             paths: [{ path: "/" }]
-                        });
-                        break;
-                    case "error":
-                        await context.pageBuilder.pages.prerendering.render({
-                            paths: [
-                                {
-                                    path: page.path,
-                                    configuration: {
-                                        storage: { folder: ERROR_FOLDER }
-                                    }
-                                }
-                            ]
                         });
                         break;
                     case "notFound":

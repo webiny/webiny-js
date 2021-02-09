@@ -82,14 +82,20 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     // 5. Create sample pages.
                     const { pages } = context.pageBuilder;
 
-                    // Home page.
                     const initialPages = [
                         { title: "Welcome to Webiny", path: "/welcome-to-webiny" },
-                        { title: "Not Found", path: "/not-found" },
-                        { title: "Error", path: "/error" }
+                        {
+                            title: "Not Found",
+                            path: "/not-found",
+                            // Do not show the page in page lists, only direct get is possible.
+                            visibility: {
+                                get: { latest: true, published: true },
+                                list: { latest: false, published: false }
+                            }
+                        }
                     ];
 
-                    await Promise.all(
+                    const [homePage, notFoundPage] = await Promise.all(
                         initialPages.map(data =>
                             pages
                                 .create(staticCategory.slug)
@@ -98,19 +104,19 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                         )
                     );
 
-                    // 6(a). Mark the Page Builder app as installed.
+                    await context.pageBuilder.settings.default.update({
+                        name: args.data.name,
+                        pages: {
+                            home: homePage.pid,
+                            notFound: notFoundPage.pid
+                        }
+                    });
+
+                    // 6. Mark the Page Builder app as installed.
                     const settings = await context.pageBuilder.settings.install.get();
                     if (!settings?.installed) {
                         await context.pageBuilder.settings.install.update({
                             installed: true
-                        });
-                    }
-
-                    // 6(b). Save site "name" in Page Builder default settings.
-                    const defaultSettings = await context.pageBuilder.settings.default.get();
-                    if (!defaultSettings || !defaultSettings.name) {
-                        await context.pageBuilder.settings.default.update({
-                            name: args.data.name
                         });
                     }
 

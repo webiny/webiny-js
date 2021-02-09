@@ -19,7 +19,6 @@ const DATA_FIELDS = /* GraphQL */ `
             }
             pages {
                 home
-                error
                 notFound
             }
             social {
@@ -78,7 +77,7 @@ export function usePageBuilderSettings() {
         return url + "?preview=" + encodeURIComponent(page.id);
     };
 
-    const isSpecialPage = (page, type: "home" | "error" | "notFound") => {
+    const isSpecialPage = (page, type: "home" | "notFound") => {
         if (!settings.pages?.[type]) {
             return false;
         }

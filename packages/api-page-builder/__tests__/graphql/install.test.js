@@ -5,8 +5,13 @@ describe("Install Test", () => {
         isInstalled,
         install,
         listCategories,
-        getSettings,
-        deleteElasticSearchIndex
+        deleteElasticSearchIndex,
+        listPages,
+        listPublishedPages,
+        getPage,
+        getPublishedPage,
+        until,
+        getSettings
     } = useGqlHandler();
 
     beforeEach(async () => {
@@ -129,7 +134,36 @@ describe("Install Test", () => {
             })
         );
 
-        // 2. Installation must set the "Website" name.
+        // 2. Only homepage should be visible in published and latest pages.
+        await until(listPages, ([res]) => res.data.pageBuilder.listPages.data.length === 1).then(
+            ([res]) => {
+                expect(res.data.pageBuilder.listPages.data[0].title).toBe("Welcome to Webiny");
+                expect(res.data.pageBuilder.listPages.data[0].status).toBe("published");
+            }
+        );
+
+        await until(listPublishedPages, ([res]) => {
+            const { data } = res.data.pageBuilder.listPublishedPages;
+            return data.length === 1 && data[0].status === "published";
+        }).then(([res]) => {
+            expect(res.data.pageBuilder.listPublishedPages.data[0].title).toBe("Welcome to Webiny");
+            expect(res.data.pageBuilder.listPublishedPages.data[0].status).toBe("published");
+        });
+
+        // 3. Let's get the ID of the not-found page and try to get it directly.
+        const settings = await getSettings().then(([res]) => res.data.pageBuilder.getSettings.data);
+
+        await getPage({ id: settings.pages.notFound }).then(([res]) => {
+            expect(res.data.pageBuilder.getPage.data.title).toBe("Not Found");
+            expect(res.data.pageBuilder.getPage.data.status).toBe("published");
+        });
+
+        await getPublishedPage({ id: settings.pages.notFound }).then(([res]) => {
+            expect(res.data.pageBuilder.getPublishedPage.data.title).toBe("Not Found");
+            expect(res.data.pageBuilder.getPublishedPage.data.status).toBe("published");
+        });
+
+        // 4. Installation must set the "Website" name.
         await getSettings().then(([res]) =>
             expect(res).toMatchObject({
                 data: {

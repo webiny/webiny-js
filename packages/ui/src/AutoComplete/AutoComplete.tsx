@@ -210,11 +210,12 @@ class AutoComplete extends React.Component<Props, State> {
                         <div>
                             <Input
                                 {...getInputProps({
+                                    // This prop is above `otherInputProps` since it can be overridden by the user.
+                                    trailingIcon: this.props.loading && <Spinner />,
                                     ...otherInputProps,
                                     // @ts-ignore
                                     validation,
                                     rawOnChange: true,
-                                    trailingIcon: this.props.loading && <Spinner />,
                                     onChange: ev => ev,
                                     onBlur: ev => ev,
                                     onFocus: ev => {
@@ -256,7 +257,9 @@ class AutoComplete extends React.Component<Props, State> {
                                     }
                                 })}
                             />
-                            {this.renderOptions({ ...rest, options, placement })}
+                            {!otherInputProps.disabled &&
+                                !otherInputProps.readOnly &&
+                                this.renderOptions({ ...rest, options, placement })}
                         </div>
                     )}
                 </Downshift>

@@ -21,6 +21,7 @@ import {
     beforeDeleteHook,
     afterDeleteHook
 } from "./contentModel/hooks";
+import { NotAuthorizedError } from "@webiny/api-security";
 
 export default (): ContextPlugin<CmsContext> => ({
     type: "context",
@@ -77,6 +78,20 @@ export default (): ContextPlugin<CmsContext> => ({
                 return {
                     get: modelsGet,
                     list: modelsList
+                };
+            },
+            silentAuth: () => {
+                return {
+                    list: async () => {
+                        try {
+                            return models.list();
+                        } catch (ex) {
+                            if (ex instanceof NotAuthorizedError) {
+                                return [];
+                            }
+                            throw ex;
+                        }
+                    }
                 };
             },
             async get(modelId) {

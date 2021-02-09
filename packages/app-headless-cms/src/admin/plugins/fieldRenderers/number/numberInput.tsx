@@ -30,7 +30,6 @@ const plugin: CmsEditorFieldRendererPlugin = {
                             <Input
                                 {...bindProps}
                                 onChange={value => {
-                                    value = parseFloat(value);
                                     return bindProps.onChange(value);
                                 }}
                                 label={field.label}

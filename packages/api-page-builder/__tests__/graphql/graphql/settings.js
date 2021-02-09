@@ -14,7 +14,6 @@ export const DATA_FIELD = /* GraphQL */ `
         pages {
             home
             notFound
-            error
         }
         social {
             instagram

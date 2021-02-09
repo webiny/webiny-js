@@ -34,5 +34,7 @@ export default ({ username, password }) => {
                 reject(err);
             }
         });
+
+        return cognitoUser;
     });
 };

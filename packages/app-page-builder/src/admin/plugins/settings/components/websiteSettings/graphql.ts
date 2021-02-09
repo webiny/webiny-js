@@ -17,7 +17,6 @@ const fields = /* GraphQL */ `
             }
             pages {
                 home
-                error
                 notFound
             }
             social {

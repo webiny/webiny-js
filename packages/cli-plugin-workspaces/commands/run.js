@@ -13,7 +13,8 @@ module.exports = async (inputs, context) => {
     if (inputs.script === "watch") {
         inputs.parallel = true;
     }
-    const { script, scope, folder, parallel, stream } = inputs;
+    const { script, scope, folder, parallel, stream, ...otherInputs } = inputs;
+
     const scopes = normalizeArray(scope);
     const folders = normalizeArray(folder);
 
@@ -22,7 +23,23 @@ module.exports = async (inputs, context) => {
             const color = randomColor().hexString();
             const prefix = chalk.hex(color).bold(pkg.name);
             const logger = logLine(prefix);
-            const process = execa("yarn", [script], { cwd: pkg.path });
+
+            // Let's build the complete list of args we're about to pass to execa. Also, we must ensure all of the extra
+            // args are passed to the commands we're executing (e.g. the "--env prod" should be passed to build commands).
+            const args = [script];
+
+            const ignoreList = ["$0", "_", "options"];
+            for (const key in otherInputs) {
+                if (ignoreList.includes(key)) {
+                    continue;
+                }
+
+                const value = otherInputs[key];
+                const prefix = key.length === 1 ? "-" : "--";
+                args.push(`${prefix}${key}`, value);
+            }
+
+            const process = execa("yarn", args, { cwd: pkg.path });
 
             if (stream) {
                 process.stdout.on("data", logger);

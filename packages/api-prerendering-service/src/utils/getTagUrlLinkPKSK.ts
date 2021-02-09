@@ -1,4 +1,4 @@
-import { Tag } from "@webiny/api-prerendering-service/render/types";
+import { Tag } from "@webiny/api-prerendering-service/queue/add/types";
 
 type Args = {
     tag: Tag;

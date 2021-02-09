@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig",
+  "include": ["src"],
+  "references": [
+    {
+      "path": "../plugins"
+    },
+    {
+      "path": "../handler"
+    }
+  ]
+}
