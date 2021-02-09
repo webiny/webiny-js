@@ -64,11 +64,11 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: webiny-js
+        working-directory: webiny-next
     steps:
       - uses: actions/checkout@v2
         with:
-          path: 'webiny-js'
+          path: 'webiny-next
 
       - uses: actions/setup-node@v2-beta
         with:
@@ -101,11 +101,7 @@ jobs:
       - name: Release to Verdaccio
         run: yarn lerna:publish:verdaccio
 
-      - name: Create "create-webiny-project" folder
-        run: mkdir create-webiny-project
-
       - name: Create a new Webiny project
-        working-directory: create-webiny-project
         run: npx create-webiny-project@beta test-webiny-project --tag beta --no-interactive --template-options '{"region":"eu-central-1","vpc":false}'
 
       - name: List all files and folders
