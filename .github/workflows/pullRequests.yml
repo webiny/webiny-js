@@ -63,8 +63,8 @@ jobs:
     name: Test "create-webiny-project"
     runs-on: ubuntu-latest
     env:
-      DIR_PR: ./pr # Submitted code will be cloned into this directory.
-      DIR_CWP: ./cwp # A new create-webiny-project folder will be initialized in this directory.
+      DIR_PR: pr # Submitted code will be cloned into this directory.
+      DIR_CWP: cwp # A new create-webiny-project folder will be initialized in this directory.
     steps:
       - uses: actions/checkout@v2
         with:
