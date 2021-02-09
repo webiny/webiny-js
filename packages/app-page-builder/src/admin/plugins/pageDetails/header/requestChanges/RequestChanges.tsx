@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as RequestChangesIcon } from "@webiny/app-page-builder/admin/assets/rule-24px.svg";
@@ -7,7 +7,7 @@ import { i18n } from "@webiny/app/i18n";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useMutation } from "@apollo/react-hooks";
 import gql from "graphql-tag";
-import { useSecurity } from "@webiny/app-security";
+import usePermission from "../../../../../hooks/usePermission";
 
 const t = i18n.ns("app-page-builder/page-details/header/request-changes");
 
@@ -31,9 +31,8 @@ const REQUEST_CHANGES = gql`
 `;
 
 const RequestChanges = props => {
-    const { identity } = useSecurity();
     const { page } = props;
-
+    const { canRequestChange } = usePermission();
     const { showSnackbar } = useSnackbar();
     const [requestChanges] = useMutation(REQUEST_CHANGES);
 
@@ -50,18 +49,7 @@ const RequestChanges = props => {
         )
     });
 
-    const pbPagePermission = useMemo(() => identity.getPermission("pb.page"), []);
-    if (!pbPagePermission) {
-        return null;
-    }
-
-    // You can't request changes on the page you created (this is different from `ownedBy`).
-    // Owner of the page CAN request changes on revisions that were created by other users.
-    if (page.createdBy && page.createdBy.id === identity.login) {
-        return null;
-    }
-
-    if (typeof pbPagePermission.pw === "string" && !pbPagePermission.pw.includes("c")) {
+    if (!canRequestChange()) {
         return null;
     }
 

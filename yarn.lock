@@ -7955,6 +7955,7 @@ __metadata:
     "@webiny/app": ^5.0.0-beta.4
     "@webiny/app-admin": ^5.0.0-beta.4
     "@webiny/app-i18n": ^5.0.0-beta.4
+    "@webiny/app-security": ^5.0.0-beta.4
     "@webiny/form": ^5.0.0-beta.4
     "@webiny/ui": ^5.0.0-beta.4
     babel-plugin-emotion: ^9.2.8

@@ -84,7 +84,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 return {
                     list: async () => {
                         try {
-                            return models.list();
+                            return await models.list();
                         } catch (ex) {
                             if (ex instanceof NotAuthorizedError) {
                                 return [];

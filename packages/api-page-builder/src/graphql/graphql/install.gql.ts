@@ -105,6 +105,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     );
 
                     await context.pageBuilder.settings.default.update({
+                        name: args.data.name,
                         pages: {
                             home: homePage.pid,
                             notFound: notFoundPage.pid

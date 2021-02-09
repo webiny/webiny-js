@@ -46,7 +46,7 @@ const actionWrapperStyle = css({
     }
 });
 
-function Tags({ file }) {
+function Tags({ file, canEdit }) {
     const client = useApolloClient();
 
     const [editing, setEdit] = useState(false);
@@ -57,6 +57,8 @@ function Tags({ file }) {
     const handleEdit = useCallback(() => setEdit(true), []);
     const listTagsQuery = useQuery(LIST_TAGS);
     const allTags = get(listTagsQuery, "data.fileManager.listTags") || [];
+
+    const isEditingAllowed = canEdit(file);
 
     const renderHeaderContent = useCallback(
         ({ data }) => {
@@ -75,22 +77,28 @@ function Tags({ file }) {
                                 return <Chip key={label + index} label={label} />;
                             })}
                         </Chips>
-                        <IconButton
-                            className={iconButtonStyle}
-                            icon={<EditIcon />}
-                            onClick={handleEdit}
-                        />
+                        {isEditingAllowed && (
+                            <IconButton
+                                className={iconButtonStyle}
+                                icon={<EditIcon />}
+                                onClick={handleEdit}
+                            />
+                        )}
                     </>
                 );
             }
             // Render "add tags" action.
             return (
-                <ButtonDefault className={addTagsStyle} onClick={handleEdit}>
+                <ButtonDefault
+                    className={addTagsStyle}
+                    onClick={handleEdit}
+                    disabled={!isEditingAllowed}
+                >
                     Add tags...
                 </ButtonDefault>
             );
         },
-        [editing]
+        [editing, isEditingAllowed]
     );
 
     return (

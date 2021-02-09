@@ -74,7 +74,7 @@ export const CMSPermissions = ({ value, onChange }) => {
             // Content models, content model groups, content entries
             ENTITIES.forEach(entity => {
                 const accessScope = data[`${entity}AccessScope`];
-                if (accessScope) {
+                if (accessScope && accessScope !== NO_ACCESS) {
                     const permission = {
                         name: `${CMS_PERMISSION}.${entity}`,
                         own: false,

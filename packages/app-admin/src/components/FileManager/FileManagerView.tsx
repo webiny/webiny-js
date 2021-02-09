@@ -1,4 +1,6 @@
-import * as React from "react";
+import React, { useRef, useCallback, useMemo } from "react";
+import { css } from "emotion";
+import styled from "@emotion/styled";
 import Files from "react-butterfiles";
 import { ButtonPrimary, ButtonIcon } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
@@ -7,7 +9,8 @@ import { useQuery, useMutation, useApolloClient } from "@apollo/react-hooks";
 import { FilesRules } from "react-butterfiles";
 import { LIST_FILES, CREATE_FILE, GET_FILE_SETTINGS } from "./graphql";
 import getFileTypePlugin from "./getFileTypePlugin";
-import { get, debounce } from "lodash";
+import get from "lodash/get";
+import debounce from "lodash/debounce";
 import getFileUploader from "./getFileUploader";
 import outputFileSelectionError from "./outputFileSelectionError";
 import DropFilesHere from "./DropFilesHere";
@@ -19,13 +22,13 @@ import { OverlayLayout } from "@webiny/app-admin/components/OverlayLayout";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { css } from "emotion";
-import styled from "@emotion/styled";
+import { i18n } from "@webiny/app/i18n";
+import { useSecurity } from "@webiny/app-security";
 import { useHotkeys } from "react-hotkeyz";
 import { useFileManager } from "./FileManagerContext";
-import { i18n } from "@webiny/app/i18n";
 import { ReactComponent as SearchIcon } from "./icons/round-search-24px.svg";
 import { ReactComponent as UploadIcon } from "./icons/round-cloud_upload-24px.svg";
+import NoPermissionView from "./NoPermissionView";
 
 const t = i18n.ns("app-admin/file-manager/file-manager-view");
 
@@ -117,7 +120,10 @@ function renderFile(props) {
     );
 }
 
-const renderEmpty = ({ hasPreviouslyUploadedFiles, browseFiles }) => {
+const renderEmpty = ({ hasPreviouslyUploadedFiles, browseFiles, fmFilePermission }) => {
+    if (!fmFilePermission) {
+        return <NoPermissionView />;
+    }
     if (hasPreviouslyUploadedFiles) {
         return <NoResults />;
     }
@@ -149,10 +155,45 @@ function FileManagerView(props: FileManagerViewProps) {
         hasPreviouslyUploadedFiles,
         setHasPreviouslyUploadedFiles
     } = useFileManager();
-
-    const { useRef, useCallback } = React;
-
     const { showSnackbar } = useSnackbar();
+
+    const { identity } = useSecurity();
+    const fmFilePermission = useMemo(() => identity.getPermission("fm.file"), []);
+    const canCreate = useMemo(() => {
+        // Bail out early if no access
+        if (!fmFilePermission) {
+            return false;
+        }
+
+        if (fmFilePermission.own) {
+            return true;
+        }
+
+        if (typeof fmFilePermission.rwd === "string") {
+            return fmFilePermission.rwd.includes("w");
+        }
+
+        return true;
+    }, [fmFilePermission]);
+    const canEdit = useCallback(
+        item => {
+            // Bail out early if no access
+            if (!fmFilePermission) {
+                return false;
+            }
+
+            if (fmFilePermission.own) {
+                return get(item, "createdBy.id") === identity.login;
+            }
+
+            if (typeof fmFilePermission.rwd === "string") {
+                return fmFilePermission.rwd.includes("w");
+            }
+
+            return true;
+        },
+        [fmFilePermission]
+    );
 
     const searchOnChange = useCallback(
         // @ts-ignore
@@ -306,6 +347,21 @@ function FileManagerView(props: FileManagerViewProps) {
         setTimeout(() => showSnackbar(t`File upload complete.`), 750);
     };
 
+    const renderUploadFileAction = useCallback(
+        ({ browseFiles }) => {
+            if (!canCreate) {
+                return null;
+            }
+            return (
+                <ButtonPrimary onClick={browseFiles} disabled={uploading}>
+                    <ButtonIcon icon={<UploadIcon />} />
+                    {t`Upload...`}
+                </ButtonPrimary>
+            );
+        },
+        [uploading, canCreate]
+    );
+
     const settingsQuery = useQuery(GET_FILE_SETTINGS);
     const settings = get(settingsQuery.data, "fileManager.getSettings.data") || {};
     return (
@@ -334,6 +390,7 @@ function FileManagerView(props: FileManagerViewProps) {
                                 ref={searchInput}
                                 onChange={e => searchOnChange(e.target.value)}
                                 placeholder={t`Search by filename or tags`}
+                                disabled={!fmFilePermission}
                             />
                         </InputSearch>
                     }
@@ -350,11 +407,7 @@ function FileManagerView(props: FileManagerViewProps) {
                                 {t`Select`} {multiple && `(${selected.length})`}
                             </ButtonPrimary>
                         ) : (
-                            // @ts-ignore
-                            <ButtonPrimary onClick={browseFiles} disabled={uploading}>
-                                <ButtonIcon icon={<UploadIcon />} />
-                                {t`Upload...`}
-                            </ButtonPrimary>
+                            renderUploadFileAction({ browseFiles })
                         )
                     }
                 >
@@ -375,6 +428,7 @@ function FileManagerView(props: FileManagerViewProps) {
                                 list,
                                 src: showingFileDetails
                             })}
+                            canEdit={canEdit}
                         />
 
                         <LeftSidebar
@@ -420,7 +474,8 @@ function FileManagerView(props: FileManagerViewProps) {
                                           )
                                         : renderEmpty({
                                               hasPreviouslyUploadedFiles,
-                                              browseFiles
+                                              browseFiles,
+                                              fmFilePermission
                                           })}
                                 </FileList>
                             </Scrollbar>

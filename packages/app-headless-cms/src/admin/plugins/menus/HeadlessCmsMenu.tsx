@@ -16,7 +16,7 @@ const HeadlessCmsMenu = ({ Menu, children }) => {
 
     const locale = getCurrentLocale("content");
 
-    const contentModelGroups = get(response, "data.listContentModelGroups.data", []);
+    const contentModelGroups = get(response, "data.listContentModelGroups.data", []) || [];
 
     const cmgHash = contentModelGroups.reduce((returnValue, currentValue) => {
         return (

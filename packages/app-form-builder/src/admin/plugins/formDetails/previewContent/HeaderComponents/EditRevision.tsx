@@ -4,10 +4,17 @@ import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as EditIcon } from "@webiny/app-form-builder/admin/icons/edit.svg";
 import { useRevision } from "../../formRevisions/useRevision";
+import usePermission from "../../../../../hooks/usePermission";
 
 const EditRevision = ({ revision, form }) => {
     const { createRevision } = useRevision({ revision, form });
     const { history } = useRouter();
+    const { canEdit } = usePermission();
+
+    // Render nothing is user doesn't have required permission.
+    if (!canEdit(form)) {
+        return null;
+    }
 
     if (revision.status === "draft") {
         return (
