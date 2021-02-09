@@ -43,6 +43,7 @@ const mockField: CmsContentModelField = {
     type: "text",
     label: "Text",
     validation: [],
+    listValidation: [],
     multipleValues: false,
     renderer: {
         name: "any"
