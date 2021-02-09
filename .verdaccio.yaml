@@ -1,0 +1,11 @@
+packages:
+  "**":
+    access: $all
+    publish: $all
+    proxy: npmjs
+
+server:
+  keepAliveTimeout: 60
+
+logs:
+  - { type: stdout, format: pretty, level: http }
