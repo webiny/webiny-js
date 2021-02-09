@@ -7,10 +7,6 @@ on:
 env:
   NODE_OPTIONS: --max_old_space_size=4096
 
-defaults:
-  run:
-    working-directory: webiny-dev-repo
-
 jobs:
   initial-checks:
     name: Initial checks
@@ -47,8 +43,13 @@ jobs:
   build-test:
     name: Build and test
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: webiny-js
     steps:
       - uses: actions/checkout@v2
+        with:
+          path: 'webiny-js'
 
       - uses: actions/setup-node@v2-beta
         with:
@@ -99,6 +100,9 @@ jobs:
 
       - name: Release to Verdaccio
         run: yarn lerna:publish:verdaccio
+
+      - name: Create "create-webiny-project" folder
+        run: mkdir create-webiny-project
 
       - name: Create a new Webiny project
         working-directory: create-webiny-project
