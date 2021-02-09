@@ -62,13 +62,8 @@ jobs:
   create-webiny-project:
     name: Test "create-webiny-project"
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: webiny-next
     steps:
       - uses: actions/checkout@v2
-        with:
-          path: 'webiny-next
 
       - uses: actions/setup-node@v2-beta
         with:
@@ -102,8 +97,9 @@ jobs:
         run: yarn lerna:publish:verdaccio
 
       - name: Create a new Webiny project
-        run: npx create-webiny-project@beta test-webiny-project --tag beta --no-interactive --template-options '{"region":"eu-central-1","vpc":false}'
+        working-directory: ../
+        run: npx create-webiny-project@beta new-webiny-project --tag beta --no-interactive --template-options '{"region":"eu-central-1","vpc":false}'
 
       - name: List all files and folders
-        working-directory: test-webiny-project
+        working-directory: ../new-webiny-project
         run: ls -alh
