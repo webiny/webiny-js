@@ -59,9 +59,10 @@ jobs:
       - name: Run tests
         run: yarn test
 
-  cwp-test:
+  create-webiny-project:
     name: Test "create-webiny-project"
     runs-on: ubuntu-latest
+    working-directory: ./webiny-js
     steps:
       - uses: actions/checkout@v2
 
@@ -97,7 +98,9 @@ jobs:
         run: yarn lerna:publish:verdaccio
 
       - name: Create a new Webiny project
-        run: cd .. && npx create-webiny-project@beta test-webiny-project --tag beta --no-interactive --template-options '{"region":"eu-central-1","vpc":false}'
+        working-directory: ./create-webiny-project
+        run: npx create-webiny-project@beta test-webiny-project --tag beta --no-interactive --template-options '{"region":"eu-central-1","vpc":false}'
 
       - name: List all files and folders
+        working-directory: ./create-webiny-project
         run: ls -alh
