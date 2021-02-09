@@ -16,7 +16,7 @@ jobs:
 
       - uses: actions/setup-node@v2-beta
         with:
-          node-version: "12"
+          node-version: 12
 
       - name: Install dependencies
         run: yarn --immutable
@@ -48,7 +48,7 @@ jobs:
 
       - uses: actions/setup-node@v2-beta
         with:
-          node-version: "12"
+          node-version: 12
 
       - name: Install dependencies
         run: yarn --immutable
@@ -68,11 +68,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          path: ${{ env.env.DIR_PR }}
+          path: ${{ env.DIR_PR }}
 
       - uses: actions/setup-node@v2-beta
         with:
-          node-version: "12"
+          node-version: 12
 
       - name: Install dependencies
         run: yarn --immutable
