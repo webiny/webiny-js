@@ -72,6 +72,9 @@ jobs:
       - name: Install dependencies
         run: yarn --immutable
 
+      - name: Build packages
+        run: yarn build
+
       - name: Start Verdaccio local server
         run: yarn verdaccio:start:detached
 
@@ -86,9 +89,6 @@ jobs:
 
       - name: Set git username
         run: git config --global user.name "webiny-bot"
-
-      - name: Build packages (move up)
-        run: yarn build
 
       - name: Version packages (no push, no changelog)
         run: yarn lerna:version:verdaccio
