@@ -78,6 +78,8 @@ export default (): CliCommandScaffoldTemplate => ({
 
             oraSpinner.start(`Creating service files in ${chalk.green(fullLocation)}...`);
 
+            const relativeRootPath = path.relative(fullLocation, projectRootPath);
+
             await fs.mkdirSync(location, { recursive: true });
 
             // Get base TS config path
@@ -105,9 +107,12 @@ export default (): CliCommandScaffoldTemplate => ({
                 { find: "TARGETS", replaceWith: Case.constant(entity.plural) },
                 { find: "target", replaceWith: Case.camel(entity.singular) },
                 { find: "Target", replaceWith: Case.pascal(entity.singular) },
-                { find: "TARGET", replaceWith: Case.constant(entity.singular) }
+                { find: "TARGET", replaceWith: Case.constant(entity.singular) },
+                { find: "RELATIVE_ROOT_PATH", replaceWith: relativeRootPath }
             ];
 
+            replaceInPath(path.join(fullLocation, ".babelrc.js"), codeReplacements);
+            replaceInPath(path.join(fullLocation, "jest.config.js"), codeReplacements);
             replaceInPath(path.join(fullLocation, "src/**/*.ts"), codeReplacements);
             replaceInPath(path.join(fullLocation, "__tests__/**/*.ts"), codeReplacements);
 
