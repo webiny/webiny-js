@@ -1,7 +1,7 @@
 name: Pull Request (v5)
 
 on:
-  pull_request:
+  push:
     branches: [next]
 
 env:
@@ -11,6 +11,9 @@ jobs:
   initial-checks:
     name: Initial checks
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: webiny-js
     steps:
       - uses: actions/checkout@v2
 
@@ -97,9 +100,9 @@ jobs:
         run: yarn lerna:publish:verdaccio
 
       - name: Create a new Webiny project
-        working-directory: ./create-webiny-project
+        working-directory: create-webiny-project
         run: npx create-webiny-project@beta test-webiny-project --tag beta --no-interactive --template-options '{"region":"eu-central-1","vpc":false}'
 
       - name: List all files and folders
-        working-directory: ./create-webiny-project
+        working-directory: create-webiny-project
         run: ls -alh
