@@ -1,18 +1,18 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { IconButton } from "@webiny/ui/Button";
 import { useRouter } from "@webiny/react-router";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as EditIcon } from "@webiny/app-page-builder/admin/assets/edit.svg";
 import { CREATE_PAGE } from "@webiny/app-page-builder/admin/graphql/pages";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { useSecurity } from "@webiny/app-security";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-headless-cms/app-page-builder/page-details/header/edit");
 import { useMutation } from "@apollo/react-hooks";
+import usePermission from "../../../../../hooks/usePermission";
 
 const EditRevision = props => {
-    const { identity } = useSecurity();
     const { page } = props;
+    const { canEdit } = usePermission();
     const { history } = useRouter();
     const [inProgress, setInProgress] = useState<boolean>();
     const { showSnackbar } = useSnackbar();
@@ -32,16 +32,7 @@ const EditRevision = props => {
         history.push(`/page-builder/editor/${encodeURIComponent(data.id)}`);
     }, [page]);
 
-    const pbPagePermission = useMemo(() => identity.getPermission("pb.page"), []);
-    if (!pbPagePermission) {
-        return null;
-    }
-
-    if (pbPagePermission.own && page?.createdBy?.id !== identity.login) {
-        return null;
-    }
-
-    if (typeof pbPagePermission.rwd === "string" && !pbPagePermission.rwd.includes("r")) {
+    if (!canEdit(page)) {
         return null;
     }
 

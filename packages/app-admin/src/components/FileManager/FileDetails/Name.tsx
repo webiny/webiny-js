@@ -8,7 +8,7 @@ import { useSnackbar } from "../../../hooks/useSnackbar";
 import { UPDATE_FILE, LIST_FILES } from "./../graphql";
 import { useFileManager } from "./../FileManagerContext";
 
-function Name({ file }) {
+function Name({ file, canEdit }) {
     const name = file.name || "";
     const { showSnackbar } = useSnackbar();
     const client = useApolloClient();
@@ -62,6 +62,7 @@ function Name({ file }) {
                 {({ Bind, submit }) => (
                     <Bind name={"name"} validators={validation.create("required")}>
                         <Input
+                            disabled={!canEdit(file)}
                             autoFocus
                             placeholder={"Enter name"}
                             fullwidth={true}
@@ -72,7 +73,7 @@ function Name({ file }) {
                 )}
             </Form>
         );
-    }, [name, file.name]);
+    }, [name, file.name, canEdit]);
 
     return <li-content>{editContent}</li-content>;
 }

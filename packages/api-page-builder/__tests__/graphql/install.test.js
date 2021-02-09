@@ -81,7 +81,7 @@ describe("Install Test", () => {
 
         await install({
             data: {
-                name: "My Site"
+                name: "My Website"
             }
         }).then(([res]) =>
             expect(res).toEqual({
@@ -162,5 +162,20 @@ describe("Install Test", () => {
             expect(res.data.pageBuilder.getPublishedPage.data.title).toBe("Not Found");
             expect(res.data.pageBuilder.getPublishedPage.data.status).toBe("published");
         });
+
+        // 4. Installation must set the "Website" name.
+        await getSettings().then(([res]) =>
+            expect(res).toMatchObject({
+                data: {
+                    pageBuilder: {
+                        getSettings: {
+                            data: {
+                                name: "My Website"
+                            }
+                        }
+                    }
+                }
+            })
+        );
     });
 });

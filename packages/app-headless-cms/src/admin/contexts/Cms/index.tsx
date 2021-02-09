@@ -19,7 +19,7 @@ export function CmsProvider(props: CmsProviderProps) {
 
     const currentLocale = getCurrentLocale("content");
 
-    const hasPermission = identity.getPermission("cms.manage");
+    const hasPermission = identity.getPermission("cms.endpoint.manage");
     if (!hasPermission) {
         return <CmsContext.Provider value={{}} {...props} />;
     }

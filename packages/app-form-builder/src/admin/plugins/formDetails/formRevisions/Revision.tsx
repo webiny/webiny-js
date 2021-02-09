@@ -25,6 +25,7 @@ import { ReactComponent as PublishIcon } from "@webiny/app-form-builder/admin/ic
 import { ReactComponent as UnpublishIcon } from "@webiny/app-form-builder/admin/icons/unpublish.svg";
 import { useRevision } from "./useRevision";
 import { FbFormModel } from "@webiny/app-form-builder/types";
+import usePermission from "../../../../hooks/usePermission";
 
 const primaryColor = css({ color: "var(--mdc-theme-primary)" });
 
@@ -69,6 +70,9 @@ const Revision = (props: RevisionProps) => {
         editRevision,
         unpublishRevision
     } = useRevision({ revision: rev, form });
+    const { canPublish, canUnpublish, canDelete, canEdit } = usePermission();
+
+    const showMenu = canEdit(form) || canDelete(form) || canPublish() || canUnpublish();
 
     return (
         <ListItem>
@@ -84,66 +88,82 @@ const Revision = (props: RevisionProps) => {
                     {rev.version})
                 </ListItemTextSecondary>
             </ListItemText>
-            <ListItemMeta>
-                <Menu handle={<IconButton icon={<MoreVerticalIcon />} />} className={revisionsMenu}>
-                    <MenuItem onClick={createRevision}>
-                        <ListItemGraphic>
-                            <Icon icon={<AddIcon />} />
-                        </ListItemGraphic>
-                        New from current
-                    </MenuItem>
-                    {rev.status === "draft" && (
-                        <MenuItem onClick={editRevision}>
-                            <ListItemGraphic>
-                                <Icon icon={<EditIcon />} />
-                            </ListItemGraphic>
-                            Edit
-                        </MenuItem>
-                    )}
-
-                    {rev.status !== "published" && (
-                        <MenuItem onClick={() => publishRevision(rev)}>
-                            <ListItemGraphic>
-                                <Icon icon={<PublishIcon />} />
-                            </ListItemGraphic>
-                            Publish
-                        </MenuItem>
-                    )}
-
-                    {rev.status === "published" && (
-                        <ConfirmationDialog
-                            title="Confirmation required!"
-                            message={<span>Are you sure you want to unpublish this revision?</span>}
-                        >
-                            {({ showConfirmation }) => (
-                                <MenuItem
-                                    onClick={() => showConfirmation(() => unpublishRevision(rev))}
-                                >
-                                    <ListItemGraphic>
-                                        <Icon icon={<UnpublishIcon />} />
-                                    </ListItemGraphic>
-                                    Unpublish
-                                </MenuItem>
-                            )}
-                        </ConfirmationDialog>
-                    )}
-
-                    <MenuDivider />
-                    <ConfirmationDialog
-                        title="Confirmation required!"
-                        message={<span>Are you sure you want to delete this revision?</span>}
+            {showMenu && (
+                <ListItemMeta>
+                    <Menu
+                        handle={<IconButton icon={<MoreVerticalIcon />} />}
+                        className={revisionsMenu}
                     >
-                        {({ showConfirmation }) => (
-                            <MenuItem onClick={() => showConfirmation(deleteRevision)}>
+                        {canEdit(form) && (
+                            <MenuItem onClick={createRevision}>
                                 <ListItemGraphic>
-                                    <Icon icon={<DeleteIcon />} />
+                                    <Icon icon={<AddIcon />} />
                                 </ListItemGraphic>
-                                Delete
+                                New from current
                             </MenuItem>
                         )}
-                    </ConfirmationDialog>
-                </Menu>
-            </ListItemMeta>
+                        {rev.status === "draft" && canEdit(form) && (
+                            <MenuItem onClick={editRevision}>
+                                <ListItemGraphic>
+                                    <Icon icon={<EditIcon />} />
+                                </ListItemGraphic>
+                                Edit
+                            </MenuItem>
+                        )}
+
+                        {rev.status !== "published" && canPublish() && (
+                            <MenuItem onClick={() => publishRevision(rev)}>
+                                <ListItemGraphic>
+                                    <Icon icon={<PublishIcon />} />
+                                </ListItemGraphic>
+                                Publish
+                            </MenuItem>
+                        )}
+
+                        {rev.status === "published" && canUnpublish() && (
+                            <ConfirmationDialog
+                                title="Confirmation required!"
+                                message={
+                                    <span>Are you sure you want to unpublish this revision?</span>
+                                }
+                            >
+                                {({ showConfirmation }) => (
+                                    <MenuItem
+                                        onClick={() =>
+                                            showConfirmation(() => unpublishRevision(rev))
+                                        }
+                                    >
+                                        <ListItemGraphic>
+                                            <Icon icon={<UnpublishIcon />} />
+                                        </ListItemGraphic>
+                                        Unpublish
+                                    </MenuItem>
+                                )}
+                            </ConfirmationDialog>
+                        )}
+
+                        <MenuDivider />
+
+                        {canDelete(form) && (
+                            <ConfirmationDialog
+                                title="Confirmation required!"
+                                message={
+                                    <span>Are you sure you want to delete this revision?</span>
+                                }
+                            >
+                                {({ showConfirmation }) => (
+                                    <MenuItem onClick={() => showConfirmation(deleteRevision)}>
+                                        <ListItemGraphic>
+                                            <Icon icon={<DeleteIcon />} />
+                                        </ListItemGraphic>
+                                        Delete
+                                    </MenuItem>
+                                )}
+                            </ConfirmationDialog>
+                        )}
+                    </Menu>
+                </ListItemMeta>
+            )}
         </ListItem>
     );
 };

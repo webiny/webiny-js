@@ -47,12 +47,17 @@ type EditActionProps = {
     file: any;
     uploadFile: any;
     validateFiles: any;
+    canEdit: (file: any) => boolean;
 };
 
 const EditAction: React.FC<EditActionProps> = props => {
-    const { file, uploadFile, validateFiles } = props;
+    const { file, uploadFile, validateFiles, canEdit } = props;
     const [state, dispatch] = React.useReducer(reducer, initialState);
     const { showSnackbar } = useSnackbar();
+    // Render nothing if the user don't have required permission for "edit".
+    if (!canEdit(file)) {
+        return null;
+    }
 
     return (
         <>

@@ -124,6 +124,12 @@ const CategoriesForm = ({ canCreate }: CategoriesFormProps) => {
     }, []);
 
     const canSave = useMemo(() => {
+        // User should be able to save the form
+        // if it's a new entry and user has the "own" permission set.
+        if (!loadedCategory.slug && pbMenuPermission.own) {
+            return true;
+        }
+
         if (pbMenuPermission.own) {
             return loadedCategory?.createdBy?.id === identity.login;
         }

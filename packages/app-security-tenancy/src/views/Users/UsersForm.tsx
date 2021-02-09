@@ -44,8 +44,11 @@ const ButtonWrapper = styled("div")({
     justifyContent: "space-between"
 });
 
-const formatData = data =>
+const pickDataForCreateOperation = data =>
     pick(data, ["login", "password", "firstName", "lastName", "avatar", "group"]);
+
+const pickDataForUpdateOperation = data =>
+    pick(data, ["password", "firstName", "lastName", "avatar", "group"]);
 
 const UsersForm = () => {
     const { location, history } = useRouter();
@@ -88,7 +91,7 @@ const UsersForm = () => {
                       {
                           variables: {
                               login: data.login,
-                              data: formatData(data)
+                              data: pickDataForUpdateOperation(data)
                           }
                       }
                   ]
@@ -96,7 +99,7 @@ const UsersForm = () => {
                       create,
                       {
                           variables: {
-                              data: formatData(data)
+                              data: pickDataForCreateOperation(data)
                           }
                       }
                   ];
