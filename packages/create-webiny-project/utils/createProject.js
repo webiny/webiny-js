@@ -62,6 +62,14 @@ module.exports = async function createProject({
 
     await sendEvent({ event: "create-webiny-project-start" });
 
+    let isGitAvailable = false;
+    try {
+        await execa("git", ["--version"]);
+        isGitAvailable = true;
+    } catch {
+        // Git is not available.
+    }
+
     const tasks = new Listr([
         {
             // Creates root package.json.
@@ -108,6 +116,7 @@ module.exports = async function createProject({
         {
             // Initialize `git` by executing `git init` in project directory.
             title: `Initialize git`,
+            enabled: isGitAvailable,
             task: (ctx, task) => {
                 try {
                     execa.sync("git", ["--version"]);
@@ -157,6 +166,7 @@ module.exports = async function createProject({
                     }
 
                     return require(templatePath)({
+                        isGitAvailable,
                         projectName,
                         projectRoot,
                         interactive,
