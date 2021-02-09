@@ -69,14 +69,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       DIR_PR: pr # Submitted code will be cloned into this directory.
-      DIR_CWP: cwp # A new create-webiny-project folder will be initialized in this directory.
+      DIR_CWP: webiny-project # A new create-webiny-project folder will be initialized in this directory.
     steps:
       - uses: actions/checkout@v2
         with:
           path: ${{ env.DIR_PR }}
-
-      - name: Check env variable
-        run: echo 'this is ${{ env.DIR_CWP }}'
 
       - uses: actions/setup-node@v2-beta
         with:
@@ -119,7 +116,7 @@ jobs:
         working-directory: ${{ env.DIR_PR }}
 
       - name: Create a new Webiny project
-        run: npx create-webiny-project@beta new-webiny-project --tag beta --no-interactive --template-options '{"region":"eu-central-1","vpc":false}'
+        run: npx create-webiny-project@beta ${{ env.DIR_CWP }} --tag beta --no-interactive --template-options '{"region":"eu-central-1","vpc":false}'
         # working-directory: No need for that here, we want to execute the above command in the job root.
 
       - name: List all files and folders
