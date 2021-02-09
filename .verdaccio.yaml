@@ -7,9 +7,14 @@ uplinks:
 
 packages:
   "**":
-    access: $all
-    publish: $all
+    access: $anonymous
+    publish: $anonymous
     proxy: npmjs
+
+auth:
+  htpasswd:
+    file: ./htpasswd
+    max_users: -1
 
 server:
   keepAliveTimeout: 60
