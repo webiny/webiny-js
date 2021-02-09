@@ -68,7 +68,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          path: ${{ DIR_PR }}
+          path: ${{ env.DIR_PR }}
 
       - uses: actions/setup-node@v2-beta
         with:
