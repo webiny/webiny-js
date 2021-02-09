@@ -7,8 +7,8 @@ uplinks:
 
 packages:
   "**":
-    access: $all
-    publish: $all
+    access: $anonymous
+    publish: $anonymous
     proxy: npmjs
 
 auth:
