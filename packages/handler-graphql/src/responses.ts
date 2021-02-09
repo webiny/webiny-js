@@ -64,13 +64,13 @@ export class Response {
     }
 }
 
-export class ListResponse {
-    data: Array<Object>;
-    meta: Object;
+export class ListResponse<T extends any, M extends any> {
+    data: Array<T>;
+    meta: M;
     error: null;
-    constructor(data: Array<Object>, meta: Object = {}) {
+    constructor(data: Array<T>, meta?: M) {
         this.data = Array.isArray(data) ? data : [];
-        this.meta = meta;
+        this.meta = meta || ({} as M);
         this.error = null;
     }
 }
