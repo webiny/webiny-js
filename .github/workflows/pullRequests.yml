@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: webiny-js
+        working-directory: webiny-dev-repo
     steps:
       - uses: actions/checkout@v2
 
