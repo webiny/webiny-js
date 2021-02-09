@@ -63,6 +63,9 @@ jobs:
     name: Test "create-webiny-project"
     runs-on: ubuntu-latest
     steps:
+      - name: PWD
+        run: pwd
+
       - uses: actions/checkout@v2
 
       - uses: actions/setup-node@v2-beta
@@ -72,13 +75,16 @@ jobs:
       - name: Install dependencies
         run: yarn --immutable
 
+      - name: PWD
+        run: pwd
+
       - name: Build packages
         run: yarn build
 
       - name: Start Verdaccio local server
         run: yarn verdaccio:start:detached
 
-      - name: Create ".npmrc" file in the project root, with a dummy auth token
+      - name: Create ".npmrc" file in the project root, with a d¡ummy auth token
         run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
 
       - name: Configure NPM to use local registry
