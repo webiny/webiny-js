@@ -73,7 +73,7 @@ jobs:
         run: yarn --immutable
 
       - name: Start Verdaccio local server
-        run: yarn pm2 start "yarn verdaccio"
+        run: yarn verdaccio:start:detached
 
       - name: Configure NPM to use local registry
         run: npm config set registry http://localhost:4873
