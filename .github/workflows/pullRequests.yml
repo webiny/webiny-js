@@ -88,10 +88,10 @@ jobs:
         run: yarn build
 
       - name: Version packages (no push, no changelog)
-        run: yarn ci:version
+        run: yarn lerna:version:verdaccio
 
       - name: Release to Verdaccio
-        run: yarn ci:publish
+        run: yarn lerna:publish:verdaccio
 
       - name: Create a new Webiny project
         run: npx create-webiny-project@beta test-project --tag beta --no-interactive --template-options '{"region":"eu-central-1","vpc":false}'
