@@ -97,7 +97,7 @@ jobs:
         run: yarn lerna:publish:verdaccio
 
       - name: Create a new Webiny project
-        run: npx create-webiny-project@beta test-project --tag beta --no-interactive --template-options '{"region":"eu-central-1","vpc":false}'
+        run: cd .. && npx create-webiny-project@beta test-webiny-project --tag beta --no-interactive --template-options '{"region":"eu-central-1","vpc":false}'
 
-      - name: Execute some tests
-        run: echo 'TODO'
+      - name: List all files and folders
+        run: ls -alh
