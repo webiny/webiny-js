@@ -7,6 +7,10 @@ on:
 env:
   NODE_OPTIONS: --max_old_space_size=4096
 
+defaults:
+  run:
+    working-directory: ./webiny-js
+
 jobs:
   initial-checks:
     name: Initial checks
@@ -62,7 +66,6 @@ jobs:
   create-webiny-project:
     name: Test "create-webiny-project"
     runs-on: ubuntu-latest
-    working-directory: ./webiny-js
     steps:
       - uses: actions/checkout@v2
 
