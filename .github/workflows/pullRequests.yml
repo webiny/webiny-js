@@ -43,13 +43,8 @@ jobs:
   build-test:
     name: Build and test
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: webiny-js
     steps:
       - uses: actions/checkout@v2
-        with:
-          path: 'webiny-js'
 
       - uses: actions/setup-node@v2-beta
         with:
@@ -67,8 +62,13 @@ jobs:
   create-webiny-project:
     name: Test "create-webiny-project"
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: webiny-js
     steps:
       - uses: actions/checkout@v2
+        with:
+          path: 'webiny-js'
 
       - uses: actions/setup-node@v2-beta
         with:
@@ -109,5 +109,5 @@ jobs:
         run: npx create-webiny-project@beta test-webiny-project --tag beta --no-interactive --template-options '{"region":"eu-central-1","vpc":false}'
 
       - name: List all files and folders
-        working-directory: create-webiny-project
+        working-directory: test-webiny-project
         run: ls -alh
