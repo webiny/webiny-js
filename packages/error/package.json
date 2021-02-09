@@ -2,7 +2,7 @@
   "name": "@webiny/error",
   "version": "5.0.0-beta.4",
   "main": "index.js",
-  "types": "types.d.ts",
+  "types": "index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
