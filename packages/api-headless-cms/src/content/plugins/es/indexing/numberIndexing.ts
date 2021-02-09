@@ -9,7 +9,7 @@ const convertToString = (value: number[] | number) => {
 
 const convertToFloat = (value: string[] | number) => {
     if (Array.isArray(value) === false) {
-        return value;
+        return typeof value === "string" ? parseFloat(value) : value;
     }
     return (value as string[]).map(v => parseFloat(v));
 };
