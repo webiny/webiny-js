@@ -7,7 +7,8 @@
 #
 
 # path to a directory with all packages
-storage: /Users/adrian/.local/share/verdaccio/storage
+storage: ./.verdaccio
+
 # path to a directory with plugins to include
 plugins: ./plugins
 
