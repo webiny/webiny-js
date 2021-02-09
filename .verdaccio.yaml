@@ -11,6 +11,11 @@ packages:
     publish: $all
     proxy: npmjs
 
+auth:
+  htpasswd:
+    file: ./htpasswd
+    max_users: -1
+
 server:
   keepAliveTimeout: 60
 
