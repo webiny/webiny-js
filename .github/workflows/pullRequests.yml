@@ -75,6 +75,9 @@ jobs:
         with:
           path: ${{ env.DIR_PR }}
 
+      - name: Check env variable
+        run: echo 'this is ${{ env.DIR_CWP }}'
+
       - uses: actions/setup-node@v2-beta
         with:
           node-version: ${{ matrix.node }}
