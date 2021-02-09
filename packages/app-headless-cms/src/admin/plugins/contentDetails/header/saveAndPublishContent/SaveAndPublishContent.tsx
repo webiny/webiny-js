@@ -4,6 +4,7 @@ import { i18n } from "@webiny/app/i18n";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import { useRevision } from "@webiny/app-headless-cms/admin/plugins/contentDetails/contentRevisions/useRevision";
+import usePermission from "../../../../hooks/usePermission";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/content-details/header/publish-revision");
 
@@ -34,6 +35,11 @@ const SaveAndPublishButton = ({
         ),
         dataTestId: "cms-confirm-save-and-publish"
     });
+    const { canEdit, canPublish } = usePermission();
+
+    if (!canEdit(entry, "cms.contentEntry") || !canPublish("cms.contentEntry")) {
+        return null;
+    }
 
     return (
         <ButtonPrimary

@@ -26,6 +26,7 @@ import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/ico
 import { CmsEditorContentModel, CmsEditorContentEntry } from "@webiny/app-headless-cms/types";
 import { i18n } from "@webiny/app/i18n";
 import { useRevision } from "./useRevision";
+import usePermission from "../../../hooks/usePermission";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/content-details/content-revisions");
 
@@ -85,6 +86,7 @@ const Revision = (props: Props) => {
         setLoading,
         listQueryVariables
     });
+    const { canEdit, canDelete, canPublish, canUnpublish } = usePermission();
     const { icon, text: tooltipText } = getIcon(revision);
 
     return (
@@ -119,14 +121,16 @@ const Revision = (props: Props) => {
                             handle={<IconButton icon={<MoreVerticalIcon />} />}
                             className={revisionsMenu}
                         >
-                            <MenuItem onClick={createRevision}>
-                                <ListItemGraphic>
-                                    <Icon icon={<AddIcon />} />
-                                </ListItemGraphic>
-                                {t`New from current`}
-                            </MenuItem>
+                            {canEdit(entry, "cms.contentEntry") && (
+                                <MenuItem onClick={createRevision}>
+                                    <ListItemGraphic>
+                                        <Icon icon={<AddIcon />} />
+                                    </ListItemGraphic>
+                                    {t`New from current`}
+                                </MenuItem>
+                            )}
 
-                            {!revision.meta.locked && (
+                            {!revision.meta.locked && canEdit(entry, "cms.contentEntry") && (
                                 <MenuItem
                                     onClick={() => {
                                         editRevision();
@@ -140,25 +144,27 @@ const Revision = (props: Props) => {
                                 </MenuItem>
                             )}
 
-                            {revision.meta.status !== "published" && (
-                                <MenuItem onClick={() => publishRevision(revision.id)}>
-                                    <ListItemGraphic>
-                                        <Icon icon={<PublishIcon />} />
-                                    </ListItemGraphic>
-                                    {t`Publish`}
-                                </MenuItem>
-                            )}
+                            {revision.meta.status !== "published" &&
+                                canPublish("cms.contentEntry") && (
+                                    <MenuItem onClick={() => publishRevision(revision.id)}>
+                                        <ListItemGraphic>
+                                            <Icon icon={<PublishIcon />} />
+                                        </ListItemGraphic>
+                                        {t`Publish`}
+                                    </MenuItem>
+                                )}
 
-                            {revision.meta.status === "published" && (
-                                <MenuItem onClick={unpublishRevision}>
-                                    <ListItemGraphic>
-                                        <Icon icon={<UnpublishIcon />} />
-                                    </ListItemGraphic>
-                                    {t`Unpublish`}
-                                </MenuItem>
-                            )}
+                            {revision.meta.status === "published" &&
+                                canUnpublish("cms.contentEntry") && (
+                                    <MenuItem onClick={unpublishRevision}>
+                                        <ListItemGraphic>
+                                            <Icon icon={<UnpublishIcon />} />
+                                        </ListItemGraphic>
+                                        {t`Unpublish`}
+                                    </MenuItem>
+                                )}
 
-                            {!revision.meta.locked && (
+                            {!revision.meta.locked && canDelete(entry, "cms.contentEntry") && (
                                 <div>
                                     <MenuDivider />
                                     <MenuItem onClick={() => showConfirmation(deleteRevision)}>

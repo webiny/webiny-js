@@ -2,6 +2,7 @@ import React, { useCallback } from "react";
 import styled from "@emotion/styled";
 import isEmpty from "lodash/isEmpty";
 import get from "lodash/get";
+import pick from "lodash/pick";
 import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
@@ -23,6 +24,7 @@ import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { useMutation, useQuery } from "@webiny/app-headless-cms/admin/hooks";
 import * as GQL from "./graphql";
+import usePermission from "../../hooks/usePermission";
 
 const t = i18n.ns("app-headless-cms/admin/content-model-groups/form");
 const ButtonWrapper = styled("div")({
@@ -36,6 +38,7 @@ type ContentModelGroupsFormProps = {
 function ContentModelGroupsForm({ canCreate }: ContentModelGroupsFormProps) {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
+    const { canEdit } = usePermission();
 
     const newEntry = new URLSearchParams(location.search).get("new") === "true";
     const id = new URLSearchParams(location.search).get("id");
@@ -83,8 +86,16 @@ function ContentModelGroupsForm({ canCreate }: ContentModelGroupsFormProps) {
     const onSubmit = useCallback(
         async ({ id, ...group }) => {
             const [operation, args] = id
-                ? [update, { variables: { id, data: group } }]
-                : [create, { variables: { data: group } }];
+                ? [
+                      update,
+                      {
+                          variables: {
+                              id,
+                              data: pick(group, ["name", "description", "icon"])
+                          }
+                      }
+                  ]
+                : [create, { variables: { data: pick(group, ["name", "description", "icon"]) } }];
 
             const response = await operation(args);
 
@@ -160,9 +171,11 @@ function ContentModelGroupsForm({ canCreate }: ContentModelGroupsFormProps) {
                             <ButtonDefault
                                 onClick={() => history.push("/cms/content-model-groups")}
                             >{t`Cancel`}</ButtonDefault>
-                            <ButtonPrimary
-                                onClick={form.submit}
-                            >{t`Save content model group`}</ButtonPrimary>
+                            {canEdit(data, "cms.contentModelGroup") && (
+                                <ButtonPrimary
+                                    onClick={form.submit}
+                                >{t`Save content model group`}</ButtonPrimary>
+                            )}
                         </ButtonWrapper>
                     </SimpleFormFooter>
                 </SimpleForm>

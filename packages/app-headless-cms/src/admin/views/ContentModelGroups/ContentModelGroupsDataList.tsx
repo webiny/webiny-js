@@ -27,6 +27,7 @@ import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import { serializeSorters, deserializeSorters } from "../utils";
+import usePermission from "../../hooks/usePermission";
 
 const t = i18n.ns("app-headless-cms/admin/content-model-groups/data-list");
 
@@ -61,6 +62,7 @@ const ContentModelGroupsDataList = ({ canCreate }: ContentModelGroupsDataListPro
     const listQuery = useQuery(GQL.LIST_CONTENT_MODEL_GROUPS);
 
     const { showConfirmation } = useConfirmationDialog();
+    const { canDelete } = usePermission();
 
     const filterData = useCallback(
         ({ name }) => {
@@ -203,12 +205,13 @@ const ContentModelGroupsDataList = ({ canCreate }: ContentModelGroupsDataListPro
                                         : t`No content models`}
                                 </ListItemTextSecondary>
                             </ListItemText>
-
-                            <ListItemMeta>
-                                <ListActions>
-                                    <DeleteIcon onClick={() => deleteItem(item)} />
-                                </ListActions>
-                            </ListItemMeta>
+                            {canDelete(item, "cms.contentModelGroup") && (
+                                <ListItemMeta>
+                                    <ListActions>
+                                        <DeleteIcon onClick={() => deleteItem(item)} />
+                                    </ListActions>
+                                </ListItemMeta>
+                            )}
                         </ListItem>
                     ))}
                 </List>
