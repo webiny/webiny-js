@@ -62,13 +62,13 @@ jobs:
   create-webiny-project:
     name: Test "create-webiny-project"
     runs-on: ubuntu-latest
+    env:
+      DIR_PR: ./pr # Submitted code will be cloned into this directory.
+      DIR_CWP: ./cwp # A new create-webiny-project folder will be initialized in this directory.
     steps:
-      - name: PWD
-        run: pwd
-
       - uses: actions/checkout@v2
         with:
-          path: dev-repo
+          path: ${{ DIR_PR }}
 
       - uses: actions/setup-node@v2-beta
         with:
@@ -76,38 +76,44 @@ jobs:
 
       - name: Install dependencies
         run: yarn --immutable
-
-      - name: PWD
-        run: pwd
+        working-directory: ${{ DIR_PR }}
 
       - name: Build packages
         run: yarn build
+        working-directory: ${{ DIR_PR }}
 
       - name: Start Verdaccio local server
         run: yarn verdaccio:start:detached
+        working-directory: ${{ DIR_PR }}
 
       - name: Create ".npmrc" file in the project root, with a d¡ummy auth token
         run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
+        working-directory: ${{ DIR_PR }}
 
       - name: Configure NPM to use local registry
         run: npm config set registry http://localhost:4873
+        working-directory: ${{ DIR_PR }}
 
       - name: Set git email
         run: git config --global user.email "webiny-bot@webiny.com"
+        working-directory: ${{ DIR_PR }}
 
       - name: Set git username
         run: git config --global user.name "webiny-bot"
+        working-directory: ${{ DIR_PR }}
 
       - name: Version packages (no push, no changelog)
         run: yarn lerna:version:verdaccio
+        working-directory: ${{ DIR_PR }}
 
       - name: Release to Verdaccio
         run: yarn lerna:publish:verdaccio
+        working-directory: ${{ DIR_PR }}
 
       - name: Create a new Webiny project
-        working-directory: ../
         run: npx create-webiny-project@beta new-webiny-project --tag beta --no-interactive --template-options '{"region":"eu-central-1","vpc":false}'
+        # working-directory: No need for that here, we want to execute the above command in the job root.
 
       - name: List all files and folders
-        working-directory: ../new-webiny-project
+        working-directory: ${{ DIR_CWP }}
         run: ls -alh
