@@ -1,7 +1,7 @@
 name: Pull Request (v5)
 
 on:
-  push:
+  pull_request:
     branches: [next]
 
 env:
