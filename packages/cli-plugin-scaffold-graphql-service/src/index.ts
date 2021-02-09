@@ -1,25 +1,24 @@
 import WebinyError from "@webiny/error";
 import fs from "fs";
-// const fs = require("fs");
-// const path = require("path");
 import path from "path";
-// const util = require("util");
 import util from "util";
-const ncpPromisified = util.promisify(require("ncp").ncp);
-// import ncp from "ncp";
-const findUp = require("find-up");
-const camelCase = require("lodash.camelcase");
-const kebabCase = require("lodash.kebabcase");
-const readJson = require("load-json-file");
-const writeJson = require("write-json-file");
-const pluralize = require("pluralize");
-const Case = require("case");
-const { replaceInPath } = require("replace-in-path");
-const execa = require("execa");
-const { green } = require("chalk");
-const indentString = require("indent-string");
+import ncpBase from "ncp";
+import findUp from "find-up";
+import readJson from "load-json-file";
+import writeJson from "write-json-file";
+import pluralize from "pluralize";
+import Case from "case";
+import { replaceInPath } from "replace-in-path";
+import execa from "execa";
+import chalk from "chalk";
+import indentString from "indent-string";
+import {
+    CliCommandScaffoldTemplate,
+    PackageJson,
+    TsConfigJson
+} from "@webiny/cli-plugin-scaffold/types";
 
-import { CliCommandScaffoldTemplate } from "@webiny/cli-plugin-scaffold/types";
+const ncp = util.promisify(ncpBase.ncp);
 
 export default (): CliCommandScaffoldTemplate => ({
     name: "cli-plugin-scaffold-template-graphql-service",
@@ -31,9 +30,9 @@ export default (): CliCommandScaffoldTemplate => ({
                 {
                     name: "location",
                     message: "Enter package location (including package name)",
-                    default: "api/books",
+                    default: "api/code/books",
                     validate: location => {
-                        if (location === "") {
+                        if (location.length < 2) {
                             return "Please enter a package location";
                         }
 
@@ -41,24 +40,16 @@ export default (): CliCommandScaffoldTemplate => ({
                             return "The target location already exists";
                         }
 
-                        const rootResourcesPath = findUp.sync("resources.js", {
-                            cwd: path.resolve(location)
-                        });
-
-                        if (!rootResourcesPath) {
-                            return `Resources file was not found. Make sure your package is inside of your project's root and that either it or one of its parent directories contains resources.js`;
-                        }
-
                         return true;
                     }
                 },
                 {
-                    name: "initialEntityName",
+                    name: "entityName",
                     message: "Enter name of the initial data model",
                     default: "Book",
                     validate: name => {
-                        if (!name.match(/[a-zA-Z]*/)) {
-                            return "A valid entity name must consist of letters only.";
+                        if (!name.match(/^([a-zA-Z]+)$/)) {
+                            return "A valid target name must consist of letters only.";
                         }
 
                         return true;
@@ -66,12 +57,9 @@ export default (): CliCommandScaffoldTemplate => ({
                 }
             ];
         },
-        generate: async ({ input, wait, oraSpinner }) => {
-            const { location, initialEntityName } = input;
+        generate: async ({ input, oraSpinner }) => {
+            const { location, entityName } = input;
             const fullLocation = path.resolve(location);
-            const rootResourcesPath = findUp.sync("resources.js", {
-                cwd: fullLocation
-            });
 
             const projectRootPath = path.dirname(
                 findUp.sync("webiny.root.js", {
@@ -79,23 +67,16 @@ export default (): CliCommandScaffoldTemplate => ({
                 })
             );
 
-            const relativeLocation = path
-                .relative(path.dirname(rootResourcesPath), fullLocation)
-                .replace(/\\/g, "/");
+            const packageName = Case.kebab(location);
 
-            const packageName = kebabCase(location);
-            const resourceName = camelCase(packageName);
-            const serviceName = packageName.replace(/-/g, "_").toUpperCase();
-
-            // Then we also copy the template folder
-            const sourceFolder = path.join(__dirname, "template");
+            //
+            const templateFolder = path.join(__dirname, "../template");
 
             if (fs.existsSync(location)) {
                 throw new Error(`Destination folder ${location} already exists!`);
             }
 
-            oraSpinner.start(`Creating service files in ${green(fullLocation)}...`);
-            await wait();
+            oraSpinner.start(`Creating service files in ${chalk.green(fullLocation)}...`);
 
             await fs.mkdirSync(location, { recursive: true });
 
@@ -110,35 +91,31 @@ export default (): CliCommandScaffoldTemplate => ({
                 .replace(/\\/g, "/");
 
             // Copy template files
-            await ncpPromisified(sourceFolder, location);
+            await ncp(templateFolder, fullLocation);
 
-            // Replace generic "Entity" with received "input.initialEntityName" argument.
+            // Replace generic "Target" with received "input.entityName" argument.
             const entity = {
-                plural: pluralize(Case.camel(initialEntityName)),
-                singular: pluralize.singular(Case.camel(initialEntityName))
+                plural: pluralize(Case.camel(entityName)),
+                singular: pluralize.singular(Case.camel(entityName))
             };
 
             const codeReplacements = [
-                { find: "entities", replaceWith: Case.camel(entity.plural) },
-                { find: "Entities", replaceWith: Case.pascal(entity.plural) },
-                { find: "ENTITIES", replaceWith: Case.constant(entity.plural) },
-                { find: "entity", replaceWith: Case.camel(entity.singular) },
-                { find: "Entity", replaceWith: Case.pascal(entity.singular) },
-                { find: "ENTITY", replaceWith: Case.constant(entity.singular) }
+                { find: "targets", replaceWith: Case.camel(entity.plural) },
+                { find: "Targets", replaceWith: Case.pascal(entity.plural) },
+                { find: "TARGETS", replaceWith: Case.constant(entity.plural) },
+                { find: "target", replaceWith: Case.camel(entity.singular) },
+                { find: "Target", replaceWith: Case.pascal(entity.singular) },
+                { find: "TARGET", replaceWith: Case.constant(entity.singular) }
             ];
 
             replaceInPath(path.join(fullLocation, "src/**/*.ts"), codeReplacements);
-            replaceInPath(path.join(fullLocation, "__tests__/**/*.js"), codeReplacements);
+            replaceInPath(path.join(fullLocation, "__tests__/**/*.ts"), codeReplacements);
 
             // Make sure to also rename base file names.
             const fileNameReplacements = [
                 {
-                    find: "src/plugins/models/entity.model.ts",
-                    replaceWith: `src/plugins/models/${entity.singular}.model.ts`
-                },
-                {
-                    find: "__tests__/graphql/entities.js",
-                    replaceWith: `__tests__/graphql/${entity.plural}.js`
+                    find: "__tests__/graphql/targets.ts",
+                    replaceWith: `__tests__/graphql/${entity.plural}.ts`
                 },
                 {
                     find: "example.tsconfig.json",
@@ -146,8 +123,7 @@ export default (): CliCommandScaffoldTemplate => ({
                 }
             ];
 
-            for (let i = 0; i < fileNameReplacements.length; i++) {
-                const fileNameReplacement = fileNameReplacements[i];
+            for (const fileNameReplacement of fileNameReplacements) {
                 fs.renameSync(
                     path.join(fullLocation, fileNameReplacement.find),
                     path.join(fullLocation, fileNameReplacement.replaceWith)
@@ -155,82 +131,49 @@ export default (): CliCommandScaffoldTemplate => ({
             }
 
             oraSpinner.stopAndPersist({
-                symbol: green("✔"),
-                text: `Service files created in ${green(fullLocation)}.`
+                symbol: chalk.green("✔"),
+                text: `Service files created in ${chalk.green(fullLocation)}.`
             });
 
             // Update root package.json - update "workspaces.packages" section.
             oraSpinner.start(
-                `Adding ${green(input.location)} workspace in root ${green(`package.json`)}..`
+                `Adding ${chalk.green(input.location)} workspace in root ${chalk.green(
+                    `package.json`
+                )}..`
             );
-            await wait();
 
             const rootPackageJsonPath = path.join(projectRootPath, "package.json");
-            const rootPackageJson = await readJson(rootPackageJsonPath);
+            const rootPackageJson = await readJson<PackageJson>(rootPackageJsonPath);
             if (!rootPackageJson.workspaces.packages.includes(input.location)) {
                 rootPackageJson.workspaces.packages.push(input.location);
                 await writeJson(rootPackageJsonPath, rootPackageJson);
             }
 
             oraSpinner.stopAndPersist({
-                symbol: green("✔"),
-                text: `Workspace ${green(input.location)} added in root ${green(`package.json`)}.`
+                symbol: chalk.green("✔"),
+                text: `Workspace ${chalk.green(input.location)} added in root ${chalk.green(
+                    `package.json`
+                )}.`
             });
 
             // Update the package's name
             const packageJsonPath = path.resolve(location, "package.json");
-            let packageJson = fs.readFileSync(packageJsonPath, "utf8");
-            packageJson = packageJson.replace("[PACKAGE_NAME]", packageName);
-            fs.writeFileSync(packageJsonPath, packageJson);
-
-            // Inject resource into closest resources.js
-            const { transform } = require("@babel/core");
-            const source = fs.readFileSync(rootResourcesPath, "utf8");
-            let resourceTpl = fs.readFileSync(path.join(__dirname, "resource.tpl"), "utf8");
-            resourceTpl = resourceTpl.replace(/\[PACKAGE_PATH]/g, relativeLocation);
-
-            oraSpinner.start(
-                `Adding ${green(resourceName)} resource in ${green(rootResourcesPath)}...`
-            );
-            await wait();
-
-            const { code } = await transform(source, {
-                plugins: [
-                    [
-                        __dirname + "/transform",
-                        {
-                            template: resourceTpl,
-                            resourceName,
-                            serviceName: `LAMBDA_SERVICE_${serviceName}`
-                        }
-                    ]
-                ]
-            });
-
-            oraSpinner.stopAndPersist({
-                symbol: green("✔"),
-                text: `Resource ${green(resourceName)} added in ${green(rootResourcesPath)}.`
-            });
+            const packageJson = await readJson<PackageJson>(packageJsonPath);
+            packageJson.name = packageName;
+            fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 
             // Update tsconfig "extends" path
             const tsConfigPath = path.join(fullLocation, "tsconfig.json");
-            const tsconfig = require(tsConfigPath);
+            const tsconfig = await readJson<TsConfigJson>(tsConfigPath);
             tsconfig.extends = baseTsConfigPath;
             fs.writeFileSync(tsConfigPath, JSON.stringify(tsconfig, null, 2));
-
-            // Format code with prettier
-            const prettier = require("prettier");
-            const prettierConfig = await prettier.resolveConfig(rootResourcesPath);
-            const formattedCode = prettier.format(code, { ...prettierConfig, parser: "babel" });
-
-            fs.writeFileSync(rootResourcesPath, formattedCode);
 
             // Once everything is done, run `yarn` so the new packages are automatically installed.
             try {
                 oraSpinner.start(`Installing dependencies...`);
                 await execa("yarn");
                 oraSpinner.stopAndPersist({
-                    symbol: green("✔"),
+                    symbol: chalk.green("✔"),
                     text: "Dependencies installed."
                 });
             } catch (err) {
@@ -242,44 +185,29 @@ export default (): CliCommandScaffoldTemplate => ({
         },
         onSuccess({ input }) {
             const { location } = input;
-            const fullLocation = path.resolve(location);
-            const pluginsLocation = path.join(fullLocation, "/src/plugins");
-            const projectRootPath = path.dirname(
-                findUp.sync("webiny.root.js", {
-                    cwd: fullLocation
-                })
-            );
-            const rootResourcesPath = path.dirname(
-                findUp.sync("resources.js", {
-                    cwd: fullLocation
-                })
-            );
-
-            const deployCommandStackPath = rootResourcesPath
-                .replace(projectRootPath, "")
-                .replace("/", "");
-
             console.log(`The next steps:`);
             console.log(
                 indentString(
-                    `1. Edit existing and create new plugins in ${green(pluginsLocation)}.`,
+                    `1. In ${chalk.green(
+                        "api/code/graphql/index.ts"
+                    )} import your plugin file ${chalk.green(
+                        `${location}/index.ts`
+                    )} and load plugins in the handler.`,
                     2
                 )
             );
             console.log(
                 indentString(
-                    `2. From project root, run ${green(
-                        "yarn test"
+                    `2. From project root, run ${chalk.green(
+                        `yarn test ${location}`
                     )} to ensure that the service works.`,
                     2
                 )
             );
             console.log(
                 indentString(
-                    `3. Finally, deploy the ${green(
-                        deployCommandStackPath
-                    )} stack by running ${green(
-                        `webiny deploy ${deployCommandStackPath} --env local`
+                    `3. Finally, deploy the ${chalk.green(location)} stack by running ${chalk.green(
+                        `yarn webiny app deploy ${location} --env=dev`
                     )}.`,
                     2
                 )

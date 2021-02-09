@@ -15,7 +15,6 @@
   },
   "homepage": "https://github.com/webiny/webiny-js#readme",
   "dependencies": {
-    "@babel/core": "^7.9.6",
     "@webiny/error": "^5.0.0-beta.0",
     "case": "^1.6.3",
     "chalk": "^4.1.0",
@@ -23,11 +22,8 @@
     "find-up": "^5.0.0",
     "indent-string": "^4.0.0",
     "load-json-file": "^6.2.0",
-    "lodash.camelcase": "^4.3.0",
-    "lodash.kebabcase": "^4.1.1",
     "ncp": "^2.0.0",
     "pluralize": "^8.0.0",
-    "prettier": "^2.2.1",
     "replace-in-path": "^1.0.4",
     "write-json-file": "^4.3.0"
   },
@@ -39,7 +35,6 @@
     "@types/inquirer": "^7.3.1",
     "@types/ncp": "^2.0.4",
     "@types/pluralize": "^0.0.29",
-    "@types/prettier": "^2.1.6",
     "@webiny/cli-plugin-scaffold": "^4.14.0",
     "@webiny/handler": "^5.0.0-beta.4",
     "@webiny/plugins": "^5.0.0-beta.4",
