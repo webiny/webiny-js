@@ -7,13 +7,14 @@ on:
 env:
   NODE_OPTIONS: --max_old_space_size=4096
 
+defaults:
+  run:
+    working-directory: webiny-dev-repo
+
 jobs:
   initial-checks:
     name: Initial checks
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: webiny-dev-repo
     steps:
       - uses: actions/checkout@v2
 
