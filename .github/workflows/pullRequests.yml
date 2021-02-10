@@ -107,9 +107,6 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
-      - name: List all files and folders
-        run: pwd && ls -alh
-
       - name: Start Verdaccio local server
         run: yarn add pm2 verdaccio && yarn pm2 start yarn --node-args "verdaccio -c .verdaccio.yaml"
 
@@ -118,7 +115,3 @@ jobs:
 
       - name: Create a new Webiny project
         run: npx create-webiny-project@beta test-project --tag beta --no-interactive --template-options '{"region":"eu-central-1","vpc":false}'
-
-      - name: List all files and folders
-        working-directory: test-project
-        run: ls -alh
