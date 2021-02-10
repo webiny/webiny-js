@@ -1,7 +1,8 @@
 const run = require("./run");
+const tracking = require("./tracking");
 
 module.exports.createCommands = (yargs, context) => {
-    context.plugins.register(run);
+    context.plugins.register(run, tracking);
 
     context.loadUserPlugins();
 
