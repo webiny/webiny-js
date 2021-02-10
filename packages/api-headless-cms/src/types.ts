@@ -1660,7 +1660,7 @@ export interface CmsModelFieldToElasticsearchPlugin extends Plugin {
      * unmappedType: "date"
      * ```
      */
-    unmappedType?: string;
+    unmappedType?: (field: CmsContentModelField) => string;
     /**
      * This is meant to do some transformation of the entry, preferably only to fieldType it was defined for. Nothing is stopping you to do anything you want to other fields, but try to separate field transformations.
      * It returns `Partial<CmsContentIndexEntryType>`. Always return a top-level property of the entry since it is merged via spread operator.

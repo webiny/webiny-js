@@ -130,7 +130,7 @@ describe("refField", () => {
             data: {
                 title: "Potato",
                 price: 100,
-                availableOn: "2020-12-25T16:37:00Z.000",
+                availableOn: "2020-12-25",
                 color: "white",
                 availableSizes: ["s", "m"],
                 image: "file.jpg",

@@ -1,11 +1,15 @@
-import GraphQLLong from "graphql-type-long";
-import { GraphQLDateTime } from "graphql-iso-date";
 import { GraphQLScalarPlugin, GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { CmsContext } from "@webiny/api-headless-cms/types";
-import GraphQLJSON from "graphql-type-json";
-import { RefInput } from "@webiny/handler-graphql/builtInTypes/RefInputScalar";
-import { Number } from "@webiny/handler-graphql/builtInTypes/NumberScalar";
-import { Any } from "@webiny/handler-graphql/builtInTypes/AnyScalar";
+import {
+    RefInput,
+    Number as NumberScalar,
+    Any as AnyScalar,
+    DateTimeScalar,
+    DateScalar,
+    TimeScalar,
+    LongScalar,
+    JsonScalar
+} from "@webiny/handler-graphql/builtInTypes";
 
 const baseSchema = (context: CmsContext): GraphQLSchemaPlugin => {
     const scalars = context.plugins
@@ -23,6 +27,8 @@ const baseSchema = (context: CmsContext): GraphQLSchemaPlugin => {
                 scalar RefInput
                 scalar Number
                 scalar Any
+                scalar Date
+                scalar Time
 
                 type Query
 
@@ -63,12 +69,14 @@ const baseSchema = (context: CmsContext): GraphQLSchemaPlugin => {
                     acc[s.name] = s;
                     return acc;
                 }, {}),
-                JSON: GraphQLJSON,
-                DateTime: GraphQLDateTime,
-                Long: GraphQLLong,
+                JSON: JsonScalar,
+                DateTime: DateTimeScalar,
+                Long: LongScalar,
                 RefInput,
-                Number,
-                Any,
+                Number: NumberScalar,
+                Any: AnyScalar,
+                Date: DateScalar,
+                Time: TimeScalar,
                 Mutation: {
                     _empty: () => "_empty"
                 }

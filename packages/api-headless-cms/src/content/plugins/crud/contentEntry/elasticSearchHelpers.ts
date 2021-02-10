@@ -18,7 +18,7 @@ import Error from "@webiny/error";
 import lodashCloneDeep from "lodash/cloneDeep";
 
 interface ModelField {
-    unmappedType?: string;
+    unmappedType?: (field: CmsContentModelField) => string;
     isSearchable: boolean;
     isSortable: boolean;
     type: string;
@@ -250,21 +250,25 @@ const createModelFieldOptions = (context: CmsContext, model: CmsContentModel): M
         },
         savedOn: {
             type: "date",
-            unmappedType: "date",
+            unmappedType: () => {
+                return "date";
+            },
             isSystemField: true,
             isSearchable: true,
             isSortable: true
         },
         createdOn: {
             type: "date",
-            unmappedType: "date",
+            unmappedType: () => {
+                return "date";
+            },
             isSystemField: true,
             isSearchable: true,
             isSortable: true
         }
     };
     // collect all unmappedType from elastic plugins
-    const unmappedTypes = context.plugins
+    const unmappedTypes: ModelFields = context.plugins
         .byType<CmsModelFieldToElasticsearchPlugin>("cms-model-field-to-elastic-search")
         .reduce((acc, plugin) => {
             if (!plugin.unmappedType) {
@@ -280,14 +284,15 @@ const createModelFieldOptions = (context: CmsContext, model: CmsContentModel): M
             const { fieldType, isSearchable, isSortable } = plugin;
             const unmappedType = unmappedTypes[fieldType];
             types[fieldType] = {
-                unmappedType: unmappedType || undefined,
+                unmappedType: unmappedType,
                 isSearchable: isSearchable === true,
                 isSortable: isSortable === true
             };
             return types;
         }, {});
 
-    return model.fields.reduce((fields, { fieldId, type }) => {
+    return model.fields.reduce((fields, field) => {
+        const { fieldId, type } = field;
         if (!pluginFieldTypes[type]) {
             throw new Error(`There is no plugin for field type "${type}".`);
         }
@@ -296,7 +301,7 @@ const createModelFieldOptions = (context: CmsContext, model: CmsContentModel): M
             type,
             isSearchable,
             isSortable,
-            unmappedType,
+            unmappedType: unmappedType(field),
             isSystemField: false
         };
 

@@ -23,9 +23,9 @@ describe("fieldValidations", () => {
         lowerCase: "lowercase",
         upperCase: "UPPERCASE",
         date: "2020-12-15",
-        dateTime: "2020-12-15T12:01:01",
-        dateTimeZ: "2020-12-15T12:01:01+01:00",
-        time: "12:01:01"
+        dateTime: new Date("2020-12-15T12:12:21").toISOString(),
+        dateTimeZ: new Date("2020-12-15T14:52:41+01:00").toISOString(),
+        time: "13:29:58"
     };
 
     // This function is not directly within `beforeEach` as we don't always setup the same content model.
@@ -574,7 +574,7 @@ describe("fieldValidations", () => {
             const [response] = await createFruit({
                 data: {
                     ...defaultFruitData,
-                    dateTime
+                    dateTime: new Date(dateTime).toISOString()
                 }
             });
 
@@ -616,7 +616,7 @@ describe("fieldValidations", () => {
             const [response] = await createFruit({
                 data: {
                     ...defaultFruitData,
-                    dateTimeZ
+                    dateTimeZ: new Date(dateTimeZ)
                 }
             });
 
