@@ -8429,6 +8429,7 @@ __metadata:
   dependencies:
     "@webiny/cli": 5.0.0-beta.4
     "@webiny/cli-plugin-deploy-pulumi": ^5.0.0-beta.4
+    "@webiny/tracking": ^5.0.0-beta.4
     chalk: 4.1.0
     create-webiny-project: ^5.0.0-beta.4
     dotenv: ^8.2.0
