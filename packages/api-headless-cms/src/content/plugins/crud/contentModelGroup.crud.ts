@@ -115,8 +115,7 @@ export default (): ContextPlugin<CmsContext> => ({
             const { where, limit } = args || {};
             const [groups] = await db.read<CmsContentModelGroup>({
                 ...utils.defaults.db,
-                query: { PK: PK_GROUP(), SK: { $gt: " " } },
-                limit
+                query: { PK: PK_GROUP(), SK: { $gt: " " } }
             });
 
             const whereKeys = Object.keys(where || {});
@@ -124,7 +123,9 @@ export default (): ContextPlugin<CmsContext> => ({
                 return groups;
             }
 
-            return groups.filter(whereFilterFactory(where));
+            const filteredGroups = groups.filter(whereFilterFactory(where));
+
+            return typeof limit !== "undefined" ? filteredGroups.slice(0, limit) : filteredGroups;
         };
 
         const groups: CmsContentModelGroupContext = {
