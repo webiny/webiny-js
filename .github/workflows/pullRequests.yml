@@ -40,8 +40,8 @@ jobs:
       - uses: actions/checkout@v2
       - uses: webiny/action-conventional-commits@v1.0.2
 
-  build-test:
-    name: Build and test
+  build-test-verdaccio-release:
+    name: Build, test, and release to Verdaccio
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -58,23 +58,6 @@ jobs:
 
       - name: Run tests
         run: yarn test
-
-  verdaccio-publish:
-    needs: [initial-checks, build-test]
-    name: Build and publish to Verdaccio
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - uses: actions/setup-node@v2-beta
-        with:
-          node-version: 12
-
-      - name: Install dependencies
-        run: yarn --immutable
-
-      - name: Build packages
-        run: yarn build
 
       - name: Start Verdaccio local server
         run: yarn verdaccio:start:detached
@@ -107,7 +90,7 @@ jobs:
             .verdaccio.yaml
 
   test-create-webiny-project:
-    needs: verdaccio-publish
+    needs: [initial-checks, build-test-verdaccio-release]
     name: Test "create-webiny-project"
     strategy:
       fail-fast: false
@@ -127,6 +110,9 @@ jobs:
       - name: PWD
         run: pwd
 
+      - name: List all files and folders
+        run: ls -alh
+
       - name: Start Verdaccio local server
         run: npx verdaccio -c .verdaccio.yaml
 
@@ -137,4 +123,5 @@ jobs:
         run: npx create-webiny-project@beta test-project --tag beta --no-interactive --template-options '{"region":"eu-central-1","vpc":false}'
 
       - name: List all files and folders
+        working-directory: test-project
         run: ls -alh
