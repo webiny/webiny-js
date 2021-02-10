@@ -124,6 +124,9 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
+      - name: PWD
+        run: pwd
+
       - name: Start Verdaccio local server
         run: npx verdaccio -c .verdaccio.yaml
 
