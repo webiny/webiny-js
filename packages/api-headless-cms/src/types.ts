@@ -38,6 +38,10 @@ interface BaseCmsValuesObject {
      * Means this request is a PREVIEW API
      */
     PREVIEW: boolean;
+    /**
+     * Get Read API key
+     */
+    getReadAPIKey: () => Promise<string>;
 }
 /**
  * @description This combines all contexts used in the CMS into a single one.
@@ -621,6 +625,10 @@ export interface CmsSettings {
      * Last content model change. Used to cache GraphQL schema.
      */
     contentModelLastChange: Date;
+    /**
+     * Internal API key used to access Read API
+     */
+    readAPIKey: string;
 }
 
 /**
@@ -653,7 +661,7 @@ export interface CmsSettingsContext {
     /**
      * Updates settings model with a new date.
      */
-    updateContentModelLastChange: () => Promise<CmsSettings>;
+    updateContentModelLastChange: () => Promise<void>;
     /**
      * Get the datetime when content model last changed.
      */

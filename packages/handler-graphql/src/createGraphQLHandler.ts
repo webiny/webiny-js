@@ -69,6 +69,10 @@ export default (options: HandlerGraphQLOptions = {}): PluginCollection => {
                     );
 
                     if (debug) {
+                        context.plugins.byType("handler-graphql-after-query").forEach(pl => {
+                            pl.apply(report, context);
+                        });
+
                         return context.http.response({
                             statusCode: 500,
                             body: JSON.stringify(report, null, 2),

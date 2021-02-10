@@ -62,6 +62,7 @@ export type Page = {
     pid: string;
     title: string;
     path: string;
+    pattern: boolean;
     category: string;
     content: Record<string, any>;
     publishedOn: string;
@@ -84,6 +85,7 @@ export type Page = {
             layout: string;
             image: File;
         };
+        dataSources?: DataSourceSettings[];
     };
     locked: boolean;
     status: PageStatus;
@@ -105,7 +107,23 @@ export type Page = {
         id: string;
         displayName: string;
     };
+    // This property can exist only on `getPublishedPage` query.
+    dataSources?: DataSource[];
 };
+
+export interface DataSource {
+    name: string;
+    data: any;
+}
+
+export interface DataSourceSettings {
+    // "type" refers to the type of data source (CMS, REST, etc. This comes from the data source plugin).
+    type: string;
+    // A name of the data-source, which will be useful in the UI and to reference the dataset.
+    name: string;
+    // Configuration of the datasource.
+    config: Record<string, any>;
+}
 
 export type File = {
     id: string;

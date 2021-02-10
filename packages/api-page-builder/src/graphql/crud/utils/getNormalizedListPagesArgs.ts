@@ -26,6 +26,10 @@ const getQuery = (args: ListPagesArgs) => {
     };
 
     if (where) {
+        if (where.pattern) {
+            query.bool.filter.push({ term: { pattern: where.pattern } });
+        }
+
         if (where.category) {
             query.bool.filter.push({ term: { "category.keyword": where.category } });
         }

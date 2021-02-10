@@ -9,6 +9,7 @@ import fieldTypePlugins from "./plugins/graphqlFields";
 import validatorsPlugins from "./plugins/validators";
 import elasticSearchPlugins from "./plugins/es";
 import fieldsStoragePlugins from "./plugins/fieldsStorage";
+import internalSecurity from "./plugins/internalSecurity";
 
 interface CmsContentPluginsIndexArgs {
     debug?: boolean;
@@ -25,5 +26,6 @@ export default (options: CmsContentPluginsIndexArgs = {}) => [
     fieldTypePlugins(),
     fieldsStoragePlugins(),
     validatorsPlugins(),
-    elasticSearchPlugins()
+    elasticSearchPlugins(),
+    internalSecurity()
 ];

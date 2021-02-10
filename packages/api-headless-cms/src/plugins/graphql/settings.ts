@@ -31,6 +31,7 @@ export default {
                     await cms.settings.install();
                     return new Response(true);
                 } catch (e) {
+                    console.log("install", e.stack);
                     return new ErrorResponse(e);
                 }
             }

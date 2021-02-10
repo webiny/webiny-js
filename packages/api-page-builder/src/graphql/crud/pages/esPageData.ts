@@ -16,6 +16,8 @@ export const getESPageData = (context: PbContext, page) => {
         title: page.title,
         titleLC: page.title.toLowerCase(),
         path: page.path,
+        pattern: page.pattern,
+        // dataSources: [{ type: "webiny.headless", contentModels: ["article"] }],
         status: page.status,
         locked: page.locked,
         publishedOn: page.publishedOn,
@@ -46,6 +48,7 @@ export const getESUpdateLatestPageData = updateData => {
         title: updateData.title,
         titleLC: updateData?.title?.toLowerCase(),
         path: updateData.path,
+        pattern: updateData.pattern,
         savedOn: updateData.savedOn,
 
         // Save some images that could maybe be used on listing pages.

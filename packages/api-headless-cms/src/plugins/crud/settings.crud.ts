@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import { ContextPlugin } from "@webiny/handler/types";
 import Error from "@webiny/error";
 import { NotAuthorizedError } from "@webiny/api-security";
@@ -17,7 +18,7 @@ const initialContentModelGroup = {
     icon: "fas/star"
 };
 
-const SETTINGS_SECONDARY_KEY = "settings";
+const SK_SETTINGS = "settings";
 
 export default {
     type: "context",
@@ -31,11 +32,29 @@ export default {
             return utils.checkPermissions(context, "cms.settings");
         };
 
+        const createAPIKey = () => {
+            return crypto.randomBytes(Math.ceil(48 / 2)).toString("hex");
+        };
+
         const settingsGet = async () => {
             const [[settings]] = await db.read<CmsSettings>({
                 ...utils.defaults.db,
-                query: { PK: PK_SETTINGS(), SK: SETTINGS_SECONDARY_KEY }
+                query: { PK: PK_SETTINGS(), SK: SK_SETTINGS }
             });
+
+            if (settings && !settings.readAPIKey) {
+                settings.readAPIKey = createAPIKey();
+                await db.update({
+                    ...utils.defaults.db,
+                    query: {
+                        PK: PK_SETTINGS(),
+                        SK: SK_SETTINGS
+                    },
+                    data: {
+                        readAPIKey: settings.readAPIKey
+                    }
+                });
+            }
 
             return settings;
         };
@@ -93,7 +112,8 @@ export default {
 
                 const model: CmsSettings = {
                     isInstalled: true,
-                    contentModelLastChange: contentModelGroup.savedOn
+                    contentModelLastChange: contentModelGroup.savedOn,
+                    readAPIKey: createAPIKey()
                 };
 
                 // Store the initial timestamp which is then used to determine if CMS Schema was changed.
@@ -104,7 +124,7 @@ export default {
                     ...utils.defaults.db,
                     data: {
                         PK: PK_SETTINGS(),
-                        SK: SETTINGS_SECONDARY_KEY,
+                        SK: SK_SETTINGS,
                         TYPE: "cms.settings",
                         ...model
                     }
@@ -112,14 +132,14 @@ export default {
 
                 return model;
             },
-            updateContentModelLastChange: async (): Promise<CmsSettings> => {
+            updateContentModelLastChange: async (): Promise<void> => {
                 const updatedDate = new Date();
 
                 await db.update({
                     ...utils.defaults.db,
                     query: {
                         PK: PK_SETTINGS(),
-                        SK: SETTINGS_SECONDARY_KEY
+                        SK: SK_SETTINGS
                     },
                     data: {
                         lastContentModelChange: updatedDate
@@ -127,11 +147,6 @@ export default {
                 });
 
                 context.cms.settings.contentModelLastChange = updatedDate;
-
-                return {
-                    isInstalled: true,
-                    contentModelLastChange: updatedDate
-                };
             },
             getContentModelLastChange: (): Date => {
                 return context.cms.settings.contentModelLastChange;
@@ -139,7 +154,11 @@ export default {
         };
         context.cms = {
             ...(context.cms || ({} as any)),
-            settings
+            settings,
+            async getReadAPIKey() {
+                const settings = await settingsGet();
+                return settings ? settings.readAPIKey : null;
+            }
         };
     }
 } as ContextPlugin<CmsContext>;

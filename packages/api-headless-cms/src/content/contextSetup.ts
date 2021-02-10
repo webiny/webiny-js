@@ -1,5 +1,5 @@
 import { Context, ContextPlugin } from "@webiny/handler/types";
-import { CmsContext } from "@webiny/api-headless-cms/types";
+import { CmsContext, CmsSettings } from "@webiny/api-headless-cms/types";
 
 interface CmsHttpParameters {
     type: string;
@@ -35,7 +35,7 @@ const setContextCmsVariables = async (context: CmsContext): Promise<void> => {
     // Need to load settings because of the timestamp of last change to content models.
     // Based on that timestamp, we cache/refresh the schema definition.
     const settings = await context.cms.settings.noAuth().get();
-    context.cms.getSettings = () => ({
+    context.cms.getSettings = (): CmsSettings => ({
         ...settings,
         contentModelLastChange: context.cms.settings.contentModelLastChange
     });
