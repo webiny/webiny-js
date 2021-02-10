@@ -94,7 +94,7 @@ interface CliCommandScaffold<T extends Answers> {
     /**
      * Trigger when generator completes.
      */
-    onSuccess: (args: CliCommandScaffoldCallableArgs) => void;
+    onSuccess: (args: CliCommandScaffoldCallableArgs) => Promise<void>;
     /**
      * Trigger when there is a generator error.
      */
