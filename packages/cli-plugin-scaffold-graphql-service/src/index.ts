@@ -188,7 +188,7 @@ export default (): CliCommandScaffoldTemplate => ({
                 );
             }
         },
-        onSuccess({ input }) {
+        onSuccess: async ({ input }) => {
             const { location } = input;
             console.log(`The next steps:`);
             console.log(
