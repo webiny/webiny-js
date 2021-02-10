@@ -111,7 +111,7 @@ jobs:
         run: pwd && ls -alh
 
       - name: Start Verdaccio local server
-        run: yarn add pm2 verdaccio && yarn pm2 start "yarn verdaccio -c ./.verdaccio.yaml"
+        run: yarn add pm2 verdaccio && yarn pm2 start "yarn verdaccio" --node-args="-c=.verdaccio.yaml"
 
       - name: Configure NPM to use local registry
         run: npm config set registry http://localhost:4873
