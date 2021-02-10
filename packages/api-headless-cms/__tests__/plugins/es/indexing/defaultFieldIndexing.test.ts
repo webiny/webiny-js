@@ -1,4 +1,4 @@
-import defaultFieldIndexPlugin from "../../../../src/content/plugins/es/indexing/defaultFieldIndexPlugin";
+import defaultFieldIndexPlugin from "../../../../src/content/plugins/es/indexing/defaultFieldIndexing";
 import {
     CmsContentEntry,
     CmsContentModelField,
@@ -46,6 +46,7 @@ const mockRichTextField: CmsContentModelField = {
     type: "rich-text",
     label: "Rich text",
     validation: [],
+    listValidation: [],
     multipleValues: false,
     renderer: {
         name: "any"
@@ -79,6 +80,7 @@ const mockTextField: CmsContentModelField = {
     type: "text",
     label: "Plain text",
     validation: [],
+    listValidation: [],
     multipleValues: false,
     renderer: {
         name: "any"
