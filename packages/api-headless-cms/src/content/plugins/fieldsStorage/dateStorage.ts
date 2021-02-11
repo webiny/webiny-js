@@ -1,4 +1,7 @@
-import { CmsModelFieldToStoragePlugin } from "@webiny/api-headless-cms/types";
+import {
+    CmsContentModelDateTimeField,
+    CmsModelFieldToStoragePlugin
+} from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
 
 export default (): CmsModelFieldToStoragePlugin => ({
@@ -6,8 +9,8 @@ export default (): CmsModelFieldToStoragePlugin => ({
     name: "cms-model-field-to-storage-datetime",
     fieldType: "datetime",
     async fromStorage({ field, value }): Promise<Date | string> {
-        const { type } = field.settings;
-        if (!value || type === "time") {
+        const { type } = (field as CmsContentModelDateTimeField).settings;
+        if (!value || type === "time" || type === "dateTimeWithTimezone") {
             return value;
         }
         try {
