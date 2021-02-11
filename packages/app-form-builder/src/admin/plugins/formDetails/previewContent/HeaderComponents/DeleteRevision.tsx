@@ -12,11 +12,18 @@ import {
     removeRevisionFromFormCache,
     updateLatestRevisionInListCache
 } from "../../../../views/cache";
+import usePermission from "../../../../../hooks/usePermission";
 
 const DeleteRevision = ({ revisions, form, revision, selectRevision }) => {
     const { showSnackbar } = useSnackbar();
     const client = useApolloClient();
     const { history } = useRouter();
+    const { canDelete } = usePermission();
+
+    // Render nothing is user doesn't have required permission.
+    if (!canDelete(form)) {
+        return null;
+    }
 
     let message = "You are about to delete this form revision, are you sure want to continue?";
     const lastRevision = revisions.length === 1;

@@ -21,6 +21,7 @@ import orderBy from "lodash/orderBy";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
+import usePermission from "../../hooks/usePermission";
 
 const t = i18n.namespace("FormsApp.ContentModelsDataList");
 
@@ -64,6 +65,7 @@ const ContentModelsDataList = ({ canCreate, onCreate }: ContentModelsDataListPro
     const { showSnackbar } = useSnackbar();
     const { showConfirmation } = useConfirmationDialog();
     const { data, loading } = useQuery(GQL.LIST_CONTENT_MODELS);
+    const { canDelete, canEdit } = usePermission();
 
     const filterData = useCallback(
         ({ name }) => {
@@ -188,32 +190,45 @@ const ContentModelsDataList = ({ canCreate, onCreate }: ContentModelsDataListPro
                                 </UIL.ListItemText>
                                 <UIL.ListItemMeta className={rightAlign}>
                                     <UIL.ListActions>
-                                        <Tooltip
-                                            content={t`{message}`({ message })}
-                                            placement={"top"}
-                                        >
-                                            <IconButton
-                                                data-testid={"cms-view-content-model-button"}
-                                                icon={<ViewListIcon />}
-                                                label={t`View entries`}
-                                                onClick={viewContentEntries(contentModel)}
-                                                disabled={disableViewContent}
-                                            />
-                                        </Tooltip>
-                                        <Tooltip content={t`Edit content model`} placement={"top"}>
-                                            <EditIcon
-                                                onClick={() => editRecord(contentModel)}
-                                                data-testid={"cms-edit-content-model-button"}
-                                            />
-                                        </Tooltip>
-                                        <Tooltip
-                                            content={t`Delete content model`}
-                                            placement={"top"}
-                                        >
-                                            <DeleteIcon
-                                                onClick={() => deleteRecord(contentModel)}
-                                            />
-                                        </Tooltip>
+                                        {canEdit(contentModel, "cms.contentModel") && (
+                                            <>
+                                                <Tooltip
+                                                    content={t`{message}`({ message })}
+                                                    placement={"top"}
+                                                >
+                                                    <IconButton
+                                                        data-testid={
+                                                            "cms-view-content-model-button"
+                                                        }
+                                                        icon={<ViewListIcon />}
+                                                        label={t`View entries`}
+                                                        onClick={viewContentEntries(contentModel)}
+                                                        disabled={disableViewContent}
+                                                    />
+                                                </Tooltip>
+                                                <Tooltip
+                                                    content={t`Edit content model`}
+                                                    placement={"top"}
+                                                >
+                                                    <EditIcon
+                                                        onClick={() => editRecord(contentModel)}
+                                                        data-testid={
+                                                            "cms-edit-content-model-button"
+                                                        }
+                                                    />
+                                                </Tooltip>
+                                            </>
+                                        )}
+                                        {canDelete(contentModel, "cms.contentModel") && (
+                                            <Tooltip
+                                                content={t`Delete content model`}
+                                                placement={"top"}
+                                            >
+                                                <DeleteIcon
+                                                    onClick={() => deleteRecord(contentModel)}
+                                                />
+                                            </Tooltip>
+                                        )}
                                     </UIL.ListActions>
                                 </UIL.ListItemMeta>
                             </UIL.ListItem>

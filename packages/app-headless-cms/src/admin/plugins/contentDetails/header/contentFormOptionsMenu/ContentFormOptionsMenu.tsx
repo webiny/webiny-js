@@ -12,6 +12,7 @@ import { useMutation } from "@webiny/app-headless-cms/admin/hooks";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import { i18n } from "@webiny/app/i18n";
 import { createDeleteMutation } from "../../../../views/components/ContentModelForm/graphql";
+import usePermission from "../../../../hooks/usePermission";
 
 const t = i18n.ns(
     "app-headless-cms/admin/plugins/content-details/header/content-form-options-menu"
@@ -41,6 +42,7 @@ const ContentFormOptionsMenu = ({
     const { showSnackbar } = useSnackbar();
     const { history } = useRouter();
     const { showDialog } = useDialog();
+    const { canDelete } = usePermission();
 
     const DELETE_CONTENT = useMemo(() => {
         return createDeleteMutation(contentModel);
@@ -87,6 +89,10 @@ const ContentFormOptionsMenu = ({
             setLoading(false);
         });
     }, null);
+
+    if (!canDelete(entry, "cms.contentEntry")) {
+        return null;
+    }
 
     return (
         <Menu className={menuStyles} handle={<IconButton icon={<MoreVerticalIcon />} />}>

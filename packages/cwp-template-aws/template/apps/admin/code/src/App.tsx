@@ -12,7 +12,6 @@ import { PageBuilderProvider } from "@webiny/app-page-builder/contexts/PageBuild
 import { BrowserRouter } from "@webiny/react-router";
 import { Authentication } from "@webiny/app-plugin-security-cognito/Authentication";
 import { createApolloClient } from "./components/apolloClient";
-import { NetworkError } from "./components/NetworkError";
 import { Telemetry } from "./components/Telemetry";
 import { getIdentityData } from "./components/getIdentityData";
 
@@ -28,77 +27,72 @@ export const App = () => (
         */}
         <SecurityProvider>
             {/*
-                <NetworkError> renders network error information when there are problems communicating with your GraphQL API.
+                <BrowserRouter> is an enhanced version of "react-router" to add some capabilities specific to Webiny.
             */}
-            <NetworkError>
+            <BrowserRouter basename={process.env.PUBLIC_URL}>
                 {/*
-                    <BrowserRouter> is an enhanced version of "react-router" to add some capabilities specific to Webiny.
+                    To learn more about Webiny telemetry system, please visit: https://docs.webiny.com/docs/webiny-telemetry
                 */}
-                <BrowserRouter basename={process.env.PUBLIC_URL}>
+                <Telemetry />
+                {/*
+                    <UiProvider> is a centralized state handler for UI related things. When you need to render
+                    dialogs, snackbars, handle dark mode, you can use the "useUi()" hook to set/unset UI information
+                    without losing the state on route transitions.
+                    NOTE: we do not recommend using this provider for you application data, it's just a helper state
+                    manager to handle UI easier.
+                */}
+                <UiProvider>
                     {/*
-                        To learn more about Webiny telemetry system, please visit: https://docs.webiny.com/docs/webiny-telemetry
+                        <AppInstaller> checks and runs app installers registered via "admin-installation" plugins.
+                        Requires "app-installer-security" plugin configured in "./plugins/security.ts"
+                        to render login for protected installers.
                     */}
-                    <Telemetry />
-                    {/*
-                        <UiProvider> is a centralized state handler for UI related things. When you need to render
-                        dialogs, snackbars, handle dark mode, you can use the "useUi()" hook to set/unset UI information
-                        without losing the state on route transitions.
-                        NOTE: we do not recommend using this provider for you application data, it's just a helper state
-                        manager to handle UI easier.
-                    */}
-                    <UiProvider>
+                    <AppInstaller>
                         {/*
-                            <AppInstaller> checks and runs app installers registered via "admin-installation" plugins.
-                            Requires "app-installer-security" plugin configured in "./plugins/security.ts"
-                            to render login for protected installers.
+                            Once all installers are executed, <Authentication> is mounted to check the identity
+                            and prompt for login, if necessary. Once logged in, it sets the identity data into
+                            the <SecurityProvider>.
                         */}
-                        <AppInstaller>
+                        <Authentication getIdentityData={getIdentityData}>
                             {/*
-                                Once all installers are executed, <Authentication> is mounted to check the identity
-                                and prompt for login, if necessary. Once logged in, it sets the identity data into
-                                the <SecurityProvider>.
+                                <TenancyProvider> controls access to different tenants and manages permissions a user
+                                has on each particular tenant. At this point, Webiny doesn't provide a tenancy management app so
+                                your app is limited to a single tenant.
                             */}
-                            <Authentication getIdentityData={getIdentityData}>
+                            <TenancyProvider>
                                 {/*
-                                    <TenancyProvider> controls access to different tenants and manages permissions a user
-                                    has on each particular tenant. At this point, Webiny doesn't provide a tenancy management app so
-                                    your app is limited to a single tenant.
+                                    <I18NProvider> loads system locales. Webiny supports multi-language content and language-based
+                                    permissions, so we always need to know all locales to be able to render language selectors,
+                                    and send the proper locale code to the GraphQL API.
                                 */}
-                                <TenancyProvider>
+                                <I18NProvider
+                                    loader={<CircularProgress label={"Loading locales..."} />}
+                                >
                                     {/*
-                                        <I18NProvider> loads system locales. Webiny supports multi-language content and language-based
-                                        permissions, so we always need to know all locales to be able to render language selectors,
-                                        and send the proper locale code to the GraphQL API.
+                                        <PageBuilderProvider> handles "pb-theme" plugins and combines them into a single
+                                        "theme" object. You can build your theme using multiple "pb-theme" plugins and
+                                        then access is using "usePageBuilder()" hook.
                                     */}
-                                    <I18NProvider
-                                        loader={<CircularProgress label={"Loading locales..."} />}
-                                    >
+                                    <PageBuilderProvider>
                                         {/*
-                                            <PageBuilderProvider> handles "pb-theme" plugins and combines them into a single
-                                            "theme" object. You can build your theme using multiple "pb-theme" plugins and
-                                            then access is using "usePageBuilder()" hook.
+                                            <CmsProvider> handles CMS environments and provides an Apollo Client instance
+                                            that points to the /manage GraphQL API.
                                         */}
-                                        <PageBuilderProvider>
+                                        <CmsProvider createApolloClient={createApolloClient}>
                                             {/*
-                                                <CmsProvider> handles CMS environments and provides an Apollo Client instance
-                                                that points to the /manage GraphQL API.
+                                                <Routes/> is a helper component that loads all "route" plugins, sorts them
+                                                in the correct "path" order and renders using the <Switch> component, 
+                                                so only the matching route is rendered.   
                                             */}
-                                            <CmsProvider createApolloClient={createApolloClient}>
-                                                {/*
-                                                    <Routes/> is a helper component that loads all "route" plugins, sorts them
-                                                    in the correct "path" order and renders using the <Switch> component, 
-                                                    so only the matching route is rendered.   
-                                                */}
-                                                <Routes />
-                                            </CmsProvider>
-                                        </PageBuilderProvider>
-                                    </I18NProvider>
-                                </TenancyProvider>
-                            </Authentication>
-                        </AppInstaller>
-                    </UiProvider>
-                </BrowserRouter>
-            </NetworkError>
+                                            <Routes />
+                                        </CmsProvider>
+                                    </PageBuilderProvider>
+                                </I18NProvider>
+                            </TenancyProvider>
+                        </Authentication>
+                    </AppInstaller>
+                </UiProvider>
+            </BrowserRouter>
         </SecurityProvider>
     </ApolloProvider>
 );

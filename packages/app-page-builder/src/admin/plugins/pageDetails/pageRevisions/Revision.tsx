@@ -29,6 +29,7 @@ import { ReactComponent as UnpublishIcon } from "@webiny/app-page-builder/admin/
 import { ReactComponent as DeleteIcon } from "@webiny/app-page-builder/admin/assets/delete.svg";
 import { ReactComponent as PreviewIcon } from "@webiny/app-page-builder/admin/assets/visibility.svg";
 import { PbPageData, PbPageRevision } from "@webiny/app-page-builder/types";
+import usePermission from "../../../../hooks/usePermission";
 
 type RevisionProps = {
     revision: PbPageRevision;
@@ -89,6 +90,8 @@ const Revision = ({ revision, page }: RevisionProps) => {
         refreshSiteStatus
     );
 
+    const { canPublish, canUnpublish, canDelete } = usePermission();
+
     return (
         <ConfirmationDialog
             title="Confirmation required!"
@@ -128,7 +131,7 @@ const Revision = ({ revision, page }: RevisionProps) => {
                                 </MenuItem>
                             )}
 
-                            {revision.status !== "published" && (
+                            {revision.status !== "published" && canPublish() && (
                                 <MenuItem onClick={() => publishRevision(revision)}>
                                     <ListItemGraphic>
                                         <Icon icon={<PublishIcon />} />
@@ -137,7 +140,7 @@ const Revision = ({ revision, page }: RevisionProps) => {
                                 </MenuItem>
                             )}
 
-                            {revision.status === "published" && (
+                            {revision.status === "published" && canUnpublish() && (
                                 <MenuItem onClick={() => unpublishRevision(revision)}>
                                     <ListItemGraphic>
                                         <Icon icon={<UnpublishIcon />} />
@@ -168,7 +171,7 @@ const Revision = ({ revision, page }: RevisionProps) => {
                                 Preview
                             </MenuItem>
 
-                            {!revision.locked && (
+                            {canDelete(page) && !revision.locked && (
                                 <Div>
                                     <MenuDivider />
                                     <MenuItem onClick={() => showConfirmation(deleteRevision)}>

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import bytes from "bytes";
 import classNames from "classnames";
 import { css } from "emotion";
@@ -24,9 +24,11 @@ import { ReactComponent as HighlightIcon } from "../../assets/icons/highlight-24
 import { useFileManager } from "./FileManagerContext";
 import { useMutation } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+import { useSecurity } from "@webiny/app-security";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { DELETE_FILE, LIST_FILES, LIST_TAGS } from "./graphql";
 import { i18n } from "@webiny/app/i18n";
+
 const t = i18n.ns("app-admin/file-manager/file-details");
 
 const fileDetailsSidebar = css({
@@ -137,14 +139,40 @@ const style: any = {
         }
     })
 };
-
-export default function FileDetails(props) {
+type FileDetailsProps = {
+    canEdit: (item: any) => boolean;
+    file: {
+        name: string;
+        [key: string]: any;
+    };
+    [key: string]: any;
+};
+export default function FileDetails(props: FileDetailsProps) {
     const { file, uploadFile, validateFiles } = props;
     const filePlugin = getFileTypePlugin(file);
     const actions = get(filePlugin, "fileDetails.actions") || [];
 
     const { hideFileDetails, queryParams } = useFileManager();
     const [darkImageBackground, setDarkImageBackground] = useState(false);
+
+    const { identity } = useSecurity();
+    const fmFilePermission = useMemo(() => identity.getPermission("fm.file"), []);
+    const canDelete = useCallback(
+        item => {
+            // Bail out early if no access
+            if (!fmFilePermission) {
+                return false;
+            }
+            if (fmFilePermission.own) {
+                return get(item, "createdBy.id") === identity.login;
+            }
+            if (typeof fmFilePermission.rwd === "string") {
+                return fmFilePermission.rwd.includes("d");
+            }
+            return true;
+        },
+        [fmFilePermission]
+    );
 
     useHotkeys({
         zIndex: 55,
@@ -214,16 +242,49 @@ export default function FileDetails(props) {
     });
     const { showSnackbar } = useSnackbar();
 
-    const fileDeleteConfirmationProps = {
-        title: t`Delete file`,
-        message: file && (
-            <span>
-                {t`You're about to delete file {name}. Are you sure you want to continue?`({
-                    name: file.name
-                })}
-            </span>
-        )
-    };
+    const renderDeleteImageAction = useCallback(file => {
+        if (!canDelete(file)) {
+            return null;
+        }
+        const fileDeleteConfirmationProps = {
+            title: t`Delete file`,
+            message: file && (
+                <span>
+                    {t`You're about to delete file {name}. Are you sure you want to continue?`({
+                        name: file.name
+                    })}
+                </span>
+            )
+        };
+        return (
+            <ConfirmationDialog
+                {...fileDeleteConfirmationProps}
+                data-testid={"fm-delete-file-confirmation-dialog"}
+                style={{ zIndex: 100 }}
+            >
+                {({ showConfirmation }) => {
+                    return (
+                        <Tooltip content={<span>{t`Delete image`}</span>} placement={"bottom"}>
+                            <IconButton
+                                data-testid={"fm-delete-file-button"}
+                                icon={<DeleteIcon style={{ margin: "0 8px 0 0" }} />}
+                                onClick={() =>
+                                    showConfirmation(async () => {
+                                        await deleteFile({
+                                            variables: {
+                                                id: file.id
+                                            }
+                                        });
+                                        showSnackbar(t`File deleted successfully.`);
+                                    })
+                                }
+                            />
+                        </Tooltip>
+                    );
+                }}
+            </ConfirmationDialog>
+        );
+    }, []);
 
     const fileTypeIcon = useMemo(() => {
         if (file && typeof file.type === "string") {
@@ -237,7 +298,7 @@ export default function FileDetails(props) {
             className={fileDetailsSidebar}
             dir="rtl"
             modal
-            open={file}
+            open={Boolean(file)}
             onClose={hideFileDetails}
         >
             {file && (
@@ -264,37 +325,7 @@ export default function FileDetails(props) {
                             {actions.map((Component, index) => (
                                 <Component key={index} {...props} />
                             ))}
-                            <ConfirmationDialog
-                                {...fileDeleteConfirmationProps}
-                                data-testid={"fm-delete-file-confirmation-dialog"}
-                                style={{ zIndex: 100 }}
-                            >
-                                {({ showConfirmation }) => {
-                                    return (
-                                        <Tooltip
-                                            content={<span>{t`Delete image`}</span>}
-                                            placement={"bottom"}
-                                        >
-                                            <IconButton
-                                                data-testid={"fm-delete-file-button"}
-                                                icon={
-                                                    <DeleteIcon style={{ margin: "0 8px 0 0" }} />
-                                                }
-                                                onClick={() =>
-                                                    showConfirmation(async () => {
-                                                        await deleteFile({
-                                                            variables: {
-                                                                id: file.id
-                                                            }
-                                                        });
-                                                        showSnackbar(t`File deleted successfully.`);
-                                                    })
-                                                }
-                                            />
-                                        </Tooltip>
-                                    );
-                                }}
-                            </ConfirmationDialog>
+                            {renderDeleteImageAction(file)}
                             {/* Render background switcher */}
                             <Tooltip content={t`Toggle background`} placement={"bottom"}>
                                 <IconButton

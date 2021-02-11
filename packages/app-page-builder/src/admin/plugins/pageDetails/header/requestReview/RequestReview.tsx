@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as RequestReviewIcon } from "@webiny/app-page-builder/admin/assets/emoji_people-24px.svg";
@@ -7,7 +7,7 @@ import { i18n } from "@webiny/app/i18n";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useMutation } from "@apollo/react-hooks";
 import gql from "graphql-tag";
-import { useSecurity } from "@webiny/app-security";
+import usePermission from "../../../../../hooks/usePermission";
 
 const t = i18n.ns("app-page-builder/page-details/header/request-review");
 
@@ -31,9 +31,9 @@ const REQUEST_REVIEW = gql`
 `;
 
 const RequestReview = props => {
-    const { identity } = useSecurity();
     const { page } = props;
 
+    const { canRequestReview } = usePermission();
     const { showSnackbar } = useSnackbar();
     const [requestReview] = useMutation(REQUEST_REVIEW);
 
@@ -50,16 +50,7 @@ const RequestReview = props => {
         )
     });
 
-    const pbPagePermission = useMemo(() => identity.getPermission("pb.page"), []);
-    if (!pbPagePermission) {
-        return null;
-    }
-
-    if (pbPagePermission.own && page?.createdBy?.id !== identity.login) {
-        return null;
-    }
-
-    if (typeof pbPagePermission.pw === "string" && !pbPagePermission.pw.includes("r")) {
+    if (!canRequestReview()) {
         return null;
     }
 

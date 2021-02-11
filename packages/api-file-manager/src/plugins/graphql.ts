@@ -17,6 +17,11 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
     type: "graphql-schema",
     schema: {
         typeDefs: /* GraphQL */ `
+            type FmCreatedBy {
+                id: ID
+                displayName: String
+            }
+
             input FileInput {
                 key: String
                 name: String
@@ -76,6 +81,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                 tags: [String]
                 meta: JSON
                 createdOn: DateTime
+                createdBy: FmCreatedBy
             }
 
             type FileManagerBooleanResponse {
