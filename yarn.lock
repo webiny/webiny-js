@@ -13526,6 +13526,7 @@ __metadata:
     execa: ^4.1.0
     fs-extra: 9.0.1
     indent-string: 4.0.0
+    js-yaml: ^3.0.0
     listr: 0.14.3
     load-json-file: 6.2.0
     node-fetch: 2.6.1
