@@ -137,7 +137,7 @@ jobs:
 
       - name: Start Verdaccio local server
         working-directory: verdaccio-files
-        run: yarn add pm2 verdaccio && yarn pm2 start "verdaccio:start"
+        run: yarn add pm2 verdaccio && yarn pm2 start "yarn verdaccio:start"
 
       - name: Configure NPM to use local registry
         run: npm config set registry http://localhost:4873
