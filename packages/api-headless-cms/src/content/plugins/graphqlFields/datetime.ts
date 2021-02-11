@@ -3,7 +3,7 @@ import { CmsContentModelField, CmsModelFieldToGraphQLPlugin } from "@webiny/api-
 const fieldGraphQLTypes = {
     time: "Time",
     dateTimeWithoutTimezone: "DateTime",
-    dateTimeWithTimezone: "DateTime",
+    dateTimeWithTimezone: "DateTimeZ",
     date: "Date"
 };
 

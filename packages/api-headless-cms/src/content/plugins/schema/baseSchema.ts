@@ -8,7 +8,8 @@ import {
     DateScalar,
     TimeScalar,
     LongScalar,
-    JsonScalar
+    JsonScalar,
+    DateTimeZScalar
 } from "@webiny/handler-graphql/builtInTypes";
 
 const baseSchema = (context: CmsContext): GraphQLSchemaPlugin => {
@@ -23,11 +24,12 @@ const baseSchema = (context: CmsContext): GraphQLSchemaPlugin => {
                 ${scalars.map(scalar => `scalar ${scalar.name}`).join(" ")}
                 scalar JSON
                 scalar Long
-                scalar DateTime
                 scalar RefInput
                 scalar Number
                 scalar Any
                 scalar Date
+                scalar DateTime
+                scalar DateTimeZ
                 scalar Time
 
                 type Query
@@ -70,11 +72,12 @@ const baseSchema = (context: CmsContext): GraphQLSchemaPlugin => {
                     return acc;
                 }, {}),
                 JSON: JsonScalar,
-                DateTime: DateTimeScalar,
                 Long: LongScalar,
                 RefInput,
                 Number: NumberScalar,
                 Any: AnyScalar,
+                DateTime: DateTimeScalar,
+                DateTimeZ: DateTimeZScalar,
                 Date: DateScalar,
                 Time: TimeScalar,
                 Mutation: {
