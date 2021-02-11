@@ -1,6 +1,13 @@
 import { CmsFieldValueTransformer } from "@webiny/app-headless-cms/types";
 import WebinyError from "@webiny/error";
 
+const transformDate = (value: string, type: "date" | "datetime" | "time") => {
+    if (type === "date") {
+        return value.substr(0, 10);
+    }
+    return value;
+};
+
 export default (): CmsFieldValueTransformer => ({
     type: "cms-field-value-transformer",
     name: "cms-field-value-transformer-date",
@@ -8,11 +15,12 @@ export default (): CmsFieldValueTransformer => ({
     transform: (value, field) => {
         // check types in packages/app-headless-cms/src/admin/plugins/fieldRenderers/dateTime/dateTimeField.tsx
         const type = field.settings.type;
-        if (type === "time") {
+        if (type === "time" || type === "dateTimeWithTimezone") {
             return value;
         }
         try {
-            return new Date(value).toISOString();
+            const result = new Date(value).toISOString();
+            return transformDate(result, type);
         } catch (ex) {
             throw new WebinyError(`Could not transform "${value}" to a date.`, "TRANSFORM_ERROR", {
                 message: ex.message,
