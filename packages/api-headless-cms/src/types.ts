@@ -155,6 +155,18 @@ export interface CmsContentModelField {
 }
 
 /**
+ * A definition for dateTime field to show possible type of the field in settings.
+ */
+export interface CmsContentModelDateTimeField extends CmsContentModelField {
+    /**
+     * Settings object for the field. Contains type property.
+     */
+    settings: {
+        type: "time" | "date" | "dateTimeWithoutTimezone" | "dateTimeWithTimezone";
+    };
+}
+
+/**
  * Arguments for the field validator validate method.
  *
  * @category ContentModelField
@@ -1482,6 +1494,16 @@ export interface ElasticsearchQueryBuilderArgsPlugin {
     parentObject?: string;
     originalField?: string;
 }
+/**
+ * A plugin definition to modify Elasticsearch query.
+ *
+ * @category Plugin
+ * @category Elasticsearch
+ */
+export interface ElasticsearchQueryPlugin extends Plugin {
+    type: "elasticsearch-query";
+    modify: (query: ElasticsearchQuery, model: CmsContentModel) => void;
+}
 
 /**
  * A plugin definition to build Elasticsearch query
@@ -1491,7 +1513,7 @@ export interface ElasticsearchQueryBuilderArgsPlugin {
  */
 export interface ElasticsearchQueryBuilderPlugin extends Plugin {
     /**
-     * A plugin type
+     * A plugin type.
      */
     type: "elastic-search-query-builder";
     /**
@@ -1507,6 +1529,27 @@ export interface ElasticsearchQueryBuilderPlugin extends Plugin {
      * Has access to whole query object so it can remove something added by other plugins.
      */
     apply: (query: ElasticsearchQuery, args: ElasticsearchQueryBuilderArgsPlugin) => void;
+}
+
+/**
+ * A plugin definiton
+ *
+ * @category Plugin
+ * @category Elasticsearch
+ */
+export interface ElasticsearchQueryBuilderValueSearchPlugin extends Plugin {
+    /**
+     * A plugin type.
+     */
+    type: "elastic-search-query-builder-value-search";
+    /**
+     * A field type for plugin to target.
+     */
+    fieldType: string;
+    /**
+     * Transform value that is going to be searched for in the Elasticsearch.
+     */
+    transform: (field: CmsContentModelField, value: any) => any;
 }
 
 /**
