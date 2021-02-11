@@ -115,7 +115,11 @@ jobs:
         run: git config --global user.name "webiny-bot"
 
       - name: Create a new Webiny project
-        run: npx create-webiny-project@beta test-project --tag beta --no-interactive --template-options '{"region":"eu-central-1","vpc":false}'
+        run: >
+          npx create-webiny-project@beta test-project
+          --tag beta --no-interactive
+          --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
+          --template-options '{"region":"eu-central-1","vpc":false}'
 
   deploy-preview:
     needs: [test-create-webiny-project]
@@ -131,15 +135,11 @@ jobs:
         with:
           node-version: 12
 
-      - name: Prepare package.json
-        working-directory: verdaccio-files
-        run: echo '{"scripts":{"verdaccio:start":"yarn verdaccio -c ./.verdaccio.yaml"}}' > package.json
-
       - name: Start Verdaccio local server
         working-directory: verdaccio-files
-        run: yarn add pm2 verdaccio && yarn pm2 start "yarn verdaccio:start"
+        run: yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c .verdaccio.yaml
 
-      - name: Configure NPM to use local registry
+      - name: Configure NPM to use local registry (for `npx create-webiny-project`)
         run: npm config set registry http://localhost:4873
 
       - name: Set git email (needed for create-webiny-project)
@@ -149,7 +149,11 @@ jobs:
         run: git config --global user.name "webiny-bot"
 
       - name: Create a new Webiny project
-        run: npx create-webiny-project@beta test-project --tag beta --no-interactive --template-options '{"region":"eu-central-1","vpc":false,"iac":["pulumi",{"backend":{"url":"${AWS_PULUMI_S3_BUCKET_NEXT_BRANCH_PREVIEW}"}}]}'
+        run: >
+          npx create-webiny-project@beta test-project
+          --tag beta --no-interactive
+          --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
+          --template-options '{"region":"eu-central-1","vpc":false,"iac":["pulumi",{"backend":{"url":"${AWS_PULUMI_S3_BUCKET_NEXT_BRANCH_PREVIEW}"}}]}'
 
       - name: Print CLI version
         working-directory: test-project
