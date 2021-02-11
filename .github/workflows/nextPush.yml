@@ -133,7 +133,7 @@ jobs:
 
       - name: Prepare package.json
         working-directory: verdaccio-files
-        run: echo '{"scripts": { "verdaccio:start": "yarn verdaccio -c ./.verdaccio.yaml" }}' > package.json
+        run: echo '{"scripts":{"verdaccio:start":"yarn verdaccio -c ./.verdaccio.yaml"}}' > package.json
 
       - name: Start Verdaccio local server
         working-directory: verdaccio-files
