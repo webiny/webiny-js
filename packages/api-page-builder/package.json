@@ -32,11 +32,17 @@
     "@webiny/validation": "^5.0.0-beta.4",
     "commodo-fields-object": "^1.0.6",
     "dataloader": "^2.0.0",
+    "download": "^5.0.3",
+    "extract-zip": "^1.6.7",
+    "fs-extra": "^7.0.0",
     "jsonpack": "^1.1.5",
+    "load-json-file": "^6.2.0",
     "lodash": "^4.17.11",
     "mdbid": "^1.0.0",
     "node-fetch": "^2.6.1",
-    "uniqid": "^5.2.0"
+    "rimraf": "^2.6.2",
+    "uniqid": "^5.2.0",
+    "zip-local": "^0.3.4"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
