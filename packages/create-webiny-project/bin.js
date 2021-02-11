@@ -3,7 +3,7 @@
 
 const semver = require("semver");
 const chalk = require("chalk");
-const getYarnVersion = require('./utils/getYarnVersion')
+const getYarnVersion = require("./utils/getYarnVersion");
 const verifyConfig = require("./utils/verifyConfig");
 
 const currentNodeVersion = process.versions.node;
