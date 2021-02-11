@@ -20,11 +20,11 @@
     "fs-extra": "9.0.1",
     "get-yarn-workspaces": "1.0.2",
     "inquirer": "7.3.3",
+    "js-yaml": "^3.0.0",
     "load-json-file": "6.2.0",
     "lodash": "4.17.20",
     "ora": "4.1.1",
-    "write-json-file": "4.3.0",
-    "js-yaml": "^3.0.0"
+    "write-json-file": "4.3.0"
   },
   "devDependencies": {
     "dotenv": "^8.2.0"
@@ -41,3 +41,4 @@
   },
   "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
 }
+
