@@ -25,7 +25,7 @@ function random(length = 32) {
 }
 
 const setup = async args => {
-    const { projectRoot, projectName, templateOptions = {} } = args;
+    const { isGitAvailable, projectRoot, projectName, templateOptions = {} } = args;
     const {
         vpc = false,
         region = getDefaultRegion(),
@@ -56,7 +56,7 @@ const setup = async args => {
 
     const { name, version } = require("./package.json");
 
-    if (!IS_TEST) {
+    if (!IS_TEST && isGitAvailable) {
         // Commit .gitignore.
         execa.sync("git", ["add", ".gitignore"], { cwd: projectRoot });
         execa.sync("git", ["commit", "-m", `chore: initialize .gitignore`], { cwd: projectRoot });

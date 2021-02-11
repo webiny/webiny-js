@@ -62,63 +62,81 @@ module.exports = async function createProject({
 
     await sendEvent({ event: "create-webiny-project-start" });
 
-    const tasks = new Listr([
-        {
-            // Creates root package.json.
-            title: "Prepare project folder",
-            task: () => {
-                checkProjectName(projectName);
-                fs.ensureDirSync(projectName);
-                writeJson.sync(path.join(projectRoot, "package.json"), getPackageJson(projectName));
-            }
-        },
-        {
-            // Setup yarn@2
-            title: "Setup yarn@^2",
-            task: async () => {
-                await execa("yarn", ["set", "version", "berry"], { cwd: projectRoot });
-                fs.copySync(
-                    path.join(__dirname, "files", "example.yarnrc.yml"),
-                    path.join(projectRoot, ".yarnrc.yml"),
-                    { overwrite: true }
-                );
-            }
-        },
-        {
-            // "yarn adds" given template which can be either a real package or a path of a local package.
-            title: `Install template package`,
-            task: async context => {
-                let add;
-                let templateName = `@webiny/cwp-template-${template}`;
+    let isGitAvailable = false;
+    try {
+        await execa("git", ["--version"]);
+        isGitAvailable = true;
+    } catch {
+        // Git is not available.
+    }
 
-                if (template.startsWith(".") || template.startsWith("file:")) {
-                    templateName =
-                        "file:" + path.relative(projectName, template.replace("file:", ""));
-                    add = templateName;
-                } else {
-                    add = `${templateName}@${tag}`;
+    const tasks = new Listr(
+        [
+            {
+                // Creates root package.json.
+                title: "Prepare project folder",
+                task: () => {
+                    checkProjectName(projectName);
+                    fs.ensureDirSync(projectName);
+                    writeJson.sync(
+                        path.join(projectRoot, "package.json"),
+                        getPackageJson(projectName)
+                    );
                 }
-
-                // Assign template name to context.
-                context.templateName = templateName;
-
-                await execa("yarn", ["add", add], { cwd: projectRoot });
-            }
-        },
-        {
-            // Initialize `git` by executing `git init` in project directory.
-            title: `Initialize git`,
-            task: (ctx, task) => {
-                try {
-                    execa.sync("git", ["--version"]);
-                    execa.sync("git", ["init"], { cwd: projectRoot });
-                    fs.writeFileSync(path.join(projectRoot, ".gitignore"), "node_modules/");
-                } catch (err) {
-                    task.skip("Git repo not initialized", err);
+            },
+            {
+                // Setup yarn@2
+                title: "Setup yarn@^2",
+                task: async () => {
+                    await execa("yarn", ["set", "version", "berry"], { cwd: projectRoot });
+                    fs.copySync(
+                        path.join(__dirname, "files", "example.yarnrc.yml"),
+                        path.join(projectRoot, ".yarnrc.yml"),
+                        { overwrite: true }
+                    );
                 }
-            }
-        }
-    ]);
+            },
+            {
+                // "yarn adds" given template which can be either a real package or a path of a local package.
+                title: `Install template package`,
+                task: async context => {
+                    let add;
+                    let templateName = `@webiny/cwp-template-${template}`;
+
+                    if (template.startsWith(".") || template.startsWith("file:")) {
+                        templateName =
+                            "file:" + path.relative(projectName, template.replace("file:", ""));
+                        add = templateName;
+                    } else {
+                        add = `${templateName}@${tag}`;
+                    }
+
+                    // Assign template name to context.
+                    context.templateName = templateName;
+
+                    await execa("yarn", ["add", add], { cwd: projectRoot });
+                }
+            },
+            isGitAvailable
+                ? {
+                      // Initialize `git` by executing `git init` in project directory.
+                      title: `Initialize git`,
+                      task: (ctx, task) => {
+                          try {
+                              execa.sync("git", ["--version"]);
+                              execa.sync("git", ["init"], { cwd: projectRoot });
+                              fs.writeFileSync(
+                                  path.join(projectRoot, ".gitignore"),
+                                  "node_modules/"
+                              );
+                          } catch (err) {
+                              task.skip("Git repo not initialized", err);
+                          }
+                      }
+                  }
+                : null
+        ].filter(Boolean)
+    );
 
     let logPath = "cwp-logs.txt";
     if (log.length > 0) {
@@ -157,6 +175,7 @@ module.exports = async function createProject({
                     }
 
                     return require(templatePath)({
+                        isGitAvailable,
                         projectName,
                         projectRoot,
                         interactive,

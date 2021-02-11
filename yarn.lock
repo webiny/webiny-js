@@ -8538,6 +8538,7 @@ __metadata:
   dependencies:
     "@webiny/cli": 5.0.0-beta.4
     "@webiny/cli-plugin-deploy-pulumi": ^5.0.0-beta.4
+    "@webiny/tracking": ^5.0.0-beta.4
     chalk: 4.1.0
     create-webiny-project: ^5.0.0-beta.4
     dotenv: ^8.2.0
@@ -9317,13 +9318,10 @@ __metadata:
   resolution: "admin@workspace:apps/admin/code"
   dependencies:
     "@apollo/react-components": ^3.1.5
-    "@apollo/react-hooks": ^3.1.5
     "@editorjs/delimiter": ^1.2.0
     "@editorjs/list": ^1.6.0
     "@editorjs/quote": ^2.4.0
     "@editorjs/underline": ^1.0.0
-    "@emotion/core": ^10.0.17
-    "@emotion/styled": ^10.0.17
     "@types/react": ^16.14.2
     "@webiny/app": ^5.0.0-beta.0
     "@webiny/app-admin": ^5.0.0-beta.0
@@ -9351,14 +9349,10 @@ __metadata:
     apollo-client: ^2.2.8
     apollo-link: ^1.2.14
     apollo-link-batch-http: ^1.2.14
-    apollo-link-error: ^1.1.13
     apollo-utilities: ^1.3.4
     core-js: ^3.0.1
     cross-env: ^5.0.2
     cross-fetch: ^3.0.4
-    emotion: ^10.0.17
-    graphql: ^14.7.0
-    graphql-tag: ^2.10.1
     invariant: ^2.2.4
     prop-types: ^15.7.2
     react: ^16.14.0
@@ -9940,17 +9934,6 @@ __metadata:
     apollo-link: ^1.2.14
     tslib: ^1.9.3
   checksum: bb26853689c4fff4205695d6067b6eb170152f2f96e3e42d2583e4656141db6c472c0df9c57fd61279ccbf93de6a74a34111848a73ba7457da4bf499f0dd94e1
-  languageName: node
-  linkType: hard
-
-"apollo-link-error@npm:^1.1.13":
-  version: 1.1.13
-  resolution: "apollo-link-error@npm:1.1.13"
-  dependencies:
-    apollo-link: ^1.2.14
-    apollo-link-http-common: ^0.2.16
-    tslib: ^1.9.3
-  checksum: 351c1eb4c70b2356f549bc65dd0c3d63a173b881197f107bb4ecac3a414d3e0b4918a07f68f246d02d0319618e0ccc896ee17fa050bff9aa636bd8ed4a9381f4
   languageName: node
   linkType: hard
 

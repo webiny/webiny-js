@@ -15,7 +15,7 @@ const getConfig = async () => {
                 config.id = "unknown";
             }
         } catch (e) {
-            config = { id: "unknown", tracking: true };
+            config = { id: "unknown" };
         }
     }
     return config;
@@ -23,6 +23,10 @@ const getConfig = async () => {
 
 module.exports.sendEvent = async ({ event, data }) => {
     const config = await getConfig();
+
+    if (config.tracking === false) {
+        return;
+    }
 
     data = data || {};
     if (!data.version) {
