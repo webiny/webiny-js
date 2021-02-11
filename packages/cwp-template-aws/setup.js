@@ -4,6 +4,7 @@ const execa = require("execa");
 const crypto = require("crypto");
 const renames = require("./setup/renames");
 const merge = require("lodash/merge");
+const get = require("lodash/get");
 const writeJsonFile = require("write-json-file");
 const loadJsonFile = require("load-json-file");
 const getPackages = require("get-yarn-workspaces");
@@ -25,7 +26,11 @@ function random(length = 32) {
 
 const setup = async args => {
     const { projectRoot, projectName, templateOptions = {} } = args;
-    const { vpc = false, region = getDefaultRegion() } = templateOptions;
+    const {
+        vpc = false,
+        region = getDefaultRegion(),
+        iac = ["pulumi", { backend: { url: "file://" } }]
+    } = templateOptions;
 
     fs.copySync(path.join(__dirname, "template"), projectRoot);
 
@@ -86,6 +91,21 @@ const setup = async args => {
         path.join(projectRoot, "api", "pulumi"),
         { overwrite: true }
     );
+
+    // Set the appropriate backend.url value in Pulumi.yaml files.
+    const backendUrl = get(iac, "1.backend.url") || "file://";
+
+    const pulumiYamlFiles = [
+        "api/Pulumi.yaml",
+        "apps/admin/Pulumi.yaml",
+        "apps/website/Pulumi.yaml"
+    ];
+
+    for (let i = 0; i < pulumiYamlFiles.length; i++) {
+        const current = path.join(projectRoot, pulumiYamlFiles[i]);
+        const content = fs.readFileSync(current, "utf-8").replace("{BACKEND_URL}", backendUrl);
+        fs.writeFileSync(current, content);
+    }
 
     // Adjust versions - change them from `latest` to current one.
     const latestVersion = version;

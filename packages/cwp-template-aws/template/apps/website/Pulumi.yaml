@@ -3,4 +3,4 @@ runtime: nodejs
 description: Represents cloud infrastructure that hosts your project's public website.
 main: pulumi/
 backend:
-  url: file://
+  url: {BACKEND_URL}
