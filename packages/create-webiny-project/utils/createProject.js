@@ -11,6 +11,8 @@ const { sendEvent } = require("@webiny/tracking");
 const getPackageJson = require("./getPackageJson");
 const checkProjectName = require("./checkProjectName");
 const yaml = require("js-yaml");
+const getYarnVersion = require("./getYarnVersion");
+const semver = require("semver");
 
 module.exports = async function createProject({
     projectName,
@@ -90,7 +92,11 @@ module.exports = async function createProject({
                 // Setup yarn@2
                 title: "Setup yarn@^2",
                 task: async () => {
-                    await execa("yarn", ["set", "version", "berry"], { cwd: projectRoot });
+                    const yarnVersion = await getYarnVersion();
+                    if (semver.satisfies(yarnVersion, "^1.22.0")) {
+                        await execa("yarn", ["set", "version", "berry"], { cwd: projectRoot });
+                    }
+
                     fs.copySync(
                         path.join(__dirname, "files", "example.yarnrc.yml"),
                         path.join(projectRoot, ".yarnrc.yml"),
