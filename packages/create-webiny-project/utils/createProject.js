@@ -121,7 +121,6 @@ module.exports = async function createProject({
                             fs.writeFileSync(yamlPath, yaml.dump(parsedYaml));
                         }
                     }
-                    process.exit(0);
                 }
             },
             {
