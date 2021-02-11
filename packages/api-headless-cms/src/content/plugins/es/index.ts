@@ -11,6 +11,7 @@ import { elasticSearchQueryBuilderGtPlugin } from "./elasticSearchQueryBuilderGt
 import { elasticSearchQueryBuilderLtePlugin } from "./elasticSearchQueryBuilderLtePlugin";
 import { elasticSearchQueryBuilderLtPlugin } from "./elasticSearchQueryBuilderLtPlugin";
 import elasticSearchIndexingPlugins from "./indexing";
+import elasticSearchSearchPlugins from "./search";
 
 export default () => [
     elasticSearchQueryBuilderBetweenPlugin(),
@@ -25,5 +26,6 @@ export default () => [
     elasticSearchQueryBuilderGtPlugin(),
     elasticSearchQueryBuilderLtePlugin(),
     elasticSearchQueryBuilderLtPlugin(),
-    elasticSearchIndexingPlugins()
+    elasticSearchIndexingPlugins(),
+    elasticSearchSearchPlugins()
 ];
