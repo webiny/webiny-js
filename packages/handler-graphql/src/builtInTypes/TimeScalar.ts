@@ -1,24 +1,29 @@
 import { GraphQLScalarType } from "graphql";
 import WebinyError from "@webiny/error";
 
-const parseTime = (value: string) => {
+const re = /^([0-9]{2}):([0-9]{2})?(:([0-9]{2}))$/;
+
+const parseTime = (value?: string) => {
+    if (!value || value.match(re) === null) {
+        throw new WebinyError("Value does not look like time.", "TIME_VALIDATION_ERROR", { value });
+    }
     const parsed = value.split(":").map(Number);
     if (parsed.length < 2) {
-        throw new WebinyError(`Value "${value}" does not look like time.`);
+        throw new WebinyError(`Could not parse the value.`, "TIME_VALIDATION_ERROR", { value });
     }
     const [hours, minutes, seconds = 0] = parsed;
     if (hours >= 24) {
-        throw new WebinyError(`There cannot be more than 24 hours. Value parsed is "${value}".`);
-    } else if (hours < 0) {
-        throw new WebinyError(`Hours cannot go into negative. Value parsed is "${value}".`);
+        throw new WebinyError(`There cannot be more than 24 hours.`, "TIME_VALIDATION_ERROR", {
+            value
+        });
     } else if (minutes >= 60) {
-        throw new WebinyError(`There cannot be more than 59 minutes. Value parsed is "${value}".`);
-    } else if (minutes < 0) {
-        throw new WebinyError(`Minutes cannot go into negative. Value parsed is "${value}".`);
+        throw new WebinyError(`There cannot be more than 59 minutes.`, "TIME_VALIDATION_ERROR", {
+            value
+        });
     } else if (seconds >= 60) {
-        throw new WebinyError(`There cannot be more than 59 seconds. Value parsed is "${value}".`);
-    } else if (seconds < 0) {
-        throw new WebinyError(`Seconds cannot go into negative. Value parsed is "${value}".`);
+        throw new WebinyError(`There cannot be more than 59 seconds.`, "TIME_VALIDATION_ERROR", {
+            value
+        });
     }
     return {
         hours,
@@ -29,7 +34,9 @@ const parseTime = (value: string) => {
 
 const convertToTime = (value: string): string => {
     const { hours, minutes, seconds } = parseTime(value);
-    return `${hours}:${minutes}:${seconds}`;
+    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(
+        seconds
+    ).padStart(2, "0")}`;
 };
 
 export const TimeScalar = new GraphQLScalarType({

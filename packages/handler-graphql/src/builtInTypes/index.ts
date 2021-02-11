@@ -1,6 +1,7 @@
 export * from "./AnyScalar";
 export * from "./DateScalar";
 export * from "./DateTimeScalar";
+export * from "./DateTimeZScalar";
 export * from "./JsonScalar";
 export * from "./LongScalar";
 export * from "./NumberScalar";
