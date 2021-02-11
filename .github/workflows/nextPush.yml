@@ -1,4 +1,4 @@
-name: Pull Request (v5)
+name: Next Branch - Push
 
 on:
   push:
