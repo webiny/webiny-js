@@ -11,7 +11,7 @@ export interface ElasticsearchQuerySearchValuePlugins {
 export const searchPluginsList = (context: CmsContext): ElasticsearchQuerySearchValuePlugins => {
     return context.plugins
         .byType<ElasticsearchQueryBuilderValueSearchPlugin>(
-            "elastic-search-query-builder-value-search"
+            "cms-elastic-search-query-builder-value-search"
         )
         .reduce((plugins, plugin) => {
             if (plugins[plugin.fieldType]) {

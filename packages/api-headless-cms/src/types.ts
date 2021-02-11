@@ -935,7 +935,7 @@ export interface ContentModelManagerPlugin extends Plugin {
     /**
      * A plugin type.
      */
-    type: "content-model-manager";
+    type: "cms-content-model-manager";
     /**
      * Specific model CmsContentModelManager loader. Can target exact modelId(s).
      * Be aware that if you define multiple plugins without `modelId`, last one will run.
@@ -1501,7 +1501,7 @@ export interface ElasticsearchQueryBuilderArgsPlugin {
  * @category Elasticsearch
  */
 export interface ElasticsearchQueryPlugin extends Plugin {
-    type: "elasticsearch-query";
+    type: "cms-elasticsearch-query";
     modify: (query: ElasticsearchQuery, model: CmsContentModel) => void;
 }
 
@@ -1515,7 +1515,7 @@ export interface ElasticsearchQueryBuilderPlugin extends Plugin {
     /**
      * A plugin type.
      */
-    type: "elastic-search-query-builder";
+    type: "cms-elastic-search-query-builder";
     /**
      * Name of the plugin. Name it for better debugging experience.
      */
@@ -1541,7 +1541,7 @@ export interface ElasticsearchQueryBuilderValueSearchPlugin extends Plugin {
     /**
      * A plugin type.
      */
-    type: "elastic-search-query-builder-value-search";
+    type: "cms-elastic-search-query-builder-value-search";
     /**
      * A field type for plugin to target.
      */
@@ -1847,7 +1847,7 @@ export interface CmsContentModelUpdateHookPluginArgs extends CmsContentModelHook
  * @category LifecycleHook
  */
 export interface CmsContentModelHookPlugin extends Plugin {
-    type: "content-model-hook";
+    type: "cms-content-model-hook";
     /**
      * A hook triggered before the content model is created.
      */
@@ -1890,7 +1890,7 @@ export interface CmsContentEntryHookPluginArgs {
  * @category LifecycleHook
  */
 export interface CmsContentEntryHookPlugin extends Plugin {
-    type: "content-entry-hook";
+    type: "cms-content-entry-hook";
     /**
      * A hook triggered before entry is stored.
      * At this point, entry for storage and elastic search is already built so you cannot modify them.

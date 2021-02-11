@@ -7,7 +7,7 @@ interface OperatorPlugins {
 
 export const operatorPluginsList = (context: CmsContext): OperatorPlugins => {
     return context.plugins
-        .byType<ElasticsearchQueryBuilderPlugin>("elastic-search-query-builder")
+        .byType<ElasticsearchQueryBuilderPlugin>("cms-elastic-search-query-builder")
         .reduce((plugins, plugin) => {
             if (plugins[plugin.operator]) {
                 throw new WebinyError(
