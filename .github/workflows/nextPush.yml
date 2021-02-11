@@ -18,9 +18,6 @@ jobs:
         with:
           node-version: 12
 
-      - name: CHECK YARN
-        run: yarn --version
-
       - name: Install dependencies
         run: yarn --immutable
 
