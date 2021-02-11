@@ -3,7 +3,7 @@
 
 const semver = require("semver");
 const chalk = require("chalk");
-const execa = require("execa");
+const getYarnVersion = require('./utils/getYarnVersion')
 const verifyConfig = require("./utils/verifyConfig");
 
 const currentNodeVersion = process.versions.node;
@@ -31,8 +31,8 @@ const NODE_VERSION_MIN_MINOR = 14;
     }
 
     try {
-        const { stdout } = await execa("yarn", ["--version"]);
-        if (!semver.satisfies(stdout, "^1.22.0 || ^2")) {
+        const yarnVersion = await getYarnVersion();
+        if (!semver.satisfies(yarnVersion, "^1.22.0 || ^2")) {
             console.error(
                 chalk.red(
                     `Webiny requires yarn@^1.22.0. Please run "npm install -g yarn" to update.`
