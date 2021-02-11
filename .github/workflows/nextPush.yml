@@ -33,13 +33,6 @@ jobs:
       - name: ESLint
         run: yarn eslint
 
-  validate-commits:
-    name: Validate commit messages
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: webiny/action-conventional-commits@v1.0.2
-
   build-test-verdaccio-release:
     name: Build, test, and release to Verdaccio
     runs-on: ubuntu-latest
