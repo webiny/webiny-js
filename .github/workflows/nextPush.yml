@@ -53,7 +53,7 @@ jobs:
         run: yarn test
 
       - name: Start Verdaccio local server
-        run: yarn verdaccio:start:detached
+        run: npx pm2 start verdaccio -- -c .verdaccio.yaml
 
       - name: Create ".npmrc" file in the project root, with a d¡ummy auth token
         run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
