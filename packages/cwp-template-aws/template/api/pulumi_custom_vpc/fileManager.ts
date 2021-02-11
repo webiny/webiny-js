@@ -18,8 +18,8 @@ class FileManager {
     };
     constructor() {
         this.bucket = new aws.s3.Bucket("fm-bucket", {
-            forceDestroy: false,
             acl: "private",
+            forceDestroy: true,
             corsRules: [
                 {
                     allowedHeaders: ["*"],
