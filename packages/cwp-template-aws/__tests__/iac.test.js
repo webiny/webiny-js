@@ -37,7 +37,6 @@ describe("`iac` template option test", () => {
             const config = yaml.load(content);
             expect(config.backend.url).toBe(url);
         }
-
     });
 
     test("should use `file://` as the default backend URL", async () => {
@@ -48,14 +47,14 @@ describe("`iac` template option test", () => {
 
         await setup({
             projectName: PROJECT_NAME,
-            projectRoot: PROJECT_ROOT,
+            projectRoot: PROJECT_ROOT
         });
 
         for (let i = 0; i < PULUMI_YAML_FILES.length; i++) {
             const current = path.join(PROJECT_ROOT, PULUMI_YAML_FILES[i]);
             const content = fs.readFileSync(current, "utf-8");
             const config = yaml.load(content);
-            expect(config.backend.url).toBe('file://');
+            expect(config.backend.url).toBe("file://");
         }
     });
 });
