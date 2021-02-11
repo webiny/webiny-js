@@ -8546,6 +8546,7 @@ __metadata:
     fs-extra: 9.0.1
     get-yarn-workspaces: 1.0.2
     inquirer: 7.3.3
+    js-yaml: ^3.0.0
     load-json-file: 6.2.0
     lodash: 4.17.20
     ora: 4.1.1
@@ -21501,7 +21502,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"js-yaml@npm:3.14.1, js-yaml@npm:^3.13.1, js-yaml@npm:^3.14.0":
+"js-yaml@npm:3.14.1, js-yaml@npm:^3.0.0, js-yaml@npm:^3.13.1, js-yaml@npm:^3.14.0":
   version: 3.14.1
   resolution: "js-yaml@npm:3.14.1"
   dependencies:
