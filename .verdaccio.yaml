@@ -55,4 +55,4 @@ middlewares:
 logs:
   - { type: stdout, format: pretty, level: http }
 
-max_body_size: 100mb
+max_body_size: 1000mb
