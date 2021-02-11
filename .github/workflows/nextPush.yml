@@ -1,0 +1,159 @@
+name: Pull Request (v5)
+
+on:
+  pull_request:
+    branches: [next]
+
+env:
+  NODE_OPTIONS: --max_old_space_size=4096
+
+jobs:
+  initial-checks:
+    name: Initial checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: 12
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - name: Check code formatting
+        run: yarn prettier:check
+
+      - name: Check dependencies
+        run: yarn adio
+
+      - name: Check TS configs
+        run: yarn check-ts-configs
+
+      - name: ESLint
+        run: yarn eslint
+
+  validate-commits:
+    name: Validate commit messages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: webiny/action-conventional-commits@v1.0.2
+
+  build-test-verdaccio-release:
+    name: Build, test, and release to Verdaccio
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: 12
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - name: Build packages
+        run: yarn build
+
+      - name: Run tests
+        run: yarn test
+
+      - name: Start Verdaccio local server
+        run: yarn verdaccio:start:detached
+
+      - name: Create ".npmrc" file in the project root, with a d¡ummy auth token
+        run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
+
+      - name: Configure NPM to use local registry
+        run: npm config set registry http://localhost:4873
+
+      - name: Set git email
+        run: git config --global user.email "webiny-bot@webiny.com"
+
+      - name: Set git username
+        run: git config --global user.name "webiny-bot"
+
+      - name: Version packages (no push, no changelog)
+        run: yarn lerna:version:verdaccio
+
+      - name: Release to Verdaccio
+        run: yarn lerna:publish:verdaccio
+
+      - name: Upload verdaccio files
+        uses: actions/upload-artifact@v2
+        with:
+          name: verdaccio-files
+          retention-days: 1
+          path: |
+            .verdaccio/
+            .verdaccio.yaml
+
+  test-create-webiny-project:
+    needs: [initial-checks, build-test-verdaccio-release]
+    name: Test "create-webiny-project"
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        node: [12, 14]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: verdaccio-files
+          path: verdaccio-files
+
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Start Verdaccio local server
+        working-directory: verdaccio-files
+        run: yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c .verdaccio.yaml
+
+      - name: Configure NPM to use local registry
+        run: npm config set registry http://localhost:4873
+
+      - name: Set git email (needed for create-webiny-project)
+        run: git config --global user.email "webiny-bot@webiny.com"
+
+      - name: Set git username (needed for create-webiny-project)
+        run: git config --global user.name "webiny-bot"
+
+      - name: Create a new Webiny project
+        run: npx create-webiny-project@beta test-project --tag beta --no-interactive --template-options '{"region":"eu-central-1","vpc":false}'
+
+  deploy-preview:
+    needs: [test-create-webiny-project]
+    name: Deploy preview
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: verdaccio-files
+          path: verdaccio-files
+
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: 12
+
+      - name: Start Verdaccio local server
+        working-directory: verdaccio-files
+        run: yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c .verdaccio.yaml
+
+      - name: Configure NPM to use local registry
+        run: npm config set registry http://localhost:4873
+
+      - name: Set git email (needed for create-webiny-project)
+        run: git config --global user.email "webiny-bot@webiny.com"
+
+      - name: Set git username (needed for create-webiny-project)
+        run: git config --global user.name "webiny-bot"
+
+      - name: Create a new Webiny project
+        run: npx create-webiny-project@beta test-project --tag beta --no-interactive --template-options '{"region":"eu-central-1","vpc":false,"iac":["pulumi",{"backend":{"url":"${AWS_PULUMI_S3_BUCKET_NEXT_BRANCH_PREVIEW}"}}]}'
+
+      - name: Deploy preview
+        working-directory: test-project
+        run: yarn webiny deploy
