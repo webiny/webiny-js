@@ -2,19 +2,23 @@ const path = require("path");
 const webpack = require("webpack");
 const WebpackBar = require("webpackbar");
 const { constantCase } = require("constant-case");
+const { version } = require("@webiny/project-utils/package.json");
 
 const generatePackageVersionDefinitions = () => {
     const pkgJSON = require(path.resolve("package.json"));
 
-    return Object.keys(pkgJSON.dependencies || []).reduce((acc, item) => {
-        if (item.startsWith("@webiny/")) {
-            const { version } = require(require.resolve(path.join(item, "package.json"), {
-                paths: [process.cwd()]
-            }));
-            acc[`${constantCase(item)}_VERSION`] = JSON.stringify(version);
-        }
-        return acc;
-    }, {});
+    return Object.keys(pkgJSON.dependencies || []).reduce(
+        (acc, item) => {
+            if (item.startsWith("@webiny/")) {
+                const { version } = require(require.resolve(path.join(item, "package.json"), {
+                    paths: [process.cwd()]
+                }));
+                acc[`${constantCase(item)}_VERSION`] = JSON.stringify(version);
+            }
+            return acc;
+        },
+        { WEBINY_VERSION: JSON.stringify(version) }
+    );
 };
 
 module.exports = ({ entry, output, debug = false, babelOptions, define }) => {
