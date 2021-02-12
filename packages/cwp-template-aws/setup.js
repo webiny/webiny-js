@@ -3,14 +3,16 @@ const path = require("path");
 const execa = require("execa");
 const crypto = require("crypto");
 const renames = require("./setup/renames");
-const merge = require("lodash/merge");
 const get = require("lodash/get");
+const merge = require("lodash/merge");
+const trimEnd = require("lodash/trimend");
 const writeJsonFile = require("write-json-file");
 const loadJsonFile = require("load-json-file");
 const getPackages = require("get-yarn-workspaces");
 const { green } = require("chalk");
 
 const IS_TEST = process.env.NODE_ENV === "test";
+const DEFAULT_BACKEND_URL = "file://";
 
 // Automatic detection could be added here.
 function getDefaultRegion() {
@@ -29,7 +31,7 @@ const setup = async args => {
     const {
         vpc = false,
         region = getDefaultRegion(),
-        iac = ["pulumi", { backend: { url: "file://" } }]
+        iac = ["pulumi", { backend: { url: DEFAULT_BACKEND_URL } }]
     } = templateOptions;
 
     fs.copySync(path.join(__dirname, "template"), projectRoot);
@@ -93,18 +95,20 @@ const setup = async args => {
     );
 
     // Set the appropriate backend.url value in Pulumi.yaml files.
-    const backendUrl = get(iac, "1.backend.url") || "file://";
+    const [, iacOptions = {}] = iac;
 
-    const pulumiYamlFiles = [
-        "api/Pulumi.yaml",
-        "apps/admin/Pulumi.yaml",
-        "apps/website/Pulumi.yaml"
-    ];
+    const pulumiYamlFolders = ["api", "apps/admin", "apps/website"];
+    for (let i = 0; i < pulumiYamlFolders.length; i++) {
+        const pulumiYamlFolder = pulumiYamlFolders[i];
+        const pulumiYamlPath = path.join(projectRoot, pulumiYamlFolder, "Pulumi.yaml");
+        const content = fs.readFileSync(pulumiYamlPath, "utf-8");
 
-    for (let i = 0; i < pulumiYamlFiles.length; i++) {
-        const current = path.join(projectRoot, pulumiYamlFiles[i]);
-        const content = fs.readFileSync(current, "utf-8").replace("{BACKEND_URL}", backendUrl);
-        fs.writeFileSync(current, content);
+        let backendUrl = get(iacOptions, "backend.url") || DEFAULT_BACKEND_URL;
+        if (backendUrl !== DEFAULT_BACKEND_URL) {
+            backendUrl = trimEnd(backendUrl, "/") + "/" + pulumiYamlFolder;
+        }
+
+        fs.writeFileSync(pulumiYamlPath, content.replace("{BACKEND_URL}", backendUrl));
     }
 
     // Adjust versions - change them from `latest` to current one.

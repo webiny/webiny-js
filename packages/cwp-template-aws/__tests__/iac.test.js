@@ -8,7 +8,7 @@ const yaml = require("js-yaml");
 const PROJECT_NAME = "test-123";
 const PROJECT_ROOT = path.join(__dirname, PROJECT_NAME);
 
-const PULUMI_YAML_FILES = ["api/Pulumi.yaml", "apps/admin/Pulumi.yaml", "apps/website/Pulumi.yaml"];
+const PULUMI_YAML_FOLDERS = ["api", "apps/admin", "apps/website"];
 
 describe("`iac` template option test", () => {
     afterAll(() => {
@@ -31,11 +31,12 @@ describe("`iac` template option test", () => {
             }
         });
 
-        for (let i = 0; i < PULUMI_YAML_FILES.length; i++) {
-            const current = path.join(PROJECT_ROOT, PULUMI_YAML_FILES[i]);
-            const content = fs.readFileSync(current, "utf-8");
+        for (let i = 0; i < PULUMI_YAML_FOLDERS.length; i++) {
+            const pulumiYamlFolder = PULUMI_YAML_FOLDERS[i];
+            const pulumiYamlPath = path.join(PROJECT_ROOT, pulumiYamlFolder, "Pulumi.yaml");
+            const content = fs.readFileSync(pulumiYamlPath, "utf-8");
             const config = yaml.load(content);
-            expect(config.backend.url).toBe(url);
+            expect(config.backend.url).toBe(url + pulumiYamlFolder);
         }
     });
 
@@ -50,9 +51,10 @@ describe("`iac` template option test", () => {
             projectRoot: PROJECT_ROOT
         });
 
-        for (let i = 0; i < PULUMI_YAML_FILES.length; i++) {
-            const current = path.join(PROJECT_ROOT, PULUMI_YAML_FILES[i]);
-            const content = fs.readFileSync(current, "utf-8");
+        for (let i = 0; i < PULUMI_YAML_FOLDERS.length; i++) {
+            const pulumiYamlFolder = PULUMI_YAML_FOLDERS[i];
+            const pulumiYamlPath = path.join(PROJECT_ROOT, pulumiYamlFolder, "Pulumi.yaml");
+            const content = fs.readFileSync(pulumiYamlPath, "utf-8");
             const config = yaml.load(content);
             expect(config.backend.url).toBe("file://");
         }
