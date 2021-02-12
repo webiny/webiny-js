@@ -22,6 +22,7 @@ const prerenderingService = new PrerenderingService({
 });
 
 const pageBuilder = new PageBuilder({
+    bucket: fileManager.bucket,
     env: {
         DB_TABLE: dynamoDb.table.name,
         DEBUG: String(process.env.DEBUG)

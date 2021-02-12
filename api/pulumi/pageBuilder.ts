@@ -10,7 +10,7 @@ class PageBuilder {
         updateSettings: aws.lambda.Function;
     };
     constructor({ env, bucket }: { env: Record<string, any>; bucket: aws.s3.Bucket }) {
-        const pbInstallationZipPath = path.join(path.resolve(), "pbInstallation.zip");
+        const pbInstallationZipPath = path.join(path.resolve(), ".tmp", "pbInstallation.zip");
 
         createInstallationZip(pbInstallationZipPath);
 
