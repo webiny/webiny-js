@@ -1,4 +1,6 @@
 const get = require("lodash.get");
+const getWorkspaces = require("get-yarn-workspaces");
+const path = require("path");
 
 module.exports = {
     parser: {
@@ -40,5 +42,7 @@ module.exports = {
         peerDependencies: true
     },
     ignoreDirs: ["node_modules/", "dist/", "build/"],
-    packages: ["packages/*", "api/code/api", "apps/admin/code", "apps/website/code"]
+    packages: getWorkspaces().map(pkg =>
+        pkg.replace(/\//g, path.sep).replace(process.cwd() + path.sep, "")
+    )
 };
