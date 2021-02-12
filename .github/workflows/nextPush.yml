@@ -203,4 +203,4 @@ jobs:
         run: echo "Need to set Pulumi backend to S3 bucket that was used in previous steps."
 
       - name: Cypress - run the rest of Admin app tests
-        run: echo "Once ready, run -> yarn cypress run --spec "cypress/integration/admin/**/*.spec.js"
+        run: echo 'Once ready, run -> yarn cypress run --spec "cypress/integration/admin/**/*.spec.js"'
