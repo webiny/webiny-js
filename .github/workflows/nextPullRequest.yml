@@ -62,7 +62,7 @@ jobs:
       - name: Start Verdaccio local server
         run: yarn verdaccio:start:detached
 
-      - name: Create ".npmrc" file in the project root, with a d¡ummy auth token
+      - name: Create ".npmrc" file in the project root, with a dummy auth token
         run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
 
       - name: Configure NPM to use local registry
