@@ -8,6 +8,15 @@ import downloadInstallationFiles from "./downloadInstallFiles";
 const FILES_COUNT_IN_EACH_BATCH = 15;
 
 export default async ({ context }) => {
+    /**
+     * This function contains logic of file download from S3.
+     * Current we're not mocking zip file download from S3 in tests at the moment.
+     * So, we're manually mocking it in case of test just by returning an empty object.
+     */
+    if (process.env.NODE_ENV === "test") {
+        return {};
+    }
+
     const INSTALL_EXTRACT_DIR = await downloadInstallationFiles();
 
     const pagesFilesData = await loadJson(
@@ -23,7 +32,7 @@ export default async ({ context }) => {
         // Gives an array of chunks (each consists of FILES_COUNT_IN_EACH_BATCH items).
         const filesChunks = chunk(pagesFilesData, FILES_COUNT_IN_EACH_BATCH);
         await console.log(
-            `savePages: there are total of ${filesChunks.length} chunks of ${FILES_COUNT_IN_EACH_BATCH} files to save.`
+            `[savePageAssets]: there are total of ${filesChunks.length} chunks of ${FILES_COUNT_IN_EACH_BATCH} files to save.`
         );
 
         for (let i = 0; i < filesChunks.length; i++) {
@@ -31,7 +40,7 @@ export default async ({ context }) => {
                 // eslint-disable-next-line
                 new Promise(async (promise, reject) => {
                     try {
-                        await console.log(`savePages: started with chunk index ${i}`);
+                        await console.log(`[savePageAssets]: started with chunk index ${i}`);
                         const filesChunk = filesChunks[i];
 
                         // 2. Use received pre-signed POST payloads to upload files directly to S3.
@@ -90,6 +99,6 @@ export default async ({ context }) => {
         await Promise.all(chunksProcesses);
         return fileIdToKeyMap;
     } catch (e) {
-        return console.log(`savePageAssets: error occurred: ${e.stack}`);
+        return console.log(`[savePageAssets]: error occurred: ${e.stack}`);
     }
 };

@@ -22,7 +22,7 @@ const FILE_ID_MAP = {
     COMMUNITY_ICON_SVG: "60228148fa244d0008c47c7a"
 };
 
-export const preparePageData = ({ srcPrefix, ID_TO_KEY }) => {
+export const preparePageData = ({ srcPrefix, fileIdToKeyMap }) => {
     return {
         id: "Fv1PpPWu-",
         type: "document",
@@ -64,7 +64,7 @@ export const preparePageData = ({ srcPrefix, ID_TO_KEY }) => {
                                         name: "9kkxzki5x-bgwelcome-to-webiny.svg",
                                         key: "9kkxzki5x-bgwelcome-to-webiny.svg",
                                         src: `${srcPrefix}/${
-                                            ID_TO_KEY[FILE_ID_MAP.HERO_BLOCK_BG_SVG]
+                                            fileIdToKeyMap[FILE_ID_MAP.HERO_BLOCK_BG_SVG]
                                         }`,
                                         size: 1854,
                                         type: "image/svg+xml"
@@ -139,7 +139,7 @@ export const preparePageData = ({ srcPrefix, ID_TO_KEY }) => {
                                                     name: "9kkxzki5a-webinylogo.svg",
                                                     key: "9kkxzki5a-webinylogo.svg",
                                                     src: `${srcPrefix}/${
-                                                        ID_TO_KEY[FILE_ID_MAP.WEBINY_LOGO_SVG]
+                                                        fileIdToKeyMap[FILE_ID_MAP.WEBINY_LOGO_SVG]
                                                     }`,
                                                     size: 5053,
                                                     type: "image/svg+xml"
@@ -377,7 +377,7 @@ export const preparePageData = ({ srcPrefix, ID_TO_KEY }) => {
                                                         name: "8kkxzt99l-hero-card-bg.svg",
                                                         key: "8kkxzt99l-hero-card-bg.svg",
                                                         src: `${srcPrefix}/${
-                                                            ID_TO_KEY[
+                                                            fileIdToKeyMap[
                                                                 FILE_ID_MAP.FEATURE_CARD_BG_SVG
                                                             ]
                                                         }`,
@@ -463,7 +463,7 @@ export const preparePageData = ({ srcPrefix, ID_TO_KEY }) => {
                                                         name: "8kkxzt99l-hero-card-bg.svg",
                                                         key: "8kkxzt99l-hero-card-bg.svg",
                                                         src: `${srcPrefix}/${
-                                                            ID_TO_KEY[
+                                                            fileIdToKeyMap[
                                                                 FILE_ID_MAP.FEATURE_CARD_BG_SVG
                                                             ]
                                                         }`,
@@ -586,7 +586,7 @@ export const preparePageData = ({ srcPrefix, ID_TO_KEY }) => {
                                                         name: "8kkxzt99l-hero-card-bg.svg",
                                                         key: "8kkxzt99l-hero-card-bg.svg",
                                                         src: `${srcPrefix}/${
-                                                            ID_TO_KEY[
+                                                            fileIdToKeyMap[
                                                                 FILE_ID_MAP.FEATURE_CARD_BG_SVG
                                                             ]
                                                         }`,
@@ -673,7 +673,7 @@ export const preparePageData = ({ srcPrefix, ID_TO_KEY }) => {
                                                         name: "8kkxzt99l-hero-card-bg.svg",
                                                         key: "8kkxzt99l-hero-card-bg.svg",
                                                         src: `${srcPrefix}/${
-                                                            ID_TO_KEY[
+                                                            fileIdToKeyMap[
                                                                 FILE_ID_MAP.FEATURE_CARD_BG_SVG
                                                             ]
                                                         }`,
@@ -1002,7 +1002,7 @@ export const preparePageData = ({ srcPrefix, ID_TO_KEY }) => {
                                                                     key:
                                                                         "9kkxzki4p-webinyserverlessapplicationframework.svg",
                                                                     src: `${srcPrefix}/${
-                                                                        ID_TO_KEY[
+                                                                        fileIdToKeyMap[
                                                                             FILE_ID_MAP
                                                                                 .WEBINY_SERVERLESS_APPLICATION_FRAMEWORK_SVG
                                                                         ]
@@ -1534,7 +1534,7 @@ export const preparePageData = ({ srcPrefix, ID_TO_KEY }) => {
                                                                     key:
                                                                         "8kkxzki50-webiny-infrastructure-overview.svg",
                                                                     src: `${srcPrefix}/${
-                                                                        ID_TO_KEY[
+                                                                        fileIdToKeyMap[
                                                                             FILE_ID_MAP
                                                                                 .WEBINY_INFRASTRUCTURE_OVERVIEW_SVG
                                                                         ]
@@ -1709,7 +1709,7 @@ export const preparePageData = ({ srcPrefix, ID_TO_KEY }) => {
                                         name: "8kkxzki0e-pink-shape.svg",
                                         key: "8kkxzki0e-pink-shape.svg",
                                         src: `${srcPrefix}/${
-                                            ID_TO_KEY[FILE_ID_MAP.PINK_SHAPE_SVG]
+                                            fileIdToKeyMap[FILE_ID_MAP.PINK_SHAPE_SVG]
                                         }`,
                                         size: 390,
                                         type: "image/svg+xml"
@@ -1913,7 +1913,7 @@ export const preparePageData = ({ srcPrefix, ID_TO_KEY }) => {
                                                                     name: "8kkxzki4u-security.svg",
                                                                     key: "8kkxzki4u-security.svg",
                                                                     src: `${srcPrefix}/${
-                                                                        ID_TO_KEY[
+                                                                        fileIdToKeyMap[
                                                                             FILE_ID_MAP.SECURITY_SVG
                                                                         ]
                                                                     }`,
@@ -2139,7 +2139,7 @@ export const preparePageData = ({ srcPrefix, ID_TO_KEY }) => {
                                                                     key:
                                                                         "8kkxzki46-scaffolding.svg",
                                                                     src: `${srcPrefix}/${
-                                                                        ID_TO_KEY[
+                                                                        fileIdToKeyMap[
                                                                             FILE_ID_MAP
                                                                                 .SCAFFOLDING_SVG
                                                                         ]
@@ -2360,7 +2360,7 @@ export const preparePageData = ({ srcPrefix, ID_TO_KEY }) => {
                                                                     name: "8kkxzki32-IDP.svg",
                                                                     key: "8kkxzki32-IDP.svg",
                                                                     src: `${srcPrefix}/${
-                                                                        ID_TO_KEY[
+                                                                        fileIdToKeyMap[
                                                                             FILE_ID_MAP.IDP_SVG
                                                                         ]
                                                                     }`,
@@ -2582,7 +2582,7 @@ export const preparePageData = ({ srcPrefix, ID_TO_KEY }) => {
                                                                     key:
                                                                         "8kkxzki24-environments.svg",
                                                                     src: `${srcPrefix}/${
-                                                                        ID_TO_KEY[
+                                                                        fileIdToKeyMap[
                                                                             FILE_ID_MAP
                                                                                 .ENVIRONMENTS_SVG
                                                                         ]
@@ -2868,7 +2868,7 @@ export const preparePageData = ({ srcPrefix, ID_TO_KEY }) => {
                                                                     key:
                                                                         "8kkxzkhzu-webiny-serverless-cms.svg",
                                                                     src: `${srcPrefix}/${
-                                                                        ID_TO_KEY[
+                                                                        fileIdToKeyMap[
                                                                             FILE_ID_MAP
                                                                                 .WEBINY_SERVERLESS_CMS_SVG
                                                                         ]
@@ -3094,7 +3094,7 @@ export const preparePageData = ({ srcPrefix, ID_TO_KEY }) => {
                                                                     key:
                                                                         "8kkxzkhza-serverless-CMS-logo.svg",
                                                                     src: `${srcPrefix}/${
-                                                                        ID_TO_KEY[
+                                                                        fileIdToKeyMap[
                                                                             FILE_ID_MAP
                                                                                 .SERVERLESS_CMS_LOGO_SVG
                                                                         ]
@@ -3520,7 +3520,7 @@ export const preparePageData = ({ srcPrefix, ID_TO_KEY }) => {
                                         name: "8kkxzkhvv-CMSbenefitsshape.svg",
                                         key: "8kkxzkhvv-CMSbenefitsshape.svg",
                                         src: `${srcPrefix}/${
-                                            ID_TO_KEY[FILE_ID_MAP.CMS_BENEFITS_SHAPE_SVG]
+                                            fileIdToKeyMap[FILE_ID_MAP.CMS_BENEFITS_SHAPE_SVG]
                                         }`,
                                         size: 392,
                                         type: "image/svg+xml"
@@ -3676,7 +3676,9 @@ export const preparePageData = ({ srcPrefix, ID_TO_KEY }) => {
                                                     name: "9kkxzkg4t-scalable-icon.svg",
                                                     key: "9kkxzkg4t-scalable-icon.svg",
                                                     src: `${srcPrefix}/${
-                                                        ID_TO_KEY[FILE_ID_MAP.SCALABLE_ICON_SVG]
+                                                        fileIdToKeyMap[
+                                                            FILE_ID_MAP.SCALABLE_ICON_SVG
+                                                        ]
                                                     }`,
                                                     size: 7806,
                                                     type: "image/svg+xml"
@@ -3787,7 +3789,9 @@ export const preparePageData = ({ srcPrefix, ID_TO_KEY }) => {
                                                     name: "9kkxzkg10-adaptable-icon.svg",
                                                     key: "9kkxzkg10-adaptable-icon.svg",
                                                     src: `${srcPrefix}/${
-                                                        ID_TO_KEY[FILE_ID_MAP.ADAPTABLE_ICON_SVG]
+                                                        fileIdToKeyMap[
+                                                            FILE_ID_MAP.ADAPTABLE_ICON_SVG
+                                                        ]
                                                     }`,
                                                     size: 28918,
                                                     type: "image/svg+xml"
@@ -3894,7 +3898,7 @@ export const preparePageData = ({ srcPrefix, ID_TO_KEY }) => {
                                                     name: "9kkxzkg3p-cost-icon.svg",
                                                     key: "9kkxzkg3p-cost-icon.svg",
                                                     src: `${srcPrefix}/${
-                                                        ID_TO_KEY[FILE_ID_MAP.COST_ICON_SVG]
+                                                        fileIdToKeyMap[FILE_ID_MAP.COST_ICON_SVG]
                                                     }`,
                                                     size: 60602,
                                                     type: "image/svg+xml"
@@ -4032,7 +4036,7 @@ export const preparePageData = ({ srcPrefix, ID_TO_KEY }) => {
                                                     name: "8kkxzki32-IDP.svg",
                                                     key: "8kkxzki32-IDP.svg",
                                                     src: `${srcPrefix}/${
-                                                        ID_TO_KEY[FILE_ID_MAP.IDP_SVG]
+                                                        fileIdToKeyMap[FILE_ID_MAP.IDP_SVG]
                                                     }`,
                                                     size: 27878,
                                                     type: "image/svg+xml"
@@ -4143,7 +4147,7 @@ export const preparePageData = ({ srcPrefix, ID_TO_KEY }) => {
                                                     name: "9kkxzkg2t-data-icon.svg",
                                                     key: "9kkxzkg2t-data-icon.svg",
                                                     src: `${srcPrefix}/${
-                                                        ID_TO_KEY[FILE_ID_MAP.DATA_ICON_SVG]
+                                                        fileIdToKeyMap[FILE_ID_MAP.DATA_ICON_SVG]
                                                     }`,
                                                     size: 73153,
                                                     type: "image/svg+xml"
@@ -4250,7 +4254,9 @@ export const preparePageData = ({ srcPrefix, ID_TO_KEY }) => {
                                                     name: "9kkxzkg28-permission-icon.svg",
                                                     key: "9kkxzkg28-permission-icon.svg",
                                                     src: `${srcPrefix}/${
-                                                        ID_TO_KEY[FILE_ID_MAP.PERMISSION_ICON_SVG]
+                                                        fileIdToKeyMap[
+                                                            FILE_ID_MAP.PERMISSION_ICON_SVG
+                                                        ]
                                                     }`,
                                                     size: 67402,
                                                     type: "image/svg+xml"
@@ -4502,7 +4508,7 @@ export const preparePageData = ({ srcPrefix, ID_TO_KEY }) => {
                                                     name: "9kkxzkfzt-developer.svg",
                                                     key: "9kkxzkfzt-developer.svg",
                                                     src: `${srcPrefix}/${
-                                                        ID_TO_KEY[FILE_ID_MAP.DEVELOPER_SVG]
+                                                        fileIdToKeyMap[FILE_ID_MAP.DEVELOPER_SVG]
                                                     }`,
                                                     size: 27804,
                                                     type: "image/svg+xml"
@@ -4614,7 +4620,7 @@ export const preparePageData = ({ srcPrefix, ID_TO_KEY }) => {
                                                     name: "9kkxzkfza-Octocat.svg",
                                                     key: "9kkxzkfza-Octocat.svg",
                                                     src: `${srcPrefix}/${
-                                                        ID_TO_KEY[FILE_ID_MAP.DEVELOPER_SVG]
+                                                        fileIdToKeyMap[FILE_ID_MAP.DEVELOPER_SVG]
                                                     }`,
                                                     size: 30007,
                                                     type: "image/svg+xml"
@@ -4725,7 +4731,9 @@ export const preparePageData = ({ srcPrefix, ID_TO_KEY }) => {
                                                     name: "9kkxzkfx1-community-icon.svg",
                                                     key: "9kkxzkfx1-community-icon.svg",
                                                     src: `${srcPrefix}/${
-                                                        ID_TO_KEY[FILE_ID_MAP.COMMUNITY_ICON_SVG]
+                                                        fileIdToKeyMap[
+                                                            FILE_ID_MAP.COMMUNITY_ICON_SVG
+                                                        ]
                                                     }`,
                                                     size: 545157,
                                                     type: "image/svg+xml"
