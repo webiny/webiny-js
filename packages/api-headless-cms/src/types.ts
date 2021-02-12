@@ -1660,6 +1660,10 @@ export interface CmsContentIndexEntry extends CmsContentEntry {
      */
     rawValues: Record<string, any>;
     /**
+     * Version of Webiny this entry was created with.
+     */
+    webinyVersion?: string;
+    /**
      * Dev can add what ever keys they want and need. Just need to be careful not to break the entry.
      */
     [key: string]: any;

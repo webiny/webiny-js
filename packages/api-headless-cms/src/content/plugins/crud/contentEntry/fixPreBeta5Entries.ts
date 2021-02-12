@@ -21,7 +21,7 @@ const convertTimeToNumber = (time?: string): number => {
     return hours * 60 * 60 + minutes * 60 + seconds;
 };
 
-const isTime = (value: any) => {
+const isTime = (value: string | number) => {
     return String(value).match(/^([0-9]{2}):([0-9]{2})/) !== null;
 };
 
@@ -69,7 +69,7 @@ const fixValue = (field: CmsContentModelDateTimeField, value: any) => {
 /**
  * if there is no version - fix is needed since there is no ver in pre beta.5
  */
-const isFixNeeded = (item: any): boolean => {
+const isFixNeeded = (item: CmsContentIndexEntry): boolean => {
     const ver = item.webinyVersion;
     if (!ver) {
         return true;
