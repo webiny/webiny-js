@@ -229,7 +229,7 @@ describe("multiple values in field", () => {
             ...manageOpts
         });
 
-        const availableOn = "2020-12-25T16:37:00Z.000";
+        const availableOn = "2020-12-25";
         const [createProductResponse] = await createProduct({
             data: {
                 title: "Potato",
