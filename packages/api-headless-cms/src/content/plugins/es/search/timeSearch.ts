@@ -1,13 +1,10 @@
-import {
-    CmsContentModelDateTimeField,
-    ElasticsearchQueryBuilderValueSearchPlugin
-} from "@webiny/api-headless-cms/types";
+import { ElasticsearchQueryBuilderValueSearchPlugin } from "@webiny/api-headless-cms/types";
 
 export default (): ElasticsearchQueryBuilderValueSearchPlugin => ({
     type: "cms-elastic-search-query-builder-value-search",
     name: "elastic-search-query-builder-value-search-time",
     fieldType: "datetime",
-    transform: (field: CmsContentModelDateTimeField, value) => {
+    transform: ({ field, value }) => {
         if (field.settings.type !== "time") {
             return value;
         }

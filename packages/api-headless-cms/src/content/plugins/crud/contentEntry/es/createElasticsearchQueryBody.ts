@@ -213,14 +213,16 @@ const execElasticsearchBuildQueryPlugins = (
         const value = transformValueForSearch({
             plugins: searchPlugins,
             field: cmsField,
-            value: where[key]
+            value: where[key],
+            context
         });
         const fieldWithParent = isSystemField ? null : withParentObject(field);
         plugin.apply(query, {
             field: fieldWithParent || field,
             value,
             parentObject,
-            originalField: fieldWithParent ? field : undefined
+            originalField: fieldWithParent ? field : undefined,
+            context
         });
     }
 
@@ -330,7 +332,7 @@ export const createElasticsearchQueryBody = (params: CreateElasticsearchParams) 
         "cms-elasticsearch-query"
     );
     for (const pl of queryPlugins) {
-        pl.modify(query, model);
+        pl.modify({ query, model, context });
     }
 
     return {

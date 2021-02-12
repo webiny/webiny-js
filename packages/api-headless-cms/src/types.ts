@@ -1474,9 +1474,21 @@ type ElasticsearchQueryShouldParam = {
  * @category Elasticsearch
  */
 export interface ElasticsearchQuery {
+    /**
+     * A must part of the query.
+     */
     must: ElasticsearchQueryMustParam[];
+    /**
+     * A mustNot part of the query.
+     */
     mustNot: ElasticsearchQueryMustNotParam[];
+    /**
+     * A match part of the query.
+     */
     match: ElasticsearchQueryMatchParam[];
+    /**
+     * A should part of the query.
+     */
     should: ElasticsearchQueryShouldParam[];
 }
 
@@ -1491,8 +1503,20 @@ export interface ElasticsearchQuery {
 export interface ElasticsearchQueryBuilderArgsPlugin {
     field: string;
     value: any;
+    context: CmsContext;
     parentObject?: string;
     originalField?: string;
+}
+
+/**
+ * Arguments for ElasticsearchQueryPlugin.
+ *
+ * @see ElasticsearchQueryPlugin.modify
+ */
+interface ElasticsearchQueryPluginArgs {
+    query: ElasticsearchQuery;
+    model: CmsContentModel;
+    context: CmsContext;
 }
 /**
  * A plugin definition to modify Elasticsearch query.
@@ -1502,11 +1526,11 @@ export interface ElasticsearchQueryBuilderArgsPlugin {
  */
 export interface ElasticsearchQueryPlugin extends Plugin {
     type: "cms-elasticsearch-query";
-    modify: (query: ElasticsearchQuery, model: CmsContentModel) => void;
+    modify: (args: ElasticsearchQueryPluginArgs) => void;
 }
 
 /**
- * A plugin definition to build Elasticsearch query
+ * A plugin definition to build Elasticsearch query.
  *
  * @category Plugin
  * @category Elasticsearch
@@ -1532,7 +1556,17 @@ export interface ElasticsearchQueryBuilderPlugin extends Plugin {
 }
 
 /**
- * A plugin definiton
+ * Arguments for ElasticsearchQueryBuilderValueSearchPlugin.
+ *
+ * @see ElasticsearchQueryBuilderValueSearchPlugin.transform
+ */
+interface ElasticsearchQueryBuilderValueSearchPluginArgs {
+    field: CmsContentModelField;
+    value: any;
+    context: CmsContext;
+}
+/**
+ * A plugin definition for transforming the search value for Elasticsearch.
  *
  * @category Plugin
  * @category Elasticsearch
@@ -1549,7 +1583,7 @@ export interface ElasticsearchQueryBuilderValueSearchPlugin extends Plugin {
     /**
      * Transform value that is going to be searched for in the Elasticsearch.
      */
-    transform: (field: CmsContentModelField, value: any) => any;
+    transform: (args: ElasticsearchQueryBuilderValueSearchPluginArgs) => any;
 }
 
 /**
