@@ -123,7 +123,7 @@ jobs:
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"eu-central-1","vpc":false}'
 
-  deploy-preview:
+  preview:
     needs: [test-create-webiny-project]
     name: Deploy preview
     runs-on: ubuntu-latest
@@ -164,3 +164,13 @@ jobs:
       - name: Deploy preview
         working-directory: test-project
         run: yarn webiny deploy
+
+      - name: Upload preview files
+        uses: actions/upload-artifact@v2
+        with:
+          name: preview-files
+          retention-days: 1
+          path: |
+            test-project/
+            !test-project/node_modules/**/*
+            !test-project/**/node_modules/**/*
