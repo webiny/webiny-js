@@ -56,6 +56,8 @@ import {
 
 import { GET_SETTINGS, GET_DEFAULT_SETTINGS, UPDATE_SETTINGS } from "./graphql/settings";
 import { Db } from "@webiny/db";
+import path from "path";
+import fs from "fs";
 
 const defaultTenant = { id: "root", name: "Root", parent: null };
 
@@ -138,6 +140,27 @@ export default ({ permissions, identity, tenant } = {}) => {
                     id: "mocked",
                     displayName: "m"
                 })
+        },
+        {
+            type: "api-file-manager-storage",
+            name: "api-file-manager-storage",
+            async upload(args) {
+                // TODO: use tmp OS directory
+                const key = path.join(__dirname, args.name);
+
+                fs.writeFileSync(key, args.buffer);
+
+                return {
+                    file: {
+                        key: args.name,
+                        name: args.name,
+                        type: args.type,
+                        size: args.size
+                    }
+                };
+            },
+            // eslint-disable-next-line
+            async delete(args) {}
         }
     );
 
