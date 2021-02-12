@@ -155,6 +155,18 @@ export interface CmsContentModelField {
 }
 
 /**
+ * A definition for dateTime field to show possible type of the field in settings.
+ */
+export interface CmsContentModelDateTimeField extends CmsContentModelField {
+    /**
+     * Settings object for the field. Contains type property.
+     */
+    settings: {
+        type: "time" | "date" | "dateTimeWithoutTimezone" | "dateTimeWithTimezone";
+    };
+}
+
+/**
  * Arguments for the field validator validate method.
  *
  * @category ContentModelField
@@ -923,7 +935,7 @@ export interface ContentModelManagerPlugin extends Plugin {
     /**
      * A plugin type.
      */
-    type: "content-model-manager";
+    type: "cms-content-model-manager";
     /**
      * Specific model CmsContentModelManager loader. Can target exact modelId(s).
      * Be aware that if you define multiple plugins without `modelId`, last one will run.
@@ -1068,6 +1080,15 @@ export interface CmsContentModelContext {
          * Get a single content model.
          */
         get: (modelId: string) => Promise<CmsContentModel | null>;
+        /**
+         * Get all content models.
+         */
+        list: () => Promise<CmsContentModel[]>;
+    };
+    /**
+     * A function defining usage of a method with authenticating the user but not throwing an error.
+     */
+    silentAuth: () => {
         /**
          * Get all content models.
          */
@@ -1453,9 +1474,21 @@ type ElasticsearchQueryShouldParam = {
  * @category Elasticsearch
  */
 export interface ElasticsearchQuery {
+    /**
+     * A must part of the query.
+     */
     must: ElasticsearchQueryMustParam[];
+    /**
+     * A mustNot part of the query.
+     */
     mustNot: ElasticsearchQueryMustNotParam[];
+    /**
+     * A match part of the query.
+     */
     match: ElasticsearchQueryMatchParam[];
+    /**
+     * A should part of the query.
+     */
     should: ElasticsearchQueryShouldParam[];
 }
 
@@ -1470,21 +1503,43 @@ export interface ElasticsearchQuery {
 export interface ElasticsearchQueryBuilderArgsPlugin {
     field: string;
     value: any;
+    context: CmsContext;
     parentObject?: string;
     originalField?: string;
 }
 
 /**
- * A plugin definition to build Elasticsearch query
+ * Arguments for ElasticsearchQueryPlugin.
+ *
+ * @see ElasticsearchQueryPlugin.modify
+ */
+interface ElasticsearchQueryPluginArgs {
+    query: ElasticsearchQuery;
+    model: CmsContentModel;
+    context: CmsContext;
+}
+/**
+ * A plugin definition to modify Elasticsearch query.
+ *
+ * @category Plugin
+ * @category Elasticsearch
+ */
+export interface ElasticsearchQueryPlugin extends Plugin {
+    type: "cms-elasticsearch-query";
+    modify: (args: ElasticsearchQueryPluginArgs) => void;
+}
+
+/**
+ * A plugin definition to build Elasticsearch query.
  *
  * @category Plugin
  * @category Elasticsearch
  */
 export interface ElasticsearchQueryBuilderPlugin extends Plugin {
     /**
-     * A plugin type
+     * A plugin type.
      */
-    type: "elastic-search-query-builder";
+    type: "cms-elastic-search-query-builder";
     /**
      * Name of the plugin. Name it for better debugging experience.
      */
@@ -1498,6 +1553,37 @@ export interface ElasticsearchQueryBuilderPlugin extends Plugin {
      * Has access to whole query object so it can remove something added by other plugins.
      */
     apply: (query: ElasticsearchQuery, args: ElasticsearchQueryBuilderArgsPlugin) => void;
+}
+
+/**
+ * Arguments for ElasticsearchQueryBuilderValueSearchPlugin.
+ *
+ * @see ElasticsearchQueryBuilderValueSearchPlugin.transform
+ */
+interface ElasticsearchQueryBuilderValueSearchPluginArgs {
+    field: CmsContentModelField;
+    value: any;
+    context: CmsContext;
+}
+/**
+ * A plugin definition for transforming the search value for Elasticsearch.
+ *
+ * @category Plugin
+ * @category Elasticsearch
+ */
+export interface ElasticsearchQueryBuilderValueSearchPlugin extends Plugin {
+    /**
+     * A plugin type.
+     */
+    type: "cms-elastic-search-query-builder-value-search";
+    /**
+     * A field type for plugin to target.
+     */
+    fieldType: string;
+    /**
+     * Transform value that is going to be searched for in the Elasticsearch.
+     */
+    transform: (args: ElasticsearchQueryBuilderValueSearchPluginArgs) => any;
 }
 
 /**
@@ -1651,7 +1737,7 @@ export interface CmsModelFieldToElasticsearchPlugin extends Plugin {
      * unmappedType: "date"
      * ```
      */
-    unmappedType?: string;
+    unmappedType?: (field: CmsContentModelField) => string;
     /**
      * This is meant to do some transformation of the entry, preferably only to fieldType it was defined for. Nothing is stopping you to do anything you want to other fields, but try to separate field transformations.
      * It returns `Partial<CmsContentIndexEntryType>`. Always return a top-level property of the entry since it is merged via spread operator.
@@ -1795,7 +1881,7 @@ export interface CmsContentModelUpdateHookPluginArgs extends CmsContentModelHook
  * @category LifecycleHook
  */
 export interface CmsContentModelHookPlugin extends Plugin {
-    type: "content-model-hook";
+    type: "cms-content-model-hook";
     /**
      * A hook triggered before the content model is created.
      */
@@ -1838,7 +1924,7 @@ export interface CmsContentEntryHookPluginArgs {
  * @category LifecycleHook
  */
 export interface CmsContentEntryHookPlugin extends Plugin {
-    type: "content-entry-hook";
+    type: "cms-content-entry-hook";
     /**
      * A hook triggered before entry is stored.
      * At this point, entry for storage and elastic search is already built so you cannot modify them.

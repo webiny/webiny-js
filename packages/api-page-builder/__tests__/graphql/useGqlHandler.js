@@ -11,6 +11,7 @@ import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import elasticSearchPlugins from "@webiny/api-plugin-elastic-search-client";
 import { Client } from "@elastic/elasticsearch";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
+import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
 
 import { INSTALL, IS_INSTALLED } from "./graphql/install";
 import {
@@ -114,7 +115,16 @@ export default ({ permissions, identity, tenant } = {}) => {
         fileManagerPlugins(),
         mockLocalesPlugins(),
         pageBuilderPlugins(),
-
+        prerenderingServicePlugins({
+            handlers: {
+                render: "render",
+                flush: "flush",
+                queue: {
+                    add: "add",
+                    process: "process"
+                }
+            }
+        }),
         {
             type: "security-authorization",
             name: "security-authorization",

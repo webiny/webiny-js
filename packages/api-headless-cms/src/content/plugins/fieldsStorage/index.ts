@@ -1,3 +1,4 @@
 import richTextStorage from "./richTextStorage";
+import dateStorage from "./dateStorage";
 
-export default () => [richTextStorage()];
+export default () => [richTextStorage(), dateStorage()];

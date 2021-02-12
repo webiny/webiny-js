@@ -119,7 +119,6 @@ describe("Settings Test", () => {
             data: {
                 pages: {
                     home: p1.id,
-                    error: p1.id,
                     notFound: p1.id
                 }
             }
@@ -133,7 +132,6 @@ describe("Settings Test", () => {
             data: {
                 pages: {
                     home: p2.id,
-                    error: p1.id,
                     notFound: p1.id
                 }
             }
@@ -146,7 +144,6 @@ describe("Settings Test", () => {
             data: {
                 pages: {
                     home: p2.id,
-                    error: p2.id,
                     notFound: p1.id
                 }
             }
@@ -159,7 +156,6 @@ describe("Settings Test", () => {
             data: {
                 pages: {
                     home: p2.id,
-                    error: p2.id,
                     notFound: p2.id
                 }
             }

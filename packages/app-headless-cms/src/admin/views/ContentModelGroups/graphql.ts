@@ -7,6 +7,7 @@ const fields = `
     description
     icon
     createdOn
+    createdBy
 `;
 
 export const LIST_CONTENT_MODEL_GROUPS = gql`

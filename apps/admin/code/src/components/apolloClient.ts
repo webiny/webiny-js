@@ -1,7 +1,6 @@
 import ApolloClient from "apollo-client";
 import { ApolloLink } from "apollo-link";
 import { BatchHttpLink } from "apollo-link-batch-http";
-import { ErrorLink } from "apollo-link-error";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import {
     createOmitTypenameLink,
@@ -9,27 +8,11 @@ import {
     createConsoleLink
 } from "@webiny/app/graphql";
 import { plugins } from "@webiny/plugins";
-import { GET_ERROR } from "./NetworkError";
 import { CacheGetObjectIdPlugin } from "@webiny/app/types";
 
 export const createApolloClient = ({ uri }) => {
     return new ApolloClient({
         link: ApolloLink.from([
-            /**
-             * This link will store information about the error into Apollo Cache. We then use it within `NetworkError`
-             * component to render useful information and directions on how to proceed.
-             */
-            new ErrorLink(({ networkError, operation }) => {
-                if (networkError) {
-                    const { cache } = operation.getContext();
-                    cache.writeQuery({
-                        query: GET_ERROR,
-                        data: {
-                            networkError: "UNAVAILABLE"
-                        }
-                    });
-                }
-            }),
             /**
              * This link checks for `extensions.console` in the response, and logs it to browser console.
              */

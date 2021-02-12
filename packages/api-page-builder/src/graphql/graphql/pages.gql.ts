@@ -16,6 +16,16 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 url: String
             }
 
+            type PbPageVisibilitySettings {
+                published: Boolean
+                latest: Boolean
+            }
+
+            type PbPageVisibility {
+                get: PbPageVisibilitySettings
+                list: PbPageVisibilitySettings
+            }
+
             type PbPage {
                 id: ID
                 pid: ID
@@ -31,6 +41,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 version: Int
                 title: String
                 status: String
+                visibility: PbPageVisibility
                 path: String
                 url: String
                 settings: PbPageSettings
@@ -89,10 +100,21 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 _empty: String
             }
 
+            input PbPageVisibilitySettingsInput {
+                published: Boolean
+                latest: Boolean
+            }
+
+            input PbPageVisibilityInput {
+                get: PbPageVisibilitySettingsInput
+                list: PbPageVisibilitySettingsInput
+            }
+
             input PbUpdatePageInput {
                 title: String
                 category: ID
                 path: String
+                visibility: PbPageVisibilityInput
                 settings: PbPageSettingsInput
                 content: JSON
             }

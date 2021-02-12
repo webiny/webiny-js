@@ -33,6 +33,9 @@
     },
     {
       "path": "../validation"
+    },
+    {
+      "path": "../error"
     }
   ]
 }

@@ -55,7 +55,7 @@ export type PageStatus =
     | "reviewRequested"
     | "changesRequested"
     | "draft";
-export type PageSpecialType = "home" | "error" | "notFound";
+export type PageSpecialType = "home" | "notFound";
 
 export type Page = {
     id: string;
@@ -87,8 +87,11 @@ export type Page = {
     };
     locked: boolean;
     status: PageStatus;
+    visibility: {
+        list: { latest: boolean; published: boolean };
+        get: { latest: boolean; published: boolean };
+    };
     home: boolean;
-    error: boolean;
     notFound: boolean;
     createdOn: string;
     savedOn: string;
@@ -133,7 +136,6 @@ export type DefaultSettings = {
     pages: {
         home: string;
         notFound: string;
-        error: string;
     };
 };
 

@@ -1,7 +1,8 @@
 const { green } = require("chalk");
 const { getStackOutput, getPulumi } = require("@webiny/cli-plugin-deploy-pulumi/utils");
-const sleep = require("../utils/sleep");
 const execa = require("execa");
+const { sendEvent } = require("@webiny/tracking");
+const sleep = require("../utils/sleep");
 
 const deploy = (stack, inputs) => {
     return execa(
@@ -33,7 +34,7 @@ module.exports = async (inputs, context) => {
     // If we just installed Pulumi, let's add a new line.
     installed && console.log();
 
-    // 1. Get exports from `site` stack, for `args.env` environment.
+    // 1. Get exports from `website` stack, for `args.env` environment.
     const apiStackOutput = await getStackOutput("api", env);
     const appsAdmin = await getStackOutput("apps/admin", env);
     const appsWebsite = await getStackOutput("apps/website", env);
@@ -48,29 +49,45 @@ module.exports = async (inputs, context) => {
         await sleep();
     }
 
-    // Deploying `api` project application.
-    isFirstDeployment && console.log();
-    context.info(`Deploying ${green("api")} project application...`);
+    try {
+        await sendEvent({ event: "project-deploy-start" });
 
-    await deploy("api", inputs);
-    context.success(`${green("api")} project application was deployed successfully!`);
-    isFirstDeployment && (await sleep(2000));
+        // Deploying `api` project application.
+        isFirstDeployment && console.log();
+        context.info(`Deploying ${green("api")} project application...`);
 
-    // Deploying `apps/admin` project application.
-    console.log();
-    context.info(`Deploying ${green("apps/admin")} project application...`);
-    isFirstDeployment && (await sleep());
+        await deploy("api", inputs);
+        context.success(`${green("api")} project application was deployed successfully!`);
+        isFirstDeployment && (await sleep(2000));
 
-    await deploy("apps/admin", inputs);
-    context.success(`${green("apps/admin")} project application was deployed successfully!`);
+        // Deploying `apps/admin` project application.
+        console.log();
+        context.info(`Deploying ${green("apps/admin")} project application...`);
+        isFirstDeployment && (await sleep());
 
-    // Deploying `apps/admin` project application.
-    console.log();
-    context.info(`Deploying ${green("apps/website")} project application...`);
-    isFirstDeployment && (await sleep());
+        await deploy("apps/admin", inputs);
+        context.success(`${green("apps/admin")} project application was deployed successfully!`);
 
-    await deploy("apps/website", inputs);
-    context.success(`${green("apps/website")} project application was deployed successfully!`);
+        // Deploying `apps/admin` project application.
+        console.log();
+        context.info(`Deploying ${green("apps/website")} project application...`);
+        isFirstDeployment && (await sleep());
+
+        await deploy("apps/website", inputs);
+        context.success(`${green("apps/website")} project application was deployed successfully!`);
+
+        await sendEvent({ event: "project-deploy-end" });
+    } catch (e) {
+        await sendEvent({
+            event: "project-deploy-error",
+            data: {
+                errorMessage: e.message,
+                errorStack: e.stack
+            }
+        });
+
+        throw e;
+    }
 
     const outputs = {
         api: await getStackOutput("api", env),

@@ -1,14 +1,20 @@
 import { HandlerPlugin as DefaultHandlerPlugin, Context } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
 import { DbContext } from "@webiny/handler-db/types";
-import { HandlerArgs as FlushArgs } from "./../../flush/types";
-import { HandlerArgs as RenderArgs } from "./../../render/types";
+import { Args as FlushArgs } from "./../../flush/types";
+import { Args as RenderArgs } from "./../../render/types";
 import { Plugin } from "@webiny/plugins/types";
 import debug from "debug";
 
+export type Tag = { key: string; value?: string };
+
+export type QueueArgs = {
+    tag?: Tag;
+};
+
 export type Args = {
-    flush?: FlushArgs;
-    render?: RenderArgs;
+    flush?: FlushArgs & QueueArgs;
+    render?: RenderArgs & QueueArgs;
 };
 
 export type HandlerArgs = Args | Args[];

@@ -5,11 +5,13 @@ import { i18n } from "@webiny/app/i18n";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
 import { LIST_MENU_CONTENT_GROUPS_MODELS } from "./../../viewsGraphql";
+import usePermission from "../../hooks/usePermission";
 
 const t = i18n.ns("app-headless-cms/admin/menus");
 
 const ContentModelMenuItems = ({ Section, Item }) => {
     const response = useQuery(LIST_MENU_CONTENT_GROUPS_MODELS);
+    const { canRead } = usePermission();
 
     const { data } = get(response, "data.listContentModelGroups") || {};
     if (!data) {
@@ -29,16 +31,30 @@ const ContentModelMenuItems = ({ Section, Item }) => {
                     />
                 }
             >
-                {contentModelGroup.contentModels.length === 0 && (
+                {(contentModelGroup.contentModels.length === 0 ||
+                    contentModelGroup.contentModels.every(
+                        contentModel =>
+                            !canRead({
+                                contentModelGroup,
+                                contentModel,
+                                permissionName: "cms.contentEntry"
+                            })
+                    )) && (
                     <Item style={{ opacity: 0.4 }} key={"empty-item"} label={t`Nothing to show.`} />
                 )}
-                {contentModelGroup.contentModels.map(contentModel => (
-                    <Item
-                        key={contentModel.modelId}
-                        label={pluralize(contentModel.name)}
-                        path={`/cms/content-entries/${contentModel.modelId}`}
-                    />
-                ))}
+                {contentModelGroup.contentModels.map(contentModel =>
+                    canRead({
+                        contentModelGroup,
+                        contentModel,
+                        permissionName: "cms.contentEntry"
+                    }) ? (
+                        <Item
+                            key={contentModel.modelId}
+                            label={pluralize(contentModel.name)}
+                            path={`/cms/content-entries/${contentModel.modelId}`}
+                        />
+                    ) : null
+                )}
             </Section>
         );
     });

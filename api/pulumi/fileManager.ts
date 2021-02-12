@@ -1,6 +1,5 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-import vpc from "./vpc";
 
 // @ts-ignore
 import { getLayerArn } from "@webiny/aws-layers";
@@ -63,10 +62,6 @@ class FileManager {
             layers: [getLayerArn("webiny-v4-sharp", String(process.env.AWS_REGION))],
             environment: {
                 variables: { S3_BUCKET: this.bucket.id }
-            },
-            vpcConfig: {
-                subnetIds: vpc.subnets.private.map(subNet => subNet.id),
-                securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
             }
         });
 
@@ -82,10 +77,6 @@ class FileManager {
             }),
             environment: {
                 variables: { S3_BUCKET: this.bucket.id }
-            },
-            vpcConfig: {
-                subnetIds: vpc.subnets.private.map(subNet => subNet.id),
-                securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
             }
         });
 
@@ -104,10 +95,6 @@ class FileManager {
                     S3_BUCKET: this.bucket.id,
                     IMAGE_TRANSFORMER_FUNCTION: transform.arn
                 }
-            },
-            vpcConfig: {
-                subnetIds: vpc.subnets.private.map(subNet => subNet.id),
-                securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
             }
         });
 

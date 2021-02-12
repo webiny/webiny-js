@@ -9,7 +9,8 @@
     "../app-i18n",
     "../app-admin",
     "../form",
-    "../ui"
+    "../ui",
+    "../app-security"
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -31,6 +32,9 @@
     },
     {
       "path": "../ui/tsconfig.build.json"
+    },
+    {
+      "path": "../app-security/tsconfig.build.json"
     }
   ]
 }

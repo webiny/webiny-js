@@ -29,7 +29,13 @@ const getLogType = type => {
 };
 
 const webinyLog = (type, ...args) => {
-    console.log(`webiny ${getLogType(type)}:`, ...args);
+    const prefix = `webiny ${getLogType(type)}: `;
+
+    const [first, ...rest] = args;
+    if (typeof first === "string") {
+        return console.log(prefix + first, ...rest);
+    }
+    return console.log(prefix, first, ...rest);
 };
 
 class Context {

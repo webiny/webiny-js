@@ -6,6 +6,7 @@ import { ContentModelForm } from "../../../views/components/ContentModelForm";
 import * as GQL from "../../../views/components/ContentModelForm/graphql";
 import * as GQLCache from "../cache";
 import { CmsEditorContentEntry, CmsEditorContentModel } from "@webiny/app-headless-cms/types";
+import { prepareFormData } from "./prepareFormData";
 
 interface ContentFormProps {
     contentModel: CmsEditorContentModel;
@@ -162,7 +163,8 @@ const ContentForm: React.FunctionComponent<ContentFormProps> = ({
             contentModel={contentModel}
             entry={entry}
             onForm={contentForm => setState({ contentForm })}
-            onSubmit={async data => {
+            onSubmit={async fData => {
+                const data = prepareFormData(fData, contentModel);
                 if (!entry.id) {
                     return createContent(data);
                 }

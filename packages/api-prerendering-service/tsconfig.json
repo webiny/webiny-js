@@ -18,6 +18,9 @@
     },
     {
       "path": "../handler-client"
+    },
+    {
+      "path": "../error"
     }
   ]
 }

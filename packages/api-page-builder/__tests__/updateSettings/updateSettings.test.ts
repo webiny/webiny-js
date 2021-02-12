@@ -56,8 +56,7 @@ describe("Update Settings Handler Test", () => {
                 },
                 pages: {
                     home: null,
-                    notFound: null,
-                    error: null
+                    notFound: null
                 }
             },
             error: null

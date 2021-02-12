@@ -30,6 +30,7 @@ import SearchUI from "@webiny/app-admin/components/SearchUI";
 import { deserializeSorters, serializeSorters } from "@webiny/app-page-builder/admin/views/utils";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
+import usePermission from "../../../hooks/usePermission";
 
 const t = i18n.namespace("FormsApp.FormsDataList");
 const rightAlign = css({
@@ -75,6 +76,7 @@ const FormsDataList = (props: FormsDataListProps) => {
     const { location, history } = useRouter();
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
+    const { canEdit, canDelete } = usePermission();
 
     const deleteRecord = useCallback(
         async item => {
@@ -234,21 +236,25 @@ const FormsDataList = (props: FormsDataListProps) => {
                                     {upperFirst(form.status)} (v{form.version})
                                 </Typography>
                                 <ListActions>
-                                    <EditIcon onClick={editRecord(form)} />
-                                    <ConfirmationDialog
-                                        title={"Confirmation required!"}
-                                        message={
-                                            "This will delete the form and all of its revisions. Are you sure you want to continue?"
-                                        }
-                                    >
-                                        {({ showConfirmation }) => (
-                                            <DeleteIcon
-                                                onClick={() =>
-                                                    showConfirmation(async () => deleteRecord(form))
-                                                }
-                                            />
-                                        )}
-                                    </ConfirmationDialog>
+                                    {canEdit(form) && <EditIcon onClick={editRecord(form)} />}
+                                    {canDelete(form) && (
+                                        <ConfirmationDialog
+                                            title={"Confirmation required!"}
+                                            message={
+                                                "This will delete the form and all of its revisions. Are you sure you want to continue?"
+                                            }
+                                        >
+                                            {({ showConfirmation }) => (
+                                                <DeleteIcon
+                                                    onClick={() =>
+                                                        showConfirmation(async () =>
+                                                            deleteRecord(form)
+                                                        )
+                                                    }
+                                                />
+                                            )}
+                                        </ConfirmationDialog>
+                                    )}
                                 </ListActions>
                             </ListItemMeta>
                         </ListItem>

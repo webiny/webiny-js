@@ -226,7 +226,6 @@ describe("Settings Test", () => {
                             data: {
                                 name: "test 1",
                                 pages: {
-                                    error: null,
                                     home: null,
                                     notFound: null
                                 },
@@ -293,7 +292,6 @@ describe("Settings Test", () => {
                             data: {
                                 name: "test 1",
                                 pages: {
-                                    error: null,
                                     home: null,
                                     notFound: null
                                 },
@@ -327,7 +325,7 @@ describe("Settings Test", () => {
         );
     });
 
-    test("settings special pages (error, notFound, home)", async () => {
+    test("settings special pages (notFound, home)", async () => {
         const page = await createPage({ category: "category" }).then(
             ([res]) => res.data.pageBuilder.createPage.data
         );
@@ -414,7 +412,6 @@ describe("Settings Test", () => {
                 data: {
                     pages: {
                         home: page.id,
-                        error: page.id,
                         notFound: page.id
                     }
                 }
@@ -430,7 +427,6 @@ describe("Settings Test", () => {
                             data: {
                                 pages: {
                                     home: pid,
-                                    error: pid,
                                     notFound: pid
                                 }
                             }
@@ -444,7 +440,6 @@ describe("Settings Test", () => {
             data: {
                 pages: {
                     home: null,
-                    error: null,
                     notFound: null
                 }
             }
@@ -476,7 +471,6 @@ describe("Settings Test", () => {
                             data: {
                                 pages: {
                                     home: pid,
-                                    error: pid,
                                     notFound: pid
                                 }
                             }

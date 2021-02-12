@@ -1,11 +1,11 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import { i18n } from "@webiny/app/i18n";
-import { useSecurity } from "@webiny/app-security";
 import { useRevision } from "@webiny/app-headless-cms/admin/plugins/contentDetails/contentRevisions/useRevision";
 import { ReactComponent as RequestChangesIcon } from "./rule-24px.svg";
+import usePermission from "../../../../hooks/usePermission";
 
 const t = i18n.ns("app-headless-cms/admin/content-details/header/request-review");
 
@@ -18,7 +18,7 @@ const RequestChanges = ({ entry, contentModel, setLoading, listQueryVariables })
         listQueryVariables
     });
 
-    const { identity } = useSecurity();
+    const { canRequestChange } = usePermission();
 
     const { showConfirmation } = useConfirmationDialog({
         title: t`Request Changes`,
@@ -27,20 +27,7 @@ const RequestChanges = ({ entry, contentModel, setLoading, listQueryVariables })
         )
     });
 
-    const contentEntryPermission = useMemo(() => identity.getPermission("cms.contentEntry"), []);
-    if (!contentEntryPermission) {
-        return null;
-    }
-
-    if (entry.createdBy && entry.createdBy.id === identity.login) {
-        return null;
-    }
-
-    if (contentEntryPermission.own && entry.createdBy.id !== identity.login) {
-        return null;
-    }
-
-    if (typeof contentEntryPermission.pw === "string" && !contentEntryPermission.pw.includes("c")) {
+    if (!canRequestChange("cms.contentEntry")) {
         return null;
     }
 

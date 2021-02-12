@@ -42,6 +42,15 @@ export const SecurityPermissions = ({ value, onChange }) => {
                 if (data.apiKeyAccessScope === FULL_ACCESS) {
                     permissions.push({ name: SECURITY_API_KEY_ACCESS });
                 }
+
+                /**
+                 * You can't create a user without a group assigned.
+                 * So in case "security.group" is "NO_ACCESS", we need to remove "security.user" from permission list.
+                 */
+                if (data.groupAccessScope === NO_ACCESS && data.userAccessScope === FULL_ACCESS) {
+                    const index = permissions.findIndex(perm => perm.name === SECURITY_USER_ACCESS);
+                    permissions.splice(index, 1);
+                }
             }
 
             if (permissions && permissions.length) {
@@ -84,7 +93,8 @@ export const SecurityPermissions = ({ value, onChange }) => {
         }
 
         const hasUserAccess = permissions.find(item => item.name === SECURITY_USER_ACCESS);
-        if (hasUserAccess) {
+        // "security.group" is required for "security.user".
+        if (hasUserAccess && hasGroupAccess) {
             data.userAccessScope = FULL_ACCESS;
         }
 
@@ -98,79 +108,99 @@ export const SecurityPermissions = ({ value, onChange }) => {
 
     return (
         <Form data={formData} onChange={onFormChange}>
-            {({ data, Bind }) => (
-                <Fragment>
-                    <Grid className={gridNoPaddingClass}>
-                        <Cell span={6}>
-                            <PermissionInfo title={t`Access Level`} />
-                        </Cell>
-                        <Cell span={6}>
-                            <Bind name={"accessLevel"}>
-                                <Select label={t`Access Level`}>
-                                    <option value={NO_ACCESS}>{t`No access`}</option>
-                                    <option value={FULL_ACCESS}>{t`Full access`}</option>
-                                    <option value={CUSTOM_ACCESS}>{t`Custom access`}</option>
-                                </Select>
-                            </Bind>
-                        </Cell>
-                    </Grid>
-                    {data.accessLevel === CUSTOM_ACCESS && (
-                        <React.Fragment>
-                            <Elevation z={1} style={{ marginTop: 10 }}>
-                                <Grid>
-                                    <Cell span={12}>
-                                        <Typography use={"overline"}>{t`Users`}</Typography>
-                                    </Cell>
-                                    <Cell span={12}>
-                                        <Bind name={"userAccessScope"}>
-                                            <Select label={t`Access Scope`}>
-                                                <option value={NO_ACCESS}>{t`No access`}</option>
-                                                <option
-                                                    value={FULL_ACCESS}
-                                                >{t`Full access`}</option>
-                                            </Select>
-                                        </Bind>
-                                    </Cell>
-                                </Grid>
-                            </Elevation>
-                            <Elevation z={1} style={{ marginTop: 10 }}>
-                                <Grid>
-                                    <Cell span={12}>
-                                        <Typography use={"overline"}>{t`Groups`}</Typography>
-                                    </Cell>
-                                    <Cell span={12}>
-                                        <Bind name={"groupAccessScope"}>
-                                            <Select label={t`Access Scope`}>
-                                                <option value={NO_ACCESS}>{t`No access`}</option>
-                                                <option
-                                                    value={FULL_ACCESS}
-                                                >{t`Full access`}</option>
-                                            </Select>
-                                        </Bind>
-                                    </Cell>
-                                </Grid>
-                            </Elevation>
-                            <Elevation z={1} style={{ marginTop: 10 }}>
-                                <Grid>
-                                    <Cell span={12}>
-                                        <Typography use={"overline"}>{t`API Keys`}</Typography>
-                                    </Cell>
-                                    <Cell span={12}>
-                                        <Bind name={"apiKeyAccessScope"}>
-                                            <Select label={t`Access Scope`}>
-                                                <option value={NO_ACCESS}>{t`No access`}</option>
-                                                <option
-                                                    value={FULL_ACCESS}
-                                                >{t`Full access`}</option>
-                                            </Select>
-                                        </Bind>
-                                    </Cell>
-                                </Grid>
-                            </Elevation>
-                        </React.Fragment>
-                    )}
-                </Fragment>
-            )}
+            {({ data, Bind }) => {
+                const disableUserAccessScope = data.groupAccessScope === NO_ACCESS;
+                return (
+                    <Fragment>
+                        <Grid className={gridNoPaddingClass}>
+                            <Cell span={6}>
+                                <PermissionInfo title={t`Access Level`} />
+                            </Cell>
+                            <Cell span={6}>
+                                <Bind name={"accessLevel"}>
+                                    <Select label={t`Access Level`}>
+                                        <option value={NO_ACCESS}>{t`No access`}</option>
+                                        <option value={FULL_ACCESS}>{t`Full access`}</option>
+                                        <option value={CUSTOM_ACCESS}>{t`Custom access`}</option>
+                                    </Select>
+                                </Bind>
+                            </Cell>
+                        </Grid>
+                        {data.accessLevel === CUSTOM_ACCESS && (
+                            <React.Fragment>
+                                <Elevation z={1} style={{ marginTop: 10 }}>
+                                    <Grid>
+                                        <Cell span={12}>
+                                            <Typography use={"overline"}>{t`API Keys`}</Typography>
+                                        </Cell>
+                                        <Cell span={12}>
+                                            <Bind name={"apiKeyAccessScope"}>
+                                                <Select label={t`Access Scope`}>
+                                                    <option
+                                                        value={NO_ACCESS}
+                                                    >{t`No access`}</option>
+                                                    <option
+                                                        value={FULL_ACCESS}
+                                                    >{t`Full access`}</option>
+                                                </Select>
+                                            </Bind>
+                                        </Cell>
+                                    </Grid>
+                                </Elevation>
+                                <Elevation z={1} style={{ marginTop: 10 }}>
+                                    <Grid>
+                                        <Cell span={12}>
+                                            <Typography use={"overline"}>{t`Groups`}</Typography>
+                                        </Cell>
+                                        <Cell span={12}>
+                                            <Bind name={"groupAccessScope"}>
+                                                <Select label={t`Access Scope`}>
+                                                    <option
+                                                        value={NO_ACCESS}
+                                                    >{t`No access`}</option>
+                                                    <option
+                                                        value={FULL_ACCESS}
+                                                    >{t`Full access`}</option>
+                                                </Select>
+                                            </Bind>
+                                        </Cell>
+                                    </Grid>
+                                </Elevation>
+                                <Elevation z={1} style={{ marginTop: 10 }}>
+                                    <Grid>
+                                        <Cell span={12}>
+                                            <Typography use={"overline"}>{t`Users`}</Typography>
+                                        </Cell>
+                                        <Cell span={12}>
+                                            <Bind name={"userAccessScope"}>
+                                                {({ value, ...props }) => (
+                                                    <Select
+                                                        {...props}
+                                                        label={t`Access Scope`}
+                                                        disabled={disableUserAccessScope}
+                                                        value={
+                                                            disableUserAccessScope
+                                                                ? NO_ACCESS
+                                                                : value
+                                                        }
+                                                    >
+                                                        <option
+                                                            value={NO_ACCESS}
+                                                        >{t`No access`}</option>
+                                                        <option
+                                                            value={FULL_ACCESS}
+                                                        >{t`Full access`}</option>
+                                                    </Select>
+                                                )}
+                                            </Bind>
+                                        </Cell>
+                                    </Grid>
+                                </Elevation>
+                            </React.Fragment>
+                        )}
+                    </Fragment>
+                );
+            }}
         </Form>
     );
 };

@@ -229,11 +229,11 @@ describe("multiple values in field", () => {
             ...manageOpts
         });
 
-        const availableOn = "2020-12-25T16:37:00Z.000";
+        const availableOn = "2020-12-25";
         const [createProductResponse] = await createProduct({
             data: {
                 title: "Potato",
-                price: 100,
+                price: 100.02,
                 availableOn,
                 color: "white",
                 availableSizes: ["s", "m"],
@@ -269,7 +269,7 @@ describe("multiple values in field", () => {
                         },
                         title: "Potato",
                         color: "white",
-                        price: 100,
+                        price: 100.02,
                         availableOn,
                         availableSizes: ["s", "m"],
                         inStock: null,

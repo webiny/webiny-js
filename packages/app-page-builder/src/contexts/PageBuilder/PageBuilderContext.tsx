@@ -14,7 +14,6 @@ export type PageBuilderContextValue = {
     defaults?: {
         pages?: {
             notFound?: React.ComponentType<any>;
-            error?: React.ComponentType<any>;
         };
     };
     responsiveDisplayMode?: ResponsiveDisplayMode;

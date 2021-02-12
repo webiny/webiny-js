@@ -1,6 +1,5 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-import vpc from "./vpc";
 import defaultLambdaRole from "./defaultLambdaRole";
 
 class PageBuilder {
@@ -23,10 +22,6 @@ class PageBuilder {
                 variables: {
                     ...env
                 }
-            },
-            vpcConfig: {
-                subnetIds: vpc.subnets.private.map(subNet => subNet.id),
-                securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
             }
         });
 

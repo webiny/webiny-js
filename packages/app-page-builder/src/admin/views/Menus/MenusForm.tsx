@@ -116,6 +116,12 @@ const MenusForm = ({ canCreate }: MenusFormProps) => {
     }, []);
 
     const canSave = useMemo(() => {
+        // User should be able to save the form
+        // if it's a new entry and user has the "own" permission set.
+        if (!loadedMenu.slug && pbMenuPermission.own) {
+            return true;
+        }
+
         if (pbMenuPermission.own) {
             return loadedMenu?.createdBy?.id === identity.login;
         }

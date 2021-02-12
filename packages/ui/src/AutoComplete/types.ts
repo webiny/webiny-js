@@ -12,6 +12,11 @@ export type AutoCompleteBaseProps = FormComponentProps & {
     disabled?: boolean;
 
     /**
+     * Is component read-only?
+     */
+    readOnly?: boolean;
+
+    /**
      * Options that will be shown.
      */
     options: Array<any>;

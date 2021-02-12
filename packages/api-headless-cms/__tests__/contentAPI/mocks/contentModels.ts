@@ -650,9 +650,9 @@ const models: CmsContentModel[] = [
                     },
                     {
                         name: "maxLength",
-                        message: "Numbers can contain at most 4 items.",
+                        message: "Numbers can contain at most 7 items.",
                         settings: {
-                            value: 4
+                            value: 7
                         }
                     }
                 ],

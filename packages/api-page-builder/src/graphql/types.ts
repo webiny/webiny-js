@@ -17,19 +17,7 @@ import {
     PageElement,
     PageSpecialType
 } from "@webiny/api-page-builder/types";
-
-export type HandlerConfiguration = {
-    prerendering: {
-        handlers: {
-            queue: {
-                add: string;
-                process: string;
-            };
-            render: string;
-            flush: string;
-        };
-    };
-};
+import { PrerenderingServiceClientContext } from "@webiny/api-prerendering-service/client/types";
 
 // CRUD types.
 export type SortOrder = "asc" | "desc";
@@ -59,14 +47,23 @@ export type ListMeta = {
 // Pages CRUD.
 export type Tag = { key: string; value?: string };
 
-export type RenderArgs = {
-    tags?: { tag: Tag; configuration?: { storage?: { folder?: string; name?: string } } }[];
-    paths?: { path: string; configuration?: { storage?: { folder?: string; name?: string } } }[];
+export type TagItem = {
+    tag: Tag;
+    configuration?: { storage?: { folder?: string; name?: string } };
 };
 
+export type PathItem = {
+    path: string;
+    configuration?: { storage?: { folder?: string; name?: string } };
+};
+
+export type RenderArgs = {
+    tags?: TagItem[];
+    paths?: PathItem[];
+};
 export type FlushArgs = {
-    tags?: { tag: Tag; configuration?: { storage?: { folder?: string; name?: string } } }[];
-    paths?: { path: string; configuration?: { storage?: { folder?: string; name?: string } } }[];
+    tags?: TagItem[];
+    paths?: PathItem[];
 };
 
 export type PagesCrud = {
@@ -156,6 +153,7 @@ export type PbContext = Context<
     ElasticSearchClientContext,
     SecurityContext,
     TenancyContext,
+    PrerenderingServiceClientContext,
     {
         pageBuilder: Record<string, any> & {
             pages: PagesCrud;

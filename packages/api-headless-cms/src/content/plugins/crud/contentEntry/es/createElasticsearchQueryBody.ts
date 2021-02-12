@@ -2,20 +2,21 @@ import {
     CmsContentEntryListOptions,
     CmsContentEntryListSort,
     CmsContentEntryListWhere,
-    CmsContentEntry,
-    CmsContentIndexEntry,
-    CmsContentModelField,
     CmsContentModel,
     CmsContext,
     CmsModelFieldToElasticsearchPlugin,
     CmsModelFieldToGraphQLPlugin,
-    ElasticsearchQueryBuilderPlugin,
     ElasticsearchQuery,
-    CmsContentEntryListArgs
+    CmsContentEntryListArgs,
+    CmsContentModelField,
+    ElasticsearchQueryPlugin
 } from "@webiny/api-headless-cms/types";
 import { decodeElasticsearchCursor } from "@webiny/api-headless-cms/utils";
 import Error from "@webiny/error";
-import lodashCloneDeep from "lodash/cloneDeep";
+import WebinyError from "@webiny/error";
+import { operatorPluginsList } from "./operatorPluginsList";
+import { transformValueForSearch } from "./transformValueForSearch";
+import { searchPluginsList } from "./searchPluginsList";
 
 interface ModelField {
     unmappedType?: string;
@@ -23,6 +24,7 @@ interface ModelField {
     isSortable: boolean;
     type: string;
     isSystemField?: boolean;
+    field: CmsContentModelField;
 }
 
 type ModelFields = Record<string, ModelField>;
@@ -185,56 +187,46 @@ const execElasticsearchBuildQueryPlugins = (
         return `${parentObject}.${field}`;
     };
 
-    const plugins = context.plugins.byType<ElasticsearchQueryBuilderPlugin>(
-        "elastic-search-query-builder"
-    );
     if (!where || Object.keys(where).length === 0) {
         return query;
     }
 
+    const operatorPlugins = operatorPluginsList(context);
+    const searchPlugins = searchPluginsList(context);
+
     for (const key in where) {
         const { field, op } = parseWhereKey(key);
         const modelFieldOptions = modelFields[field];
-        const { isSearchable = false, isSystemField } = modelFieldOptions || {};
+        const { isSearchable = false, isSystemField, field: cmsField } = modelFieldOptions || {};
 
         if (!modelFieldOptions) {
             throw new Error(`There is no field "${field}".`);
         } else if (!isSearchable) {
             throw new Error(`Field "${field}" is not searchable.`);
         }
-
-        for (const plugin of plugins) {
-            if (plugin.operator !== op) {
-                continue;
-            }
-
-            const fieldWithParent = isSystemField ? null : withParentObject(field);
-            plugin.apply(query, {
-                field: fieldWithParent || field,
-                value: where[key],
-                parentObject,
-                originalField: fieldWithParent ? field : undefined
+        const plugin = operatorPlugins[op];
+        if (!plugin) {
+            throw new WebinyError("Operator plugin missing.", "PLUGIN_MISSING", {
+                operator: op
             });
         }
+        const value = transformValueForSearch({
+            plugins: searchPlugins,
+            field: cmsField,
+            value: where[key],
+            context
+        });
+        const fieldWithParent = isSystemField ? null : withParentObject(field);
+        plugin.apply(query, {
+            field: fieldWithParent || field,
+            value,
+            parentObject,
+            originalField: fieldWithParent ? field : undefined,
+            context
+        });
     }
 
     return query;
-};
-
-const ES_LIMIT_MAX = 10000;
-const ES_LIMIT_DEFAULT = 50;
-
-export const createElasticsearchLimit = (
-    limit: number,
-    defaultValue = ES_LIMIT_DEFAULT
-): number => {
-    if (!limit) {
-        return defaultValue;
-    }
-    if (limit < ES_LIMIT_MAX) {
-        return limit;
-    }
-    return ES_LIMIT_MAX - 1;
 };
 
 /*
@@ -246,25 +238,40 @@ const createModelFieldOptions = (context: CmsContext, model: CmsContentModel): M
             type: "text",
             isSystemField: true,
             isSearchable: true,
-            isSortable: true
+            isSortable: true,
+            field: ({
+                type: "text"
+            } as unknown) as CmsContentModelField
         },
         savedOn: {
             type: "date",
             unmappedType: "date",
             isSystemField: true,
             isSearchable: true,
-            isSortable: true
+            isSortable: true,
+            field: ({
+                type: "date",
+                settings: {
+                    type: "dateTimeWithoutTimezone"
+                }
+            } as unknown) as CmsContentModelField
         },
         createdOn: {
             type: "date",
             unmappedType: "date",
             isSystemField: true,
             isSearchable: true,
-            isSortable: true
+            isSortable: true,
+            field: ({
+                type: "text",
+                settings: {
+                    type: "dateTimeWithoutTimezone"
+                }
+            } as unknown) as CmsContentModelField
         }
     };
     // collect all unmappedType from elastic plugins
-    const unmappedTypes = context.plugins
+    const unmappedTypes: ModelFields = context.plugins
         .byType<CmsModelFieldToElasticsearchPlugin>("cms-model-field-to-elastic-search")
         .reduce((acc, plugin) => {
             if (!plugin.unmappedType) {
@@ -278,16 +285,16 @@ const createModelFieldOptions = (context: CmsContext, model: CmsContentModel): M
         .byType<CmsModelFieldToGraphQLPlugin>("cms-model-field-to-graphql")
         .reduce((types, plugin) => {
             const { fieldType, isSearchable, isSortable } = plugin;
-            const unmappedType = unmappedTypes[fieldType];
             types[fieldType] = {
-                unmappedType: unmappedType || undefined,
+                unmappedType: unmappedTypes[fieldType],
                 isSearchable: isSearchable === true,
                 isSortable: isSortable === true
             };
             return types;
         }, {});
 
-    return model.fields.reduce((fields, { fieldId, type }) => {
+    return model.fields.reduce((fields, field) => {
+        const { fieldId, type } = field;
         if (!pluginFieldTypes[type]) {
             throw new Error(`There is no plugin for field type "${type}".`);
         }
@@ -296,15 +303,16 @@ const createModelFieldOptions = (context: CmsContext, model: CmsContentModel): M
             type,
             isSearchable,
             isSortable,
-            unmappedType,
-            isSystemField: false
+            unmappedType: unmappedType ? unmappedType(field) : undefined,
+            isSystemField: false,
+            field
         };
 
         return fields;
     }, systemFields);
 };
 
-export const createElasticsearchParams = (params: CreateElasticsearchParams) => {
+export const createElasticsearchQueryBody = (params: CreateElasticsearchParams) => {
     const { context, model, args, ownedBy, parentObject = null, options } = params;
     const { where, after, limit, sort } = args;
 
@@ -320,11 +328,17 @@ export const createElasticsearchParams = (params: CreateElasticsearchParams) => 
         options
     });
 
+    const queryPlugins = context.plugins.byType<ElasticsearchQueryPlugin>(
+        "cms-elasticsearch-query"
+    );
+    for (const pl of queryPlugins) {
+        pl.modify({ query, model, context });
+    }
+
     return {
         query: {
             bool: {
                 must: query.must.length > 0 ? query.must : undefined,
-
                 must_not: query.mustNot.length > 0 ? query.mustNot : undefined,
                 match: query.match.length > 0 ? query.match : undefined,
                 should: query.should.length > 0 ? query.should : undefined
@@ -335,170 +349,4 @@ export const createElasticsearchParams = (params: CreateElasticsearchParams) => 
         // eslint-disable-next-line
         search_after: decodeElasticsearchCursor(after) || undefined
     };
-};
-
-interface SetupEntriesIndexHelpersArgs {
-    context: CmsContext;
-    model: CmsContentModel;
-}
-interface PrepareElasticsearchDataArgs extends SetupEntriesIndexHelpersArgs {
-    storageEntry: CmsContentEntry;
-    originalEntry: CmsContentEntry;
-}
-interface ExtractEntriesFromIndexArgs extends SetupEntriesIndexHelpersArgs {
-    entries: CmsContentIndexEntry[];
-}
-
-const setupEntriesIndexHelpers = ({ context, model }: SetupEntriesIndexHelpersArgs) => {
-    const plugins = context.plugins.byType<CmsModelFieldToElasticsearchPlugin>(
-        "cms-model-field-to-elastic-search"
-    );
-    const fieldsAsObject: Record<string, CmsContentModelField> = {};
-    for (const field of model.fields) {
-        fieldsAsObject[field.fieldId] = field;
-    }
-
-    const fieldIndexPlugins: Record<string, CmsModelFieldToElasticsearchPlugin> = {};
-    for (const plugin of plugins.reverse()) {
-        if (fieldIndexPlugins[plugin.fieldType]) {
-            continue;
-        }
-        fieldIndexPlugins[plugin.fieldType] = plugin;
-    }
-    // we will use this plugin if no targeted plugin found
-    const defaultIndexFieldPlugin = plugins.find(plugin => plugin.fieldType === "*");
-    return {
-        fieldsAsObject,
-        fieldIndexPlugins,
-        defaultIndexFieldPlugin
-    };
-};
-
-export const prepareEntryToIndex = (args: PrepareElasticsearchDataArgs): CmsContentIndexEntry => {
-    const { context, originalEntry, storageEntry, model } = args;
-    const fieldToElasticsearchPlugins = context.plugins.byType<CmsModelFieldToElasticsearchPlugin>(
-        "cms-model-field-to-elastic-search"
-    );
-    // we will use this plugin if no targeted plugin found
-    const defaultIndexFieldPlugin = fieldToElasticsearchPlugins.find(
-        plugin => plugin.fieldType === "*"
-    );
-
-    const modelFieldToGraphqlPlugins = context.plugins.byType<CmsModelFieldToGraphQLPlugin>(
-        "cms-model-field-to-graphql"
-    );
-    const mappedPluginFieldTypes: Record<string, CmsModelFieldToGraphQLPlugin> = {};
-    for (const plugin of modelFieldToGraphqlPlugins) {
-        mappedPluginFieldTypes[plugin.fieldType] = plugin;
-    }
-
-    const fieldsAsObject: Record<string, CmsContentModelField> = {};
-    for (const field of model.fields) {
-        fieldsAsObject[field.fieldId] = field;
-    }
-
-    const mappedFieldToElasticsearchPlugins: Record<
-        string,
-        CmsModelFieldToElasticsearchPlugin
-    > = {};
-    for (const plugin of fieldToElasticsearchPlugins.reverse()) {
-        if (mappedFieldToElasticsearchPlugins[plugin.fieldType]) {
-            continue;
-        }
-        mappedFieldToElasticsearchPlugins[plugin.fieldType] = plugin;
-    }
-
-    let toIndexEntry: CmsContentIndexEntry = {
-        ...lodashCloneDeep(storageEntry),
-        rawValues: {}
-    };
-    for (const fieldId in storageEntry.values) {
-        if (storageEntry.values.hasOwnProperty(fieldId) === false) {
-            continue;
-        }
-
-        const field = fieldsAsObject[fieldId];
-        if (!field) {
-            throw new Error(`There is no field type with fieldId "${fieldId}".`);
-        }
-        const fieldTypePlugin = mappedPluginFieldTypes[field.type];
-        if (!fieldTypePlugin) {
-            throw new Error(`Missing field type plugin "${field.type}".`);
-        }
-
-        const targetFieldPlugin =
-            mappedFieldToElasticsearchPlugins[field.type] || defaultIndexFieldPlugin;
-        // we decided to take only last registered plugin for given field type
-        if (targetFieldPlugin && targetFieldPlugin.toIndex) {
-            const newEntryValues = targetFieldPlugin.toIndex({
-                context,
-                model,
-                field,
-                toIndexEntry,
-                originalEntry,
-                storageEntry,
-                fieldTypePlugin
-            });
-            toIndexEntry = {
-                ...toIndexEntry,
-                ...newEntryValues
-            };
-        }
-    }
-    return toIndexEntry;
-};
-
-export const extractEntriesFromIndex = ({
-    context,
-    entries,
-    model
-}: ExtractEntriesFromIndexArgs): CmsContentEntry[] => {
-    const { fieldsAsObject, fieldIndexPlugins, defaultIndexFieldPlugin } = setupEntriesIndexHelpers(
-        {
-            context,
-            model
-        }
-    );
-
-    const mappedPluginFieldTypes: Record<
-        string,
-        CmsModelFieldToGraphQLPlugin
-    > = context.plugins
-        .byType<CmsModelFieldToGraphQLPlugin>("cms-model-field-to-graphql")
-        .reduce((plugins, plugin) => {
-            plugins[plugin.fieldType] = plugin;
-            return plugins;
-        }, {});
-
-    const list: CmsContentEntry[] = [];
-    for (const entry of entries) {
-        let fromIndexEntry: CmsContentIndexEntry = lodashCloneDeep(entry);
-        for (const fieldId in fieldsAsObject) {
-            if (fieldsAsObject.hasOwnProperty(fieldId) === false) {
-                continue;
-            }
-            const field = fieldsAsObject[fieldId];
-            const fieldTypePlugin = mappedPluginFieldTypes[field.type];
-            if (!fieldTypePlugin) {
-                throw new Error(`Missing field type plugin "${field.type}".`);
-            }
-            const targetFieldPlugin = fieldIndexPlugins[field.type] || defaultIndexFieldPlugin;
-            if (targetFieldPlugin && targetFieldPlugin.fromIndex) {
-                const calculatedEntry = targetFieldPlugin.fromIndex({
-                    context,
-                    model,
-                    field,
-                    entry: fromIndexEntry,
-                    fieldTypePlugin
-                });
-                fromIndexEntry = {
-                    ...fromIndexEntry,
-                    ...calculatedEntry
-                };
-            }
-        }
-        list.push(fromIndexEntry);
-    }
-
-    return list;
 };

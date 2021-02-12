@@ -56,6 +56,7 @@ export class Input extends React.Component<InputProps> {
         "type",
         "step",
         "disabled",
+        "readOnly",
         "placeholder",
         "outlined",
         "onKeyDown",
