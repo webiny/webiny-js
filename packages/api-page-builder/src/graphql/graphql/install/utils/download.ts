@@ -1,8 +1,9 @@
-import fs from "fs";
-import util from "util";
+import { createWriteStream } from "fs";
+import { promisify } from "util";
+import { pipeline } from "stream";
 import fetch from "node-fetch";
 
-const streamPipeline = util.promisify(require("stream").pipeline);
+const streamPipeline = promisify(pipeline);
 /**
  * Download a remote file and save it onto disk.
  * @param {String} URL
@@ -14,7 +15,7 @@ export default async function download(URL: string, path: string) {
         if (!response.ok) {
             throw new Error(`unexpected response ${response.statusText}`);
         }
-        await streamPipeline(response.body, fs.createWriteStream(path));
+        await streamPipeline(response.body, createWriteStream(path));
     } catch (e) {
         console.log(`[download]: Error while downloading ${URL}`, e);
     }
