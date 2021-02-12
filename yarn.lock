@@ -7457,7 +7457,6 @@ __metadata:
     "@webiny/validation": ^5.0.0-beta.4
     commodo-fields-object: ^1.0.6
     dataloader: ^2.0.0
-    download: ^5.0.3
     extract-zip: ^1.6.7
     fs-extra: ^7.0.0
     jest: ^26.6.3
@@ -7468,6 +7467,7 @@ __metadata:
     mdbid: ^1.0.0
     node-fetch: ^2.6.1
     rimraf: ^3.0.2
+    stream: ^0.0.2
     typescript: ^4.1.3
     uniqid: ^5.2.0
     zip-local: ^0.3.4
@@ -15222,6 +15222,13 @@ __metadata:
     minimalistic-assert: ^1.0.1
     minimalistic-crypto-utils: ^1.0.1
   checksum: e0fb360fb6800666e0f69c837ae1f19656583322f81e106e458242055b8e241e80a48c92da8f1324684d1ff348751ff38abeadcfc1f28c54157c29d229d039a1
+  languageName: node
+  linkType: hard
+
+"emitter-component@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "emitter-component@npm:1.1.1"
+  checksum: e17a667850d3304e9a4554d820232b7a538f682a4a4d4823afd877ed272a7d9202eef67ffdd184deea72dcaa0cac99705984c583cef9f4773ee272ef4748edcb
   languageName: node
   linkType: hard
 
@@ -30456,6 +30463,15 @@ resolve@1.12.2:
   version: 1.0.1
   resolution: "stream-shift@npm:1.0.1"
   checksum: 5d777b222e460dc660ee29acad4f99649eb8d0051d3cb648fc92f3f77557b33d0a8ad656291c2cfa87703204191534a6003c2b035606a699674d0bb600353ad3
+  languageName: node
+  linkType: hard
+
+"stream@npm:^0.0.2":
+  version: 0.0.2
+  resolution: "stream@npm:0.0.2"
+  dependencies:
+    emitter-component: ^1.1.1
+  checksum: a4f5791f76cf1875b7cfedd5c6e1a71767f77518663d47ebddc455598d58e8f5f80ec049419364ca175fa9ffcf7f0d3c8d351a1800a54356c84507191b83b423
   languageName: node
   linkType: hard
 
