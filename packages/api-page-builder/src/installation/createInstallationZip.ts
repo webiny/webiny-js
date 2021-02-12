@@ -6,6 +6,11 @@ export default (destination = "./pageBuilderInstallation.zip") => {
         return;
     }
 
+    const dir = path.dirname(destination);
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+    }
+
     return zipper.sync
         .zip(path.join(__dirname, "files"))
         .compress()
