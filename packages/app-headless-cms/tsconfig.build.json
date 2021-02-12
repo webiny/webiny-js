@@ -14,7 +14,8 @@
     "../app-security",
     "../react-router",
     "../ui",
-    "../validation"
+    "../validation",
+    "../error"
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -54,6 +55,9 @@
     },
     {
       "path": "../validation/tsconfig.build.json"
+    },
+    {
+      "path": "../error/tsconfig.build.json"
     }
   ]
 }

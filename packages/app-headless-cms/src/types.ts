@@ -438,3 +438,21 @@ export interface UseContentModelEditorReducerState {
     apolloClient: ApolloClient<any>;
     id: string;
 }
+
+/**
+ * Transform field value when sending data to the API.
+ */
+export interface CmsFieldValueTransformer extends Plugin {
+    /**
+     * A plugin type.
+     */
+    type: "cms-field-value-transformer";
+    /**
+     * A field type for the value transformer. Or a list of field types.
+     */
+    fieldType: string | string[];
+    /**
+     * A transformer function that takes a value and returns a new one.
+     */
+    transform: (value: any, field: CmsEditorField) => any;
+}

@@ -9,7 +9,7 @@ export const runContentModelLifecycleHooks = async (
     args: CmsContentModelHookPluginArgs | CmsContentModelUpdateHookPluginArgs
 ): Promise<void> => {
     const { context } = args;
-    const hookPlugins = context.plugins.byType<CmsContentModelHookPlugin>("content-model-hook");
+    const hookPlugins = context.plugins.byType<CmsContentModelHookPlugin>("cms-content-model-hook");
     for (const hookPlugin of hookPlugins) {
         if (typeof hookPlugin[hookName] !== "function") {
             continue;

@@ -18,7 +18,9 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
     type: "cms-model-field-to-elastic-search",
     name: "cms-model-field-to-elastic-search-number",
     fieldType: "number",
-    unmappedType: "float",
+    unmappedType: () => {
+        return "float";
+    },
     toIndex: ({ toIndexEntry, field }) => {
         const value = toIndexEntry.values[field.fieldId];
         return {

@@ -5,6 +5,7 @@ import install from "./install";
 import revisionContent from "./contentDetails/revisionContent";
 import header from "./contentDetails/header";
 import contentForm from "./contentDetails/contentForm";
+import contentFormTransformers from "./contentDetails/contentForm/transformers";
 import contentRevisions from "./contentDetails/contentRevisions";
 import defaultBar from "./editor/defaultBar";
 import formSettings from "./editor/formSettings";
@@ -20,6 +21,7 @@ export default () => [
     header,
     revisionContent,
     contentForm,
+    contentFormTransformers(),
     contentRevisions,
     defaultBar,
     formSettings,

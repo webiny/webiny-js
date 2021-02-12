@@ -7337,9 +7337,6 @@ __metadata:
     fast-deep-equal: ^3.1.1
     fecha: ^4.0.0
     graphql: ^14.6.0
-    graphql-iso-date: ^3.6.1
-    graphql-type-json: ^0.3.2
-    graphql-type-long: ^0.1.1
     jest: ^26.6.3
     jest-dynalite: ^3.2.0
     jsonpack: ^1.1.5
@@ -7906,6 +7903,7 @@ __metadata:
     "@webiny/app-i18n": ^5.0.0-beta.4
     "@webiny/app-plugin-admin-welcome-screen": ^5.0.0-beta.4
     "@webiny/app-security": ^5.0.0-beta.4
+    "@webiny/error": ^5.0.0-beta.4
     "@webiny/form": ^5.0.0-beta.4
     "@webiny/plugins": ^5.0.0-beta.4
     "@webiny/react-router": ^5.0.0-beta.4
@@ -8585,10 +8583,8 @@ __metadata:
     "@webiny/plugins": ^5.0.0-beta.4
     boolean: ^3.0.1
     graphql: ^14.4.2
-    graphql-iso-date: ^3.6.1
+    graphql-scalars: ^1.7.0
     graphql-tag: ^2.10.3
-    graphql-type-json: ^0.3.1
-    graphql-type-long: ^0.1.1
     jest: ^26.6.3
     jest-mock-console: ^1.0.0
     rimraf: ^3.0.2
@@ -18150,15 +18146,6 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"graphql-iso-date@npm:^3.6.1":
-  version: 3.6.1
-  resolution: "graphql-iso-date@npm:3.6.1"
-  peerDependencies:
-    graphql: ^0.5.0 || ^0.6.0 || ^0.7.0 || ^0.8.0-b || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0
-  checksum: d33245ccaba87665589bf2907159de9e024bfd516ccc905631b68010ff69afbcbd09103d38481569862e4c168f6db0f9df614968295ca41c996c7d7fd2679817
-  languageName: node
-  linkType: hard
-
 "graphql-request@npm:^3.3.0":
   version: 3.4.0
   resolution: "graphql-request@npm:3.4.0"
@@ -18169,6 +18156,17 @@ fsevents@^1.2.7:
   peerDependencies:
     graphql: 14.x || 15.x
   checksum: d564874ff42ad63f1555ec18f582bfef5a0ca36160cfc4bf20e22211eca6cf5beabb65961ef734817db441508eee81a9332d4d88fe19c335e39342e20f9f303a
+  languageName: node
+  linkType: hard
+
+"graphql-scalars@npm:^1.7.0":
+  version: 1.7.0
+  resolution: "graphql-scalars@npm:1.7.0"
+  dependencies:
+    tslib: ~2.0.3
+  peerDependencies:
+    graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0
+  checksum: dff7f088f7e5de62f88f0ee55e89b64b85cc917c8da09f862a595829b5b5126c199cd27630b540c991167fa0f87f90a6b935984d0da1e15505f65ccea3d2c2e5
   languageName: node
   linkType: hard
 
@@ -18189,24 +18187,6 @@ fsevents@^1.2.7:
   peerDependencies:
     graphql: ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0
   checksum: 5589000ba86013023076842192bd569f579a647fbc3bfd86831e6ddc6c275cf430b532476717adba45c514ca90650fc5cb3329bc45e38a9b849f6fcb047444c9
-  languageName: node
-  linkType: hard
-
-"graphql-type-json@npm:^0.3.1, graphql-type-json@npm:^0.3.2":
-  version: 0.3.2
-  resolution: "graphql-type-json@npm:0.3.2"
-  peerDependencies:
-    graphql: ">=0.8.0"
-  checksum: dbc2ca9b003788012b278209a92d9b084ab5061da8c596d0ffd65dce2e770c29d26dded1812186293bb0bf33b476369dcda1576a10cd4e5b12d2458c878977f3
-  languageName: node
-  linkType: hard
-
-"graphql-type-long@npm:^0.1.1":
-  version: 0.1.1
-  resolution: "graphql-type-long@npm:0.1.1"
-  peerDependencies:
-    graphql: ^0.9.1 || ^0.10.0 || ^0.12.0 || ^0.13.0
-  checksum: 99d5c2010198ad74edd6aea18f4273e55dc34ffe365a230b5212f6e7fb7a21056d83d6b9bcde24f080258d1715462c6759b36fc41638b0ae2f1235aff3888d31
   languageName: node
   linkType: hard
 
@@ -29074,7 +29054,7 @@ resolve@1.12.2:
     "@types/jest": ^24.0.24
     "@types/jquery": ^3.3.31
     "@types/node": ^12.12.22
-    "@types/react": ^17.0.0
+    "@types/react": ^16.14.3
     "@types/react-dom": ^17.0.0
     "@typescript-eslint/eslint-plugin": ^4.14.1
     "@typescript-eslint/parser": ^4.14.1
@@ -31734,7 +31714,7 @@ resolve@1.12.2:
   languageName: node
   linkType: hard
 
-"tslib@npm:~2.0.1":
+"tslib@npm:~2.0.1, tslib@npm:~2.0.3":
   version: 2.0.3
   resolution: "tslib@npm:2.0.3"
   checksum: 447bfca5deaa157806c3f77eaba74d05dd0b38b014e47ce79d98b5c77ce7d91b00a687ba13ca1b5a74d35ca1098ac7a072c0a97fad06f0266612f2a03a6c8e8f

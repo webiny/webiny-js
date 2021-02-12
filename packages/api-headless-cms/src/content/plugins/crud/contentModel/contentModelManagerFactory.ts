@@ -8,7 +8,7 @@ const defaultName = "content-model-manager-default";
 
 export const contentModelManagerFactory = async (context: CmsContext, model: CmsContentModel) => {
     const pluginsByType = context.plugins
-        .byType<ContentModelManagerPlugin>("content-model-manager")
+        .byType<ContentModelManagerPlugin>("cms-content-model-manager")
         .reverse();
     for (const plugin of pluginsByType) {
         const target = Array.isArray(plugin.modelId) ? plugin.modelId : [plugin.modelId];
