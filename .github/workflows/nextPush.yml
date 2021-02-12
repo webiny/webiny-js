@@ -180,6 +180,7 @@ jobs:
             test-project/
             !test-project/node_modules/**/*
             !test-project/**/node_modules/**/*
+            !test-project/.yarn/cache/**/*
 
   e2e-tests:
     needs: [preview]
