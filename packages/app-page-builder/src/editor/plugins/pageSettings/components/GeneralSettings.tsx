@@ -12,7 +12,7 @@ import { validation } from "@webiny/validation";
 import { PbPageLayoutPlugin } from "@webiny/app-page-builder/types";
 
 const toSlug = (value, cb) => {
-    cb(slugify(value, { replacement: "-", lower: true, remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g })); // eslint-disable-line
+    cb(slugify(value, { replacement: "-", lower: true, remove: /[*#\?<>_\[\]+~.()'"!:;@]/g })); // eslint-disable-line
 };
 
 const GeneralSettings = ({ form, data, Bind, setValue }) => {

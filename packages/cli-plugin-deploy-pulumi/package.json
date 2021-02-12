@@ -15,7 +15,7 @@
     "chalk": "4.1.0",
     "execa": "4.1.0",
     "lodash": "4.17.20",
-    "node-notifier": "7.0.2",
+    "node-notifier": "^9.0.0",
     "ora": "4.1.1"
   },
   "license": "MIT",
