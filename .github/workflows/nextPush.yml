@@ -170,6 +170,14 @@ jobs:
         working-directory: test-project
         run: yarn webiny --version
 
+      - name: Deploy preview
+        working-directory: test-project
+        run: yarn webiny deploy
+
+      - name: Print project information
+        working-directory: test-project
+        run: yarn webiny info
+
       - name: Upload preview files
         uses: actions/upload-artifact@v2
         with:
@@ -180,14 +188,6 @@ jobs:
             !test-project/node_modules/**/*
             !test-project/**/node_modules/**/*
             !test-project/.yarn/cache/**/*
-
-      - name: Deploy preview
-        working-directory: test-project
-        run: yarn webiny deploy
-
-      - name: Print project information
-        working-directory: test-project
-        run: yarn webiny info
 
   e2e-tests:
     needs: [preview]
