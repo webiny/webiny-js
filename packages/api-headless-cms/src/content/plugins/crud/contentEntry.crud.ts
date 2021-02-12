@@ -42,6 +42,7 @@ import {
 } from "./contentEntry/hooks";
 import WebinyError from "@webiny/error";
 import { entryFromStorageTransform, entryToStorageTransform } from "../utils/entryStorage";
+import { fixPreBeta5Entries } from "./contentEntry/fixPreBeta5Entries";
 
 const TYPE_ENTRY = "cms.entry";
 const TYPE_ENTRY_LATEST = TYPE_ENTRY + ".l";
@@ -59,12 +60,22 @@ type DbItem<T> = T & {
     TYPE: string;
 };
 
-const getESLatestEntryData = (entry: CmsContentEntry) => {
-    return { ...entry, latest: true, __type: TYPE_ENTRY_LATEST };
+const getESLatestEntryData = (context: CmsContext, entry: CmsContentEntry) => {
+    return {
+        ...entry,
+        latest: true,
+        __type: TYPE_ENTRY_LATEST,
+        webinyVersion: context.WEBINY_VERSION
+    };
 };
 
-const getESPublishedEntryData = (entry: CmsContentEntry) => {
-    return { ...entry, published: true, __type: TYPE_ENTRY_PUBLISHED };
+const getESPublishedEntryData = (context: CmsContext, entry: CmsContentEntry) => {
+    return {
+        ...entry,
+        published: true,
+        __type: TYPE_ENTRY_PUBLISHED,
+        webinyVersion: context.WEBINY_VERSION
+    };
 };
 
 export default (): ContextPlugin<CmsContext> => ({
@@ -195,10 +206,15 @@ export default (): ContextPlugin<CmsContext> => ({
                 }
 
                 const { hits, total } = response.body.hits;
+                // TODO remove in v5
+                const rawEsItems = await fixPreBeta5Entries({ context, model, hits });
+                /////// TODO remove above
                 const items = extractEntriesFromIndex({
                     context,
                     model,
-                    entries: hits.map(item => item._source)
+                    // TODO uncomment when date/time fields are fixed
+                    // entries: hits.map(item => item._source),
+                    entries: rawEsItems // TODO remove when above is restored
                 });
 
                 const hasMoreItems = items.length > limit;
@@ -321,7 +337,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 await elasticSearch.create({
                     ...utils.defaults.es(context),
                     id: `CME#L#${uniqueId}`,
-                    body: getESLatestEntryData(esEntry)
+                    body: getESLatestEntryData(context, esEntry)
                 });
 
                 await afterCreateHook({ model, entry, context });
@@ -423,7 +439,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 await elasticSearch.index({
                     ...utils.defaults.es(context),
                     id: `CME#L#${uniqueId}`,
-                    body: getESLatestEntryData(esEntry)
+                    body: getESLatestEntryData(context, esEntry)
                 });
 
                 await afterCreateRevisionFromHook({
@@ -663,7 +679,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     // Update the latest revision entry in ES.
                     esOperations.push(
                         { index: { _id: `CME#L#${uniqueId}`, _index: es.index } },
-                        getESLatestEntryData(prevLatestEntry)
+                        getESLatestEntryData(context, prevLatestEntry)
                     );
                 }
 
@@ -880,7 +896,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 // Update the published revision entry in ES.
                 esOperations.push(
                     { index: { _id: `CME#P#${uniqueId}`, _index: es.index } },
-                    getESPublishedEntryData(preparedEntry)
+                    getESPublishedEntryData(context, preparedEntry)
                 );
 
                 await elasticSearch.bulk({ body: esOperations });
