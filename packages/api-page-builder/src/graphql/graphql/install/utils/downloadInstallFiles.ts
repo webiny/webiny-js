@@ -1,9 +1,9 @@
-import download from "download";
 import fs from "fs-extra";
 import extract from "extract-zip";
 import path from "path";
 import rimraf from "rimraf";
 import S3 from "aws-sdk/clients/s3";
+import download from "./download";
 
 const PAGE_BUILDER_S3_BUCKET = process.env.S3_BUCKET;
 const PAGE_BUILDER_INSTALLATION_FILES_ZIP_KEY = "pbInstallation.zip";
@@ -46,7 +46,7 @@ export default async () => {
     });
 
     fs.ensureDirSync(INSTALL_DIR);
-    fs.writeFileSync(INSTALL_ZIP_PATH, await download(installationFilesUrl));
+    await download(installationFilesUrl, INSTALL_ZIP_PATH);
 
     await extractZip(INSTALL_ZIP_PATH, INSTALL_EXTRACT_DIR);
     await deleteFile(INSTALL_ZIP_PATH);
