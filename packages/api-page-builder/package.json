@@ -32,7 +32,6 @@
     "@webiny/validation": "^5.0.0-beta.4",
     "commodo-fields-object": "^1.0.6",
     "dataloader": "^2.0.0",
-    "download": "^5.0.3",
     "extract-zip": "^1.6.7",
     "fs-extra": "^7.0.0",
     "jsonpack": "^1.1.5",
@@ -41,6 +40,7 @@
     "mdbid": "^1.0.0",
     "node-fetch": "^2.6.1",
     "rimraf": "^2.6.2",
+    "stream": "^0.0.2",
     "uniqid": "^5.2.0",
     "zip-local": "^0.3.4"
   },
