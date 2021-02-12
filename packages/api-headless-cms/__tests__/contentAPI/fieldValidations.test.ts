@@ -17,7 +17,7 @@ describe("fieldValidations", () => {
 
     const defaultFruitData = {
         name: "Apple",
-        numbers: [5, 6, 7],
+        numbers: [5, 6, 7.2, 10.18, 12.05],
         email: "john@doe.com",
         url: "https://webiny.com",
         lowerCase: "lowercase",
@@ -217,7 +217,7 @@ describe("fieldValidations", () => {
         const [maxLengthResponse] = await createFruit({
             data: {
                 ...defaultFruitData,
-                numbers: [4, 5, 6, 7, 8, 9]
+                numbers: [4, 5, 6, 7, 8, 9, 10, 11, 12]
             }
         });
 
@@ -231,7 +231,7 @@ describe("fieldValidations", () => {
                         data: [
                             {
                                 fieldId: "numbers",
-                                error: "Numbers can contain at most 4 items."
+                                error: "Numbers can contain at most 7 items."
                             }
                         ]
                     }
@@ -686,17 +686,17 @@ describe("fieldValidations", () => {
         const group = await setupContentModelGroup();
         await setupContentModels(group);
 
-        const { createFruit } = useFruitManageHandler({
+        const { createFruit, getFruit } = useFruitManageHandler({
             ...manageOpts
         });
 
-        const [response] = await createFruit({
+        const [createResponse] = await createFruit({
             data: {
                 ...defaultFruitData
             }
         });
 
-        expect(response).toEqual({
+        expect(createResponse).toEqual({
             data: {
                 createFruit: {
                     data: {
@@ -717,6 +717,54 @@ describe("fieldValidations", () => {
                             revisions: [
                                 {
                                     id: expect.any(String),
+                                    name: defaultFruitData.name
+                                }
+                            ],
+                            status: "draft",
+                            title: defaultFruitData.name,
+                            version: 1
+                        },
+                        name: defaultFruitData.name,
+                        numbers: defaultFruitData.numbers,
+                        upperCase: defaultFruitData.upperCase,
+                        url: defaultFruitData.url,
+                        time: defaultFruitData.time,
+                        date: defaultFruitData.date,
+                        dateTime: defaultFruitData.dateTime,
+                        dateTimeZ: defaultFruitData.dateTimeZ
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const apple = createResponse.data.createFruit.data;
+        // make sure that numbers were correctly inserted and parsed -> returned
+        const [response] = await getFruit({
+            revision: apple.id
+        });
+
+        expect(response).toEqual({
+            data: {
+                getFruit: {
+                    data: {
+                        id: apple.id,
+                        createdOn: apple.createdOn,
+                        createdBy: {
+                            displayName: "User 123",
+                            id: "123",
+                            type: "admin"
+                        },
+                        savedOn: apple.savedOn,
+                        email: defaultFruitData.email,
+                        lowerCase: defaultFruitData.lowerCase,
+                        meta: {
+                            locked: false,
+                            modelId: "fruit",
+                            publishedOn: null,
+                            revisions: [
+                                {
+                                    id: apple.id,
                                     name: defaultFruitData.name
                                 }
                             ],

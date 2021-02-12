@@ -22,10 +22,10 @@ export default (): CmsEditorFieldValidatorPlugin => ({
                     <Cell span={12}>
                         <Bind name={"settings.type"}>
                             {bind => {
-                                if (bind.value === type) {
-                                    return null;
+                                if (bind.value !== type) {
+                                    bind.onChange(type);
                                 }
-                                bind.onChange(type);
+                                return <></>;
                             }}
                         </Bind>
                         <Bind

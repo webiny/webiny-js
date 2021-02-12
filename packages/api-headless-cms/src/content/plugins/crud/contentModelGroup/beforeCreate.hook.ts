@@ -13,8 +13,7 @@ export const beforeCreateHook = async (
         const groups = await context.cms.groups.noAuth().list({
             where: {
                 slug
-            },
-            limit: 1
+            }
         });
         if (groups.length === 0) {
             return;
@@ -30,8 +29,7 @@ export const beforeCreateHook = async (
     const groups = await context.cms.groups.noAuth().list({
         where: {
             slug: newSlug
-        },
-        limit: 1
+        }
     });
 
     if (groups.length === 0) {

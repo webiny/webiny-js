@@ -1,7 +1,6 @@
 import * as path from "path";
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-import vpc from "./vpc";
 import defaultLambdaRole from "./defaultLambdaRole";
 //@ts-ignore
 import { createInstallationZip } from "@webiny/api-page-builder/installation";
@@ -44,10 +43,6 @@ class PageBuilder {
                 variables: {
                     ...env
                 }
-            },
-            vpcConfig: {
-                subnetIds: vpc.subnets.private.map(subNet => subNet.id),
-                securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
             }
         });
 

@@ -1,5 +1,4 @@
 import * as aws from "@pulumi/aws";
-import vpc from "./vpc";
 
 class ElasticSearch {
     domain: aws.elasticsearch.Domain;
@@ -11,10 +10,6 @@ class ElasticSearch {
             elasticsearchVersion: "7.7",
             clusterConfig: {
                 instanceType: "t3.small.elasticsearch"
-            },
-            vpcOptions: {
-                subnetIds: [vpc.subnets.private[0].id],
-                securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
             },
             ebsOptions: {
                 ebsEnabled: true,

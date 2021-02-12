@@ -7,6 +7,28 @@ import * as GQL from "../../../views/components/ContentModelForm/graphql";
 import * as GQLCache from "../cache";
 import { CmsEditorContentEntry, CmsEditorContentModel } from "@webiny/app-headless-cms/types";
 
+const transformToFloat = (value: string[] | string) => {
+    if (Array.isArray(value) === true) {
+        return (value as string[]).map(Number);
+    }
+    return Number(value as string);
+};
+
+const prepareFormData = (
+    data: Record<string, any>,
+    model: CmsEditorContentModel
+): Record<string, any> => {
+    const numberFields = model.fields
+        .filter(field => field.type === "number")
+        .map(field => field.fieldId);
+
+    return Object.keys(data).reduce((acc, key) => {
+        const value = data[key];
+        acc[key] = numberFields.includes(key) ? transformToFloat(value) : value;
+        return acc;
+    }, {});
+};
+
 interface ContentFormProps {
     contentModel: CmsEditorContentModel;
     entry: CmsEditorContentEntry;
@@ -162,7 +184,8 @@ const ContentForm: React.FunctionComponent<ContentFormProps> = ({
             contentModel={contentModel}
             entry={entry}
             onForm={contentForm => setState({ contentForm })}
-            onSubmit={async data => {
+            onSubmit={async fData => {
+                const data = prepareFormData(fData, contentModel);
                 if (!entry.id) {
                     return createContent(data);
                 }

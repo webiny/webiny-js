@@ -3,6 +3,9 @@ import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
+import { useProductManageHandler } from "../utils/useProductManageHandler";
+
+jest.setTimeout(25000);
 
 const categoryManagerHelper = async manageOpts => {
     // Use "manage" API to create and publish entries
@@ -61,6 +64,38 @@ describe("READ - Resolvers", () => {
         createContentModelGroupMutation
     } = useContentGqlHandler(manageOpts);
 
+    const setupModel = async (name: string, group: CmsContentModelGroup) => {
+        const targetModel = models.find(m => m.modelId === name);
+
+        // Create initial record
+        const [create] = await createContentModelMutation({
+            data: {
+                name: targetModel.name,
+                modelId: targetModel.modelId,
+                group: group.id
+            }
+        });
+
+        if (create.errors) {
+            console.error(`[beforeEach] ${create.errors[0].message}`);
+            process.exit(1);
+        }
+
+        const [update] = await updateContentModelMutation({
+            modelId: create.data.createContentModel.data.modelId,
+            data: {
+                fields: targetModel.fields,
+                layout: targetModel.layout
+            }
+        });
+
+        if (update.errors) {
+            console.error(`[beforeEach] ${update.errors[0].message}`);
+            process.exit(1);
+        }
+        return targetModel;
+    };
+
     beforeEach(async () => {
         try {
             await elasticSearch.indices.delete({ index: esCmsIndex });
@@ -81,34 +116,7 @@ describe("READ - Resolvers", () => {
         });
         contentModelGroup = createCMG.data.createContentModelGroup.data;
 
-        const category = models.find(m => m.modelId === "category");
-
-        // Create initial record
-        const [create] = await createContentModelMutation({
-            data: {
-                name: category.name,
-                modelId: category.modelId,
-                group: contentModelGroup.id
-            }
-        });
-
-        if (create.errors) {
-            console.error(`[beforeEach] ${create.errors[0].message}`);
-            process.exit(1);
-        }
-
-        const [update] = await updateContentModelMutation({
-            modelId: create.data.createContentModel.data.modelId,
-            data: {
-                fields: category.fields,
-                layout: category.layout
-            }
-        });
-
-        if (update.errors) {
-            console.error(`[beforeEach] ${update.errors[0].message}`);
-            process.exit(1);
-        }
+        await setupModel("category", contentModelGroup);
     });
 
     afterEach(async () => {
@@ -925,6 +933,93 @@ describe("READ - Resolvers", () => {
                             title: animals.title
                         }
                     ],
+                    meta: {
+                        cursor: expect.any(String),
+                        hasMoreItems: false,
+                        totalCount: 2
+                    },
+                    error: null
+                }
+            }
+        });
+    });
+
+    test("list entries that have price in given range", async () => {
+        await setupModel("product", contentModelGroup);
+
+        const { vegetables } = await categoryManagerHelper({
+            ...manageOpts
+        });
+        const { createProduct, listProducts, until } = useProductManageHandler({
+            ...manageOpts
+        });
+
+        await createProduct({
+            data: {
+                title: "Potato",
+                price: 100.05,
+                availableOn: "2020-12-25T16:37:00Z.000",
+                color: "white",
+                availableSizes: ["s", "m"],
+                image: "potato.jpg",
+                category: {
+                    modelId: "category",
+                    entryId: vegetables.id
+                }
+            }
+        });
+
+        await createProduct({
+            data: {
+                title: "Carrot",
+                price: 98,
+                availableOn: "2020-12-25T16:37:00Z.000",
+                color: "white",
+                availableSizes: ["m"],
+                image: "orange.jpg",
+                category: {
+                    modelId: "category",
+                    entryId: vegetables.id
+                }
+            }
+        });
+
+        await createProduct({
+            data: {
+                title: "Korn",
+                price: 99.1,
+                availableOn: "2020-12-25T16:37:00Z.000",
+                color: "white",
+                availableSizes: ["m"],
+                image: "korn.jpg",
+                category: {
+                    modelId: "category",
+                    entryId: vegetables.id
+                }
+            }
+        });
+
+        // Wait until the previous revision is indexed in Elastic as "latest"
+        await until(
+            () =>
+                listProducts({
+                    where: {}
+                }).then(([data]) => data),
+            ({ data }) => data.listProducts.data.length === 3,
+            { name: "list all products in vegetables categories", tries: 10 }
+        );
+
+        const [response] = await listProducts({
+            where: {
+                price_gte: 99,
+                price_lte: 107.99
+            }
+        });
+
+        expect(response).toEqual({
+            data: {
+                listProducts: {
+                    data: expect.any(Array),
                     meta: {
                         cursor: expect.any(String),
                         hasMoreItems: false,
