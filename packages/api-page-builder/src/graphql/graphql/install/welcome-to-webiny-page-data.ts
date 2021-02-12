@@ -4620,7 +4620,7 @@ export const preparePageData = ({ srcPrefix, fileIdToKeyMap }) => {
                                                     name: "9kkxzkfza-Octocat.svg",
                                                     key: "9kkxzkfza-Octocat.svg",
                                                     src: `${srcPrefix}/${
-                                                        fileIdToKeyMap[FILE_ID_MAP.DEVELOPER_SVG]
+                                                        fileIdToKeyMap[FILE_ID_MAP.OCTO_CAT_SVG]
                                                     }`,
                                                     size: 30007,
                                                     type: "image/svg+xml"
