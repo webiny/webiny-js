@@ -165,6 +165,7 @@ export default (): ContextPlugin<CmsContext> => ({
                         PK: PK_CONTENT_MODEL(),
                         SK: model.modelId,
                         TYPE: "cms.model",
+                        webinyVersion: context.WEBINY_VERSION,
                         ...model
                     }
                 });
@@ -206,7 +207,10 @@ export default (): ContextPlugin<CmsContext> => ({
                         PK: PK_CONTENT_MODEL(),
                         SK: model.modelId
                     },
-                    data
+                    data: {
+                        ...data,
+                        webinyVersion: context.WEBINY_VERSION
+                    }
                 });
 
                 const combinedModel: CmsContentModel = {
@@ -254,7 +258,10 @@ export default (): ContextPlugin<CmsContext> => ({
                 await db.update({
                     ...utils.defaults.db(),
                     query: { PK: PK_CONTENT_MODEL(), SK: modelId },
-                    data: modelData
+                    data: {
+                        ...modelData,
+                        webinyVersion: context.WEBINY_VERSION
+                    }
                 });
 
                 const fullModel: CmsContentModel = {
