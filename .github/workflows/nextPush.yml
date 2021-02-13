@@ -204,7 +204,7 @@ jobs:
         run: yarn --immutable
 
       - name: Setup tests
-        run: echo "Need to set Pulumi backend to S3 bucket that was used in previous steps."
+        run: echo "We need to set Pulumi backend to S3 bucket that was used in previous steps."
 
       - name: Cypress - run the rest of Admin app tests
         run: echo 'Once ready, run -> yarn cypress run --spec "cypress/integration/admin/**/*.spec.js"'
