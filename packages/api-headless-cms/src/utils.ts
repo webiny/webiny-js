@@ -40,7 +40,7 @@ export const defaults = {
             throw new Error(`There is no tenant on "context.security".`);
         }
         return {
-            index: `${tenant.id}-headless-cms-${model.modelId}`
+            index: `${tenant.id}-headless-cms-${model.modelId}`.toLowerCase()
         };
     }
 };

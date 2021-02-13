@@ -6,7 +6,7 @@ import {
     CmsContentModelManager,
     CmsContentModelPermission
 } from "@webiny/api-headless-cms/types";
-import * as utils from "@webiny/api-headless-cms/utils";
+import * as utils from "../../../utils";
 import DataLoader from "dataloader";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { contentModelManagerFactory } from "./contentModel/contentModelManagerFactory";
@@ -150,7 +150,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 await beforeCreateHook({ context, model });
 
                 const esIndex = utils.defaults.es(context, model);
-                const exists = await elasticSearch.indices.exists(esIndex);
+                const { body: exists } = await elasticSearch.indices.exists(esIndex);
                 if (exists) {
                     throw new WebinyError(
                         "Elasticsearch index already exists.",
@@ -169,17 +169,25 @@ export default (): ContextPlugin<CmsContext> => ({
                     }
                 });
 
-                await elasticSearch.indices.create({
-                    ...esIndex,
-                    body: {
-                        // we are disabling indexing of rawValues property in object that is inserted into ES
-                        mappings: {
-                            properties: {
-                                rawValues: { type: "object", enabled: false }
+                try {
+                    await elasticSearch.indices.create({
+                        ...esIndex,
+                        body: {
+                            // we are disabling indexing of rawValues property in object that is inserted into ES
+                            mappings: {
+                                properties: {
+                                    rawValues: { type: "object", enabled: false }
+                                }
                             }
                         }
-                    }
-                });
+                    });
+                } catch (ex) {
+                    throw new WebinyError(
+                        "Could not create Elasticsearch index.",
+                        "ELASTICSEARCH_INDEX",
+                        ex
+                    );
+                }
 
                 await updateManager(context, model);
 
