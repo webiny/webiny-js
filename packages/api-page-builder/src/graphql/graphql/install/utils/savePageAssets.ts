@@ -19,7 +19,7 @@ export default async ({ context }) => {
 
     const INSTALL_EXTRACT_DIR = await downloadInstallationFiles();
 
-    const pagesFilesData = await loadJson(
+    const pagesFilesData = await loadJson<Record<string, any>[]>(
         path.join(INSTALL_EXTRACT_DIR, "data/pagesFilesData.json")
     );
 

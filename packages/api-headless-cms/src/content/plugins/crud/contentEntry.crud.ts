@@ -886,7 +886,7 @@ export default (): ContextPlugin<CmsContext> => ({
                         }
                     );
                 }
-                const originalEntry = entryFromStorageTransform(context, model, entry);
+                const originalEntry = await entryFromStorageTransform(context, model, entry);
                 const preparedEntry = prepareEntryToIndex({
                     context,
                     model,

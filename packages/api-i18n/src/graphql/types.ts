@@ -1,5 +1,6 @@
 import { Plugin } from "@webiny/plugins/types";
 import { ClientContext } from "@webiny/handler-client/types";
+import { ContextInterface } from "@webiny/handler/types";
 
 export type I18NLocale = {
     code: string;
@@ -22,9 +23,9 @@ export type I18NContextObject = {
     getLocale: (code: string) => I18NLocale | null;
 };
 
-export type I18NContext = {
+export interface I18NContext extends ContextInterface {
     i18n: I18NContextObject;
-};
+}
 
 export type ContextI18NGetLocales = Plugin & {
     name: "context-i18n-get-locales";
