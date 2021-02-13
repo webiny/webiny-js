@@ -7,6 +7,7 @@ const { version } = require("@webiny/project-utils/package.json");
 const generatePackageVersionDefinitions = () => {
     const pkgJSON = require(path.resolve("package.json"));
 
+    process.env.WEBINY_VERSION = pkgJSON.version;
     return Object.keys(pkgJSON.dependencies || []).reduce(
         (acc, item) => {
             if (item.startsWith("@webiny/")) {
