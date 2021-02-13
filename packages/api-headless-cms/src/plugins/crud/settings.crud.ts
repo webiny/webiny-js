@@ -23,7 +23,7 @@ export default {
     type: "context",
     name: "context-settings-crud",
     apply(context) {
-        const { db, elasticSearch } = context;
+        const { db } = context;
 
         const PK_SETTINGS = () => `${utils.createCmsPK(context)}#SETTINGS`;
 
@@ -33,7 +33,7 @@ export default {
 
         const settingsGet = async () => {
             const [[settings]] = await db.read<CmsSettings>({
-                ...utils.defaults.db,
+                ...utils.defaults.db(),
                 query: { PK: PK_SETTINGS(), SK: SETTINGS_SECONDARY_KEY }
             });
 
@@ -67,21 +67,21 @@ export default {
                 }
 
                 // Create ES index if it doesn't already exist.
-                const esIndex = utils.defaults.es(context);
-                const { body: exists } = await elasticSearch.indices.exists(esIndex);
-                if (!exists) {
-                    await elasticSearch.indices.create({
-                        ...esIndex,
-                        body: {
-                            // we are disabling indexing of rawValues property in object that is inserted into ES
-                            mappings: {
-                                properties: {
-                                    rawValues: { type: "object", enabled: false }
-                                }
-                            }
-                        }
-                    });
-                }
+                // const esIndex = utils.defaults.es(context);
+                // const { body: exists } = await elasticSearch.indices.exists(esIndex);
+                // if (!exists) {
+                //     await elasticSearch.indices.create({
+                //         ...esIndex,
+                //         body: {
+                //             // we are disabling indexing of rawValues property in object that is inserted into ES
+                //             mappings: {
+                //                 properties: {
+                //                     rawValues: { type: "object", enabled: false }
+                //                 }
+                //             }
+                //         }
+                //     });
+                // }
 
                 // Add default content model group.
                 let contentModelGroup: CmsContentModelGroup;
@@ -101,7 +101,7 @@ export default {
 
                 // mark as installed in settings
                 await db.create({
-                    ...utils.defaults.db,
+                    ...utils.defaults.db(),
                     data: {
                         PK: PK_SETTINGS(),
                         SK: SETTINGS_SECONDARY_KEY,
@@ -116,7 +116,7 @@ export default {
                 const updatedDate = new Date();
 
                 await db.update({
-                    ...utils.defaults.db,
+                    ...utils.defaults.db(),
                     query: {
                         PK: PK_SETTINGS(),
                         SK: SETTINGS_SECONDARY_KEY

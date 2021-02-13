@@ -22,19 +22,20 @@ import {
     afterDeleteHook
 } from "./contentModel/hooks";
 import { NotAuthorizedError } from "@webiny/api-security";
+import WebinyError from "@webiny/error";
 
 export default (): ContextPlugin<CmsContext> => ({
     type: "context",
     name: "context-content-model-crud",
     async apply(context) {
-        const { db } = context;
+        const { db, elasticSearch } = context;
 
         const PK_CONTENT_MODEL = () => `${utils.createCmsPK(context)}#CM`;
 
         const loaders = {
             listModels: new DataLoader(async () => {
                 const [models] = await db.read<CmsContentModel>({
-                    ...utils.defaults.db,
+                    ...utils.defaults.db(),
                     query: { PK: PK_CONTENT_MODEL(), SK: { $gt: " " } }
                 });
 
@@ -58,7 +59,7 @@ export default (): ContextPlugin<CmsContext> => ({
 
         const modelsGet = async (modelId: string) => {
             const [[model]] = await db.read<CmsContentModel>({
-                ...utils.defaults.db,
+                ...utils.defaults.db(),
                 query: { PK: PK_CONTENT_MODEL(), SK: modelId }
             });
 
@@ -148,13 +149,35 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 await beforeCreateHook({ context, model });
 
+                const esIndex = utils.defaults.es(context, model);
+                const exists = await elasticSearch.indices.exists(esIndex);
+                if (exists) {
+                    throw new WebinyError(
+                        "Elasticsearch index already exists.",
+                        "ELASTICSEARCH_INDEX",
+                        esIndex
+                    );
+                }
+
                 await db.create({
-                    ...utils.defaults.db,
+                    ...utils.defaults.db(),
                     data: {
                         PK: PK_CONTENT_MODEL(),
                         SK: model.modelId,
                         TYPE: "cms.model",
                         ...model
+                    }
+                });
+
+                await elasticSearch.indices.create({
+                    ...esIndex,
+                    body: {
+                        // we are disabling indexing of rawValues property in object that is inserted into ES
+                        mappings: {
+                            properties: {
+                                rawValues: { type: "object", enabled: false }
+                            }
+                        }
                     }
                 });
 
@@ -170,7 +193,7 @@ export default (): ContextPlugin<CmsContext> => ({
             async updateModel(model, data: Partial<CmsContentModel>) {
                 await beforeUpdateHook({ context, model, data });
                 await db.update({
-                    ...utils.defaults.db,
+                    ...utils.defaults.db(),
                     query: {
                         PK: PK_CONTENT_MODEL(),
                         SK: model.modelId
@@ -221,7 +244,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 await beforeUpdateHook({ context, model, data: modelData });
 
                 await db.update({
-                    ...utils.defaults.db,
+                    ...utils.defaults.db(),
                     query: { PK: PK_CONTENT_MODEL(), SK: modelId },
                     data: modelData
                 });
@@ -245,12 +268,23 @@ export default (): ContextPlugin<CmsContext> => ({
                 await beforeDeleteHook({ context, model });
 
                 await db.delete({
-                    ...utils.defaults.db,
+                    ...utils.defaults.db(),
                     query: {
                         PK: PK_CONTENT_MODEL(),
                         SK: modelId
                     }
                 });
+
+                const esIndex = utils.defaults.es(context, model);
+                try {
+                    await elasticSearch.indices.delete(esIndex);
+                } catch (ex) {
+                    throw new WebinyError(
+                        "Could not delete Elasticsearch index.",
+                        "ELASTICSEARCH_INDEX",
+                        esIndex
+                    );
+                }
 
                 await afterDeleteHook({ context, model });
 

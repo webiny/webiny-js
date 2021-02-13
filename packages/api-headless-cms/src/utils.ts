@@ -3,8 +3,27 @@ import { CmsContentModelPermission, CmsContentModel, CmsContext, CreatedBy } fro
 import { NotAuthorizedError } from "@webiny/api-security";
 import { SecurityPermission } from "@webiny/api-security/types";
 
+interface DatabaseConfigKeyFields {
+    name: string;
+}
+
+interface DatabaseConfigKeys {
+    primary: boolean;
+    unique: boolean;
+    name: string;
+    fields: DatabaseConfigKeyFields[];
+}
+
+interface DatabaseConfig {
+    table: string;
+    keys: DatabaseConfigKeys[];
+}
+interface ElasticsearchConfig {
+    index: string;
+}
+
 export const defaults = {
-    db: {
+    db: (): DatabaseConfig => ({
         table: process.env.DB_TABLE_HEADLESS_CMS,
         keys: [
             {
@@ -14,14 +33,14 @@ export const defaults = {
                 fields: [{ name: "PK" }, { name: "SK" }]
             }
         ]
-    },
-    es(context: CmsContext) {
+    }),
+    es(context: CmsContext, model: CmsContentModel): ElasticsearchConfig {
         const tenant = context.security.getTenant();
         if (!tenant) {
             throw new Error(`There is no tenant on "context.security".`);
         }
         return {
-            index: `${tenant.id}-headless-cms`
+            index: `${tenant.id}-headless-cms-${model.modelId}`
         };
     }
 };
