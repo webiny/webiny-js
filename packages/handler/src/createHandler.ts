@@ -8,7 +8,7 @@ export default (...plugins) => async (...args) => {
         args,
         // @ts-ignore
         // this is injected using webpack.DefinePlugin at build time
-        WEBINY_VERSION: WEBINY_VERSION
+        WEBINY_VERSION: process.env.WEBINY_VERSION
     };
 
     try {
