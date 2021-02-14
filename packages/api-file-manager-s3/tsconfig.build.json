@@ -1,7 +1,14 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["./src"],
-  "exclude": ["node_modules", "./dist", "../validation", "../handler-graphql", "../plugins"],
+  "exclude": [
+    "node_modules",
+    "./dist",
+    "../validation",
+    "../handler-graphql",
+    "../plugins",
+    "../handler"
+  ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
@@ -16,6 +23,9 @@
     },
     {
       "path": "../plugins/tsconfig.build.json"
+    },
+    {
+      "path": "../handler/tsconfig.build.json"
     }
   ]
 }
