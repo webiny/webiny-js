@@ -15,8 +15,8 @@ __metadata:
   linkType: hard
 
 "@apollo/client@npm:latest":
-  version: 3.3.9
-  resolution: "@apollo/client@npm:3.3.9"
+  version: 3.3.10
+  resolution: "@apollo/client@npm:3.3.10"
   dependencies:
     "@graphql-typed-document-node/core": ^3.0.0
     "@types/zen-observable": ^0.8.0
@@ -40,7 +40,7 @@ __metadata:
       optional: true
     subscriptions-transport-ws:
       optional: true
-  checksum: 8b0662d70e6ef203d7e3df6e013205c891967f42f3b639cafb56d87e7cdf56c1c150358e6fd69cdc5fb9e894ed352785cdf26d7d15b76921ed028f8247fdb6a2
+  checksum: 76e671272186add72b0701a5d0384217eb31e80ea5bc7113481cd031bc5566e2b6a0b079583d1871c79106c85b8f7140e4d497294ced71e87f61637c0d97cc92
   languageName: node
   linkType: hard
 
@@ -8655,7 +8655,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/app-plugin-security-cognito@workspace:packages/app-plugin-security-cognito"
   dependencies:
-    "@apollo/react-hoc": ^3.1.5
+    "@apollo/react-hooks": ^3.1.5
     "@aws-amplify/auth": ^1.3.3
     "@babel/cli": ^7.5.5
     "@babel/core": ^7.5.5
@@ -9313,7 +9313,6 @@ __metadata:
     camelcase: 5.3.1
     case-sensitive-paths-webpack-plugin: 2.2.0
     chalk: 3.0.0
-    constant-case: 3.0.4
     css-loader: 3.2.0
     eslint: 6.8.0
     eslint-loader: 3.0.2
@@ -13703,17 +13702,6 @@ __metadata:
   version: 1.1.0
   resolution: "console-control-strings@npm:1.1.0"
   checksum: 58a404d951bf270494fb91e136cf064652c1208ccedac23e4da24e6a3a3933998f302cadc45cbf6582a007a4aa44dab944e84056b24e3b1964e9a28aeedf76c9
-  languageName: node
-  linkType: hard
-
-"constant-case@npm:3.0.4":
-  version: 3.0.4
-  resolution: "constant-case@npm:3.0.4"
-  dependencies:
-    no-case: ^3.0.4
-    tslib: ^2.0.3
-    upper-case: ^2.0.2
-  checksum: c2ca78e785a0ca46cbb4cb5ea7d64c2ff8e6184ca8a46cab39ec5bedf51a42f22d019d0aaeb00afe0e73e0d6a628d6bd9b85294856047c2fae794934888b8a10
   languageName: node
   linkType: hard
 
@@ -33860,15 +33848,6 @@ typescript@~3.7.3:
   version: 1.1.3
   resolution: "upper-case@npm:1.1.3"
   checksum: 82bfe8d6e11981608c68629de8221daf7c7e091aef9243bd7595a306beaeb9ff145afeaf003f5f1fbe1acb20de30e52421cc4564b7617375da52838da9173d19
-  languageName: node
-  linkType: hard
-
-"upper-case@npm:^2.0.2":
-  version: 2.0.2
-  resolution: "upper-case@npm:2.0.2"
-  dependencies:
-    tslib: ^2.0.3
-  checksum: db9adfeca3ba0ca98f197d8cbf5b97f424c30ac2bb5e672e68033cf2ea747e66d1e2ebc3921e947dad672869c65c6cb5257fe703142bca9c3aeefe802a0bc2e8
   languageName: node
   linkType: hard
 

@@ -7,12 +7,15 @@ const getPulumi = require("../utils/getPulumi");
 const execa = require("execa");
 
 const notify = ({ message }) => {
-    notifier.notify({
-        title: "Webiny CLI",
-        message,
-        icon: join(__dirname, "logo.png"),
-        sound: false,
-        wait: true
+    return new Promise(resolve => {
+        notifier.notify({
+            title: "Webiny CLI",
+            message,
+            icon: join(__dirname, "logo.png"),
+            sound: false
+        });
+
+        setTimeout(resolve, 100);
     });
 };
 
