@@ -958,7 +958,7 @@ describe("READ - Resolvers", () => {
             data: {
                 title: "Potato",
                 price: 100.05,
-                availableOn: "2020-12-25T16:37:00Z.000",
+                availableOn: "2020-12-25",
                 color: "white",
                 availableSizes: ["s", "m"],
                 image: "potato.jpg",
@@ -973,7 +973,7 @@ describe("READ - Resolvers", () => {
             data: {
                 title: "Carrot",
                 price: 98,
-                availableOn: "2020-12-25T16:37:00Z.000",
+                availableOn: "2020-12-25",
                 color: "white",
                 availableSizes: ["m"],
                 image: "orange.jpg",
@@ -988,7 +988,7 @@ describe("READ - Resolvers", () => {
             data: {
                 title: "Korn",
                 price: 99.1,
-                availableOn: "2020-12-25T16:37:00Z.000",
+                availableOn: "2020-12-25",
                 color: "white",
                 availableSizes: ["m"],
                 image: "korn.jpg",

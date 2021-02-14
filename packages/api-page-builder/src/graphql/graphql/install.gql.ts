@@ -1,8 +1,10 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { Response } from "@webiny/handler-graphql/responses";
+import { Response, ErrorResponse } from "@webiny/handler-graphql/responses";
 import { InstallHookPlugin, PbContext } from "@webiny/api-page-builder/types";
 import defaults from "./../crud/utils/defaults";
 import executeHookCallbacks from "./../crud/utils/executeHookCallbacks";
+import { preparePageData } from "./install/welcome-to-webiny-page-data";
+import savePageAssets from "./install/utils/savePageAssets";
 
 const plugin: GraphQLSchemaPlugin<PbContext> = {
     type: "graphql-schema",
@@ -45,6 +47,16 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     const hookPlugins = context.plugins.byType<InstallHookPlugin>("pb-page-hooks");
                     await executeHookCallbacks(hookPlugins, "beforeInstall", context);
 
+                    // Check whether the PB app is already installed
+                    const pbSettings = await context.pageBuilder.settings.install.get();
+                    const isInstalled = Boolean(pbSettings?.installed);
+                    if (isInstalled) {
+                        return new ErrorResponse({
+                            code: "PB_INSTALL_ABORTED",
+                            message: "Page builder is already installed."
+                        });
+                    }
+
                     // 1. Create ES index if it doesn't already exist.
                     const { index } = defaults.es(context);
                     const { body: exists } = await context.elasticSearch.indices.exists({ index });
@@ -68,6 +80,9 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
 
                     // 3. Create page blocks.
 
+                    // Upload page data images
+                    const fileIdToKeyMap = await savePageAssets({ context });
+
                     // 4. Create initial menu.
                     const mainMenu = await context.pageBuilder.menus.get("main-menu");
                     if (!mainMenu) {
@@ -81,9 +96,19 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
 
                     // 5. Create sample pages.
                     const { pages } = context.pageBuilder;
+                    const fmSettings = await context.fileManager.settings.getSettings();
+
+                    const welcomeToWebinyPageContent = preparePageData({
+                        srcPrefix: fmSettings && fmSettings.srcPrefix,
+                        fileIdToKeyMap
+                    });
 
                     const initialPages = [
-                        { title: "Welcome to Webiny", path: "/welcome-to-webiny" },
+                        {
+                            title: "Welcome to Webiny",
+                            path: "/welcome-to-webiny",
+                            content: welcomeToWebinyPageContent
+                        },
                         {
                             title: "Not Found",
                             path: "/not-found",

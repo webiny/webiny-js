@@ -8,7 +8,7 @@ export const runContentEntryLifecycleHooks = async (
     args: CmsContentEntryHookPluginArgs
 ): Promise<void> => {
     const { context } = args;
-    const hookPlugins = context.plugins.byType<CmsContentEntryHookPlugin>("content-entry-hook");
+    const hookPlugins = context.plugins.byType<CmsContentEntryHookPlugin>("cms-content-entry-hook");
     for (const hookPlugin of hookPlugins) {
         if (typeof hookPlugin[hookName] !== "function") {
             continue;

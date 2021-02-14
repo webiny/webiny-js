@@ -25,7 +25,8 @@ const pageBuilder = new PageBuilder({
     env: {
         DB_TABLE: dynamoDb.table.name,
         DEBUG: String(process.env.DEBUG)
-    }
+    },
+    bucket: fileManager.bucket
 });
 
 const api = new Graphql({

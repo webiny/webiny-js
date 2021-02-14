@@ -10,6 +10,7 @@ class App {
     constructor() {
         this.bucket = new aws.s3.Bucket("app", {
             acl: "public-read",
+            forceDestroy: true,
             website: {
                 indexDocument: "index.html",
                 errorDocument: "index.html"

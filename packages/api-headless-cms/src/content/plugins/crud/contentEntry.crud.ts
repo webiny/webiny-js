@@ -2,7 +2,7 @@ import mdbid from "mdbid";
 import omit from "lodash/omit";
 import cloneDeep from "lodash/cloneDeep";
 import { ContextPlugin } from "@webiny/handler/types";
-import { ErrorResponse, NotFoundError } from "@webiny/handler-graphql";
+import { NotFoundError } from "@webiny/handler-graphql";
 import {
     CmsContentEntryContext,
     CmsContentEntryPermission,
@@ -13,11 +13,11 @@ import {
 import * as utils from "../../../utils";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation";
 import {
-    createElasticsearchParams,
+    createElasticsearchQueryBody,
     createElasticsearchLimit,
     prepareEntryToIndex,
     extractEntriesFromIndex
-} from "./contentEntry/elasticSearchHelpers";
+} from "./contentEntry/es";
 import * as dataLoaders from "./contentEntry/dataLoaders";
 import { createCmsPK } from "../../../utils";
 import {
@@ -172,7 +172,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 // Possibly only get records which are owned by current user
                 const ownedBy = permission.own ? context.security.getIdentity().id : undefined;
 
-                const body = createElasticsearchParams({
+                const body = createElasticsearchQueryBody({
                     model,
                     args: {
                         ...args,
@@ -191,11 +191,7 @@ export default (): ContextPlugin<CmsContext> => ({
                         body
                     });
                 } catch (ex) {
-                    throw new ErrorResponse({
-                        message: ex.message,
-                        code: ex.code,
-                        data: ex.meta
-                    });
+                    throw new WebinyError(ex.message, ex.code, ex.meta);
                 }
 
                 const { hits, total } = response.body.hits;
