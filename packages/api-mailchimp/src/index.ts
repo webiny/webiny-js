@@ -4,9 +4,13 @@ import mailchimpSettings from "./mailchimpSettings.model";
 import MailchimpApi from "./MailchimpApi";
 import { get } from "lodash";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { ContextPlugin } from "@webiny/handler/types";
+import { ContextInterface, ContextPlugin } from "@webiny/handler/types";
 
-type SettingsContext = ContextPlugin<any>;
+interface SettingsContext extends ContextInterface {
+    models: {
+        MailchimpSettings: any;
+    };
+}
 
 const emptyResolver = () => ({});
 

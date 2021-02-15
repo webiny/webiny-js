@@ -1,7 +1,7 @@
 import React, { useReducer, useEffect } from "react";
 import Auth from "@aws-amplify/auth";
 import { ApolloClient } from "apollo-client";
-import { withApollo, WithApolloClient } from "@apollo/react-hoc";
+import { useApolloClient } from "@apollo/react-hooks";
 import { AlertType } from "@webiny/ui/Alert";
 import { useSecurity } from "@webiny/app-security";
 import { SecurityIdentity } from "@webiny/app-security/SecurityIdentity";
@@ -39,16 +39,17 @@ export type AuthProps = {
 
 export type AuthenticatorChildrenFunction = (params: AuthProps) => React.ReactElement;
 
-export type AuthenticatorProps = WithApolloClient<{
+export type AuthenticatorProps = {
     getIdentityData(params: {
         client: ApolloClient<any>;
         payload: { [key: string]: any };
     }): Promise<{ [key: string]: any }>;
     children: AuthenticatorChildrenFunction;
-}>;
+};
 
-const AuthenticatorComponent: React.FC<AuthenticatorProps> = props => {
+export const Authenticator: React.FC<AuthenticatorProps> = props => {
     const { setIdentity } = useSecurity();
+    const client = useApolloClient();
 
     const [state, setState] = useReducer((prev, next) => ({ ...prev, ...next }), {
         authState: "signIn",
@@ -103,7 +104,7 @@ const AuthenticatorComponent: React.FC<AuthenticatorProps> = props => {
             const user = await Auth.currentSession();
 
             const { login, ...data } = await props.getIdentityData({
-                client: props.client,
+                client,
                 payload: user.getIdToken().payload
             });
 
@@ -134,5 +135,3 @@ const AuthenticatorComponent: React.FC<AuthenticatorProps> = props => {
         message
     });
 };
-
-export const Authenticator = withApollo<AuthenticatorProps>(AuthenticatorComponent);

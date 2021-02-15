@@ -71,7 +71,7 @@ const CategoriesForm = ({ canCreate }: CategoriesFormProps) => {
     const [update, updateMutation] = useMutation(UPDATE_CATEGORY, {
         refetchQueries: [{ query: LIST_CATEGORIES }],
         update: (cache, { data }) => {
-            const categoryDataFromCache = cache.readQuery({
+            const categoryDataFromCache = cache.readQuery<Record<string, any>>({
                 query: GET_CATEGORY,
                 variables: { slug }
             });
