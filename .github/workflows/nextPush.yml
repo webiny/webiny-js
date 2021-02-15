@@ -10,7 +10,21 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 jobs:
+  install-cache-dependencies:
+    - uses: actions/checkout@v2
+
+    - uses: actions/cache@v2
+      id: cache
+      with:
+        path: .yarn/cache
+        key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+    - name: Install Dependencies
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: yarn --immutable
+
   code-analysis:
+    needs: install-cache-dependencies
     name: Static code analysis
     runs-on: ubuntu-latest
     steps:
@@ -19,9 +33,6 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 12
-
-      - name: Install dependencies
-        run: yarn --immutable
 
       - name: Check code formatting
         run: yarn prettier:check
