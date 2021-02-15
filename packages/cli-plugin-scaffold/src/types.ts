@@ -1,4 +1,4 @@
-import { Answers, QuestionCollection } from "inquirer";
+import { QuestionCollection } from "inquirer";
 import { ContextInterface } from "@webiny/handler/types";
 import { Plugin } from "@webiny/plugins/types";
 import { Ora } from "ora";
@@ -43,9 +43,9 @@ interface CliCommandScaffoldQuestionsCallableArgs {
  * @category ScaffoldQuestions
  * @category Template
  */
-type CliCommandScaffoldQuestionsCallable<T> = (
+type CliCommandScaffoldQuestionsCallable = (
     args: CliCommandScaffoldQuestionsCallableArgs
-) => QuestionCollection<T>;
+) => QuestionCollection;
 
 /**
  * CliCommandScaffold generate and onSuccess arguments.
@@ -53,10 +53,8 @@ type CliCommandScaffoldQuestionsCallable<T> = (
  * @category Scaffold
  * @category Template
  */
-interface CliCommandScaffoldCallableArgs {
-    input: {
-        [key: string]: any;
-    };
+interface CliCommandScaffoldCallableArgs<T extends Record<string, any>> {
+    input: T;
     context: ContextInterface;
     wait: (ms?: number) => Promise<void>;
     oraSpinner: Ora;
@@ -68,7 +66,8 @@ interface CliCommandScaffoldCallableArgs {
  * @category Scaffold
  * @category Template
  */
-interface CliCommandScaffoldCallableWithErrorArgs extends CliCommandScaffoldCallableArgs {
+interface CliCommandScaffoldCallableWithErrorArgs<T extends Record<string, any>>
+    extends CliCommandScaffoldCallableArgs<T> {
     error: Error;
 }
 
@@ -78,7 +77,7 @@ interface CliCommandScaffoldCallableWithErrorArgs extends CliCommandScaffoldCall
  * @category Scaffold
  * @category Template
  */
-interface CliCommandScaffold<T extends Answers> {
+interface CliCommandScaffold<T extends Record<string, any>> {
     /**
      * Name of the scaffold to be picked from list of choices.
      */
@@ -86,19 +85,19 @@ interface CliCommandScaffold<T extends Answers> {
     /**
      * Definition of questions for users to go through when they run the scaffold.
      */
-    questions: QuestionCollection<T> | CliCommandScaffoldQuestionsCallable<T>;
+    questions: QuestionCollection | CliCommandScaffoldQuestionsCallable;
     /**
      * Generator ran after all the scaffold questions are completed.
      */
-    generate: (args: CliCommandScaffoldCallableArgs) => Promise<any>;
+    generate: (args: CliCommandScaffoldCallableArgs<T>) => Promise<any>;
     /**
      * Trigger when generator completes.
      */
-    onSuccess: (args: CliCommandScaffoldCallableArgs) => Promise<void>;
+    onSuccess: (args: CliCommandScaffoldCallableArgs<T>) => Promise<void>;
     /**
      * Trigger when there is a generator error.
      */
-    onError?: (args: CliCommandScaffoldCallableWithErrorArgs) => Promise<void>;
+    onError?: (args: CliCommandScaffoldCallableWithErrorArgs<T>) => Promise<void>;
 }
 
 /**
@@ -108,7 +107,8 @@ interface CliCommandScaffold<T extends Answers> {
  * @category Scaffold
  * @category Template
  */
-export interface CliCommandScaffoldTemplate<T extends Answers = Answers> extends Plugin {
+export interface CliCommandScaffoldTemplate<T extends Record<string, any> = Record<string, any>>
+    extends Plugin {
     /**
      * A type of the plugin.
      */
