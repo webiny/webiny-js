@@ -43,6 +43,9 @@ jobs:
         with:
           node-version: 12
 
+      - name: Install dependencies
+        run: yarn --immutable
+
       - name: Check code formatting
         run: yarn prettier:check
 
