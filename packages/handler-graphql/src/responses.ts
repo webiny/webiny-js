@@ -55,10 +55,10 @@ export class ListErrorResponse {
     }
 }
 
-export class Response {
-    data: any;
+export class Response<T extends any = any> {
+    data: T;
     error: null;
-    constructor(data: any) {
+    constructor(data: T) {
         this.data = data;
         this.error = null;
     }
