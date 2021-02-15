@@ -61,5 +61,10 @@
     "link-workspaces": "node ./scripts/linkWorkspaces.js",
     "postinstall": "yarn link-workspaces",
     "test": "jest --config jest.config.js"
+  },
+  "resolutions": {
+    "@types/react": "16.14.2",
+    "react": "16.14.0",
+    "react-dom": "16.14.0"
   }
 }
