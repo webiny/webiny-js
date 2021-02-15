@@ -108,7 +108,7 @@ export default (): CliCommandScaffoldTemplate => ({
                 { find: "target", replaceWith: Case.camel(entity.singular) },
                 { find: "Target", replaceWith: Case.pascal(entity.singular) },
                 { find: "TARGET", replaceWith: Case.constant(entity.singular) },
-                { find: "RELATIVE_ROOT_PATH", replaceWith: relativeRootPath }
+                { find: "RELATIVE_ROOT_PATH", replaceWith: relativeRootPath.replace(/\\/g, "/") }
             ];
 
             replaceInPath(path.join(fullLocation, ".babelrc.js"), codeReplacements);
