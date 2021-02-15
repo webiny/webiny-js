@@ -45,6 +45,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        # Prevents the detached HEAD problem (https://github.com/actions/checkout/issues/124)
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
 
       - uses: actions/setup-node@v2-beta
         with:
@@ -88,3 +92,46 @@ jobs:
           path: |
             .verdaccio/
             .verdaccio.yaml
+
+  test-create-webiny-project:
+    needs: [initial-checks, build-test-verdaccio-release]
+    name: Test "create-webiny-project"
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node: [12, 14]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: verdaccio-files
+          path: verdaccio-files
+
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Start Verdaccio local server
+        working-directory: verdaccio-files
+        run: yarn add pm2 verdaccio && npx pm2 start verdaccio -- -c .verdaccio.yaml
+
+      - name: Configure NPM to use local registry
+        run: npm config set registry http://localhost:4873
+
+      - name: Set git email (needed for create-webiny-project)
+        run: git config --global user.email "webiny-bot@webiny.com"
+
+      - name: Set git username (needed for create-webiny-project)
+        run: git config --global user.name "webiny-bot"
+
+      - name: Disable Webiny tracking
+        run: mkdir ~/.webiny && echo '{id:"ci",tracking:false}' > ~/.webiny/config
+
+      - name: Create a new Webiny project
+        run: >
+          npx create-webiny-project@beta test-project
+          --tag beta --no-interactive
+          --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
+          --template-options '{"region":"eu-central-1","vpc":false}'
+
