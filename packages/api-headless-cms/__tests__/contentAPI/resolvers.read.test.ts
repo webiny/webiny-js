@@ -52,13 +52,11 @@ const categoryManagerHelper = async manageOpts => {
 describe("READ - Resolvers", () => {
     let contentModelGroup: CmsContentModelGroup;
 
-    const esCmsIndex = "root-headless-cms";
-
     const manageOpts = { path: "manage/en-US" };
     const readOpts = { path: "read/en-US" };
 
     const {
-        elasticSearch,
+        clearAllIndex,
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
@@ -98,10 +96,7 @@ describe("READ - Resolvers", () => {
 
     beforeEach(async () => {
         try {
-            await elasticSearch.indices.delete({ index: esCmsIndex });
-        } catch (e) {}
-        try {
-            await elasticSearch.indices.create({ index: esCmsIndex });
+            await clearAllIndex();
         } catch {
             // Ignore errors
         }
@@ -121,7 +116,7 @@ describe("READ - Resolvers", () => {
 
     afterEach(async () => {
         try {
-            await elasticSearch.indices.delete({ index: esCmsIndex });
+            await clearAllIndex();
         } catch (e) {}
     });
 

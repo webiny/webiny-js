@@ -7,6 +7,7 @@
   "dependencies": {
     "@webiny/api-file-manager": "^5.0.0-beta.0",
     "@webiny/cli": "5.0.0-beta.4",
-    "@webiny/handler-aws": "^5.0.0-beta.0"
+    "@webiny/handler-aws": "^5.0.0-beta.4",
+    "@webiny/project-utils": "5.0.0-beta.4"
   }
 }
