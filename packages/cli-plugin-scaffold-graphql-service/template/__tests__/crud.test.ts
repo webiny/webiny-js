@@ -8,7 +8,15 @@ import { CREATE_TARGET, LIST_TARGETS } from "./graphql/targets";
  * @see https://docs.webiny.com/docs/api-development/introduction
  */
 describe("CRUD Test", () => {
-    const { invoke } = useGqlHandler();
+    const { until, invoke, clearElasticsearchIndexes } = useGqlHandler();
+
+    beforeEach(async () => {
+        clearElasticsearchIndexes();
+    });
+
+    afterEach(async () => {
+        clearElasticsearchIndexes();
+    });
 
     it("should be able to perform basic CRUD operations", async () => {
         // 1. Let's create a couple of targets.
@@ -29,7 +37,10 @@ describe("CRUD Test", () => {
             body: {
                 query: CREATE_TARGET,
                 variables: {
-                    data: { title: "Target 2", description: "This is my 2nd target." }
+                    data: {
+                        title: "Book 2",
+                        description: "This is my 2nd target with isNice put to default (false)."
+                    }
                 }
             }
         });
@@ -42,6 +53,18 @@ describe("CRUD Test", () => {
                 }
             }
         });
+
+        // if this `until` resolves successfully, we know targets are propagated into elasticsearch
+        await until(
+            () =>
+                invoke({
+                    body: {
+                        query: LIST_TARGETS
+                    }
+                }).then(([data]) => data),
+            ({ data }) => data.books.listBooks.data.length === 3,
+            { name: "get created product" }
+        );
 
         // 2. Now that we have targets created, let's see if they come up in a basic listTargets query.
         const [targetsList] = await invoke({
@@ -64,8 +87,9 @@ describe("CRUD Test", () => {
                             {
                                 id: target2.data.targets.createTarget.data.id,
                                 title: "Target 2",
-                                description: "This is my 2nd target.",
-                                isNice: true
+                                description:
+                                    "This is my 2nd target with isNice put to default (false).",
+                                isNice: false
                             },
                             {
                                 id: target1.data.targets.createTarget.data.id,

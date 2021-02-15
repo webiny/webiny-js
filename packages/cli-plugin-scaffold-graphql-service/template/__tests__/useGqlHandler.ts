@@ -13,11 +13,62 @@ import targetPlugin from "../src/index";
 import graphqlPlugins from "@webiny/handler-graphql";
 
 /**
- * The "useGqlHandler" is a simple handler that reflects the one created in "src/index.ts". The only
- * difference is that here we use a couple of different things. For example, instead of a real database
- * driver form Commodo, we use "neDB" driver (https://github.com/louischatriot/nedb/). We also expose
- * a couple of thing that you can use in your tests, like the "database" object and "invoke" function.
+ * The "useGqlHandler" is a simple handler that reflects the one created in "api/code/graphql/src/index.ts". The only
+ * difference is that here we use a couple of things. For example, instead of a real "DynamoDb",
+ * we use "Dynalite" (https://github.com/mhart/dynalite). We also expose
+ * a couple of thing that you can use in your tests, like the "elasticSearch" client to access the ES,
+ * a function clearElasticsearchIndexes() to run before and after tests to delete the created test indexes,
+ * a function until() that helps with waiting for records to propagate into the Elasticesearch.
+ * Also, there is invoke() function with which you can call the API.
  */
+
+interface UntilOptions {
+    name?: string;
+    tries?: number;
+    wait?: number;
+}
+
+export const until = async (
+    execute: any,
+    until: (value: any) => boolean,
+    options: UntilOptions = {}
+) => {
+    const { name = "NO_NAME", tries = 5, wait = 300 } = options;
+
+    let result;
+    let triesCount = 0;
+
+    while (true) {
+        result = await execute();
+
+        let done;
+        try {
+            done = await until(result);
+        } catch {}
+
+        if (done) {
+            return result;
+        }
+
+        triesCount++;
+        if (triesCount === tries) {
+            break;
+        }
+
+        // Wait.
+        await new Promise((resolve: any) => {
+            setTimeout(() => resolve(), wait);
+        });
+    }
+
+    throw new Error(
+        `[${name}] Tried ${tries} times but failed. Last result that was received: ${JSON.stringify(
+            result,
+            null,
+            2
+        )}`
+    );
+};
 
 const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
 
@@ -39,6 +90,22 @@ export default () => {
             })
         }),
         elasticSearch({ endpoint: `http://localhost:${ELASTICSEARCH_PORT}` }),
+        {
+            type: "context",
+            name: "context-security-tenant",
+            apply(context) {
+                if (!context.security) {
+                    context.security = {};
+                }
+                context.security.getTenant = () => {
+                    return {
+                        id: "root",
+                        name: "Root",
+                        parent: null
+                    };
+                };
+            }
+        },
         securityPlugins(),
         apiKeyAuthentication({ identityType: "api-key" }),
         apiKeyAuthorization({ identityType: "api-key" }),
@@ -69,14 +136,21 @@ export default () => {
         return [JSON.parse(response.body), response];
     };
 
-    // With the "handler" and "invoke" function, let's also return the "documentClient", which will enable
-    // us to do some manual database updating, for example, preparing the initial test data.
+    const elasticsearchClient = new Client({
+        node: `http://localhost:${ELASTICSEARCH_PORT}`
+    });
+
+    const clearElasticsearchIndexes = async () => {
+        return elasticsearchClient.indices.delete({
+            index: "_all"
+        });
+    };
+
     return {
-        elasticSearch: new Client({
-            node: `http://localhost:${ELASTICSEARCH_PORT}`
-        }),
+        elasticSearch: elasticsearchClient,
         handler,
         invoke,
-        documentClient
+        clearElasticsearchIndexes,
+        until
     };
 };

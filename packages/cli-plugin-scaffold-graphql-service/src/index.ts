@@ -20,7 +20,7 @@ import {
 
 const ncp = util.promisify(ncpBase.ncp);
 
-export default (): CliCommandScaffoldTemplate => ({
+export default (): CliCommandScaffoldTemplate<{ location: string; entityName: string }> => ({
     name: "cli-plugin-scaffold-template-graphql-service",
     type: "cli-plugin-scaffold-template",
     scaffold: {
@@ -30,7 +30,7 @@ export default (): CliCommandScaffoldTemplate => ({
                 {
                     name: "location",
                     message: "Enter package location (including package name)",
-                    default: "api/code/books",
+                    default: "packages/api-books",
                     validate: location => {
                         if (location.length < 2) {
                             return "Please enter a package location";
@@ -67,7 +67,7 @@ export default (): CliCommandScaffoldTemplate => ({
                 })
             );
 
-            const packageName = Case.kebab(location);
+            const packageName = Case.kebab(entityName);
 
             //
             const templateFolder = path.join(__dirname, "../template");
@@ -95,7 +95,7 @@ export default (): CliCommandScaffoldTemplate => ({
             // Copy template files
             await ncp(templateFolder, fullLocation);
 
-            // Replace generic "Target" with received "input.entityName" argument.
+            // Replace generic "Target" with received "entityName" argument.
             const entity = {
                 plural: pluralize(Case.camel(entityName)),
                 singular: pluralize.singular(Case.camel(entityName))
@@ -143,21 +143,22 @@ export default (): CliCommandScaffoldTemplate => ({
 
             // Update root package.json - update "workspaces.packages" section.
             oraSpinner.start(
-                `Adding ${chalk.green(input.location)} workspace in root ${chalk.green(
-                    `package.json`
-                )}..`
+                `Adding ${chalk.green(location)} workspace in root ${chalk.green(`package.json`)}..`
             );
 
-            const rootPackageJsonPath = path.join(projectRootPath, "package.json");
-            const rootPackageJson = await readJson<PackageJson>(rootPackageJsonPath);
-            if (!rootPackageJson.workspaces.packages.includes(input.location)) {
-                rootPackageJson.workspaces.packages.push(input.location);
-                await writeJson(rootPackageJsonPath, rootPackageJson);
+            // if location does not start with packages/ then add new path to workspaces
+            if (location.match(/^packages\//) === null) {
+                const rootPackageJsonPath = path.join(projectRootPath, "package.json");
+                const rootPackageJson = await readJson<PackageJson>(rootPackageJsonPath);
+                if (!rootPackageJson.workspaces.packages.includes(location)) {
+                    rootPackageJson.workspaces.packages.push(location);
+                    await writeJson(rootPackageJsonPath, rootPackageJson);
+                }
             }
 
             oraSpinner.stopAndPersist({
                 symbol: chalk.green("✔"),
-                text: `Workspace ${chalk.green(input.location)} added in root ${chalk.green(
+                text: `Workspace ${chalk.green(location)} added in root ${chalk.green(
                     `package.json`
                 )}.`
             });
@@ -190,15 +191,34 @@ export default (): CliCommandScaffoldTemplate => ({
             }
         },
         onSuccess: async ({ input }) => {
-            const { location } = input;
+            const { location, entityName } = input;
+
+            const targetName = Case.camel(entityName);
+
+            const graphqlIndexFile = path
+                .relative(process.cwd(), "api/code/graphql/index.ts")
+                .replace(/\\/g, "/");
+
+            const targetPluginIndexFile = path
+                .relative(graphqlIndexFile, `${location}/index.ts`)
+                .replace(/\\/g, "/");
+
             console.log(`The next steps:`);
             console.log(
                 indentString(
-                    `1. In ${chalk.green(
-                        "api/code/graphql/index.ts"
-                    )} import your plugin file ${chalk.green(
-                        `${location}/index.ts`
-                    )} and load plugins in the handler.`,
+                    `1. Open ${chalk.green(graphqlIndexFile)} and copy the code into it:`,
+                    2
+                )
+            );
+            console.log(
+                indentString(
+                    chalk.green(`
+// at the top of the file
+import ${targetName}Plugin from "${targetPluginIndexFile}";
+
+// somewhere after headlessCmsPlugins() in the end of the createHandler() function
+${targetName}Plugin()
+`),
                     2
                 )
             );

@@ -56,7 +56,7 @@ const buildElasticsearchSort = (sort?: string[]) => {
 };
 const buildElasticsearchQuery = (where?: ListTargetsArgs) => {
     if (!where) {
-        return {};
+        return undefined;
     }
     return {};
 };
@@ -289,7 +289,7 @@ export default (): GraphQLSchemaPlugin<ApplicationContext> => ({
                         body: model
                     });
 
-                    return new Response(data);
+                    return new Response(model);
                 },
                 // @ts-ignore
                 updateTarget: async (

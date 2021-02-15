@@ -27,14 +27,13 @@ export const CREATE_TARGET = /* GraphQL */ `
 // A basic list "Targets" query.
 export const LIST_TARGETS = /* GraphQL */ `
     query ListTargets(
-        $where: TargetListWhere
-        $sort: TargetListSort
+        $where: TargetListWhereInput
+        $sort: [TargetListSortEnum!]
         $limit: Int
         $after: String
-        $before: String
     ) {
         targets {
-            listTargets(where: $where, sort: $sort, limit: $limit, after: $after, before: $before) {
+            listTargets(where: $where, sort: $sort, limit: $limit, after: $after) {
                 data {
                     id
                     title
