@@ -1,4 +1,4 @@
-import mdbid from "mdbid";
+import * as mdbid from "mdbid";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { ListResponse, Response, ErrorResponse } from "@webiny/handler-graphql";
 import {

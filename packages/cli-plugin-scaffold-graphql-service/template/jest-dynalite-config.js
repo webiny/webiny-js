@@ -1,7 +1,7 @@
 module.exports = {
     tables: [
         {
-            TableName: "HeadlessCms",
+            TableName: "tbl_target",
             KeySchema: [{ AttributeName: "PK", KeyType: "HASH" }],
             AttributeDefinitions: [{ AttributeName: "PK", AttributeType: "S" }],
             ProvisionedThroughput: { ReadCapacityUnits: 1, WriteCapacityUnits: 1 }

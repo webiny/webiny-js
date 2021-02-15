@@ -113,6 +113,7 @@ export default (): CliCommandScaffoldTemplate => ({
 
             replaceInPath(path.join(fullLocation, ".babelrc.js"), codeReplacements);
             replaceInPath(path.join(fullLocation, "jest.config.js"), codeReplacements);
+            replaceInPath(path.join(fullLocation, "jest-dynalite-config.js"), codeReplacements);
             replaceInPath(path.join(fullLocation, "src/**/*.ts"), codeReplacements);
             replaceInPath(path.join(fullLocation, "__tests__/**/*.ts"), codeReplacements);
 
