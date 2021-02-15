@@ -1,4 +1,4 @@
-import { createHandler } from "@webiny/handler";
+import { createHandler } from "@webiny/handler-aws";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import elasticSearch from "@webiny/api-plugin-elastic-search-client";
@@ -10,6 +10,7 @@ import { SecurityIdentity } from "@webiny/api-security";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Client } from "@elastic/elasticsearch";
 import targetPlugin from "../src/index";
+import graphqlPlugins from "@webiny/handler-graphql";
 
 /**
  * The "useGqlHandler" is a simple handler that reflects the one created in "src/index.ts". The only
@@ -30,6 +31,7 @@ export default () => {
 
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler(
+        graphqlPlugins(),
         dbPlugins({
             table: "TargetTable",
             driver: new DynamoDbDriver({

@@ -9,7 +9,7 @@ const ERROR_FIELDS = /* GraphQL */ `
 
 // A basic create "Target" mutation.
 export const CREATE_TARGET = /* GraphQL */ `
-    mutation CreateTarget($data: TargetInput!) {
+    mutation CreateTarget($data: TargetCreateInput!) {
         targets {
             createTarget(data: $data) {
                 data {

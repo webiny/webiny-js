@@ -1,4 +1,3 @@
-// @ts-ignore
 import mdbid from "mdbid";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { ListResponse, Response, ErrorResponse } from "@webiny/handler-graphql";
@@ -207,7 +206,7 @@ export default (): GraphQLSchemaPlugin<ApplicationContext> => ({
                     return new Response(item);
                 },
                 // @ts-ignore
-                listTarget: async (
+                listTargets: async (
                     parent,
                     args: ListTargetsArgs,
                     context

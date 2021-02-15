@@ -150,7 +150,7 @@
       "prettier --check",
       "eslint --max-warnings=0 --no-ignore",
       "adio",
-      "check-ts-configs"
+      "npm run check-ts-configs"
     ]
   },
   "yargs": {
