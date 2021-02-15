@@ -14,14 +14,13 @@ jobs:
     name: Install and cache dependencies
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
+
       - uses: actions/cache@v2
         id: cache
         with:
           path: .yarn/cache
           key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-
-      - uses: actions/checkout@v2
-        if: steps.cache.outputs.cache-hit != 'true'
 
       - name: Install Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
@@ -33,6 +32,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        id: cache
+        with:
+          path: .yarn/cache
+          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
       - uses: actions/setup-node@v2
         with:
@@ -62,6 +67,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - uses: actions/cache@v2
+        id: cache
+        with:
+          path: .yarn/cache
+          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
       - uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node }}
@@ -81,6 +92,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        id: cache
+        with:
+          path: .yarn/cache
+          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
       - uses: actions/setup-node@v2
         with:
