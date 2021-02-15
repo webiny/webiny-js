@@ -8,15 +8,38 @@ env:
   NODE_OPTIONS: --max_old_space_size=4096
 
 jobs:
-  initial-checks:
-    name: Initial checks
+  install-cache-dependencies:
+    name: Install and cache dependencies
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
-      - uses: actions/setup-node@v2-beta
+      - uses: actions/cache@v2
+        id: cache
+        with:
+          path: .yarn/cache
+          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: yarn --immutable
+
+  code-analysis:
+    needs: install-cache-dependencies
+    name: Static code analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v2
         with:
           node-version: 12
+
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        id: cache
+        with:
+          path: .yarn/cache
+          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
       - name: Install dependencies
         run: yarn --immutable
@@ -33,26 +56,27 @@ jobs:
       - name: ESLint
         run: yarn eslint
 
-  validate-commits:
-    name: Validate commit messages
-    runs-on: ubuntu-latest
+  jest-tests:
+    needs: install-cache-dependencies
+    name: Jest tests
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        node: [12, 14]
+    runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v2
-      - uses: webiny/action-conventional-commits@v1.0.2
-
-  build-test-verdaccio-release:
-    name: Build, test, and release to Verdaccio
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        # Prevents the detached HEAD problem (https://github.com/actions/checkout/issues/124)
+      - uses: actions/setup-node@v2
         with:
-          fetch-depth: 0
-          ref: ${{ github.event.pull_request.head.ref }}
+          node-version: ${{ matrix.node }}
 
-      - uses: actions/setup-node@v2-beta
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        id: cache
         with:
-          node-version: 12
+          path: .yarn/cache
+          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
       - name: Install dependencies
         run: yarn --immutable
@@ -63,8 +87,31 @@ jobs:
       - name: Run tests
         run: yarn test
 
+  verdaccio-publish:
+    needs: install-cache-dependencies
+    name: Publish to Verdaccio
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        id: cache
+        with:
+          path: .yarn/cache
+          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - name: Build packages
+        run: yarn build
+
       - name: Start Verdaccio local server
-        run: yarn verdaccio:start:detached
+        run: npx pm2 start verdaccio -- -c .verdaccio.yaml
 
       - name: Create ".npmrc" file in the project root, with a dummy auth token
         run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
@@ -94,23 +141,23 @@ jobs:
             .verdaccio.yaml
 
   test-create-webiny-project:
-    needs: [initial-checks, build-test-verdaccio-release]
+    needs: [code-analysis, jest-tests, verdaccio-publish]
     name: Test "create-webiny-project"
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
         node: [12, 14]
     runs-on: ${{ matrix.os }}
     steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
       - uses: actions/download-artifact@v2
         with:
           name: verdaccio-files
           path: verdaccio-files
-
-      - uses: actions/setup-node@v2-beta
-        with:
-          node-version: ${{ matrix.node }}
 
       - name: Start Verdaccio local server
         working-directory: verdaccio-files
