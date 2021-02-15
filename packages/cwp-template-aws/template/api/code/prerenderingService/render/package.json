@@ -7,6 +7,10 @@
   "dependencies": {
     "@webiny/api-prerendering-service": "latest",
     "@webiny/api-prerendering-service-aws": "latest",
-    "@webiny/cli": "latest"
+    "@webiny/cli": "latest",
+    "@webiny/db-dynamodb": "latest",
+    "@webiny/handler-aws": "latest",
+    "@webiny/handler-db": "latest",
+    "@webiny/project-utils": "latest"
   }
 }

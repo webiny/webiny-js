@@ -408,7 +408,7 @@ const plugin: ContextPlugin<PbContext> = {
 
                     await executeHookCallbacks(hookPlugins, "afterCreate", context, data);
 
-                    return omit(data, ["PK", "SK", "content"]);
+                    return omit(data, ["PK", "SK", "content"]) as any;
                 },
 
                 async createFrom(from) {

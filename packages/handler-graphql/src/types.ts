@@ -1,6 +1,6 @@
 import { GraphQLScalarType, GraphQLFieldResolver as BaseGraphQLFieldResolver } from "graphql";
 import { Plugin } from "@webiny/plugins/types";
-import { Context } from "@webiny/handler/types";
+import { ContextInterface } from "@webiny/handler/types";
 
 export type GraphQLScalarPlugin = Plugin & {
     type: "graphql-scalar";
@@ -14,7 +14,7 @@ export interface HandlerGraphQLOptions {
 export type GraphQLFieldResolver<
     TSource = any,
     TArgs = any,
-    TContext = Context
+    TContext = ContextInterface
 > = BaseGraphQLFieldResolver<TSource, TContext, TArgs>;
 
 // `GraphQLSchemaPlugin` types.
@@ -36,7 +36,7 @@ export type GraphQLSchemaDefinition<TContext> = {
     resolvers?: Resolvers<TContext>;
 };
 
-export type GraphQLSchemaPlugin<TContext = Context> = Plugin<{
+export type GraphQLSchemaPlugin<TContext extends ContextInterface = ContextInterface> = Plugin<{
     type: "graphql-schema";
     schema: GraphQLSchemaDefinition<TContext>;
 }>;

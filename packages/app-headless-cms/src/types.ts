@@ -267,6 +267,7 @@ export interface CmsEditorContentModel {
         id: string;
         name: string;
     };
+    description?: string;
     version: number;
     layout?: CmsEditorFieldsLayout;
     fields: CmsEditorField[];

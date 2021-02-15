@@ -42,6 +42,7 @@ import {
 } from "./contentEntry/hooks";
 import WebinyError from "@webiny/error";
 import { entryFromStorageTransform, entryToStorageTransform } from "../utils/entryStorage";
+import { fixPreBeta5Entries } from "./contentEntry/fixPreBeta5Entries";
 
 const TYPE_ENTRY = "cms.entry";
 const TYPE_ENTRY_LATEST = TYPE_ENTRY + ".l";
@@ -59,12 +60,22 @@ type DbItem<T> = T & {
     TYPE: string;
 };
 
-const getESLatestEntryData = (entry: CmsContentEntry) => {
-    return { ...entry, latest: true, __type: TYPE_ENTRY_LATEST };
+const getESLatestEntryData = (context: CmsContext, entry: CmsContentEntry) => {
+    return {
+        ...entry,
+        latest: true,
+        __type: TYPE_ENTRY_LATEST,
+        webinyVersion: context.WEBINY_VERSION
+    };
 };
 
-const getESPublishedEntryData = (entry: CmsContentEntry) => {
-    return { ...entry, published: true, __type: TYPE_ENTRY_PUBLISHED };
+const getESPublishedEntryData = (context: CmsContext, entry: CmsContentEntry) => {
+    return {
+        ...entry,
+        published: true,
+        __type: TYPE_ENTRY_PUBLISHED,
+        webinyVersion: context.WEBINY_VERSION
+    };
 };
 
 export default (): ContextPlugin<CmsContext> => ({
@@ -187,7 +198,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 let response;
                 try {
                     response = await elasticSearch.search({
-                        ...utils.defaults.es(context),
+                        ...utils.defaults.es(context, model),
                         body
                     });
                 } catch (ex) {
@@ -195,10 +206,15 @@ export default (): ContextPlugin<CmsContext> => ({
                 }
 
                 const { hits, total } = response.body.hits;
+                // TODO remove in v5
+                const rawEsItems = await fixPreBeta5Entries({ context, model, hits });
+                /////// TODO remove above
                 const items = extractEntriesFromIndex({
                     context,
                     model,
-                    entries: hits.map(item => item._source)
+                    // TODO uncomment when date/time fields are fixed
+                    // entries: hits.map(item => item._source),
+                    entries: rawEsItems // TODO remove when above is restored
                 });
 
                 const hasMoreItems = items.length > limit;
@@ -298,7 +314,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     .batch()
                     // Create main entry item
                     .create({
-                        ...utils.defaults.db,
+                        ...utils.defaults.db(),
                         data: {
                             PK: PK_ENTRY(uniqueId),
                             SK: SK_REVISION(version),
@@ -308,7 +324,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     })
                     // Create "latest" entry item
                     .create({
-                        ...utils.defaults.db,
+                        ...utils.defaults.db(),
                         data: {
                             PK: PK_ENTRY(uniqueId),
                             SK: SK_LATEST(),
@@ -318,11 +334,19 @@ export default (): ContextPlugin<CmsContext> => ({
                     })
                     .execute();
 
-                await elasticSearch.create({
-                    ...utils.defaults.es(context),
-                    id: `CME#L#${uniqueId}`,
-                    body: getESLatestEntryData(esEntry)
-                });
+                try {
+                    await elasticSearch.create({
+                        ...utils.defaults.es(context, model),
+                        id: `CME#L#${uniqueId}`,
+                        body: getESLatestEntryData(context, esEntry)
+                    });
+                } catch (ex) {
+                    throw new WebinyError(
+                        "Could not create entry in the ES.",
+                        "ES_CREATE_ERROR",
+                        ex
+                    );
+                }
 
                 await afterCreateHook({ model, entry, context });
 
@@ -338,11 +362,11 @@ export default (): ContextPlugin<CmsContext> => ({
                 const [[[entry]], [[latestEntry]]] = await db
                     .batch()
                     .read({
-                        ...utils.defaults.db,
+                        ...utils.defaults.db(),
                         query: { PK: PK_ENTRY(uniqueId), SK: SK_REVISION(version) }
                     })
                     .read({
-                        ...utils.defaults.db,
+                        ...utils.defaults.db(),
                         query: { PK: PK_ENTRY(uniqueId), SK: SK_LATEST() }
                     })
                     .execute();
@@ -390,7 +414,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     .batch()
                     // Create main entry item
                     .create({
-                        ...utils.defaults.db,
+                        ...utils.defaults.db(),
                         data: {
                             PK: PK_ENTRY(uniqueId),
                             SK: SK_REVISION(utils.zeroPad(nextVersion)),
@@ -400,7 +424,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     })
                     // Update "latest" entry item
                     .update({
-                        ...utils.defaults.db,
+                        ...utils.defaults.db(),
                         data: {
                             PK: PK_ENTRY(uniqueId),
                             SK: SK_LATEST(),
@@ -421,9 +445,9 @@ export default (): ContextPlugin<CmsContext> => ({
                 });
 
                 await elasticSearch.index({
-                    ...utils.defaults.es(context),
+                    ...utils.defaults.es(context, model),
                     id: `CME#L#${uniqueId}`,
-                    body: getESLatestEntryData(esEntry)
+                    body: getESLatestEntryData(context, esEntry)
                 });
 
                 await afterCreateRevisionFromHook({
@@ -453,11 +477,11 @@ export default (): ContextPlugin<CmsContext> => ({
                 const [[[entry]], [[latestEntry]]] = await db
                     .batch()
                     .read({
-                        ...utils.defaults.db,
+                        ...utils.defaults.db(),
                         query: { PK: PK_ENTRY(uniqueId), SK: SK_REVISION(version) }
                     })
                     .read({
-                        ...utils.defaults.db,
+                        ...utils.defaults.db(),
                         query: { PK: PK_ENTRY(uniqueId), SK: SK_LATEST() }
                     })
                     .execute();
@@ -505,7 +529,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 await beforeUpdateHook({ model, entry: updatedEntry, context });
 
                 await db.update({
-                    ...utils.defaults.db,
+                    ...utils.defaults.db(),
                     query: { PK: PK_ENTRY(uniqueId), SK: SK_REVISION(version) },
                     data: {
                         values: updatedStorageEntry.values,
@@ -529,7 +553,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     };
                     try {
                         await elasticSearch.update({
-                            ...utils.defaults.es(context),
+                            ...utils.defaults.es(context, model),
                             id: `CME#L#${uniqueId}`,
                             body: {
                                 doc: esDoc
@@ -553,21 +577,21 @@ export default (): ContextPlugin<CmsContext> => ({
                 const [[[entry]], [[latestEntryData]], [[publishedEntryData]]] = await db
                     .batch()
                     .read({
-                        ...utils.defaults.db,
+                        ...utils.defaults.db(),
                         query: {
                             PK: PK_ENTRY(uniqueId),
                             SK: SK_REVISION(version)
                         }
                     })
                     .read({
-                        ...utils.defaults.db,
+                        ...utils.defaults.db(),
                         query: {
                             PK: PK_ENTRY(uniqueId),
                             SK: SK_LATEST()
                         }
                     })
                     .read({
-                        ...utils.defaults.db,
+                        ...utils.defaults.db(),
                         query: {
                             PK: PK_ENTRY(uniqueId),
                             SK: SK_PUBLISHED()
@@ -589,14 +613,14 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 // Delete revision from DB
                 const batch = db.batch().delete({
-                    ...utils.defaults.db,
+                    ...utils.defaults.db(),
                     query: {
                         PK: PK_ENTRY(uniqueId),
                         SK: SK_REVISION(version)
                     }
                 });
 
-                const es = utils.defaults.es(context);
+                const es = utils.defaults.es(context, model);
                 const esOperations = [];
 
                 const isLatest = latestEntryData ? latestEntryData.id === revisionId : false;
@@ -607,7 +631,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 // If the entry is published, remove published data, both from DB and ES.
                 if (isPublished) {
                     batch.delete({
-                        ...utils.defaults.db,
+                        ...utils.defaults.db(),
                         query: {
                             PK: PK_ENTRY(uniqueId),
                             SK: SK_PUBLISHED()
@@ -623,7 +647,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 // Updates must be made on both DB and ES side.
                 if (isLatest) {
                     const [[prevLatestEntry]] = await db.read<DbItem<CmsContentEntry>>({
-                        ...utils.defaults.db,
+                        ...utils.defaults.db(),
                         query: {
                             PK: PK_ENTRY(uniqueId),
                             SK: { $lt: SK_REVISION(version) }
@@ -649,7 +673,7 @@ export default (): ContextPlugin<CmsContext> => ({
 
                     // Update latest entry data.
                     batch.update({
-                        ...utils.defaults.db,
+                        ...utils.defaults.db(),
                         query: {
                             PK: PK_ENTRY(uniqueId),
                             SK: SK_LATEST()
@@ -663,7 +687,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     // Update the latest revision entry in ES.
                     esOperations.push(
                         { index: { _id: `CME#L#${uniqueId}`, _index: es.index } },
-                        getESLatestEntryData(prevLatestEntry)
+                        getESLatestEntryData(context, prevLatestEntry)
                     );
                 }
 
@@ -686,7 +710,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 utils.checkModelAccess(context, permission, model);
 
                 const [items] = await db.read<CmsContentEntry>({
-                    ...utils.defaults.db,
+                    ...utils.defaults.db(),
                     query: {
                         PK: PK_ENTRY(entryId),
                         SK: { $gt: " " }
@@ -714,7 +738,7 @@ export default (): ContextPlugin<CmsContext> => ({
                         .batch()
                         .delete(
                             ...items.map((item: any) => ({
-                                ...utils.defaults.db,
+                                ...utils.defaults.db(),
                                 query: {
                                     PK: item.PK,
                                     SK: item.SK
@@ -725,7 +749,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 });
 
                 // Remove everything from Elastic Search as well.
-                const es = utils.defaults.es(context);
+                const es = utils.defaults.es(context, model);
                 await elasticSearch.bulk({
                     body: [
                         {
@@ -752,15 +776,15 @@ export default (): ContextPlugin<CmsContext> => ({
                 const [[[entry]], [[latestEntryData]], [[publishedEntryData]]] = await db
                     .batch()
                     .read({
-                        ...utils.defaults.db,
+                        ...utils.defaults.db(),
                         query: { PK: PK_ENTRY(uniqueId), SK: SK_REVISION(version) }
                     })
                     .read({
-                        ...utils.defaults.db,
+                        ...utils.defaults.db(),
                         query: { PK: PK_ENTRY(uniqueId), SK: SK_LATEST() }
                     })
                     .read({
-                        ...utils.defaults.db,
+                        ...utils.defaults.db(),
                         query: { PK: PK_ENTRY(uniqueId), SK: SK_PUBLISHED() }
                     })
                     .execute();
@@ -787,7 +811,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 const batch = db.batch();
 
                 batch.update({
-                    ...utils.defaults.db,
+                    ...utils.defaults.db(),
                     query: {
                         PK: PK_ENTRY(uniqueId),
                         SK: SK_REVISION(version)
@@ -805,7 +829,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     // they introduce a true update batch operation, remove this `read` call.
 
                     const [[previouslyPublishedEntry]] = await db.read<CmsContentEntry>({
-                        ...utils.defaults.db,
+                        ...utils.defaults.db(),
                         query: {
                             PK: PK_ENTRY(uniqueId),
                             SK: SK_REVISION(utils.zeroPad(publishedEntryData.version))
@@ -817,7 +841,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     batch
                         .update({
                             // Update currently published entry (unpublish it)
-                            ...utils.defaults.db,
+                            ...utils.defaults.db(),
                             query: {
                                 PK: PK_ENTRY(uniqueId),
                                 SK: SK_REVISION(utils.zeroPad(publishedEntryData.version))
@@ -826,7 +850,7 @@ export default (): ContextPlugin<CmsContext> => ({
                         })
                         .update({
                             // Update the helper item in DB with the new published entry ID
-                            ...utils.defaults.db,
+                            ...utils.defaults.db(),
                             query: {
                                 PK: PK_ENTRY(uniqueId),
                                 SK: SK_PUBLISHED()
@@ -840,7 +864,7 @@ export default (): ContextPlugin<CmsContext> => ({
                         });
                 } else {
                     batch.create({
-                        ...utils.defaults.db,
+                        ...utils.defaults.db(),
                         data: {
                             PK: PK_ENTRY(uniqueId),
                             SK: SK_PUBLISHED(),
@@ -855,7 +879,7 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 // Update data in ES.
                 const esOperations = [];
-                const es = utils.defaults.es(context);
+                const es = utils.defaults.es(context, model);
 
                 // If we are publishing the latest revision, let's also update the latest revision's status in ES.
                 if (latestEntryData && latestEntryData.id === id) {
@@ -870,7 +894,7 @@ export default (): ContextPlugin<CmsContext> => ({
                         }
                     );
                 }
-                const originalEntry = entryFromStorageTransform(context, model, entry);
+                const originalEntry = await entryFromStorageTransform(context, model, entry);
                 const preparedEntry = prepareEntryToIndex({
                     context,
                     model,
@@ -880,7 +904,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 // Update the published revision entry in ES.
                 esOperations.push(
                     { index: { _id: `CME#P#${uniqueId}`, _index: es.index } },
-                    getESPublishedEntryData(preparedEntry)
+                    getESPublishedEntryData(context, preparedEntry)
                 );
 
                 await elasticSearch.bulk({ body: esOperations });
@@ -903,11 +927,11 @@ export default (): ContextPlugin<CmsContext> => ({
                 const [[[entry]], [[latestEntryData]]] = await db
                     .batch<[[CmsContentEntry]], [[{ id: string }]]>()
                     .read({
-                        ...utils.defaults.db,
+                        ...utils.defaults.db(),
                         query: { PK: PK_ENTRY(uniqueId), SK: SK_REVISION(version) }
                     })
                     .read({
-                        ...utils.defaults.db,
+                        ...utils.defaults.db(),
                         query: { PK: PK_ENTRY(uniqueId), SK: SK_LATEST() }
                     })
                     .execute();
@@ -948,7 +972,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 });
 
                 await db.update({
-                    ...utils.defaults.db,
+                    ...utils.defaults.db(),
                     query: {
                         PK: PK_ENTRY(uniqueId),
                         SK: SK_REVISION(version)
@@ -960,7 +984,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 if (latestEntryData.id === id) {
                     // Index file in "Elastic Search"
                     await elasticSearch.update({
-                        ...utils.defaults.es(context),
+                        ...utils.defaults.es(context, model),
                         id: `CME#L#${uniqueId}`,
                         body: {
                             doc: {
@@ -986,11 +1010,11 @@ export default (): ContextPlugin<CmsContext> => ({
                 const [[[entry]], [[latestEntryData]]] = await db
                     .batch<[[CmsContentEntry]], [[{ id: string }]]>()
                     .read({
-                        ...utils.defaults.db,
+                        ...utils.defaults.db(),
                         query: { PK: PK_ENTRY(uniqueId), SK: SK_REVISION(version) }
                     })
                     .read({
-                        ...utils.defaults.db,
+                        ...utils.defaults.db(),
                         query: { PK: PK_ENTRY(uniqueId), SK: SK_LATEST() }
                     })
                     .execute();
@@ -1023,7 +1047,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 });
 
                 await db.update({
-                    ...utils.defaults.db,
+                    ...utils.defaults.db(),
                     query: {
                         PK: PK_ENTRY(uniqueId),
                         SK: SK_REVISION(version)
@@ -1041,7 +1065,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 if (latestEntryData.id === id) {
                     // Index file in "Elastic Search"
                     await elasticSearch.update({
-                        ...utils.defaults.es(context),
+                        ...utils.defaults.es(context, model),
                         id: `CME#L#${uniqueId}`,
                         body: {
                             doc: {
@@ -1062,15 +1086,15 @@ export default (): ContextPlugin<CmsContext> => ({
                 const [[[entry]], [[latestEntryData]], [[publishedEntryData]]] = await db
                     .batch()
                     .read({
-                        ...utils.defaults.db,
+                        ...utils.defaults.db(),
                         query: { PK: PK_ENTRY(uniqueId), SK: SK_REVISION(version) }
                     })
                     .read({
-                        ...utils.defaults.db,
+                        ...utils.defaults.db(),
                         query: { PK: PK_ENTRY(uniqueId), SK: SK_LATEST() }
                     })
                     .read({
-                        ...utils.defaults.db,
+                        ...utils.defaults.db(),
                         query: { PK: PK_ENTRY(uniqueId), SK: SK_PUBLISHED() }
                     })
                     .execute();
@@ -1098,14 +1122,14 @@ export default (): ContextPlugin<CmsContext> => ({
                 await db
                     .batch()
                     .delete({
-                        ...utils.defaults.db,
+                        ...utils.defaults.db(),
                         query: {
                             PK: PK_ENTRY(uniqueId),
                             SK: SK_PUBLISHED()
                         }
                     })
                     .update({
-                        ...utils.defaults.db,
+                        ...utils.defaults.db(),
                         query: {
                             PK: PK_ENTRY(uniqueId),
                             SK: SK_REVISION(version)
@@ -1121,7 +1145,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 });
 
                 // Update data in ES.
-                const es = utils.defaults.es(context);
+                const es = utils.defaults.es(context, model);
                 const esOperations = [];
 
                 // If we are unpublishing the latest revision, let's also update the latest revision entry's status in ES.

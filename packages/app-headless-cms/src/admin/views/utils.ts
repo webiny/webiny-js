@@ -6,11 +6,11 @@ export const serializeSorters = data => {
     return `${key}:${value}`;
 };
 
-export const deserializeSorters = (data: string) => {
+export const deserializeSorters = (data: string): Record<string, "asc" | "desc" | boolean> => {
     if (typeof data !== "string") {
         return data;
     }
 
-    const [key, value] = data.split(":");
+    const [key, value] = data.split(":") as [string, "asc" | "desc" | boolean];
     return { [key]: value };
 };
