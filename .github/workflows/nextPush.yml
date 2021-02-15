@@ -10,13 +10,13 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 jobs:
-  initial-checks:
+  code-analysis:
     name: Initial checks
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
-      - uses: actions/setup-node@v2-beta
+      - uses: actions/setup-node@v2
         with:
           node-version: 12
 
@@ -35,15 +35,20 @@ jobs:
       - name: ESLint
         run: yarn eslint
 
-  build-test-verdaccio-release:
-    name: Build, test, and release to Verdaccio
-    runs-on: ubuntu-latest
+  jest-tests:
+    name: Initial checks
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node: [12, 14]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
 
-      - uses: actions/setup-node@v2-beta
+      - uses: actions/setup-node@v2
         with:
-          node-version: 12
+          node-version: ${{ matrix.node }}
 
       - name: Install dependencies
         run: yarn --immutable
@@ -53,6 +58,22 @@ jobs:
 
       - name: Run tests
         run: yarn test
+
+  verdaccio-publish:
+    name: Build, test, and publish to Verdaccio
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - name: Build packages
+        run: yarn build
 
       - name: Start Verdaccio local server
         run: npx pm2 start verdaccio -- -c .verdaccio.yaml
@@ -85,7 +106,7 @@ jobs:
             .verdaccio.yaml
 
   test-create-webiny-project:
-    needs: [initial-checks, build-test-verdaccio-release]
+    needs: [code-analysis, jest-tests, verdaccio-publish]
     name: Test "create-webiny-project"
     strategy:
       fail-fast: false
@@ -99,7 +120,7 @@ jobs:
           name: verdaccio-files
           path: verdaccio-files
 
-      - uses: actions/setup-node@v2-beta
+      - uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node }}
 
@@ -139,7 +160,7 @@ jobs:
           name: verdaccio-files
           path: verdaccio-files
 
-      - uses: actions/setup-node@v2-beta
+      - uses: actions/setup-node@v2
         with:
           node-version: 12
 
@@ -196,7 +217,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: actions/setup-node@v2-beta
+      - uses: actions/setup-node@v2
         with:
           node-version: 12
 
@@ -204,7 +225,7 @@ jobs:
         run: yarn --immutable
 
       - name: Setup tests
-        run: echo "Need to set Pulumi backend to S3 bucket that was used in previous steps."
+        run: echo "We need to set Pulumi backend to S3 bucket that was used in previous steps."
 
       - name: Cypress - run the rest of Admin app tests
         run: echo 'Once ready, run -> yarn cypress run --spec "cypress/integration/admin/**/*.spec.js"'
