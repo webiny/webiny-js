@@ -134,4 +134,3 @@ jobs:
           --tag beta --no-interactive
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"eu-central-1","vpc":false}'
-
