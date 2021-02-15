@@ -11,7 +11,7 @@ env:
 
 jobs:
   code-analysis:
-    name: Initial checks
+    name: Static code analysis
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -36,7 +36,7 @@ jobs:
         run: yarn eslint
 
   jest-tests:
-    name: Initial checks
+    name: Jest tests
     strategy:
       fail-fast: false
       matrix:
@@ -60,7 +60,7 @@ jobs:
         run: yarn test
 
   verdaccio-publish:
-    name: Build, test, and publish to Verdaccio
+    name: Publish to Verdaccio
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
