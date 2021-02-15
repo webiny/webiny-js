@@ -50,11 +50,12 @@ jobs:
         run: yarn eslint
 
   jest-tests:
+    needs: install-cache-dependencies
     name: Jest tests
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
         node: [12, 14]
     runs-on: ${{ matrix.os }}
     steps:
@@ -74,6 +75,7 @@ jobs:
         run: yarn test
 
   verdaccio-publish:
+    needs: install-cache-dependencies
     name: Publish to Verdaccio
     runs-on: ubuntu-latest
     steps:
@@ -125,7 +127,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
         node: [12, 14]
     runs-on: ${{ matrix.os }}
     steps:
