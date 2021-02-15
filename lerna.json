@@ -14,7 +14,7 @@
         "api/**",
         "apps/**"
       ],
-      "allowBranch": ["master", "v5", "next", "develop", "release-*"],
+      "allowBranch": ["*"],
       "conventionalCommits": true,
       "createRelease": "github",
       "commitHooks": false,
