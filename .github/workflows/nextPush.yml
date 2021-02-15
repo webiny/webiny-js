@@ -12,6 +12,7 @@ env:
 jobs:
   install-cache-dependencies:
     name: Install and cache dependencies
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
