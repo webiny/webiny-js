@@ -130,7 +130,6 @@ jobs:
           path: .webiny/cached-packages
           key: ${{ runner.os }}-next-packages-test-5
 
-
       - name: LS
         run: ls -alh
 
