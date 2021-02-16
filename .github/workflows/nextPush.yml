@@ -212,7 +212,7 @@ jobs:
             .verdaccio.yaml
 
   test-create-webiny-project:
-    needs: [code-analysis, jest-tests, verdaccio-publish]
+    needs: [verdaccio-publish]
     name: Test "create-webiny-project"
     strategy:
       fail-fast: false
@@ -254,7 +254,7 @@ jobs:
           --template-options '{"region":"eu-central-1","vpc":false}'
 
   preview:
-    needs: [test-create-webiny-project]
+    needs: [code-analysis, jest-tests, test-create-webiny-project]
     name: Deploy preview
     runs-on: ubuntu-latest
     env:
