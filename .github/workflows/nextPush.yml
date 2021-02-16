@@ -60,7 +60,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: cached-packages-next-${{ runner.os }}
+          key: cached-packages-${{ runner.os }}-next
 
       - name: Install dependencies
         run: yarn --immutable
@@ -105,7 +105,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: cached-packages-next-${{ runner.os }}
+          key: cached-packages-${{ runner.os }}-next
 
       - name: Build packages
         run: node scripts/buildWithCache.js
@@ -133,7 +133,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: cached-packages-next-${{ runner.os }}
+          key: cached-packages-${{ runner.os }}-next
 
       - name: Install dependencies
         run: yarn --immutable
@@ -298,7 +298,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: cached-packages-next-${{ runner.os }}
+          key: cached-packages-${{ runner.os }}-next
 
       - name: Install dependencies
         run: yarn --immutable
