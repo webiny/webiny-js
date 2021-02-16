@@ -115,7 +115,8 @@ function getPackageCacheFolderPath(workspacePackage) {
 
 async function getPackageSourceHash(workspacePackage) {
     const { hash } = await hashElement(workspacePackage.packageFolder, {
-        folders: { exclude: ["dist", "tsconfig.build.tsbuildinfo"] }
+        folders: { exclude: ["dist"] },
+        files: { exclude: ["tsconfig.build.tsbuildinfo"] }
     });
 
     return hash;
