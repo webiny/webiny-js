@@ -24,6 +24,12 @@ jobs:
           path: .webiny/cached-packages
           key: cached-packages-${{ runner.os }}-next
 
+      - name: test-1
+        run: ${{ steps.yarn-cache.outputs.cache-hit }}
+
+      - name: test-2
+        run: ${{ steps.cached-packages.outputs.cache-hit }}
+
       - uses: actions/setup-node@v2
         if: steps.yarn-cache.outputs.cache-hit != 'true' || steps.cached-packages.outputs.cache-hit != 'true'
         with:
