@@ -12,6 +12,12 @@ jobs:
     name: Cache dependencies and packages
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+
+      - uses: actions/checkout@v2
+
       - uses: actions/cache@v2
         id: yarn-cache
         with:
@@ -23,14 +29,6 @@ jobs:
         with:
           path: .webiny/cached-packages
           key: cached-packages-${{ runner.os }}-next
-
-      - uses: actions/setup-node@v2
-        if: steps.yarn-cache.outputs.cache-hit != 'true' || steps.cached-packages.outputs.cache-hit != 'true'
-        with:
-          node-version: 12
-
-      - uses: actions/checkout@v2
-        if: steps.yarn-cache.outputs.cache-hit != 'true' || steps.cached-packages.outputs.cache-hit != 'true'
 
       - name: Install dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true' || steps.cached-packages.outputs.cache-hit != 'true'
