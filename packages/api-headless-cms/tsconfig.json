@@ -49,6 +49,9 @@
     },
     {
       "path": "../api-security-tenancy"
+    },
+    {
+      "path": "../system-upgrade"
     }
   ]
 }

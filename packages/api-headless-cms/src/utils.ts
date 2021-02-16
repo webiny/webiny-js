@@ -18,7 +18,7 @@ interface DatabaseConfig {
     table: string;
     keys: DatabaseConfigKeys[];
 }
-interface ElasticsearchConfig {
+export interface ElasticsearchConfig {
     index: string;
 }
 

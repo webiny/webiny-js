@@ -17,6 +17,7 @@
     "../handler-db",
     "../handler-graphql",
     "../handler-http",
+    "../system-upgrade",
     "../plugins",
     "../validation",
     "./jest.config.js"
@@ -71,6 +72,9 @@
     },
     {
       "path": "../db-dynamodb/tsconfig.build.json"
+    },
+    {
+      "path": "../system-upgrade/tsconfig.build.json"
     }
   ]
 }

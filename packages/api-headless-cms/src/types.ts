@@ -8,6 +8,7 @@ import { BaseI18NContentContext } from "@webiny/api-i18n-content/types";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { HttpContext } from "@webiny/handler-http/types";
 import { DbContext } from "@webiny/handler-db/types";
+import { UpgradeSystemResults } from "@webiny/system-upgrade/types";
 
 interface BaseCmsValuesObject {
     /**
@@ -337,6 +338,10 @@ export interface CmsContentModel {
      * It is picked as first available text field. Or user can select own field.
      */
     titleFieldId: string;
+    /**
+     * Version of Webiny that was this model created with.
+     */
+    webinyVersion?: string;
 }
 
 /**
@@ -633,6 +638,10 @@ export interface CmsSettings {
      * Last content model change. Used to cache GraphQL schema.
      */
     contentModelLastChange: Date;
+    /**
+     * Last updated Webiny version.
+     */
+    webinyVersion: string;
 }
 
 /**
@@ -670,6 +679,14 @@ export interface CmsSettingsContext {
      * Get the datetime when content model last changed.
      */
     getContentModelLastChange: () => Date;
+    /**
+     * Check if system update is available.
+     */
+    isSystemUpgradeAvailable: () => Promise<boolean>;
+    /**
+     * Upgrade the system with latest plugins.
+     */
+    systemUpgrade: () => Promise<UpgradeSystemResults<CmsContext>>;
 }
 
 /**
@@ -1010,6 +1027,10 @@ export interface CmsContentEntry {
      * @see CmsContentModelField
      */
     values: Record<string, any>;
+    /**
+     * Version of Webiny this entry was created with.
+     */
+    webinyVersion?: string;
 }
 
 /**
@@ -1659,10 +1680,6 @@ export interface CmsContentIndexEntry extends CmsContentEntry {
      * Values that are not going to be indexed.
      */
     rawValues: Record<string, any>;
-    /**
-     * Version of Webiny this entry was created with.
-     */
-    webinyVersion?: string;
     /**
      * Dev can add what ever keys they want and need. Just need to be careful not to break the entry.
      */

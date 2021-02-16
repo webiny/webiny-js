@@ -6,11 +6,13 @@ export default {
         extend type CmsQuery {
             # Is CMS installed?
             isInstalled: CmsBooleanResponse
+            isSystemUpgradeable: CmsBooleanResponse
         }
 
         extend type CmsMutation {
             # Install CMS
             install: CmsBooleanResponse
+            systemUpgrade: CmsBooleanResponse
         }
     `,
     resolvers: {
@@ -23,6 +25,14 @@ export default {
                 } catch (e) {
                     return new ErrorResponse(e);
                 }
+            },
+            isSystemUpgradeable: async (_, __, context: CmsContext) => {
+                try {
+                    const upgradeable = await context.cms.settings.isSystemUpgradeAvailable();
+                    return new Response(!!upgradeable);
+                } catch (e) {
+                    return new ErrorResponse(e);
+                }
             }
         },
         CmsMutation: {
@@ -30,6 +40,14 @@ export default {
                 try {
                     await cms.settings.install();
                     return new Response(true);
+                } catch (e) {
+                    return new ErrorResponse(e);
+                }
+            },
+            systemUpgrade: async (_, __, context: CmsContext) => {
+                try {
+                    const result = await context.cms.settings.systemUpgrade();
+                    return new Response(result);
                 } catch (e) {
                     return new ErrorResponse(e);
                 }

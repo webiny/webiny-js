@@ -9,6 +9,9 @@ import {
     CmsSettingsPermission,
     CmsSettings
 } from "../../types";
+import { isSystemUpgradeable, systemUpgrade } from "@webiny/system-upgrade";
+import WebinyError from "@webiny/error";
+import { UpgradeSystemResults } from "@webiny/system-upgrade/types";
 
 const initialContentModelGroup = {
     name: "Ungrouped",
@@ -93,7 +96,8 @@ export default {
 
                 const model: CmsSettings = {
                     isInstalled: true,
-                    contentModelLastChange: contentModelGroup.savedOn
+                    contentModelLastChange: contentModelGroup.savedOn,
+                    webinyVersion: context.WEBINY_VERSION
                 };
 
                 // Store the initial timestamp which is then used to determine if CMS Schema was changed.
@@ -111,6 +115,60 @@ export default {
                 });
 
                 return model;
+            },
+            isSystemUpgradeAvailable: async () => {
+                const identity = context.security.getIdentity();
+                if (!identity) {
+                    throw new NotAuthorizedError({
+                        message: `There is no "identity" in the "context.security", presumably because you are not logged in.`,
+                        code: "IDENTITY_ERROR"
+                    });
+                }
+                const fullAccess = await context.security.hasFullAccess();
+                if (!fullAccess) {
+                    throw new NotAuthorizedError();
+                }
+                return await isSystemUpgradeable(context);
+            },
+            systemUpgrade: async () => {
+                const identity = context.security.getIdentity();
+                if (!identity) {
+                    throw new NotAuthorizedError({
+                        message: `There is no "identity" in the "context.security", presumably because you are not logged in.`,
+                        code: "IDENTITY_ERROR"
+                    });
+                }
+                const fullAccess = await context.security.hasFullAccess();
+                if (!fullAccess) {
+                    throw new NotAuthorizedError();
+                }
+                // we need as because typescript does not see correctly what is systemUpgrade returning
+                const response = (await systemUpgrade(context)) as UpgradeSystemResults<CmsContext>;
+                const errors = Object.values(response.results)
+                    .filter(result => !!result.error)
+                    .map(result => result.error);
+
+                if (errors.length) {
+                    throw new WebinyError(
+                        "Could not finish system upgrade.",
+                        "SYSTEM_UPGRADE_ERROR",
+                        {
+                            errors: errors
+                        }
+                    );
+                }
+                await db.update({
+                    ...utils.defaults.db(),
+                    query: {
+                        PK: PK_SETTINGS(),
+                        SK: SETTINGS_SECONDARY_KEY
+                    },
+                    data: {
+                        webinyVersion: context.WEBINY_VERSION
+                    }
+                });
+
+                return response;
             },
             updateContentModelLastChange: async (): Promise<CmsSettings> => {
                 const updatedDate = new Date();
@@ -130,7 +188,8 @@ export default {
 
                 return {
                     isInstalled: true,
-                    contentModelLastChange: updatedDate
+                    contentModelLastChange: updatedDate,
+                    webinyVersion: context.WEBINY_VERSION
                 };
             },
             getContentModelLastChange: (): Date => {
