@@ -33,11 +33,30 @@ jobs:
         id: packages-build-cache
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-next-packages-test-1
+          key: ${{ runner.os }}-next-packages-test-8
 
       - name: Build packages
         if: steps.packages-build-cache.outputs.cache-hit != 'true'
         run: node scripts/buildWithCache.js
+
+      - name: LS
+        run: ls -alh
+
+      - name: LS
+        working-directory: .webiny
+        run: ls -alh
+
+      - name: LS
+        working-directory: .webiny/cached-packages
+        run: ls -alh
+
+      - name: LS
+        working-directory: .webiny/cached-packages/@webiny
+        run: ls -alh
+
+      - name: cat
+        working-directory: .webiny/cached-packages
+        run: cat meta.json
 
   code-analysis:
     needs: cache-dependencies-packages
@@ -60,7 +79,7 @@ jobs:
         id: packages-build-cache
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-next-packages-test-1
+          key: ${{ runner.os }}-next-packages-test-8
 
       - name: Install dependencies
         run: yarn --immutable
@@ -106,8 +125,7 @@ jobs:
         id: packages-build-cache
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-next-packages-test-1
-
+          key: ${{ runner.os }}-next-packages-test-8
 
       - name: LS
         run: ls -alh
@@ -155,7 +173,7 @@ jobs:
         id: packages-build-cache
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-next-packages-test-1
+          key: ${{ runner.os }}-next-packages-test-8
 
       - name: Install dependencies
         run: yarn --immutable
@@ -319,7 +337,7 @@ jobs:
         id: packages-build-cache
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-next-packages-test-1
+          key: ${{ runner.os }}-next-packages-test-8
 
       - name: Install dependencies
         run: yarn --immutable
