@@ -44,6 +44,11 @@ async function build() {
         const sourceHash = await getPackageSourceHash(workspacePackage);
 
         const packageMeta = metaJson.packages[workspacePackage.packageJson.name] || {};
+        console.log("testing", workspacesPackages.packageJson.name);
+
+        console.log('packageMeta.sourceHash', packageMeta.sourceHash)
+        console.log('sourceHash', sourceHash)
+
         if (packageMeta.sourceHash === sourceHash) {
             packagesUseCache.push(workspacePackage);
         } else {
