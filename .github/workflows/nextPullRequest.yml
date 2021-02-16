@@ -19,9 +19,6 @@ jobs:
     name: Cache dependencies and packages
     runs-on: ubuntu-latest
     steps:
-      - name: Echo git.ref
-        run: echo "${{ github.ref }}"
-
       - uses: actions/setup-node@v2
         with:
           node-version: 12
@@ -40,10 +37,10 @@ jobs:
         id: cached-packages
         with:
           path: .webiny/cached-packages
-          key: cached-packages-${{ github.ref }}
+          key: cached-packages-${{ runner.os }}-${{ github.ref }}
 
       - name: Build packages
-        if: steps.cache-packages.outputs.cache-hit != 'true'
+        if: steps.cached-packages.outputs.cache-hit != 'true'
         run: node scripts/buildWithCache.js
 
   code-analysis:
@@ -66,7 +63,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: cached-packages-${{ github.ref }}
+          key: cached-packages-${{ runner.os }}-${{ github.ref }}
 
       - name: Install dependencies
         run: yarn --immutable
@@ -111,7 +108,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: cached-packages-${{ github.ref }}
+          key: cached-packages-${{ runner.os }}-${{ github.ref }}
 
       - name: Build packages
         run: node scripts/buildWithCache.js
@@ -143,7 +140,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: cached-packages-${{ github.ref }}
+          key: cached-packages-${{ runner.os }}-${{ github.ref }}
 
       - name: Install dependencies
         run: yarn --immutable
