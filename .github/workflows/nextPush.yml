@@ -36,7 +36,7 @@ jobs:
           key: ${{ runner.os }}-next-packages-test-6
 
       - name: Build packages
-        # if: steps.packages-build-cache.outputs.cache-hit != 'true'
+        if: steps.packages-build-cache.outputs.cache-hit != 'true'
         run: node scripts/buildWithCache.js
 
       - name: LS
