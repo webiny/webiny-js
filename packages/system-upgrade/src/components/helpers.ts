@@ -3,46 +3,42 @@ import { SystemUpgrade } from "./../types";
 import WebinyError from "@webiny/error";
 import { compare as semverCompare, parse as semverParse, SemVer } from "semver";
 
-export interface SystemUpgradeWithVersion<T extends ContextInterface>
-    extends Omit<SystemUpgrade<T>, "version"> {
-    version: SemVer;
-}
-
-export const validatePluginVersion = <T extends ContextInterface>(pl: SystemUpgrade<T>): SemVer => {
-    const ver = semverParse(pl.version);
-    if (ver) {
-        return ver;
+const assignPluginVersion = (plugin: SystemUpgrade<any, any>): SemVer => {
+    if (plugin.version instanceof SemVer) {
+        return plugin.version;
     }
-    throw new WebinyError("Plugin version is not a valid semver value.", "INVALID_VERSION", {
-        plugin: {
-            name: pl.name,
-            version: pl.version
-        }
-    });
+    const ver = semverParse(plugin.version);
+    if (!ver) {
+        throw new WebinyError("Could not get plugin version.", "INVALID_PLUGIN_VERSION", {
+            plugin: {
+                name: plugin.name,
+                version: plugin.version
+            }
+        });
+    }
 };
-
-export const getSystemUpgradePlugins = <T extends ContextInterface>(context: T) => {
+export const getSystemUpgradePlugins = <T extends ContextInterface>(
+    context: T
+): SystemUpgrade<T, SemVer>[] => {
     return (
         context.plugins
-            .byType<SystemUpgrade<T>>("system-upgrade")
-            .map<SystemUpgradeWithVersion<T>>(pl => {
+            .byType<SystemUpgrade<T, SemVer | string>>("system-upgrade")
+            .map(pl => {
                 return {
                     ...pl,
-                    version: validatePluginVersion(pl)
+                    version: assignPluginVersion(pl)
                 };
             })
             // we immediately sort depending on semver
             .sort((a, b) => {
                 return semverCompare(a.version, b.version);
             })
-            // and reverse to check which plugins do we run
-            .reverse()
     );
 };
 
 export const validateCodeVersionAgainstPlugin = (
     codeVersion: SemVer,
-    plugin: SystemUpgradeWithVersion<ContextInterface>
+    plugin: SystemUpgrade<ContextInterface, SemVer>
 ) => {
     if (semverCompare(plugin.version, codeVersion) !== 1) {
         return;
@@ -63,7 +59,7 @@ export const validateCodeVersionAgainstPlugin = (
 export const filterPlugins = async <T extends ContextInterface>(
     context: T,
     codeVersion: SemVer
-): Promise<SystemUpgradeWithVersion<T>[]> => {
+): Promise<SystemUpgrade<T, SemVer>[]> => {
     const plugins = getSystemUpgradePlugins(context);
     const filteredPlugins = [];
     for (const plugin of plugins) {
@@ -72,8 +68,6 @@ export const filterPlugins = async <T extends ContextInterface>(
         try {
             const result = await plugin.isApplicable(context, codeVersion);
             if (!result) {
-                // todo determine if to skip all next plugins
-                // or just this one
                 continue;
             }
         } catch (ex) {

@@ -13,7 +13,7 @@ import {
     version539
 } from "./mocks/plugins";
 import { PluginsContainer } from "@webiny/plugins";
-import { isSystemUpgradeable, systemUpgrade, systemUpgradePlugins } from "../src";
+import { isSystemUpgradeable, systemUpgrade, getSystemUpgradePlugins } from "../src";
 import { SystemUpgrade } from "../src/types";
 
 const defaultPlugins = [
@@ -148,7 +148,7 @@ describe("system upgrade", () => {
             version500Beta1()
         ]);
 
-        const results = await systemUpgradePlugins(context);
+        const results = await getSystemUpgradePlugins(context);
 
         expect(results.map(pl => pl.version)).toEqual([
             "5.0.0-beta.1",

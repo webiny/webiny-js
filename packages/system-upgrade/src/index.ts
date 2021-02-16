@@ -1,5 +1,5 @@
 import { isSystemUpgradeable } from "./components/isSystemUpgradeable";
 import { systemUpgrade } from "./components/systemUpgrade";
-import { systemUpgradePlugins } from "./components/systemUpgradePlugins";
+import { getSystemUpgradePlugins } from "./components/getSystemUpgradePlugins";
 
-export { isSystemUpgradeable, systemUpgradePlugins, systemUpgrade };
+export { isSystemUpgradeable, getSystemUpgradePlugins, systemUpgrade };

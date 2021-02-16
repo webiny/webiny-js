@@ -6,7 +6,7 @@ import { SystemUpgrade } from "../types";
 /**
  * Fetches all the system upgrade plugins filtered by isApplicable() and sorted from lowest to highest version.
  */
-export const systemUpgradePlugins = async <T extends ContextInterface>(
+export const getSystemUpgradePlugins = async <T extends ContextInterface>(
     context: T
 ): Promise<SystemUpgrade<T>[]> => {
     const codeVersion = parseCodeVersion(context);
