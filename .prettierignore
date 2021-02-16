@@ -1,4 +1,5 @@
 .webiny/
+.verdaccio/
 **/build/
 **/dist/
 **/*.d.ts

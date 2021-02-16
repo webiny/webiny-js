@@ -6,14 +6,16 @@ on:
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 jobs:
   cache-dependencies-packages:
     name: Cache dependencies and packages
     runs-on: ubuntu-latest
     steps:
+      - name: Get day of month (for caching purposes)
+        id: day-of-month
+        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
+
       - uses: actions/setup-node@v2
         with:
           node-version: 12
@@ -21,48 +23,34 @@ jobs:
       - uses: actions/checkout@v2
 
       - uses: actions/cache@v2
-        id: cache
+        id: yarn-cache
         with:
           path: .yarn/cache
-          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-
-      - name: Install dependencies
-        run: yarn --immutable
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
       - uses: actions/cache@v2
-        id: packages-build-cache
+        id: cached-packages
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-next-packages-test-8
+          key: cached-packages-${{ runner.os }}-next-${{ steps.day-of-month.outputs.day }}
+
+      - name: Install dependencies
+        if: steps.yarn-cache.outputs.cache-hit != 'true' || steps.cached-packages.outputs.cache-hit != 'true'
+        run: yarn --immutable
 
       - name: Build packages
-        if: steps.packages-build-cache.outputs.cache-hit != 'true'
+        if: steps.cached-packages.outputs.cache-hit != 'true'
         run: node scripts/buildWithCache.js
-
-      - name: LS
-        run: ls -alh
-
-      - name: LS
-        working-directory: .webiny
-        run: ls -alh
-
-      - name: LS
-        working-directory: .webiny/cached-packages
-        run: ls -alh
-
-      - name: LS
-        working-directory: .webiny/cached-packages/@webiny
-        run: ls -alh
-
-      - name: cat
-        working-directory: .webiny/cached-packages
-        run: cat meta.json
 
   code-analysis:
     needs: cache-dependencies-packages
     name: Static code analysis
     runs-on: ubuntu-latest
     steps:
+      - name: Get day of month (for caching purposes)
+        id: day-of-month
+        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
+
       - uses: actions/setup-node@v2
         with:
           node-version: 12
@@ -70,16 +58,14 @@ jobs:
       - uses: actions/checkout@v2
 
       - uses: actions/cache@v2
-        id: cache
         with:
           path: .yarn/cache
-          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
       - uses: actions/cache@v2
-        id: packages-build-cache
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-next-packages-test-8
+          key: cached-packages-${{ runner.os }}-next-${{ steps.day-of-month.outputs.day }}
 
       - name: Install dependencies
         run: yarn --immutable
@@ -106,6 +92,10 @@ jobs:
         node: [12, 14]
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Get day of month (for caching purposes)
+        id: day-of-month
+        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
+
       - uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node }}
@@ -113,38 +103,17 @@ jobs:
       - uses: actions/checkout@v2
 
       - uses: actions/cache@v2
-        id: cache
         with:
           path: .yarn/cache
-          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
       - name: Install dependencies
         run: yarn --immutable
 
       - uses: actions/cache@v2
-        id: packages-build-cache
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-next-packages-test-8
-
-      - name: LS
-        run: ls -alh
-
-      - name: LS
-        working-directory: .webiny
-        run: ls -alh
-
-      - name: LS
-        working-directory: .webiny/cached-packages
-        run: ls -alh
-
-      - name: LS
-        working-directory: .webiny/cached-packages/@webiny
-        run: ls -alh
-
-      - name: cat
-        working-directory: .webiny/cached-packages
-        run: cat meta.json
+          key: cached-packages-${{ runner.os }}-next-${{ steps.day-of-month.outputs.day }}
 
       - name: Build packages
         run: node scripts/buildWithCache.js
@@ -157,6 +126,10 @@ jobs:
     name: Publish to Verdaccio
     runs-on: ubuntu-latest
     steps:
+      - name: Get day of month (for caching purposes)
+        id: day-of-month
+        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
+
       - uses: actions/setup-node@v2
         with:
           node-version: 12
@@ -164,16 +137,14 @@ jobs:
       - uses: actions/checkout@v2
 
       - uses: actions/cache@v2
-        id: cache
         with:
           path: .yarn/cache
-          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
       - uses: actions/cache@v2
-        id: packages-build-cache
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-next-packages-test-8
+          key: cached-packages-${{ runner.os }}-next-${{ steps.day-of-month.outputs.day }}
 
       - name: Install dependencies
         run: yarn --immutable
@@ -212,7 +183,7 @@ jobs:
             .verdaccio.yaml
 
   test-create-webiny-project:
-    needs: [code-analysis, jest-tests, verdaccio-publish]
+    needs: verdaccio-publish
     name: Test "create-webiny-project"
     strategy:
       fail-fast: false
@@ -254,10 +225,12 @@ jobs:
           --template-options '{"region":"eu-central-1","vpc":false}'
 
   preview:
-    needs: [test-create-webiny-project]
+    needs: [code-analysis, jest-tests, test-create-webiny-project]
     name: Deploy preview
     runs-on: ubuntu-latest
     env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
     steps:
@@ -321,6 +294,10 @@ jobs:
     name: Run E2E (Cypress) tests
     runs-on: ubuntu-latest
     steps:
+      - name: Get day of month (for caching purposes)
+        id: day-of-month
+        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
+
       - uses: actions/setup-node@v2
         with:
           node-version: 12
@@ -328,16 +305,14 @@ jobs:
       - uses: actions/checkout@v2
 
       - uses: actions/cache@v2
-        id: cache
         with:
           path: .yarn/cache
-          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
       - uses: actions/cache@v2
-        id: packages-build-cache
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-next-packages-test-8
+          key: cached-packages-${{ runner.os }}-next-${{ steps.day-of-month.outputs.day }}
 
       - name: Install dependencies
         run: yarn --immutable
