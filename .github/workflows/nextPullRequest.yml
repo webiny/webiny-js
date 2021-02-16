@@ -1,22 +1,63 @@
-name: Next Branch - Pull Request
-
-on:
-  pull_request:
-    branches: [next]
-
-env:
-  NODE_OPTIONS: --max_old_space_size=4096
-
 jobs:
-  initial-checks:
-    name: Initial checks
+  validate-commits:
+    name: Validate commit messages
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: webiny/action-conventional-commits@v1.0.2
 
-      - uses: actions/setup-node@v2-beta
+  cache-dependencies-packages:
+    name: Cache dependencies and packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo git.ref
+        run: echo "${{ github.ref }}"
+
+      - uses: actions/setup-node@v2
         with:
           node-version: 12
+
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - uses: actions/cache@v2
+        id: cached-packages
+        with:
+          path: .webiny/cached-packages
+          key: cached-packages-${{ github.ref }}
+
+      - name: Build packages
+        if: steps.cache-packages.outputs.cache-hit != 'true'
+        run: node scripts/buildWithCache.js
+
+  code-analysis:
+    needs: cache-dependencies-packages
+    name: Static code analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        id: cache
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - uses: actions/cache@v2
+        with:
+          path: .webiny/cached-packages
+          key: cached-packages-${{ github.ref }}
 
       - name: Install dependencies
         run: yarn --immutable
@@ -33,38 +74,76 @@ jobs:
       - name: ESLint
         run: yarn eslint
 
-  validate-commits:
-    name: Validate commit messages
-    runs-on: ubuntu-latest
+  jest-tests:
+    needs: cache-dependencies-packages
+    name: Jest tests
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        node: [12, 14]
+    runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v2
-      - uses: webiny/action-conventional-commits@v1.0.2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
 
-  build-test-verdaccio-release:
-    name: Build, test, and release to Verdaccio
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        id: cache
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - uses: actions/cache@v2
+        with:
+          path: .webiny/cached-packages
+          key: cached-packages-${{ github.ref }}
+
+      - name: Build packages
+        run: node scripts/buildWithCache.js
+
+      - name: Run tests
+        run: yarn test
+
+  verdaccio-publish:
+    needs: cache-dependencies-packages
+    name: Publish to Verdaccio
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+
       - uses: actions/checkout@v2
         # Prevents the detached HEAD problem (https://github.com/actions/checkout/issues/124)
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.ref }}
 
-      - uses: actions/setup-node@v2-beta
+      - uses: actions/cache@v2
+        id: cache
         with:
-          node-version: 12
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - uses: actions/cache@v2
+        with:
+          path: .webiny/cached-packages
+          key: cached-packages-${{ github.ref }}
 
       - name: Install dependencies
         run: yarn --immutable
 
       - name: Build packages
-        run: yarn build
-
-      - name: Run tests
-        run: yarn test
+        run: node scripts/buildWithCache.js
 
       - name: Start Verdaccio local server
-        run: yarn verdaccio:start:detached
+        run: npx pm2 start verdaccio -- -c .verdaccio.yaml
 
       - name: Create ".npmrc" file in the project root, with a dummy auth token
         run: echo '//localhost:4873/:_authToken="dummy-auth-token"' > .npmrc
@@ -94,23 +173,23 @@ jobs:
             .verdaccio.yaml
 
   test-create-webiny-project:
-    needs: [initial-checks, build-test-verdaccio-release]
+    needs: verdaccio-publish
     name: Test "create-webiny-project"
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
         node: [12, 14]
     runs-on: ${{ matrix.os }}
     steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
       - uses: actions/download-artifact@v2
         with:
           name: verdaccio-files
           path: verdaccio-files
-
-      - uses: actions/setup-node@v2-beta
-        with:
-          node-version: ${{ matrix.node }}
 
       - name: Start Verdaccio local server
         working-directory: verdaccio-files
@@ -134,4 +213,3 @@ jobs:
           --tag beta --no-interactive
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"eu-central-1","vpc":false}'
-

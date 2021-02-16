@@ -6,19 +6,57 @@ on:
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 jobs:
-  initial-checks:
-    name: Initial checks
+  cache-dependencies-packages:
+    name: Cache dependencies and packages
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-
-      - uses: actions/setup-node@v2-beta
+      - uses: actions/setup-node@v2
         with:
           node-version: 12
+
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - uses: actions/cache@v2
+        id: cached-packages
+        with:
+          path: .webiny/cached-packages
+          key: cached-packages-next-${{ runner.os }}
+
+      - name: Build packages
+        if: steps.cached-packages.outputs.cache-hit != 'true'
+        run: node scripts/buildWithCache.js
+
+  code-analysis:
+    needs: cache-dependencies-packages
+    name: Static code analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        id: cache
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - uses: actions/cache@v2
+        with:
+          path: .webiny/cached-packages
+          key: cached-packages-next-${{ runner.os }}
 
       - name: Install dependencies
         run: yarn --immutable
@@ -35,24 +73,69 @@ jobs:
       - name: ESLint
         run: yarn eslint
 
-  build-test-verdaccio-release:
-    name: Build, test, and release to Verdaccio
-    runs-on: ubuntu-latest
+  jest-tests:
+    needs: cache-dependencies-packages
+    name: Jest tests
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        node: [12, 14]
+    runs-on: ${{ matrix.os }}
     steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
       - uses: actions/checkout@v2
 
-      - uses: actions/setup-node@v2-beta
+      - uses: actions/cache@v2
+        id: cache
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - uses: actions/cache@v2
+        with:
+          path: .webiny/cached-packages
+          key: cached-packages-next-${{ runner.os }}
+
+      - name: Build packages
+        run: node scripts/buildWithCache.js
+
+      - name: Run tests
+        run: yarn test
+
+  verdaccio-publish:
+    needs: cache-dependencies-packages
+    name: Publish to Verdaccio
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v2
         with:
           node-version: 12
+
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        id: cache
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - uses: actions/cache@v2
+        with:
+          path: .webiny/cached-packages
+          key: cached-packages-next-${{ runner.os }}
 
       - name: Install dependencies
         run: yarn --immutable
 
       - name: Build packages
-        run: yarn build
-
-      - name: Run tests
-        run: yarn test
+        run: node scripts/buildWithCache.js
 
       - name: Start Verdaccio local server
         run: npx pm2 start verdaccio -- -c .verdaccio.yaml
@@ -85,23 +168,23 @@ jobs:
             .verdaccio.yaml
 
   test-create-webiny-project:
-    needs: [initial-checks, build-test-verdaccio-release]
+    needs: verdaccio-publish
     name: Test "create-webiny-project"
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
         node: [12, 14]
     runs-on: ${{ matrix.os }}
     steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
       - uses: actions/download-artifact@v2
         with:
           name: verdaccio-files
           path: verdaccio-files
-
-      - uses: actions/setup-node@v2-beta
-        with:
-          node-version: ${{ matrix.node }}
 
       - name: Start Verdaccio local server
         working-directory: verdaccio-files
@@ -127,21 +210,23 @@ jobs:
           --template-options '{"region":"eu-central-1","vpc":false}'
 
   preview:
-    needs: [test-create-webiny-project]
+    needs: [code-analysis, jest-tests, test-create-webiny-project]
     name: Deploy preview
     runs-on: ubuntu-latest
     env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
     steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+
       - uses: actions/download-artifact@v2
         with:
           name: verdaccio-files
           path: verdaccio-files
-
-      - uses: actions/setup-node@v2-beta
-        with:
-          node-version: 12
 
       - name: Start Verdaccio local server
         working-directory: verdaccio-files
@@ -194,17 +279,28 @@ jobs:
     name: Run E2E (Cypress) tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-
-      - uses: actions/setup-node@v2-beta
+      - uses: actions/setup-node@v2
         with:
           node-version: 12
+
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        id: cache
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - uses: actions/cache@v2
+        with:
+          path: .webiny/cached-packages
+          key: cached-packages-next-${{ runner.os }}
 
       - name: Install dependencies
         run: yarn --immutable
 
       - name: Setup tests
-        run: echo "Need to set Pulumi backend to S3 bucket that was used in previous steps."
+        run: echo "We need to set Pulumi backend to S3 bucket that was used in previous steps."
 
       - name: Cypress - run the rest of Admin app tests
         run: echo 'Once ready, run -> yarn cypress run --spec "cypress/integration/admin/**/*.spec.js"'
