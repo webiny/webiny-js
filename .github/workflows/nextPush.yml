@@ -31,7 +31,8 @@ jobs:
         run: yarn --immutable
 
   cache-packages:
-    name: Cache dependencies
+    needs: cache-dependencies
+    name: Cache packages
     runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@v2
