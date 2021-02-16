@@ -37,25 +37,6 @@ jobs:
         if: steps.packages-build-cache.outputs.cache-hit != 'true'
         run: node scripts/buildWithCache.js
 
-      - name: LS
-        run: ls -alh
-
-      - name: LS
-        working-directory: .webiny
-        run: ls -alh
-
-      - name: LS
-        working-directory: .webiny/cached-packages
-        run: ls -alh
-
-      - name: LS
-        working-directory: .webiny/cached-packages/@webiny
-        run: ls -alh
-
-      - name: cat
-        working-directory: .webiny/cached-packages
-        run: cat meta.json
-
   code-analysis:
     needs: cache-dependencies-packages
     name: Static code analysis
