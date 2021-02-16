@@ -1,6 +1,5 @@
 import * as aws from "@pulumi/aws";
 
-console.log("test");
 class Cognito {
     userPoolClient: aws.cognito.UserPoolClient;
     userPool: aws.cognito.UserPool;
