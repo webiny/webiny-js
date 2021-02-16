@@ -21,19 +21,19 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .yarn/cache
-          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
       - name: Install dependencies
         run: yarn --immutable
 
       - uses: actions/cache@v2
-        id: packages-build-cache
+        id: cached-packages
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-next-packages-test-8
+          key: cached-packages-next-${{ runner.os }}
 
       - name: Build packages
-        if: steps.packages-build-cache.outputs.cache-hit != 'true'
+        if: steps.cached-packages.outputs.cache-hit != 'true'
         run: node scripts/buildWithCache.js
 
   code-analysis:
@@ -51,12 +51,12 @@ jobs:
         id: cache
         with:
           path: .yarn/cache
-          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-next-packages-test-8
+          key: cached-packages-next-${{ runner.os }}
 
       - name: Install dependencies
         run: yarn --immutable
@@ -93,7 +93,7 @@ jobs:
         id: cache
         with:
           path: .yarn/cache
-          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
       - name: Install dependencies
         run: yarn --immutable
@@ -101,7 +101,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-next-packages-test-8
+          key: cached-packages-next-${{ runner.os }}
 
       - name: Build packages
         run: node scripts/buildWithCache.js
@@ -124,12 +124,12 @@ jobs:
         id: cache
         with:
           path: .yarn/cache
-          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-next-packages-test-8
+          key: cached-packages-next-${{ runner.os }}
 
       - name: Install dependencies
         run: yarn --immutable
@@ -289,12 +289,12 @@ jobs:
         id: cache
         with:
           path: .yarn/cache
-          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-next-packages-test-8
+          key: cached-packages-next-${{ runner.os }}
 
       - name: Install dependencies
         run: yarn --immutable

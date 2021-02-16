@@ -1,31 +1,44 @@
-name: Next Branch - Pull Request
-
-on:
-  pull_request:
-    branches: [next]
-
-env:
-  NODE_OPTIONS: --max_old_space_size=4096
-
 jobs:
-  install-cache-dependencies:
-    name: Install and cache dependencies
+  validate-commits:
+    name: Validate commit messages
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: webiny/action-conventional-commits@v1.0.2
+
+  cache-dependencies-packages:
+    name: Cache dependencies and packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo git.ref
+        run: echo "${{ github.ref }}"
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+
+      - uses: actions/checkout@v2
 
       - uses: actions/cache@v2
-        id: cache
         with:
           path: .yarn/cache
-          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
-      - name: Install Dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
+      - name: Install dependencies
         run: yarn --immutable
 
+      - uses: actions/cache@v2
+        id: cached-packages
+        with:
+          path: .webiny/cached-packages
+          key: cached-packages-${{ github.ref }}
+
+      - name: Build packages
+        if: steps.cache-packages.outputs.cache-hit != 'true'
+        run: node scripts/buildWithCache.js
+
   code-analysis:
-    needs: install-cache-dependencies
+    needs: cache-dependencies-packages
     name: Static code analysis
     runs-on: ubuntu-latest
     steps:
@@ -39,7 +52,12 @@ jobs:
         id: cache
         with:
           path: .yarn/cache
-          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - uses: actions/cache@v2
+        with:
+          path: .webiny/cached-packages
+          key: cached-packages-${{ github.ref }}
 
       - name: Install dependencies
         run: yarn --immutable
@@ -57,7 +75,7 @@ jobs:
         run: yarn eslint
 
   jest-tests:
-    needs: install-cache-dependencies
+    needs: cache-dependencies-packages
     name: Jest tests
     strategy:
       fail-fast: false
@@ -76,19 +94,24 @@ jobs:
         id: cache
         with:
           path: .yarn/cache
-          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
       - name: Install dependencies
         run: yarn --immutable
 
+      - uses: actions/cache@v2
+        with:
+          path: .webiny/cached-packages
+          key: cached-packages-${{ github.ref }}
+
       - name: Build packages
-        run: yarn build
+        run: node scripts/buildWithCache.js
 
       - name: Run tests
         run: yarn test
 
   verdaccio-publish:
-    needs: install-cache-dependencies
+    needs: cache-dependencies-packages
     name: Publish to Verdaccio
     runs-on: ubuntu-latest
     steps:
@@ -106,13 +129,18 @@ jobs:
         id: cache
         with:
           path: .yarn/cache
-          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - uses: actions/cache@v2
+        with:
+          path: .webiny/cached-packages
+          key: cached-packages-${{ github.ref }}
 
       - name: Install dependencies
         run: yarn --immutable
 
       - name: Build packages
-        run: yarn build
+        run: node scripts/buildWithCache.js
 
       - name: Start Verdaccio local server
         run: npx pm2 start verdaccio -- -c .verdaccio.yaml
@@ -145,7 +173,7 @@ jobs:
             .verdaccio.yaml
 
   test-create-webiny-project:
-    needs: [code-analysis, jest-tests, verdaccio-publish]
+    needs: verdaccio-publish
     name: Test "create-webiny-project"
     strategy:
       fail-fast: false
