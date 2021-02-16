@@ -20,17 +20,19 @@ jobs:
 
       - uses: actions/cache@v2
         with:
+          id: yarn-cache
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-
-      - name: Install dependencies
-        run: yarn --immutable
 
       - uses: actions/cache@v2
         id: cached-packages
         with:
           path: .webiny/cached-packages
           key: cached-packages-next-${{ runner.os }}
+
+      - name: Install dependencies
+        if: steps.yarn-cache.outputs.cache-hit != 'true' || steps.cached-packages.outputs.cache-hit != 'true'
+        run: yarn --immutable
 
       - name: Build packages
         if: steps.cached-packages.outputs.cache-hit != 'true'
