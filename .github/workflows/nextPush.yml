@@ -106,7 +106,7 @@ jobs:
         id: packages-build-cache
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-next-packages-test-1
+          key: ${{ runner.os }}-next-packages-test-2
 
 
       - name: LS
