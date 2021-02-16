@@ -115,6 +115,7 @@ function getPackageCacheFolderPath(workspacePackage) {
 
 async function getPackageSourceHash(workspacePackage) {
     const { hash } = await hashElement(workspacePackage.packageFolder, {
+        algo: 'md5',
         folders: { exclude: ["dist"] }
     });
 
