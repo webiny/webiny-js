@@ -108,6 +108,18 @@ jobs:
           path: .webiny/cached-packages
           key: ${{ runner.os }}-next-packages
 
+
+      - name: LS
+        run: ls -alh
+
+      - name: LS
+        working-directory: .webiny
+        run: ls -alh
+
+      - name: LS
+        working-directory: .webiny/cached-packages
+        run: ls -alh
+
       - name: Build packages
         run: node scripts/buildWithCache.js
 
