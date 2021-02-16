@@ -10,8 +10,8 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 jobs:
-  install-cache-dependencies:
-    name: Install and cache dependencies
+  cache-dependencies:
+    name: Cache dependencies
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -22,12 +22,29 @@ jobs:
           path: .yarn/cache
           key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
-      - name: Install Dependencies
+      - name: Install dependencies
         if: steps.cache.outputs.cache-hit != 'true'
         run: yarn --immutable
 
+  cache-packages:
+    needs: cache-dependencies
+    name: Build packages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        id: packages-build-cache
+        with:
+          path: .webiny/cached-packages
+          key: ${{ runner.os }}-next-cached-packages }}
+
+      - name: Build packages
+        if: steps.packages-build-cache.outputs.cache-hit != 'true'
+        run: yarn build
+
   code-analysis:
-    needs: install-cache-dependencies
+    needs: cache-packages
     name: Static code analysis
     runs-on: ubuntu-latest
     steps:
@@ -38,6 +55,12 @@ jobs:
         with:
           path: .yarn/cache
           key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - uses: actions/cache@v2
+        id: packages-build-cache
+        with:
+          path: .webiny/cached-packages
+          key: ${{ runner.os }}-next-cached-packages }}
 
       - uses: actions/setup-node@v2
         with:
@@ -59,7 +82,7 @@ jobs:
         run: yarn eslint
 
   jest-tests:
-    needs: install-cache-dependencies
+    needs: cache-packages
     name: Jest tests
     strategy:
       fail-fast: false
@@ -76,6 +99,12 @@ jobs:
           path: .yarn/cache
           key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
+      - uses: actions/cache@v2
+        id: packages-build-cache
+        with:
+          path: .webiny/cached-packages
+          key: ${{ runner.os }}-next-cached-packages }}
+
       - uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node }}
@@ -90,7 +119,7 @@ jobs:
         run: yarn test
 
   verdaccio-publish:
-    needs: install-cache-dependencies
+    needs: cache-packages
     name: Publish to Verdaccio
     runs-on: ubuntu-latest
     steps:
@@ -101,6 +130,12 @@ jobs:
         with:
           path: .yarn/cache
           key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - uses: actions/cache@v2
+        id: packages-build-cache
+        with:
+          path: .webiny/cached-packages
+          key: ${{ runner.os }}-next-cached-packages }}
 
       - uses: actions/setup-node@v2
         with:
@@ -254,9 +289,17 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: actions/setup-node@v2
+      - uses: actions/cache@v2
+        id: cache
         with:
-          node-version: 12
+          path: .yarn/cache
+          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - uses: actions/cache@v2
+        id: packages-build-cache
+        with:
+          path: .webiny/cached-packages
+          key: ${{ runner.os }}-next-cached-packages }}
 
       - name: Install dependencies
         run: yarn --immutable
