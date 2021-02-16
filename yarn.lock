@@ -18076,6 +18076,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"folder-hash@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "folder-hash@npm:4.0.0"
+  dependencies:
+    debug: ^4.1.1
+    graceful-fs: ~4.2.0
+    minimatch: ~3.0.4
+  bin:
+    folder-hash: bin/folder-hash
+  checksum: 8f18a0cc71db435889c5d98f2d7ff1c0d80752db6d73454495fc57cc261006b89e452b0c23659c72b26310786ecafcc59e44eff05bae1bf205b550356058e409
+  languageName: node
+  linkType: hard
+
 "follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.10.0":
   version: 1.13.2
   resolution: "follow-redirects@npm:1.13.2"
@@ -19162,6 +19175,13 @@ fsevents@^1.2.7:
   version: 4.2.5
   resolution: "graceful-fs@npm:4.2.5"
   checksum: 164eeef7f8aca15aff8d3c61c780e286ec8867deb23d6f3cee2d6231e0b422233bf4d905edf585ce2c204e485b8511188e6752e1a28e7176f296fbdaa6269dc1
+  languageName: node
+  linkType: hard
+
+"graceful-fs@npm:~4.2.0":
+  version: 4.2.6
+  resolution: "graceful-fs@npm:4.2.6"
+  checksum: 84d39c7756892553da990a9db7e45f844b3309b37b5a00174cbb4748476f2250c54f24594d4d252f64f085c65c2fdac7c809419bf6d55f0e6e42eb07ac0f5bf2
   languageName: node
   linkType: hard
 
@@ -24467,7 +24487,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"minimatch@npm:2 || 3, minimatch@npm:3.0.4, minimatch@npm:^3.0.2, minimatch@npm:^3.0.4, minimatch@npm:~3.0.2":
+"minimatch@npm:2 || 3, minimatch@npm:3.0.4, minimatch@npm:^3.0.2, minimatch@npm:^3.0.4, minimatch@npm:~3.0.2, minimatch@npm:~3.0.4":
   version: 3.0.4
   resolution: "minimatch@npm:3.0.4"
   dependencies:
@@ -30550,6 +30570,7 @@ resolve@1.12.2:
     eslint-plugin-webiny-i18n: "link:./eslint/webiny-i18n"
     execa: ^1.0.0
     flatten: ^1.0.2
+    folder-hash: ^4.0.0
     fs-extra: ^7.0.0
     fsevents: ^2.0.7
     get-stream: ^3.0.0
