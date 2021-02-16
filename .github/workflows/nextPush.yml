@@ -14,6 +14,10 @@ jobs:
     name: Cache dependencies
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/setup-node@v2
+          with:
+            node-version: 12
+
       - uses: actions/checkout@v2
 
       - uses: actions/cache@v2
@@ -31,7 +35,14 @@ jobs:
     name: Cache packages
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/setup-node@v2
+          with:
+            node-version: 12
+
       - uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: yarn --immutable
 
       - uses: actions/cache@v2
         id: packages-build-cache
@@ -48,6 +59,10 @@ jobs:
     name: Static code analysis
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/setup-node@v2
+          with:
+            node-version: 12
+
       - uses: actions/checkout@v2
 
       - uses: actions/cache@v2
@@ -61,10 +76,6 @@ jobs:
         with:
           path: .webiny/cached-packages
           key: ${{ runner.os }}-next-cached-packages }}
-
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 12
 
       - name: Install dependencies
         run: yarn --immutable
@@ -91,6 +102,10 @@ jobs:
         node: [12, 14]
     runs-on: ${{ matrix.os }}
     steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
       - uses: actions/checkout@v2
 
       - uses: actions/cache@v2
@@ -104,10 +119,6 @@ jobs:
         with:
           path: .webiny/cached-packages
           key: ${{ runner.os }}-next-cached-packages }}
-
-      - uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node }}
 
       - name: Install dependencies
         run: yarn --immutable
@@ -123,6 +134,10 @@ jobs:
     name: Publish to Verdaccio
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+
       - uses: actions/checkout@v2
 
       - uses: actions/cache@v2
@@ -136,10 +151,6 @@ jobs:
         with:
           path: .webiny/cached-packages
           key: ${{ runner.os }}-next-cached-packages }}
-
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 12
 
       - name: Install dependencies
         run: yarn --immutable
@@ -187,14 +198,14 @@ jobs:
         node: [12, 14]
     runs-on: ${{ matrix.os }}
     steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
       - uses: actions/download-artifact@v2
         with:
           name: verdaccio-files
           path: verdaccio-files
-
-      - uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node }}
 
       - name: Start Verdaccio local server
         working-directory: verdaccio-files
@@ -227,14 +238,14 @@ jobs:
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
     steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+
       - uses: actions/download-artifact@v2
         with:
           name: verdaccio-files
           path: verdaccio-files
-
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 12
 
       - name: Start Verdaccio local server
         working-directory: verdaccio-files
@@ -287,6 +298,10 @@ jobs:
     name: Run E2E (Cypress) tests
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+
       - uses: actions/checkout@v2
 
       - uses: actions/cache@v2
