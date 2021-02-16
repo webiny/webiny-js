@@ -58,7 +58,7 @@ jobs:
 
       - name: Build packages
         if: steps.packages-build-cache.outputs.cache-hit != 'true'
-        run: yarn build
+        run: node scripts/buildWithCache.js
 
   code-analysis:
     needs: cache-packages
@@ -130,7 +130,7 @@ jobs:
         run: yarn --immutable
 
       - name: Build packages
-        run: yarn build
+        run: node scripts/buildWithCache.js
 
       - name: Run tests
         run: yarn test
@@ -162,7 +162,7 @@ jobs:
         run: yarn --immutable
 
       - name: Build packages
-        run: yarn build
+        run: node scripts/buildWithCache.js
 
       - name: Start Verdaccio local server
         run: npx pm2 start verdaccio -- -c .verdaccio.yaml
