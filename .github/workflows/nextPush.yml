@@ -28,7 +28,7 @@ jobs:
 
   cache-packages:
     needs: cache-dependencies
-    name: Build packages
+    name: Cache packages
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
