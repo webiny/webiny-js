@@ -46,8 +46,8 @@ async function build() {
         const packageMeta = metaJson.packages[workspacePackage.packageJson.name] || {};
         console.log("testing", workspacePackage.packageJson.name);
 
-        console.log('packageMeta.sourceHash', packageMeta.sourceHash)
-        console.log('sourceHash', sourceHash)
+        console.log("packageMeta.sourceHash", packageMeta.sourceHash);
+        console.log("sourceHash", sourceHash);
 
         if (packageMeta.sourceHash === sourceHash) {
             packagesUseCache.push(workspacePackage);
@@ -115,7 +115,7 @@ function getPackageCacheFolderPath(workspacePackage) {
 
 async function getPackageSourceHash(workspacePackage) {
     const { hash } = await hashElement(workspacePackage.packageFolder, {
-        algo: 'md5',
+        algo: "md5",
         folders: { exclude: ["dist"] }
     });
 
