@@ -33,7 +33,7 @@ jobs:
         id: packages-build-cache
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-next-packages-test-6
+          key: ${{ runner.os }}-next-packages-test-7
 
       - name: Build packages
         if: steps.packages-build-cache.outputs.cache-hit != 'true'
@@ -79,7 +79,7 @@ jobs:
         id: packages-build-cache
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-next-packages-test-6
+          key: ${{ runner.os }}-next-packages-test-7
 
       - name: Install dependencies
         run: yarn --immutable
@@ -125,7 +125,7 @@ jobs:
         id: packages-build-cache
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-next-packages-test-6
+          key: ${{ runner.os }}-next-packages-test-7
 
       - name: LS
         run: ls -alh
@@ -173,7 +173,7 @@ jobs:
         id: packages-build-cache
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-next-packages-test-6
+          key: ${{ runner.os }}-next-packages-test-7
 
       - name: Install dependencies
         run: yarn --immutable
@@ -337,7 +337,7 @@ jobs:
         id: packages-build-cache
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-next-packages-test-6
+          key: ${{ runner.os }}-next-packages-test-7
 
       - name: Install dependencies
         run: yarn --immutable
