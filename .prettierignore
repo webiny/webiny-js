@@ -1,3 +1,4 @@
+.webiny/
 **/build/
 **/dist/
 **/*.d.ts
