@@ -28,5 +28,7 @@ export type SecurityContext = {
         getPermission: <TSecurityPermission = SecurityPermission>(
             name: string
         ) => Promise<TSecurityPermission>;
+        getPermissions: () => Promise<SecurityPermission[]>;
+        hasFullAccess(): Promise<boolean>;
     };
 };
