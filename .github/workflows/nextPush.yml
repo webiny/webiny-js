@@ -58,9 +58,6 @@ jobs:
         working-directory: .webiny/cached-packages
         run: cat meta.json
 
-      - name: Build packages
-        run: node scripts/buildWithCache.js
-
   code-analysis:
     needs: cache-dependencies-packages
     name: Static code analysis
