@@ -12,6 +12,10 @@ jobs:
     name: Cache dependencies and packages
     runs-on: ubuntu-latest
     steps:
+      - name: Get day of month (for caching purposes)
+        id: day-of-month
+        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
+
       - uses: actions/setup-node@v2
         with:
           node-version: 12
@@ -28,7 +32,7 @@ jobs:
         id: cached-packages
         with:
           path: .webiny/cached-packages
-          key: cached-packages-${{ runner.os }}-next
+          key: cached-packages-${{ runner.os }}-next-${{ steps.day-of-month.outputs.day }}
 
       - name: Install dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true' || steps.cached-packages.outputs.cache-hit != 'true'
@@ -43,6 +47,10 @@ jobs:
     name: Static code analysis
     runs-on: ubuntu-latest
     steps:
+      - name: Get day of month (for caching purposes)
+        id: day-of-month
+        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
+
       - uses: actions/setup-node@v2
         with:
           node-version: 12
@@ -57,7 +65,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: cached-packages-${{ runner.os }}-next
+          key: cached-packages-${{ runner.os }}-next-${{ steps.day-of-month.outputs.day }}
 
       - name: Install dependencies
         run: yarn --immutable
@@ -84,6 +92,10 @@ jobs:
         node: [12, 14]
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Get day of month (for caching purposes)
+        id: day-of-month
+        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
+
       - uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node }}
@@ -101,7 +113,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: cached-packages-${{ runner.os }}-next
+          key: cached-packages-${{ runner.os }}-next-${{ steps.day-of-month.outputs.day }}
 
       - name: Build packages
         run: node scripts/buildWithCache.js
@@ -114,6 +126,10 @@ jobs:
     name: Publish to Verdaccio
     runs-on: ubuntu-latest
     steps:
+      - name: Get day of month (for caching purposes)
+        id: day-of-month
+        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
+
       - uses: actions/setup-node@v2
         with:
           node-version: 12
@@ -128,7 +144,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: cached-packages-${{ runner.os }}-next
+          key: cached-packages-${{ runner.os }}-next-${{ steps.day-of-month.outputs.day }}
 
       - name: Install dependencies
         run: yarn --immutable
@@ -278,6 +294,10 @@ jobs:
     name: Run E2E (Cypress) tests
     runs-on: ubuntu-latest
     steps:
+      - name: Get day of month (for caching purposes)
+        id: day-of-month
+        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
+
       - uses: actions/setup-node@v2
         with:
           node-version: 12
@@ -292,7 +312,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: cached-packages-${{ runner.os }}-next
+          key: cached-packages-${{ runner.os }}-next-${{ steps.day-of-month.outputs.day }}
 
       - name: Install dependencies
         run: yarn --immutable
