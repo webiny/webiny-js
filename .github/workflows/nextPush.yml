@@ -10,8 +10,8 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 jobs:
-  cache-dependencies:
-    name: Cache dependencies
+  cache-dependencies-packages:
+    name: Cache dependencies and packages
     runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-node@v2
@@ -27,19 +27,7 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
       - name: Install dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
         run: yarn --immutable
-
-  cache-packages:
-    needs: cache-dependencies
-    name: Cache packages
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 12
-
-      - uses: actions/checkout@v2
 
       - uses: actions/cache@v2
         id: packages-build-cache
@@ -52,7 +40,7 @@ jobs:
         run: node scripts/buildWithCache.js
 
   code-analysis:
-    needs: cache-packages
+    needs: cache-dependencies-packages
     name: Static code analysis
     runs-on: ubuntu-latest
     steps:
@@ -90,7 +78,7 @@ jobs:
         run: yarn eslint
 
   jest-tests:
-    needs: cache-packages
+    needs: cache-dependencies-packages
     name: Jest tests
     strategy:
       fail-fast: false
@@ -127,7 +115,7 @@ jobs:
         run: yarn test
 
   verdaccio-publish:
-    needs: cache-packages
+    needs: cache-dependencies-packages
     name: Publish to Verdaccio
     runs-on: ubuntu-latest
     steps:
