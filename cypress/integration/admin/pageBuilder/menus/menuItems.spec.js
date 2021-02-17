@@ -5,6 +5,17 @@ context("Menus Module", () => {
 
     it("should be able add all types items to the menu", () => {
         const id = uniqid();
+
+        cy.pbCreatePage({ category: "static" }).then(page => {
+            cy.pbUpdatePage({
+                id: page.id,
+                data: {
+                    title: `Menus-Module-Welcome-${id}`,
+                }
+            });
+            cy.pbPublishPage({ id: page.id });
+        });
+
         cy.visit("/page-builder/menus");
         cy.findByTestId("data-list-new-record-button").click();
 
@@ -38,8 +49,8 @@ context("Menus Module", () => {
             .click()
             .wait(200);
         cy.findByText("Value is required.").should("exist");
-        cy.findByLabelText("Page").type(`Welcome`);
-        cy.findByText("Welcome to Webiny").click();
+        cy.findByLabelText("Page").type(`Menus`);
+        cy.findByText(`Menus-Module-Welcome-${id}`).click();
         cy.findByText(/Save Menu Item/i).click();
 
         // Test "Link".
