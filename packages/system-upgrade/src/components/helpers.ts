@@ -8,14 +8,15 @@ const assignPluginVersion = (plugin: SystemUpgrade<any, any>): SemVer => {
         return plugin.version;
     }
     const ver = semverParse(plugin.version);
-    if (!ver) {
-        throw new WebinyError("Could not get plugin version.", "INVALID_PLUGIN_VERSION", {
-            plugin: {
-                name: plugin.name,
-                version: plugin.version
-            }
-        });
+    if (ver) {
+        return ver;
     }
+    throw new WebinyError("Could not get plugin version.", "INVALID_PLUGIN_VERSION", {
+        plugin: {
+            name: plugin.name,
+            version: plugin.version
+        }
+    });
 };
 export const getSystemUpgradePlugins = <T extends ContextInterface>(
     context: T

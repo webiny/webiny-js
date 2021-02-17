@@ -15,7 +15,7 @@ export interface SystemUpgrade<
      */
     type: "system-upgrade";
     /**
-     * A version of the Webiny that this plugin upgrades the system to.
+     * A version of the Webiny system that this plugin upgrades.
      * Also uses as a check if plugin should be applied.
      */
     version: V;
