@@ -22,12 +22,14 @@ const fixRawValues = (
             continue;
         }
         const existingValue = entry.values[fieldId];
+        const rawValue = entry.rawValues[fieldId];
+        // always remove from rawValue
+        delete entry.rawValues[fieldId];
         // if there is something in values - do not switch it
-        if (!!existingValue) {
+        if (!!existingValue || rawValue === undefined || rawValue === null) {
             continue;
         }
-        entry.values = entry.rawValues[fieldId];
-        delete entry.rawValues[fieldId];
+        entry.values = rawValue;
     }
     return entry;
 };
@@ -85,6 +87,8 @@ const fixDateTimeValues = (
         const field = finder.findById(target.modelId, fieldId);
         const fixMethod = dateFixMethods[field.type];
         if (!fixMethod) {
+            continue;
+        } else if (target.values[fieldId] === null || target.values[fieldId] === undefined) {
             continue;
         }
         target.values[fieldId] = fixMethod(target.values[fieldId]);
