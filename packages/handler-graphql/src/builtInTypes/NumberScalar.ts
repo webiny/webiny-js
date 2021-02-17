@@ -12,7 +12,14 @@ const getNumber = (value: any): any => {
 export const Number = new GraphQLScalarType({
     name: "Number",
     description: "A custom input type to be used with numbers. Supports Int and Float.",
-    serialize: getNumber,
+    serialize: (value: string | number) => {
+        if (typeof value === "number") {
+            return value;
+        } else if (value === null || value === undefined || isNaN(value as any) === true) {
+            return null;
+        }
+        return parseFloat(value);
+    },
     parseValue: getNumber,
     parseLiteral: (ast: any) => {
         if (ast.kind === Kind.INT || ast.kind === Kind.FLOAT) {
