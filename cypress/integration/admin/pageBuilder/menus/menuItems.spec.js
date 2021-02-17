@@ -6,6 +6,7 @@ context("Menus Module", () => {
     it("should be able add all types items to the menu", () => {
         const id = uniqid();
 
+        // eslint-disable-next-line
         cy.pbCreatePage({ category: "static" }).then(page => {
             cy.pbUpdatePage({
                 id: page.id,
