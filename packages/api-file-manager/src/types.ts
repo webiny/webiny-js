@@ -85,6 +85,7 @@ export type Settings = {
     uploadMinFileSize: number;
     uploadMaxFileSize: number;
     srcPrefix: string;
+    webinyVersion: string;
 };
 
 export type SettingsCRUD = {

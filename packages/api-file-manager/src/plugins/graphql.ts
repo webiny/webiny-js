@@ -226,7 +226,8 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                         }
 
                         const data: Partial<Settings> = {
-                            installed: true
+                            installed: true,
+                            webinyVersion: context.WEBINY_VERSION
                         };
 
                         if (args.srcPrefix) {
