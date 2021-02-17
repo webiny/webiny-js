@@ -1,0 +1,45 @@
+name: Next Branch - Push
+
+on:
+  push:
+    branches: [ci-cypress]
+
+env:
+  NODE_OPTIONS: --max_old_space_size=4096
+
+jobs:
+  e2e-tests:
+    name: Run E2E (Cypress) tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get day of month (for caching purposes)
+        id: day -of-month
+        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - uses: actions/cache@v2
+        with:
+          path: .webiny/cached-packages
+          key: cached-packages-${{ runner.os }}-next-${{ steps.day-of-month.outputs.day }}
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - name: Setup - update Pulumi backend
+        run: node scripts/changePulumiBackend.js ${{ secrets.AWS_PULUMI_S3_BUCKET_NEXT_BRANCH_PREVIEW }}
+
+      - name: Setup - setup cypress.json config file
+        run: node scripts/setupCypress.js --force
+
+      - name: Cypress - run the rest of Admin app tests
+        run: yarn cypress run --spec "cypress/integration/admin/**/*.spec.js"
