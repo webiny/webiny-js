@@ -21,7 +21,7 @@ const DEFAULT_BACKEND_URL = "file://";
 
         parsedYaml.backend.url = backendUrl;
         if (backendUrl !== DEFAULT_BACKEND_URL) {
-            parsedYaml.backend.url += '/' + pulumiYamlFolder;
+            parsedYaml.backend.url += "/" + pulumiYamlFolder;
         }
 
         fs.writeFileSync(pulumiYamlPath, yaml.dump(parsedYaml));
