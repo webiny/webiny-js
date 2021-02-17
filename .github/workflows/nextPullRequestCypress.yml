@@ -39,6 +39,9 @@ jobs:
         if: steps.cached-packages.outputs.cache-hit != 'true'
         run: yarn build
 
+      - name: secret
+      - run: ${{ secrets.AWS_PULUMI_S3_BUCKET_NEXT_BRANCH_PREVIEW }}
+
       - name: Setup - update Pulumi backend
         run: node scripts/changePulumiBackend.js ${{ secrets.AWS_PULUMI_S3_BUCKET_NEXT_BRANCH_PREVIEW }}
 
