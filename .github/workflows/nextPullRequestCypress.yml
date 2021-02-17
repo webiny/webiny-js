@@ -6,6 +6,7 @@ on:
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
+  DAY_OF_MONTH: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
 
 jobs:
   e2e-tests:
@@ -16,8 +17,8 @@ jobs:
         id: day-of-month
         run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
 
-      - name: secret
-        run: echo "${{ secrets.AWS_PULUMI_S3_BUCKET_NEXT_BRANCH_PREVIEW }}"
+      - name: secret-day
+        run: echo DAY_OF_MONTH
 
       - uses: actions/setup-node@v2
         with:
