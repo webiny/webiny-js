@@ -138,13 +138,10 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     });
 
                     // 6. Mark the Page Builder app as installed.
-                    const settings = await context.pageBuilder.settings.install.get();
-                    if (!settings?.installed) {
-                        await context.pageBuilder.settings.install.update({
-                            installed: true,
-                            webinyVersion: context.WEBINY_VERSION
-                        });
-                    }
+                    await context.pageBuilder.settings.install.update({
+                        installed: true,
+                        webinyVersion: context.WEBINY_VERSION
+                    });
 
                     await executeHookCallbacks(hookPlugins, "afterInstall", context);
 
