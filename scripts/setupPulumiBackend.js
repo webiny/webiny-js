@@ -25,7 +25,7 @@ const DEFAULT_BACKEND_URL = "file://";
 
         parsedYaml.backend.url = backendUrl;
         if (backendUrl !== DEFAULT_BACKEND_URL) {
-            parsedYaml.backend.url = trimEnd(parsedYaml.backend.url);
+            parsedYaml.backend.url = trimEnd(parsedYaml.backend.url, "/");
             parsedYaml.backend.url += "/" + pulumiYamlFolder;
         }
 
