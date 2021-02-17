@@ -12,7 +12,12 @@ import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { SecurityIdentity } from "@webiny/api-security/types";
 import { Client } from "@elastic/elasticsearch";
 import { createIdentity, createPermissions, until, PermissionsArg } from "./helpers";
-import { INSTALL_MUTATION, IS_INSTALLED_QUERY } from "./graphql/settings";
+import {
+    INSTALL_MUTATION,
+    IS_INSTALLED_QUERY,
+    IS_SYSTEM_UPGRADE_AVAILABLE_QUERY,
+    SYSTEM_UPGRADE_MUTATION
+} from "./graphql/settings";
 import {
     CREATE_CONTENT_MODEL_GROUP_MUTATION,
     DELETE_CONTENT_MODEL_GROUP_MUTATION,
@@ -207,6 +212,12 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
         },
         async installMutation() {
             return invoke({ body: { query: INSTALL_MUTATION } });
+        },
+        async isSystemUpgradeAvailable() {
+            return invoke({ body: { query: IS_SYSTEM_UPGRADE_AVAILABLE_QUERY } });
+        },
+        async systemUpgrade() {
+            return invoke({ body: { query: SYSTEM_UPGRADE_MUTATION } });
         },
         // content model group
         async createContentModelGroupMutation(variables: Record<string, any>) {

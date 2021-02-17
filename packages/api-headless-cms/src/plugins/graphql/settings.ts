@@ -10,12 +10,14 @@ export default {
         extend type CmsQuery {
             # Is CMS installed?
             isInstalled: CmsBooleanResponse
-            isSystemUpgradeable: CmsBooleanResponse
+            # Is system upgrade available?
+            isSystemUpgradeAvailable: CmsBooleanResponse!
         }
 
         extend type CmsMutation {
             # Install CMS
             install: CmsBooleanResponse
+            # Upgrade this system
             systemUpgrade: SystemUpgradeResponse!
         }
     `,
@@ -30,7 +32,7 @@ export default {
                     return new ErrorResponse(e);
                 }
             },
-            isSystemUpgradeable: async (_, __, context: CmsContext) => {
+            isSystemUpgradeAvailable: async (_, __, context: CmsContext) => {
                 try {
                     const upgradeable = await context.cms.settings.isSystemUpgradeAvailable();
                     return new Response(!!upgradeable);

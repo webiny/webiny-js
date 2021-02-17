@@ -1,6 +1,6 @@
 import { CmsContentModelGroup, CmsContext } from "@webiny/api-headless-cms/types";
-import { toSlug } from "@webiny/api-headless-cms/utils";
-import Error from "@webiny/error";
+import { toSlug } from "../../../../utils";
+import WebinyError from "@webiny/error";
 import shortid from "shortid";
 
 export const beforeCreateHook = async (
@@ -18,7 +18,7 @@ export const beforeCreateHook = async (
         if (groups.length === 0) {
             return;
         }
-        throw new Error(
+        throw new WebinyError(
             `Content model group with the slug "${slug}" already exists.`,
             "SLUG_ALREADY_EXISTS"
         );

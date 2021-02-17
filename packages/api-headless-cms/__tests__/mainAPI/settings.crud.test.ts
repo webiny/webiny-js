@@ -1,6 +1,18 @@
 import { useAdminGqlHandler } from "../utils/useAdminGqlHandler";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { createIdentity } from "../utils/helpers";
+import { SystemUpgrade } from "@webiny/system-upgrade/types";
+
+const applicableUpgradePlugin = (): SystemUpgrade => ({
+    type: "system-upgrade",
+    version: process.env.WEBINY_VERSION,
+    isApplicable: async () => {
+        return true;
+    },
+    apply: async (): Promise<string> => {
+        return "All is ok";
+    }
+});
 
 describe("Settings crud test", () => {
     const manageOpts = {
@@ -155,6 +167,81 @@ describe("Settings crud test", () => {
                             message: "Not authorized!",
                             data: null
                         }
+                    }
+                }
+            }
+        });
+    });
+
+    test("system upgrade is not available", async () => {
+        const { isSystemUpgradeAvailable } = useAdminGqlHandler({
+            ...manageOpts,
+            permissions: [
+                {
+                    name: "*"
+                }
+            ]
+        });
+        const [response] = await isSystemUpgradeAvailable();
+
+        expect(response).toEqual({
+            data: {
+                cms: {
+                    isSystemUpgradeAvailable: {
+                        data: false,
+                        error: null
+                    }
+                }
+            }
+        });
+    });
+
+    test("system upgrade is available - dummy plugin", async () => {
+        const { isSystemUpgradeAvailable } = useAdminGqlHandler(
+            {
+                ...manageOpts,
+                permissions: [
+                    {
+                        name: "*"
+                    }
+                ]
+            },
+            [applicableUpgradePlugin()]
+        );
+        const [response] = await isSystemUpgradeAvailable();
+
+        expect(response).toEqual({
+            data: {
+                cms: {
+                    isSystemUpgradeAvailable: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+    });
+
+    test("system upgrade is available - 5.0.0-beta.4 plugin", async () => {
+        const { isSystemUpgradeAvailable, elasticSearch } = useAdminGqlHandler({
+            ...manageOpts,
+            permissions: [
+                {
+                    name: "*"
+                }
+            ]
+        });
+        await elasticSearch.indices.create({
+            index: "root-headless-cms"
+        });
+        const [response] = await isSystemUpgradeAvailable();
+
+        expect(response).toEqual({
+            data: {
+                cms: {
+                    isSystemUpgradeAvailable: {
+                        data: true,
+                        error: null
                     }
                 }
             }

@@ -90,7 +90,7 @@ const cleanDatabaseRecord = <T extends CmsContentModel | CmsContentEntry>(
     return lodashOmit(record, ["PK", "SK", "TYPE"]) as T;
 };
 
-const pluginVersion = "5.0.0-beta.5";
+const pluginVersion = "5.0.0-beta.4";
 /**
  * A plugin that will upgrade beta 4 (and earlier releases to beta 5)
  */

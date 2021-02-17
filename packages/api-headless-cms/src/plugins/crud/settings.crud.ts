@@ -128,7 +128,11 @@ export default {
                 if (!fullAccess) {
                     throw new NotAuthorizedError();
                 }
-                return await isSystemUpgradeable(context);
+                try {
+                    return await isSystemUpgradeable(context);
+                } catch (ex) {
+                    throw new WebinyError(ex.message, ex.code, ex.data);
+                }
             },
             systemUpgrade: async () => {
                 const identity = context.security.getIdentity();
