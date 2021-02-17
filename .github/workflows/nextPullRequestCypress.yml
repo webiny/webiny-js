@@ -17,7 +17,7 @@ jobs:
         run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
 
       - name: secret
-        run: ${{ secrets.AWS_PULUMI_S3_BUCKET_NEXT_BRANCH_PREVIEW }}
+        run: echo "${{ secrets.AWS_PULUMI_S3_BUCKET_NEXT_BRANCH_PREVIEW }}"
 
       - uses: actions/setup-node@v2
         with:
@@ -43,7 +43,7 @@ jobs:
         run: yarn build
 
       - name: Setup - update Pulumi backend
-        run: node scripts/changePulumiBackend.js ${{ secrets.AWS_PULUMI_S3_BUCKET_NEXT_BRANCH_PREVIEW }}
+        run: node scripts/changePulumiBackend.js "${{ secrets.AWS_PULUMI_S3_BUCKET_NEXT_BRANCH_PREVIEW }}"
 
       - name: cat
         run: cat api/Pulumi.yaml
