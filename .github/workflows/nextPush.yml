@@ -225,7 +225,7 @@ jobs:
           --template-options '{"region":"eu-central-1","vpc":false}'
 
   deploy-preview:
-    needs: cache-dependencies-packages
+    needs: verdaccio-publish
     name: Deploy preview
     runs-on: ubuntu-latest
     env:
