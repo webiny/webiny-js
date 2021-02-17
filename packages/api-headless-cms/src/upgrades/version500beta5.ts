@@ -1,9 +1,16 @@
 import { SystemUpgrade } from "@webiny/system-upgrade/types";
-import { CmsContentIndexEntry, CmsContentModel, CmsContext } from "@webiny/api-headless-cms/types";
+import {
+    CmsContentEntry,
+    CmsContentIndexEntry,
+    CmsContentModel,
+    CmsContentModelField,
+    CmsContext
+} from "@webiny/api-headless-cms/types";
 import { compare as semverCompare } from "semver";
 import { Client as ElasticsearchClient } from "@elastic/elasticsearch";
 import WebinyError from "@webiny/error";
-import { defaults as configurations, ElasticsearchConfig } from "../utils";
+import { defaults as configurations, ElasticsearchConfig, createCmsPK } from "../utils";
+import { omit as lodashOmit } from "lodash";
 
 interface Hit {
     _id: string;
@@ -54,15 +61,39 @@ const deleteCreatedElasticsearchIndexes = async (
 
 const moveReferenceValues = (
     model: CmsContentModel,
-    entry: CmsContentIndexEntry
+    entry: CmsContentIndexEntry,
+    fields: CmsContentModelField[]
 ): CmsContentIndexEntry => {
+    if (fields.length === 0) {
+        return entry;
+    }
+    const values = {
+        ...entry.values
+    };
+    const rawValues = {
+        ...entry.rawValues
+    };
+    for (const { fieldId } of fields) {
+        values[fieldId] = rawValues[fieldId];
+        delete rawValues[fieldId];
+    }
     return {
-        ...entry
+        ...entry,
+        values,
+        rawValues
     };
 };
 
-const pluginVersion = "5.0.0-beta.5";
+const cleanDatabaseRecord = <T extends CmsContentModel | CmsContentEntry>(
+    record: T & { PK?: string; SK?: string; TYPE?: string }
+): T => {
+    return lodashOmit(record, ["PK", "SK", "TYPE"]) as T;
+};
 
+const pluginVersion = "5.0.0-beta.5";
+/**
+ * A plugin that will upgrade beta 4 (and earlier releases to beta 5)
+ */
 export default (): SystemUpgrade<CmsContext> => ({
     type: "system-upgrade",
     version: pluginVersion,
@@ -76,7 +107,7 @@ export default (): SystemUpgrade<CmsContext> => ({
         return exists;
     },
     apply: async (context, codeVersion) => {
-        const { elasticSearch } = context;
+        const { elasticSearch, db } = context;
         const models = (await context.cms.models.noAuth().list())
             // make sure to filter out models that were created with current version
             .filter(model => {
@@ -109,6 +140,19 @@ export default (): SystemUpgrade<CmsContext> => ({
         let hasMoreResults = true;
         let after: string | undefined = undefined;
         const limit = 1001;
+        // need all ref fields to switch the mapping
+        const modelsRefFields: Record<string, CmsContentModelField[]> = models.reduce(
+            (acc, model) => {
+                const fields = model.fields.filter(field => field.type === "ref");
+                if (fields.length === 0) {
+                    acc[model.modelId] = [];
+                    return acc;
+                }
+                acc[model.modelId] = fields;
+                return acc;
+            },
+            {}
+        );
         // go through old index and search the data in a loop to minimize es hammering
         while (hasMoreResults) {
             const response = await elasticSearch.search({
@@ -146,6 +190,17 @@ export default (): SystemUpgrade<CmsContext> => ({
                         }
                     );
                 }
+                const refFields = modelsRefFields[model.modelId];
+                if (!refFields) {
+                    throw new WebinyError(
+                        "Could not fetch model ref fields.",
+                        "MODEL_REF_FIELDS_ERROR",
+                        {
+                            model: model.modelId
+                        }
+                    );
+                }
+                const newEntry = moveReferenceValues(model, cleanDatabaseRecord(entry), refFields);
                 return [
                     // first part of the array is the es operation
                     {
@@ -156,7 +211,7 @@ export default (): SystemUpgrade<CmsContext> => ({
                     },
                     // second is the data to be inserted
                     {
-                        ...moveReferenceValues(model, entry),
+                        ...newEntry,
                         webinyVersion: pluginVersion
                     } as CmsContentIndexEntry
                 ];
@@ -167,9 +222,40 @@ export default (): SystemUpgrade<CmsContext> => ({
             }
             after = esOperations.length > 0 ? hits[esOperations.length - 1].sort : undefined;
 
-            await elasticSearch.bulk({ body: esOperations });
+            try {
+                await elasticSearch.bulk({ body: esOperations });
+            } catch (ex) {
+                throw new WebinyError(
+                    "Elasticsearch bulk operations failed.",
+                    "ELASTICSEARCH_BULK_ERROR",
+                    {
+                        operations: esOperations,
+                        error: ex
+                    }
+                );
+            }
+        }
+        // update all models to latest version
+        const batch = db.batch();
+
+        const PK_CONTENT_MODEL = () => `${createCmsPK(context)}#CM`;
+
+        for (const model of models) {
+            batch.update({
+                ...configurations.db(),
+                query: {
+                    PK: PK_CONTENT_MODEL,
+                    SK: model.modelId
+                },
+                data: {
+                    ...cleanDatabaseRecord(model),
+                    webinyVersion: context.WEBINY_VERSION
+                }
+            });
         }
 
+        await batch.execute();
+        // delete the old index
         await elasticSearch.indices.delete({
             index: oldIndexName
         });
