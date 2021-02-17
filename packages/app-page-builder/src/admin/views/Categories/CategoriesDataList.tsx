@@ -168,7 +168,7 @@ const PageBuilderCategoriesDataList = ({ canCreate }: PageBuilderCategoriesDataL
             actions={
                 canCreate ? (
                     <ButtonSecondary
-                        data-testid="new-record-button"
+                        data-testid="data-list-new-record-button"
                         onClick={() => history.push("/page-builder/categories?new=true")}
                     >
                         <ButtonIcon icon={<AddIcon />} /> {t`New Category`}
