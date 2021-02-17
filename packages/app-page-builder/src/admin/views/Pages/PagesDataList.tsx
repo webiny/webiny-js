@@ -257,32 +257,33 @@ const PagesDataList = ({ onCreatePage, canCreate }: PagesDataListProps) => {
                             loadMoreOnScroll({ scrollFrame, fetchMore: listQuery.fetchMore })
                         }
                     >
-                        {Array.isArray(data) && data.map(page => (
-                            <ListItem key={page.id} selected={page.id === selectedPageId}>
-                                <ListItemText
-                                    onClick={() => {
-                                        query.set("id", page.id);
-                                        history.push({ search: query.toString() });
-                                    }}
-                                >
-                                    {page.title}
-                                    <ListTextOverline>
-                                        {page.category?.name || t`Unknown category`}
-                                    </ListTextOverline>
-                                    {page.createdBy && (
-                                        <ListItemTextSecondary>
-                                            Created by: {page.createdBy.firstName || "N/A"}. Last
-                                            modified: <TimeAgo datetime={page.savedOn} />.
-                                        </ListItemTextSecondary>
-                                    )}
-                                </ListItemText>
-                                <ListItemMeta className={rightAlign}>
-                                    <Typography use={"subtitle2"}>
-                                        {statusesLabels[page.status]} (v{page.version})
-                                    </Typography>
-                                </ListItemMeta>
-                            </ListItem>
-                        ))}
+                        {Array.isArray(data) &&
+                            data.map(page => (
+                                <ListItem key={page.id} selected={page.id === selectedPageId}>
+                                    <ListItemText
+                                        onClick={() => {
+                                            query.set("id", page.id);
+                                            history.push({ search: query.toString() });
+                                        }}
+                                    >
+                                        {page.title}
+                                        <ListTextOverline>
+                                            {page.category?.name || t`Unknown category`}
+                                        </ListTextOverline>
+                                        {page.createdBy && (
+                                            <ListItemTextSecondary>
+                                                Created by: {page.createdBy.firstName || "N/A"}.
+                                                Last modified: <TimeAgo datetime={page.savedOn} />.
+                                            </ListItemTextSecondary>
+                                        )}
+                                    </ListItemText>
+                                    <ListItemMeta className={rightAlign}>
+                                        <Typography use={"subtitle2"}>
+                                            {statusesLabels[page.status]} (v{page.version})
+                                        </Typography>
+                                    </ListItemMeta>
+                                </ListItem>
+                            ))}
                     </Scrollbar>
                     {fetchMoreLoading && (
                         <InlineLoaderWrapper>

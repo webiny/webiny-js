@@ -10,7 +10,7 @@ context("Menus Module", () => {
             cy.pbUpdatePage({
                 id: page.id,
                 data: {
-                    title: `Menus-Module-Welcome-${id}`,
+                    title: `Menus-Module-Welcome-${id}`
                 }
             });
             cy.pbPublishPage({ id: page.id });
