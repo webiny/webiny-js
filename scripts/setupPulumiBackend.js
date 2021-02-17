@@ -3,6 +3,7 @@ const path = require("path");
 const yaml = require("js-yaml");
 const { green } = require("chalk");
 const argv = require("yargs").argv;
+const trimEnd = require("lodash/trimEnd");
 
 const DEFAULT_BACKEND_URL = "file://";
 
@@ -24,6 +25,7 @@ const DEFAULT_BACKEND_URL = "file://";
 
         parsedYaml.backend.url = backendUrl;
         if (backendUrl !== DEFAULT_BACKEND_URL) {
+            parsedYaml.backend.url = trimEnd(parsedYaml.backend.url);
             parsedYaml.backend.url += "/" + pulumiYamlFolder;
         }
 
