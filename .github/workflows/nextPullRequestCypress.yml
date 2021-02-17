@@ -45,6 +45,16 @@ jobs:
       - name: Setup - update Pulumi backend
         run: node scripts/changePulumiBackend.js '${{ secrets.AWS_PULUMI_S3_BUCKET_NEXT_BRANCH_PREVIEW }}'
 
+      - name: Upload 111preview files
+          uses: actions/upload-artifact@v2
+          with:
+            name: preview-files
+            retention-days: 1
+            path: |
+              api/Pulumi.yaml
+              apps/admin/Pulumi.yaml
+              apps/website/Pulumi.yaml
+
       - name: cat
         run: cat api/Pulumi.yaml
 
