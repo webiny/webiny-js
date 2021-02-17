@@ -43,7 +43,7 @@ jobs:
         run: yarn build
 
       - name: Setup - update Pulumi backend
-        run: node scripts/setPulumiBackend.js '${{ secrets.AWS_PULUMI_S3_BUCKET_NEXT_BRANCH_PREVIEW }}'
+        run: node scripts/setupPulumiBackend.js '${{ secrets.AWS_PULUMI_S3_BUCKET_NEXT_BRANCH_PREVIEW }}'
 
       - name: Upload 111preview files
         uses: actions/upload-artifact@v2
