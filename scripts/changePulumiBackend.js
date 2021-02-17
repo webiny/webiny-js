@@ -6,6 +6,9 @@ const argv = require("yargs").argv;
 
 const DEFAULT_BACKEND_URL = "file://";
 
+/**
+ * Used within GitHub actions workflows (CI/CD).
+ */
 (async () => {
     const pulumiYamlFolders = ["api", "apps/admin", "apps/website"];
     const [backendUrl] = argv._;
