@@ -52,7 +52,7 @@ We provide you with an administration app so you can kickstart your projects muc
 ## Deployment to the Cloud
 
 We use [Pulumi IaaC](https://www.pulumi.com/) to reliably deploy infrastructure and your code to the cloud.
-You can also deploy Webiny using native CloudFormation if you will, AWS SAM, or any other tool. Guides on those particular tools will come at a later stage, but it IS possible.
+You can also deploy Webiny using native CloudFormation if you want, AWS SAM, or any other tool. Guides on those particular tools will come at a later stage, but it is possible.
 
 ## Contributing
 
