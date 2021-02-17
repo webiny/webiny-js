@@ -141,7 +141,8 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     const settings = await context.pageBuilder.settings.install.get();
                     if (!settings?.installed) {
                         await context.pageBuilder.settings.install.update({
-                            installed: true
+                            installed: true,
+                            webinyVersion: context.WEBINY_VERSION
                         });
                     }
 
