@@ -3,6 +3,10 @@ import { CmsContext } from "@webiny/api-headless-cms/types";
 
 export default {
     typeDefs: /* GraphQL */ `
+        type SystemUpgradeResponse {
+            plugins: JSON
+            results: JSON
+        }
         extend type CmsQuery {
             # Is CMS installed?
             isInstalled: CmsBooleanResponse
@@ -12,7 +16,7 @@ export default {
         extend type CmsMutation {
             # Install CMS
             install: CmsBooleanResponse
-            systemUpgrade: CmsBooleanResponse
+            systemUpgrade: SystemUpgradeResponse!
         }
     `,
     resolvers: {
