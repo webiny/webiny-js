@@ -1,94 +1,22 @@
 import { SystemUpgrade } from "@webiny/system-upgrade/types";
-import {
-    CmsContentEntry,
-    CmsContentIndexEntry,
-    CmsContentModel,
-    CmsContentModelField,
-    CmsContext
-} from "@webiny/api-headless-cms/types";
+import { CmsContentIndexEntry, CmsContentModel, CmsContext } from "@webiny/api-headless-cms/types";
 import { compare as semverCompare } from "semver";
-import { Client as ElasticsearchClient } from "@elastic/elasticsearch";
 import WebinyError from "@webiny/error";
 import { defaults as configurations, ElasticsearchConfig, createCmsPK } from "../utils";
-import { omit as lodashOmit } from "lodash";
+import {
+    entryValueFixer,
+    cleanDatabaseRecord,
+    createFieldFinder,
+    createOldVersionIndiceName,
+    createElasticsearchIndice,
+    deleteCreatedElasticsearchIndices
+} from "./version500beta4/helpers";
 
 interface Hit {
     _id: string;
     _index: string;
     _source: CmsContentIndexEntry;
 }
-
-const createElasticsearchIndex = (es: ElasticsearchClient, esIndex: ElasticsearchConfig) => {
-    return new Promise(async (resolve: (value?: unknown) => void, reject: (ex: Error) => void) => {
-        try {
-            await es.indices.create({
-                ...esIndex,
-                body: {
-                    // we are disabling indexing of rawValues property in object that is inserted into ES
-                    mappings: {
-                        properties: {
-                            rawValues: { type: "object", enabled: false }
-                        }
-                    }
-                }
-            });
-            resolve();
-        } catch (ex) {
-            const er = new WebinyError(
-                "Could not create Elasticsearch index.",
-                "ELASTICSEARCH_INDEX",
-                ex
-            );
-            reject(er);
-        }
-    });
-};
-
-const createOldIndexName = (context: CmsContext): string => {
-    return `${context.security.getTenant().id}-headless-cms`;
-};
-
-const deleteCreatedElasticsearchIndexes = async (
-    context: CmsContext,
-    indexes: ElasticsearchConfig[]
-): Promise<void> => {
-    await Promise.all(
-        indexes.map(index => {
-            return context.elasticSearch.indices.delete(index);
-        })
-    );
-};
-
-const moveReferenceValues = (
-    model: CmsContentModel,
-    entry: CmsContentIndexEntry,
-    fields: CmsContentModelField[]
-): CmsContentIndexEntry => {
-    if (fields.length === 0) {
-        return entry;
-    }
-    const values = {
-        ...entry.values
-    };
-    const rawValues = {
-        ...entry.rawValues
-    };
-    for (const { fieldId } of fields) {
-        values[fieldId] = rawValues[fieldId];
-        delete rawValues[fieldId];
-    }
-    return {
-        ...entry,
-        values,
-        rawValues
-    };
-};
-
-const cleanDatabaseRecord = <T extends CmsContentModel | CmsContentEntry>(
-    record: T & { PK?: string; SK?: string; TYPE?: string }
-): T => {
-    return lodashOmit(record, ["PK", "SK", "TYPE"]) as T;
-};
 
 const pluginVersion = "5.0.0-beta.4";
 /**
@@ -100,7 +28,7 @@ export default (): SystemUpgrade<CmsContext> => ({
     isApplicable: async context => {
         const { elasticSearch } = context;
         // if we still old elasticsearch index
-        const esIndex = createOldIndexName(context);
+        const esIndex = createOldVersionIndiceName(context);
         const { body: exists } = await elasticSearch.indices.exists({
             index: esIndex
         });
@@ -124,35 +52,24 @@ export default (): SystemUpgrade<CmsContext> => ({
         try {
             await Promise.all(
                 indexes.map(index => {
-                    return createElasticsearchIndex(elasticSearch, index);
+                    return createElasticsearchIndice(elasticSearch, index);
                 })
             );
         } catch (ex) {
-            await deleteCreatedElasticsearchIndexes(context, indexes);
+            await deleteCreatedElasticsearchIndices(context, indexes);
             throw new WebinyError(ex.message, ex.code, ex.data);
         }
         const modelsById: Record<string, CmsContentModel> = models.reduce((acc, model) => {
             acc[model.modelId] = model;
             return acc;
         }, {});
-        const oldIndexName = createOldIndexName(context);
+        const oldIndexName = createOldVersionIndiceName(context);
 
         let hasMoreResults = true;
         let after: string | undefined = undefined;
         const limit = 1001;
-        // need all ref fields to switch the mapping
-        const modelsRefFields: Record<string, CmsContentModelField[]> = models.reduce(
-            (acc, model) => {
-                const fields = model.fields.filter(field => field.type === "ref");
-                if (fields.length === 0) {
-                    acc[model.modelId] = [];
-                    return acc;
-                }
-                acc[model.modelId] = fields;
-                return acc;
-            },
-            {}
-        );
+
+        const modelFieldFinder = createFieldFinder(models);
         // go through old index and search the data in a loop to minimize es hammering
         while (hasMoreResults) {
             const response = await elasticSearch.search({
@@ -190,17 +107,7 @@ export default (): SystemUpgrade<CmsContext> => ({
                         }
                     );
                 }
-                const refFields = modelsRefFields[model.modelId];
-                if (!refFields) {
-                    throw new WebinyError(
-                        "Could not fetch model ref fields.",
-                        "MODEL_REF_FIELDS_ERROR",
-                        {
-                            model: model.modelId
-                        }
-                    );
-                }
-                const newEntry = moveReferenceValues(model, cleanDatabaseRecord(entry), refFields);
+
                 return [
                     // first part of the array is the es operation
                     {
@@ -211,7 +118,7 @@ export default (): SystemUpgrade<CmsContext> => ({
                     },
                     // second is the data to be inserted
                     {
-                        ...newEntry,
+                        ...entryValueFixer(model, modelFieldFinder, cleanDatabaseRecord(entry)),
                         webinyVersion: pluginVersion
                     } as CmsContentIndexEntry
                 ];
