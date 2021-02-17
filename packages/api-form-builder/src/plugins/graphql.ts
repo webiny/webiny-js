@@ -92,7 +92,8 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
 
                         // Prepare "settings" data
                         const data: Partial<Settings> = {
-                            installed: true
+                            installed: true,
+                            webinyVersion: context.WEBINY_VERSION
                         };
 
                         if (args.domain) {

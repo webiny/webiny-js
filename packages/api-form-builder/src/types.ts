@@ -178,6 +178,7 @@ export type Settings = {
         siteKey: string;
         secretKey: string;
     };
+    webinyVersion: string;
 };
 
 export type SettingsCRUD = {
