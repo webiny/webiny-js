@@ -6,19 +6,18 @@ on:
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
-  DAY_OF_MONTH: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
 
 jobs:
   e2e-tests:
     name: Run E2E (Cypress) tests
     runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     steps:
       - name: Get day of month (for caching purposes)
         id: day-of-month
         run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
-
-      - name: secret-day
-        run: echo ${{ env.DAY_OF_MONTH }}
 
       - uses: actions/setup-node@v2
         with:
@@ -45,19 +44,6 @@ jobs:
 
       - name: Setup - update Pulumi backend
         run: node scripts/setupPulumiBackend.js '${{ secrets.AWS_PULUMI_S3_BUCKET_NEXT_BRANCH_PREVIEW }}'
-
-      - name: Upload 111preview files
-        uses: actions/upload-artifact@v2
-        with:
-          name: preview-files
-          retention-days: 1
-          path: |
-            api/Pulumi.yaml
-            apps/admin/Pulumi.yaml
-            apps/website/Pulumi.yaml
-
-      - name: cat
-        run: cat api/Pulumi.yaml
 
       - name: Setup - setup cypress.json config file
         run: node scripts/setupCypress.js --force
