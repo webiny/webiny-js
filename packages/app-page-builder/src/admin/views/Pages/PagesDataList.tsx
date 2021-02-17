@@ -257,7 +257,7 @@ const PagesDataList = ({ onCreatePage, canCreate }: PagesDataListProps) => {
                             loadMoreOnScroll({ scrollFrame, fetchMore: listQuery.fetchMore })
                         }
                     >
-                        {data.map(page => (
+                        {Array.isArray(data) && data.map(page => (
                             <ListItem key={page.id} selected={page.id === selectedPageId}>
                                 <ListItemText
                                     onClick={() => {
