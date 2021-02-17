@@ -55,6 +55,9 @@ jobs:
             apps/admin/Pulumi.yaml
             apps/website/Pulumi.yaml
 
+      - name: Print info
+        run: yarn webiny info
+
       - name: Setup - setup cypress.json config file
         run: node scripts/setupCypress.js --force
 
