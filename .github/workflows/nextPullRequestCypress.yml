@@ -16,6 +16,9 @@ jobs:
         id: day-of-month
         run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
 
+      - name: secret
+        run: ${{ secrets.AWS_PULUMI_S3_BUCKET_NEXT_BRANCH_PREVIEW }}
+
       - uses: actions/setup-node@v2
         with:
           node-version: 12
@@ -38,9 +41,6 @@ jobs:
       - name: Build packages
         if: steps.cached-packages.outputs.cache-hit != 'true'
         run: yarn build
-
-      - name: secret
-      - run: ${{ secrets.AWS_PULUMI_S3_BUCKET_NEXT_BRANCH_PREVIEW }}
 
       - name: Setup - update Pulumi backend
         run: node scripts/changePulumiBackend.js ${{ secrets.AWS_PULUMI_S3_BUCKET_NEXT_BRANCH_PREVIEW }}
