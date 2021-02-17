@@ -8,7 +8,11 @@ export const install = async (
     const { locales } = context;
 
     try {
-        await locales.create({ code: args.data.code, default: true });
+        await locales.create({
+            code: args.data.code,
+            default: true,
+            webinyVersion: context.WEBINY_VERSION
+        });
         await locales.updateDefault(args.data.code);
     } catch (e) {
         return new ErrorResponse({
