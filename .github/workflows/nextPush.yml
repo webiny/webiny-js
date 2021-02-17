@@ -224,8 +224,8 @@ jobs:
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"eu-central-1","vpc":false}'
 
-  preview:
-    needs: [code-analysis, jest-tests, test-create-webiny-project]
+  deploy-preview:
+    needs: verdaccio-publish
     name: Deploy preview
     runs-on: ubuntu-latest
     env:
@@ -290,9 +290,15 @@ jobs:
             !test-project/.yarn/cache/**/*
 
   e2e-tests:
-    needs: [preview]
+    needs: deploy-preview
     name: Run E2E (Cypress) tests
     runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: eu-central-1
+      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
+      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
     steps:
       - name: Get day of month (for caching purposes)
         id: day-of-month
@@ -317,8 +323,14 @@ jobs:
       - name: Install dependencies
         run: yarn --immutable
 
-      - name: Setup tests
-        run: echo "We need to set Pulumi backend to S3 bucket that was used in previous steps."
+      - name: Build packages
+        run: yarn build
+
+      - name: Setup - update Pulumi backend
+        run: node scripts/setupPulumiBackend.js '${{ secrets.AWS_PULUMI_S3_BUCKET_NEXT_BRANCH_PREVIEW }}'
+
+      - name: Setup - setup cypress.json config file
+        run: node scripts/setupCypress.js --force
 
       - name: Cypress - run the rest of Admin app tests
-        run: echo 'Once ready, run -> yarn cypress run --spec "cypress/integration/admin/**/*.spec.js"'
+        run: yarn cypress run --spec "cypress/integration/admin/**/*.spec.js"
