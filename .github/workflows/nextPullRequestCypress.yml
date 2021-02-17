@@ -18,7 +18,7 @@ jobs:
         run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
 
       - name: secret-day
-        run: echo DAY_OF_MONTH
+        run: echo ${{ env.DAY_OF_MONTH }}
 
       - uses: actions/setup-node@v2
         with:
