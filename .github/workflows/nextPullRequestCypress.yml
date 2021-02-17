@@ -15,6 +15,8 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_REGION: eu-central-1
+      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
+      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
     steps:
       - name: Get day of month (for caching purposes)
         id: day-of-month
@@ -40,30 +42,10 @@ jobs:
         run: yarn --immutable
 
       - name: Build packages
-        if: steps.cached-packages.outputs.cache-hit != 'true'
         run: yarn build
 
       - name: Setup - update Pulumi backend
         run: node scripts/setupPulumiBackend.js '${{ secrets.AWS_PULUMI_S3_BUCKET_NEXT_BRANCH_PREVIEW }}'
-
-      - name: Create Pulumi.dev.yaml files
-        run: |
-          touch api/Pulumi.dev.yaml
-          touch apps/admin/Pulumi.dev.yaml
-          touch apps/website/Pulumi.dev.yaml
-
-      - name: Upload 111preview files
-        uses: actions/upload-artifact@v2
-        with:
-          name: preview-files
-          retention-days: 1
-          path: |
-            api/Pulumi.yaml
-            apps/admin/Pulumi.yaml
-            apps/website/Pulumi.yaml
-
-      - name: Print info
-        run: yarn webiny info --env dev
 
       - name: Setup - setup cypress.json config file
         run: node scripts/setupCypress.js --force
