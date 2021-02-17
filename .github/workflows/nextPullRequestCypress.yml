@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Get day of month (for caching purposes)
-        id: day -of-month
+        id: day-of-month
         run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
 
       - uses: actions/setup-node@v2
