@@ -2,7 +2,7 @@ name: Next Branch - Push
 
 on:
   push:
-    branches: [next]
+    branches: [ci-cypress]
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
@@ -269,6 +269,10 @@ jobs:
       - name: Print CLI version
         working-directory: test-project
         run: yarn webiny --version
+
+      - name: Reduce prerendering service's process-queue schedule
+        working-directory: test-project
+        run: sed -i 's/5 minutes/30 seconds/g' api/pulumi/prerenderingService.ts
 
       - name: Deploy preview
         working-directory: test-project
