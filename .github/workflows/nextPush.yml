@@ -270,6 +270,10 @@ jobs:
         working-directory: test-project
         run: yarn webiny --version
 
+      - name: Reduce prerendering service's process-queue schedule
+        working-directory: test-project
+        run: sed -i 's/5 minutes/1 minute/g' api/pulumi/prerenderingService.ts
+
       - name: Deploy preview
         working-directory: test-project
         run: yarn webiny deploy
