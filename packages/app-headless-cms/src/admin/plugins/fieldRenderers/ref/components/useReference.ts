@@ -3,29 +3,42 @@ import get from "lodash/get";
 import { useApolloClient } from "@webiny/app-headless-cms/admin/hooks";
 import { createListQuery, createGetQuery, GET_CONTENT_MODEL } from "./graphql";
 import { getOptions } from "./getOptions";
-import { CmsEditorContentModel } from "@webiny/app-headless-cms/types";
+import { CmsEditorContentModel, CmsEditorField } from "@webiny/app-headless-cms/types";
 
-type ValueEntry = {
+interface ValueEntry {
     id: string;
     published: boolean;
     name: string;
-};
+}
+interface UseReferenceHookArgs {
+    bind: any;
+    field: CmsEditorField;
+    assignValueEntry?: boolean;
+}
+interface UseReferenceHookValue {
+    onChange: (value: any) => void;
+    setSearch: (value: string) => void;
+    value: ValueEntry | null;
+    loading: boolean;
+    options: ValueEntry[];
+}
+type UseReferenceHook = (args: UseReferenceHookArgs) => UseReferenceHookValue;
 
-function distinctBy(key, array) {
+function distinctBy(key: string, array: any[]): any[] {
     const keys = array.map(value => value[key]);
     return array.filter((value, index) => keys.indexOf(value[key]) === index);
 }
 
-export const useReference = ({ bind, field }) => {
-    const allEntries = useRef([]);
+export const useReference: UseReferenceHook = ({ bind, field, assignValueEntry }) => {
+    const allEntries = useRef<any[]>([]);
     const client = useApolloClient();
-    const [search, setSearch] = useState("");
-    const [loading, setLoading] = useState(false);
+    const [search, setSearch] = useState<string>("");
+    const [loading, setLoading] = useState<boolean>(false);
     const [model, setModel] = useState<CmsEditorContentModel>(null);
-    const [LIST_CONTENT, setListContent] = useState(null);
-    const [GET_CONTENT, setGetContent] = useState(null);
-    const [entries, setEntries] = useState([]);
-    const [latestEntries, setLatestEntries] = useState([]);
+    const [LIST_CONTENT, setListContent] = useState<any>(null);
+    const [GET_CONTENT, setGetContent] = useState<any>(null);
+    const [entries, setEntries] = useState<any[]>([]);
+    const [latestEntries, setLatestEntries] = useState<any[]>([]);
     const [valueEntry, setValueEntry] = useState<ValueEntry>(null);
 
     const { modelId } = field.settings.models[0];
@@ -91,14 +104,28 @@ export const useReference = ({ bind, field }) => {
                 variables: { limit: 10 }
             })
             .then(({ data }) => {
-                setLatestEntries(data.content.data);
+                const selectedEntry = [];
+                if (
+                    assignValueEntry &&
+                    valueEntry &&
+                    data.content.data.some(e => e.id === valueEntry.id) === false
+                ) {
+                    selectedEntry.push({
+                        id: valueEntry.id,
+                        meta: {
+                            status: valueEntry.published ? "published" : "draft",
+                            title: valueEntry.name
+                        }
+                    });
+                }
+                setLatestEntries(data.content.data.concat(selectedEntry));
                 allEntries.current = [...data.content.data];
             });
     }, [modelId, LIST_CONTENT]);
 
     useEffect(() => {
         if (!value || !model || !model.titleFieldId || !GET_CONTENT) {
-            setValueEntry(null);
+            setValueEntry(() => null);
             return;
         }
 
@@ -118,16 +145,27 @@ export const useReference = ({ bind, field }) => {
             setLoading(false);
             const entry = res.data.content.data;
 
+            const existsInAllEntries = allEntries.current.some(e => e.id === entry.id);
+            const existsInLatestEntries = latestEntries.some(e => e.id === entry.id);
+
             // Calculate a couple of props for the Autocomplete component.
-            setValueEntry(
-                entry
-                    ? {
-                          id: entry.id,
-                          published: entry.meta.status === "published",
-                          name: entry.meta.title
-                      }
-                    : null
-            );
+            setValueEntry(() => {
+                if (!entry) {
+                    return null;
+                }
+                // assign value to lists if required
+                else if (assignValueEntry && !existsInAllEntries) {
+                    allEntries.current.push(entry);
+                    if (!existsInLatestEntries) {
+                        setLatestEntries(prev => prev.concat([entry]));
+                    }
+                }
+                return {
+                    id: entry.id,
+                    published: entry.meta.status === "published",
+                    name: entry.meta.title
+                };
+            });
         });
     }, [value, GET_CONTENT, model]);
 
@@ -143,7 +181,7 @@ export const useReference = ({ bind, field }) => {
             return bind.onChange({ modelId, entryId: value });
         }
 
-        setValueEntry(null);
+        setValueEntry(() => null);
         bind.onChange(null);
     }, []);
 
