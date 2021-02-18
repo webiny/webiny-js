@@ -101,7 +101,7 @@ class PageBuilder {
 
         const eventRule = new aws.cloudwatch.EventRule("ps-process-queue-event-rule", {
             description: `Triggers "ps-process-queue" Lambda function that will process all queued prerendering jobs.`,
-            scheduleExpression: "rate(10 minutes)",
+            scheduleExpression: "rate(5 minutes)",
             isEnabled: true
         });
 
