@@ -26,8 +26,8 @@ const getQuery = (args: ListPagesArgs) => {
     };
 
     if (where) {
-        if (where.pattern) {
-            query.bool.filter.push({ term: { pattern: where.pattern } });
+        if (where.dynamic) {
+            query.bool.filter.push({ term: { dynamic: where.dynamic } });
         }
 
         if (where.category) {

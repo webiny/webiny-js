@@ -59,6 +59,7 @@ export const saveRevisionAction: EventActionCallable<SaveRevisionActionArgsType>
                         id
                         content
                         title
+                        dynamic
                         status
                         savedOn
                     }

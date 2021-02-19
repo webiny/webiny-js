@@ -1,4 +1,6 @@
 import gql from "graphql-tag";
+import { plugins } from "@webiny/plugins";
+import { PbEditorPageSettingsPlugin } from "@webiny/app-page-builder/types";
 
 const ERROR_FIELD = /* GraphQL */ `
     {
@@ -8,12 +10,13 @@ const ERROR_FIELD = /* GraphQL */ `
     }
 `;
 
-const DATA_FIELD = /* GraphQL */ `
+const DATA_FIELD = () => /* GraphQL */ `
     {
         id
         pid
         title
         path
+        dynamic
         version
         locked
         status
@@ -31,35 +34,11 @@ const DATA_FIELD = /* GraphQL */ `
             savedOn
         }
         settings {
-            general {
-                snippet
-                tags
-                layout
-                image {
-                    id
-                    src
-                }
-            }
-            social {
-                meta {
-                    property
-                    content
-                }
-                title
-                description
-                image {
-                    id
-                    src
-                }
-            }
-            seo {
-                title
-                description
-                meta {
-                    name
-                    content
-                }
-            }
+            _empty
+            ${plugins
+                .byType("pb-editor-page-settings")
+                .map((pl: PbEditorPageSettingsPlugin) => pl.fields)
+                .join("\n")}
         }
         createdBy {
             id
@@ -69,22 +48,22 @@ const DATA_FIELD = /* GraphQL */ `
     }
 `;
 
-export const CREATE_PAGE_FROM = gql`
+export const CREATE_PAGE_FROM = () => gql`
     mutation CreatePageFrom($from: ID) {
         pageBuilder {
             createPage(from: $from) {
-                data ${DATA_FIELD}
+                data ${DATA_FIELD()}
                 error ${ERROR_FIELD}
             }
         }
     }
 `;
 
-export const GET_PAGE = gql`
+export const GET_PAGE = () => gql`
     query GetPage($id: ID!) {
         pageBuilder {
             getPage(id: $id) {
-                data ${DATA_FIELD}
+                data ${DATA_FIELD()}
                 error ${ERROR_FIELD}
             }
         }

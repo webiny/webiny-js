@@ -20,6 +20,7 @@ import codesandbox from "@webiny/app-page-builder/editor/plugins/elements/code/c
 import pagesList from "@webiny/app-page-builder/editor/plugins/elements/pagesList";
 import imagesList from "@webiny/app-page-builder/editor/plugins/elements/imagesList";
 import heading from "@webiny/app-page-builder/editor/plugins/elements/heading";
+import dynamicParagraph from "@webiny/app-page-builder/editor/plugins/elements/dynamic/paragraph";
 // Icons
 import icons from "@webiny/app-page-builder/editor/plugins/icons";
 // Element actions
@@ -31,6 +32,7 @@ import mediaGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/me
 import formGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/form";
 import socialGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/social";
 import codeGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/code";
+import dynamicGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/dynamic";
 import savedGroup from "@webiny/app-page-builder/editor/plugins/elementGroups/saved";
 // Blocks
 import gridBlock from "@webiny/app-page-builder/editor/plugins/blocks/gridBlock";
@@ -59,6 +61,8 @@ import gridSettings from "@webiny/app-page-builder/editor/plugins/elementSetting
 import textSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/text";
 // Default bar
 import defaultBarPlugins from "@webiny/app-page-builder/editor/plugins/defaultBar";
+// Datasource loader
+import dataSources from "@webiny/app-page-builder/editor/plugins/dataSources";
 // Responsive editor mode
 import responsiveEditorMode from "@webiny/app-page-builder/editor/plugins/responsiveMode";
 // Page settings
@@ -94,6 +98,7 @@ export default [
     twitter(),
     codesandbox(),
     pagesList(),
+    dynamicParagraph(),
     // grid presets
     ...gridPresets,
     // Icons
@@ -107,6 +112,7 @@ export default [
     mediaGroup,
     socialGroup,
     codeGroup,
+    dynamicGroup,
     savedGroup,
     // Block categories
     blocksCategories,
@@ -141,5 +147,7 @@ export default [
     // Breadcrumbs
     breadcrumbs,
     // action registration
-    actionPlugins()
+    actionPlugins(),
+    // DataSources
+    dataSources()
 ];

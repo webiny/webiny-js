@@ -208,6 +208,7 @@ export type PbPageData = {
     path: string;
     title?: string;
     content: any;
+    dataSources?: { name: string; data: Record<string, any> }[];
     settings?: {
         general?: {
             layout?: string;
@@ -289,7 +290,7 @@ export type PbDocumentElementPlugin = Plugin & {
 
 export type PbPageDetailsRevisionContentPlugin = Plugin & {
     type: "pb-page-details-revision-content";
-    render(params: { page: Record<string, any>; getPageQuery: any }): ReactElement;
+    render(params: { page: Record<string, any>; loading: boolean }): ReactElement;
 };
 
 export type PbPageDetailsHeaderRightOptionsMenuItemPlugin = Plugin & {
@@ -299,7 +300,7 @@ export type PbPageDetailsHeaderRightOptionsMenuItemPlugin = Plugin & {
 
 export type PbPageDetailsRevisionContentPreviewPlugin = Plugin & {
     type: "pb-page-details-revision-content-preview";
-    render(params: { page: Record<string, any>; getPageQuery: any }): ReactElement;
+    render(params: { page: Record<string, any>; loading: boolean }): ReactElement;
 };
 
 export type PbMenuItemPlugin = Plugin & {

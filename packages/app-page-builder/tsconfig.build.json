@@ -1,10 +1,11 @@
 {
   "extends": "../../tsconfig.build.json",
-  "include": ["./src", "./custom.d.ts", "./slate.d.ts", "./slate-react.d.ts"],
+  "include": ["./src"],
   "exclude": [
     "node_modules",
     "../app",
     "../app-admin",
+    "../app-i18n",
     "../app-plugin-admin-welcome-screen",
     "../app-security",
     "../plugins",
@@ -24,6 +25,9 @@
     },
     {
       "path": "../app-admin/tsconfig.build.json"
+    },
+    {
+      "path": "../app-i18n/tsconfig.build.json"
     },
     {
       "path": "../app-plugin-admin-welcome-screen/tsconfig.build.json"

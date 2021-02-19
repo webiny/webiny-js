@@ -94,7 +94,7 @@ const PageSettingsContent: React.FunctionComponent<PageSettingsContentPropsType>
     return (
         <OverlayLayout barMiddle={Title} onExited={deactivatePlugin}>
             <SplitView>
-                <LeftPanel span={5}>
+                <LeftPanel span={4}>
                     <List twoLine className={listStyle}>
                         {pluginsByType.map(pl => (
                             <ListItem
@@ -113,7 +113,7 @@ const PageSettingsContent: React.FunctionComponent<PageSettingsContentPropsType>
                         ))}
                     </List>
                 </LeftPanel>
-                <RightPanel span={7}>
+                <RightPanel span={8}>
                     <Form data={pageAtomValue} onSubmit={savePage}>
                         {({ Bind, submit, form, data, setValue }) => (
                             <SimpleForm>

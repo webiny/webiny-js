@@ -106,5 +106,6 @@ export const UpdateSettingsModel = withFields({
             description: string({ validation: validation.create("maxLength:500") }),
             image: object()
         })()
-    })
+    }),
+    dataSources: object({ list: true, value: [] })
 })();

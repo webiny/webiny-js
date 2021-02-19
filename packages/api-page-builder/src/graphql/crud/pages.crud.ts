@@ -1,15 +1,13 @@
 import { ContextPlugin } from "@webiny/handler/types";
 import mdbid from "mdbid";
-import defaults from "./utils/defaults";
 import uniqid from "uniqid";
 import { NotAuthorizedError } from "@webiny/api-security";
 import Error from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
-import getNormalizedListPagesArgs from "./utils/getNormalizedListPagesArgs";
 import trimStart from "lodash/trimStart";
 import omit from "lodash/omit";
+import get from "lodash/get";
 import merge from "lodash/merge";
-import getPKPrefix from "./utils/getPKPrefix";
 import DataLoader from "dataloader";
 
 import {
@@ -18,11 +16,13 @@ import {
     Page,
     PageSecurityPermission
 } from "@webiny/api-page-builder/types";
+import getNormalizedListPagesArgs from "./utils/getNormalizedListPagesArgs";
+import getPKPrefix from "./utils/getPKPrefix";
+import defaults from "./utils/defaults";
 import createListMeta from "./utils/createListMeta";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
 import executeHookCallbacks from "./utils/executeHookCallbacks";
-import path from "path";
 import normalizePath from "./pages/normalizePath";
 import { compressContent, extractContent } from "./pages/contentCompression";
 import { CreateDataModel, UpdateSettingsModel, UpdateDataModel } from "./pages/models";
@@ -335,7 +335,7 @@ const plugin: ContextPlugin<PbContext> = {
                         pagePath = normalizePath("untitled-" + uniqid.time());
                     } else {
                         pagePath = normalizePath(
-                            path.join(category.url, "untitled-" + uniqid.time())
+                            [category.url, "untitled-" + uniqid.time()].join("/")
                         );
                     }
 
@@ -538,6 +538,8 @@ const plugin: ContextPlugin<PbContext> = {
 
                     const identity = context.security.getIdentity();
                     checkOwnPermissions(identity, permission, page, "ownedBy");
+                    
+                    console.log("saving data", data);
 
                     const updateDataModel = new UpdateDataModel().populate(data);
                     await updateDataModel.validate();
@@ -552,6 +554,11 @@ const plugin: ContextPlugin<PbContext> = {
 
                     updateData.settings = await updateSettingsModel.toJSON();
                     updateData.savedOn = new Date().toISOString();
+                    if (updateData.path) {
+                        updateData.dynamic = updateData.path.includes("{");
+                    }
+                    
+                    console.log("updateData", updateData);
 
                     await executeHookCallbacks(hookPlugins, "beforeUpdate", context, page);
 
@@ -574,11 +581,11 @@ const plugin: ContextPlugin<PbContext> = {
                         });
 
                         // Update the ES index according to the value of the "latest pages lists" visibility setting.
-                        if (updateData?.visibility?.list?.latest !== false) {
+                        if (get(updateData, "visibility.list.latest") !== false) {
                             await elasticSearch.index({
                                 ...ES_DEFAULTS(),
                                 id: `L#${pid}`,
-                                body: getESLatestPageData(context, { ...page, ...data })
+                                body: getESLatestPageData(context, { ...page, ...updateData })
                             });
                         } else {
                             await elasticSearch.delete({
@@ -590,7 +597,7 @@ const plugin: ContextPlugin<PbContext> = {
 
                     await executeHookCallbacks(hookPlugins, "afterUpdate", context, page);
 
-                    return { ...page, ...data };
+                    return { ...page, ...updateData };
                 },
 
                 async delete(pageId) {

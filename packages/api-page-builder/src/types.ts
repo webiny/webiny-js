@@ -62,7 +62,7 @@ export type Page = {
     pid: string;
     title: string;
     path: string;
-    pattern: boolean;
+    dynamic: boolean;
     category: string;
     content: Record<string, any>;
     publishedOn: string;

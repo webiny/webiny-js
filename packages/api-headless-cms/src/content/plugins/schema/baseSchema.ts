@@ -21,6 +21,8 @@ const baseSchema = (context: CmsContext): GraphQLSchemaPlugin => {
         type: "graphql-schema",
         schema: {
             typeDefs: /* GraphQL */ `
+                directive @pbMapToPath(name: String!) on FIELD | FRAGMENT_SPREAD | INLINE_FRAGMENT
+
                 ${scalars.map(scalar => `scalar ${scalar.name}`).join(" ")}
                 scalar JSON
                 scalar Long

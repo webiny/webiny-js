@@ -11,9 +11,13 @@ export const DATA_FIELDS = `
     pid
     title
     path
+    dynamic
     version
     locked
     status
+    settings {
+        dataSources
+    }
     revisions {
         id
         savedOn

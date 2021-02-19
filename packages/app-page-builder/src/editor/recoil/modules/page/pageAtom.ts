@@ -10,11 +10,14 @@ export type PageAtomType = {
     id?: string;
     title?: string;
     path?: string;
+    dynamic?: boolean;
     settings?: {
+        dataSources?: Record<string, any>[];
         general?: {
             layout?: string;
         };
     };
+    dataSources?: { id: string; type: string; name: string; data: Record<string, any> }[];
     parent?: string;
     version: number;
     locked: boolean;

@@ -20,13 +20,13 @@ const listWrapper = css({
 });
 
 const RevisionsList = props => {
-    const { page, getPageQuery } = props;
+    const { page, loading } = props;
     const { revisions = [] } = page;
 
     return (
         <Elevation className={listWrapper} z={2}>
             <div style={{ position: "relative" }}>
-                {getPageQuery.loading && <CircularProgress />}
+                {loading && <CircularProgress />}
                 <List nonInteractive twoLine>
                     {revisions.map(revision => (
                         <Revision {...props} revision={revision} key={revision.id} />

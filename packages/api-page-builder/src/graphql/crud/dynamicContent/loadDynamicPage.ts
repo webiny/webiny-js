@@ -4,7 +4,7 @@ import { loadDataSources } from "./loadDataSources";
 export const loadDynamicPage = async (args, context: PbContext) => {
     // Find all pages that have a pattern instead of an exact slug
     const [pages] = await context.pageBuilder.pages.listPublished({
-        where: { pattern: true },
+        where: { dynamic: true },
         limit: 100
     });
 

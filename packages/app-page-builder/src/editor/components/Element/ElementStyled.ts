@@ -119,6 +119,7 @@ export const ElementContainer = React.memo<ElementContainerProps>(
                     transition: "background-color 0.2s"
                 },
                 ".element-holder": {
+                    whiteSpace: "nowrap",
                     "> span, > svg": {
                         backgroundColor: color
                     }

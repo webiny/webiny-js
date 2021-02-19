@@ -38,6 +38,12 @@ export default [
                         { className: "webiny-pb-typography-description", label: "Description" }
                     ]
                 },
+                "dynamic-paragraph": {
+                    types: [
+                        { className: "webiny-pb-typography-body", label: "Body" },
+                        { className: "webiny-pb-typography-description", label: "Description" }
+                    ]
+                },
                 list: {
                     types: [
                         { className: "", label: "Default" },

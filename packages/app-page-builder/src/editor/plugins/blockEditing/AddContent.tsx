@@ -8,7 +8,7 @@ import { useEventActionHandler } from "../../hooks/useEventActionHandler";
 import { ReactComponent as AddIcon } from "../../assets/icons/add.svg";
 import { TogglePluginActionEvent } from "../../recoil/actions";
 import { uiAtom } from "../../recoil/modules";
-import { elementsInContentTotalSelector } from "../../recoil/modules/page/selectors/elementsInContentTotalSelector";
+import { elementsInContentTotalSelector } from "../../recoil/modules/page/selectors";
 
 const pulse = keyframes`
   0% {

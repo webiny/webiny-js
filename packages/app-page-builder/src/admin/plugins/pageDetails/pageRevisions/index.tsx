@@ -8,7 +8,7 @@ const plugin: PbPageDetailsRevisionContentPlugin = {
     type: "pb-page-details-revision-content",
     render(props) {
         return (
-            <Tab label={"Revisions"} disabled={props.getPageQuery.loading}>
+            <Tab label={"Revisions"} disabled={props.loading}>
                 <RevisionsList {...props} />
             </Tab>
         );

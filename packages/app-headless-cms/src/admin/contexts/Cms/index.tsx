@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import ApolloClient from "apollo-client";
 import { useSecurity } from "@webiny/app-security";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
@@ -16,6 +16,7 @@ type CmsProviderProps = {
 export function CmsProvider(props: CmsProviderProps) {
     const { identity } = useSecurity();
     const { getCurrentLocale } = useI18N();
+    const clientsRef = useRef({});
 
     const currentLocale = getCurrentLocale("content");
 
@@ -39,7 +40,13 @@ export function CmsProvider(props: CmsProviderProps) {
             }
             return apolloClientsCache[locale];
         },
-        createApolloClient: props.createApolloClient,
+        createApolloClient: ({ uri }) => {
+            if (!clientsRef.current[uri]) {
+                clientsRef.current[uri] = props.createApolloClient({ uri });
+            }
+
+            return clientsRef.current[uri];
+        },
         apolloClient: apolloClientsCache[currentLocale]
     };
 

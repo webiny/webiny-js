@@ -18,6 +18,7 @@ import twitter from "@webiny/app-page-builder/render/plugins/elements/embeds/twi
 import pinterest from "@webiny/app-page-builder/render/plugins/elements/embeds/pinterest";
 import pagesList from "@webiny/app-page-builder/render/plugins/elements/pagesList";
 import imagesList from "@webiny/app-page-builder/render/plugins/elements/imagesList";
+import dynamicParagraph from "@webiny/app-page-builder/render/plugins/elements/dynamic/paragraph";
 // Page settings
 import pageSettings from "@webiny/app-page-builder/render/plugins/pageSettings";
 // Element settings
@@ -57,6 +58,7 @@ export default [
     imagesList(),
     // Page settings
     pageSettings(),
+    dynamicParagraph(),
     // Element settings
     align,
     animation,

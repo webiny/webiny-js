@@ -11,8 +11,9 @@ const DATA_NAMESPACE = "data.text";
 type TextPropsType = {
     element: PbElement;
     rootClassName?: string;
+    text?: string;
 };
-const TextElement: React.FunctionComponent<TextPropsType> = ({ element, rootClassName }) => {
+const TextElement: React.FunctionComponent<TextPropsType> = ({ element, rootClassName, text = null }) => {
     const {
         responsiveDisplayMode: { displayMode }
     } = usePageBuilder();
@@ -26,7 +27,7 @@ const TextElement: React.FunctionComponent<TextPropsType> = ({ element, rootClas
     );
 
     const value = get(element, `${DATA_NAMESPACE}.${displayMode}`, fallbackValue);
-    const textContent = get(element, `${DATA_NAMESPACE}.data.text`);
+    const textContent = text || get(element, `${DATA_NAMESPACE}.data.text`);
     const tag = get(value, "tag");
     const typography = get(value, "typography");
 

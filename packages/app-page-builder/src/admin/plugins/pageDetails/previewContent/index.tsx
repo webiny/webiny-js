@@ -24,14 +24,14 @@ const plugins = [
         name: "pb-page-details-revision-content-preview",
         type: "pb-page-details-revision-content",
         render(props) {
-            const { getPageQuery } = props;
+            const { loading } = props;
 
             return (
-                <Tab label={"Page preview"} disabled={getPageQuery.loading}>
+                <Tab label={"Page preview"} disabled={loading}>
                     <RenderBlock>
                         <Elevation z={2}>
                             <div style={{ position: "relative" }}>
-                                {getPageQuery.loading && <CircularProgress />}
+                                {loading && <CircularProgress />}
                                 {renderPlugins("pb-page-details-revision-content-preview", props)}
                             </div>
                         </Elevation>

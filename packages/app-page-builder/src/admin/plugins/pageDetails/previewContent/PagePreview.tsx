@@ -4,6 +4,8 @@ import styled from "@emotion/styled";
 import classNames from "classnames";
 import { Typography } from "@webiny/ui/Typography";
 import { Select } from "@webiny/ui/Select";
+import { PageProvider } from "@webiny/app-page-builder/render/contexts/Page";
+import { PbPageData } from "@webiny/app-page-builder/types";
 import RenderElement from "../../../../render/components/Element";
 import useResponsiveClassName from "../../../../hooks/useResponsiveClassName";
 import Zoom from "./Zoom";
@@ -50,8 +52,7 @@ const PagePreviewToolbar = styled("div")({
 });
 
 type PagePreviewProps = {
-    page: Record<string, any>;
-    getPageQuery: Function;
+    page: PbPageData & Record<string, any>;
 };
 
 const PagePreview = ({ page }: PagePreviewProps) => {
@@ -65,7 +66,9 @@ const PagePreview = ({ page }: PagePreviewProps) => {
                     className={classNames(pageInnerWrapper, responsiveClassName)}
                     style={{ "--webiny-pb-page-preview-scale": zoom } as CSSProperties}
                 >
-                    <RenderElement key={page.id} element={page.content} />
+                    <PageProvider page={page}>
+                        <RenderElement key={page.id} element={page.content} />
+                    </PageProvider>
                     <PagePreviewToolbar>
                         <span>
                             <Typography use={"overline"}>Zoom:&nbsp;</Typography>

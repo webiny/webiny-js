@@ -6,6 +6,8 @@ import { PbEditorPageSettingsPlugin } from "@webiny/app-page-builder/types";
 import { ReactComponent as SettingsIcon } from "./icons/round-settings-24px.svg";
 import { ReactComponent as SocialIcon } from "./icons/round-thumb_up-24px.svg";
 import { ReactComponent as SeoIcon } from "./icons/round-search-24px.svg";
+import { ReactComponent as HeadlessCmsIcon } from "./icons/devices_other-black-24px.svg";
+import HeadlessDataSourcesSettings from "./components/headlessDataSource/DataSourcesSettings";
 
 const plugins: PbEditorPageSettingsPlugin[] = [
     {
@@ -70,6 +72,19 @@ const plugins: PbEditorPageSettingsPlugin[] = [
     `,
         render(props) {
             return <SocialSettings {...props} />;
+        }
+    },
+    {
+        name: "pb-editor-page-settings-headless-cms-data-source",
+        type: "pb-editor-page-settings",
+        title: "Headless CMS data source",
+        description: "Generate a page using Headless CMS data.",
+        icon: <HeadlessCmsIcon />,
+        fields: `
+            dataSources
+        `,
+        render(props) {
+            return <HeadlessDataSourcesSettings {...props} />;
         }
     }
 ];

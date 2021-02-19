@@ -43,10 +43,12 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 status: String
                 visibility: PbPageVisibility
                 path: String
+                dynamic: Boolean
                 url: String
                 settings: PbPageSettings
                 content: JSON
                 revisions: [PbPageRevision]
+                dataSources: [JSON]
             }
 
             type PbPageRevision {
@@ -78,6 +80,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 snippet: String
                 tags: [String]
                 path: String
+                dynamic: Boolean
                 url: String
                 savedOn: DateTime
                 createdFrom: ID
@@ -289,6 +292,23 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 url: async (page: Page, args, context) => {
                     const settings = await context.pageBuilder.settings.default.get();
                     return settings ? settings.websiteUrl + page.path : page.path;
+                },
+                title(page: Page) {
+                    if (
+                        page.dynamic &&
+                        page.title.includes("{") &&
+                        Array.isArray(page.dataSources)
+                    ) {
+                        const [ds, ...path] = page.title
+                            .substring(1, page.title.length - 1)
+                            .split(".");
+                        const dataSource = page.dataSources.find(d => d.name === ds);
+                        if (dataSource) {
+                            return path.reduce((obj, key) => obj[key], dataSource.data);
+                        }
+                    }
+
+                    return page.title;
                 }
             },
             PbPageListItem: {
