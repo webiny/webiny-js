@@ -100,7 +100,7 @@ export default (): ContextPlugin<CmsContext> => ({
 
         const groupsGet = async (id: string) => {
             const [[group]] = await db.read<CmsContentModelGroup>({
-                ...utils.defaults.db,
+                ...utils.defaults.db(),
                 query: { PK: PK_GROUP(), SK: id }
             });
 
@@ -114,7 +114,7 @@ export default (): ContextPlugin<CmsContext> => ({
         const groupsList = async (args?: CmsContentModelGroupListArgs) => {
             const { where, limit } = args || {};
             const [groups] = await db.read<CmsContentModelGroup>({
-                ...utils.defaults.db,
+                ...utils.defaults.db(),
                 query: { PK: PK_GROUP(), SK: { $gt: " " } }
             });
 
@@ -187,7 +187,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 };
 
                 await db.create({
-                    ...utils.defaults.db,
+                    ...utils.defaults.db(),
                     data: dbData
                 });
                 return model;
@@ -214,7 +214,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 });
 
                 await db.update({
-                    ...utils.defaults.db,
+                    ...utils.defaults.db(),
                     query: { PK: PK_GROUP(), SK: id },
                     data: modelData
                 });
@@ -231,7 +231,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 await beforeDeleteHook(context, id);
 
                 await db.delete({
-                    ...utils.defaults.db,
+                    ...utils.defaults.db(),
                     query: {
                         PK: PK_GROUP(),
                         SK: id

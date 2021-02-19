@@ -27,15 +27,13 @@ describe("READ - resolvers - api key", () => {
 
     const API_TOKEN = "aToken";
 
-    const esCmsIndex = "root-headless-cms";
-
     const manageOpts = {
         path: "manage/en-US"
     };
     const readOpts = { path: "read/en-US", permissions: [] };
 
     const {
-        elasticSearch,
+        clearAllIndex,
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
@@ -43,7 +41,7 @@ describe("READ - resolvers - api key", () => {
 
     beforeEach(async () => {
         try {
-            await elasticSearch.indices.create({ index: esCmsIndex });
+            await clearAllIndex();
         } catch {
             // Ignore errors
         }
@@ -90,7 +88,7 @@ describe("READ - resolvers - api key", () => {
 
     afterEach(async () => {
         try {
-            await elasticSearch.indices.delete({ index: esCmsIndex });
+            await clearAllIndex();
         } catch (e) {}
     });
 

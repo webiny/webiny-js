@@ -1,0 +1,54 @@
+<svg width="80" height="91" viewBox="0 0 80 91" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="webiny serverless application framework">
+<g id="Group 117">
+<g id="Group 111">
+<path id="path-1 path" opacity="0.3" fill-rule="evenodd" clip-rule="evenodd" d="M44.6848 88.8765C41.7859 90.5623 38.2146 90.5623 35.3157 88.8765L4.68447 71.0604C1.78563 69.3742 0 66.2587 0 62.8867L0 27.2545C0 23.8825 1.78563 20.7665 4.68447 19.0808L35.3157 1.2647C38.2146 -0.421567 41.7859 -0.421567 44.6848 1.2647L75.3155 19.0808C78.2144 20.7665 80 23.8825 80 27.2545V62.8867C80 66.2587 78.2144 69.3742 75.3155 71.0604L44.6848 88.8765Z" fill="#7B39D9"/>
+<path id="path-1 path_2" fill-rule="evenodd" clip-rule="evenodd" d="M44.7863 84.496C42.1732 86.0131 38.954 86.0131 36.3409 84.496L8.72965 68.4615C6.1166 66.9438 4.50702 64.1399 4.50702 61.1051L4.50702 29.0361C4.50702 26.0013 6.1166 23.197 8.72965 21.6798L36.3409 5.64531C38.954 4.12767 42.1732 4.12767 44.7863 5.64531L72.397 21.6798C75.0101 23.197 76.6197 26.0013 76.6197 29.0361V61.1051C76.6197 64.1399 75.0101 66.9438 72.397 68.4615L44.7863 84.496Z" fill="url(#paint0_linear)"/>
+</g>
+</g>
+<g id="Group 123">
+<circle id="Ellipse 8" cx="40.5634" cy="19.1549" r="4.50704" stroke="white" stroke-width="2"/>
+<circle id="Ellipse 15" cx="40.5634" cy="19.155" r="1.12676" fill="white"/>
+</g>
+<g id="Group 120">
+<circle id="Ellipse 9" cx="40.5634" cy="70.6754" r="4.50704" stroke="white" stroke-width="2"/>
+<circle id="Ellipse 18" r="1.12676" transform="matrix(1 0 0 -1 40.5634 70.6754)" fill="white"/>
+</g>
+<g id="Group 124">
+<circle id="Ellipse 9_2" cx="40.5634" cy="45.0704" r="4.50704" stroke="white" stroke-width="2"/>
+<circle id="Ellipse 18_2" r="1.12676" transform="matrix(1 0 0 -1 40.5634 45.0704)" fill="white"/>
+</g>
+<g id="Group 119">
+<circle id="Ellipse 10" cx="19.1549" cy="56.338" r="4.50704" stroke="white" stroke-width="2"/>
+<circle id="Ellipse 19" r="1.12676" transform="matrix(1 0 0 -1 19.1548 56.338)" fill="white"/>
+</g>
+<g id="Group 118">
+<circle id="Ellipse 13" cx="19.1549" cy="31.5494" r="4.50704" stroke="white" stroke-width="2"/>
+<circle id="Ellipse 14" cx="19.1548" cy="31.5494" r="1.12676" fill="white"/>
+</g>
+<g id="Group 121">
+<circle id="Ellipse 11" cx="61.9719" cy="56.338" r="4.50704" stroke="white" stroke-width="2"/>
+<circle id="Ellipse 17" r="1.12676" transform="matrix(-1 0 0 1 61.9719 56.3381)" fill="white"/>
+</g>
+<g id="Group 122">
+<circle id="Ellipse 12" cx="61.9719" cy="31.5494" r="4.50704" stroke="white" stroke-width="2"/>
+<circle id="Ellipse 16" cx="61.9719" cy="31.5494" r="1.12676" fill="white"/>
+</g>
+<path id="Line 30" d="M36.6197 20.8452L28.169 25.9155" stroke="white" stroke-width="2"/>
+<path id="Line 31" d="M19.369 36.0565L19.4049 45.9124" stroke="white" stroke-width="2"/>
+<path id="Line 34" d="M62.2198 51.5461L62.188 41.6901" stroke="white" stroke-width="2"/>
+<path id="Line 32" d="M22.6684 58.5859L30.9603 63.9137" stroke="white" stroke-width="2"/>
+<path id="Line 35" d="M57.9935 28.993L49.4536 24.0725" stroke="white" stroke-width="2"/>
+<path id="Line 33" d="M44.0917 68.32L52.2355 62.7685" stroke="white" stroke-width="2"/>
+<path id="Line 36" d="M44.2173 43.1027L52.3611 37.5512" stroke="white" stroke-width="2"/>
+<path id="Line 37" d="M36.0345 42.2863L27.8907 36.7348" stroke="white" stroke-width="2"/>
+<path id="Line 38" d="M40.9741 49.7944L40.9087 59.6502" stroke="white" stroke-width="2"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear" x1="103.964" y1="107.726" x2="152.463" y2="39.5578" gradientUnits="userSpaceOnUse">
+<stop stop-color="#8033EB"/>
+<stop offset="0.53" stop-color="#D4648E"/>
+<stop offset="1" stop-color="#EC7071"/>
+</linearGradient>
+</defs>
+</svg>

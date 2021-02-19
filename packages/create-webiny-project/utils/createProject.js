@@ -10,6 +10,9 @@ const rimraf = require("rimraf");
 const { sendEvent } = require("@webiny/tracking");
 const getPackageJson = require("./getPackageJson");
 const checkProjectName = require("./checkProjectName");
+const yaml = require("js-yaml");
+const getYarnVersion = require("./getYarnVersion");
+const semver = require("semver");
 
 module.exports = async function createProject({
     projectName,
@@ -17,7 +20,8 @@ module.exports = async function createProject({
     tag,
     log,
     interactive,
-    templateOptions
+    templateOptions,
+    assignToYarnrc: assignToYarnRc
 }) {
     if (!projectName) {
         throw Error("You must provide a name for the project to use.");
@@ -88,12 +92,35 @@ module.exports = async function createProject({
                 // Setup yarn@2
                 title: "Setup yarn@^2",
                 task: async () => {
-                    await execa("yarn", ["set", "version", "berry"], { cwd: projectRoot });
+                    const yarnVersion = await getYarnVersion();
+                    if (semver.satisfies(yarnVersion, "^1.22.0")) {
+                        await execa("yarn", ["set", "version", "berry"], { cwd: projectRoot });
+                    }
+
                     fs.copySync(
                         path.join(__dirname, "files", "example.yarnrc.yml"),
                         path.join(projectRoot, ".yarnrc.yml"),
                         { overwrite: true }
                     );
+
+                    // Enables adding additional params into the `.yarnrc.yml` file.
+                    if (assignToYarnRc) {
+                        let parsedAssignToYarnRc;
+                        try {
+                            parsedAssignToYarnRc = JSON.parse(assignToYarnRc);
+                        } catch {
+                            console.log(
+                                yellow("Warning: could not parse provided --assign-to-yarnrc JSON.")
+                            );
+                        }
+
+                        if (parsedAssignToYarnRc) {
+                            const yamlPath = path.join(projectRoot, ".yarnrc.yml");
+                            const parsedYaml = yaml.load(fs.readFileSync(yamlPath, "utf-8"));
+                            Object.assign(parsedYaml, parsedAssignToYarnRc);
+                            fs.writeFileSync(yamlPath, yaml.dump(parsedYaml));
+                        }
+                    }
                 }
             },
             {

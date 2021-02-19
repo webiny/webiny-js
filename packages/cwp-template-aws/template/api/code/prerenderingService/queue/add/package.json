@@ -5,6 +5,11 @@
     "build": "yarn webiny run build"
   },
   "dependencies": {
-    "@webiny/cli": "latest"
+    "@webiny/api-prerendering-service": "latest",
+    "@webiny/cli": "latest",
+    "@webiny/db-dynamodb": "latest",
+    "@webiny/handler-aws": "latest",
+    "@webiny/handler-db": "latest",
+    "@webiny/project-utils": "latest"
   }
 }

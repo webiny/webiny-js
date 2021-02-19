@@ -138,7 +138,8 @@
       "@webiny/cli-plugin-scaffold/*": ["./packages/cli-plugin-scaffold/src/*"],
       "@webiny/cli-plugin-scaffold-graphql-service/*": [
         "./packages/cli-plugin-scaffold-graphql-service/src/*"
-      ]
+      ],
+        "@webiny/system-upgrade/*": ["./packages/system-upgrade/src/*"]
     },
     "typeRoots": ["./typings", "./node_modules/@types", "@types/testing-library__cypress"]
   },

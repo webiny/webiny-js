@@ -1,24 +1,9 @@
 const path = require("path");
 const webpack = require("webpack");
 const WebpackBar = require("webpackbar");
-const { constantCase } = require("constant-case");
-
-const generatePackageVersionDefinitions = () => {
-    const pkgJSON = require(path.resolve("package.json"));
-
-    return Object.keys(pkgJSON.dependencies || []).reduce((acc, item) => {
-        if (item.startsWith("@webiny/")) {
-            const { version } = require(require.resolve(path.join(item, "package.json"), {
-                paths: [process.cwd()]
-            }));
-            acc[`${constantCase(item)}_VERSION`] = JSON.stringify(version);
-        }
-        return acc;
-    }, {});
-};
+const { version } = require("@webiny/project-utils/package.json");
 
 module.exports = ({ entry, output, debug = false, babelOptions, define }) => {
-    const packageVersions = generatePackageVersionDefinitions();
     const definitions = define ? JSON.parse(define) : {};
 
     return {
@@ -42,7 +27,10 @@ module.exports = ({ entry, output, debug = false, babelOptions, define }) => {
             hints: false
         },
         plugins: [
-            new webpack.DefinePlugin({ ...definitions, ...packageVersions }),
+            new webpack.DefinePlugin({
+                "process.env.WEBINY_VERSION": JSON.stringify(version),
+                ...definitions
+            }),
             new WebpackBar({ name: path.basename(process.cwd()) })
         ],
         // Run babel on all .js files and skip those in node_modules

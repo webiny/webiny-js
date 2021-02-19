@@ -7,8 +7,6 @@ import models from "./mocks/contentModels";
 describe("Endpoint access", () => {
     let contentModelGroup: CmsContentModelGroup;
 
-    const esCmsIndex = "root-headless-cms";
-
     const manageOpts = { path: "manage/en-US" };
     const readOpts = { path: "read/en-US" };
     const previewOpts = { path: "preview/en-US" };
@@ -30,7 +28,7 @@ describe("Endpoint access", () => {
     ];
 
     const {
-        elasticSearch,
+        clearAllIndex,
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
@@ -82,13 +80,13 @@ describe("Endpoint access", () => {
 
     beforeEach(async () => {
         try {
-            await elasticSearch.indices.create({ index: esCmsIndex });
+            await clearAllIndex();
         } catch {}
     });
 
     afterEach(async () => {
         try {
-            await elasticSearch.indices.delete({ index: esCmsIndex });
+            await clearAllIndex();
         } catch {}
     });
 

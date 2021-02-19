@@ -2,6 +2,7 @@
 .idea
 .webpack
 .webiny
+.tmp/
 .env
 .env.*
 .npmrc

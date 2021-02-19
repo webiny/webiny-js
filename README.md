@@ -17,7 +17,7 @@
 [![SemVer](http://img.shields.io/:semver-2.0.0-brightgreen.svg)](http://semver.org)
 ![](https://img.shields.io/npm/types/scrub-js.svg)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v1.4%20adopted-ff69b4.svg)](CODE_OF_CONDUCT.md)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v1.4%20adopted-ff69b4.svg)](/docs/CODE_OF_CONDUCT.md)
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FWebiny%2Fwebiny-js.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FWebiny%2Fwebiny-js?ref=badge_shield)
 [![Join our Slack community https://www.webiny.com/slack](https://img.shields.io/badge/Slack-Join%20our%20community!-orange)](https://www.webiny.com/slack)
 
