@@ -2,5 +2,3 @@ name: admin
 runtime: nodejs
 description: Represents cloud infrastructure that hosts your project's Admin area.
 main: pulumi/
-backend:
-  url: file://
