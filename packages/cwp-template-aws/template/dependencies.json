@@ -56,7 +56,7 @@
     ]
   },
   "scripts": {
-    "setup-repo": "node ./scripts/setupRepository.js",
+    "setup-repo": "node ./scripts/setupRepo.js",
     "setup-env-files": "node ./scripts/setupEnvFiles.js",
     "link-workspaces": "node ./scripts/linkWorkspaces.js",
     "postinstall": "yarn link-workspaces",

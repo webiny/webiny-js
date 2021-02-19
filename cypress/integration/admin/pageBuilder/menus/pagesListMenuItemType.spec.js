@@ -14,9 +14,12 @@ describe("Menus Module", () => {
                 cy.pbUpdatePage({
                     id: page.id,
                     data: {
+                        category: "static",
+                        path: `/page-${id}-${i}`,
                         title: `Page-${id}-${i}`,
                         settings: {
                             general: {
+                                layout: "static",
                                 tags: [`page-${id}`, `page-${id}-${i}`]
                             }
                         }
@@ -36,7 +39,7 @@ describe("Menus Module", () => {
         // Test "Page List".
         cy.findByText(/\+ Add Menu Item/i).click();
         cy.findByText("Page list").click();
-        cy.findByLabelText("Title").type(id);
+        cy.findByLabelText("Title").type(`added-menu-${id}`);
         cy.findByText(/Save Menu Item/i)
             .click()
             .wait(200);
@@ -68,23 +71,15 @@ describe("Menus Module", () => {
     });
 
     it(`Step 2: assert that menu item and pages are shown (descending order)`, () => {
-        cy.visit(Cypress.env("WEBSITE_URL"));
+        cy.visit(Cypress.env("WEBSITE_URL") + `/page-${id}-${0}`);
         cy.reloadUntil(() => {
             // We wait until the document contains the newly added menu.
-            return new Promise(resolve => {
-                setTimeout(() => {
-                    resolve(Cypress.$(`:contains(${id})`).length > 0);
-                    console.log(
-                        `Cypress.$(\`:contains(${id})\`).length > 0`,
-                        Cypress.$(`:contains(${id})`).length
-                    );
-                }, 5000);
-            });
+            return Cypress.$(`:contains(added-menu-${id})`).length > 0;
         })
             .findByTestId("pb-desktop-header")
             .within(() => {
                 // Let's check the links and the order.
-                cy.findByText(id).within(() => {
+                cy.findByText(`added-menu-${id}`).within(() => {
                     cy.get("ul li:nth-child(1)").contains(`Page-${id}-1`);
                     cy.get("ul li:nth-child(2)").contains(`Page-${id}-0`);
                 });
@@ -98,7 +93,7 @@ describe("Menus Module", () => {
             cy.findByText(`Main Menu`).click({ force: true });
         });
 
-        cy.findByTestId(`pb-menu-item-render-${id}`).within(() => {
+        cy.findByTestId(`pb-menu-item-render-added-menu-${id}`).within(() => {
             cy.findByTestId("pb-edit-icon-button").click();
         });
 
@@ -107,7 +102,7 @@ describe("Menus Module", () => {
             .select("Ascending");
         cy.findByLabelText("Title")
             .clear()
-            .type(idEdited);
+            .type(`added-menu-${idEdited}`);
 
         cy.findByText(/Save Menu Item/i).click();
         cy.findByText("Save menu").click();
@@ -115,17 +110,15 @@ describe("Menus Module", () => {
     });
 
     it(`Step 4: assert that menu item and pages are shown (ascending order)`, () => {
-        cy.visit(Cypress.env("WEBSITE_URL"))
+        cy.visit(Cypress.env("WEBSITE_URL") + `/page-${id}-${0}`)
             .reloadUntil(() => {
                 // We wait until the document contains the newly added menu.
-                return new Promise(resolve => {
-                    setTimeout(() => resolve(Cypress.$(`:contains(${idEdited})`).length > 0), 5000);
-                });
+                return Cypress.$(`:contains(added-menu-${idEdited})`).length > 0;
             })
             .findByTestId("pb-desktop-header")
             .within(() => {
                 // Let's check the links and the order.
-                cy.findByText(idEdited).within(() => {
+                cy.findByText(`added-menu-${idEdited}`).within(() => {
                     cy.get("ul li:nth-child(1)").contains(`Page-${id}-0`);
                     cy.get("ul li:nth-child(2)").contains(`Page-${id}-1`);
                 });
@@ -139,7 +132,7 @@ describe("Menus Module", () => {
             cy.findByText(`Main Menu`).click({ force: true });
         });
 
-        cy.findByTestId(`pb-menu-item-render-${idEdited}`).within(() => {
+        cy.findByTestId(`pb-menu-item-render-added-menu-${idEdited}`).within(() => {
             cy.findByTestId("pb-delete-icon-button").click();
         });
 
@@ -148,20 +141,15 @@ describe("Menus Module", () => {
     });
 
     it(`Step 6: assert that the pages list menu item does not exist`, () => {
-        cy.visit(Cypress.env("WEBSITE_URL"))
+        cy.visit(Cypress.env("WEBSITE_URL") + `/page-${id}-${0}`)
             .reloadUntil(() => {
                 // We wait until the document contains the newly added menu.
-                return new Promise(resolve => {
-                    setTimeout(
-                        () => resolve(Cypress.$(`:contains(${idEdited})`).length === 0),
-                        5000
-                    );
-                });
+                return Cypress.$(`:contains(added-menu-${idEdited})`).length === 0;
             })
             .findByTestId("pb-desktop-header")
             .within(() => {
                 // Let's check the links and the order.
-                cy.findByText(idEdited).should("not.exist");
+                cy.findByText(`added-menu-${idEdited}`).should("not.exist");
             });
     });
 });
