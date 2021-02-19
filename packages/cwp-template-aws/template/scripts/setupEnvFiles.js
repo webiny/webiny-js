@@ -21,7 +21,7 @@ const PROJECT_FOLDER = ".";
     console.log(`✍️  Writing environment config files...`);
     // Create root .env
     const rootEnvFilePath = path.resolve(PROJECT_FOLDER, ".env");
-    const rootExampleEnvFilePath = path.resolve(PROJECT_FOLDER, "example.env");
+    const rootExampleEnvFilePath = path.resolve(PROJECT_FOLDER, ".example.env");
     if (fs.existsSync(rootEnvFilePath)) {
         console.log(`⚠️  ${green(".env")} already exists, skipping.`);
     } else {
