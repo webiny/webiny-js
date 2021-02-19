@@ -103,3 +103,19 @@ export const createElasticsearchQuery = (where?: ListBooksWhere) => {
 
     return query;
 };
+
+export const encodeElasticsearchCursor = (cursor?: any) => {
+    if (!cursor) {
+        return null;
+    }
+
+    return Buffer.from(JSON.stringify(cursor)).toString("base64");
+};
+
+export const decodeElasticsearchCursor = (cursor?: string) => {
+    if (!cursor) {
+        return null;
+    }
+
+    return JSON.parse(Buffer.from(cursor, "base64").toString("ascii"));
+};

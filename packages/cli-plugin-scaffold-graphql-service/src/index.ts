@@ -195,22 +195,26 @@ export default (): CliCommandScaffoldTemplate<{ location: string; entityName: st
 
             const targetName = Case.camel(entityName);
 
-            const graphqlIndexFile = path
-                .relative(process.cwd(), "api/code/graphql/src/index.ts")
-                .replace(/\\/g, "/");
+            const graphqlPath = path.relative(process.cwd(), "./api/code/graphql");
+            const graphqlIndexFile = `${path.relative(process.cwd(), `${graphqlPath}/src`)}`;
+            const graphqlTsConfigFile = `${path.relative(process.cwd(), `${graphqlPath}`)}`;
 
-            const graphqlTsConfigFile = path
-                .relative(process.cwd(), "api/code/graphql/tsconfig.json")
-                .replace(/\\/g, "/");
-
-            const targetPluginIndexFile = path
-                .relative(graphqlIndexFile, `${location}/src/index`)
-                .replace(/\\/g, "/");
-
-            const targetPluginTsConfigIncludePath = targetPluginIndexFile.replace(
-                /\/src\/index$/,
-                "/src/**/*.ts"
+            const servicePath = path.relative(process.cwd(), location);
+            const serviceIndexFile = path.relative(graphqlIndexFile, `${servicePath}/src/index`);
+            const serviceTsConfigInclude = path.relative(
+                graphqlTsConfigFile,
+                `${servicePath}/src/**/*.ts`
             );
+
+            console.log({
+                graphqlPath,
+                graphqlIndexFile,
+                graphqlTsConfigFile,
+                servicePath,
+                serviceIndexFile,
+                serviceTsConfigInclude
+            });
+            return;
 
             console.log(`The next steps:`);
             console.log(

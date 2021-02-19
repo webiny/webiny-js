@@ -13,23 +13,12 @@ import {
     UpdateTargetArgs
 } from "./types";
 import { configuration } from "./configuration";
-import { createElasticsearchQuery } from "./es";
+import {
+    createElasticsearchQuery,
+    encodeElasticsearchCursor,
+    decodeElasticsearchCursor
+} from "./es";
 
-const encodeElasticsearchCursor = (cursor?: any) => {
-    if (!cursor) {
-        return null;
-    }
-
-    return Buffer.from(JSON.stringify(cursor)).toString("base64");
-};
-
-const decodeElasticsearchCursor = (cursor?: string) => {
-    if (!cursor) {
-        return null;
-    }
-
-    return JSON.parse(Buffer.from(cursor, "base64").toString("ascii"));
-};
 /**
  * Fields that will have unmapped_type set to "date". Without this, sorting by date does not work.
  */
@@ -111,8 +100,19 @@ export default (): GraphQLSchemaPlugin<ApplicationContext> => ({
             }
 
             input TargetListWhereInput {
-                title: String
-                description: String
+                # system fields
+                id: String
+                id_in: [String!]
+                id_not: String
+                id_not_in: [String!]
+                savedOn_gt: DateTime
+                savedOn_lt: DateTime
+                createdOn_gt: DateTime
+                createdOn_lt: DateTime
+
+                # custom fields
+                title_contains: String
+                title_not_contains: String
                 isNice: Boolean
             }
 
