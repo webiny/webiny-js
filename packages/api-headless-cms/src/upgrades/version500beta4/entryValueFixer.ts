@@ -70,13 +70,21 @@ const fixDateTime = (dateTime: any): string => {
     }
 };
 
-const dateFixMethods = {
-    time: fixTime,
-    date: fixDate,
-    dateTime: fixDateTime
+const fixNumber = (value: any) => {
+    if (value === undefined || value === null) {
+        return null;
+    }
+    return parseFloat(value);
 };
 
-const fixDateTimeValues = (
+const fieldFixMethods = {
+    time: fixTime,
+    date: fixDate,
+    dateTime: fixDateTime,
+    number: fixNumber
+};
+
+const fixFieldValues = (
     target: CmsContentIndexEntry,
     finder: ModelFieldFinder
 ): CmsContentIndexEntry => {
@@ -85,7 +93,7 @@ const fixDateTimeValues = (
     };
     for (const fieldId in target.values) {
         const field = finder.findById(target.modelId, fieldId);
-        const fixMethod = dateFixMethods[field.type];
+        const fixMethod = fieldFixMethods[field.type];
         if (!fixMethod) {
             continue;
         } else if (target.values[fieldId] === null || target.values[fieldId] === undefined) {
@@ -102,5 +110,5 @@ export const entryValueFixer = (
     finder: ModelFieldFinder,
     target: CmsContentIndexEntry
 ): CmsContentEntry => {
-    return cleanDatabaseRecord(fixDateTimeValues(fixRawValues(target, finder), finder));
+    return cleanDatabaseRecord(fixFieldValues(fixRawValues(target, finder), finder));
 };
