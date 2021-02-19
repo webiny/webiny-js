@@ -1,7 +1,11 @@
 import minimatch from "minimatch";
 import { ContextPlugin } from "@webiny/handler/types";
 import { SecurityIdentity } from "./SecurityIdentity";
-import { SecurityAuthenticationPlugin, SecurityAuthorizationPlugin } from "../types";
+import {
+    SecurityAuthenticationPlugin,
+    SecurityAuthorizationPlugin,
+    SecurityPermission
+} from "../types";
 
 export default () => [
     {
@@ -17,7 +21,7 @@ export default () => [
                 getIdentity() {
                     return context.security.identity;
                 },
-                async getPermission(permission) {
+                async getPermission(permission): Promise<SecurityPermission | null> {
                     const perms = await context.security.getPermissions();
                     const exactMatch = perms.find(p => p.name === permission);
                     if (exactMatch) {
@@ -32,7 +36,7 @@ export default () => [
 
                     return null;
                 },
-                async getPermissions() {
+                async getPermissions(): Promise<SecurityPermission[]> {
                     const authorizationPlugins = context.plugins.byType<
                         SecurityAuthorizationPlugin
                     >("security-authorization");
@@ -46,6 +50,13 @@ export default () => [
 
                     // Returning an empty array since not a single plugin returned any permissions.
                     return [];
+                },
+                async hasFullAccess(): Promise<boolean> {
+                    const permissions = (await context.security.getPermissions()) as SecurityPermission[];
+
+                    return permissions.some(permission => {
+                        return permission.name === "*";
+                    });
                 }
             });
 
