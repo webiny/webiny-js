@@ -62,7 +62,12 @@ module.exports = async (inputs, context) => {
 
     await pulumi.run({
         command: "destroy",
-        execa: { stdio: "inherit" },
+        execa: {
+            stdio: "inherit",
+            env: {
+                WEBINY_ENV: env
+            }
+        },
         args: {
             yes: true
         }
