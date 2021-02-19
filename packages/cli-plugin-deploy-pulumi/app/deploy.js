@@ -133,7 +133,10 @@ module.exports = async (inputs, context) => {
                 secretsProvider: SECRETS_PROVIDER
             },
             execa: {
-                stdio: "inherit"
+                stdio: "inherit",
+                env: {
+                    WEBINY_ENV: env
+                }
             }
         });
     }
