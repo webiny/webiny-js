@@ -10,10 +10,16 @@ interface ValueEntry {
     published: boolean;
     name: string;
 }
+interface DataEntry {
+    id: string;
+    meta: {
+        status: "published" | "draft";
+        title: string;
+    };
+}
 interface UseReferenceHookArgs {
     bind: any;
     field: CmsEditorField;
-    assignValueEntry?: boolean;
 }
 interface UseReferenceHookValue {
     onChange: (value: any) => void;
@@ -24,21 +30,50 @@ interface UseReferenceHookValue {
 }
 type UseReferenceHook = (args: UseReferenceHookArgs) => UseReferenceHookValue;
 
-function distinctBy(key: string, array: any[]): any[] {
-    const keys = array.map(value => value[key]);
-    return array.filter((value, index) => keys.indexOf(value[key]) === index);
-}
+type EntryCollection = Record<string, DataEntry>;
 
-export const useReference: UseReferenceHook = ({ bind, field, assignValueEntry }) => {
-    const allEntries = useRef<any[]>([]);
+const convertQueryDataToEntryList = (data: DataEntry[]): EntryCollection => {
+    return data.reduce((collection, entry) => {
+        collection[entry.id] = entry;
+        return collection;
+    }, {});
+};
+
+const convertValueEntryToData = (entry: ValueEntry): DataEntry => {
+    return {
+        id: entry.id,
+        meta: {
+            status: entry.published ? "published" : "draft",
+            title: entry.name
+        }
+    };
+};
+
+const convertDataEntryToValue = (entry: DataEntry): ValueEntry => {
+    return {
+        id: entry.id,
+        published: entry.meta.status === "published",
+        name: entry.meta.title
+    };
+};
+
+const assignValueEntry = (entry: ValueEntry | null, collection: EntryCollection): void => {
+    if (!entry) {
+        return;
+    }
+    collection[entry.id] = convertValueEntryToData(entry);
+};
+
+export const useReference: UseReferenceHook = ({ bind, field }) => {
+    const allEntries = useRef<EntryCollection>({});
     const client = useApolloClient();
     const [search, setSearch] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
     const [model, setModel] = useState<CmsEditorContentModel>(null);
     const [LIST_CONTENT, setListContent] = useState<any>(null);
     const [GET_CONTENT, setGetContent] = useState<any>(null);
-    const [entries, setEntries] = useState<any[]>([]);
-    const [latestEntries, setLatestEntries] = useState<any[]>([]);
+    const [entries, setEntries] = useState<EntryCollection>({});
+    const [latestEntries, setLatestEntries] = useState<EntryCollection>({});
     const [valueEntry, setValueEntry] = useState<ValueEntry>(null);
 
     const { modelId } = field.settings.models[0];
@@ -63,8 +98,11 @@ export const useReference: UseReferenceHook = ({ bind, field, assignValueEntry }
 
         setLoading(false);
 
-        allEntries.current = distinctBy("id", [...allEntries.current, ...data.content.data]);
-        setEntries(data.content.data);
+        const searchEntries = convertQueryDataToEntryList(data.content.data);
+        assignValueEntry(valueEntry, searchEntries);
+        Object.assign(allEntries.current, searchEntries);
+
+        setEntries(searchEntries);
     };
 
     useEffect(() => {
@@ -104,22 +142,11 @@ export const useReference: UseReferenceHook = ({ bind, field, assignValueEntry }
                 variables: { limit: 10 }
             })
             .then(({ data }) => {
-                const selectedEntry = [];
-                if (
-                    assignValueEntry &&
-                    valueEntry &&
-                    data.content.data.some(e => e.id === valueEntry.id) === false
-                ) {
-                    selectedEntry.push({
-                        id: valueEntry.id,
-                        meta: {
-                            status: valueEntry.published ? "published" : "draft",
-                            title: valueEntry.name
-                        }
-                    });
-                }
-                setLatestEntries(data.content.data.concat(selectedEntry));
-                allEntries.current = [...data.content.data];
+                const latestEntryData = convertQueryDataToEntryList(data.content.data);
+                assignValueEntry(valueEntry, latestEntryData);
+
+                setLatestEntries(latestEntryData);
+                Object.assign(allEntries.current, latestEntryData);
             });
     }, [modelId, LIST_CONTENT]);
 
@@ -129,13 +156,11 @@ export const useReference: UseReferenceHook = ({ bind, field, assignValueEntry }
             return;
         }
 
-        const entry = allEntries.current.find(entry => entry.id === value);
+        const entry = allEntries.current[value];
         if (entry) {
             // if entry exists set valueEntry to that one so we do not load new one
-            setValueEntry({
-                id: entry.id,
-                published: entry.meta.status === "published",
-                name: entry.meta.title
+            setValueEntry(() => {
+                return convertDataEntryToValue(entry);
             });
             return;
         }
@@ -143,40 +168,30 @@ export const useReference: UseReferenceHook = ({ bind, field, assignValueEntry }
         setLoading(true);
         client.query({ query: GET_CONTENT, variables: { revision: value } }).then(res => {
             setLoading(false);
-            const entry = res.data.content.data;
-
-            const existsInAllEntries = allEntries.current.some(e => e.id === entry.id);
-            const existsInLatestEntries = latestEntries.some(e => e.id === entry.id);
-
+            const dataEntry: DataEntry | null = res.data.content.data;
+            if (!dataEntry) {
+                return;
+            }
+            allEntries.current[dataEntry.id] = dataEntry;
+            setLatestEntries(prev => {
+                return {
+                    ...prev,
+                    [dataEntry.id]: dataEntry
+                };
+            });
             // Calculate a couple of props for the Autocomplete component.
             setValueEntry(() => {
-                if (!entry) {
-                    return null;
-                }
-                // assign value to lists if required
-                else if (assignValueEntry && !existsInAllEntries) {
-                    allEntries.current.push(entry);
-                    if (!existsInLatestEntries) {
-                        setLatestEntries(prev => prev.concat([entry]));
-                    }
-                }
-                return {
-                    id: entry.id,
-                    published: entry.meta.status === "published",
-                    name: entry.meta.title
-                };
+                return convertDataEntryToValue(dataEntry);
             });
         });
     }, [value, GET_CONTENT, model]);
 
     const onChange = useCallback(value => {
         if (value !== null) {
-            const entry = allEntries.current.find(entry => entry.id === value);
+            const entry = allEntries.current[value];
             setSearch("");
-            setValueEntry({
-                id: entry.id,
-                published: entry.meta.status === "published",
-                name: entry.meta.title
+            setValueEntry(() => {
+                return convertDataEntryToValue(entry);
             });
             return bind.onChange({ modelId, entryId: value });
         }
@@ -186,16 +201,21 @@ export const useReference: UseReferenceHook = ({ bind, field, assignValueEntry }
     }, []);
 
     // Format options for the Autocomplete component.
-    const options = useMemo(() => getOptions(entries), [entries]);
+    const options = useMemo(() => getOptions(Object.values(entries)), [entries]);
 
     // Format default options for the Autocomplete component.
-    const defaultOptions = useMemo(() => getOptions(latestEntries), [latestEntries]);
+    const defaultOptions = useMemo(() => getOptions(Object.values(latestEntries)), [latestEntries]);
 
+    const outputOptions: ValueEntry[] = search ? options : defaultOptions || [];
+
+    if (valueEntry && outputOptions.some(opt => opt.id === valueEntry.id) === false) {
+        outputOptions.push(valueEntry);
+    }
     return {
         onChange,
         setSearch,
         value: valueEntry,
         loading,
-        options: search ? options : defaultOptions || []
+        options: outputOptions
     };
 };
