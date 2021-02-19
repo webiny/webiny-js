@@ -99,8 +99,24 @@ export interface GetTargetArgs {
     id: string;
 }
 
+export interface ListBooksWhere {
+    // system fields
+    id?: string;
+    id_in?: string[];
+    id_not?: string;
+    id_not_in?: string[];
+    savedOn_gt: Date;
+    savedOn_lt: Date;
+    createdOn_gt: Date;
+    createdOn_lt: Date;
+    // custom fields fields
+    title_contains: string;
+    title_not_contains: string;
+    isNice: boolean;
+}
+
 export interface ListTargetsArgs {
-    where?: Record<string, any>;
+    where?: ListBooksWhere;
     sort?: string[];
     limit?: number;
     after?: string;

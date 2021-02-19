@@ -1,4 +1,4 @@
-import * as mdbid from "mdbid";
+import mdbid from "mdbid";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { ListResponse, Response, ErrorResponse } from "@webiny/handler-graphql";
 import {
@@ -13,6 +13,7 @@ import {
     UpdateTargetArgs
 } from "./types";
 import { configuration } from "./configuration";
+import { createElasticsearchQuery } from "./es";
 
 const encodeElasticsearchCursor = (cursor?: any) => {
     if (!cursor) {
@@ -29,7 +30,9 @@ const decodeElasticsearchCursor = (cursor?: string) => {
 
     return JSON.parse(Buffer.from(cursor, "base64").toString("ascii"));
 };
-
+/**
+ * Fields that will have unmapped_type set to "date". Without this, sorting by date does not work.
+ */
 const dateTypeFields = ["createdOn", "savedOn"];
 const buildElasticsearchSort = (sort?: string[]) => {
     if (!sort || sort.length === 0) {
@@ -44,7 +47,7 @@ const buildElasticsearchSort = (sort?: string[]) => {
         ];
     }
     return sort.map(s => {
-        const [field = "createdOn", order] = s.split("_");
+        const [field, order] = s.split("_");
         return {
             [field]: {
                 order: order === "ASC" ? "ASC" : "DESC",
@@ -53,12 +56,6 @@ const buildElasticsearchSort = (sort?: string[]) => {
             }
         };
     });
-};
-const buildElasticsearchQuery = (where?: ListTargetsArgs) => {
-    if (!where) {
-        return undefined;
-    }
-    return {};
 };
 
 const emptyResolver = () => ({});
@@ -139,6 +136,17 @@ export default (): GraphQLSchemaPlugin<ApplicationContext> => ({
                 error: TargetError
             }
 
+            type InstallResponseError {
+                message: String
+                code: String
+                data: JSON
+            }
+
+            type InstallResponse {
+                data: Boolean
+                error: InstallResponseError
+            }
+
             type TargetQuery {
                 getTarget(id: ID!): TargetResponse!
 
@@ -148,6 +156,7 @@ export default (): GraphQLSchemaPlugin<ApplicationContext> => ({
                     limit: Int
                     after: String
                 ): TargetListResponse!
+                isInstalled: InstallResponse!
             }
 
             type TargetMutation {
@@ -156,6 +165,8 @@ export default (): GraphQLSchemaPlugin<ApplicationContext> => ({
                 updateTarget(id: ID!, data: TargetUpdateInput!): TargetResponse!
 
                 deleteTarget(id: ID!): TargetDeleteResponse!
+
+                install: InstallResponse!
             }
 
             extend type Query {
@@ -174,7 +185,6 @@ export default (): GraphQLSchemaPlugin<ApplicationContext> => ({
                 targets: emptyResolver
             },
             TargetQuery: {
-                // @ts-ignore
                 getTarget: async (
                     parent,
                     args: GetTargetArgs,
@@ -205,7 +215,6 @@ export default (): GraphQLSchemaPlugin<ApplicationContext> => ({
 
                     return new Response(item);
                 },
-                // @ts-ignore
                 listTargets: async (
                     parent,
                     args: ListTargetsArgs,
@@ -217,7 +226,7 @@ export default (): GraphQLSchemaPlugin<ApplicationContext> => ({
                     const size = !limit || limit <= 0 || limit >= 1000 ? 50 : limit;
 
                     const body = {
-                        query: buildElasticsearchQuery(where),
+                        query: createElasticsearchQuery(where),
                         sort: buildElasticsearchSort(sort),
                         // we always take one extra to see if there are more items to be fetched
                         size: size + 1,
@@ -249,10 +258,55 @@ export default (): GraphQLSchemaPlugin<ApplicationContext> => ({
                     };
 
                     return new ListResponse(items, meta);
+                },
+                isInstalled: async (_, __, context) => {
+                    const { security, elasticSearch } = context;
+                    const hasFullAccess = await security.hasFullAccess();
+                    if (!hasFullAccess) {
+                        return new ErrorResponse({
+                            message: "Not authorized.",
+                            code: "NOT_AUTHORIZED"
+                        });
+                    }
+                    try {
+                        const esConfig = configuration.es(context);
+                        const { body: hasIndice } = await elasticSearch.indices.exists(esConfig);
+                        return new Response(hasIndice);
+                    } catch (ex) {
+                        return new ErrorResponse({
+                            message: "Could not check for Elasticsearch index.",
+                            code: "ELASTICSEARCH_ERROR",
+                            data: ex
+                        });
+                    }
                 }
             },
             TargetMutation: {
-                // @ts-ignore
+                install: async (_, __, context) => {
+                    const { security, elasticSearch } = context;
+                    const hasFullAccess = await security.hasFullAccess();
+                    if (!hasFullAccess) {
+                        return new ErrorResponse({
+                            message: "Not authorized.",
+                            code: "NOT_AUTHORIZED"
+                        });
+                    }
+                    const esConfig = configuration.es(context);
+                    const { body: hasIndice } = await elasticSearch.indices.exists(esConfig);
+                    if (hasIndice) {
+                        return new Response(true);
+                    }
+                    try {
+                        await elasticSearch.indices.create(esConfig);
+                    } catch (ex) {
+                        return new ErrorResponse({
+                            message: "Could not create Elasticsearch index.",
+                            code: "ELASTICSEARCH_ERROR",
+                            data: ex
+                        });
+                    }
+                    return new Response(true);
+                },
                 createTarget: async (
                     parent,
                     args: CreateTargetArgs,
@@ -291,7 +345,6 @@ export default (): GraphQLSchemaPlugin<ApplicationContext> => ({
 
                     return new Response(model);
                 },
-                // @ts-ignore
                 updateTarget: async (
                     parent,
                     args: UpdateTargetArgs,
@@ -346,7 +399,6 @@ export default (): GraphQLSchemaPlugin<ApplicationContext> => ({
                         ...model
                     });
                 },
-                // @ts-ignore
                 deleteTarget: async (
                     parent,
                     args: DeleteTargetArgs,

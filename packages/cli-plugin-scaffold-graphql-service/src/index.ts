@@ -196,12 +196,21 @@ export default (): CliCommandScaffoldTemplate<{ location: string; entityName: st
             const targetName = Case.camel(entityName);
 
             const graphqlIndexFile = path
-                .relative(process.cwd(), "api/code/graphql/index.ts")
+                .relative(process.cwd(), "api/code/graphql/src/index.ts")
+                .replace(/\\/g, "/");
+
+            const graphqlTsConfigFile = path
+                .relative(process.cwd(), "api/code/graphql/tsconfig.json")
                 .replace(/\\/g, "/");
 
             const targetPluginIndexFile = path
-                .relative(graphqlIndexFile, `${location}/index.ts`)
+                .relative(graphqlIndexFile, `${location}/src/index`)
                 .replace(/\\/g, "/");
+
+            const targetPluginTsConfigIncludePath = targetPluginIndexFile.replace(
+                /\/src\/index$/,
+                "/src/**/*.ts"
+            );
 
             console.log(`The next steps:`);
             console.log(
@@ -210,6 +219,7 @@ export default (): CliCommandScaffoldTemplate<{ location: string; entityName: st
                     2
                 )
             );
+
             console.log(
                 indentString(
                     chalk.green(`
@@ -222,9 +232,26 @@ ${targetName}Plugin()
                     2
                 )
             );
+
             console.log(
                 indentString(
-                    `2. From project root, run ${chalk.green(
+                    `2. Open ${chalk.green(graphqlTsConfigFile)} and add the include path:`
+                )
+            );
+            console.log(
+                indentString(
+                    chalk.green(`
+"include": [
+    "${targetPluginTsConfigIncludePath}"
+]
+`),
+                    2
+                )
+            );
+
+            console.log(
+                indentString(
+                    `3. From project root, run ${chalk.green(
                         `yarn test ${location}`
                     )} to ensure that the service works.`,
                     2
@@ -232,14 +259,16 @@ ${targetName}Plugin()
             );
             console.log(
                 indentString(
-                    `3. Finally, deploy the ${chalk.green(location)} stack by running ${chalk.green(
+                    `4. Finally, deploy the ${chalk.green(location)} stack by running ${chalk.green(
                         `yarn webiny app deploy ${location} --env=dev`
                     )}.`,
                     2
                 )
             );
             console.log(
-                `Learn more about API development at https://docs.webiny.com/docs/api-development/introduction`
+                `
+Learn more about API development at https://docs.webiny.com/docs/api-development/introduction
+`
             );
         }
     }
