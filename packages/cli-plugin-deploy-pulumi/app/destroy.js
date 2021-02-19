@@ -38,7 +38,7 @@ module.exports = async (inputs, context) => {
         }
     });
 
-    const login = process.env.WEBINY_PULUMI_LOGIN || `file://`;
+    const login = process.env.PULUMI_LOGIN || `file://`;
     await pulumi.run({
         command: ["login", login]
     });
