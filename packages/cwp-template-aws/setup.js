@@ -25,10 +25,7 @@ function random(length = 32) {
 
 const setup = async args => {
     const { isGitAvailable, projectRoot, projectName, templateOptions = {} } = args;
-    const {
-        vpc = false,
-        region = getDefaultRegion(),
-    } = templateOptions;
+    const { vpc = false, region = getDefaultRegion() } = templateOptions;
 
     fs.copySync(path.join(__dirname, "template"), projectRoot);
 
