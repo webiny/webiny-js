@@ -4,6 +4,7 @@ const notifier = require("node-notifier");
 const path = require("path");
 const loadEnvVariables = require("../utils/loadEnvVariables");
 const getPulumi = require("../utils/getPulumi");
+const login = require("../utils/login");
 const execa = require("execa");
 
 const notify = ({ message }) => {
@@ -72,13 +73,14 @@ module.exports = async (inputs, context) => {
         );
     }
 
+    await login(stackDir);
+
     const pulumi = getPulumi({
         execa: {
             cwd: stackDir
         }
     });
 
-    const login = process.env.PULUMI_LOGIN || `file://`;
 
     await pulumi.run({
         command: ["login", login]
