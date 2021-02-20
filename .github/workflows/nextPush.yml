@@ -233,6 +233,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
+      PULUMI_LOGIN: ${{ secrets.PULUMI_LOGIN }}
     steps:
       - uses: actions/setup-node@v2
         with:
@@ -264,7 +265,7 @@ jobs:
           npx create-webiny-project@beta test-project
           --tag beta --no-interactive
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
-          --template-options '{"region":"eu-central-1","vpc":false,"iac":["pulumi",{"backend":{"url":"${{ secrets.AWS_PULUMI_S3_BUCKET_NEXT_BRANCH_PREVIEW }}"}}]}'
+          --template-options '{"region":"eu-central-1","vpc":false}'
 
       - name: Print CLI version
         working-directory: test-project
@@ -303,6 +304,7 @@ jobs:
       AWS_REGION: eu-central-1
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
+      PULUMI_LOGIN: ${{ secrets.AWS_PULUMI_S3_BUCKET_NEXT_BRANCH_PREVIEW }}
     steps:
       - name: Get day of month (for caching purposes)
         id: day-of-month
@@ -329,9 +331,6 @@ jobs:
 
       - name: Build packages
         run: yarn build
-
-      - name: Setup - update Pulumi backend
-        run: node scripts/setupPulumiBackend.js '${{ secrets.AWS_PULUMI_S3_BUCKET_NEXT_BRANCH_PREVIEW }}'
 
       - name: Setup - setup cypress.json config file
         run: node scripts/setupCypress.js --force
