@@ -81,7 +81,6 @@ module.exports = async (inputs, context) => {
         }
     });
 
-
     await pulumi.run({
         command: ["login", login]
     });

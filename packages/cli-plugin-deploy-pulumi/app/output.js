@@ -16,7 +16,7 @@ module.exports = async (inputs, context) => {
 
     await loadEnvVariables(inputs, context);
 
-    await login(folder)
+    await login(folder);
 
     const pulumi = getPulumi({
         execa: {
