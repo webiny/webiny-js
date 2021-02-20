@@ -81,10 +81,6 @@ module.exports = async (inputs, context) => {
         }
     });
 
-    await pulumi.run({
-        command: ["login", login]
-    });
-
     let stackExists = true;
     try {
         await pulumi.run(
