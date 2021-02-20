@@ -111,3 +111,4 @@ Once you're done, do the following:
 1. Undo all commits created with `lerna:version:verdaccio`.
 2. Remove created tags. List all tags with `git tag -l "v5*"` and delete a tag with `git tag -d "v5.0.0-beta.5"`.
 3. Reset NPM registry with `npm config set registry https://registry.npmjs.org/`
+4. Remove `.verdaccio` folder 
