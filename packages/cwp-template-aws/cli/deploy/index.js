@@ -18,6 +18,12 @@ module.exports = () => ({
                     describe: `Build packages before deploying`,
                     type: "boolean"
                 });
+                yargs.option("preview", {
+                    required: false,
+                    default: false,
+                    describe: `Preview the deploy instead of actually performing it`,
+                    type: "boolean"
+                });
                 yargs.option("debug", {
                     required: false,
                     default: false,
