@@ -3,9 +3,9 @@ import inquirer from "inquirer";
 import { CliCommandScaffoldTemplate } from "./types";
 import { ContextInterface } from "@webiny/handler/types";
 
-const wait = (ms = 1000) => {
-    return new Promise((resolve: any) => {
-        setTimeout(resolve, ms);
+const wait = (ms?: number): Promise<void> => {
+    return new Promise((resolve: () => void) => {
+        setTimeout(resolve, ms || 1000);
     });
 };
 
