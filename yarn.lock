@@ -6355,6 +6355,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/ncp@npm:^2.0.4":
+  version: 2.0.4
+  resolution: "@types/ncp@npm:2.0.4"
+  dependencies:
+    "@types/node": "*"
+  checksum: 9d5f5b6eb74ebd712783eaf1c30517800a1378edee7c02a128fec0b084ad9df1d76e4b118a5a6606f34ec6114d305ae3eb55ecd01b9e8506cc4f34d0800d656c
+  languageName: node
+  linkType: hard
+
 "@types/node-fetch@npm:2.5.7":
   version: 2.5.7
   resolution: "@types/node-fetch@npm:2.5.7"
@@ -6411,6 +6420,13 @@ __metadata:
   version: 4.0.0
   resolution: "@types/parse-json@npm:4.0.0"
   checksum: 4a8f720afac47b474d3f2eece312340e72bc31bc9561cda37b596ce2ed218c0099765d302625bb67d659a8452a1f93d514f4863c11c7ebaf65430428687dc426
+  languageName: node
+  linkType: hard
+
+"@types/pluralize@npm:^0.0.29":
+  version: 0.0.29
+  resolution: "@types/pluralize@npm:0.0.29"
+  checksum: e800d731c76ca1506e4570fbdcc802df48cb002bce23e10059a77023cbdbd0093728f56d5b762214571b8f12db5014cc3afc55a7f6c0814152b3b2f1b6f711f1
   languageName: node
   linkType: hard
 
@@ -8462,7 +8478,37 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/cli-plugin-scaffold@workspace:packages/cli-plugin-scaffold":
+"@webiny/cli-plugin-scaffold-graphql-service@workspace:packages/cli-plugin-scaffold-graphql-service":
+  version: 0.0.0-use.local
+  resolution: "@webiny/cli-plugin-scaffold-graphql-service@workspace:packages/cli-plugin-scaffold-graphql-service"
+  dependencies:
+    "@babel/cli": ^7.5.5
+    "@babel/core": ^7.5.5
+    "@babel/preset-env": ^7.5.5
+    "@babel/preset-flow": ^7.0.0
+    "@types/inquirer": ^7.3.1
+    "@types/ncp": ^2.0.4
+    "@types/pluralize": ^0.0.29
+    "@webiny/cli-plugin-scaffold": ^4.14.0
+    "@webiny/error": ^5.0.0-beta.0
+    "@webiny/handler": ^5.0.0-beta.4
+    "@webiny/plugins": ^5.0.0-beta.4
+    case: ^1.6.3
+    chalk: ^4.1.0
+    execa: ^5.0.0
+    find-up: ^5.0.0
+    indent-string: ^4.0.0
+    load-json-file: ^6.2.0
+    ncp: ^2.0.0
+    pluralize: ^8.0.0
+    replace-in-path: ^1.0.4
+    rimraf: ^3.0.2
+    typescript: ^4.1.3
+    write-json-file: ^4.3.0
+  languageName: unknown
+  linkType: soft
+
+"@webiny/cli-plugin-scaffold@^4.14.0, @webiny/cli-plugin-scaffold@workspace:packages/cli-plugin-scaffold":
   version: 0.0.0-use.local
   resolution: "@webiny/cli-plugin-scaffold@workspace:packages/cli-plugin-scaffold"
   dependencies:
@@ -8585,7 +8631,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/error@^5.0.0-beta.4, @webiny/error@workspace:packages/error":
+"@webiny/error@^5.0.0-beta.0, @webiny/error@^5.0.0-beta.4, @webiny/error@workspace:packages/error":
   version: 0.0.0-use.local
   resolution: "@webiny/error@workspace:packages/error"
   dependencies:
@@ -12131,6 +12177,13 @@ __metadata:
   version: 2.3.0
   resolution: "case-sensitive-paths-webpack-plugin@npm:2.3.0"
   checksum: 45d85caef4dfc3cacb1461912dee18cfcae74f35cdbeaf564484ed3c82266a5d9305883b86d9537bd57d07ba2a64fb716c2ff98a88a4bf97619ab7b130cbb68e
+  languageName: node
+  linkType: hard
+
+"case@npm:^1.6.3":
+  version: 1.6.3
+  resolution: "case@npm:1.6.3"
+  checksum: 439692e51188256a6b065860070046b4c1b15b56237fd2948bfb8c093f55cbc95eedec8c3855bbf922d0209c42ec979ee8eb5a53cabb656075af22e97e32f20d
   languageName: node
   linkType: hard
 
@@ -16420,7 +16473,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"execa@npm:5.0.0":
+"execa@npm:5.0.0, execa@npm:^5.0.0":
   version: 5.0.0
   resolution: "execa@npm:5.0.0"
   dependencies:
@@ -24049,7 +24102,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"ncp@npm:~2.0.0":
+"ncp@npm:^2.0.0, ncp@npm:~2.0.0":
   version: 2.0.0
   resolution: "ncp@npm:2.0.0"
   bin:
@@ -29118,6 +29171,17 @@ fsevents@^1.2.7:
   dependencies:
     is-finite: ^1.0.0
   checksum: a788561778bfcbe4fc6fd15cb912ed53665933514524e4b5a998934ef20793c0afd21229f411d15bc5b7ab171eca7ac531655070f1dfc427f723bae57b61d55a
+  languageName: node
+  linkType: hard
+
+"replace-in-path@npm:^1.0.4":
+  version: 1.0.4
+  resolution: "replace-in-path@npm:1.0.4"
+  dependencies:
+    globby: ^11.0.1
+  bin:
+    replace-in-path: dist/bin/replace-in-path.js
+  checksum: 0385d861f3c73d5e8b45df451c9baa633fb2e670cda302d52b3b10eefcec0de217da3cd256c2d162ffd234244b14af0d8a41cf4beea43f6190c7de193a13423b
   languageName: node
   linkType: hard
 

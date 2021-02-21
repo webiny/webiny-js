@@ -55,22 +55,22 @@ export class ListErrorResponse {
     }
 }
 
-export class Response {
-    data: any;
+export class Response<T extends any = any> {
+    data: T;
     error: null;
-    constructor(data: any) {
+    constructor(data: T) {
         this.data = data;
         this.error = null;
     }
 }
 
-export class ListResponse {
-    data: Array<Object>;
-    meta: Object;
+export class ListResponse<T extends any, M extends any> {
+    data: Array<T>;
+    meta: M;
     error: null;
-    constructor(data: Array<Object>, meta: Object = {}) {
+    constructor(data: Array<T>, meta?: M) {
         this.data = Array.isArray(data) ? data : [];
-        this.meta = meta;
+        this.meta = meta || ({} as M);
         this.error = null;
     }
 }
