@@ -30,7 +30,7 @@ export default (): CliCommandScaffoldTemplate<{ location: string; entityName: st
                 {
                     name: "location",
                     message: "Enter package location (including package name)",
-                    default: "packages/api-books",
+                    default: "p/books/api",
                     validate: location => {
                         if (location.length < 2) {
                             return "Please enter a package location";
@@ -196,30 +196,22 @@ export default (): CliCommandScaffoldTemplate<{ location: string; entityName: st
             const targetName = Case.camel(entityName);
 
             const graphqlPath = path.relative(process.cwd(), "./api/code/graphql");
-            const graphqlIndexFile = `${path.relative(process.cwd(), `${graphqlPath}/src`)}`;
-            const graphqlTsConfigFile = `${path.relative(process.cwd(), `${graphqlPath}`)}`;
+            const graphqlSrcPath = `${path.relative(process.cwd(), `${graphqlPath}/src`)}`;
+            const graphqlTsConfigFilePath = `${path.relative(process.cwd(), `${graphqlPath}`)}`;
 
             const servicePath = path.relative(process.cwd(), location);
-            const serviceIndexFile = path.relative(graphqlIndexFile, `${servicePath}/src/index`);
+            const serviceIndexFile = path.relative(graphqlSrcPath, `${servicePath}/src`);
             const serviceTsConfigInclude = path.relative(
-                graphqlTsConfigFile,
+                graphqlTsConfigFilePath,
                 `${servicePath}/src/**/*.ts`
             );
-
-            console.log({
-                graphqlPath,
-                graphqlIndexFile,
-                graphqlTsConfigFile,
-                servicePath,
-                serviceIndexFile,
-                serviceTsConfigInclude
-            });
-            return;
 
             console.log(`The next steps:`);
             console.log(
                 indentString(
-                    `1. Open ${chalk.green(graphqlIndexFile)} and copy the code into it:`,
+                    `1. Open ${chalk.green(
+                        `${graphqlSrcPath}/index.ts`
+                    )} and copy the code into it:`,
                     2
                 )
             );
@@ -228,7 +220,7 @@ export default (): CliCommandScaffoldTemplate<{ location: string; entityName: st
                 indentString(
                     chalk.green(`
 // at the top of the file
-import ${targetName}Plugin from "${targetPluginIndexFile}";
+import ${targetName}Plugin from "${serviceIndexFile}";
 
 // somewhere after headlessCmsPlugins() in the end of the createHandler() function
 ${targetName}Plugin()
@@ -239,14 +231,16 @@ ${targetName}Plugin()
 
             console.log(
                 indentString(
-                    `2. Open ${chalk.green(graphqlTsConfigFile)} and add the include path:`
+                    `2. Open ${chalk.green(
+                        `${graphqlTsConfigFilePath}/tsconfig.json`
+                    )} and add the include path:`
                 )
             );
             console.log(
                 indentString(
                     chalk.green(`
 "include": [
-    "${targetPluginTsConfigIncludePath}"
+    "${serviceTsConfigInclude}"
 ]
 `),
                     2
