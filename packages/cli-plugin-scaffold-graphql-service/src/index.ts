@@ -30,7 +30,7 @@ export default (): CliCommandScaffoldTemplate<{ location: string; entityName: st
                 {
                     name: "location",
                     message: "Enter package location (including package name)",
-                    default: "p/books/api",
+                    default: "packages/api-books",
                     validate: location => {
                         if (location.length < 2) {
                             return "Please enter a package location";
