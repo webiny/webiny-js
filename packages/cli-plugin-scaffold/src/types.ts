@@ -141,5 +141,6 @@ export interface PackageJson {
  * @category Template
  */
 export interface TsConfigJson {
+    include: string[];
     extends: string;
 }
