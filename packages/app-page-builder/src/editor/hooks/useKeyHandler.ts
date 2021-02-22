@@ -1,6 +1,6 @@
 import React, { SyntheticEvent } from "react";
-import shortid from "shortid";
 import isHotkey from "is-hotkey";
+import { getNanoid } from "../helpers";
 const keyStack = {};
 
 let listener = false;
@@ -66,7 +66,7 @@ export function useKeyHandler(): {
     addKeyHandler: AddKeyHandlerType;
     removeKeyHandler: RemoveKeyHandlerType;
 } {
-    const [id] = React.useState(shortid.generate());
+    const [id] = React.useState(getNanoid());
 
     return React.useMemo(
         () => ({

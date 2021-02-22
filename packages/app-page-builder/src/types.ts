@@ -616,6 +616,7 @@ export interface EventActionHandler {
     endBatch: () => void;
     enableHistory: () => void;
     disableHistory: () => void;
+    getElementTree: (element?: PbEditorElement) => Promise<any>;
 }
 
 export interface EventActionHandlerTarget {
