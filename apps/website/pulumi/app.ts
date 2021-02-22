@@ -53,6 +53,7 @@ class App {
             ],
             defaultRootObject: "index.html",
             defaultCacheBehavior: {
+                compress: true,
                 targetOriginId: this.bucket.arn,
                 viewerProtocolPolicy: "redirect-to-https",
                 allowedMethods: ["GET", "HEAD", "OPTIONS"],
