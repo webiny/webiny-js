@@ -1,0 +1,113 @@
+import gql from "graphql-tag";
+
+export const LIST_TARGETS = gql`
+    query ListTargets(
+        $sort: [TargetListSort!]
+        $where: TargetListWhereInput
+        $limit: Int
+        $after: String
+    ) {
+        entities {
+            listTargets(sort: $sort, where: $where, limit: $limit, after: $after) {
+                data {
+                    id
+                    title
+                    description
+                    isNice
+                    createdOn
+                    savedOn
+                    createdBy {
+                        id
+                        displayName
+                        type
+                    }
+                }
+            }
+        }
+    }
+`;
+
+export const CREATE_TARGET = gql`
+    mutation CreateTarget($input: TargetCreateInput!) {
+        createTarget(input: $input) {
+            data {
+                id
+                title
+                description
+                isNice
+                createdOn
+                savedOn
+                createdBy {
+                    id
+                    displayName
+                    type
+                }
+            }
+            error {
+                code
+                message
+                data
+            }
+        }
+    }
+`;
+
+export const READ_TARGET = gql`
+    query GetTarget($id: ID!) {
+        entities {
+            target: getTarget(id: $id) {
+                data {
+                    id
+                    title
+                    description
+                    isNice
+                    createdOn
+                    savedOn
+                    createdBy {
+                        id
+                        displayName
+                        type
+                    }
+                }
+            }
+        }
+    }
+`;
+
+export const DELETE_TARGET = gql`
+    mutation DeleteTarget($id: ID!) {
+        deleteTarget(id: $id) {
+            data
+            error {
+                code
+                message
+                data
+            }
+        }
+    }
+`;
+
+export const UPDATE_TARGET = gql`
+    mutation UpdateTarget($id: ID!, $data: TargetUpdateInput!) {
+        updateTarget(id: $id, data: $data) {
+            data {
+                id
+                title
+                description
+                isNice
+                createdOn
+                savedOn
+                createdBy {
+                    id
+                    displayName
+                    type
+                }
+            }
+            error {
+                code
+                message
+                data
+            }
+        }
+    }
+`;
