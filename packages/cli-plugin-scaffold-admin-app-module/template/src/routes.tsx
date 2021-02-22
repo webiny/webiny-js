@@ -9,9 +9,9 @@ const Loader = ({ children, ...props }) => (
     <Suspense fallback={<CircularProgress />}>{React.cloneElement(children, props)}</Suspense>
 );
 
-const Targets = lazy(() => import("./views/Targets"));
+const Books = lazy(() => import("./views/Books"));
 
-const entitiesRoute: RoutePlugin = {
+export default (): RoutePlugin => ({
     type: "route",
     name: "route-admin-entities",
     route: (
@@ -21,17 +21,13 @@ const entitiesRoute: RoutePlugin = {
             render={() => (
                 <AdminLayout>
                     <Helmet>
-                        <title>Targets</title>
+                        <title>Books</title>
                     </Helmet>
                     <Loader>
-                        <Targets />
+                        <Books />
                     </Loader>
                 </AdminLayout>
             )}
         />
     )
-};
-
-const routes: RoutePlugin[] = [entitiesRoute];
-
-export default routes;
+});
