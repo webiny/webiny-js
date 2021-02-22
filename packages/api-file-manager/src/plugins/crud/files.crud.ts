@@ -11,7 +11,11 @@ import checkBasePermissions from "./utils/checkBasePermissions";
 
 const BATCH_CREATE_MAX_FILES = 20;
 
-const getFileDocForES = (file: File & { [key: string]: any }, locale: string) => ({
+const getFileDocForES = (
+    file: File & { [key: string]: any },
+    locale: string,
+    context: FileManagerContext
+) => ({
     id: file.id,
     createdOn: file.createdOn,
     key: file.key,
@@ -21,7 +25,8 @@ const getFileDocForES = (file: File & { [key: string]: any }, locale: string) =>
     tags: file.tags,
     createdBy: file.createdBy,
     meta: file.meta,
-    locale
+    locale,
+    webinyVersion: context.WEBINY_VERSION
 });
 
 /**
@@ -97,7 +102,7 @@ export default (context: FileManagerContext) => {
             await elasticSearch.create({
                 ...defaults.es(context),
                 id,
-                body: getFileDocForES(file, localeCode)
+                body: getFileDocForES(file, localeCode, context)
             });
 
             return file;
@@ -228,7 +233,7 @@ export default (context: FileManagerContext) => {
             // @ts-ignore
             const body = files.flatMap(doc => [
                 { index: { _index: defaults.es(context).index, _id: doc.id } },
-                getFileDocForES(doc, localeCode)
+                getFileDocForES(doc, localeCode, context)
             ]);
 
             const { body: bulkResponse } = await elasticSearch.bulk({ body });

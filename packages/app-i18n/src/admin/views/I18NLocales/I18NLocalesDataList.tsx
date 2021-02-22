@@ -37,13 +37,15 @@ const serializeSorters = data => {
     return `${key}:${value}`;
 };
 
-const deserializeSorters = (data: string) => {
+const deserializeSorters = (data: string): Record<string, "asc" | "desc" | boolean> => {
     if (typeof data !== "string") {
         return data;
     }
 
-    const [key, value] = data.split(":");
-    return { [key]: value };
+    const [key, value] = data.split(":") as [string, "asc" | "desc" | boolean];
+    return {
+        [key]: value
+    };
 };
 
 const SORTERS = [

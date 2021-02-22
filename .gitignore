@@ -29,7 +29,7 @@ pbInstalation.zip
 globalConfig.json
 .graphqlconfig
 schema.graphql
-.statis.json
+.tmp/
 # yarn2 files
 .yarn/*
 !.yarn/releases

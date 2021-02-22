@@ -1,0 +1,58 @@
+{
+  "name": "@webiny/cli-plugin-scaffold-graphql-service",
+  "version": "4.14.0",
+  "description": "Generate Webiny GraphQL service",
+  "main": "dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/webiny/webiny-js.git",
+    "directory": "packages/cli-scaffold-graphql-service"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/webiny/webiny-js/issues"
+  },
+  "homepage": "https://github.com/webiny/webiny-js#readme",
+  "dependencies": {
+    "@webiny/error": "^5.0.0-beta.0",
+    "case": "^1.6.3",
+    "chalk": "^4.1.0",
+    "execa": "^5.0.0",
+    "find-up": "^5.0.0",
+    "indent-string": "^4.0.0",
+    "load-json-file": "^6.2.0",
+    "ncp": "^2.0.0",
+    "pluralize": "^8.0.0",
+    "replace-in-path": "^1.0.4",
+    "write-json-file": "^4.3.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-flow": "^7.0.0",
+    "@types/inquirer": "^7.3.1",
+    "@types/ncp": "^2.0.4",
+    "@types/pluralize": "^0.0.29",
+    "@webiny/cli-plugin-scaffold": "^4.14.0",
+    "@webiny/handler": "^5.0.0-beta.4",
+    "@webiny/plugins": "^5.0.0-beta.4",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.1.3"
+  },
+  "scripts": {
+    "build": "rimraf ./dist '*.tsbuildinfo' && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" && yarn postbuild",
+    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" --watch",
+    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
+  "adio": {
+    "ignoreDirs": [
+      "template"
+    ]
+  }
+}

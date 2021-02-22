@@ -1,14 +1,18 @@
+import gql from "graphql-tag";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import { GraphQLScalarPlugin } from "@webiny/handler-graphql/types";
-import gql from "graphql-tag";
-import GraphQLJSON from "graphql-type-json";
-import { GraphQLDateTime } from "graphql-iso-date";
-import GraphQLLong from "graphql-type-long";
 import { Context } from "@webiny/handler/types";
 import { HttpContext } from "@webiny/handler-http/types";
-import { RefInput } from "./builtInTypes/RefInputScalar";
-import { Number } from "./builtInTypes/NumberScalar";
-import { Any } from "./builtInTypes/AnyScalar";
+import {
+    RefInput,
+    Number as NumberScalar,
+    Any as AnyScalar,
+    DateScalar,
+    DateTimeScalar,
+    JsonScalar,
+    TimeScalar,
+    LongScalar
+} from "./builtInTypes";
 
 export const createGraphQLSchema = (context: Context<HttpContext>) => {
     const scalars = context.plugins
@@ -22,10 +26,12 @@ export const createGraphQLSchema = (context: Context<HttpContext>) => {
             ${scalars.map(scalar => `scalar ${scalar.name}`).join(" ")}
             scalar JSON
             scalar Long
-            scalar DateTime
             scalar RefInput
             scalar Number
             scalar Any
+            scalar Date
+            scalar DateTime
+            scalar Time
         `
     ];
 
@@ -35,12 +41,14 @@ export const createGraphQLSchema = (context: Context<HttpContext>) => {
                 acc[s.name] = s;
                 return acc;
             }, {}),
-            JSON: GraphQLJSON,
-            DateTime: GraphQLDateTime,
-            Long: GraphQLLong,
+            JSON: JsonScalar,
+            Long: LongScalar,
             RefInput,
-            Number,
-            Any
+            Number: NumberScalar,
+            Any: AnyScalar,
+            DateTime: DateTimeScalar,
+            Date: DateScalar,
+            Time: TimeScalar
         }
     ];
 

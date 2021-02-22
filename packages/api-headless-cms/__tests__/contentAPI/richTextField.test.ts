@@ -5,6 +5,8 @@ import { useProductManageHandler } from "../utils/useProductManageHandler";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useProductReadHandler } from "../utils/useProductReadHandler";
 
+jest.setTimeout(25000);
+
 const richTextMock = [
     {
         tag: "h1",
@@ -17,16 +19,14 @@ const richTextMock = [
 ];
 
 describe("refField", () => {
-    const esCmsIndex = "root-headless-cms";
-
     const manageOpts = { path: "manage/en-US" };
     const readOpts = { path: "read/en-US" };
 
     const {
-        elasticSearch,
         createContentModelMutation,
         updateContentModelMutation,
-        createContentModelGroupMutation
+        createContentModelGroupMutation,
+        clearAllIndex
     } = useContentGqlHandler(manageOpts);
 
     // This function is not directly within `beforeEach` as we don't always setup the same content model.
@@ -102,13 +102,13 @@ describe("refField", () => {
 
     beforeEach(async () => {
         try {
-            await elasticSearch.indices.create({ index: esCmsIndex });
+            await clearAllIndex();
         } catch {}
     });
 
     afterEach(async () => {
         try {
-            await elasticSearch.indices.delete({ index: esCmsIndex });
+            await clearAllIndex();
         } catch {}
     });
 
@@ -130,7 +130,7 @@ describe("refField", () => {
             data: {
                 title: "Potato",
                 price: 100,
-                availableOn: "2020-12-25T16:37:00Z.000",
+                availableOn: "2020-12-25",
                 color: "white",
                 availableSizes: ["s", "m"],
                 image: "file.jpg",

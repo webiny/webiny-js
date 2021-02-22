@@ -41,7 +41,13 @@ yargs.command(
         });
         yargs.option("template-options", {
             describe: `A JSON containing template-specific options (usually used in non-interactive environments)`,
-            default: true,
+            default: null,
+            type: "string",
+            demandOption: false
+        });
+        yargs.option("assign-to-yarnrc", {
+            describe: `A JSON containing additional options that will be assigned into the "yarnrc.yml" configuration file`,
+            default: null,
             type: "string",
             demandOption: false
         });

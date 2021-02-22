@@ -12,7 +12,7 @@ const sortEntries = (list, sort) => {
         return list;
     }
     const [key, value] = sort.split("_");
-    const order = value.toLowerCase();
+    const order = value.toLowerCase() as "asc" | "desc";
     return orderBy(list, [key], [order]);
 };
 

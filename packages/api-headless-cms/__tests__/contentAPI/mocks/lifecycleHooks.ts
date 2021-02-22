@@ -29,7 +29,7 @@ class HooksTracker {
 export const hooksTracker = new HooksTracker();
 
 export const contentModelHooks = (): CmsContentModelHookPlugin => ({
-    type: "content-model-hook",
+    type: "cms-content-model-hook",
     name: "contentModelDummyHooks",
     beforeCreate: async () => {
         hooksTracker.track("contentModel:beforeCreate");
@@ -52,7 +52,7 @@ export const contentModelHooks = (): CmsContentModelHookPlugin => ({
 });
 
 export const contentEntryHooks = (): CmsContentEntryHookPlugin => ({
-    type: "content-entry-hook",
+    type: "cms-content-entry-hook",
     name: "contentEntryDummyHooks",
     beforeCreate: async () => {
         hooksTracker.track("contentEntry:beforeCreate");

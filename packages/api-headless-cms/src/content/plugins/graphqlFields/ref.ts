@@ -6,7 +6,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
     type: "cms-model-field-to-graphql",
     fieldType: "ref",
     isSortable: false,
-    isSearchable: false,
+    isSearchable: true,
     read: {
         createTypeField({ field }) {
             const { models } = field.settings;

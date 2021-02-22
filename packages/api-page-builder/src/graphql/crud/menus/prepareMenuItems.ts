@@ -53,7 +53,8 @@ const prepareItems = async ({
 };
 
 export default async ({ menu, context }: { menu: Menu; context: PbContext }) => {
-    const items = cloneDeep(menu.items);
+    // TODO determine real type
+    const items: any = cloneDeep(menu.items);
     // Each modifier is recursively applied to all items.
     await prepareItems({
         items,
