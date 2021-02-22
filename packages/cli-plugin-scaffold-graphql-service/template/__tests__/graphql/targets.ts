@@ -28,7 +28,7 @@ export const CREATE_TARGET = /* GraphQL */ `
 export const LIST_TARGETS = /* GraphQL */ `
     query ListTargets(
         $where: TargetListWhereInput
-        $sort: [TargetListSortEnum!]
+        $sort: [TargetListSort!]
         $limit: Int
         $after: String
     ) {

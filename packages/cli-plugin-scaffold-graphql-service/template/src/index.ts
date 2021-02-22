@@ -116,7 +116,7 @@ export default (): GraphQLSchemaPlugin<ApplicationContext> => ({
                 isNice: Boolean
             }
 
-            enum TargetListSortEnum {
+            enum TargetListSort {
                 title_ASC
                 title_DESC
                 createdOn_ASC
@@ -152,7 +152,7 @@ export default (): GraphQLSchemaPlugin<ApplicationContext> => ({
 
                 listTargets(
                     where: TargetListWhereInput
-                    sort: [TargetListSortEnum!]
+                    sort: [TargetListSort!]
                     limit: Int
                     after: String
                 ): TargetListResponse!

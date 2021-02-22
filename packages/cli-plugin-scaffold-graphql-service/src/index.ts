@@ -20,7 +20,12 @@ import {
 
 const ncp = util.promisify(ncpBase.ncp);
 
-export default (): CliCommandScaffoldTemplate<{ location: string; entityName: string }> => ({
+interface Input {
+    location: string;
+    entityName: string;
+}
+
+export default (): CliCommandScaffoldTemplate<Input> => ({
     name: "cli-plugin-scaffold-template-graphql-service",
     type: "cli-plugin-scaffold-template",
     scaffold: {
@@ -29,15 +34,15 @@ export default (): CliCommandScaffoldTemplate<{ location: string; entityName: st
             return [
                 {
                     name: "location",
-                    message: "Enter package location (including package name)",
+                    message: "Enter package location (including the package name)",
                     default: "packages/api-books",
                     validate: location => {
                         if (location.length < 2) {
-                            return "Please enter a package location";
+                            return "Please enter the package location.";
                         }
 
                         if (fs.existsSync(path.resolve(location))) {
-                            return "The target location already exists";
+                            return "The target location already exists.";
                         }
 
                         return true;
