@@ -40,6 +40,7 @@ class Delivery {
             ],
             orderedCacheBehaviors: [
                 {
+                    compress: true,
                     allowedMethods: ["GET", "HEAD", "OPTIONS"],
                     cachedMethods: ["GET", "HEAD", "OPTIONS"],
                     forwardedValues: {
@@ -57,6 +58,7 @@ class Delivery {
             ],
             defaultRootObject: "index.html",
             defaultCacheBehavior: {
+                compress: true,
                 targetOriginId: this.bucket.arn,
                 viewerProtocolPolicy: "redirect-to-https",
                 allowedMethods: ["GET", "HEAD", "OPTIONS"],

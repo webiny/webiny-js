@@ -39,5 +39,6 @@
     "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
   },
   "adio": {},
-  "gitHead": "2cd812f1b150c10df088a5b2f75a62c9e376c1a4"
+  "gitHead": "2cd812f1b150c10df088a5b2f75a62c9e376c1a4",
+  "types": "dist/types.d.ts"
 }

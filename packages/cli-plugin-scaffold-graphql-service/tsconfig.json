@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig",
+  "include": ["src"],
+  "references": [
+    {
+      "path": "../plugins"
+    },
+    {
+      "path": "../handler"
+    },
+    {
+      "path": "../cli-plugin-scaffold"
+    },
+    {
+      "path": "../error"
+    }
+  ]
+}

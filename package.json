@@ -24,8 +24,8 @@
     "@4tw/cypress-drag-drop": "^1.4.0",
     "@babel/cli": "^7.0.0",
     "@babel/core": "^7.0.0",
-    "@commitlint/cli": "^8.3.5",
-    "@commitlint/config-conventional": "^8.3.4",
+    "@commitlint/cli": "^11.0.0",
+    "@commitlint/config-conventional": "^11.0.0",
     "@testing-library/cypress": "^7.0.2",
     "@types/fs-extra": "^8.0.1",
     "@types/jest": "^24.0.24",
@@ -157,7 +157,8 @@
     "**/*.{js,ts,tsx}": [
       "prettier --check",
       "eslint --max-warnings=0 --no-ignore",
-      "adio"
+      "adio",
+      "npm run check-ts-configs"
     ]
   },
   "yargs": {
