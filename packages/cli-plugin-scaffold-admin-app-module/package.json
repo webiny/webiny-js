@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cli-plugin-scaffold-admin-app-module",
-  "version": "4.14.0",
+  "version": "5.0.0-beta.4",
   "description": "Generate Webiny GraphQL Admin app module",
   "main": "dist/index.js",
   "repository": {
@@ -25,6 +25,7 @@
     "ncp": "^2.0.0",
     "pluralize": "^8.0.0",
     "replace-in-path": "^1.0.4",
+    "validate-npm-package-name": "^3.0.0",
     "write-json-file": "^4.3.0"
   },
   "devDependencies": {
@@ -44,7 +45,7 @@
   "scripts": {
     "build": "rimraf ./dist '*.tsbuildinfo' && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" && yarn postbuild",
     "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" --watch",
-    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
+    "postbuild": "cp -R package.json LICENSE README.md template dist/ && tsc -p tsconfig.build.json"
   },
   "publishConfig": {
     "access": "public",
