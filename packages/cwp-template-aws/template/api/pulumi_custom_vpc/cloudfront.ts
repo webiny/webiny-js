@@ -19,7 +19,6 @@ class Cloudfront {
                     headers: ["Accept", "Accept-Language"],
                     queryString: true
                 },
-                compress: true,
                 maxTtl: 86400,
                 minTtl: 0,
                 targetOriginId: apiGateway.api.name,
