@@ -21,5 +21,9 @@
     "@elastic/elasticsearch": "^7.9.1",
     "mdbid": "^1.0.0"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  }
 }
