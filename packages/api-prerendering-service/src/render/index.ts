@@ -30,6 +30,7 @@ const storeFile = ({ key, contentType, body, storageName }) => {
             Key: key,
             ACL: "public-read",
             ContentType: contentType,
+            CacheControl: "max-age=31536000",
             Body: body
         })
         .promise();
