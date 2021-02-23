@@ -28,7 +28,8 @@ class App {
                     acl: "public-read",
                     bucket: this.bucket,
                     contentType: mime.getType(filePath) || undefined,
-                    source: new pulumi.asset.FileAsset(filePath)
+                    source: new pulumi.asset.FileAsset(filePath),
+                    cacheControl: "max-age=31536000"
                 },
                 {
                     parent: this.bucket
