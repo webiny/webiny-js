@@ -17,12 +17,14 @@ import {
     PackageJson,
     TsConfigJson
 } from "@webiny/cli-plugin-scaffold/types";
+import validateNpmPackageName from "validate-npm-package-name";
 
 const ncp = util.promisify(ncpBase.ncp);
 
 interface Input {
     location: string;
     entityName: string;
+    packageName?: string;
 }
 
 export default (): CliCommandScaffoldTemplate<Input> => ({
@@ -35,7 +37,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 {
                     name: "location",
                     message: "Enter package location (including the package name)",
-                    default: "packages/api-books",
+                    default: "p/books/api",
                     validate: location => {
                         if (location.length < 2) {
                             return "Please enter the package location.";
@@ -46,6 +48,21 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                         }
 
                         return true;
+                    }
+                },
+                {
+                    name: "packageName",
+                    message: "Enter package name",
+                    default: answers => {
+                        return Case.kebab(answers.location);
+                    },
+                    validate: packageName => {
+                        if (!packageName) {
+                            return true;
+                        } else if (validateNpmPackageName(packageName)) {
+                            return true;
+                        }
+                        return `Package name must look something like "@package/my-generated-package".`;
                     }
                 },
                 {
@@ -63,7 +80,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             ];
         },
         generate: async ({ input, oraSpinner }) => {
-            const { location, entityName } = input;
+            const { location, entityName, packageName: initialPackageName } = input;
             const fullLocation = path.resolve(location);
 
             const projectRootPath = path.dirname(
@@ -72,8 +89,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 })
             );
 
-            const packageName = Case.kebab(entityName);
-
+            const packageName = initialPackageName || Case.kebab(location);
             //
             const templateFolder = path.join(__dirname, "../template");
 
@@ -172,13 +188,13 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             const packageJsonPath = path.resolve(location, "package.json");
             const packageJson = await readJson<PackageJson>(packageJsonPath);
             packageJson.name = packageName;
-            fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+            await writeJson(packageJsonPath, packageJson);
 
             // Update tsconfig "extends" path
             const tsConfigPath = path.join(fullLocation, "tsconfig.json");
             const tsconfig = await readJson<TsConfigJson>(tsConfigPath);
             tsconfig.extends = baseTsConfigPath;
-            fs.writeFileSync(tsConfigPath, JSON.stringify(tsconfig, null, 2));
+            await writeJson(tsConfigPath, tsconfig);
 
             // Once everything is done, run `yarn` so the new packages are automatically installed.
             try {

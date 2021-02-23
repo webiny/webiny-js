@@ -1,4 +1,8 @@
-import { CliCommandScaffoldTemplate, TsConfigJson } from "@webiny/cli-plugin-scaffold/types";
+import {
+    CliCommandScaffoldTemplate,
+    TsConfigJson,
+    PackageJson
+} from "@webiny/cli-plugin-scaffold/types";
 import fs from "fs";
 import path from "path";
 import util from "util";
@@ -13,12 +17,14 @@ import chalk from "chalk";
 import indentString from "indent-string";
 import WebinyError from "@webiny/error";
 import execa from "execa";
+import validateNpmPackageName from "validate-npm-package-name";
 
 const ncp = util.promisify(ncpBase.ncp);
 
 interface Input {
     location: string;
     entityName: string;
+    packageName?: string;
 }
 
 const adminAppCodePath = "apps/admin/code";
@@ -51,6 +57,21 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     }
                 },
                 {
+                    name: "packageName",
+                    message: "Enter package name",
+                    default: answers => {
+                        return Case.kebab(answers.location);
+                    },
+                    validate: packageName => {
+                        if (!packageName) {
+                            return true;
+                        } else if (validateNpmPackageName(packageName)) {
+                            return true;
+                        }
+                        return `Package name must look something like "@package/my-generated-package".`;
+                    }
+                },
+                {
                     name: "entityName",
                     message: "Enter name of the initial data model",
                     default: "Book",
@@ -65,9 +86,10 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             ];
         },
         generate: async ({ input, oraSpinner }) => {
-            const { entityName, location } = input;
+            const { entityName, location, packageName: initialPackageName } = input;
 
             const locationPath = path.resolve(location);
+            const packageName = initialPackageName || Case.kebab(location);
 
             // Then we also copy the template folder
             const sourcePath = path.join(__dirname, "../template");
@@ -143,6 +165,10 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             oraSpinner.info(
                 "Adding package path to include section of admin app tsconfig.json file."
             );
+            const packageJsonFile = path.resolve(locationPath, "package.json");
+            const packageJson = readJson.sync<PackageJson>(packageJsonFile);
+            packageJson.name = packageName;
+            await writeJson(packageJsonFile, packageJson);
             // const adminAppTsConfig = readJson.sync<TsConfigJson>(adminAppTsConfigFilePath);
             // adminAppTsConfig.include.push(locationRelativePath);
             // await writeJson(adminAppTsConfigFilePath, adminAppTsConfig);
