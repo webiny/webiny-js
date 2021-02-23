@@ -148,4 +148,5 @@ export interface TsConfigJson {
     include?: string[];
     extends: string;
     references?: TsConfigJsonReference[];
+    paths?: Record<string, string[]>;
 }

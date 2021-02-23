@@ -207,7 +207,6 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 }
             ]);
             await writeJson(graphqlTsconfigPath, graphqlTsconfig);
-
             oraSpinner.stopAndPersist({
                 symbol: chalk.green("✔"),
                 text: `Workspace ${chalk.green(location)} added in root ${chalk.green(
@@ -222,19 +221,32 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             const packageJson = await readJson<PackageJson>(packageJsonPath);
             packageJson.name = packageName;
             await writeJson(packageJsonPath, packageJson);
-
             oraSpinner.stopAndPersist({
                 symbol: chalk.green("✔"),
                 text: `Package name set into ${chalk.green(`package.json`)}.`
             });
 
             oraSpinner.start(`Updating package tsconfig extends path to root tsconfig...`);
-
             // Update package tsconfig "extends" path
             const tsConfigPath = path.join(fullLocation, "tsconfig.json");
-            const tsconfig = await readJson<TsConfigJson>(tsConfigPath);
-            tsconfig.extends = baseTsConfigPath;
-            await writeJson(tsConfigPath, tsconfig);
+            const tsConfig = await readJson<TsConfigJson>(tsConfigPath);
+            tsConfig.extends = baseTsConfigPath;
+            await writeJson(tsConfigPath, tsConfig);
+            oraSpinner.stopAndPersist({
+                symbol: chalk.green("✔"),
+                text: `Update package tsconfig extends path.`
+            });
+
+            // Update root tsconfig.build.json file paths
+            const tsConfigBuildJsonPath = baseTsConfigPath.replace(
+                "tsconfig.json",
+                "tsconfig.build.json"
+            );
+            const tsConfigBuildJson = await readJson<TsConfigJson>(tsConfigBuildJsonPath);
+            tsConfigBuildJson.paths[`${packageName}/*`] = [
+                path.relative(tsConfigBuildJsonPath, fullLocation)
+            ];
+            await writeJson(tsConfigBuildJsonPath, tsConfigBuildJson);
 
             // Once everything is done, run `yarn` so the new packages are automatically installed.
             try {
