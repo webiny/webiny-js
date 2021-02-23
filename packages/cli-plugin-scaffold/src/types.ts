@@ -133,6 +133,10 @@ export interface PackageJson {
     };
 }
 
+interface TsConfigJsonReference {
+    path: string;
+}
+
 /**
  * A representation of loaded tsconfig.json and tsconfig.build.json files.
  * Used as T when reading a file with load-json-file.
@@ -141,6 +145,7 @@ export interface PackageJson {
  * @category Template
  */
 export interface TsConfigJson {
-    include: string[];
+    include?: string[];
     extends: string;
+    references?: TsConfigJsonReference[];
 }
