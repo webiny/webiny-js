@@ -1,15 +1,17 @@
 // This will ensure the page is tested for 10 minutes, until the test can be considered as failed.
 const MAX_RETRIES = 200;
 const WAIT_BETWEEN_RETRIES = 3000;
+const REPEAT_WAIT_BETWEEN_RETRIES = 2000;
 
-const sleep = () =>
+const sleep = (ms = WAIT_BETWEEN_RETRIES) =>
     new Promise(resolve => {
-        setTimeout(resolve, WAIT_BETWEEN_RETRIES);
+        setTimeout(resolve, ms);
     });
 
-Cypress.Commands.add("reloadUntil", callback => {
+Cypress.Commands.add("reloadUntil", (callback, options = {}) => {
     return cy.log(`Reloading until a condition is met...`).then(() => {
         let retries = -1;
+        let repeat = 0;
         function check() {
             retries++;
             return cy.then(async response => {
@@ -19,6 +21,27 @@ Cypress.Commands.add("reloadUntil", callback => {
                         throw Error();
                     }
 
+                    // Sometimes, reloading the page can still return previous, not-wanted result. To avoid this,
+                    // users can pass `options.repeat`, which will reload the page and make the extra assertions
+                    // `options.repeat` times.
+                    if (options.repeat > 0) {
+                        repeat++;
+                        if (repeat <= options.repeat) {
+                            if (repeat === 1) {
+                                cy.log(
+                                    `Success, but repeating the assertion ${options.repeat} times, to be extra sure.`
+                                );
+                            }
+                            cy.log(`Assertion repeat ${repeat} / ${options.repeat}.`);
+                            await sleep(REPEAT_WAIT_BETWEEN_RETRIES);
+                            return cy
+                                .log(`Reloading (attempt #${retries + 1})...`)
+                                .reload()
+                                .then(() => {
+                                    return check();
+                                });
+                        }
+                    }
                     return cy.log("Condition met, moving on...");
                 } catch (err) {
                     if (retries > MAX_RETRIES) {
