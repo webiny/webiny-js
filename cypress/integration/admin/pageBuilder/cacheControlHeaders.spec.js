@@ -8,6 +8,7 @@ describe("Cache-Control Headers", () => {
     after(() => cy.pbDeletePage({ id: createdPage.id }));
 
     it(`Create a page, publish it, and check headers`, () => {
+        // eslint-disable-next-line
         cy.pbCreatePage({ category: "static" }).then(page => {
             createdPage = page;
             cy.pbUpdatePage({
