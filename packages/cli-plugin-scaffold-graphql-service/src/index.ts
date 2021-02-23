@@ -27,6 +27,19 @@ interface Input {
     packageName?: string;
 }
 
+const createPackageName = ({
+    initial,
+    location
+}: {
+    initial?: string;
+    location: string;
+}): string => {
+    if (initial) {
+        return initial;
+    }
+    return Case.kebab(location);
+};
+
 export default (): CliCommandScaffoldTemplate<Input> => ({
     name: "cli-plugin-scaffold-template-graphql-service",
     type: "cli-plugin-scaffold-template",
@@ -89,9 +102,12 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 })
             );
 
-            const packageName = initialPackageName || Case.kebab(location);
+            const packageName = createPackageName({
+                initial: initialPackageName,
+                location
+            });
             //
-            const templateFolder = path.join(__dirname, "../template");
+            const templateFolder = path.join(__dirname, "template");
 
             if (fs.existsSync(location)) {
                 throw new Error(`Destination folder ${location} already exists!`);
@@ -164,18 +180,33 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             // Update root package.json - update "workspaces.packages" section.
             oraSpinner.start(
-                `Adding ${chalk.green(location)} workspace in root ${chalk.green(`package.json`)}..`
+                `Adding ${chalk.green(location)} workspace in root ${chalk.green(
+                    `package.json`
+                )}...`
             );
 
-            // if location does not start with packages/ then add new path to workspaces
-            if (location.match(/^packages\//) === null) {
-                const rootPackageJsonPath = path.join(projectRootPath, "package.json");
-                const rootPackageJson = await readJson<PackageJson>(rootPackageJsonPath);
-                if (!rootPackageJson.workspaces.packages.includes(location)) {
-                    rootPackageJson.workspaces.packages.push(location);
-                    await writeJson(rootPackageJsonPath, rootPackageJson);
-                }
+            // Add package to workspaces
+            const rootPackageJsonPath = path.join(projectRootPath, "package.json");
+            const rootPackageJson = await readJson<PackageJson>(rootPackageJsonPath);
+            if (!rootPackageJson.workspaces.packages.includes(location)) {
+                rootPackageJson.workspaces.packages.push(location);
+                await writeJson(rootPackageJsonPath, rootPackageJson);
             }
+
+            // Update graphql tsconfig file
+            const graphqlPath = path.relative(process.cwd(), "./api/code/graphql");
+            const graphqlTsconfigPath = path.resolve(graphqlPath, "tsconfig.json");
+            const packagePathRelativeToGraphql = path.relative(graphqlPath, fullLocation);
+            const graphqlTsconfig = readJson.sync<TsConfigJson>(graphqlTsconfigPath);
+            graphqlTsconfig.include = (graphqlTsconfig.include || []).concat([
+                packagePathRelativeToGraphql
+            ]);
+            graphqlTsconfig.references = (graphqlTsconfig.references || []).concat([
+                {
+                    path: packagePathRelativeToGraphql
+                }
+            ]);
+            await writeJson(graphqlTsconfigPath, graphqlTsconfig);
 
             oraSpinner.stopAndPersist({
                 symbol: chalk.green("✔"),
@@ -184,13 +215,22 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 )}.`
             });
 
+            oraSpinner.start(`Updating package name...`);
+
             // Update the package's name
             const packageJsonPath = path.resolve(location, "package.json");
             const packageJson = await readJson<PackageJson>(packageJsonPath);
             packageJson.name = packageName;
             await writeJson(packageJsonPath, packageJson);
 
-            // Update tsconfig "extends" path
+            oraSpinner.stopAndPersist({
+                symbol: chalk.green("✔"),
+                text: `Package name set into ${chalk.green(`package.json`)}.`
+            });
+
+            oraSpinner.start(`Updating package tsconfig extends path to root tsconfig...`);
+
+            // Update package tsconfig "extends" path
             const tsConfigPath = path.join(fullLocation, "tsconfig.json");
             const tsconfig = await readJson<TsConfigJson>(tsConfigPath);
             tsconfig.extends = baseTsConfigPath;
@@ -212,9 +252,14 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             }
         },
         onSuccess: async ({ input }) => {
-            const { location, entityName } = input;
+            const { location, entityName, packageName: initialPackageName } = input;
 
             const targetName = Case.camel(entityName);
+
+            const packageName = createPackageName({
+                initial: initialPackageName,
+                location
+            });
 
             const graphqlPath = path.relative(process.cwd(), "./api/code/graphql");
             const graphqlSrcPath = `${path.relative(process.cwd(), `${graphqlPath}/src`)}`;
@@ -222,10 +267,6 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             const servicePath = path.relative(process.cwd(), location);
             const serviceIndexFile = path.relative(graphqlSrcPath, `${servicePath}/src`);
-            const serviceTsConfigInclude = path.relative(
-                graphqlTsConfigFilePath,
-                `${servicePath}/src/**/*.ts`
-            );
 
             console.log(`The next steps:`);
             console.log(
@@ -261,7 +302,7 @@ ${targetName}Plugin()
                 indentString(
                     chalk.green(`
 "include": [
-    "${serviceTsConfigInclude}"
+    "${packageName}"
 ]
 `),
                     2
