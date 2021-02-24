@@ -35,3 +35,17 @@ export const PUBLISH_PAGE = gql`
         }
     }
 `;
+
+export const DELETE_PAGE = gql`
+    mutation DeletePage($id: ID!) {
+        pageBuilder {
+            deletePage(id: $id) {
+                error {
+                    message
+                    data
+                    code
+                }
+            }
+        }
+    }
+`;
