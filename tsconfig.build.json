@@ -17,6 +17,8 @@
     "paths": {
       "@webiny/api-cookie-policy/*": ["./packages/api-cookie-policy/src/*"],
       "@webiny/api-cookie-policy": ["./packages/api-cookie-policy/src"],
+      "@webiny/api-dynamodb-to-elasticsearch": ["./packages/api-dynamodb-to-elasticsearch/src"],
+      "@webiny/api-dynamodb-to-elasticsearch/*": ["./packages/api-dynamodb-to-elasticsearch/src/*"],
       "@webiny/api-file-manager/*": ["./packages/api-file-manager/src/*"],
       "@webiny/api-file-manager": ["./packages/api-file-manager/src"],
       "@webiny/api-file-manager-s3/*": ["./packages/api-file-manager-s3/src/*"],

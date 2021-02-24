@@ -5,6 +5,7 @@
     "build": "yarn webiny run build"
   },
   "dependencies": {
+    "@webiny/api-dynamodb-to-elasticsearch": "^5.0.0-beta.4",
     "@webiny/api-plugin-elastic-search-client": "^5.0.0-beta.4",
     "@webiny/cli": "5.0.0-beta.4",
     "@webiny/handler-aws": "^5.0.0-beta.4",

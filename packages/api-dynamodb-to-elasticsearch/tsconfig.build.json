@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["./src"],
+  "exclude": ["node_modules"],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist"
+  },
+  "references": [
+    {
+      "path": "../api-plugin-elastic-search-client/tsconfig.build.json"
+    },
+    {
+      "path": "../handler/tsconfig.build.json"
+    }
+  ]
+}
