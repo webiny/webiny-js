@@ -3,16 +3,13 @@ const path = require("path");
 const execa = require("execa");
 const crypto = require("crypto");
 const renames = require("./setup/renames");
-const get = require("lodash/get");
 const merge = require("lodash/merge");
-const trimEnd = require("lodash/trimEnd");
 const writeJsonFile = require("write-json-file");
 const loadJsonFile = require("load-json-file");
 const getPackages = require("get-yarn-workspaces");
 const { green } = require("chalk");
 
 const IS_TEST = process.env.NODE_ENV === "test";
-const DEFAULT_BACKEND_URL = "file://";
 
 // Automatic detection could be added here.
 function getDefaultRegion() {
@@ -28,11 +25,7 @@ function random(length = 32) {
 
 const setup = async args => {
     const { isGitAvailable, projectRoot, projectName, templateOptions = {} } = args;
-    const {
-        vpc = false,
-        region = getDefaultRegion(),
-        iac = ["pulumi", { backend: { url: DEFAULT_BACKEND_URL } }]
-    } = templateOptions;
+    const { vpc = false, region = getDefaultRegion() } = templateOptions;
 
     fs.copySync(path.join(__dirname, "template"), projectRoot);
 
@@ -94,23 +87,6 @@ const setup = async args => {
         { overwrite: true }
     );
 
-    // Set the appropriate backend.url value in Pulumi.yaml files.
-    const [, iacOptions = {}] = iac;
-
-    const pulumiYamlFolders = ["api", "apps/admin", "apps/website"];
-    for (let i = 0; i < pulumiYamlFolders.length; i++) {
-        const pulumiYamlFolder = pulumiYamlFolders[i];
-        const pulumiYamlPath = path.join(projectRoot, pulumiYamlFolder, "Pulumi.yaml");
-        const content = fs.readFileSync(pulumiYamlPath, "utf-8");
-
-        let backendUrl = get(iacOptions, "backend.url") || DEFAULT_BACKEND_URL;
-        if (backendUrl !== DEFAULT_BACKEND_URL) {
-            backendUrl = trimEnd(backendUrl, "/") + "/" + pulumiYamlFolder;
-        }
-
-        fs.writeFileSync(pulumiYamlPath, content.replace("{BACKEND_URL}", backendUrl));
-    }
-
     // Adjust versions - change them from `latest` to current one.
     const latestVersion = version;
 
@@ -140,20 +116,13 @@ const setup = async args => {
             stdio: "inherit"
         };
 
-        await execa("yarn", [], options);
-
-        /*
-        // TODO: finish logging.
-        let logStream;
-        if (log) {
-            logStream = fs.createWriteStream(context.logPath);
-            const runner = execa("yarn", [], options);
-            runner.stdout.pipe(logStream);
-            runner.stderr.pipe(logStream);
-            await runner;
-        } else {
+        try {
             await execa("yarn", [], options);
-        }*/
+        } catch (e) {
+            throw new Error(
+                "Failed while installing project dependencies. Please check the above logs for more information."
+            );
+        }
     }
 
     if (!IS_TEST) {

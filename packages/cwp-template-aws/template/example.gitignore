@@ -7,6 +7,8 @@
 .env.*
 .npmrc
 .pulumi
+Pulumi.*.yaml
+!Pulumi.yaml
 htpasswd
 npm-debug.log
 node_modules

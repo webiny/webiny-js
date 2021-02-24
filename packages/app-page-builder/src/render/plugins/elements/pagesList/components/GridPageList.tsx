@@ -37,7 +37,7 @@ export type PageItemProps = {
 const PageItem = ({ data, className }: PageItemProps) => {
     const image = get(data, "images.general.src");
     return (
-        <Link to={data.fullUrl} className={"webiny-pb-page-element-page-list__item " + className}>
+        <Link to={data.url} className={"webiny-pb-page-element-page-list__item " + className}>
             {image ? (
                 <div
                     className={"webiny-pb-page-element-page-list__media"}
@@ -49,7 +49,7 @@ const PageItem = ({ data, className }: PageItemProps) => {
                 <div
                     className={"webiny-pb-page-element-page-list__media"}
                     style={{ backgroundColor: "lightgray" }}
-                ></div>
+                />
             )}
 
             <div className={"webiny-pb-page-element-page-list__content"}>

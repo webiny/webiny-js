@@ -10,7 +10,7 @@ function runInquirer(cwp) {
         "In order to setup your new Webiny project, please answer the following questions."
     );
     console.log();
-    inquirer
+    return inquirer
         .prompt([
             {
                 type: "list",
@@ -60,15 +60,7 @@ function runInquirer(cwp) {
                 ]
             }
         ])
-        .then(templateOptions => setup({ ...cwp, templateOptions }))
-        .catch(e => {
-            if (e.isTtyError) {
-                console.log("Could not start setup wizard in current environment.");
-            } else {
-                console.log("Something went wrong:");
-                console.log(e);
-            }
-        });
+        .then(templateOptions => setup({ ...cwp, templateOptions }));
 }
 
 module.exports = runInquirer;
