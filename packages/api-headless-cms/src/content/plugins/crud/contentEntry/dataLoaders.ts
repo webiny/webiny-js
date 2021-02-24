@@ -8,7 +8,7 @@ export const getAllEntryRevisions = (context: CmsContext, { PK_ENTRY }) => {
 
         for (let i = 0; i < keys.length; i++) {
             const [entries] = await context.db.read({
-                ...utils.defaults.db,
+                ...utils.defaults.db(),
                 query: {
                     PK: PK_ENTRY(keys[i]),
                     SK: { $beginsWith: "REV#" }
@@ -27,7 +27,7 @@ export const getRevisionById = (context: CmsContext, { PK_ENTRY }) => {
         const queries = keys.map(id => {
             const [entryId, version] = id.split("#");
             return {
-                ...utils.defaults.db,
+                ...utils.defaults.db(),
                 query: {
                     PK: PK_ENTRY(entryId),
                     SK: `REV#${version}`
@@ -57,7 +57,7 @@ export const getPublishedRevisionByEntryId = (context: CmsContext, { PK_ENTRY, S
             .batch()
             .read(
                 ...keys.map(id => ({
-                    ...utils.defaults.db,
+                    ...utils.defaults.db(),
                     query: {
                         PK: PK_ENTRY(id),
                         SK: SK_PUBLISHED()
@@ -76,7 +76,7 @@ export const getLatestRevisionByEntryId = (context: CmsContext, { PK_ENTRY, SK_L
             .batch()
             .read(
                 ...keys.map(id => ({
-                    ...utils.defaults.db,
+                    ...utils.defaults.db(),
                     query: {
                         PK: PK_ENTRY(id),
                         SK: SK_LATEST()

@@ -1,0 +1,200 @@
+[
+  {
+    "id": "6022814b7a77e60008f70d62",
+    "name": "hero-block-bg.svg",
+    "__physicalFileName": "hero-block-bg.svg",
+    "key": "welcome-to-webiny__hero-block-bg.svg",
+    "size": 1854,
+    "type": "image/svg+xml",
+    "meta": { "private": true }
+  },
+  {
+    "id": "6022814b0df4b000088735bc",
+    "name": "webiny-logo.svg",
+    "__physicalFileName": "webiny-logo.svg",
+    "key": "welcome-to-webiny__webiny-logo.svg",
+    "size": 5053,
+    "type": "image/svg+xml",
+    "meta": { "private": true }
+  },
+  {
+    "id": "602282e07a77e60008f70d63",
+    "name": "feature-card-bg.svg",
+    "__physicalFileName": "hero-feature-card-bg.svg",
+    "key": "welcome-to-webiny__hero-feature-card-bg.svg",
+    "size": 888,
+    "type": "image/svg+xml",
+    "meta": { "private": true }
+  },
+  {
+    "id": "6022814a0df4b000088735bb",
+    "name": "webiny-serverless-application-framework.svg",
+    "__physicalFileName": "webiny-serverless-application-framework.svg",
+    "key": "welcome-to-webiny__webiny-serverless-application-framework.svg",
+    "size": 3661,
+    "type": "image/svg+xml",
+    "meta": { "private": true }
+  },
+  {
+    "id": "6022814891bd1300087bd24c",
+    "name": "webiny-infrastructure-overview.svg",
+    "__physicalFileName": "webiny-infrastructure-overview.svg",
+    "key": "welcome-to-webiny__webiny-infrastructure-overview.svg",
+    "size": 87624,
+    "type": "image/svg+xml",
+    "meta": { "private": true }
+  },
+  {
+    "id": "60228148f98841000981c723",
+    "name": "pink-shape.svg",
+    "__physicalFileName": "pink-shape.svg",
+    "key": "welcome-to-webiny__pink-shape.svg",
+    "size": 390,
+    "type": "image/svg+xml",
+    "meta": { "private": true }
+  },
+  {
+    "id": "6022814bef4a940008b3ba27",
+    "name": "security.svg",
+    "__physicalFileName": "security.svg",
+    "key": "welcome-to-webiny__security.svg",
+    "size": 17711,
+    "type": "image/svg+xml",
+    "meta": { "private": true }
+  },
+  {
+    "id": "6022814bef4a940008b3ba26",
+    "name": "scaffolding.svg",
+    "__physicalFileName": "scaffolding.svg",
+    "key": "welcome-to-webiny__scaffolding.svg",
+    "size": 32856,
+    "type": "image/svg+xml",
+    "meta": { "private": true }
+  },
+  {
+    "id": "60228148f98841000981c724",
+    "name": "idp.svg",
+    "__physicalFileName": "idp.svg",
+    "key": "welcome-to-webiny__IDP.svg",
+    "size": 27878,
+    "type": "image/svg+xml",
+    "meta": { "private": true }
+  },
+  {
+    "id": "6022814bef4a940008b3ba28",
+    "name": "environments.svg",
+    "__physicalFileName": "environments.svg",
+    "key": "welcome-to-webiny__environments.svg",
+    "size": 132767,
+    "type": "image/svg+xml",
+    "meta": { "private": true }
+  },
+  {
+    "id": "602281486ed41f0008bc2dad",
+    "name": "webiny-serverless-cms.png  ",
+    "__physicalFileName": "webiny-serverless-cms.png",
+    "key": "welcome-to-webiny__webiny-serverless-cms.png",
+    "size": 108898,
+    "type": "image/png",
+    "meta": { "private": true }
+  },
+  {
+    "id": "602281486639200009fd35eb",
+    "name": "serverless-cms-logo.svg",
+    "__physicalFileName": "serverless-cms-logo.svg",
+    "key": "welcome-to-webiny__serverless-cms-logo.svg",
+    "size": 1758,
+    "type": "image/svg+xml",
+    "meta": { "private": true }
+  },
+  {
+    "id": "602281486639200009fd35ec",
+    "name": "cms-benefits-shape.svg",
+    "__physicalFileName": "cms-benefits-shape.svg",
+    "key": "welcome-to-webiny__cms-benefits-shape.svg",
+    "size": 392,
+    "type": "image/svg+xml",
+    "meta": { "private": true }
+  },
+  {
+    "id": "60228148fa244d0008c47c79",
+    "name": "scalable-icon.svg",
+    "__physicalFileName": "scalable-icon.svg",
+    "key": "welcome-to-webiny__scalable-icon.svg",
+    "size": 7806,
+    "type": "image/svg+xml",
+    "meta": { "private": true }
+  },
+  {
+    "id": "60228145f98841000981c720",
+    "name": "adaptable-icon.svg",
+    "__physicalFileName": "adaptable-icon.svg",
+    "key": "welcome-to-webiny__adaptable-icon.svg",
+    "size": 28918,
+    "type": "image/svg+xml",
+    "meta": { "private": true }
+  },
+  {
+    "id": "6022814851197600081724ae",
+    "name": "cost-icon.svg",
+    "__physicalFileName": "cost-icon.svg",
+    "key": "welcome-to-webiny__cost-icon.svg",
+    "size": 60602,
+    "type": "image/svg+xml",
+    "meta": { "private": true }
+  },
+  {
+    "id": "60228148f98841000981c724",
+    "name": "idp.svg",
+    "__physicalFileName": "idp.svg",
+    "key": "welcome-to-webiny__idp.svg",
+    "size": 27878,
+    "type": "image/svg+xml",
+    "meta": { "private": true }
+  },
+  {
+    "id": "602281486ed41f0008bc2dac",
+    "name": "data-icon.svg",
+    "__physicalFileName": "data-icon.svg",
+    "key": "welcome-to-webiny__data-icon.svg",
+    "size": 73153,
+    "type": "image/svg+xml",
+    "meta": { "private": true }
+  },
+  {
+    "id": "602281486ed41f0008bc2dab",
+    "name": "permission-icon.svg",
+    "__physicalFileName": "permission-icon.svg",
+    "key": "welcome-to-webiny__permission-icon.svg",
+    "size": 67402,
+    "type": "image/svg+xml",
+    "meta": { "private": true }
+  },
+  {
+    "id": "60228145f98841000981c721",
+    "name": "developer.svg",
+    "__physicalFileName": "developer.svg",
+    "key": "welcome-to-webiny__developer.svg",
+    "size": 27804,
+    "type": "image/svg+xml",
+    "meta": { "private": true }
+  },
+  {
+    "id": "60228145f98841000981c71f",
+    "name": "octo-cat.svg",
+    "__physicalFileName": "octo-cat.svg",
+    "key": "welcome-to-webiny__octo-cat.svg",
+    "size": 30007,
+    "type": "image/svg+xml",
+    "meta": { "private": true }
+  },
+  {
+    "id": "60228148fa244d0008c47c7a",
+    "name": "community-icon.png",
+    "__physicalFileName": "community-icon.png",
+    "key": "welcome-to-webiny__community-icon.png",
+    "size": 17382,
+    "type": "image/png",
+    "meta": { "private": true }
+  }
+]

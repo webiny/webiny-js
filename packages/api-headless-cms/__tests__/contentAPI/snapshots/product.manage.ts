@@ -15,7 +15,7 @@ export default /* GraphQL */ `
         price: Number
         inStock: Boolean
         itemsInStock: Number
-        availableOn: String
+        availableOn: Date
         color: String
         availableSizes: [String]
         image: String
@@ -39,7 +39,7 @@ export default /* GraphQL */ `
         price: Number
         inStock: Boolean
         itemsInStock: Number
-        availableOn: String
+        availableOn: Date
         color: String
         availableSizes: [String]
         image: String
@@ -52,7 +52,7 @@ export default /* GraphQL */ `
         price: Number
         inStock: Boolean
         itemsInStock: Number
-        availableOn: String
+        availableOn: Date
         color: String
         availableSizes: String
     }
@@ -105,14 +105,14 @@ export default /* GraphQL */ `
         itemsInStock_gt: Number
         itemsInStock_gte: Number
 
-        availableOn: String
-        availableOn_not: String
-        availableOn_in: [String]
-        availableOn_not_in: [String]
-        availableOn_lt: String
-        availableOn_lte: String
-        availableOn_gt: String
-        availableOn_gte: String
+        availableOn: Date
+        availableOn_not: Date
+        availableOn_in: [Date]
+        availableOn_not_in: [Date]
+        availableOn_lt: Date
+        availableOn_lte: Date
+        availableOn_gt: Date
+        availableOn_gte: Date
         
         color: String
         color_not: String

@@ -7,8 +7,19 @@ const DEFAULT_LOGIN = { username: DEFAULT_USERNAME, password: DEFAULT_PASSWORD }
 
 const cache = {};
 
+// A trivial approach. Upgrade if needed.
+const hasLoginDataInLocalStorage = () => {
+    for (const key in localStorage) {
+        if (key.startsWith("CognitoIdentityServiceProvider")) {
+            return true;
+        }
+    }
+
+    return false;
+};
+
 Cypress.Commands.add("login", ({ username, password } = DEFAULT_LOGIN) => {
-    if (cache[username + password]) {
+    if (cache[username + password] && hasLoginDataInLocalStorage()) {
         return cache[username + password];
     }
 

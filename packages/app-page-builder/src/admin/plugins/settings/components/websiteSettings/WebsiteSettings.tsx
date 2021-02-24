@@ -47,7 +47,7 @@ const WebsiteSettings = () => {
 
     const [update, { loading: mutationInProgress }] = useMutation(UPDATE_SETTINGS, {
         update: (cache, { data }) => {
-            const dataFromCache = cache.readQuery({ query: SETTINGS_QUERY });
+            const dataFromCache = cache.readQuery<Record<string, any>>({ query: SETTINGS_QUERY });
             const updatedSettings = get(data, "pageBuilder.updateSettings.data");
 
             if (updatedSettings) {

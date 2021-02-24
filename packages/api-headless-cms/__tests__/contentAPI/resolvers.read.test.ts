@@ -52,13 +52,11 @@ const categoryManagerHelper = async manageOpts => {
 describe("READ - Resolvers", () => {
     let contentModelGroup: CmsContentModelGroup;
 
-    const esCmsIndex = "root-headless-cms";
-
     const manageOpts = { path: "manage/en-US" };
     const readOpts = { path: "read/en-US" };
 
     const {
-        elasticSearch,
+        clearAllIndex,
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
@@ -98,10 +96,7 @@ describe("READ - Resolvers", () => {
 
     beforeEach(async () => {
         try {
-            await elasticSearch.indices.delete({ index: esCmsIndex });
-        } catch (e) {}
-        try {
-            await elasticSearch.indices.create({ index: esCmsIndex });
+            await clearAllIndex();
         } catch {
             // Ignore errors
         }
@@ -121,7 +116,7 @@ describe("READ - Resolvers", () => {
 
     afterEach(async () => {
         try {
-            await elasticSearch.indices.delete({ index: esCmsIndex });
+            await clearAllIndex();
         } catch (e) {}
     });
 
@@ -958,7 +953,7 @@ describe("READ - Resolvers", () => {
             data: {
                 title: "Potato",
                 price: 100.05,
-                availableOn: "2020-12-25T16:37:00Z.000",
+                availableOn: "2020-12-25",
                 color: "white",
                 availableSizes: ["s", "m"],
                 image: "potato.jpg",
@@ -973,7 +968,7 @@ describe("READ - Resolvers", () => {
             data: {
                 title: "Carrot",
                 price: 98,
-                availableOn: "2020-12-25T16:37:00Z.000",
+                availableOn: "2020-12-25",
                 color: "white",
                 availableSizes: ["m"],
                 image: "orange.jpg",
@@ -988,7 +983,7 @@ describe("READ - Resolvers", () => {
             data: {
                 title: "Korn",
                 price: 99.1,
-                availableOn: "2020-12-25T16:37:00Z.000",
+                availableOn: "2020-12-25",
                 color: "white",
                 availableSizes: ["m"],
                 image: "korn.jpg",

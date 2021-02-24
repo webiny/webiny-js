@@ -19,6 +19,7 @@ const TYPE_FORM_SUBMISSION = "fb.formSubmission";
 
 const getESDataForLatestRevision = (form: FbForm, context: FormBuilderContext) => ({
     __type: "fb.form",
+    webinyVersion: context.WEBINY_VERSION,
     id: form.id,
     createdOn: form.createdOn,
     savedOn: form.savedOn,
@@ -1134,6 +1135,7 @@ export default {
                         id: submissionModel.id,
                         body: {
                             __type: "fb.submission",
+                            webinyVersion: context.WEBINY_VERSION,
                             createdOn: new Date().toISOString(),
                             ...submission
                         }

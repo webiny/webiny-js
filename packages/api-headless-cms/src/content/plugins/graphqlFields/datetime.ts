@@ -1,15 +1,30 @@
-import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
+import { CmsContentModelField, CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
+
+const fieldGraphQLTypes = {
+    time: "Time",
+    dateTimeWithoutTimezone: "DateTime",
+    dateTimeWithTimezone: "DateTimeZ",
+    date: "Date"
+};
+
+const getFieldGraphQLType = (field: CmsContentModelField): string => {
+    const type = field.settings.type;
+    if (!type || !fieldGraphQLTypes[type]) {
+        return "DateTime";
+    }
+    return fieldGraphQLTypes[type];
+};
 
 const createListFilters = ({ field }) => {
     return `
-        ${field.fieldId}: String
-        ${field.fieldId}_not: String
-        ${field.fieldId}_in: [String]
-        ${field.fieldId}_not_in: [String]
-        ${field.fieldId}_lt: String
-        ${field.fieldId}_lte: String
-        ${field.fieldId}_gt: String
-        ${field.fieldId}_gte: String
+        ${field.fieldId}: ${getFieldGraphQLType(field)}
+        ${field.fieldId}_not: ${getFieldGraphQLType(field)}
+        ${field.fieldId}_in: [${getFieldGraphQLType(field)}]
+        ${field.fieldId}_not_in: [${getFieldGraphQLType(field)}]
+        ${field.fieldId}_lt: ${getFieldGraphQLType(field)}
+        ${field.fieldId}_lte: ${getFieldGraphQLType(field)}
+        ${field.fieldId}_gt: ${getFieldGraphQLType(field)}
+        ${field.fieldId}_gte: ${getFieldGraphQLType(field)}
     `;
 };
 
@@ -22,23 +37,23 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
     read: {
         createListFilters,
         createGetFilters({ field }) {
-            return `${field.fieldId}: String`;
+            return `${field.fieldId}: ${getFieldGraphQLType(field)}`;
         },
         createTypeField({ field }) {
             if (field.multipleValues) {
-                return `${field.fieldId}: [String]`;
+                return `${field.fieldId}: [${getFieldGraphQLType(field)}]`;
             }
 
-            return `${field.fieldId}: String`;
+            return `${field.fieldId}: ${getFieldGraphQLType(field)}`;
         }
     },
     manage: {
         createListFilters,
         createTypeField({ field }) {
-            return field.fieldId + ": String";
+            return `${field.fieldId}: ${getFieldGraphQLType(field)}`;
         },
         createInputField({ field }) {
-            return field.fieldId + ": String";
+            return `${field.fieldId}: ${getFieldGraphQLType(field)}`;
         }
     }
 };

@@ -178,11 +178,18 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
         return [JSON.parse(response.body), response];
     };
 
+    const elasticSearchClient = new Client({
+        node: `http://localhost:${ELASTICSEARCH_PORT}`
+    });
+
     return {
         until,
-        elasticSearch: new Client({
-            node: `http://localhost:${ELASTICSEARCH_PORT}`
-        }),
+        elasticSearch: elasticSearchClient,
+        clearAllIndex: async () => {
+            await elasticSearchClient.indices.delete({
+                index: "_all"
+            });
+        },
         documentClient,
         sleep: (ms = 333) => {
             return new Promise(resolve => {

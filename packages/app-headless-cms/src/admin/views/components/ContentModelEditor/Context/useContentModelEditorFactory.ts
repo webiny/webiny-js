@@ -15,6 +15,10 @@ import {
 } from "@webiny/app-headless-cms/types";
 import ApolloClient from "apollo-client";
 
+type PickedCmsEditorContentModel = Pick<
+    CmsEditorContentModel,
+    "layout" | "fields" | "name" | "settings" | "description" | "titleFieldId"
+>;
 /**
  * cleanup is required because backend always expects string value in predefined values entries
  */
@@ -37,7 +41,7 @@ const cleanupModelDataFields = (fields: CmsEditorField[]): CmsEditorField[] => {
     });
 };
 
-const cleanupModelData = (data: CmsEditorContentModel): CmsEditorContentModel => {
+const cleanupModelData = (data: PickedCmsEditorContentModel): PickedCmsEditorContentModel => {
     return {
         ...data,
         fields: cleanupModelDataFields(data.fields)
@@ -116,7 +120,7 @@ export default ContentModelEditorContext => {
                 return response;
             },
             saveContentModel: async (data = state.data) => {
-                const modelData: CmsEditorContentModel = pick(data, [
+                const modelData: PickedCmsEditorContentModel = pick(data, [
                     "layout",
                     "fields",
                     "name",

@@ -4,12 +4,10 @@ import models from "./mocks/contentModels";
 import { useFruitManageHandler } from "../utils/useFruitManageHandler";
 
 describe("fieldValidations", () => {
-    const esCmsIndex = "root-headless-cms";
-
     const manageOpts = { path: "manage/en-US" };
 
     const {
-        elasticSearch,
+        clearAllIndex,
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
@@ -23,9 +21,9 @@ describe("fieldValidations", () => {
         lowerCase: "lowercase",
         upperCase: "UPPERCASE",
         date: "2020-12-15",
-        dateTime: "2020-12-15T12:01:01",
-        dateTimeZ: "2020-12-15T12:01:01+01:00",
-        time: "12:01:01"
+        dateTime: new Date("2020-12-15T12:12:21").toISOString(),
+        dateTimeZ: "2020-12-15T14:52:41+01:00",
+        time: "13:29:58"
     };
 
     // This function is not directly within `beforeEach` as we don't always setup the same content model.
@@ -82,13 +80,13 @@ describe("fieldValidations", () => {
 
     beforeEach(async () => {
         try {
-            await elasticSearch.indices.create({ index: esCmsIndex });
+            await clearAllIndex();
         } catch {}
     });
 
     afterEach(async () => {
         try {
-            await elasticSearch.indices.delete({ index: esCmsIndex });
+            await clearAllIndex();
         } catch {}
     });
     /**
@@ -574,7 +572,7 @@ describe("fieldValidations", () => {
             const [response] = await createFruit({
                 data: {
                     ...defaultFruitData,
-                    dateTime
+                    dateTime: new Date(dateTime).toISOString()
                 }
             });
 
@@ -599,8 +597,11 @@ describe("fieldValidations", () => {
     );
 
     const dateTimeZErrorValidations = [
-        ["2020-11-30T11:30:00+0100", "Date must be greater or equal than 2020-12-01T11:30:00+0100"],
-        ["2021-01-01T14:30:00+0100", "Date must be lesser or equal than 2020-12-31T13:30:00+0100"]
+        [
+            "2020-11-30T11:30:00+01:00",
+            "Date must be greater or equal than 2020-12-01T11:30:00+0100"
+        ],
+        ["2021-01-01T14:30:00+01:00", "Date must be lesser or equal than 2020-12-31T13:30:00+0100"]
     ];
 
     test.each(dateTimeZErrorValidations)(

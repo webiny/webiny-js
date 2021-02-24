@@ -5,6 +5,7 @@ export type HandlerArgs = any[];
 export interface ContextInterface {
     plugins: PluginsContainer;
     args: HandlerArgs;
+    readonly WEBINY_VERSION: string;
 }
 
 export type Context<
@@ -21,6 +22,7 @@ export type Context<
 > = {
     plugins: PluginsContainer;
     args: HandlerArgs;
+    readonly WEBINY_VERSION: string;
 } & C0 &
     C1 &
     C2 &

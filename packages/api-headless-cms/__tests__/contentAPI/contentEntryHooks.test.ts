@@ -7,11 +7,10 @@ import { SecurityIdentity } from "@webiny/api-security";
 
 describe("contentEntryHooks", () => {
     let contentModelGroup: CmsContentModelGroup;
-    const esCmsIndex = "root-headless-cms";
     const manageOpts = { path: "manage/en-US" };
 
     const {
-        elasticSearch,
+        clearAllIndex,
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
@@ -62,14 +61,14 @@ describe("contentEntryHooks", () => {
     beforeEach(async () => {
         await setupContentModel();
         try {
-            await elasticSearch.indices.create({ index: esCmsIndex });
+            await clearAllIndex();
         } catch {}
         hooksTracker.reset();
     });
 
     afterEach(async () => {
         try {
-            await elasticSearch.indices.delete({ index: esCmsIndex });
+            await clearAllIndex();
         } catch {}
     });
 

@@ -7,17 +7,17 @@ import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useReviewReadHandler } from "../utils/useReviewReadHandler";
 import { useAuthorManageHandler } from "../utils/useAuthorManageHandler";
 
-describe("refField", () => {
-    const esCmsIndex = "root-headless-cms";
+jest.setTimeout(25000);
 
+describe("refField", () => {
     const manageOpts = { path: "manage/en-US" };
     const readOpts = { path: "read/en-US" };
 
     const {
-        elasticSearch,
         createContentModelMutation,
         updateContentModelMutation,
-        createContentModelGroupMutation
+        createContentModelGroupMutation,
+        clearAllIndex
     } = useContentGqlHandler(manageOpts);
 
     // This function is not directly within `beforeEach` as we don't always setup the same content model.
@@ -97,7 +97,7 @@ describe("refField", () => {
             data: {
                 title: "Potato",
                 price: 100,
-                availableOn: "2020-12-25T16:37:00Z.000",
+                availableOn: "2020-12-25",
                 color: "white",
                 availableSizes: ["s", "m"],
                 image: "file.jpg",
@@ -138,13 +138,13 @@ describe("refField", () => {
 
     beforeEach(async () => {
         try {
-            await elasticSearch.indices.create({ index: esCmsIndex });
+            await clearAllIndex();
         } catch {}
     });
 
     afterEach(async () => {
         try {
-            await elasticSearch.indices.delete({ index: esCmsIndex });
+            await clearAllIndex();
         } catch {}
     });
 
