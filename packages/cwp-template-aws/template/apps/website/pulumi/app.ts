@@ -28,7 +28,8 @@ class App {
                     acl: "public-read",
                     bucket: this.bucket,
                     contentType: mime.getType(filePath) || undefined,
-                    source: new pulumi.asset.FileAsset(filePath)
+                    source: new pulumi.asset.FileAsset(filePath),
+                    cacheControl: "max-age=31536000"
                 },
                 {
                     parent: this.bucket
@@ -53,6 +54,7 @@ class App {
             ],
             defaultRootObject: "index.html",
             defaultCacheBehavior: {
+                compress: true,
                 targetOriginId: this.bucket.arn,
                 viewerProtocolPolicy: "redirect-to-https",
                 allowedMethods: ["GET", "HEAD", "OPTIONS"],

@@ -2864,18 +2864,19 @@ export const preparePageData = ({ srcPrefix, fileIdToKeyMap }) => {
                                                                 file: {
                                                                     id: "602281486ed41f0008bc2dad",
                                                                     name:
-                                                                        "8kkxzkhzu-webiny-serverless-cms.svg",
+                                                                        "8kkxzkhzu-webiny-serverless-cms.png",
                                                                     key:
-                                                                        "8kkxzkhzu-webiny-serverless-cms.svg",
+                                                                        "8kkxzkhzu-webiny-serverless-cms.png",
                                                                     src: `${srcPrefix}/${
                                                                         fileIdToKeyMap[
                                                                             FILE_ID_MAP
                                                                                 .WEBINY_SERVERLESS_CMS_SVG
                                                                         ]
                                                                     }`,
-                                                                    size: 5954021,
-                                                                    type: "image/svg+xml"
-                                                                }
+                                                                    size: 108898,
+                                                                    type: "image/png"
+                                                                },
+                                                                width: "495px"
                                                             }
                                                         },
                                                         elements: []
@@ -4728,17 +4729,18 @@ export const preparePageData = ({ srcPrefix, fileIdToKeyMap }) => {
                                             image: {
                                                 file: {
                                                     id: "60228148fa244d0008c47c7a",
-                                                    name: "9kkxzkfx1-community-icon.svg",
-                                                    key: "9kkxzkfx1-community-icon.svg",
+                                                    name: "9kkxzkfx1-community-icon.png",
+                                                    key: "9kkxzkfx1-community-icon.png",
                                                     src: `${srcPrefix}/${
                                                         fileIdToKeyMap[
                                                             FILE_ID_MAP.COMMUNITY_ICON_SVG
                                                         ]
                                                     }`,
-                                                    size: 545157,
-                                                    type: "image/svg+xml"
+                                                    size: 17382,
+                                                    type: "image/png"
                                                 },
-                                                height: "200px"
+                                                height: "200px",
+                                                width: "276px"
                                             },
                                             link: {}
                                         },

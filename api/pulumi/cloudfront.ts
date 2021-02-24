@@ -8,6 +8,7 @@ class Cloudfront {
         this.cloudfront = new aws.cloudfront.Distribution("api-cloudfront", {
             waitForDeployment: false,
             defaultCacheBehavior: {
+                compress: true,
                 allowedMethods: ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"],
                 cachedMethods: ["GET", "HEAD", "OPTIONS"],
                 defaultTtl: 0,
@@ -18,7 +19,6 @@ class Cloudfront {
                     headers: ["Accept", "Accept-Language"],
                     queryString: true
                 },
-                compress: true,
                 maxTtl: 86400,
                 minTtl: 0,
                 targetOriginId: apiGateway.api.name,
@@ -28,6 +28,7 @@ class Cloudfront {
             enabled: true,
             orderedCacheBehaviors: [
                 {
+                    compress: true,
                     allowedMethods: ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"],
                     cachedMethods: ["GET", "HEAD", "OPTIONS"],
                     forwardedValues: {
