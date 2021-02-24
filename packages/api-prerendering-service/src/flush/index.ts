@@ -5,14 +5,13 @@ import getDbNamespace from "./../utils/getDbNamespace";
 import getRenderUrl from "./../utils/getRenderUrl";
 import { HandlerPlugin, Configuration, FlushHookPlugin } from "./types";
 import { HandlerResponse, DbRender } from "@webiny/api-prerendering-service/types";
-import debug from "debug";
 import defaults from "./../utils/defaults";
 import path from "path";
 import getTagUrlLinkPKSK from "./../utils/getTagUrlLinkPKSK";
 
 const s3 = new S3({ region: process.env.AWS_REGION });
 
-const log = debug("wby:api-prerendering-service:flush");
+const log = console.log;
 
 const deleteFile = ({ key, storageName }) => {
     return s3

@@ -233,7 +233,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
-      PULUMI_LOGIN: ${{ secrets.PULUMI_LOGIN }}
+      PULUMI_LOGIN: ${{ secrets.AWS_PULUMI_S3_BUCKET_NEXT_BRANCH_PREVIEW }}
     steps:
       - uses: actions/setup-node@v2
         with:

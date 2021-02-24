@@ -7644,7 +7644,6 @@ __metadata:
     "@webiny/handler-db": ^5.0.0-beta.4
     "@webiny/plugins": ^5.0.0-beta.4
     chrome-aws-lambda: ^5.5.0
-    debug: ^4.3.1
     lodash: ^4.17.20
     mdbid: ^1.0.0
     object-hash: ^2.1.1
@@ -8213,6 +8212,7 @@ __metadata:
     lodash: ^4.17.10
     lodash.pick: ^4.4.0
     medium-editor: ^5.23.3
+    nanoid: ^3.1.20
     object.pick: ^1.3.0
     platform: ^1.3.5
     prop-types: ^15.7.2
@@ -8229,7 +8229,6 @@ __metadata:
     react-virtualized: ^9.21.0
     recoil: ^0.1.2
     rimraf: ^3.0.2
-    shortid: ^2.2.8
     slugify: ^1.2.9
     store: ^2.0.12
     timeago-react: ^2.0.0
@@ -14347,7 +14346,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:4, debug@npm:^4.0.1, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.2, debug@npm:^4.3.0, debug@npm:^4.3.1, debug@npm:~4.3.1":
+"debug@npm:4, debug@npm:^4.0.1, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.2, debug@npm:^4.3.0, debug@npm:~4.3.1":
   version: 4.3.2
   resolution: "debug@npm:4.3.2"
   dependencies:
@@ -24062,6 +24061,15 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"nanoid@npm:^3.1.20":
+  version: 3.1.20
+  resolution: "nanoid@npm:3.1.20"
+  bin:
+    nanoid: bin/nanoid.cjs
+  checksum: 4788d36edcfec7bb32ddf33ed8f1f46df2867f70e9b1993bb131f7677e04ead2b621e5d614d2736308be18db1d54208d8ab207b4586bd5b052f71fb9d4c0ebea
+  languageName: node
+  linkType: hard
+
 "nanomatch@npm:^1.2.9":
   version: 1.2.13
   resolution: "nanomatch@npm:1.2.13"
@@ -30436,7 +30444,7 @@ resolve@1.12.2:
   languageName: node
   linkType: hard
 
-"shortid@npm:^2.2.12, shortid@npm:^2.2.14, shortid@npm:^2.2.15, shortid@npm:^2.2.16, shortid@npm:^2.2.8":
+"shortid@npm:^2.2.12, shortid@npm:^2.2.14, shortid@npm:^2.2.15, shortid@npm:^2.2.16":
   version: 2.2.16
   resolution: "shortid@npm:2.2.16"
   dependencies:
