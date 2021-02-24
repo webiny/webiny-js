@@ -71,7 +71,7 @@ describe("Menus Module", () => {
     });
 
     it(`Step 2: assert that menu item and pages are shown (descending order)`, () => {
-        cy.visit(Cypress.env("WEBSITE_URL") + `/page-${id}-${0}`);
+        cy.visit(Cypress.env("WEBSITE_URL") + `/page-${id}-${0}/`);
         cy.reloadUntil(() => {
             // We wait until the document contains the newly added menu.
             return Cypress.$(`:contains(added-menu-${id})`).length > 0;
@@ -110,7 +110,7 @@ describe("Menus Module", () => {
     });
 
     it(`Step 4: assert that menu item and pages are shown (ascending order)`, () => {
-        cy.visit(Cypress.env("WEBSITE_URL") + `/page-${id}-${0}`)
+        cy.visit(Cypress.env("WEBSITE_URL") + `/page-${id}-${0}/`)
             .reloadUntil(() => {
                 // We wait until the document contains the newly added menu.
                 return Cypress.$(`:contains(added-menu-${idEdited})`).length > 0;
@@ -141,7 +141,7 @@ describe("Menus Module", () => {
     });
 
     it(`Step 6: assert that the pages list menu item does not exist`, () => {
-        cy.visit(Cypress.env("WEBSITE_URL") + `/page-${id}-${0}`)
+        cy.visit(Cypress.env("WEBSITE_URL") + `/page-${id}-${0}/`)
             .reloadUntil(() => {
                 // We wait until the document contains the newly added menu.
                 return Cypress.$(`:contains(added-menu-${idEdited})`).length === 0;
