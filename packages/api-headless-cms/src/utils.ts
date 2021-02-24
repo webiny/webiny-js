@@ -34,6 +34,17 @@ export const defaults = {
             }
         ]
     }),
+    esDb: (): DatabaseConfig => ({
+        table: process.env.DB_TABLE_ELASTICSEARCH,
+        keys: [
+            {
+                primary: true,
+                unique: true,
+                name: "primary",
+                fields: [{ name: "PK" }, { name: "SK" }]
+            }
+        ]
+    }),
     es(context: CmsContext, model: CmsContentModel): ElasticsearchConfig {
         const tenant = context.security.getTenant();
         if (!tenant) {

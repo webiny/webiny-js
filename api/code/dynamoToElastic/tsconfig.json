@@ -1,0 +1,10 @@
+{
+  "extends": "../../../tsconfig",
+  "references": [
+    { "path": "../../../packages/handler-aws" },
+    {
+      "path": "../../../packages/api-plugin-elastic-search-client"
+    }
+  ]
+}
+c

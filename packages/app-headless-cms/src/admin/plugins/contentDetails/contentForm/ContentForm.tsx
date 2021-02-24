@@ -47,7 +47,7 @@ const ContentForm: React.FunctionComponent<ContentFormProps> = ({
     const [invalidFields, setInvalidFields] = useState<Record<string, string>>({});
 
     const setInvalidFieldValues = errors => {
-        const values = errors.reduce((acc, er) => {
+        const values = (errors || []).reduce((acc, er) => {
             acc[er.fieldId] = er.error;
             return acc;
         }, {});

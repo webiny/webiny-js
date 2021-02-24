@@ -10324,6 +10324,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"api-dynamo-to-elastic@workspace:api/code/dynamoToElastic":
+  version: 0.0.0-use.local
+  resolution: "api-dynamo-to-elastic@workspace:api/code/dynamoToElastic"
+  dependencies:
+    "@webiny/api-plugin-elastic-search-client": ^5.0.0-beta.4
+    "@webiny/cli": 5.0.0-beta.4
+    "@webiny/handler-aws": ^5.0.0-beta.4
+    "@webiny/project-utils": 5.0.0-beta.4
+  languageName: unknown
+  linkType: soft
+
 "api-file-manager-download@workspace:api/code/fileManager/download":
   version: 0.0.0-use.local
   resolution: "api-file-manager-download@workspace:api/code/fileManager/download"

@@ -1,0 +1,104 @@
+[
+  {
+    "eventID": "abf8fe77f85517e814ae14ccf595f959",
+    "eventName": "INSERT",
+    "eventVersion": "1.1",
+    "eventSource": "aws:dynamodb",
+    "awsRegion": "eu-central-1",
+    "dynamodb": {
+      "ApproximateCreationDateTime": 1613938979,
+      "Keys": {
+        "SK": {
+          "S": "1"
+        },
+        "PK": {
+          "S": "T#root#ES"
+        }
+      },
+      "NewImage": {
+        "data": {
+          "M": {
+            "modelId": {
+              "S": "order"
+            },
+            "entryId": {
+              "N": "1"
+            }
+          }
+        },
+        "SK": {
+          "S": "1"
+        },
+        "PK": {
+          "S": "T#root#ES"
+        }
+      },
+      "SequenceNumber": "100000000029551535408",
+      "SizeBytes": 58,
+      "StreamViewType": "NEW_IMAGE"
+    },
+    "eventSourceARN": "arn:aws:dynamodb:eu-central-1:656932293860:table/webiny-streams-8d9ad52/stream/2021-02-21T20:12:44.976"
+  },
+  {
+    "eventID": "29eb28980abf381b6a3a07ed9be9f2b7",
+    "eventName": "MODIFY",
+    "eventVersion": "1.1",
+    "eventSource": "aws:dynamodb",
+    "awsRegion": "eu-central-1",
+    "dynamodb": {
+      "ApproximateCreationDateTime": 1613939110,
+      "Keys": {
+        "SK": {
+          "S": "1"
+        },
+        "PK": {
+          "S": "T#root#ES"
+        }
+      },
+      "NewImage": {
+        "data": {
+          "M": {
+            "modelId": {
+              "S": "order"
+            },
+            "entryId": {
+              "N": "2"
+            }
+          }
+        },
+        "SK": {
+          "S": "1"
+        },
+        "PK": {
+          "S": "T#root#ES"
+        }
+      },
+      "SequenceNumber": "200000000029551607363",
+      "SizeBytes": 58,
+      "StreamViewType": "NEW_IMAGE"
+    },
+    "eventSourceARN": "arn:aws:dynamodb:eu-central-1:656932293860:table/webiny-streams-8d9ad52/stream/2021-02-21T20:12:44.976"
+  },
+  {
+    "eventID": "2cb5ad3ffabca3639e4f7858e3bdd138",
+    "eventName": "REMOVE",
+    "eventVersion": "1.1",
+    "eventSource": "aws:dynamodb",
+    "awsRegion": "eu-central-1",
+    "dynamodb": {
+      "ApproximateCreationDateTime": 1613939165,
+      "Keys": {
+        "SK": {
+          "S": "1"
+        },
+        "PK": {
+          "S": "T#root#ES"
+        }
+      },
+      "SequenceNumber": "300000000029551639656",
+      "SizeBytes": 14,
+      "StreamViewType": "NEW_IMAGE"
+    },
+    "eventSourceARN": "arn:aws:dynamodb:eu-central-1:656932293860:table/webiny-streams-8d9ad52/stream/2021-02-21T20:12:44.976"
+  }
+]

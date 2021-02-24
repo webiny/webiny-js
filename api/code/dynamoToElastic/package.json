@@ -1,0 +1,13 @@
+{
+  "name": "api-dynamo-to-elastic",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "yarn webiny run build"
+  },
+  "dependencies": {
+    "@webiny/api-plugin-elastic-search-client": "^5.0.0-beta.4",
+    "@webiny/cli": "5.0.0-beta.4",
+    "@webiny/handler-aws": "^5.0.0-beta.4",
+    "@webiny/project-utils": "5.0.0-beta.4"
+  }
+}
