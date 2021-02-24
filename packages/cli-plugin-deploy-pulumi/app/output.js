@@ -3,6 +3,7 @@ const { red } = require("chalk");
 const path = require("path");
 const loadEnvVariables = require("../utils/loadEnvVariables");
 const getPulumi = require("../utils/getPulumi");
+const login = require("../utils/login");
 
 const getStackName = folder => {
     folder = folder.split("/").pop();
@@ -14,6 +15,8 @@ module.exports = async (inputs, context) => {
     const stacksDir = path.join(".", folder).replace(/\\/g, "/");
 
     await loadEnvVariables(inputs, context);
+
+    await login(folder);
 
     const pulumi = getPulumi({
         execa: {

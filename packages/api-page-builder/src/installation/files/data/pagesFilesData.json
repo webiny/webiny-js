@@ -91,11 +91,11 @@
   },
   {
     "id": "602281486ed41f0008bc2dad",
-    "name": "webiny-serverless-cms.svg",
-    "__physicalFileName": "webiny-serverless-cms.svg",
-    "key": "welcome-to-webiny__webiny-serverless-cms.svg",
-    "size": 5954021,
-    "type": "image/svg+xml",
+    "name": "webiny-serverless-cms.png  ",
+    "__physicalFileName": "webiny-serverless-cms.png",
+    "key": "welcome-to-webiny__webiny-serverless-cms.png",
+    "size": 108898,
+    "type": "image/png",
     "meta": { "private": true }
   },
   {
@@ -190,11 +190,11 @@
   },
   {
     "id": "60228148fa244d0008c47c7a",
-    "name": "community-icon.svg",
-    "__physicalFileName": "community-icon.svg",
-    "key": "welcome-to-webiny__community-icon.svg",
-    "size": 545157,
-    "type": "image/svg+xml",
+    "name": "community-icon.png",
+    "__physicalFileName": "community-icon.png",
+    "key": "welcome-to-webiny__community-icon.png",
+    "size": 17382,
+    "type": "image/png",
     "meta": { "private": true }
   }
 ]
