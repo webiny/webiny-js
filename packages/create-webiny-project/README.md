@@ -118,14 +118,14 @@ Once you're done, do the following:
 
 ### Commands Cheat Sheet
 
-| Command                                                                                                                                                            | Description                       |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------- |
-| `rm -rf .verdaccio`                                                                                                                                                | Remove `.verdaccio` folder        |
-| `git tag -l "v5*"`                                                                                                                                                 | List all v5\* tags                |
-| `git tag -d "v5.0.0-beta.5"`                                                                                                                                       | Remove specific tag               |
-| `npm config set registry http://localhost:4873`                                                                                                                    | Set Verdaccio as the NPM registry |
-| `npm config set registry https://registry.npmjs.org/`                                                                                                              | Reset NPM registry                |
-| `yarn verdaccio:start`                                                                                                                                             | Start Verdaccio                   |
-| `yarn lerna:version:verdaccio && yarn lerna:publish:verdaccio`                                                                                                     | Version and publish to Verdaccio  |
-| `npx create-webiny-project@beta my-test-project --tag beta --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'` | Create a new Webiny project       |
-| `git reset HEAD~ && git reset --hard HEAD`                                                                                                                         | Revert versioning commit          |
+| Description                       | Command                                                                                                                                                            |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Remove `.verdaccio` folder        | `rm -rf .verdaccio`                                                                                                                                                |
+| List all v5\* tags                | `git tag -l "v5*"`                                                                                                                                                 |
+| Remove specific tag               | `git tag -d "v5.0.0-beta.5"`                                                                                                                                       |
+| Set Verdaccio as the NPM registry | `npm config set registry http://localhost:4873`                                                                                                                    |
+| Reset NPM registry                | `npm config set registry https://registry.npmjs.org/`                                                                                                              |
+| Start Verdaccio                   | `yarn verdaccio:start`                                                                                                                                             |
+| Version and publish to Verdaccio  | `yarn lerna:version:verdaccio && yarn lerna:publish:verdaccio`                                                                                                     |
+| Create a new Webiny project       | `npx create-webiny-project@beta my-test-project --tag beta --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'` |
+| Revert versioning commit          | `git reset HEAD~ && git reset --hard HEAD`                                                                                                                         |
