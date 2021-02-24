@@ -60,7 +60,7 @@ function runInquirer(cwp) {
                 ]
             }
         ])
-        .then(templateOptions => setup({ ...cwp, templateOptions }))
+        .then(templateOptions => setup({ ...cwp, templateOptions }));
 }
 
 module.exports = runInquirer;
