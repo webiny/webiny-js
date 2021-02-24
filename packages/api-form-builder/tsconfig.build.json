@@ -14,6 +14,7 @@
     "../handler-aws",
     "../handler-db",
     "../api-plugin-elastic-search-client",
+    "../api-dynamodb-to-elasticsearch",
     "../db-dynamodb",
     "../api-security-tenancy"
   ],
@@ -56,6 +57,9 @@
     },
     {
       "path": "../api-plugin-elastic-search-client/tsconfig.build.json"
+    },
+    {
+      "path": "../api-dynamodb-to-elasticsearch/tsconfig.build.json"
     },
     {
       "path": "../db-dynamodb/tsconfig.build.json"
