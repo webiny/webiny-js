@@ -37,7 +37,7 @@ describe("Cache-Control Headers", () => {
         );
 
         return cy.request(url).then(res => {
-            expect(res.headers).to.have.property("cache-control", "max-age=31536000");
+            expect(res.headers).to.have.property("cache-control", "max-age=30");
 
             const [, staticJsPath] = res.body.match(/"(\/static\/js\/.*?)"/);
             const [, staticCssPath] = res.body.match(/"(\/static\/css\/.*?)"/);
