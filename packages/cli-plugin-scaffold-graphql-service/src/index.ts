@@ -274,6 +274,21 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     symbol: chalk.green("✔"),
                     text: "Dependencies installed."
                 });
+                oraSpinner.start(`Building generated package...`);
+                const cwd = process.cwd();
+                process.chdir(location);
+                await execa("yarn", ["build"]);
+                process.chdir(cwd);
+                oraSpinner.stopAndPersist({
+                    symbol: chalk.green("✔"),
+                    text: "Package built."
+                });
+                oraSpinner.start(`Linking package...`);
+                await execa("yarn", ["postinstall"]);
+                oraSpinner.stopAndPersist({
+                    symbol: chalk.green("✔"),
+                    text: "Package linked."
+                });
             } catch (err) {
                 throw new WebinyError(
                     `Unable to install dependencies. Try running "yarn" in project root manually.`,
@@ -282,15 +297,17 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             }
         },
         onSuccess: async ({ input }) => {
-            const { location, entityName } = input;
+            const { location, entityName, packageName: initialPackageName } = input;
 
             const targetName = Case.camel(entityName);
 
+            const packageName = createPackageName({
+                initial: initialPackageName,
+                location
+            });
+
             const graphqlPath = path.relative(process.cwd(), "./api/code/graphql");
             const graphqlSrcPath = `${path.relative(process.cwd(), `${graphqlPath}/src`)}`;
-
-            const servicePath = path.relative(process.cwd(), location);
-            const serviceIndexFile = path.relative(graphqlSrcPath, `${servicePath}/src`);
 
             console.log(`The next steps:`);
             console.log(
@@ -306,7 +323,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 indentString(
                     chalk.green(`
 // at the top of the file
-import ${targetName}Plugin from "${serviceIndexFile}";
+import ${targetName}Plugin from "${packageName}";
 
 // somewhere after headlessCmsPlugins() in the end of the createHandler() function
 ${targetName}Plugin()
@@ -325,8 +342,8 @@ ${targetName}Plugin()
             );
             console.log(
                 indentString(
-                    `3. Finally, deploy the ${chalk.green(location)} stack by running ${chalk.green(
-                        `yarn webiny app deploy ${location} --env=dev`
+                    `3. Finally, deploy the ${chalk.green(packageName)} by running ${chalk.green(
+                        `yarn webiny app deploy api --env=dev`
                     )}.`,
                     2
                 )
