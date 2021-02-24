@@ -221,12 +221,12 @@ jobs:
 
       - name: Build "api" project application
         working-directory: test-project
-        run: yarn webiny ws run build --folder api
+        run: yarn webiny ws run build --folder api --env dev
 
       - name: Build "apps/admin" project application
         working-directory: test-project
-        run: yarn webiny ws run build --folder apps/admin
+        run: yarn webiny ws run build --folder apps/admin --env dev
 
       - name: Build "apps/website" project application
         working-directory: test-project
-        run: yarn webiny ws run build --folder apps/website
+        run: yarn webiny ws run build --folder apps/website --env dev
