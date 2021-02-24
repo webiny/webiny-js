@@ -7669,7 +7669,6 @@ __metadata:
     "@webiny/handler-db": ^5.0.0-beta.4
     "@webiny/plugins": ^5.0.0-beta.4
     chrome-aws-lambda: ^5.5.0
-    debug: ^4.3.1
     lodash: ^4.17.20
     mdbid: ^1.0.0
     object-hash: ^2.1.1
@@ -14352,7 +14351,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:4, debug@npm:^4.0.1, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.2, debug@npm:^4.3.0, debug@npm:^4.3.1, debug@npm:~4.3.1":
+"debug@npm:4, debug@npm:^4.0.1, debug@npm:^4.1.0, debug@npm:^4.1.1, debug@npm:^4.2, debug@npm:^4.3.0, debug@npm:~4.3.1":
   version: 4.3.2
   resolution: "debug@npm:4.3.2"
   dependencies:
