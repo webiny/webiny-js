@@ -17,7 +17,9 @@ const deploy = (stack, inputs) => {
             "--debug",
             Boolean(inputs.debug),
             "--build",
-            Boolean(inputs.build)
+            Boolean(inputs.build),
+            "--preview",
+            Boolean(inputs.preview)
         ],
         {
             stdio: "inherit"

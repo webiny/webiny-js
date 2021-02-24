@@ -4,6 +4,7 @@ const notifier = require("node-notifier");
 const path = require("path");
 const loadEnvVariables = require("../utils/loadEnvVariables");
 const getPulumi = require("../utils/getPulumi");
+const login = require("../utils/login");
 const execa = require("execa");
 
 const notify = ({ message }) => {
@@ -72,6 +73,8 @@ module.exports = async (inputs, context) => {
         );
     }
 
+    await login(stackDir);
+
     const pulumi = getPulumi({
         execa: {
             cwd: stackDir
@@ -133,7 +136,10 @@ module.exports = async (inputs, context) => {
                 secretsProvider: SECRETS_PROVIDER
             },
             execa: {
-                stdio: "inherit"
+                stdio: "inherit",
+                env: {
+                    WEBINY_ENV: env
+                }
             }
         });
     }
