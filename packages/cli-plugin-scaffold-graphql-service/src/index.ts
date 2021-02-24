@@ -113,21 +113,25 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 throw new Error(`Destination folder ${location} already exists!`);
             }
 
+            // Get base TS config path
+            const baseTsConfigFullPath = findUp.sync("tsconfig.json", {
+                cwd: fullLocation
+            });
+            const baseTsConfigRelativePath = path
+                .relative(fullLocation, baseTsConfigFullPath)
+                .replace(/\\/g, "/");
+
+            const baseTsConfigBuildJsonPath = baseTsConfigFullPath.replace(
+                "tsconfig.json",
+                "tsconfig.build.json"
+            );
+            const baseTsConfigBuildJson = await readJson<TsConfigJson>(baseTsConfigBuildJsonPath);
+
             oraSpinner.start(`Creating service files in ${chalk.green(fullLocation)}...`);
 
             const relativeRootPath = path.relative(fullLocation, projectRootPath);
 
             await fs.mkdirSync(location, { recursive: true });
-
-            // Get base TS config path
-            const baseTsConfigPath = path
-                .relative(
-                    fullLocation,
-                    findUp.sync("tsconfig.json", {
-                        cwd: fullLocation
-                    })
-                )
-                .replace(/\\/g, "/");
 
             // Copy template files
             await ncp(templateFolder, fullLocation);
@@ -227,10 +231,11 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             });
 
             oraSpinner.start(`Updating package tsconfig extends path to root tsconfig...`);
+
             // Update package tsconfig "extends" path
             const tsConfigPath = path.join(fullLocation, "tsconfig.json");
             const tsConfig = await readJson<TsConfigJson>(tsConfigPath);
-            tsConfig.extends = baseTsConfigPath;
+            tsConfig.extends = baseTsConfigRelativePath;
             await writeJson(tsConfigPath, tsConfig);
             oraSpinner.stopAndPersist({
                 symbol: chalk.green("✔"),
@@ -238,15 +243,11 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             });
 
             // Update root tsconfig.build.json file paths
-            const tsConfigBuildJsonPath = baseTsConfigPath.replace(
-                "tsconfig.json",
-                "tsconfig.build.json"
-            );
-            const tsConfigBuildJson = await readJson<TsConfigJson>(tsConfigBuildJsonPath);
-            tsConfigBuildJson.paths[`${packageName}/*`] = [
-                path.relative(tsConfigBuildJsonPath, fullLocation)
-            ];
-            await writeJson(tsConfigBuildJsonPath, tsConfigBuildJson);
+            if (!baseTsConfigBuildJson.compilerOptions) {
+                baseTsConfigBuildJson.compilerOptions = {};
+            }
+            baseTsConfigBuildJson.compilerOptions.paths[`${packageName}/*`] = [`./${location}`];
+            await writeJson(baseTsConfigBuildJsonPath, baseTsConfigBuildJson);
 
             // Once everything is done, run `yarn` so the new packages are automatically installed.
             try {
