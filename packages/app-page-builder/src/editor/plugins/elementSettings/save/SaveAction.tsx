@@ -7,10 +7,9 @@ import createElementPlugin from "@webiny/app-page-builder/admin/utils/createElem
 import createBlockPlugin from "@webiny/app-page-builder/admin/utils/createBlockPlugin";
 import {
     activeElementAtom,
-    elementWithChildrenByIdSelector
+    elementByIdSelector
 } from "@webiny/app-page-builder/editor/recoil/modules";
 import { useApolloClient } from "@apollo/react-hooks";
-import { cloneDeep } from "lodash";
 import { plugins } from "@webiny/plugins";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
@@ -26,16 +25,15 @@ import {
     PbEditorPageElementSaveActionPlugin,
     PbEditorElement
 } from "@webiny/app-page-builder/types";
+import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
 
-const removeIdsAndPaths = el => {
+const removeIds = el => {
     delete el.id;
-    delete el.path;
 
     el.elements = el.elements.map(el => {
         delete el.id;
-        delete el.path;
         if (el.elements && el.elements.length) {
-            el = removeIdsAndPaths(el);
+            el = removeIds(el);
         }
 
         return el;
@@ -70,14 +68,15 @@ const pluginOnSave = (element: PbEditorElement): PbEditorElement => {
 
 const SaveAction: React.FunctionComponent = ({ children }) => {
     const activeElementId = useRecoilValue(activeElementAtom);
-    const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
+    const element = useRecoilValue(elementByIdSelector(activeElementId));
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
+    const { getElementTree } = useEventActionHandler();
     const { showSnackbar } = useSnackbar();
     const [isDialogOpened, setOpenDialog] = useState<boolean>(false);
     const client = useApolloClient();
 
     const onSubmit = async formData => {
-        formData.content = pluginOnSave(removeIdsAndPaths(cloneDeep(element)));
+        formData.content = pluginOnSave(removeIds(await getElementTree(element)));
 
         const meta = await getDataURLImageDimensions(formData.preview);
         const blob = dataURLtoBlob(formData.preview);
