@@ -237,6 +237,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     page: Int
                     sort: PbListPagesSortInput
                     search: PbListPagesSearchInput
+                    exclude: [String]
                 ): PbPageListResponse
 
                 listPageTags(search: PbListPageTagsSearchInput!): PbPageTagsListResponse
