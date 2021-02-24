@@ -6,9 +6,16 @@ export const LIST_PUBLISHED_PAGES = gql`
         $sort: PbListPagesSortInput
         $limit: Int
         $page: Int
+        $exclude: [String]
     ) {
         pageBuilder {
-            listPublishedPages(where: $where, sort: $sort, limit: $limit, page: $page) {
+            listPublishedPages(
+                where: $where
+                sort: $sort
+                limit: $limit
+                page: $page
+                exclude: $exclude
+            ) {
                 data {
                     id
                     title

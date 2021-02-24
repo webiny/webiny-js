@@ -29,6 +29,7 @@ export type ListPagesArgs = {
         status?: string;
         tags?: { query: string[]; rule?: "any" | "all" };
     };
+    exclude?: string[];
     search?: { query?: string };
     sort?: { publishedOn?: SortOrder; createdOn?: SortOrder; title?: SortOrder };
 };
