@@ -1,0 +1,45 @@
+{
+  "extends": "PATH_TO_TSCONFIG_BUILD",
+  "include": ["src"],
+  "exclude": ["node_modules"],
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "declarationDir": "dist"
+  },
+  "references": [
+    {
+      "path": "../../../packages/api-i18n/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-i18n-content/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-plugin-elastic-search-client/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-plugin-elastic-search-client/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-security/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/api-security-tenancy/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/db-dynamodb/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/handler/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/handler-db/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/handler-graphql/tsconfig.build.json"
+    },
+    {
+      "path": "../../../packages/handler-http/tsconfig.build.json"
+    }
+  ]
+}

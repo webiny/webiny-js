@@ -101,6 +101,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     cwd: fullLocation
                 })
             );
+            const locationRelative = path.relative(projectRootPath, fullLocation);
 
             const packageName = createPackageName({
                 initial: initialPackageName,
@@ -163,10 +164,6 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 {
                     find: "__tests__/graphql/targets.ts",
                     replaceWith: `__tests__/graphql/${entity.plural}.ts`
-                },
-                {
-                    find: "example.tsconfig.json",
-                    replaceWith: "tsconfig.json"
                 }
             ];
 
@@ -230,9 +227,8 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 text: `Package name set into ${chalk.green(`package.json`)}.`
             });
 
-            oraSpinner.start(`Updating package tsconfig extends path to root tsconfig...`);
-
             // Update package tsconfig "extends" path
+            oraSpinner.start(`Updating package tsconfig extends path to root tsconfig...`);
             const tsConfigPath = path.join(fullLocation, "tsconfig.json");
             const tsConfig = await readJson<TsConfigJson>(tsConfigPath);
             tsConfig.extends = baseTsConfigRelativePath;
@@ -242,11 +238,32 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 text: `Update package tsconfig extends path.`
             });
 
+            // Update package tsconfig.build "extends" path
+            oraSpinner.start(
+                `Updating package tsconfig.build extends path to root tsconfig.build...`
+            );
+            const tsConfigBuildPath = tsConfigPath.replace("tsconfig.json", "tsconfig.build.json");
+            const tsConfigBuild = await readJson<TsConfigJson>(tsConfigBuildPath);
+            tsConfigBuild.extends = baseTsConfigRelativePath.replace(
+                "tsconfig.json",
+                "tsconfig.build.json"
+            );
+            await writeJson(tsConfigBuildPath, tsConfigBuild);
+            oraSpinner.stopAndPersist({
+                symbol: chalk.green("✔"),
+                text: `Update package tsconfig.build extends path.`
+            });
+
             // Update root tsconfig.build.json file paths
             if (!baseTsConfigBuildJson.compilerOptions) {
                 baseTsConfigBuildJson.compilerOptions = {};
             }
-            baseTsConfigBuildJson.compilerOptions.paths[`${packageName}/*`] = [`./${location}`];
+            baseTsConfigBuildJson.compilerOptions.paths[`${packageName}`] = [
+                `./${locationRelative}/src`
+            ];
+            baseTsConfigBuildJson.compilerOptions.paths[`${packageName}/*`] = [
+                `./${locationRelative}/src/*`
+            ];
             await writeJson(baseTsConfigBuildJsonPath, baseTsConfigBuildJson);
 
             // Once everything is done, run `yarn` so the new packages are automatically installed.
@@ -265,18 +282,12 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             }
         },
         onSuccess: async ({ input }) => {
-            const { location, entityName, packageName: initialPackageName } = input;
+            const { location, entityName } = input;
 
             const targetName = Case.camel(entityName);
 
-            const packageName = createPackageName({
-                initial: initialPackageName,
-                location
-            });
-
             const graphqlPath = path.relative(process.cwd(), "./api/code/graphql");
             const graphqlSrcPath = `${path.relative(process.cwd(), `${graphqlPath}/src`)}`;
-            const graphqlTsConfigFilePath = `${path.relative(process.cwd(), `${graphqlPath}`)}`;
 
             const servicePath = path.relative(process.cwd(), location);
             const serviceIndexFile = path.relative(graphqlSrcPath, `${servicePath}/src`);
@@ -306,25 +317,7 @@ ${targetName}Plugin()
 
             console.log(
                 indentString(
-                    `2. Open ${chalk.green(
-                        `${graphqlTsConfigFilePath}/tsconfig.json`
-                    )} and add the include path:`
-                )
-            );
-            console.log(
-                indentString(
-                    chalk.green(`
-"include": [
-    "${packageName}"
-]
-`),
-                    2
-                )
-            );
-
-            console.log(
-                indentString(
-                    `3. From project root, run ${chalk.green(
+                    `2. From project root, run ${chalk.green(
                         `yarn test ${location}`
                     )} to ensure that the service works.`,
                     2
@@ -332,7 +325,7 @@ ${targetName}Plugin()
             );
             console.log(
                 indentString(
-                    `4. Finally, deploy the ${chalk.green(location)} stack by running ${chalk.green(
+                    `3. Finally, deploy the ${chalk.green(location)} stack by running ${chalk.green(
                         `yarn webiny app deploy ${location} --env=dev`
                     )}.`,
                     2
