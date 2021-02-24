@@ -42,17 +42,20 @@ async function symlink(src, dest) {
     }
 }
 
-const defaults = { whitelist: ["packages"] };
+const defaults = { whitelist: [] };
 
 module.exports.linkWorkspaces = async ({ whitelist } = defaults) => {
     console.log(`Linking project workspaces...`);
 
     whitelist = whitelist.map(p => path.resolve(p));
-
     // Filter packages to only those in the whitelisted folders
     const packages = require("get-yarn-workspaces")(process.cwd())
         .map(pkg => pkg.replace(/\//g, path.sep))
         .reduce((acc, pkg) => {
+            if (!whitelist || whitelist.length === 0) {
+                acc.push(pkg);
+                return acc;
+            }
             whitelist.forEach(w => {
                 if (pkg.startsWith(w)) {
                     acc.push(pkg);
