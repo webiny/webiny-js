@@ -28,8 +28,22 @@ interface Input {
 }
 
 const adminAppCodePath = "apps/admin/code";
-const adminAppPluginsPath = "apps/admin/code/src/plugins";
+// const adminAppCodeSrcPath = "apps/admin/code/src";
+// const adminAppPluginsPath = "apps/admin/code/src/plugins";
 const adminAppPluginsIndexFile = `${adminAppCodePath}/src/plugins/index.ts`;
+
+const createPackageName = ({
+    initial,
+    location
+}: {
+    initial?: string;
+    location: string;
+}): string => {
+    if (initial) {
+        return initial;
+    }
+    return Case.kebab(location);
+};
 
 export default (): CliCommandScaffoldTemplate<Input> => ({
     name: "cli-plugin-scaffold-template-graphql-app",
@@ -42,7 +56,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     name: "location",
                     message: `Enter package location (including the package name)`,
                     // default: "packages/app-books",
-                    default: "p/books/app",
+                    default: "p/books-app",
                     validate: location => {
                         if (!location) {
                             return "Please enter the package location.";
@@ -88,34 +102,49 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
         generate: async ({ input, oraSpinner }) => {
             const { entityName, location, packageName: initialPackageName } = input;
 
-            const locationPath = path.resolve(location);
-            const packageName = initialPackageName || Case.kebab(location);
+            const fullLocation = path.resolve(location);
+            const packageName = createPackageName({
+                initial: initialPackageName,
+                location
+            });
 
             // Then we also copy the template folder
-            const sourcePath = path.join(__dirname, "../template");
+            const sourcePath = path.join(__dirname, "template");
 
-            if (fs.existsSync(locationPath)) {
-                throw new WebinyError(`Destination folder ${locationPath} already exists.`);
+            if (fs.existsSync(fullLocation)) {
+                throw new WebinyError(`Destination folder ${fullLocation} already exists.`);
             }
 
-            // Get base TS config path
-            const baseTsConfigPath = path
-                .relative(
-                    locationPath,
-                    findUp.sync("tsconfig.json", {
-                        cwd: locationPath
-                    })
-                )
-                .replace(/\\/g, "/");
+            const projectRootPath = path.dirname(
+                findUp.sync("webiny.root.js", {
+                    cwd: fullLocation
+                })
+            );
+            const locationRelative = path.relative(projectRootPath, fullLocation);
+
+            const relativeRootPath = path.relative(fullLocation, projectRootPath);
+
+            const baseTsConfigFullPath = path.resolve(projectRootPath, "tsconfig.json");
+            const baseTsConfigRelativePath = path.relative(fullLocation, baseTsConfigFullPath);
+
+            const baseTsConfigBuildJsonPath = baseTsConfigFullPath.replace(
+                "tsconfig.json",
+                "tsconfig.build.json"
+            );
+            const baseTsConfigBuildRelativePath = path.relative(
+                fullLocation,
+                baseTsConfigBuildJsonPath
+            );
+            const baseTsConfigBuildJson = await readJson<TsConfigJson>(baseTsConfigBuildJsonPath);
 
             oraSpinner.start(
-                `Creating new Admin app module files in ${chalk.green(locationPath)}...`
+                `Creating new Admin app module files in ${chalk.green(fullLocation)}...`
             );
 
-            await fs.mkdirSync(locationPath, { recursive: true });
+            await fs.mkdirSync(fullLocation, { recursive: true });
 
             // Copy template files
-            await ncp(sourcePath, locationPath);
+            await ncp(sourcePath, fullLocation);
 
             // Replace generic "Entity" with received "input.entityName" or "input.newEntityName" argument.
             const entity = {
@@ -129,11 +158,13 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 { find: "TARGETS", replaceWith: Case.constant(entity.plural) },
                 { find: "target", replaceWith: Case.camel(entity.singular) },
                 { find: "Target", replaceWith: Case.pascal(entity.singular) },
-                { find: "TARGET", replaceWith: Case.constant(entity.singular) }
+                { find: "TARGET", replaceWith: Case.constant(entity.singular) },
+                { find: "RELATIVE_ROOT_PATH", replaceWith: relativeRootPath.replace(/\\/g, "/") }
             ];
 
-            replaceInPath(path.join(locationPath, "**/*.ts"), codeReplacements);
-            replaceInPath(path.join(locationPath, "**/*.tsx"), codeReplacements);
+            replaceInPath(path.join(fullLocation, ".babelrc.js"), codeReplacements);
+            replaceInPath(path.join(fullLocation, "**/*.ts"), codeReplacements);
+            replaceInPath(path.join(fullLocation, "**/*.tsx"), codeReplacements);
 
             // Make sure to also rename base file names.
             const fileNameReplacements = [
@@ -157,30 +188,80 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 }
                 const fileNameReplacement = fileNameReplacements[key];
                 fs.renameSync(
-                    path.join(locationPath, fileNameReplacement.find),
-                    path.join(locationPath, fileNameReplacement.replaceWith)
+                    path.join(fullLocation, fileNameReplacement.find),
+                    path.join(fullLocation, fileNameReplacement.replaceWith)
                 );
             }
 
-            oraSpinner.info(
-                "Adding package path to include section of admin app tsconfig.json file."
-            );
-            const packageJsonFile = path.resolve(locationPath, "package.json");
+            // Generated package file changes
+            oraSpinner.start(`Setting package name...`);
+            const packageJsonFile = path.resolve(fullLocation, "package.json");
             const packageJson = readJson.sync<PackageJson>(packageJsonFile);
             packageJson.name = packageName;
             await writeJson(packageJsonFile, packageJson);
-            // const adminAppTsConfig = readJson.sync<TsConfigJson>(adminAppTsConfigFilePath);
-            // adminAppTsConfig.include.push(locationRelativePath);
-            // await writeJson(adminAppTsConfigFilePath, adminAppTsConfig);
-
-            const packageTsConfigFilePath = path.resolve(locationPath, "tsconfig.json");
+            oraSpinner.stopAndPersist({
+                symbol: chalk.green("✔"),
+                text: "Package name set."
+            });
+            oraSpinner.start(`Setting tsconfig.json extends path...`);
+            const packageTsConfigFilePath = path.resolve(fullLocation, "tsconfig.json");
             const packageTsConfig = readJson.sync<TsConfigJson>(packageTsConfigFilePath);
-            packageTsConfig.extends = baseTsConfigPath;
+            packageTsConfig.extends = baseTsConfigRelativePath;
             await writeJson(packageTsConfigFilePath, packageTsConfig);
+            oraSpinner.stopAndPersist({
+                symbol: chalk.green("✔"),
+                text: "tsconfig.json extends set."
+            });
+            oraSpinner.start(`Setting tsconfig.build.json extends path...`);
+            const packageTsConfigBuildFilePath = path.resolve(fullLocation, "tsconfig.build.json");
+            const packageTsConfigBuild = readJson.sync<TsConfigJson>(packageTsConfigFilePath);
+            packageTsConfigBuild.extends = baseTsConfigBuildRelativePath;
+            await writeJson(packageTsConfigBuildFilePath, packageTsConfigBuild);
+            oraSpinner.stopAndPersist({
+                symbol: chalk.green("✔"),
+                text: "tsconfig.build.json extends set."
+            });
+
+            // Add package to workspaces
+            const rootPackageJsonPath = path.join(projectRootPath, "package.json");
+            const rootPackageJson = await readJson<PackageJson>(rootPackageJsonPath);
+            if (!rootPackageJson.workspaces.packages.includes(location)) {
+                rootPackageJson.workspaces.packages.push(location);
+                await writeJson(rootPackageJsonPath, rootPackageJson);
+            }
+
+            // Update root tsconfig.build.json file paths
+            oraSpinner.start(
+                `Updating base tsconfig compilerOptions.paths to contain the package...`
+            );
+            if (!baseTsConfigBuildJson.compilerOptions) {
+                baseTsConfigBuildJson.compilerOptions = {};
+            }
+            baseTsConfigBuildJson.compilerOptions.paths[`${packageName}`] = [
+                `./${locationRelative}/src`
+            ];
+            baseTsConfigBuildJson.compilerOptions.paths[`${packageName}/*`] = [
+                `./${locationRelative}/src/*`
+            ];
+            await writeJson(baseTsConfigBuildJsonPath, baseTsConfigBuildJson);
+            oraSpinner.stopAndPersist({
+                symbol: chalk.green("✔"),
+                text: `Updated base tsconfig compilerOptions.paths.`
+            });
+
+            // Admin app files updates
+            const adminAppPath = path.relative(process.cwd(), adminAppCodePath);
+            const packagePathRelativeToAdminApp = path.relative(adminAppPath, fullLocation);
+            const adminAppTsConfigPath = path.resolve(adminAppCodePath, "tsconfig.json");
+            const adminAppTsConfig = readJson.sync<TsConfigJson>(adminAppTsConfigPath);
+            adminAppTsConfig.references = (adminAppTsConfig.references || []).concat({
+                path: packagePathRelativeToAdminApp
+            });
+            await writeJson(adminAppTsConfigPath, adminAppTsConfig);
 
             oraSpinner.stopAndPersist({
                 symbol: chalk.green("✔"),
-                text: `Admin app module files created in ${chalk.green(locationPath)}.`
+                text: `Admin app module files created in ${chalk.green(fullLocation)}.`
             });
 
             // Once everything is done, run `yarn` so the new packages are automatically installed.
@@ -191,6 +272,21 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     symbol: chalk.green("✔"),
                     text: "Dependencies installed."
                 });
+                oraSpinner.start(`Building generated package...`);
+                const cwd = process.cwd();
+                process.chdir(fullLocation);
+                await execa("yarn", ["build"]);
+                process.chdir(cwd);
+                oraSpinner.stopAndPersist({
+                    symbol: chalk.green("✔"),
+                    text: "Package built."
+                });
+                oraSpinner.start(`Linking package...`);
+                await execa("yarn", ["postinstall"]);
+                oraSpinner.stopAndPersist({
+                    symbol: chalk.green("✔"),
+                    text: "Package linked."
+                });
             } catch (err) {
                 throw new WebinyError(
                     `Unable to install dependencies. Try running "yarn" in project root manually.`,
@@ -199,20 +295,20 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             }
         },
         onSuccess: async ({ input }) => {
-            const { entityName, location } = input;
+            const { entityName, location, packageName: initialPackageName } = input;
 
-            const targetName = Case.camel(entityName);
+            const entity = {
+                singular: Case.camel(entityName),
+                plural: pluralize(Case.camel(entityName))
+            };
+            const packageName = createPackageName({
+                initial: initialPackageName,
+                location
+            });
 
             const adminAppPluginsIndexFileRelativePath = path.relative(
                 process.cwd(),
                 adminAppPluginsIndexFile
-            );
-            const adminAppPluginsRelativePath = path.relative(process.cwd(), adminAppPluginsPath);
-
-            const adminAppPath = path.relative(process.cwd(), location);
-            const adminAppIndexFilePath = path.relative(
-                adminAppPluginsRelativePath,
-                `${adminAppPath}/src`
             );
 
             console.log(
@@ -235,10 +331,10 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 indentString(
                     chalk.green(`
 // at the top of the file
-import ${targetName}Plugin from "${adminAppIndexFilePath}";
+import ${entity.singular}Plugin from "${packageName}";
 
 // in the end of the registration array
-${targetName}Plugin()
+${entity.singular}Plugin()
 `),
                     2
                 )

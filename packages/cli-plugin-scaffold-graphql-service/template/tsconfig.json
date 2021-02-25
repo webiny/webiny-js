@@ -1,39 +1,5 @@
 {
   "extends": "PATH_TO_TSCONFIG",
   "include": ["src", "__tests__/**/*.ts"],
-  "references": [
-    {
-      "path": "../../../packages/api-i18n"
-    },
-    {
-      "path": "../../../packages/api-i18n-content"
-    },
-    {
-      "path": "../../../packages/api-plugin-elastic-search-client"
-    },
-    {
-      "path": "../../../packages/api-plugin-elastic-search-client"
-    },
-    {
-      "path": "../../../packages/api-security"
-    },
-    {
-      "path": "../../../packages/api-security-tenancy"
-    },
-    {
-      "path": "../../../packages/db-dynamodb"
-    },
-    {
-      "path": "../../../packages/handler"
-    },
-    {
-      "path": "../../../packages/handler-db"
-    },
-    {
-      "path": "../../../packages/handler-graphql"
-    },
-    {
-      "path": "../../../packages/handler-http"
-    }
-  ]
+  "references": []
 }

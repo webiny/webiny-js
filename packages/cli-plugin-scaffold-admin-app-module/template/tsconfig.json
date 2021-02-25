@@ -1,5 +1,5 @@
 {
-  "extends": "../../tsconfig",
-  "include": ["src", "__tests__/**/*.ts", "__tests__/**/*.tsx"],
+  "extends": "BASE_TSCONFIG_PATH",
+  "include": ["src", "__tests__/**/*.ts"],
   "references": []
 }

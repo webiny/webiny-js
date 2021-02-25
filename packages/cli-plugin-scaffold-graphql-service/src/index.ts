@@ -50,7 +50,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 {
                     name: "location",
                     message: "Enter package location (including the package name)",
-                    default: "p/books/api",
+                    default: "packages/books/api",
                     validate: location => {
                         if (location.length < 2) {
                             return "Please enter the package location.";
@@ -252,6 +252,9 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             });
 
             // Update root tsconfig.build.json file paths
+            oraSpinner.start(
+                `Updating base tsconfig compilerOptions.paths to contain the package...`
+            );
             if (!baseTsConfigBuildJson.compilerOptions) {
                 baseTsConfigBuildJson.compilerOptions = {};
             }
@@ -262,6 +265,10 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 `./${locationRelative}/src/*`
             ];
             await writeJson(baseTsConfigBuildJsonPath, baseTsConfigBuildJson);
+            oraSpinner.stopAndPersist({
+                symbol: chalk.green("✔"),
+                text: `Updated base tsconfig compilerOptions.paths.`
+            });
 
             // Once everything is done, run `yarn` so the new packages are automatically installed.
             try {
