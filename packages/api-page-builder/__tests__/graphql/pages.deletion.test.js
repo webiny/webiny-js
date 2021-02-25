@@ -17,6 +17,7 @@ describe("deleting pages", () => {
     } = useGqlHandler();
 
     let p1v1, p1v2, p1v3, category;
+
     beforeAll(async () => {
         await deleteElasticSearchIndex();
     });

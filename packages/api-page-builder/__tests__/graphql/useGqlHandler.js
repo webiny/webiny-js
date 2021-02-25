@@ -1,4 +1,3 @@
-import elasticSearch from "@webiny/api-plugin-elastic-search-client";
 import { createHandler } from "@webiny/handler-aws";
 import apolloServerPlugins from "@webiny/handler-graphql";
 import pageBuilderPlugins from "@webiny/api-page-builder/graphql";

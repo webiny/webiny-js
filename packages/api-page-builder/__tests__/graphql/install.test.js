@@ -5,6 +5,7 @@ describe("Install Test", () => {
         isInstalled,
         install,
         listCategories,
+        createElasticSearchIndex,
         deleteElasticSearchIndex,
         listPages,
         listPublishedPages,
@@ -14,8 +15,15 @@ describe("Install Test", () => {
         getSettings
     } = useGqlHandler();
 
+    beforeAll(async () => {
+        await deleteElasticSearchIndex();
+    });
+
     beforeEach(async () => {
-        // Let's ensure installation works without any indexes in the ElasticSearch.
+        await createElasticSearchIndex();
+    });
+
+    afterEach(async () => {
         await deleteElasticSearchIndex();
     });
 
