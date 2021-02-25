@@ -144,7 +144,12 @@ export default (): GraphQLSchemaPlugin<ApplicationContext> => ({
 
             type InstallResponse {
                 data: Boolean
-                error: InstallResponseError
+                error: TargetError
+            }
+
+            type UninstallResponse {
+                data: Boolean
+                error: TargetError
             }
 
             type TargetQuery {
@@ -167,6 +172,8 @@ export default (): GraphQLSchemaPlugin<ApplicationContext> => ({
                 deleteTarget(id: ID!): TargetDeleteResponse!
 
                 install: InstallResponse!
+
+                uninstall: UninstallResponse!
             }
 
             extend type Query {
@@ -301,6 +308,31 @@ export default (): GraphQLSchemaPlugin<ApplicationContext> => ({
                     } catch (ex) {
                         return new ErrorResponse({
                             message: "Could not create Elasticsearch index.",
+                            code: "ELASTICSEARCH_ERROR",
+                            data: ex
+                        });
+                    }
+                    return new Response(true);
+                },
+                uninstall: async (_, __, context) => {
+                    const { security, elasticSearch } = context;
+                    const hasFullAccess = await security.hasFullAccess();
+                    if (!hasFullAccess) {
+                        return new ErrorResponse({
+                            message: "Not authorized.",
+                            code: "NOT_AUTHORIZED"
+                        });
+                    }
+                    const esConfig = configuration.es(context);
+                    const { body: hasIndice } = await elasticSearch.indices.exists(esConfig);
+                    if (!hasIndice) {
+                        return new Response(true);
+                    }
+                    try {
+                        await elasticSearch.indices.delete(esConfig);
+                    } catch (ex) {
+                        return new ErrorResponse({
+                            message: "Could not delete Elasticsearch index.",
                             code: "ELASTICSEARCH_ERROR",
                             data: ex
                         });

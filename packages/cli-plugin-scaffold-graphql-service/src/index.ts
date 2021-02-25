@@ -299,7 +299,10 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
         onSuccess: async ({ input }) => {
             const { location, entityName, packageName: initialPackageName } = input;
 
-            const targetName = Case.camel(entityName);
+            const entity = {
+                singular: Case.camel(entityName),
+                plural: pluralize(Case.camel(entityName))
+            };
 
             const packageName = createPackageName({
                 initial: initialPackageName,
@@ -323,10 +326,10 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 indentString(
                     chalk.green(`
 // at the top of the file
-import ${targetName}Plugin from "${packageName}";
+import ${entity.singular}Plugin from "${packageName}";
 
 // somewhere after headlessCmsPlugins() in the end of the createHandler() function
-${targetName}Plugin()
+${entity.singular}Plugin()
 `),
                     2
                 )
@@ -340,14 +343,38 @@ ${targetName}Plugin()
                     2
                 )
             );
+
             console.log(
                 indentString(
-                    `3. Finally, deploy the ${chalk.green(packageName)} by running ${chalk.green(
+                    `3. Deploy the ${chalk.green(packageName)} by running ${chalk.green(
                         `yarn webiny app deploy api --env=dev`
                     )}.`,
                     2
                 )
             );
+
+            console.log(
+                indentString(
+                    `4. Finally, run the ${chalk.green("install")} mutation by running
+${chalk.green(`
+mutation ${Case.pascal(entity.plural)}Mutation {
+    ${entity.plural} {
+        install {
+            data
+            error {
+                message
+                code
+                data
+            }
+        }
+    }
+}
+`)}
+in API playground.`,
+                    2
+                )
+            );
+
             console.log(
                 `
 Learn more about API development at https://docs.webiny.com/docs/api-development/introduction
