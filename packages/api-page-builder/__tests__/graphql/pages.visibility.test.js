@@ -16,15 +16,15 @@ describe("page visibility test", () => {
     beforeAll(async () => {
         await deleteElasticSearchIndex();
     });
-    
+
     beforeEach(async () => {
         await createElasticSearchIndex();
     });
-    
+
     afterEach(async () => {
         await deleteElasticSearchIndex();
     });
-    
+
     test("changing visiblity of a page should affect results from get and list operations ", async () => {
         const category = await createCategory({
             data: {
