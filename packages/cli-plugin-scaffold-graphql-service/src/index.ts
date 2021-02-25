@@ -199,9 +199,6 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             const graphqlTsconfigPath = path.resolve(graphqlPath, "tsconfig.json");
             const packagePathRelativeToGraphql = path.relative(graphqlPath, fullLocation);
             const graphqlTsconfig = readJson.sync<TsConfigJson>(graphqlTsconfigPath);
-            graphqlTsconfig.include = (graphqlTsconfig.include || []).concat([
-                packagePathRelativeToGraphql
-            ]);
             graphqlTsconfig.references = (graphqlTsconfig.references || []).concat([
                 {
                     path: packagePathRelativeToGraphql
