@@ -2,6 +2,7 @@ import useGqlHandler from "./useGqlHandler";
 
 describe("page full URL test", () => {
     const {
+        createElasticSearchIndex,
         deleteElasticSearchIndex,
         createCategory,
         createPage,
@@ -11,7 +12,15 @@ describe("page full URL test", () => {
         until
     } = useGqlHandler();
 
+    beforeAll(async () => {
+        await deleteElasticSearchIndex();
+    });
+
     beforeEach(async () => {
+        await createElasticSearchIndex();
+    });
+
+    afterEach(async () => {
         await deleteElasticSearchIndex();
     });
 

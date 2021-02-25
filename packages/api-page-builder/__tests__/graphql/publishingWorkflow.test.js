@@ -5,6 +5,7 @@ jest.setTimeout(25000);
 
 describe("publishing workflow", () => {
     const {
+        createElasticSearchIndex,
         deleteElasticSearchIndex,
         createCategory,
         createPage,
@@ -19,9 +20,13 @@ describe("publishing workflow", () => {
 
     let initialPageIds, initialCategory;
 
-    beforeEach(async () => {
-        initialPageIds = [];
+    beforeAll(async () => {
         await deleteElasticSearchIndex();
+    });
+
+    beforeEach(async () => {
+        await createElasticSearchIndex();
+        initialPageIds = [];
         await createCategory({
             data: {
                 slug: `category`,
@@ -44,6 +49,10 @@ describe("publishing workflow", () => {
 
             initialPageIds.push(id);
         }
+    });
+
+    afterEach(async () => {
+        await deleteElasticSearchIndex();
     });
 
     test("simple workflow test (check request review and request changes)", async () => {

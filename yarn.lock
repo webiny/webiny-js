@@ -7288,6 +7288,24 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/api-dynamodb-to-elasticsearch@^5.0.0-beta.4, @webiny/api-dynamodb-to-elasticsearch@workspace:packages/api-dynamodb-to-elasticsearch":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-dynamodb-to-elasticsearch@workspace:packages/api-dynamodb-to-elasticsearch"
+  dependencies:
+    "@babel/cli": ^7.5.5
+    "@babel/core": ^7.5.5
+    "@babel/plugin-proposal-object-rest-spread": ^7.5.5
+    "@babel/plugin-transform-runtime": ^7.5.5
+    "@babel/preset-env": ^7.5.5
+    "@babel/preset-typescript": ^7.0.0
+    "@babel/runtime": ^7.5.5
+    "@webiny/api-plugin-elastic-search-client": ^5.0.0-beta.4
+    "@webiny/handler": ^5.0.0-beta.4
+    aws-sdk: ^2.539.0
+    typescript: ^4.1.3
+  languageName: unknown
+  linkType: soft
+
 "@webiny/api-file-manager-s3@^5.0.0-beta.4, @webiny/api-file-manager-s3@workspace:packages/api-file-manager-s3":
   version: 0.0.0-use.local
   resolution: "@webiny/api-file-manager-s3@workspace:packages/api-file-manager-s3"
@@ -7322,6 +7340,7 @@ __metadata:
     "@elastic/elasticsearch": ^7.9.1
     "@elastic/elasticsearch-mock": 0.3.0
     "@shelf/jest-elasticsearch": ^1.0.0
+    "@webiny/api-dynamodb-to-elasticsearch": ^5.0.0-beta.4
     "@webiny/api-i18n-content": ^5.0.0-beta.4
     "@webiny/api-plugin-elastic-search-client": ^5.0.0-beta.4
     "@webiny/api-security": ^5.0.0-beta.4
@@ -7356,6 +7375,7 @@ __metadata:
     "@commodo/fields": 1.1.2-beta.20
     "@elastic/elasticsearch": ^7.9.1
     "@shelf/jest-elasticsearch": ^1.0.0
+    "@webiny/api-dynamodb-to-elasticsearch": ^5.0.0-beta.4
     "@webiny/api-file-manager": ^5.0.0-beta.4
     "@webiny/api-i18n": ^5.0.0-beta.4
     "@webiny/api-i18n-content": ^5.0.0-beta.4
@@ -7368,6 +7388,7 @@ __metadata:
     "@webiny/handler-db": ^5.0.0-beta.4
     "@webiny/handler-graphql": ^5.0.0-beta.4
     "@webiny/plugins": ^5.0.0-beta.4
+    "@webiny/project-utils": ^5.0.0-beta.4
     "@webiny/validation": ^5.0.0-beta.4
     commodo-fields-object: ^1.0.6
     csvtojson: ^2.0.10
@@ -7417,6 +7438,7 @@ __metadata:
     "@graphql-tools/schema": ^7.1.2
     "@shelf/jest-elasticsearch": ^1.0.0
     "@types/jsonpack": ^1.1.0
+    "@webiny/api-dynamodb-to-elasticsearch": ^5.0.0-beta.4
     "@webiny/api-i18n": ^5.0.0-beta.4
     "@webiny/api-i18n-content": ^5.0.0-beta.4
     "@webiny/api-plugin-elastic-search-client": ^5.0.0-beta.4
@@ -7431,6 +7453,7 @@ __metadata:
     "@webiny/handler-graphql": ^5.0.0-beta.4
     "@webiny/handler-http": ^5.0.0-beta.4
     "@webiny/plugins": ^5.0.0-beta.4
+    "@webiny/project-utils": ^5.0.0-beta.4
     "@webiny/validation": ^5.0.0-beta.4
     apollo-graphql: ^0.4.1
     boolean: ^3.0.2
@@ -7535,6 +7558,7 @@ __metadata:
     "@elastic/elasticsearch": ^7.9.1
     "@shelf/jest-elasticsearch": ^1.0.0
     "@types/puppeteer": ^5.4.2
+    "@webiny/api-dynamodb-to-elasticsearch": ^5.0.0-beta.4
     "@webiny/api-file-manager": ^5.0.0-beta.0
     "@webiny/api-i18n": ^5.0.0-beta.4
     "@webiny/api-i18n-content": ^5.0.0-beta.4
@@ -7552,6 +7576,7 @@ __metadata:
     "@webiny/handler-db": ^5.0.0-beta.4
     "@webiny/handler-graphql": ^5.0.0-beta.4
     "@webiny/plugins": ^5.0.0-beta.4
+    "@webiny/project-utils": ^5.0.0-beta.4
     "@webiny/pulumi-sdk": ^5.0.0-beta.4
     "@webiny/validation": ^5.0.0-beta.4
     commodo-fields-object: ^1.0.6
@@ -9741,6 +9766,18 @@ __metadata:
   checksum: 3814cdf39848b5c6d70f461f05f4d1f4a0514fe0f54f3623a0478dc9ebf03ac2bf2587b00c2218a8e4fc52f135cc4e3e4f6226bb1e45ca06f58726a04e212d32
   languageName: node
   linkType: hard
+
+"api-dynamo-to-elastic@workspace:api/code/dynamoToElastic":
+  version: 0.0.0-use.local
+  resolution: "api-dynamo-to-elastic@workspace:api/code/dynamoToElastic"
+  dependencies:
+    "@webiny/api-dynamodb-to-elasticsearch": ^5.0.0-beta.4
+    "@webiny/api-plugin-elastic-search-client": ^5.0.0-beta.4
+    "@webiny/cli": 5.0.0-beta.4
+    "@webiny/handler-aws": ^5.0.0-beta.4
+    "@webiny/project-utils": 5.0.0-beta.4
+  languageName: unknown
+  linkType: soft
 
 "api-file-manager-download@workspace:api/code/fileManager/download":
   version: 0.0.0-use.local

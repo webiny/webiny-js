@@ -17,6 +17,7 @@ const fileManager = new FileManager();
 const prerenderingService = new PrerenderingService({
     env: {
         DB_TABLE: dynamoDb.table.name,
+        DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
         DEBUG: String(process.env.DEBUG)
     }
 });
@@ -24,6 +25,7 @@ const prerenderingService = new PrerenderingService({
 const pageBuilder = new PageBuilder({
     env: {
         DB_TABLE: dynamoDb.table.name,
+        DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
         DEBUG: String(process.env.DEBUG)
     },
     bucket: fileManager.bucket
@@ -34,6 +36,7 @@ const api = new Graphql({
         COGNITO_REGION: String(process.env.AWS_REGION),
         COGNITO_USER_POOL_ID: cognito.userPool.id,
         DB_TABLE: dynamoDb.table.name,
+        DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
         DEBUG: String(process.env.DEBUG),
         ELASTIC_SEARCH_ENDPOINT: elasticSearch.domain.endpoint,
         PRERENDERING_RENDER_HANDLER: prerenderingService.functions.render.arn,
@@ -49,6 +52,7 @@ const headlessCms = new HeadlessCMS({
         COGNITO_REGION: String(process.env.AWS_REGION),
         COGNITO_USER_POOL_ID: cognito.userPool.id,
         DB_TABLE: dynamoDb.table.name,
+        DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
         DEBUG: String(process.env.DEBUG),
         ELASTIC_SEARCH_ENDPOINT: elasticSearch.domain.endpoint,
         S3_BUCKET: fileManager.bucket.id

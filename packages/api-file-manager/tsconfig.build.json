@@ -12,7 +12,8 @@
     "../handler-client",
     "../validation",
     "../api-i18n-content",
-    "../api-plugin-elastic-search-client"
+    "../api-plugin-elastic-search-client",
+    "../api-dynamodb-to-elasticsearch"
   ],
   "compilerOptions": {
     "rootDir": "./src",
@@ -46,6 +47,9 @@
     },
     {
       "path": "../api-plugin-elastic-search-client/tsconfig.build.json"
+    },
+    {
+      "path": "../api-dynamodb-to-elasticsearch/tsconfig.build.json"
     }
   ]
 }

@@ -6,6 +6,7 @@
       "apps/admin/code",
       "apps/website/code",
       "apps/theme",
+      "api/code/dynamoToElastic",
       "api/code/fileManager/*",
       "api/code/graphql",
       "api/code/headlessCMS",

@@ -9,6 +9,7 @@ import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { SecurityIdentity } from "@webiny/api-security";
 import elasticSearch from "@webiny/api-plugin-elastic-search-client";
+import { simulateStream } from "@webiny/project-utils/testing/dynamodb";
 import { Client } from "@elastic/elasticsearch";
 import filesPlugins from "../src/plugins";
 
@@ -28,6 +29,7 @@ import {
     UPDATE_SETTINGS
 } from "./graphql/fileManagerSettings";
 import { SecurityPermission } from "@webiny/api-security/types";
+import dynamoToElastic from "@webiny/api-dynamodb-to-elasticsearch/handler";
 
 type UseGqlHandlerParams = {
     permissions?: SecurityPermission[];
@@ -38,20 +40,28 @@ const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
 
 export default ({ permissions, identity }: UseGqlHandlerParams) => {
     const tenant = { id: "root", name: "Root", parent: null };
+
+    const documentClient = new DocumentClient({
+        convertEmptyValues: true,
+        endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
+        sslEnabled: false,
+        region: "local"
+    });
+
+    const elasticSearchContext = elasticSearch({
+        endpoint: `http://localhost:${ELASTICSEARCH_PORT}`
+    });
+
+    // Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
+    simulateStream(documentClient, createHandler(elasticSearchContext, dynamoToElastic()));
+
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler(
         dbPlugins({
             table: "FileManager",
-            driver: new DynamoDbDriver({
-                documentClient: new DocumentClient({
-                    convertEmptyValues: true,
-                    endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
-                    sslEnabled: false,
-                    region: "local"
-                })
-            })
+            driver: new DynamoDbDriver({ documentClient })
         }),
-        elasticSearch({ endpoint: `http://localhost:${ELASTICSEARCH_PORT}` }),
+        elasticSearchContext,
         graphqlHandlerPlugins(),
         securityPlugins(),
         {

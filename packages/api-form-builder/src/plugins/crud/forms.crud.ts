@@ -253,12 +253,14 @@ export default {
                         triggers: null
                     };
 
+                    const FORM_PK = PK_FORM(uniqueId);
+
                     await db
                         .batch()
                         .create({
                             ...defaults.db,
                             data: {
-                                PK: PK_FORM(uniqueId),
+                                PK: FORM_PK,
                                 SK: SK_FORM_REVISION(version),
                                 TYPE: TYPE_FORM,
                                 ...form
@@ -267,21 +269,23 @@ export default {
                         .create({
                             ...defaults.db,
                             data: {
-                                PK: PK_FORM(uniqueId),
+                                PK: FORM_PK,
                                 SK: SK_FORM_LATEST(),
                                 TYPE: TYPE_FORM_LATEST,
                                 id,
                                 version
                             }
                         })
+                        .create({
+                            ...defaults.esDb,
+                            data: {
+                                PK: FORM_PK,
+                                SK: SK_FORM_LATEST(),
+                                index: defaults.es(context).index,
+                                data: getESDataForLatestRevision(form, context)
+                            }
+                        })
                         .execute();
-
-                    // Index form in "Elastic Search"
-                    await elasticSearch.create({
-                        ...defaults.es(context),
-                        id: `FORM#L#${uniqueId}`,
-                        body: getESDataForLatestRevision(form, context)
-                    });
 
                     return form;
                 },
@@ -291,20 +295,21 @@ export default {
                     await updateData.validate();
 
                     const [uniqueId, version] = id.split("#");
+                    const FORM_PK = PK_FORM(uniqueId);
 
                     const [[[form]], [[latestForm]]] = await db
                         .batch()
                         .read({
                             ...defaults.db,
                             query: {
-                                PK: PK_FORM(uniqueId),
+                                PK: FORM_PK,
                                 SK: SK_FORM_REVISION(version)
                             }
                         })
                         .read({
                             ...defaults.db,
                             query: {
-                                PK: PK_FORM(uniqueId),
+                                PK: FORM_PK,
                                 SK: SK_FORM_LATEST()
                             }
                         })
@@ -319,33 +324,38 @@ export default {
                     const newData = Object.assign(await updateData.toJSON({ onlyDirty: true }), {
                         savedOn: new Date().toISOString()
                     });
+                    Object.assign(form, newData);
 
                     // Finally save it to DB
-                    await db.update({
+                    const batch = db.batch().update({
                         ...defaults.db,
                         query: {
-                            PK: PK_FORM(uniqueId),
+                            PK: FORM_PK,
                             SK: SK_FORM_REVISION(version)
                         },
-                        data: newData
+                        data: form
                     });
 
                     // Update form in "Elastic Search"
                     if (latestForm.id === id) {
-                        await elasticSearch.update({
-                            ...defaults.es(context),
-                            id: `FORM#L#${uniqueId}`,
-                            body: {
-                                doc: {
-                                    id: id,
-                                    savedOn: form.savedOn,
-                                    name: data.name
-                                }
+                        batch.update({
+                            ...defaults.esDb,
+                            query: {
+                                PK: FORM_PK,
+                                SK: SK_FORM_LATEST()
+                            },
+                            data: {
+                                PK: FORM_PK,
+                                SK: SK_FORM_LATEST(),
+                                index: defaults.es(context).index,
+                                data: getESDataForLatestRevision(form, context)
                             }
                         });
                     }
 
-                    return Object.assign(form, newData);
+                    await batch.execute();
+
+                    return form;
                 },
                 async deleteForm(id) {
                     const permission = await utils.checkBaseFormPermissions(context, { rwd: "d" });
@@ -381,9 +391,12 @@ export default {
                     });
 
                     // Delete items from "Elastic Search"
-                    await elasticSearch.delete({
-                        ...defaults.es(context),
-                        id: `FORM#L#${uniqueId}`
+                    await db.delete({
+                        ...defaults.esDb,
+                        query: {
+                            PK: PK_FORM(uniqueId),
+                            SK: SK_FORM_LATEST()
+                        }
                     });
 
                     return true;
@@ -491,26 +504,34 @@ export default {
                                 return this.deleteForm(uniqueId);
                             }
 
-                            batch.update({
-                                ...defaults.db,
-                                query: {
-                                    PK: FORM_PK,
-                                    SK: SK_FORM_LATEST()
-                                },
-                                data: {
-                                    PK: FORM_PK,
-                                    SK: SK_FORM_LATEST(),
-                                    TYPE: TYPE_FORM_LATEST,
-                                    id: prevRevision.id,
-                                    version: prevRevision.version
-                                }
-                            });
-
-                            await elasticSearch.index({
-                                ...defaults.es(context),
-                                id: `FORM#L#${uniqueId}`,
-                                body: getESDataForLatestRevision(prevRevision, context)
-                            });
+                            batch
+                                .update({
+                                    ...defaults.db,
+                                    query: {
+                                        PK: FORM_PK,
+                                        SK: SK_FORM_LATEST()
+                                    },
+                                    data: {
+                                        PK: FORM_PK,
+                                        SK: SK_FORM_LATEST(),
+                                        TYPE: TYPE_FORM_LATEST,
+                                        id: prevRevision.id,
+                                        version: prevRevision.version
+                                    }
+                                })
+                                .update({
+                                    ...defaults.esDb,
+                                    query: {
+                                        PK: FORM_PK,
+                                        SK: SK_FORM_LATEST()
+                                    },
+                                    data: {
+                                        PK: FORM_PK,
+                                        SK: SK_FORM_LATEST(),
+                                        index: defaults.es(context).index,
+                                        data: getESDataForLatestRevision(prevRevision, context)
+                                    }
+                                });
                         }
                     }
 
@@ -562,7 +583,7 @@ export default {
                     });
 
                     // Finally save it to DB
-                    await db
+                    const batch = db
                         .batch()
                         .update({
                             ...defaults.db,
@@ -585,25 +606,26 @@ export default {
                                 id,
                                 version: form.version
                             }
-                        })
-                        .execute();
+                        });
 
                     // Update form in "Elastic Search"
                     if (latestForm.id === id) {
-                        await elasticSearch.update({
-                            ...defaults.es(context),
-                            id: `FORM#L#${uniqueId}`,
-                            body: {
-                                doc: {
-                                    published: true,
-                                    publishedOn: savedOn,
-                                    locked: true,
-                                    savedOn,
-                                    status
-                                }
+                        batch.update({
+                            ...defaults.esDb,
+                            query: {
+                                PK: PK_FORM(uniqueId),
+                                SK: SK_FORM_LATEST()
+                            },
+                            data: {
+                                PK: PK_FORM(uniqueId),
+                                SK: SK_FORM_LATEST(),
+                                index: defaults.es(context).index,
+                                data: getESDataForLatestRevision(form, context)
                             }
                         });
                     }
+
+                    await batch.execute();
 
                     return form;
                 },
@@ -713,22 +735,24 @@ export default {
                         }
                     }
 
-                    await batch.execute();
-
                     // Update form in "Elastic Search"
                     if (latestForm.id === id) {
-                        await elasticSearch.update({
-                            ...defaults.es(context),
-                            id: `FORM#L#${uniqueId}`,
-                            body: {
-                                doc: {
-                                    published: false,
-                                    savedOn,
-                                    status
-                                }
+                        batch.update({
+                            ...defaults.esDb,
+                            query: {
+                                PK: PK_FORM(uniqueId),
+                                SK: SK_FORM_LATEST()
+                            },
+                            data: {
+                                PK: PK_FORM(uniqueId),
+                                SK: SK_FORM_LATEST(),
+                                index: defaults.es(context).index,
+                                data: getESDataForLatestRevision(form, context)
                             }
                         });
                     }
+
+                    await batch.execute();
 
                     return form;
                 },
@@ -820,14 +844,20 @@ export default {
                                 version: newRevision.version
                             }
                         })
+                        .update({
+                            ...defaults.esDb,
+                            query: {
+                                PK: FORM_PK,
+                                SK: SK_FORM_LATEST()
+                            },
+                            data: {
+                                PK: FORM_PK,
+                                SK: SK_FORM_LATEST(),
+                                index: defaults.es(context).index,
+                                data: getESDataForLatestRevision(newRevision, context)
+                            }
+                        })
                         .execute();
-
-                    // Index form in "Elastic Search"
-                    await elasticSearch.index({
-                        ...defaults.es(context),
-                        id: `FORM#L#${uniqueId}`,
-                        body: getESDataForLatestRevision(newRevision, context)
-                    });
 
                     return newRevision;
                 },
@@ -1119,27 +1149,33 @@ export default {
                     };
 
                     // Store submission to DB
-                    await db.create({
-                        data: {
-                            PK: PK_FORM(uniqueId),
-                            SK: SK_SUBMISSION(submission.id),
-                            TYPE: TYPE_FORM_SUBMISSION,
-                            tenant: form.tenant,
-                            ...submission
-                        }
-                    });
-
-                    // TODO: review and reduce amount of data stored to ES (field settings and validators)
-                    await elasticSearch.index({
-                        ...defaults.es(context),
-                        id: submissionModel.id,
-                        body: {
-                            __type: "fb.submission",
-                            webinyVersion: context.WEBINY_VERSION,
-                            createdOn: new Date().toISOString(),
-                            ...submission
-                        }
-                    });
+                    await db
+                        .batch()
+                        .create({
+                            ...defaults.db,
+                            data: {
+                                PK: PK_FORM(uniqueId),
+                                SK: SK_SUBMISSION(submission.id),
+                                TYPE: TYPE_FORM_SUBMISSION,
+                                tenant: form.tenant,
+                                ...submission
+                            }
+                        })
+                        .create({
+                            ...defaults.esDb,
+                            data: {
+                                PK: PK_FORM(uniqueId),
+                                SK: SK_SUBMISSION(submission.id),
+                                index: defaults.es(context).index,
+                                data: {
+                                    __type: "fb.submission",
+                                    webinyVersion: context.WEBINY_VERSION,
+                                    createdOn: new Date().toISOString(),
+                                    ...submission
+                                }
+                            }
+                        })
+                        .execute();
 
                     submission.logs = [
                         ...(submission.logs || []),
@@ -1214,13 +1250,23 @@ export default {
                 },
                 async deleteSubmission(formId, submissionId) {
                     const [uniqueId] = formId.split("#");
-                    await db.delete({
-                        ...defaults.db,
-                        query: {
-                            PK: PK_FORM(uniqueId),
-                            SK: SK_SUBMISSION(submissionId)
-                        }
-                    });
+                    await db
+                        .batch()
+                        .delete({
+                            ...defaults.db,
+                            query: {
+                                PK: PK_FORM(uniqueId),
+                                SK: SK_SUBMISSION(submissionId)
+                            }
+                        })
+                        .delete({
+                            ...defaults.esDb,
+                            query: {
+                                PK: PK_FORM(uniqueId),
+                                SK: SK_SUBMISSION(submissionId)
+                            }
+                        })
+                        .execute();
 
                     return true;
                 }
