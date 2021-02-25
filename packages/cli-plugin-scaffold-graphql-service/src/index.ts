@@ -352,7 +352,9 @@ ${entity.singular}Plugin()
 
             console.log(
                 indentString(
-                    `4. Finally, run the ${chalk.green("install")} mutation by running
+                    `4. Finally, to create Elasticsearch index, run the ${chalk.green(
+                        "install"
+                    )} mutation by running
 ${chalk.green(`
 mutation ${Case.pascal(entity.plural)}Mutation {
     ${entity.plural} {
@@ -367,7 +369,7 @@ mutation ${Case.pascal(entity.plural)}Mutation {
     }
 }
 `)}
-in API playground.`,
+in the API playground.`,
                     2
                 )
             );

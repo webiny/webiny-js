@@ -18,8 +18,6 @@
   "dependencies": {
     "@webiny/cli-plugin-scaffold": "^4.14.0",
     "@webiny/error": "^5.0.0-beta.0",
-    "@webiny/handler": "^5.0.0-beta.4",
-    "@webiny/plugins": "^5.0.0-beta.4",
     "case": "^1.6.3",
     "chalk": "^4.1.0",
     "execa": "^5.0.0",
@@ -40,6 +38,8 @@
     "@types/inquirer": "^7.3.1",
     "@types/ncp": "^2.0.4",
     "@types/pluralize": "^0.0.29",
+    "@webiny/handler": "^5.0.0-beta.4",
+    "@webiny/plugins": "^5.0.0-beta.4",
     "rimraf": "^3.0.2",
     "typescript": "^4.1.3"
   },
