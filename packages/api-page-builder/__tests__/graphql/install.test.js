@@ -143,12 +143,13 @@ describe("Install Test", () => {
         );
 
         // 2. Only homepage should be visible in published and latest pages.
-        await until(listPages, ([res]) => res.data.pageBuilder.listPages.data.length === 1).then(
-            ([res]) => {
-                expect(res.data.pageBuilder.listPages.data[0].title).toBe("Welcome to Webiny");
-                expect(res.data.pageBuilder.listPages.data[0].status).toBe("published");
-            }
-        );
+        await until(listPages, ([res]) => {
+            const { data } = res.data.pageBuilder.listPages;
+            return data.length === 1 && data[0].status === "published";
+        }).then(([res]) => {
+            expect(res.data.pageBuilder.listPages.data[0].title).toBe("Welcome to Webiny");
+            expect(res.data.pageBuilder.listPages.data[0].status).toBe("published");
+        });
 
         await until(listPublishedPages, ([res]) => {
             const { data } = res.data.pageBuilder.listPublishedPages;
