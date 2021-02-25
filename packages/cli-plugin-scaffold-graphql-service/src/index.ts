@@ -352,13 +352,37 @@ ${entity.singular}Plugin()
 
             console.log(
                 indentString(
-                    `4. Finally, to create Elasticsearch index, run the ${chalk.green(
+                    `4. To create the Elasticsearch index, run the ${chalk.green(
                         "install"
                     )} mutation by running
 ${chalk.green(`
-mutation ${Case.pascal(entity.plural)}Mutation {
+mutation ${Case.pascal(entity.plural)}InstallMutation {
     ${entity.plural} {
         install {
+            data
+            error {
+                message
+                code
+                data
+            }
+        }
+    }
+}
+`)}
+in the API playground.`,
+                    2
+                )
+            );
+
+            console.log(
+                indentString(
+                    `5. If you want to delete the Elasticsearch index, run the ${chalk.green(
+                        "uninstall"
+                    )} mutation by running
+${chalk.green(`
+mutation ${Case.pascal(entity.plural)}UninstallMutation {
+    ${entity.plural} {
+        uninstall {
             data
             error {
                 message
