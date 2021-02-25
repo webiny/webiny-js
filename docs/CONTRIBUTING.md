@@ -1,15 +1,15 @@
 # CONTRIBUTING
 
 This guide is for anyone who wants to contribute to the Webiny project.
-We have an active community on [slack](webiny.com/slack). Talk to the core team, and get help. Webiny team is always there for any questions.
+We have an active community on [slack](https://www.webiny.com/slack). Talk to the core team, and get help. Webiny team is always there for any questions.
 
 ## Working on an issue
 
-> IMPORTANT: Before working on a PR, please open an issue and discuss your intended changes with the maintainers. They may provide invaluable info and point you in the right direction to get the most out of your contribution.
+> IMPORTANT: Before working on a PR, please open an issue and discuss your intended changes with the maintainers. They may provide invaluable info and point you in the right direction to get the most out of your contribution. If you just send a PR out of the blue, there is a good chance it won't be accepted.
 
 ### Branches
 
-`master` is the main branch on which we develop. All `issue` branches should be branched from `master` branch, unless you're working on an issue that belongs to one of our [projects](https://github.com/webiny/webiny-js/projects). In that case, a project branch will be specified in the project board. If you're not sure about the branch, don't hesitate to contact us.
+`next` is the main branch on which we develop. All `issue` branches should be branched from `next` branch, unless you're working on an issue that belongs to one of our [projects](https://github.com/webiny/webiny-js/projects). In that case, a project branch will be specified in the project board. If you're not sure about the branch, don't hesitate to contact us.
 
 ### Workflow
 
@@ -33,7 +33,7 @@ Always follow the specification (even though later down the road, your PR might 
 
 
 ##### Additional explanation
-When merging larger PRs, squashing all commits into a single one often doesn't make sense, and in those cases, we are doing a regular merge or rebase - without squash. And when that happens, it's important that all commit messages were properly written.
+When merging larger PRs, squashing all commits into a single one often doesn't make sense, and in those cases, we are doing a regular merge or rebase - without squash. And when that happens, it's important that all commit messages are properly written.
 
 ### Pull Requests (PRs)
 
@@ -48,7 +48,7 @@ Try to make your PRs as informative as possible:
 For example:
 ![Snipaste_2020-04-19_20-10-44](https://user-images.githubusercontent.com/5121148/79717886-20ebe280-82db-11ea-9c23-f46e5ab01724.png)
 
-There's nothing nicer than a well-written PR. 🤓
+There's nothing more satisfying than a well-written PR. 🤓
 
 ## Repo overview
 
@@ -57,25 +57,25 @@ Once you clone the repository, you will have a monorepo which consists of a bunc
 - `app-*` packages are used only in React apps
 - `api-*` are only used when building API services
 - `handler-*` are utility packages to create serverless function handlers
-- `serverless-*` are packages containing infrastructure components used to deploy your infrastructure
+- `cli-*` are packages that are use by Webiny CLI
 
-In the root of the project, you'll find the `api` and `apps` folders. These are the [stacks](https://docs.webiny.com/docs/deep-dive/stacks/) we use as our sandbox for development of Webiny packages.
-The setup of the repo is identical to the one created by `create-webiny-project`.
+In the root of the project, you'll find the `api` and `apps` folders. You'll find an in-depth explanation of [project organization on our docs portal](https://docs.webiny.com/docs/key-topics/project-organization).
+The setup of our Github repo is identical to the one created by `create-webiny-project`.
 
 ## Prerequisites
 
 1. Node `12` or higher (to manage your Node versions we recommend [n](https://www.npmjs.com/package/n) for OSX/Linux, and [nvm-windows](https://github.com/coreybutler/nvm-windows) for Windows)
 
-2. `yarn 1.0` or higher (because our project setup uses workspaces). Yarn `v2` is not yet supported!
-   If you don't already have `yarn`, visit [https://classic.yarnpkg.com/](https://classic.yarnpkg.com/en/docs/install) to install it.
+2. `yarn 1.22.*` or higher (because our project setup uses workspaces). We prefer using `yarn 2` as it's a lot faster and some issues from `yarn 1` are finally fixed. 
+   If you don't already have `yarn`, visit https://yarnpkg.com/ to install it.
 
-3. A verified AWS account with an [IAM user for programmatic usage](https://www.youtube.com/watch?v=tgb_MRVylWw)
+3. A verified AWS account with an [IAM user for programmatic usage](https://docs.webiny.com/docs/how-to-guides/deployment/configure-aws-credentials)
 
 ## Local setup
 
 > IMPORTANT: The following commands should be executed from the root of your repository.
  
-1. Fork and clone the repo.
+1. Fork and clone the repo. It will be on `next` branch by default.
 
 2. Install all dependencies:
 
@@ -88,9 +88,9 @@ The setup of the repo is identical to the one created by `create-webiny-project`
    yarn setup-repo
    ```
 
-4. Deploy you API to use with local React apps: 
+4. Deploy your API to use with local React apps: 
    ```
-   yarn webiny stack deploy api --env=dev
+   yarn webiny app deploy api --env=dev
    ```
 
 6. Begin working on the `admin` app:
