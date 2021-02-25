@@ -347,6 +347,8 @@ export const createElasticsearchQueryBody = (params: CreateElasticsearchParams) 
         sort: createElasticsearchSortParams({ sort, modelFields, parentObject, model }),
         size: limit + 1,
         // eslint-disable-next-line
-        search_after: decodeElasticsearchCursor(after) || undefined
+        search_after: decodeElasticsearchCursor(after) || undefined,
+        // eslint-disable-next-line
+        track_total_hits: true
     };
 };
