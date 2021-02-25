@@ -1,21 +1,23 @@
 const { Converter } = require("aws-sdk/clients/dynamodb");
 
-const processDelete = async (documentClient, handler, args) => {
-    const [params] = args;
+const processDelete = async (documentClient, handler, params) => {
     if (!params || params.TableName !== process.env.DB_TABLE_ELASTICSEARCH) {
         return;
     }
     // Get original item from DDB to use as OldImage
     const { Key, TableName } = params;
     const { Item } = await documentClient.get({ Key, TableName }).promise();
+
+    if (!Item || !Item.index) {
+        return;
+    }
+
     handler(
         createDynamoStreamEvent(createDynamoStreamRecord("REMOVE", { Keys: Key, OldImage: Item }))
     );
 };
 
-const processPut = async (documentClient, handler, args) => {
-    const [params] = args;
-
+const processPut = async (documentClient, handler, params) => {
     if (!params || params.TableName !== process.env.DB_TABLE_ELASTICSEARCH) {
         return;
     }
@@ -28,8 +30,7 @@ const processPut = async (documentClient, handler, args) => {
     );
 };
 
-const processBatchWrite = async (documentClient, handler, args) => {
-    const [params] = args;
+const processBatchWrite = async (documentClient, handler, params) => {
     const operations = params.RequestItems[process.env.DB_TABLE_ELASTICSEARCH];
     if (!operations) {
         return;
@@ -43,9 +44,11 @@ const processBatchWrite = async (documentClient, handler, args) => {
                 .get({ Key: DeleteRequest.Key, TableName: process.env.DB_TABLE_ELASTICSEARCH })
                 .promise();
 
-            records.push(
-                createDynamoStreamRecord("REMOVE", { Keys: DeleteRequest.Key, OldImage: Item })
-            );
+            if (Item && Item.index) {
+                records.push(
+                    createDynamoStreamRecord("REMOVE", { Keys: DeleteRequest.Key, OldImage: Item })
+                );
+            }
         }
 
         if (PutRequest) {
@@ -61,22 +64,47 @@ const processBatchWrite = async (documentClient, handler, args) => {
     handler(createDynamoStreamEvent(...records));
 };
 
+const processParams = async (documentClient, handler, method, params) => {
+    switch (method) {
+        case "delete":
+            await processDelete(documentClient, handler, params);
+            break;
+        case "batchWrite":
+            await processBatchWrite(documentClient, handler, params);
+            break;
+        default:
+            await processPut(documentClient, handler, params);
+    }
+};
+
 const simulateStream = (documentClient, handler) => {
     const methods = ["put", "update", "delete", "batchWrite"];
     methods.map(method => {
         const originalMethod = documentClient[method];
-        documentClient[method] = (...args) => {
-            switch (method) {
-                case "delete":
-                    processDelete(documentClient, handler, args);
-                    break;
-                case "batchWrite":
-                    processBatchWrite(documentClient, handler, args);
-                    break;
-                default:
-                    processPut(documentClient, handler, args);
+        documentClient[method] = (params, callback) => {
+            if (!callback) {
+                return {
+                    promise: async () => {
+                        await processParams(documentClient, handler, method, params);
+                        return new Promise((resolve, reject) => {
+                            originalMethod.apply(documentClient, [
+                                params,
+                                (err, data) => {
+                                    if (err) {
+                                        reject(err);
+                                    } else {
+                                        resolve(data);
+                                    }
+                                }
+                            ]);
+                        });
+                    }
+                };
             }
-            return originalMethod.apply(documentClient, args);
+
+            processParams(documentClient, handler, method, params).then(() => {
+                originalMethod.apply(documentClient, [params, callback]);
+            });
         };
     });
 };
