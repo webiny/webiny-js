@@ -7,6 +7,7 @@
     "../db",
     "../api-i18n-content",
     "../api-plugin-elastic-search-client",
+    "../api-dynamodb-to-elasticsearch",
     "../api-security",
     "../handler",
     "../handler-args",
@@ -61,6 +62,9 @@
     },
     {
       "path": "../api-plugin-elastic-search-client/tsconfig.build.json"
+    },
+    {
+      "path": "../api-dynamodb-to-elasticsearch/tsconfig.build.json"
     },
     {
       "path": "../handler-graphql/tsconfig.build.json"

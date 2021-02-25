@@ -9,12 +9,23 @@ describe("page visibility test", () => {
         listPublishedPages,
         publishPage,
         until,
+        createElasticSearchIndex,
         deleteElasticSearchIndex
     } = useGqlHandler();
 
-    test("changing visiblity of a page should affect results from get and list operations ", async () => {
+    beforeAll(async () => {
         await deleteElasticSearchIndex();
-
+    });
+    
+    beforeEach(async () => {
+        await createElasticSearchIndex();
+    });
+    
+    afterEach(async () => {
+        await deleteElasticSearchIndex();
+    });
+    
+    test("changing visiblity of a page should affect results from get and list operations ", async () => {
         const category = await createCategory({
             data: {
                 slug: `slug`,
@@ -63,9 +74,9 @@ describe("page visibility test", () => {
             return data.length === 1;
         });
 
-        const p1v2 = await createPage({ from: p1v1.id }).then(
-            ([res]) => res.data.pageBuilder.createPage.data
-        );
+        const p1v2 = await createPage({ from: p1v1.id }).then(([res]) => {
+            return res.data.pageBuilder.createPage.data;
+        });
 
         await until(listPages, ([res]) => {
             const { data } = res.data.pageBuilder.listPages;

@@ -1,5 +1,7 @@
 import useGqlHandler from "./useGqlHandler";
 
+jest.setTimeout(10000);
+
 describe("deleting pages", () => {
     const {
         getPage,
@@ -10,12 +12,17 @@ describe("deleting pages", () => {
         listPublishedPages,
         publishPage,
         until,
+        createElasticSearchIndex,
         deleteElasticSearchIndex
     } = useGqlHandler();
 
     let p1v1, p1v2, p1v3, category;
-    beforeEach(async () => {
+    beforeAll(async () => {
         await deleteElasticSearchIndex();
+    });
+
+    beforeEach(async () => {
+        await createElasticSearchIndex();
 
         category = await createCategory({
             data: {
@@ -30,13 +37,17 @@ describe("deleting pages", () => {
             ([res]) => res.data.pageBuilder.createPage.data
         );
 
-        p1v2 = await createPage({ from: p1v1.id }).then(
-            ([res]) => res.data.pageBuilder.createPage.data
-        );
+        p1v2 = await createPage({ from: p1v1.id }).then(([res]) => {
+            return res.data.pageBuilder.createPage.data;
+        });
 
         p1v3 = await createPage({ from: p1v2.id }).then(
             ([res]) => res.data.pageBuilder.createPage.data
         );
+    });
+
+    afterEach(async () => {
+        await deleteElasticSearchIndex();
     });
 
     test("deleting v1 page should delete all related DB / index entries", async () => {

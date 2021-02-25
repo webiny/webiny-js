@@ -8,15 +8,17 @@ import { NotFoundError } from "@webiny/handler-graphql";
 import getNormalizedListPagesArgs from "./utils/getNormalizedListPagesArgs";
 import trimStart from "lodash/trimStart";
 import omit from "lodash/omit";
+import get from "lodash/get";
 import merge from "lodash/merge";
 import getPKPrefix from "./utils/getPKPrefix";
 import DataLoader from "dataloader";
 
 import {
-    PageHookPlugin,
-    PbContext,
     Page,
-    PageSecurityPermission
+    PageHookPlugin,
+    PageSecurityPermission,
+    PbContext,
+    TYPE
 } from "@webiny/api-page-builder/types";
 import createListMeta from "./utils/createListMeta";
 import checkBasePermissions from "./utils/checkBasePermissions";
@@ -25,12 +27,10 @@ import executeHookCallbacks from "./utils/executeHookCallbacks";
 import path from "path";
 import normalizePath from "./pages/normalizePath";
 import { compressContent, extractContent } from "./pages/contentCompression";
-import { CreateDataModel, UpdateSettingsModel, UpdateDataModel } from "./pages/models";
+import { CreateDataModel, UpdateDataModel, UpdateSettingsModel } from "./pages/models";
 import { getESLatestPageData, getESPublishedPageData } from "./pages/esPageData";
 
 import { Args as FlushArgs } from "@webiny/api-prerendering-service/flush/types";
-
-import { TYPE } from "@webiny/api-page-builder/types";
 
 const STATUS_CHANGES_REQUESTED = "changesRequested";
 const STATUS_REVIEW_REQUESTED = "reviewRequested";
@@ -390,21 +390,24 @@ const plugin: ContextPlugin<PbContext> = {
 
                     await executeHookCallbacks(hookPlugins, "beforeCreate", context, data);
 
+                    const latestPageKeys = { PK: PK_PAGE(pid), SK: "L" };
+
                     await db
                         .batch()
                         .create({ ...defaults.db, data })
                         .create({
                             ...defaults.db,
-                            data: { ...data, PK: PK_PAGE(pid), SK: "L" }
+                            data: { ...data, ...latestPageKeys }
+                        })
+                        .create({
+                            ...defaults.esDb,
+                            data: {
+                                ...latestPageKeys,
+                                index: ES_DEFAULTS().index,
+                                data: getESLatestPageData(context, { ...data, ...latestPageKeys })
+                            }
                         })
                         .execute();
-
-                    // Index page in "Elastic Search"
-                    await elasticSearch.index({
-                        ...ES_DEFAULTS(),
-                        id: "L#" + pid,
-                        body: getESLatestPageData(context, data)
-                    });
 
                     await executeHookCallbacks(hookPlugins, "afterCreate", context, data);
 
@@ -473,37 +476,43 @@ const plugin: ContextPlugin<PbContext> = {
 
                     await executeHookCallbacks(hookPlugins, "beforeCreate", context, data);
 
-                    await db
+                    const latestPageKeys = {
+                        PK: PK_PAGE(fromPid),
+                        SK: "L"
+                    };
+
+                    const batch = db
                         .batch()
                         .create({ ...defaults.db, data })
                         .update({
                             ...defaults.db,
-                            query: {
-                                PK: PK_PAGE(fromPid),
-                                SK: "L"
-                            },
+                            query: latestPageKeys,
                             data: {
                                 ...data,
-                                PK: PK_PAGE(fromPid),
-                                SK: "L"
+                                ...latestPageKeys
                             }
-                        })
-                        .execute();
+                        });
 
                     // If the new revision is visible in "latest" page lists, then update the ES index.
-                    if (data?.visibility?.list?.latest !== false) {
-                        // Replace existing `"L#" + fromParent` entry with the new one.
-                        await elasticSearch.index({
-                            ...ES_DEFAULTS(),
-                            id: "L#" + fromPid,
-                            body: getESLatestPageData(context, data)
+                    if (get(data, "visibility.list.latest") !== false) {
+                        batch.update({
+                            ...defaults.esDb,
+                            query: latestPageKeys,
+                            data: {
+                                ...latestPageKeys,
+                                index: ES_DEFAULTS().index,
+                                data: getESLatestPageData(context, data)
+                            }
                         });
                     }
+
+                    await batch.execute();
 
                     await executeHookCallbacks(hookPlugins, "afterCreate", context, data);
 
                     // Extract compressed page content.
-                    page.content = await extractContent(page.content);
+                    data.content = await extractContent(data.content);
+
                     return data as Page;
                 },
 
@@ -555,42 +564,54 @@ const plugin: ContextPlugin<PbContext> = {
 
                     await executeHookCallbacks(hookPlugins, "beforeUpdate", context, page);
 
+                    // Assign new data to the page record
+                    Object.assign(page, updateData);
+                    Object.assign(latestPage, updateData);
+
                     if (updateData.content) {
                         updateData.content = compressContent(updateData.content);
                     }
 
-                    await db.update({
+                    const batch = db.batch().update({
                         ...defaults.db,
                         query: { PK: PK_PAGE(pid), SK: `REV#${rev}` },
-                        data: updateData
+                        data: page
                     });
 
                     // If we updated the latest rev, make sure the changes are propagated to "L" record and ES.
                     if (latestPage.id === id) {
-                        await db.update({
+                        const latestPageKeys = { PK: PK_PAGE(pid), SK: "L" };
+
+                        batch.update({
                             ...defaults.db,
-                            query: { PK: PK_PAGE(pid), SK: "L" },
-                            data: updateData
+                            query: latestPageKeys,
+                            data: latestPage
                         });
 
                         // Update the ES index according to the value of the "latest pages lists" visibility setting.
-                        if (updateData?.visibility?.list?.latest !== false) {
-                            await elasticSearch.index({
-                                ...ES_DEFAULTS(),
-                                id: `L#${pid}`,
-                                body: getESLatestPageData(context, { ...page, ...data })
+                        if (get(updateData, "visibility.list.latest") !== false) {
+                            batch.update({
+                                ...defaults.esDb,
+                                query: latestPageKeys,
+                                data: {
+                                    ...latestPageKeys,
+                                    index: ES_DEFAULTS().index,
+                                    data: getESLatestPageData(context, page)
+                                }
                             });
                         } else {
-                            await elasticSearch.delete({
-                                ...ES_DEFAULTS(),
-                                id: `L#${pid}`
+                            batch.delete({
+                                ...defaults.esDb,
+                                query: latestPageKeys
                             });
                         }
                     }
 
+                    await batch.execute();
+
                     await executeHookCallbacks(hookPlugins, "afterUpdate", context, page);
 
-                    return { ...page, ...data };
+                    return page;
                 },
 
                 async delete(pageId) {
@@ -599,21 +620,22 @@ const plugin: ContextPlugin<PbContext> = {
                     });
 
                     const [pid, rev] = pageId.split("#");
+                    const PAGE_PK = PK_PAGE(pid);
 
                     // 1. Load the page and latest / published page (rev) data.
                     const [[[page]], [[latestPage]], [[publishedPage]]] = await db
                         .batch<[[Page]], [[Page]], [[Page]]>()
                         .read({
                             ...defaults.db,
-                            query: { PK: PK_PAGE(pid), SK: `REV#${rev}` }
+                            query: { PK: PAGE_PK, SK: `REV#${rev}` }
                         })
                         .read({
                             ...defaults.db,
-                            query: { PK: PK_PAGE(pid), SK: "L" }
+                            query: { PK: PAGE_PK, SK: "L" }
                         })
                         .read({
                             ...defaults.db,
-                            query: { PK: PK_PAGE(pid), SK: "P" }
+                            query: { PK: PAGE_PK, SK: "P" }
                         })
                         .execute();
 
@@ -652,7 +674,7 @@ const plugin: ContextPlugin<PbContext> = {
                             const [pageItemCollection] = await db.read({
                                 ...defaults.db,
                                 limit: 15,
-                                query: { PK: PK_PAGE(pid), SK: { $gte: " " } }
+                                query: { PK: PAGE_PK, SK: { $gte: " " } }
                             });
 
                             if (pageItemCollection.length === 0) {
@@ -680,22 +702,23 @@ const plugin: ContextPlugin<PbContext> = {
                         }
 
                         // 4.2. Finally, delete data from ES.
-                        await elasticSearch.bulk({
-                            body: [
-                                {
-                                    delete: {
-                                        _id: `L#${pid}`,
-                                        _index: ES_DEFAULTS().index
-                                    }
-                                },
-                                {
-                                    delete: {
-                                        _id: `P#${pid}`,
-                                        _index: ES_DEFAULTS().index
-                                    }
+                        await db
+                            .batch()
+                            .delete({
+                                ...defaults.esDb,
+                                query: {
+                                    PK: PAGE_PK,
+                                    SK: "L"
                                 }
-                            ]
-                        });
+                            })
+                            .delete({
+                                ...defaults.esDb,
+                                query: {
+                                    PK: PAGE_PK,
+                                    SK: "P"
+                                }
+                            })
+                            .execute();
 
                         await executeHookCallbacks(hookPlugins, "afterDelete", context, {
                             page,
@@ -711,11 +734,8 @@ const plugin: ContextPlugin<PbContext> = {
                     // 6.1. Delete the actual page entry.
                     const batch = db.batch().delete({
                         ...defaults.db,
-                        query: { PK: PK_PAGE(pid), SK: `REV#${rev}` }
+                        query: { PK: PAGE_PK, SK: `REV#${rev}` }
                     });
-
-                    // We need to update / delete data in ES too.
-                    const esOperations = [];
 
                     // 6.2. If the page is published, remove published data, both from DB and ES.
                     if (publishedPage && publishedPage.id === page.id) {
@@ -723,7 +743,7 @@ const plugin: ContextPlugin<PbContext> = {
                             .delete({
                                 ...defaults.db,
                                 query: {
-                                    PK: PK_PAGE(pid),
+                                    PK: PAGE_PK,
                                     SK: "P"
                                 }
                             })
@@ -733,11 +753,14 @@ const plugin: ContextPlugin<PbContext> = {
                                     PK: PK_PAGE_PUBLISHED_PATH(),
                                     SK: publishedPage.path
                                 }
+                            })
+                            .delete({
+                                ...defaults.esDb,
+                                query: {
+                                    PK: PAGE_PK,
+                                    SK: "P"
+                                }
                             });
-
-                        esOperations.push({
-                            delete: { _id: `P#${pid}`, _index: ES_DEFAULTS().index }
-                        });
                     }
 
                     // 6.3. If the page is latest, assign the previously latest page as the new latest.
@@ -746,40 +769,41 @@ const plugin: ContextPlugin<PbContext> = {
                     if (latestPage.id === page.id) {
                         [[newLatestPage]] = await db.read({
                             ...defaults.db,
-                            query: { PK: PK_PAGE(pid), SK: { $lt: `REV#${rev}` } },
+                            query: { PK: PAGE_PK, SK: { $lt: `REV#${rev}` } },
                             sort: { SK: -1 },
                             limit: 1
                         });
 
                         // Update latest page data.
-                        batch.update({
-                            ...defaults.db,
-                            query: {
-                                PK: PK_PAGE(pid),
-                                SK: "L"
-                            },
-                            data: {
-                                ...newLatestPage,
-                                PK: PK_PAGE(pid),
-                                SK: "L"
-                            }
-                        });
-
-                        // And of course, update the latest rev entry in ES.
-                        esOperations.push(
-                            {
-                                index: { _id: `L#${pid}`, _index: ES_DEFAULTS().index }
-                            },
-                            getESLatestPageData(context, newLatestPage)
-                        );
+                        batch
+                            .update({
+                                ...defaults.db,
+                                query: {
+                                    PK: PAGE_PK,
+                                    SK: "L"
+                                },
+                                data: {
+                                    ...newLatestPage,
+                                    PK: PAGE_PK,
+                                    SK: "L"
+                                }
+                            })
+                            .update({
+                                ...defaults.esDb,
+                                query: {
+                                    PK: PAGE_PK,
+                                    SK: "L"
+                                },
+                                data: {
+                                    PK: PAGE_PK,
+                                    SK: "L",
+                                    index: ES_DEFAULTS().index,
+                                    data: getESLatestPageData(context, newLatestPage)
+                                }
+                            });
                     }
 
                     await batch.execute();
-
-                    // When deleting a non-published and non-latest rev, we mustn't execute the bulk operation.
-                    if (esOperations.length) {
-                        await elasticSearch.bulk({ body: esOperations });
-                    }
 
                     await executeHookCallbacks(hookPlugins, "afterDelete", context, {
                         page,
@@ -801,6 +825,7 @@ const plugin: ContextPlugin<PbContext> = {
                     );
 
                     const [pid, rev] = pageId.split("#");
+                    const PAGE_PK = PK_PAGE(pid);
 
                     // `publishedPageData` will give us a record that contains `id` and `path, which tell us
                     // the current revision and over which path it has been published, respectively.
@@ -808,19 +833,19 @@ const plugin: ContextPlugin<PbContext> = {
                         .batch<[[Page]], [[Page]], [[Page]]>()
                         .read({
                             ...defaults.db,
-                            query: { PK: PK_PAGE(pid), SK: `REV#${rev}` }
+                            query: { PK: PAGE_PK, SK: `REV#${rev}` }
                         })
                         .read({
                             ...defaults.db,
                             query: {
-                                PK: PK_PAGE(pid),
+                                PK: PAGE_PK,
                                 SK: "P"
                             }
                         })
                         .read({
                             ...defaults.db,
                             query: {
-                                PK: PK_PAGE(pid),
+                                PK: PAGE_PK,
                                 SK: "L"
                             }
                         })
@@ -881,7 +906,7 @@ const plugin: ContextPlugin<PbContext> = {
                     batch.update({
                         ...defaults.db,
                         query: {
-                            PK: PK_PAGE(pid),
+                            PK: PAGE_PK,
                             SK: `REV#${rev}`
                         },
                         data: page
@@ -892,10 +917,10 @@ const plugin: ContextPlugin<PbContext> = {
                         batch.update({
                             ...defaults.db,
                             query: {
-                                PK: PK_PAGE(pid),
+                                PK: PAGE_PK,
                                 SK: "L"
                             },
-                            data: { ...page, PK: PK_PAGE(pid), SK: "L" }
+                            data: { ...page, PK: PAGE_PK, SK: "L" }
                         });
                     }
 
@@ -905,23 +930,23 @@ const plugin: ContextPlugin<PbContext> = {
                             .update({
                                 ...defaults.db,
                                 query: {
-                                    PK: PK_PAGE(pid),
+                                    PK: PAGE_PK,
                                     SK: `REV#${publishedRev}`
                                 },
                                 data: {
                                     ...publishedPage,
                                     status: STATUS_UNPUBLISHED,
-                                    PK: PK_PAGE(pid),
+                                    PK: PAGE_PK,
                                     SK: `REV#${publishedRev}`
                                 }
                             })
                             .update({
                                 ...defaults.db,
                                 query: {
-                                    PK: PK_PAGE(pid),
+                                    PK: PAGE_PK,
                                     SK: "P"
                                 },
-                                data: { ...page, PK: PK_PAGE(pid), SK: "P" }
+                                data: { ...page, PK: PAGE_PK, SK: "P" }
                             });
 
                         // If the paths are different, delete previous published-page-on-path entry.
@@ -962,7 +987,7 @@ const plugin: ContextPlugin<PbContext> = {
                                 ...defaults.db,
                                 data: {
                                     ...page,
-                                    PK: PK_PAGE(pid),
+                                    PK: PAGE_PK,
                                     SK: "P"
                                 }
                             })
@@ -976,46 +1001,56 @@ const plugin: ContextPlugin<PbContext> = {
                             });
                     }
 
-                    await batch.execute();
-
-                    // Update data in ES.
-                    const esOperations = [];
-
                     // If we are publishing the latest revision, let's also update the latest revision entry's
                     // status in ES. Also, if we are publishing the latest revision and the "LATEST page lists
                     // visibility" is not false, then we need to update the latest page revision entry in ES.
-                    if (latestPage?.id === pageId && page?.visibility?.list?.latest !== false) {
-                        esOperations.push(
-                            {
-                                index: {
-                                    _id: `L#${pid}`,
-                                    _index: ES_DEFAULTS().index
-                                }
+                    if (
+                        latestPage?.id === pageId &&
+                        get(page, "visibility.list.latest") !== false
+                    ) {
+                        batch.update({
+                            ...defaults.esDb,
+                            query: {
+                                PK: PAGE_PK,
+                                SK: "L"
                             },
-                            getESLatestPageData(context, page)
-                        );
-                    }
-
-                    // And of course, update the published revision entry in ES. This time, if the "PUBLISHED page
-                    // lists visibility" setting is not explicitly set to false.
-                    if (page?.visibility?.list?.published !== false) {
-                        esOperations.push(
-                            { index: { _id: `P#${pid}`, _index: ES_DEFAULTS().index } },
-                            getESPublishedPageData(context, {
-                                ...page,
-                                id: pageId,
-                                status: STATUS_PUBLISHED,
-                                locked: true
-                            })
-                        );
-                    } else {
-                        // If the page should not be visible in published pages lists, then delete the entry.
-                        esOperations.push({
-                            delete: { _id: `P#${pid}`, _index: ES_DEFAULTS().index }
+                            data: {
+                                PK: PAGE_PK,
+                                SK: "L",
+                                index: ES_DEFAULTS().index,
+                                data: getESLatestPageData(context, page)
+                            }
                         });
                     }
 
-                    await elasticSearch.bulk({ body: esOperations });
+                    // Update the published revision entry in ES,
+                    // if the "PUBLISHED page lists visibility" setting is not explicitly set to false.
+                    if (get(page, "visibility.list.published") !== false) {
+                        batch.create({
+                            ...defaults.esDb,
+                            data: {
+                                PK: PAGE_PK,
+                                SK: "P",
+                                index: ES_DEFAULTS().index,
+                                data: getESPublishedPageData(context, {
+                                    ...page,
+                                    id: pageId,
+                                    status: STATUS_PUBLISHED,
+                                    locked: true
+                                })
+                            }
+                        });
+                    } else {
+                        batch.delete({
+                            ...defaults.esDb,
+                            query: {
+                                PK: PAGE_PK,
+                                SK: "P"
+                            }
+                        });
+                    }
+
+                    await batch.execute();
 
                     await executeHookCallbacks(hookPlugins, "afterPublish", context, {
                         page,
@@ -1036,19 +1071,20 @@ const plugin: ContextPlugin<PbContext> = {
                     );
 
                     const [pid, rev] = pageId.split("#");
+                    const PAGE_PK = PK_PAGE(pid);
 
                     const [[[page]], [[publishedPage]], [[latestPage]]] = await db
                         .batch()
                         .read({
                             ...defaults.db,
-                            query: { PK: PK_PAGE(pid), SK: `REV#${rev}` },
+                            query: { PK: PAGE_PK, SK: `REV#${rev}` },
                             limit: 1
                         })
                         .read({
                             ...defaults.db,
                             limit: 1,
                             query: {
-                                PK: PK_PAGE(pid),
+                                PK: PAGE_PK,
                                 SK: "P"
                             }
                         })
@@ -1056,7 +1092,7 @@ const plugin: ContextPlugin<PbContext> = {
                             ...defaults.db,
                             limit: 1,
                             query: {
-                                PK: PK_PAGE(pid),
+                                PK: PAGE_PK,
                                 SK: "L"
                             }
                         })
@@ -1085,12 +1121,12 @@ const plugin: ContextPlugin<PbContext> = {
 
                     page.status = STATUS_UNPUBLISHED;
 
-                    await db
+                    const batch = db
                         .batch()
                         .delete({
                             ...defaults.db,
                             query: {
-                                PK: PK_PAGE(pid),
+                                PK: PAGE_PK,
                                 SK: "P"
                             }
                         })
@@ -1104,41 +1140,43 @@ const plugin: ContextPlugin<PbContext> = {
                         .update({
                             ...defaults.db,
                             query: {
-                                PK: PK_PAGE(pid),
+                                PK: PAGE_PK,
                                 SK: `REV#${rev}`
                             },
                             data: page
-                        })
-                        .execute();
-
-                    // Update data in ES.
-                    const esOperations = [];
+                        });
 
                     // If we are unpublishing the latest revision, let's also update the latest revision entry's
                     // status in ES. We can only do that if the entry actually exists, or in other words, if the
                     // published page's "LATEST pages lists visibility" setting is not set to false.
-                    if (latestPage.id === pageId && page?.visibility?.list?.latest !== false) {
-                        esOperations.push(
-                            {
-                                update: {
-                                    _id: `L#${pid}`,
-                                    _index: ES_DEFAULTS().index
-                                }
+                    if (latestPage.id === pageId && get(page, "visibility.list.latest") !== false) {
+                        batch.update({
+                            ...defaults.esDb,
+                            query: {
+                                PK: PAGE_PK,
+                                SK: "L"
                             },
-                            { doc: { status: STATUS_UNPUBLISHED } }
-                        );
-                    }
-
-                    // And of course, delete the published revision entry in ES.
-                    if (page?.visibility?.list?.published !== false) {
-                        esOperations.push({
-                            delete: { _id: `P#${pid}`, _index: ES_DEFAULTS().index }
+                            data: {
+                                PK: PAGE_PK,
+                                SK: "L",
+                                index: ES_DEFAULTS().index,
+                                data: getESLatestPageData(context, page)
+                            }
                         });
                     }
 
-                    if (esOperations.length) {
-                        await elasticSearch.bulk({ body: esOperations });
+                    // And of course, delete the published revision entry in ES.
+                    if (get(page, "visibility.list.published") !== false) {
+                        batch.delete({
+                            ...defaults.esDb,
+                            query: {
+                                PK: PAGE_PK,
+                                SK: "P"
+                            }
+                        });
                     }
+
+                    await batch.execute();
 
                     await executeHookCallbacks(hookPlugins, "afterUnpublish", context, page);
 
@@ -1151,17 +1189,18 @@ const plugin: ContextPlugin<PbContext> = {
                     });
 
                     const [pid, rev] = pageId.split("#");
+                    const PAGE_PK = PK_PAGE(pid);
 
                     const [[[page]], [[latestPageData]]] = await db
                         .batch()
                         .read({
                             ...defaults.db,
-                            query: { PK: PK_PAGE(pid), SK: `REV#${rev}` }
+                            query: { PK: PAGE_PK, SK: `REV#${rev}` }
                         })
                         .read({
                             ...defaults.db,
                             query: {
-                                PK: PK_PAGE(pid),
+                                PK: PAGE_PK,
                                 SK: "L"
                             }
                         })
@@ -1185,33 +1224,36 @@ const plugin: ContextPlugin<PbContext> = {
                     page.status = STATUS_REVIEW_REQUESTED;
                     page.locked = true;
 
-                    await db.update({
+                    const batch = db.batch().update({
                         ...defaults.db,
                         query: {
-                            PK: PK_PAGE(pid),
+                            PK: PAGE_PK,
                             SK: `REV#${rev}`
                         },
-                        data: omit(page, ["PK", "SK"])
+                        data: page
                     });
 
                     // If we updated the latest version, then make sure the changes are propagated to ES too.
                     if (latestPageData.id === pageId) {
                         // 0nly update if the "LATEST pages lists visibility" is not set to false.
-                        if (page?.visibility?.list?.latest !== false) {
-                            const [uniqueId] = pageId.split("#");
-                            // Index file in "Elastic Search"
-                            await elasticSearch.update({
-                                ...ES_DEFAULTS(),
-                                id: `L#${uniqueId}`,
-                                body: {
-                                    doc: {
-                                        status: STATUS_REVIEW_REQUESTED,
-                                        locked: true
-                                    }
+                        if (get(page, "visibility.list.latest") !== false) {
+                            batch.update({
+                                ...defaults.esDb,
+                                query: {
+                                    PK: PAGE_PK,
+                                    SK: "L"
+                                },
+                                data: {
+                                    PK: PAGE_PK,
+                                    SK: "L",
+                                    index: ES_DEFAULTS().index,
+                                    data: getESLatestPageData(context, page)
                                 }
                             });
                         }
                     }
+
+                    await batch.execute();
 
                     return page;
                 },
@@ -1222,17 +1264,18 @@ const plugin: ContextPlugin<PbContext> = {
                     });
 
                     const [pid, rev] = pageId.split("#");
+                    const PAGE_PK = PK_PAGE(pid);
 
                     const [[[page]], [[latestPageData]]] = await db
                         .batch()
                         .read({
                             ...defaults.db,
-                            query: { PK: PK_PAGE(pid), SK: `REV#${rev}` }
+                            query: { PK: PAGE_PK, SK: `REV#${rev}` }
                         })
                         .read({
                             ...defaults.db,
                             query: {
-                                PK: PK_PAGE(pid),
+                                PK: PAGE_PK,
                                 SK: "L"
                             }
                         })
@@ -1263,33 +1306,36 @@ const plugin: ContextPlugin<PbContext> = {
                     page.status = STATUS_CHANGES_REQUESTED;
                     page.locked = false;
 
-                    await db.update({
+                    const batch = await db.batch().update({
                         ...defaults.db,
                         query: {
-                            PK: PK_PAGE(pid),
+                            PK: PAGE_PK,
                             SK: `REV#${rev}`
                         },
-                        data: omit(page, ["PK", "SK"])
+                        data: page
                     });
 
                     // If we updated the latest version, then make sure the changes are propagated to ES too.
                     if (latestPageData.id === pageId) {
-                        // 0nly update if the "LATEST pages lists visibility" is not set to false.
-                        if (page?.visibility?.list?.latest !== false) {
-                            const [uniqueId] = pageId.split("#");
-                            // Index file in "Elastic Search"
-                            await elasticSearch.update({
-                                ...ES_DEFAULTS(),
-                                id: `L#${uniqueId}`,
-                                body: {
-                                    doc: {
-                                        status: STATUS_CHANGES_REQUESTED,
-                                        locked: false
-                                    }
+                        // Only update if the "LATEST pages lists visibility" is not set to false.
+                        if (get(page, "visibility.list.latest") !== false) {
+                            batch.update({
+                                ...defaults.esDb,
+                                query: {
+                                    PK: PAGE_PK,
+                                    SK: "L"
+                                },
+                                data: {
+                                    PK: PAGE_PK,
+                                    SK: "L",
+                                    index: ES_DEFAULTS().index,
+                                    data: getESLatestPageData(context, page)
                                 }
                             });
                         }
                     }
+
+                    await batch.execute();
 
                     return page;
                 },

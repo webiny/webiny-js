@@ -12,6 +12,17 @@ export default {
             }
         ]
     },
+    esDb: {
+        table: process.env.DB_TABLE_ELASTICSEARCH,
+        keys: [
+            {
+                primary: true,
+                unique: true,
+                name: "primary",
+                fields: [{ name: "PK" }, { name: "SK" }]
+            }
+        ]
+    },
     es(context: PbContext) {
         const tenant = context.security.getTenant();
         if (tenant) {
