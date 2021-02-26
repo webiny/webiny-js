@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { i18n } from "@webiny/app/i18n";
-import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
+import { useI18N } from "../../../hooks/useI18N";
 import { useRouter } from "@webiny/react-router";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { LIST_LOCALES, DELETE_LOCALE } from "./graphql";

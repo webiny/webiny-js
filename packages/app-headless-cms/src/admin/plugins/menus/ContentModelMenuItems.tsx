@@ -3,7 +3,7 @@ import get from "lodash/get";
 import pluralize from "pluralize";
 import { i18n } from "@webiny/app/i18n";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
+import { useQuery } from "../../hooks";
 import { LIST_MENU_CONTENT_GROUPS_MODELS } from "./../../viewsGraphql";
 import usePermission from "../../hooks/usePermission";
 

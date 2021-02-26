@@ -5,7 +5,7 @@ const path = require("path");
 class WebinyPackage {
     constructor(pkg) {
         this.pkg = pkg;
-        this.path = `../packages/${this.pkg}`;
+        this.path = `./packages/${this.pkg}`;
         this.srcPath = `${this.path}/src`;
         this.packageJsonPath = `${this.path}/package.json`;
         //this.tsconfigJsonPath = `${this.path}/tsconfig.json`;
@@ -70,7 +70,7 @@ class WebinyPackage {
     }
 }
 
-const packages = fsExtra.readdirSync("../packages").reduce((collection, pkg) => {
+const packages = fsExtra.readdirSync("./packages").reduce((collection, pkg) => {
     const def = new WebinyPackage(pkg);
     if (!def.isWebinyPackage()) {
         return collection;

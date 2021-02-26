@@ -7,7 +7,7 @@ import { useRouter } from "@webiny/react-router";
 import { Typography } from "@webiny/ui/Typography";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { DeleteIcon, EditIcon } from "@webiny/ui/List/DataList/icons";
-import { DELETE_FORM, CREATE_REVISION_FROM } from "@webiny/app-form-builder/admin/graphql";
+import { DELETE_FORM, CREATE_REVISION_FROM } from "../../graphql";
 import { useApolloClient } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import {

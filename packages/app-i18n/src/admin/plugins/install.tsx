@@ -6,7 +6,7 @@ import { Form } from "@webiny/form";
 import { Alert } from "@webiny/ui/Alert";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { ButtonPrimary } from "@webiny/ui/Button";
-import LocaleCodesAutoComplete from "@webiny/app-i18n/admin/views/I18NLocales/LocaleCodesAutoComplete";
+import LocaleCodesAutoComplete from "../views/I18NLocales/LocaleCodesAutoComplete";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { validation } from "@webiny/validation";
 import {

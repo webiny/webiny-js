@@ -1,5 +1,5 @@
 import React from "react";
-import { Form as FormsForm } from "@webiny/app-form-builder/components/Form";
+import { Form as FormsForm } from "../../../components/Form";
 import { get } from "lodash";
 import { PbRenderElementPlugin } from "@webiny/app-page-builder/types";
 

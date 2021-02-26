@@ -7,7 +7,7 @@ import { validation } from "@webiny/validation";
 import {
     CmsEditorFieldValidatorPlugin,
     CmsEditorFieldValidatorPatternPlugin
-} from "@webiny/app-headless-cms/types";
+} from "../../../types";
 
 export default {
     type: "cms-editor-field-validator",

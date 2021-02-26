@@ -19,7 +19,7 @@ import {
     FbFormSubmissionData,
     FbFormFieldValidatorPlugin,
     FbFormLayoutPlugin
-} from "@webiny/app-form-builder/types";
+} from "../../types";
 import { PbThemePlugin } from "@webiny/app-page-builder/types";
 
 declare global {

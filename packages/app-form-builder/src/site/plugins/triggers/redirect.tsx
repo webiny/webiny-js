@@ -1,4 +1,4 @@
-import { FbFormTriggerHandlerPlugin } from "@webiny/app-form-builder/types";
+import { FbFormTriggerHandlerPlugin } from "../../../types";
 
 export default {
     type: "form-trigger-handler",

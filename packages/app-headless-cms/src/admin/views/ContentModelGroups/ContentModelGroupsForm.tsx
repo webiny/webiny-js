@@ -22,7 +22,7 @@ import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
-import { useMutation, useQuery } from "@webiny/app-headless-cms/admin/hooks";
+import { useMutation, useQuery } from "../../hooks";
 import * as GQL from "./graphql";
 import usePermission from "../../hooks/usePermission";
 

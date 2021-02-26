@@ -1,14 +1,14 @@
 import * as React from "react";
 import Downshift from "downshift";
 import MaterialSpinner from "react-spinner-material";
-import { Input } from "@webiny/ui/Input";
-import { Chips, Chip } from "@webiny/ui/Chips";
+import { Input } from "../Input";
+import { Chips, Chip } from "../Chips";
 import { getOptionValue, getOptionText, findInAliases } from "./utils";
 
 import { ReactComponent as BaselineCloseIcon } from "./icons/baseline-close-24px.svg";
 import classNames from "classnames";
-import { Elevation } from "@webiny/ui/Elevation";
-import { Typography } from "@webiny/ui/Typography";
+import { Elevation } from "../Elevation";
+import { Typography } from "../Typography";
 import { autoCompleteStyle, suggestionList } from "./styles";
 
 import { AutoCompleteBaseProps } from "./types";

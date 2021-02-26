@@ -9,13 +9,13 @@ const createPackageRelativePath = pkg => {
     return `../${name}`;
 };
 
-const packages = fsExtra.readdirSync("../packages");
+const packages = fsExtra.readdirSync("./packages");
 
 const files = packages
     .map(pkg => {
-        const packageFile = `../packages/${pkg}/package.json`;
-        const tsconfigFile = `../packages/${pkg}/tsconfig.json`;
-        const tsconfigbuildFile = `../packages/${pkg}/tsconfig.build.json`;
+        const packageFile = `./packages/${pkg}/package.json`;
+        const tsconfigFile = `./packages/${pkg}/tsconfig.json`;
+        const tsconfigbuildFile = `./packages/${pkg}/tsconfig.build.json`;
 
         if (
             !fsExtra.existsSync(packageFile) ||

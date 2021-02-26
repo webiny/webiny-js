@@ -1,9 +1,9 @@
 import * as React from "react";
 import Downshift from "downshift";
-import { Input } from "@webiny/ui/Input";
+import { Input } from "../Input";
 import classNames from "classnames";
-import { Elevation } from "@webiny/ui/Elevation";
-import { Typography } from "@webiny/ui/Typography";
+import { Elevation } from "../Elevation";
+import { Typography } from "../Typography";
 import keycode from "keycode";
 import { autoCompleteStyle, suggestionList } from "./styles";
 import { AutoCompleteBaseProps } from "./types";

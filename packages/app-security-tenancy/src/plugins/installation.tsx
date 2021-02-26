@@ -17,7 +17,7 @@ import {
     SimpleFormFooter,
     SimpleFormContent
 } from "@webiny/app-admin/components/SimpleForm";
-import { SecurityInstallationFormPlugin } from "@webiny/app-security-tenancy/types";
+import { SecurityInstallationFormPlugin } from "../types";
 
 const t = i18n.ns("app-security/admin/installation");
 

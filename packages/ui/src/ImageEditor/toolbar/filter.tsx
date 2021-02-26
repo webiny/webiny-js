@@ -1,9 +1,9 @@
 import React from "react";
 import { ReactComponent as FilterIcon } from "./icons/filter.svg";
-import { Slider } from "@webiny/ui/Slider";
+import { Slider } from "../../Slider";
 import { ImageEditorTool } from "./types";
-import { IconButton, ButtonDefault } from "@webiny/ui/Button";
-import { Tooltip } from "@webiny/ui/Tooltip";
+import { IconButton, ButtonDefault } from "../../Button";
+import { Tooltip } from "../../Tooltip";
 import { debounce } from "lodash";
 import styled from "@emotion/styled";
 

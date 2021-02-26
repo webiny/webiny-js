@@ -4,7 +4,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { Dialog, DialogContent, DialogTitle, DialogCancel, DialogActions } from "@webiny/ui/Dialog";
 
 import { i18n } from "@webiny/app/i18n";
-import { FbFormSubmissionData } from "@webiny/app-form-builder/types";
+import { FbFormSubmissionData } from "../../../../../types";
 const t = i18n.namespace("FormEditor.FormSubmissionDialog");
 
 const dialogBody = css({

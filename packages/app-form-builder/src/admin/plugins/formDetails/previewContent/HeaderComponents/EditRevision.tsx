@@ -2,7 +2,7 @@ import React from "react";
 import { useRouter } from "@webiny/react-router";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { ReactComponent as EditIcon } from "@webiny/app-form-builder/admin/icons/edit.svg";
+import { ReactComponent as EditIcon } from "../../../../icons/edit.svg";
 import { useRevision } from "../../formRevisions/useRevision";
 import usePermission from "../../../../../hooks/usePermission";
 

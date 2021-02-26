@@ -1,5 +1,5 @@
 import React from "react";
-import { useFormEditor } from "@webiny/app-form-builder/admin/components/FormEditor/Context";
+import { useFormEditor } from "./Context";
 import { plugins } from "@webiny/plugins";
 import styled from "@emotion/styled";
 import { css } from "emotion";
@@ -7,7 +7,7 @@ import { Icon } from "@webiny/ui/Icon";
 import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
 import { ReactComponent as HandleIcon } from "./icons/round-drag_indicator-24px.svg";
 import Draggable from "./Draggable";
-import { FbBuilderFieldPlugin, FbEditorFieldGroup } from "@webiny/app-form-builder/types";
+import { FbBuilderFieldPlugin, FbEditorFieldGroup } from "../../../types";
 
 const FieldContainer = styled("div")({
     padding: "10px 15px",

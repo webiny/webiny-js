@@ -1,5 +1,5 @@
 import * as React from "react";
-import { CmsEditorField } from "@webiny/app-headless-cms/types";
+import { CmsEditorField } from "../../../../types";
 import { BindComponentRenderProp } from "@webiny/form";
 import { Input as UiInput } from "@webiny/ui/Input";
 

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { AdminGlobalSearchPlugin } from "@webiny/app-admin/types";
+import { AdminGlobalSearchPlugin } from "../../types";
 import classnames from "classnames";
 import { List, ListItem, ListItemGraphic, ListItemText, ListItemMeta } from "@webiny/ui/List";
 import { searchBarDropdown, iconSearchType } from "./styled";

@@ -5,7 +5,7 @@ import { useRouter } from "@webiny/react-router";
 import styled from "@emotion/styled";
 import { renderPlugins } from "@webiny/app/plugins";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
+import { useQuery } from "../../hooks";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { ButtonDefault, ButtonIcon } from "@webiny/ui/Button";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";

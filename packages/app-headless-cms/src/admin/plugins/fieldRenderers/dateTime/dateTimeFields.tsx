@@ -1,8 +1,8 @@
 import React from "react";
 import get from "lodash/get";
-import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
+import { CmsEditorFieldRendererPlugin } from "../../../../types";
 import { i18n } from "@webiny/app/i18n";
-import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/close.svg";
+import { ReactComponent as DeleteIcon } from "../../../icons/close.svg";
 import DynamicSection from "../DynamicSection";
 import DateTimeWithoutTimezone from "./DateTimeWithoutTimezone";
 import DateTimeWithTimezone from "./DateTimeWithTimezone";

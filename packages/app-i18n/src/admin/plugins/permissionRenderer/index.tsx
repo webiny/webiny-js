@@ -1,7 +1,7 @@
 import React from "react";
 import { AccordionItem } from "@webiny/ui/Accordion";
 import { AdminAppPermissionRendererPlugin } from "@webiny/app-admin/types";
-import { ReactComponent as TranslateIcon } from "@webiny/app-i18n/admin/assets/icons/round-translate-24px.svg";
+import { ReactComponent as TranslateIcon } from "../../assets/icons/round-translate-24px.svg";
 import { I18NPermissions } from "./I18NPermissions";
 import { i18n } from "@webiny/app/i18n";
 

@@ -1,6 +1,6 @@
 import * as React from "react";
 import SearchBar from "./SearchBar";
-import { AdminHeaderMiddlePlugin } from "@webiny/app-admin/types";
+import { AdminHeaderMiddlePlugin } from "../../types";
 
 export const globalSearch: AdminHeaderMiddlePlugin = {
     name: "admin-global-search",

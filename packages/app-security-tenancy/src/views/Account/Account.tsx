@@ -24,7 +24,7 @@ import {
     SimpleFormFooter,
     SimpleFormContent
 } from "@webiny/app-admin/components/SimpleForm";
-import { SecurityUserAccountFormPlugin } from "@webiny/app-security-tenancy/types";
+import { SecurityUserAccountFormPlugin } from "../../types";
 import { useSecurity } from "@webiny/app-security";
 import { SecurityIdentity } from "@webiny/app-security/SecurityIdentity";
 

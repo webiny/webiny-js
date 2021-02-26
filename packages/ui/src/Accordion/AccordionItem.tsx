@@ -1,10 +1,10 @@
 import React, { useState, useCallback } from "react";
-import { ListItem, ListItemGraphic, ListItemMeta } from "@webiny/ui/List";
+import { ListItem, ListItemGraphic, ListItemMeta } from "../List";
 import Transition from "react-transition-group/Transition";
-import { Icon } from "@webiny/ui/Icon";
+import { Icon } from "../Icon";
 import styled from "@emotion/styled";
 import { css } from "emotion";
-import { Typography } from "@webiny/ui/Typography";
+import { Typography } from "../Typography";
 
 import { ReactComponent as UpArrow } from "./icons/round-keyboard_arrow_up-24px.svg";
 import { ReactComponent as DownArrow } from "./icons/round-keyboard_arrow_down-24px.svg";

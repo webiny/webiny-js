@@ -10,7 +10,7 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
 import { ButtonDefault, ButtonPrimary, ButtonIcon } from "@webiny/ui/Button";
-import { SecurityUserFormPlugin } from "@webiny/app-security-tenancy/types";
+import { SecurityUserFormPlugin } from "../../types";
 import { validation } from "@webiny/validation";
 import {
     SimpleForm,

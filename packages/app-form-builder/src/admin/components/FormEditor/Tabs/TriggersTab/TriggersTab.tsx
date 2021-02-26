@@ -3,12 +3,12 @@ import styled from "@emotion/styled";
 import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
 import { Typography } from "@webiny/ui/Typography";
 import { Form } from "@webiny/form";
-import { useFormEditor } from "@webiny/app-form-builder/admin/components/FormEditor/Context";
+import { useFormEditor } from "../../Context";
 import { plugins } from "@webiny/plugins";
 import { set } from "lodash";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
-import { FbEditorTrigger } from "@webiny/app-form-builder/types";
+import { FbEditorTrigger } from "../../../../../types";
 const t = i18n.namespace("FormsApp.Editor.TriggersTab");
 
 const Container = styled("div")({

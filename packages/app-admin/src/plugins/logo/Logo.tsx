@@ -1,6 +1,6 @@
 import React from "react";
 import { isEqual } from "lodash";
-import { ReactComponent as WebinyLogo } from "@webiny/app-admin/assets/images/webiny-logo.svg";
+import { ReactComponent as WebinyLogo } from "../../assets/images/webiny-logo.svg";
 import { Link } from "@webiny/react-router";
 
 class Logo extends React.Component<any> {
