@@ -6,7 +6,8 @@
     "outDir": "dist",
     "rootDir": "src",
     "declarationDir": "dist",
-    "paths": {}
+    "paths": {},
+    "baseUrl": "."
   },
   "references": []
 }

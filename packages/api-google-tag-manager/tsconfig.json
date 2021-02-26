@@ -1,12 +1,13 @@
 {
   "extends": "../../tsconfig",
-  "references": ["../commodo", "../handler-graphql"],
+  "references": [{ "path": "../commodo" }, { "path": "../handler-graphql" }],
   "compilerOptions": {
     "paths": {
-      "@webiny/commodo/*": ["../commodo/*"],
-      "@webiny/commodo": ["../commodo"],
-      "@webiny/handler-graphql/*": ["../handler-graphql/*"],
-      "@webiny/handler-graphql": ["../handler-graphql"]
-    }
+      "@webiny/commodo/*": ["../commodo/src/*"],
+      "@webiny/commodo": ["../commodo/src"],
+      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
+      "@webiny/handler-graphql": ["../handler-graphql/src"]
+    },
+    "baseUrl": "."
   }
 }

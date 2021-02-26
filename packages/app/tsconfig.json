@@ -1,18 +1,25 @@
 {
   "extends": "../../tsconfig",
-  "references": ["../i18n", "../i18n-react", "../plugins", "../react-router", "../ui"],
+  "references": [
+    { "path": "../i18n" },
+    { "path": "../i18n-react" },
+    { "path": "../plugins" },
+    { "path": "../react-router" },
+    { "path": "../ui" }
+  ],
   "compilerOptions": {
     "paths": {
-      "@webiny/i18n/*": ["../i18n/*"],
-      "@webiny/i18n": ["../i18n"],
-      "@webiny/i18n-react/*": ["../i18n-react/*"],
-      "@webiny/i18n-react": ["../i18n-react"],
-      "@webiny/plugins/*": ["../plugins/*"],
-      "@webiny/plugins": ["../plugins"],
-      "@webiny/react-router/*": ["../react-router/*"],
-      "@webiny/react-router": ["../react-router"],
-      "@webiny/ui/*": ["../ui/*"],
-      "@webiny/ui": ["../ui"]
-    }
+      "@webiny/i18n/*": ["../i18n/src/*"],
+      "@webiny/i18n": ["../i18n/src"],
+      "@webiny/i18n-react/*": ["../i18n-react/src/*"],
+      "@webiny/i18n-react": ["../i18n-react/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/react-router/*": ["../react-router/src/*"],
+      "@webiny/react-router": ["../react-router/src"],
+      "@webiny/ui/*": ["../ui/src/*"],
+      "@webiny/ui": ["../ui/src"]
+    },
+    "baseUrl": "."
   }
 }

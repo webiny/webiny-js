@@ -1,13 +1,14 @@
 {
   "extends": "../../tsconfig",
   "include": ["src"],
-  "references": ["../handler", "../plugins"],
+  "references": [{ "path": "../handler" }, { "path": "../plugins" }],
   "compilerOptions": {
     "paths": {
-      "@webiny/handler/*": ["../handler/*"],
-      "@webiny/handler": ["../handler"],
-      "@webiny/plugins/*": ["../plugins/*"],
-      "@webiny/plugins": ["../plugins"]
-    }
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"]
+    },
+    "baseUrl": "."
   }
 }

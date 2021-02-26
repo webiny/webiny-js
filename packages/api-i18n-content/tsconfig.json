@@ -1,16 +1,22 @@
 {
   "extends": "../../tsconfig",
-  "references": ["../api-i18n", "../api-security", "../handler", "../handler-graphql"],
+  "references": [
+    { "path": "../api-i18n" },
+    { "path": "../api-security" },
+    { "path": "../handler" },
+    { "path": "../handler-graphql" }
+  ],
   "compilerOptions": {
     "paths": {
-      "@webiny/api-i18n/*": ["../api-i18n/*"],
-      "@webiny/api-i18n": ["../api-i18n"],
-      "@webiny/api-security/*": ["../api-security/*"],
-      "@webiny/api-security": ["../api-security"],
-      "@webiny/handler/*": ["../handler/*"],
-      "@webiny/handler": ["../handler"],
-      "@webiny/handler-graphql/*": ["../handler-graphql/*"],
-      "@webiny/handler-graphql": ["../handler-graphql"]
-    }
+      "@webiny/api-i18n/*": ["../api-i18n/src/*"],
+      "@webiny/api-i18n": ["../api-i18n/src"],
+      "@webiny/api-security/*": ["../api-security/src/*"],
+      "@webiny/api-security": ["../api-security/src"],
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
+      "@webiny/handler-graphql": ["../handler-graphql/src"]
+    },
+    "baseUrl": "."
   }
 }

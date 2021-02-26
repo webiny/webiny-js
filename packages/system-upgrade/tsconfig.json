@@ -1,14 +1,15 @@
 {
   "extends": "../../tsconfig",
-  "references": ["../error", "../handler", "../plugins"],
+  "references": [{ "path": "../error" }, { "path": "../handler" }, { "path": "../plugins" }],
   "compilerOptions": {
     "paths": {
-      "@webiny/error/*": ["../error/*"],
-      "@webiny/error": ["../error"],
-      "@webiny/handler/*": ["../handler/*"],
-      "@webiny/handler": ["../handler"],
-      "@webiny/plugins/*": ["../plugins/*"],
-      "@webiny/plugins": ["../plugins"]
-    }
+      "@webiny/error/*": ["../error/src/*"],
+      "@webiny/error": ["../error/src"],
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"]
+    },
+    "baseUrl": "."
   }
 }

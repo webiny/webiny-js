@@ -1,30 +1,31 @@
 {
   "extends": "../../tsconfig.json",
   "references": [
-    "../app",
-    "../app-security",
-    "../app-security-tenancy",
-    "../form",
-    "../plugins",
-    "../ui",
-    "../validation"
+    { "path": "../app" },
+    { "path": "../app-security" },
+    { "path": "../app-security-tenancy" },
+    { "path": "../form" },
+    { "path": "../plugins" },
+    { "path": "../ui" },
+    { "path": "../validation" }
   ],
   "compilerOptions": {
     "paths": {
-      "@webiny/app/*": ["../app/*"],
-      "@webiny/app": ["../app"],
-      "@webiny/app-security/*": ["../app-security/*"],
-      "@webiny/app-security": ["../app-security"],
-      "@webiny/app-security-tenancy/*": ["../app-security-tenancy/*"],
-      "@webiny/app-security-tenancy": ["../app-security-tenancy"],
-      "@webiny/form/*": ["../form/*"],
-      "@webiny/form": ["../form"],
-      "@webiny/plugins/*": ["../plugins/*"],
-      "@webiny/plugins": ["../plugins"],
-      "@webiny/ui/*": ["../ui/*"],
-      "@webiny/ui": ["../ui"],
-      "@webiny/validation/*": ["../validation/*"],
-      "@webiny/validation": ["../validation"]
-    }
+      "@webiny/app/*": ["../app/src/*"],
+      "@webiny/app": ["../app/src"],
+      "@webiny/app-security/*": ["../app-security/src/*"],
+      "@webiny/app-security": ["../app-security/src"],
+      "@webiny/app-security-tenancy/*": ["../app-security-tenancy/src/*"],
+      "@webiny/app-security-tenancy": ["../app-security-tenancy/src"],
+      "@webiny/form/*": ["../form/src/*"],
+      "@webiny/form": ["../form/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/ui/*": ["../ui/src/*"],
+      "@webiny/ui": ["../ui/src"],
+      "@webiny/validation/*": ["../validation/src/*"],
+      "@webiny/validation": ["../validation/src"]
+    },
+    "baseUrl": "."
   }
 }

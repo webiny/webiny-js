@@ -1,24 +1,25 @@
 {
   "extends": "../../tsconfig",
   "references": [
-    "../api-security",
-    "../api-security-tenancy",
-    "../handler",
-    "../handler-graphql",
-    "../handler-http"
+    { "path": "../api-security" },
+    { "path": "../api-security-tenancy" },
+    { "path": "../handler" },
+    { "path": "../handler-graphql" },
+    { "path": "../handler-http" }
   ],
   "compilerOptions": {
     "paths": {
-      "@webiny/api-security/*": ["../api-security/*"],
-      "@webiny/api-security": ["../api-security"],
-      "@webiny/api-security-tenancy/*": ["../api-security-tenancy/*"],
-      "@webiny/api-security-tenancy": ["../api-security-tenancy"],
-      "@webiny/handler/*": ["../handler/*"],
-      "@webiny/handler": ["../handler"],
-      "@webiny/handler-graphql/*": ["../handler-graphql/*"],
-      "@webiny/handler-graphql": ["../handler-graphql"],
-      "@webiny/handler-http/*": ["../handler-http/*"],
-      "@webiny/handler-http": ["../handler-http"]
-    }
+      "@webiny/api-security/*": ["../api-security/src/*"],
+      "@webiny/api-security": ["../api-security/src"],
+      "@webiny/api-security-tenancy/*": ["../api-security-tenancy/src/*"],
+      "@webiny/api-security-tenancy": ["../api-security-tenancy/src"],
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
+      "@webiny/handler-graphql": ["../handler-graphql/src"],
+      "@webiny/handler-http/*": ["../handler-http/src/*"],
+      "@webiny/handler-http": ["../handler-http/src"]
+    },
+    "baseUrl": "."
   }
 }

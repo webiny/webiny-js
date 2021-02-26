@@ -55,22 +55,26 @@ for (const { pkg: currentPackage, packageFile, tsconfigFile, tsconfigbuildFile }
         paths: webinyPackages.reduce((acc, pkg) => {
             const path = createPackagePath(pkg);
 
-            acc[`${pkg}/*`] = [`${path}/*`];
-            acc[pkg] = [path];
+            acc[`${pkg}/*`] = [`${path}/src/*`];
+            acc[pkg] = [`${path}/src`];
             return acc;
-        }, {})
+        }, {}),
+        baseUrl: "."
     };
 
     tsconfigJson.references = webinyPackages.map(pkg => {
-        return createPackageRelativePath(pkg);
+        return {
+            path: createPackageRelativePath(pkg)
+        };
     });
 
     tsconfigbuildJson.compilerOptions = {
         ...(tsconfigbuildJson.compilerOptions || {}),
-        paths: {}
+        paths: {},
+        baseUrl: "."
     };
     tsconfigbuildJson.references = [];
 
-    fsExtra.writeJsonSync(tsconfigFile, tsconfigJson);
-    fsExtra.writeJsonSync(tsconfigbuildFile, tsconfigbuildJson);
+    fsExtra.writeFileSync(tsconfigFile, JSON.stringify(tsconfigJson, null, 2));
+    fsExtra.writeFileSync(tsconfigbuildFile, JSON.stringify(tsconfigbuildJson, null, 2));
 }

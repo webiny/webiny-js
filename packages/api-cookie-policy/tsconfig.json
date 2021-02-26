@@ -1,14 +1,19 @@
 {
   "extends": "../../tsconfig",
-  "references": ["../commodo", "../handler-graphql", "../validation"],
+  "references": [
+    { "path": "../commodo" },
+    { "path": "../handler-graphql" },
+    { "path": "../validation" }
+  ],
   "compilerOptions": {
     "paths": {
-      "@webiny/commodo/*": ["../commodo/*"],
-      "@webiny/commodo": ["../commodo"],
-      "@webiny/handler-graphql/*": ["../handler-graphql/*"],
-      "@webiny/handler-graphql": ["../handler-graphql"],
-      "@webiny/validation/*": ["../validation/*"],
-      "@webiny/validation": ["../validation"]
-    }
+      "@webiny/commodo/*": ["../commodo/src/*"],
+      "@webiny/commodo": ["../commodo/src"],
+      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
+      "@webiny/handler-graphql": ["../handler-graphql/src"],
+      "@webiny/validation/*": ["../validation/src/*"],
+      "@webiny/validation": ["../validation/src"]
+    },
+    "baseUrl": "."
   }
 }

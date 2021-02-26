@@ -17,7 +17,8 @@
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": {}
+    "paths": {},
+    "baseUrl": "."
   },
   "references": []
 }

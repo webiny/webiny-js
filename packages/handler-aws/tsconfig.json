@@ -1,16 +1,22 @@
 {
   "extends": "../../tsconfig",
-  "references": ["../handler", "../handler-args", "../handler-client", "../handler-http"],
+  "references": [
+    { "path": "../handler" },
+    { "path": "../handler-args" },
+    { "path": "../handler-client" },
+    { "path": "../handler-http" }
+  ],
   "compilerOptions": {
     "paths": {
-      "@webiny/handler/*": ["../handler/*"],
-      "@webiny/handler": ["../handler"],
-      "@webiny/handler-args/*": ["../handler-args/*"],
-      "@webiny/handler-args": ["../handler-args"],
-      "@webiny/handler-client/*": ["../handler-client/*"],
-      "@webiny/handler-client": ["../handler-client"],
-      "@webiny/handler-http/*": ["../handler-http/*"],
-      "@webiny/handler-http": ["../handler-http"]
-    }
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/handler-args/*": ["../handler-args/src/*"],
+      "@webiny/handler-args": ["../handler-args/src"],
+      "@webiny/handler-client/*": ["../handler-client/src/*"],
+      "@webiny/handler-client": ["../handler-client/src"],
+      "@webiny/handler-http/*": ["../handler-http/src/*"],
+      "@webiny/handler-http": ["../handler-http/src"]
+    },
+    "baseUrl": "."
   }
 }

@@ -4,7 +4,8 @@
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": {}
+    "paths": {},
+    "baseUrl": "."
   },
   "exclude": ["node_modules", "dist", "../handler"],
   "references": []

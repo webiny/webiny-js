@@ -1,18 +1,25 @@
 {
   "extends": "../../tsconfig.json",
-  "references": ["../app-admin", "../app-security", "../plugins", "../react-router", "../ui"],
+  "references": [
+    { "path": "../app-admin" },
+    { "path": "../app-security" },
+    { "path": "../plugins" },
+    { "path": "../react-router" },
+    { "path": "../ui" }
+  ],
   "compilerOptions": {
     "paths": {
-      "@webiny/app-admin/*": ["../app-admin/*"],
-      "@webiny/app-admin": ["../app-admin"],
-      "@webiny/app-security/*": ["../app-security/*"],
-      "@webiny/app-security": ["../app-security"],
-      "@webiny/plugins/*": ["../plugins/*"],
-      "@webiny/plugins": ["../plugins"],
-      "@webiny/react-router/*": ["../react-router/*"],
-      "@webiny/react-router": ["../react-router"],
-      "@webiny/ui/*": ["../ui/*"],
-      "@webiny/ui": ["../ui"]
-    }
+      "@webiny/app-admin/*": ["../app-admin/src/*"],
+      "@webiny/app-admin": ["../app-admin/src"],
+      "@webiny/app-security/*": ["../app-security/src/*"],
+      "@webiny/app-security": ["../app-security/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/react-router/*": ["../react-router/src/*"],
+      "@webiny/react-router": ["../react-router/src"],
+      "@webiny/ui/*": ["../ui/src/*"],
+      "@webiny/ui": ["../ui/src"]
+    },
+    "baseUrl": "."
   }
 }

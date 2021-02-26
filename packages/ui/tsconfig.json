@@ -8,15 +8,20 @@
     "../form",
     "../validation"
   ],
-  "references": ["../form", "../storybook-utils", "../validation"],
+  "references": [
+    { "path": "../form" },
+    { "path": "../storybook-utils" },
+    { "path": "../validation" }
+  ],
   "compilerOptions": {
     "paths": {
-      "@webiny/form/*": ["../form/*"],
-      "@webiny/form": ["../form"],
-      "@webiny/storybook-utils/*": ["../storybook-utils/*"],
-      "@webiny/storybook-utils": ["../storybook-utils"],
-      "@webiny/validation/*": ["../validation/*"],
-      "@webiny/validation": ["../validation"]
-    }
+      "@webiny/form/*": ["../form/src/*"],
+      "@webiny/form": ["../form/src"],
+      "@webiny/storybook-utils/*": ["../storybook-utils/src/*"],
+      "@webiny/storybook-utils": ["../storybook-utils/src"],
+      "@webiny/validation/*": ["../validation/src/*"],
+      "@webiny/validation": ["../validation/src"]
+    },
+    "baseUrl": "."
   }
 }

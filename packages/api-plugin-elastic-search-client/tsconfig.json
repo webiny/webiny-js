@@ -1,10 +1,8 @@
 {
   "extends": "../../tsconfig",
-  "references": ["../handler"],
+  "references": [{ "path": "../handler" }],
   "compilerOptions": {
-    "paths": {
-      "@webiny/handler/*": ["../handler/*"],
-      "@webiny/handler": ["../handler"]
-    }
+    "paths": { "@webiny/handler/*": ["../handler/src/*"], "@webiny/handler": ["../handler/src"] },
+    "baseUrl": "."
   }
 }

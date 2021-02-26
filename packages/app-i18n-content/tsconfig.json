@@ -1,20 +1,28 @@
 {
   "extends": "../../tsconfig.json",
-  "references": ["../app", "../app-admin", "../app-i18n", "../app-security", "../form", "../ui"],
+  "references": [
+    { "path": "../app" },
+    { "path": "../app-admin" },
+    { "path": "../app-i18n" },
+    { "path": "../app-security" },
+    { "path": "../form" },
+    { "path": "../ui" }
+  ],
   "compilerOptions": {
     "paths": {
-      "@webiny/app/*": ["../app/*"],
-      "@webiny/app": ["../app"],
-      "@webiny/app-admin/*": ["../app-admin/*"],
-      "@webiny/app-admin": ["../app-admin"],
-      "@webiny/app-i18n/*": ["../app-i18n/*"],
-      "@webiny/app-i18n": ["../app-i18n"],
-      "@webiny/app-security/*": ["../app-security/*"],
-      "@webiny/app-security": ["../app-security"],
-      "@webiny/form/*": ["../form/*"],
-      "@webiny/form": ["../form"],
-      "@webiny/ui/*": ["../ui/*"],
-      "@webiny/ui": ["../ui"]
-    }
+      "@webiny/app/*": ["../app/src/*"],
+      "@webiny/app": ["../app/src"],
+      "@webiny/app-admin/*": ["../app-admin/src/*"],
+      "@webiny/app-admin": ["../app-admin/src"],
+      "@webiny/app-i18n/*": ["../app-i18n/src/*"],
+      "@webiny/app-i18n": ["../app-i18n/src"],
+      "@webiny/app-security/*": ["../app-security/src/*"],
+      "@webiny/app-security": ["../app-security/src"],
+      "@webiny/form/*": ["../form/src/*"],
+      "@webiny/form": ["../form/src"],
+      "@webiny/ui/*": ["../ui/src/*"],
+      "@webiny/ui": ["../ui/src"]
+    },
+    "baseUrl": "."
   }
 }
