@@ -1,14 +1,14 @@
 {
   "extends": "../../tsconfig",
-  "references": [
-    {
-      "path": "../app-page-builder"
-    },
-    {
-      "path": "../validation"
-    },
-    {
-      "path": "../app"
+  "references": ["../app", "../app-page-builder", "../validation"],
+  "compilerOptions": {
+    "paths": {
+      "@webiny/app/*": ["../app/*"],
+      "@webiny/app": ["../app"],
+      "@webiny/app-page-builder/*": ["../app-page-builder/*"],
+      "@webiny/app-page-builder": ["../app-page-builder"],
+      "@webiny/validation/*": ["../validation/*"],
+      "@webiny/validation": ["../validation"]
     }
-  ]
+  }
 }

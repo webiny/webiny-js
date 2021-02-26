@@ -1,8 +1,4 @@
-import {
-    CmsFieldTypePlugins,
-    CmsContentModel,
-    CmsModelFieldDefinition
-} from "@webiny/api-headless-cms/types";
+import { CmsFieldTypePlugins, CmsContentModel, CmsModelFieldDefinition } from "../../../types";
 
 interface RenderFields {
     (params: {

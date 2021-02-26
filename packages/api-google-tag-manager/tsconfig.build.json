@@ -5,14 +5,8 @@
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
-    "declarationDir": "./dist"
+    "declarationDir": "./dist",
+    "paths": {}
   },
-  "references": [
-    {
-      "path": "../handler-graphql/tsconfig.build.json"
-    },
-    {
-      "path": "../commodo/tsconfig.build.json"
-    }
-  ]
+  "references": []
 }

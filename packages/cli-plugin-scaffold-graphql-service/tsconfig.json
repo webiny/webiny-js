@@ -1,18 +1,17 @@
 {
   "extends": "../../tsconfig",
   "include": ["src"],
-  "references": [
-    {
-      "path": "../plugins"
-    },
-    {
-      "path": "../handler"
-    },
-    {
-      "path": "../cli-plugin-scaffold"
-    },
-    {
-      "path": "../error"
+  "references": ["../error", "../cli-plugin-scaffold", "../handler", "../plugins"],
+  "compilerOptions": {
+    "paths": {
+      "@webiny/error/*": ["../error/*"],
+      "@webiny/error": ["../error"],
+      "@webiny/cli-plugin-scaffold/*": ["../cli-plugin-scaffold/*"],
+      "@webiny/cli-plugin-scaffold": ["../cli-plugin-scaffold"],
+      "@webiny/handler/*": ["../handler/*"],
+      "@webiny/handler": ["../handler"],
+      "@webiny/plugins/*": ["../plugins/*"],
+      "@webiny/plugins": ["../plugins"]
     }
-  ]
+  }
 }

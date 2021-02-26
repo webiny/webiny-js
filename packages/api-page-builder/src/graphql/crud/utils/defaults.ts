@@ -1,4 +1,4 @@
-import { PbContext } from "@webiny/api-page-builder/types";
+import { PbContext } from "../../../types";
 
 export default {
     db: {

@@ -1,5 +1,5 @@
 import { validation } from "@webiny/validation";
-import { FbFormFieldValidatorPlugin } from "@webiny/app-form-builder/types";
+import { FbFormFieldValidatorPlugin } from "../../../types";
 
 export default {
     type: "fb-form-field-validator",

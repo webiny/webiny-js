@@ -1,5 +1,4 @@
-import { TenancyContext } from "@webiny/api-security-tenancy/types";
-import { SecurityAuthorizationPlugin, SecurityContext } from "@webiny/api-security/types";
+import { SecurityAuthorizationPlugin } from "@webiny/api-security/types";
 
 type APIKeyAuthorization = {
     identityType?: string;
@@ -8,7 +7,7 @@ type APIKeyAuthorization = {
 export default (config: APIKeyAuthorization = {}): SecurityAuthorizationPlugin => ({
     type: "security-authorization",
     name: "security-authorization-api-key",
-    async getPermissions({ security }: SecurityContext & TenancyContext) {
+    async getPermissions({ security }) {
         const identityType = config.identityType || "api-key";
 
         const identity = security.getIdentity();

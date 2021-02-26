@@ -1,5 +1,5 @@
 import { TogglePluginActionArgsType } from "./types";
-import { BaseEventAction } from "@webiny/app-page-builder/editor/recoil/eventActions";
+import { BaseEventAction } from "../../eventActions";
 
 export class TogglePluginActionEvent extends BaseEventAction<TogglePluginActionArgsType> {
     public getName(): string {

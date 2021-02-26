@@ -1,7 +1,7 @@
 import React from "react";
 import { css } from "emotion";
 import get from "lodash/get";
-import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
+import { ElementRoot } from "../../../../render/components/ElementRoot";
 
 const center = css({ textAlign: "center" });
 

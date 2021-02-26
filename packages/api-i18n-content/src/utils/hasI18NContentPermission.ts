@@ -1,4 +1,4 @@
-import { I18NContentContext } from "@webiny/api-i18n-content/types";
+import { I18NContentContext } from "../types";
 
 export default async (context: I18NContentContext): Promise<boolean> => {
     // If `content.i18n` permission is not present, immediately throw.

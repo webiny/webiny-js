@@ -2,7 +2,7 @@ import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { contentEntryHooks, hooksTracker } from "./mocks/lifecycleHooks";
 import models from "./mocks/contentModels";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import { CmsContentModelGroup } from "@webiny/api-headless-cms/types";
+import { CmsContentModelGroup } from "../../src/types";
 import { SecurityIdentity } from "@webiny/api-security";
 
 describe("contentEntryHooks", () => {

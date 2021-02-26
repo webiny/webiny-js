@@ -1,6 +1,6 @@
 import cloneDeep from "lodash/cloneDeep";
-import { PbContext } from "@webiny/api-page-builder/graphql/types";
-import { Menu } from "@webiny/api-page-builder/types";
+import { PbContext } from "../../types";
+import { Menu } from "../../../types";
 
 const applyCleanup = async items => {
     if (!Array.isArray(items)) {

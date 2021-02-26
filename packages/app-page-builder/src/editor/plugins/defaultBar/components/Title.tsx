@@ -1,7 +1,7 @@
 import React, { useState, useCallback, SyntheticEvent } from "react";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
-import { UpdatePageRevisionActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
-import { pageAtom, PageAtomType } from "@webiny/app-page-builder/editor/recoil/modules";
+import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
+import { UpdatePageRevisionActionEvent } from "../../../recoil/actions";
+import { pageAtom, PageAtomType } from "../../../recoil/modules";
 import { useRecoilValue } from "recoil";
 import { Input } from "@webiny/ui/Input";
 import { Tooltip } from "@webiny/ui/Tooltip";

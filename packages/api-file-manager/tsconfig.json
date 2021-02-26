@@ -2,35 +2,42 @@
   "extends": "../../tsconfig",
   "include": ["./src", "./__tests__"],
   "references": [
-    {
-      "path": "../api-i18n-content"
-    },
-    {
-      "path": "../error"
-    },
-    {
-      "path": "../api-plugin-elastic-search-client"
-    },
-    {
-      "path": "../api-dynamodb-to-elasticsearch"
-    },
-    {
-      "path": "../api-security"
-    },
-    {
-      "path": "../api-security-tenancy"
-    },
-    {
-      "path": "../handler-graphql"
-    },
-    {
-      "path": "../handler"
-    },
-    {
-      "path": "../handler-client"
-    },
-    {
-      "path": "../validation"
+    "../api-i18n-content",
+    "../api-plugin-elastic-search-client",
+    "../api-security",
+    "../api-security-tenancy",
+    "../error",
+    "../handler",
+    "../handler-client",
+    "../handler-graphql",
+    "../project-utils",
+    "../validation",
+    "../api-dynamodb-to-elasticsearch"
+  ],
+  "compilerOptions": {
+    "paths": {
+      "@webiny/api-i18n-content/*": ["../api-i18n-content/*"],
+      "@webiny/api-i18n-content": ["../api-i18n-content"],
+      "@webiny/api-plugin-elastic-search-client/*": ["../api-plugin-elastic-search-client/*"],
+      "@webiny/api-plugin-elastic-search-client": ["../api-plugin-elastic-search-client"],
+      "@webiny/api-security/*": ["../api-security/*"],
+      "@webiny/api-security": ["../api-security"],
+      "@webiny/api-security-tenancy/*": ["../api-security-tenancy/*"],
+      "@webiny/api-security-tenancy": ["../api-security-tenancy"],
+      "@webiny/error/*": ["../error/*"],
+      "@webiny/error": ["../error"],
+      "@webiny/handler/*": ["../handler/*"],
+      "@webiny/handler": ["../handler"],
+      "@webiny/handler-client/*": ["../handler-client/*"],
+      "@webiny/handler-client": ["../handler-client"],
+      "@webiny/handler-graphql/*": ["../handler-graphql/*"],
+      "@webiny/handler-graphql": ["../handler-graphql"],
+      "@webiny/project-utils/*": ["../project-utils/*"],
+      "@webiny/project-utils": ["../project-utils"],
+      "@webiny/validation/*": ["../validation/*"],
+      "@webiny/validation": ["../validation"],
+      "@webiny/api-dynamodb-to-elasticsearch/*": ["../api-dynamodb-to-elasticsearch/*"],
+      "@webiny/api-dynamodb-to-elasticsearch": ["../api-dynamodb-to-elasticsearch"]
     }
-  ]
+  }
 }

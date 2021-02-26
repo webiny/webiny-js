@@ -3,14 +3,14 @@ import styled from "@emotion/styled";
 import ImageSettings from "./ImageSettings";
 import Image from "./Image";
 import { imageCreatedEditorAction } from "./imageCreatedEditorAction";
-import { CreateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
+import { CreateElementActionEvent } from "../../../recoil/actions";
 import { ReactComponent as ImageIcon } from "./round-image-24px.svg";
 import {
     PbEditorPageElementPlugin,
     PbEditorPageElementStyleSettingsPlugin,
     PbEditorEventActionPlugin,
     DisplayMode
-} from "@webiny/app-page-builder/types";
+} from "../../../../types";
 import { Plugin } from "@webiny/plugins/types";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 

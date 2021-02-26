@@ -1,4 +1,4 @@
-import { CmsEditorContentModel } from "@webiny/app-headless-cms/types";
+import { CmsEditorContentModel } from "../../../../../../types";
 
 export default ({
     data,

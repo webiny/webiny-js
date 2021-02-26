@@ -1,4 +1,10 @@
 {
   "extends": "../../tsconfig",
-  "references": [{ "path": "../db" }]
+  "references": ["../db"],
+  "compilerOptions": {
+    "paths": {
+      "@webiny/db/*": ["../db/*"],
+      "@webiny/db": ["../db"]
+    }
+  }
 }

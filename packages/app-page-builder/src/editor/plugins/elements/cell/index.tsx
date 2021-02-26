@@ -1,25 +1,21 @@
 import React from "react";
 import CellContainer from "./CellContainer";
-import { executeAction } from "@webiny/app-page-builder/editor/recoil/eventActions";
-import { UpdateElementActionArgsType } from "@webiny/app-page-builder/editor/recoil/actions/updateElement/types";
+import { executeAction } from "../../../recoil/eventActions";
+import { UpdateElementActionArgsType } from "../../../recoil/actions/updateElement/types";
 import {
     CreateElementActionEvent,
     DeleteElementActionEvent,
     updateElementAction
-} from "@webiny/app-page-builder/editor/recoil/actions";
-import {
-    addElementToParent,
-    createDroppedElement,
-    createElement
-} from "@webiny/app-page-builder/editor/helpers";
+} from "../../../recoil/actions";
+import { addElementToParent, createDroppedElement, createElement } from "../../../helpers";
 import {
     DisplayMode,
     PbEditorPageElementPlugin,
     PbEditorPageElementSaveActionPlugin,
     PbEditorElement
-} from "@webiny/app-page-builder/types";
+} from "../../../../types";
 import { Plugin } from "@webiny/plugins/types";
-import { AfterDropElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions/afterDropElement";
+import { AfterDropElementActionEvent } from "../../../recoil/actions/afterDropElement";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
 const cellPlugin: PbEditorPageElementPlugin = {

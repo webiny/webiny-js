@@ -1,6 +1,6 @@
 import dateLtePlugin from "../../src/content/plugins/validators/dateLte";
 import dateGtePlugin from "../../src/content/plugins/validators/dateGte";
-import { CmsContentModelFieldValidation } from "@webiny/api-headless-cms/types";
+import { CmsContentModelFieldValidation } from "../../src/types";
 
 const createValidator = (args): CmsContentModelFieldValidation => {
     return {

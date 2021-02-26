@@ -1,41 +1,45 @@
 {
   "extends": "../../tsconfig",
   "references": [
-    {
-      "path": "../app"
-    },
-    {
-      "path": "../app-admin"
-    },
-    {
-      "path": "../app-graphql-playground"
-    },
-    {
-      "path": "../app-plugin-admin-welcome-screen"
-    },
-    {
-      "path": "../app-i18n"
-    },
-    {
-      "path": "../form"
-    },
-    {
-      "path": "../plugins"
-    },
-    {
-      "path": "../app-security"
-    },
-    {
-      "path": "../react-router"
-    },
-    {
-      "path": "../ui"
-    },
-    {
-      "path": "../validation"
-    },
-    {
-      "path": "../error"
+    "../app",
+    "../app-admin",
+    "../app-graphql-playground",
+    "../app-i18n",
+    "../app-plugin-admin-welcome-screen",
+    "../app-security",
+    "../error",
+    "../form",
+    "../plugins",
+    "../react-router",
+    "../ui",
+    "../validation"
+  ],
+  "compilerOptions": {
+    "paths": {
+      "@webiny/app/*": ["../app/*"],
+      "@webiny/app": ["../app"],
+      "@webiny/app-admin/*": ["../app-admin/*"],
+      "@webiny/app-admin": ["../app-admin"],
+      "@webiny/app-graphql-playground/*": ["../app-graphql-playground/*"],
+      "@webiny/app-graphql-playground": ["../app-graphql-playground"],
+      "@webiny/app-i18n/*": ["../app-i18n/*"],
+      "@webiny/app-i18n": ["../app-i18n"],
+      "@webiny/app-plugin-admin-welcome-screen/*": ["../app-plugin-admin-welcome-screen/*"],
+      "@webiny/app-plugin-admin-welcome-screen": ["../app-plugin-admin-welcome-screen"],
+      "@webiny/app-security/*": ["../app-security/*"],
+      "@webiny/app-security": ["../app-security"],
+      "@webiny/error/*": ["../error/*"],
+      "@webiny/error": ["../error"],
+      "@webiny/form/*": ["../form/*"],
+      "@webiny/form": ["../form"],
+      "@webiny/plugins/*": ["../plugins/*"],
+      "@webiny/plugins": ["../plugins"],
+      "@webiny/react-router/*": ["../react-router/*"],
+      "@webiny/react-router": ["../react-router"],
+      "@webiny/ui/*": ["../ui/*"],
+      "@webiny/ui": ["../ui"],
+      "@webiny/validation/*": ["../validation/*"],
+      "@webiny/validation": ["../validation"]
     }
-  ]
+  }
 }

@@ -1,4 +1,4 @@
-import { PluginsAtomPluginParamsType } from "@webiny/app-page-builder/editor/recoil/modules";
+import { PluginsAtomPluginParamsType } from "../../modules";
 
 export type TogglePluginActionArgsType = {
     name: string;

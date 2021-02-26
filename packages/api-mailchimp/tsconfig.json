@@ -1,17 +1,16 @@
 {
   "extends": "../../tsconfig",
-  "references": [
-    {
-      "path": "../handler-graphql"
-    },
-    {
-      "path": "../api-security"
-    },
-    {
-      "path": "../commodo"
-    },
-    {
-      "path": "../handler"
+  "references": ["../api-security", "../commodo", "../handler", "../handler-graphql"],
+  "compilerOptions": {
+    "paths": {
+      "@webiny/api-security/*": ["../api-security/*"],
+      "@webiny/api-security": ["../api-security"],
+      "@webiny/commodo/*": ["../commodo/*"],
+      "@webiny/commodo": ["../commodo"],
+      "@webiny/handler/*": ["../handler/*"],
+      "@webiny/handler": ["../handler"],
+      "@webiny/handler-graphql/*": ["../handler-graphql/*"],
+      "@webiny/handler-graphql": ["../handler-graphql"]
     }
-  ]
+  }
 }

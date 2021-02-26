@@ -1,5 +1,5 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { CmsContext } from "@webiny/api-headless-cms/types";
+import { CmsContext } from "../../types";
 import contentModels from "./schema/contentModels";
 import contentModelGroups from "./schema/contentModelGroups";
 import baseSchema from "./schema/baseSchema";

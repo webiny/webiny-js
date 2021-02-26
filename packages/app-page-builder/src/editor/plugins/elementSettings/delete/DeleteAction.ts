@@ -1,12 +1,9 @@
 import React, { useCallback } from "react";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
-import { DeleteElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
-import {
-    activeElementAtom,
-    elementByIdSelector
-} from "@webiny/app-page-builder/editor/recoil/modules";
+import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
+import { DeleteElementActionEvent } from "../../../recoil/actions";
+import { activeElementAtom, elementByIdSelector } from "../../../recoil/modules";
 import { plugins } from "@webiny/plugins";
-import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
+import { PbEditorPageElementPlugin } from "../../../../types";
 import { useRecoilValue } from "recoil";
 
 type DeleteActionPropsType = {

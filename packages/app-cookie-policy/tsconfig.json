@@ -1,29 +1,33 @@
 {
   "extends": "../../tsconfig",
   "references": [
-    {
-      "path": "../app-admin"
-    },
-    {
-      "path": "../app-security"
-    },
-    {
-      "path": "../app-page-builder"
-    },
-    {
-      "path": "../form"
-    },
-    {
-      "path": "../react-router"
-    },
-    {
-      "path": "../validation"
-    },
-    {
-      "path": "../ui"
-    },
-    {
-      "path": "../app"
+    "../app",
+    "../app-admin",
+    "../app-page-builder",
+    "../app-security",
+    "../form",
+    "../react-router",
+    "../ui",
+    "../validation"
+  ],
+  "compilerOptions": {
+    "paths": {
+      "@webiny/app/*": ["../app/*"],
+      "@webiny/app": ["../app"],
+      "@webiny/app-admin/*": ["../app-admin/*"],
+      "@webiny/app-admin": ["../app-admin"],
+      "@webiny/app-page-builder/*": ["../app-page-builder/*"],
+      "@webiny/app-page-builder": ["../app-page-builder"],
+      "@webiny/app-security/*": ["../app-security/*"],
+      "@webiny/app-security": ["../app-security"],
+      "@webiny/form/*": ["../form/*"],
+      "@webiny/form": ["../form"],
+      "@webiny/react-router/*": ["../react-router/*"],
+      "@webiny/react-router": ["../react-router"],
+      "@webiny/ui/*": ["../ui/*"],
+      "@webiny/ui": ["../ui"],
+      "@webiny/validation/*": ["../validation/*"],
+      "@webiny/validation": ["../validation"]
     }
-  ]
+  }
 }

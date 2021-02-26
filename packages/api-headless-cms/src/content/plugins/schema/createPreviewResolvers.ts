@@ -1,4 +1,4 @@
-import { CmsContentModel, CmsFieldTypePlugins, CmsContext } from "@webiny/api-headless-cms/types";
+import { CmsContentModel, CmsFieldTypePlugins, CmsContext } from "../../../types";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
 import { commonFieldResolvers } from "./resolvers/commonFieldResolvers";
 import { resolveGet } from "./resolvers/preview/resolveGet";

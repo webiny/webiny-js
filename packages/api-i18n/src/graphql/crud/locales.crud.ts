@@ -1,6 +1,6 @@
 import { ContextPlugin } from "@webiny/handler/types";
 import { DbContext } from "@webiny/handler-db/types";
-import { I18NLocale } from "@webiny/api-i18n/types";
+import { I18NLocale } from "../../types";
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
 import getPKPrefix from "./utils/getPKPrefix";
 

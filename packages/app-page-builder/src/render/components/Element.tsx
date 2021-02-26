@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 
 import { plugins } from "@webiny/plugins";
-import { PbElement, PbRenderElementPlugin, PbThemePlugin } from "@webiny/app-page-builder/types";
+import { PbElement, PbRenderElementPlugin, PbThemePlugin } from "../../types";
 
 import tryRenderingPlugin from "./../../utils/tryRenderingPlugin";
 

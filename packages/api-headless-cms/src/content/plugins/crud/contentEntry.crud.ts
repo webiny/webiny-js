@@ -9,7 +9,7 @@ import {
     CmsContentEntry,
     CmsContentModel,
     CmsContext
-} from "@webiny/api-headless-cms/types";
+} from "../../../types";
 import * as utils from "../../../utils";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation";
 import {

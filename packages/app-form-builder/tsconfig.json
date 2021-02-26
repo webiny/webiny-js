@@ -1,35 +1,39 @@
 {
   "extends": "../../tsconfig",
   "references": [
-    {
-      "path": "../form"
-    },
-    {
-      "path": "../app-page-builder"
-    },
-    {
-      "path": "../app-plugin-admin-welcome-screen"
-    },
-    {
-      "path": "../app"
-    },
-    {
-      "path": "../app-admin"
-    },
-    {
-      "path": "../app-security"
-    },
-    {
-      "path": "../plugins"
-    },
-    {
-      "path": "../react-router"
-    },
-    {
-      "path": "../ui"
-    },
-    {
-      "path": "../validation"
+    "../app",
+    "../app-admin",
+    "../app-page-builder",
+    "../app-plugin-admin-welcome-screen",
+    "../app-security",
+    "../form",
+    "../plugins",
+    "../react-router",
+    "../ui",
+    "../validation"
+  ],
+  "compilerOptions": {
+    "paths": {
+      "@webiny/app/*": ["../app/*"],
+      "@webiny/app": ["../app"],
+      "@webiny/app-admin/*": ["../app-admin/*"],
+      "@webiny/app-admin": ["../app-admin"],
+      "@webiny/app-page-builder/*": ["../app-page-builder/*"],
+      "@webiny/app-page-builder": ["../app-page-builder"],
+      "@webiny/app-plugin-admin-welcome-screen/*": ["../app-plugin-admin-welcome-screen/*"],
+      "@webiny/app-plugin-admin-welcome-screen": ["../app-plugin-admin-welcome-screen"],
+      "@webiny/app-security/*": ["../app-security/*"],
+      "@webiny/app-security": ["../app-security"],
+      "@webiny/form/*": ["../form/*"],
+      "@webiny/form": ["../form"],
+      "@webiny/plugins/*": ["../plugins/*"],
+      "@webiny/plugins": ["../plugins"],
+      "@webiny/react-router/*": ["../react-router/*"],
+      "@webiny/react-router": ["../react-router"],
+      "@webiny/ui/*": ["../ui/*"],
+      "@webiny/ui": ["../ui"],
+      "@webiny/validation/*": ["../validation/*"],
+      "@webiny/validation": ["../validation"]
     }
-  ]
+  }
 }

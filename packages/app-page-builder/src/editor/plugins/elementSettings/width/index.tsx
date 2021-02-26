@@ -1,6 +1,6 @@
 import React from "react";
-import { PbEditorPageElementStyleSettingsPlugin } from "@webiny/app-page-builder/types";
-import WidthSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/width/WidthSettings";
+import { PbEditorPageElementStyleSettingsPlugin } from "../../../../types";
+import WidthSettings from "./WidthSettings";
 
 export default {
     name: "pb-editor-page-element-style-settings-width",

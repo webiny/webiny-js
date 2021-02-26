@@ -1,5 +1,5 @@
 import React from "react";
-import { uiAtom } from "@webiny/app-page-builder/editor/recoil/modules";
+import { uiAtom } from "../../../recoil/modules";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as SaveIcon } from "@webiny/app-page-builder/editor/assets/icons/baseline-cloud_upload-24px.svg";

@@ -1,13 +1,12 @@
-import { ContextPlugin } from "@webiny/handler/types";
+import { ContextPluginInterface } from "@webiny/handler/types";
 import acceptLanguageParser from "accept-language-parser";
 import {
-    I18NContext,
     ContextI18NGetLocales,
-    I18NLocaleContextPlugin,
-    I18NContextObject
-} from "@webiny/api-i18n/types";
-import { HttpContext } from "@webiny/handler-http/types";
-import { ClientContext } from "@webiny/handler-client/types";
+    I18NContext,
+    I18NContextObject,
+    I18NLocaleContextPlugin
+} from "./types";
+import { TenancyContext } from "@webiny/api-security-tenancy/types";
 
 // Parses "x-i18n-locale" header value (e.g. "default:en-US;content:hr-HR;").
 const parseXI18NLocaleHeader = value => {
@@ -55,7 +54,7 @@ const getLocaleFromHeaders = (http, localeContext = "default") => {
     return { acceptLanguageHeader, contextLocaleHeader };
 };
 
-export default {
+export default (): ContextPluginInterface<I18NContext & TenancyContext> => ({
     type: "context",
     apply: async context => {
         let locales = [];
@@ -159,4 +158,4 @@ export default {
 
         context.i18n = self;
     }
-} as ContextPlugin<HttpContext, I18NContext, ClientContext>;
+});

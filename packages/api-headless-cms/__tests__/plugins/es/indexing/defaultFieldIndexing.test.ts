@@ -3,7 +3,7 @@ import {
     CmsContentEntry,
     CmsContentModelField,
     CmsModelFieldToGraphQLPlugin
-} from "@webiny/api-headless-cms/types";
+} from "../../../../src/types";
 import cloneDeep from "lodash/cloneDeep";
 
 const mockRichTextValue = [

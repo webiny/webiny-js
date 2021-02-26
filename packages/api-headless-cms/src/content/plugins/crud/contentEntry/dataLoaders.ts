@@ -1,5 +1,5 @@
 import DataLoader from "dataloader";
-import { CmsContentEntry, CmsContext } from "@webiny/api-headless-cms/types";
+import { CmsContentEntry, CmsContext } from "../../../../types";
 import * as utils from "../../../../utils";
 
 export const getAllEntryRevisions = (context: CmsContext, { PK_ENTRY }) => {

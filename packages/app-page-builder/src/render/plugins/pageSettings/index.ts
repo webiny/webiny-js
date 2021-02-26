@@ -1,4 +1,4 @@
-import { PbPageSettingsFieldsPlugin } from "@webiny/app-page-builder/types";
+import { PbPageSettingsFieldsPlugin } from "../../../types";
 
 export default (): PbPageSettingsFieldsPlugin[] => [
     {

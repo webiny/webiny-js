@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@apollo/react-hooks";
 import { get } from "dot-prop-immutable";
-import { LIST_PAGE_ELEMENTS } from "@webiny/app-page-builder/admin/graphql/pages";
+import { LIST_PAGE_ELEMENTS } from "../../graphql/pages";
 import createElementPlugin from "../../utils/createElementPlugin";
 import createBlockPlugin from "../../utils/createBlockPlugin";
 

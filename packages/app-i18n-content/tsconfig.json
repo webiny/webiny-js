@@ -1,23 +1,20 @@
 {
   "extends": "../../tsconfig.json",
-  "references": [
-    {
-      "path": "../app"
-    },
-    {
-      "path": "../app-i18n"
-    },
-    {
-      "path": "../app-admin"
-    },
-    {
-      "path": "../form"
-    },
-    {
-      "path": "../ui"
-    },
-    {
-      "path": "../app-security"
+  "references": ["../app", "../app-admin", "../app-i18n", "../app-security", "../form", "../ui"],
+  "compilerOptions": {
+    "paths": {
+      "@webiny/app/*": ["../app/*"],
+      "@webiny/app": ["../app"],
+      "@webiny/app-admin/*": ["../app-admin/*"],
+      "@webiny/app-admin": ["../app-admin"],
+      "@webiny/app-i18n/*": ["../app-i18n/*"],
+      "@webiny/app-i18n": ["../app-i18n"],
+      "@webiny/app-security/*": ["../app-security/*"],
+      "@webiny/app-security": ["../app-security"],
+      "@webiny/form/*": ["../form/*"],
+      "@webiny/form": ["../form"],
+      "@webiny/ui/*": ["../ui/*"],
+      "@webiny/ui": ["../ui"]
     }
-  ]
+  }
 }

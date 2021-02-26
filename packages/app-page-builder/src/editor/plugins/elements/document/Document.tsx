@@ -1,6 +1,6 @@
 import React from "react";
-import Element from "@webiny/app-page-builder/editor/components/Element";
-import { PbEditorElement } from "@webiny/app-page-builder/types";
+import Element from "../../../components/Element";
+import { PbEditorElement } from "../../../../types";
 
 type DocumentProps = { element: PbEditorElement };
 

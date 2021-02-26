@@ -4,15 +4,15 @@ import {
     CreateElementActionEvent,
     DeleteElementActionEvent,
     updateElementAction
-} from "@webiny/app-page-builder/editor/recoil/actions";
-import { addElementToParent, createDroppedElement } from "@webiny/app-page-builder/editor/helpers";
+} from "../../../recoil/actions";
+import { addElementToParent, createDroppedElement } from "../../../helpers";
 import {
     DisplayMode,
     EventActionHandlerActionCallableResponse,
     PbEditorPageElementPlugin,
     PbEditorElement
-} from "@webiny/app-page-builder/types";
-import { AfterDropElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions/afterDropElement";
+} from "../../../../types";
+import { AfterDropElementActionEvent } from "../../../recoil/actions/afterDropElement";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
 export default (): PbEditorPageElementPlugin => {

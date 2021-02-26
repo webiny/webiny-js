@@ -1,6 +1,6 @@
 import { useEffect, useReducer } from "react";
 import gql from "graphql-tag";
-import { useCms } from "@webiny/app-headless-cms/admin/hooks";
+import { useCms } from "../../../hooks";
 
 const LIST_DATA = gql`
     query CmsLoadPermissionsData {

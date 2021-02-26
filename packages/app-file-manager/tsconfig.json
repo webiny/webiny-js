@@ -1,26 +1,30 @@
 {
   "extends": "../../tsconfig",
   "references": [
-    {
-      "path": "../app-admin"
-    },
-    {
-      "path": "../app-security"
-    },
-    {
-      "path": "../form"
-    },
-    {
-      "path": "../plugins"
-    },
-    {
-      "path": "../react-router"
-    },
-    {
-      "path": "../ui"
-    },
-    {
-      "path": "../app"
+    "../app",
+    "../app-admin",
+    "../app-security",
+    "../form",
+    "../plugins",
+    "../react-router",
+    "../ui"
+  ],
+  "compilerOptions": {
+    "paths": {
+      "@webiny/app/*": ["../app/*"],
+      "@webiny/app": ["../app"],
+      "@webiny/app-admin/*": ["../app-admin/*"],
+      "@webiny/app-admin": ["../app-admin"],
+      "@webiny/app-security/*": ["../app-security/*"],
+      "@webiny/app-security": ["../app-security"],
+      "@webiny/form/*": ["../form/*"],
+      "@webiny/form": ["../form"],
+      "@webiny/plugins/*": ["../plugins/*"],
+      "@webiny/plugins": ["../plugins"],
+      "@webiny/react-router/*": ["../react-router/*"],
+      "@webiny/react-router": ["../react-router"],
+      "@webiny/ui/*": ["../ui/*"],
+      "@webiny/ui": ["../ui"]
     }
-  ]
+  }
 }

@@ -1,6 +1,6 @@
-import { SaveRevisionActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
+import { SaveRevisionActionEvent } from "..";
 import { UpdatePageRevisionActionArgsType } from "./types";
-import { EventActionCallable } from "@webiny/app-page-builder/types";
+import { EventActionCallable } from "../../../../types";
 
 export const updatePageAction: EventActionCallable<UpdatePageRevisionActionArgsType> = (
     state,

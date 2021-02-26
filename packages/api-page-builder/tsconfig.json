@@ -1,65 +1,73 @@
 {
   "extends": "../../tsconfig",
   "references": [
-    {
-      "path": "../plugins"
-    },
-    {
-      "path": "../db"
-    },
-    {
-      "path": "../api-i18n-content"
-    },
-    {
-      "path": "../api-plugin-elastic-search-client"
-    },
-    {
-      "path": "../api-dynamodb-to-elasticsearch"
-    },
-    {
-      "path": "../api-security"
-    },
-    {
-      "path": "../handler"
-    },
-    {
-      "path": "../handler-client"
-    },
-    {
-      "path": "../handler-args"
-    },
-    {
-      "path": "../handler-db"
-    },
-    {
-      "path": "../validation"
-    },
-    {
-      "path": "../api-i18n"
-    },
-    {
-      "path": "../handler-graphql"
-    },
-    {
-      "path": "../handler-aws"
-    },
-    {
-      "path": "../db-dynamodb"
-    },
-    {
-      "path": "../error"
-    },
-    {
-      "path": "../api-file-manager"
-    },
-    {
-      "path": "../api-security-tenancy"
-    },
-    {
-      "path": "../api-prerendering-service"
-    },
-    {
-      "path": "../pulumi-sdk"
+    "../api-file-manager",
+    "../api-i18n",
+    "../api-i18n-content",
+    "../api-prerendering-service",
+    "../api-security",
+    "../api-security-tenancy",
+    "../db-dynamodb",
+    "../error",
+    "../handler",
+    "../handler-args",
+    "../handler-aws",
+    "../handler-client",
+    "../handler-db",
+    "../handler-graphql",
+    "../plugins",
+    "../pulumi-sdk",
+    "../validation",
+    "../api-dynamodb-to-elasticsearch",
+    "../api-file-manager",
+    "../api-plugin-elastic-search-client",
+    "../db",
+    "../project-utils"
+  ],
+  "compilerOptions": {
+    "paths": {
+      "@webiny/api-file-manager/*": ["../api-file-manager/*"],
+      "@webiny/api-file-manager": ["../api-file-manager"],
+      "@webiny/api-i18n/*": ["../api-i18n/*"],
+      "@webiny/api-i18n": ["../api-i18n"],
+      "@webiny/api-i18n-content/*": ["../api-i18n-content/*"],
+      "@webiny/api-i18n-content": ["../api-i18n-content"],
+      "@webiny/api-prerendering-service/*": ["../api-prerendering-service/*"],
+      "@webiny/api-prerendering-service": ["../api-prerendering-service"],
+      "@webiny/api-security/*": ["../api-security/*"],
+      "@webiny/api-security": ["../api-security"],
+      "@webiny/api-security-tenancy/*": ["../api-security-tenancy/*"],
+      "@webiny/api-security-tenancy": ["../api-security-tenancy"],
+      "@webiny/db-dynamodb/*": ["../db-dynamodb/*"],
+      "@webiny/db-dynamodb": ["../db-dynamodb"],
+      "@webiny/error/*": ["../error/*"],
+      "@webiny/error": ["../error"],
+      "@webiny/handler/*": ["../handler/*"],
+      "@webiny/handler": ["../handler"],
+      "@webiny/handler-args/*": ["../handler-args/*"],
+      "@webiny/handler-args": ["../handler-args"],
+      "@webiny/handler-aws/*": ["../handler-aws/*"],
+      "@webiny/handler-aws": ["../handler-aws"],
+      "@webiny/handler-client/*": ["../handler-client/*"],
+      "@webiny/handler-client": ["../handler-client"],
+      "@webiny/handler-db/*": ["../handler-db/*"],
+      "@webiny/handler-db": ["../handler-db"],
+      "@webiny/handler-graphql/*": ["../handler-graphql/*"],
+      "@webiny/handler-graphql": ["../handler-graphql"],
+      "@webiny/plugins/*": ["../plugins/*"],
+      "@webiny/plugins": ["../plugins"],
+      "@webiny/pulumi-sdk/*": ["../pulumi-sdk/*"],
+      "@webiny/pulumi-sdk": ["../pulumi-sdk"],
+      "@webiny/validation/*": ["../validation/*"],
+      "@webiny/validation": ["../validation"],
+      "@webiny/api-dynamodb-to-elasticsearch/*": ["../api-dynamodb-to-elasticsearch/*"],
+      "@webiny/api-dynamodb-to-elasticsearch": ["../api-dynamodb-to-elasticsearch"],
+      "@webiny/api-plugin-elastic-search-client/*": ["../api-plugin-elastic-search-client/*"],
+      "@webiny/api-plugin-elastic-search-client": ["../api-plugin-elastic-search-client"],
+      "@webiny/db/*": ["../db/*"],
+      "@webiny/db": ["../db"],
+      "@webiny/project-utils/*": ["../project-utils/*"],
+      "@webiny/project-utils": ["../project-utils"]
     }
-  ]
+  }
 }

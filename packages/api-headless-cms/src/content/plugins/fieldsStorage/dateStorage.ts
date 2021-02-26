@@ -1,7 +1,4 @@
-import {
-    CmsContentModelDateTimeField,
-    CmsModelFieldToStoragePlugin
-} from "@webiny/api-headless-cms/types";
+import { CmsContentModelDateTimeField, CmsModelFieldToStoragePlugin } from "../../../types";
 import WebinyError from "@webiny/error";
 
 export default (): CmsModelFieldToStoragePlugin => ({

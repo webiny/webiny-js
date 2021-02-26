@@ -1,8 +1,8 @@
-import { PbIcon } from "@webiny/app-page-builder/types";
+import { PbIcon } from "../../../../types";
 import React from "react";
 import { Typography } from "@webiny/ui/Typography";
 import { Cell } from "@webiny/ui/Grid";
-import IconPickerComponent from "@webiny/app-page-builder/editor/components/IconPicker";
+import IconPickerComponent from "../../../components/IconPicker";
 
 type IconPickerProps = {
     label: string;

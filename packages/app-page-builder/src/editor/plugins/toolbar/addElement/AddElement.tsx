@@ -1,28 +1,25 @@
 import React, { useCallback, useEffect, useState, useMemo } from "react";
 import * as Styled from "./StyledComponents";
-import { activePluginParamsByNameSelector } from "@webiny/app-page-builder/editor/recoil/modules";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
+import { activePluginParamsByNameSelector } from "../../../recoil/modules";
+import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
 import {
     DeactivatePluginActionEvent,
     DragEndActionEvent,
     DragStartActionEvent,
     DropElementActionEvent
-} from "@webiny/app-page-builder/editor/recoil/actions";
-import { DropElementActionArgsType } from "@webiny/app-page-builder/editor/recoil/actions/dropElement/types";
-import Draggable from "@webiny/app-page-builder/editor/components/Draggable";
+} from "../../../recoil/actions";
+import { DropElementActionArgsType } from "../../../recoil/actions/dropElement/types";
+import Draggable from "../../../components/Draggable";
 import { plugins } from "@webiny/plugins";
-import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
+import { usePageBuilder } from "../../../../hooks/usePageBuilder";
 import { useRecoilValue } from "recoil";
 import { css } from "emotion";
 import { List, ListItem, ListItemMeta } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { Typography } from "@webiny/ui/Typography";
 import { ButtonFloating } from "@webiny/ui/Button";
-import { ReactComponent as AddIcon } from "@webiny/app-page-builder/editor/assets/icons/add.svg";
-import {
-    PbEditorPageElementGroupPlugin,
-    PbEditorPageElementPlugin
-} from "@webiny/app-page-builder/types";
+import { ReactComponent as AddIcon } from "../../../assets/icons/add.svg";
+import { PbEditorPageElementGroupPlugin, PbEditorPageElementPlugin } from "../../../../types";
 import { useKeyHandler } from "../../../hooks/useKeyHandler";
 
 const ADD_ELEMENT = "pb-editor-toolbar-add-element";

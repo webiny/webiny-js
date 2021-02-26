@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import { useRouter } from "@webiny/react-router";
-import { CREATE_PAGE, DELETE_PAGE, LIST_PAGES } from "@webiny/app-page-builder/admin/graphql/pages";
+import { CREATE_PAGE, DELETE_PAGE, LIST_PAGES } from "../../../graphql/pages";
 import { usePublishRevisionHandler } from "./usePublishRevisionHandler";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import cloneDeep from "lodash/cloneDeep";

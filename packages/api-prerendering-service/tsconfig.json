@@ -1,26 +1,30 @@
 {
   "extends": "../../tsconfig",
   "references": [
-    {
-      "path": "../plugins"
-    },
-    {
-      "path": "../db"
-    },
-    {
-      "path": "../handler"
-    },
-    {
-      "path": "../handler-db"
-    },
-    {
-      "path": "../handler-args"
-    },
-    {
-      "path": "../handler-client"
-    },
-    {
-      "path": "../error"
+    "../error",
+    "../handler",
+    "../handler-args",
+    "../handler-client",
+    "../handler-db",
+    "../plugins",
+    "../db"
+  ],
+  "compilerOptions": {
+    "paths": {
+      "@webiny/error/*": ["../error/*"],
+      "@webiny/error": ["../error"],
+      "@webiny/handler/*": ["../handler/*"],
+      "@webiny/handler": ["../handler"],
+      "@webiny/handler-args/*": ["../handler-args/*"],
+      "@webiny/handler-args": ["../handler-args"],
+      "@webiny/handler-client/*": ["../handler-client/*"],
+      "@webiny/handler-client": ["../handler-client"],
+      "@webiny/handler-db/*": ["../handler-db/*"],
+      "@webiny/handler-db": ["../handler-db"],
+      "@webiny/plugins/*": ["../plugins/*"],
+      "@webiny/plugins": ["../plugins"],
+      "@webiny/db/*": ["../db/*"],
+      "@webiny/db": ["../db"]
     }
-  ]
+  }
 }

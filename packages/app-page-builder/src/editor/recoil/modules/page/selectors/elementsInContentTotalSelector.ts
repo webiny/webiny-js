@@ -1,6 +1,6 @@
-import { elementsAtom, rootElementAtom } from "@webiny/app-page-builder/editor/recoil/modules";
+import { elementsAtom, rootElementAtom } from "../..";
 import { selector } from "recoil";
-import { PbEditorElement } from "@webiny/app-page-builder/types";
+import { PbEditorElement } from "../../../../../types";
 
 export const elementsInContentTotalSelector = selector({
     key: "elementsInContentTotalSelector",

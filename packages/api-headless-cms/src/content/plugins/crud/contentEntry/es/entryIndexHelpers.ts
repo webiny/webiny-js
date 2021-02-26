@@ -6,7 +6,7 @@ import {
     CmsContext,
     CmsModelFieldToElasticsearchPlugin,
     CmsModelFieldToGraphQLPlugin
-} from "@webiny/api-headless-cms/types";
+} from "../../../../../types";
 import lodashCloneDeep from "lodash/cloneDeep";
 import Error from "@webiny/error";
 

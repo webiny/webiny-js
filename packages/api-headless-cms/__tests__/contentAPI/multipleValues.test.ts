@@ -1,8 +1,4 @@
-import {
-    CmsContentEntry,
-    CmsContentModelGroup,
-    CmsContentModel
-} from "@webiny/api-headless-cms/types";
+import { CmsContentEntry, CmsContentModelGroup, CmsContentModel } from "../../src/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import models from "./mocks/contentModels";
 import { useProductManageHandler } from "../utils/useProductManageHandler";

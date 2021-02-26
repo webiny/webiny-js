@@ -1,26 +1,30 @@
 {
   "extends": "../../tsconfig.json",
   "references": [
-    {
-      "path": "../app"
-    },
-    {
-      "path": "../app-security"
-    },
-    {
-      "path": "../app-security-tenancy"
-    },
-    {
-      "path": "../plugins"
-    },
-    {
-      "path": "../ui"
-    },
-    {
-      "path": "../validation"
-    },
-    {
-      "path": "../form"
+    "../app",
+    "../app-security",
+    "../app-security-tenancy",
+    "../form",
+    "../plugins",
+    "../ui",
+    "../validation"
+  ],
+  "compilerOptions": {
+    "paths": {
+      "@webiny/app/*": ["../app/*"],
+      "@webiny/app": ["../app"],
+      "@webiny/app-security/*": ["../app-security/*"],
+      "@webiny/app-security": ["../app-security"],
+      "@webiny/app-security-tenancy/*": ["../app-security-tenancy/*"],
+      "@webiny/app-security-tenancy": ["../app-security-tenancy"],
+      "@webiny/form/*": ["../form/*"],
+      "@webiny/form": ["../form"],
+      "@webiny/plugins/*": ["../plugins/*"],
+      "@webiny/plugins": ["../plugins"],
+      "@webiny/ui/*": ["../ui/*"],
+      "@webiny/ui": ["../ui"],
+      "@webiny/validation/*": ["../validation/*"],
+      "@webiny/validation": ["../validation"]
     }
-  ]
+  }
 }

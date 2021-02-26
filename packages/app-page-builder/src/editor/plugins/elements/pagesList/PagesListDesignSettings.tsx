@@ -1,7 +1,7 @@
 import * as React from "react";
 import { plugins } from "@webiny/plugins";
 import { validation } from "@webiny/validation";
-import { PbPageElementPagesListComponentPlugin } from "@webiny/app-page-builder/types";
+import { PbPageElementPagesListComponentPlugin } from "../../../../types";
 import Accordion from "../../elementSettings/components/Accordion";
 import Wrapper from "../../elementSettings/components/Wrapper";
 import InputField from "../../elementSettings/components/InputField";

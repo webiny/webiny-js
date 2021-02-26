@@ -3,20 +3,14 @@ import dataURLtoBlob from "dataurl-to-blob";
 import SaveDialog from "./SaveDialog";
 import pick from "lodash.pick";
 import get from "lodash/get";
-import createElementPlugin from "@webiny/app-page-builder/admin/utils/createElementPlugin";
-import createBlockPlugin from "@webiny/app-page-builder/admin/utils/createBlockPlugin";
-import {
-    activeElementAtom,
-    elementByIdSelector
-} from "@webiny/app-page-builder/editor/recoil/modules";
+import createElementPlugin from "../../../../admin/utils/createElementPlugin";
+import createBlockPlugin from "../../../../admin/utils/createBlockPlugin";
+import { activeElementAtom, elementByIdSelector } from "../../../recoil/modules";
 import { useApolloClient } from "@apollo/react-hooks";
 import { plugins } from "@webiny/plugins";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
-import {
-    CREATE_PAGE_ELEMENT,
-    UPDATE_PAGE_ELEMENT
-} from "@webiny/app-page-builder/admin/graphql/pages";
+import { useKeyHandler } from "../../../hooks/useKeyHandler";
+import { CREATE_PAGE_ELEMENT, UPDATE_PAGE_ELEMENT } from "../../../../admin/graphql/pages";
 import { useRecoilValue } from "recoil";
 import { CREATE_FILE } from "./SaveDialog/graphql";
 import { FileUploaderPlugin } from "@webiny/app/types";
@@ -24,7 +18,7 @@ import {
     PbEditorPageElementPlugin,
     PbEditorPageElementSaveActionPlugin,
     PbEditorElement
-} from "@webiny/app-page-builder/types";
+} from "../../../../types";
 import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
 
 const removeIds = el => {

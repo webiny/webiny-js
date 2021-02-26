@@ -1,17 +1,16 @@
 {
   "extends": "../../tsconfig",
-  "references": [
-    {
-      "path": "../api-prerendering-service"
-    },
-    {
-      "path": "../handler"
-    },
-    {
-      "path": "../handler-args"
-    },
-    {
-      "path": "../plugins"
+  "references": ["../api-prerendering-service", "../handler", "../handler-args", "../plugins"],
+  "compilerOptions": {
+    "paths": {
+      "@webiny/api-prerendering-service/*": ["../api-prerendering-service/*"],
+      "@webiny/api-prerendering-service": ["../api-prerendering-service"],
+      "@webiny/handler/*": ["../handler/*"],
+      "@webiny/handler": ["../handler"],
+      "@webiny/handler-args/*": ["../handler-args/*"],
+      "@webiny/handler-args": ["../handler-args"],
+      "@webiny/plugins/*": ["../plugins/*"],
+      "@webiny/plugins": ["../plugins"]
     }
-  ]
+  }
 }

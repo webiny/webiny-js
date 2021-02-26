@@ -1,6 +1,6 @@
 import { selectorFamily } from "recoil";
 import { elementByIdSelector } from "./elementByIdSelector";
-import { PbEditorElement } from "@webiny/app-page-builder/types";
+import { PbEditorElement } from "../../../../../types";
 
 export const elementWithChildrenByIdSelector = selectorFamily<PbEditorElement | undefined, string>({
     key: "elementWithChildrenByIdSelector",

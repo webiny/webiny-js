@@ -1,12 +1,12 @@
 import * as React from "react";
 import { BindComponent } from "@webiny/form";
-import OEmbed, { OEmbedProps } from "@webiny/app-page-builder/editor/components/OEmbed";
+import OEmbed, { OEmbedProps } from "../../../../components/OEmbed";
 import {
     PbEditorElement,
     PbEditorPageElementPlugin,
     PbEditorPageElementAdvancedSettingsPlugin,
     DisplayMode
-} from "@webiny/app-page-builder/types";
+} from "../../../../../types";
 import { createInitialPerDeviceSettingValue } from "../../../elementSettings/elementSettingsUtils";
 
 type EmbedPluginConfig = {

@@ -2,7 +2,7 @@ import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
 import {
     CmsContentEntryResolverFactory as ResolverFactory,
     CmsContentEntry
-} from "@webiny/api-headless-cms/types";
+} from "../../../../../types";
 
 export const resolveGetRevisions: ResolverFactory = () => async (root, args, { cms }) => {
     try {

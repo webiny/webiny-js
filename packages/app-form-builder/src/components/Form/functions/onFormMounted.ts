@@ -1,5 +1,5 @@
 import { get, set } from "lodash";
-import { FbFormRenderComponentProps } from "@webiny/app-form-builder/types";
+import { FbFormRenderComponentProps } from "../../../types";
 import { SAVE_FORM_VIEW } from "./graphql";
 import { ApolloClient } from "apollo-client";
 

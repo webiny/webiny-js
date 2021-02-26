@@ -1,4 +1,4 @@
-import { DragObjectWithTypeWithTarget } from "@webiny/app-page-builder/editor/components/Droppable";
+import { DragObjectWithTypeWithTarget } from "../../../components/Droppable";
 
 export type DropElementActionArgsType = {
     source: DragObjectWithTypeWithTarget;

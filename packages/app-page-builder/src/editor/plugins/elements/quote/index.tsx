@@ -1,6 +1,6 @@
 import React from "react";
 import Quote, { className } from "./Quote";
-import { DisplayMode, PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
+import { DisplayMode, PbEditorPageElementPlugin } from "../../../../types";
 import { createInitialTextValue } from "../utils/textUtils";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 

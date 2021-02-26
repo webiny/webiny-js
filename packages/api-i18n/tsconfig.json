@@ -1,35 +1,39 @@
 {
   "extends": "../../tsconfig",
   "references": [
-    {
-      "path": "../api-security"
-    },
-    {
-      "path": "../api-security-tenancy"
-    },
-    {
-      "path": "../plugins"
-    },
-    {
-      "path": "../handler"
-    },
-    {
-      "path": "../handler-aws"
-    },
-    {
-      "path": "../handler-graphql"
-    },
-    {
-      "path": "../handler-client"
-    },
-    {
-      "path": "../handler-db"
-    },
-    {
-      "path": "../db-dynamodb"
-    },
-    {
-      "path": "../handler-http"
+    "../api-security",
+    "../api-security-tenancy",
+    "../db-dynamodb",
+    "../handler",
+    "../handler-aws",
+    "../handler-client",
+    "../handler-db",
+    "../handler-graphql",
+    "../handler-http",
+    "../plugins"
+  ],
+  "compilerOptions": {
+    "paths": {
+      "@webiny/api-security/*": ["../api-security/*"],
+      "@webiny/api-security": ["../api-security"],
+      "@webiny/api-security-tenancy/*": ["../api-security-tenancy/*"],
+      "@webiny/api-security-tenancy": ["../api-security-tenancy"],
+      "@webiny/db-dynamodb/*": ["../db-dynamodb/*"],
+      "@webiny/db-dynamodb": ["../db-dynamodb"],
+      "@webiny/handler/*": ["../handler/*"],
+      "@webiny/handler": ["../handler"],
+      "@webiny/handler-aws/*": ["../handler-aws/*"],
+      "@webiny/handler-aws": ["../handler-aws"],
+      "@webiny/handler-client/*": ["../handler-client/*"],
+      "@webiny/handler-client": ["../handler-client"],
+      "@webiny/handler-db/*": ["../handler-db/*"],
+      "@webiny/handler-db": ["../handler-db"],
+      "@webiny/handler-graphql/*": ["../handler-graphql/*"],
+      "@webiny/handler-graphql": ["../handler-graphql"],
+      "@webiny/handler-http/*": ["../handler-http/*"],
+      "@webiny/handler-http": ["../handler-http"],
+      "@webiny/plugins/*": ["../plugins/*"],
+      "@webiny/plugins": ["../plugins"]
     }
-  ]
+  }
 }

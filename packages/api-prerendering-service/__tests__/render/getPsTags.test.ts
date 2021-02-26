@@ -1,4 +1,4 @@
-import getPsTags from "@webiny/api-prerendering-service/render/getPsTags";
+import getPsTags from "../../src/render/getPsTags";
 
 describe("parse all <ps-tag .../>", () => {
     it("must detect all ps-tag tags in given HTML (unique must be true by default)", async () => {
