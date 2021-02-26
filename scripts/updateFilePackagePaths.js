@@ -33,7 +33,7 @@ class WebinyPackage {
         }
         const paths = [`${this.srcPath}`, `${this.path}/__tests__`];
         this._files = paths.reduce((files, path) => {
-            const tsFiles = glob.sync(`${path}/**/**.ts(x)`);
+            const tsFiles = glob.sync(`${path}/**/**.ts`);
             const tsxFiles = glob.sync(`${path}/**/**.tsx`);
             return files.concat(tsFiles).concat(tsxFiles);
         }, []);
