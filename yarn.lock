@@ -4808,9 +4808,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:2.16.2":
-  version: 2.16.2
-  resolution: "@pulumi/pulumi@npm:2.16.2"
+"@pulumi/pulumi@npm:2.19.0":
+  version: 2.19.0
+  resolution: "@pulumi/pulumi@npm:2.19.0"
   dependencies:
     "@grpc/grpc-js": ^0.6.15
     "@pulumi/query": ^0.3.0
@@ -4826,29 +4826,7 @@ __metadata:
     ts-node: ^7.0.1
     typescript: ~3.7.3
     upath: ^1.1.0
-  checksum: 6144567f6c24b1d19989bf5b2b1251f1cfd22685f29ff0e0c710b75bc3b602410d50fe91a04f7941edd9931eb6c6dc8285de9af580339fe77f3b6a74eb7d5d5f
-  languageName: node
-  linkType: hard
-
-"@pulumi/pulumi@npm:^2.15.0":
-  version: 2.20.0
-  resolution: "@pulumi/pulumi@npm:2.20.0"
-  dependencies:
-    "@grpc/grpc-js": ^0.6.15
-    "@pulumi/query": ^0.3.0
-    google-protobuf: ^3.5.0
-    js-yaml: ^3.14.0
-    minimist: ^1.2.0
-    normalize-package-data: ^2.4.0
-    protobufjs: ^6.8.6
-    read-package-tree: ^5.3.1
-    require-from-string: ^2.0.1
-    semver: ^6.1.0
-    source-map-support: ^0.4.16
-    ts-node: ^7.0.1
-    typescript: ~3.7.3
-    upath: ^1.1.0
-  checksum: 41d6a65678be42b5cc4ec4295d000e6074ab9ff8a0a94d6df750a9cd47996a78e52efdcf004a183745a69039ee884ef130dd5172136873c3e76e96debe0ef1cd
+  checksum: 1723361a954a3ba7e23f2ff50c97508ba5a383abc70737df5c81e47d6a9b8b2350d620cbb29042d912db63bb510c675e941f3705bc98b3c805b61b56df791cb7
   languageName: node
   linkType: hard
 
@@ -8907,7 +8885,7 @@ __metadata:
     "@babel/cli": ^7.5.5
     "@babel/core": ^7.5.5
     "@pulumi/aws": 3.22.0
-    "@pulumi/pulumi": 2.16.2
+    "@pulumi/pulumi": 2.19.0
     "@types/node": ^10.0.0
     decompress: ^4.2.1
     download: ^5.0.3
