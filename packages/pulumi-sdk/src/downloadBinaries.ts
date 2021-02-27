@@ -5,7 +5,7 @@ const download = require("download");
 const path = require("path");
 const decompress = require("decompress");
 
-const PULUMI_VERSION = "2.16.2";
+const PULUMI_VERSION = "2.19.0";
 
 export default async (downloadFolder, beforeInstall, afterInstall) => {
     if (fs.existsSync(downloadFolder)) {
