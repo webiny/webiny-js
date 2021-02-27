@@ -11,6 +11,7 @@ module.exports = [
                 yargs.example("$0 app deploy api --env=dev");
                 yargs.example("$0 app destroy api --env=dev");
                 yargs.example("$0 app output api --env=dev");
+
                 yargs.command(
                     "deploy <folder>",
                     `Deploys cloud infrastructure for given project application`,
@@ -108,6 +109,29 @@ module.exports = [
                     }
                 );
             });
+
+            yargs.command(
+                "pulumi <folder>",
+                `Runs a Pulumi command in the provided project application folder. Note: make sure to use "--" before the actual Pulumi command.`,
+                () => {
+                    yargs.example("$0 pulumi apps/website --env dev -- config set foo bar --secret");
+
+                    yargs.positional("folder", {
+                        describe: `Project application folder`,
+                        type: "string"
+                    });
+
+                    yargs.option("env", {
+                        required: true,
+                        describe: `Environment`,
+                        type: "string"
+                    });
+                },
+                async argv => {
+                    await require("./pulumiRun")(argv, context);
+                    process.exit(0);
+                }
+            );
         }
     }
 ];
