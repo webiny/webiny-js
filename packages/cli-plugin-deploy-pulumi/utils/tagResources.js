@@ -1,29 +1,27 @@
-import * as pulumi from "@pulumi/pulumi";
-
-/**
- * Define your tags here. They will be applied to all taggable resources.
- */
-const TAGS = {
-    WbyProjectName: process.env.WEBINY_PROJECT_NAME as string,
-    WbyEnvironment: process.env.WEBINY_ENV as string
-};
+const pulumi = require("@pulumi/pulumi");
 
 /**
  * Registers a global stack transformation that merges a set
  * of tags with whatever was explicitly set in the resource definition.
  */
-pulumi.runtime.registerStackTransformation(args => {
-    if (isTaggable(args.type)) {
-        args.props["tags"] = { ...args.props["tags"], ...TAGS };
-        return { props: args.props, opts: args.opts };
-    }
-    return undefined;
-});
+function tagResources(tags) {
+    pulumi.runtime.registerStackTransformation(args => {
+        if (isTaggable(args.type)) {
+            args.props["tags"] = { ...args.props["tags"], ...tags };
+            return { props: args.props, opts: args.opts };
+        }
+        return undefined;
+    });
+}
+
+module.exports = {
+    tagResources
+};
 
 /**
  * Returns true if the given resource type is an AWS resource that supports tags.
  */
-const isTaggable = (resourceType: string): boolean => {
+const isTaggable = resourceType => {
     return taggableResourceTypes.indexOf(resourceType) !== -1;
 };
 

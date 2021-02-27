@@ -197,7 +197,6 @@
     }
   },
   "resolutions": {
-    "@pulumi/pulumi": "2.19.0",
     "@rmwc/textfield": "link:./packages/ui/rmwc/textfield",
     "@types/react": "^16.14.2",
     "react": "16.14.0",
