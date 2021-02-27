@@ -68,7 +68,8 @@ module.exports = async (inputs, context) => {
         execa: {
             stdio: "inherit",
             env: {
-                WEBINY_ENV: env
+                WEBINY_ENV: env,
+                WEBINY_PROJECT_NAME: context.projectName
             }
         },
         args: {
