@@ -36,7 +36,7 @@ class HeadlessCMS {
                 timeout: 30,
                 memorySize: 512,
                 code: new pulumi.asset.AssetArchive({
-                    ".": new pulumi.asset.FileArchive("./../code/headlessCMS/build")
+                    ".": new pulumi.asset.FileArchive("../../../code/headlessCMS/build")
                 }),
                 environment: {
                     variables: {

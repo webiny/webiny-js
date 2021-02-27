@@ -9,7 +9,7 @@ import FileManager from "./fileManager";
 import PageBuilder from "./pageBuilder";
 import PrerenderingService from "./prerenderingService";
 
-export function setup() {
+export = () => {
     const dynamoDb = new DynamoDB();
     const cognito = new Cognito();
     const elasticSearch = new ElasticSearch();
@@ -104,4 +104,4 @@ export function setup() {
         cognitoAppClientId: cognito.userPoolClient.id,
         updatePbSettingsFunction: pageBuilder.functions.updateSettings.arn
     };
-}
+};

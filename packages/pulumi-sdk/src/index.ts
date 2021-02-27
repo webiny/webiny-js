@@ -86,7 +86,7 @@ export class Pulumi {
             const { version } = require("@pulumi/aws/package.json");
             await execa(
                 path.join(PULUMI_FOLDER, "pulumi", "pulumi"),
-                ["plugin", "install", "resource", "aws", `v${version}`],
+                ["plugin", "install", "resource", "aws", version],
                 {
                     stdio: "inherit",
                     env: {

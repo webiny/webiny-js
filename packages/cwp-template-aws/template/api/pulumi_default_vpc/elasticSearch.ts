@@ -83,7 +83,7 @@ class ElasticSearch {
             },
             description: "Process DynamoDB Stream.",
             code: new pulumi.asset.AssetArchive({
-                ".": new pulumi.asset.FileArchive("../code/dynamoToElastic/build")
+                ".": new pulumi.asset.FileArchive("../../code/dynamoToElastic/build")
             })
         });
 
