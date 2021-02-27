@@ -1,3 +1,4 @@
+import "./tagResources";
 import Cognito from "./cognito";
 import DynamoDB from "./dynamoDb";
 import Graphql from "./graphql";
