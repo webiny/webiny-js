@@ -1,11 +1,21 @@
 {
   "extends": "../../tsconfig",
   "references": [
-    { "path": "../error" },
-    { "path": "../handler" },
-    { "path": "../handler-http" },
-    { "path": "../plugins" },
-    { "path": "../handler-args" }
+    {
+      "path": "../error"
+    },
+    {
+      "path": "../handler"
+    },
+    {
+      "path": "../handler-http"
+    },
+    {
+      "path": "../plugins"
+    },
+    {
+      "path": "../handler-args"
+    }
   ],
   "compilerOptions": {
     "paths": {

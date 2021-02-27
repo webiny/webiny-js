@@ -1,12 +1,24 @@
 {
   "extends": "../../tsconfig.json",
   "references": [
-    { "path": "../app" },
-    { "path": "../app-admin" },
-    { "path": "../app-i18n" },
-    { "path": "../app-security" },
-    { "path": "../form" },
-    { "path": "../ui" }
+    {
+      "path": "../app"
+    },
+    {
+      "path": "../app-admin"
+    },
+    {
+      "path": "../app-i18n"
+    },
+    {
+      "path": "../app-security"
+    },
+    {
+      "path": "../form"
+    },
+    {
+      "path": "../ui"
+    }
   ],
   "compilerOptions": {
     "paths": {

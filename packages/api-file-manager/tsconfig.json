@@ -2,17 +2,36 @@
   "extends": "../../tsconfig",
   "include": ["./src", "./__tests__"],
   "references": [
-    { "path": "../api-i18n-content" },
-    { "path": "../api-plugin-elastic-search-client" },
-    { "path": "../api-security" },
-    { "path": "../api-security-tenancy" },
-    { "path": "../error" },
-    { "path": "../handler" },
-    { "path": "../handler-client" },
-    { "path": "../handler-graphql" },
-    { "path": "../project-utils" },
-    { "path": "../validation" },
-    { "path": "../api-dynamodb-to-elasticsearch" }
+    {
+      "path": "../api-i18n-content"
+    },
+    {
+      "path": "../api-plugin-elastic-search-client"
+    },
+    {
+      "path": "../api-security"
+    },
+    {
+      "path": "../api-security-tenancy"
+    },
+    {
+      "path": "../error"
+    },
+    {
+      "path": "../handler"
+    },
+    {
+      "path": "../handler-client"
+    },
+    {
+      "path": "../handler-graphql"
+    },
+    {
+      "path": "../validation"
+    },
+    {
+      "path": "../api-dynamodb-to-elasticsearch"
+    }
   ],
   "compilerOptions": {
     "paths": {
@@ -32,8 +51,6 @@
       "@webiny/handler-client": ["../handler-client/src"],
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
-      "@webiny/project-utils/*": ["../project-utils/src/*"],
-      "@webiny/project-utils": ["../project-utils/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"],
       "@webiny/api-dynamodb-to-elasticsearch/*": ["../api-dynamodb-to-elasticsearch/src/*"],

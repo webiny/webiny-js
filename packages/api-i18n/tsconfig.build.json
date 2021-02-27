@@ -11,8 +11,7 @@
     "../handler-graphql",
     "../handler-client",
     "../handler-db",
-    "../db-dynamodb",
-    "../handler-http"
+    "../db-dynamodb"
   ],
   "compilerOptions": {
     "outDir": "dist",

@@ -1,10 +1,18 @@
 {
   "extends": "../../tsconfig",
   "references": [
-    { "path": "../handler" },
-    { "path": "../handler-args" },
-    { "path": "../handler-client" },
-    { "path": "../handler-http" }
+    {
+      "path": "../handler"
+    },
+    {
+      "path": "../handler-args"
+    },
+    {
+      "path": "../handler-client"
+    },
+    {
+      "path": "../handler-http"
+    }
   ],
   "compilerOptions": {
     "paths": {

@@ -1,15 +1,33 @@
 {
   "extends": "../../tsconfig",
   "references": [
-    { "path": "../api-security" },
-    { "path": "../api-security-tenancy" },
-    { "path": "../db-dynamodb" },
-    { "path": "../handler" },
-    { "path": "../handler-aws" },
-    { "path": "../handler-client" },
-    { "path": "../handler-db" },
-    { "path": "../handler-graphql" },
-    { "path": "../plugins" }
+    {
+      "path": "../api-security"
+    },
+    {
+      "path": "../api-security-tenancy"
+    },
+    {
+      "path": "../db-dynamodb"
+    },
+    {
+      "path": "../handler"
+    },
+    {
+      "path": "../handler-aws"
+    },
+    {
+      "path": "../handler-client"
+    },
+    {
+      "path": "../handler-db"
+    },
+    {
+      "path": "../handler-graphql"
+    },
+    {
+      "path": "../plugins"
+    }
   ],
   "compilerOptions": {
     "paths": {

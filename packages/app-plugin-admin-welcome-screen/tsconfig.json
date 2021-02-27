@@ -1,11 +1,21 @@
 {
   "extends": "../../tsconfig.json",
   "references": [
-    { "path": "../app-admin" },
-    { "path": "../app-security" },
-    { "path": "../plugins" },
-    { "path": "../react-router" },
-    { "path": "../ui" }
+    {
+      "path": "../app-admin"
+    },
+    {
+      "path": "../app-security"
+    },
+    {
+      "path": "../plugins"
+    },
+    {
+      "path": "../react-router"
+    },
+    {
+      "path": "../ui"
+    }
   ],
   "compilerOptions": {
     "paths": {

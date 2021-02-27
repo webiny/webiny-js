@@ -1,6 +1,13 @@
 {
   "extends": "../../tsconfig.json",
-  "references": [{ "path": "../app" }, { "path": "../plugins" }],
+  "references": [
+    {
+      "path": "../app"
+    },
+    {
+      "path": "../plugins"
+    }
+  ],
   "compilerOptions": {
     "paths": {
       "@webiny/app/*": ["../app/src/*"],

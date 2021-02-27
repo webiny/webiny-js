@@ -1,8 +1,15 @@
 {
   "extends": "../../tsconfig",
-  "references": [{ "path": "../i18n" }],
+  "references": [
+    {
+      "path": "../i18n"
+    }
+  ],
   "compilerOptions": {
-    "paths": { "@webiny/i18n/*": ["../i18n/src/*"], "@webiny/i18n": ["../i18n/src"] },
+    "paths": {
+      "@webiny/i18n/*": ["../i18n/src/*"],
+      "@webiny/i18n": ["../i18n/src"]
+    },
     "baseUrl": "."
   }
 }

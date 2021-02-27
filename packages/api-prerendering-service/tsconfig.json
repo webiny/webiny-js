@@ -1,13 +1,27 @@
 {
   "extends": "../../tsconfig",
   "references": [
-    { "path": "../error" },
-    { "path": "../handler" },
-    { "path": "../handler-args" },
-    { "path": "../handler-client" },
-    { "path": "../handler-db" },
-    { "path": "../plugins" },
-    { "path": "../db" }
+    {
+      "path": "../error"
+    },
+    {
+      "path": "../handler"
+    },
+    {
+      "path": "../handler-args"
+    },
+    {
+      "path": "../handler-client"
+    },
+    {
+      "path": "../handler-db"
+    },
+    {
+      "path": "../plugins"
+    },
+    {
+      "path": "../db"
+    }
   ],
   "compilerOptions": {
     "paths": {

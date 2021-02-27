@@ -9,9 +9,15 @@
     "../validation"
   ],
   "references": [
-    { "path": "../form" },
-    { "path": "../storybook-utils" },
-    { "path": "../validation" }
+    {
+      "path": "../form"
+    },
+    {
+      "path": "../storybook-utils"
+    },
+    {
+      "path": "../validation"
+    }
   ],
   "compilerOptions": {
     "paths": {

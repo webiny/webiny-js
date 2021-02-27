@@ -2,10 +2,18 @@
   "extends": "../../tsconfig",
   "include": ["src"],
   "references": [
-    { "path": "../error" },
-    { "path": "../cli-plugin-scaffold" },
-    { "path": "../handler" },
-    { "path": "../plugins" }
+    {
+      "path": "../error"
+    },
+    {
+      "path": "../cli-plugin-scaffold"
+    },
+    {
+      "path": "../handler"
+    },
+    {
+      "path": "../plugins"
+    }
   ],
   "compilerOptions": {
     "paths": {

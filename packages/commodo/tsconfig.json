@@ -1,6 +1,9 @@
 {
   "extends": "../../tsconfig.json",
   "exclude": ["./dist"],
-  "compilerOptions": { "paths": {}, "baseUrl": "." },
+  "compilerOptions": {
+    "paths": {},
+    "baseUrl": "."
+  },
   "references": []
 }

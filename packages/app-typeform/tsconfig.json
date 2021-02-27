@@ -1,9 +1,15 @@
 {
   "extends": "../../tsconfig",
   "references": [
-    { "path": "../app" },
-    { "path": "../app-page-builder" },
-    { "path": "../validation" }
+    {
+      "path": "../app"
+    },
+    {
+      "path": "../app-page-builder"
+    },
+    {
+      "path": "../validation"
+    }
   ],
   "compilerOptions": {
     "paths": {

@@ -1,9 +1,16 @@
 {
   "extends": "../../tsconfig",
   "exclude": ["node_modules", "./dist", "../plugins"],
-  "references": [{ "path": "../plugins" }],
+  "references": [
+    {
+      "path": "../plugins"
+    }
+  ],
   "compilerOptions": {
-    "paths": { "@webiny/plugins/*": ["../plugins/src/*"], "@webiny/plugins": ["../plugins/src"] },
+    "paths": {
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"]
+    },
     "baseUrl": "."
   }
 }

@@ -2,10 +2,18 @@
   "extends": "../../tsconfig",
   "include": ["./src"],
   "references": [
-    { "path": "../error" },
-    { "path": "../handler" },
-    { "path": "../handler-graphql" },
-    { "path": "../plugins" }
+    {
+      "path": "../error"
+    },
+    {
+      "path": "../handler"
+    },
+    {
+      "path": "../handler-graphql"
+    },
+    {
+      "path": "../plugins"
+    }
   ],
   "compilerOptions": {
     "paths": {

@@ -2,23 +2,54 @@
   "extends": "../../tsconfig",
   "include": ["src", "__tests__/**/*.ts"],
   "references": [
-    { "path": "../api-i18n" },
-    { "path": "../api-i18n-content" },
-    { "path": "../api-security" },
-    { "path": "../api-security-tenancy" },
-    { "path": "../commodo" },
-    { "path": "../db-dynamodb" },
-    { "path": "../error" },
-    { "path": "../handler" },
-    { "path": "../handler-aws" },
-    { "path": "../handler-db" },
-    { "path": "../handler-graphql" },
-    { "path": "../handler-http" },
-    { "path": "../plugins" },
-    { "path": "../validation" },
-    { "path": "../api-dynamodb-to-elasticsearch" },
-    { "path": "../api-plugin-elastic-search-client" },
-    { "path": "../project-utils" }
+    {
+      "path": "../api-i18n"
+    },
+    {
+      "path": "../api-i18n-content"
+    },
+    {
+      "path": "../api-security"
+    },
+    {
+      "path": "../api-security-tenancy"
+    },
+    {
+      "path": "../commodo"
+    },
+    {
+      "path": "../db-dynamodb"
+    },
+    {
+      "path": "../error"
+    },
+    {
+      "path": "../handler"
+    },
+    {
+      "path": "../handler-aws"
+    },
+    {
+      "path": "../handler-db"
+    },
+    {
+      "path": "../handler-graphql"
+    },
+    {
+      "path": "../handler-http"
+    },
+    {
+      "path": "../plugins"
+    },
+    {
+      "path": "../validation"
+    },
+    {
+      "path": "../api-dynamodb-to-elasticsearch"
+    },
+    {
+      "path": "../api-plugin-elastic-search-client"
+    }
   ],
   "compilerOptions": {
     "paths": {
@@ -53,9 +84,7 @@
       "@webiny/api-dynamodb-to-elasticsearch/*": ["../api-dynamodb-to-elasticsearch/src/*"],
       "@webiny/api-dynamodb-to-elasticsearch": ["../api-dynamodb-to-elasticsearch/src"],
       "@webiny/api-plugin-elastic-search-client/*": ["../api-plugin-elastic-search-client/src/*"],
-      "@webiny/api-plugin-elastic-search-client": ["../api-plugin-elastic-search-client/src"],
-      "@webiny/project-utils/*": ["../project-utils/src/*"],
-      "@webiny/project-utils": ["../project-utils/src"]
+      "@webiny/api-plugin-elastic-search-client": ["../api-plugin-elastic-search-client/src"]
     },
     "baseUrl": "."
   }

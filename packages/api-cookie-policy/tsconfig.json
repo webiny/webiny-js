@@ -1,9 +1,15 @@
 {
   "extends": "../../tsconfig",
   "references": [
-    { "path": "../commodo" },
-    { "path": "../handler-graphql" },
-    { "path": "../validation" }
+    {
+      "path": "../commodo"
+    },
+    {
+      "path": "../handler-graphql"
+    },
+    {
+      "path": "../validation"
+    }
   ],
   "compilerOptions": {
     "paths": {

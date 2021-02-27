@@ -1,7 +1,14 @@
 {
   "extends": "../../tsconfig",
   "include": ["./src"],
-  "references": [{ "path": "../api-plugin-elastic-search-client" }, { "path": "../handler" }],
+  "references": [
+    {
+      "path": "../api-plugin-elastic-search-client"
+    },
+    {
+      "path": "../handler"
+    }
+  ],
   "compilerOptions": {
     "paths": {
       "@webiny/api-plugin-elastic-search-client/*": ["../api-plugin-elastic-search-client/src/*"],

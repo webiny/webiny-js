@@ -1,11 +1,21 @@
 {
   "extends": "../../tsconfig",
   "references": [
-    { "path": "../api-security" },
-    { "path": "../api-security-tenancy" },
-    { "path": "../handler" },
-    { "path": "../handler-graphql" },
-    { "path": "../handler-http" }
+    {
+      "path": "../api-security"
+    },
+    {
+      "path": "../api-security-tenancy"
+    },
+    {
+      "path": "../handler"
+    },
+    {
+      "path": "../handler-graphql"
+    },
+    {
+      "path": "../handler-http"
+    }
   ],
   "compilerOptions": {
     "paths": {

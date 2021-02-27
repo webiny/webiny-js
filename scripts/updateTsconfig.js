@@ -9,32 +9,30 @@ const createPackageRelativePath = pkg => {
     return `../${name}`;
 };
 
-const packages = fsExtra.readdirSync("./packages");
+const packages = fsExtra.readdirSync("./packages").reduce((collection, pkg) => {
+    const packageFile = `./packages/${pkg}/package.json`;
+    const tsconfigFile = `./packages/${pkg}/tsconfig.json`;
+    const tsconfigbuildFile = `./packages/${pkg}/tsconfig.build.json`;
 
-const files = packages
-    .map(pkg => {
-        const packageFile = `./packages/${pkg}/package.json`;
-        const tsconfigFile = `./packages/${pkg}/tsconfig.json`;
-        const tsconfigbuildFile = `./packages/${pkg}/tsconfig.build.json`;
+    if (
+        !fsExtra.existsSync(packageFile) ||
+        !fsExtra.existsSync(tsconfigbuildFile) ||
+        !fsExtra.existsSync(tsconfigFile)
+    ) {
+        return collection;
+    }
+    collection[pkg] = {
+        pkg,
+        packageFile,
+        tsconfigFile,
+        tsconfigbuildFile
+    };
+    return collection;
+}, {});
 
-        if (
-            !fsExtra.existsSync(packageFile) ||
-            !fsExtra.existsSync(tsconfigbuildFile) ||
-            !fsExtra.existsSync(tsconfigFile)
-        ) {
-            return null;
-        }
-
-        return {
-            pkg,
-            packageFile,
-            tsconfigFile,
-            tsconfigbuildFile
-        };
-    })
-    .filter(Boolean);
-
-for (const { pkg: currentPackage, packageFile, tsconfigFile, tsconfigbuildFile } of files) {
+for (const key in packages) {
+    const pkg = packages[key];
+    const { pkg: currentPackage, packageFile, tsconfigFile, tsconfigbuildFile } = pkg;
     const packageJson = fsExtra.readJsonSync(packageFile);
     const tsconfigJson = fsExtra.readJsonSync(tsconfigFile);
     const tsconfigbuildJson = fsExtra.readJsonSync(tsconfigbuildFile);
@@ -47,7 +45,12 @@ for (const { pkg: currentPackage, packageFile, tsconfigFile, tsconfigbuildFile }
             if (pkg === `@webiny/${currentPackage}`) {
                 return false;
             }
-            return pkg.startsWith("@webiny/");
+            const isWebiny = pkg.startsWith("@webiny/");
+            if (!isWebiny) {
+                return false;
+            }
+            const name = pkg.replace("@webiny/", "");
+            return !!packages[name];
         });
 
     tsconfigJson.compilerOptions = {
