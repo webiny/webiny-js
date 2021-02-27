@@ -114,7 +114,9 @@ module.exports = [
                 "pulumi <folder>",
                 `Runs a Pulumi command in the provided project application folder. Note: make sure to use "--" before the actual Pulumi command.`,
                 () => {
-                    yargs.example("$0 pulumi apps/website --env dev -- config set foo bar --secret");
+                    yargs.example(
+                        "$0 pulumi apps/website --env dev -- config set foo bar --secret"
+                    );
 
                     yargs.positional("folder", {
                         describe: `Project application folder`,
