@@ -143,7 +143,7 @@ describe("READ - Resolvers", () => {
                         id: categoryId
                     }
                 }).then(([data]) => data),
-            ({ data }) => data.getCategory.data
+            ({ data }) => !!data.getCategory.data.id
         );
 
         expect(result).toEqual({
@@ -291,7 +291,7 @@ describe("READ - Resolvers", () => {
                     limit: 1
                 }).then(([data]) => data),
             ({ data }) => data.listCategories.data[0].id === animals.id,
-            { name: "list entries with limit after" }
+            { name: "list entries with limit after", wait: 500 }
         );
 
         expect(firstResult).toEqual({

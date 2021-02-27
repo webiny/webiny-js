@@ -128,7 +128,7 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
         securityPlugins(),
         apiKeyAuthentication({ identityType: "api-key" }),
         apiKeyAuthorization({ identityType: "api-key" }),
-        i18nContext,
+        i18nContext(),
         i18nContentPlugins(),
         mockLocalesPlugins(),
         elasticSearchPlugins(),
