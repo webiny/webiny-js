@@ -562,15 +562,16 @@ const plugin: ContextPlugin<PbContext> = {
                     updateData.settings = await updateSettingsModel.toJSON();
                     updateData.savedOn = new Date().toISOString();
 
+                    const newContent = updateData.content;
+                    if (newContent) {
+                        updateData.content = compressContent(newContent);
+                    }
+
                     await executeHookCallbacks(hookPlugins, "beforeUpdate", context, page);
 
                     // Assign new data to the page record
                     Object.assign(page, updateData);
                     Object.assign(latestPage, updateData);
-
-                    if (updateData.content) {
-                        updateData.content = compressContent(updateData.content);
-                    }
 
                     const batch = db.batch().update({
                         ...defaults.db,
@@ -589,7 +590,7 @@ const plugin: ContextPlugin<PbContext> = {
                         });
 
                         // Update the ES index according to the value of the "latest pages lists" visibility setting.
-                        if (get(updateData, "visibility.list.latest") !== false) {
+                        if (get(page, "visibility.list.latest") !== false) {
                             batch.update({
                                 ...defaults.esDb,
                                 query: latestPageKeys,
@@ -611,7 +612,10 @@ const plugin: ContextPlugin<PbContext> = {
 
                     await executeHookCallbacks(hookPlugins, "afterUpdate", context, page);
 
-                    return page;
+                    return {
+                        ...page,
+                        content: newContent
+                    };
                 },
 
                 async delete(pageId) {
