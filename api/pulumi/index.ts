@@ -8,7 +8,7 @@ export = async () => {
     });
 
     // Import resources factory.
-    return await import("./benchmark").then(module => {
+    return await import("./default").then(module => {
         // Configure resources and return the expected outputs.
         return module.default();
     });
