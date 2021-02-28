@@ -4,10 +4,11 @@ import Graphql from "./graphql";
 import HeadlessCMS from "./headlessCMS";
 import ApiGateway from "./apiGateway";
 import Cloudfront from "./cloudfront";
-import ElasticSearch from "./elasticSearch";
 import FileManager from "./fileManager";
+import ElasticSearch from "./elasticSearch";
 import PageBuilder from "./pageBuilder";
 import PrerenderingService from "./prerenderingService";
+import HeadlessCMSTables from "./headlessCMSTables";
 
 export default () => {
     const dynamoDb = new DynamoDB();
@@ -32,12 +33,19 @@ export default () => {
         bucket: fileManager.bucket
     });
 
+    const headlessCmsTables = new HeadlessCMSTables(
+        elasticSearch.domain,
+        elasticSearch.streamTarget
+    );
+
     const api = new Graphql({
         env: {
             COGNITO_REGION: String(process.env.AWS_REGION),
             COGNITO_USER_POOL_ID: cognito.userPool.id,
             DB_TABLE: dynamoDb.table.name,
             DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
+            DB_TABLE_HEADLESS_CMS: headlessCmsTables.dataTable.name,
+            DB_TABLE_HEADLESS_CMS_ELASTICSEARCH: headlessCmsTables.esTable.name,
             DEBUG: String(process.env.DEBUG),
             ELASTIC_SEARCH_ENDPOINT: elasticSearch.domain.endpoint,
             PRERENDERING_RENDER_HANDLER: prerenderingService.functions.render.arn,
@@ -54,6 +62,8 @@ export default () => {
             COGNITO_USER_POOL_ID: cognito.userPool.id,
             DB_TABLE: dynamoDb.table.name,
             DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
+            DB_TABLE_HEADLESS_CMS: headlessCmsTables.dataTable.name,
+            DB_TABLE_HEADLESS_CMS_ELASTICSEARCH: headlessCmsTables.esTable.name,
             DEBUG: String(process.env.DEBUG),
             ELASTIC_SEARCH_ENDPOINT: elasticSearch.domain.endpoint,
             S3_BUCKET: fileManager.bucket.id
@@ -102,6 +112,9 @@ export default () => {
         apiUrl: cloudfront.cloudfront.domainName.apply(value => `https://${value}`),
         cognitoUserPoolId: cognito.userPool.id,
         cognitoAppClientId: cognito.userPoolClient.id,
+        mainTable: dynamoDb.table.name,
+        headlessCmsDataTable: headlessCmsTables.dataTable.name,
+        headlessCmsESTable: headlessCmsTables.esTable.name,
         updatePbSettingsFunction: pageBuilder.functions.updateSettings.arn
     };
 };
