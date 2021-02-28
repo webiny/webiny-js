@@ -614,7 +614,7 @@ const plugin: ContextPlugin<PbContext> = {
 
                     return {
                         ...page,
-                        content: newContent
+                        content: newContent || page.content
                     };
                 },
 
