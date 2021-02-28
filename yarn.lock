@@ -8493,6 +8493,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/cli-plugin-deploy-pulumi@workspace:packages/cli-plugin-deploy-pulumi"
   dependencies:
+    "@pulumi/pulumi": ^2.21.2
     "@webiny/cli": ^5.0.0-beta.4
     "@webiny/pulumi-sdk": ^5.0.0-beta.4
     chalk: 4.1.0
