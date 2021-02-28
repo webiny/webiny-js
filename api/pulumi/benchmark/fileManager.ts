@@ -1,6 +1,5 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-import vpc from "./vpc";
 
 // @ts-ignore
 import { getLayerArn } from "@webiny/aws-layers";
@@ -58,15 +57,11 @@ class FileManager {
             role: this.role.arn,
             description: "Performs image optimization, resizing, etc.",
             code: new pulumi.asset.AssetArchive({
-                ".": new pulumi.asset.FileArchive("../../code/fileManager/transform/build")
+                ".": new pulumi.asset.FileArchive("./../code/fileManager/transform/build")
             }),
             layers: [getLayerArn("webiny-v4-sharp", String(process.env.AWS_REGION))],
             environment: {
                 variables: { S3_BUCKET: this.bucket.id }
-            },
-            vpcConfig: {
-                subnetIds: vpc.subnets.private.map(subNet => subNet.id),
-                securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
             }
         });
 
@@ -78,14 +73,10 @@ class FileManager {
             memorySize: 512,
             description: "Triggered when a file is deleted.",
             code: new pulumi.asset.AssetArchive({
-                ".": new pulumi.asset.FileArchive("../../code/fileManager/manage/build")
+                ".": new pulumi.asset.FileArchive("./../code/fileManager/manage/build")
             }),
             environment: {
                 variables: { S3_BUCKET: this.bucket.id }
-            },
-            vpcConfig: {
-                subnetIds: vpc.subnets.private.map(subNet => subNet.id),
-                securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
             }
         });
 
@@ -97,17 +88,13 @@ class FileManager {
             memorySize: 512,
             description: "Serves previously uploaded files.",
             code: new pulumi.asset.AssetArchive({
-                ".": new pulumi.asset.FileArchive("../../code/fileManager/download//build")
+                ".": new pulumi.asset.FileArchive("./../code/fileManager/download/build")
             }),
             environment: {
                 variables: {
                     S3_BUCKET: this.bucket.id,
                     IMAGE_TRANSFORMER_FUNCTION: transform.arn
                 }
-            },
-            vpcConfig: {
-                subnetIds: vpc.subnets.private.map(subNet => subNet.id),
-                securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
             }
         });
 

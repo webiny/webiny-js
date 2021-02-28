@@ -1,16 +1,15 @@
 import * as path from "path";
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-import defaultLambdaRole from "./defaultLambdaRole";
-//@ts-ignore
 import { createInstallationZip } from "@webiny/api-page-builder/installation";
+import defaultLambdaRole from "./defaultLambdaRole";
 
 class PageBuilder {
     functions: {
         updateSettings: aws.lambda.Function;
     };
     constructor({ env, bucket }: { env: Record<string, any>; bucket: aws.s3.Bucket }) {
-        const pbInstallationZipPath = path.join(path.resolve(), ".tmp", "pbInstallation.zip");
+        const pbInstallationZipPath = path.join(process.cwd(), ".tmp", "pbInstallation.zip");
 
         createInstallationZip(pbInstallationZipPath);
 
@@ -37,7 +36,7 @@ class PageBuilder {
             description:
                 "Updates default Page Builder app's settings, e.g. website or prerendering URLs, default title, etc.",
             code: new pulumi.asset.AssetArchive({
-                ".": new pulumi.asset.FileArchive("./../code/pageBuilder/updateSettings/build")
+                ".": new pulumi.asset.FileArchive("../../code/pageBuilder/updateSettings/build")
             }),
             environment: {
                 variables: {

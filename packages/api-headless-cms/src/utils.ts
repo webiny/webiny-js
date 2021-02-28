@@ -35,7 +35,8 @@ export const defaults = {
         ]
     }),
     esDb: (): DatabaseConfig => ({
-        table: process.env.DB_TABLE_ELASTICSEARCH,
+        table:
+            process.env.DB_TABLE_HEADLESS_CMS_ELASTICSEARCH || process.env.DB_TABLE_ELASTICSEARCH,
         keys: [
             {
                 primary: true,

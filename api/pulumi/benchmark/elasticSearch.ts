@@ -5,6 +5,7 @@ import defaultLambdaRole from "./defaultLambdaRole";
 class ElasticSearch {
     domain: aws.elasticsearch.Domain;
     table: aws.dynamodb.Table;
+    streamTarget: aws.lambda.Function;
 
     constructor() {
         const domainName = "webiny-js";
@@ -60,8 +61,8 @@ class ElasticSearch {
             billingMode: "PAY_PER_REQUEST",
             hashKey: "PK",
             rangeKey: "SK",
-            readCapacity: 1,
-            writeCapacity: 1
+            readCapacity: 0,
+            writeCapacity: 0
         });
 
         /**
@@ -70,7 +71,7 @@ class ElasticSearch {
          * we store data for Elasticsearch in a DynamoDB table, and asynchronously insert it into Elasticsearch
          * using batching.
          */
-        const streamTarget = new aws.lambda.Function("dynamo-to-elastic", {
+        this.streamTarget = new aws.lambda.Function("dynamo-to-elastic", {
             role: defaultLambdaRole.role.arn,
             runtime: "nodejs12.x",
             handler: "handler.handler",
@@ -83,13 +84,13 @@ class ElasticSearch {
             },
             description: "Process DynamoDB Stream.",
             code: new pulumi.asset.AssetArchive({
-                ".": new pulumi.asset.FileArchive("../../code/dynamoToElastic/build")
+                ".": new pulumi.asset.FileArchive("../code/dynamoToElastic/build")
             })
         });
 
         new aws.lambda.EventSourceMapping("dynamo-to-elastic", {
             eventSourceArn: this.table.streamArn,
-            functionName: streamTarget.arn,
+            functionName: this.streamTarget.arn,
             startingPosition: "LATEST",
             maximumRetryAttempts: 3,
             batchSize: 100,
