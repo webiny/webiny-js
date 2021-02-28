@@ -18,9 +18,7 @@ module.exports = async (inputs, context) => {
     });
 
     if (env) {
-        context.info(
-            `Environment provided - selecting ${green(env)} Pulumi stack.`
-        );
+        context.info(`Environment provided - selecting ${green(env)} Pulumi stack.`);
 
         let stackExists = true;
         try {
@@ -30,13 +28,13 @@ module.exports = async (inputs, context) => {
         }
 
         if (!stackExists) {
-            throw new Error(`Project application ${red(folder)} (${red(env)} environment) does not exist.`);
+            throw new Error(
+                `Project application ${red(folder)} (${red(env)} environment) does not exist.`
+            );
         }
     }
 
-    context.info(
-        `Running the following command in ${green(folder)} folder:`
-    );
+    context.info(`Running the following command in ${green(folder)} folder:`);
     context.info(`${green("pulumi " + command.join(" "))}`);
 
     return pulumi.run({
