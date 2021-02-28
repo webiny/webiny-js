@@ -1,4 +1,3 @@
-const { basename } = require("path");
 const { red } = require("chalk");
 const path = require("path");
 const loadEnvVariables = require("../utils/loadEnvVariables");
