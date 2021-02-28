@@ -51,11 +51,7 @@ module.exports = async (inputs, context) => {
     }
 
     if (!stackExists) {
-        context.error(
-            `Could not find Pulumi stack information for ${red(folder)} project application, ${red(
-                env
-            )} environment.`
-        );
+        context.error(`Project application ${red(folder)} (${red(env)} environment) does not exist.`);
         return;
     }
 
