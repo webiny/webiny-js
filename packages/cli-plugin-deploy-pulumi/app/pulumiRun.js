@@ -1,14 +1,11 @@
-const { green } = require("chalk");
-const path = require("path");
+const { green, red } = require("chalk");
 const loadEnvVariables = require("../utils/loadEnvVariables");
 const getPulumi = require("../utils/getPulumi");
 const login = require("../utils/login");
 
 module.exports = async (inputs, context) => {
-    const [, ...commandArray] = inputs._;
+    const [, ...command] = inputs._;
     const { env, folder } = inputs;
-
-    const stacksDir = path.join(".", folder).replace(/\\/g, "/");
 
     await loadEnvVariables(inputs, context);
 
@@ -16,18 +13,34 @@ module.exports = async (inputs, context) => {
 
     const pulumi = getPulumi({
         execa: {
-            cwd: stacksDir
+            cwd: folder
         }
     });
 
-    const command = commandArray.join(" ");
+    if (env) {
+        context.info(
+            `Environment provided - selecting ${green(env)} Pulumi stack.`
+        );
+
+        let stackExists = true;
+        try {
+            await pulumi.run({ command: ["stack", "select", env] });
+        } catch (e) {
+            stackExists = false;
+        }
+
+        if (!stackExists) {
+            throw new Error(`Project application ${red(folder)} (${red(env)} environment) does not exist.`);
+        }
+    }
+
     context.info(
-        `Running the following command in ${green(stacksDir)} folder (${green(env)} environment):`
+        `Running the following command in ${green(folder)} folder:`
     );
-    context.info(`${green("pulumi " + command)}`);
+    context.info(`${green("pulumi " + command.join(" "))}`);
 
     return pulumi.run({
-        command: commandArray,
+        command,
         execa: { stdio: "inherit" }
     });
 };

@@ -258,7 +258,7 @@ ${targetName}Plugin()
             console.log(
                 indentString(
                     `4. Finally, deploy the ${chalk.green(location)} stack by running ${chalk.green(
-                        `yarn webiny app deploy ${location} --env=dev`
+                        `yarn webiny deploy ${location} --env=dev`
                     )}.`,
                     2
                 )

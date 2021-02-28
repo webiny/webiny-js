@@ -40,12 +40,30 @@ const processHooks = async (hook, { context, ...options }) => {
 const SECRETS_PROVIDER = process.env.PULUMI_SECRETS_PROVIDER;
 
 module.exports = async (inputs, context) => {
+    const { env, folder, build } = inputs;
+
+    // If folder not specified, that means we want to deploy the whole project (all project applications).
+    // For that, we look if there are registered plugins that perform that.
+    if (!folder) {
+        const plugin = context.plugins.byName("cli-command-deployment-deploy-all");
+        if (!plugin) {
+            throw new Error(
+                `Cannot continue - "cli-command-deployment-deploy-all" plugin not found.`
+            );
+        }
+
+        return plugin.deploy(inputs, context);
+    }
+
+    if (!env) {
+        throw new Error(`Please specify environment, for example "dev".`);
+    }
+
     const start = new Date();
     const getDuration = () => {
         return (new Date() - start) / 1000;
     };
 
-    const { env, folder, build } = inputs;
     const stackName = getStackName(folder);
 
     await loadEnvVariables(inputs, context);

@@ -4,16 +4,15 @@ const execa = require("execa");
 const { sendEvent } = require("@webiny/tracking");
 const sleep = require("../utils/sleep");
 
-const deploy = (stack, inputs) => {
-    return execa(
+const deploy = (stack, env, inputs) =>
+    execa(
         "yarn",
         [
             "webiny",
-            "app",
             "deploy",
             stack,
             "--env",
-            inputs.env,
+            env,
             "--debug",
             Boolean(inputs.debug),
             "--build",
@@ -25,10 +24,9 @@ const deploy = (stack, inputs) => {
             stdio: "inherit"
         }
     );
-};
 
 module.exports = async (inputs, context) => {
-    const { env } = inputs;
+    const { env = "dev" } = inputs;
 
     // 0. Let's just make sure Pulumi is installed.
     const installed = await getPulumi().install();
@@ -58,7 +56,7 @@ module.exports = async (inputs, context) => {
         isFirstDeployment && console.log();
         context.info(`Deploying ${green("api")} project application...`);
 
-        await deploy("api", inputs);
+        await deploy("api", env, inputs);
         context.success(`${green("api")} project application was deployed successfully!`);
         isFirstDeployment && (await sleep(2000));
 
@@ -67,7 +65,7 @@ module.exports = async (inputs, context) => {
         context.info(`Deploying ${green("apps/admin")} project application...`);
         isFirstDeployment && (await sleep());
 
-        await deploy("apps/admin", inputs);
+        await deploy("apps/admin", env, inputs);
         context.success(`${green("apps/admin")} project application was deployed successfully!`);
 
         // Deploying `apps/admin` project application.
@@ -75,7 +73,7 @@ module.exports = async (inputs, context) => {
         context.info(`Deploying ${green("apps/website")} project application...`);
         isFirstDeployment && (await sleep());
 
-        await deploy("apps/website", inputs);
+        await deploy("apps/website", env, inputs);
         context.success(`${green("apps/website")} project application was deployed successfully!`);
 
         await sendEvent({ event: "project-deploy-end" });
@@ -128,9 +126,9 @@ module.exports = async (inputs, context) => {
                 usefulLinks,
                 "",
                 `💡 Tip: to deploy project applications separately, use the ${green(
-                    "app deploy"
+                    "deploy"
                 )} command (e.g. ${green(
-                    `yarn webiny app deploy apps/website --env ${env}`
+                    `yarn webiny deploy apps/website --env ${env}`
                 )}). For additional help, please run ${green("yarn webiny --help")}.`
             ].join("\n")
         );
