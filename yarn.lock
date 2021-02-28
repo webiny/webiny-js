@@ -6554,13 +6554,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^16.14.2":
-  version: 16.14.4
-  resolution: "@types/react@npm:16.14.4"
+"@types/react@npm:16.14.2":
+  version: 16.14.2
+  resolution: "@types/react@npm:16.14.2"
   dependencies:
     "@types/prop-types": "*"
     csstype: ^3.0.2
-  checksum: f994d97aa05233e4f62cd42940ea4290ef1f9a8f3eb0ebda1ea39ed7ae20a16fff7ae1948952dce215b580c2a439fbf451556601be97ebe53a22dbce8a4e31a4
+  checksum: 41d227d4e9a45b1ad6d80c9b0fe9af003d95d03a0f2f2495a537c36d69541439fcff67edcef241e88c8ab7257377dbe8737d013d3f9b9503b76174165083f7b6
   languageName: node
   linkType: hard
 
@@ -29946,7 +29946,7 @@ resolve@1.12.2:
     "@types/jest": ^24.0.24
     "@types/jquery": ^3.3.31
     "@types/node": ^12.12.22
-    "@types/react": ^16.14.3
+    "@types/react": 16.14.2
     "@types/react-dom": ^17.0.0
     "@typescript-eslint/eslint-plugin": ^4.14.1
     "@typescript-eslint/parser": ^4.14.1
