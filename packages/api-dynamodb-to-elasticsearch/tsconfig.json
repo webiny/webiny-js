@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig",
+  "include": ["./src"],
+  "references": [
+    {
+      "path": "../api-plugin-elastic-search-client"
+    },
+    {
+      "path": "../handler"
+    }
+  ]
+}

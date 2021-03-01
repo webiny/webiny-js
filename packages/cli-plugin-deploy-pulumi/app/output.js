@@ -1,27 +1,22 @@
-const { basename } = require("path");
 const { red } = require("chalk");
 const path = require("path");
 const loadEnvVariables = require("../utils/loadEnvVariables");
 const getPulumi = require("../utils/getPulumi");
-
-const getStackName = folder => {
-    folder = folder.split("/").pop();
-    return folder === "." ? basename(process.cwd()) : folder;
-};
+const login = require("../utils/login");
 
 module.exports = async (inputs, context) => {
     const { env, folder, json } = inputs;
-    const stacksDir = path.join(".", folder).replace(/\\/g, "/");
+    const projectApplicationDir = path.join(".", folder).replace(/\\/g, "/");
 
     await loadEnvVariables(inputs, context);
 
+    await login(folder);
+
     const pulumi = getPulumi({
         execa: {
-            cwd: stacksDir
+            cwd: projectApplicationDir
         }
     });
-
-    const stackName = getStackName(folder);
 
     let stackExists = true;
     try {
@@ -44,5 +39,5 @@ module.exports = async (inputs, context) => {
         return console.log(JSON.stringify(null));
     }
 
-    context.error(`${red(stackName)} does not exist!`);
+    context.error(`Project application ${red(folder)} (${red(env)} environment) does not exist.`);
 };

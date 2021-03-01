@@ -116,20 +116,13 @@ const setup = async args => {
             stdio: "inherit"
         };
 
-        await execa("yarn", [], options);
-
-        /*
-        // TODO: finish logging.
-        let logStream;
-        if (log) {
-            logStream = fs.createWriteStream(context.logPath);
-            const runner = execa("yarn", [], options);
-            runner.stdout.pipe(logStream);
-            runner.stderr.pipe(logStream);
-            await runner;
-        } else {
+        try {
             await execa("yarn", [], options);
-        }*/
+        } catch (e) {
+            throw new Error(
+                "Failed while installing project dependencies. Please check the above logs for more information."
+            );
+        }
     }
 
     if (!IS_TEST) {

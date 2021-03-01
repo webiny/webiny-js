@@ -4,6 +4,7 @@ import { NotAuthorizedError } from "@webiny/api-security";
 import Error from "@webiny/error";
 import { File, FileManagerContext, FilePermission, FilesCRUD } from "../../types";
 import defaults from "./utils/defaults";
+import { paginateBatch } from "./utils/paginateBatch";
 import { decodeCursor, encodeCursor } from "./utils/cursors";
 import getPKPrefix from "./utils/getPKPrefix";
 import createFileModel from "./utils/createFileModel";
@@ -11,7 +12,11 @@ import checkBasePermissions from "./utils/checkBasePermissions";
 
 const BATCH_CREATE_MAX_FILES = 20;
 
-const getFileDocForES = (file: File & { [key: string]: any }, locale: string) => ({
+const getFileDocForES = (
+    file: File & { [key: string]: any },
+    locale: string,
+    context: FileManagerContext
+) => ({
     id: file.id,
     createdOn: file.createdOn,
     key: file.key,
@@ -21,7 +26,8 @@ const getFileDocForES = (file: File & { [key: string]: any }, locale: string) =>
     tags: file.tags,
     createdBy: file.createdBy,
     meta: file.meta,
-    locale
+    locale,
+    webinyVersion: context.WEBINY_VERSION
 });
 
 /**
@@ -37,7 +43,7 @@ const checkOwnership = (file: File, permission: FilePermission, context: FileMan
 };
 
 export default (context: FileManagerContext) => {
-    const { db, i18nContent, elasticSearch, security } = context;
+    const { db, i18nContent, security } = context;
     const localeCode = i18nContent?.locale?.code;
 
     const PK_FILE = id => `${getPKPrefix(context)}F#${id}`;
@@ -84,30 +90,37 @@ export default (context: FileManagerContext) => {
             };
 
             // Save file to DB.
-            await db.create({
-                data: {
-                    PK: PK_FILE(id),
-                    SK: "A",
-                    TYPE: "fm.file",
-                    ...file
-                }
-            });
-
-            // Index file to "ElasticSearch".
-            await elasticSearch.create({
-                ...defaults.es(context),
-                id,
-                body: getFileDocForES(file, localeCode)
-            });
+            await db
+                .batch()
+                .create({
+                    ...defaults.db,
+                    data: {
+                        PK: PK_FILE(id),
+                        SK: "A",
+                        TYPE: "fm.file",
+                        ...file
+                    }
+                })
+                .create({
+                    ...defaults.esDb,
+                    data: {
+                        PK: PK_FILE(id),
+                        SK: "A",
+                        index: defaults.es(context).index,
+                        data: getFileDocForES(file, localeCode, context)
+                    }
+                })
+                .execute();
 
             return file;
         },
         async updateFile(id, data) {
             const permission = await checkBasePermissions(context, { rwd: "w" });
+            const FILE_PK = PK_FILE(id);
 
             const [[file]] = await db.read<File>({
                 ...defaults.db,
-                query: { PK: PK_FILE(id), SK: "A" },
+                query: { PK: FILE_PK, SK: "A" },
                 limit: 1
             });
 
@@ -122,23 +135,31 @@ export default (context: FileManagerContext) => {
             await updatedFileData.validate();
 
             const updateFile = await updatedFileData.toJSON({ onlyDirty: true });
+            Object.assign(file, updateFile);
 
-            await db.update({
-                ...defaults.db,
-                query: { PK: PK_FILE(id), SK: "A" },
-                data: updateFile
-            });
+            await db
+                .batch()
+                .update({
+                    ...defaults.db,
+                    query: { PK: FILE_PK, SK: "A" },
+                    data: file
+                })
+                .update({
+                    ...defaults.esDb,
+                    query: {
+                        PK: FILE_PK,
+                        SK: "A"
+                    },
+                    data: {
+                        PK: FILE_PK,
+                        SK: "A",
+                        index: defaults.es(context).index,
+                        data: getFileDocForES(file, localeCode, context)
+                    }
+                })
+                .execute();
 
-            // Index file in "Elastic Search"
-            await elasticSearch.update({
-                ...defaults.es(context),
-                id,
-                body: {
-                    doc: updateFile
-                }
-            });
-
-            return { ...file, ...updateFile };
+            return file;
         },
         async deleteFile(id) {
             const permission = await checkBasePermissions(context, { rwd: "d" });
@@ -151,16 +172,18 @@ export default (context: FileManagerContext) => {
             checkOwnership(file, permission, context);
 
             // Delete from DB.
-            await db.delete({
-                ...defaults.db,
-                query: { PK: PK_FILE(id), SK: "A" }
-            });
+            await db
+                .batch()
+                .delete({
+                    ...defaults.db,
+                    query: { PK: PK_FILE(id), SK: "A" }
+                })
+                .delete({
+                    ...defaults.esDb,
+                    query: { PK: PK_FILE(id), SK: "A" }
+                })
+                .execute();
 
-            // Delete index form ES.
-            await elasticSearch.delete({
-                ...defaults.es(context),
-                id
-            });
             return true;
         },
         async createFilesInBatch(data) {
@@ -192,68 +215,46 @@ export default (context: FileManagerContext) => {
                 type: identity.type
             };
 
-            // Use Batch to save files in DB.
-            const batch = db.batch();
+            const FileModel = createFileModel();
+            const { index } = defaults.es(context);
             const files = [];
 
-            const FileModel = createFileModel();
+            // Process files 12 by 12. This will create DynamoDB batches of 24 (1 file also has 1 ES record).
+            await paginateBatch(data, 10, async items => {
+                const batch = db.batch();
+                for (let i = 0; i < items.length; i++) {
+                    const fileInstance = new FileModel().populate(items[i]);
+                    await fileInstance.validate();
 
-            for (let i = 0; i < data.length; i++) {
-                const fileData = data[i];
+                    const file = {
+                        ...(await fileInstance.toJSON()),
+                        id: mdbid(),
+                        tenant: tenant.id,
+                        createdBy
+                    };
 
-                const fileInstance = new FileModel().populate(fileData);
-                await fileInstance.validate();
+                    files.push(file);
 
-                const file = {
-                    ...(await fileInstance.toJSON()),
-                    id: mdbid(),
-                    tenant: tenant.id,
-                    createdBy
-                };
-
-                files.push(file);
-
-                batch.create({
-                    data: {
-                        PK: PK_FILE(file.id),
-                        SK: "A",
-                        ...file
-                    }
-                });
-            }
-
-            await batch.execute();
-
-            // Index files in ES.
-            // @ts-ignore
-            const body = files.flatMap(doc => [
-                { index: { _index: defaults.es(context).index, _id: doc.id } },
-                getFileDocForES(doc, localeCode)
-            ]);
-
-            const { body: bulkResponse } = await elasticSearch.bulk({ body });
-            if (bulkResponse.errors) {
-                const erroredDocuments = [];
-                // The items array has the same order of the dataset we just indexed.
-                // The presence of the `error` key indicates that the operation
-                // that we did for the document has failed.
-                bulkResponse.items.forEach((action, i) => {
-                    const operation = Object.keys(action)[0];
-                    if (action[operation].error) {
-                        erroredDocuments.push({
-                            // If the status is 429 it means that you can retry the document,
-                            // otherwise it's very likely a mapping error, and you should
-                            // fix the document before to try it again.
-                            status: action[operation].status,
-                            error: action[operation].error,
-                            operation: body[i * 2],
-                            document: body[i * 2 + 1]
+                    batch
+                        .create({
+                            data: {
+                                PK: PK_FILE(file.id),
+                                SK: "A",
+                                ...file
+                            }
+                        })
+                        .create({
+                            ...defaults.esDb,
+                            data: {
+                                PK: PK_FILE(file.id),
+                                SK: "A",
+                                index,
+                                data: getFileDocForES(file, localeCode, context)
+                            }
                         });
-                    }
-                });
-                console.warn("Bulk index of files failed.");
-                console.log(erroredDocuments);
-            }
+                }
+                await batch.execute();
+            });
 
             return files;
         },

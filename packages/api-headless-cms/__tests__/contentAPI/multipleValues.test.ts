@@ -9,12 +9,10 @@ import { useProductManageHandler } from "../utils/useProductManageHandler";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 
 describe("multiple values in field", () => {
-    const esCmsIndex = "root-headless-cms";
-
     const manageOpts = { path: "manage/en-US" };
 
     const {
-        elasticSearch,
+        clearAllIndex,
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
@@ -62,13 +60,13 @@ describe("multiple values in field", () => {
 
     beforeEach(async () => {
         try {
-            await elasticSearch.indices.create({ index: esCmsIndex });
+            await clearAllIndex();
         } catch {}
     });
 
     afterEach(async () => {
         try {
-            await elasticSearch.indices.delete({ index: esCmsIndex });
+            await clearAllIndex();
         } catch {}
     });
 

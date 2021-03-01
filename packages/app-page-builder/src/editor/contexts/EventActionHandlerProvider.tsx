@@ -279,6 +279,7 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
 
     const eventActionHandler = useMemo<EventActionHandler>(
         () => ({
+            getElementTree,
             on: (target, callable) => {
                 const name = getEventActionClassName(target);
                 if (!has(name)) {

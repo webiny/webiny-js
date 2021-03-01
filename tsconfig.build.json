@@ -17,6 +17,8 @@
     "paths": {
       "@webiny/api-cookie-policy/*": ["./packages/api-cookie-policy/src/*"],
       "@webiny/api-cookie-policy": ["./packages/api-cookie-policy/src"],
+      "@webiny/api-dynamodb-to-elasticsearch": ["./packages/api-dynamodb-to-elasticsearch/src"],
+      "@webiny/api-dynamodb-to-elasticsearch/*": ["./packages/api-dynamodb-to-elasticsearch/src/*"],
       "@webiny/api-file-manager/*": ["./packages/api-file-manager/src/*"],
       "@webiny/api-file-manager": ["./packages/api-file-manager/src"],
       "@webiny/api-file-manager-s3/*": ["./packages/api-file-manager-s3/src/*"],
@@ -134,7 +136,12 @@
       "@webiny/validation": ["./packages/validation/src"],
       "@webiny/validation/*": ["./packages/validation/src/*"],
       "@webiny/ui/*": ["./packages/ui/src/*"],
-      "@webiny/cli-plugin-scaffold/*": ["./packages/cli-plugin-scaffold/src/*"]
+      "@webiny/cli-plugin-scaffold": ["./packages/cli-plugin-scaffold/src"],
+      "@webiny/cli-plugin-scaffold/*": ["./packages/cli-plugin-scaffold/src/*"],
+      "@webiny/cli-plugin-scaffold-graphql-service/*": [
+        "./packages/cli-plugin-scaffold-graphql-service/src/*"
+      ],
+      "@webiny/system-upgrade/*": ["./packages/system-upgrade/src/*"]
     },
     "typeRoots": ["./typings", "./node_modules/@types", "@types/testing-library__cypress"]
   },

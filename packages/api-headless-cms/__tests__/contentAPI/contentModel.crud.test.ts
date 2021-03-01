@@ -17,11 +17,10 @@ const getTypeObject = (schema, type) => {
 jest.setTimeout(15000);
 
 describe("content model test", () => {
-    const esCmsIndex = "root-headless-cms";
     const readHandlerOpts = { path: "read/en-US" };
     const manageHandlerOpts = { path: "manage/en-US" };
 
-    const { createContentModelGroupMutation, elasticSearch } = useContentGqlHandler(
+    const { clearAllIndex, createContentModelGroupMutation } = useContentGqlHandler(
         manageHandlerOpts
     );
 
@@ -38,7 +37,7 @@ describe("content model test", () => {
         });
         contentModelGroup = createCMG.data.createContentModelGroup.data;
         try {
-            await elasticSearch.indices.create({ index: esCmsIndex });
+            await clearAllIndex();
         } catch {
             // Ignore errors
         }
@@ -48,7 +47,7 @@ describe("content model test", () => {
 
     afterEach(async () => {
         try {
-            await elasticSearch.indices.delete({ index: esCmsIndex });
+            await clearAllIndex();
         } catch {}
     });
 

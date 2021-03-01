@@ -6,6 +6,8 @@ context("Categories Module", () => {
     it("should be able to create, edit, and immediately delete a category", () => {
         const id = uniqid();
         cy.visit("/page-builder/categories");
+        cy.findByTestId("data-list-new-record-button").click();
+
         cy.findByLabelText("Name").type(`Cool Category ${id}`);
         cy.findByText("Save category").click();
         cy.findAllByText("Value is required.")

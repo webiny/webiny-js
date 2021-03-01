@@ -2,10 +2,13 @@
 .idea
 .webpack
 .webiny
+.tmp/
 .env
 .env.*
 .npmrc
 .pulumi
+Pulumi.*.yaml
+!Pulumi.yaml
 htpasswd
 npm-debug.log
 node_modules

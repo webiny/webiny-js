@@ -9,6 +9,8 @@ import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import elasticSearchPlugins from "@webiny/api-plugin-elastic-search-client";
+import { simulateStream } from "@webiny/project-utils/testing/dynamodb";
+import dynamoToElastic from "@webiny/api-dynamodb-to-elasticsearch/handler";
 import { Client } from "@elastic/elasticsearch";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
 import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
@@ -56,6 +58,8 @@ import {
 
 import { GET_SETTINGS, GET_DEFAULT_SETTINGS, UPDATE_SETTINGS } from "./graphql/settings";
 import { Db } from "@webiny/db";
+import path from "path";
+import fs from "fs";
 
 const defaultTenant = { id: "root", name: "Root", parent: null };
 
@@ -74,32 +78,32 @@ export default ({ permissions, identity, tenant } = {}) => {
         })
     });
 
+    const documentClient = new DocumentClient({
+        convertEmptyValues: true,
+        endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
+        sslEnabled: false,
+        region: "local"
+    });
+
+    const elasticSearchContext = elasticSearchPlugins({
+        endpoint: `http://localhost:${ELASTICSEARCH_PORT}`
+    });
+
+    // Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
+    simulateStream(documentClient, createHandler(elasticSearchContext, dynamoToElastic()));
+
     const db = new Db({
         table: "PageBuilder",
-        driver: new DynamoDbDriver({
-            documentClient: new DocumentClient({
-                convertEmptyValues: true,
-                endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
-                sslEnabled: false,
-                region: "local"
-            })
-        })
+        driver: new DynamoDbDriver({ documentClient })
     });
 
     const handler = createHandler(
         dbPlugins({
             table: "PageBuilder",
             logTable: "PageBuilderLogs",
-            driver: new DynamoDbDriver({
-                documentClient: new DocumentClient({
-                    convertEmptyValues: true,
-                    endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
-                    sslEnabled: false,
-                    region: "local"
-                })
-            })
+            driver: new DynamoDbDriver({ documentClient })
         }),
-        elasticSearchPlugins({ endpoint: `http://localhost:${ELASTICSEARCH_PORT}` }),
+        elasticSearchContext,
         apolloServerPlugins(),
         securityPlugins(),
         {
@@ -138,6 +142,27 @@ export default ({ permissions, identity, tenant } = {}) => {
                     id: "mocked",
                     displayName: "m"
                 })
+        },
+        {
+            type: "api-file-manager-storage",
+            name: "api-file-manager-storage",
+            async upload(args) {
+                // TODO: use tmp OS directory
+                const key = path.join(__dirname, args.name);
+
+                fs.writeFileSync(key, args.buffer);
+
+                return {
+                    file: {
+                        key: args.name,
+                        name: args.name,
+                        type: args.type,
+                        size: args.size
+                    }
+                };
+            },
+            // eslint-disable-next-line
+            async delete(args) {}
         }
     );
 
@@ -184,6 +209,12 @@ export default ({ permissions, identity, tenant } = {}) => {
         },
         elasticSearch,
         logsDb,
+        createElasticSearchIndex: async () => {
+            try {
+                const tenantId = tenant ? tenant.id : defaultTenant.id;
+                await elasticSearch.indices.create({ index: tenantId + "-page-builder" });
+            } catch {}
+        },
         deleteElasticSearchIndex: async () => {
             try {
                 const tenantId = tenant ? tenant.id : defaultTenant.id;

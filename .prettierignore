@@ -1,6 +1,9 @@
+.webiny/
+.verdaccio/
 **/build/
 **/dist/
 **/*.d.ts
 **/.out/
 **/.pulumi/
+.webiny/**
 packages/ui/src/RichTextEditor/editorjs/**

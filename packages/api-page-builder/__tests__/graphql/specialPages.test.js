@@ -23,10 +23,19 @@ describe("Settings Test", () => {
         publishPage,
         unpublishPage,
         getPublishedPage,
+        createElasticSearchIndex,
         deleteElasticSearchIndex
     } = useGqlHandler();
 
+    beforeAll(async () => {
+        await deleteElasticSearchIndex();
+    });
+
     beforeEach(async () => {
+        await createElasticSearchIndex();
+    });
+
+    afterEach(async () => {
         await deleteElasticSearchIndex();
     });
 

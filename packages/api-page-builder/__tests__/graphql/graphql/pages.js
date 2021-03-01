@@ -65,6 +65,7 @@ export const DATA_FIELD = /* GraphQL */ `
 const LIST_DATA_FIELD = /* GraphQL */ `
     {
         id
+        pid
         editor
         category {
             slug
@@ -204,9 +205,9 @@ export const LIST_PAGES = /* GraphQL */ `
 `;
 
 export const LIST_PUBLISHED_PAGES = /* GraphQL */ `
-    query ListPublishedPages($where: PbListPublishedPagesWhereInput, $limit: Int, $page: Int, $sort: PbListPagesSortInput) {
+    query ListPublishedPages($where: PbListPublishedPagesWhereInput, $limit: Int, $page: Int, $sort: PbListPagesSortInput, $exclude: [String]) {
         pageBuilder {
-            listPublishedPages(where: $where, limit: $limit, page: $page, sort: $sort) {
+            listPublishedPages(where: $where, limit: $limit, page: $page, sort: $sort, exclude: $exclude) {
                 data ${LIST_DATA_FIELD}
                 error ${ERROR_FIELD}
                 meta {

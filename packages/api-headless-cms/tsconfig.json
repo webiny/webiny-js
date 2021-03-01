@@ -48,6 +48,9 @@
       "path": "../api-plugin-elastic-search-client"
     },
     {
+      "path": "../api-dynamodb-to-elasticsearch"
+    },
+    {
       "path": "../api-security-tenancy"
     }
   ]

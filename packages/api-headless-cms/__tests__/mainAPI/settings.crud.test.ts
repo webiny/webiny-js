@@ -16,28 +16,20 @@ describe("Settings crud test", () => {
     });
 
     const {
+        clearAllIndex,
         isInstalledQuery,
-        installMutation: installMutationNoPermission,
-        elasticSearch
+        installMutation: installMutationNoPermission
     } = useAdminGqlHandler({
         ...manageOpts,
         permissions: []
     });
 
-    const esCmsIndex = "root-headless-cms";
-
     beforeEach(async () => {
-        try {
-            await elasticSearch.indices.create({ index: esCmsIndex });
-        } catch {
-            // Ignore errors
-        }
+        await clearAllIndex();
     });
 
     afterEach(async () => {
-        try {
-            await elasticSearch.indices.delete({ index: esCmsIndex });
-        } catch (e) {}
+        await clearAllIndex();
     });
 
     test("cms is not installed yet", async () => {

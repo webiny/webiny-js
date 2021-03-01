@@ -62,7 +62,7 @@ const MenusForm = ({ canCreate }: MenusFormProps) => {
     const [update, updateMutation] = useMutation(UPDATE_MENU, {
         refetchQueries: [{ query: LIST_MENUS }],
         update: (cache, { data }) => {
-            const dataFromCache = cache.readQuery({
+            const dataFromCache = cache.readQuery<Record<string, any>>({
                 query: GET_MENU,
                 variables: { slug }
             });

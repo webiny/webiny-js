@@ -490,8 +490,8 @@ function FileManagerView(props: FileManagerViewProps) {
 
 FileManagerView.defaultProps = {
     multiple: false,
-    maxSize: "10mb",
-    multipleMaxSize: "100mb",
+    maxSize: "1000mb",
+    multipleMaxSize: "1000mb",
     multipleMaxCount: 100
 };
 
