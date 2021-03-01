@@ -231,35 +231,6 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
         const { displayMode } = await snapshot.getPromise(uiAtom);
         getUpdateValue(`${displayMode}.left`)(value);
     });
-    // TODO: @ashutosh Remove commented code after testing.
-    // const updateValueTop = useCallback(
-    //     value => {
-    //         getUpdateValue(`${displayMode}.top`)(value);
-    //     },
-    //     [displayMode, getUpdateValue]
-    // );
-
-    //
-    // const updateValueRight = useCallback(
-    //     value => {
-    //         getUpdateValue(`${displayMode}.right`)(value);
-    //     },
-    //     [displayMode, getUpdateValue]
-    // );
-    //
-    // const updateValueBottom = useCallback(
-    //     value => {
-    //         getUpdateValue(`${displayMode}.bottom`)(value);
-    //     },
-    //     [displayMode, getUpdateValue]
-    // );
-    //
-    // const updateValueLeft = useCallback(
-    //     value => {
-    //         getUpdateValue(`${displayMode}.left`)(value);
-    //     },
-    //     [displayMode, getUpdateValue]
-    // );
 
     const [top, right, bottom, left] = useMemo(() => {
         return SIDES.map(side => {
