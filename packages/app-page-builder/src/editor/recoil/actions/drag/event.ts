@@ -1,5 +1,5 @@
 import { DragStartActionArgsType, DragEndActionArgsType } from "./types";
-import { BaseEventAction } from "@webiny/app-page-builder/editor/recoil/eventActions";
+import { BaseEventAction } from "../../eventActions";
 
 export class DragStartActionEvent extends BaseEventAction<DragStartActionArgsType> {
     public getName(): string {

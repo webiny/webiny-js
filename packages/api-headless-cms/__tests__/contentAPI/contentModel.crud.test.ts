@@ -1,4 +1,4 @@
-import { CmsContentModelFieldInput, CmsContentModelGroup } from "@webiny/api-headless-cms/types";
+import { CmsContentModelFieldInput, CmsContentModelGroup } from "../../src/types";
 import mdbid from "mdbid";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import * as helpers from "../utils/helpers";

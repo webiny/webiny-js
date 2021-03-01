@@ -1,7 +1,7 @@
 import React from "react";
 import Logo from "./Logo";
 import { TopAppBarTitle } from "@webiny/ui/TopAppBar";
-import { AdminHeaderLeftPlugin, AdminMenuLogoPlugin } from "@webiny/app-admin/types";
+import { AdminHeaderLeftPlugin, AdminMenuLogoPlugin } from "../../types";
 
 export default () => [
     {

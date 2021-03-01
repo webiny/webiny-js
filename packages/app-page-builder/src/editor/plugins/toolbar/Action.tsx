@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
-import { TogglePluginActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
-import { isPluginActiveSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import { useEventActionHandler } from "../../hooks/useEventActionHandler";
+import { TogglePluginActionEvent } from "../../recoil/actions";
+import { isPluginActiveSelector } from "../../recoil/modules";
 import { css } from "emotion";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";

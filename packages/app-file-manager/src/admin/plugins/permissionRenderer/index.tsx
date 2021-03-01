@@ -1,7 +1,7 @@
 import React from "react";
 import { AccordionItem } from "@webiny/ui/Accordion";
 import { AdminAppPermissionRendererPlugin } from "@webiny/app-admin/types";
-import { ReactComponent as FileManagerIcon } from "@webiny/app-file-manager/admin/assets/icons/folder-open.svg";
+import { ReactComponent as FileManagerIcon } from "../../assets/icons/folder-open.svg";
 import { FileManagerPermissions } from "./FileManagerPermissions";
 import { i18n } from "@webiny/app/i18n";
 

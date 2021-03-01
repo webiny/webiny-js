@@ -1,5 +1,5 @@
 import { ToggleSaveRevisionStateActionArgsType } from "./types";
-import { EventActionCallable } from "@webiny/app-page-builder/types";
+import { EventActionCallable } from "../../../../types";
 
 export const toggleSaveRevisionStateAction: EventActionCallable<ToggleSaveRevisionStateActionArgsType> = (
     state,

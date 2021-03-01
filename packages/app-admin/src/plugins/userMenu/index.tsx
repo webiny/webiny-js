@@ -1,5 +1,5 @@
 import React from "react";
-import { AdminHeaderRightPlugin } from "@webiny/app-admin/types";
+import { AdminHeaderRightPlugin } from "../../types";
 import UserMenu from "./UserMenu";
 
 const plugin: AdminHeaderRightPlugin = {

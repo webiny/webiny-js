@@ -2,7 +2,7 @@
   "extends": "../../tsconfig",
   "references": [
     {
-      "path": "../handler-graphql"
+      "path": "../api-i18n"
     },
     {
       "path": "../api-security"
@@ -11,7 +11,20 @@
       "path": "../handler"
     },
     {
-      "path": "../api-i18n"
+      "path": "../handler-graphql"
     }
-  ]
+  ],
+  "compilerOptions": {
+    "paths": {
+      "@webiny/api-i18n/*": ["../api-i18n/src/*"],
+      "@webiny/api-i18n": ["../api-i18n/src"],
+      "@webiny/api-security/*": ["../api-security/src/*"],
+      "@webiny/api-security": ["../api-security/src"],
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
+      "@webiny/handler-graphql": ["../handler-graphql/src"]
+    },
+    "baseUrl": "."
+  }
 }

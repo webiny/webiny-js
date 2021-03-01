@@ -72,7 +72,7 @@ export default ({ permissions, identity }: UseGqlHandlerParams) => {
                 };
             }
         },
-        i18nContext,
+        i18nContext(),
         i18nContentPlugins(),
         mockLocalesPlugins(),
         filesPlugins(),

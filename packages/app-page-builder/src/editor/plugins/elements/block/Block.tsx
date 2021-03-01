@@ -1,9 +1,9 @@
 import React from "react";
 import BlockContainer from "./BlockContainer";
-import ElementAnimation from "@webiny/app-page-builder/render/components/ElementAnimation";
+import ElementAnimation from "../../../../render/components/ElementAnimation";
 import styled from "@emotion/styled";
-import { PbEditorElement } from "@webiny/app-page-builder/types";
-import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
+import { PbEditorElement } from "../../../../types";
+import { ElementRoot } from "../../../../render/components/ElementRoot";
 
 const BlockStyle = styled("div")({
     position: "relative",

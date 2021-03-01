@@ -2,7 +2,7 @@ import React, { useCallback, useEffect } from "react";
 import { css } from "emotion";
 import { isEqual } from "lodash";
 import { get } from "lodash";
-import { PbEditorElement } from "@webiny/app-page-builder/types";
+import { PbEditorElement } from "../../../../../types";
 import useRenderEmptyEmbed from "../../../elements/utils/oembed/useRenderEmptyEmbed";
 
 declare global {

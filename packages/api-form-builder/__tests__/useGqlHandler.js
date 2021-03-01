@@ -118,7 +118,7 @@ export default ({ permissions, identity, tenant } = {}) => {
                 };
             }
         },
-        i18nContext,
+        i18nContext(),
         i18nContentPlugins(),
         mockLocalesPlugins(),
         fileManagerPlugins(),

@@ -1,7 +1,7 @@
 import React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { ButtonPrimary } from "@webiny/ui/Button";
-import { FbEditorTrigger } from "@webiny/app-form-builder/types";
+import { FbEditorTrigger } from "../../../../types";
 import { ReactComponent as LinkIcon } from "./icons/round-link-24px.svg";
 import WebhooksRequestsDynamicFieldset from "./components/WebhooksRequestsDynamicFieldset";
 

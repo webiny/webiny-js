@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { plugins } from "@webiny/plugins";
 import domToImage from "./domToImage";
-import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
+import { PbEditorPageElementPlugin } from "../../../../../types";
 
 const replaceContent = (element: any, doc: Document): Document => {
     const pl = plugins

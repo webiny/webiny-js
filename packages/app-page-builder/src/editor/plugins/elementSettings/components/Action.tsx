@@ -1,13 +1,10 @@
-import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
-import { TogglePluginActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
+import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
+import { TogglePluginActionEvent } from "../../../recoil/actions";
 import React, { useEffect, useCallback, ReactElement } from "react";
-import {
-    isPluginActiveSelector,
-    activePluginsByTypeTotalSelector
-} from "@webiny/app-page-builder/editor/recoil/modules";
+import { isPluginActiveSelector, activePluginsByTypeTotalSelector } from "../../../recoil/modules";
 import { css } from "emotion";
 import { IconButton } from "@webiny/ui/Button";
-import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
+import { useKeyHandler } from "../../../hooks/useKeyHandler";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { useRecoilValue } from "recoil";
 

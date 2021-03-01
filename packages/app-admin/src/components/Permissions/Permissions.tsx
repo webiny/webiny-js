@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { AdminAppPermissionRendererPlugin } from "@webiny/app-admin/types";
+import { AdminAppPermissionRendererPlugin } from "../../types";
 import { Accordion } from "@webiny/ui/Accordion";
 import { plugins } from "@webiny/plugins";
 import { BindComponentRenderProp } from "@webiny/form";

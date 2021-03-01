@@ -28,7 +28,7 @@ import {
     EventActionHandler,
     EventActionHandlerTarget,
     EventActionHandlerCallableState
-} from "@webiny/app-page-builder/types";
+} from "../../types";
 import {
     Snapshot,
     useGotoRecoilSnapshot,

@@ -1,7 +1,7 @@
 import React from "react";
 import preview from "./preview.png";
-import { createElement } from "@webiny/app-page-builder/editor/helpers";
-import { PbEditorBlockPlugin } from "@webiny/app-page-builder/types";
+import { createElement } from "../../../helpers";
+import { PbEditorBlockPlugin } from "../../../../types";
 
 export default {
     name: "pb-editor-block-empty",

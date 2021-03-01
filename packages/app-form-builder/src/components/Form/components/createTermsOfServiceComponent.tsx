@@ -1,6 +1,6 @@
 import * as React from "react";
 import { termsOfServiceEnabled } from "./../functions";
-import { FbFormModel, FbFormRenderComponentProps } from "@webiny/app-form-builder/types";
+import { FbFormModel, FbFormRenderComponentProps } from "../../../types";
 
 type CreateTermsOfServiceComponentArgs = {
     props: FbFormRenderComponentProps;

@@ -2,9 +2,9 @@ import React, { useCallback } from "react";
 import { Input } from "@webiny/ui/Input";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { camelCase } from "lodash";
-import { useFormEditor } from "@webiny/app-form-builder/admin/components/FormEditor/Context";
+import { useFormEditor } from "../../../Context";
 import { validation } from "@webiny/validation";
-import { FbFormModelField } from "@webiny/app-form-builder/types";
+import { FbFormModelField } from "../../../../../../types";
 import { FormChildrenFunctionParams } from "@webiny/form/Form";
 
 type GeneralTabProps = {

@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useQuery } from "@apollo/react-hooks";
-import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
+import { usePageBuilder } from "../../../../hooks/usePageBuilder";
 import { LIST_PUBLISHED_PAGES } from "./graphql";
 import { plugins } from "@webiny/plugins";
 import { get } from "lodash";
-import { PbPageElementPagesListComponentPlugin } from "@webiny/app-page-builder/types";
+import { PbPageElementPagesListComponentPlugin } from "../../../../types";
 import { useRecoilValue } from "recoil";
 import { pageAtom } from "../../../recoil/modules";
 

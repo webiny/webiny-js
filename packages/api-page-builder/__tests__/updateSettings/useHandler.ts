@@ -3,7 +3,7 @@ import apolloServerPlugins from "@webiny/handler-graphql";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import pageBuilderPlugins from "@webiny/api-page-builder/updateSettings";
+import pageBuilderPlugins from "../../src/updateSettings";
 
 export default () => {
     const handler = createHandler(

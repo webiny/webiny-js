@@ -1,5 +1,5 @@
 import React from "react";
-import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
+import { ElementRoot } from "../../../../render/components/ElementRoot";
 import ButtonContainer from "./ButtonContainer";
 
 const Button = ({ element }) => {

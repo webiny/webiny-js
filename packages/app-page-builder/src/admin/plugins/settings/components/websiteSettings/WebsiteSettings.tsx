@@ -4,7 +4,7 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { ButtonIcon, ButtonPrimary } from "@webiny/ui/Button";
 import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
-import { PagesAutocomplete } from "@webiny/app-page-builder/admin/components/PagesAutocomplete";
+import { PagesAutocomplete } from "../../../../components/PagesAutocomplete";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { GET_SETTINGS, UPDATE_SETTINGS } from "./graphql";
@@ -12,7 +12,7 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import { get, set } from "lodash";
 import { validation } from "@webiny/validation";
 import { sendEvent, setProperties } from "@webiny/tracking/react";
-import { ReactComponent as EditIcon } from "@webiny/app-page-builder/admin/assets/edit.svg";
+import { ReactComponent as EditIcon } from "../../../../assets/edit.svg";
 import { useRouter } from "@webiny/react-router";
 
 import {
@@ -21,7 +21,7 @@ import {
     SimpleFormContent,
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
-import { GET_SETTINGS as SETTINGS_QUERY } from "@webiny/app-page-builder/admin/hooks/usePageBuilderSettings";
+import { GET_SETTINGS as SETTINGS_QUERY } from "../../../../hooks/usePageBuilderSettings";
 import { useCallback } from "react";
 
 import { css } from "emotion";

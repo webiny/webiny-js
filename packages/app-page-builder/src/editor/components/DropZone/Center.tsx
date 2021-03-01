@@ -1,4 +1,4 @@
-import { activeElementAtom } from "@webiny/app-page-builder/editor/recoil/modules";
+import { activeElementAtom } from "../../recoil/modules";
 import React from "react";
 import Droppable, { DroppableIsVisiblePropType, DroppableOnDropPropType } from "./../Droppable";
 import styled from "@emotion/styled";

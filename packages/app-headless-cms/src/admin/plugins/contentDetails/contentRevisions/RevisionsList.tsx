@@ -4,7 +4,7 @@ import { List } from "@webiny/ui/List";
 import { Elevation } from "@webiny/ui/Elevation";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { i18n } from "@webiny/app/i18n";
-import { CmsEditorContentEntry, CmsEditorContentModel } from "@webiny/app-headless-cms/types";
+import { CmsEditorContentEntry, CmsEditorContentModel } from "../../../../types";
 import Revision from "./Revision";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/content-details/content-revisions");

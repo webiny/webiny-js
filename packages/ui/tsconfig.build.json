@@ -13,11 +13,9 @@
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
-    "declarationDir": "./dist"
+    "declarationDir": "./dist",
+    "paths": {},
+    "baseUrl": "."
   },
-  "references": [
-    { "path": "../form/tsconfig.build.json" },
-    { "path": "../storybook-utils/tsconfig.build.json" },
-    { "path": "../validation/tsconfig.build.json" }
-  ]
+  "references": []
 }

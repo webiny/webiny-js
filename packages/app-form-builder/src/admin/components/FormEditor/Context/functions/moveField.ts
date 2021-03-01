@@ -1,8 +1,4 @@
-import {
-    FbFormModelField,
-    FieldIdType,
-    FieldLayoutPositionType
-} from "@webiny/app-form-builder/types";
+import { FbFormModelField, FieldIdType, FieldLayoutPositionType } from "../../../../../types";
 import getFieldPosition from "./getFieldPosition";
 
 /**

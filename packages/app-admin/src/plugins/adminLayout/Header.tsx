@@ -6,7 +6,7 @@ import {
     AdminHeaderLeftPlugin,
     AdminHeaderMiddlePlugin,
     AdminHeaderRightPlugin
-} from "@webiny/app-admin/types";
+} from "../../types";
 
 const middleBar = css({
     width: "50%"

@@ -1,5 +1,5 @@
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
-import { CmsContext } from "@webiny/api-headless-cms/types";
+import { CmsContext } from "../../types";
 
 export default {
     typeDefs: /* GraphQL */ `

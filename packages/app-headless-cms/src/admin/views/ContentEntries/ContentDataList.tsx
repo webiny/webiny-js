@@ -15,7 +15,7 @@ import { Scrollbar } from "@webiny/ui/Scrollbar";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import SearchUI from "@webiny/app-admin/components/SearchUI";
-import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
+import { useQuery } from "../../hooks";
 import { useRouter } from "@webiny/react-router";
 import { Form } from "@webiny/form";
 import { createListQuery } from "../components/ContentModelForm/graphql";

@@ -1,9 +1,6 @@
 import { plugins } from "@webiny/plugins";
 import { selectorFamily } from "recoil";
-import {
-    pluginsAtom,
-    PluginsAtomPluginParamsType
-} from "@webiny/app-page-builder/editor/recoil/modules";
+import { pluginsAtom, PluginsAtomPluginParamsType } from "../..";
 
 export const activePluginParamsByNameSelector = selectorFamily<
     PluginsAtomPluginParamsType | null,

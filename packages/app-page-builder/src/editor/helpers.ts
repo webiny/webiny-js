@@ -2,7 +2,7 @@ import invariant from "invariant";
 import { customAlphabet } from "nanoid";
 import { set } from "dot-prop-immutable";
 import omit from "lodash/omit";
-import { DragObjectWithTypeWithTarget } from "@webiny/app-page-builder/editor/components/Droppable";
+import { DragObjectWithTypeWithTarget } from "./components/Droppable";
 import { plugins } from "@webiny/plugins";
 import {
     PbEditorBlockPlugin,
@@ -10,7 +10,7 @@ import {
     PbEditorPageElementSettingsPlugin,
     PbEditorPageElementStyleSettingsPlugin,
     PbEditorElement
-} from "@webiny/app-page-builder/types";
+} from "../types";
 
 const ALPHANUMERIC = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 export const getNanoid = customAlphabet(ALPHANUMERIC, 10);

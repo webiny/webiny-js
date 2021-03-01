@@ -1,5 +1,5 @@
-import { BaseEventAction } from "@webiny/app-page-builder/editor/recoil/eventActions";
-import { CloneElementActionArgsType } from "@webiny/app-page-builder/editor/recoil/actions/cloneElement/types";
+import { BaseEventAction } from "../../eventActions";
+import { CloneElementActionArgsType } from "./types";
 
 export class CloneElementActionEvent extends BaseEventAction<CloneElementActionArgsType> {
     public getName(): string {

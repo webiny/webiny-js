@@ -1,4 +1,4 @@
-import { HttpContext } from "@webiny/handler-http/types";
+import { HttpContext } from "./types";
 import { ContextPlugin, HandlerErrorPlugin } from "@webiny/handler/types";
 
 export default () => [

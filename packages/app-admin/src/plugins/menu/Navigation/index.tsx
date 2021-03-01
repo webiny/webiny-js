@@ -4,14 +4,10 @@ import { Drawer, DrawerContent, DrawerHeader } from "@webiny/ui/Drawer";
 import { List, ListItem } from "@webiny/ui/List";
 import { IconButton } from "@webiny/ui/Button";
 import { plugins } from "@webiny/plugins";
-import {
-    AdminMenuLogoPlugin,
-    AdminMenuPlugin,
-    AdminDrawerFooterMenuPlugin
-} from "@webiny/app-admin/types";
+import { AdminMenuLogoPlugin, AdminMenuPlugin, AdminDrawerFooterMenuPlugin } from "../../../types";
 import { useNavigation, Menu, Item, Section } from "./components";
 import { logoStyle, MenuFooter, MenuHeader, navContent, navHeader, subFooter } from "./Styled";
-import { ReactComponent as MenuIcon } from "@webiny/app-admin/assets/icons/baseline-menu-24px.svg";
+import { ReactComponent as MenuIcon } from "../../../assets/icons/baseline-menu-24px.svg";
 
 const Navigation = () => {
     const { hideMenu, menuIsShown, initSections } = useNavigation();

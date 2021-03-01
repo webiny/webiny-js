@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Plugin } from "@webiny/plugins/types";
-import { ReCaptchaComponent } from "@webiny/app-form-builder/components/Form/components/createReCaptchaComponent";
-import { TermsOfServiceComponent } from "@webiny/app-form-builder/components/Form/components/createTermsOfServiceComponent";
+import { ReCaptchaComponent } from "./components/Form/components/createReCaptchaComponent";
+import { TermsOfServiceComponent } from "./components/Form/components/createTermsOfServiceComponent";
 import {
     BindComponent,
     FormChildrenFunctionParams,

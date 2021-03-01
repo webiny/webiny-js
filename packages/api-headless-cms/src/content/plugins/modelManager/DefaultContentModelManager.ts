@@ -1,8 +1,4 @@
-import {
-    CmsContentModelManager,
-    CmsContentModel,
-    CmsContext
-} from "@webiny/api-headless-cms/types";
+import { CmsContentModelManager, CmsContentModel, CmsContext } from "../../../types";
 
 export class DefaultContentModelManager implements CmsContentModelManager {
     private readonly _context: CmsContext;

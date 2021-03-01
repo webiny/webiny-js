@@ -5,7 +5,7 @@ import { css } from "emotion";
 import AceEditor from "react-ace";
 import "brace/theme/github";
 import "brace/theme/twilight";
-import { FormElementMessage } from "@webiny/ui/FormElementMessage";
+import { FormElementMessage } from "../FormElementMessage";
 
 /**
  * Controls the helper text below the checkbox.

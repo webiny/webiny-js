@@ -1,9 +1,5 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import {
-    CmsModelFieldToGraphQLPlugin,
-    CmsFieldTypePlugins,
-    CmsContext
-} from "@webiny/api-headless-cms/types";
+import { CmsModelFieldToGraphQLPlugin, CmsFieldTypePlugins, CmsContext } from "../../../types";
 import { createManageSDL } from "./createManageSDL";
 import { createReadSDL } from "./createReadSDL";
 import { createManageResolvers } from "./createManageResolvers";

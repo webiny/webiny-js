@@ -1,5 +1,5 @@
 import React from "react";
-import { AdminHeaderUserMenuPlugin } from "@webiny/app-admin/types";
+import { AdminHeaderUserMenuPlugin } from "../../../types";
 import { DarkModeToggle } from "./DarkModeToggle";
 import { DarkModeController } from "./DarkModeController";
 import { UiStatePlugin } from "@webiny/app/types";

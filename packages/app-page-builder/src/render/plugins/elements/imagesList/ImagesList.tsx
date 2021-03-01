@@ -1,7 +1,7 @@
 import * as React from "react";
 import warning from "warning";
 import { plugins } from "@webiny/plugins";
-import { PbPageElementImagesListComponentPlugin } from "@webiny/app-page-builder/types";
+import { PbPageElementImagesListComponentPlugin } from "../../../../types";
 
 const ImagesList = ({ data, theme }) => {
     const { component } = data;

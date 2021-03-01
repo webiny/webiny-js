@@ -5,19 +5,36 @@
       "path": "../app"
     },
     {
+      "path": "../app-admin"
+    },
+    {
       "path": "../app-i18n"
     },
     {
-      "path": "../app-admin"
+      "path": "../app-security"
     },
     {
       "path": "../form"
     },
     {
       "path": "../ui"
-    },
-    {
-      "path": "../app-security"
     }
-  ]
+  ],
+  "compilerOptions": {
+    "paths": {
+      "@webiny/app/*": ["../app/src/*"],
+      "@webiny/app": ["../app/src"],
+      "@webiny/app-admin/*": ["../app-admin/src/*"],
+      "@webiny/app-admin": ["../app-admin/src"],
+      "@webiny/app-i18n/*": ["../app-i18n/src/*"],
+      "@webiny/app-i18n": ["../app-i18n/src"],
+      "@webiny/app-security/*": ["../app-security/src/*"],
+      "@webiny/app-security": ["../app-security/src"],
+      "@webiny/form/*": ["../form/src/*"],
+      "@webiny/form": ["../form/src"],
+      "@webiny/ui/*": ["../ui/src/*"],
+      "@webiny/ui": ["../ui/src"]
+    },
+    "baseUrl": "."
+  }
 }

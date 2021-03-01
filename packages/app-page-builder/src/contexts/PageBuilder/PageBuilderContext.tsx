@@ -1,6 +1,6 @@
 import * as React from "react";
 import { plugins } from "@webiny/plugins";
-import { PbThemePlugin, PbTheme, DisplayMode } from "@webiny/app-page-builder/types";
+import { PbThemePlugin, PbTheme, DisplayMode } from "../../types";
 
 export const PageBuilderContext = React.createContext(null);
 

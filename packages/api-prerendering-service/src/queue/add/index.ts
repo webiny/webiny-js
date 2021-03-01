@@ -1,6 +1,6 @@
 import { HandlerPlugin, QueueAddHookPlugin } from "./types";
 import { TYPE, DbQueueJob } from "../../types";
-import { HandlerResponse } from "@webiny/api-prerendering-service/types";
+import { HandlerResponse } from "../../types";
 import mdbid from "mdbid";
 
 const log = console.log;

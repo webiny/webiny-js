@@ -1,6 +1,6 @@
 import gql from "graphql-tag";
 import { makeExecutableSchema } from "@graphql-tools/schema";
-import { GraphQLScalarPlugin } from "@webiny/handler-graphql/types";
+import { GraphQLScalarPlugin } from "./types";
 import { Context } from "@webiny/handler/types";
 import { HttpContext } from "@webiny/handler-http/types";
 import {

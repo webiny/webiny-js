@@ -1,4 +1,4 @@
-import { CmsModelFieldToStoragePlugin } from "@webiny/api-headless-cms/types";
+import { CmsModelFieldToStoragePlugin } from "../../../types";
 import jsonpack from "jsonpack";
 import WebinyError from "@webiny/error";
 

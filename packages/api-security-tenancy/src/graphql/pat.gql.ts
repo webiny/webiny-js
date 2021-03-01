@@ -3,7 +3,7 @@ import crypto from "crypto";
 import { Response, ErrorResponse, NotFoundResponse } from "@webiny/handler-graphql/responses";
 import { Context as HandlerContext } from "@webiny/handler/types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { TenancyContext, User } from "@webiny/api-security-tenancy/types";
+import { TenancyContext, User } from "../types";
 import { SecurityContext } from "@webiny/api-security/types";
 
 type Context = HandlerContext<TenancyContext, SecurityContext>;

@@ -1,4 +1,4 @@
-import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
+import { CmsModelFieldToGraphQLPlugin } from "../../../types";
 
 const plugin: CmsModelFieldToGraphQLPlugin = {
     name: "cms-model-field-to-graphql-file",

@@ -3,7 +3,7 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { Transition } from "react-transition-group";
 import { plugins } from "@webiny/plugins";
 import { renderPlugins } from "@webiny/app/plugins";
-import { PbEditorPageElementPlugin, PbEditorElement } from "@webiny/app-page-builder/types";
+import { PbEditorPageElementPlugin, PbEditorElement } from "../../types";
 import Draggable from "./Draggable";
 import tryRenderingPlugin from "../../utils/tryRenderingPlugin";
 import {

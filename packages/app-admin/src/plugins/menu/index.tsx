@@ -1,6 +1,6 @@
 import React from "react";
 import Hamburger from "./Hamburger";
-import { AdminHeaderLeftPlugin } from "@webiny/app-admin/types";
+import { AdminHeaderLeftPlugin } from "../../types";
 
 const plugin = [
     {

@@ -1,8 +1,5 @@
 import React from "react";
-import Droppable, {
-    DroppableIsVisiblePropType,
-    DroppableOnDropPropType
-} from "@webiny/app-page-builder/editor/components/Droppable";
+import Droppable, { DroppableIsVisiblePropType, DroppableOnDropPropType } from "../Droppable";
 import styled from "@emotion/styled";
 
 const InnerDiv = styled("div")({

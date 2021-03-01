@@ -1,6 +1,6 @@
 import { DeactivatePluginActionEvent } from "./event";
 import { deactivatePluginAction } from "./action";
-import { PbEditorEventActionPlugin } from "@webiny/app-page-builder/types";
+import { PbEditorEventActionPlugin } from "../../../../types";
 
 export default () => {
     return {

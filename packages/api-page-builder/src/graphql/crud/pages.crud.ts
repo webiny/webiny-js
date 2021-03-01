@@ -13,13 +13,7 @@ import merge from "lodash/merge";
 import getPKPrefix from "./utils/getPKPrefix";
 import DataLoader from "dataloader";
 
-import {
-    Page,
-    PageHookPlugin,
-    PageSecurityPermission,
-    PbContext,
-    TYPE
-} from "@webiny/api-page-builder/types";
+import { Page, PageHookPlugin, PageSecurityPermission, PbContext, TYPE } from "../../types";
 import createListMeta from "./utils/createListMeta";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";

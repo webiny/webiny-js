@@ -5,8 +5,8 @@ import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { ButtonSecondary, ButtonPrimary } from "@webiny/ui/Button";
 import { Select } from "@webiny/ui/Select";
-import { TagsMultiAutocomplete } from "@webiny/app-page-builder/admin/components/TagsMultiAutocomplete";
-import { CategoriesAutocomplete } from "@webiny/app-page-builder/admin/components/CategoriesAutocomplete";
+import { TagsMultiAutocomplete } from "../../../components/TagsMultiAutocomplete";
+import { CategoriesAutocomplete } from "../../../components/CategoriesAutocomplete";
 import { Elevation } from "@webiny/ui/Elevation";
 import { validation } from "@webiny/validation";
 

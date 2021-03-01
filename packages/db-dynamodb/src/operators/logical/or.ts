@@ -1,4 +1,4 @@
-import { Operator } from "@webiny/db-dynamodb/types";
+import { Operator } from "../../types";
 
 const processQuery = (query, orArgs, processStatement) => {
     const args = {

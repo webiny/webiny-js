@@ -17,7 +17,7 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Form, FormOnSubmit } from "@webiny/form";
 import styled from "@emotion/styled";
-import { PbEditorBlockCategoryPlugin } from "@webiny/app-page-builder/types";
+import { PbEditorBlockCategoryPlugin } from "../../../types";
 
 const narrowDialog = css({
     ".mdc-dialog__surface": {

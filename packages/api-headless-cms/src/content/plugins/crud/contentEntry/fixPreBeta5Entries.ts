@@ -3,7 +3,7 @@ import {
     CmsContentModel,
     CmsContentModelDateTimeField,
     CmsContext
-} from "@webiny/api-headless-cms/types";
+} from "../../../../types";
 import WebinyError from "@webiny/error";
 
 interface Hit {

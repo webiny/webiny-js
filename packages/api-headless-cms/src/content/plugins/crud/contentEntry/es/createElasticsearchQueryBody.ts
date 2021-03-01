@@ -10,8 +10,8 @@ import {
     CmsContentEntryListArgs,
     CmsContentModelField,
     ElasticsearchQueryPlugin
-} from "@webiny/api-headless-cms/types";
-import { decodeElasticsearchCursor } from "@webiny/api-headless-cms/utils";
+} from "../../../../../types";
+import { decodeElasticsearchCursor } from "../../../../../utils";
 import Error from "@webiny/error";
 import WebinyError from "@webiny/error";
 import { operatorPluginsList } from "./operatorPluginsList";

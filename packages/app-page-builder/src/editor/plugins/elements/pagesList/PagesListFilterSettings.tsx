@@ -1,7 +1,7 @@
 import * as React from "react";
 import { css } from "emotion";
-import { TagsMultiAutocomplete } from "@webiny/app-page-builder/admin/components/TagsMultiAutocomplete";
-import { CategoriesAutocomplete } from "@webiny/app-page-builder/admin/components/CategoriesAutocomplete";
+import { TagsMultiAutocomplete } from "../../../../admin/components/TagsMultiAutocomplete";
+import { CategoriesAutocomplete } from "../../../../admin/components/CategoriesAutocomplete";
 import Accordion from "../../elementSettings/components/Accordion";
 import Wrapper from "../../elementSettings/components/Wrapper";
 import SelectField from "../../elementSettings/components/SelectField";

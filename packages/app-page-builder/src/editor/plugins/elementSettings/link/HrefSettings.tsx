@@ -4,14 +4,14 @@ import { merge } from "dot-prop-immutable";
 import { Switch } from "@webiny/ui/Switch";
 import { Form } from "@webiny/form";
 import { validation } from "@webiny/validation";
-import { withActiveElement } from "@webiny/app-page-builder/editor/components";
-import { DelayedOnChange } from "@webiny/app-page-builder/editor/components/DelayedOnChange";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
-import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
+import { withActiveElement } from "../../../components";
+import { DelayedOnChange } from "../../../components/DelayedOnChange";
+import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
+import { UpdateElementActionEvent } from "../../../recoil/actions";
 import {
     PbEditorPageElementSettingsRenderComponentProps,
     PbEditorElement
-} from "@webiny/app-page-builder/types";
+} from "../../../../types";
 // Components
 import Accordion from "../components/Accordion";
 import Wrapper from "../components/Wrapper";

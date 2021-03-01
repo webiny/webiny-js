@@ -1,10 +1,7 @@
 import React from "react";
 import styled from "@emotion/styled";
 import { plugins } from "@webiny/plugins";
-import {
-    PbEditorToolbarBottomPlugin,
-    PbEditorToolbarTopPlugin
-} from "@webiny/app-page-builder/types";
+import { PbEditorToolbarBottomPlugin, PbEditorToolbarTopPlugin } from "../../../types";
 
 const DialogsContainer = styled("div")({
     position: "fixed",

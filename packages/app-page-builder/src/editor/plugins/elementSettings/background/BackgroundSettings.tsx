@@ -25,7 +25,7 @@ import SelectField from "../components/SelectField";
 import Accordion from "../components/Accordion";
 import ColorPicker from "../components/ColorPicker";
 import { ContentWrapper, classes } from "../components/StyledComponents";
-import { applyFallbackDisplayMode } from "@webiny/app-page-builder/editor/plugins/elementSettings/elementSettingsUtils";
+import { applyFallbackDisplayMode } from "../elementSettingsUtils";
 
 const positions = [
     "top left",

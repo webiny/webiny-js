@@ -12,20 +12,9 @@
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
-    "declarationDir": "./dist"
+    "declarationDir": "./dist",
+    "paths": {},
+    "baseUrl": "."
   },
-  "references": [
-    {
-      "path": "../validation/tsconfig.build.json"
-    },
-    {
-      "path": "../handler-graphql/tsconfig.build.json"
-    },
-    {
-      "path": "../plugins/tsconfig.build.json"
-    },
-    {
-      "path": "../handler/tsconfig.build.json"
-    }
-  ]
+  "references": []
 }

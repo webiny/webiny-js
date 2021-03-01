@@ -5,7 +5,7 @@ import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
 import defaults from "./utils/defaults";
 import getPKPrefix from "./utils/getPKPrefix";
-import { PageElement, PbContext } from "@webiny/api-page-builder/types";
+import { PageElement, PbContext } from "../../types";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
 import { NotFoundError } from "@webiny/handler-graphql";

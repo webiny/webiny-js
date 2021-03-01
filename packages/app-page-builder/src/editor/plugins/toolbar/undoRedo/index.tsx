@@ -1,12 +1,12 @@
 import React from "react";
 import platform from "platform";
 import { useSetRecoilState } from "recoil";
-import { ReactComponent as UndoIcon } from "@webiny/app-page-builder/editor/assets/icons/undo-icon.svg";
-import { ReactComponent as RedoIcon } from "@webiny/app-page-builder/editor/assets/icons/redo-icon.svg";
-import { PbEditorToolbarBottomPlugin } from "@webiny/app-page-builder/types";
+import { ReactComponent as UndoIcon } from "../../../assets/icons/undo-icon.svg";
+import { ReactComponent as RedoIcon } from "../../../assets/icons/redo-icon.svg";
+import { PbEditorToolbarBottomPlugin } from "../../../../types";
 import { activeElementAtom } from "../../../recoil/modules";
 import Action from "../Action";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
+import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
 
 const metaKey = platform.os.family === "OS X" ? "CMD" : "CTRL";
 

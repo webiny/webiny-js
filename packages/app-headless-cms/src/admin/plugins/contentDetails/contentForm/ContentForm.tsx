@@ -1,11 +1,11 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { useMutation } from "@webiny/app-headless-cms/admin/hooks";
+import { useMutation } from "../../../hooks";
 import { ContentModelForm } from "../../../views/components/ContentModelForm";
 import * as GQL from "../../../views/components/ContentModelForm/graphql";
 import * as GQLCache from "../cache";
-import { CmsEditorContentEntry, CmsEditorContentModel } from "@webiny/app-headless-cms/types";
+import { CmsEditorContentEntry, CmsEditorContentModel } from "../../../../types";
 import { prepareFormData } from "./prepareFormData";
 
 interface ContentFormProps {

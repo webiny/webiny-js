@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Typography } from "@webiny/ui/Typography";
+import { Typography } from "../../Typography";
 import styled from "@emotion/styled";
 
 const NoDataWrapper = styled("div")({

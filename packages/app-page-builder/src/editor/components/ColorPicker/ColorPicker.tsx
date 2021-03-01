@@ -6,12 +6,12 @@ import classNames from "classnames";
 import { isEqual } from "lodash";
 import { ChromePicker } from "react-color";
 import { Menu } from "@webiny/ui/Menu";
-import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
+import { usePageBuilder } from "../../../hooks/usePageBuilder";
 // Icons
 import { ReactComponent as IconPalette } from "@webiny/app-page-builder/editor/assets/icons/round-color_lens-24px.svg";
 import { ReactComponent as ColorizeIcon } from "./colorize.svg";
 import { ReactComponent as NoColorSelectedIcon } from "./unselected.svg";
-import { COLORS } from "@webiny/app-page-builder/editor/plugins/elementSettings/components/StyledComponents";
+import { COLORS } from "../../plugins/elementSettings/components/StyledComponents";
 
 const ColorPickerStyle = styled("div")({
     display: "flex",

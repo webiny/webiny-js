@@ -7,9 +7,9 @@ import {
     DELETE_REVISION,
     PUBLISH_REVISION,
     UNPUBLISH_REVISION
-} from "@webiny/app-form-builder/admin/graphql";
+} from "../../../graphql";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { FbFormModel } from "@webiny/app-form-builder/types";
+import { FbFormModel } from "../../../../types";
 import {
     removeRevisionFromFormCache,
     updateLatestRevisionInListCache,

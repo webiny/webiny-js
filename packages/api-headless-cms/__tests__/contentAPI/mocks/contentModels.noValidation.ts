@@ -1,6 +1,6 @@
 import shortId from "shortid";
 import contentModelGroup from "./contentModelGroup";
-import { CmsContentModel } from "@webiny/api-headless-cms/types";
+import { CmsContentModel } from "../../../src/types";
 
 const ids = {
     field11: shortId.generate(),

@@ -1,9 +1,9 @@
 import { useCallback, useEffect } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { plugins } from "@webiny/plugins";
-import { PbEditorPageElementPlugin } from "@webiny/app-page-builder/types";
-import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
-import { userElementStyleSettingsPlugins } from "@webiny/app-page-builder/editor/helpers";
+import { PbEditorPageElementPlugin } from "../../../../types";
+import { useKeyHandler } from "../../../hooks/useKeyHandler";
+import { userElementStyleSettingsPlugins } from "../../../helpers";
 import { activeElementAtom, elementByIdSelector } from "../../../recoil/modules";
 
 const getElementActions = plugin => {

@@ -1,8 +1,8 @@
 import React, { ComponentType, ReactElement, ReactNode } from "react";
-import { DragObjectWithTypeWithTarget } from "@webiny/app-page-builder/editor/components/Droppable";
-import { BaseEventAction, EventAction } from "@webiny/app-page-builder/editor/recoil/eventActions";
-import { PluginsAtomType } from "@webiny/app-page-builder/editor/recoil/modules";
-import { PbState } from "@webiny/app-page-builder/editor/recoil/modules/types";
+import { DragObjectWithTypeWithTarget } from "./editor/components/Droppable";
+import { BaseEventAction, EventAction } from "./editor/recoil/eventActions";
+import { PluginsAtomType } from "./editor/recoil/modules";
+import { PbState } from "./editor/recoil/modules/types";
 import { Plugin } from "@webiny/app/types";
 import { BindComponent } from "@webiny/form/Bind";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
