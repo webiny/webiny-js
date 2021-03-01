@@ -25,7 +25,7 @@ function random(length = 32) {
 
 const setup = async args => {
     const { isGitAvailable, projectRoot, projectName, templateOptions = {} } = args;
-    const { vpc = false, region = getDefaultRegion() } = templateOptions;
+    const { region = getDefaultRegion() } = templateOptions;
 
     fs.copySync(path.join(__dirname, "template"), projectRoot);
 
@@ -68,24 +68,6 @@ const setup = async args => {
     webinyRoot = webinyRoot.replace("[PROJECT_NAME]", projectName);
     webinyRoot = webinyRoot.replace("[TEMPLATE_VERSION]", `${name}@${version}`);
     fs.writeFileSync(path.join(projectRoot, "webiny.root.js"), webinyRoot);
-
-    // Keep the needed Pulumi program.
-    // Note: this approach most probably won't work when additional variables are added into the mix (e.g. ability
-    // to choose a different default database, choose exact apps, backend for Pulumi, etc.) For now it works.
-    let move = "default_vpc",
-        remove = "custom_vpc";
-
-    if (vpc) {
-        move = "custom_vpc";
-        remove = "default_vpc";
-    }
-
-    fs.removeSync(path.join(projectRoot, "api", `pulumi_${remove}`));
-    fs.moveSync(
-        path.join(projectRoot, "api", `pulumi_${move}`),
-        path.join(projectRoot, "api", "pulumi"),
-        { overwrite: true }
-    );
 
     // Adjust versions - change them from `latest` to current one.
     const latestVersion = version;
