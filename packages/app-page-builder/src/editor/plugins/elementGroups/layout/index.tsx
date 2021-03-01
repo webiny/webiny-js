@@ -1,5 +1,5 @@
 import React from "react";
-import { ReactComponent as LayoutIcon } from "@webiny/app-page-builder/editor/assets/icons/round-view_quilt-24px.svg";
+import { ReactComponent as LayoutIcon } from "../../../assets/icons/round-view_quilt-24px.svg";
 import { PbEditorPageElementGroupPlugin } from "../../../../types";
 
 const layoutGroup: PbEditorPageElementGroupPlugin = {

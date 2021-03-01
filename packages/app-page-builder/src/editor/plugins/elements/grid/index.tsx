@@ -1,7 +1,7 @@
 import React from "react";
 import GridContainer from "./GridContainer";
 import styled from "@emotion/styled";
-import { ReactComponent as GridIcon } from "@webiny/app-page-builder/editor/assets/icons/view_quilt.svg";
+import { ReactComponent as GridIcon } from "../../../assets/icons/view_quilt.svg";
 import { createElement } from "../../../helpers";
 import { PbEditorPageElementPlugin, DisplayMode } from "../../../../types";
 import { getDefaultPresetCellsTypePluginType, calculatePresetCells } from "../../gridPresets";

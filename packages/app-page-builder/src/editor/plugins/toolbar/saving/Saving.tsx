@@ -2,8 +2,8 @@ import React from "react";
 import { uiAtom } from "../../../recoil/modules";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { ReactComponent as SaveIcon } from "@webiny/app-page-builder/editor/assets/icons/baseline-cloud_upload-24px.svg";
-import { ReactComponent as SavedIcon } from "@webiny/app-page-builder/editor/assets/icons/baseline-cloud_done-24px.svg";
+import { ReactComponent as SaveIcon } from "../../../assets/icons/baseline-cloud_upload-24px.svg";
+import { ReactComponent as SavedIcon } from "../../../assets/icons/baseline-cloud_done-24px.svg";
 import { useRecoilValue } from "recoil";
 
 const Saving = () => {

@@ -18,7 +18,7 @@ const t = i18n.ns(
     "app-headless-cms/admin/plugins/content-details/header/content-form-options-menu"
 );
 
-import { ReactComponent as MoreVerticalIcon } from "@webiny/app-headless-cms/admin/icons/more_vert.svg";
+import { ReactComponent as MoreVerticalIcon } from "../../../../icons/more_vert.svg";
 import { ReactComponent as DeleteIcon } from "../../../../icons/delete.svg";
 import { removeEntryFromListCache } from "../../cache";
 

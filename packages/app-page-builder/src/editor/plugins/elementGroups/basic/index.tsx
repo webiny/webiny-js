@@ -1,5 +1,5 @@
 import React from "react";
-import { ReactComponent as TextIcon } from "@webiny/app-page-builder/editor/assets/icons/round-text_format-24px.svg";
+import { ReactComponent as TextIcon } from "../../../assets/icons/round-text_format-24px.svg";
 import { PbEditorPageElementGroupPlugin } from "../../../../types";
 
 const basicGroup: PbEditorPageElementGroupPlugin = {

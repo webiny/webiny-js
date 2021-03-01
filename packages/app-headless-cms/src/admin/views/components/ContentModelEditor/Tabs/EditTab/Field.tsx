@@ -7,7 +7,7 @@ import { ReactComponent as EditIcon } from "../../../../../icons/edit.svg";
 import { ReactComponent as DeleteIcon } from "../../../../../icons/delete.svg";
 import { ReactComponent as TitleIcon } from "../../../../../icons/title-24px.svg";
 import { useContentModelEditor } from "../../Context";
-import { ReactComponent as MoreVerticalIcon } from "@webiny/app-headless-cms/admin/icons/more_vert.svg";
+import { ReactComponent as MoreVerticalIcon } from "../../../../../icons/more_vert.svg";
 import { Menu, MenuItem } from "@webiny/ui/Menu";
 import { plugins } from "@webiny/plugins";
 import { CmsEditorField, CmsEditorFieldOptionPlugin } from "../../../../../../types";
