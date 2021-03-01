@@ -517,7 +517,7 @@ const plugin: ContextPlugin<PbContext> = {
 
                     const [pid, rev] = id.split("#");
 
-                    const [[[page]], [[latestPage]]] = await db
+                    const [[[existingPage]], [[existingLatestPage]]] = await db
                         .batch()
                         .read({
                             ...defaults.db,
@@ -531,16 +531,16 @@ const plugin: ContextPlugin<PbContext> = {
                         })
                         .execute();
 
-                    if (!page) {
+                    if (!existingPage) {
                         throw new NotFoundError(`Page "${id}" not found.`);
                     }
 
-                    if (page.locked) {
+                    if (existingPage.locked) {
                         throw new Error(`Cannot update page because it's locked.`);
                     }
 
                     const identity = context.security.getIdentity();
-                    checkOwnPermissions(identity, permission, page, "ownedBy");
+                    checkOwnPermissions(identity, permission, existingPage, "ownedBy");
 
                     const updateDataModel = new UpdateDataModel().populate(data);
                     await updateDataModel.validate();
@@ -548,7 +548,7 @@ const plugin: ContextPlugin<PbContext> = {
                     const updateData = await updateDataModel.toJSON({ onlyDirty: true });
 
                     const updateSettingsModel = new UpdateSettingsModel()
-                        .populate(page.settings)
+                        .populate(existingPage.settings)
                         .populate(data.settings);
 
                     await updateSettingsModel.validate();
@@ -556,41 +556,41 @@ const plugin: ContextPlugin<PbContext> = {
                     updateData.settings = await updateSettingsModel.toJSON();
                     updateData.savedOn = new Date().toISOString();
 
-                    await executeHookCallbacks(hookPlugins, "beforeUpdate", context, page);
-
-                    // Assign new data to the page record
-                    Object.assign(page, updateData);
-                    Object.assign(latestPage, updateData);
-
-                    if (updateData.content) {
-                        updateData.content = compressContent(updateData.content);
+                    const newContent = updateData.content;
+                    if (newContent) {
+                        updateData.content = compressContent(newContent);
                     }
+
+                    await executeHookCallbacks(hookPlugins, "beforeUpdate", context, existingPage);
+
+                    const newPageData = { ...existingPage, ...updateData };
+                    const newLatestPageData = { ...existingLatestPage, ...updateData };
 
                     const batch = db.batch().update({
                         ...defaults.db,
                         query: { PK: PK_PAGE(pid), SK: `REV#${rev}` },
-                        data: page
+                        data: newPageData
                     });
 
                     // If we updated the latest rev, make sure the changes are propagated to "L" record and ES.
-                    if (latestPage.id === id) {
+                    if (newLatestPageData.id === id) {
                         const latestPageKeys = { PK: PK_PAGE(pid), SK: "L" };
 
                         batch.update({
                             ...defaults.db,
                             query: latestPageKeys,
-                            data: latestPage
+                            data: newLatestPageData
                         });
 
                         // Update the ES index according to the value of the "latest pages lists" visibility setting.
-                        if (get(updateData, "visibility.list.latest") !== false) {
+                        if (get(newPageData, "visibility.list.latest") !== false) {
                             batch.update({
                                 ...defaults.esDb,
                                 query: latestPageKeys,
                                 data: {
                                     ...latestPageKeys,
                                     index: ES_DEFAULTS().index,
-                                    data: getESLatestPageData(context, page)
+                                    data: getESLatestPageData(context, newPageData)
                                 }
                             });
                         } else {
@@ -603,9 +603,12 @@ const plugin: ContextPlugin<PbContext> = {
 
                     await batch.execute();
 
-                    await executeHookCallbacks(hookPlugins, "afterUpdate", context, page);
+                    await executeHookCallbacks(hookPlugins, "afterUpdate", context, newPageData);
 
-                    return page;
+                    return {
+                        ...newPageData,
+                        content: newContent || newPageData.content
+                    };
                 },
 
                 async delete(pageId) {
