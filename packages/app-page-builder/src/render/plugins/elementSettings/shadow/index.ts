@@ -1,5 +1,5 @@
 import { get } from "lodash";
-import { PbRenderElementStylePlugin } from "@webiny/app-page-builder/types";
+import { PbRenderElementStylePlugin } from "../../../../types";
 
 export default {
     name: "pb-render-page-element-style-shadow",

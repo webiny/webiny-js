@@ -1,4 +1,4 @@
-import { CmsContentModelGroup } from "@webiny/api-headless-cms/types";
+import { CmsContentModelGroup } from "../../src/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
@@ -143,7 +143,7 @@ describe("READ - Resolvers", () => {
                         id: categoryId
                     }
                 }).then(([data]) => data),
-            ({ data }) => data.getCategory.data
+            ({ data }) => !!data.getCategory.data.id
         );
 
         expect(result).toEqual({
@@ -291,7 +291,7 @@ describe("READ - Resolvers", () => {
                     limit: 1
                 }).then(([data]) => data),
             ({ data }) => data.listCategories.data[0].id === animals.id,
-            { name: "list entries with limit after" }
+            { name: "list entries with limit after", wait: 500 }
         );
 
         expect(firstResult).toEqual({

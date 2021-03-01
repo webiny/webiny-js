@@ -2,7 +2,7 @@ import {
     CmsContentModelHookPlugin,
     CmsContentModelHookPluginArgs,
     CmsContentModelUpdateHookPluginArgs
-} from "@webiny/api-headless-cms/types";
+} from "../../../../types";
 
 export const runContentModelLifecycleHooks = async (
     hookName: string,

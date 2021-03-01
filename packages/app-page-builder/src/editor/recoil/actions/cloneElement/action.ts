@@ -1,6 +1,6 @@
-import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
-import { EventActionCallable, PbEditorElement } from "@webiny/app-page-builder/types";
-import { CloneElementActionArgsType } from "@webiny/app-page-builder/editor/recoil/actions/cloneElement/types";
+import { UpdateElementActionEvent } from "..";
+import { EventActionCallable, PbEditorElement } from "../../../../types";
+import { CloneElementActionArgsType } from "../cloneElement/types";
 import { getNanoid } from "../../../helpers";
 
 export const cloneElement = async (state, element: PbEditorElement): Promise<PbEditorElement> => {

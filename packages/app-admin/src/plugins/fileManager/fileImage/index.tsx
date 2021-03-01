@@ -1,7 +1,7 @@
 import * as React from "react";
 import { css } from "emotion";
 import { Image } from "@webiny/app/components";
-import { AdminFileManagerFileTypePlugin } from "@webiny/app-admin/types";
+import { AdminFileManagerFileTypePlugin } from "../../../types";
 
 import EditAction from "./EditAction";
 

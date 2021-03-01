@@ -1,5 +1,5 @@
 import { DragEndActionEvent, DragStartActionEvent } from "./event";
-import { EventActionCallable } from "@webiny/app-page-builder/types";
+import { EventActionCallable } from "../../../../types";
 
 export const dragStartAction: EventActionCallable<DragStartActionEvent> = state => {
     return {

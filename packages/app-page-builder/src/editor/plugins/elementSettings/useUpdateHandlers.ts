@@ -1,7 +1,7 @@
-import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
-import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
-import { UpdateElementActionArgsType } from "@webiny/app-page-builder/editor/recoil/actions/updateElement/types";
-import { PbEditorElement } from "@webiny/app-page-builder/types";
+import { useEventActionHandler } from "../../hooks/useEventActionHandler";
+import { UpdateElementActionEvent } from "../../recoil/actions";
+import { UpdateElementActionArgsType } from "../../recoil/actions/updateElement/types";
+import { PbEditorElement } from "../../../types";
 import { useMemo } from "react";
 import lodashSet from "lodash/set";
 import lodashMerge from "lodash/merge";

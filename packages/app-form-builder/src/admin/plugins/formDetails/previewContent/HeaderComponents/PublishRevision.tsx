@@ -1,13 +1,13 @@
 import React from "react";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { ReactComponent as PublishIcon } from "@webiny/app-form-builder/admin/icons/publish.svg";
-import { ReactComponent as UnpublishIcon } from "@webiny/app-form-builder/admin/icons/unpublish.svg";
-import { PUBLISH_REVISION, UNPUBLISH_REVISION } from "@webiny/app-form-builder/admin/graphql";
+import { ReactComponent as PublishIcon } from "../../../../icons/publish.svg";
+import { ReactComponent as UnpublishIcon } from "../../../../icons/unpublish.svg";
+import { PUBLISH_REVISION, UNPUBLISH_REVISION } from "../../../../graphql";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { useApolloClient } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { FbRevisionModel } from "@webiny/app-form-builder/types";
+import { FbRevisionModel } from "../../../../../types";
 import usePermission from "../../../../../hooks/usePermission";
 
 type PublishRevisionProps = {

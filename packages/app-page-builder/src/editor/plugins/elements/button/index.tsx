@@ -4,7 +4,7 @@ import {
     DisplayMode,
     PbEditorPageElementPlugin,
     PbEditorPageElementStyleSettingsPlugin
-} from "@webiny/app-page-builder/types";
+} from "../../../../types";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 import ButtonSettings from "./ButtonSettings";
 import Button from "./Button";

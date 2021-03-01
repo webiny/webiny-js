@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import { get, set } from "dot-prop-immutable";
 import { useUi } from "@webiny/app/hooks/useUi";
 import { IconButton } from "@webiny/ui/Button";
-import { ReactComponent as MenuIcon } from "@webiny/app-admin/assets/icons/baseline-menu-24px.svg";
+import { ReactComponent as MenuIcon } from "../../assets/icons/baseline-menu-24px.svg";
 import Navigation from "./Navigation";
 
 let el = null;

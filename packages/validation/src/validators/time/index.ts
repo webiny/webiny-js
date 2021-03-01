@@ -1,4 +1,4 @@
-import ValidationError from "@webiny/validation/validationError";
+import ValidationError from "../../validationError";
 
 const parseTime = (value: string) => {
     const parsed = value.split(":").map(Number);

@@ -1,4 +1,4 @@
-import { ContentModelManagerPlugin } from "@webiny/api-headless-cms/types";
+import { ContentModelManagerPlugin } from "../../../types";
 import { DefaultContentModelManager } from "./DefaultContentModelManager";
 
 const plugin: ContentModelManagerPlugin = {

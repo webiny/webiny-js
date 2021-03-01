@@ -4,7 +4,7 @@ import getStorageFolder from "./../utils/getStorageFolder";
 import getDbNamespace from "./../utils/getDbNamespace";
 import getRenderUrl from "./../utils/getRenderUrl";
 import { HandlerPlugin, Configuration, FlushHookPlugin } from "./types";
-import { HandlerResponse, DbRender } from "@webiny/api-prerendering-service/types";
+import { HandlerResponse, DbRender } from "../types";
 import defaults from "./../utils/defaults";
 import path from "path";
 import getTagUrlLinkPKSK from "./../utils/getTagUrlLinkPKSK";

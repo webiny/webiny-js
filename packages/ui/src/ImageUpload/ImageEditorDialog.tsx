@@ -1,6 +1,6 @@
 import * as React from "react";
-import { ImageEditor } from "@webiny/ui/ImageEditor";
-import { Tooltip } from "@webiny/ui/Tooltip";
+import { ImageEditor } from "../ImageEditor";
+import { Tooltip } from "../Tooltip";
 import { css } from "emotion";
 import {
     Dialog,
@@ -9,7 +9,7 @@ import {
     DialogActions,
     DialogContent,
     DialogOnClose
-} from "@webiny/ui/Dialog";
+} from "../Dialog";
 
 type Props = {
     dialogZIndex?: number;

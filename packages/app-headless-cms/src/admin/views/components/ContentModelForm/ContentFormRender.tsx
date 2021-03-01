@@ -1,9 +1,6 @@
 import React, { useEffect, useRef, useMemo } from "react";
 import { Form, FormOnSubmit } from "@webiny/form";
-import {
-    CmsEditorContentModel,
-    CmsEditorFieldRendererPlugin
-} from "@webiny/app-headless-cms/types";
+import { CmsEditorContentModel, CmsEditorFieldRendererPlugin } from "../../../../types";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { plugins } from "@webiny/plugins";

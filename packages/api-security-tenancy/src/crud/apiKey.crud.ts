@@ -4,12 +4,7 @@ import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
 import dbArgs from "./dbArgs";
 import mdbid from "mdbid";
-import {
-    ApiKey,
-    ApiKeyPermission,
-    ApiKeysCRUD,
-    TenancyContext
-} from "@webiny/api-security-tenancy/types";
+import { ApiKey, ApiKeyPermission, ApiKeysCRUD, TenancyContext } from "../types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { NotFoundError } from "@webiny/handler-graphql";
 

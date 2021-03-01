@@ -2,7 +2,7 @@ import React from "react";
 import AddBlock from "./AddBlock";
 import AddContent from "./AddContent";
 import SearchBlocks from "./SearchBlocks";
-import { PbEditorBarPlugin, PbEditorContentPlugin } from "@webiny/app-page-builder/types";
+import { PbEditorBarPlugin, PbEditorContentPlugin } from "../../../types";
 
 export default [
     {

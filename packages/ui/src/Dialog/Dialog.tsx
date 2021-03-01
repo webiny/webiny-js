@@ -13,7 +13,7 @@ import {
     DialogButton as RmwcDialogButton,
     DialogButtonProps as RmwcDialogButtonProps
 } from "@rmwc/dialog";
-import { getClasses } from "@webiny/ui/Helpers";
+import { getClasses } from "../Helpers";
 
 export type DialogOnClose = (event: DialogOnCloseEventT) => void;
 

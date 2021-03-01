@@ -5,11 +5,9 @@
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
-    "declarationDir": "./dist"
+    "declarationDir": "./dist",
+    "paths": {},
+    "baseUrl": "."
   },
-  "references": [
-    {
-      "path": "../plugins/tsconfig.build.json"
-    }
-  ]
+  "references": []
 }

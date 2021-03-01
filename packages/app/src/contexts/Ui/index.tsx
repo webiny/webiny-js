@@ -1,5 +1,5 @@
 import React from "react";
-import { UiStatePlugin } from "@webiny/app/types";
+import { UiStatePlugin } from "../../types";
 import { plugins } from "@webiny/plugins";
 
 export const UiContext = React.createContext({});

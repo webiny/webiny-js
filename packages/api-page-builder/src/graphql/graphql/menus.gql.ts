@@ -1,5 +1,5 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { PbContext } from "@webiny/api-page-builder/types";
+import { PbContext } from "../../types";
 import resolve from "./utils/resolve";
 
 const plugin: GraphQLSchemaPlugin<PbContext> = {

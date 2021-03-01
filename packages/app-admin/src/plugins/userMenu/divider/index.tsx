@@ -1,6 +1,6 @@
 import React from "react";
 import shortid from "shortid";
-import { AdminHeaderUserMenuPlugin } from "@webiny/app-admin/types";
+import { AdminHeaderUserMenuPlugin } from "../../../types";
 import { MenuDivider } from "@webiny/ui/Menu";
 
 export default (): AdminHeaderUserMenuPlugin => ({

@@ -4,8 +4,8 @@ import dataURLtoBlob from "dataurl-to-blob";
 import { ImageEditorDialog } from "@webiny/ui/ImageUpload";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { IconButton } from "@webiny/ui/Button";
-import outputFileSelectionError from "@webiny/app-admin/components/FileManager/outputFileSelectionError";
-import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+import outputFileSelectionError from "../../../components/FileManager/outputFileSelectionError";
+import { useSnackbar } from "../../../hooks/useSnackbar";
 import { ReactComponent as EditIcon } from "./../icons/edit.svg";
 
 function toDataUrl(url) {

@@ -14,29 +14,9 @@
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
-    "declarationDir": "./dist"
+    "declarationDir": "./dist",
+    "paths": {},
+    "baseUrl": "."
   },
-  "references": [
-    {
-      "path": "../plugins/tsconfig.build.json"
-    },
-    {
-      "path": "../db/tsconfig.build.json"
-    },
-    {
-      "path": "../handler/tsconfig.build.json"
-    },
-    {
-      "path": "../handler-db/tsconfig.build.json"
-    },
-    {
-      "path": "../handler-args/tsconfig.build.json"
-    },
-    {
-      "path": "../handler-client/tsconfig.build.json"
-    },
-    {
-      "path": "../error/tsconfig.build.json"
-    }
-  ]
+  "references": []
 }

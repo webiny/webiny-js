@@ -1,4 +1,4 @@
-import { CmsContentModel, CmsContext } from "@webiny/api-headless-cms/types";
+import { CmsContentModel, CmsContext } from "../../../../types";
 import WebinyError from "@webiny/error";
 import { runContentModelLifecycleHooks } from "./runContentModelLifecycleHooks";
 

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { FbFormDetailsPluginType } from "@webiny/app-form-builder/types";
+import { FbFormDetailsPluginType } from "../../../../types";
 import { Tab } from "@webiny/ui/Tabs";
 import RevisionsList from "./RevisionsList";
 

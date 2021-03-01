@@ -13,13 +13,9 @@
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
-    "declarationDir": "./dist"
+    "declarationDir": "./dist",
+    "paths": {},
+    "baseUrl": "."
   },
-  "references": [
-    { "path": "../react-router/tsconfig.build.json" },
-    { "path": "../plugins/tsconfig.build.json" },
-    { "path": "../ui/tsconfig.build.json" },
-    { "path": "../i18n/tsconfig.build.json" },
-    { "path": "../i18n-react/tsconfig.build.json" }
-  ]
+  "references": []
 }

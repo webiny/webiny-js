@@ -4,7 +4,7 @@ import {
     FbFormPermission,
     FbFormSettingsPermission,
     FormBuilderContext
-} from "@webiny/api-form-builder/types";
+} from "../../types";
 
 export const checkBaseFormPermissions = async (
     context: FormBuilderContext,

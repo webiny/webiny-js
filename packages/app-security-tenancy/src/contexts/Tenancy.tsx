@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect, useCallback } from "react";
 
 import { plugins } from "@webiny/plugins";
 import { useSecurity } from "@webiny/app-security";
-import { Tenant } from "@webiny/app-security-tenancy/types";
+import { Tenant } from "../types";
 export const TenancyContext = React.createContext(null);
 
 export type TenancyContextValue = {

@@ -10,7 +10,7 @@ import { Scrollbar } from "@webiny/ui/Scrollbar";
 import FormSubmissionDialog from "./FormSubmissionDialog";
 import { ReactComponent as ImportExport } from "./icons/round-cloud_download-24px.svg";
 import Block from "../Block";
-import useSubmissions from "@webiny/app-form-builder/admin/plugins/formDetails/formSubmissions/FormSubmissionsList/useSubmissions";
+import useSubmissions from "./useSubmissions";
 
 const t = i18n.namespace("FormsApp.FormsDataList");
 

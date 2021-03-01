@@ -1,7 +1,7 @@
 import * as React from "react";
 import { FormComponentProps } from "./../types";
 import { webinyCheckboxTitle } from "./Checkbox.styles";
-import { FormElementMessage } from "@webiny/ui/FormElementMessage";
+import { FormElementMessage } from "../FormElementMessage";
 
 interface ChildrenRenderProp {
     onChange: (id: string | number) => () => void;

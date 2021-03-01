@@ -2,7 +2,7 @@ import {
     CmsContentModelField,
     CmsContentModel,
     CmsContentModelUpdateInput
-} from "@webiny/api-headless-cms/types";
+} from "../../../../types";
 import { ContentModelFieldModel } from "./models";
 
 export const createFieldModels = async (

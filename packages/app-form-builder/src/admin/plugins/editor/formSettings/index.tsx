@@ -1,5 +1,5 @@
 import * as React from "react";
-import { FormSettingsPluginType } from "@webiny/app-form-builder/types";
+import { FormSettingsPluginType } from "../../../../types";
 import GeneralSettings from "./components/GeneralSettings";
 import TermsOfServiceSettings from "./components/TermsOfServiceSettings";
 import ReCaptchaSettings from "./components/ReCaptchaSettings";

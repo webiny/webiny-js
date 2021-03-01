@@ -7,7 +7,7 @@ import { ReactComponent as DownButton } from "@webiny/app-page-builder/admin/ass
 import { MenuItem } from "@rmwc/menu";
 import { Typography } from "@webiny/ui/Typography";
 import { Menu } from "@webiny/ui/Menu";
-import statusesLabels from "@webiny/app-page-builder/admin/constants/pageStatusesLabels";
+import statusesLabels from "../../../../constants/pageStatusesLabels";
 
 const buttonStyle = css({
     "&.mdc-button": {

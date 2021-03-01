@@ -1,6 +1,6 @@
 import React from "react";
-import { PbElement } from "@webiny/app-page-builder/types";
-import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
+import { PbElement } from "../../../../types";
+import { ElementRoot } from "../../../components/ElementRoot";
 import { Image as WebinyImage } from "@webiny/app/components";
 import { Link as RouterLink } from "@webiny/react-router";
 

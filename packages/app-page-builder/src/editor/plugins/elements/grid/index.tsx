@@ -2,12 +2,9 @@ import React from "react";
 import GridContainer from "./GridContainer";
 import styled from "@emotion/styled";
 import { ReactComponent as GridIcon } from "@webiny/app-page-builder/editor/assets/icons/view_quilt.svg";
-import { createElement } from "@webiny/app-page-builder/editor/helpers";
-import { PbEditorPageElementPlugin, DisplayMode } from "@webiny/app-page-builder/types";
-import {
-    getDefaultPresetCellsTypePluginType,
-    calculatePresetCells
-} from "@webiny/app-page-builder/editor/plugins/gridPresets";
+import { createElement } from "../../../helpers";
+import { PbEditorPageElementPlugin, DisplayMode } from "../../../../types";
+import { getDefaultPresetCellsTypePluginType, calculatePresetCells } from "../../gridPresets";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
 const PreviewBox = styled("div")({

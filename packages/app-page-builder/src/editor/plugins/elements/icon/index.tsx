@@ -4,7 +4,7 @@ import {
     PbEditorPageElementPlugin,
     PbEditorPageElementStyleSettingsPlugin,
     DisplayMode
-} from "@webiny/app-page-builder/types";
+} from "../../../../types";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 // Icons
 import { ReactComponent as IconSvg } from "./round-star_border-24px.svg";

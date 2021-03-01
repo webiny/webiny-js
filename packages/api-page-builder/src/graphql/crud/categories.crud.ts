@@ -3,7 +3,7 @@ import DataLoader from "dataloader";
 import { withFields, string } from "@commodo/fields";
 import { validation } from "@webiny/validation";
 import getPKPrefix from "./utils/getPKPrefix";
-import { Category, PbContext } from "@webiny/api-page-builder/types";
+import { Category, PbContext } from "../../types";
 import { ContextPlugin } from "@webiny/handler/types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import hasRwd from "./utils/hasRwd";

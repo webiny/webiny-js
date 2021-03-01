@@ -4,8 +4,8 @@ import { Tooltip } from "@webiny/ui/Tooltip";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import { i18n } from "@webiny/app/i18n";
 import { useSecurity } from "@webiny/app-security";
-import { ReactComponent as PublishIcon } from "@webiny/app-page-builder/admin/assets/round-publish-24px.svg";
-import { ReactComponent as UnpublishIcon } from "@webiny/app-page-builder/admin/assets/unpublish.svg";
+import { ReactComponent as PublishIcon } from "../../../../assets/round-publish-24px.svg";
+import { ReactComponent as UnpublishIcon } from "../../../../assets/unpublish.svg";
 import { usePublishRevisionHandler } from "../../pageRevisions/usePublishRevisionHandler";
 import usePermission from "../../../../../hooks/usePermission";
 

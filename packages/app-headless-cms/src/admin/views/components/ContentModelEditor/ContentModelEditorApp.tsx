@@ -3,7 +3,7 @@ import { useRouter } from "@webiny/react-router";
 import { ContentModelEditorProvider } from "./Context";
 import ContentModelEditor from "./ContentModelEditor";
 import { match } from "react-router";
-import { useCms } from "@webiny/app-headless-cms/admin/hooks";
+import { useCms } from "../../../hooks";
 
 type QueryMatch = {
     modelId?: string;

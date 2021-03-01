@@ -4,7 +4,7 @@ import {
     CmsContentModel,
     CmsContext,
     CmsModelFieldToStoragePlugin
-} from "@webiny/api-headless-cms/types";
+} from "../../../types";
 import WebinyError from "@webiny/error";
 
 const getStoragePlugins = (context: CmsContext): Record<string, CmsModelFieldToStoragePlugin> => {

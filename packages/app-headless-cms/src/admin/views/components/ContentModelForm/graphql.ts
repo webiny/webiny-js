@@ -2,7 +2,7 @@ import upperFirst from "lodash/upperFirst";
 import gql from "graphql-tag";
 import pluralize from "pluralize";
 import { plugins } from "@webiny/plugins";
-import { CmsEditorContentModel, CmsEditorFieldTypePlugin } from "@webiny/app-headless-cms/types";
+import { CmsEditorContentModel, CmsEditorFieldTypePlugin } from "../../../../types";
 
 const ERROR_FIELD = /* GraphQL */ `
     {

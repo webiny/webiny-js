@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import HTML5Backend from "react-dnd-html5-backend";
 import classSet from "classnames";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
-import { EventActionHandler, PbEditorEventActionPlugin } from "@webiny/app-page-builder/types";
+import { useEventActionHandler } from "../../hooks/useEventActionHandler";
+import { EventActionHandler, PbEditorEventActionPlugin } from "../../../types";
 import {
     rootElementAtom,
     PageAtomType,
@@ -12,7 +12,7 @@ import {
 } from "../../recoil/modules";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { DndProvider } from "react-dnd";
-import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
+import { useKeyHandler } from "../../hooks/useKeyHandler";
 import { plugins } from "@webiny/plugins";
 import "./Editor.scss";
 // Components

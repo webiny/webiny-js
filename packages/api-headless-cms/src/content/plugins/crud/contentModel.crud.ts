@@ -5,7 +5,7 @@ import {
     CmsContentModelContext,
     CmsContentModelManager,
     CmsContentModelPermission
-} from "@webiny/api-headless-cms/types";
+} from "../../../types";
 import * as utils from "../../../utils";
 import DataLoader from "dataloader";
 import { NotFoundError } from "@webiny/handler-graphql";

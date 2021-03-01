@@ -7,7 +7,7 @@ export default () => [
     crud,
     localeContexts,
     graphql,
-    i18nContext,
+    i18nContext(),
     {
         name: "context-i18n-get-locales",
         type: "context-i18n-get-locales",

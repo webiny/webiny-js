@@ -1,6 +1,6 @@
 /* eslint-disable */
 import Error from "@webiny/error";
-import { CmsContentEntry, CmsContentModelGroup } from "@webiny/api-headless-cms/types";
+import { CmsContentEntry, CmsContentModelGroup } from "../../src/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";

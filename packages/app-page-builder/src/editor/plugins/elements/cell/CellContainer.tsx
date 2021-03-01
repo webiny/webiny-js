@@ -1,16 +1,13 @@
 import React from "react";
 import Cell from "./Cell";
-import DropZone from "@webiny/app-page-builder/editor/components/DropZone";
+import DropZone from "../../../components/DropZone";
 import styled from "@emotion/styled";
-import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
+import { ElementRoot } from "../../../../render/components/ElementRoot";
+import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
 import { ReactComponent as AddCircleOutline } from "@webiny/app-page-builder/editor/assets/icons/baseline-add_circle-24px.svg";
-import { DragObjectWithTypeWithTarget } from "@webiny/app-page-builder/editor/components/Droppable";
-import {
-    DropElementActionEvent,
-    TogglePluginActionEvent
-} from "@webiny/app-page-builder/editor/recoil/actions";
-import { elementByIdSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import { DragObjectWithTypeWithTarget } from "../../../components/Droppable";
+import { DropElementActionEvent, TogglePluginActionEvent } from "../../../recoil/actions";
+import { elementByIdSelector } from "../../../recoil/modules";
 import { IconButton } from "@webiny/ui/Button";
 import { css } from "emotion";
 import { useRecoilValue } from "recoil";

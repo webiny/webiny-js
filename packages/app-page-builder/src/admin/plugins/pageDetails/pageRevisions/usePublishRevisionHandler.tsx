@@ -2,11 +2,7 @@ import React from "react";
 import { set } from "dot-prop-immutable";
 import { useApolloClient } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import {
-    PUBLISH_PAGE,
-    UNPUBLISH_PAGE,
-    GET_PAGE
-} from "@webiny/app-page-builder/admin/graphql/pages";
+import { PUBLISH_PAGE, UNPUBLISH_PAGE, GET_PAGE } from "../../../graphql/pages";
 
 export function usePublishRevisionHandler({ page }) {
     const client = useApolloClient();

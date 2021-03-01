@@ -5,14 +5,9 @@
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
-    "declarationDir": "./dist"
+    "declarationDir": "./dist",
+    "paths": {},
+    "baseUrl": "."
   },
-  "references": [
-    {
-      "path": "../api-plugin-elastic-search-client/tsconfig.build.json"
-    },
-    {
-      "path": "../handler/tsconfig.build.json"
-    }
-  ]
+  "references": []
 }

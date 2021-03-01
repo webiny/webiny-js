@@ -1,7 +1,7 @@
 import * as React from "react";
-import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
+import { usePageBuilder } from "../../../../hooks/usePageBuilder";
 import { plugins } from "@webiny/plugins";
-import { PbPageElementImagesListComponentPlugin } from "@webiny/app-page-builder/types";
+import { PbPageElementImagesListComponentPlugin } from "../../../../types";
 
 const ImagesList = ({ data }) => {
     const { theme } = usePageBuilder();

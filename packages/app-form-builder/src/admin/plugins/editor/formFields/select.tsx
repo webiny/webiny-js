@@ -3,7 +3,7 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { ReactComponent as Icon } from "./icons/dropdown-icon.svg";
 import OptionsList from "./components/OptionsList";
 import { Input } from "@webiny/ui/Input";
-import { FbBuilderFieldPlugin } from "@webiny/app-form-builder/types";
+import { FbBuilderFieldPlugin } from "../../../../types";
 
 const plugin: FbBuilderFieldPlugin = {
     type: "form-editor-field-type",

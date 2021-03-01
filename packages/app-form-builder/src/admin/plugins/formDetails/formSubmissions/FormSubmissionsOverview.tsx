@@ -2,7 +2,7 @@ import * as React from "react";
 import Block from "./Block";
 import { Typography } from "@webiny/ui/Typography";
 import styled from "@emotion/styled";
-import { FbFormModel } from "@webiny/app-form-builder/types";
+import { FbFormModel } from "../../../../types";
 
 type Props = {
     form: FbFormModel;

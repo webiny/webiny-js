@@ -4,7 +4,7 @@ import { css } from "emotion";
 import { useSecurity } from "@webiny/app-security";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { ButtonPrimary } from "@webiny/ui/Button";
-import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
+import { SplitView, LeftPanel, RightPanel } from "../SplitView";
 import { Elevation } from "@webiny/ui/Elevation";
 import { plugins } from "@webiny/plugins";
 import { useInstaller } from "./useInstaller";

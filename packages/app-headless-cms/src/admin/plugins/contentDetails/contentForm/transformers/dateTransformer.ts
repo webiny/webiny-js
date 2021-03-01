@@ -1,4 +1,4 @@
-import { CmsFieldValueTransformer } from "@webiny/app-headless-cms/types";
+import { CmsFieldValueTransformer } from "../../../../../types";
 import WebinyError from "@webiny/error";
 
 const transformDate = (value: string, type: "date" | "datetime" | "time") => {

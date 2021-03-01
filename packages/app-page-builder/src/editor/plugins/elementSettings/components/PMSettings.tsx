@@ -1,12 +1,9 @@
 import React, { useMemo, useState } from "react";
 import SliderWithInput from "./SliderWithInput";
 import Footer from "./Footer";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
-import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
-import {
-    activeElementAtom,
-    elementWithChildrenByIdSelector
-} from "@webiny/app-page-builder/editor/recoil/modules";
+import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
+import { UpdateElementActionEvent } from "../../../recoil/actions";
+import { activeElementAtom, elementWithChildrenByIdSelector } from "../../../recoil/modules";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
 import { get } from "lodash";
 import { set, merge } from "dot-prop-immutable";

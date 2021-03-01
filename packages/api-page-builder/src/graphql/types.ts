@@ -16,7 +16,7 @@ import {
     Page,
     PageElement,
     PageSpecialType
-} from "@webiny/api-page-builder/types";
+} from "../types";
 import { PrerenderingServiceClientContext } from "@webiny/api-prerendering-service/client/types";
 
 // CRUD types.

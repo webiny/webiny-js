@@ -1,6 +1,6 @@
 import dotProp from "dot-prop-immutable";
 import orderBy from "lodash/orderBy";
-import { CmsEditorContentEntry } from "@webiny/app-headless-cms/types";
+import { CmsEditorContentEntry } from "../../../types";
 import * as GQL from "../../views/components/ContentModelForm/graphql";
 
 /*

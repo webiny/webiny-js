@@ -1,6 +1,6 @@
 import dotProp from "dot-prop-immutable";
 import * as GQL from "../../viewsGraphql";
-import { CmsEditorContentModel } from "@webiny/app-headless-cms/types";
+import { CmsEditorContentModel } from "../../../types";
 
 export const addModelToListCache = (cache, model: CmsEditorContentModel) => {
     const { listContentModels } = cache.readQuery({ query: GQL.LIST_CONTENT_MODELS });

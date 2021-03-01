@@ -2,7 +2,7 @@ import { useCallback, useReducer, useEffect } from "react";
 import { Graph, alg } from "graphlib";
 import { useApolloClient } from "@apollo/react-hooks";
 import { plugins } from "@webiny/plugins";
-import { AdminInstallationPlugin } from "@webiny/app-admin/types";
+import { AdminInstallationPlugin } from "../../types";
 
 export const useInstaller = () => {
     const [{ loading, installers, installerIndex, showLogin }, setState] = useReducer(

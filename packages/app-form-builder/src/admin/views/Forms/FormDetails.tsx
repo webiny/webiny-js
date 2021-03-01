@@ -3,7 +3,7 @@ import { useQuery } from "@apollo/react-hooks";
 import { renderPlugins } from "@webiny/app/plugins";
 import { useRouter } from "@webiny/react-router";
 import styled from "@emotion/styled";
-import { GET_FORM, GET_FORM_REVISIONS } from "@webiny/app-form-builder/admin/graphql";
+import { GET_FORM, GET_FORM_REVISIONS } from "../../graphql";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Tabs } from "@webiny/ui/Tabs";
 import { CircularProgress } from "@webiny/ui/Progress";

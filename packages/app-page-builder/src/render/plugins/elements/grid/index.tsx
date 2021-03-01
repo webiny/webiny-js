@@ -1,6 +1,6 @@
 import React from "react";
 import Grid from "./Grid";
-import { PbRenderElementPlugin } from "@webiny/app-page-builder/types";
+import { PbRenderElementPlugin } from "../../../../types";
 
 export default (): PbRenderElementPlugin => {
     return {

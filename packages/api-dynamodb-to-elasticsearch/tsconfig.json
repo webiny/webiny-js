@@ -8,5 +8,14 @@
     {
       "path": "../handler"
     }
-  ]
+  ],
+  "compilerOptions": {
+    "paths": {
+      "@webiny/api-plugin-elastic-search-client/*": ["../api-plugin-elastic-search-client/src/*"],
+      "@webiny/api-plugin-elastic-search-client": ["../api-plugin-elastic-search-client/src"],
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"]
+    },
+    "baseUrl": "."
+  }
 }

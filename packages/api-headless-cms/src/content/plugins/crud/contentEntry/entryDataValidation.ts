@@ -5,7 +5,7 @@ import {
     CmsContext,
     CmsModelFieldValidatorPlugin,
     CmsModelFieldValidatorValidateArgs
-} from "@webiny/api-headless-cms/types";
+} from "../../../../types";
 import WebinyError from "@webiny/error";
 
 type PluginValidationCallable = (params: CmsModelFieldValidatorValidateArgs) => Promise<boolean>;

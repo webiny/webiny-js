@@ -3,7 +3,7 @@ import {
     CmsContentEntryMeta,
     CmsContentEntryResolverFactory as ResolverFactory,
     CmsContentEntry
-} from "@webiny/api-headless-cms/types";
+} from "../../../../../types";
 
 export const resolveList: ResolverFactory = ({ model }) => async (root, args, { cms }) => {
     try {

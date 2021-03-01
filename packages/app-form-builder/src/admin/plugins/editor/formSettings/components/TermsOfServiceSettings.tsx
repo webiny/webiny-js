@@ -3,7 +3,7 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { Switch } from "@webiny/ui/Switch";
 import { get } from "lodash";
-import { FormSettingsPluginRenderFunctionType } from "@webiny/app-form-builder/types";
+import { FormSettingsPluginRenderFunctionType } from "../../../../../types";
 import { RichTextEditor, createPropsFromConfig } from "@webiny/app-admin/components/RichTextEditor";
 import { useMemo } from "react";
 import { plugins } from "@webiny/plugins";

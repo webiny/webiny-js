@@ -6,13 +6,13 @@ import {
     SimpleFormContent,
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
-import { useFormEditor } from "@webiny/app-form-builder/admin/components/FormEditor/Context";
+import { useFormEditor } from "../../../Context";
 import { Form } from "@webiny/form";
 import { cloneDeep, debounce } from "lodash";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { validation } from "@webiny/validation";
-import { FbBuilderFormFieldValidatorPlugin } from "@webiny/app-form-builder/types";
+import { FbBuilderFormFieldValidatorPlugin } from "../../../../../../types";
 
 const onEnabledChange = ({ data, validationValue, onChangeValidation, validator }) => {
     if (data) {

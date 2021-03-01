@@ -4,10 +4,10 @@ import { plugins } from "@webiny/plugins";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid } from "react-virtualized";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { DelayedOnChange } from "@webiny/app-page-builder/editor/components/DelayedOnChange";
+import { DelayedOnChange } from "./DelayedOnChange";
 import { Menu } from "@webiny/ui/Menu";
 import { Input } from "@webiny/ui/Input";
-import { PbIcon, PbIconsPlugin } from "@webiny/app-page-builder/types";
+import { PbIcon, PbIconsPlugin } from "../../types";
 import classNames from "classnames";
 import { COLORS } from "../plugins/elementSettings/components/StyledComponents";
 // Icons

@@ -6,7 +6,7 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { UPDATE_FORMS_SETTINGS } from "./graphql";
-import { useFormEditor } from "@webiny/app-form-builder/admin/components/FormEditor/Context";
+import { useFormEditor } from "../../../../components/FormEditor/Context";
 import { validation } from "@webiny/validation";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.namespace("Forms.ReCaptchaSettingsDialog");

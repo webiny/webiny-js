@@ -1,21 +1,24 @@
 import { elasticSearchQueryBuilderContainsPlugin } from "../../../src/content/plugins/es/elasticSearchQueryBuilderContainsPlugin";
 import { createBlankQuery } from "./helpers";
-import { ElasticsearchQuery } from "@webiny/api-headless-cms/types";
+import { ElasticsearchQuery } from "../../../src/types";
 
 describe("elasticSearchQueryBuilderContainsPlugin", () => {
     const plugin = elasticSearchQueryBuilderContainsPlugin();
+    const context: any = {};
 
     it("should apply contains correctly", () => {
         const query = createBlankQuery();
 
         plugin.apply(query, {
             field: "name",
-            value: "John"
+            value: "John",
+            context
         });
 
         plugin.apply(query, {
             field: "name",
-            value: "Doe"
+            value: "Doe",
+            context
         });
 
         const expected: ElasticsearchQuery = {

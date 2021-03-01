@@ -23,7 +23,7 @@ import SelectField from "../../elementSettings/components/SelectField";
 import { BaseColorPicker } from "../../elementSettings/components/ColorPicker";
 import useUpdateHandlers from "../../elementSettings/useUpdateHandlers";
 import TextAlignment from "./TextAlignment";
-import { applyFallbackDisplayMode } from "@webiny/app-page-builder/editor/plugins/elementSettings/elementSettingsUtils";
+import { applyFallbackDisplayMode } from "../elementSettingsUtils";
 
 const classes = {
     grid: css({

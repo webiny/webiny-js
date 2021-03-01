@@ -1,6 +1,6 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { Response, ErrorResponse } from "@webiny/handler-graphql/responses";
-import { InstallHookPlugin, PbContext } from "@webiny/api-page-builder/types";
+import { InstallHookPlugin, PbContext } from "../../types";
 import defaults from "./../crud/utils/defaults";
 import executeHookCallbacks from "./../crud/utils/executeHookCallbacks";
 import { preparePageData } from "./install/welcome-to-webiny-page-data";

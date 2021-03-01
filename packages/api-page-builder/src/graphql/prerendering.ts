@@ -1,4 +1,4 @@
-import { MenuHookPlugin, PageHookPlugin, SettingsHookPlugin } from "@webiny/api-page-builder/types";
+import { MenuHookPlugin, PageHookPlugin, SettingsHookPlugin } from "../types";
 
 const NOT_FOUND_FOLDER = "_NOT_FOUND_PAGE_";
 

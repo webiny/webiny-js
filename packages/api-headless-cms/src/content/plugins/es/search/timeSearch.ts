@@ -1,4 +1,4 @@
-import { ElasticsearchQueryBuilderValueSearchPlugin } from "@webiny/api-headless-cms/types";
+import { ElasticsearchQueryBuilderValueSearchPlugin } from "../../../../types";
 
 export default (): ElasticsearchQueryBuilderValueSearchPlugin => ({
     type: "cms-elastic-search-query-builder-value-search",

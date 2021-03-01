@@ -1,16 +1,13 @@
 import React, { useMemo } from "react";
 import { cloneDeep } from "lodash";
 import { merge } from "dot-prop-immutable";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
-import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
+import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
+import { UpdateElementActionEvent } from "../../../recoil/actions";
 import { plugins } from "@webiny/plugins";
 import { renderPlugins } from "@webiny/app/plugins";
-import { withActiveElement } from "@webiny/app-page-builder/editor/components";
+import { withActiveElement } from "../../../components";
 import { Form } from "@webiny/form";
-import {
-    PbEditorPageElementAdvancedSettingsPlugin,
-    PbEditorElement
-} from "@webiny/app-page-builder/types";
+import { PbEditorPageElementAdvancedSettingsPlugin, PbEditorElement } from "../../../../types";
 
 const emptyElement = { data: {}, type: null };
 

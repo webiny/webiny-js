@@ -1,5 +1,5 @@
 import { DropElementActionArgsType } from "./types";
-import { BaseEventAction } from "@webiny/app-page-builder/editor/recoil/eventActions";
+import { BaseEventAction } from "../../eventActions";
 
 export class DropElementActionEvent extends BaseEventAction<DropElementActionArgsType> {
     public getName(): string {

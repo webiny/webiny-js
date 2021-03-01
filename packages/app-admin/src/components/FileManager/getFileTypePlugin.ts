@@ -1,6 +1,6 @@
 import { plugins } from "@webiny/plugins";
 import invariant from "invariant";
-import { AdminFileManagerFileTypePlugin } from "@webiny/app-admin/types";
+import { AdminFileManagerFileTypePlugin } from "../../types";
 
 export default function getFileTypePlugin(file) {
     if (!file) {

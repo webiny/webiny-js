@@ -30,7 +30,7 @@ story.add(
                     </StorySandboxExample>
                     <StorySandboxCode>
                         {`
-                        import { RichTextEditor } from "@webiny/ui/RichTextEditor";
+                        import { RichTextEditor } from "..";
 
                         <RichTextEditor/>
                     `}

@@ -34,7 +34,7 @@ import {
     BottomRight
 } from "./StyledComponents";
 import Accordion from "./Accordion";
-import { applyFallbackDisplayMode } from "@webiny/app-page-builder/editor/plugins/elementSettings/elementSettingsUtils";
+import { applyFallbackDisplayMode } from "../elementSettingsUtils";
 
 const classes = {
     gridContainerClass: css({
