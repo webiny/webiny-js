@@ -39,25 +39,6 @@ function runInquirer(cwp) {
                     { value: "me-south-1", name: "me-south-1 (Middle East, Bahrain)" },
                     { value: "sa-east-1", name: "sa-east-1 (South America, São Paulo)" }
                 ]
-            },
-            {
-                type: "list",
-                name: "vpc",
-                default: false,
-                message:
-                    "Do you want to have your API project application deployed into a custom Virtual Private Cloud (VPC)?",
-                choices: [
-                    {
-                        name:
-                            "Yes (includes private subnets and a NAT Gateway, more secure, incurs cost)",
-                        value: true
-                    },
-                    {
-                        name:
-                            "No, use the default VPC (less secure, all deployed resources are free tier eligible)",
-                        value: false
-                    }
-                ]
             }
         ])
         .then(templateOptions => setup({ ...cwp, templateOptions }));

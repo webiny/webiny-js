@@ -5,7 +5,6 @@ import defaultLambdaRole from "./defaultLambdaRole";
 class ElasticSearch {
     domain: aws.elasticsearch.Domain;
     table: aws.dynamodb.Table;
-    streamTarget: aws.lambda.Function;
 
     constructor() {
         const domainName = "webiny-js";
@@ -13,11 +12,7 @@ class ElasticSearch {
         this.domain = new aws.elasticsearch.Domain(domainName, {
             elasticsearchVersion: "7.7",
             clusterConfig: {
-                instanceType: "t3.small.elasticsearch",
-                zoneAwarenessEnabled: true,
-                zoneAwarenessConfig: {
-                    availabilityZoneCount: 3
-                }
+                instanceType: "t3.small.elasticsearch"
             },
             ebsOptions: {
                 ebsEnabled: true,
@@ -73,7 +68,7 @@ class ElasticSearch {
          * we store data for Elasticsearch in a DynamoDB table, and asynchronously insert it into Elasticsearch
          * using batching.
          */
-        this.streamTarget = new aws.lambda.Function("dynamo-to-elastic", {
+        const streamTarget = new aws.lambda.Function("dynamo-to-elastic", {
             role: defaultLambdaRole.role.arn,
             runtime: "nodejs12.x",
             handler: "handler.handler",
@@ -92,11 +87,11 @@ class ElasticSearch {
 
         new aws.lambda.EventSourceMapping("dynamo-to-elastic", {
             eventSourceArn: this.table.streamArn,
-            functionName: this.streamTarget.arn,
+            functionName: streamTarget.arn,
             startingPosition: "LATEST",
             maximumRetryAttempts: 3,
-            batchSize: 100,
-            maximumBatchingWindowInSeconds: 3
+            batchSize: 500,
+            maximumBatchingWindowInSeconds: 1
         });
     }
 }
