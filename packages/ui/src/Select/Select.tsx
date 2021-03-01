@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Select as RmwcSelect, SelectProps as RmwcSelectProps } from "@rmwc/select";
-import { FormElementMessage } from "@webiny/ui/FormElementMessage";
+import { FormElementMessage } from "../FormElementMessage";
 import { FormComponentProps } from "./../types";
 import { css } from "emotion";
 import classNames from "classnames";

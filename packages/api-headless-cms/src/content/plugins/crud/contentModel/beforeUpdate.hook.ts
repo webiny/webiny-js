@@ -3,7 +3,7 @@ import {
     CmsContentModelField,
     CmsContext,
     CmsModelLockedFieldPlugin
-} from "@webiny/api-headless-cms/types";
+} from "../../../../types";
 import WebinyError from "@webiny/error";
 import { runContentModelLifecycleHooks } from "./runContentModelLifecycleHooks";
 

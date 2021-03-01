@@ -17,7 +17,7 @@ import {
 } from "@webiny/ui/List";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { useQuery, useApolloClient } from "@webiny/app-headless-cms/admin/hooks";
+import { useQuery, useApolloClient } from "../../hooks";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import * as GQL from "./graphql";
 import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";

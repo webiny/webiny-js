@@ -1,13 +1,10 @@
 import React from "react";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
-import {
-    activeElementAtom,
-    elementByIdSelector
-} from "@webiny/app-page-builder/editor/recoil/modules";
+import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
+import { activeElementAtom, elementByIdSelector } from "../../../recoil/modules";
 import { plugins } from "@webiny/plugins";
-import { PbEditorPageElementPlugin, PbEditorElement } from "@webiny/app-page-builder/types";
+import { PbEditorPageElementPlugin, PbEditorElement } from "../../../../types";
 import { useRecoilValue } from "recoil";
-import { CloneElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions/cloneElement";
+import { CloneElementActionEvent } from "../../../recoil/actions/cloneElement";
 
 type CloneActionPropsType = {
     children: React.ReactElement;

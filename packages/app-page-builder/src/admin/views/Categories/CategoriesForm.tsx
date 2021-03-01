@@ -19,7 +19,7 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Input } from "@webiny/ui/Input";
 import { categoryUrlValidator } from "./validators";
 import { plugins } from "@webiny/plugins";
-import { PbPageLayoutPlugin } from "@webiny/app-page-builder/types";
+import { PbPageLayoutPlugin } from "../../../types";
 import { Select } from "@webiny/ui/Select";
 import { useSecurity } from "@webiny/app-security";
 import pick from "object.pick";

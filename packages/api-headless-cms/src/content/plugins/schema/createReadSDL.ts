@@ -1,4 +1,4 @@
-import { CmsContentModel, CmsFieldTypePlugins } from "@webiny/api-headless-cms/types";
+import { CmsContentModel, CmsFieldTypePlugins } from "../../../types";
 import { createReadTypeName, createTypeName } from "../utils/createTypeName";
 import { renderSortEnum } from "../utils/renderSortEnum";
 import { renderFields } from "../utils/renderFields";

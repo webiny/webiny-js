@@ -1,4 +1,4 @@
-import { EventActionHandlerMutationActionCallable } from "@webiny/app-page-builder/types";
+import { EventActionHandlerMutationActionCallable } from "../../../../../types";
 import { SidebarAtomType } from "../sidebarAtom";
 
 export const updateSidebarActiveTabIndexMutation: EventActionHandlerMutationActionCallable<

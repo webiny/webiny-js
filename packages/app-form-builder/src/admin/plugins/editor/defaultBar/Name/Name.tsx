@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 import { Input } from "@webiny/ui/Input";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Typography } from "@webiny/ui/Typography";
-import { useFormEditor } from "@webiny/app-form-builder/admin/components/FormEditor/Context";
+import { useFormEditor } from "../../../../components/FormEditor/Context";
 import { useHotkeys } from "react-hotkeyz";
 import {
     FormMeta,

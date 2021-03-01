@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { CmsContext } from "@webiny/app-headless-cms/admin/contexts/Cms";
+import { CmsContext } from "../contexts/Cms";
 
 const useCms = () => {
     const context = useContext<any>(CmsContext);

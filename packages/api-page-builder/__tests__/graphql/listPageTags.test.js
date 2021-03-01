@@ -4,6 +4,7 @@ jest.setTimeout(15000);
 
 describe("listing tags used by pages", () => {
     const {
+        createElasticSearchIndex,
         deleteElasticSearchIndex,
         createCategory,
         createPage,
@@ -15,9 +16,13 @@ describe("listing tags used by pages", () => {
 
     let initiallyCreatedPagesIds;
 
-    beforeEach(async () => {
-        initiallyCreatedPagesIds = [];
+    beforeAll(async () => {
         await deleteElasticSearchIndex();
+    });
+
+    beforeEach(async () => {
+        await createElasticSearchIndex();
+        initiallyCreatedPagesIds = [];
         await createCategory({
             data: {
                 slug: `category`,
@@ -41,6 +46,10 @@ describe("listing tags used by pages", () => {
 
             initiallyCreatedPagesIds.push(id);
         }
+    });
+
+    afterEach(async () => {
+        await deleteElasticSearchIndex();
     });
 
     test("must return tags accordingly", async () => {

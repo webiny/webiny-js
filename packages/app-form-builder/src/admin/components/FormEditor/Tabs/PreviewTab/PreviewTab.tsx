@@ -1,8 +1,8 @@
 import React from "react";
 import { css } from "emotion";
-import { useFormEditor } from "@webiny/app-form-builder/admin/components/FormEditor/Context";
+import { useFormEditor } from "../../Context";
 import { Elevation } from "@webiny/ui/Elevation";
-import { Form } from "@webiny/app-form-builder/components/Form";
+import { Form } from "../../../../../components/Form";
 
 const formPreviewWrapper = css({
     padding: 40,

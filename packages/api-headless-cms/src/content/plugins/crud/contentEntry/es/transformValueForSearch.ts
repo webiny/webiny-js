@@ -1,4 +1,4 @@
-import { CmsContentModelField, CmsContext } from "@webiny/api-headless-cms/types";
+import { CmsContentModelField, CmsContext } from "../../../../../types";
 import { ElasticsearchQuerySearchValuePlugins } from "./searchPluginsList";
 
 interface Args {

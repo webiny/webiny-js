@@ -1,5 +1,5 @@
 import * as React from "react";
-import { TopProgressBar } from "@webiny/ui/TopProgressBar";
+import { TopProgressBar } from "..";
 
 const withTopProgressBar = () => {
     return (BaseComponent: React.ComponentType<any>) => {

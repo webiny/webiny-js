@@ -3,16 +3,29 @@
   "include": ["src"],
   "references": [
     {
-      "path": "../plugins"
-    },
-    {
-      "path": "../handler"
+      "path": "../error"
     },
     {
       "path": "../cli-plugin-scaffold"
     },
     {
-      "path": "../error"
+      "path": "../handler"
+    },
+    {
+      "path": "../plugins"
     }
-  ]
+  ],
+  "compilerOptions": {
+    "paths": {
+      "@webiny/error/*": ["../error/src/*"],
+      "@webiny/error": ["../error/src"],
+      "@webiny/cli-plugin-scaffold/*": ["../cli-plugin-scaffold/src/*"],
+      "@webiny/cli-plugin-scaffold": ["../cli-plugin-scaffold/src"],
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"]
+    },
+    "baseUrl": "."
+  }
 }

@@ -1,11 +1,11 @@
 import invariant from "invariant";
-import { DragObjectWithTypeWithTarget } from "@webiny/app-page-builder/editor/components/Droppable";
+import { DragObjectWithTypeWithTarget } from "../../../components/Droppable";
 import {
     PbEditorPageElementPlugin,
     EventActionCallable,
     EventActionHandlerCallableState,
     PbEditorElement
-} from "@webiny/app-page-builder/types";
+} from "../../../../types";
 import { plugins } from "@webiny/plugins";
 import { DropElementActionArgsType } from "./types";
 

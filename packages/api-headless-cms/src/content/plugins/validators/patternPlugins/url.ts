@@ -1,4 +1,4 @@
-import { CmsModelFieldPatternValidatorPlugin } from "@webiny/api-headless-cms/types";
+import { CmsModelFieldPatternValidatorPlugin } from "../../../../types";
 
 const plugin: CmsModelFieldPatternValidatorPlugin = {
     type: "cms-model-field-validator-pattern",

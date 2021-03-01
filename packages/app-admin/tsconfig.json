@@ -3,13 +3,13 @@
   "include": ["src", "./custom.d.ts"],
   "references": [
     {
-      "path": "../ui"
-    },
-    {
       "path": "../app"
     },
     {
       "path": "../app-security"
+    },
+    {
+      "path": "../form"
     },
     {
       "path": "../plugins"
@@ -18,10 +18,29 @@
       "path": "../react-router"
     },
     {
-      "path": "../form"
+      "path": "../ui"
     },
     {
       "path": "../validation"
     }
-  ]
+  ],
+  "compilerOptions": {
+    "paths": {
+      "@webiny/app/*": ["../app/src/*"],
+      "@webiny/app": ["../app/src"],
+      "@webiny/app-security/*": ["../app-security/src/*"],
+      "@webiny/app-security": ["../app-security/src"],
+      "@webiny/form/*": ["../form/src/*"],
+      "@webiny/form": ["../form/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/react-router/*": ["../react-router/src/*"],
+      "@webiny/react-router": ["../react-router/src"],
+      "@webiny/ui/*": ["../ui/src/*"],
+      "@webiny/ui": ["../ui/src"],
+      "@webiny/validation/*": ["../validation/src/*"],
+      "@webiny/validation": ["../validation/src"]
+    },
+    "baseUrl": "."
+  }
 }

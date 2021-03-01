@@ -1,10 +1,6 @@
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
 import { GraphQLSchemaPlugin, Resolvers } from "@webiny/handler-graphql/types";
-import {
-    CmsContentModelCreateInput,
-    CmsContentModelUpdateInput,
-    CmsContext
-} from "@webiny/api-headless-cms/types";
+import { CmsContentModelCreateInput, CmsContentModelUpdateInput, CmsContext } from "../../../types";
 
 interface CreateContentModelArgs {
     data: CmsContentModelCreateInput;

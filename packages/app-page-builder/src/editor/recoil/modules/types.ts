@@ -1,13 +1,8 @@
-import { PageAtomType } from "@webiny/app-page-builder/editor/recoil/modules/page";
-import { PluginsAtomType } from "@webiny/app-page-builder/editor/recoil/modules/plugins";
-import { RevisionsAtomType } from "@webiny/app-page-builder/editor/recoil/modules/revisions";
-import {
-    ActiveElementAtomType,
-    HighlightElementAtomType,
-    SidebarAtomType,
-    UiAtomType
-} from "@webiny/app-page-builder/editor/recoil/modules/ui";
-import { PbEditorElement } from "@webiny/app-page-builder/types";
+import { PageAtomType } from "./page";
+import { PluginsAtomType } from "./plugins";
+import { RevisionsAtomType } from "./revisions";
+import { ActiveElementAtomType, HighlightElementAtomType, SidebarAtomType, UiAtomType } from "./ui";
+import { PbEditorElement } from "../../../types";
 
 export type PbState = {
     activeElement?: ActiveElementAtomType;

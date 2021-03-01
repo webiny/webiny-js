@@ -1,6 +1,6 @@
 import React from "react";
-import OEmbed from "@webiny/app-page-builder/render/components/OEmbed";
-import { PbRenderElementPlugin } from "@webiny/app-page-builder/types";
+import OEmbed from "../../../../components/OEmbed";
+import { PbRenderElementPlugin } from "../../../../../types";
 
 const oembed = {
     global: "twttr",

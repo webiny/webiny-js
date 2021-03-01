@@ -4,9 +4,9 @@ import { css } from "emotion";
 import { useQuery } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Typography } from "@webiny/ui/Typography";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
-import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
-import { PbEditorElement } from "@webiny/app-page-builder/types";
+import { useEventActionHandler } from "../hooks/useEventActionHandler";
+import { UpdateElementActionEvent } from "../recoil/actions";
+import { PbEditorElement } from "../../types";
 import useRenderEmptyEmbed from "../plugins/elements/utils/oembed/useRenderEmptyEmbed";
 
 function appendSDK(props) {

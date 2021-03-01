@@ -12,7 +12,7 @@ import {
     FieldLayoutPosition,
     CmsEditorFieldTypePlugin,
     CmsEditorContentModel
-} from "@webiny/app-headless-cms/types";
+} from "../../../../../types";
 import ApolloClient from "apollo-client";
 
 type PickedCmsEditorContentModel = Pick<

@@ -1,6 +1,6 @@
 import { Response, ErrorResponse } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { PbContext } from "@webiny/api-page-builder/types";
+import { PbContext } from "../../types";
 
 const resolve = async fn => {
     try {

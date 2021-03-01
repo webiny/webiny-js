@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { IconButton } from "@webiny/ui/Button";
+import { IconButton } from "../../../Button";
 import { DataListModalOverlayContext } from "./DataListModalOverlayContext";
 
 export type DataListModalOverlayActionProps = {

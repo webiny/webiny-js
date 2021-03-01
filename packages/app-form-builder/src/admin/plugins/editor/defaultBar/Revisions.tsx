@@ -9,7 +9,7 @@ import { ReactComponent as DownButton } from "./icons/round-arrow_drop_down-24px
 import { i18n } from "@webiny/app/i18n";
 import { useQuery } from "@apollo/react-hooks";
 import { GET_FORM_REVISIONS } from "../../../graphql";
-import { useFormEditor } from "@webiny/app-form-builder/admin/components/FormEditor";
+import { useFormEditor } from "../../../components/FormEditor";
 const t = i18n.namespace("FormEditor.RevisionsMenu");
 
 const buttonStyle = css({

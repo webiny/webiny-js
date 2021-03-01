@@ -1,6 +1,6 @@
 import { useFruitManageHandler } from "../utils/useFruitManageHandler";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import { CmsContentModelGroup } from "@webiny/api-headless-cms/types";
+import { CmsContentModelGroup } from "../../src/types";
 import models from "./mocks/contentModels";
 import { useFruitReadHandler } from "../utils/useFruitReadHandler";
 

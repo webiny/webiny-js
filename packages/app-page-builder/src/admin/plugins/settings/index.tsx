@@ -7,7 +7,7 @@ import { SecureRoute, SecureView } from "@webiny/app-security/components";
 import { i18n } from "@webiny/app/i18n";
 import { plugins } from "@webiny/plugins";
 import Helmet from "react-helmet";
-import { PbMenuSettingsItemPlugin } from "@webiny/app-page-builder/types";
+import { PbMenuSettingsItemPlugin } from "../../../types";
 import { RoutePlugin } from "@webiny/app/types";
 import { AdminMenuSettingsPlugin } from "@webiny/app-admin/types";
 

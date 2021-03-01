@@ -1,6 +1,6 @@
 import * as React from "react";
 import { TextField, TextFieldProps } from "@rmwc/textfield";
-import { FormElementMessage } from "@webiny/ui/FormElementMessage";
+import { FormElementMessage } from "../FormElementMessage";
 import pick from "lodash/pick";
 import { FormComponentProps } from "./../types";
 import { ReactElement } from "react";

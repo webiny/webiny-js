@@ -11,19 +11,22 @@
       "path": "../app-graphql-playground"
     },
     {
+      "path": "../app-i18n"
+    },
+    {
       "path": "../app-plugin-admin-welcome-screen"
     },
     {
-      "path": "../app-i18n"
+      "path": "../app-security"
+    },
+    {
+      "path": "../error"
     },
     {
       "path": "../form"
     },
     {
       "path": "../plugins"
-    },
-    {
-      "path": "../app-security"
     },
     {
       "path": "../react-router"
@@ -33,9 +36,35 @@
     },
     {
       "path": "../validation"
-    },
-    {
-      "path": "../error"
     }
-  ]
+  ],
+  "compilerOptions": {
+    "paths": {
+      "@webiny/app/*": ["../app/src/*"],
+      "@webiny/app": ["../app/src"],
+      "@webiny/app-admin/*": ["../app-admin/src/*"],
+      "@webiny/app-admin": ["../app-admin/src"],
+      "@webiny/app-graphql-playground/*": ["../app-graphql-playground/src/*"],
+      "@webiny/app-graphql-playground": ["../app-graphql-playground/src"],
+      "@webiny/app-i18n/*": ["../app-i18n/src/*"],
+      "@webiny/app-i18n": ["../app-i18n/src"],
+      "@webiny/app-plugin-admin-welcome-screen/*": ["../app-plugin-admin-welcome-screen/src/*"],
+      "@webiny/app-plugin-admin-welcome-screen": ["../app-plugin-admin-welcome-screen/src"],
+      "@webiny/app-security/*": ["../app-security/src/*"],
+      "@webiny/app-security": ["../app-security/src"],
+      "@webiny/error/*": ["../error/src/*"],
+      "@webiny/error": ["../error/src"],
+      "@webiny/form/*": ["../form/src/*"],
+      "@webiny/form": ["../form/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/react-router/*": ["../react-router/src/*"],
+      "@webiny/react-router": ["../react-router/src"],
+      "@webiny/ui/*": ["../ui/src/*"],
+      "@webiny/ui": ["../ui/src"],
+      "@webiny/validation/*": ["../validation/src/*"],
+      "@webiny/validation": ["../validation/src"]
+    },
+    "baseUrl": "."
+  }
 }

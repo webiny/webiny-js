@@ -1,4 +1,4 @@
-import { useDataList } from "@webiny/app/hooks/useDataList";
+import { useDataList } from "../useDataList";
 import { debounce } from "lodash";
 
 interface UseAutocompleteHook {

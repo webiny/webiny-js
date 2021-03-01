@@ -1,6 +1,7 @@
 import { Plugin } from "@webiny/plugins/types";
 import { ClientContext } from "@webiny/handler-client/types";
 import { ContextInterface } from "@webiny/handler/types";
+import { TenancyContext } from "@webiny/api-security-tenancy/types";
 
 export type I18NLocale = {
     code: string;
@@ -23,13 +24,13 @@ export type I18NContextObject = {
     getLocale: (code: string) => I18NLocale | null;
 };
 
-export interface I18NContext extends ContextInterface {
+export interface I18NContext extends ContextInterface, ClientContext, TenancyContext {
     i18n: I18NContextObject;
 }
 
 export type ContextI18NGetLocales = Plugin & {
     name: "context-i18n-get-locales";
-    resolve(params: { context: I18NContext & ClientContext }): Promise<any[]>;
+    resolve(params: { context: I18NContext }): Promise<any[]>;
 };
 
 export type I18NLocaleContextPlugin = Plugin<{

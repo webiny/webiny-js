@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
-import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
+import { useQuery } from "../../hooks";
 import { AdminGlobalSearchPlugin } from "@webiny/app-admin/types";
 import { plugins } from "@webiny/plugins";
 import { LIST_MENU_CONTENT_GROUPS_MODELS } from "./../../viewsGraphql";

@@ -1,4 +1,4 @@
-import { CmsContext, ElasticsearchQueryBuilderPlugin } from "@webiny/api-headless-cms/types";
+import { CmsContext, ElasticsearchQueryBuilderPlugin } from "../../../../../types";
 import WebinyError from "@webiny/error";
 
 interface OperatorPlugins {

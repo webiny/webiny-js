@@ -10,7 +10,7 @@ import {
     CmsEditorFieldRendererPlugin,
     CmsEditorFieldTypePlugin,
     CmsEditorFieldValidatorPlugin
-} from "@webiny/app-headless-cms/types";
+} from "../../../../../../types";
 import { plugins } from "@webiny/plugins";
 import GeneralTab from "./EditFieldDialog/GeneralTab";
 import AppearanceTab from "./EditFieldDialog/AppearanceTab";

@@ -3,7 +3,7 @@ import DateTimeWithoutTimezone from "../../fieldRenderers/dateTime/DateTimeWitho
 import DateTimeWithTimezone from "../../fieldRenderers/dateTime/DateTimeWithTimezone";
 import Time from "../../fieldRenderers/dateTime/Time";
 import Input from "../../fieldRenderers/dateTime/Input";
-import { CmsEditorField } from "@webiny/app-headless-cms/types";
+import { CmsEditorField } from "../../../../types";
 
 export const createInputField = (field: CmsEditorField, bind: any) => {
     if (field.settings.type === "dateTimeWithoutTimezone") {

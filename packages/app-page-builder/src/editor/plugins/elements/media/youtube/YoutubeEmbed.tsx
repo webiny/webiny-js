@@ -1,7 +1,7 @@
 import * as React from "react";
 import { css } from "emotion";
 import { get } from "dot-prop-immutable";
-import { OEmbedProps } from "@webiny/app-page-builder/editor/components/OEmbed";
+import { OEmbedProps } from "../../../../components/OEmbed";
 
 const outerWrapper = css({
     boxSizing: "border-box"

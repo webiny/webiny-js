@@ -1,10 +1,10 @@
 import React from "react";
 import { css } from "emotion";
 import kebabCase from "lodash/kebabCase";
-import Element from "@webiny/app-page-builder/render/components/Element";
-import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
-import { PbElement } from "@webiny/app-page-builder/types";
-import ElementAnimation from "@webiny/app-page-builder/render/components/ElementAnimation";
+import Element from "../../../components/Element";
+import { ElementRoot } from "../../../components/ElementRoot";
+import { PbElement } from "../../../../types";
+import ElementAnimation from "../../../components/ElementAnimation";
 import { Interpolation } from "@emotion/core";
 import { PageBuilderContext, PageBuilderContextValue } from "../../../../contexts/PageBuilder";
 

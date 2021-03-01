@@ -1,7 +1,4 @@
-import {
-    CmsContentEntryHookPlugin,
-    CmsContentEntryHookPluginArgs
-} from "@webiny/api-headless-cms/types";
+import { CmsContentEntryHookPlugin, CmsContentEntryHookPluginArgs } from "../../../../types";
 
 export const runContentEntryLifecycleHooks = async (
     hookName: string,

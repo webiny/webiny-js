@@ -1,7 +1,7 @@
 import * as React from "react";
 import { FormComponentProps } from "./../types";
 import BrowseFiles, { SelectedFile, FileError } from "react-butterfiles";
-import { FormElementMessage } from "@webiny/ui/FormElementMessage";
+import { FormElementMessage } from "../FormElementMessage";
 import styled from "@emotion/styled";
 import classNames from "classnames";
 import Image from "./Image";

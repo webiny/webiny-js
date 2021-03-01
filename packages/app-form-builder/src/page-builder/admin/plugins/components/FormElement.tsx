@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "@emotion/styled";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
-import { Form as FormsForm } from "@webiny/app-form-builder/components/Form";
+import { Form as FormsForm } from "../../../../components/Form";
 import { PbEditorElement, PbElementDataSettingsFormType } from "@webiny/app-page-builder/types";
 import useRenderEmptyEmbed from "@webiny/app-page-builder/editor/plugins/elements/utils/oembed/useRenderEmptyEmbed";
 

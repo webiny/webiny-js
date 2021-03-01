@@ -52,9 +52,7 @@ module.exports = async (inputs, context) => {
 
     if (!stackExists) {
         context.error(
-            `Could not find Pulumi stack information for ${red(folder)} project application, ${red(
-                env
-            )} environment.`
+            `Project application ${red(folder)} (${red(env)} environment) does not exist.`
         );
         return;
     }
@@ -68,7 +66,8 @@ module.exports = async (inputs, context) => {
         execa: {
             stdio: "inherit",
             env: {
-                WEBINY_ENV: env
+                WEBINY_ENV: env,
+                WEBINY_PROJECT_NAME: context.projectName
             }
         },
         args: {

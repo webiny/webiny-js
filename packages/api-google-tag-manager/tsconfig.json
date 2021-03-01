@@ -7,5 +7,14 @@
     {
       "path": "../handler-graphql"
     }
-  ]
+  ],
+  "compilerOptions": {
+    "paths": {
+      "@webiny/commodo/*": ["../commodo/src/*"],
+      "@webiny/commodo": ["../commodo/src"],
+      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
+      "@webiny/handler-graphql": ["../handler-graphql/src"]
+    },
+    "baseUrl": "."
+  }
 }

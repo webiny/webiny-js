@@ -1,5 +1,5 @@
 import React from "react";
-import { PbEditorPageElementStyleSettingsPlugin } from "@webiny/app-page-builder/types";
+import { PbEditorPageElementStyleSettingsPlugin } from "../../../../types";
 import TextSettings from "./TextSettings";
 
 export default {

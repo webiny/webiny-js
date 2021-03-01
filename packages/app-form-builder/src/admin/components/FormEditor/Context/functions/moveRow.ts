@@ -1,4 +1,4 @@
-import { FbFormModel } from "@webiny/app-form-builder/types";
+import { FbFormModel } from "../../../../../types";
 
 export default ({
     data,

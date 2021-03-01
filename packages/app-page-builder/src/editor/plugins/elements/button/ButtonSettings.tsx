@@ -1,11 +1,8 @@
 import React, { useCallback } from "react";
 import { useRecoilValue } from "recoil";
 import { css } from "emotion";
-import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
-import {
-    activeElementAtom,
-    elementWithChildrenByIdSelector
-} from "@webiny/app-page-builder/editor/recoil/modules";
+import { usePageBuilder } from "../../../../hooks/usePageBuilder";
+import { activeElementAtom, elementWithChildrenByIdSelector } from "../../../recoil/modules";
 import { PbEditorPageElementSettingsRenderComponentProps } from "../../../../types";
 // Components
 import IconPickerComponent from "../../../components/IconPicker";

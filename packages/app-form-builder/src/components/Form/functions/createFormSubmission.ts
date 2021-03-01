@@ -1,4 +1,4 @@
-import { FbFormRenderComponentProps, FormSubmitResponseType } from "@webiny/app-form-builder/types";
+import { FbFormRenderComponentProps, FormSubmitResponseType } from "../../../types";
 
 import { CREATE_FORM_SUBMISSION } from "./graphql";
 import getClientIp from "./getClientIp";

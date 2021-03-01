@@ -6,6 +6,7 @@ describe("Page Settings Test", () => {
         createPage,
         getPage,
         updatePage,
+        createElasticSearchIndex,
         deleteElasticSearchIndex
     } = useGqlHandler();
 
@@ -13,6 +14,13 @@ describe("Page Settings Test", () => {
         await deleteElasticSearchIndex();
     });
 
+    beforeEach(async () => {
+        await createElasticSearchIndex();
+    });
+
+    afterEach(async () => {
+        await deleteElasticSearchIndex();
+    });
     test("update settings must work correctly", async () => {
         const category = await createCategory({
             data: {

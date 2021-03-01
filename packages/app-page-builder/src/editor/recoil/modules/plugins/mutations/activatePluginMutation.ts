@@ -1,6 +1,6 @@
-import { PluginsAtomType } from "@webiny/app-page-builder/editor/recoil/modules";
+import { PluginsAtomType } from "../..";
 import { plugins } from "@webiny/plugins";
-import { EventActionHandlerMutationActionCallable } from "@webiny/app-page-builder/types";
+import { EventActionHandlerMutationActionCallable } from "../../../../../types";
 
 export const activatePluginByNameMutation: EventActionHandlerMutationActionCallable<
     PluginsAtomType,

@@ -5,8 +5,6 @@ const download = require("download");
 const path = require("path");
 const decompress = require("decompress");
 
-const PULUMI_VERSION = "2.16.2";
-
 export default async (downloadFolder, beforeInstall, afterInstall) => {
     if (fs.existsSync(downloadFolder)) {
         return false;
@@ -41,7 +39,8 @@ export default async (downloadFolder, beforeInstall, afterInstall) => {
 };
 
 async function setupDarwin(downloadFolder) {
-    const filename = `pulumi-v${PULUMI_VERSION}-darwin-x64.tar.gz`;
+    const { version } = require("@pulumi/pulumi/package.json");
+    const filename = `pulumi-v${version}-darwin-x64.tar.gz`;
     const downloadUrl = "https://get.pulumi.com/releases/sdk/" + filename;
 
     await download(downloadUrl, downloadFolder);
@@ -55,7 +54,8 @@ async function setupDarwin(downloadFolder) {
 }
 
 async function setupWindows(downloadFolder) {
-    const filename = `pulumi-v${PULUMI_VERSION}-windows-x64.zip`;
+    const { version } = require("@pulumi/pulumi/package.json");
+    const filename = `pulumi-v${version}-windows-x64.zip`;
     const downloadUrl = "https://get.pulumi.com/releases/sdk/" + filename;
 
     await download(downloadUrl, downloadFolder);
@@ -68,7 +68,8 @@ async function setupWindows(downloadFolder) {
 }
 
 async function setupLinux(downloadFolder) {
-    const filename = `pulumi-v${PULUMI_VERSION}-linux-x64.tar.gz`;
+    const { version } = require("@pulumi/pulumi/package.json");
+    const filename = `pulumi-v${version}-linux-x64.tar.gz`;
     const downloadUrl = "https://get.pulumi.com/releases/sdk/" + filename;
 
     await download(downloadUrl, downloadFolder);

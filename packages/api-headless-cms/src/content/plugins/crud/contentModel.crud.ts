@@ -5,7 +5,7 @@ import {
     CmsContentModelContext,
     CmsContentModelManager,
     CmsContentModelPermission
-} from "@webiny/api-headless-cms/types";
+} from "../../../types";
 import * as utils from "../../../utils";
 import DataLoader from "dataloader";
 import { NotFoundError } from "@webiny/handler-graphql";
@@ -149,16 +149,6 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 await beforeCreateHook({ context, model });
 
-                const esIndex = utils.defaults.es(context, model);
-                const { body: exists } = await elasticSearch.indices.exists(esIndex);
-                if (exists) {
-                    throw new WebinyError(
-                        "Elasticsearch index already exists.",
-                        "ELASTICSEARCH_INDEX",
-                        esIndex
-                    );
-                }
-
                 await db.create({
                     ...utils.defaults.db(),
                     data: {
@@ -171,17 +161,21 @@ export default (): ContextPlugin<CmsContext> => ({
                 });
 
                 try {
-                    await elasticSearch.indices.create({
-                        ...esIndex,
-                        body: {
-                            // we are disabling indexing of rawValues property in object that is inserted into ES
-                            mappings: {
-                                properties: {
-                                    rawValues: { type: "object", enabled: false }
+                    const esIndex = utils.defaults.es(context, model);
+                    const { body: exists } = await elasticSearch.indices.exists(esIndex);
+                    if (!exists) {
+                        await elasticSearch.indices.create({
+                            ...esIndex,
+                            body: {
+                                // we are disabling indexing of rawValues property in object that is inserted into ES
+                                mappings: {
+                                    properties: {
+                                        rawValues: { type: "object", enabled: false }
+                                    }
                                 }
                             }
-                        }
-                    });
+                        });
+                    }
                 } catch (ex) {
                     throw new WebinyError(
                         "Could not create Elasticsearch index.",

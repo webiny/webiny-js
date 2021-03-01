@@ -1,6 +1,6 @@
 import { Response, ErrorResponse, ListResponse } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { ApiKeyInput, TenancyContext } from "@webiny/api-security-tenancy/types";
+import { ApiKeyInput, TenancyContext } from "../types";
 
 const plugin: GraphQLSchemaPlugin<TenancyContext> = {
     type: "graphql-schema",

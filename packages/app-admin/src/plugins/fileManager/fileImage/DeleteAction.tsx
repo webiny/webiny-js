@@ -1,7 +1,7 @@
 import React from "react";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { IconButton } from "@webiny/ui/Button";
-import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
+import { useSnackbar } from "../../../hooks/useSnackbar";
 import { useMutation } from "@apollo/react-hooks";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.ns("app-admin/file-manager/files/delete-action");

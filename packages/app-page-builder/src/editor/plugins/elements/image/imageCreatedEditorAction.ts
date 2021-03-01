@@ -1,5 +1,5 @@
-import { CreateElementEventActionCallable } from "@webiny/app-page-builder/editor/recoil/actions/createElement/types";
-import { PbEditorPageElementPlugin, PbEditorElement } from "@webiny/app-page-builder/types";
+import { CreateElementEventActionCallable } from "../../../recoil/actions/createElement/types";
+import { PbEditorPageElementPlugin, PbEditorElement } from "../../../../types";
 import { plugins } from "@webiny/plugins";
 
 const MAX_ELEMENT_FIND_RETRIES = 10;

@@ -1,4 +1,4 @@
-import { TenancyContext } from "@webiny/api-security-tenancy/types";
+import { TenancyContext } from "../types";
 import { SecurityContext } from "@webiny/api-security/types";
 
 export default () => ({

@@ -3,7 +3,7 @@ import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import { i18n } from "@webiny/app/i18n";
-import { useRevision } from "@webiny/app-headless-cms/admin/plugins/contentDetails/contentRevisions/useRevision";
+import { useRevision } from "../../contentRevisions/useRevision";
 import { ReactComponent as RequestChangesIcon } from "./rule-24px.svg";
 import usePermission from "../../../../hooks/usePermission";
 

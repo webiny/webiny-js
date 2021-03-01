@@ -1,6 +1,6 @@
 import { ListResponse, Response, ErrorResponse } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { Page, PbContext } from "@webiny/api-page-builder/types";
+import { Page, PbContext } from "../../types";
 import Error from "@webiny/error";
 import resolve from "./utils/resolve";
 import pageSettings from "./pages/pageSettings";

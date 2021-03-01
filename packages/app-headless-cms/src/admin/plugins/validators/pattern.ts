@@ -1,5 +1,5 @@
 import { plugins } from "@webiny/plugins";
-import { CmsModelFieldValidatorPatternPlugin } from "@webiny/app-headless-cms/types";
+import { CmsModelFieldValidatorPatternPlugin } from "../../../types";
 
 export default {
     type: "cms-model-field-validator",

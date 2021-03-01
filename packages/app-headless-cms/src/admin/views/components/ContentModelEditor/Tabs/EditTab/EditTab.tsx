@@ -1,8 +1,8 @@
 import React, { useCallback, useState } from "react";
 import { get, cloneDeep } from "lodash";
 import { Icon } from "@webiny/ui/Icon";
-import { ReactComponent as HandleIcon } from "@webiny/app-headless-cms/admin/icons/round-drag_indicator-24px.svg";
-import { CmsEditorContentTab, FieldLayoutPosition } from "@webiny/app-headless-cms/types";
+import { ReactComponent as HandleIcon } from "../../../../../icons/round-drag_indicator-24px.svg";
+import { CmsEditorContentTab, FieldLayoutPosition } from "../../../../../../types";
 import { i18n } from "@webiny/app/i18n";
 import { useContentModelEditor } from "../../Context";
 import { Center, Vertical, Horizontal } from "../../DropZone";

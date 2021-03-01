@@ -3,7 +3,7 @@ import * as toolbar from "./toolbar";
 import { ImageEditorTool } from "./toolbar/types";
 import styled from "@emotion/styled";
 import classNames from "classnames";
-import { ButtonSecondary, ButtonPrimary } from "@webiny/ui/Button";
+import { ButtonSecondary, ButtonPrimary } from "../Button";
 import loadScript from "load-script";
 
 const Toolbar = styled("div")({

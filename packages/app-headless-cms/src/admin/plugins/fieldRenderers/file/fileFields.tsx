@@ -1,9 +1,9 @@
 import React from "react";
 import dotProp from "dot-prop-immutable";
-import { CmsEditorFieldRendererPlugin } from "@webiny/app-headless-cms/types";
+import { CmsEditorFieldRendererPlugin } from "../../../../types";
 import { i18n } from "@webiny/app/i18n";
 import { Cell, GridInner } from "@webiny/ui/Grid";
-import { imageWrapperStyles } from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/file/utils";
+import { imageWrapperStyles } from "./utils";
 import { FileManager } from "@webiny/app-admin/components";
 import styled from "@emotion/styled";
 import File from "./File";

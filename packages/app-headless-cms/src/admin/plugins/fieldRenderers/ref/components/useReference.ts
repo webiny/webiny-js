@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import get from "lodash/get";
-import { useApolloClient } from "@webiny/app-headless-cms/admin/hooks";
+import { useApolloClient } from "../../../../hooks";
 import { createListQuery, createGetQuery, GET_CONTENT_MODEL } from "./graphql";
 import { getOptions } from "./getOptions";
-import { CmsEditorContentModel, CmsEditorField } from "@webiny/app-headless-cms/types";
+import { CmsEditorContentModel, CmsEditorField } from "../../../../../types";
 
 interface ValueEntry {
     id: string;

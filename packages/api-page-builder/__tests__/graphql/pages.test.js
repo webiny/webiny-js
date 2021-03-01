@@ -4,6 +4,8 @@ jest.setTimeout(15000);
 
 describe("CRUD Test", () => {
     const {
+        createElasticSearchIndex,
+        deleteElasticSearchIndex,
         createCategory,
         createPage,
         deletePage,
@@ -11,11 +13,18 @@ describe("CRUD Test", () => {
         getPage,
         updatePage,
         until,
-        sleep,
-        deleteElasticSearchIndex
+        sleep
     } = useGqlHandler();
 
     beforeAll(async () => {
+        await deleteElasticSearchIndex();
+    });
+
+    beforeEach(async () => {
+        await createElasticSearchIndex();
+    });
+
+    afterEach(async () => {
         await deleteElasticSearchIndex();
     });
 

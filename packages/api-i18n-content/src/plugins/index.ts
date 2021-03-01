@@ -3,7 +3,7 @@ import { I18NContext } from "@webiny/api-i18n/types";
 import { I18NContentContext } from "../types";
 import { SecurityContext } from "@webiny/api-security/types";
 import { NotAuthorizedError } from "@webiny/api-security";
-import hasPermission from "@webiny/api-i18n-content/utils/hasI18NContentPermission";
+import hasPermission from "../utils/hasI18NContentPermission";
 
 export default () =>
     ({

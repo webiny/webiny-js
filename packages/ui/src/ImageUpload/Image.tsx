@@ -3,8 +3,8 @@ import classNames from "classnames";
 import { ReactComponent as AddImageIcon } from "./icons/round-add_photo_alternate-24px.svg";
 import { ReactComponent as RemoveImageIcon } from "./icons/round-close-24px.svg";
 import { ReactComponent as EditImageIcon } from "./icons/round-edit-24px.svg";
-import { Typography } from "@webiny/ui/Typography";
-import { CircularProgress } from "@webiny/ui/Progress";
+import { Typography } from "../Typography";
+import { CircularProgress } from "../Progress";
 import {
     AddImageIconWrapper,
     AddImageWrapper,

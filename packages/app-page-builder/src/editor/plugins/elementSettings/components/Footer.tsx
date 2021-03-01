@@ -2,7 +2,7 @@ import * as React from "react";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
 import { Switch } from "@webiny/ui/Switch";
-import { Footer as FooterStyled } from "@webiny/app-page-builder/editor/plugins/elementSettings/components/StyledComponents";
+import { Footer as FooterStyled } from "./StyledComponents";
 import { css } from "emotion";
 
 const switchStyle = css({

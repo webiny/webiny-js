@@ -1,15 +1,17 @@
 import { elasticSearchQueryBuilderLtePlugin } from "../../../src/content/plugins/es/elasticSearchQueryBuilderLtePlugin";
 import { createBlankQuery } from "./helpers";
-import { ElasticsearchQuery } from "@webiny/api-headless-cms/types";
+import { ElasticsearchQuery } from "../../../src/types";
 
 describe("elasticSearchQueryBuilderLtePlugin", () => {
     const plugin = elasticSearchQueryBuilderLtePlugin();
+    const context: any = {};
 
     it("should apply lte correctly", () => {
         const query = createBlankQuery();
         plugin.apply(query, {
             value: 100,
-            field: "id"
+            field: "id",
+            context
         });
 
         const expected: ElasticsearchQuery = {
@@ -34,13 +36,15 @@ describe("elasticSearchQueryBuilderLtePlugin", () => {
         const query = createBlankQuery();
         plugin.apply(query, {
             value: 100,
-            field: "id"
+            field: "id",
+            context
         });
 
         const to = new Date();
         plugin.apply(query, {
             value: to,
-            field: "date"
+            field: "date",
+            context
         });
 
         const expected: ElasticsearchQuery = {

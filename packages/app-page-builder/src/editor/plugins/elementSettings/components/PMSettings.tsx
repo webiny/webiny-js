@@ -1,20 +1,17 @@
 import React, { useMemo, useState } from "react";
 import SliderWithInput from "./SliderWithInput";
 import Footer from "./Footer";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
-import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
-import {
-    activeElementAtom,
-    elementWithChildrenByIdSelector
-} from "@webiny/app-page-builder/editor/recoil/modules";
+import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
+import { UpdateElementActionEvent } from "../../../recoil/actions";
+import { activeElementAtom, elementWithChildrenByIdSelector } from "../../../recoil/modules";
 import { Tabs, Tab } from "@webiny/ui/Tabs";
 import { get } from "lodash";
 import { set, merge } from "dot-prop-immutable";
-import { ReactComponent as BorderOuterIcon } from "@webiny/app-page-builder/editor/assets/icons/border_outer.svg";
-import { ReactComponent as BorderLeftIcon } from "@webiny/app-page-builder/editor/assets/icons/border_left.svg";
-import { ReactComponent as BorderRightIcon } from "@webiny/app-page-builder/editor/assets/icons/border_right.svg";
-import { ReactComponent as BorderTopIcon } from "@webiny/app-page-builder/editor/assets/icons/border_top.svg";
-import { ReactComponent as BorderBottomIcon } from "@webiny/app-page-builder/editor/assets/icons/border_bottom.svg";
+import { ReactComponent as BorderOuterIcon } from "../../../assets/icons/border_outer.svg";
+import { ReactComponent as BorderLeftIcon } from "../../../assets/icons/border_left.svg";
+import { ReactComponent as BorderRightIcon } from "../../../assets/icons/border_right.svg";
+import { ReactComponent as BorderTopIcon } from "../../../assets/icons/border_top.svg";
+import { ReactComponent as BorderBottomIcon } from "../../../assets/icons/border_bottom.svg";
 import { useRecoilValue } from "recoil";
 
 /**

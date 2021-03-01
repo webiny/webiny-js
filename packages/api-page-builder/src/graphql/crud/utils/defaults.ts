@@ -1,8 +1,19 @@
-import { PbContext } from "@webiny/api-page-builder/types";
+import { PbContext } from "../../../types";
 
 export default {
     db: {
         table: process.env.DB_TABLE_PAGE_BUILDER,
+        keys: [
+            {
+                primary: true,
+                unique: true,
+                name: "primary",
+                fields: [{ name: "PK" }, { name: "SK" }]
+            }
+        ]
+    },
+    esDb: {
+        table: process.env.DB_TABLE_ELASTICSEARCH,
         keys: [
             {
                 primary: true,

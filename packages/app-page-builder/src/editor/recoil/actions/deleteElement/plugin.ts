@@ -1,6 +1,6 @@
 import { DeleteElementActionEvent } from "./event";
 import { deleteElementAction } from "./action";
-import { PbEditorEventActionPlugin } from "@webiny/app-page-builder/types";
+import { PbEditorEventActionPlugin } from "../../../../types";
 
 export default (): PbEditorEventActionPlugin => ({
     type: "pb-editor-event-action-plugin",

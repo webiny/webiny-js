@@ -2,7 +2,7 @@ import {
     FbFormRenderComponentProps,
     FbFormTriggerHandlerPlugin,
     FormSubmitResponseType
-} from "@webiny/app-form-builder/types";
+} from "../../../types";
 import { plugins } from "@webiny/plugins";
 import { get } from "lodash";
 

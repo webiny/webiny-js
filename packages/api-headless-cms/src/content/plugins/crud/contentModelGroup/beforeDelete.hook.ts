@@ -1,4 +1,4 @@
-import { CmsContext } from "@webiny/api-headless-cms/types";
+import { CmsContext } from "../../../../types";
 
 export const beforeDeleteHook = async (context: CmsContext, id: string): Promise<void> => {
     const items = (await context.cms.models.list()).filter(model => {

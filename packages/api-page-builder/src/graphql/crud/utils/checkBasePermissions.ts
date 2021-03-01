@@ -1,4 +1,4 @@
-import { PbContext } from "@webiny/api-page-builder/types";
+import { PbContext } from "../../../types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import hasRwd from "./hasRwd";
 import { SecurityPermission } from "@webiny/api-security/types";

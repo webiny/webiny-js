@@ -3,7 +3,7 @@ import {
     CmsEditorField,
     CmsEditorFieldRendererPlugin,
     CmsEditorContentModel
-} from "@webiny/app-headless-cms/types";
+} from "../../../../../types";
 import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
 import { createValidators } from "./functions/createValidators";

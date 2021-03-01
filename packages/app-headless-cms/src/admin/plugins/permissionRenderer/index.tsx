@@ -1,7 +1,7 @@
 import React from "react";
 import { AccordionItem } from "@webiny/ui/Accordion";
 import { AdminAppPermissionRendererPlugin } from "@webiny/app-admin/types";
-import { ReactComponent as HeadlessCMSIcon } from "@webiny/app-headless-cms/admin/icons/devices_other-black-24px.svg";
+import { ReactComponent as HeadlessCMSIcon } from "../../icons/devices_other-black-24px.svg";
 import { CMSPermissions } from "./CmsPermissions";
 
 export default {

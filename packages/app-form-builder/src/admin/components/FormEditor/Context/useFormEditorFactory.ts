@@ -11,7 +11,7 @@ import {
     FieldIdType,
     FieldLayoutPositionType,
     FbBuilderFieldPlugin
-} from "@webiny/app-form-builder/types";
+} from "../../../../types";
 
 export default FormEditorContext => {
     return () => {

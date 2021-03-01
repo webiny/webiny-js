@@ -1,4 +1,4 @@
-import { CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
+import { CmsModelFieldToGraphQLPlugin } from "../../../types";
 
 const createListFilters = ({ field }) => {
     return `

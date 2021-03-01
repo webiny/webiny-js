@@ -1,9 +1,9 @@
 import { HandlerPlugin } from "@webiny/handler/types";
 import { ArgsContext } from "@webiny/handler-args/types";
 import { DbContext } from "@webiny/handler-db/types";
-import DefaultSettingsModel from "@webiny/api-page-builder/utils/models/DefaultSettings.model";
-import defaults from "@webiny/api-page-builder/utils/defaults";
-import { DefaultSettings } from "@webiny/api-page-builder/types";
+import DefaultSettingsModel from "../utils/models/DefaultSettings.model";
+import defaults from "../utils/defaults";
+import { DefaultSettings } from "../types";
 
 export type HandlerArgs = {
     data: DefaultSettings;

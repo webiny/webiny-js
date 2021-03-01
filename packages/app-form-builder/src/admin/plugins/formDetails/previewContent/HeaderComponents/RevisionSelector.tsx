@@ -2,7 +2,7 @@ import React from "react";
 import { css } from "emotion";
 import { ButtonDefault } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
-import { ReactComponent as DownButton } from "@webiny/app-form-builder/admin/icons/round-arrow_drop_down-24px.svg";
+import { ReactComponent as DownButton } from "../../../../icons/round-arrow_drop_down-24px.svg";
 
 import { MenuItem } from "@rmwc/menu";
 import { Typography } from "@webiny/ui/Typography";

@@ -1,4 +1,4 @@
-import { ListPagesArgs } from "@webiny/api-page-builder/types";
+import { ListPagesArgs } from "../../../types";
 
 /**
  * Returns arguments suited to be sent to ElasticSearch's `search` method.

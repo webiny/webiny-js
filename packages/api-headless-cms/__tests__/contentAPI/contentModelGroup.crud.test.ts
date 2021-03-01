@@ -1,5 +1,5 @@
 import { identity } from "../utils/helpers";
-import { toSlug } from "@webiny/api-headless-cms/utils";
+import { toSlug } from "../../src/utils";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 
 enum TestHelperEnum {

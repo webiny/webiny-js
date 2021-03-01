@@ -4,8 +4,8 @@ import { ReactComponent as FlipIcon } from "./icons/flip.svg";
 import Cropper from "cropperjs";
 import "cropperjs/dist/cropper.css";
 
-import { IconButton, ButtonDefault } from "@webiny/ui/Button";
-import { Tooltip } from "@webiny/ui/Tooltip";
+import { IconButton, ButtonDefault } from "../../Button";
+import { Tooltip } from "../../Tooltip";
 
 let cropper: Cropper = null;
 

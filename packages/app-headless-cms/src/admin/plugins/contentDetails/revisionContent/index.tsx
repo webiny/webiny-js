@@ -1,6 +1,6 @@
 import * as React from "react";
 import { renderPlugins } from "@webiny/app/plugins";
-import { CmsContentDetailsPlugin } from "@webiny/app-headless-cms/types";
+import { CmsContentDetailsPlugin } from "../../../../types";
 import { Tabs } from "@webiny/ui/Tabs";
 
 const plugin: CmsContentDetailsPlugin = {

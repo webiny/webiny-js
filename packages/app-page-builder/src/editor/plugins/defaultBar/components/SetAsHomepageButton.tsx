@@ -1,16 +1,16 @@
 import React from "react";
 import gql from "graphql-tag";
-import { pageAtom } from "@webiny/app-page-builder/editor/recoil/modules";
+import { pageAtom } from "../../../recoil/modules";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useRouter } from "@webiny/react-router";
 import { MenuItem } from "@webiny/ui/Menu";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
-import { ReactComponent as HomeIcon } from "@webiny/app-page-builder/admin/assets/round-home-24px.svg";
+import { ReactComponent as HomeIcon } from "../../../../admin/assets/round-home-24px.svg";
 import { useMutation } from "@apollo/react-hooks";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { useRecoilValue } from "recoil";
-import { usePageBuilderSettings } from "@webiny/app-page-builder/admin/hooks/usePageBuilderSettings";
+import { usePageBuilderSettings } from "../../../../admin/hooks/usePageBuilderSettings";
 
 const PUBLISH_PAGE = gql`
     mutation PbPublishPage($id: ID!) {

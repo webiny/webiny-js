@@ -1,12 +1,12 @@
 import React from "react";
-import { pageAtom } from "@webiny/app-page-builder/editor/recoil/modules";
+import { pageAtom } from "../../../recoil/modules";
 import { MenuItem } from "@webiny/ui/Menu";
-import { useConfigureWebsiteUrlDialog } from "@webiny/app-page-builder/admin/hooks/useConfigureWebsiteUrl";
-import { usePageBuilderSettings } from "@webiny/app-page-builder/admin/hooks/usePageBuilderSettings";
-import { useSiteStatus } from "@webiny/app-page-builder/admin/hooks/useSiteStatus";
+import { useConfigureWebsiteUrlDialog } from "../../../../admin/hooks/useConfigureWebsiteUrl";
+import { usePageBuilderSettings } from "../../../../admin/hooks/usePageBuilderSettings";
+import { useSiteStatus } from "../../../../admin/hooks/useSiteStatus";
 import { ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
-import { ReactComponent as PreviewIcon } from "@webiny/app-page-builder/admin/assets/visibility.svg";
+import { ReactComponent as PreviewIcon } from "../../../../admin/assets/visibility.svg";
 import { useRecoilValue } from "recoil";
 
 const openTarget = window.Cypress ? "_self" : "_blank";

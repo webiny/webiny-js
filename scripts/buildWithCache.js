@@ -14,9 +14,11 @@ const META_FILE_PATH = path.join(CACHE_FOLDER_PATH, "meta.json");
 (async () => {
     const start = new Date();
     await build();
+
+    await require("./linkWorkspaces");
+
     const duration = (new Date() - start) / 1000;
-    console.log();
-    console.log(`Done! Build finished in ${green(duration + "s")}.`);
+    console.log(`Done! Finished in ${green(duration + "s")}.`);
 })();
 
 async function build() {
@@ -30,6 +32,8 @@ async function build() {
 
     const packagesNoCache = [];
     const packagesUseCache = [];
+
+    console.log(`There is a total of ${green(workspacesPackages.length)} packages.`);
 
     // 1. Determine for which packages we can use the cached built code, and for which we need to execute build.
     for (let i = 0; i < workspacesPackages.length; i++) {

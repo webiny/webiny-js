@@ -10,8 +10,8 @@ import {
     CmsContentEntryListArgs,
     CmsContentModelField,
     ElasticsearchQueryPlugin
-} from "@webiny/api-headless-cms/types";
-import { decodeElasticsearchCursor } from "@webiny/api-headless-cms/utils";
+} from "../../../../../types";
+import { decodeElasticsearchCursor } from "../../../../../utils";
 import Error from "@webiny/error";
 import WebinyError from "@webiny/error";
 import { operatorPluginsList } from "./operatorPluginsList";
@@ -347,6 +347,8 @@ export const createElasticsearchQueryBody = (params: CreateElasticsearchParams) 
         sort: createElasticsearchSortParams({ sort, modelFields, parentObject, model }),
         size: limit + 1,
         // eslint-disable-next-line
-        search_after: decodeElasticsearchCursor(after) || undefined
+        search_after: decodeElasticsearchCursor(after) || undefined,
+        // eslint-disable-next-line
+        track_total_hits: true
     };
 };

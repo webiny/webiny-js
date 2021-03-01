@@ -1,5 +1,5 @@
 import React from "react";
-import { PbRenderElementPlugin } from "@webiny/app-page-builder/types";
+import { PbRenderElementPlugin } from "../../../../../types";
 import PinterestEmbed from "./PinterestEmbed";
 
 export default (): PbRenderElementPlugin => {

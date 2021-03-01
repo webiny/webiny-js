@@ -1,14 +1,14 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 
-class HeadlessCMS {
+class Graphql {
     functions: {
-        graphql: aws.lambda.Function;
+        api: aws.lambda.Function;
     };
     role: aws.iam.Role;
     policy: aws.iam.RolePolicyAttachment;
     constructor({ env }: { env: Record<string, any> }) {
-        this.role = new aws.iam.Role("headless-cms-lambda-role", {
+        this.role = new aws.iam.Role("api-lambda-role", {
             assumeRolePolicy: {
                 Version: "2012-10-17",
                 Statement: [
@@ -23,20 +23,20 @@ class HeadlessCMS {
             }
         });
 
-        this.policy = new aws.iam.RolePolicyAttachment("headless-cms-lambda-role-policy", {
+        this.policy = new aws.iam.RolePolicyAttachment("api-lambda-role-policy", {
             role: this.role,
             policyArn: "arn:aws:iam::aws:policy/AdministratorAccess"
         });
 
         this.functions = {
-            graphql: new aws.lambda.Function("headless-cms", {
+            api: new aws.lambda.Function("graphql", {
                 runtime: "nodejs12.x",
                 handler: "handler.handler",
                 role: this.role.arn,
                 timeout: 30,
                 memorySize: 512,
                 code: new pulumi.asset.AssetArchive({
-                    ".": new pulumi.asset.FileArchive("./../code/headlessCMS/build")
+                    ".": new pulumi.asset.FileArchive("../code/graphql/build")
                 }),
                 environment: {
                     variables: {
@@ -49,4 +49,4 @@ class HeadlessCMS {
     }
 }
 
-export default HeadlessCMS;
+export default Graphql;

@@ -1,4 +1,4 @@
-import { PageAtomType } from "@webiny/app-page-builder/editor/recoil/modules";
+import { PageAtomType } from "../../modules";
 
 export type UpdatePageRevisionActionArgsType = {
     page: Omit<PageAtomType, "content">;

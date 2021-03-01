@@ -1,4 +1,4 @@
-import { FbFormFieldPatternValidatorPlugin } from "@webiny/api-form-builder/types";
+import { FbFormFieldPatternValidatorPlugin } from "../../../types";
 
 export default {
     type: "fb-form-field-validator-pattern",

@@ -24,7 +24,7 @@ Packages written in TS always extend the base `tsconfig.json` (for IDE) and `tsc
 
 ### Tooling
 
-The basic tools used to run and manage our monorepo are [yarn](https://classic.yarnpkg.com/lang/en/) and [lerna](https://lerna.js.org/). There is an [in-depth article about managing a monorepo](https://doppelmutzi.github.io/monorepo-lerna-yarn-workspaces/) with Lerna and different package managers, so take a look at it if you're interested.
+The basic tools used to run and manage our monorepo are [yarn](https://yarnpkg.com/) and [lerna](https://lerna.js.org/). There is an [in-depth article about managing a monorepo](https://doppelmutzi.github.io/monorepo-lerna-yarn-workspaces/) with Lerna and different package managers, so take a look at it if you're interested.
 
 We let `yarn` manage the workspaces and we use `lerna` to publish packages and run commands across workspaces. In `monorepo` lingo, a `workspace` is a single package.
 
@@ -34,18 +34,18 @@ We let `yarn` manage the workspaces and we use `lerna` to publish packages and r
 
 This chapter assumes that you understand how `yarn` links workspaces. If not, read the previous chapter.
 
-> IMPORTANT: Understanding how packages are linked inside Webiny monorepo is vital to debugging most of the errors you will encounter during development and building of services/apps so read this chapter carefully.
+> IMPORTANT: Understanding how packages are linked inside Webiny monorepo is vital to debugging most of the errors you will encounter during development and building of api/apps so read this chapter carefully.
 
-Vast majority of packages in our repo are written using Typescript. It means that each package has to be built before it can be used by any other package/service/app in the repo. You can't just import raw TS from another package and expect it to work.
+Vast majority of packages in our repo are written using Typescript. It means that each package has to be built before it can be used by any other package/api/app in the repo. You can't just import raw TS from another package and expect it to work.
 
-Moreover, the source code of majority of the packages is located in `src` folder. Yes, you can use the `main` field to tell node.js where to look for default exports, but that covers only root package imports. This DOES NOT cover imports from package subfolders (e.g.: `import xy from "@webiny/handler-graphql/responses`, which is extremely important for tree-shaking when bundling with `webpack`).
+Moreover, the source code of majority of the packages is located in `src` folder. Yes, you can use the `main` field to tell node.js where to look for default exports, but that covers only root package imports. This _DOES NOT_ cover imports from package subfolders (e.g.: `import xy from "@webiny/handler-graphql/responses`, which is extremely important for tree-shaking when bundling with `webpack`).
 
 So how do we solve this?
 
-Each package written with TS has a `build` script defined in its `package.json`. The script will transpile the code from `src` using `babel` and run `tsc` compiler to generate type declarations (`*.d.ts` files) and check that your types are in order. The output folder of the build script is `dist`.
+Each package written with TS has a `build` script defined in its `package.json`. The script will transpile the code from `src` using `babel` and run `tsc` compiler to generate type declarations (`*.d.ts` files) and check that your types are in order. The output folder of the build script is `dist`. This folder is important.
 
 Remember how `yarn` links workspaces? Can you already see the problem? Let's go step by step to make this very, very clear:
-So, you ran `yarn` in your monorepo, it did its magic and linked your packages. Then you built your packages to turn them into usable JS packages, by doing `lerna run build --stream` (this ran the `build` command on all your packages taking inter-package dependencies into consideration).
+So, you ran `yarn` in your monorepo, it did its magic and linked your packages. Then you built your TS packages to turn them into usable JS packages, by doing `lerna run build --stream` (this ran the `build` command on all your packages taking inter-package dependencies into consideration).
 
 Now you want to import one of your packages. Here's a sample code:
 
@@ -61,7 +61,7 @@ This code WILL FAIL. But why? `@webiny/plugins` will be resolved to `node_module
 
 We solved it by creating a small tool (located at `/packages/project-utils/workspaces/linkWorkspaces.js`) that will relink packages exactly how we want them to be linked.
 
-In our packages we configure the desired target directory in `package.json` file, in the `publishConfig.directory`. We're being consistent with `lerna` which uses [that same configuration](https://github.com/lerna/lerna/tree/master/commands/publish#publishconfigdirectory) to determine which folder to use when publishing packages to `npm`.
+In our packages, we configure the desired target directory in the `package.json` file, using the `publishConfig.directory`. We're being consistent with `lerna` which uses [that same configuration](https://github.com/lerna/lerna/tree/master/commands/publish#publishconfigdirectory) to determine which folder to use when publishing packages to `npm`.
 
 If you open `<webiny-js>/package.json`, you'll find a `postinstall` script. That script is executed each time `yarn` installs dependencies and is done doing its magic. This gives us the chance to relink packages exactly how we want them to be.
 

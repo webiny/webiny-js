@@ -8,7 +8,7 @@ import { CircularProgress } from "@webiny/ui/Progress";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useMutation } from "@apollo/react-hooks";
-import { CREATE_PAGE } from "@webiny/app-page-builder/admin/graphql/pages";
+import { CREATE_PAGE } from "../../graphql/pages";
 
 const Pages = () => {
     const [creatingPage, setCreatingPage] = useState(false);

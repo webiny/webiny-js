@@ -5,7 +5,7 @@ import { ButtonPrimary } from "@webiny/ui/Button";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
-import { useFormEditor } from "@webiny/app-form-builder/admin/components/FormEditor/Context";
+import { useFormEditor } from "../../../components/FormEditor/Context";
 import { PUBLISH_REVISION } from "../../../graphql";
 import usePermission from "../../../../hooks/usePermission";
 

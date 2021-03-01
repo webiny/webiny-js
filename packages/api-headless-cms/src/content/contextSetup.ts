@@ -1,5 +1,5 @@
 import { Context, ContextPlugin } from "@webiny/handler/types";
-import { CmsContext } from "@webiny/api-headless-cms/types";
+import { CmsContext } from "../types";
 
 interface CmsHttpParameters {
     type: string;
