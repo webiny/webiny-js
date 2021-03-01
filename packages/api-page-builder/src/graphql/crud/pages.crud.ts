@@ -569,8 +569,8 @@ const plugin: ContextPlugin<PbContext> = {
 
                     await executeHookCallbacks(hookPlugins, "beforeUpdate", context, existingPage);
 
-                    const newPageData = merge(existingPage, updateData);
-                    const newLatestPageData = merge(existingLatestPage, updateData);
+                    const newPageData = { ...existingPage, ...updateData };
+                    const newLatestPageData = { ...existingLatestPage, ...updateData };
 
                     const batch = db.batch().update({
                         ...defaults.db,
