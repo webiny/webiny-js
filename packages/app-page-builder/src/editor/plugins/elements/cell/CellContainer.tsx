@@ -4,7 +4,7 @@ import DropZone from "../../../components/DropZone";
 import styled from "@emotion/styled";
 import { ElementRoot } from "../../../../render/components/ElementRoot";
 import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
-import { ReactComponent as AddCircleOutline } from "@webiny/app-page-builder/editor/assets/icons/baseline-add_circle-24px.svg";
+import { ReactComponent as AddCircleOutline } from "../../../assets/icons/baseline-add_circle-24px.svg";
 import { DragObjectWithTypeWithTarget } from "../../../components/Droppable";
 import { DropElementActionEvent, TogglePluginActionEvent } from "../../../recoil/actions";
 import { elementByIdSelector } from "../../../recoil/modules";

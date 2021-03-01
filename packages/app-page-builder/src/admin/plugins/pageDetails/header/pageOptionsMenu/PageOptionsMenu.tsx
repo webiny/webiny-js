@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { IconButton } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";
-import { ReactComponent as MoreVerticalIcon } from "@webiny/app-page-builder/admin/assets/more_vert.svg";
+import { ReactComponent as MoreVerticalIcon } from "../../../../assets/more_vert.svg";
 import { ReactComponent as PreviewIcon } from "../../../../assets/visibility.svg";
 import { ReactComponent as HomeIcon } from "../../../../assets/round-home-24px.svg";
 import { ListItemGraphic } from "@webiny/ui/List";

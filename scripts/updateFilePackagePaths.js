@@ -50,11 +50,14 @@ class WebinyPackage {
     refactorFile(file) {
         const initialContent = fsExtra.readFileSync(file).toString();
 
-        const re = new RegExp(`\"${this.name}/([a-zA-Z0-9\/\.\-]+)\"`, "g");
+        const name = this.name.replace("/", "/");
+        const pattern = `\"${name}\/([a-zA-Z0-9\-\_\/\.]+)\"`;
+        const re = new RegExp(pattern, "g");
 
         const matched = (initialContent.match(re) || []).map(m => {
             return m.replace(/^"/, "").replace(/"$/, "");
         });
+
         if (matched.length === 0) {
             return false;
         }

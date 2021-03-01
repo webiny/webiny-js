@@ -4,7 +4,7 @@ import { css } from "emotion";
 import get from "lodash/get";
 import { useRouter } from "@webiny/react-router";
 import { DeleteIcon, EditIcon } from "@webiny/ui/List/DataList/icons";
-import { ReactComponent as ViewListIcon } from "@webiny/app-headless-cms/admin/icons/view_list.svg";
+import { ReactComponent as ViewListIcon } from "../../icons/view_list.svg";
 import { useApolloClient, useQuery } from "../../hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import * as UIL from "@webiny/ui/List";

@@ -8,7 +8,7 @@ import { ChromePicker } from "react-color";
 import { Menu } from "@webiny/ui/Menu";
 import { usePageBuilder } from "../../../hooks/usePageBuilder";
 // Icons
-import { ReactComponent as IconPalette } from "@webiny/app-page-builder/editor/assets/icons/round-color_lens-24px.svg";
+import { ReactComponent as IconPalette } from "../../assets/icons/round-color_lens-24px.svg";
 import { ReactComponent as ColorizeIcon } from "./colorize.svg";
 import { ReactComponent as NoColorSelectedIcon } from "./unselected.svg";
 import { COLORS } from "../../plugins/elementSettings/components/StyledComponents";

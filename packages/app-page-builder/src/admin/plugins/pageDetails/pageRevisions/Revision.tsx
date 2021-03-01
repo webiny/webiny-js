@@ -14,7 +14,7 @@ import { Icon } from "@webiny/ui/Icon";
 import { MenuItem, Menu, MenuDivider } from "@webiny/ui/Menu";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { ReactComponent as MoreVerticalIcon } from "@webiny/app-page-builder/admin/assets/more_vert.svg";
+import { ReactComponent as MoreVerticalIcon } from "../../../assets/more_vert.svg";
 import { ReactComponent as LockIcon } from "../../../assets/lock.svg";
 import { ReactComponent as BeenHereIcon } from "../../../assets/beenhere.svg";
 import { ReactComponent as GestureIcon } from "../../../assets/gesture.svg";

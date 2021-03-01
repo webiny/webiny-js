@@ -20,7 +20,7 @@ import { ReactComponent as DeleteIcon } from "../../../icons/delete.svg";
 import { ReactComponent as EditIcon } from "../../../icons/edit.svg";
 import { ReactComponent as GestureIcon } from "../../../icons/gesture.svg";
 import { ReactComponent as LockIcon } from "../../../icons/lock.svg";
-import { ReactComponent as MoreVerticalIcon } from "@webiny/app-form-builder/admin/icons/more_vert.svg";
+import { ReactComponent as MoreVerticalIcon } from "../../../icons/more_vert.svg";
 import { ReactComponent as PublishIcon } from "../../../icons/publish.svg";
 import { ReactComponent as UnpublishIcon } from "../../../icons/unpublish.svg";
 import { useRevision } from "./useRevision";
