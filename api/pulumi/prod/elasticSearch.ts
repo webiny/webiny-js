@@ -64,9 +64,7 @@ class ElasticSearch {
             streamViewType: "NEW_AND_OLD_IMAGES",
             billingMode: "PAY_PER_REQUEST",
             hashKey: "PK",
-            rangeKey: "SK",
-            readCapacity: 1,
-            writeCapacity: 1
+            rangeKey: "SK"
         });
 
         /**
@@ -101,8 +99,8 @@ class ElasticSearch {
             functionName: streamTarget.arn,
             startingPosition: "LATEST",
             maximumRetryAttempts: 3,
-            batchSize: 100,
-            maximumBatchingWindowInSeconds: 3
+            batchSize: 500,
+            maximumBatchingWindowInSeconds: 1
         });
     }
 }

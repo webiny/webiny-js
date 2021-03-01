@@ -40,7 +40,7 @@ class PageBuilder {
             description:
                 "Updates default Page Builder app's settings, e.g. website or prerendering URLs, default title, etc.",
             code: new pulumi.asset.AssetArchive({
-                ".": new pulumi.asset.FileArchive("./../code/pageBuilder/updateSettings/build")
+                ".": new pulumi.asset.FileArchive("../code/pageBuilder/updateSettings/build")
             }),
             environment: {
                 variables: {

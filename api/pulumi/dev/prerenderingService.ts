@@ -31,7 +31,7 @@ class PageBuilder {
             },
             description: "Renders pages and stores output in an S3 bucket of choice.",
             code: new pulumi.asset.AssetArchive({
-                ".": new pulumi.asset.FileArchive("../../code/prerenderingService/render/build")
+                ".": new pulumi.asset.FileArchive("../code/prerenderingService/render/build")
             })
         });
 
@@ -48,7 +48,7 @@ class PageBuilder {
             },
             description: "Flushes previously render pages.",
             code: new pulumi.asset.AssetArchive({
-                ".": new pulumi.asset.FileArchive("../../code/prerenderingService/flush/build")
+                ".": new pulumi.asset.FileArchive("../code/prerenderingService/flush/build")
             })
         });
 
@@ -65,7 +65,7 @@ class PageBuilder {
             },
             description: "Adds a prerendering task to the prerendering queue.",
             code: new pulumi.asset.AssetArchive({
-                ".": new pulumi.asset.FileArchive("../../code/prerenderingService/queue/add/build")
+                ".": new pulumi.asset.FileArchive("../code/prerenderingService/queue/add/build")
             })
         });
 
@@ -85,7 +85,7 @@ class PageBuilder {
             description: "Processes all jobs added to the prerendering queue.",
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive(
-                    "../../code/prerenderingService/queue/process/build"
+                    "../code/prerenderingService/queue/process/build"
                 )
             })
         });
@@ -101,7 +101,7 @@ class PageBuilder {
 
         const eventRule = new aws.cloudwatch.EventRule("ps-process-queue-event-rule", {
             description: `Triggers "ps-process-queue" Lambda function that will process all queued prerendering jobs.`,
-            scheduleExpression: "rate(5 minutes)",
+            scheduleExpression: "rate(1 minute)",
             isEnabled: true
         });
 

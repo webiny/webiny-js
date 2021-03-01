@@ -1,5 +1,6 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
+import vpc from "./vpc";
 import defaultLambdaRole from "./defaultLambdaRole";
 
 class ElasticSearch {
@@ -13,6 +14,10 @@ class ElasticSearch {
             elasticsearchVersion: "7.7",
             clusterConfig: {
                 instanceType: "t3.small.elasticsearch"
+            },
+            vpcOptions: {
+                subnetIds: [vpc.subnets.private[0].id],
+                securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
             },
             ebsOptions: {
                 ebsEnabled: true,
@@ -59,9 +64,7 @@ class ElasticSearch {
             streamViewType: "NEW_AND_OLD_IMAGES",
             billingMode: "PAY_PER_REQUEST",
             hashKey: "PK",
-            rangeKey: "SK",
-            readCapacity: 1,
-            writeCapacity: 1
+            rangeKey: "SK"
         });
 
         /**
@@ -83,8 +86,12 @@ class ElasticSearch {
             },
             description: "Process DynamoDB Stream.",
             code: new pulumi.asset.AssetArchive({
-                ".": new pulumi.asset.FileArchive("../../code/dynamoToElastic/build")
-            })
+                ".": new pulumi.asset.FileArchive("../code/dynamoToElastic/build")
+            }),
+            vpcConfig: {
+                subnetIds: vpc.subnets.private.map(subNet => subNet.id),
+                securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
+            }
         });
 
         new aws.lambda.EventSourceMapping("dynamo-to-elastic", {
@@ -92,8 +99,8 @@ class ElasticSearch {
             functionName: streamTarget.arn,
             startingPosition: "LATEST",
             maximumRetryAttempts: 3,
-            batchSize: 100,
-            maximumBatchingWindowInSeconds: 3
+            batchSize: 500,
+            maximumBatchingWindowInSeconds: 1
         });
     }
 }

@@ -1,16 +1,20 @@
 import * as path from "path";
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-import { createInstallationZip } from "@webiny/api-page-builder/installation";
+import vpc from "./vpc";
 import defaultLambdaRole from "./defaultLambdaRole";
+
+//@ts-ignore
+import { createInstallationZip } from "@webiny/api-page-builder/installation";
 
 class PageBuilder {
     functions: {
         updateSettings: aws.lambda.Function;
     };
     constructor({ env, bucket }: { env: Record<string, any>; bucket: aws.s3.Bucket }) {
-        const pbInstallationZipPath = path.join(process.cwd(), ".tmp", "pbInstallation.zip");
+        const pbInstallationZipPath = path.join(path.resolve(), ".tmp", "pbInstallation.zip");
 
+        // Will create "pbInstallation.zip" and save it in the `pbInstallationZipPath` path.
         createInstallationZip(pbInstallationZipPath);
 
         new aws.s3.BucketObject(
@@ -42,6 +46,10 @@ class PageBuilder {
                 variables: {
                     ...env
                 }
+            },
+            vpcConfig: {
+                subnetIds: vpc.subnets.private.map(subNet => subNet.id),
+                securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
             }
         });
 

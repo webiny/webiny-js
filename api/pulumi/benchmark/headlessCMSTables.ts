@@ -18,16 +18,12 @@ class HeadlessCMSTables {
             billingMode: "PAY_PER_REQUEST",
             hashKey: "PK",
             rangeKey: "SK",
-            readCapacity: 0,
-            writeCapacity: 0,
             globalSecondaryIndexes: [
                 {
                     name: "GSI1",
                     hashKey: "GSI1_PK",
                     rangeKey: "GSI1_SK",
-                    projectionType: "ALL",
-                    readCapacity: 0,
-                    writeCapacity: 0
+                    projectionType: "ALL"
                 }
             ]
         });
@@ -44,9 +40,7 @@ class HeadlessCMSTables {
             streamViewType: "NEW_AND_OLD_IMAGES",
             billingMode: "PAY_PER_REQUEST",
             hashKey: "PK",
-            rangeKey: "SK",
-            readCapacity: 0,
-            writeCapacity: 0
+            rangeKey: "SK"
         });
 
         new aws.lambda.EventSourceMapping("headless-dynamo-to-elastic", {

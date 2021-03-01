@@ -13,16 +13,12 @@ class DynamoDB {
             billingMode: "PAY_PER_REQUEST",
             hashKey: "PK",
             rangeKey: "SK",
-            readCapacity: 1,
-            writeCapacity: 1,
             globalSecondaryIndexes: [
                 {
                     name: "GSI1",
                     hashKey: "GSI1_PK",
                     rangeKey: "GSI1_SK",
-                    projectionType: "ALL",
-                    readCapacity: 1,
-                    writeCapacity: 1
+                    projectionType: "ALL"
                 }
             ]
         });

@@ -1,6 +1,5 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-import vpc from "./vpc";
 
 class HeadlessCMS {
     functions: {
@@ -37,17 +36,13 @@ class HeadlessCMS {
                 timeout: 30,
                 memorySize: 512,
                 code: new pulumi.asset.AssetArchive({
-                    ".": new pulumi.asset.FileArchive("./../code/headlessCMS/build")
+                    ".": new pulumi.asset.FileArchive("../code/headlessCMS/build")
                 }),
                 environment: {
                     variables: {
                         ...env,
                         AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1"
                     }
-                },
-                vpcConfig: {
-                    subnetIds: vpc.subnets.private.map(subNet => subNet.id),
-                    securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
                 }
             })
         };
