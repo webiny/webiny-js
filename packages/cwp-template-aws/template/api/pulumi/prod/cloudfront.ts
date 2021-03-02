@@ -11,7 +11,6 @@ class Cloudfront {
                 compress: true,
                 allowedMethods: ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"],
                 cachedMethods: ["GET", "HEAD", "OPTIONS"],
-                defaultTtl: 0,
                 forwardedValues: {
                     cookies: {
                         forward: "none"
@@ -19,8 +18,10 @@ class Cloudfront {
                     headers: ["Accept", "Accept-Language"],
                     queryString: true
                 },
-                maxTtl: 86400,
+                // MinTTL <= DefaultTTL <= MaxTTL
                 minTtl: 0,
+                defaultTtl: 0,
+                maxTtl: 86400,
                 targetOriginId: apiGateway.api.name,
                 viewerProtocolPolicy: "allow-all"
             },
@@ -43,7 +44,6 @@ class Cloudfront {
                     targetOriginId: apiGateway.api.name
                 },
                 {
-                    defaultTtl: 2592000,
                     allowedMethods: ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"],
                     cachedMethods: ["GET", "HEAD", "OPTIONS"],
                     forwardedValues: {
@@ -53,6 +53,10 @@ class Cloudfront {
                         headers: ["Accept", "Accept-Language"],
                         queryString: true
                     },
+                    // MinTTL <= DefaultTTL <= MaxTTL
+                    minTtl: 0,
+                    defaultTtl: 0,
+                    maxTtl: 2592000,
                     pathPattern: "/files/*",
                     viewerProtocolPolicy: "allow-all",
                     targetOriginId: apiGateway.api.name
