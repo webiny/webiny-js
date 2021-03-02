@@ -181,3 +181,7 @@ The `reloadUntil` command will just reload the page until a condition is met. Af
 The page will be reloaded every ~3 seconds for 60 times. If there are no changes after that, the command will throw an error, and the test will fail.
 
 There are a couple of examples in the existing tests, so feel free to check them out to better understand how it works.
+
+### Testing create-webiny-project
+
+When making changes to the `create-webiny-project` or to one of its template packages (e.g. `cwp-template-aws`), it's important you test the changes locally, before submitting a PR. A comprehensive guide on this topic can be found in the `README.md` file, located in the `create-webiny-project` package.
