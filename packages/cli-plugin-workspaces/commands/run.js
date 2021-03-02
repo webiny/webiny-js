@@ -88,10 +88,10 @@ module.exports = async (inputs, context) => {
     }
 
     if (!scopes.length) {
-        context.info(`Running %o in %o packages`, script, packages.length);
+        context.info(`Running %o in %o packages...`, script, packages.length);
     } else {
         context.info(
-            `Running %o in %o packages %O`,
+            `Running %o in %o packages %O...`,
             script,
             packages.length,
             packages.map(pkg => pkg.name)
@@ -99,7 +99,7 @@ module.exports = async (inputs, context) => {
     }
 
     if (parallel) {
-        context.info(`Running %o in parallel`, script);
+        context.info(`Running %o in parallel...`, script);
         await pMap(packages, pkg => runScript(pkg));
         return;
     }
