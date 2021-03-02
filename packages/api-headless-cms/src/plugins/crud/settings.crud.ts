@@ -51,37 +51,17 @@ export default {
                 await checkPermissions();
                 return settingsGet();
             },
-            install: async (): Promise<CmsSettings> => {
+            install: async (): Promise<void> => {
                 const identity = context.security.getIdentity();
                 if (!identity) {
-                    throw new NotAuthorizedError({
-                        message: `There is no "identity" in the "context.security", presumably because you are not logged in.`,
-                        code: "IDENTITY_ERROR"
-                    });
+                    throw new NotAuthorizedError();
                 }
 
                 // Get settings without any permission checks.
-                const settings = await settingsGet();
-                if (!!settings?.isInstalled) {
-                    throw new Error("The app is already installed.", "CMS_INSTALLATION_ERROR");
+                const version = await context.cms.system.getVersion();
+                if (version) {
+                    return;
                 }
-
-                // Create ES index if it doesn't already exist.
-                // const esIndex = utils.defaults.es(context);
-                // const { body: exists } = await elasticSearch.indices.exists(esIndex);
-                // if (!exists) {
-                //     await elasticSearch.indices.create({
-                //         ...esIndex,
-                //         body: {
-                //             // we are disabling indexing of rawValues property in object that is inserted into ES
-                //             mappings: {
-                //                 properties: {
-                //                     rawValues: { type: "object", enabled: false }
-                //                 }
-                //             }
-                //         }
-                //     });
-                // }
 
                 // Add default content model group.
                 let contentModelGroup: CmsContentModelGroup;
@@ -92,14 +72,12 @@ export default {
                 }
 
                 const model: CmsSettings = {
-                    isInstalled: true,
                     contentModelLastChange: contentModelGroup.savedOn
                 };
 
                 // Store the initial timestamp which is then used to determine if CMS Schema was changed.
                 context.cms.settings.contentModelLastChange = contentModelGroup.savedOn;
-
-                // mark as installed in settings
+                
                 await db.create({
                     ...utils.defaults.db(),
                     data: {
@@ -110,9 +88,10 @@ export default {
                     }
                 });
 
-                return model;
+                // mark as installed in settings
+                await context.cms.system.setVersion(context.WEBINY_VERSION);
             },
-            updateContentModelLastChange: async (): Promise<CmsSettings> => {
+            updateContentModelLastChange: async (): Promise<void> => {
                 const updatedDate = new Date();
 
                 await db.update({
@@ -127,11 +106,6 @@ export default {
                 });
 
                 context.cms.settings.contentModelLastChange = updatedDate;
-
-                return {
-                    isInstalled: true,
-                    contentModelLastChange: updatedDate
-                };
             },
             getContentModelLastChange: (): Date => {
                 return context.cms.settings.contentModelLastChange;

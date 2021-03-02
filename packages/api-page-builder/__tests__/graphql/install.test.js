@@ -27,7 +27,7 @@ describe("Install Test", () => {
         await deleteElasticSearchIndex();
     });
 
-    test("should be able to run isInstalled anonymously, but not install", async () => {
+    test("should be able to get app version anonymously, but not install", async () => {
         const { isInstalled, install } = useGqlHandler({
             identity: null,
             permissions: []
@@ -37,10 +37,7 @@ describe("Install Test", () => {
             expect(res).toEqual({
                 data: {
                     pageBuilder: {
-                        isInstalled: {
-                            data: false,
-                            error: null
-                        }
+                        version: null
                     }
                 }
             })
@@ -78,10 +75,7 @@ describe("Install Test", () => {
             expect(res).toEqual({
                 data: {
                     pageBuilder: {
-                        isInstalled: {
-                            data: false,
-                            error: null
-                        }
+                        version: null
                     }
                 }
             })
@@ -108,10 +102,7 @@ describe("Install Test", () => {
             expect(res).toEqual({
                 data: {
                     pageBuilder: {
-                        isInstalled: {
-                            data: true,
-                            error: null
-                        }
+                        version: expect.any(String)
                     }
                 }
             })

@@ -118,8 +118,8 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
 
                 listTags: [String]
 
-                # Is File Manager installed?
-                isInstalled: FileManagerBooleanResponse
+                # Get installed version
+                version: String
 
                 getSettings: FileManagerSettingsResponse
             }
@@ -185,16 +185,13 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                         return new ErrorResponse(error);
                     }
                 },
-                async isInstalled(_, args, context) {
-                    const { i18nContent, security } = context;
+                async version(_, args, context) {
+                    const { i18nContent, security, fileManager } = context;
                     if (!security.getTenant() || !i18nContent.getLocale()) {
                         return false;
                     }
 
-                    const { fileManager } = context;
-
-                    const settings = await fileManager.settings.getSettings();
-                    return new Response(Boolean(settings?.installed));
+                    return await fileManager.system.getVersion();
                 },
                 async getSettings(_, args, context) {
                     return resolve(() => context.fileManager.settings.getSettings());
@@ -216,28 +213,22 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                 async install(_, args, context) {
                     const { fileManager, elasticSearch } = context;
                     try {
-                        const settings = await fileManager.settings.getSettings();
+                        const version = await fileManager.system.getVersion();
 
-                        if (settings && settings.installed) {
+                        if (version) {
                             return new ErrorResponse({
                                 code: "FILES_INSTALL_ABORTED",
                                 message: "File Manager is already installed."
                             });
                         }
 
-                        const data: Partial<Settings> = {
-                            installed: true
-                        };
+                        const data: Partial<Settings> = {};
 
                         if (args.srcPrefix) {
                             data.srcPrefix = args.srcPrefix;
                         }
 
-                        if (!settings) {
-                            await fileManager.settings.createSettings(data);
-                        } else {
-                            await fileManager.settings.updateSettings(data);
-                        }
+                        await fileManager.settings.createSettings(data);
 
                         // Create ES index if it doesn't already exist.
                         const esIndex = defaults.es(context);
@@ -245,6 +236,8 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                         if (!exists) {
                             await elasticSearch.indices.create(esIndex);
                         }
+
+                        await fileManager.system.setVersion(context.WEBINY_VERSION);
 
                         return new Response(true);
                     } catch (error) {

@@ -20,8 +20,8 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
             }
 
             extend type PbQuery {
-                # Is Page Builder installed?
-                isInstalled: PbInstallResponse
+                # Get installed version
+                version: String
             }
 
             extend type PbMutation {
@@ -31,15 +31,13 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
         `,
         resolvers: {
             PbQuery: {
-                isInstalled: async (_, args, context) => {
-                    const { security } = context;
+                version: async (_, args, context) => {
+                    const { security, pageBuilder } = context;
                     if (!security.getTenant()) {
                         return false;
                     }
 
-                    const settings = await context.pageBuilder.settings.install.get();
-                    const isInstalled = Boolean(settings?.installed);
-                    return new Response(isInstalled);
+                    return pageBuilder.system.getVersion();
                 }
             },
             PbMutation: {
@@ -48,9 +46,8 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     await executeHookCallbacks(hookPlugins, "beforeInstall", context);
 
                     // Check whether the PB app is already installed
-                    const pbSettings = await context.pageBuilder.settings.install.get();
-                    const isInstalled = Boolean(pbSettings?.installed);
-                    if (isInstalled) {
+                    const version = await context.pageBuilder.system.getVersion();
+                    if (version) {
                         return new ErrorResponse({
                             code: "PB_INSTALL_ABORTED",
                             message: "Page builder is already installed."
@@ -138,12 +135,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     });
 
                     // 6. Mark the Page Builder app as installed.
-                    const settings = await context.pageBuilder.settings.install.get();
-                    if (!settings?.installed) {
-                        await context.pageBuilder.settings.install.update({
-                            installed: true
-                        });
-                    }
+                    await context.pageBuilder.system.setVersion(context.WEBINY_VERSION);
 
                     await executeHookCallbacks(hookPlugins, "afterInstall", context);
 

@@ -19,10 +19,7 @@ describe("Files settings test", () => {
         expect(response).toEqual({
             data: {
                 fileManager: {
-                    isInstalled: {
-                        data: false,
-                        error: null
-                    }
+                    version: null
                 }
             }
         });
@@ -45,10 +42,7 @@ describe("Files settings test", () => {
         expect(response).toEqual({
             data: {
                 fileManager: {
-                    isInstalled: {
-                        data: true,
-                        error: null
-                    }
+                    version: expect.any(String)
                 }
             }
         });

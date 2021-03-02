@@ -142,6 +142,11 @@ export type FormsCRUD = {
     deleteSubmission(formId: string, submissionId: string): Promise<boolean>;
 };
 
+export type SystemCRUD = {
+    getVersion(): Promise<string>;
+    setVersion(version: string): Promise<void>;
+};
+
 export type FbSubmission = {
     id: string;
     locale: string;
@@ -207,6 +212,7 @@ export type FormBuilderContext = Context<
         formBuilder: {
             forms: FormsCRUD;
             settings: SettingsCRUD;
+            system: SystemCRUD;
         };
     }
 >;

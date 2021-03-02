@@ -22,6 +22,13 @@ export type I18NContextObject = {
     getDefaultLocale: () => I18NLocale;
     getLocales: () => I18NLocale[];
     getLocale: (code: string) => I18NLocale | null;
+    locales: any; // TODO: add types for `locales` CRUD
+    system: SystemCRUD;
+};
+
+export type SystemCRUD = {
+    getVersion(): Promise<string>;
+    setVersion(version: string): Promise<void>;
 };
 
 export interface I18NContext extends ContextInterface, ClientContext, TenancyContext {

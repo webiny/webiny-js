@@ -4,6 +4,7 @@ import tenantCrud from "./crud/tenants.crud";
 import userCrud from "./crud/users.crud";
 import groupCrud from "./crud/groups.crud";
 import apiKeyCrud from "./crud/apiKey.crud";
+import systemCrud from "./crud/system.crud";
 
 const tenantCache = {};
 
@@ -41,8 +42,9 @@ export default (): ContextPluginInterface<TenancyContext> => ({
 
         context.security.tenants = tenantCrud(context);
         context.security.users = userCrud(context);
-        context.security.groups = groupCrud(context as any);
-        context.security.apiKeys = apiKeyCrud(context as any);
+        context.security.groups = groupCrud(context);
+        context.security.apiKeys = apiKeyCrud(context);
+        context.security.system = systemCrud(context);
 
         __tenant = await getCurrentTenant(context);
     }

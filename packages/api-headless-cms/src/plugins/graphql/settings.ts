@@ -4,22 +4,23 @@ import { CmsContext } from "../../types";
 export default {
     typeDefs: /* GraphQL */ `
         extend type CmsQuery {
-            # Is CMS installed?
-            isInstalled: CmsBooleanResponse
+            # Get installed version
+            version: String
         }
 
         extend type CmsMutation {
             # Install CMS
             install: CmsBooleanResponse
+
+            # Upgrade CMS
+            upgrade(version: String, data: JSON): CmsBooleanResponse
         }
     `,
     resolvers: {
         CmsQuery: {
-            isInstalled: async (_, __, context: CmsContext) => {
+            version: async (_, __, context: CmsContext) => {
                 try {
-                    // we are disabling auth here because we only require isInstalled flag
-                    const settings = await context.cms.settings.noAuth().get();
-                    return new Response(!!settings?.isInstalled);
+                    return context.cms.system.getVersion();
                 } catch (e) {
                     return new ErrorResponse(e);
                 }
@@ -28,11 +29,22 @@ export default {
         CmsMutation: {
             install: async (_, __, { cms }: CmsContext) => {
                 try {
+                    const version = await cms.system.getVersion();
+                    if (version) {
+                        return new ErrorResponse({
+                            code: "CMS_INSTALLATION_ERROR",
+                            message: "CMS is already installed."
+                        });
+                    }
+
                     await cms.settings.install();
                     return new Response(true);
                 } catch (e) {
                     return new ErrorResponse(e);
                 }
+            },
+            upgrade: async (_, { version, data }, { cms }: CmsContext) => {
+                // TODO: verify that the given version is indeed the next applicable upgrade
             }
         }
     }

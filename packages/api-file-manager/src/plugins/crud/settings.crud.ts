@@ -1,4 +1,4 @@
-import { withFields, string, boolean, number, onSet } from "@commodo/fields";
+import { withFields, string, number, onSet } from "@commodo/fields";
 import { validation } from "@webiny/validation";
 import defaults from "./utils/defaults";
 import { FileManagerContext, Settings, SettingsCRUD } from "../../types";
@@ -6,7 +6,6 @@ import { FileManagerContext, Settings, SettingsCRUD } from "../../types";
 export const SETTINGS_KEY = "file-manager";
 
 const CreateDataModel = withFields({
-    installed: boolean({ value: false }),
     uploadMinFileSize: number({ value: 0, validation: validation.create("gte:0") }),
     uploadMaxFileSize: number({ value: 26214401 }),
     srcPrefix: onSet(value => {
@@ -19,7 +18,6 @@ const CreateDataModel = withFields({
 })();
 
 const UpdateDataModel = withFields({
-    installed: boolean(),
     uploadMinFileSize: number({
         validation: validation.create("gte:0")
     }),

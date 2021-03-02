@@ -46,10 +46,7 @@ describe("Settings Test", () => {
         expect(response).toEqual({
             data: {
                 formBuilder: {
-                    isInstalled: {
-                        data: false,
-                        error: null
-                    }
+                    version: null
                 }
             }
         });
@@ -74,10 +71,7 @@ describe("Settings Test", () => {
         expect(response).toEqual({
             data: {
                 formBuilder: {
-                    isInstalled: {
-                        data: true,
-                        error: null
-                    }
+                    version: expect.any(String)
                 }
             }
         });

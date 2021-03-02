@@ -16,8 +16,8 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
             }
 
             type FbQuery {
-                # Is Form Builder installed?
-                isInstalled: FbBooleanResponse
+                # Get installed version
+                version: String
             }
 
             type FbMutation {
@@ -52,22 +52,15 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                 formBuilder: emptyResolver
             },
             FbQuery: {
-                isInstalled: async (root, args, context) => {
-                    const { i18nContent, security } = context;
+                version: async (root, args, context) => {
+                    const { i18nContent, security, formBuilder } = context;
 
                     if (!security.getTenant() || !i18nContent.getLocale()) {
                         return false;
                     }
 
                     try {
-                        const settings = await context.formBuilder.settings.getSettings({
-                            auth: false
-                        });
-                        if (!settings) {
-                            return new Response(false);
-                        }
-
-                        return new Response(Boolean(settings.installed));
+                        return formBuilder.system.getVersion();
                     } catch (e) {
                         return new ErrorResponse({
                             code: "FORM_BUILDER_ERROR",
@@ -82,8 +75,8 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                     const { formBuilder, elasticSearch } = context;
 
                     try {
-                        const existingSettings = await formBuilder.settings.getSettings();
-                        if (existingSettings && existingSettings.installed) {
+                        const version = await formBuilder.system.getVersion();
+                        if (version) {
                             return new ErrorResponse({
                                 code: "FORM_BUILDER_INSTALL_ABORTED",
                                 message: "Form builder is already installed."
@@ -91,19 +84,13 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                         }
 
                         // Prepare "settings" data
-                        const data: Partial<Settings> = {
-                            installed: true
-                        };
+                        const data: Partial<Settings> = {};
 
                         if (args.domain) {
                             data.domain = args.domain;
                         }
 
-                        if (!existingSettings) {
-                            await formBuilder.settings.createSettings(data);
-                        } else {
-                            await formBuilder.settings.updateSettings(data);
-                        }
+                        await formBuilder.settings.createSettings(data);
 
                         // Create ES index if it doesn't already exist.
                         const esIndex = defaults.es(context);
@@ -111,6 +98,8 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                         if (!exists) {
                             await elasticSearch.indices.create(esIndex);
                         }
+
+                        await formBuilder.system.setVersion(context.WEBINY_VERSION);
 
                         return new Response(true);
                     } catch (e) {

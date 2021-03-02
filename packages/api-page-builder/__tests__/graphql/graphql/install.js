@@ -1,14 +1,7 @@
 export const IS_INSTALLED = /* GraphQL */ `
     query IsInstalled {
         pageBuilder {
-            isInstalled {
-                data
-                error {
-                    code
-                    message
-                    data
-                }
-            }
+            version
         }
     }
 `;

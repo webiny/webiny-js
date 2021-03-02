@@ -42,10 +42,7 @@ export const GET_SETTINGS = /* GraphQL */ `
 export const IS_INSTALLED = /* GraphQL */ `
     query IsInstalled {
         formBuilder {
-            isInstalled {
-                data
-                error ${ERROR_FIELD}
-            }
+            version
         }
     }
 `;

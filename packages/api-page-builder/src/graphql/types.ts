@@ -11,7 +11,6 @@ import { ClientContext } from "@webiny/handler-client/types";
 import {
     Category,
     DefaultSettings,
-    InstallSettings,
     Menu,
     Page,
     PageElement,
@@ -124,7 +123,7 @@ type DefaultSettingsCrudOptions = { tenant?: string | false; locale?: string | f
 
 export type SettingsCrud = {
     dataLoaders: {
-        get: DataLoader<{ PK: string; SK: string }, DefaultSettings | InstallSettings, string>;
+        get: DataLoader<{ PK: string; SK: string }, DefaultSettings, string>;
     };
     default: {
         PK: (options: Record<string, any>) => string;
@@ -137,12 +136,11 @@ export type SettingsCrud = {
         ) => Promise<DefaultSettings>;
         getSettingsCacheKey: (options?: DefaultSettingsCrudOptions) => string;
     };
-    install: {
-        PK: () => string;
-        SK: "install";
-        get: () => Promise<InstallSettings>;
-        update: (data: Record<string, any>) => Promise<InstallSettings>;
-    };
+};
+
+export type SystemCrud = {
+    getVersion(): Promise<string>;
+    setVersion(version: string): Promise<void>;
 };
 
 // PBContext types.
@@ -162,6 +160,7 @@ export type PbContext = Context<
             categories: CategoriesCrud;
             menus: MenusCrud;
             settings: SettingsCrud;
+            system: SystemCrud;
         };
     }
 >;

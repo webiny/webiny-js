@@ -14,6 +14,7 @@ export type FileManagerContext = Context<
             files: FilesCRUD;
             settings: SettingsCRUD;
             storage: FileStorage;
+            system: SystemCRUD;
         };
     }
 >;
@@ -79,9 +80,13 @@ export type FilesCRUD = {
     createFilesInBatch(data: FileInput[]): Promise<File[]>;
 };
 
+export type SystemCRUD = {
+    getVersion(): Promise<string>;
+    setVersion(version: string): Promise<void>;
+};
+
 export type Settings = {
     key: string;
-    installed: boolean;
     uploadMinFileSize: number;
     uploadMaxFileSize: number;
     srcPrefix: string;
