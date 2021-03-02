@@ -53,7 +53,10 @@ class Delivery {
                     pathPattern: "/static/*",
                     viewerProtocolPolicy: "allow-all",
                     targetOriginId: appS3Bucket.arn,
-                    defaultTtl: 2592000 // 30 days.
+                    // MinTTL <= DefaultTTL <= MaxTTL
+                    minTtl: 0,
+                    defaultTtl: 2592000, // 30 days
+                    maxTtl: 2592000
                 }
             ],
             defaultRootObject: "index.html",
@@ -67,7 +70,10 @@ class Delivery {
                     cookies: { forward: "none" },
                     queryString: true
                 },
-                defaultTtl: 30
+                // MinTTL <= DefaultTTL <= MaxTTL
+                minTtl: 0,
+                defaultTtl: 30,
+                maxTtl: 30
             },
             priceClass: "PriceClass_100",
             restrictions: {

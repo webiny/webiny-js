@@ -29,6 +29,7 @@ class Cloudfront {
                     cookies: { forward: "none" },
                     queryString: false
                 },
+                // MinTTL <= DefaultTTL <= MaxTTL
                 minTtl: 0,
                 defaultTtl: 600,
                 maxTtl: 600
