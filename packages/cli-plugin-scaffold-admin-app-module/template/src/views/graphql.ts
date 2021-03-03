@@ -7,7 +7,7 @@ export const LIST_TARGETS = gql`
         $limit: Int
         $after: String
     ) {
-        entities {
+        targets {
             listTargets(sort: $sort, where: $where, limit: $limit, after: $after) {
                 data {
                     id
@@ -54,7 +54,7 @@ export const CREATE_TARGET = gql`
 
 export const READ_TARGET = gql`
     query GetTarget($id: ID!) {
-        entities {
+        targets {
             target: getTarget(id: $id) {
                 data {
                     id

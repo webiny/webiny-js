@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@webiny/react-router": "^5.0.0-beta.4",
+    "@webiny/plugins": "^5.0.0-beta.4",
     "@webiny/app-admin": "^5.0.0-beta.4",
     "@webiny/app": "^5.0.0-beta.4",
     "@webiny/ui": "^5.0.0-beta.4",

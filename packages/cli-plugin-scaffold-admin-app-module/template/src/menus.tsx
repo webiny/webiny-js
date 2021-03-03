@@ -4,11 +4,11 @@ import { ReactComponent as Icon } from "./assets/round-ballot-24px.svg";
 
 export default (): AdminMenuPlugin => ({
     type: "admin-menu",
-    name: "admin-menu-entities",
+    name: "admin-menu-targets",
     render({ Menu, Item }) {
         return (
-            <Menu name="menu-entities" label={"Books"} icon={<Icon />}>
-                <Item label={"Books"} path={"/entities/"} />
+            <Menu name="menu-targets" label={"Targets"} icon={<Icon />}>
+                <Item label={"Targets"} path={"/targets/"} />
             </Menu>
         );
     }
