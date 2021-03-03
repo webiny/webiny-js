@@ -342,8 +342,22 @@ ${entity.singular}Plugin()
             console.log(
                 indentString(
                     `2. From project root, run ${chalk.green(
-                        `yarn test ${location}`
+                        `LOCAL_ELASTICSEARCH=true yarn test ${location}`
                     )} to ensure that the service works.`,
+                    2
+                )
+            );
+            console.log(
+                indentString(
+                    `Remember, you must have local Elasticsearch installed for this to work.`,
+                    2
+                )
+            );
+            console.log(
+                indentString(
+                    `Also, you can change the Elasticsearch port by setting ELASRTICSEARCH_PORT variable, like this ${chalk.green(
+                        `ELASTICSEARCH_PORT=9200 LOCAL_ELASTICSEARCH=true yarn test ${location}`
+                    )}`,
                     2
                 )
             );
