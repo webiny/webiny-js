@@ -148,7 +148,8 @@ describe("CRUD Test", () => {
                         data: [
                             {
                                 id: target3.data.targets.createTarget.data.id,
-                                ...targetsData.target3
+                                ...targetsData.target3,
+                                description: null
                             },
                             {
                                 id: target1.data.targets.createTarget.data.id,
