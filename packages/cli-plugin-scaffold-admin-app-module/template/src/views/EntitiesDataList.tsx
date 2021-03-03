@@ -43,10 +43,10 @@ const TargetsDataList = () => {
         >
             {({ data, select, isSelected }) => (
                 <ScrollList data-testid="default-data-list">
-                    {data.map(item => (
+                    {(data || []).map(item => (
                         <ListItem key={item.id} selected={isSelected(item)}>
                             <ListItemText onClick={() => select(item)}>
-                                {item.name}
+                                {item.title}
                                 <ListItemTextSecondary>{item.description}</ListItemTextSecondary>
                             </ListItemText>
 
