@@ -1,6 +1,6 @@
 {
   "name": "@webiny/system-upgrade",
-  "version": "5.0.0-beta.4",
+  "version": "5.0.0-beta.5",
   "main": "index.js",
   "types": "types.ts",
   "license": "MIT",
@@ -17,9 +17,9 @@
   ],
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/error": "^5.0.0-beta.4",
-    "@webiny/handler": "^5.0.0-beta.4",
-    "@webiny/plugins": "^5.0.0-beta.4",
+    "@webiny/error": "^5.0.0-beta.5",
+    "@webiny/handler": "^5.0.0-beta.5",
+    "@webiny/plugins": "^5.0.0-beta.5",
     "semver": "^7.3.4"
   },
   "devDependencies": {
