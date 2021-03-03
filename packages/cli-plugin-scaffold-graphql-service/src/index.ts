@@ -48,9 +48,24 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
         questions: () => {
             return [
                 {
+                    name: "entityName",
+                    message: "Enter name of the initial data model",
+                    default: "Book",
+                    validate: name => {
+                        if (!name.match(/^([a-zA-Z]+)$/)) {
+                            return "A valid target name must consist of letters only.";
+                        }
+
+                        return true;
+                    }
+                },
+                {
                     name: "location",
-                    message: "Enter package location (including the package name)",
-                    default: "packages/books/api",
+                    message: "Enter package location",
+                    default: answers => {
+                        const entityNamePlural = pluralize(Case.camel(answers.entityName));
+                        return `packages/${entityNamePlural}/api`;
+                    },
                     validate: location => {
                         if (location.length < 2) {
                             return "Please enter the package location.";
@@ -67,7 +82,8 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     name: "packageName",
                     message: "Enter package name",
                     default: answers => {
-                        return Case.kebab(answers.location);
+                        const entityNamePlural = pluralize(Case.camel(answers.entityName));
+                        return `@${entityNamePlural}/api`;
                     },
                     validate: packageName => {
                         if (!packageName) {
@@ -76,18 +92,6 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                             return true;
                         }
                         return `Package name must look something like "@package/my-generated-package".`;
-                    }
-                },
-                {
-                    name: "entityName",
-                    message: "Enter name of the initial data model",
-                    default: "Book",
-                    validate: name => {
-                        if (!name.match(/^([a-zA-Z]+)$/)) {
-                            return "A valid target name must consist of letters only.";
-                        }
-
-                        return true;
                     }
                 }
             ];
@@ -185,8 +189,6 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     `package.json`
                 )}...`
             );
-
-            // Add package to workspaces
             const rootPackageJsonPath = path.join(projectRootPath, "package.json");
             const rootPackageJson = await readJson<PackageJson>(rootPackageJsonPath);
             if (!rootPackageJson.workspaces.packages.includes(location)) {
@@ -194,8 +196,20 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 await writeJson(rootPackageJsonPath, rootPackageJson);
             }
 
-            // Update graphql tsconfig file
             const graphqlPath = path.relative(process.cwd(), "./api/code/graphql");
+            oraSpinner.start(`Adding ${chalk.green(packageName)} to api package.json.`);
+            const graphqlPackageJsonPath = path.resolve(graphqlPath, "package.json");
+            const graphqlPackageJson = await readJson<PackageJson>(graphqlPackageJsonPath);
+            graphqlPackageJson.dependencies[packageName] = "^1.0.0";
+            await writeJson(graphqlPackageJsonPath, graphqlPackageJson);
+
+            oraSpinner.stopAndPersist({
+                symbol: chalk.green("✔"),
+                text: `Added ${chalk.green(packageName)} to api package.json.`
+            });
+
+            oraSpinner.start(`Updating api tsconfig.json.`);
+            // Update graphql tsconfig file
             const graphqlTsconfigPath = path.resolve(graphqlPath, "tsconfig.json");
             const packagePathRelativeToGraphql = path.relative(graphqlPath, fullLocation);
             const graphqlTsconfig = readJson.sync<TsConfigJson>(graphqlTsconfigPath);
@@ -355,7 +369,7 @@ ${entity.singular}Plugin()
             );
             console.log(
                 indentString(
-                    `Also, you can change the Elasticsearch port by setting ELASRTICSEARCH_PORT variable, like this ${chalk.green(
+                    `Also, you can change the Elasticsearch port by setting LOCAL_ELASTICSEARCH variable, like this ${chalk.green(
                         `ELASTICSEARCH_PORT=9200 LOCAL_ELASTICSEARCH=true yarn test ${location}`
                     )}`,
                     2
