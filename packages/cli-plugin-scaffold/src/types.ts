@@ -128,6 +128,7 @@ export interface CliCommandScaffoldTemplate<T extends Record<string, any> = Reco
  */
 export interface PackageJson {
     name: string;
+    dependencies: Record<string, string>;
     workspaces: {
         packages: string[];
     };
