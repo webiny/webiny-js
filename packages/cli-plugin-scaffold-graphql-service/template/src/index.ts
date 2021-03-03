@@ -116,7 +116,7 @@ export default (): GraphQLSchemaPlugin<ApplicationContext> => ({
                 isNice: Boolean
             }
 
-            enum TargetListSortEnum {
+            enum TargetListSort {
                 title_ASC
                 title_DESC
                 createdOn_ASC
@@ -136,15 +136,14 @@ export default (): GraphQLSchemaPlugin<ApplicationContext> => ({
                 error: TargetError
             }
 
-            type InstallResponseError {
-                message: String
-                code: String
-                data: JSON
-            }
-
             type InstallResponse {
                 data: Boolean
-                error: InstallResponseError
+                error: TargetError
+            }
+
+            type UninstallResponse {
+                data: Boolean
+                error: TargetError
             }
 
             type TargetQuery {
@@ -152,7 +151,7 @@ export default (): GraphQLSchemaPlugin<ApplicationContext> => ({
 
                 listTargets(
                     where: TargetListWhereInput
-                    sort: [TargetListSortEnum!]
+                    sort: [TargetListSort!]
                     limit: Int
                     after: String
                 ): TargetListResponse!
@@ -167,6 +166,8 @@ export default (): GraphQLSchemaPlugin<ApplicationContext> => ({
                 deleteTarget(id: ID!): TargetDeleteResponse!
 
                 install: InstallResponse!
+
+                uninstall: UninstallResponse!
             }
 
             extend type Query {
@@ -197,7 +198,8 @@ export default (): GraphQLSchemaPlugin<ApplicationContext> => ({
                     const response = await db.read<Target>({
                         ...configuration.db(context),
                         query: {
-                            PK: id
+                            PK: id,
+                            SK: "A"
                         },
                         limit: 1
                     });
@@ -307,12 +309,37 @@ export default (): GraphQLSchemaPlugin<ApplicationContext> => ({
                     }
                     return new Response(true);
                 },
+                uninstall: async (_, __, context) => {
+                    const { security, elasticSearch } = context;
+                    const hasFullAccess = await security.hasFullAccess();
+                    if (!hasFullAccess) {
+                        return new ErrorResponse({
+                            message: "Not authorized.",
+                            code: "NOT_AUTHORIZED"
+                        });
+                    }
+                    const esConfig = configuration.es(context);
+                    const { body: hasIndice } = await elasticSearch.indices.exists(esConfig);
+                    if (!hasIndice) {
+                        return new Response(true);
+                    }
+                    try {
+                        await elasticSearch.indices.delete(esConfig);
+                    } catch (ex) {
+                        return new ErrorResponse({
+                            message: "Could not delete Elasticsearch index.",
+                            code: "ELASTICSEARCH_ERROR",
+                            data: ex
+                        });
+                    }
+                    return new Response(true);
+                },
                 createTarget: async (
                     parent,
                     args: CreateTargetArgs,
                     context
                 ): Promise<ResolverResponse<Target>> => {
-                    const { db, elasticSearch, security } = context;
+                    const { db, security } = context;
                     const { data } = args;
 
                     const date = new Date().toISOString();
@@ -328,20 +355,44 @@ export default (): GraphQLSchemaPlugin<ApplicationContext> => ({
                         description: data.description,
                         isNice: data.isNice === undefined ? false : data.isNice
                     };
-                    // save the data into the database
-                    await db.create({
-                        ...configuration.db(context),
-                        data: {
-                            PK: model.id,
-                            ...model
-                        }
-                    });
-                    // save the data into elasticsearch
-                    await elasticSearch.create({
-                        ...configuration.es(context),
-                        id: model.id,
-                        body: model
-                    });
+
+                    const { index: esIndex } = configuration.es(context);
+
+                    const batch = db.batch();
+                    batch
+                        // create the dynamodb target item
+                        .create({
+                            ...configuration.db(context),
+                            data: {
+                                PK: model.id,
+                                SK: "A",
+                                ...model,
+                                webinyVersion: context.WEBINY_VERSION
+                            }
+                        })
+                        // create the dynamodb target item in stream table
+                        .create({
+                            ...configuration.esDb(context),
+                            data: {
+                                PK: model.id,
+                                SK: "A",
+                                index: esIndex,
+                                data: {
+                                    ...model,
+                                    webinyVersion: context.WEBINY_VERSION
+                                }
+                            }
+                        });
+
+                    try {
+                        await batch.execute();
+                    } catch (ex) {
+                        return new ErrorResponse({
+                            message: ex.message,
+                            code: ex.code || "COULD_NOT_INSERT_DATA_INTO_DYNAMODB",
+                            data: ex
+                        });
+                    }
 
                     return new Response(model);
                 },
@@ -350,13 +401,14 @@ export default (): GraphQLSchemaPlugin<ApplicationContext> => ({
                     args: UpdateTargetArgs,
                     context
                 ): Promise<ResolverResponse<Target>> => {
-                    const { db, elasticSearch } = context;
+                    const { db } = context;
                     const { id, data } = args;
 
                     const [[item]] = await db.read<Target>({
                         ...configuration.db(context),
                         query: {
-                            PK: id
+                            PK: id,
+                            SK: "A"
                         },
                         limit: 1
                     });
@@ -373,44 +425,80 @@ export default (): GraphQLSchemaPlugin<ApplicationContext> => ({
                         return new Response(item);
                     }
 
-                    const model: Partial<Target> = {
+                    const modelData: Target = {
+                        ...item,
                         ...data,
                         savedOn: new Date().toISOString()
                     };
-                    // save the data into the database
-                    await db.update({
-                        ...configuration.db(context),
-                        query: {
-                            PK: id
-                        },
-                        data: model
-                    });
-                    // save the data into elasticsearch
-                    await elasticSearch.update({
-                        ...configuration.es(context),
-                        id: id,
-                        body: {
-                            doc: model
+                    const excludeKeys = ["PK", "SK"];
+                    const model: Target = Object.keys(modelData).reduce((acc, key) => {
+                        if (excludeKeys.includes(key)) {
+                            return acc;
                         }
-                    });
+                        acc[key] = modelData[key];
+                        return acc;
+                    }, ({} as unknown) as Target);
 
-                    return new Response({
-                        ...item,
-                        ...model
-                    });
+                    const { index: esIndex } = configuration.es(context);
+
+                    const batch = db.batch();
+                    batch
+                        // dynamodb target update
+                        .update({
+                            ...configuration.db(context),
+                            query: {
+                                PK: id,
+                                SK: "A"
+                            },
+                            data: {
+                                PK: id,
+                                SK: "A",
+                                ...model,
+                                webinyVersion: context.WEBINY_VERSION
+                            }
+                        })
+                        .update({
+                            ...configuration.esDb(context),
+                            query: {
+                                PK: id,
+                                SK: "A"
+                            },
+                            data: {
+                                PK: id,
+                                SK: "A",
+                                index: esIndex,
+                                data: {
+                                    ...model,
+                                    webinyVersion: context.WEBINY_VERSION
+                                }
+                            }
+                        });
+
+                    try {
+                        await batch.execute();
+                    } catch (ex) {
+                        return new ErrorResponse({
+                            message: ex.message,
+                            code: ex.code || "COULD_NOT_UPDATE_DATA_IN_DYNAMODB",
+                            data: ex
+                        });
+                    }
+
+                    return new Response(model);
                 },
                 deleteTarget: async (
                     parent,
                     args: DeleteTargetArgs,
                     context
                 ): Promise<ResolverResponse<boolean>> => {
-                    const { db, elasticSearch } = context;
+                    const { db } = context;
                     const { id } = args;
 
                     const [[item]] = await db.read<Target>({
                         ...configuration.db(context),
                         query: {
-                            PK: id
+                            PK: id,
+                            SK: "A"
                         },
                         limit: 1
                     });
@@ -423,28 +511,33 @@ export default (): GraphQLSchemaPlugin<ApplicationContext> => ({
                             }
                         });
                     }
-                    // delete the data from the database
-                    await db.delete({
-                        ...configuration.db(context),
-                        query: {
-                            PK: id
-                        }
-                    });
-                    // delete the data from elasticsearch
-                    await elasticSearch.deleteByQuery({
-                        ...configuration.es(context),
-                        body: {
+                    const batch = db.batch();
+                    batch.delete(
+                        {
+                            ...configuration.db(context),
                             query: {
-                                bool: {
-                                    must: {
-                                        term: {
-                                            id
-                                        }
-                                    }
-                                }
+                                PK: id,
+                                SK: "A"
+                            }
+                        },
+                        {
+                            ...configuration.esDb(context),
+                            query: {
+                                PK: id,
+                                SK: "A"
                             }
                         }
-                    });
+                    );
+
+                    try {
+                        await batch.execute();
+                    } catch (ex) {
+                        return new ErrorResponse({
+                            message: ex.message,
+                            code: ex.code || "COULD_NOT_DELETE_DATA_FROM_DYNAMODB",
+                            data: ex
+                        });
+                    }
 
                     return new Response(true);
                 }

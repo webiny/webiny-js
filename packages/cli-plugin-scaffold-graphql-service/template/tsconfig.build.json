@@ -1,0 +1,12 @@
+{
+  "extends": "PATH_TO_TSCONFIG_BUILD",
+  "include": ["src"],
+  "exclude": ["node_modules"],
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "declarationDir": "dist",
+    "paths": {}
+  },
+  "references": []
+}

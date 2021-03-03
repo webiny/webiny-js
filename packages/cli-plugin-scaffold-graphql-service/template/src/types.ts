@@ -37,6 +37,7 @@ interface ConfigurationEs {
 
 export interface Configuration {
     db: (context: ApplicationContext) => ConfigurationDb;
+    esDb: (context: ApplicationContext) => ConfigurationDb;
     es: (context: ApplicationContext) => ConfigurationEs;
 }
 

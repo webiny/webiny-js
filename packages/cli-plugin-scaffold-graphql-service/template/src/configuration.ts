@@ -11,6 +11,27 @@ export const configuration: Configuration = {
                 fields: [
                     {
                         name: "PK"
+                    },
+                    {
+                        name: "SK"
+                    }
+                ]
+            }
+        ]
+    }),
+    esDb: () => ({
+        table: process.env.DB_TABLE_ELASTICSEARCH,
+        keys: [
+            {
+                primary: true,
+                unique: true,
+                name: "primary",
+                fields: [
+                    {
+                        name: "PK"
+                    },
+                    {
+                        name: "SK"
                     }
                 ]
             }
