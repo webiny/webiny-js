@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-i18n",
-  "version": "5.0.0-beta.7",
+  "version": "5.0.0-beta.8",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -12,15 +12,15 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/api-security": "^5.0.0-beta.7",
-    "@webiny/api-security-tenancy": "^5.0.0-beta.7",
-    "@webiny/db-dynamodb": "^5.0.0-beta.7",
-    "@webiny/handler": "^5.0.0-beta.7",
-    "@webiny/handler-aws": "^5.0.0-beta.7",
-    "@webiny/handler-client": "^5.0.0-beta.7",
-    "@webiny/handler-db": "^5.0.0-beta.7",
-    "@webiny/handler-graphql": "^5.0.0-beta.7",
-    "@webiny/plugins": "^5.0.0-beta.7",
+    "@webiny/api-security": "^5.0.0-beta.8",
+    "@webiny/api-security-tenancy": "^5.0.0-beta.8",
+    "@webiny/db-dynamodb": "^5.0.0-beta.8",
+    "@webiny/handler": "^5.0.0-beta.8",
+    "@webiny/handler-aws": "^5.0.0-beta.8",
+    "@webiny/handler-client": "^5.0.0-beta.8",
+    "@webiny/handler-db": "^5.0.0-beta.8",
+    "@webiny/handler-graphql": "^5.0.0-beta.8",
+    "@webiny/plugins": "^5.0.0-beta.8",
     "accept-language-parser": "^1.5.0",
     "i18n-locales": "^0.0.2",
     "lodash": "^4.17.4"

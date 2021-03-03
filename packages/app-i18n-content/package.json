@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-i18n-content",
-  "version": "5.0.0-beta.7",
+  "version": "5.0.0-beta.8",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -9,12 +9,12 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
-    "@webiny/app": "^5.0.0-beta.7",
-    "@webiny/app-admin": "^5.0.0-beta.7",
-    "@webiny/app-i18n": "^5.0.0-beta.7",
-    "@webiny/app-security": "^5.0.0-beta.7",
-    "@webiny/form": "^5.0.0-beta.7",
-    "@webiny/ui": "^5.0.0-beta.7",
+    "@webiny/app": "^5.0.0-beta.8",
+    "@webiny/app-admin": "^5.0.0-beta.8",
+    "@webiny/app-i18n": "^5.0.0-beta.8",
+    "@webiny/app-security": "^5.0.0-beta.8",
+    "@webiny/form": "^5.0.0-beta.8",
+    "@webiny/ui": "^5.0.0-beta.8",
     "emotion": "^10.0.17",
     "react": "^16.14.0",
     "react-dom": "^16.14.0"
