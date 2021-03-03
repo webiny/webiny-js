@@ -8514,7 +8514,7 @@ __metadata:
     "@types/inquirer": ^7.3.1
     "@types/ncp": ^2.0.4
     "@types/pluralize": ^0.0.29
-    "@webiny/cli-plugin-scaffold": ^4.14.0
+    "@webiny/cli-plugin-scaffold": ^5.0.0-beta.4
     "@webiny/error": ^5.0.0-beta.0
     "@webiny/handler": ^5.0.0-beta.4
     "@webiny/plugins": ^5.0.0-beta.4
@@ -8545,7 +8545,7 @@ __metadata:
     "@types/inquirer": ^7.3.1
     "@types/ncp": ^2.0.4
     "@types/pluralize": ^0.0.29
-    "@webiny/cli-plugin-scaffold": ^4.14.0
+    "@webiny/cli-plugin-scaffold": ^5.0.0-beta.4
     "@webiny/error": ^5.0.0-beta.0
     "@webiny/handler": ^5.0.0-beta.4
     "@webiny/plugins": ^5.0.0-beta.4
@@ -8565,7 +8565,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/cli-plugin-scaffold@^4.14.0, @webiny/cli-plugin-scaffold@workspace:packages/cli-plugin-scaffold":
+"@webiny/cli-plugin-scaffold@^5.0.0-beta.4, @webiny/cli-plugin-scaffold@workspace:packages/cli-plugin-scaffold":
   version: 0.0.0-use.local
   resolution: "@webiny/cli-plugin-scaffold@workspace:packages/cli-plugin-scaffold"
   dependencies:
