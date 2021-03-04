@@ -57,7 +57,7 @@ export const CREATE_TARGET = gql`
 export const READ_TARGET = gql`
     query GetTarget($id: ID!) {
         targets {
-            target: getTarget(id: $id) {
+            getTarget(id: $id) {
                 data {
                     id
                     title
@@ -70,6 +70,11 @@ export const READ_TARGET = gql`
                         displayName
                         type
                     }
+                }
+                error {
+                    code
+                    message
+                    data
                 }
             }
         }

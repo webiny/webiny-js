@@ -44,7 +44,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
     name: "cli-plugin-scaffold-template-graphql-service",
     type: "cli-plugin-scaffold-template",
     scaffold: {
-        name: "GraphQL Webiny Service",
+        name: "GraphQL API package",
         questions: () => {
             return [
                 {

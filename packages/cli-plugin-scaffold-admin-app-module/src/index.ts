@@ -28,8 +28,6 @@ interface Input {
 }
 
 const adminAppCodePath = "apps/admin/code";
-// const adminAppCodeSrcPath = "apps/admin/code/src";
-// const adminAppPluginsPath = "apps/admin/code/src/plugins";
 const adminAppPluginsIndexFile = `${adminAppCodePath}/src/plugins/index.ts`;
 
 const createPackageName = ({
@@ -49,7 +47,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
     name: "cli-plugin-scaffold-template-graphql-app",
     type: "cli-plugin-scaffold-template",
     scaffold: {
-        name: "Admin App Module",
+        name: "Admin Area package",
         questions: () => {
             return [
                 {
@@ -172,15 +170,15 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             // Make sure to also rename base file names.
             const fileNameReplacements = [
                 {
-                    find: "src/views/EntitiesDataList.tsx",
+                    find: "src/views/TargetsDataList.tsx",
                     replaceWith: `src/views/${Case.pascal(entity.plural)}DataList.tsx`
                 },
                 {
-                    find: "src/views/Entities.tsx",
+                    find: "src/views/Targets.tsx",
                     replaceWith: `src/views/${Case.pascal(entity.plural)}.tsx`
                 },
                 {
-                    find: "src/views/EntityForm.tsx",
+                    find: "src/views/TargetForm.tsx",
                     replaceWith: `src/views/${Case.pascal(entity.singular)}Form.tsx`
                 }
             ];
