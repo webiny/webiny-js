@@ -83,6 +83,8 @@ export type FilesCRUD = {
 export type SystemCRUD = {
     getVersion(): Promise<string>;
     setVersion(version: string): Promise<void>;
+    install(args: { srcPrefix: string }): Promise<boolean>;
+    upgrade(version: string, data?: Record<string, any>): Promise<boolean>;
 };
 
 export type Settings = {

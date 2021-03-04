@@ -1,9 +1,13 @@
+import { NotAuthorizedError } from "@webiny/api-security";
+import { getApplicablePlugin } from "@webiny/api-upgrade";
+import Error from "@webiny/error";
+import { FileManagerContext, Settings, SystemCRUD } from "../../types";
 import defaults from "./utils/defaults";
-import { FileManagerContext, SystemCRUD } from "../../types";
+import { UpgradePlugin } from "@webiny/api-upgrade/types";
 
 export default (context: FileManagerContext): SystemCRUD => {
     const { security } = context;
-    
+
     const keys = () => ({ PK: `T#${security.getTenant().id}#SYSTEM`, SK: "FM" });
 
     return {
@@ -50,6 +54,84 @@ export default (context: FileManagerContext): SystemCRUD => {
                     }
                 });
             }
+        },
+        async install({ srcPrefix }) {
+            const { fileManager, elasticSearch } = context;
+            const version = await fileManager.system.getVersion();
+
+            if (version) {
+                throw new Error("File Manager is already installed.", "FILES_INSTALL_ABORTED");
+            }
+
+            const data: Partial<Settings> = {};
+
+            if (srcPrefix) {
+                data.srcPrefix = srcPrefix;
+            }
+
+            await fileManager.settings.createSettings(data);
+
+            // Create ES index if it doesn't already exist.
+            const esIndex = defaults.es(context);
+            const { body: exists } = await elasticSearch.indices.exists(esIndex);
+            if (!exists) {
+                await elasticSearch.indices.create({
+                    ...esIndex,
+                    body: {
+                        settings: {
+                            analysis: {
+                                analyzer: {
+                                    lowercase_analyzer: {
+                                        type: "custom",
+                                        filter: ["standard", "lowercase", "trim"],
+                                        tokenizer: "keyword"
+                                    }
+                                }
+                            }
+                        },
+                        mappings: {
+                            properties: {
+                                property: {
+                                    type: "text",
+                                    fields: {
+                                        keyword: {
+                                            type: "keyword",
+                                            ignore_above: 256
+                                        }
+                                    },
+                                    analyzer: "lowercase_analyzer"
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            await fileManager.system.setVersion(context.WEBINY_VERSION);
+
+            return true;
+        },
+        async upgrade(version) {
+            const identity = context.security.getIdentity();
+            if (!identity) {
+                throw new NotAuthorizedError();
+            }
+
+            const upgradePlugins = context.plugins
+                .byType<UpgradePlugin>("api-upgrade")
+                .filter(pl => pl.app === "file-manager");
+
+            const plugin = getApplicablePlugin({
+                deployedVersion: context.WEBINY_VERSION,
+                installedAppVersion: await this.getVersion(),
+                upgradePlugins,
+                upgradeToVersion: version
+            });
+
+            await plugin.apply(context);
+
+            await this.setVersion(version);
+            return true;
         }
     };
 };

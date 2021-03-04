@@ -1,7 +1,6 @@
 import { Response, ErrorResponse, ListResponse } from "@webiny/handler-graphql";
 import { FileInput, FileManagerContext, FilesListOpts, Settings } from "../types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import defaults from "./crud/utils/defaults";
 
 const emptyResolver = () => ({});
 
@@ -138,6 +137,8 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                 # Install File manager
                 install(srcPrefix: String): FileManagerBooleanResponse
 
+                upgrade(version: String!, data: JSON): FileManagerBooleanResponse
+
                 updateSettings(data: FileManagerSettingsInput): FileManagerSettingsResponse
             }
 
@@ -211,38 +212,12 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                     return resolve(() => context.fileManager.files.deleteFile(args.id));
                 },
                 async install(_, args, context) {
-                    const { fileManager, elasticSearch } = context;
-                    try {
-                        const version = await fileManager.system.getVersion();
-
-                        if (version) {
-                            return new ErrorResponse({
-                                code: "FILES_INSTALL_ABORTED",
-                                message: "File Manager is already installed."
-                            });
-                        }
-
-                        const data: Partial<Settings> = {};
-
-                        if (args.srcPrefix) {
-                            data.srcPrefix = args.srcPrefix;
-                        }
-
-                        await fileManager.settings.createSettings(data);
-
-                        // Create ES index if it doesn't already exist.
-                        const esIndex = defaults.es(context);
-                        const { body: exists } = await elasticSearch.indices.exists(esIndex);
-                        if (!exists) {
-                            await elasticSearch.indices.create(esIndex);
-                        }
-
-                        await fileManager.system.setVersion(context.WEBINY_VERSION);
-
-                        return new Response(true);
-                    } catch (error) {
-                        return new ErrorResponse(error);
-                    }
+                    return resolve(() =>
+                        context.fileManager.system.install({ srcPrefix: args.srcPrefix })
+                    );
+                },
+                async upgrade(_, args, context) {
+                    return resolve(() => context.fileManager.system.upgrade(args.version));
                 },
                 async updateSettings(_, args: { data: Partial<Settings> }, context) {
                     return resolve(() => context.fileManager.settings.updateSettings(args.data));
