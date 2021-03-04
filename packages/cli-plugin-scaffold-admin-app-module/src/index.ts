@@ -28,8 +28,6 @@ interface Input {
 }
 
 const adminAppCodePath = "apps/admin/code";
-// const adminAppCodeSrcPath = "apps/admin/code/src";
-// const adminAppPluginsPath = "apps/admin/code/src/plugins";
 const adminAppPluginsIndexFile = `${adminAppCodePath}/src/plugins/index.ts`;
 
 const createPackageName = ({
@@ -49,7 +47,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
     name: "cli-plugin-scaffold-template-graphql-app",
     type: "cli-plugin-scaffold-template",
     scaffold: {
-        name: "Admin App Module",
+        name: "Admin Area package",
         questions: () => {
             return [
                 {

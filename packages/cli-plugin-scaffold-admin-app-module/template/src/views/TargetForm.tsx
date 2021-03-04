@@ -21,7 +21,7 @@ import { CREATE_TARGET, READ_TARGET, UPDATE_TARGET } from "./graphql";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { ButtonDefault, ButtonIcon } from "@webiny/ui/Button";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
-import { TargetItem, TargetItemUserFields } from "@targets/admin-app/types";
+import { TargetItem, TargetItemUserFields } from "../types";
 
 const t = i18n.ns("admin-app-target/form");
 
