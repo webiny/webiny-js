@@ -49,6 +49,7 @@
     "react-hotkeyz": "^1.0.4",
     "react-lazy-load": "^3.0.13",
     "react-transition-group": "^4.3.0",
+    "semver": "^7.3.4",
     "shortid": "^2.2.12",
     "store": "^2.0.12"
   },

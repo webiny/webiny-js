@@ -112,11 +112,15 @@ export type AdminFileManagerFileTypePlugin = Plugin & {
 
 export type AdminInstallationPlugin = Plugin & {
     type: "admin-installation";
-    isInstalled(params: { client: ApolloClient<object> }): Promise<boolean>;
+    getInstalledVersion(params: { client: ApolloClient<object> }): Promise<string>;
     title: string;
     dependencies?: string[];
     secure: boolean;
     render({ onInstalled }): React.ReactNode;
+    upgrades?: {
+        version: string;
+        getComponent(): React.ComponentType<{ onInstalled: () => void }>;
+    }[];
 };
 
 export type AdminAppPermissionRendererPlugin = Plugin & {
