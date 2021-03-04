@@ -172,15 +172,15 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             // Make sure to also rename base file names.
             const fileNameReplacements = [
                 {
-                    find: "src/views/EntitiesDataList.tsx",
+                    find: "src/views/TargetsDataList.tsx",
                     replaceWith: `src/views/${Case.pascal(entity.plural)}DataList.tsx`
                 },
                 {
-                    find: "src/views/Entities.tsx",
+                    find: "src/views/Targets.tsx",
                     replaceWith: `src/views/${Case.pascal(entity.plural)}.tsx`
                 },
                 {
-                    find: "src/views/EntityForm.tsx",
+                    find: "src/views/TargetForm.tsx",
                     replaceWith: `src/views/${Case.pascal(entity.singular)}Form.tsx`
                 }
             ];
