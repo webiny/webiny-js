@@ -3,6 +3,9 @@
   "dependencies": {
     "@webiny/aws-layers": "latest",
     "@webiny/cli": "latest",
+    "@webiny/cli-plugin-scaffold": "latest",
+    "@webiny/cli-plugin-admin-app-module": "latest",
+    "@webiny/cli-plugin-graphql-service": "latest",
     "@webiny/cli-plugin-workspaces": "latest",
     "@webiny/cli-plugin-deploy-pulumi": "latest",
     "@webiny/project-utils": "latest"
