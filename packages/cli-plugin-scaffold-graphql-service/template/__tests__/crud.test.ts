@@ -273,4 +273,112 @@ describe("CRUD Test", () => {
             }
         });
     });
+
+    test("should sort targets by title ASC", async () => {
+        // 1. Let's create a couple of targets.
+        const [target1] = await createTarget(targetsData.target1);
+        const [target2] = await createTarget(targetsData.target2);
+        const [target3] = await createTarget(targetsData.target3);
+
+        // if this `until` resolves successfully, we know the deleted target was deleted from elasticsearch
+        await until(
+            () =>
+                invoke({
+                    body: {
+                        query: LIST_TARGETS
+                    }
+                }).then(([data]) => data),
+            ({ data }) => data.targets.listTargets.data.length === 3,
+            { name: "list targets" }
+        );
+
+        const [targetsListResponse] = await invoke({
+            body: {
+                query: LIST_TARGETS,
+                variables: {
+                    sort: ["title_ASC"]
+                }
+            }
+        });
+
+        expect(targetsListResponse).toEqual({
+            data: {
+                targets: {
+                    listTargets: {
+                        data: [
+                            {
+                                id: target1.data.targets.createTarget.data.id,
+                                ...targetsData.target1
+                            },
+                            {
+                                id: target2.data.targets.createTarget.data.id,
+                                ...targetsData.target2,
+                                isNice: false
+                            },
+                            {
+                                id: target3.data.targets.createTarget.data.id,
+                                ...targetsData.target3,
+                                description: null
+                            }
+                        ],
+                        error: null
+                    }
+                }
+            }
+        });
+    });
+
+    test("should sort targets by title desc", async () => {
+        // 1. Let's create a couple of targets.
+        const [target1] = await createTarget(targetsData.target1);
+        const [target2] = await createTarget(targetsData.target2);
+        const [target3] = await createTarget(targetsData.target3);
+
+        // if this `until` resolves successfully, we know the deleted target was deleted from elasticsearch
+        await until(
+            () =>
+                invoke({
+                    body: {
+                        query: LIST_TARGETS
+                    }
+                }).then(([data]) => data),
+            ({ data }) => data.targets.listTargets.data.length === 3,
+            { name: "list targets" }
+        );
+
+        const [targetsListResponse] = await invoke({
+            body: {
+                query: LIST_TARGETS,
+                variables: {
+                    sort: ["title_DESC"]
+                }
+            }
+        });
+
+        expect(targetsListResponse).toEqual({
+            data: {
+                targets: {
+                    listTargets: {
+                        data: [
+                            {
+                                id: target3.data.targets.createTarget.data.id,
+                                ...targetsData.target3,
+                                description: null
+                            },
+                            {
+                                id: target2.data.targets.createTarget.data.id,
+                                ...targetsData.target2,
+                                isNice: false
+                            },
+                            {
+                                id: target1.data.targets.createTarget.data.id,
+                                ...targetsData.target1
+                            }
+                        ],
+                        error: null
+                    }
+                }
+            }
+        });
+    });
 });

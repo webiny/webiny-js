@@ -138,8 +138,9 @@ export const createElasticsearchSort = (sort?: string[]) => {
     }
     return sort.map(s => {
         const [field, order] = s.split("_");
+        const fieldName = dateTypeFields.includes(field) ? field : `${field}.keyword`;
         return {
-            [field]: {
+            [fieldName]: {
                 order: order === "ASC" ? "ASC" : "DESC",
                 // eslint-disable-next-line
                 unmapped_type: dateTypeFields.includes(field) ? "date" : undefined
