@@ -2,7 +2,7 @@ import { Configuration } from "./types";
 
 export const configuration: Configuration = {
     db: () => ({
-        table: process.env.DB_TABLE_TARGET || "TargetTable",
+        table: process.env.DB_TABLE_TARGET,
         keys: [
             {
                 primary: true,

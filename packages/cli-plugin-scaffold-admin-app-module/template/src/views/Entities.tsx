@@ -21,7 +21,7 @@ const Targets = ({ scopes, formProps, listProps }: any) => {
                 read={READ_TARGET}
                 list={{
                     query: LIST_TARGETS,
-                    variables: { sort: { savedOn: -1 } }
+                    variables: { sort: "savedOn_DESC" }
                 }}
                 update={{
                     mutation: UPDATE_TARGET,

@@ -53,10 +53,24 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
         questions: () => {
             return [
                 {
+                    name: "entityName",
+                    message: "Enter name of the initial data model",
+                    default: "Book",
+                    validate: name => {
+                        if (!name.match(/^([a-zA-Z]+)$/)) {
+                            return "A valid entity name must consist of letters only.";
+                        }
+
+                        return true;
+                    }
+                },
+                {
                     name: "location",
-                    message: `Enter package location (including the package name)`,
-                    // default: "packages/app-books",
-                    default: "p/books-app",
+                    message: `Enter package location`,
+                    default: answers => {
+                        const entityNamePlural = pluralize(Case.camel(answers.entityName));
+                        return `packages/${entityNamePlural}/admin-app`;
+                    },
                     validate: location => {
                         if (!location) {
                             return "Please enter the package location.";
@@ -74,7 +88,8 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     name: "packageName",
                     message: "Enter package name",
                     default: answers => {
-                        return Case.kebab(answers.location);
+                        const entityNamePlural = pluralize(Case.camel(answers.entityName));
+                        return `@${entityNamePlural}/admin-app`;
                     },
                     validate: packageName => {
                         if (!packageName) {
@@ -83,18 +98,6 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                             return true;
                         }
                         return `Package name must look something like "@package/my-generated-package".`;
-                    }
-                },
-                {
-                    name: "entityName",
-                    message: "Enter name of the initial data model",
-                    default: "Book",
-                    validate: name => {
-                        if (!name.match(/^([a-zA-Z]+)$/)) {
-                            return "A valid entity name must consist of letters only.";
-                        }
-
-                        return true;
                     }
                 }
             ];
@@ -214,7 +217,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             });
             oraSpinner.start(`Setting tsconfig.build.json extends path...`);
             const packageTsConfigBuildFilePath = path.resolve(fullLocation, "tsconfig.build.json");
-            const packageTsConfigBuild = readJson.sync<TsConfigJson>(packageTsConfigFilePath);
+            const packageTsConfigBuild = readJson.sync<TsConfigJson>(packageTsConfigBuildFilePath);
             packageTsConfigBuild.extends = baseTsConfigBuildRelativePath;
             await writeJson(packageTsConfigBuildFilePath, packageTsConfigBuild);
             oraSpinner.stopAndPersist({
@@ -249,15 +252,15 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 text: `Updated base tsconfig compilerOptions.paths.`
             });
 
-            // Admin app files updates
-            const adminAppPath = path.relative(process.cwd(), adminAppCodePath);
-            const packagePathRelativeToAdminApp = path.relative(adminAppPath, fullLocation);
-            const adminAppTsConfigPath = path.resolve(adminAppCodePath, "tsconfig.json");
-            const adminAppTsConfig = readJson.sync<TsConfigJson>(adminAppTsConfigPath);
-            adminAppTsConfig.references = (adminAppTsConfig.references || []).concat({
-                path: packagePathRelativeToAdminApp
+            const adminAppPackageJsonPath = path.resolve(adminAppCodePath, "package.json");
+            const adminAppPackageJson = await readJson<PackageJson>(adminAppPackageJsonPath);
+            adminAppPackageJson.dependencies[packageName] = "^1.0.0";
+            await writeJson(adminAppPackageJsonPath, adminAppPackageJson);
+
+            oraSpinner.stopAndPersist({
+                symbol: chalk.green("✔"),
+                text: `Added ${chalk.green(packageName)} to api package.json.`
             });
-            await writeJson(adminAppTsConfigPath, adminAppTsConfig);
 
             oraSpinner.stopAndPersist({
                 symbol: chalk.green("✔"),

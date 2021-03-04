@@ -7,7 +7,7 @@ export const LIST_TARGETS = gql`
         $limit: Int
         $after: String
     ) {
-        entities {
+        targets {
             listTargets(sort: $sort, where: $where, limit: $limit, after: $after) {
                 data {
                     id
@@ -28,25 +28,27 @@ export const LIST_TARGETS = gql`
 `;
 
 export const CREATE_TARGET = gql`
-    mutation CreateTarget($input: TargetCreateInput!) {
-        createTarget(input: $input) {
-            data {
-                id
-                title
-                description
-                isNice
-                createdOn
-                savedOn
-                createdBy {
+    mutation CreateTarget($data: TargetCreateInput!) {
+        targets {
+            createTarget(data: $data) {
+                data {
                     id
-                    displayName
-                    type
+                    title
+                    description
+                    isNice
+                    createdOn
+                    savedOn
+                    createdBy {
+                        id
+                        displayName
+                        type
+                    }
                 }
-            }
-            error {
-                code
-                message
-                data
+                error {
+                    code
+                    message
+                    data
+                }
             }
         }
     }
@@ -54,7 +56,7 @@ export const CREATE_TARGET = gql`
 
 export const READ_TARGET = gql`
     query GetTarget($id: ID!) {
-        entities {
+        targets {
             target: getTarget(id: $id) {
                 data {
                     id
@@ -76,12 +78,14 @@ export const READ_TARGET = gql`
 
 export const DELETE_TARGET = gql`
     mutation DeleteTarget($id: ID!) {
-        deleteTarget(id: $id) {
-            data
-            error {
-                code
-                message
+        targets {
+            deleteTarget(id: $id) {
                 data
+                error {
+                    code
+                    message
+                    data
+                }
             }
         }
     }
@@ -89,24 +93,26 @@ export const DELETE_TARGET = gql`
 
 export const UPDATE_TARGET = gql`
     mutation UpdateTarget($id: ID!, $data: TargetUpdateInput!) {
-        updateTarget(id: $id, data: $data) {
-            data {
-                id
-                title
-                description
-                isNice
-                createdOn
-                savedOn
-                createdBy {
+        targets {
+            updateTarget(id: $id, data: $data) {
+                data {
                     id
-                    displayName
-                    type
+                    title
+                    description
+                    isNice
+                    createdOn
+                    savedOn
+                    createdBy {
+                        id
+                        displayName
+                        type
+                    }
                 }
-            }
-            error {
-                code
-                message
-                data
+                error {
+                    code
+                    message
+                    data
+                }
             }
         }
     }

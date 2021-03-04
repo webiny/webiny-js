@@ -48,7 +48,7 @@ export interface ResolverResponse<T extends unknown> {
 
 export interface ListResolverResponse<T extends unknown> {
     data: T[];
-    meta: {
+    meta?: {
         cursor: string | null;
         hasMoreItems: boolean;
         totalCount: number;

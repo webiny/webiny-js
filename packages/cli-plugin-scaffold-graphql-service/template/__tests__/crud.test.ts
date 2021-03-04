@@ -7,6 +7,21 @@ import {
     UPDATE_TARGET
 } from "./graphql/targets";
 
+const targetsData = {
+    target1: {
+        title: "Target 1",
+        description: "This is my 1st target.",
+        isNice: false
+    },
+    target2: {
+        title: "Target 2",
+        description: "This is my 2nd target with isNice put to default (false)."
+    },
+    target3: {
+        title: "Target 3",
+        isNice: true
+    }
+};
 /**
  * This is a simple test that asserts basic CRUD operations work as expected.
  * Feel free to update this test according to changes you made in the actual code.
@@ -25,41 +40,22 @@ describe("CRUD Test", () => {
         await clearElasticsearchIndexes();
     });
 
+    const createTarget = async (data: Record<string, any>) => {
+        return await invoke({
+            body: {
+                query: CREATE_TARGET,
+                variables: {
+                    data
+                }
+            }
+        });
+    };
+
     it("should be able to perform basic CRUD operations", async () => {
         // 1. Let's create a couple of targets.
-        const [target1] = await invoke({
-            body: {
-                query: CREATE_TARGET,
-                variables: {
-                    data: {
-                        title: "Target 1",
-                        description: "This is my 1st target.",
-                        isNice: false
-                    }
-                }
-            }
-        });
-
-        const [target2] = await invoke({
-            body: {
-                query: CREATE_TARGET,
-                variables: {
-                    data: {
-                        title: "Target 2",
-                        description: "This is my 2nd target with isNice put to default (false)."
-                    }
-                }
-            }
-        });
-
-        const [target3] = await invoke({
-            body: {
-                query: CREATE_TARGET,
-                variables: {
-                    data: { title: "Target 3", isNice: true }
-                }
-            }
-        });
+        const [target1] = await createTarget(targetsData.target1);
+        const [target2] = await createTarget(targetsData.target2);
+        const [target3] = await createTarget(targetsData.target3);
 
         // if this `until` resolves successfully, we know targets are propagated into elasticsearch
         await until(
@@ -87,22 +83,17 @@ describe("CRUD Test", () => {
                         data: [
                             {
                                 id: target3.data.targets.createTarget.data.id,
-                                title: "Target 3",
-                                description: null,
-                                isNice: true
+                                ...targetsData.target3,
+                                description: null
                             },
                             {
                                 id: target2.data.targets.createTarget.data.id,
-                                title: "Target 2",
-                                description:
-                                    "This is my 2nd target with isNice put to default (false).",
+                                ...targetsData.target2,
                                 isNice: false
                             },
                             {
                                 id: target1.data.targets.createTarget.data.id,
-                                title: "Target 1",
-                                description: "This is my 1st target.",
-                                isNice: false
+                                ...targetsData.target1
                             }
                         ],
                         error: null
@@ -157,15 +148,12 @@ describe("CRUD Test", () => {
                         data: [
                             {
                                 id: target3.data.targets.createTarget.data.id,
-                                title: "Target 3",
-                                description: null,
-                                isNice: true
+                                ...targetsData.target3,
+                                description: null
                             },
                             {
                                 id: target1.data.targets.createTarget.data.id,
-                                title: "Target 1",
-                                description: "This is my 1st target.",
-                                isNice: false
+                                ...targetsData.target1
                             }
                         ],
                         error: null
@@ -225,6 +213,60 @@ describe("CRUD Test", () => {
                             description: "This is my 1st target. - updated",
                             isNice: true
                         },
+                        error: null
+                    }
+                }
+            }
+        });
+    });
+
+    test("should sort targets", async () => {
+        // 1. Let's create a couple of targets.
+        const [target1] = await createTarget(targetsData.target1);
+        const [target2] = await createTarget(targetsData.target2);
+        const [target3] = await createTarget(targetsData.target3);
+
+        // if this `until` resolves successfully, we know the deleted target was deleted from elasticsearch
+        await until(
+            () =>
+                invoke({
+                    body: {
+                        query: LIST_TARGETS
+                    }
+                }).then(([data]) => data),
+            ({ data }) => data.targets.listTargets.data.length === 3,
+            { name: "list targets" }
+        );
+
+        const [targetsListResponse] = await invoke({
+            body: {
+                query: LIST_TARGETS,
+                variables: {
+                    sort: ["createdOn_ASC"]
+                }
+            }
+        });
+
+        expect(targetsListResponse).toEqual({
+            data: {
+                targets: {
+                    listTargets: {
+                        data: [
+                            {
+                                id: target1.data.targets.createTarget.data.id,
+                                ...targetsData.target1
+                            },
+                            {
+                                id: target2.data.targets.createTarget.data.id,
+                                ...targetsData.target2,
+                                isNice: false
+                            },
+                            {
+                                id: target3.data.targets.createTarget.data.id,
+                                ...targetsData.target3,
+                                description: null
+                            }
+                        ],
                         error: null
                     }
                 }

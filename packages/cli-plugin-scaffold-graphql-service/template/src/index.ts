@@ -16,36 +16,9 @@ import { configuration } from "./configuration";
 import {
     createElasticsearchQuery,
     encodeElasticsearchCursor,
-    decodeElasticsearchCursor
+    decodeElasticsearchCursor,
+    createElasticsearchSort
 } from "./es";
-
-/**
- * Fields that will have unmapped_type set to "date". Without this, sorting by date does not work.
- */
-const dateTypeFields = ["createdOn", "savedOn"];
-const buildElasticsearchSort = (sort?: string[]) => {
-    if (!sort || sort.length === 0) {
-        return [
-            {
-                createdOn: {
-                    order: "DESC",
-                    // eslint-disable-next-line
-                    unmapped_type: "date"
-                }
-            }
-        ];
-    }
-    return sort.map(s => {
-        const [field, order] = s.split("_");
-        return {
-            [field]: {
-                order: order === "ASC" ? "ASC" : "DESC",
-                // eslint-disable-next-line
-                unmapped_type: dateTypeFields.includes(field)
-            }
-        };
-    });
-};
 
 const emptyResolver = () => ({});
 
@@ -229,17 +202,26 @@ export default (): GraphQLSchemaPlugin<ApplicationContext> => ({
 
                     const body = {
                         query: createElasticsearchQuery(where),
-                        sort: buildElasticsearchSort(sort),
+                        sort: createElasticsearchSort(sort),
                         // we always take one extra to see if there are more items to be fetched
                         size: size + 1,
                         // eslint-disable-next-line
                         search_after: decodeElasticsearchCursor(after) || undefined
                     };
 
-                    const response = await elasticSearch.search({
-                        ...configuration.es(context),
-                        body
-                    });
+                    let response;
+                    try {
+                        response = await elasticSearch.search({
+                            ...configuration.es(context),
+                            body
+                        });
+                    } catch (ex) {
+                        return new ErrorResponse({
+                            code: ex.code || "ELASTICSEARCH_ERROR",
+                            message: ex.message,
+                            data: ex
+                        });
+                    }
                     const { hits, total } = response.body.hits;
 
                     const items = hits.map((item: any) => item._source);
