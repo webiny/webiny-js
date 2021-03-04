@@ -11,6 +11,9 @@ import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Client } from "@elastic/elasticsearch";
 import targetPlugin from "../src/index";
 import graphqlPlugins from "@webiny/handler-graphql";
+import { configuration } from "../src/configuration";
+import { simulateStream } from "@webiny/project-utils/testing/dynamodb";
+import dynamoToElastic from "@webiny/api-dynamodb-to-elasticsearch/handler";
 
 /**
  * The "useGqlHandler" is a simple handler that reflects the one created in "api/code/graphql/src/index.ts". The only
@@ -33,7 +36,7 @@ export const until = async (
     until: (value: any) => boolean,
     options: UntilOptions = {}
 ) => {
-    const { name = "NO_NAME", tries = 5, wait = 300 } = options;
+    const { name = "NO_NAME", tries = 10, wait = 300 } = options;
 
     let result;
     let triesCount = 0;
@@ -80,6 +83,24 @@ export default () => {
         region: "local"
     });
 
+    const tenant = {
+        id: "root",
+        name: "Root",
+        parent: null
+    };
+    const dummyContext: any = {
+        security: {
+            getTenant: () => tenant
+        }
+    };
+
+    const elasticSearchContext = elasticSearch({
+        endpoint: `http://localhost:${ELASTICSEARCH_PORT}`
+    });
+
+    // Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
+    simulateStream(documentClient, createHandler(elasticSearchContext, dynamoToElastic()));
+
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler(
         graphqlPlugins(),
@@ -98,11 +119,7 @@ export default () => {
                     context.security = {};
                 }
                 context.security.getTenant = () => {
-                    return {
-                        id: "root",
-                        name: "Root",
-                        parent: null
-                    };
+                    return tenant;
                 };
             }
         },
@@ -140,6 +157,10 @@ export default () => {
         node: `http://localhost:${ELASTICSEARCH_PORT}`
     });
 
+    const createElasticsearchIndex = async () => {
+        return elasticsearchClient.indices.create(configuration.es(dummyContext));
+    };
+
     const clearElasticsearchIndexes = async () => {
         return elasticsearchClient.indices.delete({
             index: "_all"
@@ -150,6 +171,7 @@ export default () => {
         elasticSearch: elasticsearchClient,
         handler,
         invoke,
+        createElasticsearchIndex,
         clearElasticsearchIndexes,
         until
     };

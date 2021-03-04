@@ -2,8 +2,26 @@ module.exports = {
     tables: [
         {
             TableName: "TargetTable",
-            KeySchema: [{ AttributeName: "PK", KeyType: "HASH" }],
-            AttributeDefinitions: [{ AttributeName: "PK", AttributeType: "S" }],
+            KeySchema: [
+                { AttributeName: "PK", KeyType: "HASH" },
+                { AttributeName: "SK", KeyType: "RANGE" }
+            ],
+            AttributeDefinitions: [
+                { AttributeName: "PK", AttributeType: "S" },
+                { AttributeName: "SK", AttributeType: "S" }
+            ],
+            ProvisionedThroughput: { ReadCapacityUnits: 1, WriteCapacityUnits: 1 }
+        },
+        {
+            TableName: "ElasticSearchStream",
+            KeySchema: [
+                { AttributeName: "PK", KeyType: "HASH" },
+                { AttributeName: "SK", KeyType: "RANGE" }
+            ],
+            AttributeDefinitions: [
+                { AttributeName: "PK", AttributeType: "S" },
+                { AttributeName: "SK", AttributeType: "S" }
+            ],
             ProvisionedThroughput: { ReadCapacityUnits: 1, WriteCapacityUnits: 1 }
         }
     ],

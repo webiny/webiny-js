@@ -3,10 +3,10 @@
   "include": ["src"],
   "references": [
     {
-      "path": "../cli-plugin-scaffold"
+      "path": "../error"
     },
     {
-      "path": "../error"
+      "path": "../cli-plugin-scaffold"
     },
     {
       "path": "../handler"
@@ -17,10 +17,10 @@
   ],
   "compilerOptions": {
     "paths": {
-      "@webiny/cli-plugin-scaffold/*": ["../cli-plugin-scaffold/src/*"],
-      "@webiny/cli-plugin-scaffold": ["../cli-plugin-scaffold/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
+      "@webiny/cli-plugin-scaffold/*": ["../cli-plugin-scaffold/src/*"],
+      "@webiny/cli-plugin-scaffold": ["../cli-plugin-scaffold/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],

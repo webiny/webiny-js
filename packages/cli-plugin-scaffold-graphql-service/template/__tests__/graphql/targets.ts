@@ -7,6 +7,24 @@ const ERROR_FIELDS = /* GraphQL */ `
     }
 `;
 
+export const GET_TARGET = /* GraphQL */ `
+    query GetTarget(
+        $id: ID!
+    ) {
+        targets {
+            getTarget(id: $id) {
+                data {
+                    id
+                    title
+                    description
+                    isNice
+                }
+                error ${ERROR_FIELDS}
+            }
+        }
+    }
+`;
+
 // A basic create "Target" mutation.
 export const CREATE_TARGET = /* GraphQL */ `
     mutation CreateTarget($data: TargetCreateInput!) {
@@ -24,11 +42,43 @@ export const CREATE_TARGET = /* GraphQL */ `
     }
 `;
 
+export const UPDATE_TARGET = /* GraphQL*/ `
+    mutation UpdateTarget($id: ID!, $data: TargetUpdateInput!) {
+        targets {
+            updateTarget(id: $id, data: $data) {
+                data {
+                    id
+                    title
+                    description
+                    isNice
+                }
+                error ${ERROR_FIELDS}
+            }
+        }
+    }
+`;
+
+// A basic delete "Target" mutation.
+export const DELETE_TARGET = /* GraphQL */ `
+    mutation DeleteTarget($id: ID!) {
+        targets {
+            deleteTarget(id: $id) {
+                data
+                error {
+                    message
+                    code
+                    data
+                }
+            }
+        }
+    }
+`;
+
 // A basic list "Targets" query.
 export const LIST_TARGETS = /* GraphQL */ `
     query ListTargets(
         $where: TargetListWhereInput
-        $sort: [TargetListSortEnum!]
+        $sort: [TargetListSort!]
         $limit: Int
         $after: String
     ) {
