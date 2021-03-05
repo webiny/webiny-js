@@ -130,7 +130,9 @@ export default (context: FileManagerContext): SystemCRUD => {
 
             await plugin.apply(context);
 
+            // Store new app version
             await this.setVersion(version);
+            
             return true;
         }
     };
