@@ -51,6 +51,23 @@ const isUniqueModelId = (models, modelId) => {
     }
 };
 
+const DISALLOWED_MODEL_IDS = [
+    "contentModel",
+    "contentModels",
+    "contentModelGroup",
+    "contentModelGroups"
+];
+
+const checkModelIdAllowed = modelId => {
+    if (DISALLOWED_MODEL_IDS.includes(modelId)) {
+        throw new Error(`Provided model ID "${modelId}" is not allowed.`);
+    }
+};
+
+const isAllowedModelId = modelId => {
+    return !DISALLOWED_MODEL_IDS.includes(modelId);
+};
+
 const createNewModelId = async (
     context: CmsContext,
     models: string[],
@@ -67,7 +84,7 @@ const createNewModelId = async (
 
         // Let's try generating a new modelId and immediately check for its uniqueness.
         const generatedModelId = `${modelIdCamelCase}${counter || ""}`;
-        if (isUniqueModelId(models, generatedModelId)) {
+        if (isAllowedModelId(generatedModelId) && isUniqueModelId(models, generatedModelId)) {
             return generatedModelId;
         }
         counter++;
@@ -82,10 +99,12 @@ interface Args {
 export const beforeCreateHook = async (args: Args): Promise<void> => {
     const { context, model } = args;
     const { modelId } = model;
+
     const models = (await context.cms.models.noAuth().list()).map(m => m.modelId);
     // If there is a modelId assigned, check if it's unique ...
     if (modelId) {
         const modelIdCamelCase = camelCase(model.name);
+        checkModelIdAllowed(modelIdCamelCase);
         checkModelIdUniqueness(models, modelIdCamelCase);
         model.modelId = modelIdCamelCase;
     } else {
