@@ -15,6 +15,7 @@ import { resolveCreateFrom } from "./resolvers/manage/resolveCreateFrom";
 import { createManageTypeName, createTypeName } from "../utils/createTypeName";
 import { pluralizedTypeName } from "../utils/pluralizedTypeName";
 import { entryFieldFromStorageTransform } from "../utils/entryStorage";
+import get from "lodash/get";
 
 interface CreateManageResolvers {
     (params: {
@@ -77,11 +78,13 @@ export const createManageResolvers: CreateManageResolvers = ({
         },
         [mTypeName]: model.fields.reduce(
             (resolvers, field) => {
-                const { manage } = fieldTypePlugins[field.type];
-
-                const resolver = manage.createResolver
-                    ? manage.createResolver({ models, model, field })
-                    : null;
+                // Every time a client updates content model's fields, we check the type of each field. If a field plugin
+                // for a particular "field.type" doesn't exist on the backend yet, we throw an error. But still, we also
+                // want to be careful when accessing the field plugin here too. It is still possible to have a content model
+                // that contains a field, for which we don't have a plugin registered on the backend. For example, user
+                // could've just removed the plugin from the backend.
+                const createResolver = get(fieldTypePlugins, `${field.type}.manage.createResolver`);
+                const resolver = createResolver ? createResolver({ models, model, field }) : null;
 
                 resolvers[field.fieldId] = async (entry, args, context: CmsContext, info) => {
                     // Get transformed value (eg. data decompression)
