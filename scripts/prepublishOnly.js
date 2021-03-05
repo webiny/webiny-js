@@ -55,6 +55,11 @@ const writeJson = require("write-json-file");
                     return;
                 }
 
+                const depVersion = lockPackageJson.dependencies[key];
+                if (depVersion.startsWith("file:")) {
+                    return;
+                }
+
                 const pkgJsonPath = require.resolve(`${key}/package.json`, {
                     paths: [distDirectory]
                 });
