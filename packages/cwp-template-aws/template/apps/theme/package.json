@@ -21,9 +21,5 @@
     "react": "^16.14.0",
     "react-hamburger-menu": "^1.1.1",
     "react-helmet": "^5.2.0"
-  },
-  "publishConfig": {
-    "access": "public",
-    "directory": "dist"
   }
 }

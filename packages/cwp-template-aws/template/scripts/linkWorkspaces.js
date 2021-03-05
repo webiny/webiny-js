@@ -5,5 +5,7 @@
  */
 (async () => {
     const { linkWorkspaces } = require("@webiny/project-utils/workspaces");
-    await linkWorkspaces();
+    await linkWorkspaces({
+        whitelist: ["packages"]
+    });
 })();
