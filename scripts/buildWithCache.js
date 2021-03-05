@@ -6,19 +6,25 @@ const execa = require("execa");
 const path = require("path");
 const loadJson = require("load-json-file");
 const writeJson = require("write-json-file");
-const { green } = require("chalk");
+const { green, red } = require("chalk");
 
 const CACHE_FOLDER_PATH = ".webiny/cached-packages";
 const META_FILE_PATH = path.join(CACHE_FOLDER_PATH, "meta.json");
 
 (async () => {
-    const start = new Date();
-    await build();
+    try {
+        const start = new Date();
+        await build();
 
-    await require("./linkWorkspaces");
+        await require("./linkWorkspaces");
 
-    const duration = (new Date() - start) / 1000;
-    console.log(`Done! Finished in ${green(duration + "s")}.`);
+        const duration = (new Date() - start) / 1000;
+        console.log(`Done! Finished in ${green(duration + "s")}.`);
+    } catch (e) {
+        console.log(red("An error occurred while executing the command:"));
+        console.log(e);
+        process.exit(1);
+    }
 })();
 
 async function build() {
