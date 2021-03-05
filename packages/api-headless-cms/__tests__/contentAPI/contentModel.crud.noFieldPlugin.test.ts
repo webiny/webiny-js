@@ -41,11 +41,24 @@ describe("content model test", () => {
 
         await createContentModelMutation({
             data: {
-                name: "Content model",
+                name: "Test Content model",
                 modelId: "testContentModel",
                 group: contentModelGroup.id
             }
-        }).then(async () => {
+        }).then(async ([response]) => {
+            expect(response).toMatchObject({
+                data: {
+                    createContentModel: {
+                        data: {
+                            modelId: "testContentModel",
+                            name: "Test Content model",
+                            titleFieldId: "id"
+                        },
+                        error: null
+                    }
+                }
+            });
+
             await updateContentModelMutation({
                 modelId: "testContentModel",
                 data: {
