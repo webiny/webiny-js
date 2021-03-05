@@ -1,14 +1,15 @@
 import uniqid from "uniqid";
 
 context("Menus Module", () => {
-    const id = uniqid();
-    let createdPage;
+    let createdPage, id;
 
     beforeEach(() => cy.login());
 
     after(() => cy.pbDeletePage({ id: createdPage.id }));
 
     it("should be able add all types items to the menu", () => {
+        id = uniqid();
+
         // eslint-disable-next-line
         cy.pbCreatePage({ category: "static" }).then(page => {
             createdPage = page;
