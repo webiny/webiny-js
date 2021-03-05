@@ -293,7 +293,7 @@ export default (): GraphQLSchemaPlugin<ApplicationContext> => ({
                                         analyzer: {
                                             lowercase_analyzer: {
                                                 type: "custom",
-                                                filter: ["standard", "lowercase", "trim"],
+                                                filter: ["lowercase", "trim"],
                                                 tokenizer: "keyword"
                                             }
                                         }
