@@ -12,27 +12,26 @@ const MAX_MODEL_ID_SEARCH_AMOUNT = 50;
  * @param modelId
  */
 const checkModelIdUniqueness = (models, modelId) => {
-    const modelIdCamelCase = camelCase(modelId);
-    if (models.includes(modelIdCamelCase) === true) {
-        throw Error(`Content model with modelId "${modelIdCamelCase}" already exists.`);
+    if (models.includes(modelId) === true) {
+        throw Error(`Content model with modelId "${modelId}" already exists.`);
     }
 
     // Additionally, check if the plural form of the received modelId exists too. This prevents users
     // from creating, for example, "event" and "events" models, which would break the GraphQL schema.
 
     // 1. First check if user wants to create the "event" model, but the "events" model already exists.
-    const pluralizedModelIdCamelCase = pluralize(modelIdCamelCase);
+    const pluralizedModelIdCamelCase = pluralize(modelId);
     if (models.includes(pluralizedModelIdCamelCase) === true) {
         throw Error(
-            `Content model with modelId "${modelIdCamelCase}" does not exist, but a model with modelId "${pluralizedModelIdCamelCase}" does.`
+            `Content model with modelId "${modelId}" does not exist, but a model with modelId "${pluralizedModelIdCamelCase}" does.`
         );
     }
 
     // 2. Then check if user wants to create the "events" model, but the "event" model already exists.
-    const singularizedModelIdCamelCase = pluralize.singular(modelIdCamelCase);
+    const singularizedModelIdCamelCase = pluralize.singular(modelId);
     if (models.includes(singularizedModelIdCamelCase) === true) {
         throw Error(
-            `Content model with modelId "${modelIdCamelCase}" does not exist, but a model with modelId "${singularizedModelIdCamelCase}" does.`
+            `Content model with modelId "${modelId}" does not exist, but a model with modelId "${singularizedModelIdCamelCase}" does.`
         );
     }
 };
@@ -86,7 +85,8 @@ export const beforeCreateHook = async (args: Args): Promise<void> => {
     const models = (await context.cms.models.noAuth().list()).map(m => m.modelId);
     // If there is a modelId assigned, check if it's unique ...
     if (modelId) {
-        checkModelIdUniqueness(models, modelId);
+        const modelIdCamelCase = camelCase(model.name);
+        checkModelIdUniqueness(models, modelIdCamelCase);
         model.modelId = modelIdCamelCase;
     } else {
         // ... otherwise, assign a unique modelId automatically.
