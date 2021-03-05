@@ -994,7 +994,7 @@ describe("READ - Resolvers", () => {
             }
         });
 
-        // Wait until the previous revision is indexed in Elastic as "latest"
+        // wait until we have all products in the elastic
         await until(
             () =>
                 listProducts({
@@ -1019,6 +1019,109 @@ describe("READ - Resolvers", () => {
                         cursor: expect.any(String),
                         hasMoreItems: false,
                         totalCount: 2
+                    },
+                    error: null
+                }
+            }
+        });
+    });
+
+    test("sort entries by title", async () => {
+        await setupModel("product", contentModelGroup);
+
+        const { vegetables } = await categoryManagerHelper({
+            ...manageOpts
+        });
+        const { createProduct, listProducts, until } = useProductManageHandler({
+            ...manageOpts
+        });
+
+        const [potatoResponse] = await createProduct({
+            data: {
+                title: "Potato",
+                price: 100.05,
+                availableOn: "2020-12-25",
+                color: "white",
+                availableSizes: ["s", "m"],
+                image: "potato.jpg",
+                category: {
+                    modelId: "category",
+                    entryId: vegetables.id
+                }
+            }
+        });
+
+        const [carrotResponse] = await createProduct({
+            data: {
+                title: "Carrot",
+                price: 98,
+                availableOn: "2020-12-25",
+                color: "white",
+                availableSizes: ["m"],
+                image: "orange.jpg",
+                category: {
+                    modelId: "category",
+                    entryId: vegetables.id
+                }
+            }
+        });
+
+        const [kornResponse] = await createProduct({
+            data: {
+                title: "Korn",
+                price: 99.1,
+                availableOn: "2020-12-25",
+                color: "white",
+                availableSizes: ["m"],
+                image: "korn.jpg",
+                category: {
+                    modelId: "category",
+                    entryId: vegetables.id
+                }
+            }
+        });
+
+        const potato = potatoResponse.data.createProduct.data;
+        const carrot = carrotResponse.data.createProduct.data;
+        const korn = kornResponse.data.createProduct.data;
+
+        // wait until we have all products in the elastic
+        await until(
+            () => listProducts({}).then(([data]) => data),
+            ({ data }) => data.listProducts.data.length === 3,
+            { name: "list all products in vegetables categories", tries: 10, wait: 1000 }
+        );
+
+        const [responseAsc] = await listProducts({
+            sort: ["title_ASC"]
+        });
+
+        expect(responseAsc).toEqual({
+            data: {
+                listProducts: {
+                    data: [carrot, korn, potato],
+                    meta: {
+                        cursor: expect.any(String),
+                        hasMoreItems: false,
+                        totalCount: 3
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [responseDesc] = await listProducts({
+            sort: ["title_DESC"]
+        });
+
+        expect(responseDesc).toEqual({
+            data: {
+                listProducts: {
+                    data: [potato, korn, carrot],
+                    meta: {
+                        cursor: expect.any(String),
+                        hasMoreItems: false,
+                        totalCount: 3
                     },
                     error: null
                 }

@@ -6,6 +6,7 @@ import { resolveGet } from "./resolvers/read/resolveGet";
 import { resolveList } from "./resolvers/read/resolveList";
 import { pluralizedTypeName } from "../utils/pluralizedTypeName";
 import { entryFieldFromStorageTransform } from "../utils/entryStorage";
+import get from "lodash/get";
 
 interface CreateReadResolvers {
     (params: {
@@ -28,11 +29,14 @@ export const createReadResolvers: CreateReadResolvers = ({ models, model, fieldT
             [`list${pluralizedTypeName(typeName)}`]: resolveList({ model })
         },
         [rTypeName]: model.fields.reduce((resolvers, field) => {
-            const { read } = fieldTypePlugins[field.type];
+            // Every time a client updates content model's fields, we check the type of each field. If a field plugin
+            // for a particular "field.type" doesn't exist on the backend yet, we throw an error. But still, we also
+            // want to be careful when accessing the field plugin here too. It is still possible to have a content model
+            // that contains a field, for which we don't have a plugin registered on the backend. For example, user
+            // could've just removed the plugin from the backend.
+            const createResolver = get(fieldTypePlugins, `${field.type}.read.createResolver`);
 
-            const resolver = read.createResolver
-                ? read.createResolver({ models, model, field })
-                : null;
+            const resolver = createResolver ? createResolver({ models, model, field }) : null;
 
             resolvers[field.fieldId] = async (entry, args, context: CmsContext, info) => {
                 // Get transformed value (eg. data decompression)
