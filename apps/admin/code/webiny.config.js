@@ -25,8 +25,6 @@ module.exports = {
 
             Object.assign(process.env, output);
 
-            process.env.REACT_APP_WEBINY_VERSION = "5.0.0-beta.5";
-
             // Start local development
             await startApp(options, context);
         },
