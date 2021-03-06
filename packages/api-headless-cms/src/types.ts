@@ -8,6 +8,7 @@ import { BaseI18NContentContext } from "@webiny/api-i18n-content/types";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { HttpContext } from "@webiny/handler-http/types";
 import { DbContext } from "@webiny/handler-db/types";
+import { FileManagerContext } from "@webiny/api-file-manager/types";
 
 interface BaseCmsValuesObject {
     /**
@@ -49,6 +50,7 @@ export interface CmsContext
         DbContext,
         HttpContext,
         I18NContext,
+        FileManagerContext,
         BaseI18NContentContext,
         ElasticSearchClientContext,
         TenancyContext {
@@ -655,10 +657,6 @@ export interface CmsSettingsContext {
      */
     get: () => Promise<CmsSettings | null>;
     /**
-     * Install the CMS.
-     */
-    install: () => Promise<void>;
-    /**
      * Updates settings model with a new date.
      */
     updateContentModelLastChange: () => Promise<void>;
@@ -671,6 +669,8 @@ export interface CmsSettingsContext {
 export type CmsSystemContext = {
     getVersion(): Promise<string>;
     setVersion(version: string): Promise<void>;
+    install(): Promise<void>;
+    upgrade(version: string): Promise<boolean>;
 };
 
 /**

@@ -13,7 +13,7 @@ export default {
             install: CmsBooleanResponse
 
             # Upgrade CMS
-            upgrade(version: String, data: JSON): CmsBooleanResponse
+            upgrade(version: String!): CmsBooleanResponse
         }
     `,
     resolvers: {
@@ -37,14 +37,19 @@ export default {
                         });
                     }
 
-                    await cms.settings.install();
+                    await cms.system.install();
                     return new Response(true);
                 } catch (e) {
                     return new ErrorResponse(e);
                 }
             },
-            upgrade: async (_, { version, data }, { cms }: CmsContext) => {
-                // TODO: verify that the given version is indeed the next applicable upgrade
+            upgrade: async (_, { version }, { cms }: CmsContext) => {
+                try {
+                    await cms.system.upgrade(version);
+                    return new Response(true);
+                } catch (e) {
+                    return new ErrorResponse(e);
+                }
             }
         }
     }

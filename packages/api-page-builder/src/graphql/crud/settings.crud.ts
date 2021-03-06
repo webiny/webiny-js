@@ -30,11 +30,7 @@ const plugin: ContextPlugin<PbContext> = {
             ...context.pageBuilder,
             settings: {
                 dataLoaders: {
-                    get: new DataLoader<
-                        { PK: string; SK: string },
-                        DefaultSettings,
-                        string
-                    >(
+                    get: new DataLoader<{ PK: string; SK: string }, DefaultSettings, string>(
                         async keys => {
                             const results = [];
                             for (let i = 0; i < keys.length; i++) {

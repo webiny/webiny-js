@@ -1,4 +1,4 @@
-import React, {useState, useCallback, lazy} from "react";
+import React, { useState, useCallback, lazy } from "react";
 import gql from "graphql-tag";
 import { useApolloClient } from "@apollo/react-hooks";
 import { i18n } from "@webiny/app/i18n";

@@ -16,7 +16,6 @@ import { Typography } from "@webiny/ui/Typography";
 
 const t = i18n.ns("app-headless-cms/admin/installation");
 
-
 const UPGRADE = gql`
     mutation UpgradeFileManager($version: String) {
         fileManager {
@@ -77,7 +76,9 @@ const Upgrade = ({ onInstalled }) => {
                         <Typography use={"body1"} tag={"div"}>
                             This upgrade will do the following:
                             <ul>
-                                <li>insert Elasticsearch records into a dedicated DynamoDB table</li>
+                                <li>
+                                    insert Elasticsearch records into a dedicated DynamoDB table
+                                </li>
                             </ul>
                         </Typography>
                     </Cell>

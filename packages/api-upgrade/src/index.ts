@@ -65,7 +65,10 @@ export function getApplicablePlugin(args: RunUpgradeArgs): UpgradePlugin {
     const upgrade = upgradePlugins.find(pl => pl.version === upgradeToVersion);
 
     if (!upgrade) {
-        throw new Error(`Upgrade to version ${upgradeToVersion} is not available.`, "UPGRADE_NOT_AVAILABLE");
+        throw new Error(
+            `Upgrade to version ${upgradeToVersion} is not available.`,
+            "UPGRADE_NOT_AVAILABLE"
+        );
     }
 
     return upgrade;

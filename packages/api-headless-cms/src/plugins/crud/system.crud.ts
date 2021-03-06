@@ -1,5 +1,16 @@
+import { NotAuthorizedError } from "@webiny/api-security";
+import Error from "@webiny/error";
+import { getApplicablePlugin } from "@webiny/api-upgrade";
+import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import * as utils from "../../utils";
 import { CmsContext } from "../../types";
+
+const initialContentModelGroup = {
+    name: "Ungrouped",
+    slug: "ungrouped",
+    description: "A generic content model group",
+    icon: "fas/star"
+};
 
 export default {
     type: "context",
@@ -21,7 +32,7 @@ export default {
                         // If settings already exist, it means this system was installed before versioning was introduced.
                         // 5.0.0-beta.4 is the last version before versioning was introduced.
                         const settings = await context.cms.settings.noAuth().get();
-                        
+
                         return settings ? "5.0.0-beta.4" : null;
                     }
 
@@ -50,6 +61,51 @@ export default {
                             }
                         });
                     }
+                },
+                install: async (): Promise<void> => {
+                    const identity = context.security.getIdentity();
+                    if (!identity) {
+                        throw new NotAuthorizedError();
+                    }
+
+                    const version = await context.cms.system.getVersion();
+                    if (version) {
+                        return;
+                    }
+
+                    // Add default content model group.
+                    try {
+                        await context.cms.groups.create(initialContentModelGroup);
+                    } catch (ex) {
+                        throw new Error(ex.message, "CMS_INSTALLATION_CONTENT_MODEL_GROUP_ERROR");
+                    }
+
+                    // Set app version
+                    await this.setVersion(context.WEBINY_VERSION);
+                },
+                async upgrade(version) {
+                    const identity = context.security.getIdentity();
+                    if (!identity) {
+                        throw new NotAuthorizedError();
+                    }
+
+                    const upgradePlugins = context.plugins
+                        .byType<UpgradePlugin>("api-upgrade")
+                        .filter(pl => pl.app === "headless-cms");
+
+                    const plugin = getApplicablePlugin({
+                        deployedVersion: context.WEBINY_VERSION,
+                        installedAppVersion: await this.getVersion(),
+                        upgradePlugins,
+                        upgradeToVersion: version
+                    });
+
+                    await plugin.apply(context);
+
+                    // Store new app version
+                    await this.setVersion(version);
+
+                    return true;
                 }
             }
         };

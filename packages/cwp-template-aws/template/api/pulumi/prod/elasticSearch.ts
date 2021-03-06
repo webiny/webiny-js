@@ -18,7 +18,7 @@ class ElasticSearch {
                 zoneAwarenessEnabled: true,
                 zoneAwarenessConfig: {
                     availabilityZoneCount: 2
-                },
+                }
             },
             vpcOptions: {
                 subnetIds: [vpc.subnets.private[0].id],

@@ -13,7 +13,7 @@ export default (context: DbContext & TenancyContext): SystemCRUD => {
             if (!rootTenant) {
                 return null;
             }
-            
+
             const [[system]] = await db.read({
                 ...dbArgs,
                 query: keys()

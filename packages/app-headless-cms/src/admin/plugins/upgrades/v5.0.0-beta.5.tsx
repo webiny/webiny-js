@@ -16,7 +16,6 @@ import { Typography } from "@webiny/ui/Typography";
 
 const t = i18n.ns("app-headless-cms/admin/installation");
 
-
 const UPGRADE = gql`
     mutation UpgradeCMS($version: String) {
         cms {
@@ -77,9 +76,15 @@ const Upgrade = ({ onInstalled }) => {
                         <Typography use={"body1"} tag={"div"}>
                             This upgrade will do the following:
                             <ul>
-                                <li>create a separate Elasticsearch index for each content model</li>
-                                <li>upgrade data stored into Elasticsearch for certain data types</li>
-                                <li>insert Elasticsearch records into a dedicated DynamoDB table</li>
+                                <li>
+                                    create a separate Elasticsearch index for each content model
+                                </li>
+                                <li>
+                                    upgrade data stored into Elasticsearch for certain data types
+                                </li>
+                                <li>
+                                    insert Elasticsearch records into a dedicated DynamoDB table
+                                </li>
                             </ul>
                         </Typography>
                     </Cell>

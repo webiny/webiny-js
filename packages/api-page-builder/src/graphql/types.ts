@@ -8,14 +8,7 @@ import { I18NContext } from "@webiny/api-i18n/types";
 import { ElasticSearchClientContext } from "@webiny/api-plugin-elastic-search-client/types";
 import DataLoader from "dataloader";
 import { ClientContext } from "@webiny/handler-client/types";
-import {
-    Category,
-    DefaultSettings,
-    Menu,
-    Page,
-    PageElement,
-    PageSpecialType
-} from "../types";
+import { Category, DefaultSettings, Menu, Page, PageElement, PageSpecialType } from "../types";
 import { PrerenderingServiceClientContext } from "@webiny/api-prerendering-service/client/types";
 
 // CRUD types.

@@ -137,7 +137,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                 # Install File manager
                 install(srcPrefix: String): FileManagerBooleanResponse
 
-                upgrade(version: String!, data: JSON): FileManagerBooleanResponse
+                upgrade(version: String!): FileManagerBooleanResponse
 
                 updateSettings(data: FileManagerSettingsInput): FileManagerSettingsResponse
             }

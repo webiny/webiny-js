@@ -48,7 +48,7 @@ describe("Install Test", () => {
                 name: "My Site"
             }
         }).then(([res]) => {
-            expect(res.data.pageBuilder.install.error.message).toBe("Not authorized!")
+            expect(res.data.pageBuilder.install.error.message).toBe("Not authorized!");
         });
     });
 
