@@ -48,7 +48,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
             PbMutation: {
                 install: async (_, args, context) => {
                     try {
-                        await context.pageBuilder.system.install({ name: args.name });
+                        await context.pageBuilder.system.install({ name: args.data.name });
                         return new Response(true);
                     } catch (e) {
                         return new ErrorResponse(e);
