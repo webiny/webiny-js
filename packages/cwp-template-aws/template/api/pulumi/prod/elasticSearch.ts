@@ -13,7 +13,12 @@ class ElasticSearch {
         this.domain = new aws.elasticsearch.Domain(domainName, {
             elasticsearchVersion: "7.7",
             clusterConfig: {
-                instanceType: "t3.small.elasticsearch"
+                instanceType: "t3.medium.elasticsearch",
+                instanceCount: 2,
+                zoneAwarenessEnabled: true,
+                zoneAwarenessConfig: {
+                    availabilityZoneCount: 2
+                },
             },
             vpcOptions: {
                 subnetIds: [vpc.subnets.private[0].id],
@@ -99,7 +104,7 @@ class ElasticSearch {
             functionName: streamTarget.arn,
             startingPosition: "LATEST",
             maximumRetryAttempts: 3,
-            batchSize: 500,
+            batchSize: 1000,
             maximumBatchingWindowInSeconds: 1
         });
     }

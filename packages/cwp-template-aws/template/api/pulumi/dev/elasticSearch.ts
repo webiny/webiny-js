@@ -12,7 +12,7 @@ class ElasticSearch {
         this.domain = new aws.elasticsearch.Domain(domainName, {
             elasticsearchVersion: "7.7",
             clusterConfig: {
-                instanceType: "t3.small.elasticsearch"
+                instanceType: "t3.micro.elasticsearch"
             },
             ebsOptions: {
                 ebsEnabled: true,
@@ -90,7 +90,7 @@ class ElasticSearch {
             functionName: streamTarget.arn,
             startingPosition: "LATEST",
             maximumRetryAttempts: 3,
-            batchSize: 500,
+            batchSize: 1000,
             maximumBatchingWindowInSeconds: 1
         });
     }
