@@ -128,11 +128,19 @@ export interface CliCommandScaffoldTemplate<T extends Record<string, any> = Reco
  */
 export interface PackageJson {
     name: string;
+    dependencies: Record<string, string>;
     workspaces: {
         packages: string[];
     };
 }
 
+interface TsConfigJsonReference {
+    path: string;
+}
+
+interface TsConfigJsonCompilerOptions {
+    paths?: Record<string, string[]>;
+}
 /**
  * A representation of loaded tsconfig.json and tsconfig.build.json files.
  * Used as T when reading a file with load-json-file.
@@ -141,5 +149,8 @@ export interface PackageJson {
  * @category Template
  */
 export interface TsConfigJson {
+    include?: string[];
     extends: string;
+    references?: TsConfigJsonReference[];
+    compilerOptions?: TsConfigJsonCompilerOptions;
 }

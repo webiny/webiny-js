@@ -2,7 +2,7 @@ import { Configuration } from "./types";
 
 export const configuration: Configuration = {
     db: () => ({
-        table: process.env.DB_TABLE_TARGET || "TargetTable",
+        table: process.env.DB_TABLE_TARGET,
         keys: [
             {
                 primary: true,
@@ -11,6 +11,27 @@ export const configuration: Configuration = {
                 fields: [
                     {
                         name: "PK"
+                    },
+                    {
+                        name: "SK"
+                    }
+                ]
+            }
+        ]
+    }),
+    esDb: () => ({
+        table: process.env.DB_TABLE_ELASTICSEARCH,
+        keys: [
+            {
+                primary: true,
+                unique: true,
+                name: "primary",
+                fields: [
+                    {
+                        name: "PK"
+                    },
+                    {
+                        name: "SK"
                     }
                 ]
             }

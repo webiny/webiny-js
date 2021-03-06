@@ -96,8 +96,8 @@ describe("content model test", () => {
 
         const [createResponse] = await createContentModelMutation({
             data: {
-                name: "Content model",
-                modelId: "content-model",
+                name: "Test Content model",
+                modelId: "test-content-model",
                 group: contentModelGroup.id
             }
         });
@@ -106,10 +106,10 @@ describe("content model test", () => {
             data: {
                 createContentModel: {
                     data: {
-                        name: "Content model",
+                        name: "Test Content model",
                         description: null,
                         titleFieldId: "id",
-                        modelId: "contentModel",
+                        modelId: "testContentModel",
                         createdBy: helpers.identity,
                         createdOn: expect.stringMatching(/^20/),
                         savedOn: expect.stringMatching(/^20/),
@@ -219,8 +219,8 @@ describe("content model test", () => {
 
         const [createResponse] = await createContentModelMutation({
             data: {
-                name: "Content model",
-                modelId: "content-model",
+                name: "Test Content model",
+                modelId: "test-content-model",
                 group: contentModelGroup.id
             }
         });
@@ -310,8 +310,8 @@ describe("content model test", () => {
 
         const [createResponse] = await createContentModelMutation({
             data: {
-                name: "Content model",
-                modelId: "content-model",
+                name: "Test Content model",
+                modelId: "test-content-model",
                 group: contentModelGroup.id
             }
         });
@@ -409,8 +409,8 @@ describe("content model test", () => {
         );
         const [createResponse] = await createContentModelMutation({
             data: {
-                name: "Content model",
-                modelId: "content-model",
+                name: "Test Content model",
+                modelId: "test-content-model",
                 group: contentModelGroup.id
             }
         });
@@ -498,8 +498,8 @@ describe("content model test", () => {
         );
         const [createResponse] = await createContentModelMutation({
             data: {
-                name: "Content model",
-                modelId: "content-model",
+                name: "Test Content model",
+                modelId: "test-content-model",
                 group: contentModelGroup.id
             }
         });
@@ -558,8 +558,8 @@ describe("content model test", () => {
 
         const [response] = await createContentModelMutation({
             data: {
-                name: "Content model",
-                modelId: "content-model",
+                name: "Test Content model",
+                modelId: "test-content-model",
                 group: contentModelGroup.id
             }
         });
@@ -588,8 +588,8 @@ describe("content model test", () => {
 
         const [createResponse] = await createContentModelMutation({
             data: {
-                name: "Content model",
-                modelId: "content-model",
+                name: "Test Content model",
+                modelId: "test-content-model",
                 group: contentModelGroup.id
             }
         });
@@ -631,8 +631,8 @@ describe("content model test", () => {
 
         const [createResponse] = await createContentModelMutation({
             data: {
-                name: "Content model",
-                modelId: "content-model",
+                name: "Test Content model",
+                modelId: "test-content-model",
                 group: contentModelGroup.id
             }
         });

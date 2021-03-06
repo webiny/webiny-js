@@ -172,13 +172,13 @@ type Props = {
     multiSelectActions?: React.ReactNode;
 
     // Provide callback that will be executed once user selects all list items.
-    multiSelectAll: (value: boolean) => void;
+    multiSelectAll?: (value: boolean) => void;
 
     // Callback which returns true if all items were selected, otherwise returns false.
-    isAllMultiSelected: () => boolean;
+    isAllMultiSelected?: () => boolean;
 
     // Callback which returns true if none of the items were selected, otherwise returns false.
-    isNoneMultiSelected: () => boolean;
+    isNoneMultiSelected?: () => boolean;
 
     showOptions?: { [key: string]: any };
 

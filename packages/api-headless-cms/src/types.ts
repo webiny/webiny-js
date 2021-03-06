@@ -1920,10 +1920,10 @@ export interface CmsContentModelHookPlugin extends Plugin {
  * @category ContentEntry
  * @category LifecycleHook
  */
-export interface CmsContentEntryHookPluginArgs {
+export interface CmsContentEntryHookPluginArgs<T = CmsContext> {
     model: CmsContentModel;
     entry: CmsContentEntry;
-    context: CmsContext;
+    context: T;
 }
 /**
  * A plugin type that defines lifecycle hooks for content entry.
@@ -1932,81 +1932,81 @@ export interface CmsContentEntryHookPluginArgs {
  * @category ContentEntry
  * @category LifecycleHook
  */
-export interface CmsContentEntryHookPlugin extends Plugin {
+export interface CmsContentEntryHookPlugin<T extends ContextInterface = CmsContext> extends Plugin {
     type: "cms-content-entry-hook";
     /**
      * A hook triggered before entry is stored.
      * At this point, entry for storage and elastic search is already built so you cannot modify them.
      */
-    beforeCreate?: (args: CmsContentEntryHookPluginArgs) => void;
+    beforeCreate?: (args: CmsContentEntryHookPluginArgs<T>) => void;
     /**
      * A hook triggered after entry is stored to the database and Elasticsearch.
      */
-    afterCreate?: (args: CmsContentEntryHookPluginArgs) => void;
+    afterCreate?: (args: CmsContentEntryHookPluginArgs<T>) => void;
     /**
      * @see CmsContentEntryHookPlugin.beforeCreate
      */
-    beforeCreateRevisionFrom?: (args: CmsContentEntryHookPluginArgs) => void;
+    beforeCreateRevisionFrom?: (args: CmsContentEntryHookPluginArgs<T>) => void;
     /**
      * @see CmsContentEntryHookPlugin.afterCreate
      */
-    afterCreateRevisionFrom?: (args: CmsContentEntryHookPluginArgs) => void;
+    afterCreateRevisionFrom?: (args: CmsContentEntryHookPluginArgs<T>) => void;
     /**
      * A hook triggered before entry is updated in the database.
      * It can be modified but we do not recommend it.
      */
-    beforeUpdate?: (args: CmsContentEntryHookPluginArgs) => void;
+    beforeUpdate?: (args: CmsContentEntryHookPluginArgs<T>) => void;
     /**
      * A hook triggered after entry is updated in the database and Elasticsearch.
      */
-    afterUpdate?: (args: CmsContentEntryHookPluginArgs) => void;
+    afterUpdate?: (args: CmsContentEntryHookPluginArgs<T>) => void;
     /**
      * A hook triggered before deleting a certain revision (id#revision).
      */
-    beforeDeleteRevision?: (args: CmsContentEntryHookPluginArgs) => void;
+    beforeDeleteRevision?: (args: CmsContentEntryHookPluginArgs<T>) => void;
     /**
      * A hook triggered after deleting certain revision from the database and Elasticsearch.
      * In a case that deleted revision is only one, deleteEntry is called just to make sure that nothing is left in storage.
      */
-    afterDeleteRevision?: (args: CmsContentEntryHookPluginArgs) => void;
+    afterDeleteRevision?: (args: CmsContentEntryHookPluginArgs<T>) => void;
     /**
      * A hook triggered before deleting an entry with all its revisions.
      */
-    beforeDelete?: (args: CmsContentEntryHookPluginArgs) => void;
+    beforeDelete?: (args: CmsContentEntryHookPluginArgs<T>) => void;
     /**
      * A hook triggered after deleting an entry from the database and Elasticsearch.
      */
-    afterDelete?: (args: CmsContentEntryHookPluginArgs) => void;
+    afterDelete?: (args: CmsContentEntryHookPluginArgs<T>) => void;
     /**
      * A hook triggered before publishing of an entry.
      */
-    beforePublish?: (args: CmsContentEntryHookPluginArgs) => void;
+    beforePublish?: (args: CmsContentEntryHookPluginArgs<T>) => void;
     /**
      * A hook triggered after publishing of an entry. Publish is stored in both database and Elasticsearch.
      */
-    afterPublish?: (args: CmsContentEntryHookPluginArgs) => void;
+    afterPublish?: (args: CmsContentEntryHookPluginArgs<T>) => void;
     /**
      * A hook triggered before unpublishing of an entry.
      */
-    beforeUnpublish?: (args: CmsContentEntryHookPluginArgs) => void;
+    beforeUnpublish?: (args: CmsContentEntryHookPluginArgs<T>) => void;
     /**
      * A hook triggered after unpublishing of an entry. Publish is stored in both database and Elasticsearch.
      */
-    afterUnpublish?: (args: CmsContentEntryHookPluginArgs) => void;
+    afterUnpublish?: (args: CmsContentEntryHookPluginArgs<T>) => void;
     /**
      * A hook triggered before requesting changes of an entry.
      */
-    beforeRequestChanges?: (args: CmsContentEntryHookPluginArgs) => void;
+    beforeRequestChanges?: (args: CmsContentEntryHookPluginArgs<T>) => void;
     /**
      * A hook triggered after requesting changes of an entry.
      */
-    afterRequestChanges?: (args: CmsContentEntryHookPluginArgs) => void;
+    afterRequestChanges?: (args: CmsContentEntryHookPluginArgs<T>) => void;
     /**
      * A hook triggered before requesting review of an entry.
      */
-    beforeRequestReview?: (args: CmsContentEntryHookPluginArgs) => void;
+    beforeRequestReview?: (args: CmsContentEntryHookPluginArgs<T>) => void;
     /**
      * A hook triggered after requesting review of an entry.
      */
-    afterRequestReview?: (args: CmsContentEntryHookPluginArgs) => void;
+    afterRequestReview?: (args: CmsContentEntryHookPluginArgs<T>) => void;
 }

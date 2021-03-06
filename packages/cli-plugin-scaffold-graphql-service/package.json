@@ -1,8 +1,9 @@
 {
   "name": "@webiny/cli-plugin-scaffold-graphql-service",
-  "version": "4.14.0",
+  "version": "5.0.0-beta.4",
   "description": "Generate Webiny GraphQL service",
-  "main": "dist/index.js",
+  "main": "index.js",
+  "types": "index.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/webiny/webiny-js.git",
@@ -15,6 +16,7 @@
   },
   "homepage": "https://github.com/webiny/webiny-js#readme",
   "dependencies": {
+    "@webiny/cli-plugin-scaffold": "^5.0.0-beta.4",
     "@webiny/error": "^5.0.0-beta.0",
     "case": "^1.6.3",
     "chalk": "^4.1.0",
@@ -25,6 +27,7 @@
     "ncp": "^2.0.0",
     "pluralize": "^8.0.0",
     "replace-in-path": "^1.0.4",
+    "validate-npm-package-name": "^3.0.0",
     "write-json-file": "^4.3.0"
   },
   "devDependencies": {
@@ -35,7 +38,6 @@
     "@types/inquirer": "^7.3.1",
     "@types/ncp": "^2.0.4",
     "@types/pluralize": "^0.0.29",
-    "@webiny/cli-plugin-scaffold": "^4.14.0",
     "@webiny/handler": "^5.0.0-beta.4",
     "@webiny/plugins": "^5.0.0-beta.4",
     "rimraf": "^3.0.2",
@@ -44,7 +46,7 @@
   "scripts": {
     "build": "rimraf ./dist '*.tsbuildinfo' && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" && yarn postbuild",
     "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" --watch",
-    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
+    "postbuild": "cp -R package.json LICENSE README.md template dist/ && tsc -p tsconfig.build.json"
   },
   "publishConfig": {
     "access": "public",

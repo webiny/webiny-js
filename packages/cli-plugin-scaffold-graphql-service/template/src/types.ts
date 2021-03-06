@@ -37,6 +37,7 @@ interface ConfigurationEs {
 
 export interface Configuration {
     db: (context: ApplicationContext) => ConfigurationDb;
+    esDb: (context: ApplicationContext) => ConfigurationDb;
     es: (context: ApplicationContext) => ConfigurationEs;
 }
 
@@ -47,7 +48,7 @@ export interface ResolverResponse<T extends unknown> {
 
 export interface ListResolverResponse<T extends unknown> {
     data: T[];
-    meta: {
+    meta?: {
         cursor: string | null;
         hasMoreItems: boolean;
         totalCount: number;
