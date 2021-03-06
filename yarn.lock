@@ -7409,6 +7409,7 @@ __metadata:
     "@webiny/api-plugin-elastic-search-client": ^5.0.0-beta.4
     "@webiny/api-security": ^5.0.0-beta.4
     "@webiny/api-security-tenancy": ^5.0.0-beta.4
+    "@webiny/api-upgrade": ^5.0.0-beta.4
     "@webiny/db-dynamodb": ^5.0.0-beta.4
     "@webiny/handler": ^5.0.0-beta.4
     "@webiny/handler-aws": ^5.0.0-beta.4
@@ -7592,6 +7593,7 @@ __metadata:
     "@webiny/api-prerendering-service": ^5.0.0-beta.4
     "@webiny/api-security": ^5.0.0-beta.4
     "@webiny/api-security-tenancy": ^5.0.0-beta.4
+    "@webiny/api-upgrade": ^5.0.0-beta.4
     "@webiny/db": ^5.0.0-beta.4
     "@webiny/db-dynamodb": ^5.0.0-beta.4
     "@webiny/error": ^5.0.0-beta.4

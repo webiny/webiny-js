@@ -1,10 +1,6 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { Response, ErrorResponse } from "@webiny/handler-graphql/responses";
-import { InstallHookPlugin, PbContext } from "../../types";
-import defaults from "./../crud/utils/defaults";
-import executeHookCallbacks from "./../crud/utils/executeHookCallbacks";
-import { preparePageData } from "./install/welcome-to-webiny-page-data";
-import savePageAssets from "./install/utils/savePageAssets";
+import { PbContext } from "../../types";
 
 const plugin: GraphQLSchemaPlugin<PbContext> = {
     type: "graphql-schema",
@@ -14,7 +10,13 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 websiteUrl: String
                 name: String!
             }
+
             type PbInstallResponse {
+                data: Boolean
+                error: PbError
+            }
+
+            type PbUpgradeResponse {
                 data: Boolean
                 error: PbError
             }
@@ -27,6 +29,9 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
             extend type PbMutation {
                 # Install Page Builder (there are x steps because the process takes a long time).
                 install(data: PbInstallInput!): PbInstallResponse
+
+                # Upgrade Page Builder to a newer version
+                upgrade(version: String!): PbUpgradeResponse
             }
         `,
         resolvers: {
@@ -42,104 +47,20 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
             },
             PbMutation: {
                 install: async (_, args, context) => {
-                    const hookPlugins = context.plugins.byType<InstallHookPlugin>("pb-page-hooks");
-                    await executeHookCallbacks(hookPlugins, "beforeInstall", context);
-
-                    // Check whether the PB app is already installed
-                    const version = await context.pageBuilder.system.getVersion();
-                    if (version) {
-                        return new ErrorResponse({
-                            code: "PB_INSTALL_ABORTED",
-                            message: "Page builder is already installed."
-                        });
+                    try {
+                        await context.pageBuilder.system.install({ name: args.name });
+                        return new Response(true);
+                    } catch (e) {
+                        return new ErrorResponse(e);
                     }
-
-                    // 1. Create ES index if it doesn't already exist.
-                    const { index } = defaults.es(context);
-                    const { body: exists } = await context.elasticSearch.indices.exists({ index });
-                    if (!exists) {
-                        await context.elasticSearch.indices.create({
-                            index
-                        });
+                },
+                upgrade: async (_, args, context) => {
+                    try {
+                        await context.pageBuilder.system.upgrade(args.version);
+                        return new Response(true);
+                    } catch (e) {
+                        return new ErrorResponse(e);
                     }
-
-                    // 2. Create initial page category.
-                    let staticCategory = await context.pageBuilder.categories.get("static");
-                    if (!staticCategory) {
-                        staticCategory = await context.pageBuilder.categories.create({
-                            name: "Static",
-                            slug: "static",
-                            url: "/static/",
-                            layout: "static"
-                        });
-                        context.pageBuilder.categories.dataLoaders.get.clearAll();
-                    }
-
-                    // 3. Create page blocks.
-
-                    // Upload page data images
-                    const fileIdToKeyMap = await savePageAssets({ context });
-
-                    // 4. Create initial menu.
-                    const mainMenu = await context.pageBuilder.menus.get("main-menu");
-                    if (!mainMenu) {
-                        await context.pageBuilder.menus.create({
-                            title: "Main Menu",
-                            slug: "main-menu",
-                            description:
-                                "The main menu of the website, containing links to most important pages."
-                        });
-                    }
-
-                    // 5. Create sample pages.
-                    const { pages } = context.pageBuilder;
-                    const fmSettings = await context.fileManager.settings.getSettings();
-
-                    const welcomeToWebinyPageContent = preparePageData({
-                        srcPrefix: fmSettings && fmSettings.srcPrefix,
-                        fileIdToKeyMap
-                    });
-
-                    const initialPages = [
-                        {
-                            title: "Welcome to Webiny",
-                            path: "/welcome-to-webiny",
-                            content: welcomeToWebinyPageContent
-                        },
-                        {
-                            title: "Not Found",
-                            path: "/not-found",
-                            // Do not show the page in page lists, only direct get is possible.
-                            visibility: {
-                                get: { latest: true, published: true },
-                                list: { latest: false, published: false }
-                            }
-                        }
-                    ];
-
-                    const [homePage, notFoundPage] = await Promise.all(
-                        initialPages.map(data =>
-                            pages
-                                .create(staticCategory.slug)
-                                .then(page => pages.update(page.id, data))
-                                .then(page => pages.publish(page.id))
-                        )
-                    );
-
-                    await context.pageBuilder.settings.default.update({
-                        name: args.data.name,
-                        pages: {
-                            home: homePage.pid,
-                            notFound: notFoundPage.pid
-                        }
-                    });
-
-                    // 6. Mark the Page Builder app as installed.
-                    await context.pageBuilder.system.setVersion(context.WEBINY_VERSION);
-
-                    await executeHookCallbacks(hookPlugins, "afterInstall", context);
-
-                    return new Response(true);
                 }
             }
         }

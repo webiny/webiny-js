@@ -23,6 +23,9 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
             type FbMutation {
                 # Install Form Builder
                 install(domain: String): FbBooleanResponse
+
+                # Upgrade Form Builder
+                upgrade(version: String!): FbBooleanResponse
             }
 
             extend type Query {
@@ -72,34 +75,8 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
             },
             FbMutation: {
                 install: async (root, args, context) => {
-                    const { formBuilder, elasticSearch } = context;
-
                     try {
-                        const version = await formBuilder.system.getVersion();
-                        if (version) {
-                            return new ErrorResponse({
-                                code: "FORM_BUILDER_INSTALL_ABORTED",
-                                message: "Form builder is already installed."
-                            });
-                        }
-
-                        // Prepare "settings" data
-                        const data: Partial<Settings> = {};
-
-                        if (args.domain) {
-                            data.domain = args.domain;
-                        }
-
-                        await formBuilder.settings.createSettings(data);
-
-                        // Create ES index if it doesn't already exist.
-                        const esIndex = defaults.es(context);
-                        const { body: exists } = await elasticSearch.indices.exists(esIndex);
-                        if (!exists) {
-                            await elasticSearch.indices.create(esIndex);
-                        }
-
-                        await formBuilder.system.setVersion(context.WEBINY_VERSION);
+                        await context.formBuilder.system.install({ domain: args.domain });
 
                         return new Response(true);
                     } catch (e) {
@@ -108,6 +85,15 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                             message: e.message,
                             data: e.data
                         });
+                    }
+                },
+                upgrade: async (root, args, context) => {
+                    try {
+                        await context.formBuilder.system.upgrade(args.version as string);
+
+                        return new Response(true);
+                    } catch (e) {
+                        return new ErrorResponse(e);
                     }
                 }
             }

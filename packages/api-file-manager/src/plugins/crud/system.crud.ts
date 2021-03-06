@@ -75,36 +75,7 @@ export default (context: FileManagerContext): SystemCRUD => {
             const esIndex = defaults.es(context);
             const { body: exists } = await elasticSearch.indices.exists(esIndex);
             if (!exists) {
-                await elasticSearch.indices.create({
-                    ...esIndex,
-                    body: {
-                        settings: {
-                            analysis: {
-                                analyzer: {
-                                    lowercase_analyzer: {
-                                        type: "custom",
-                                        filter: ["standard", "lowercase", "trim"],
-                                        tokenizer: "keyword"
-                                    }
-                                }
-                            }
-                        },
-                        mappings: {
-                            properties: {
-                                property: {
-                                    type: "text",
-                                    fields: {
-                                        keyword: {
-                                            type: "keyword",
-                                            ignore_above: 256
-                                        }
-                                    },
-                                    analyzer: "lowercase_analyzer"
-                                }
-                            }
-                        }
-                    }
-                });
+                await elasticSearch.indices.create(esIndex);
             }
 
             await fileManager.system.setVersion(context.WEBINY_VERSION);
@@ -132,7 +103,7 @@ export default (context: FileManagerContext): SystemCRUD => {
 
             // Store new app version
             await this.setVersion(version);
-            
+
             return true;
         }
     };

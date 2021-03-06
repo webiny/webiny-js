@@ -1,13 +1,14 @@
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
-import { FileManagerContext } from "../../../types";
+import { FormBuilderContext } from "../../../types";
 import { paginateBatch } from "../utils";
-import defaults from "../../crud/utils/defaults";
+import defaults from "../../crud/defaults";
 
-const plugin: UpgradePlugin<FileManagerContext> = {
+const plugin: UpgradePlugin<FormBuilderContext> = {
     type: "api-upgrade",
-    app: "file-manager",
+    app: "form-builder",
     version: "5.0.0-beta.5",
-    async apply({ elasticSearch, fileManager, db }) {
+    async apply(context) {
+        const { elasticSearch, fileManager, db } = context;
         const limit = 1000;
         let hasMoreItems = true;
         let after = undefined;
@@ -15,7 +16,7 @@ const plugin: UpgradePlugin<FileManagerContext> = {
 
         while (hasMoreItems) {
             const response = await elasticSearch.search({
-                index: "root-file-manager",
+                ...defaults.es(context),
                 body: {
                     sort: {
                         createdOn: {
@@ -44,7 +45,7 @@ const plugin: UpgradePlugin<FileManagerContext> = {
         const esJSON = JSON.stringify(esItems);
 
         const { file } = await fileManager.storage.storagePlugin.upload({
-            name: "upgrade-file-manager-es-5.0.0-beta.5.json",
+            name: "upgrade-form-builder-es-5.0.0-beta.5.json",
             type: "application/json",
             size: esJSON.length,
             buffer: Buffer.from(esJSON),
@@ -58,16 +59,33 @@ const plugin: UpgradePlugin<FileManagerContext> = {
             await db
                 .batch()
                 .create(
-                    ...items.map(item => ({
-                        ...defaults.esDb,
-                        data: {
-                            PK: `T#root#L#${item._source.locale}#FM#F#${item._source.id}`,
-                            SK: "A",
-                            index: item._index,
-                            data: item._source,
-                            savedOn: new Date().toISOString()
+                    ...items.map(item => {
+                        if (item._source.__type === "fb.form") {
+                            const [uniqueId] = item._source.id.split("#");
+                            return {
+                                ...defaults.esDb,
+                                data: {
+                                    PK: `T#root#L#${item._source.locale}#FB#F#${uniqueId}`,
+                                    SK: "L",
+                                    index: item._index,
+                                    data: item._source,
+                                    savedOn: new Date().toISOString()
+                                }
+                            };
                         }
-                    }))
+
+                        // __type: "fb.submission"
+                        return {
+                            ...defaults.esDb,
+                            data: {
+                                PK: `T#root#L#${item._source.locale}#FB#F#${item._source.form.parent}`,
+                                SK: `FS#${item._source.id}`,
+                                index: item._index,
+                                data: item._source,
+                                savedOn: new Date().toISOString()
+                            }
+                        };
+                    })
                 )
                 .execute();
         });
@@ -87,7 +105,7 @@ const plugin: UpgradePlugin<FileManagerContext> = {
             filter_path: "errors,items.*.error"
         });
 
-        console.log(`Deleted old Elasticsearch items from "root-file-manager" index.`);
+        console.log(`Deleted old Elasticsearch items from "root-form-builder" index.`);
 
         if (errors) {
             console.warn("These items were not deleted", items);
@@ -97,28 +115,34 @@ const plugin: UpgradePlugin<FileManagerContext> = {
 
 export default plugin;
 
-// Target _id: T#root#L#en-US#FM#F#603e248212ee4400089d16eb:A
+// Target _id: T#root#L#en-US#FB#F#603e248212ee4400089d16eb:L
 
 // const record = {
-//     _index: "root-file-manager",
+//     _index: "root-form-builder",
 //     _type: "_doc",
-//     _id: "6040a6e2a6180e00085d168a",
+//     _id: "FORM#L#6040a8a5a6180e00085d168e",
 //     _score: 1.0,
 //     _source: {
-//         id: "6040a6e2a6180e00085d168a",
-//         createdOn: "2021-03-04T09:22:42.029Z",
-//         key: "8klunupd0-004.jpg",
-//         size: 412963,
-//         type: "image/jpeg",
-//         name: "8klunupd0-004.jpg",
-//         tags: null,
+//         __type: "fb.form",
+//         id: "6040a8a5a6180e00085d168e#0001",
+//         createdOn: "2021-03-04T09:30:13.784Z",
+//         savedOn: "2021-03-04T09:30:13.784Z",
+//         name: "Test",
+//         slug: "test-6040a8a5a6180e00085d168e",
+//         published: false,
+//         publishedOn: null,
+//         version: 1,
+//         locked: false,
+//         status: "draft",
 //         createdBy: {
 //             id: "admin@webiny.com",
 //             displayName: "Pavel Denisjuk",
 //             type: "admin"
 //         },
-//         meta: {
-//             private: false
+//         ownedBy: {
+//             id: "admin@webiny.com",
+//             displayName: "Pavel Denisjuk",
+//             type: "admin"
 //         },
 //         locale: "en-US"
 //     }

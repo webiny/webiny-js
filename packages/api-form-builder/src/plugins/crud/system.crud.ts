@@ -1,5 +1,9 @@
+import Error from "@webiny/error";
+import { NotAuthorizedError } from "@webiny/api-security";
+import { UpgradePlugin } from "@webiny/api-upgrade/types";
+import { getApplicablePlugin } from "@webiny/api-upgrade";
 import defaults from "./defaults";
-import { FormBuilderContext } from "../../types";
+import { FormBuilderContext, Settings } from "../../types";
 
 export default {
     type: "context",
@@ -56,6 +60,59 @@ export default {
                             }
                         });
                     }
+                },
+                async install({ domain }) {
+                    const { formBuilder, elasticSearch } = context;
+
+                    const version = await this.getVersion();
+                    if (version) {
+                        throw new Error(
+                            "Form builder is already installed.",
+                            "FORM_BUILDER_INSTALL_ABORTED"
+                        );
+                    }
+
+                    // Prepare "settings" data
+                    const data: Partial<Settings> = {};
+
+                    if (domain) {
+                        data.domain = domain;
+                    }
+
+                    await formBuilder.settings.createSettings(data);
+
+                    // Create ES index if it doesn't already exist.
+                    const esIndex = defaults.es(context);
+                    const { body: exists } = await elasticSearch.indices.exists(esIndex);
+                    if (!exists) {
+                        await elasticSearch.indices.create(esIndex);
+                    }
+
+                    await formBuilder.system.setVersion(context.WEBINY_VERSION);
+                },
+                async upgrade(version) {
+                    const identity = context.security.getIdentity();
+                    if (!identity) {
+                        throw new NotAuthorizedError();
+                    }
+
+                    const upgradePlugins = context.plugins
+                        .byType<UpgradePlugin>("api-upgrade")
+                        .filter(pl => pl.app === "form-builder");
+
+                    const plugin = getApplicablePlugin({
+                        deployedVersion: context.WEBINY_VERSION,
+                        installedAppVersion: await this.getVersion(),
+                        upgradePlugins,
+                        upgradeToVersion: version
+                    });
+
+                    await plugin.apply(context);
+
+                    // Store new app version
+                    await this.setVersion(version);
+
+                    return true;
                 }
             }
         };

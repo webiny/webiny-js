@@ -145,6 +145,8 @@ export type FormsCRUD = {
 export type SystemCRUD = {
     getVersion(): Promise<string>;
     setVersion(version: string): Promise<void>;
+    install(args: { domain?: string }): Promise<void>;
+    upgrade(version: string, data?: Record<string, any>): Promise<boolean>;
 };
 
 export type FbSubmission = {
@@ -176,7 +178,6 @@ export type SubmissionUpdateData = {
 
 export type Settings = {
     key: "form-builder";
-    installed: boolean;
     domain: string;
     reCaptcha: {
         enabled: boolean;

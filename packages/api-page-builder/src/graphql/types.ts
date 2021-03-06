@@ -141,6 +141,8 @@ export type SettingsCrud = {
 export type SystemCrud = {
     getVersion(): Promise<string>;
     setVersion(version: string): Promise<void>;
+    install(args: { name: string }): Promise<void>;
+    upgrade(version: string, data?: Record<string, any>): Promise<boolean>;
 };
 
 // PBContext types.
