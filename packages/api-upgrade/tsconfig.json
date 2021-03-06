@@ -5,12 +5,17 @@
       "path": "../error"
     },
     {
+      "path": "../handler"
+    },
+    {
       "path": "../plugins"
     }
   ],
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
