@@ -45,10 +45,9 @@ const respond = (http, result: unknown) => {
 const schemaList = new Map<string, SchemaCache>();
 const generateCacheKey = async (args: Args): Promise<string> => {
     const { context, locale, type } = args;
-    const tenantId = context.security.getTenant().id;
     const settings = await context.cms.getSettings();
     const lastModelChange = settings?.contentModelLastChange || new Date();
-    return [tenantId, locale.code, type, lastModelChange.toISOString()].join("#");
+    return [locale.code, type, lastModelChange.toISOString()].join("#");
 };
 
 const generateSchema = async (args: Args): Promise<GraphQLSchema> => {
