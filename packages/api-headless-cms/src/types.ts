@@ -24,10 +24,6 @@ interface BaseCmsValuesObject {
      */
     getLocale: () => I18NLocale;
     /**
-     * returns instance of app settings
-     */
-    getSettings: () => CmsSettings;
-    /**
      * Means this request is a READ API
      */
     READ: boolean;
@@ -667,7 +663,7 @@ export interface CmsSettingsContext {
     /**
      * Get the datetime when content model last changed.
      */
-    getContentModelLastChange: () => Date;
+    getContentModelLastChange: () => Promise<Date>;
 }
 
 export type CmsSystemContext = {

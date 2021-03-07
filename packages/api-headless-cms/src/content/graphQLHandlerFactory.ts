@@ -20,7 +20,6 @@ interface SchemaCache {
 interface Args {
     context: CmsContext;
     type: string;
-    settings: CmsSettings;
     locale: I18NLocale;
 }
 interface ParsedBody {
@@ -44,9 +43,25 @@ const respond = (http, result: unknown) => {
     });
 };
 const schemaList = new Map<string, SchemaCache>();
-const generateCacheKey = (args: Args): string => {
-    const { settings, locale, type } = args;
-    return [settings.contentModelLastChange.toISOString(), locale.code, type].join("#");
+
+const getLastModelChange = (settings?: CmsSettings): Date => {
+    if (!settings || !settings.contentModelLastChange) {
+        return new Date();
+    }
+    if (settings.contentModelLastChange instanceof Date) {
+        return settings.contentModelLastChange;
+    }
+    try {
+        return new Date(settings.contentModelLastChange);
+    } catch {
+        return new Date();
+    }
+};
+const generateCacheKey = async (args: Args): Promise<string> => {
+    const { context, locale, type } = args;
+    const settings = await context.cms.settings.noAuth().get();
+    const lastModelChange = getLastModelChange(settings);
+    return [locale.code, type, lastModelChange.toISOString()].join("#");
 };
 
 const generateSchema = async (args: Args): Promise<GraphQLSchema> => {
@@ -71,10 +86,11 @@ const generateSchema = async (args: Args): Promise<GraphQLSchema> => {
 // gets an existing schema or rewrites existing one or creates a completely new one
 // depending on the schemaId created from type and locale parameters
 const getSchema = async (args: Args): Promise<GraphQLSchema> => {
-    const { type, locale } = args;
-    const id = `${type}#${locale.code}`;
+    const { context, type, locale } = args;
+    const tenantId = context.security.getTenant().id;
+    const id = `${tenantId}#${type}#${locale.code}`;
 
-    const cacheKey = generateCacheKey(args);
+    const cacheKey = await generateCacheKey(args);
     if (!schemaList.has(id)) {
         const schema = await generateSchema(args);
 
@@ -145,7 +161,6 @@ export const graphQLHandlerFactory = (
                     const schema = await getSchema({
                         context,
                         locale: context.cms.getLocale(),
-                        settings: context.cms.getSettings(),
                         type: context.cms.type
                     });
 

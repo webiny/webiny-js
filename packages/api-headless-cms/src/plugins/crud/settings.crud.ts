@@ -52,8 +52,23 @@ export default {
 
                 context.cms.settings.contentModelLastChange = updatedDate;
             },
-            getContentModelLastChange: (): Date => {
-                return context.cms.settings.contentModelLastChange;
+            getContentModelLastChange: async (): Promise<Date> => {
+                const settings = await settingsGet();
+                if (!settings.contentModelLastChange) {
+                    return new Date();
+                }
+                try {
+                    return new Date(settings.contentModelLastChange);
+                } catch (ex) {
+                    console.log({
+                        error: {
+                            message: ex.message,
+                            code: ex.code || "COULD_NOT_PARSE_CONTENT_MODEL_LAST_CHANGE",
+                            data: ex
+                        }
+                    });
+                }
+                return new Date();
             }
         };
         context.cms = {
