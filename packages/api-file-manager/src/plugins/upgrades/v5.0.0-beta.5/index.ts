@@ -5,6 +5,7 @@ import defaults from "../../crud/utils/defaults";
 
 const plugin: UpgradePlugin<FileManagerContext> = {
     name: "api-upgrade-file-manager",
+    type: "api-upgrade",
     app: "file-manager",
     version: "5.0.0-beta.5",
     async apply({ elasticSearch, fileManager, db }) {
