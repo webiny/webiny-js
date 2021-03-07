@@ -4,7 +4,7 @@ import { paginateBatch } from "../utils";
 import defaults from "../../crud/utils/defaults";
 
 const plugin: UpgradePlugin<FileManagerContext> = {
-    type: "api-upgrade",
+    name: "api-upgrade-file-manager",
     app: "file-manager",
     version: "5.0.0-beta.5",
     async apply({ elasticSearch, fileManager, db }) {

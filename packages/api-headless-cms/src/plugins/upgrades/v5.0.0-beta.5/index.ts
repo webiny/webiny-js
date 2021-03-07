@@ -21,6 +21,7 @@ interface Hit {
 }
 
 const plugin: UpgradePlugin<CmsContext> = {
+    name: "api-upgrade-cms",
     type: "api-upgrade",
     app: "headless-cms",
     version: "5.0.0-beta.5",
@@ -113,8 +114,6 @@ const plugin: UpgradePlugin<CmsContext> = {
                 return acc;
             }, {});
 
-            const modelFieldFinder = createFieldFinder(models);
-
             /**
              *  Build a list of items for ES DDB table
              */
@@ -129,8 +128,10 @@ const plugin: UpgradePlugin<CmsContext> = {
                         return null;
                     }
 
+                    const modelFieldFinder = createFieldFinder(models);
+
                     return {
-                        PK: entry.PK,
+                        PK: `T#root#L#${locale.code}#CMS#CME#${entry.id.split("#")[0]}`,
                         SK: entry.__type === "cms.entry.l" ? "L" : "P",
                         index: configurations.es(context, model).index,
                         data: {
@@ -145,7 +146,6 @@ const plugin: UpgradePlugin<CmsContext> = {
 
             console.log(`[${locale.code}] Prepared ${ddbItems.length} ES DDB items.`);
 
-            // Insert items into ES DDB table
             await paginateBatch(ddbItems, 25, async items => {
                 const batch = db.batch();
                 await batch
@@ -159,6 +159,7 @@ const plugin: UpgradePlugin<CmsContext> = {
                     )
                     .execute();
             });
+
             console.log(`[${locale.code}] Inserted ES DDB items.`);
 
             // update all models to latest version
@@ -184,13 +185,6 @@ const plugin: UpgradePlugin<CmsContext> = {
                 `[${locale.code}] Updated DDB model records with version number and locale code.`
             );
         }
-
-        // delete the old index
-        await elasticSearch.indices.delete({
-            index: esIndex
-        });
-
-        console.log(`Deleted ${esIndex} index.`);
     }
 };
 

@@ -91,7 +91,7 @@ export const AppInstaller = ({ children }) => {
     // This means there are no installers to run or installation was finished
     if (!loading && (installers.length === 0 || finished)) {
         markInstallerAsCompleted();
-        //return children;
+        return children;
     }
 
     if (installer) {

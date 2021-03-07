@@ -38,32 +38,12 @@ export const createFieldFinder = (models: CmsContentModel[]): ModelFieldFinder =
     return {
         findById: (model, fieldId) => {
             const modelId = typeof model === "string" ? model : model.modelId;
-            if (!modelsList[modelId]) {
-                throw new WebinyError("Could not find the model", "MODEL_NOT_FOUND_ERROR", {
-                    modelId: modelId,
-                    fieldId: fieldId
-                });
-            } else if (!modelsList[modelId].id[fieldId]) {
-                throw new WebinyError("Could not find the model", "MODEL_NOT_FOUND_ERROR", {
-                    modelId: modelId,
-                    fieldId: fieldId
-                });
-            }
+
             return modelsList[modelId].id[fieldId];
         },
         findByType: (model, type) => {
             const modelId = typeof model === "string" ? model : model.modelId;
-            if (!modelsList[modelId]) {
-                throw new WebinyError("Could not find the model", "MODEL_NOT_FOUND_ERROR", {
-                    modelId: model,
-                    fieldType: type
-                });
-            } else if (!modelsList[modelId].type[type]) {
-                throw new WebinyError("Could not find the model", "MODEL_NOT_FOUND_ERROR", {
-                    modelId: model,
-                    fieldType: type
-                });
-            }
+
             return modelsList[modelId].type[type];
         }
     };

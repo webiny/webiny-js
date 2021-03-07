@@ -32,9 +32,14 @@ export default (): HandlerPlugin<ElasticSearchClientContext> => ({
         }
 
         try {
-            await context.elasticSearch.bulk({ body: operations });
+            const res = await context.elasticSearch.bulk({ body: operations });
+            if (process.env.DEBUG === "true") {
+                console.log("Bulk response", JSON.stringify(res, null, 2));
+            }
         } catch (error) {
-            console.log(JSON.stringify(error, null, 2));
+            if (process.env.DEBUG === "true") {
+                console.log("Bulk error", JSON.stringify(error, null, 2));
+            }
             throw error;
         }
 

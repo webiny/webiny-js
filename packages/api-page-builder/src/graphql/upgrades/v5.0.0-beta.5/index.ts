@@ -4,6 +4,7 @@ import { paginateBatch } from "../utils";
 import defaults from "../../crud/utils/defaults";
 
 const plugin: UpgradePlugin<PbContext> = {
+    name: "api-upgrade-page-builder",
     type: "api-upgrade",
     app: "page-builder",
     version: "5.0.0-beta.5",

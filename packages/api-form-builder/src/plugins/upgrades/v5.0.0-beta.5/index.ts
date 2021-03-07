@@ -4,6 +4,7 @@ import { paginateBatch } from "../utils";
 import defaults from "../../crud/defaults";
 
 const plugin: UpgradePlugin<FormBuilderContext> = {
+    name: "api-upgrade-form-builder",
     type: "api-upgrade",
     app: "form-builder",
     version: "5.0.0-beta.5",

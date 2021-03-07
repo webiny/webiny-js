@@ -1,5 +1,6 @@
 import { Client as ElasticsearchClient } from "@elastic/elasticsearch";
 import WebinyError from "@webiny/error";
+import get from "lodash/get";
 import { ElasticsearchConfig } from "../../../utils";
 
 export const createElasticsearchIndice = (
@@ -21,6 +22,10 @@ export const createElasticsearchIndice = (
             });
             resolve();
         } catch (ex) {
+            if (get(ex, "meta.body.error.type") === "resource_already_exists_exception") {
+                return resolve();
+            }
+
             const er = new WebinyError(
                 "Could not create Elasticsearch indice.",
                 "ELASTICSEARCH_INDEX",

@@ -87,8 +87,13 @@ const fixFieldValues = (
     const entry = {
         ...target
     };
+
     for (const fieldId in target.values) {
         const field = finder.findById(target.modelId, fieldId);
+        if (!field) {
+            continue;
+        }
+
         const fixMethod = fieldFixMethods[field.type];
         if (!fixMethod) {
             continue;

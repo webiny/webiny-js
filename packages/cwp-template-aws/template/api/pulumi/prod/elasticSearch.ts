@@ -86,6 +86,7 @@ class ElasticSearch {
             memorySize: 512,
             environment: {
                 variables: {
+                    DEBUG: String(process.env.DEBUG),
                     ELASTIC_SEARCH_ENDPOINT: this.domain.endpoint
                 }
             },

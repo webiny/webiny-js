@@ -166,7 +166,7 @@ export const useInstaller = () => {
                 installers,
                 installerIndex: 0,
                 loading: false,
-                showLogin: toUpgrade.length > 0 || toInstall[0].secure
+                showLogin: toUpgrade.length > 0 || (toInstall.length > 0 && toInstall[0].secure)
             });
         })();
     }, []);

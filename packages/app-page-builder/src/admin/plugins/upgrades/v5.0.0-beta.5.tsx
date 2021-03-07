@@ -53,8 +53,7 @@ const Upgrade = ({ onInstalled }) => {
                     return;
                 }
 
-                // Just so the user sees the actual message.
-                setTimeout(onInstalled, 3000);
+                onInstalled();
             });
     }, []);
 
