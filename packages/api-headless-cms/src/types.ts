@@ -23,10 +23,6 @@ interface BaseCmsValuesObject {
      */
     getLocale: () => I18NLocale;
     /**
-     * returns instance of app settings
-     */
-    getSettings: () => Promise<CmsSettings>;
-    /**
      * Means this request is a READ API
      */
     READ: boolean;
