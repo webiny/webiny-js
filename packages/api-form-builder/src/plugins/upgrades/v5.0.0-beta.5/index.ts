@@ -69,7 +69,8 @@ const plugin: UpgradePlugin<FormBuilderContext> = {
                                     SK: "L",
                                     index: item._index,
                                     data: item._source,
-                                    savedOn: new Date().toISOString()
+                                    savedOn: new Date().toISOString(),
+                                    version: "5.0.0-beta.5"
                                 }
                             };
                         }

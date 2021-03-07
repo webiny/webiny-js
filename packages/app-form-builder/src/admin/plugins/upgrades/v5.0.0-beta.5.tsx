@@ -17,7 +17,7 @@ import { Typography } from "@webiny/ui/Typography";
 const t = i18n.ns("app-headless-cms/admin/installation");
 
 const UPGRADE = gql`
-    mutation UpgradeFormBuilder($version: String) {
+    mutation UpgradeFormBuilder($version: String!) {
         formBuilder {
             upgrade(version: $version) {
                 data
@@ -47,7 +47,7 @@ const Upgrade = ({ onInstalled }) => {
             })
             .then(({ data }) => {
                 setLoading(false);
-                const { error } = data.cms.upgrade;
+                const { error } = data.formBuilder.upgrade;
                 if (error) {
                     setError(error.message);
                     return;

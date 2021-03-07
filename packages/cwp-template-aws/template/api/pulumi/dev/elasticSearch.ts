@@ -12,7 +12,7 @@ class ElasticSearch {
         this.domain = new aws.elasticsearch.Domain(domainName, {
             elasticsearchVersion: "7.7",
             clusterConfig: {
-                instanceType: "t3.micro.elasticsearch"
+                instanceType: "t2.small.elasticsearch"
             },
             ebsOptions: {
                 ebsEnabled: true,

@@ -81,7 +81,7 @@ export default {
                     }
 
                     // Set app version
-                    await this.setVersion(context.WEBINY_VERSION);
+                    await context.cms.system.setVersion(context.WEBINY_VERSION);
                 },
                 async upgrade(version) {
                     const identity = context.security.getIdentity();
@@ -103,7 +103,7 @@ export default {
                     await plugin.apply(context);
 
                     // Store new app version
-                    await this.setVersion(version);
+                    await context.cms.system.setVersion(version);
 
                     return true;
                 }

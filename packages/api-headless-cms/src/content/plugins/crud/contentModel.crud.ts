@@ -127,10 +127,11 @@ export default (): ContextPlugin<CmsContext> => ({
                     throw new NotFoundError(`There is no group "${createdDataJson.group}".`);
                 }
 
-                const identity = context.security.getIdentity();
+                const identity = context.security.getIdentity(); 
                 const model: CmsContentModel = {
                     ...createdDataJson,
                     titleFieldId: "id",
+                    locale: context.cms.getLocale().code,
                     group: {
                         id: group.id,
                         name: group.name

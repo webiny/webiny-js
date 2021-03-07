@@ -17,7 +17,7 @@ import { Typography } from "@webiny/ui/Typography";
 const t = i18n.ns("app-headless-cms/admin/installation");
 
 const UPGRADE = gql`
-    mutation UpgradeCMS($version: String) {
+    mutation UpgradeCMS($version: String!) {
         cms {
             upgrade(version: $version) {
                 data

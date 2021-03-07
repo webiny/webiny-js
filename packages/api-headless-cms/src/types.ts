@@ -287,6 +287,10 @@ export interface CmsContentModel {
      */
     modelId: string;
     /**
+     * Locale this model belongs to.
+     */
+    locale: string;
+    /**
      * Content model group reference object.
      */
     group: {
@@ -717,6 +721,10 @@ export interface CmsContentModelGroup {
      * Slug for the group. Must be unique.
      */
     slug: string;
+    /**
+     * Locale this group belongs to.
+     */
+    locale: string;
     /**
      * Description for the group.
      */

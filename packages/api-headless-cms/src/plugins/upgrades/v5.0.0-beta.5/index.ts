@@ -12,6 +12,7 @@ import {
 } from "./helpers";
 
 import { paginateBatch } from "../utils";
+import * as utils from "../../../utils";
 
 interface Hit {
     _id: string;
@@ -36,42 +37,16 @@ const plugin: UpgradePlugin<CmsContext> = {
             return;
         }
 
-        const models = await context.cms.models.noAuth().list();
-
-        const indexes: ElasticsearchConfig[] = models.map(model => {
-            return configurations.es(context, model);
-        });
-
-        // create new indexes in a single promise
-        try {
-            await Promise.all(
-                indexes.map(index => {
-                    return createElasticsearchIndice(elasticSearch, index);
-                })
-            );
-        } catch (ex) {
-            await deleteCreatedElasticsearchIndices(context, indexes);
-            throw new WebinyError(ex.message, ex.code, ex.data);
-        }
-
-        const modelsById: Record<string, CmsContentModel> = models.reduce((acc, model) => {
-            acc[model.modelId] = model;
-            return acc;
-        }, {});
-
-        const oldIndexName = createOldVersionIndiceName(context);
-
+        // Load existing ES items
         let hasMoreItems = true;
         let after: string | undefined = undefined;
         const limit = 1000;
         let esItems = [];
 
-        const modelFieldFinder = createFieldFinder(models);
-
         // go through old index and load data in bulks of 1000
         while (hasMoreItems) {
             const response = await elasticSearch.search({
-                index: oldIndexName,
+                index: esIndex,
                 body: {
                     sort: {
                         createdOn: {
@@ -110,75 +85,112 @@ const plugin: UpgradePlugin<CmsContext> = {
 
         console.log(`Stored backup of Elasticsearch items to ${file.key}`);
 
-        /**
-         *  Build a list of items for ES DDB table
-         */
-        const ddbItems = esItems
-            .map((hit: Hit) => {
-                const entry = hit._source;
-                const model = modelsById[entry.modelId];
-                if (!model) {
-                    return null;
-                }
+        // Load models for each locale and distribute ES items to new per-model indexes
+        const locales = context.i18n.getLocales();
 
-                return {
-                    PK: entry.PK,
-                    SK: entry.__type === "cms.entry.l" ? "L" : "P",
-                    index: configurations.es(context, model).index,
-                    data: {
-                        ...entryValueFixer(model, modelFieldFinder, cleanDatabaseRecord(entry)),
-                        webinyVersion: "5.0.0-beta.5"
-                    },
-                    savedOn: new Date().toISOString()
-                };
-            })
-            .filter(Boolean);
+        for (const locale of locales) {
+            const [models] = await db.read<CmsContentModel>({
+                ...utils.defaults.db(),
+                query: { PK: `T#root#L#${locale.code}#CMS#CM`, SK: { $gt: " " } }
+            });
 
-        console.log(`Prepared ${ddbItems.length} ES DDB items.`);
+            const indexes: ElasticsearchConfig[] = models.map(model => ({
+                index: `root-headless-cms-${locale.code}-${model.modelId}`.toLowerCase()
+            }));
 
-        // Insert items into ES DDB table
-        await paginateBatch(ddbItems, 25, async items => {
-            const batch = db.batch();
-            await batch
-                .create(
-                    ...items.map(item => {
-                        return {
-                            ...configurations.esDb(),
-                            data: item
-                        };
-                    })
-                )
-                .execute();
-        });
+            // create new indexes in a single promise
+            try {
+                await Promise.all(
+                    indexes.map(index => createElasticsearchIndice(elasticSearch, index))
+                );
+            } catch (ex) {
+                await deleteCreatedElasticsearchIndices(context, indexes);
+                throw new WebinyError(ex.message, ex.code, ex.data);
+            }
 
-        console.log("Inserted ES DDB items.");
+            const modelsById: Record<string, CmsContentModel> = models.reduce((acc, model) => {
+                acc[model.modelId] = model;
+                return acc;
+            }, {});
 
-        // update all models to latest version
-        await paginateBatch(models, 25, async items => {
-            await db
-                .batch()
-                .create(
-                    ...items.map(model => {
-                        return {
-                            ...configurations.db(),
-                            data: {
-                                ...model,
-                                webinyVersion: "5.0.0-beta.5"
-                            }
-                        };
-                    })
-                )
-                .execute();
-        });
+            const modelFieldFinder = createFieldFinder(models);
 
-        console.log("Updated DDB model records with version number.");
+            /**
+             *  Build a list of items for ES DDB table
+             */
+            const ddbItems = esItems
+                .filter((hit: Hit) => {
+                    return hit._source.locale === locale.code;
+                })
+                .map((hit: Hit) => {
+                    const entry = hit._source;
+                    const model = modelsById[entry.modelId];
+                    if (!model) {
+                        return null;
+                    }
+
+                    return {
+                        PK: entry.PK,
+                        SK: entry.__type === "cms.entry.l" ? "L" : "P",
+                        index: configurations.es(context, model).index,
+                        data: {
+                            ...entryValueFixer(model, modelFieldFinder, cleanDatabaseRecord(entry)),
+                            webinyVersion: "5.0.0-beta.5"
+                        },
+                        savedOn: new Date().toISOString(),
+                        version: "5.0.0-beta.5"
+                    };
+                })
+                .filter(Boolean);
+
+            console.log(`[${locale.code}] Prepared ${ddbItems.length} ES DDB items.`);
+
+            // Insert items into ES DDB table
+            await paginateBatch(ddbItems, 25, async items => {
+                const batch = db.batch();
+                await batch
+                    .create(
+                        ...items.map(item => {
+                            return {
+                                ...configurations.esDb(),
+                                data: item
+                            };
+                        })
+                    )
+                    .execute();
+            });
+            console.log(`[${locale.code}] Inserted ES DDB items.`);
+
+            // update all models to latest version
+            await paginateBatch(models, 25, async items => {
+                await db
+                    .batch()
+                    .create(
+                        ...items.map(model => {
+                            return {
+                                ...configurations.db(),
+                                data: {
+                                    ...model,
+                                    locale: locale.code,
+                                    webinyVersion: "5.0.0-beta.5"
+                                }
+                            };
+                        })
+                    )
+                    .execute();
+            });
+
+            console.log(
+                `[${locale.code}] Updated DDB model records with version number and locale code.`
+            );
+        }
 
         // delete the old index
         await elasticSearch.indices.delete({
-            index: oldIndexName
+            index: esIndex
         });
 
-        console.log(`Deleted ${oldIndexName} index.`);
+        console.log(`Deleted ${esIndex} index.`);
     }
 };
 

@@ -61,11 +61,15 @@ const plugin: UpgradePlugin<PbContext> = {
                 .create(
                     ...items.map(item => {
                         return {
-                            PK: `T#root#L#${item._source.locale}#PB#P#${item._source.pid}`,
-                            SK: item._source.published === true ? "P" : "L",
-                            index: item._index,
-                            data: item._source,
-                            savedOn: new Date().toISOString()
+                            ...defaults.esDb,
+                            data: {
+                                PK: `T#root#L#${item._source.locale}#PB#P#${item._source.pid}`,
+                                SK: item._source.published === true ? "P" : "L",
+                                index: item._index,
+                                data: item._source,
+                                savedOn: new Date().toISOString(),
+                                version: "5.0.0-beta.5"
+                            }
                         };
                     })
                 )
@@ -76,7 +80,7 @@ const plugin: UpgradePlugin<PbContext> = {
 
         // Delete original items from ES index
         const operations = esItems.map(item => {
-            return { delete: { _id: item._id, _index: item.index } };
+            return { delete: { _id: item._id, _index: item._index } };
         });
 
         const {
