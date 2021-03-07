@@ -12,9 +12,31 @@ export const createElasticsearchIndice = (
             await es.indices.create({
                 ...esIndex,
                 body: {
-                    // we are disabling indexing of rawValues property in object that is inserted into ES
+                    // need this part for sorting to work on text fields
+                    settings: {
+                        analysis: {
+                            analyzer: {
+                                lowercase_analyzer: {
+                                    type: "custom",
+                                    filter: ["lowercase", "trim"],
+                                    tokenizer: "keyword"
+                                }
+                            }
+                        }
+                    },
                     mappings: {
                         properties: {
+                            property: {
+                                type: "text",
+                                fields: {
+                                    keyword: {
+                                        type: "keyword",
+                                        ignore_above: 256
+                                    }
+                                },
+                                analyzer: "lowercase_analyzer"
+                            },
+                            // we are disabling indexing of rawValues property in object that is inserted into ES
                             rawValues: { type: "object", enabled: false }
                         }
                     }
