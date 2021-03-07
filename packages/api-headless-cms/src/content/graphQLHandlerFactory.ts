@@ -1,7 +1,7 @@
 import { boolean } from "boolean";
 import { GraphQLSchema } from "graphql";
 import { makeExecutableSchema } from "@graphql-tools/schema";
-import { CmsContext, CmsSettings } from "../types";
+import { CmsContext } from "../types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { NotAuthorizedError, NotAuthorizedResponse } from "@webiny/api-security";
 import { ErrorResponse } from "@webiny/handler-graphql";
@@ -20,7 +20,6 @@ interface SchemaCache {
 interface Args {
     context: CmsContext;
     type: string;
-    settings: CmsSettings;
     locale: I18NLocale;
 }
 interface ParsedBody {
@@ -44,9 +43,11 @@ const respond = (http, result: unknown) => {
     });
 };
 const schemaList = new Map<string, SchemaCache>();
-const generateCacheKey = (args: Args): string => {
-    const { settings, locale, type } = args;
-    return [settings.contentModelLastChange.toISOString(), locale.code, type].join("#");
+const generateCacheKey = async (args: Args): Promise<string> => {
+    const { context, locale, type } = args;
+    const settings = await context.cms.getSettings();
+    const lastModelChange = settings?.contentModelLastChange || new Date();
+    return [lastModelChange.toISOString(), locale.code, type].join("#");
 };
 
 const generateSchema = async (args: Args): Promise<GraphQLSchema> => {
@@ -74,7 +75,7 @@ const getSchema = async (args: Args): Promise<GraphQLSchema> => {
     const { type, locale } = args;
     const id = `${type}#${locale.code}`;
 
-    const cacheKey = generateCacheKey(args);
+    const cacheKey = await generateCacheKey(args);
     if (!schemaList.has(id)) {
         const schema = await generateSchema(args);
 
@@ -145,7 +146,6 @@ export const graphQLHandlerFactory = (
                     const schema = await getSchema({
                         context,
                         locale: context.cms.getLocale(),
-                        settings: context.cms.getSettings(),
                         type: context.cms.type
                     });
 

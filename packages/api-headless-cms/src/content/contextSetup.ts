@@ -1,5 +1,5 @@
 import { Context, ContextPlugin } from "@webiny/handler/types";
-import { CmsContext } from "../types";
+import { CmsContext, CmsSettings } from "../types";
 
 interface CmsHttpParameters {
     type: string;
@@ -32,13 +32,17 @@ const setContextCmsVariables = async (context: CmsContext): Promise<void> => {
     }
     context.cms.getLocale = () => locale;
 
-    // Need to load settings because of the timestamp of last change to content models.
-    // Based on that timestamp, we cache/refresh the schema definition.
-    const settings = await context.cms.settings.noAuth().get();
-    context.cms.getSettings = () => ({
-        ...settings,
-        contentModelLastChange: context.cms.settings.contentModelLastChange
-    });
+    context.cms.getSettings = async (): Promise<CmsSettings> => {
+        // Need to load settings because of the timestamp of last change to content models.
+        // Based on that timestamp, we cache/refresh the schema definition.
+        const settings = await context.cms.settings.noAuth().get();
+        const dbLastChange = settings?.contentModelLastChange || new Date();
+        const lastChange = context.cms.settings?.contentModelLastChange || new Date();
+        return {
+            ...(settings || ({} as any)),
+            contentModelLastChange: lastChange > dbLastChange ? lastChange : dbLastChange
+        };
+    };
 };
 // eslint-disable-next-line
 export default (options: any = {}): ContextPlugin<CmsContext> => ({

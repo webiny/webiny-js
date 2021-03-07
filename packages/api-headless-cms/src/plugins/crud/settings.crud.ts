@@ -66,23 +66,6 @@ export default {
                     throw new Error("The app is already installed.", "CMS_INSTALLATION_ERROR");
                 }
 
-                // Create ES index if it doesn't already exist.
-                // const esIndex = utils.defaults.es(context);
-                // const { body: exists } = await elasticSearch.indices.exists(esIndex);
-                // if (!exists) {
-                //     await elasticSearch.indices.create({
-                //         ...esIndex,
-                //         body: {
-                //             // we are disabling indexing of rawValues property in object that is inserted into ES
-                //             mappings: {
-                //                 properties: {
-                //                     rawValues: { type: "object", enabled: false }
-                //                 }
-                //             }
-                //         }
-                //     });
-                // }
-
                 // Add default content model group.
                 let contentModelGroup: CmsContentModelGroup;
                 try {
@@ -133,8 +116,23 @@ export default {
                     contentModelLastChange: updatedDate
                 };
             },
-            getContentModelLastChange: (): Date => {
-                return context.cms.settings.contentModelLastChange;
+            getContentModelLastChange: async (): Promise<Date> => {
+                const settings = await settingsGet();
+                if (!settings.contentModelLastChange) {
+                    return new Date();
+                }
+                try {
+                    return new Date(settings.contentModelLastChange);
+                } catch (ex) {
+                    console.log({
+                        error: {
+                            message: ex.message,
+                            code: ex.code || "COULD_NOT_PARSE_CONTENT_MODEL_LAST_CHANGE",
+                            data: ex
+                        }
+                    });
+                }
+                return new Date();
             }
         };
         context.cms = {
