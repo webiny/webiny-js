@@ -9,10 +9,7 @@ const ERROR_FIELD = /* GraphQL */ `
 export const IS_INSTALLED = /* GraphQL */ `
     query IsInstalled {
         fileManager {
-            isInstalled {
-                data
-                error ${ERROR_FIELD}
-            }
+            version
         }
     }
 `;

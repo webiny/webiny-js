@@ -5,6 +5,7 @@
     "node_modules",
     "./dist",
     "../api-security",
+    "../api-upgrade",
     "../error",
     "../api-security-tenancy",
     "../handler-graphql",

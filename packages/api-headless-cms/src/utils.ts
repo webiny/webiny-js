@@ -18,7 +18,8 @@ interface DatabaseConfig {
     table: string;
     keys: DatabaseConfigKeys[];
 }
-interface ElasticsearchConfig {
+
+export interface ElasticsearchConfig {
     index: string;
 }
 
@@ -51,8 +52,11 @@ export const defaults = {
         if (!tenant) {
             throw new Error(`There is no tenant on "context.security".`);
         }
+
+        const locale = context.cms.getLocale().code;
+
         return {
-            index: `${tenant.id}-headless-cms-${model.modelId}`.toLowerCase()
+            index: `${tenant.id}-headless-cms-${locale}-${model.modelId}`.toLowerCase()
         };
     }
 };

@@ -27,7 +27,7 @@ describe("Install Test", () => {
         await deleteElasticSearchIndex();
     });
 
-    test("should be able to run isInstalled anonymously, but not install", async () => {
+    test("should be able to get app version anonymously, but not install", async () => {
         const { isInstalled, install } = useGqlHandler({
             identity: null,
             permissions: []
@@ -37,10 +37,7 @@ describe("Install Test", () => {
             expect(res).toEqual({
                 data: {
                     pageBuilder: {
-                        isInstalled: {
-                            data: false,
-                            error: null
-                        }
+                        version: null
                     }
                 }
             })
@@ -50,27 +47,9 @@ describe("Install Test", () => {
             data: {
                 name: "My Site"
             }
-        }).then(([res]) =>
-            expect(res).toEqual({
-                data: {
-                    pageBuilder: {
-                        install: null
-                    }
-                },
-                errors: [
-                    {
-                        locations: [
-                            {
-                                column: 13,
-                                line: 4
-                            }
-                        ],
-                        message: "Not authorized!",
-                        path: ["pageBuilder", "install"]
-                    }
-                ]
-            })
-        );
+        }).then(([res]) => {
+            expect(res.data.pageBuilder.install.error.message).toBe("Not authorized!");
+        });
     });
 
     test("make sure installation creates initial resources and marks the app as installed", async () => {
@@ -78,10 +57,7 @@ describe("Install Test", () => {
             expect(res).toEqual({
                 data: {
                     pageBuilder: {
-                        isInstalled: {
-                            data: false,
-                            error: null
-                        }
+                        version: null
                     }
                 }
             })
@@ -108,10 +84,7 @@ describe("Install Test", () => {
             expect(res).toEqual({
                 data: {
                     pageBuilder: {
-                        isInstalled: {
-                            data: true,
-                            error: null
-                        }
+                        version: expect.any(String)
                     }
                 }
             })

@@ -28,7 +28,7 @@ module.exports = ({ entry, output, debug = false, babelOptions, define }) => {
         },
         plugins: [
             new webpack.DefinePlugin({
-                "process.env.WEBINY_VERSION": JSON.stringify(version),
+                "process.env.WEBINY_VERSION": JSON.stringify(process.env.WEBINY_VERSION || version),
                 ...definitions
             }),
             new WebpackBar({ name: path.basename(process.cwd()) })

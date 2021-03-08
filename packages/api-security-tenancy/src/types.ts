@@ -128,6 +128,11 @@ export type ApiKeyInput = {
     permissions: SecurityPermission[];
 };
 
+export type SystemCRUD = {
+    getVersion(): Promise<string>;
+    setVersion(version: string): Promise<void>;
+};
+
 export type TenantsCRUD = {
     getRootTenant(): Promise<Tenant>;
     getTenant(id: string): Promise<Tenant>;
@@ -188,6 +193,7 @@ export type TenancyContextObject = {
     users?: UsersCRUD;
     groups?: GroupsCRUD;
     apiKeys?: ApiKeysCRUD;
+    system?: SystemCRUD;
 };
 
 export interface TenancyContext extends ContextInterface, HttpContext, DbContext {

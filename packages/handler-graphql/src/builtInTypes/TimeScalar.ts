@@ -1,7 +1,7 @@
 import { GraphQLScalarType } from "graphql";
 import WebinyError from "@webiny/error";
 
-const re = /^([0-9]{2}):([0-9]{2})?(:([0-9]{2}))$/;
+const re = /^([0-9]{2}):([0-9]{2})(:([0-9]{2}))?$/;
 
 const parseTime = (value?: string) => {
     if (!value || value.match(re) === null) {

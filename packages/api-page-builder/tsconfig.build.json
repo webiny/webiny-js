@@ -9,6 +9,7 @@
     "../api-plugin-elastic-search-client",
     "../api-dynamodb-to-elasticsearch",
     "../api-security",
+    "../api-upgrade",
     "../handler",
     "../handler-args",
     "../handler-client",

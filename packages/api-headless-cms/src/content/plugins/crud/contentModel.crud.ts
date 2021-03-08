@@ -131,6 +131,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 const model: CmsContentModel = {
                     ...createdDataJson,
                     titleFieldId: "id",
+                    locale: context.cms.getLocale().code,
                     group: {
                         id: group.id,
                         name: group.name

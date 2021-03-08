@@ -72,8 +72,8 @@ export default {
         I18NQuery: {
             getI18NLocale: compose(hasPermission("i18n.locale"))(
                 async (_, args: { code: string }, context) => {
-                    const { locales } = context;
-                    const locale = await locales.getByCode(args.code);
+                    const { i18n } = context;
+                    const locale = await i18n.locales.getByCode(args.code);
                     if (!locale) {
                         return new NotFoundResponse(`Locale "${args.code}" not found.`);
                     }
@@ -82,8 +82,8 @@ export default {
                 }
             ),
             listI18NLocales: compose(hasPermission("i18n.locale"))(async (_, args, context) => {
-                const { locales } = context;
-                return new Response(await locales.list());
+                const { i18n } = context;
+                return new Response(await i18n.locales.list());
             }),
             searchLocaleCodes,
             getI18NInformation
@@ -91,18 +91,18 @@ export default {
         I18NMutation: {
             createI18NLocale: compose(hasPermission("i18n.locale"))(
                 async (_, args: { data: Record<string, any> }, context) => {
-                    const { locales } = context;
+                    const { i18n } = context;
                     const { data } = args;
 
-                    if (await locales.getByCode(data.code)) {
+                    if (await i18n.locales.getByCode(data.code)) {
                         return new NotFoundResponse(
                             `Locale with key "${data.code}" already exists.`
                         );
                     }
 
-                    await locales.create(data);
+                    await i18n.locales.create(data);
                     if (data.default) {
-                        await locales.updateDefault(data.code);
+                        await i18n.locales.updateDefault(data.code);
                     }
 
                     return new Response(data);
@@ -110,20 +110,20 @@ export default {
             ),
             updateI18NLocale: compose(hasPermission("i18n.locale"))(
                 async (_, args: { code: string; default: boolean }, context) => {
-                    const { locales } = context;
+                    const { i18n } = context;
                     const { code } = args;
 
-                    const locale = await locales.getByCode(code);
+                    const locale = await i18n.locales.getByCode(code);
                     if (!locale) {
                         return new NotFoundResponse(`Locale "${args.code}" not found.`);
                     }
 
-                    await locales.update(code, {
+                    await i18n.locales.update(code, {
                         default: args.default
                     });
 
                     if (locale.default) {
-                        await locales.updateDefault(code);
+                        await i18n.locales.updateDefault(code);
                     }
 
                     return new Response(locale);
@@ -131,10 +131,10 @@ export default {
             ),
             deleteI18NLocale: compose(hasPermission("i18n.locale"))(
                 async (_, args: { code: string }, context) => {
-                    const { locales } = context;
+                    const { i18n } = context;
                     const { code } = args;
 
-                    const locale = await locales.getByCode(code);
+                    const locale = await i18n.locales.getByCode(code);
                     if (!locale) {
                         return new NotFoundResponse(`Locale "${args.code}" not found.`);
                     }
@@ -146,14 +146,14 @@ export default {
                         });
                     }
 
-                    const allLocales = await locales.list();
+                    const allLocales = await i18n.locales.list();
                     if (allLocales.length === 1) {
                         return new ErrorResponse({
                             message: "Cannot delete the last locale."
                         });
                     }
 
-                    await locales.delete(code);
+                    await i18n.locales.delete(code);
 
                     return new Response(locale);
                 }

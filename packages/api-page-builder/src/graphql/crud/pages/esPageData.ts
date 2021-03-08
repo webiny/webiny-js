@@ -39,19 +39,3 @@ export const getESLatestPageData = (context: PbContext, page) => {
 export const getESPublishedPageData = (context: PbContext, page) => {
     return { ...getESPageData(context, page), published: true };
 };
-
-export const getESUpdateLatestPageData = updateData => {
-    return {
-        tags: updateData?.settings?.general?.tags || [],
-        snippet: updateData?.settings?.general?.snippet || null,
-        title: updateData.title,
-        titleLC: updateData?.title?.toLowerCase(),
-        path: updateData.path,
-        savedOn: updateData.savedOn,
-
-        // Save some images that could maybe be used on listing pages.
-        images: {
-            general: updateData?.settings?.general?.image
-        }
-    };
-};

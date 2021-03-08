@@ -7371,6 +7371,7 @@ __metadata:
     "@webiny/api-plugin-elastic-search-client": ^5.0.0-beta.4
     "@webiny/api-security": ^5.0.0-beta.4
     "@webiny/api-security-tenancy": ^5.0.0-beta.4
+    "@webiny/api-upgrade": ^5.0.0-beta.4
     "@webiny/error": ^5.0.0-beta.4
     "@webiny/handler": ^5.0.0-beta.4
     "@webiny/handler-client": ^5.0.0-beta.4
@@ -7408,7 +7409,9 @@ __metadata:
     "@webiny/api-plugin-elastic-search-client": ^5.0.0-beta.4
     "@webiny/api-security": ^5.0.0-beta.4
     "@webiny/api-security-tenancy": ^5.0.0-beta.4
+    "@webiny/api-upgrade": ^5.0.0-beta.4
     "@webiny/db-dynamodb": ^5.0.0-beta.4
+    "@webiny/error": ^5.0.0-beta.4
     "@webiny/handler": ^5.0.0-beta.4
     "@webiny/handler-aws": ^5.0.0-beta.4
     "@webiny/handler-db": ^5.0.0-beta.4
@@ -7465,11 +7468,13 @@ __metadata:
     "@shelf/jest-elasticsearch": ^1.0.0
     "@types/jsonpack": ^1.1.0
     "@webiny/api-dynamodb-to-elasticsearch": ^5.0.0-beta.4
+    "@webiny/api-file-manager": ^5.0.0-beta.4
     "@webiny/api-i18n": ^5.0.0-beta.4
     "@webiny/api-i18n-content": ^5.0.0-beta.4
     "@webiny/api-plugin-elastic-search-client": ^5.0.0-beta.4
     "@webiny/api-security": ^5.0.0-beta.4
     "@webiny/api-security-tenancy": ^5.0.0-beta.4
+    "@webiny/api-upgrade": ^5.0.0-beta.4
     "@webiny/commodo": ^5.0.0-beta.4
     "@webiny/db-dynamodb": ^5.0.0-beta.4
     "@webiny/error": ^5.0.0-beta.4
@@ -7485,8 +7490,6 @@ __metadata:
     boolean: ^3.0.2
     chalk: ^3.0.0
     dataloader: ^2.0.0
-    fast-deep-equal: ^3.1.1
-    fecha: ^4.0.0
     graphql: ^14.6.0
     jest: ^26.6.3
     jest-dynalite: ^3.2.0
@@ -7591,6 +7594,7 @@ __metadata:
     "@webiny/api-prerendering-service": ^5.0.0-beta.4
     "@webiny/api-security": ^5.0.0-beta.4
     "@webiny/api-security-tenancy": ^5.0.0-beta.4
+    "@webiny/api-upgrade": ^5.0.0-beta.4
     "@webiny/cli-plugin-deploy-pulumi": ^5.0.0-beta.4
     "@webiny/db": ^5.0.0-beta.4
     "@webiny/db-dynamodb": ^5.0.0-beta.4
@@ -7752,6 +7756,26 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/api-upgrade@^5.0.0-beta.4, @webiny/api-upgrade@workspace:packages/api-upgrade":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-upgrade@workspace:packages/api-upgrade"
+  dependencies:
+    "@babel/cli": ^7.5.5
+    "@babel/core": ^7.5.5
+    "@babel/preset-env": ^7.5.5
+    "@babel/runtime": ^7.5.5
+    "@types/semver": ^7.3.4
+    "@webiny/error": ^5.0.0-beta.4
+    "@webiny/handler": ^5.0.0-beta.4
+    "@webiny/plugins": ^5.0.0-beta.4
+    jest: ^26.6.3
+    jest-mock-console: ^1.0.0
+    rimraf: ^3.0.2
+    semver: ^7.3.4
+    typescript: ^4.1.3
+  languageName: unknown
+  linkType: soft
+
 "@webiny/app-admin@^5.0.0-beta.0, @webiny/app-admin@^5.0.0-beta.4, @webiny/app-admin@workspace:packages/app-admin":
   version: 0.0.0-use.local
   resolution: "@webiny/app-admin@workspace:packages/app-admin"
@@ -7805,6 +7829,7 @@ __metadata:
     react-lazy-load: ^3.0.13
     react-transition-group: ^4.3.0
     rimraf: ^3.0.2
+    semver: ^7.3.4
     shortid: ^2.2.12
     store: ^2.0.12
     typescript: ^4.1.3
@@ -9024,26 +9049,6 @@ __metadata:
     react-highlight.js: ^1.0.7
     react-remarkable: ^1.1.3
     rimraf: ^3.0.2
-    typescript: ^4.1.3
-  languageName: unknown
-  linkType: soft
-
-"@webiny/system-upgrade@workspace:packages/system-upgrade":
-  version: 0.0.0-use.local
-  resolution: "@webiny/system-upgrade@workspace:packages/system-upgrade"
-  dependencies:
-    "@babel/cli": ^7.5.5
-    "@babel/core": ^7.5.5
-    "@babel/preset-env": ^7.5.5
-    "@babel/runtime": ^7.5.5
-    "@types/semver": ^7.3.4
-    "@webiny/error": ^5.0.0-beta.4
-    "@webiny/handler": ^5.0.0-beta.4
-    "@webiny/plugins": ^5.0.0-beta.4
-    jest: ^26.6.3
-    jest-mock-console: ^1.0.0
-    rimraf: ^3.0.2
-    semver: ^7.3.4
     typescript: ^4.1.3
   languageName: unknown
   linkType: soft
@@ -17100,13 +17105,6 @@ __metadata:
   version: 2.3.3
   resolution: "fecha@npm:2.3.3"
   checksum: 1761ec8cd88dc165bad8d726e5bc38c933de6cc7ae479eea83260bcbadd3dd285f67b7605db6d2d5e2f8cb92ab5fe7f7634fe09229f0746bdc032a84d824dedb
-  languageName: node
-  linkType: hard
-
-"fecha@npm:^4.0.0":
-  version: 4.2.0
-  resolution: "fecha@npm:4.2.0"
-  checksum: aa64b6bbd6c11c7f6ec66255a2abfcbb307a1c13e46235ef6055f695e7aa688f782807f32fcbf663bd248fd682ab4f7c3ab68ae15cf6bfcc3c0a019efe56a1f6
   languageName: node
   linkType: hard
 

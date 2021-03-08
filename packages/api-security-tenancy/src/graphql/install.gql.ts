@@ -61,8 +61,8 @@ const plugin: GraphQLSchemaPlugin = {
             }
 
             extend type SecurityQuery {
-                "Is Security installed?"
-                isInstalled: SecurityBooleanResponse
+                "Get installed version"
+                version: String
             }
 
             extend type SecurityMutation {
@@ -72,9 +72,8 @@ const plugin: GraphQLSchemaPlugin = {
         `,
         resolvers: {
             SecurityQuery: {
-                isInstalled: async (root, args, context: Context) => {
-                    const rootTenant = await context.security.tenants.getRootTenant();
-                    return new Response(!!rootTenant);
+                version: async (root, args, context: Context) => {
+                    return await context.security.system.getVersion();
                 }
             },
             SecurityMutation: {
@@ -126,6 +125,9 @@ const plugin: GraphQLSchemaPlugin = {
                             tenant,
                             fullAccessGroup
                         );
+
+                        // Store app version
+                        await context.security.system.setVersion(context.WEBINY_VERSION);
 
                         return new Response(true);
                     } catch (e) {

@@ -59,9 +59,7 @@ class ElasticSearch {
             streamViewType: "NEW_AND_OLD_IMAGES",
             billingMode: "PAY_PER_REQUEST",
             hashKey: "PK",
-            rangeKey: "SK",
-            readCapacity: 1,
-            writeCapacity: 1
+            rangeKey: "SK"
         });
 
         /**
@@ -78,6 +76,7 @@ class ElasticSearch {
             memorySize: 512,
             environment: {
                 variables: {
+                    DEBUG: String(process.env.DEBUG),
                     ELASTIC_SEARCH_ENDPOINT: this.domain.endpoint
                 }
             },

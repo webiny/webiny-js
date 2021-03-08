@@ -1,6 +1,6 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { merge } from "lodash";
-import cmsSettings from "./graphql/settings";
+import system from "./graphql/system";
 
 const emptyResolver = () => ({});
 
@@ -53,7 +53,7 @@ export default () => [
                     _empty: String
                 }
 
-                ${cmsSettings.typeDefs}
+                ${system.typeDefs}
             `,
             resolvers: merge(
                 {
@@ -64,7 +64,7 @@ export default () => [
                         cms: emptyResolver
                     }
                 },
-                cmsSettings.resolvers
+                system.resolvers
             )
         }
     } as GraphQLSchemaPlugin
