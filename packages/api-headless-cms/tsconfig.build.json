@@ -10,6 +10,8 @@
     "../api-dynamodb-to-elasticsearch",
     "../api-security",
     "../api-security-tenancy",
+    "../api-file-manager",
+    "../api-upgrade",
     "../commodo",
     "../error",
     "../db-dynamodb",

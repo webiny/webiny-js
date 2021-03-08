@@ -21,13 +21,7 @@ const t = i18n.ns("app-i18n/admin/installation");
 const IS_INSTALLED = gql`
     query IsI18NInstalled {
         i18n {
-            isInstalled {
-                data
-                error {
-                    code
-                    message
-                }
-            }
+            version
         }
     }
 `;
@@ -105,9 +99,9 @@ export default {
     title: "I18N",
     dependencies: ["admin-installation-security"],
     secure: true,
-    async isInstalled({ client }) {
+    async getInstalledVersion({ client }) {
         const { data } = await client.query({ query: IS_INSTALLED });
-        return data.i18n.isInstalled.data;
+        return data.i18n.version;
     },
     render({ onInstalled }) {
         return <I18NInstaller onInstalled={onInstalled} />;

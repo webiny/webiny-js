@@ -1,56 +1,28 @@
 import React, { useCallback, useEffect, useState } from "react";
-import styled from "@emotion/styled";
-import { css } from "emotion";
 import { useSecurity } from "@webiny/app-security";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { SplitView, LeftPanel, RightPanel } from "../SplitView";
+import { Grid, Cell } from "@webiny/ui/Grid";
+import { Typography } from "@webiny/ui/Typography";
 import { Elevation } from "@webiny/ui/Elevation";
 import { plugins } from "@webiny/plugins";
 import { useInstaller } from "./useInstaller";
 import Sidebar from "./Sidebar";
+import {
+    Wrapper,
+    alertClass,
+    InnerContent,
+    InstallContent,
+    installerSplitView,
+    SuccessDialog
+} from "./styled";
 
-export const Wrapper = styled("section")({
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    minHeight: "100vh",
-    color: "var(--mdc-theme-on-surface)"
-});
+const markInstallerAsCompleted = () =>
+    (localStorage["wby_installer_status"] = process.env.REACT_APP_WEBINY_VERSION);
 
-export const InstallContent = styled("div")({
-    maxWidth: 800,
-    margin: "0 auto 25px auto",
-    ".mdc-elevation--z2": {
-        borderRadius: 4,
-        boxShadow: "0 1px 3px 0 rgba(0,0,0,0.15)"
-    }
-});
-
-const installerSplitView = css({
-    ".webiny-split-view__inner": {
-        height: "100vh",
-        ".webiny-split-view__right-panel-wrapper": {
-            height: "100vh"
-        }
-    }
-});
-
-const SuccessDialog = styled("div")({
-    padding: 40,
-    textAlign: "center",
-    p: {
-        paddingBottom: 40
-    }
-});
-
-export const InnerContent = styled("div")({
-    padding: 25,
-    position: "relative"
-});
-
-const markInstallerAsCompleted = () => (localStorage["wby_installer_status"] = "completed");
-const installerCompleted = localStorage["wby_installer_status"] === "completed";
+const installerCompleted =
+    localStorage["wby_installer_status"] === process.env.REACT_APP_WEBINY_VERSION;
 
 export const AppInstaller = ({ children }) => {
     if (installerCompleted) {
@@ -59,7 +31,15 @@ export const AppInstaller = ({ children }) => {
 
     const [finished, setFinished] = useState(false);
     const { identity } = useSecurity();
-    const { loading, installers, installer, showNextInstaller, showLogin, onUser } = useInstaller();
+    const {
+        loading,
+        installers,
+        installer,
+        showNextInstaller,
+        showLogin,
+        onUser,
+        skippingVersions
+    } = useInstaller();
 
     useEffect(() => {
         if (identity) {
@@ -116,8 +96,59 @@ export const AppInstaller = ({ children }) => {
 
     if (installer) {
         return renderLayout(
-            renderBody(installer.plugin.render({ onInstalled: showNextInstaller })),
-            installer.plugin.secure
+            renderBody(installer.render({ onInstalled: showNextInstaller })),
+            installer.secure
+        );
+    }
+
+    if (skippingVersions) {
+        return renderBody(
+            <Elevation z={1} className={alertClass}>
+                <Grid>
+                    <Cell span={12}>
+                        <Typography use={"headline4"}>Important!</Typography>
+                    </Cell>
+                    <Cell span={12}>
+                        <Typography use={"body1"} tag={"div"}>
+                            We&apos;ve detected that your current application is running Webiny{" "}
+                            <strong>v{skippingVersions.latest}</strong>. However, your API is
+                            running <strong>v{skippingVersions.current}</strong>. Unfortunately, we
+                            can&apos;t upgrade your system by skipping versions in between.
+                            <br />
+                            <br />
+                            Here&apos;s a list of versions you skipped, that contain upgrades you
+                            need to install:
+                            <ul>
+                                {skippingVersions.availableUpgrades
+                                    .filter(v => v !== skippingVersions.latest)
+                                    .map(v => (
+                                        <li key={v}>v{v}</li>
+                                    ))}
+                            </ul>
+                            For instructions on how to upgrade Webiny, please consult our{" "}
+                            <a
+                                href={"https://docs.webiny.com/docs/how-to-guides/upgrade-webiny"}
+                                target={"_blank"}
+                                rel={"noreferrer noopener"}
+                            >
+                                Upgrade Webiny
+                            </a>{" "}
+                            guide. Note that some versions may have a dedicated article with upgrade
+                            instructions, so look out for those in the upgrade guide.
+                            <br />
+                            <br />
+                            If you run into problems, find us on our{" "}
+                            <a
+                                href={"https://www.webiny.com/slack"}
+                                target={"_blank"}
+                                rel={"noreferrer noopener"}
+                            >
+                                Slack community.
+                            </a>
+                        </Typography>
+                    </Cell>
+                </Grid>
+            </Elevation>
         );
     }
 

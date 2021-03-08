@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, lazy } from "react";
 import gql from "graphql-tag";
 import { useApolloClient } from "@apollo/react-hooks";
 import { i18n } from "@webiny/app/i18n";
@@ -22,13 +22,7 @@ const t = i18n.ns("api-page-builder/admin/installation");
 const IS_INSTALLED = gql`
     query IsPageBuilderInstalled {
         pageBuilder {
-            isInstalled {
-                data
-                error {
-                    code
-                    message
-                }
-            }
+            version
         }
     }
 `;
@@ -119,11 +113,19 @@ export default {
     title: t`Page Builder`,
     dependencies: [],
     secure: true,
-    async isInstalled({ client }) {
+    async getInstalledVersion({ client }) {
         const { data } = await client.query({ query: IS_INSTALLED });
-        return data.pageBuilder.isInstalled.data;
+        return data.pageBuilder.version;
     },
     render({ onInstalled }) {
         return <PBInstaller onInstalled={onInstalled} />;
-    }
+    },
+    upgrades: [
+        {
+            version: "5.0.0",
+            getComponent() {
+                return lazy(() => import("./upgrades/v5.0.0"));
+            }
+        }
+    ]
 };

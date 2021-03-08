@@ -127,29 +127,16 @@ const createElasticsearchSortParams = (
 };
 
 const createInitialQueryValue = (args: CreateElasticsearchQueryArgs): ElasticsearchQuery => {
-    const { ownedBy, options, model, context } = args;
+    const { ownedBy, options } = args;
 
     const query: ElasticsearchQuery = {
         match: [],
-        must: [
-            // always search by given model id
-            {
-                term: {
-                    "modelId.keyword": model.modelId
-                }
-            },
-            // and in the given locale
-            {
-                term: {
-                    "locale.keyword": context.cms.getLocale().code
-                }
-            }
-        ],
+        must: [],
         mustNot: [],
         should: []
     };
 
-    // when permission has own property, this value is passed into the fn
+    // When permission has "only own records" set, we'll have "ownedBy" passed into this function.
     if (ownedBy) {
         query.must.push({
             term: {

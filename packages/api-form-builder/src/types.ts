@@ -5,6 +5,7 @@ import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { ElasticSearchClientContext } from "@webiny/api-plugin-elastic-search-client/types";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
+import { I18NContext } from "@webiny/api-i18n/graphql/types";
 
 type FbFormTriggerData = Record<string, any>;
 type FbSubmissionData = Record<string, any>;
@@ -142,6 +143,13 @@ export type FormsCRUD = {
     deleteSubmission(formId: string, submissionId: string): Promise<boolean>;
 };
 
+export type SystemCRUD = {
+    getVersion(): Promise<string>;
+    setVersion(version: string): Promise<void>;
+    install(args: { domain?: string }): Promise<void>;
+    upgrade(version: string, data?: Record<string, any>): Promise<boolean>;
+};
+
 export type FbSubmission = {
     id: string;
     locale: string;
@@ -171,7 +179,6 @@ export type SubmissionUpdateData = {
 
 export type Settings = {
     key: "form-builder";
-    installed: boolean;
     domain: string;
     reCaptcha: {
         enabled: boolean;
@@ -200,6 +207,7 @@ export type FbFormSettingsPermission = SecurityPermission<{
 
 export type FormBuilderContext = Context<
     TenancyContext,
+    I18NContext,
     I18NContentContext,
     FileManagerContext,
     ElasticSearchClientContext,
@@ -207,6 +215,7 @@ export type FormBuilderContext = Context<
         formBuilder: {
             forms: FormsCRUD;
             settings: SettingsCRUD;
+            system: SystemCRUD;
         };
     }
 >;

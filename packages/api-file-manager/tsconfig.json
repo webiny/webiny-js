@@ -12,6 +12,9 @@
       "path": "../api-security"
     },
     {
+      "path": "../api-upgrade"
+    },
+    {
       "path": "../api-security-tenancy"
     },
     {
@@ -35,12 +38,16 @@
   ],
   "compilerOptions": {
     "paths": {
+      "@webiny/api-i18n/*": ["../api-i18n/src/*"],
+      "@webiny/api-i18n": ["../api-i18n/src"],
       "@webiny/api-i18n-content/*": ["../api-i18n-content/src/*"],
       "@webiny/api-i18n-content": ["../api-i18n-content/src"],
       "@webiny/api-plugin-elastic-search-client/*": ["../api-plugin-elastic-search-client/src/*"],
       "@webiny/api-plugin-elastic-search-client": ["../api-plugin-elastic-search-client/src"],
       "@webiny/api-security/*": ["../api-security/src/*"],
       "@webiny/api-security": ["../api-security/src"],
+      "@webiny/api-upgrade/*": ["../api-upgrade/src/*"],
+      "@webiny/api-upgrade": ["../api-upgrade/src"],
       "@webiny/api-security-tenancy/*": ["../api-security-tenancy/src/*"],
       "@webiny/api-security-tenancy": ["../api-security-tenancy/src"],
       "@webiny/error/*": ["../error/src/*"],

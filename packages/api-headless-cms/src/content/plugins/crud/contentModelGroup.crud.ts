@@ -170,6 +170,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 const model: CmsContentModelGroup = {
                     ...createdDataJson,
                     id,
+                    locale: context.cms.getLocale().code,
                     createdOn: new Date().toISOString(),
                     savedOn: new Date().toISOString(),
                     createdBy: {

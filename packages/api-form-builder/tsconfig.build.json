@@ -7,6 +7,8 @@
     "../api-i18n",
     "../api-file-manager",
     "../api-security",
+    "../api-upgrade",
+    "../error",
     "../handler",
     "../handler-graphql",
     "../validation",

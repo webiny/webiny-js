@@ -7,6 +7,8 @@ import {
     I18NLocaleContextPlugin
 } from "./types";
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
+import localesCRUD from "./crud/locales.crud";
+import systemCRUD from "./crud/system.crud";
 
 // Parses "x-i18n-locale" header value (e.g. "default:en-US;content:hr-HR;").
 const parseXI18NLocaleHeader = value => {
@@ -57,6 +59,12 @@ const getLocaleFromHeaders = (http, localeContext = "default") => {
 export default (): ContextPluginInterface<I18NContext & TenancyContext> => ({
     type: "context",
     apply: async context => {
+        context.i18n = {
+            locales: localesCRUD(context)
+        } as I18NContextObject;
+
+        context.i18n.system = systemCRUD(context);
+
         let locales = [];
         if (context.security.getTenant()) {
             const plugin = context.plugins.byName<ContextI18NGetLocales>(
@@ -69,7 +77,7 @@ export default (): ContextPluginInterface<I18NContext & TenancyContext> => ({
         }
 
         const { http, plugins } = context;
-        const self: I18NContextObject = {
+        const self: Partial<I18NContextObject> = {
             __i18n: {
                 acceptLanguage: null,
                 defaultLocale: null,
@@ -134,28 +142,9 @@ export default (): ContextPluginInterface<I18NContext & TenancyContext> => ({
                     return null;
                 }
                 return item;
-            },
-            // @ts-ignore TODO: remove
-            getValue(value) {
-                if (!value) {
-                    return "";
-                }
-
-                if (Array.isArray(value.values)) {
-                    const locale = self.getCurrentLocales();
-                    if (!locale) {
-                        return "";
-                    }
-
-                    // @ts-ignore
-                    const valuesValue = value.values.find(value => value.locale === locale.code);
-                    return valuesValue ? valuesValue.value : "";
-                }
-
-                return value.value || "";
             }
         };
 
-        context.i18n = self;
+        Object.assign(context.i18n, self);
     }
 });

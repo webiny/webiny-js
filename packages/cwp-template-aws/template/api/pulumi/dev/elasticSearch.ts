@@ -76,6 +76,7 @@ class ElasticSearch {
             memorySize: 512,
             environment: {
                 variables: {
+                    DEBUG: String(process.env.DEBUG),
                     ELASTIC_SEARCH_ENDPOINT: this.domain.endpoint
                 }
             },
@@ -90,7 +91,7 @@ class ElasticSearch {
             functionName: streamTarget.arn,
             startingPosition: "LATEST",
             maximumRetryAttempts: 3,
-            batchSize: 500,
+            batchSize: 1000,
             maximumBatchingWindowInSeconds: 1
         });
     }

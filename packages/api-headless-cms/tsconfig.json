@@ -15,6 +15,12 @@
       "path": "../api-security-tenancy"
     },
     {
+      "path": "../api-file-manager"
+    },
+    {
+      "path": "../api-upgrade"
+    },
+    {
       "path": "../commodo"
     },
     {
@@ -61,6 +67,10 @@
       "@webiny/api-security": ["../api-security/src"],
       "@webiny/api-security-tenancy/*": ["../api-security-tenancy/src/*"],
       "@webiny/api-security-tenancy": ["../api-security-tenancy/src"],
+      "@webiny/api-file-manager/*": ["../api-file-manager/src/*"],
+      "@webiny/api-file-manager": ["../api-file-manager/src"],
+      "@webiny/api-upgrade/*": ["../api-upgrade/src/*"],
+      "@webiny/api-upgrade": ["../api-upgrade/src"],
       "@webiny/commodo/*": ["../commodo/src/*"],
       "@webiny/commodo": ["../commodo/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],

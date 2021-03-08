@@ -8,6 +8,7 @@ import { BaseI18NContentContext } from "@webiny/api-i18n-content/types";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { HttpContext } from "@webiny/handler-http/types";
 import { DbContext } from "@webiny/handler-db/types";
+import { FileManagerContext } from "@webiny/api-file-manager/types";
 
 interface BaseCmsValuesObject {
     /**
@@ -45,6 +46,7 @@ export interface CmsContext
         DbContext,
         HttpContext,
         I18NContext,
+        FileManagerContext,
         BaseI18NContentContext,
         ElasticSearchClientContext,
         TenancyContext {
@@ -280,6 +282,10 @@ export interface CmsContentModel {
      * Unique ID for the content model. Created from name if not defined by user.
      */
     modelId: string;
+    /**
+     * Locale this model belongs to.
+     */
+    locale: string;
     /**
      * Content model group reference object.
      */
@@ -622,17 +628,13 @@ export interface CreatedBy {
  */
 export interface CmsSettings {
     /**
-     * Is the CMS installed?
-     */
-    isInstalled: boolean;
-    /**
      * Last content model change. Used to cache GraphQL schema.
      */
     contentModelLastChange: Date;
 }
 
 /**
- * Settings crud in context.
+ * Settings CRUD in context.
  *
  * @category Context
  */
@@ -655,18 +657,21 @@ export interface CmsSettingsContext {
      */
     get: () => Promise<CmsSettings | null>;
     /**
-     * Install the CMS.
-     */
-    install: () => Promise<CmsSettings>;
-    /**
      * Updates settings model with a new date.
      */
-    updateContentModelLastChange: () => Promise<CmsSettings>;
+    updateContentModelLastChange: () => Promise<void>;
     /**
      * Get the datetime when content model last changed.
      */
     getContentModelLastChange: () => Promise<Date>;
 }
+
+export type CmsSystemContext = {
+    getVersion(): Promise<string>;
+    setVersion(version: string): Promise<void>;
+    install(): Promise<void>;
+    upgrade(version: string): Promise<boolean>;
+};
 
 /**
  * A GraphQL args.data parameter received when creating content model group.
@@ -712,6 +717,10 @@ export interface CmsContentModelGroup {
      * Slug for the group. Must be unique.
      */
     slug: string;
+    /**
+     * Locale this group belongs to.
+     */
+    locale: string;
     /**
      * Description for the group.
      */
@@ -939,7 +948,7 @@ export interface ContentModelManagerPlugin extends Plugin {
     modelId?: string[] | string;
     /**
      * Create a CmsContentModelManager for specific type - or new default one.
-     * For reference in how is this plugin run check [contentModelManagerFactory](https://github.com/webiny/webiny-js/blob/f15676/packages/api-headless-cms/src/content/plugins/crud/contentModel/contentModelManagerFactory.ts)
+     * For reference in how is this plugin run check [contentModelManagerFactory](https://github.com/webiny/webiny-js/blob/f15676/packages/api-headless-cms/src/content/plugins/CRUD/contentModel/contentModelManagerFactory.ts)
      */
     create(context: CmsContext, model: CmsContentModel): Promise<CmsContentModelManager>;
 }
@@ -1188,7 +1197,7 @@ export interface CmsContentEntryListArgs {
 }
 
 /**
- * List entries crud options.
+ * List entries CRUD options.
  *
  * @category ContentEntry
  */
@@ -1218,7 +1227,7 @@ export interface CmsContentEntryMeta {
 }
 
 /**
- * Content entry crud methods in the context.
+ * Content entry CRUD methods in the context.
  *
  * @category Context
  * @category ContentEntry
@@ -1313,21 +1322,21 @@ export interface CmsContentEntryContext {
 }
 
 /**
- * A cms part of the context that has all the crud operations.
+ * A cms part of the context that has all the CRUD operations.
  *
  * @category Context
  */
 interface CmsCrudContextObject {
     /**
-     * Settings crud methods.
+     * Settings CRUD methods.
      */
     settings: CmsSettingsContext;
     /**
-     * Content model group crud methods.
+     * Content model group CRUD methods.
      */
     groups: CmsContentModelGroupContext;
     /**
-     * Content model crud methods.
+     * Content model CRUD methods.
      */
     models: CmsContentModelContext;
     /**
@@ -1335,9 +1344,13 @@ interface CmsCrudContextObject {
      */
     getModel: (modelId: string) => Promise<CmsContentModelManager>;
     /**
-     * Content entry crud methods.
+     * Content entry CRUD methods.
      */
     entries: CmsContentEntryContext;
+    /**
+     * System CRUD methods
+     */
+    system: CmsSystemContext;
 }
 
 /**

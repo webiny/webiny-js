@@ -42,7 +42,6 @@ import {
 } from "./contentEntry/hooks";
 import WebinyError from "@webiny/error";
 import { entryFromStorageTransform, entryToStorageTransform } from "../utils/entryStorage";
-import { fixPreBeta5Entries } from "./contentEntry/fixPreBeta5Entries";
 
 const TYPE_ENTRY = "cms.entry";
 const TYPE_ENTRY_LATEST = TYPE_ENTRY + ".l";
@@ -206,15 +205,10 @@ export default (): ContextPlugin<CmsContext> => ({
                 }
 
                 const { hits, total } = response.body.hits;
-                // TODO remove in v5
-                const rawEsItems = await fixPreBeta5Entries({ context, model, hits });
-                /////// TODO remove above
                 const items = extractEntriesFromIndex({
                     context,
                     model,
-                    // TODO uncomment when date/time fields are fixed
-                    // entries: hits.map(item => item._source),
-                    entries: rawEsItems // TODO remove when above is restored
+                    entries: hits.map(item => item._source)
                 });
 
                 const hasMoreItems = items.length > limit;

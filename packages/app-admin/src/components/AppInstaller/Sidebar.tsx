@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import styled from "@emotion/styled";
 import { Typography } from "@webiny/ui/Typography";
 import classSet from "classnames";
@@ -67,7 +67,7 @@ const Note = styled("div")({
     padding: 15
 });
 
-const Sidebar = ({ allInstallers, installer, showLogin }) => {
+const Installations = ({ title, allInstallers, installer, showLogin }) => {
     const renderList = () => {
         const loginItem = (
             <li key={"login"} className={"sign-in"}>
@@ -80,17 +80,17 @@ const Sidebar = ({ allInstallers, installer, showLogin }) => {
 
         const items = [];
         for (let i = 0; i < allInstallers.length; i++) {
-            const { plugin, installed } = allInstallers[i];
-            const prev = i === 0 ? null : allInstallers[i - 1].plugin;
-            if ((!prev || !prev.secure) && plugin.secure) {
+            const { name, title, secure, installed } = allInstallers[i];
+            const prev = i === 0 ? null : allInstallers[i - 1];
+            if ((!prev || !prev.secure) && secure && showLogin) {
                 items.push(loginItem);
             }
 
-            const active = installer && !showLogin && plugin.name === installer.plugin.name;
+            const active = installer && !showLogin && name === installer.name;
 
             items.push(
                 <li
-                    key={plugin.name}
+                    key={name}
                     className={classSet(
                         { installed: installed },
                         { active: active },
@@ -98,7 +98,7 @@ const Sidebar = ({ allInstallers, installer, showLogin }) => {
                     )}
                 >
                     <span className={"status"} />
-                    <span className={"title"}>{plugin.title}</span>
+                    <span className={"title"}>{title}</span>
                 </li>
             );
         }
@@ -106,16 +106,45 @@ const Sidebar = ({ allInstallers, installer, showLogin }) => {
     };
 
     return (
+        <Fragment>
+            <Note>
+                <Typography use={"body1"}>{title}</Typography>
+            </Note>
+            <List>{renderList()}</List>
+        </Fragment>
+    );
+};
+
+const Sidebar = ({ allInstallers, installer, showLogin }) => {
+    const upgrades = allInstallers.filter(installer => installer.type === "upgrade");
+    const installations = allInstallers.filter(installer => installer.type === "install");
+
+    return (
         <SidebarWrapper>
             <Logo>
                 <img src={webinyLogo} alt="Webiny CMS" />
             </Logo>
-            <Note>
-                <Typography use={"body1"}>
-                    The following apps will be installed and configured:
-                </Typography>
-            </Note>
-            <List>{renderList()}</List>
+            {upgrades.length > 0 ? (
+                <Installations
+                    title={
+                        <span>
+                            The following apps will be upgraded to{" "}
+                            <strong>{process.env.REACT_APP_WEBINY_VERSION}</strong>:
+                        </span>
+                    }
+                    allInstallers={upgrades}
+                    installer={installer}
+                    showLogin={showLogin}
+                />
+            ) : null}
+            {installations.length > 0 && (
+                <Installations
+                    title={"The following apps will be installed and configured:"}
+                    allInstallers={installations}
+                    installer={installer}
+                    showLogin={upgrades.length > 0 ? false : showLogin}
+                />
+            )}
         </SidebarWrapper>
     );
 };
