@@ -46,7 +46,6 @@
   },
   "workspaces": {
     "packages": [
-      "packages/*",
       "apps/admin/code",
       "apps/website/code",
       "apps/theme",
