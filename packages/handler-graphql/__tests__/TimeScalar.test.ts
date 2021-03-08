@@ -1,6 +1,18 @@
 import { TimeScalar } from "../src/builtInTypes";
 
 describe("TimeScalar", () => {
+    const correctTime = [
+        ["20:35", "20:35:00"],
+        ["13:59", "13:59:00"],
+        ["20:35:48", "20:35:48"],
+        ["01:01:01", "01:01:01"]
+    ];
+
+    test.each(correctTime)("should parse the time", (time: string, expected: string) => {
+        const result = TimeScalar.parseValue(time);
+
+        expect(result).toEqual(expected);
+    });
     const incorrectTime = [
         ["20", "Value does not look like time."],
         ["24:01:01", "There cannot be more than 24 hours."],
