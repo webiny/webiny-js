@@ -22,8 +22,7 @@
     "../error",
     "../api-file-manager",
     "../api-security-tenancy",
-    "../api-prerendering-service",
-    "../pulumi-sdk"
+    "../api-prerendering-service"
   ],
   "compilerOptions": {
     "rootDir": "./src",

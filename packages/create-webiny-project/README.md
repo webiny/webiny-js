@@ -129,3 +129,20 @@ Once you're done, do the following:
 | Version and publish to Verdaccio  | `yarn lerna:version:verdaccio && yarn lerna:publish:verdaccio`                                                                                                     |
 | Create a new Webiny project       | `npx create-webiny-project@beta my-test-project --tag beta --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'` |
 | Revert versioning commit          | `git reset HEAD~ && git reset --hard HEAD`                                                                                                                         |
+
+## Troubleshooting
+
+#### I made a new release to Verdaccio, but I still receive old code.
+
+This is probably because of one of the Yarn package caching mechanisms.
+
+Yarn has two levels of cache - local and shared. 
+
+When you install a package, it gets cached in the local cache folder (located in your project), and in the shared cache folder. This makes it much faster when you're working on a couple of projects on your local machine, and you're pulling the same package in each. If the package doesn't exist in local cache, it will be pulled from shared cache. 
+
+On Windows, the shared cache folder should be located in: `C:\Users\{USER-NAME}\AppData\Local\Yarn`. 
+On Linux/Mac, the shared cache folder should be located in: `/Users/adrian/Library/Caches/Yarn`.
+
+In these folders, most probably, you'll also have the `\Berry\cache` folder. But, there were also cases where this folder did not exist.
+
+Deleting the mentioned cache folders should help with the issue of still receiving old packages in your testing sessions.

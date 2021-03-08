@@ -52,7 +52,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             return [
                 {
                     name: "entityName",
-                    message: "Enter name of the initial data model",
+                    message: "Enter the name of the initial data model",
                     default: "Book",
                     validate: name => {
                         if (!name.match(/^([a-zA-Z]+)$/)) {
@@ -64,9 +64,9 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 },
                 {
                     name: "location",
-                    message: `Enter package location`,
+                    message: `Enter the package location`,
                     default: answers => {
-                        const entityNamePlural = pluralize(Case.camel(answers.entityName));
+                        const entityNamePlural = pluralize(Case.kebab(answers.entityName));
                         return `packages/${entityNamePlural}/admin-app`;
                     },
                     validate: location => {
@@ -84,9 +84,9 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 },
                 {
                     name: "packageName",
-                    message: "Enter package name",
+                    message: "Enter the package name",
                     default: answers => {
-                        const entityNamePlural = pluralize(Case.camel(answers.entityName));
+                        const entityNamePlural = pluralize(Case.kebab(answers.entityName));
                         return `@${entityNamePlural}/admin-app`;
                     },
                     validate: packageName => {

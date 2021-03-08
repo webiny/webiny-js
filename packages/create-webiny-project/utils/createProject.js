@@ -10,8 +10,6 @@ const { sendEvent } = require("@webiny/tracking");
 const getPackageJson = require("./getPackageJson");
 const checkProjectName = require("./checkProjectName");
 const yaml = require("js-yaml");
-const getYarnVersion = require("./getYarnVersion");
-const semver = require("semver");
 
 module.exports = async function createProject({
     projectName,
@@ -91,16 +89,13 @@ module.exports = async function createProject({
                 // Setup yarn@2
                 title: "Setup yarn@^2",
                 task: async () => {
-                    const yarnVersion = await getYarnVersion();
-                    if (semver.satisfies(yarnVersion, "^1.22.0")) {
-                        await execa("yarn", ["set", "version", "berry"], { cwd: projectRoot });
-                    }
+                    await execa("yarn", ["set", "version", "berry"], { cwd: projectRoot });
 
-                    fs.copySync(
-                        path.join(__dirname, "files", "example.yarnrc.yml"),
-                        path.join(projectRoot, ".yarnrc.yml"),
-                        { overwrite: true }
-                    );
+                    const yamlPath = path.join(projectRoot, ".yarnrc.yml");
+                    const parsedYaml = yaml.load(fs.readFileSync(yamlPath, "utf-8"));
+
+                    // Default settings are applied here. Currently we only apply the `nodeLinker` param.
+                    parsedYaml.nodeLinker = "node-modules";
 
                     // Enables adding additional params into the `.yarnrc.yml` file.
                     if (assignToYarnRc) {
@@ -114,12 +109,11 @@ module.exports = async function createProject({
                         }
 
                         if (parsedAssignToYarnRc) {
-                            const yamlPath = path.join(projectRoot, ".yarnrc.yml");
-                            const parsedYaml = yaml.load(fs.readFileSync(yamlPath, "utf-8"));
                             Object.assign(parsedYaml, parsedAssignToYarnRc);
-                            fs.writeFileSync(yamlPath, yaml.dump(parsedYaml));
                         }
                     }
+
+                    fs.writeFileSync(yamlPath, yaml.dump(parsedYaml));
                 }
             },
             {
