@@ -96,7 +96,7 @@ const plugin: UpgradePlugin<FormBuilderContext> = {
 
         // Delete original items from ES index
         const operations = esItems.map(item => {
-            return { delete: { _id: item._id, _index: item.index } };
+            return { delete: { _id: item._id, _index: item._index } };
         });
 
         const {

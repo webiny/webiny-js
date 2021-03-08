@@ -95,19 +95,14 @@ const plugin: UpgradePlugin<CmsContext> = {
                 query: { PK: `T#root#L#${locale.code}#CMS#CM`, SK: { $gt: " " } }
             });
 
-            const indexes: ElasticsearchConfig[] = models.map(model => ({
-                index: `root-headless-cms-${locale.code}-${model.modelId}`.toLowerCase()
-            }));
-
-            // create new indexes in a single promise
-            try {
-                await Promise.all(
-                    indexes.map(index => createElasticsearchIndice(elasticSearch, index))
-                );
-            } catch (ex) {
-                await deleteCreatedElasticsearchIndices(context, indexes);
-                throw new WebinyError(ex.message, ex.code, ex.data);
+            for (const model of models) {
+                await createElasticsearchIndice(elasticSearch, {
+                    index: `root-headless-cms-${locale.code}-${model.modelId}`.toLowerCase()
+                });
             }
+
+            // Sleep for 2 seconds
+            await new Promise(resolve => setTimeout(resolve, 2000));
 
             const modelsById: Record<string, CmsContentModel> = models.reduce((acc, model) => {
                 acc[model.modelId] = model;
@@ -133,7 +128,7 @@ const plugin: UpgradePlugin<CmsContext> = {
                     return {
                         PK: `T#root#L#${locale.code}#CMS#CME#${entry.id.split("#")[0]}`,
                         SK: entry.__type === "cms.entry.l" ? "L" : "P",
-                        index: configurations.es(context, model).index,
+                        index: `root-headless-cms-${locale.code}-${model.modelId}`.toLowerCase(),
                         data: {
                             ...entryValueFixer(model, modelFieldFinder, cleanDatabaseRecord(entry)),
                             webinyVersion: "5.0.0-beta.5"

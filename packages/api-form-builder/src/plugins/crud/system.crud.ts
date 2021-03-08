@@ -15,7 +15,7 @@ export default {
             ...context.formBuilder,
             system: {
                 async getVersion() {
-                    const { db, formBuilder } = context;
+                    const { db, i18n } = context;
 
                     const [[system]] = await db.read({
                         ...defaults.db,
@@ -24,10 +24,12 @@ export default {
 
                     // Backwards compatibility check
                     if (!system) {
-                        // If settings exist, it means this system was installed before versioning was introduced.
-                        // 5.0.0-beta.4 is the last version before versioning was introduced.
-                        const settings = await formBuilder.settings.getSettings({
-                            auth: false
+                        const [[settings]] = await db.read({
+                            ...defaults.db,
+                            query: {
+                                PK: `T#root#L#${i18n.getDefaultLocale().code}#FB#SETTINGS`,
+                                SK: "default"
+                            }
                         });
 
                         return settings ? "5.0.0-beta.4" : null;

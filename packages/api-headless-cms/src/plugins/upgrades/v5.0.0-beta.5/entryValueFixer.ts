@@ -1,8 +1,19 @@
-import { TimeScalar } from "@webiny/handler-graphql/builtInTypes";
-import WebinyError from "@webiny/error";
-import { CmsContentEntry, CmsContentIndexEntry, CmsContentModel } from "../../../types";
+import {
+    CmsContentEntry,
+    CmsContentIndexEntry,
+    CmsContentModel,
+    CmsContentModelField
+} from "../../../types";
 import { ModelFieldFinder } from "./fieldFinder";
 import { cleanDatabaseRecord } from "./cleanDatabaseRecord";
+
+const convertTimeToNumber = (time?: string): number | null => {
+    if (!time) {
+        return null;
+    }
+    const [hours, minutes, seconds = 0] = time.split(":").map(Number);
+    return hours * 60 * 60 + minutes * 60 + seconds;
+};
 
 const fixRawValues = (
     target: CmsContentIndexEntry,
@@ -22,51 +33,41 @@ const fixRawValues = (
         // always remove from rawValue
         delete entry.rawValues[fieldId];
         // if there is something in values - do not switch it
-        if (!!existingValue || rawValue === undefined || rawValue === null) {
+        if (typeof existingValue !== "undefined" || rawValue === undefined || rawValue === null) {
             continue;
         }
-        entry.values = rawValue;
+        entry.values[fieldId] = rawValue;
     }
     return entry;
 };
 
-const fixTime = (time: any): number | null => {
+const fixTime = (field, time: any): number | null => {
     if (isNaN(time as number) === false) {
         return parseInt(time);
     }
     // lets not reinvent the wheel
-    return TimeScalar.parseValue(time);
-};
-
-const fixDate = (date: any): string => {
     try {
-        return new Date(date).toISOString();
-    } catch (ex) {
-        throw new WebinyError(
-            "Could not convert what is assumed to be a date string to a date object.",
-            "DATE_CONVERT_ERROR",
-            {
-                date
-            }
-        );
+        return convertTimeToNumber(time);
+    } catch (err) {
+        console.log(`fixTime on field "${field.fieldId}" failed`, err);
+        return null;
     }
 };
 
-const fixDateTime = (dateTime: any): string => {
-    try {
-        return new Date(dateTime).toISOString();
-    } catch (ex) {
-        throw new WebinyError(
-            "Could not convert what is presumed to be a dateTime string to a date object.",
-            "DATETIME_CONVERT_ERROR",
-            {
-                dateTime
-            }
-        );
+const fixDateTime = (field: CmsContentModelField, dateTime: any): any => {
+    switch (field.settings.type) {
+        case "time":
+            return fixTime(field, dateTime);
+        case "date":
+            return new Date(dateTime).toISOString();
+        case "dateTimeWithoutTimezone":
+            return new Date(dateTime).toISOString();
+        default:
+            return dateTime;
     }
 };
 
-const fixNumber = (value: any) => {
+const fixNumber = (field: CmsContentModelField, value: any) => {
     if (value === undefined || value === null) {
         return null;
     }
@@ -74,9 +75,7 @@ const fixNumber = (value: any) => {
 };
 
 const fieldFixMethods = {
-    time: fixTime,
-    date: fixDate,
-    dateTime: fixDateTime,
+    datetime: fixDateTime,
     number: fixNumber
 };
 
@@ -100,7 +99,7 @@ const fixFieldValues = (
         } else if (target.values[fieldId] === null || target.values[fieldId] === undefined) {
             continue;
         }
-        target.values[fieldId] = fixMethod(target.values[fieldId]);
+        target.values[fieldId] = fixMethod(field, target.values[fieldId]);
     }
 
     return entry;
