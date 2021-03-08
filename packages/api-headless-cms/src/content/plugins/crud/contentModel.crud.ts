@@ -161,52 +161,6 @@ export default (): ContextPlugin<CmsContext> => ({
                     }
                 });
 
-                try {
-                    const esIndex = utils.defaults.es(context, model);
-                    const { body: exists } = await elasticSearch.indices.exists(esIndex);
-                    if (!exists) {
-                        await elasticSearch.indices.create({
-                            ...esIndex,
-                            body: {
-                                // need this part for sorting to work on text fields
-                                settings: {
-                                    analysis: {
-                                        analyzer: {
-                                            lowercase_analyzer: {
-                                                type: "custom",
-                                                filter: ["lowercase", "trim"],
-                                                tokenizer: "keyword"
-                                            }
-                                        }
-                                    }
-                                },
-                                // we are disabling indexing of rawValues property in object that is inserted into ES
-                                mappings: {
-                                    properties: {
-                                        property: {
-                                            type: "text",
-                                            fields: {
-                                                keyword: {
-                                                    type: "keyword",
-                                                    ignore_above: 256
-                                                }
-                                            },
-                                            analyzer: "lowercase_analyzer"
-                                        },
-                                        rawValues: { type: "object", enabled: false }
-                                    }
-                                }
-                            }
-                        });
-                    }
-                } catch (ex) {
-                    throw new WebinyError(
-                        "Could not create Elasticsearch index.",
-                        "ELASTICSEARCH_INDEX",
-                        ex
-                    );
-                }
-
                 await updateManager(context, model);
 
                 await afterCreateHook({ context, model });
