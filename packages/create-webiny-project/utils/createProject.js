@@ -10,8 +10,6 @@ const { sendEvent } = require("@webiny/tracking");
 const getPackageJson = require("./getPackageJson");
 const checkProjectName = require("./checkProjectName");
 const yaml = require("js-yaml");
-const getYarnVersion = require("./getYarnVersion");
-const semver = require("semver");
 
 module.exports = async function createProject({
     projectName,
