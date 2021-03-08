@@ -39,7 +39,7 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 version: async (_, args, context) => {
                     const { security, pageBuilder } = context;
                     if (!security.getTenant()) {
-                        return false;
+                        return null;
                     }
 
                     return pageBuilder.system.getVersion();

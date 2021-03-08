@@ -189,7 +189,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                 async version(_, args, context) {
                     const { i18nContent, security, fileManager } = context;
                     if (!security.getTenant() || !i18nContent.getLocale()) {
-                        return false;
+                        return null;
                     }
 
                     return await fileManager.system.getVersion();

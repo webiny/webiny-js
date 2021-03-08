@@ -22,6 +22,10 @@ export default {
             ...context.cms,
             system: {
                 async getVersion() {
+                    if (!security.getTenant()) {
+                        return null;
+                    }
+
                     const [[system]] = await db.read({
                         ...utils.defaults.db(),
                         query: keys()

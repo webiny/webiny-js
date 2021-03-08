@@ -21,10 +21,7 @@ export default (context: DbContext & TenancyContext): SystemCRUD => {
 
             // Backwards compatibility check
             if (!system) {
-                const rootTenant = await security.tenants.getRootTenant();
-                // If the tenant exists, it means this system was installed before versioning was introduced.
-                // 5.0.0-beta.4 is the last version before versioning was introduced.
-                return rootTenant ? "5.0.0-beta.4" : null;
+                return "5.0.0-beta.4";
             }
 
             return system.version;

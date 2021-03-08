@@ -58,7 +58,7 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
                     const { i18nContent, security, formBuilder } = context;
 
                     if (!security.getTenant() || !i18nContent.getLocale()) {
-                        return false;
+                        return null;
                     }
 
                     try {
