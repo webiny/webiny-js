@@ -233,6 +233,22 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             const packageJsonPath = path.resolve(location, "package.json");
             const packageJson = await readJson<PackageJson>(packageJsonPath);
             packageJson.name = packageName;
+
+            const { version } = require("@webiny/cli-plugin-scaffold/package.json");
+
+            // Inject Webiny packages version
+            Object.keys(packageJson.dependencies).forEach(name => {
+                if (name.startsWith("@webiny")) {
+                    packageJson.dependencies[name] = version;
+                }
+            });
+
+            Object.keys(packageJson.devDependencies).forEach(name => {
+                if (name.startsWith("@webiny")) {
+                    packageJson.devDependencies[name] = version;
+                }
+            });
+
             await writeJson(packageJsonPath, packageJson);
             oraSpinner.stopAndPersist({
                 symbol: chalk.green("✔"),
