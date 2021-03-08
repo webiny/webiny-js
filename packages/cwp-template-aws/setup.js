@@ -82,7 +82,7 @@ const setup = async args => {
         );
 
         depsList.forEach(name => {
-            packageJson.dependencies[name] = `^` + latestVersion;
+            packageJson.dependencies[name] = latestVersion;
         });
 
         await writeJsonFile(packageJsonPath, packageJson);

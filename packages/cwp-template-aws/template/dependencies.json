@@ -67,8 +67,7 @@
     "test": "jest --config jest.config.js"
   },
   "resolutions": {
-    "@pulumi/pulumi": "2.19.0",
-    "@types/react": "16.14.2",
+    "@types/react": "16.14.4",
     "react": "16.14.0",
     "react-dom": "16.14.0"
   }
