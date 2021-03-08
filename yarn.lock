@@ -7490,8 +7490,6 @@ __metadata:
     boolean: ^3.0.2
     chalk: ^3.0.0
     dataloader: ^2.0.0
-    fast-deep-equal: ^3.1.1
-    fecha: ^4.0.0
     graphql: ^14.6.0
     jest: ^26.6.3
     jest-dynalite: ^3.2.0
@@ -7597,6 +7595,7 @@ __metadata:
     "@webiny/api-security": ^5.0.0-beta.4
     "@webiny/api-security-tenancy": ^5.0.0-beta.4
     "@webiny/api-upgrade": ^5.0.0-beta.4
+    "@webiny/cli-plugin-deploy-pulumi": ^5.0.0-beta.4
     "@webiny/db": ^5.0.0-beta.4
     "@webiny/db-dynamodb": ^5.0.0-beta.4
     "@webiny/error": ^5.0.0-beta.4
@@ -7608,7 +7607,6 @@ __metadata:
     "@webiny/handler-graphql": ^5.0.0-beta.4
     "@webiny/plugins": ^5.0.0-beta.4
     "@webiny/project-utils": ^5.0.0-beta.4
-    "@webiny/pulumi-sdk": ^5.0.0-beta.4
     "@webiny/validation": ^5.0.0-beta.4
     commodo-fields-object: ^1.0.6
     dataloader: ^2.0.0
@@ -17107,13 +17105,6 @@ __metadata:
   version: 2.3.3
   resolution: "fecha@npm:2.3.3"
   checksum: 1761ec8cd88dc165bad8d726e5bc38c933de6cc7ae479eea83260bcbadd3dd285f67b7605db6d2d5e2f8cb92ab5fe7f7634fe09229f0746bdc032a84d824dedb
-  languageName: node
-  linkType: hard
-
-"fecha@npm:^4.0.0":
-  version: 4.2.0
-  resolution: "fecha@npm:4.2.0"
-  checksum: aa64b6bbd6c11c7f6ec66255a2abfcbb307a1c13e46235ef6055f695e7aa688f782807f32fcbf663bd248fd682ab4f7c3ab68ae15cf6bfcc3c0a019efe56a1f6
   languageName: node
   linkType: hard
 
