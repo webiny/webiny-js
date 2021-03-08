@@ -49,7 +49,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             return [
                 {
                     name: "entityName",
-                    message: "Enter name of the initial data model",
+                    message: "Enter the name of the initial data model",
                     default: "Book",
                     validate: name => {
                         if (!name.match(/^([a-zA-Z]+)$/)) {
@@ -61,9 +61,9 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 },
                 {
                     name: "location",
-                    message: "Enter package location",
+                    message: "Enter the package location",
                     default: answers => {
-                        const entityNamePlural = pluralize(Case.camel(answers.entityName));
+                        const entityNamePlural = pluralize(Case.kebab(answers.entityName));
                         return `packages/${entityNamePlural}/api`;
                     },
                     validate: location => {
@@ -80,9 +80,9 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 },
                 {
                     name: "packageName",
-                    message: "Enter package name",
+                    message: "Enter the package name",
                     default: answers => {
-                        const entityNamePlural = pluralize(Case.camel(answers.entityName));
+                        const entityNamePlural = pluralize(Case.kebab(answers.entityName));
                         return `@${entityNamePlural}/api`;
                     },
                     validate: packageName => {
@@ -148,6 +148,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             };
 
             const codeReplacements = [
+                { find: "targetKebabCase", replaceWith: Case.kebab(entity.singular) },
                 { find: "targets", replaceWith: Case.camel(entity.plural) },
                 { find: "Targets", replaceWith: Case.pascal(entity.plural) },
                 { find: "TARGETS", replaceWith: Case.constant(entity.plural) },
@@ -369,9 +370,15 @@ ${entity.singular}Plugin()
             );
             console.log(
                 indentString(
-                    `Also, you can change the Elasticsearch port by setting LOCAL_ELASTICSEARCH variable, like this ${chalk.green(
+                    `Also, you can change the Elasticsearch port by setting LOCAL_ELASTICSEARCH variable, like this:`,
+                    2
+                )
+            );
+            console.log(
+                indentString(
+                    chalk.green(
                         `ELASTICSEARCH_PORT=9200 LOCAL_ELASTICSEARCH=true yarn test ${location}`
-                    )}`,
+                    ),
                     2
                 )
             );
