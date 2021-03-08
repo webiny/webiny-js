@@ -46,7 +46,7 @@ export const configuration: Configuration = {
             throw new Error(`There is no tenant on "context.security".`);
         }
         return {
-            index: `${tenant.id}-target`
+            index: `${tenant.id}-targetKebabCase`
         };
     }
 };
