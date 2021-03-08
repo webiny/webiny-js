@@ -1,6 +1,5 @@
-const { Pulumi } = require("@webiny/pulumi-sdk");
 const LambdaClient = require("aws-sdk/clients/lambda");
-const path = require("path");
+const getStackOutput = require("@webiny/cli-plugin-deploy-pulumi/utils/getStackOutput");
 
 module.exports = () => [
     {
@@ -11,69 +10,34 @@ module.exports = () => [
                 return;
             }
 
-            // When the "site" stack is deployed, let's make sure we update Page Builder app's settings
-            // with necessary pieces of information. This way the user doesn't have to do this manually.
-            const siteStackDir = path.join(context.paths.projectRoot, "apps", "website");
-            const apiStackDir = path.join(context.paths.projectRoot, "api");
-
-            const pulumi = new Pulumi();
-
             // 1. Get exports from `site` stack, for `args.env` environment.
-            await pulumi.run({
-                command: ["stack", "select", args.env],
-                args: { cwd: siteStackDir }
-            });
-
-            const siteExports = await pulumi
-                .run({
-                    command: ["stack", "output"],
-                    args: {
-                        stack: args.env,
-                        cwd: siteStackDir,
-                        json: true
-                    }
-                })
-                .then(({ stdout }) => JSON.parse(stdout));
+            const websiteOutput = await getStackOutput("apps/website", args.env);
 
             // 2. Get exports from `api` stack, again, for `args.env` environment.
-            await pulumi.run({
-                command: ["stack", "select", args.env],
-                args: { cwd: apiStackDir }
-            });
-
-            const apiExports = await pulumi
-                .run({
-                    command: ["stack", "output"],
-                    args: {
-                        stack: args.env,
-                        cwd: apiStackDir,
-                        json: true
-                    }
-                })
-                .then(({ stdout }) => JSON.parse(stdout));
+            const apiOutput = await getStackOutput("api", args.env);
 
             // 3. Let's update relevant Page Builder app's URLs, by invoking the `updateSettings` function,
             // which has been exported from the `api` stack for this exact purpose.
             try {
-                const lambdaClient = new LambdaClient({ region: apiExports.region });
+                const lambdaClient = new LambdaClient({ region: apiOutput.region });
 
                 const response = await lambdaClient
                     .invoke({
-                        FunctionName: apiExports.updatePbSettingsFunction,
+                        FunctionName: apiOutput.updatePbSettingsFunction,
                         Payload: JSON.stringify({
                             data: {
-                                websiteUrl: siteExports.deliveryUrl,
-                                websitePreviewUrl: siteExports.appUrl,
+                                websiteUrl: websiteOutput.deliveryUrl,
+                                websitePreviewUrl: websiteOutput.appUrl,
                                 prerendering: {
                                     app: {
-                                        url: siteExports.appUrl
+                                        url: websiteOutput.appUrl
                                     },
                                     storage: {
-                                        name: siteExports.deliveryStorage
+                                        name: websiteOutput.deliveryStorage
                                     },
                                     meta: {
                                         cloudfront: {
-                                            distributionId: siteExports.deliveryId
+                                            distributionId: websiteOutput.deliveryId
                                         }
                                     }
                                 }
