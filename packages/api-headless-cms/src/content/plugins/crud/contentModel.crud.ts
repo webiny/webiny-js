@@ -161,6 +161,20 @@ export default (): ContextPlugin<CmsContext> => ({
                     }
                 });
 
+                try {
+                    const esIndex = utils.defaults.es(context, model);
+                    const { body: exists } = await elasticSearch.indices.exists(esIndex);
+                    if (!exists) {
+                        await elasticSearch.indices.create(esIndex);
+                    }
+                } catch (ex) {
+                    throw new WebinyError(
+                        "Could not create Elasticsearch index.",
+                        "ELASTICSEARCH_INDEX",
+                        ex
+                    );
+                }
+
                 await updateManager(context, model);
 
                 await afterCreateHook({ context, model });
