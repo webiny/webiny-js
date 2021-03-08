@@ -1,5 +1,4 @@
 import { CmsContentModel, CmsContentModelField } from "@webiny/api-headless-cms/types";
-import WebinyError from "@webiny/error";
 
 interface MappedModels {
     [modelId: string]: {
