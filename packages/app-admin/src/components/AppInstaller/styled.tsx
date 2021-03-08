@@ -2,12 +2,14 @@ import styled from "@emotion/styled";
 import { css } from "emotion";
 
 export const Wrapper = styled("section")({
-    whiteSpace: "nowrap",
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
     minHeight: "100vh",
     color: "var(--mdc-theme-on-surface)",
+    ".spinner__inner-wrapper": {
+        whiteSpace: "nowrap"
+    },
     ul: {
         listStyle: "disc",
         paddingLeft: "var(--mdc-layout-grid-margin-desktop, 24px)",
