@@ -80,6 +80,50 @@ export default {
                         throw new Error(ex.message, "CMS_INSTALLATION_CONTENT_MODEL_GROUP_ERROR");
                     }
 
+                    try {
+                        await context.elasticSearch.indices.putTemplate({
+                            name: "headless-cms-entries-index",
+                            body: {
+                                index_patterns: ["*headless-cms*"],
+                                settings: {
+                                    analysis: {
+                                        analyzer: {
+                                            lowercase_analyzer: {
+                                                type: "custom",
+                                                filter: ["lowercase", "trim"],
+                                                tokenizer: "keyword"
+                                            }
+                                        }
+                                    }
+                                },
+                                mappings: {
+                                    properties: {
+                                        property: {
+                                            type: "text",
+                                            fields: {
+                                                keyword: {
+                                                    type: "keyword",
+                                                    ignore_above: 256
+                                                }
+                                            },
+                                            analyzer: "lowercase_analyzer"
+                                        },
+                                        rawValues: {
+                                            type: "object",
+                                            enabled: false
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    } catch (err) {
+                        console.log(err);
+                        throw new Error(
+                            "Index template creation failed!",
+                            "CMS_INSTALLATION_INDEX_TEMPLATE_ERROR"
+                        );
+                    }
+
                     // Set app version
                     await context.cms.system.setVersion(context.WEBINY_VERSION);
                 },

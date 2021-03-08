@@ -10,6 +10,11 @@ export default (): HandlerPlugin<ElasticSearchClientContext> => ({
 
         event.Records.forEach(record => {
             const newImage = Converter.unmarshall(record.dynamodb.NewImage);
+
+            if (newImage.ignore === true) {
+                return;
+            }
+
             const oldImage = Converter.unmarshall(record.dynamodb.OldImage);
             const keys = Converter.unmarshall(record.dynamodb.Keys);
             const _id = `${keys.PK}:${keys.SK}`;

@@ -7,7 +7,7 @@ const plugin: UpgradePlugin<FormBuilderContext> = {
     name: "api-upgrade-form-builder",
     type: "api-upgrade",
     app: "form-builder",
-    version: "5.0.0-beta.5",
+    version: "5.0.0",
     async apply(context) {
         const { elasticSearch, fileManager, db } = context;
         const limit = 1000;
@@ -46,7 +46,7 @@ const plugin: UpgradePlugin<FormBuilderContext> = {
         const esJSON = JSON.stringify(esItems);
 
         const { file } = await fileManager.storage.storagePlugin.upload({
-            name: "upgrade-form-builder-es-5.0.0-beta.5.json",
+            name: "upgrade-form-builder-es-5.0.0.json",
             type: "application/json",
             size: esJSON.length,
             buffer: Buffer.from(esJSON),
@@ -71,7 +71,7 @@ const plugin: UpgradePlugin<FormBuilderContext> = {
                                     index: item._index,
                                     data: item._source,
                                     savedOn: new Date().toISOString(),
-                                    version: "5.0.0-beta.5"
+                                    version: "5.0.0"
                                 }
                             };
                         }

@@ -1,14 +1,12 @@
 import WebinyError from "@webiny/error";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { CmsContentIndexEntry, CmsContentModel, CmsContext } from "../../../types";
-import { defaults as configurations, ElasticsearchConfig } from "../../../utils";
+import { defaults as configurations } from "../../../utils";
 import {
     entryValueFixer,
     cleanDatabaseRecord,
     createFieldFinder,
-    createOldVersionIndiceName,
-    createElasticsearchIndice,
-    deleteCreatedElasticsearchIndices
+    createOldVersionIndiceName
 } from "./helpers";
 
 import { paginateBatch } from "../utils";
@@ -24,7 +22,7 @@ const plugin: UpgradePlugin<CmsContext> = {
     name: "api-upgrade-cms",
     type: "api-upgrade",
     app: "headless-cms",
-    version: "5.0.0-beta.5",
+    version: "5.0.0",
     async apply(context) {
         const { elasticSearch, db, fileManager } = context;
 
@@ -36,6 +34,47 @@ const plugin: UpgradePlugin<CmsContext> = {
 
         if (!exists) {
             return;
+        }
+
+        try {
+            await elasticSearch.indices.putTemplate({
+                name: "headless-cms-entries-index",
+                body: {
+                    index_patterns: ["*headless-cms*"],
+                    settings: {
+                        analysis: {
+                            analyzer: {
+                                lowercase_analyzer: {
+                                    type: "custom",
+                                    filter: ["lowercase", "trim"],
+                                    tokenizer: "keyword"
+                                }
+                            }
+                        }
+                    },
+                    mappings: {
+                        properties: {
+                            property: {
+                                type: "text",
+                                fields: {
+                                    keyword: {
+                                        type: "keyword",
+                                        ignore_above: 256
+                                    }
+                                },
+                                analyzer: "lowercase_analyzer"
+                            },
+                            rawValues: {
+                                type: "object",
+                                enabled: false
+                            }
+                        }
+                    }
+                }
+            });
+        } catch (err) {
+            console.log(err);
+            throw new WebinyError("Put index template failed!");
         }
 
         // Load existing ES items
@@ -77,7 +116,7 @@ const plugin: UpgradePlugin<CmsContext> = {
         const esJSON = JSON.stringify(esItems);
 
         const { file } = await fileManager.storage.storagePlugin.upload({
-            name: "upgrade-headless-cms-es-5.0.0-beta.5.json",
+            name: "upgrade-headless-cms-es-5.0.0.json",
             type: "application/json",
             size: esJSON.length,
             buffer: Buffer.from(esJSON),
@@ -89,17 +128,13 @@ const plugin: UpgradePlugin<CmsContext> = {
         // Load models for each locale and distribute ES items to new per-model indexes
         const locales = context.i18n.getLocales();
 
+        const esOperations = [];
+
         for (const locale of locales) {
             const [models] = await db.read<CmsContentModel>({
                 ...utils.defaults.db(),
                 query: { PK: `T#root#L#${locale.code}#CMS#CM`, SK: { $gt: " " } }
             });
-
-            for (const model of models) {
-                await createElasticsearchIndice(elasticSearch, {
-                    index: `root-headless-cms-${locale.code}-${model.modelId}`.toLowerCase()
-                });
-            }
 
             // Sleep for 2 seconds
             await new Promise(resolve => setTimeout(resolve, 2000));
@@ -125,16 +160,24 @@ const plugin: UpgradePlugin<CmsContext> = {
 
                     const modelFieldFinder = createFieldFinder(models);
 
+                    const indexName = `root-headless-cms-${locale.code}-${model.modelId}`.toLowerCase();
+                    const PK = `T#root#L#${locale.code}#CMS#CME#${entry.id.split("#")[0]}`;
+                    const SK = entry.__type === "cms.entry.l" ? "L" : "P";
+                    const esData = {
+                        ...entryValueFixer(model, modelFieldFinder, cleanDatabaseRecord(entry)),
+                        webinyVersion: "5.0.0"
+                    };
+
+                    esOperations.push({ index: { _index: indexName, _id: `${PK}:${SK}` } }, esData);
+
                     return {
-                        PK: `T#root#L#${locale.code}#CMS#CME#${entry.id.split("#")[0]}`,
-                        SK: entry.__type === "cms.entry.l" ? "L" : "P",
-                        index: `root-headless-cms-${locale.code}-${model.modelId}`.toLowerCase(),
-                        data: {
-                            ...entryValueFixer(model, modelFieldFinder, cleanDatabaseRecord(entry)),
-                            webinyVersion: "5.0.0-beta.5"
-                        },
+                        PK,
+                        SK,
+                        index: indexName,
+                        data: esData,
                         savedOn: new Date().toISOString(),
-                        version: "5.0.0-beta.5"
+                        version: "5.0.0",
+                        ignore: true
                     };
                 })
                 .filter(Boolean);
@@ -168,7 +211,7 @@ const plugin: UpgradePlugin<CmsContext> = {
                                 data: {
                                     ...model,
                                     locale: locale.code,
-                                    webinyVersion: "5.0.0-beta.5"
+                                    webinyVersion: "5.0.0"
                                 }
                             };
                         })
@@ -180,6 +223,13 @@ const plugin: UpgradePlugin<CmsContext> = {
                 `[${locale.code}] Updated DDB model records with version number and locale code.`
             );
         }
+
+        // ES BULK INSERT
+        const bulkInsert = await context.elasticSearch.bulk({
+            body: esOperations
+        });
+
+        console.log("ES bulk index", bulkInsert);
     }
 };
 

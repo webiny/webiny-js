@@ -17,8 +17,8 @@ import { Typography } from "@webiny/ui/Typography";
 const t = i18n.ns("app-headless-cms/admin/installation");
 
 const UPGRADE = gql`
-    mutation UpgradeFormBuilder($version: String!) {
-        formBuilder {
+    mutation UpgradeCMS($version: String!) {
+        cms {
             upgrade(version: $version) {
                 data
                 error {
@@ -42,12 +42,12 @@ const Upgrade = ({ onInstalled }) => {
             .mutate({
                 mutation: UPGRADE,
                 variables: {
-                    version: "5.0.0-beta.5"
+                    version: "5.0.0"
                 }
             })
             .then(({ data }) => {
                 setLoading(false);
-                const { error } = data.formBuilder.upgrade;
+                const { error } = data.cms.upgrade;
                 if (error) {
                     setError(error.message);
                     return;
@@ -62,19 +62,25 @@ const Upgrade = ({ onInstalled }) => {
             {error}
         </Alert>
     ) : (
-        t`Upgrading Form Builder...`
+        t`Upgrading Headless CMS...`
     );
 
     return (
         <SimpleForm>
             {loading && <CircularProgress label={label} />}
-            <SimpleFormHeader title={"Upgrade Form Builder"} />
+            <SimpleFormHeader title={"Upgrade Headless CMS"} />
             <SimpleFormContent>
                 <Grid>
                     <Cell span={12}>
                         <Typography use={"body1"} tag={"div"}>
                             This upgrade will do the following:
                             <ul>
+                                <li>
+                                    create a separate Elasticsearch index for each content model
+                                </li>
+                                <li>
+                                    upgrade data stored into Elasticsearch for certain data types
+                                </li>
                                 <li>
                                     insert Elasticsearch records into a dedicated DynamoDB table
                                 </li>

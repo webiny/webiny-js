@@ -1,15 +1,14 @@
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
-import { PbContext } from "../../../types";
+import { FileManagerContext } from "../../../types";
 import { paginateBatch } from "../utils";
 import defaults from "../../crud/utils/defaults";
 
-const plugin: UpgradePlugin<PbContext> = {
-    name: "api-upgrade-page-builder",
+const plugin: UpgradePlugin<FileManagerContext> = {
+    name: "api-upgrade-file-manager",
     type: "api-upgrade",
-    app: "page-builder",
-    version: "5.0.0-beta.5",
-    async apply(context) {
-        const { elasticSearch, fileManager, db } = context;
+    app: "file-manager",
+    version: "5.0.0",
+    async apply({ elasticSearch, fileManager, db }) {
         const limit = 1000;
         let hasMoreItems = true;
         let after = undefined;
@@ -17,7 +16,7 @@ const plugin: UpgradePlugin<PbContext> = {
 
         while (hasMoreItems) {
             const response = await elasticSearch.search({
-                ...defaults.es(context),
+                index: "root-file-manager",
                 body: {
                     sort: {
                         createdOn: {
@@ -46,7 +45,7 @@ const plugin: UpgradePlugin<PbContext> = {
         const esJSON = JSON.stringify(esItems);
 
         const { file } = await fileManager.storage.storagePlugin.upload({
-            name: "upgrade-page-builder-es-5.0.0-beta.5.json",
+            name: "upgrade-file-manager-es-5.0.0.json",
             type: "application/json",
             size: esJSON.length,
             buffer: Buffer.from(esJSON),
@@ -60,19 +59,17 @@ const plugin: UpgradePlugin<PbContext> = {
             await db
                 .batch()
                 .create(
-                    ...items.map(item => {
-                        return {
-                            ...defaults.esDb,
-                            data: {
-                                PK: `T#root#L#${item._source.locale}#PB#P#${item._source.pid}`,
-                                SK: item._source.published === true ? "P" : "L",
-                                index: item._index,
-                                data: item._source,
-                                savedOn: new Date().toISOString(),
-                                version: "5.0.0-beta.5"
-                            }
-                        };
-                    })
+                    ...items.map(item => ({
+                        ...defaults.esDb,
+                        data: {
+                            PK: `T#root#L#${item._source.locale}#FM#F#${item._source.id}`,
+                            SK: "A",
+                            index: item._index,
+                            data: item._source,
+                            savedOn: new Date().toISOString(),
+                            version: "5.0.0"
+                        }
+                    }))
                 )
                 .execute();
         });
@@ -92,7 +89,7 @@ const plugin: UpgradePlugin<PbContext> = {
             filter_path: "errors,items.*.error"
         });
 
-        console.log(`Deleted old Elasticsearch items from "root-page-builder" index.`);
+        console.log(`Deleted old Elasticsearch items from "root-file-manager" index.`);
 
         if (errors) {
             console.warn("These items were not deleted", items);
@@ -102,45 +99,29 @@ const plugin: UpgradePlugin<PbContext> = {
 
 export default plugin;
 
-// Target _id: T#root#L#en-US#PB#P#603e248312ee4400089d16ec:L
-// Target _id: T#root#L#en-US#PB#P#603e248312ee4400089d16ec:P
+// Target _id: T#root#L#en-US#FM#F#603e248212ee4400089d16eb:A
 
 // const record = {
-//     _index: "root-page-builder",
+//     _index: "root-file-manager",
 //     _type: "_doc",
-//     _id: "P#6026a3873d8f6b0009c67db6",
+//     _id: "6040a6e2a6180e00085d168a",
 //     _score: 1.0,
 //     _source: {
-//         __type: "page",
-//         id: "6026a3873d8f6b0009c67db6#0001",
-//         pid: "6026a3873d8f6b0009c67db6",
-//         editor: "page-builder",
-//         locale: "en-US",
-//         createdOn: "2021-02-12T15:49:27.077Z",
-//         savedOn: "2021-02-12T15:49:27.417Z",
+//         id: "6040a6e2a6180e00085d168a",
+//         createdOn: "2021-03-04T09:22:42.029Z",
+//         key: "8klunupd0-004.jpg",
+//         size: 412963,
+//         type: "image/jpeg",
+//         name: "8klunupd0-004.jpg",
+//         tags: null,
 //         createdBy: {
-//             type: "admin",
+//             id: "admin@webiny.com",
 //             displayName: "Pavel Denisjuk",
-//             id: "admin@webiny.com"
+//             type: "admin"
 //         },
-//         ownedBy: {
-//             type: "admin",
-//             displayName: "Pavel Denisjuk",
-//             id: "admin@webiny.com"
+//         meta: {
+//             private: false
 //         },
-//         category: "static",
-//         version: 1,
-//         title: "Welcome to Webiny",
-//         titleLC: "welcome to webiny",
-//         path: "/welcome-to-webiny",
-//         status: "published",
-//         locked: true,
-//         publishedOn: "2021-02-12T15:49:27.560Z",
-//         tags: [],
-//         snippet: null,
-//         images: {
-//             general: null
-//         },
-//         published: true
+//         locale: "en-US"
 //     }
 // };

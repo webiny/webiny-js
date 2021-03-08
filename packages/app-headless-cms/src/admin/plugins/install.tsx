@@ -92,9 +92,9 @@ const plugin: AdminInstallationPlugin = {
     },
     upgrades: [
         {
-            version: "5.0.0-beta.5",
+            version: "5.0.0",
             getComponent() {
-                return lazy(() => import("./upgrades/v5.0.0-beta.5"));
+                return lazy(() => import("./upgrades/v5.0.0"));
             }
         }
     ]

@@ -1,3 +1,3 @@
-import upgrade500beta5 from "./v5.0.0-beta.5";
+import upgrade500 from "./v5.0.0";
 
-export default [upgrade500beta5];
+export default [upgrade500];
