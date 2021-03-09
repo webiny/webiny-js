@@ -2014,3 +2014,121 @@ export interface CmsContentEntryHookPlugin<T extends ContextInterface = CmsConte
      */
     afterRequestReview?: (args: CmsContentEntryHookPluginArgs<T>) => void;
 }
+
+/**
+ * Arguments for the CRUD provider method.
+ */
+interface CmsContentModelGroupCrudProviderArgs {
+    context: CmsContext;
+}
+
+interface CmsCrudProvider<A = any, T = any> extends Plugin {
+    provide: (args: A) => Promise<T>;
+}
+/**
+ * A plugin that provides the CRUD operations implementation.
+ */
+export interface CmsContentModelGroupCrudProvider
+    extends CmsCrudProvider<CmsContentModelGroupCrudProviderArgs, CmsContentModelGroupCrud> {
+    /**
+     * A plugin type.
+     */
+    type: "cms-content-model-group-provider";
+}
+
+export interface CmsContentModelGroupCrudGetArgs {
+    id: string;
+}
+
+export interface CmsContentModelGroupCrudListArgs {
+    where?: Record<string, any>;
+    limit?: number;
+}
+export interface CmsContentModelGroupCrudBeforeCreateArgs {
+    input: CmsContentModelGroupCreateInput;
+    data: CmsContentModelGroup;
+}
+export interface CmsContentModelGroupCrudCreateArgs {
+    input: CmsContentModelGroupCreateInput;
+    data: CmsContentModelGroup;
+}
+export interface CmsContentModelGroupCrudAfterCreateArgs {
+    input: CmsContentModelGroupCreateInput;
+    group: CmsContentModelGroup;
+}
+export interface CmsContentModelGroupCrudBeforeUpdateArgs {
+    group: CmsContentModelGroup;
+    data: CmsContentModelGroup;
+    input: CmsContentModelGroupUpdateInput;
+}
+export interface CmsContentModelGroupCrudUpdateArgs {
+    group: CmsContentModelGroup;
+    data: CmsContentModelGroup;
+    input: CmsContentModelGroupUpdateInput;
+}
+export interface CmsContentModelGroupCrudAfterUpdateArgs {
+    group: CmsContentModelGroup;
+    data: CmsContentModelGroup;
+    input: CmsContentModelGroupUpdateInput;
+}
+
+export interface CmsContentModelGroupCrudBeforeDeleteArgs {
+    group: CmsContentModelGroup;
+}
+export interface CmsContentModelGroupCrudDeleteArgs {
+    group: CmsContentModelGroup;
+}
+export interface CmsContentModelGroupCrudAfterDeleteArgs {
+    group: CmsContentModelGroup;
+}
+/**
+ * Description of the ContentModelGroup CRUD operations.
+ * If user wants to add another database to the application, this is how it is done.
+ * This is just plain read, update, write, delete and list - no authentication or permission checks.
+ */
+export interface CmsContentModelGroupCrud {
+    /**
+     * Gets content model group by given id.
+     */
+    get: (args: CmsContentModelGroupCrudGetArgs) => Promise<CmsContentModelGroup | null>;
+    /**
+     * List all content model groups. Filterable via params.
+     */
+    list: (args: CmsContentModelGroupCrudListArgs) => Promise<CmsContentModelGroup[]>;
+    /**
+     * A hook to be run before the create method.
+     */
+    beforeCreate?: (args: CmsContentModelGroupCrudBeforeCreateArgs) => Promise<void>;
+    /**
+     * Create a new content model group.
+     */
+    create: (args: CmsContentModelGroupCrudCreateArgs) => Promise<CmsContentModelGroup>;
+    /**
+     * A hook to be run after the create method.
+     */
+    afterCreate?: (args: CmsContentModelGroupCrudAfterCreateArgs) => Promise<void>;
+    /**
+     * A hook to be run before the update method.
+     */
+    beforeUpdate?: (args: CmsContentModelGroupCrudBeforeUpdateArgs) => Promise<void>;
+    /**
+     * Update existing content model group.
+     */
+    update: (args: CmsContentModelGroupCrudUpdateArgs) => Promise<CmsContentModelGroup>;
+    /**
+     * A hook to be run after the update method.
+     */
+    afterUpdate?: (args: CmsContentModelGroupCrudAfterUpdateArgs) => Promise<void>;
+    /**
+     * A hook to be run before the delete method.
+     */
+    beforeDelete?: (args: CmsContentModelGroupCrudBeforeDeleteArgs) => Promise<void>;
+    /**
+     * Delete content model group by given id.
+     */
+    delete: (args: CmsContentModelGroupCrudDeleteArgs) => Promise<boolean>;
+    /**
+     * A hook to be run after the delete method.
+     */
+    afterDelete?: (args: CmsContentModelGroupCrudAfterDeleteArgs) => Promise<void>;
+}
