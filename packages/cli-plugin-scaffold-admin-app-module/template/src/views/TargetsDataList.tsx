@@ -92,9 +92,6 @@ const TargetsDataList = () => {
                 if (id === item.id) {
                     history.push(`/targets`);
                 }
-
-                // Reload page
-                window.location.reload();
             });
         },
         [id]

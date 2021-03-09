@@ -17,7 +17,7 @@ import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useCallback } from "react";
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import { CREATE_TARGET, READ_TARGET, UPDATE_TARGET } from "./graphql";
+import { CREATE_TARGET, READ_TARGET, UPDATE_TARGET, LIST_TARGETS } from "./graphql";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { ButtonDefault, ButtonIcon } from "@webiny/ui/Button";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
@@ -33,7 +33,7 @@ const pickTargetData = (item: TargetItem): TargetItemUserFields => {
     };
 };
 
-const TargetForm = () => {
+const TargetForm: React.FunctionComponent = () => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const searchParams = new URLSearchParams(location.search);
@@ -57,9 +57,13 @@ const TargetForm = () => {
         }
     });
 
-    const [createTarget, createMutation] = useMutation(CREATE_TARGET);
+    const [createTarget, createMutation] = useMutation(CREATE_TARGET, {
+        refetchQueries: [{ query: LIST_TARGETS }]
+    });
 
-    const [updateTarget, updateMutation] = useMutation(UPDATE_TARGET);
+    const [updateTarget, updateMutation] = useMutation(UPDATE_TARGET, {
+        refetchQueries: [{ query: LIST_TARGETS }]
+    });
 
     const onSubmit = useCallback(
         async data => {
@@ -78,8 +82,6 @@ const TargetForm = () => {
                 history.push(`/targets?id=${targetsData.data.id}`);
             }
             showSnackbar(t`Target saved successfully.`);
-            // Reload page
-            window.location.reload();
         },
         [id]
     );
