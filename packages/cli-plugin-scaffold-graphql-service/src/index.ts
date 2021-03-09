@@ -402,7 +402,7 @@ ${entity.singular}Plugin()
             console.log(
                 indentString(
                     `3. Deploy the ${chalk.green(packageName)} by running ${chalk.green(
-                        `yarn webiny app deploy api --env=dev`
+                        `yarn webiny deploy api --env=dev`
                     )}.`,
                     2
                 )
