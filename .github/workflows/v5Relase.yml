@@ -348,9 +348,9 @@ jobs:
       - name: Cypress - run the rest of Admin app tests
         run: yarn cypress run --spec "cypress/integration/admin/**/*.spec.js"
 
-  npm-release-beta:
+  npm-release-latest:
     needs: [code-analysis, jest-tests, test-create-webiny-project, e2e-tests]
-    name: NPM release ("beta" tag)
+    name: NPM release ("latest" tag)
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
