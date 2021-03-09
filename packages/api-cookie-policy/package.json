@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-cookie-policy",
-  "version": "5.0.0-beta.4",
+  "version": "5.0.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -12,9 +12,9 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/commodo": "^5.0.0-beta.4",
-    "@webiny/handler-graphql": "^5.0.0-beta.4",
-    "@webiny/validation": "^5.0.0-beta.4",
+    "@webiny/commodo": "^5.0.0",
+    "@webiny/handler-graphql": "^5.0.0",
+    "@webiny/validation": "^5.0.0",
     "lodash": "^4.17.4"
   },
   "devDependencies": {

@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.5...v5.0.0) (2021-03-09)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+# [5.0.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.4...v5.0.0-beta.5) (2021-03-09)
+
+
+### Bug Fixes
+
+* **project-utils:** handle promise and callback calls on document client ([0ff9bea](https://github.com/webiny/webiny-js/commit/0ff9bea6362bfcb6de915441b0ff3dc95fae4e9f))
+* date format for pre-beta5 ([#1437](https://github.com/webiny/webiny-js/issues/1437)) ([bfc5b0a](https://github.com/webiny/webiny-js/commit/bfc5b0a0e4639d4037418f0e62f6a6c653ad82aa))
+
+
+### Features
+
+* introduce app upgrades and versions ([#1494](https://github.com/webiny/webiny-js/issues/1494)) ([f4d2b5e](https://github.com/webiny/webiny-js/commit/f4d2b5e73c899077cb1207940f2ab169a880aec9))
+* **cli-plugin-scaffold-graphql-service:** switch to ddb streams ([d644e4a](https://github.com/webiny/webiny-js/commit/d644e4a7ac5b6e4cf12dcab9debebf033181687f))
+* **cwp-template-aws:** add scaffold packages to user project ([#1485](https://github.com/webiny/webiny-js/issues/1485)) ([2882ec5](https://github.com/webiny/webiny-js/commit/2882ec5f57ca4fa5da1a9e9930152afe281ef898))
+* add tools to simulate DynamoDB Streams in Jest ([ac4f057](https://github.com/webiny/webiny-js/commit/ac4f05719b5ab140e664cb712dcf98049ef91f8e))
+
+
+
+
+
 # [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-02-01)
 
 **Note:** Version bump only for package @webiny/project-utils

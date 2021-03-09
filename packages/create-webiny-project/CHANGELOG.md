@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.5...v5.0.0) (2021-03-09)
+
+**Note:** Version bump only for package create-webiny-project
+
+
+
+
+
+# [5.0.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.4...v5.0.0-beta.5) (2021-03-09)
+
+
+### Bug Fixes
+
+* add default value ([85cd1de](https://github.com/webiny/webiny-js/commit/85cd1dea4b4814af9cf8b95f9e0422723d43f3c9))
+* check for yarn@^1.22.0 ([47029a0](https://github.com/webiny/webiny-js/commit/47029a0e90890cfa56b8c82a7de5a53c1571c4f0))
+* only call yarn set if on yarn@^1.22.0 ([4132365](https://github.com/webiny/webiny-js/commit/4132365056e3fd9f3de9756692c01f739094b8c3))
+* remove process.exit call ([6d1afc4](https://github.com/webiny/webiny-js/commit/6d1afc4a2cbbd55647b55950b51313500850d8e3))
+* remove unnecessary imports ([5915b23](https://github.com/webiny/webiny-js/commit/5915b2391e4c0f80a8d9d1fcdebd34acd704514c))
+* remove unused dependency ([d50e32a](https://github.com/webiny/webiny-js/commit/d50e32ad243fb2287a845cde95b5c3902b458581))
+* update existing ".yarnrc.yml" instead of creating a new one ([6d667e5](https://github.com/webiny/webiny-js/commit/6d667e5e828da9b6f1c70b846cd211552eba5e14))
+* use "getYarnVersion" ([596ab42](https://github.com/webiny/webiny-js/commit/596ab426bac446abde1a77ab03b542522e909213))
+
+
+### Features
+
+* add --assign-to-yarnrc argument ([55b3e58](https://github.com/webiny/webiny-js/commit/55b3e58a70bd4b1dc0dd49835de78a4c759bd6fd))
+* migrate to yarn v2 ([#1407](https://github.com/webiny/webiny-js/issues/1407)) ([46ba7ed](https://github.com/webiny/webiny-js/commit/46ba7ed7df28f98820b358698ef1764f46b5db58))
+
+
+
+
+
 # [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-02-01)
 
 **Note:** Version bump only for package create-webiny-project

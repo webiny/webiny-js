@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.5...v5.0.0) (2021-03-09)
+
+**Note:** Version bump only for package @webiny/ui
+
+
+
+
+
+# [5.0.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.4...v5.0.0-beta.5) (2021-03-09)
+
+
+### Bug Fixes
+
+* add "readOnly" prop ([1a268b3](https://github.com/webiny/webiny-js/commit/1a268b378b99b41b5f41075eb613727b69b6e9d5))
+* pass `readOnly` prop ([65294f7](https://github.com/webiny/webiny-js/commit/65294f7c4471b76ec0a543fec701eb244ed78267))
+
+
+### Features
+
+* **cwp-template-aws:** add scaffold packages to user project ([#1485](https://github.com/webiny/webiny-js/issues/1485)) ([2882ec5](https://github.com/webiny/webiny-js/commit/2882ec5f57ca4fa5da1a9e9930152afe281ef898))
+* migrate to yarn v2 ([#1407](https://github.com/webiny/webiny-js/issues/1407)) ([46ba7ed](https://github.com/webiny/webiny-js/commit/46ba7ed7df28f98820b358698ef1764f46b5db58))
+
+
+
+
+
 # [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-02-01)
 
 **Note:** Version bump only for package @webiny/ui

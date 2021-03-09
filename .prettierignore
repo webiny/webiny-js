@@ -7,3 +7,4 @@
 **/.pulumi/
 .webiny/**
 packages/ui/src/RichTextEditor/editorjs/**
+lerna.json
