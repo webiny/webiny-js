@@ -358,6 +358,15 @@ ${entity.singular}Plugin()
             );
 
             console.log(
+                indentString(
+                    `3. Deploy the ${chalk.green(packageName)} by running ${chalk.green(
+                        `yarn webiny deploy apps/admin --env=dev`
+                    )}.`,
+                    2
+                )
+            );
+
+            console.log(
                 "Learn more about app development at https://docs.webiny.com/docs/app-development/introduction."
             );
         }
