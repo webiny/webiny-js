@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.4...v5.0.0-beta.5) (2021-03-09)
+
+
+### Bug Fixes
+
+* **handler-graphql:** number scalar output ([#1450](https://github.com/webiny/webiny-js/issues/1450)) ([97925c9](https://github.com/webiny/webiny-js/commit/97925c934fd52c3ebdb2b1a1502edf59c219c582))
+* add "Content-Type" response header ([f0876ec](https://github.com/webiny/webiny-js/commit/f0876ecc3820246c34e0006cb6c0b1bcfc3c3bf8))
+* date format for pre-beta5 ([#1437](https://github.com/webiny/webiny-js/issues/1437)) ([bfc5b0a](https://github.com/webiny/webiny-js/commit/bfc5b0a0e4639d4037418f0e62f6a6c653ad82aa))
+
+
+### Features
+
+* graphql date, datetime, datetimez and time scalars ([#1434](https://github.com/webiny/webiny-js/issues/1434)) ([c3ac73a](https://github.com/webiny/webiny-js/commit/c3ac73a86568fdf9e7cb0c12722bdb087d4502c3))
+* introduce app upgrades and versions ([#1494](https://github.com/webiny/webiny-js/issues/1494)) ([f4d2b5e](https://github.com/webiny/webiny-js/commit/f4d2b5e73c899077cb1207940f2ab169a880aec9))
+* migrate to yarn v2 ([#1407](https://github.com/webiny/webiny-js/issues/1407)) ([46ba7ed](https://github.com/webiny/webiny-js/commit/46ba7ed7df28f98820b358698ef1764f46b5db58))
+
+
+
+
+
 # [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-02-01)
 
 **Note:** Version bump only for package @webiny/handler-graphql

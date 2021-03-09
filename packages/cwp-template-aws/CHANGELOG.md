@@ -3,6 +3,58 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.4...v5.0.0-beta.5) (2021-03-09)
+
+
+### Bug Fixes
+
+* remove `packages/*` entry ([2a0cc9a](https://github.com/webiny/webiny-js/commit/2a0cc9a8f77a62b21cd1baba0460acd70048eb31))
+* **cwp-template-aws:** add jest configs and lock webiny package versions ([058ad7c](https://github.com/webiny/webiny-js/commit/058ad7c8046b1bb3ef9ccedb4974701fc67d0578))
+* define min, default, and max TTL ([d4cda61](https://github.com/webiny/webiny-js/commit/d4cda616fbac2df1c60ff467475c4aa1dbdf29b0))
+* **cwp-template-aws:** add missing workspace ([583d9ba](https://github.com/webiny/webiny-js/commit/583d9bae66b6edcc5e0e3fcf5355928daa9bf58c))
+* **cwp-template-aws:** remove VPC selection ([cdbe713](https://github.com/webiny/webiny-js/commit/cdbe71399d23b042b6e441b50c96971ec2aed4ed))
+* add "compress: true" to cache behaviours ([7b347fa](https://github.com/webiny/webiny-js/commit/7b347faf5c08995521ead13aad4043248128014b))
+* add "Pulumi.*.yaml" files to ignored files ([8851495](https://github.com/webiny/webiny-js/commit/88514953438c51c451f529ae6fce30a522a262d4))
+* add `.tmp` ([aca0c9b](https://github.com/webiny/webiny-js/commit/aca0c9ba1b82f89f6fc6a708390c11d932e35f2a))
+* add cache-control headers ([409e58f](https://github.com/webiny/webiny-js/commit/409e58fb66c6215aa9dcf03ccaafcf291ef232c3))
+* add missing dot ([d960b98](https://github.com/webiny/webiny-js/commit/d960b987eb3ca1bf65766580efe556b17b9a276f))
+* add missing TS configs ([fd123d5](https://github.com/webiny/webiny-js/commit/fd123d534ade96a8016ece83cc4eb037c537e6aa))
+* add page builder installation files to CWP template ([8ac355e](https://github.com/webiny/webiny-js/commit/8ac355effb05ef9744a0d70ba6e9ecf618161476))
+* add project-level resolutions ([da17dce](https://github.com/webiny/webiny-js/commit/da17dced160f3321ba77dd9eb78942a6afbfc514))
+* append project application folder to "backend.url" ([aa3b396](https://github.com/webiny/webiny-js/commit/aa3b396a7d385dc20b0c8f3b2490f8c51ad7e802))
+* check for API availability before building React apps ([#1432](https://github.com/webiny/webiny-js/issues/1432)) ([bce62ca](https://github.com/webiny/webiny-js/commit/bce62ca086019375503ea275c5a37ca1546b6512))
+* correct letter case ([9e45a96](https://github.com/webiny/webiny-js/commit/9e45a964db7dc7c95a394de50d1c4162daf1dc02))
+* correct link ([9b42b35](https://github.com/webiny/webiny-js/commit/9b42b35aeeb51163f1418c823c0b2164258a1e00))
+* correct script name ([6c1392e](https://github.com/webiny/webiny-js/commit/6c1392e49670936d306139b65ee248746f3b03b6))
+* date format for pre-beta5 ([#1437](https://github.com/webiny/webiny-js/issues/1437)) ([bfc5b0a](https://github.com/webiny/webiny-js/commit/bfc5b0a0e4639d4037418f0e62f6a6c653ad82aa))
+* improve error handling ([aa4b450](https://github.com/webiny/webiny-js/commit/aa4b450a2cc1194822e96dc38e225cad8afa722b))
+* lock TS version ([e0860cf](https://github.com/webiny/webiny-js/commit/e0860cff8f1d1311942079a716c2f9626a4fc8b7))
+* remove "iac" option ([5fb8e03](https://github.com/webiny/webiny-js/commit/5fb8e03cab9311dd842c679a8da0b74cf57b986f))
+* remove double flag ([cac9129](https://github.com/webiny/webiny-js/commit/cac91290af1fefcbbe1b98da582b127850b7c4a0))
+* remove redundant dependency ([360ed2b](https://github.com/webiny/webiny-js/commit/360ed2b4d8ea80d67a8d631736625a6a6539a340))
+* set "forceDestroy: true" ([f15ce03](https://github.com/webiny/webiny-js/commit/f15ce03d88559af953e40061153f4e4a93c71831))
+* update dependencies ([04dd038](https://github.com/webiny/webiny-js/commit/04dd038aee7d65643f0174a30481162509f265bb))
+* update dependency versions ([0cdf46a](https://github.com/webiny/webiny-js/commit/0cdf46ab8285562a13c3ab7f62c736f41118d213))
+* **cli:** restore telemetry control ([#1430](https://github.com/webiny/webiny-js/issues/1430)) ([2dd0957](https://github.com/webiny/webiny-js/commit/2dd0957c541a2e48d0bac2ed97a76bd9c6c81fbe))
+* **cwp-template-aws:** add new ENV variables ([c786c65](https://github.com/webiny/webiny-js/commit/c786c65a9e165bc185814b27c3b6b5b22557cc90))
+* update template with the new prerendering service ([6a60060](https://github.com/webiny/webiny-js/commit/6a60060813eeb3c8711a0ba7912977d110bded10))
+
+
+### Features
+
+* introduce app upgrades and versions ([#1494](https://github.com/webiny/webiny-js/issues/1494)) ([f4d2b5e](https://github.com/webiny/webiny-js/commit/f4d2b5e73c899077cb1207940f2ab169a880aec9))
+* **cwp-template-aws:** add scaffold packages to user project ([#1485](https://github.com/webiny/webiny-js/issues/1485)) ([2882ec5](https://github.com/webiny/webiny-js/commit/2882ec5f57ca4fa5da1a9e9930152afe281ef898))
+* add ability to set backend URL ([5f1acc2](https://github.com/webiny/webiny-js/commit/5f1acc2237f2105256fdf68529c344910d963bac))
+* add api-dynamodb-to-elasticsearch handler ([a005710](https://github.com/webiny/webiny-js/commit/a0057109134b11d7a1d9e930edec10698ec102ba))
+* enable "--preview" flag for "webiny deploy" ([316ee25](https://github.com/webiny/webiny-js/commit/316ee25f36a083ad5aa40b22650f3022e7ead5a1))
+* migrate to yarn v2 ([#1407](https://github.com/webiny/webiny-js/issues/1407)) ([46ba7ed](https://github.com/webiny/webiny-js/commit/46ba7ed7df28f98820b358698ef1764f46b5db58))
+* remove `app` commands section ([ed277d4](https://github.com/webiny/webiny-js/commit/ed277d447de91875bf0543d7d007afe390b61bd3))
+* resource tagging and custom infra setups ([#1474](https://github.com/webiny/webiny-js/issues/1474)) ([46da034](https://github.com/webiny/webiny-js/commit/46da034badccd67adb6cf24196c708a8790c6a84))
+
+
+
+
+
 # [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-02-01)
 
 

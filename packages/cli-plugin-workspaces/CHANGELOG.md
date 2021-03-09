@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.4...v5.0.0-beta.5) (2021-03-09)
+
+
+### Bug Fixes
+
+* add "..." at the end of the info message ([557b050](https://github.com/webiny/webiny-js/commit/557b050a88ebc02f45d703182cb54566ee7b3a71))
+* pass all extra args to the executed command ([fee545d](https://github.com/webiny/webiny-js/commit/fee545dc5cf6dc55551cf27b51f8d362ff2376ce))
+
+
+
+
+
 # [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-02-01)
 
 **Note:** Version bump only for package @webiny/cli-plugin-workspaces

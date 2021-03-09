@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.4...v5.0.0-beta.5) (2021-03-09)
+
+
+### Bug Fixes
+
+* package paths containing underscores ([#1479](https://github.com/webiny/webiny-js/issues/1479)) ([67b4a83](https://github.com/webiny/webiny-js/commit/67b4a8364403bff0682d3512bc7c06209097984c))
+* **app-headless-cms:** add loading screen to content model editor ([de402e2](https://github.com/webiny/webiny-js/commit/de402e27d657a01581dd78a8d247478fb3d99562))
+* **app-headless-cms:** convert strings to numbers ([#1428](https://github.com/webiny/webiny-js/issues/1428)) ([e2a083e](https://github.com/webiny/webiny-js/commit/e2a083eb3ee56aa74e4245e4375c90ae9fce3e4b))
+* **app-headless-cms:** item click clears the ref field ([#1455](https://github.com/webiny/webiny-js/issues/1455)) ([c39946f](https://github.com/webiny/webiny-js/commit/c39946f49c67d7729ec6cdff831a9fe9ff8c88ac))
+* **app-headless-cms:** number field selectable as title ([#1402](https://github.com/webiny/webiny-js/issues/1402)) ([6563dd6](https://github.com/webiny/webiny-js/commit/6563dd6f00c17f0f4b12f3969475c018ee19a296))
+* **app-headless-cms:** number input removes decimal point ([#1416](https://github.com/webiny/webiny-js/issues/1416)) ([10c1ecb](https://github.com/webiny/webiny-js/commit/10c1ecbf469ebf5c19335eb678159bca07fb7942))
+* **app-headless-cms:** ref field not showing selected value ([#1451](https://github.com/webiny/webiny-js/issues/1451)) ([315f4d3](https://github.com/webiny/webiny-js/commit/315f4d33119952aacd8930edf1b37508708ce0f8))
+* date format for pre-beta5 ([#1437](https://github.com/webiny/webiny-js/issues/1437)) ([bfc5b0a](https://github.com/webiny/webiny-js/commit/bfc5b0a0e4639d4037418f0e62f6a6c653ad82aa))
+* **app-headless-cms:** date validators error because nothing in render ([#1429](https://github.com/webiny/webiny-js/issues/1429)) ([64456d6](https://github.com/webiny/webiny-js/commit/64456d6ae6f8a3a38f798d4383123fc6887e2969))
+* **app-headless-cms:** warn about unsaved changes in content model editor ([368cc76](https://github.com/webiny/webiny-js/commit/368cc76832c027d8539d519409d73db875ae1bf5))
+
+
+### Features
+
+* add dynamo-to-elastic lambda and ddb stream ([26aac81](https://github.com/webiny/webiny-js/commit/26aac818182da25d39307c716703f5a74bfb200b))
+* graphql date, datetime, datetimez and time scalars ([#1434](https://github.com/webiny/webiny-js/issues/1434)) ([c3ac73a](https://github.com/webiny/webiny-js/commit/c3ac73a86568fdf9e7cb0c12722bdb087d4502c3))
+* introduce app upgrades and versions ([#1494](https://github.com/webiny/webiny-js/issues/1494)) ([f4d2b5e](https://github.com/webiny/webiny-js/commit/f4d2b5e73c899077cb1207940f2ab169a880aec9))
+* migrate to yarn v2 ([#1407](https://github.com/webiny/webiny-js/issues/1407)) ([46ba7ed](https://github.com/webiny/webiny-js/commit/46ba7ed7df28f98820b358698ef1764f46b5db58))
+
+
+
+
+
 # [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-02-01)
 
 **Note:** Version bump only for package @webiny/app-headless-cms

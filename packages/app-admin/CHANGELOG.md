@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.4...v5.0.0-beta.5) (2021-03-09)
+
+
+### Bug Fixes
+
+* **app-admin:** set nowrap on CircularProgress label ([7558c7c](https://github.com/webiny/webiny-js/commit/7558c7caf2a8dca920a9c2f6429f72bf75d25017))
+* increase size to 1000mb ([f2c36a1](https://github.com/webiny/webiny-js/commit/f2c36a1a8dc73a37b7e6683fe89d6190adf75179))
+* package paths containing underscores ([#1479](https://github.com/webiny/webiny-js/issues/1479)) ([67b4a83](https://github.com/webiny/webiny-js/commit/67b4a8364403bff0682d3512bc7c06209097984c))
+
+
+### Features
+
+* File manager UX ([#1398](https://github.com/webiny/webiny-js/issues/1398)) ([eeb344b](https://github.com/webiny/webiny-js/commit/eeb344bf0230d02266db2bf0c3ef9a016551d4d1))
+* introduce app upgrades and versions ([#1494](https://github.com/webiny/webiny-js/issues/1494)) ([f4d2b5e](https://github.com/webiny/webiny-js/commit/f4d2b5e73c899077cb1207940f2ab169a880aec9))
+* migrate to yarn v2 ([#1407](https://github.com/webiny/webiny-js/issues/1407)) ([46ba7ed](https://github.com/webiny/webiny-js/commit/46ba7ed7df28f98820b358698ef1764f46b5db58))
+
+
+
+
+
 # [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-02-01)
 
 **Note:** Version bump only for package @webiny/app-admin

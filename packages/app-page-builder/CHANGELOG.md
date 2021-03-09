@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.4...v5.0.0-beta.5) (2021-03-09)
+
+
+### Bug Fixes
+
+* package paths containing underscores ([#1479](https://github.com/webiny/webiny-js/issues/1479)) ([67b4a83](https://github.com/webiny/webiny-js/commit/67b4a8364403bff0682d3512bc7c06209097984c))
+* **app-page-builder:** use useRecoilCallback in margin/padding settings ([#1477](https://github.com/webiny/webiny-js/issues/1477)) ([927bb2c](https://github.com/webiny/webiny-js/commit/927bb2c73503674bba39b0aff6c6a20aafac0222))
+* correct import statement ([be2869c](https://github.com/webiny/webiny-js/commit/be2869cfdcdf84acafd104f5aab49c22c6e7eef0))
+* create a new revision automatically when needed ([adb38de](https://github.com/webiny/webiny-js/commit/adb38deb431377bfc63d4710ddd0e40519370c9e))
+* date format for pre-beta5 ([#1437](https://github.com/webiny/webiny-js/issues/1437)) ([bfc5b0a](https://github.com/webiny/webiny-js/commit/bfc5b0a0e4639d4037418f0e62f6a6c653ad82aa))
+* exit if the page cannot be found in cache ([4515130](https://github.com/webiny/webiny-js/commit/4515130bd12217d94c0384dc76039d10dc9f15c2))
+* move queries into a separate file ([c16275e](https://github.com/webiny/webiny-js/commit/c16275e73be9e321f416d3de91c072189db03236))
+* PB editor saved element ([#1460](https://github.com/webiny/webiny-js/issues/1460)) ([3039a17](https://github.com/webiny/webiny-js/commit/3039a172d1996d495deeeaa66d1b18cf90f3e2cc))
+* remove "error" page ([a4e182c](https://github.com/webiny/webiny-js/commit/a4e182c30ba3dfa7a4e8514e2d690f2823448bec))
+* vertically center the button ([a5c4679](https://github.com/webiny/webiny-js/commit/a5c467988f743db9e0b96b5b472010f93f5bd5c5))
+
+
+### Features
+
+* enable editing home and not-found pages ([efb124c](https://github.com/webiny/webiny-js/commit/efb124cb872f6039131023bd3c8a908849fdd7d4))
+* introduce app upgrades and versions ([#1494](https://github.com/webiny/webiny-js/issues/1494)) ([f4d2b5e](https://github.com/webiny/webiny-js/commit/f4d2b5e73c899077cb1207940f2ab169a880aec9))
+* migrate to yarn v2 ([#1407](https://github.com/webiny/webiny-js/issues/1407)) ([46ba7ed](https://github.com/webiny/webiny-js/commit/46ba7ed7df28f98820b358698ef1764f46b5db58))
+
+
+
+
+
 # [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-02-01)
 
 **Note:** Version bump only for package @webiny/app-page-builder
