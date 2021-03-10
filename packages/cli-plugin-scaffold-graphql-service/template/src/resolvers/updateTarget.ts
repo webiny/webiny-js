@@ -1,6 +1,11 @@
-import { ErrorResponse, Response } from "@webiny/handler-graphql";
-import { configuration } from "../configuration";
+import { ErrorResponse, Response, NotFoundResponse } from "@webiny/handler-graphql";
+import { utils } from "../utils";
 import { ApplicationContext, ResolverResponse, Target, UpdateTargetArgs } from "../types";
+
+/**
+ * Keys to be filtered out of the DynamoDB record.
+ */
+const excludeKeys = ["PK", "SK"];
 
 const updateTarget = async (
     _,
@@ -9,34 +14,43 @@ const updateTarget = async (
 ): Promise<ResolverResponse<Target>> => {
     const { db } = context;
     const { id, data } = args;
-
+    /**
+     * Primary key is always constructed out of the id and a fixed Target configuration.
+     */
+    const primaryKey = utils.createPk(context, id);
+    /**
+     * First we need to check if the target we want to update is actually in the database.
+     */
     const [[item]] = await db.read<Target>({
-        ...configuration.db(context),
+        ...utils.db(context),
         query: {
-            PK: id,
-            SK: "A"
+            PK: primaryKey,
+            SK: id
         },
         limit: 1
     });
     if (!item) {
-        return new ErrorResponse({
-            message: `Target with id "${id}" not found.`,
-            code: "NOT_FOUND",
-            data: {
-                id
-            }
-        });
+        return new NotFoundResponse(`Target with id "${id}" not found.`);
     }
+    /**
+     * If there is no data sent, we do not need to proceed to updating the target.
+     * Some proper validation should be inserted instead of part.
+     */
     if (Object.keys(data).length === 0) {
         return new Response(item);
     }
 
+    /**
+     * Build the Target data model to be updated in the database.
+     */
     const modelData: Target = {
         ...item,
         ...data,
         savedOn: new Date().toISOString()
     };
-    const excludeKeys = ["PK", "SK"];
+    /**
+     * Remove the keys which are not needed later on.
+     */
     const model: Target = Object.keys(modelData).reduce((acc, key) => {
         if (excludeKeys.includes(key)) {
             return acc;
@@ -44,34 +58,51 @@ const updateTarget = async (
         acc[key] = modelData[key];
         return acc;
     }, ({} as unknown) as Target);
-
-    const { index: esIndex } = configuration.es(context);
-
+    /**
+     * Create the index name that is going to be used when streaming from DDB to Elasticsearch.
+     * Can be removed if Elasticsearch is not used.
+     */
+    const { index: esIndex } = utils.es(context);
+    /**
+     * We do operations in batch, when possible, so there are no multiple calls towards the DynamoDB.
+     */
     const batch = db.batch();
     batch
-        // dynamodb target update
+        /**
+         * Update the DynamoDB target record.
+         */
         .update({
-            ...configuration.db(context),
+            ...utils.db(context),
             query: {
-                PK: id,
-                SK: "A"
+                PK: primaryKey,
+                SK: id
             },
             data: {
-                PK: id,
-                SK: "A",
+                PK: primaryKey,
+                SK: id,
                 ...model,
+                /**
+                 * We always insert the version of Webiny this target was created with so it can be used later for upgrades.
+                 */
                 webinyVersion: context.WEBINY_VERSION
             }
         })
+        /**
+         * Update the DynamoDB target record in stream table.
+         * Can be removed if Elasticsearch is not used.
+         */
         .update({
-            ...configuration.esDb(context),
+            ...utils.esDb(context),
             query: {
-                PK: id,
-                SK: "A"
+                PK: primaryKey,
+                SK: id
             },
             data: {
-                PK: id,
-                SK: "A",
+                PK: primaryKey,
+                SK: id,
+                /**
+                 * Elasticsearch index that is this table streaming to.
+                 */
                 index: esIndex,
                 data: {
                     ...model,
@@ -79,13 +110,15 @@ const updateTarget = async (
                 }
             }
         });
-
+    /**
+     * Try to update the data in the DynamoDB. Fail with response if error happens.
+     */
     try {
         await batch.execute();
     } catch (ex) {
         return new ErrorResponse({
             message: ex.message,
-            code: ex.code || "COULD_NOT_UPDATE_DATA_IN_DYNAMODB",
+            code: ex.code || "TARGET_UPDATE_ERROR",
             data: ex
         });
     }

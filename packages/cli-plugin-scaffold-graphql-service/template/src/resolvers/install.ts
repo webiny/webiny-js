@@ -1,17 +1,29 @@
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
-import { configuration } from "../configuration";
+import { NotAuthorizedResponse } from "@webiny/api-security";
+import { utils } from "../utils";
 import { ApplicationContext } from "../types";
 
+/**
+ * Install mutation is Elasticsearch index creation.
+ * Can be removed if Elasticsearch is not used.
+ */
 const install = async (_, __, context: ApplicationContext) => {
     const { security, elasticSearch } = context;
+    /**
+     * The user running this code MUST have full access to the system.
+     */
     const hasFullAccess = await security.hasFullAccess();
     if (!hasFullAccess) {
-        return new ErrorResponse({
-            message: "Not authorized.",
-            code: "NOT_AUTHORIZED"
-        });
+        return new NotAuthorizedResponse();
     }
-    const esConfig = configuration.es(context);
+    /**
+     * Create the Elasticsearch config to be used in index creation.
+     */
+    const esConfig = utils.es(context);
+    /**
+     * We need to check if given index already exists. If it does it means installation procedure was already done.
+     * Fail with response in that case.
+     */
     const { body: hasIndice } = await elasticSearch.indices.exists(esConfig);
     if (hasIndice) {
         return new ErrorResponse({
@@ -19,11 +31,18 @@ const install = async (_, __, context: ApplicationContext) => {
             code: "IS_INSTALLED"
         });
     }
+    /**
+     * Try to create the Elasticsearch index.
+     * Fail with ErrorResponse on any error.
+     */
     try {
         await elasticSearch.indices.create({
             ...esConfig,
             body: {
-                // need this part for sorting to work on text fields
+                /**
+                 * We need settings and mappings for sorting to work on text fields.
+                 * You could not sort by title if this was not set on index creation.
+                 */
                 settings: {
                     analysis: {
                         analyzer: {

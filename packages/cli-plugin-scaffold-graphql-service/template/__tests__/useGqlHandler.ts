@@ -11,7 +11,7 @@ import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { Client } from "@elastic/elasticsearch";
 import targetPlugin from "../src/index";
 import graphqlPlugins from "@webiny/handler-graphql";
-import { configuration } from "../src/configuration";
+import { utils } from "../src/utils";
 import { simulateStream } from "@webiny/project-utils/testing/dynamodb";
 import dynamoToElastic from "@webiny/api-dynamodb-to-elasticsearch/handler";
 
@@ -158,7 +158,7 @@ export default () => {
     });
 
     const createElasticsearchIndex = async () => {
-        return elasticsearchClient.indices.create(configuration.es(dummyContext));
+        return elasticsearchClient.indices.create(utils.es(dummyContext));
     };
 
     const clearElasticsearchIndexes = async () => {

@@ -1,7 +1,7 @@
-import { ErrorResponse, Response } from "@webiny/handler-graphql";
 import mdbid from "mdbid";
-import { configuration } from "../configuration";
+import { utils } from "../utils";
 import { ApplicationContext, CreateTargetArgs, ResolverResponse, Target } from "../types";
+import { ErrorResponse, Response } from "@webiny/handler-graphql";
 
 const createTarget = async (
     _,
@@ -11,40 +11,71 @@ const createTarget = async (
     const { db, security } = context;
     const { data } = args;
 
-    const date = new Date().toISOString();
-
+    /**
+     * Build the Target data model to be inserted into the database.
+     */
     const model: Target = {
         id: mdbid(),
         createdBy: security.getIdentity(),
         savedBy: security.getIdentity(),
-        createdOn: date,
-        savedOn: date,
-        // custom user defined fields
+        /**
+         * We need to transform the Date object to iso string since DynamoDB insert will not do it automatically.
+         */
+        createdOn: new Date().toISOString(),
+        savedOn: new Date().toISOString(),
+        /**
+         * Custom user defined fields.
+         */
         title: data.title,
         description: data.description,
         isNice: data.isNice === undefined ? false : data.isNice
     };
+    /**
+     * Create the index name that is going to be used when streaming from DDB to Elasticsearch.
+     * Can be removed if Elasticsearch is not used.
+     */
+    const { index: esIndex } = utils.es(context);
 
-    const { index: esIndex } = configuration.es(context);
-
+    /**
+     * Primary key is always constructed out of the target.id and a fixed Target configuration.
+     */
+    const primaryKey = utils.createPk(context, model.id);
+    /**
+     * We do operations in batch, when possible, so there are no multiple calls towards the DynamoDB.
+     */
     const batch = db.batch();
     batch
-        // create the dynamodb target item
+        /**
+         * Create the DynamoDB target record.
+         */
         .create({
-            ...configuration.db(context),
+            ...utils.db(context),
             data: {
-                PK: model.id,
-                SK: "A",
+                PK: primaryKey,
+                /**
+                 * Need something as SecondaryKey so we put the id of the Target.
+                 * Can be createdOn so you can sort and search by it (if there is no Elasticsearch).
+                 */
+                SK: model.id,
                 ...model,
+                /**
+                 * We always insert the version of Webiny this target was created with so it can be used later for upgrades.
+                 */
                 webinyVersion: context.WEBINY_VERSION
             }
         })
-        // create the dynamodb target item in stream table
+        /**
+         * Create the DynamoDB target record in stream table.
+         * Can be removed if Elasticsearch is not used.
+         */
         .create({
-            ...configuration.esDb(context),
+            ...utils.esDb(context),
             data: {
-                PK: model.id,
-                SK: "A",
+                PK: primaryKey,
+                SK: model.id,
+                /**
+                 * Elasticsearch index that is this table streaming to.
+                 */
                 index: esIndex,
                 data: {
                     ...model,
@@ -52,13 +83,15 @@ const createTarget = async (
                 }
             }
         });
-
+    /**
+     * Try to insert the data into the DynamoDB. Fail with response if error happens.
+     */
     try {
         await batch.execute();
     } catch (ex) {
         return new ErrorResponse({
             message: ex.message,
-            code: ex.code || "COULD_NOT_INSERT_DATA_INTO_DYNAMODB",
+            code: ex.code || "TARGET_INSERT_ERROR",
             data: ex
         });
     }

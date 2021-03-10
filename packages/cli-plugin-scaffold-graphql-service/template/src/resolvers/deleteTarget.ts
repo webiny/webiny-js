@@ -1,5 +1,5 @@
-import { ErrorResponse, Response } from "@webiny/handler-graphql";
-import { configuration } from "../configuration";
+import { ErrorResponse, Response, NotFoundResponse } from "@webiny/handler-graphql";
+import { utils } from "../utils";
 import { ApplicationContext, DeleteTargetArgs, ResolverResponse, Target } from "../types";
 
 const deleteTarget = async (
@@ -9,48 +9,60 @@ const deleteTarget = async (
 ): Promise<ResolverResponse<boolean>> => {
     const { db } = context;
     const { id } = args;
-
+    /**
+     * Primary key is always constructed out of the id and a fixed Target configuration.
+     */
+    const primaryKey = utils.createPk(context, id);
+    /**
+     * First we need to check if the target we want to delete is actually in the database.
+     */
     const [[item]] = await db.read<Target>({
-        ...configuration.db(context),
+        ...utils.db(context),
         query: {
-            PK: id,
-            SK: "A"
+            PK: primaryKey,
+            SK: id
         },
         limit: 1
     });
     if (!item) {
-        return new ErrorResponse({
-            message: `Target with id "${id}" not found.`,
-            code: "NOT_FOUND",
-            data: {
-                id
-            }
-        });
+        return new NotFoundResponse(`Target with id "${id}" not found.`);
     }
+    /**
+     * We do operations in batch, when possible, so there are no multiple calls towards the DynamoDB.
+     */
     const batch = db.batch();
     batch.delete(
+        /**
+         * Delete the DynamoDB target record.
+         */
         {
-            ...configuration.db(context),
+            ...utils.db(context),
             query: {
-                PK: id,
-                SK: "A"
+                PK: primaryKey,
+                SK: id
             }
         },
+        /**
+         * Delete the DynamoDB target record in stream table.
+         * Can be removed if Elasticsearch is not used.
+         */
         {
-            ...configuration.esDb(context),
+            ...utils.esDb(context),
             query: {
-                PK: id,
-                SK: "A"
+                PK: primaryKey,
+                SK: id
             }
         }
     );
-
+    /**
+     * Try to delete the data from the DynamoDB. Fail with response if error happens.
+     */
     try {
         await batch.execute();
     } catch (ex) {
         return new ErrorResponse({
             message: ex.message,
-            code: ex.code || "COULD_NOT_DELETE_DATA_FROM_DYNAMODB",
+            code: ex.code || "TARGET_DELETE_ERROR",
             data: ex
         });
     }

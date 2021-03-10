@@ -1,27 +1,31 @@
 const graphql = /* GraphQL */ `
+    # response for the delete mutation
     type TargetDeleteResponse {
         data: Boolean
         error: TargetError
     }
-
+    # meta property containing:
+    #   cursor - the last target received in the list
+    #   hasMoreItems - if there are more targets to load
+    #   totalCount - total amount of targets that can be fetched with given query
     type TargetListMeta {
         cursor: String
         hasMoreItems: Boolean!
         totalCount: Int!
     }
-
+    # response error definition
     type TargetError {
         code: String!
         message: String!
         data: JSON
     }
-
+    # target is created by whom?
     type CreatedByResponse {
         id: String!
         displayName: String!
         type: String!
     }
-
+    # target definition
     type Target {
         id: ID!
         createdOn: DateTime!
@@ -31,19 +35,19 @@ const graphql = /* GraphQL */ `
         description: String
         isNice: Boolean!
     }
-
+    # input definition when creating the target
     input TargetCreateInput {
         title: String!
         description: String
         isNice: Boolean
     }
-
+    # input definition when updating the target
     input TargetUpdateInput {
         title: String
         description: String
         isNice: Boolean
     }
-
+    # possible where filters when listing targets
     input TargetListWhereInput {
         # system fields
         id: String
@@ -60,7 +64,7 @@ const graphql = /* GraphQL */ `
         title_not_contains: String
         isNice: Boolean
     }
-
+    # possible sort options when listing targets
     enum TargetListSort {
         title_ASC
         title_DESC
