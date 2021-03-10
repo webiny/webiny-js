@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useCallback } from "react";
 import { i18n } from "@webiny/app/i18n";
 import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
@@ -15,7 +15,6 @@ import {
 } from "@webiny/app-admin/components/SimpleForm";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { useCallback } from "react";
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { CREATE_TARGET, READ_TARGET, UPDATE_TARGET } from "./graphql";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
@@ -34,7 +33,12 @@ const pickTargetData = (item: TargetItem): TargetItemUserFields => {
     };
 };
 
-const TargetForm: React.FunctionComponent = () => {
+interface Props {
+    limit: number;
+    sortBy: string;
+}
+
+const TargetForm: React.FunctionComponent<Props> = ({ limit, sortBy }) => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const searchParams = new URLSearchParams(location.search);
@@ -65,7 +69,10 @@ const TargetForm: React.FunctionComponent = () => {
         async (formData: TargetItem) => {
             const isUpdate = !!formData.createdOn;
             const data = pickTargetData(formData);
-
+            const listVariables = {
+                sort: [sortBy],
+                limit
+            };
             if (isUpdate) {
                 await updateTarget({
                     variables: {
@@ -79,7 +86,7 @@ const TargetForm: React.FunctionComponent = () => {
                         } else if (!target) {
                             return showSnackbar(t`There is no Target data in the response.`);
                         }
-                        updateToListCache(cache, target);
+                        updateToListCache(cache, listVariables, target);
                     }
                 });
             } else {
@@ -94,7 +101,7 @@ const TargetForm: React.FunctionComponent = () => {
                         } else if (!target) {
                             return showSnackbar(t`There is no Target data in the response.`);
                         }
-                        addToListCache(cache, target);
+                        addToListCache(cache, listVariables, target);
 
                         history.push(`/targets/?id=${encodeURIComponent(target.id)}`);
                     }
