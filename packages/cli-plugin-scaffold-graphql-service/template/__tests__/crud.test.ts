@@ -29,15 +29,20 @@ const targetsData = {
  * @see https://docs.webiny.com/docs/api-development/introduction
  */
 describe("CRUD Test", () => {
-    const { until, invoke, clearElasticsearchIndexes, createElasticsearchIndex } = useGqlHandler();
+    const {
+        until,
+        invoke,
+        clearElasticsearchIndices,
+        createElasticsearchIndices
+    } = useGqlHandler();
 
     beforeEach(async () => {
-        await clearElasticsearchIndexes();
-        await createElasticsearchIndex();
+        await clearElasticsearchIndices();
+        await createElasticsearchIndices();
     });
 
     afterEach(async () => {
-        await clearElasticsearchIndexes();
+        await clearElasticsearchIndices();
     });
 
     const createTarget = async (data: Record<string, any>) => {
