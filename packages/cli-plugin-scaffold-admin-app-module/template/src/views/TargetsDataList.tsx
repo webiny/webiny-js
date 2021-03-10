@@ -24,6 +24,7 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { TargetItem, DataListChildProps } from "../types";
 import { DELETE_TARGET, LIST_TARGETS } from "./graphql";
+import { removeFromListCache } from "./cache";
 
 const t = i18n.ns("admin-app-target/data-list");
 
@@ -74,24 +75,26 @@ const TargetsDataList = () => {
     const id = new URLSearchParams(location.search).get("id");
 
     const deleteTargetItem = useCallback(
-        (item: TargetItem) => {
+        (target: TargetItem) => {
             showConfirmation(async () => {
-                const response = await deleteTarget({
+                await deleteTarget({
                     variables: {
-                        id: item.id
+                        id: target.id
+                    },
+                    update: (cache, response) => {
+                        const { error } = response.data.targets.deleteTarget;
+                        if (error) {
+                            return showSnackbar(error.message);
+                        }
+                        removeFromListCache(cache, target);
+
+                        showSnackbar(t`Target "{title}" deleted.`({ title: target.title }));
+
+                        if (id === target.id) {
+                            history.push(`/targets`);
+                        }
                     }
                 });
-
-                const { error } = response.data.targets.deleteTarget;
-                if (error) {
-                    return showSnackbar(error.message);
-                }
-
-                showSnackbar(t`Target "{title}" deleted.`({ code: item.title }));
-
-                if (id === item.id) {
-                    history.push(`/targets`);
-                }
             });
         },
         [id]
