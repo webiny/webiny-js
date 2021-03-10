@@ -17,11 +17,12 @@ import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useCallback } from "react";
 import { useMutation, useQuery } from "@apollo/react-hooks";
-import { CREATE_TARGET, READ_TARGET, UPDATE_TARGET, LIST_TARGETS } from "./graphql";
+import { CREATE_TARGET, READ_TARGET, UPDATE_TARGET } from "./graphql";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { ButtonDefault, ButtonIcon } from "@webiny/ui/Button";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { TargetItem, TargetItemUserFields } from "../types";
+import { addToListCache, updateToListCache } from "./cache";
 
 const t = i18n.ns("admin-app-target/form");
 
@@ -57,29 +58,47 @@ const TargetForm: React.FunctionComponent = () => {
         }
     });
 
-    const [createTarget, createMutation] = useMutation(CREATE_TARGET, {
-        refetchQueries: [{ query: LIST_TARGETS }]
-    });
-
-    const [updateTarget, updateMutation] = useMutation(UPDATE_TARGET, {
-        refetchQueries: [{ query: LIST_TARGETS }]
-    });
+    const [createTarget, createMutation] = useMutation(CREATE_TARGET);
+    const [updateTarget, updateMutation] = useMutation(UPDATE_TARGET);
 
     const onSubmit = useCallback(
-        async data => {
-            const isUpdate = data.createdOn;
-            const [operation, args] = isUpdate
-                ? [updateTarget, { variables: { id: data.id, data: pickTargetData(data) } }]
-                : [createTarget, { variables: { data: pickTargetData(data) } }];
+        async (formData: TargetItem) => {
+            const isUpdate = !!formData.createdOn;
+            const data = pickTargetData(formData);
 
-            const response = await operation(args);
+            if (isUpdate) {
+                await updateTarget({
+                    variables: {
+                        id: formData.id,
+                        data: data
+                    },
+                    update: (cache, response) => {
+                        const { data: target, error } = response.data?.targets?.updateTarget || {};
+                        if (error) {
+                            return showSnackbar(error.message);
+                        } else if (!target) {
+                            return showSnackbar(t`There is no Target data in the response.`);
+                        }
+                        updateToListCache(cache, target);
+                    }
+                });
+            } else {
+                await createTarget({
+                    variables: {
+                        data: data
+                    },
+                    update: (cache, response) => {
+                        const { data: target, error } = response.data?.targets?.createTarget || {};
+                        if (error) {
+                            return showSnackbar(error.message);
+                        } else if (!target) {
+                            return showSnackbar(t`There is no Target data in the response.`);
+                        }
+                        addToListCache(cache, target);
 
-            const targetsData = response.data?.targets[isUpdate ? "updateTarget" : "createTarget"];
-            const error = targetsData.error;
-            if (error) {
-                return showSnackbar(error.message);
-            } else if (!isUpdate) {
-                history.push(`/targets?id=${targetsData.data.id}`);
+                        history.push(`/targets/?id=${encodeURIComponent(target.id)}`);
+                    }
+                });
             }
             showSnackbar(t`Target saved successfully.`);
         },
