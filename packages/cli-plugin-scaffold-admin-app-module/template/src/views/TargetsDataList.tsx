@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo } from "react";
 import { i18n } from "@webiny/app/i18n";
 import {
     DataList,
@@ -24,77 +24,55 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { TargetItem, DataListChildProps } from "../types";
 import { DELETE_TARGET, LIST_TARGETS } from "./graphql";
+import { removeFromListCache } from "./cache";
 
 const t = i18n.ns("admin-app-target/data-list");
 
-const sorters = [
-    {
-        label: "Newest to oldest",
-        value: "createdOn_DESC"
-    },
-    {
-        label: "Oldest to newest",
-        value: "createdOn_ASC"
-    },
-    {
-        label: "Tile A-Z",
-        value: "title_ASC"
-    },
-    {
-        label: "Title Z-A",
-        value: "title_DESC"
-    }
-];
+interface Props {
+    sortBy: string;
+    setSortBy: (value: string) => void;
+    limit: number;
+    setLimit: (value: number) => void;
+    sorters: { label: string; value: string }[];
+}
 
-const TargetsDataList = () => {
+const TargetsDataList: React.FunctionComponent<Props> = ({ sortBy, setSortBy, limit, sorters }) => {
     const { history } = useRouter();
-    const [sortBy, setSortBy] = useState(sorters[0].value);
-    const [limit] = useState(20);
 
     const { showSnackbar } = useSnackbar();
     const { showConfirmation } = useConfirmationDialog();
+    const listVariables = {
+        sort: [sortBy],
+        limit
+    };
     const listQuery = useQuery(LIST_TARGETS, {
-        variables: {
-            sort: [sortBy],
-            limit
-        }
+        variables: listVariables
     });
-    const [deleteTarget, deleteMutation] = useMutation(DELETE_TARGET, {
-        refetchQueries: [
-            {
-                query: LIST_TARGETS,
-                variables: {
-                    sort: [sortBy],
-                    limit
-                }
-            }
-        ]
-    });
+    const [deleteTarget, deleteMutation] = useMutation(DELETE_TARGET);
 
     const id = new URLSearchParams(location.search).get("id");
 
     const deleteTargetItem = useCallback(
-        (item: TargetItem) => {
+        (target: TargetItem) => {
             showConfirmation(async () => {
-                const response = await deleteTarget({
+                await deleteTarget({
                     variables: {
-                        id: item.id
+                        id: target.id
+                    },
+                    update: (cache, response) => {
+                        const { error } = response.data.targets.deleteTarget;
+                        if (error) {
+                            return showSnackbar(error.message);
+                        }
+                        removeFromListCache(cache, listVariables, target);
+
+                        showSnackbar(t`Target "{title}" deleted.`({ title: target.title }));
+
+                        if (id === target.id) {
+                            history.push(`/targets`);
+                        }
                     }
                 });
-
-                const { error } = response.data.targets.deleteTarget;
-                if (error) {
-                    return showSnackbar(error.message);
-                }
-
-                showSnackbar(t`Target "{title}" deleted.`({ code: item.title }));
-
-                if (id === item.id) {
-                    history.push(`/targets`);
-                }
-
-                // Reload page
-                window.location.reload();
             });
         },
         [id]
