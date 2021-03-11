@@ -141,6 +141,8 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             // Copy template files
             await ncp(templateFolder, fullLocation);
 
+            const graphqlPath = path.relative(process.cwd(), "api/code/graphql");
+
             // Replace generic "Target" with received "entityName" argument.
             const entity = {
                 plural: pluralize(Case.camel(entityName)),
@@ -155,7 +157,11 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 { find: "target", replaceWith: Case.camel(entity.singular) },
                 { find: "Target", replaceWith: Case.pascal(entity.singular) },
                 { find: "TARGET", replaceWith: Case.constant(entity.singular) },
-                { find: "RELATIVE_ROOT_PATH", replaceWith: relativeRootPath.replace(/\\/g, "/") }
+                { find: "RELATIVE_ROOT_PATH", replaceWith: relativeRootPath.replace(/\\/g, "/") },
+                { find: "packageName", replaceWith: packageName },
+                { find: "packageLocation", replaceWith: location },
+                { find: "graphQlIndexFile", replaceWith: `${graphqlPath}/src/index.ts` },
+                { find: "location", replaceWith: location }
             ];
 
             replaceInPath(path.join(fullLocation, ".babelrc.js"), codeReplacements);
@@ -163,12 +169,33 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             replaceInPath(path.join(fullLocation, "jest-dynalite-config.js"), codeReplacements);
             replaceInPath(path.join(fullLocation, "src/**/*.ts"), codeReplacements);
             replaceInPath(path.join(fullLocation, "__tests__/**/*.ts"), codeReplacements);
+            replaceInPath(path.join(fullLocation, "README.md"), codeReplacements);
 
             // Make sure to also rename base file names.
             const fileNameReplacements = [
                 {
                     find: "__tests__/graphql/targets.ts",
                     replaceWith: `__tests__/graphql/${entity.plural}.ts`
+                },
+                {
+                    find: "src/resolvers/createTarget.ts",
+                    replaceWith: `src/resolvers/create${Case.pascal(entity.singular)}.ts`
+                },
+                {
+                    find: "src/resolvers/deleteTarget.ts",
+                    replaceWith: `src/resolvers/delete${Case.pascal(entity.singular)}.ts`
+                },
+                {
+                    find: "src/resolvers/getTarget.ts",
+                    replaceWith: `src/resolvers/get${Case.pascal(entity.singular)}.ts`
+                },
+                {
+                    find: "src/resolvers/listTargets.ts",
+                    replaceWith: `src/resolvers/list${Case.pascal(entity.plural)}.ts`
+                },
+                {
+                    find: "src/resolvers/updateTarget.ts",
+                    replaceWith: `src/resolvers/update${Case.pascal(entity.singular)}.ts`
                 }
             ];
 
@@ -197,7 +224,6 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 await writeJson(rootPackageJsonPath, rootPackageJson);
             }
 
-            const graphqlPath = path.relative(process.cwd(), "./api/code/graphql");
             oraSpinner.start(`Adding ${chalk.green(packageName)} to api package.json.`);
             const graphqlPackageJsonPath = path.resolve(graphqlPath, "package.json");
             const graphqlPackageJson = await readJson<PackageJson>(graphqlPackageJsonPath);
@@ -372,7 +398,7 @@ ${entity.singular}Plugin()
 
             console.log(
                 indentString(
-                    `2. From project root, run ${chalk.green(
+                    `2. From the project root, run ${chalk.green(
                         `LOCAL_ELASTICSEARCH=true yarn test ${location}`
                     )} to ensure that the service works.`,
                     2
@@ -458,7 +484,7 @@ in the API playground.`,
 
             console.log(
                 `
-Learn more about API development at https://docs.webiny.com/docs/api-development/introduction
+Learn more about scaffolding at https://docs.webiny.com/docs/tutorials/create-an-application/introduction
 `
             );
         }

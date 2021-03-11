@@ -6,6 +6,9 @@ import { BaseI18NContentContext } from "@webiny/api-i18n-content/types";
 import { ElasticSearchClientContext } from "@webiny/api-plugin-elastic-search-client/types";
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
 
+/**
+ * The context that is available to you.
+ */
 export interface ApplicationContext
     extends ContextInterface,
         DbContext,
@@ -15,37 +18,61 @@ export interface ApplicationContext
         ElasticSearchClientContext,
         TenancyContext {}
 
-interface ConfigurationDbKeyField {
+interface ApplicationUtilsDbKeyField {
     name: string;
 }
 
-interface ConfigurationDbKey {
+interface ApplicationUtilsDbKey {
     primary: boolean;
     unique: boolean;
     name: string;
-    fields: ConfigurationDbKeyField[];
+    fields: ApplicationUtilsDbKeyField[];
 }
 
-interface ConfigurationDb {
+interface ApplicationUtilsDb {
     table?: string;
-    keys: ConfigurationDbKey[];
+    keys: ApplicationUtilsDbKey[];
 }
 
-interface ConfigurationEs {
+interface ApplicationUtilsEs {
     index: string;
 }
 
-export interface Configuration {
-    db: (context: ApplicationContext) => ConfigurationDb;
-    esDb: (context: ApplicationContext) => ConfigurationDb;
-    es: (context: ApplicationContext) => ConfigurationEs;
+/**
+ * Description of the utils helper.
+ */
+export interface ApplicationUtils {
+    /**
+     * Method to create the DynamoDB table configuration.
+     */
+    db: (context: ApplicationContext) => ApplicationUtilsDb;
+    /**
+     * Method to create the DynamoDB to Elasticsearch stream table configuration.
+     * Can be removed if Elasticsearch is not used.
+     */
+    esDb: (context: ApplicationContext) => ApplicationUtilsDb;
+    /**
+     * Method to create the Elasticsearch configuration.
+     * Can be removed if Elasticsearch is not used.
+     */
+    es: (context: ApplicationContext) => ApplicationUtilsEs;
+    /**
+     * Method to create the PrimaryKey for the Target in DynamoDB tables.
+     */
+    createPk: (context: ApplicationContext, id: string) => string;
 }
 
+/**
+ * Resolver response for single target query or mutation.
+ */
 export interface ResolverResponse<T extends unknown> {
     data: T;
     error?: any;
 }
 
+/**
+ * Resolver response for list of targets query.
+ */
 export interface ListResolverResponse<T extends unknown> {
     data: T[];
     meta?: {
@@ -62,6 +89,9 @@ interface Identity {
     type: string;
 }
 
+/**
+ * Definition for the Target model in the code.
+ */
 export interface Target {
     // system fields
     id: string;
@@ -75,6 +105,9 @@ export interface Target {
     isNice: boolean;
 }
 
+/**
+ * Mutation arguments definition for the creation of the Target.
+ */
 export interface CreateTargetArgs {
     data: {
         title: string;
@@ -82,7 +115,9 @@ export interface CreateTargetArgs {
         isNice?: boolean;
     };
 }
-
+/**
+ * Mutation arguments definition for the update of the Target.
+ */
 export interface UpdateTargetArgs {
     id: string;
     data: {
@@ -91,16 +126,24 @@ export interface UpdateTargetArgs {
         isNice: boolean;
     };
 }
-
+/**
+ * Mutation arguments definition for the deletion of the Target.
+ */
 export interface DeleteTargetArgs {
     id: string;
 }
 
+/**
+ * Query arguments defition to fetch a single Target.
+ */
 export interface GetTargetArgs {
     id: string;
 }
 
-export interface ListBooksWhere {
+/**
+ * Where definition when fetching a list of Targets.
+ */
+export interface ListTargetsWhere {
     // system fields
     id?: string;
     id_in?: string[];
@@ -116,8 +159,11 @@ export interface ListBooksWhere {
     isNice: boolean;
 }
 
+/**
+ * Query arguments definition to fetch a list of Targets.
+ */
 export interface ListTargetsArgs {
-    where?: ListBooksWhere;
+    where?: ListTargetsWhere;
     sort?: string[];
     limit?: number;
     after?: string;
