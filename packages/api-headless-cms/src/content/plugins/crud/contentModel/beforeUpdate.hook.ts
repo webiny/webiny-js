@@ -1,6 +1,8 @@
 import {
-    CmsContentModel,
+    CmsContentModelCrud,
+    CmsContentModelCrudBeforeUpdateArgs,
     CmsContentModelField,
+    CmsContentModelUpdateHookPluginArgs,
     CmsContext,
     CmsModelFieldToGraphQLPlugin,
     CmsModelLockedFieldPlugin
@@ -8,12 +10,9 @@ import {
 import WebinyError from "@webiny/error";
 import { runContentModelLifecycleHooks } from "./runContentModelLifecycleHooks";
 
-interface Args {
+interface Args extends CmsContentModelCrudBeforeUpdateArgs {
     context: CmsContext;
-    model: CmsContentModel;
-    // data that is being updated in the database
-    // modify it, not the model
-    data: Partial<CmsContentModel>;
+    crud: CmsContentModelCrud;
 }
 
 const defaultTitleFieldId = "id";
@@ -141,5 +140,5 @@ export const beforeUpdateHook = async (args: Args) => {
             });
         }
     }
-    await runContentModelLifecycleHooks("beforeUpdate", args);
+    await runContentModelLifecycleHooks<CmsContentModelUpdateHookPluginArgs>("beforeUpdate", args);
 };

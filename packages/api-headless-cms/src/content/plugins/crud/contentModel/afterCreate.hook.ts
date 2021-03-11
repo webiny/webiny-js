@@ -1,11 +1,16 @@
-import { CmsContentModel, CmsContext } from "../../../../types";
+import {
+    CmsContentModelCreateHookPluginArgs,
+    CmsContentModelCrud,
+    CmsContentModelCrudAfterCreateArgs,
+    CmsContext
+} from "../../../../types";
 import { runContentModelLifecycleHooks } from "./runContentModelLifecycleHooks";
 
-interface Args {
+interface Args extends CmsContentModelCrudAfterCreateArgs {
     context: CmsContext;
-    model: CmsContentModel;
+    crud: CmsContentModelCrud;
 }
 
 export const afterCreateHook = async (args: Args): Promise<void> => {
-    await runContentModelLifecycleHooks("afterCreate", args);
+    await runContentModelLifecycleHooks<CmsContentModelCreateHookPluginArgs>("afterCreate", args);
 };

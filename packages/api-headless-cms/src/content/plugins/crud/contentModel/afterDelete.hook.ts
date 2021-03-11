@@ -1,13 +1,18 @@
-import { CmsContentModel, CmsContext } from "../../../../types";
+import {
+    CmsContentModelHookPluginArgs,
+    CmsContentModelCrud,
+    CmsContentModelCrudAfterDeleteArgs,
+    CmsContext
+} from "../../../../types";
 import { runContentModelLifecycleHooks } from "./runContentModelLifecycleHooks";
 
-interface Args {
+interface Args extends CmsContentModelCrudAfterDeleteArgs {
     context: CmsContext;
-    model: CmsContentModel;
+    crud: CmsContentModelCrud;
 }
 export const afterDeleteHook = async (args: Args) => {
     const { context } = args;
     await context.cms.settings.updateContentModelLastChange();
 
-    await runContentModelLifecycleHooks("afterDelete", args);
+    await runContentModelLifecycleHooks<CmsContentModelHookPluginArgs>("afterDelete", args);
 };

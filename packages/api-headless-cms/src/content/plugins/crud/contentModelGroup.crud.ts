@@ -36,11 +36,14 @@ const UpdateContentModelGroupModel = withFields({
 export default (): ContextPlugin<CmsContext> => ({
     type: "context",
     async apply(context) {
-        const pluginType = "cms-content-model-group-provider";
-        const providerPlugins = context.plugins.atLeastOneByType<CmsContentModelGroupCrudProvider>(
+        const pluginType = "cms-content-model-group-crud-provider";
+        const providerPlugins = context.plugins.byType<CmsContentModelGroupCrudProvider>(
             pluginType
         );
-        // always take the last one registered
+        /**
+         * CRUD operations for the content model group crud.
+         * Contains logic to save the data into the specific storage.
+         */
         const providerPlugin = providerPlugins[providerPlugins.length - 1];
         if (!providerPlugin) {
             throw new WebinyError(`Missing "${pluginType}" plugin.`, "PLUGIN_NOT_FOUND", {

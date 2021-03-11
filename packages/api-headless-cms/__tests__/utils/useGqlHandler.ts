@@ -37,7 +37,7 @@ import { ApiKey } from "@webiny/api-security-tenancy/types";
 import elasticSearchPlugins from "../../src/content/plugins/es";
 import fieldsStoragePlugins from "../../src/content/plugins/fieldsStorage";
 
-import { ddbElasticsearch } from "../../src/storage";
+import { dynamoElastic } from "../../src/storage";
 
 export interface GQLHandlerCallableArgs {
     permissions?: PermissionsArg[];
@@ -217,7 +217,7 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
             }
         },
         // this is the storage plugin
-        ddbElasticsearch(),
+        dynamoElastic(),
         //
         plugins
     );

@@ -1,9 +1,9 @@
 // dynamodb + elastic
-import ddbElasticsearch from "./content/plugins/crud/storage/ddbElasticsearch";
+import dynamoElastic from "./content/plugins/crud/storage/dynamoElastic";
 // dynamodb
 // import ddb from "./content/plugins/crud/storage/ddb";
 
 export {
-    ddbElasticsearch
+    dynamoElastic
     // ddb,
 };

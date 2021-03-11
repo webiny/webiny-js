@@ -70,21 +70,11 @@ const whereFilterFactory = (where: Record<string, any> = {}) => {
     };
 };
 
-const createPrimaryKey = ({ security, cms }: CmsContext): string => {
-    const tenant = security.getTenant();
-    if (!tenant) {
-        throw new WebinyError("Tenant missing.", "TENANT_NOT_FOUND");
-    }
-
-    const locale = cms.getLocale();
-    if (!locale) {
-        throw new WebinyError("Locale missing.", "LOCALE_NOT_FOUND");
-    }
-
-    return `T#${tenant.id}#L#${locale.code}#CMS`;
-};
-
-export default class CmsContentModelGroupCrudImpl implements CmsContentModelGroupCrud {
+interface ConstructorArgs {
+    context: CmsContext;
+    basePrimaryKey: string;
+}
+export default class CmsContentModelGroupCrudDynamoElastic implements CmsContentModelGroupCrud {
     private readonly _context: CmsContext;
     private readonly _primaryKey: string;
 
@@ -96,9 +86,9 @@ export default class CmsContentModelGroupCrudImpl implements CmsContentModelGrou
         return this._primaryKey;
     }
 
-    public constructor({ context }) {
+    public constructor({ context, basePrimaryKey }: ConstructorArgs) {
         this._context = context;
-        this._primaryKey = createPrimaryKey(context);
+        this._primaryKey = `${basePrimaryKey}#CMG`;
     }
 
     public async create({ data }: CmsContentModelGroupCrudCreateArgs) {
@@ -107,11 +97,12 @@ export default class CmsContentModelGroupCrudImpl implements CmsContentModelGrou
             PK: this.primaryKey,
             SK: data.id,
             TYPE: "cms.group",
-            ...data
+            ...data,
+            webinyVersion: this.context.WEBINY_VERSION
         };
 
         await db.create({
-            // TODO there are no defaults like this anymore
+            // TODO there should be no defaults like this anymore
             ...utils.defaults.db(),
             data: dbData
         });
@@ -132,7 +123,7 @@ export default class CmsContentModelGroupCrudImpl implements CmsContentModelGrou
     public async get({ id }: CmsContentModelGroupCrudGetArgs) {
         const { db } = this.context;
         const [[group]] = await db.read<CmsContentModelGroup>({
-            // TODO there are no defaults like this anymore
+            // TODO there should be no defaults like this anymore
             ...utils.defaults.db(),
             query: { PK: this.primaryKey, SK: id }
         });
@@ -141,7 +132,7 @@ export default class CmsContentModelGroupCrudImpl implements CmsContentModelGrou
     public async list({ where, limit }: CmsContentModelGroupCrudListArgs) {
         const { db } = this.context;
         const [groups] = await db.read<CmsContentModelGroup>({
-            // TODO there are no defaults like this anymore
+            // TODO there should be no defaults like this anymore
             ...utils.defaults.db(),
             query: {
                 PK: this.primaryKey,
@@ -162,10 +153,13 @@ export default class CmsContentModelGroupCrudImpl implements CmsContentModelGrou
     public async update({ group, data }: CmsContentModelGroupCrudUpdateArgs) {
         const { db } = this.context;
         await db.update({
-            // TODO there are no defaults like this anymore
+            // TODO there should be no defaults like this anymore
             ...utils.defaults.db(),
             query: { PK: this.primaryKey, SK: group.id },
-            data
+            data: {
+                ...data,
+                webinyVersion: this.context.WEBINY_VERSION
+            }
         });
         return {
             ...group,

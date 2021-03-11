@@ -39,46 +39,46 @@ describe("content model test", () => {
     test(`should not allow creation of a model the modelId set to blacklisted value`, async () => {
         const { createContentModelMutation } = useContentGqlHandler(manageHandlerOpts);
 
-        await createContentModelMutation({
+        const [response1] = await createContentModelMutation({
             data: {
                 name: "Content Model",
                 modelId: "contentModel",
                 group: contentModelGroup.id
             }
-        }).then(([response]) => {
-            expect(response).toEqual({
-                data: {
-                    createContentModel: {
-                        data: null,
-                        error: {
-                            code: "",
-                            data: null,
-                            message: 'Provided model ID "contentModel" is not allowed.'
-                        }
-                    }
-                }
-            });
         });
 
-        await createContentModelMutation({
+        expect(response1).toEqual({
+            data: {
+                createContentModel: {
+                    data: null,
+                    error: {
+                        code: "",
+                        data: null,
+                        message: 'Provided model ID "contentModel" is not allowed.'
+                    }
+                }
+            }
+        });
+
+        const [response2] = await createContentModelMutation({
             data: {
                 name: "Content Model Group",
                 modelId: "contentModelGroup",
                 group: contentModelGroup.id
             }
-        }).then(([response]) => {
-            expect(response).toEqual({
-                data: {
-                    createContentModel: {
+        });
+
+        expect(response2).toEqual({
+            data: {
+                createContentModel: {
+                    data: null,
+                    error: {
+                        code: "",
                         data: null,
-                        error: {
-                            code: "",
-                            data: null,
-                            message: 'Provided model ID "contentModelGroup" is not allowed.'
-                        }
+                        message: 'Provided model ID "contentModelGroup" is not allowed.'
                     }
                 }
-            });
+            }
         });
     });
 });

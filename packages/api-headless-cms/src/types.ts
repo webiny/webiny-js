@@ -1077,6 +1077,7 @@ export interface CmsContentModelManager {
  * @category ContentModel
  */
 export interface CmsContentModelContext {
+    operations: CmsContentModelCrud;
     /**
      * A function defining usage of a method without authenticating the user.
      */
@@ -1114,9 +1115,15 @@ export interface CmsContentModelContext {
     /**
      * Update content model without data validation. Used internally.
      *
+     * @param model - existing content model
+     * @param data - data to be updated
+     *
      * @hidden
      */
-    updateModel: (model: CmsContentModel, data: Partial<CmsContentModel>) => Promise<void>;
+    updateModel: (
+        model: CmsContentModel,
+        data: Partial<CmsContentModel>
+    ) => Promise<CmsContentModel>;
     /**
      * Update content model.
      */
@@ -1878,13 +1885,21 @@ export interface CmsModelFieldToStoragePlugin extends Plugin {
 export interface CmsContentModelHookPluginArgs {
     model: CmsContentModel;
     context: CmsContext;
+    crud: CmsContentModelCrud;
+}
+/**
+ * @category LifecycleHook
+ * @category ContentModel
+ */
+export interface CmsContentModelCreateHookPluginArgs extends CmsContentModelHookPluginArgs {
+    input: CmsContentModelCreateInput;
 }
 /**
  * @category LifecycleHook
  * @category ContentModel
  */
 export interface CmsContentModelUpdateHookPluginArgs extends CmsContentModelHookPluginArgs {
-    data: Partial<CmsContentModel>;
+    input: CmsContentModelUpdateInput;
 }
 /**
  * A plugin type that defines lifecycle hooks for content model.
@@ -1898,11 +1913,11 @@ export interface CmsContentModelHookPlugin extends Plugin {
     /**
      * A hook triggered before the content model is created.
      */
-    beforeCreate?: (args: CmsContentModelHookPluginArgs) => void;
+    beforeCreate?: (args: CmsContentModelCreateHookPluginArgs) => void;
     /**
      * A hook triggered after the content model is created.
      */
-    afterCreate?: (args: CmsContentModelHookPluginArgs) => void;
+    afterCreate?: (args: CmsContentModelCreateHookPluginArgs) => void;
     /**
      * A hook triggered before the content model is updated.
      */
@@ -1910,7 +1925,7 @@ export interface CmsContentModelHookPlugin extends Plugin {
     /**
      * A hook triggered after the content model is updated.
      */
-    afterUpdate?: (args: CmsContentModelHookPluginArgs) => void;
+    afterUpdate?: (args: CmsContentModelUpdateHookPluginArgs) => void;
     /**
      * A hook triggered before the content model is deleted.
      */
@@ -2015,33 +2030,35 @@ export interface CmsContentEntryHookPlugin<T extends ContextInterface = CmsConte
     afterRequestReview?: (args: CmsContentEntryHookPluginArgs<T>) => void;
 }
 
+interface CmsCrudProvider<A = any, T = any> extends Plugin {
+    provide: (args: A) => Promise<T>;
+}
+
 /**
- * Arguments for the CRUD provider method.
+ * Arguments for the group CRUD provider method.
  */
 interface CmsContentModelGroupCrudProviderArgs {
     context: CmsContext;
 }
-
-interface CmsCrudProvider<A = any, T = any> extends Plugin {
-    provide: (args: A) => Promise<T>;
-}
 /**
- * A plugin that provides the CRUD operations implementation.
+ * A plugin that provides the group CRUD operations implementation.
  */
 export interface CmsContentModelGroupCrudProvider
     extends CmsCrudProvider<CmsContentModelGroupCrudProviderArgs, CmsContentModelGroupCrud> {
     /**
      * A plugin type.
      */
-    type: "cms-content-model-group-provider";
+    type: "cms-content-model-group-crud-provider";
 }
 
 export interface CmsContentModelGroupCrudGetArgs {
     id: string;
 }
 
-export interface CmsContentModelGroupCrudListArgs {
-    where?: Record<string, any>;
+export interface CmsContentModelGroupCrudListArgs<
+    T extends Record<string, any> = Record<string, any>
+> {
+    where?: T;
     limit?: number;
 }
 export interface CmsContentModelGroupCrudBeforeCreateArgs {
@@ -2058,17 +2075,17 @@ export interface CmsContentModelGroupCrudAfterCreateArgs {
 }
 export interface CmsContentModelGroupCrudBeforeUpdateArgs {
     group: CmsContentModelGroup;
-    data: CmsContentModelGroup;
+    data: Partial<CmsContentModelGroup>;
     input: CmsContentModelGroupUpdateInput;
 }
 export interface CmsContentModelGroupCrudUpdateArgs {
     group: CmsContentModelGroup;
-    data: CmsContentModelGroup;
+    data: Partial<CmsContentModelGroup>;
     input: CmsContentModelGroupUpdateInput;
 }
 export interface CmsContentModelGroupCrudAfterUpdateArgs {
     group: CmsContentModelGroup;
-    data: CmsContentModelGroup;
+    data: Partial<CmsContentModelGroup>;
     input: CmsContentModelGroupUpdateInput;
 }
 
@@ -2094,7 +2111,7 @@ export interface CmsContentModelGroupCrud {
     /**
      * List all content model groups. Filterable via params.
      */
-    list: (args: CmsContentModelGroupCrudListArgs) => Promise<CmsContentModelGroup[]>;
+    list: (args?: CmsContentModelGroupCrudListArgs) => Promise<CmsContentModelGroup[]>;
     /**
      * A hook to be run before the create method.
      */
@@ -2131,4 +2148,118 @@ export interface CmsContentModelGroupCrud {
      * A hook to be run after the delete method.
      */
     afterDelete?: (args: CmsContentModelGroupCrudAfterDeleteArgs) => Promise<void>;
+}
+
+/**
+ * Arguments for the model CRUD provider method.
+ */
+interface CmsContentModelCrudProviderArgs {
+    context: CmsContext;
+}
+/**
+ * A plugin that provides the model CRUD operations implementation.
+ */
+export interface CmsContentModelCrudProvider
+    extends CmsCrudProvider<CmsContentModelCrudProviderArgs, CmsContentModelCrud> {
+    /**
+     * A plugin type.
+     */
+    type: "cms-content-model-crud-provider";
+}
+
+export interface CmsContentModelCrudGetArgs {
+    id: string;
+}
+
+export interface CmsContentModelCrudListArgs<T extends Record<string, any> = Record<string, any>> {
+    where?: T;
+    limit?: number;
+}
+export interface CmsContentModelCrudBeforeCreateArgs {
+    input: CmsContentModelCreateInput;
+    data: CmsContentModel;
+}
+export interface CmsContentModelCrudCreateArgs {
+    input: CmsContentModelCreateInput;
+    data: CmsContentModel;
+}
+export interface CmsContentModelCrudAfterCreateArgs {
+    input: CmsContentModelCreateInput;
+    model: CmsContentModel;
+}
+export interface CmsContentModelCrudBeforeUpdateArgs {
+    model: CmsContentModel;
+    data: Partial<CmsContentModel>;
+    input: CmsContentModelUpdateInput;
+}
+export interface CmsContentModelCrudUpdateArgs {
+    model: CmsContentModel;
+    data: Partial<CmsContentModel>;
+    input: CmsContentModelUpdateInput;
+}
+export interface CmsContentModelCrudAfterUpdateArgs {
+    model: CmsContentModel;
+    data: Partial<CmsContentModel>;
+    input: CmsContentModelUpdateInput;
+}
+
+export interface CmsContentModelCrudBeforeDeleteArgs {
+    model: CmsContentModel;
+}
+export interface CmsContentModelCrudDeleteArgs {
+    model: CmsContentModel;
+}
+export interface CmsContentModelCrudAfterDeleteArgs {
+    model: CmsContentModel;
+}
+/**
+ * Description of the ContentModelGroup CRUD operations.
+ * If user wants to add another database to the application, this is how it is done.
+ * This is just plain read, update, write, delete and list - no authentication or permission checks.
+ */
+export interface CmsContentModelCrud {
+    /**
+     * Gets content model group by given id.
+     */
+    get: (args: CmsContentModelCrudGetArgs) => Promise<CmsContentModel | null>;
+    /**
+     * List all content model groups. Filterable via params.
+     */
+    list: (args?: CmsContentModelCrudListArgs) => Promise<CmsContentModel[]>;
+    /**
+     * A hook to be run before the create method.
+     */
+    beforeCreate?: (args: CmsContentModelCrudBeforeCreateArgs) => Promise<void>;
+    /**
+     * Create a new content model group.
+     */
+    create: (args: CmsContentModelCrudCreateArgs) => Promise<CmsContentModel>;
+    /**
+     * A hook to be run after the create method.
+     */
+    afterCreate?: (args: CmsContentModelCrudAfterCreateArgs) => Promise<void>;
+    /**
+     * A hook to be run before the update method.
+     */
+    beforeUpdate?: (args: CmsContentModelCrudBeforeUpdateArgs) => Promise<void>;
+    /**
+     * Update existing content model group.
+     */
+    update(args: CmsContentModelCrudUpdateArgs): Promise<CmsContentModel>;
+    /**
+     * A hook to be run after the update method.
+     */
+    afterUpdate?: (args: CmsContentModelCrudAfterUpdateArgs) => Promise<void>;
+    /**
+     * A hook to be run before the delete method.
+     */
+    beforeDelete?: (args: CmsContentModelCrudBeforeDeleteArgs) => Promise<void>;
+    /**
+     * Delete content model group by given id.
+     */
+    delete: (args: CmsContentModelCrudDeleteArgs) => Promise<boolean>;
+    /**
+     * A hook to be run after the delete method.
+     */
+    afterDelete?: (args: CmsContentModelCrudAfterDeleteArgs) => Promise<void>;
 }
