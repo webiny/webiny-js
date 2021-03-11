@@ -1,20 +1,20 @@
 import {
     CmsContentModelGroup,
-    CmsContentModelGroupCrud,
-    CmsContentModelGroupCrudAfterDeleteArgs,
+    CmsContentModelGroupStorageOperations,
+    CmsContentModelGroupStorageOperationsAfterDeleteArgs,
     CmsContext
 } from "../../../../types";
 
-interface Args extends CmsContentModelGroupCrudAfterDeleteArgs {
+interface Args extends CmsContentModelGroupStorageOperationsAfterDeleteArgs {
     context: CmsContext;
     group: CmsContentModelGroup;
-    crud: CmsContentModelGroupCrud;
+    storageOperations: CmsContentModelGroupStorageOperations;
 }
-export const afterDeleteHook = async ({ group, crud }: Args): Promise<void> => {
-    if (!crud.afterDelete) {
+export const afterDeleteHook = async ({ group, storageOperations }: Args): Promise<void> => {
+    if (!storageOperations.afterDelete) {
         return;
     }
-    await crud.afterDelete({
+    await storageOperations.afterDelete({
         group
     });
 };

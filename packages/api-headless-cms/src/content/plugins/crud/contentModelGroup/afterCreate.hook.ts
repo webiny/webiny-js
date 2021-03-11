@@ -1,18 +1,18 @@
 import {
-    CmsContentModelGroupCrud,
+    CmsContentModelGroupStorageOperations,
     CmsContext,
-    CmsContentModelGroupCrudAfterCreateArgs
+    CmsContentModelGroupStorageOperationsAfterCreateArgs
 } from "../../../../types";
 
-interface Args extends CmsContentModelGroupCrudAfterCreateArgs {
+interface Args extends CmsContentModelGroupStorageOperationsAfterCreateArgs {
     context: CmsContext;
-    crud: CmsContentModelGroupCrud;
+    storageOperations: CmsContentModelGroupStorageOperations;
 }
-export const afterCreateHook = async ({ input, group, crud }: Args): Promise<void> => {
-    if (!crud.afterCreate) {
+export const afterCreateHook = async ({ input, group, storageOperations }: Args): Promise<void> => {
+    if (!storageOperations.afterCreate) {
         return;
     }
-    await crud.afterCreate({
+    await storageOperations.afterCreate({
         group,
         input
     });

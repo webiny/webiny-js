@@ -1,15 +1,15 @@
 import {
     CmsContentModelHookPluginArgs,
-    CmsContentModelCrud,
-    CmsContentModelCrudBeforeDeleteArgs,
+    CmsContentModelStorageOperations,
+    CmsContentModelStorageOperationsBeforeDeleteArgs,
     CmsContext
 } from "../../../../types";
 import WebinyError from "@webiny/error";
 import { runContentModelLifecycleHooks } from "./runContentModelLifecycleHooks";
 
-interface Args extends CmsContentModelCrudBeforeDeleteArgs {
+interface Args extends CmsContentModelStorageOperationsBeforeDeleteArgs {
     context: CmsContext;
-    crud: CmsContentModelCrud;
+    storageOperations: CmsContentModelStorageOperations;
 }
 
 export const beforeDeleteHook = async (args: Args) => {
@@ -36,6 +36,9 @@ export const beforeDeleteHook = async (args: Args) => {
             `Cannot delete content model "${modelId}" because there are existing entries.`,
             "CONTENT_MODEL_BEFORE_DELETE_HOOK_FAILED"
         );
+    }
+    if (args.storageOperations.beforeDelete) {
+        await args.storageOperations.beforeDelete(args);
     }
     await runContentModelLifecycleHooks<CmsContentModelHookPluginArgs>("beforeDelete", args);
 };

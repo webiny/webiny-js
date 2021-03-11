@@ -1,6 +1,6 @@
 import {
-    CmsContentModelGroupCrudProvider,
-    CmsContentModelCrudProvider,
+    CmsContentModelGroupStorageOperationsProvider,
+    CmsContentModelStorageOperationsProvider,
     CmsContext
 } from "../../../../types";
 import CmsContentModelGroupCrudDynamoElastic from "./contentModelGroup/dynamoElastic";
@@ -21,9 +21,9 @@ const createBasePrimaryKey = ({ security, cms }: CmsContext): string => {
     return `T#${tenant.id}#L#${locale.code}#CMS#CMG`;
 };
 
-const contentModelGroupCrudProvider = (): CmsContentModelGroupCrudProvider => ({
-    type: "cms-content-model-group-crud-provider",
-    name: "cms-content-model-group-ddb-es-crud",
+const contentModelGroupCrudProvider = (): CmsContentModelGroupStorageOperationsProvider => ({
+    type: "cms-content-model-group-storage-operations-provider",
+    name: "cms-content-model-group-storage-operations-ddb-es-crud",
     provide: async ({ context }) => {
         const basePrimaryKey = createBasePrimaryKey(context);
         return new CmsContentModelGroupCrudDynamoElastic({
@@ -33,9 +33,9 @@ const contentModelGroupCrudProvider = (): CmsContentModelGroupCrudProvider => ({
     }
 });
 
-const contentModelCrudProvider = (): CmsContentModelCrudProvider => ({
-    type: "cms-content-model-crud-provider",
-    name: "cms-content-model-ddb-es-crud",
+const contentModelCrudProvider = (): CmsContentModelStorageOperationsProvider => ({
+    type: "cms-content-model-storage-operations-provider",
+    name: "cms-content-model-storage-operations-ddb-es-crud",
     provide: async ({ context }) => {
         const basePrimaryKey = createBasePrimaryKey(context);
         return new CmsContentModelCrudDynamoElastic({

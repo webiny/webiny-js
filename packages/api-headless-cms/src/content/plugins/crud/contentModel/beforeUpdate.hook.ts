@@ -1,6 +1,6 @@
 import {
-    CmsContentModelCrud,
-    CmsContentModelCrudBeforeUpdateArgs,
+    CmsContentModelStorageOperations,
+    CmsContentModelStorageOperationsBeforeUpdateArgs,
     CmsContentModelField,
     CmsContentModelUpdateHookPluginArgs,
     CmsContext,
@@ -10,9 +10,9 @@ import {
 import WebinyError from "@webiny/error";
 import { runContentModelLifecycleHooks } from "./runContentModelLifecycleHooks";
 
-interface Args extends CmsContentModelCrudBeforeUpdateArgs {
+interface Args extends CmsContentModelStorageOperationsBeforeUpdateArgs {
     context: CmsContext;
-    crud: CmsContentModelCrud;
+    storageOperations: CmsContentModelStorageOperations;
 }
 
 const defaultTitleFieldId = "id";
@@ -139,6 +139,9 @@ export const beforeUpdateHook = async (args: Args) => {
                 field: existingField
             });
         }
+    }
+    if (args.storageOperations.beforeUpdate) {
+        await args.storageOperations.beforeUpdate(args);
     }
     await runContentModelLifecycleHooks<CmsContentModelUpdateHookPluginArgs>("beforeUpdate", args);
 };

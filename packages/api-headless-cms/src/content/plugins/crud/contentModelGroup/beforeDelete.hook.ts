@@ -1,15 +1,19 @@
 import WebinyError from "@webiny/error";
 import {
-    CmsContentModelGroupCrud,
-    CmsContentModelGroupCrudBeforeDeleteArgs,
+    CmsContentModelGroupStorageOperations,
+    CmsContentModelGroupStorageOperationsBeforeDeleteArgs,
     CmsContext
 } from "../../../../types";
 
-interface Args extends CmsContentModelGroupCrudBeforeDeleteArgs {
+interface Args extends CmsContentModelGroupStorageOperationsBeforeDeleteArgs {
     context: CmsContext;
-    crud: CmsContentModelGroupCrud;
+    storageOperations: CmsContentModelGroupStorageOperations;
 }
-export const beforeDeleteHook = async ({ group, context, crud }: Args): Promise<void> => {
+export const beforeDeleteHook = async ({
+    group,
+    context,
+    storageOperations
+}: Args): Promise<void> => {
     const models = await context.cms.models.noAuth().list();
     const items = models.filter(model => {
         return model.group.id === group.id;
@@ -24,10 +28,10 @@ export const beforeDeleteHook = async ({ group, context, crud }: Args): Promise<
             }
         );
     }
-    if (!crud.beforeDelete) {
+    if (!storageOperations.beforeDelete) {
         return;
     }
-    await crud.beforeDelete({
+    await storageOperations.beforeDelete({
         group
     });
 };

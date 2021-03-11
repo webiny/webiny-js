@@ -1,22 +1,20 @@
 import {
     CmsContentModelUpdateHookPluginArgs,
-    CmsContentModelCrud,
-    CmsContentModelCrudAfterUpdateArgs,
+    CmsContentModelStorageOperations,
+    CmsContentModelStorageOperationsAfterUpdateArgs,
     CmsContext
 } from "../../../../types";
 import { runContentModelLifecycleHooks } from "./runContentModelLifecycleHooks";
 
-interface Args extends CmsContentModelCrudAfterUpdateArgs {
+interface Args extends CmsContentModelStorageOperationsAfterUpdateArgs {
     context: CmsContext;
-    crud: CmsContentModelCrud;
+    storageOperations: CmsContentModelStorageOperations;
 }
 export const afterUpdateHook = async (args: Args) => {
-    const { context, crud, model, input } = args;
+    const { context } = args;
     await context.cms.settings.updateContentModelLastChange();
-    await runContentModelLifecycleHooks<CmsContentModelUpdateHookPluginArgs>("afterUpdate", {
-        context,
-        crud,
-        model,
-        input
-    });
+    if (args.storageOperations.afterUpdate) {
+        await args.storageOperations.afterUpdate(args);
+    }
+    await runContentModelLifecycleHooks<CmsContentModelUpdateHookPluginArgs>("afterUpdate", args);
 };

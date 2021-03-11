@@ -8,7 +8,7 @@ import {
     CmsContentModelGroupPermission,
     CmsContentModelGroup,
     CmsContext,
-    CmsContentModelGroupCrudProvider
+    CmsContentModelGroupStorageOperationsProvider
 } from "../../../types";
 import * as utils from "../../../utils";
 import { beforeDeleteHook } from "./contentModelGroup/beforeDelete.hook";
@@ -36,12 +36,12 @@ const UpdateContentModelGroupModel = withFields({
 export default (): ContextPlugin<CmsContext> => ({
     type: "context",
     async apply(context) {
-        const pluginType = "cms-content-model-group-crud-provider";
-        const providerPlugins = context.plugins.byType<CmsContentModelGroupCrudProvider>(
-            pluginType
-        );
+        const pluginType = "cms-content-model-group-storage-operations-provider";
+        const providerPlugins = context.plugins.byType<
+            CmsContentModelGroupStorageOperationsProvider
+        >(pluginType);
         /**
-         * CRUD operations for the content model group crud.
+         * Storage operations operations for the content model group.
          * Contains logic to save the data into the specific storage.
          */
         const providerPlugin = providerPlugins[providerPlugins.length - 1];
@@ -51,7 +51,7 @@ export default (): ContextPlugin<CmsContext> => ({
             });
         }
 
-        const crud = await providerPlugin.provide({
+        const storageOperations = await providerPlugin.provide({
             context
         });
 
@@ -62,7 +62,7 @@ export default (): ContextPlugin<CmsContext> => ({
         const groupsGet = async (id: string) => {
             let group: CmsContentModelGroup | null = null;
             try {
-                group = await crud.get({ id });
+                group = await storageOperations.get({ id });
             } catch (ex) {
                 throw new WebinyError(ex.message, ex.code || "GET_ERROR", {
                     ...(ex.data || {}),
@@ -79,7 +79,7 @@ export default (): ContextPlugin<CmsContext> => ({
         const groupsList = async (args?: CmsContentModelGroupListArgs) => {
             const { where, limit } = args || {};
             try {
-                return await crud.list({ where, limit });
+                return await storageOperations.list({ where, limit });
             } catch (ex) {
                 throw new WebinyError(ex.message, ex.code || "LIST_ERROR", {
                     ...(ex.data || {}),
@@ -90,6 +90,7 @@ export default (): ContextPlugin<CmsContext> => ({
         };
 
         const groups: CmsContentModelGroupContext = {
+            operations: storageOperations,
             noAuth: () => {
                 return {
                     get: groupsGet,
@@ -141,17 +142,17 @@ export default (): ContextPlugin<CmsContext> => ({
                 try {
                     await beforeCreateHook({
                         context,
-                        crud,
+                        storageOperations,
                         input,
                         data
                     });
-                    const group = await crud.create({
+                    const group = await storageOperations.create({
                         input,
                         data
                     });
                     await afterCreateHook({
                         context,
-                        crud,
+                        storageOperations,
                         input,
                         group
                     });
@@ -192,19 +193,19 @@ export default (): ContextPlugin<CmsContext> => ({
                 try {
                     await beforeUpdateHook({
                         context,
-                        crud,
+                        storageOperations,
                         group,
                         input,
                         data
                     });
-                    const updatedGroup = await crud.update({
+                    const updatedGroup = await storageOperations.update({
                         group,
                         data,
                         input
                     });
                     await afterUpdateHook({
                         context,
-                        crud,
+                        storageOperations,
                         group: updatedGroup,
                         data,
                         input
@@ -229,13 +230,13 @@ export default (): ContextPlugin<CmsContext> => ({
                 try {
                     await beforeDeleteHook({
                         context,
-                        crud,
+                        storageOperations,
                         group
                     });
-                    await crud.delete({ group });
+                    await storageOperations.delete({ group });
                     await afterDeleteHook({
                         context,
-                        crud,
+                        storageOperations,
                         group
                     });
                 } catch (ex) {

@@ -5,7 +5,7 @@ import {
     CmsContentModelContext,
     CmsContentModelManager,
     CmsContentModelPermission,
-    CmsContentModelCrudProvider,
+    CmsContentModelStorageOperationsProvider,
     CmsContentModelUpdateInput
 } from "../../../types";
 import * as utils from "../../../utils";
@@ -28,12 +28,14 @@ import WebinyError from "@webiny/error";
 
 export default (): ContextPlugin<CmsContext> => ({
     type: "context",
-    name: "context-content-model-crud",
+    name: "context-content-model-storageOperations",
     async apply(context) {
-        const pluginType = "cms-content-model-crud-provider";
-        const providerPlugins = context.plugins.byType<CmsContentModelCrudProvider>(pluginType);
+        const pluginType = "cms-content-model-storage-operations-provider";
+        const providerPlugins = context.plugins.byType<CmsContentModelStorageOperationsProvider>(
+            pluginType
+        );
         /**
-         * CRUD operations for the content model group crud.
+         * Storage operations for the content model group.
          * Contains logic to save the data into the specific storage.
          */
         const providerPlugin = providerPlugins[providerPlugins.length - 1];
@@ -43,13 +45,13 @@ export default (): ContextPlugin<CmsContext> => ({
             });
         }
 
-        const crud = await providerPlugin.provide({
+        const storageOperations = await providerPlugin.provide({
             context
         });
 
         const loaders = {
             listModels: new DataLoader(async () => {
-                const models = await crud.list();
+                const models = await storageOperations.list();
                 return [models];
             })
         };
@@ -69,7 +71,7 @@ export default (): ContextPlugin<CmsContext> => ({
         };
 
         const modelsGet = async (modelId: string) => {
-            const model = await crud.get({
+            const model = await storageOperations.get({
                 id: modelId
             });
 
@@ -85,7 +87,7 @@ export default (): ContextPlugin<CmsContext> => ({
         };
 
         const models: CmsContentModelContext = {
-            operations: crud,
+            operations: storageOperations,
             noAuth: () => {
                 return {
                     get: modelsGet,
@@ -159,7 +161,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     layout: []
                 };
 
-                await beforeCreateHook({ context, crud, input, data });
+                await beforeCreateHook({ context, storageOperations, input, data });
 
                 /*
                 await db.create({
@@ -188,14 +190,14 @@ export default (): ContextPlugin<CmsContext> => ({
                 }
                 */
 
-                const model = await crud.create({
+                const model = await storageOperations.create({
                     input,
                     data
                 });
 
                 await updateManager(context, model);
 
-                await afterCreateHook({ context, crud, input, model });
+                await afterCreateHook({ context, storageOperations, input, model });
 
                 return model;
             },
@@ -207,13 +209,13 @@ export default (): ContextPlugin<CmsContext> => ({
                 const input = (data as unknown) as CmsContentModelUpdateInput;
                 await beforeUpdateHook({
                     context,
-                    crud,
+                    storageOperations,
                     model,
                     data,
                     input
                 });
 
-                const resultModel = await crud.update({
+                const resultModel = await storageOperations.update({
                     data,
                     model,
                     input
@@ -221,7 +223,7 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 await afterUpdateHook({
                     context,
-                    crud,
+                    storageOperations,
                     model: resultModel,
                     data,
                     input
@@ -263,13 +265,13 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 await beforeUpdateHook({
                     context,
-                    crud,
+                    storageOperations,
                     model,
                     data,
                     input
                 });
 
-                const resultModel = await crud.update({
+                const resultModel = await storageOperations.update({
                     data,
                     model,
                     input
@@ -279,7 +281,7 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 await afterUpdateHook({
                     context,
-                    crud,
+                    storageOperations,
                     model: resultModel,
                     data,
                     input
@@ -294,11 +296,11 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 await beforeDeleteHook({
                     context,
-                    crud,
+                    storageOperations,
                     model
                 });
 
-                const result = await crud.delete({
+                const result = await storageOperations.delete({
                     model
                 });
                 if (!result) {
@@ -311,7 +313,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     );
                 }
 
-                await afterDeleteHook({ context, crud, model });
+                await afterDeleteHook({ context, storageOperations, model });
 
                 managers.delete(model.modelId);
             },

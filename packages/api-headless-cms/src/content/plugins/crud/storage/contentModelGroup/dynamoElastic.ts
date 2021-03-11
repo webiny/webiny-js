@@ -1,11 +1,11 @@
 import {
     CmsContentModelGroup,
-    CmsContentModelGroupCrud,
-    CmsContentModelGroupCrudCreateArgs,
-    CmsContentModelGroupCrudDeleteArgs,
-    CmsContentModelGroupCrudGetArgs,
-    CmsContentModelGroupCrudListArgs,
-    CmsContentModelGroupCrudUpdateArgs,
+    CmsContentModelGroupStorageOperations,
+    CmsContentModelGroupStorageOperationsCreateArgs,
+    CmsContentModelGroupStorageOperationsDeleteArgs,
+    CmsContentModelGroupStorageOperationsGetArgs,
+    CmsContentModelGroupStorageOperationsListArgs,
+    CmsContentModelGroupStorageOperationsUpdateArgs,
     CmsContext
 } from "../../../../../types";
 import WebinyError from "@webiny/error";
@@ -74,7 +74,8 @@ interface ConstructorArgs {
     context: CmsContext;
     basePrimaryKey: string;
 }
-export default class CmsContentModelGroupCrudDynamoElastic implements CmsContentModelGroupCrud {
+export default class CmsContentModelGroupCrudDynamoElastic
+    implements CmsContentModelGroupStorageOperations {
     private readonly _context: CmsContext;
     private readonly _primaryKey: string;
 
@@ -91,7 +92,7 @@ export default class CmsContentModelGroupCrudDynamoElastic implements CmsContent
         this._primaryKey = `${basePrimaryKey}#CMG`;
     }
 
-    public async create({ data }: CmsContentModelGroupCrudCreateArgs) {
+    public async create({ data }: CmsContentModelGroupStorageOperationsCreateArgs) {
         const { db } = this.context;
         const dbData = {
             PK: this.primaryKey,
@@ -108,7 +109,7 @@ export default class CmsContentModelGroupCrudDynamoElastic implements CmsContent
         });
         return dbData;
     }
-    public async delete({ group }: CmsContentModelGroupCrudDeleteArgs) {
+    public async delete({ group }: CmsContentModelGroupStorageOperationsDeleteArgs) {
         const { db } = this.context;
         const { id } = group;
         await db.delete({
@@ -120,7 +121,7 @@ export default class CmsContentModelGroupCrudDynamoElastic implements CmsContent
         });
         return true;
     }
-    public async get({ id }: CmsContentModelGroupCrudGetArgs) {
+    public async get({ id }: CmsContentModelGroupStorageOperationsGetArgs) {
         const { db } = this.context;
         const [[group]] = await db.read<CmsContentModelGroup>({
             // TODO there should be no defaults like this anymore
@@ -129,7 +130,7 @@ export default class CmsContentModelGroupCrudDynamoElastic implements CmsContent
         });
         return group || null;
     }
-    public async list({ where, limit }: CmsContentModelGroupCrudListArgs) {
+    public async list({ where, limit }: CmsContentModelGroupStorageOperationsListArgs) {
         const { db } = this.context;
         const [groups] = await db.read<CmsContentModelGroup>({
             // TODO there should be no defaults like this anymore
@@ -150,7 +151,7 @@ export default class CmsContentModelGroupCrudDynamoElastic implements CmsContent
         return typeof limit !== "undefined" ? filteredGroups.slice(0, limit) : filteredGroups;
     }
 
-    public async update({ group, data }: CmsContentModelGroupCrudUpdateArgs) {
+    public async update({ group, data }: CmsContentModelGroupStorageOperationsUpdateArgs) {
         const { db } = this.context;
         await db.update({
             // TODO there should be no defaults like this anymore

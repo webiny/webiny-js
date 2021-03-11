@@ -1,8 +1,8 @@
 import {
     CmsContentModel,
     CmsContentModelCreateHookPluginArgs,
-    CmsContentModelCrud,
-    CmsContentModelCrudBeforeCreateArgs,
+    CmsContentModelStorageOperations,
+    CmsContentModelStorageOperationsBeforeCreateArgs,
     CmsContext
 } from "../../../../types";
 import camelCase from "lodash/camelCase";
@@ -92,16 +92,16 @@ const createNewModelId = (existingModels: string[], model: CmsContentModel): str
     }
 };
 
-interface Args extends CmsContentModelCrudBeforeCreateArgs {
+interface Args extends CmsContentModelStorageOperationsBeforeCreateArgs {
     context: CmsContext;
-    crud: CmsContentModelCrud;
+    storageOperations: CmsContentModelStorageOperations;
 }
 
 export const beforeCreateHook = async (args: Args): Promise<void> => {
-    const { context, data, crud, input } = args;
+    const { context, data, storageOperations, input } = args;
     const { modelId } = data;
 
-    const models = (await crud.list()).map(m => m.modelId);
+    const models = (await storageOperations.list()).map(m => m.modelId);
     // If there is a modelId assigned, check if it's unique ...
     if (!!(modelId || "").trim()) {
         const modelIdCamelCase = camelCase(data.name);
@@ -113,15 +113,12 @@ export const beforeCreateHook = async (args: Args): Promise<void> => {
         data.modelId = createNewModelId(models, data);
     }
 
-    if (crud.beforeCreate) {
-        await crud.beforeCreate({
-            input,
-            data
-        });
+    if (storageOperations.beforeCreate) {
+        await storageOperations.beforeCreate(args);
     }
     await runContentModelLifecycleHooks<CmsContentModelCreateHookPluginArgs>("beforeCreate", {
         context,
-        crud,
+        storageOperations,
         input,
         model: data
     });

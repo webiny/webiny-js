@@ -1,10 +1,10 @@
 import {
     CmsContentModel,
-    CmsContentModelCrud,
-    CmsContentModelCrudCreateArgs,
-    CmsContentModelCrudDeleteArgs,
-    CmsContentModelCrudGetArgs,
-    CmsContentModelCrudUpdateArgs,
+    CmsContentModelStorageOperations,
+    CmsContentModelStorageOperationsCreateArgs,
+    CmsContentModelStorageOperationsDeleteArgs,
+    CmsContentModelStorageOperationsGetArgs,
+    CmsContentModelStorageOperationsUpdateArgs,
     CmsContext
 } from "../../../../../types";
 import * as utils from "../../../../../utils";
@@ -14,7 +14,7 @@ interface ConstructorArgs {
     context: CmsContext;
     basePrimaryKey: string;
 }
-export default class CmsContentModelCrudDynamoElastic implements CmsContentModelCrud {
+export default class CmsContentModelCrudDynamoElastic implements CmsContentModelStorageOperations {
     private readonly _context: CmsContext;
     private readonly _primaryKey: string;
 
@@ -30,7 +30,9 @@ export default class CmsContentModelCrudDynamoElastic implements CmsContentModel
         this._primaryKey = `${basePrimaryKey}#CM`;
     }
 
-    public async create({ data }: CmsContentModelCrudCreateArgs): Promise<CmsContentModel> {
+    public async create({
+        data
+    }: CmsContentModelStorageOperationsCreateArgs): Promise<CmsContentModel> {
         const { db, elasticSearch } = this.context;
 
         const esIndex = utils.defaults.es(this.context, data);
@@ -71,7 +73,7 @@ export default class CmsContentModelCrudDynamoElastic implements CmsContentModel
         throw ex;
     }
 
-    public async delete({ model }: CmsContentModelCrudDeleteArgs): Promise<boolean> {
+    public async delete({ model }: CmsContentModelStorageOperationsDeleteArgs): Promise<boolean> {
         const { db, elasticSearch } = this.context;
         await db.delete({
             // TODO there should be no defaults like this anymore
@@ -96,7 +98,9 @@ export default class CmsContentModelCrudDynamoElastic implements CmsContentModel
         }
         return true;
     }
-    public async get({ id }: CmsContentModelCrudGetArgs): Promise<CmsContentModel | null> {
+    public async get({
+        id
+    }: CmsContentModelStorageOperationsGetArgs): Promise<CmsContentModel | null> {
         const { db } = this.context;
 
         const [[model]] = await db.read<CmsContentModel>({
@@ -126,7 +130,10 @@ export default class CmsContentModelCrudDynamoElastic implements CmsContentModel
         return models;
     }
 
-    public async update({ model, data }: CmsContentModelCrudUpdateArgs): Promise<CmsContentModel> {
+    public async update({
+        model,
+        data
+    }: CmsContentModelStorageOperationsUpdateArgs): Promise<CmsContentModel> {
         const { db } = this.context;
         await db.update({
             // TODO there should be no defaults like this anymore
