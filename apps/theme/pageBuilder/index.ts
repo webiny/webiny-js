@@ -26,7 +26,8 @@ export default [
                         { className: "secondary", label: "Secondary" },
                         { className: "outline-primary", label: "Outline Primary" },
                         { className: "outline-secondary", label: "Outline Secondary" },
-                        { className: "simple", label: "Simple" }
+                        { className: "simple", label: "Simple" },
+                        { className: "playful", label: "Playful" }
                     ]
                 },
                 heading: {

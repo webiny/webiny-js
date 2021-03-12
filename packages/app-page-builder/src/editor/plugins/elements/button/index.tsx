@@ -1,9 +1,11 @@
 import React from "react";
 import { css } from "emotion";
+import kebabCase from "lodash/kebabCase";
 import {
     DisplayMode,
     PbEditorPageElementPlugin,
-    PbEditorPageElementStyleSettingsPlugin
+    PbEditorPageElementStyleSettingsPlugin,
+    PbEditorElementPluginArgs
 } from "../../../../types";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 import ButtonSettings from "./ButtonSettings";
@@ -14,35 +16,45 @@ const buttonWrapper = css({
     justifyContent: "center"
 });
 
-export default () => {
+const buttonElementPluginsFactory = (args: PbEditorElementPluginArgs = {}) => {
+    const defaultSettings = [
+        "pb-editor-page-element-style-settings-button",
+        "pb-editor-page-element-style-settings-link",
+        "pb-editor-page-element-style-settings-horizontal-align-flex",
+        "pb-editor-page-element-style-settings-margin",
+        "pb-editor-page-element-settings-clone",
+        "pb-editor-page-element-settings-delete"
+    ];
+
+    const defaultToolbar = {
+        title: "Button",
+        group: "pb-editor-element-group-basic",
+        preview() {
+            return (
+                <div className={buttonWrapper}>
+                    <button className={"webiny-pb-page-element-button"}>Click me</button>
+                </div>
+            );
+        }
+    };
+
+    const elementType = kebabCase(args.elementType || "button");
+
     return [
         {
-            name: "pb-editor-page-element-button",
+            name: `pb-editor-page-element-${elementType}`,
             type: "pb-editor-page-element",
-            elementType: "button",
-            toolbar: {
-                title: "Button",
-                group: "pb-editor-element-group-basic",
-                preview() {
-                    return (
-                        <div className={buttonWrapper}>
-                            <button className={"webiny-pb-page-element-button"}>Click me</button>
-                        </div>
-                    );
-                }
-            },
-            settings: [
-                "pb-editor-page-element-style-settings-button",
-                "pb-editor-page-element-style-settings-link",
-                "pb-editor-page-element-style-settings-horizontal-align-flex",
-                "pb-editor-page-element-style-settings-margin",
-                "pb-editor-page-element-settings-clone",
-                "pb-editor-page-element-settings-delete"
-            ],
+            elementType: elementType,
+            toolbar:
+                typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
+            settings:
+                typeof args.settings === "function"
+                    ? args.settings(defaultSettings)
+                    : defaultSettings,
             target: ["cell", "block"],
             create(options) {
-                return {
-                    type: "button",
+                const defaultValue = {
+                    type: this.elementType,
                     elements: [],
                     data: {
                         buttonText: "Click me",
@@ -59,6 +71,8 @@ export default () => {
                     },
                     ...options
                 };
+
+                return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
             },
             render({ element }) {
                 return <Button element={element} />;
@@ -73,3 +87,5 @@ export default () => {
         } as PbEditorPageElementStyleSettingsPlugin
     ];
 };
+
+export default buttonElementPluginsFactory;
