@@ -35,7 +35,7 @@ export default (): ContextPlugin<CmsContext> => ({
             pluginType
         );
         /**
-         * Storage operations for the content model group.
+         * Storage operations for the content model.
          * Contains logic to save the data into the specific storage.
          */
         const providerPlugin = providerPlugins[providerPlugins.length - 1];
