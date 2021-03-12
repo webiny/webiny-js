@@ -62,7 +62,7 @@ It's super important that, when you're testing your npx project, you also pass t
 --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
 ```
 
-This will set the necessary values in yarn2 config file, which will be located in your newly created project.
+This will set the necessary values in yarn2 config file, which will be located in your newly created project. But don't worry about it right now, this will be revisited in step 4.
 
 > Yarn2 projects don't rely on global configurations and is not installed globally, but on per-project basis. This allows having multiple versions of yarn2, for different projects.
 
