@@ -48,20 +48,10 @@ class ElasticSearch {
                             },
                             Action: "es:*",
                             Resource: this.domain.arn.apply(v => `${v}/*`)
-                        },
-                        /**
-                         * Deny all other requests
-                         */
-                        {
-                            Effect: "Deny",
-                            Principal: "*",
-                            Action: "es:*",
-                            Resource: this.domain.arn.apply(v => `${v}/*`)
                         }
                         /**
-                         * Replace the above `Deny` policy, with the following `Allow` policy to allow access
-                         * from specific IP address. This will be useful for development purposes, when you want
-                         * to access Kibana to inspect your data.
+                         * Uncomment the following `Allow` policy to allow access from specific IP address.
+                         * This will be useful for development purposes, when you want to access Kibana to inspect your data.
                          *
                          * If you need to setup proper user accounts for access to Kibana, you'll need to connect it to
                          * Cognito User Pool. For instructions, see the official documentation:
