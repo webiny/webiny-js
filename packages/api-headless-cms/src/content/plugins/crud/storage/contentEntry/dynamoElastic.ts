@@ -2,7 +2,7 @@ import {
     CmsContentEntry,
     CmsContentEntryStorageOperations,
     CmsContentEntryStorageOperationsCreateArgs, CmsContentEntryStorageOperationsCreateRevisionFromArgs,
-    CmsContentEntryStorageOperationsDeleteArgs,
+    CmsContentEntryStorageOperationsDeleteArgs, CmsContentEntryStorageOperationsDeleteRevisionArgs,
     CmsContentEntryStorageOperationsGetArgs,
     CmsContentEntryStorageOperationsListArgs, CmsContentEntryStorageOperationsListResponse,
     CmsContentEntryStorageOperationsUpdateArgs, CmsContentModel,
@@ -19,6 +19,8 @@ import {
 } from "../../contentEntry/es";
 import {entryFromStorageTransform, entryToStorageTransform} from "../../../utils/entryStorage";
 import cloneDeep from "lodash/cloneDeep";
+import {afterDeleteRevisionHook} from "../../contentEntry/afterDeleteRevision.hook";
+import omit from "lodash/omit";
 
 
 const TYPE_ENTRY = "cms.entry";
@@ -27,7 +29,7 @@ const TYPE_ENTRY_PUBLISHED = TYPE_ENTRY + ".p";
 
 const getEntryData = (context: CmsContext, entry: CmsContentEntry) => {
     return {
-        ...entry,
+        ...omit(entry, ["PK", "SK", "TYPE",]),
         webinyVersion: context.WEBINY_VERSION
     }
 };
@@ -64,15 +66,15 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
     private get context(): CmsContext {
         return this._context;
     }
-   
-    public constructor({ context, basePrimaryKey }: ConstructorArgs) {
+    
+    public constructor({context, basePrimaryKey}: ConstructorArgs) {
         this._context = context;
         this._primaryKey = `${basePrimaryKey}#CME`;
     }
     
     public async create(model: CmsContentModel, {data}: CmsContentEntryStorageOperationsCreateArgs): Promise<CmsContentEntry> {
         const {db} = this.context;
-    
+        
         data.id = `${data.id}#${utils.zeroPad(data.version)}`;
         
         const storageEntry = await entryToStorageTransform(this.context, model, data);
@@ -83,11 +85,11 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
             originalEntry: cloneDeep(data),
             storageEntry: cloneDeep(storageEntry),
         });
-    
+        
         // TODO there should be no defaults like this anymore
-        const { index: esIndex } = utils.defaults.es(this.context, model);
-    
-    
+        const {index: esIndex} = utils.defaults.es(this.context, model);
+        
+        
         const batch = db
             .batch()
             // Create main entry item
@@ -122,7 +124,7 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
                     data: getESLatestEntryData(this.context, esEntry)
                 }
             });
-    
+        
         try {
             await batch.execute();
         } catch(ex) {
@@ -141,7 +143,7 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
     
     public async createRevisionFrom(model: CmsContentModel, args: CmsContentEntryStorageOperationsCreateRevisionFromArgs) {
         const {db} = this.context;
-    
+        
         const {originalEntry, data, latestEntry} = args;
         
         const storageData = await entryToStorageTransform(this.context, model, data);
@@ -155,7 +157,6 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
         // TODO there should be no defaults like this anymore
         const {index: esIndex} = utils.defaults.es(this.context, model);
         
-    
         const primaryKey = this.getPrimaryKey(storageData.id);
         const batch = db.batch();
         batch
@@ -217,9 +218,117 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
         // There are no modifications on the entry created so just return the data.
         return data;
     }
+    
     public async delete(model: CmsContentModel, args: CmsContentEntryStorageOperationsDeleteArgs): Promise<boolean> {
         return Promise.resolve(false);
     }
+    
+    public async deleteRevision(model: CmsContentModel, args: CmsContentEntryStorageOperationsDeleteRevisionArgs): Promise<boolean> {
+        const {db} = this.context;
+        const {entry, latestEntry, publishedEntry, previousEntry} = args;
+        
+        const revisionId = this.createRevisionId(entry.id, entry.version);
+        
+        const primaryKey = this.getPrimaryKey(entry.id);
+        const batch = db.batch()
+            .delete({
+                ...utils.defaults.db(),
+                query: {
+                    PK: primaryKey,
+                    SK: this.getSecondaryKeyRevision(entry.version),
+                }
+            });
+        const latestRevisionId = latestEntry ? this.createRevisionId(latestEntry.id, latestEntry.version) : null;
+        const publishedRevisionId = latestEntry ? this.createRevisionId(publishedEntry.id, publishedEntry.version) : null;
+        const isLatest = latestRevisionId === revisionId;
+        const isPublished = publishedRevisionId === revisionId;
+    
+        const es = utils.defaults.es(this.context, model);
+        
+        if(isPublished) {
+            batch.delete(
+                {
+                    ...utils.defaults.db(),
+                    query: {
+                        PK: primaryKey,
+                        SK: this.getSecondaryKeyPublished()
+                    }
+                },
+                {
+                    ...utils.defaults.esDb(),
+                    query: {
+                        PK: primaryKey,
+                        SK: this.getSecondaryKeyPublished()
+                    }
+                }
+            );
+        }
+        if (isLatest && !latestEntry) {
+            // If we haven't found the previous revision, this must must be the last revision.
+            const deleteBatch = db.batch();
+            batch
+                .delete({
+                    ...utils.defaults.db(),
+                    query: {
+                        PK: primaryKey,
+                        SK: {$gte: " "},
+                    }
+                })
+                .delete({
+                    ...utils.defaults.esDb(),
+                    query: {
+                        PK: primaryKey,
+                        SK: {$gte: " "},
+                    },
+                });
+            try {
+                await deleteBatch.execute();
+            } catch(ex) {
+                throw new WebinyError(
+                    ex.message || "Could not delete revision from given entry.",
+                    ex.code || "DELETE_REVISION_ERROR",
+                    {
+                        error: ex,
+                        entry,
+                        publishedEntry,
+                    }
+                );
+            }
+            return true;
+        }
+        else if(isLatest) {
+            // Update latest entry data.
+            batch
+                .update({
+                    ...utils.defaults.db(),
+                    query: {
+                        PK: primaryKey,
+                        SK: this.getSecondaryKeyLatest()
+                    },
+                    data: {
+                        ...latestEntry,
+                        ...getESLatestEntryData(this.context, previousEntry),
+                    }
+                })
+                .update({
+                    ...utils.defaults.esDb(),
+                    query: {
+                        PK: primaryKey,
+                        SK: this.getSecondaryKeyLatest()
+                    },
+                    data: {
+                        PK: primaryKey,
+                        SK: this.getSecondaryKeyLatest(),
+                        index: es.index,
+                        data: getESLatestEntryData(this.context, previousEntry)
+                    }
+                });
+        }
+        
+        
+        return true;
+    }
+    
     public async get(model: CmsContentModel, args: CmsContentEntryStorageOperationsGetArgs): Promise<CmsContentEntry | null> {
         throw new WebinyError("Unsupported operation.")
     }
@@ -230,14 +339,14 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
      */
     public async getMultiple(model: CmsContentModel, args: CmsContentEntryStorageOperationsGetArgs[]): Promise<(CmsContentEntry | null)[]> {
         const {db} = this.context;
-        if (args.length === 0) {
+        if(args.length === 0) {
             return [];
         }
         /**
          * This is a really specific use method so it should not be used in fetching a lot of items.
          * Either use list or some other way to get them.
          */
-        else if (args.length > 3) {
+        else if(args.length > 3) {
             throw new WebinyError(
                 "Unsupported getMultiple amount.",
                 "MULTIPLE_GET_UNSUPPORTED",
@@ -247,7 +356,7 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
             )
         }
         const batch = db.batch();
-        for (const arg of args) {
+        for(const arg of args) {
             batch
                 .read({
                     ...utils.defaults.db(),
@@ -285,26 +394,26 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
             context: this.context,
             parentObject: "values"
         });
-    
+        
         let response;
         try {
             response = await elasticSearch.search({
                 ...utils.defaults.es(this.context, model),
                 body
             });
-        } catch (ex) {
+        } catch(ex) {
             throw new WebinyError(ex.message, ex.code, ex.meta);
         }
-    
-        const { hits, total } = response.body.hits;
+        
+        const {hits, total} = response.body.hits;
         const items = extractEntriesFromIndex({
             context: this.context,
             model,
             entries: hits.map(item => item._source)
         });
-    
+        
         const hasMoreItems = items.length > limit;
-        if (hasMoreItems) {
+        if(hasMoreItems) {
             // Remove the last item from results, we don't want to include it.
             items.pop();
         }
@@ -326,7 +435,7 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
      * There are search limitations on the DDB so we are imposing them in the code.
      */
     private createQueryFromArg(arg: CmsContentEntryStorageOperationsGetArgs) {
-        if (!arg.where) {
+        if(!arg.where) {
             throw new WebinyError(
                 `Missing "where" argument.`,
                 "SEARCH_ERROR",
@@ -336,13 +445,16 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
             );
         }
         let secondaryKey: string;
-        if (arg.where.latest) {
+        if(arg.where.latest) {
             secondaryKey = this.getSecondaryKeyLatest();
-        } else if (arg.where.published) {
+        }
+        else if(arg.where.published) {
             secondaryKey = this.getSecondaryKeyPublished();
-        } else if (arg.where.version !== undefined) {
+        }
+        else if(arg.where.version !== undefined) {
             secondaryKey = this.getSecondaryKeyRevision(arg.where.version);
-        } else {
+        }
+        else {
             throw new WebinyError(
                 "Unsupported search parameters.",
                 "SEARCH_UNSUPPORTED",
@@ -361,11 +473,13 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
      * There are sorting limitations on the DDB so we are imposing them in the code.
      */
     private createSortFromArg(arg: CmsContentEntryStorageOperationsGetArgs): Record<string, 1 | -1> {
-        if (!arg.sort) {
+        if(!arg.sort) {
             return undefined;
-        } else if (Object.keys(arg.sort).length === 0){
+        }
+        else if(Object.keys(arg.sort).length === 0) {
             return undefined;
-        } else if (Object.keys(arg.sort).length > 1 || !arg.sort[0].startsWith("createdOn_")) {
+        }
+        else if(Object.keys(arg.sort).length > 1 || !arg.sort[0].startsWith("createdOn_")) {
             throw new WebinyError(
                 "Unsupported entry sorting.",
                 "SEARCH_SORT_UNSUPPORTED",
@@ -385,14 +499,21 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
          * If ID includes # it means it is composed of ID and VERSION.
          * We need ID only so extract it.
          */
-        if (id.includes("#")) {
+        if(id.includes("#")) {
             id = id.split("#").shift();
         }
         return `${this._primaryKey}#${id}`;
     }
     
+    private createRevisionId(id: string, version: number): string {
+        if(id.includes("#")) {
+            id = id.split("#").shift();
+        }
+        return `${id}#${version}`;
+    }
+    
     private getSecondaryKeyRevision(version: string | number) {
-        if (typeof version === "string") {
+        if(typeof version === "string") {
             return `REV#${version}`;
         }
         return `REV#${utils.zeroPad(version)}`

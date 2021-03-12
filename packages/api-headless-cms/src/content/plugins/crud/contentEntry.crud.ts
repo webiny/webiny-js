@@ -662,8 +662,8 @@ export default (): ContextPlugin<CmsContext> => ({
                 
                 utils.checkOwnership(context, permission, entry, "ownedBy");
     
-                const isLatest = latestEntry ? latestEntry.id === revisionId : false;
-                const isPublished = publishedEntry ? publishedEntry.id === revisionId : false;
+                const isLatest = latestEntry?.id === revisionId;
+                const isPublished = publishedEntry?.id === revisionId;
                 
                 // BATCH 1 delete revision from the database
                 const deleteArgsList: any[] = [
@@ -698,7 +698,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 });
                 // if no previous entry, just call delete - no need for BATCH
                 if (!previousEntry) {
-                    return
+                
                 }
                 
                 // BATCH 2 insert new latest
@@ -803,12 +803,42 @@ export default (): ContextPlugin<CmsContext> => ({
                 
                 // Execute DB operations
                 await batch.execute();
-                
-                await afterDeleteRevisionHook({
-                    context,
-                    model,
-                    entry, storageOperations
-                });
+    
+                try {
+                    await beforeDeleteRevisionHook({
+                        context,
+                        model,
+                        storageOperations,
+                        publishedEntry,
+                        latestEntry,
+                        previousEntry,
+                        entry,
+                    });
+                    await storageOperations.deleteRevision(model, {
+                        publishedEntry,
+                        latestEntry,
+                        previousEntry,
+                        entry,
+                    });
+                    await afterDeleteRevisionHook({
+                        context,
+                        model,
+                        storageOperations,
+                        publishedEntry,
+                        latestEntry,
+                        previousEntry,
+                        entry,
+                    });
+                } catch(ex) {
+                    throw new WebinyError(
+                        ex.message,
+                        ex.code || "DELETE_REVISION_ERROR",
+                        {
+                            error: ex,
+                            entry,
+                        }
+                    );
+                }
             },
             deleteEntry: async (model, entryId) => {
                 const permission = await checkPermissions({rwd: "d"});

@@ -2447,7 +2447,6 @@ export interface CmsContentEntryStorageOperationsCreateArgs {
 }
 export interface CmsContentEntryStorageOperationsAfterCreateArgs {
     input: Record<string, any>;
-    model: CmsContentEntry;
 }
 export interface CmsContentEntryStorageOperationsBeforeCreateRevisionFromArgs {
     originalEntry: CmsContentEntry;
@@ -2482,30 +2481,33 @@ export interface CmsContentEntryStorageOperationsAfterUpdateArgs {
 }
 
 export interface CmsContentEntryStorageOperationsBeforeDeleteRevisionArgs {
-    model: CmsContentEntry;
+    publishedEntry: CmsContentEntry;
+    latestEntry: CmsContentEntry;
+    previousEntry: CmsContentEntry;
     entry: CmsContentEntry;
 }
 
 export interface CmsContentEntryStorageOperationsDeleteRevisionArgs {
-    model: CmsContentEntry;
+    publishedEntry: CmsContentEntry;
+    latestEntry: CmsContentEntry;
+    previousEntry: CmsContentEntry;
     entry: CmsContentEntry;
 }
 
 export interface CmsContentEntryStorageOperationsAfterDeleteRevisionArgs {
-    model: CmsContentEntry;
+    publishedEntry: CmsContentEntry;
+    latestEntry: CmsContentEntry;
+    previousEntry: CmsContentEntry;
     entry: CmsContentEntry;
 }
 
 export interface CmsContentEntryStorageOperationsBeforeDeleteArgs {
-    model: CmsContentEntry;
     entry: CmsContentEntry;
 }
 export interface CmsContentEntryStorageOperationsDeleteArgs {
-    model: CmsContentEntry;
     entry: CmsContentEntry;
 }
 export interface CmsContentEntryStorageOperationsAfterDeleteArgs {
-    model: CmsContentEntry;
     entry: CmsContentEntry;
 }
 
