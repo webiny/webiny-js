@@ -596,6 +596,17 @@ export type PbRenderResponsiveModePlugin = Plugin & {
     };
 };
 
+export type PbEditorElementPluginArgs = {
+    create?: (defaultValue) => Record<string, any>;
+    settings?: (defaultValue) => Array<string | Array<string | any>>;
+    toolbar?: (defaultValue) => Record<string, any>;
+    elementType?: string;
+};
+
+export type PbRenderElementPluginArgs = {
+    elementType?: string;
+};
+
 // ============== EVENT ACTION HANDLER ================= //
 export interface EventActionHandlerCallableState extends PbState {
     getElementById(id: string): Promise<PbEditorElement>;
