@@ -79,7 +79,8 @@ describe("predefined values", () => {
             data: {
                 name: "A hard debuggable bug",
                 bugType: "critical",
-                bugValue: 2
+                bugValue: 2,
+                bugFixed: 1
             }
         });
 
@@ -105,7 +106,8 @@ describe("predefined values", () => {
                         },
                         name: "A hard debuggable bug",
                         bugType: "critical",
-                        bugValue: 2
+                        bugValue: 2,
+                        bugFixed: 1
                     },
                     error: null
                 }
@@ -125,7 +127,8 @@ describe("predefined values", () => {
             data: {
                 name: "A hard debuggable bug",
                 bugType: "nonExistingBugType",
-                bugValue: 2
+                bugValue: 2,
+                bugFixed: 3
             }
         });
 
@@ -161,7 +164,8 @@ describe("predefined values", () => {
             data: {
                 name: "A hard debuggable bug",
                 bugType: "critical",
-                bugValue: 4567
+                bugValue: 4567,
+                bugFixed: 3
             }
         });
 
@@ -197,7 +201,8 @@ describe("predefined values", () => {
             data: {
                 name: "A hard debuggable bug",
                 bugType: "nonExistingBug",
-                bugValue: 4567
+                bugValue: 4567,
+                bugFixed: 3
             }
         });
 
@@ -240,7 +245,8 @@ describe("predefined values", () => {
             data: {
                 name: "A hard debuggable bug",
                 bugType: "critical",
-                bugValue: 2
+                bugValue: 2,
+                bugFixed: 3
             }
         });
 
@@ -266,7 +272,8 @@ describe("predefined values", () => {
                         },
                         name: "A hard debuggable bug",
                         bugType: "critical",
-                        bugValue: 2
+                        bugValue: 2,
+                        bugFixed: 3
                     },
                     error: null
                 }
@@ -288,7 +295,8 @@ describe("predefined values", () => {
             data: {
                 name: "A hard debuggable bug",
                 bugType: "critical",
-                bugValue: 3
+                bugValue: 3,
+                bugFixed: 3
             }
         });
 
@@ -314,7 +322,8 @@ describe("predefined values", () => {
                         },
                         name: "A hard debuggable bug",
                         bugType: "critical",
-                        bugValue: 3
+                        bugValue: 3,
+                        bugFixed: 3
                     },
                     error: null
                 }

@@ -38,7 +38,8 @@ const ids = {
     // bug
     field601: shortId.generate(),
     field602: shortId.generate(),
-    field603: shortId.generate()
+    field603: shortId.generate(),
+    field604: shortId.generate()
 };
 
 const models: CmsContentModel[] = [
@@ -46,6 +47,7 @@ const models: CmsContentModel[] = [
     {
         createdOn: new Date(),
         savedOn: new Date(),
+        locale: "en-US",
         titleFieldId: "title",
         lockedFields: [],
         name: "Category",
@@ -116,6 +118,7 @@ const models: CmsContentModel[] = [
     {
         createdOn: new Date(),
         savedOn: new Date(),
+        locale: "en-US",
         titleFieldId: "title",
         lockedFields: [],
         name: "Product",
@@ -412,6 +415,7 @@ const models: CmsContentModel[] = [
     {
         createdOn: new Date(),
         savedOn: new Date(),
+        locale: "en-US",
         titleFieldId: "text",
         lockedFields: [],
         name: "Review",
@@ -512,6 +516,7 @@ const models: CmsContentModel[] = [
     {
         createdOn: new Date(),
         savedOn: new Date(),
+        locale: "en-US",
         titleFieldId: "fullName",
         lockedFields: [],
         name: "Author",
@@ -552,6 +557,7 @@ const models: CmsContentModel[] = [
     {
         createdOn: new Date(),
         savedOn: new Date(),
+        locale: "en-US",
         titleFieldId: "name",
         lockedFields: [],
         name: "Fruit",
@@ -950,6 +956,7 @@ const models: CmsContentModel[] = [
     {
         createdOn: new Date(),
         savedOn: new Date(),
+        locale: "en-US",
         titleFieldId: "name",
         lockedFields: [],
         name: "Bug",
@@ -959,7 +966,7 @@ const models: CmsContentModel[] = [
             id: contentModelGroup.id,
             name: contentModelGroup.name
         },
-        layout: [[ids.field601], [ids.field602], [ids.field603]],
+        layout: [[ids.field601], [ids.field602], [ids.field603], [ids.field604]],
         fields: [
             {
                 id: ids.field601,
@@ -1033,6 +1040,37 @@ const models: CmsContentModel[] = [
                         },
                         {
                             label: "High bug value",
+                            value: "3"
+                        }
+                    ]
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            },
+            {
+                id: ids.field604,
+                multipleValues: false,
+                helpText: "",
+                label: "Bug fixed?",
+                type: "number",
+                fieldId: "bugFixed",
+                validation: [],
+                listValidation: [],
+                placeholderText: "A bug is fixed",
+                predefinedValues: {
+                    enabled: true,
+                    values: [
+                        {
+                            label: "No",
+                            value: "1"
+                        },
+                        {
+                            label: "Almost",
+                            value: "2"
+                        },
+                        {
+                            label: "Yes!",
                             value: "3"
                         }
                     ]

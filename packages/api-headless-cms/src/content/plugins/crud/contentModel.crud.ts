@@ -202,10 +202,8 @@ export default (): ContextPlugin<CmsContext> => ({
                     ...model,
                     ...data
                 };
-
-                await afterUpdateHook({ context, model: combinedModel });
-
                 await updateManager(context, combinedModel);
+                await afterUpdateHook({ context, model: combinedModel });
             },
             async update(modelId, data) {
                 await checkPermissions("w");
