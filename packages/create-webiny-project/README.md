@@ -51,7 +51,7 @@ Start by running the `yarn verdaccio:start` command, which will, as the script n
 Once you have Verdaccio up and running, you'll also need to change the default NPM registry. Meaning, when you run `npx create-webiny-project ...`, you want it to start fetching packages from Verdaccio, not real NPM. Verdaccio runs on localhost, on port 4873, so, in your terminal, run the following command:
 
 ```
-npm config set registry http://localhost:4873/
+npm config set registry http://localhost:4873
 ```
 
 Note that this will only help you with `npx`, but won't help you when a new project foundation is created, and the dependencies start to get pulled. This is because we're using yarn2, which actually doesn't respect the values that were written by the `npm config set ...` command we just executed.
