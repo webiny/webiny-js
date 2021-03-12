@@ -146,3 +146,9 @@ On Linux/Mac, the shared cache folder should be located in: `/Users/adrian/Libra
 In these folders, most probably, you'll also have the `\Berry\cache` folder. But, there were also cases where this folder did not exist.
 
 Deleting the mentioned cache folders should help with the issue of still receiving old packages in your testing sessions.
+
+With all of this being said, you can also try the [following command](https://yarnpkg.com/features/offline-cache#cleaning-the-cache):
+
+```bash
+yarn cache clean --mirror
+````
