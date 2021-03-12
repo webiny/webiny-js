@@ -9,11 +9,19 @@ import FileManager from "./fileManager";
 import PageBuilder from "./pageBuilder";
 import PrerenderingService from "./prerenderingService";
 
+/**
+ * We protect mission critical cloud infrastructure resource against accidental deletion. We do this
+ * only for the "prod" environment, but, if needed, feel free to additional environments.
+ * @see https://www.pulumi.com/docs/intro/concepts/resources/#protect
+ */
+const protectedEnvironment = process.env.WEBINY_ENV === "prod";
+
 export default () => {
-    const dynamoDb = new DynamoDB();
-    const cognito = new Cognito();
-    const elasticSearch = new ElasticSearch();
-    const fileManager = new FileManager();
+    const dynamoDb = new DynamoDB({ protectedEnvironment });
+    const cognito = new Cognito({ protectedEnvironment });
+
+    const elasticSearch = new ElasticSearch({ protectedEnvironment });
+    const fileManager = new FileManager({ protectedEnvironment });
 
     const prerenderingService = new PrerenderingService({
         env: {
