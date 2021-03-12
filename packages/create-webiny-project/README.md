@@ -84,6 +84,11 @@ yarn lerna:publish:verdaccio
 
 This will publish the packages to Verdaccio. Once it's done, you can start testing.
 
+> You can also execute both commands immediately with: 
+> ```
+> yarn lerna:version:verdaccio && yarn lerna:publish:verdaccio
+> ```
+
 #### 4. Test
 
 Test your changes with the following command:
