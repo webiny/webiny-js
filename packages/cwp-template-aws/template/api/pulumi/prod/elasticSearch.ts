@@ -21,7 +21,7 @@ class ElasticSearch {
                 }
             },
             vpcOptions: {
-                subnetIds: [vpc.subnets.private[0].id],
+                subnetIds: [vpc.subnets.private[0].id, vpc.subnets.private[1].id],
                 securityGroupIds: [vpc.vpc.defaultSecurityGroupId]
             },
             ebsOptions: {
