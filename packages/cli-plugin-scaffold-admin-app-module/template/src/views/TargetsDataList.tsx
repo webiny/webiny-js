@@ -26,6 +26,7 @@ import { useMutation, useQuery } from "@apollo/react-hooks";
 import { TargetItem, DataListChildProps } from "../types";
 import { DELETE_TARGET, LIST_TARGETS } from "./graphql";
 import { removeFromListCache } from "./cache";
+import { QueryResult } from "@apollo/react-common";
 
 const t = i18n.ns("admin-app-target/data-list");
 
@@ -36,6 +37,24 @@ interface Props {
     setLimit: (value: number) => void;
     sorters: { label: string; value: string }[];
 }
+
+const extractQueryGraphQLErrors = (listQuery: QueryResult): string[] => {
+    if (
+        !listQuery.data ||
+        Array.isArray(listQuery.data.errors) === false ||
+        listQuery.data.errors.length === 0
+    ) {
+        return [];
+    }
+    return listQuery.data.errors
+        .map(err => {
+            if (!err.message) {
+                return null;
+            }
+            return err.message;
+        })
+        .filter(Boolean);
+};
 
 const TargetsDataList: React.FunctionComponent<Props> = ({ sortBy, setSortBy, limit, sorters }) => {
     const { history } = useRouter();
@@ -109,7 +128,11 @@ const TargetsDataList: React.FunctionComponent<Props> = ({ sortBy, setSortBy, li
     const data = listQuery.loading
         ? []
         : dotProp.get(listQuery, "data.targets.listTargets.data", []);
-
+    // there is a possibility to receive graphql errors so show those as well
+    const errors = extractQueryGraphQLErrors(listQuery);
+    if (errors.length > 0) {
+        showSnackbar(errors.join("\n"));
+    }
     return (
         <DataList
             loading={loading}
