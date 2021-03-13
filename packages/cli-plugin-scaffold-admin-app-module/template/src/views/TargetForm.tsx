@@ -50,7 +50,7 @@ const TargetForm: React.FunctionComponent<Props> = ({ limit, sortBy }) => {
         variables: { id },
         skip: !id,
         onCompleted: data => {
-            const error = dotProp(data, "targets.getTarget.data.error", null);
+            const error = dotProp.get(data, "targets.getTarget.data.error", null);
             if (!error) {
                 return;
             }
@@ -78,7 +78,7 @@ const TargetForm: React.FunctionComponent<Props> = ({ limit, sortBy }) => {
                         data: data
                     },
                     update: (cache, response) => {
-                        const updateTargetResponse = dotProp(
+                        const updateTargetResponse = dotProp.get(
                             response,
                             "data.targets.updateTarget",
                             null
@@ -103,7 +103,7 @@ const TargetForm: React.FunctionComponent<Props> = ({ limit, sortBy }) => {
                         data: data
                     },
                     update: (cache, response) => {
-                        const createTargetResponse = dotProp(
+                        const createTargetResponse = dotProp.get(
                             response,
                             "data.targets.createTarget",
                             null
@@ -132,7 +132,7 @@ const TargetForm: React.FunctionComponent<Props> = ({ limit, sortBy }) => {
 
     const loading = [getQuery, createMutation, updateMutation].some(item => !!item.loading);
 
-    const targetData = dotProp(getQuery, "data.targets.getTarget.data", null);
+    const targetData = dotProp.get(getQuery, "data.targets.getTarget.data", null);
 
     const showEmptyView = !newTarget && !loading && !targetData;
     // Render "No content" selected view.

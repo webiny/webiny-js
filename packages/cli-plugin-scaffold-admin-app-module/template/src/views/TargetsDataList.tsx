@@ -61,7 +61,11 @@ const TargetsDataList: React.FunctionComponent<Props> = ({ sortBy, setSortBy, li
                         id: target.id
                     },
                     update: (cache, response) => {
-                        const error = dotProp(response, "data.targets.deleteTarget.error", null);
+                        const error = dotProp.get(
+                            response,
+                            "data.targets.deleteTarget.error",
+                            null
+                        );
                         if (error) {
                             return showSnackbar(error.message);
                         }
@@ -102,7 +106,9 @@ const TargetsDataList: React.FunctionComponent<Props> = ({ sortBy, setSortBy, li
 
     const loading = [listQuery, deleteMutation].some(item => !!item.loading);
 
-    const data = listQuery.loading ? [] : dotProp(listQuery, "data.targets.listTargets.data", []);
+    const data = listQuery.loading
+        ? []
+        : dotProp.get(listQuery, "data.targets.listTargets.data", []);
 
     return (
         <DataList
