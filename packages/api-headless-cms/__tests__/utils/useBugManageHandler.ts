@@ -22,6 +22,7 @@ const bugFields = `
     name
     bugType
     bugValue
+    bugFixed
 `;
 
 const errorFields = `

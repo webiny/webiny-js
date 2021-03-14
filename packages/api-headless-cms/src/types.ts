@@ -630,7 +630,7 @@ export interface CmsSettings {
     /**
      * Last content model change. Used to cache GraphQL schema.
      */
-    contentModelLastChange: Date;
+    contentModelLastChange: string;
 }
 
 /**
@@ -648,10 +648,6 @@ export interface CmsSettingsContext {
          */
         get: () => Promise<CmsSettings | null>;
     };
-    /**
-     * Last content model change. Used to cache GraphQL schema.
-     */
-    contentModelLastChange: Date;
     /**
      * Gets settings model from the database.
      */
