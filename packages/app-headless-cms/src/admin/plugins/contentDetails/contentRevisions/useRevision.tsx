@@ -2,10 +2,10 @@ import React, { useMemo } from "react";
 import { useRouter } from "@webiny/react-router";
 import { useHandlers } from "@webiny/app/hooks/useHandlers";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { CmsEditorContentEntry, CmsEditorContentModel } from "../../../../types";
-import * as GQL from "../../../views/components/ContentModelForm/graphql";
+import { CmsEditorContentEntry, CmsEditorContentModel } from "~/types";
+import * as GQL from "~/admin/views/components/ContentModelForm/graphql";
 import * as GQLCache from "../cache";
-import { useApolloClient } from "../../../hooks";
+import { useApolloClient } from "~/admin/hooks";
 
 export type UseRevisionProps = {
     contentModel: CmsEditorContentModel;

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { CmsContentDetailsPlugin } from "../../../../types";
+import { CmsContentDetailsPlugin } from "~/types";
 import Footer from "./Footer";
 import SubmitButton from "./SubmitButton/SubmitButton";
 

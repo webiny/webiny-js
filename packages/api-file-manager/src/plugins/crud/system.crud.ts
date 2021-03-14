@@ -1,7 +1,7 @@
 import { NotAuthorizedError } from "@webiny/api-security";
 import { getApplicablePlugin } from "@webiny/api-upgrade";
 import Error from "@webiny/error";
-import { FileManagerContext, Settings, SystemCRUD } from "../../types";
+import { FileManagerContext, Settings, SystemCRUD } from "~/types";
 import defaults from "./utils/defaults";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 

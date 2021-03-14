@@ -1,4 +1,4 @@
-import { CmsEditorContentModel } from "../../../../../../types";
+import { CmsEditorContentModel } from "~/types";
 
 export default ({
     data,

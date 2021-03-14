@@ -1,6 +1,6 @@
 import React from "react";
 import get from "lodash/get";
-import { CmsEditorFieldRendererPlugin } from "../../../../types";
+import { CmsEditorFieldRendererPlugin } from "~/types";
 import { Switch } from "@webiny/ui/Switch";
 import { i18n } from "@webiny/app/i18n";
 

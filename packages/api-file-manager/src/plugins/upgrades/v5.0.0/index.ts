@@ -1,7 +1,7 @@
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
-import { FileManagerContext } from "../../../types";
+import { FileManagerContext } from "~/types";
 import { paginateBatch } from "../utils";
-import defaults from "../../crud/utils/defaults";
+import defaults from "~/plugins/crud/utils/defaults";
 
 const plugin: UpgradePlugin<FileManagerContext> = {
     name: "api-upgrade-file-manager",

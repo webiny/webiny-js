@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Plugin } from "@webiny/plugins/types";
 import { ReactElement, ReactNode } from "react";
-import { BindComponent, FormChildrenFunctionParams, Form, FormOnSubmit } from "@webiny/form";
+import { BindComponent, FormRenderPropParams, Form, FormOnSubmit } from "@webiny/form";
 import { ApolloClient } from "apollo-client";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 import Label from "./admin/views/components/ContentModelForm/ContentFormRender/components/Label";
@@ -111,7 +111,7 @@ export interface CmsEditorFieldTypePlugin extends Plugin {
          * ```
          */
         renderSettings?: (params: {
-            form: FormChildrenFunctionParams;
+            form: FormRenderPropParams;
             afterChangeLabel: (value: string) => void;
             uniqueFieldIdValidator: (fieldId: string) => void;
             contentModel: CmsEditorContentModel;
@@ -131,7 +131,7 @@ export interface CmsEditorFieldTypePlugin extends Plugin {
          * ```
          */
         renderPredefinedValues?: (params: {
-            form: FormChildrenFunctionParams;
+            form: FormRenderPropParams;
             getBind: (index?: number) => any;
         }) => React.ReactNode;
         /**
@@ -456,4 +456,15 @@ export interface CmsFieldValueTransformer extends Plugin {
      * A transformer function that takes a value and returns a new one.
      */
     transform: (value: any, field: CmsEditorField) => any;
+}
+
+export interface CmsContentFormRendererPlugin extends Plugin {
+    type: "cms-content-form-renderer";
+    modelId: string;
+    render(props: {
+        contentModel: CmsEditorContentModel;
+        data: Record<string, any>;
+        Bind: BindComponent;
+        fields: Record<string, React.ReactElement>;
+    }): React.ReactNode;
 }
