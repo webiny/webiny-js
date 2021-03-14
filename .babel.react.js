@@ -1,4 +1,4 @@
-module.exports = {
+module.exports = () => ({
     presets: [
         [
             "@babel/preset-env",
@@ -52,6 +52,14 @@ module.exports = {
                     }
                 }
             }
+        ],
+        [
+            "babel-plugin-module-resolver",
+            {
+                alias: {
+                    "~": "./src"
+                }
+            }
         ]
     ]
-};
+});
