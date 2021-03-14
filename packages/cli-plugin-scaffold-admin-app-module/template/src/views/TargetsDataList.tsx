@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import dotProp from "dot-prop-immutable";
 import { i18n } from "@webiny/app/i18n";
 import {
@@ -38,22 +38,11 @@ interface Props {
     sorters: { label: string; value: string }[];
 }
 
-const extractQueryGraphQLErrors = (listQuery: QueryResult): string[] => {
-    if (
-        !listQuery.data ||
-        Array.isArray(listQuery.data.errors) === false ||
-        listQuery.data.errors.length === 0
-    ) {
-        return [];
+const extractQueryGraphQLError = (listQuery: QueryResult): string | null => {
+    if (!listQuery.error || !listQuery.error.message) {
+        return null;
     }
-    return listQuery.data.errors
-        .map(err => {
-            if (!err.message) {
-                return null;
-            }
-            return err.message;
-        })
-        .filter(Boolean);
+    return listQuery.error.message;
 };
 
 const TargetsDataList: React.FunctionComponent<Props> = ({ sortBy, setSortBy, limit, sorters }) => {
@@ -128,11 +117,14 @@ const TargetsDataList: React.FunctionComponent<Props> = ({ sortBy, setSortBy, li
     const data = listQuery.loading
         ? []
         : dotProp.get(listQuery, "data.targets.listTargets.data", []);
+    const error = extractQueryGraphQLError(listQuery);
     // there is a possibility to receive graphql errors so show those as well
-    const errors = extractQueryGraphQLErrors(listQuery);
-    if (errors.length > 0) {
-        showSnackbar(errors.join("\n"));
-    }
+    useEffect(() => {
+        if (!error) {
+            return;
+        }
+        showSnackbar(error);
+    }, [error]);
     return (
         <DataList
             loading={loading}
