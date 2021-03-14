@@ -6,23 +6,24 @@ import { linkState } from "./linkState";
 import { BindComponent } from "./Bind";
 import ValidationError from "./ValidationError";
 
-export type FormChildrenFunctionParamsSubmit = (
+export type FormRenderPropParamsSubmit = (
     event?: React.SyntheticEvent<any, any>
 ) => Promise<void>;
 
 export type FormSetValue = (name: string, value: any) => void;
 
-export type FormChildrenFunctionParams = {
+export type FormRenderPropParams = {
     data: { [key: string]: any };
     form: Form;
-    submit: FormChildrenFunctionParamsSubmit;
+    submit: FormRenderPropParamsSubmit;
     Bind: BindComponent;
     setValue: FormSetValue;
 };
 
-export type FormChildrenFunction = (params: FormChildrenFunctionParams) => React.ReactElement;
+export type FormRenderProp = (params: FormRenderPropParams) => React.ReactElement;
 
 export type FormData = { [key: string]: any };
+
 export type Validation = { [key: string]: any };
 
 export type FormOnSubmit = (data: FormData, form?: Form) => void;
@@ -36,7 +37,7 @@ export type FormProps = {
     onSubmit?: FormOnSubmit;
     onInvalid?: () => void;
     onChange?: FormOnSubmit;
-    children: FormChildrenFunction;
+    children: FormRenderProp;
 };
 
 type State = {
