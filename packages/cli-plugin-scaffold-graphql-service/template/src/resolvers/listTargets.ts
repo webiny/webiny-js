@@ -1,4 +1,4 @@
-import { ErrorResponse, ListResponse } from "@webiny/handler-graphql";
+import { ListErrorResponse, ListResponse } from "@webiny/handler-graphql";
 import { utils } from "../utils";
 import {
     createElasticsearchQuery,
@@ -50,18 +50,13 @@ const listTargets = async (
          */
         size: size + 1,
         /**
-         * If after is defined use it to search the records after the given one.
          * We use the cursor instead from since you can fetch more records with it.
          * Read more about it: https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html
          */
         // eslint-disable-next-line
         search_after: decodeElasticsearchCursor(after) || undefined,
-        /**
-         * To get exact number of available records to get via given request, set this to true.
-         * Read more about it: https://www.elastic.co/guide/en/elasticsearch/reference/master/search-your-data.html
-         */
         // eslint-disable-next-line
-        track_total_hits: false
+        track_total_hits: true
     };
     let response;
     try {
@@ -70,7 +65,7 @@ const listTargets = async (
             body
         });
     } catch (ex) {
-        return new ErrorResponse({
+        return new ListErrorResponse({
             code: ex.code || "ELASTICSEARCH_ERROR",
             message: ex.message,
             data: ex
