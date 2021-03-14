@@ -5,11 +5,11 @@ import { camelCase } from "lodash";
 import { useFormEditor } from "../../../Context";
 import { validation } from "@webiny/validation";
 import { FbFormModelField } from "../../../../../../types";
-import { FormChildrenFunctionParams } from "@webiny/form/Form";
+import { FormRenderPropParams } from "@webiny/form/Form";
 
 type GeneralTabProps = {
     field: FbFormModelField;
-    form: FormChildrenFunctionParams;
+    form: FormRenderPropParams;
 };
 
 const GeneralTab = ({ field, form }: GeneralTabProps) => {
