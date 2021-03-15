@@ -1,9 +1,14 @@
 import React from "react";
-import GridContainer from "./GridContainer";
 import styled from "@emotion/styled";
+import kebabCase from "lodash/kebabCase";
+import GridContainer from "./GridContainer";
 import { ReactComponent as GridIcon } from "../../../assets/icons/view_quilt.svg";
 import { createElement } from "../../../helpers";
-import { PbEditorPageElementPlugin, DisplayMode } from "../../../../types";
+import {
+    PbEditorPageElementPlugin,
+    DisplayMode,
+    PbEditorElementPluginArgs
+} from "../../../../types";
 import { getDefaultPresetCellsTypePluginType, calculatePresetCells } from "../../gridPresets";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
@@ -31,22 +36,8 @@ const createDefaultCells = (cellsType: string) => {
     });
 };
 
-export default {
-    type: "pb-editor-page-element",
-    name: "pb-editor-page-element-grid",
-    elementType: "grid",
-    toolbar: {
-        title: "Grid",
-        group: "pb-editor-element-group-layout",
-        preview() {
-            return (
-                <PreviewBox>
-                    <GridIcon />
-                </PreviewBox>
-            );
-        }
-    },
-    settings: [
+export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin => {
+    const defaultSettings = [
         "pb-editor-page-element-style-settings-grid",
         "pb-editor-page-element-style-settings-background",
         "pb-editor-page-element-style-settings-animation",
@@ -60,58 +51,84 @@ export default {
         "pb-editor-page-element-style-settings-vertical-align",
         "pb-editor-page-element-settings-clone",
         "pb-editor-page-element-settings-delete"
-    ],
-    target: ["cell", "block"],
-    canDelete: () => {
-        return true;
-    },
-    create: (options = {}) => {
-        const { elements, data = {} } = options;
-        const defaultCellsType = getDefaultPresetCellsTypePluginType();
-        const cellsType = data.settings?.cellsType || defaultCellsType;
+    ];
 
-        return {
-            type: "grid",
-            elements: elements || createDefaultCells(cellsType),
-            data: {
-                settings: {
-                    width: createInitialPerDeviceSettingValue(
-                        { value: "1100px" },
-                        DisplayMode.DESKTOP
-                    ),
-                    margin: {
-                        ...createInitialPerDeviceSettingValue(
-                            {
-                                top: "0px",
-                                right: "0px",
-                                bottom: "0px",
-                                left: "0px",
-                                advanced: true
-                            },
+    const elementType = kebabCase(args.elementType || "grid");
+
+    const defaultToolbar = {
+        title: "Grid",
+        group: "pb-editor-element-group-layout",
+        preview() {
+            return (
+                <PreviewBox>
+                    <GridIcon />
+                </PreviewBox>
+            );
+        }
+    };
+
+    return {
+        type: "pb-editor-page-element",
+        name: `pb-editor-page-element-${elementType}`,
+        elementType: elementType,
+        toolbar: typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
+        settings:
+            typeof args.settings === "function" ? args.settings(defaultSettings) : defaultSettings,
+
+        target: ["cell", "block"],
+        canDelete: () => {
+            return true;
+        },
+        create: (options = {}) => {
+            const { elements, data = {} } = options;
+            const defaultCellsType = getDefaultPresetCellsTypePluginType();
+            const cellsType = data.settings?.cellsType || defaultCellsType;
+
+            const defaultValue = {
+                type: elementType,
+                elements: elements || createDefaultCells(cellsType),
+                data: {
+                    settings: {
+                        width: createInitialPerDeviceSettingValue(
+                            { value: "1100px" },
+                            DisplayMode.DESKTOP
+                        ),
+                        margin: {
+                            ...createInitialPerDeviceSettingValue(
+                                {
+                                    top: "0px",
+                                    right: "0px",
+                                    bottom: "0px",
+                                    left: "0px",
+                                    advanced: true
+                                },
+                                DisplayMode.DESKTOP
+                            )
+                        },
+                        padding: createInitialPerDeviceSettingValue(
+                            { all: "10px" },
+                            DisplayMode.DESKTOP
+                        ),
+                        grid: {
+                            cellsType
+                        },
+                        horizontalAlignFlex: createInitialPerDeviceSettingValue(
+                            "flex-start",
+                            DisplayMode.DESKTOP
+                        ),
+                        verticalAlign: createInitialPerDeviceSettingValue(
+                            "flex-start",
                             DisplayMode.DESKTOP
                         )
-                    },
-                    padding: createInitialPerDeviceSettingValue(
-                        { all: "10px" },
-                        DisplayMode.DESKTOP
-                    ),
-                    grid: {
-                        cellsType
-                    },
-                    horizontalAlignFlex: createInitialPerDeviceSettingValue(
-                        "flex-start",
-                        DisplayMode.DESKTOP
-                    ),
-                    verticalAlign: createInitialPerDeviceSettingValue(
-                        "flex-start",
-                        DisplayMode.DESKTOP
-                    )
-                }
-            },
-            ...options
-        };
-    },
-    render({ element }) {
-        return <GridContainer element={element} />;
-    }
-} as PbEditorPageElementPlugin;
+                    }
+                },
+                ...options
+            };
+
+            return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
+        },
+        render({ element }) {
+            return <GridContainer element={element} />;
+        }
+    };
+};

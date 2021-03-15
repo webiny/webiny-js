@@ -1,11 +1,9 @@
 import React from "react";
 import styled from "@emotion/styled";
+import kebabCase from "lodash/kebabCase";
 import { Typography } from "@webiny/ui/Typography";
 import { validation } from "@webiny/validation";
-import {
-    createEmbedPlugin,
-    createEmbedSettingsPlugin
-} from "./../../utils/oembed/createEmbedPlugin";
+import { createEmbedPlugin, createEmbedSettingsPlugin } from "../../utils/oembed";
 import VimeoEmbed from "./VimeoEmbed";
 import { ReactComponent as LogoIcon } from "./vimeo-v-brands.svg";
 import Accordion from "../../../elementSettings/components/Accordion";
@@ -14,6 +12,7 @@ import {
     ButtonContainer,
     SimpleButton
 } from "../../../elementSettings/components/StyledComponents";
+import { PbEditorElementPluginArgs } from "../../../../../types";
 
 const PreviewBox = styled("div")({
     textAlign: "center",
@@ -24,49 +23,60 @@ const PreviewBox = styled("div")({
     }
 });
 
-export default () => [
-    createEmbedPlugin({
-        type: "vimeo",
-        toolbar: {
-            title: "Vimeo",
-            group: "pb-editor-element-group-media",
-            preview() {
-                return (
-                    <PreviewBox>
-                        <LogoIcon />
-                    </PreviewBox>
-                );
-            }
-        },
-        oembed: {
-            renderEmbed(props) {
-                return <VimeoEmbed {...props} />;
-            }
-        },
-        renderElementPreview() {
-            return <div>Vimeo video</div>;
-        }
-    }),
-    createEmbedSettingsPlugin({
-        type: "vimeo",
-        render({ Bind, submit }) {
+export default (args: PbEditorElementPluginArgs = {}) => {
+    const elementType = kebabCase(args.elementType || "vimeo");
+    const defaultToolbar = {
+        title: "Vimeo",
+        group: "pb-editor-element-group-media",
+        preview() {
             return (
-                <Accordion title={"Vimeo"} defaultValue={true}>
-                    <>
-                        <Bind name={"source.url"} validators={validation.create("required,url")}>
-                            <InputField
-                                placeholder={"https://vimeo.com/158050352"}
-                                description={"Enter a video URL"}
-                            />
-                        </Bind>
-                        <ButtonContainer>
-                            <SimpleButton onClick={submit}>
-                                <Typography use={"caption"}>Save</Typography>
-                            </SimpleButton>
-                        </ButtonContainer>
-                    </>
-                </Accordion>
+                <PreviewBox>
+                    <LogoIcon />
+                </PreviewBox>
             );
         }
-    })
-];
+    };
+
+    return [
+        createEmbedPlugin({
+            type: elementType,
+            toolbar:
+                typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
+            create: args.create,
+            settings: args.settings,
+            oembed: {
+                renderEmbed(props) {
+                    return <VimeoEmbed {...props} />;
+                }
+            },
+            renderElementPreview() {
+                return <div>Vimeo video</div>;
+            }
+        }),
+        createEmbedSettingsPlugin({
+            type: elementType,
+            render({ Bind, submit }) {
+                return (
+                    <Accordion title={"Vimeo"} defaultValue={true}>
+                        <>
+                            <Bind
+                                name={"source.url"}
+                                validators={validation.create("required,url")}
+                            >
+                                <InputField
+                                    placeholder={"https://vimeo.com/158050352"}
+                                    description={"Enter a video URL"}
+                                />
+                            </Bind>
+                            <ButtonContainer>
+                                <SimpleButton onClick={submit}>
+                                    <Typography use={"caption"}>Save</Typography>
+                                </SimpleButton>
+                            </ButtonContainer>
+                        </>
+                    </Accordion>
+                );
+            }
+        })
+    ];
+};

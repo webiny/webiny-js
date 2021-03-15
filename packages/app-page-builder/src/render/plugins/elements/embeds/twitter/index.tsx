@@ -1,6 +1,7 @@
 import React from "react";
+import kebabCase from "lodash/kebabCase";
 import OEmbed from "../../../../components/OEmbed";
-import { PbRenderElementPlugin } from "../../../../../types";
+import { PbRenderElementPluginArgs, PbRenderElementPlugin } from "../../../../../types";
 
 const oembed = {
     global: "twttr",
@@ -11,11 +12,13 @@ const oembed = {
     }
 };
 
-export default (): PbRenderElementPlugin => {
+export default (args: PbRenderElementPluginArgs = {}): PbRenderElementPlugin => {
+    const elementType = kebabCase(args.elementType || "twitter");
+
     return {
-        name: "pb-render-page-element-twitter",
+        name: `pb-render-page-element-${elementType}`,
         type: "pb-render-page-element",
-        elementType: "twitter",
+        elementType: elementType,
         render(props) {
             return <OEmbed element={props.element} {...oembed} />;
         }
