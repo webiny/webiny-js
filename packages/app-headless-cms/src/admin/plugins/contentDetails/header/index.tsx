@@ -1,5 +1,5 @@
 import * as React from "react";
-import { CmsContentDetailsPlugin } from "../../../../types";
+import { CmsContentDetailsPlugin } from "~/types";
 import Header from "./Header";
 import RevisionSelector from "./revisionSelector/RevisionSelector";
 import RequestReview from "./requestReview/RequestReview";

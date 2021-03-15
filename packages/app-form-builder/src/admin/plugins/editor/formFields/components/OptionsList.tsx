@@ -8,7 +8,7 @@ import { sortableContainer, sortableElement, sortableHandle } from "react-sortab
 import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as HandleIcon } from "../../../../icons/round-drag_indicator-24px.svg";
 import { validation } from "@webiny/validation";
-import { FormChildrenFunctionParams } from "@webiny/form/Form";
+import { FormRenderPropParams } from "@webiny/form/Form";
 
 const OptionList = styled("ul")({
     padding: 25,
@@ -70,7 +70,7 @@ const SortableItem = sortableElement(
 );
 
 type OptionsListProps = {
-    form: FormChildrenFunctionParams;
+    form: FormRenderPropParams;
     multiple?: boolean;
 };
 

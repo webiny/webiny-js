@@ -1,7 +1,7 @@
 import { withFields, string, number, onSet } from "@commodo/fields";
 import { validation } from "@webiny/validation";
 import defaults from "./utils/defaults";
-import { FileManagerContext, Settings, SettingsCRUD } from "../../types";
+import { FileManagerContext, Settings, SettingsCRUD } from "~/types";
 
 export const SETTINGS_KEY = "file-manager";
 
