@@ -3,6 +3,10 @@
   "include": ["src", "__tests__/**/*.ts"],
   "references": [],
   "compilerOptions": {
-    "noEmit": false
+    "noEmit": false,
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./src/*"]
+    }
   }
 }

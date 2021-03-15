@@ -21,6 +21,7 @@ module.exports = {
         ["@babel/preset-typescript", { isTSX: true, allExtensions: true }]
     ],
     plugins: [
+        "babel-plugin-macros",
         "babel-plugin-lodash",
         "@babel/plugin-proposal-class-properties",
         "@babel/plugin-proposal-throw-expressions",
@@ -49,6 +50,14 @@ module.exports = {
                     svg: {
                         ReactComponent: "@svgr/webpack![path]"
                     }
+                }
+            }
+        ],
+        [
+            "babel-plugin-module-resolver",
+            {
+                alias: {
+                    "~": "./src"
                 }
             }
         ]
