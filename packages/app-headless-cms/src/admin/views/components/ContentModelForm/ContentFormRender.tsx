@@ -7,7 +7,6 @@ import styled from "@emotion/styled";
 import {
     CmsContentFormRendererPlugin,
     CmsEditorContentModel,
-    
     CmsEditorFieldRendererPlugin
 } from "~/types";
 import RenderFieldElement from "./ContentFormRender/RenderFieldElement";

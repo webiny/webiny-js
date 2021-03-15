@@ -6,9 +6,7 @@ import { linkState } from "./linkState";
 import { BindComponent } from "./Bind";
 import ValidationError from "./ValidationError";
 
-export type FormRenderPropParamsSubmit = (
-    event?: React.SyntheticEvent<any, any>
-) => Promise<void>;
+export type FormRenderPropParamsSubmit = (event?: React.SyntheticEvent<any, any>) => Promise<void>;
 
 export type FormSetValue = (name: string, value: any) => void;
 
