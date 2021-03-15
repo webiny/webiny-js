@@ -4,7 +4,8 @@ export = async () => {
     // Add tags to all resources that support tagging.
     tagResources({
         WbyProjectName: process.env.WEBINY_PROJECT_NAME as string,
-        WbyEnvironment: process.env.WEBINY_ENV as string
+        WbyEnvironment: process.env.WEBINY_ENV as string,
+        "lumigo:auto-trace": "true"
     });
 
     if (process.env.WEBINY_ENV === "prod") {
