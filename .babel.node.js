@@ -26,6 +26,6 @@ module.exports = ({ path }) => {
                     }
                 }
             ]
-        ].filter(Boolean)
+        ]
     };
 };

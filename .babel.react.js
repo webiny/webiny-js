@@ -1,4 +1,4 @@
-module.exports = () => ({
+module.exports = ({ path }) => ({
     presets: [
         [
             "@babel/preset-env",
