@@ -15,12 +15,15 @@ export default {
     },
     es(context: Context<TenancyContext>) {
         const tenant = context.security.getTenant();
-        if (tenant) {
-            return {
-                index: tenant.id + "-page-builder"
-            };
+        if (!tenant) {
+            throw new Error("Tenant missing.");
         }
 
-        throw new Error("Tenant missing.");
+        const index = tenant.id + "-page-builder";
+        const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX;
+        if (prefix) {
+            return { index: prefix + index };
+        }
+        return { index };
     }
 };
