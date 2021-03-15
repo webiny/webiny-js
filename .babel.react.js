@@ -56,6 +56,7 @@ module.exports = () => ({
         [
             "babel-plugin-module-resolver",
             {
+                cwd: path,
                 alias: {
                     "~": "./src"
                 }
