@@ -458,13 +458,38 @@ export interface CmsFieldValueTransformer extends Plugin {
     transform: (value: any, field: CmsEditorField) => any;
 }
 
+/**
+ * Define a custom form layout renderer for a specific content model.
+ */
 export interface CmsContentFormRendererPlugin extends Plugin {
+    /**
+     * A plugin type.
+     */
     type: "cms-content-form-renderer";
+    /**
+     * Content model ID that will use this renderer.
+     */
     modelId: string;
+
+    /**
+     * A function that will render a custom form layout.
+     */
     render(props: {
+        /**
+         * Content model that is being rendered.
+         */
         contentModel: CmsEditorContentModel;
+        /**
+         * Content entry data handled by the Form element.
+         */
         data: Record<string, any>;
+        /**
+         * A component to bind data to the Form.
+         */
         Bind: BindComponent;
+        /**
+         * Content model fields to render.
+         */
         fields: Record<string, React.ReactElement>;
     }): React.ReactNode;
 }
