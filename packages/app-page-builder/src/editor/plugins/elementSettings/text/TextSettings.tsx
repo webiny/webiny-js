@@ -177,22 +177,24 @@ const TextSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderCom
                         {themeTypographyOptions}
                     </SelectField>
                 </Wrapper>
-                <Grid className={classes.warningMessageGrid}>
-                    <Cell span={12}>
-                        <Typography use={"caption"}>
-                            Please add typography options in{" "}
-                            <Link
-                                to={
-                                    "https://github.com/webiny/webiny-js/blob/next/apps/theme/pageBuilder/index.ts#L21"
-                                }
-                                target={"_blank"}
-                            >
-                                theme
-                            </Link>
-                            .
-                        </Typography>
-                    </Cell>
-                </Grid>
+                {themeTypographyOptions.length === 0 && (
+                    <Grid className={classes.warningMessageGrid}>
+                        <Cell span={12}>
+                            <Typography use={"caption"}>
+                                Please add typography options in{" "}
+                                <Link
+                                    to={
+                                        "https://github.com/webiny/webiny-js/blob/next/apps/theme/pageBuilder/index.ts#L21"
+                                    }
+                                    target={"_blank"}
+                                >
+                                    theme
+                                </Link>
+                                .
+                            </Typography>
+                        </Cell>
+                    </Grid>
+                )}
                 <Wrapper
                     containerClassName={classes.grid}
                     label={"Alignment"}
