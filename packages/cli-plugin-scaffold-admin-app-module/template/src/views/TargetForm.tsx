@@ -95,37 +95,40 @@ const TargetForm: React.FunctionComponent<Props> = ({ limit, sortBy }) => {
                             return showSnackbar(t`There is no Target data in the response.`);
                         }
                         updateToListCache(cache, listVariables, target);
-                    }
-                });
-            } else {
-                await createTarget({
-                    variables: {
-                        data: data
-                    },
-                    update: (cache, response) => {
-                        const createTargetResponse = dotProp.get(
-                            response,
-                            "data.targets.createTarget",
-                            null
-                        );
-                        if (!createTargetResponse) {
-                            return showSnackbar(
-                                t`There is no "data.targets.createTarget" in the response.`
-                            );
-                        }
-                        const { data: target, error } = createTargetResponse;
-                        if (error) {
-                            return showSnackbar(error.message);
-                        } else if (!target) {
-                            return showSnackbar(t`There is no Target data in the response.`);
-                        }
-                        addToListCache(cache, listVariables, target);
 
-                        history.push(`/targets/?id=${encodeURIComponent(target.id)}`);
+                        showSnackbar(t`Target saved successfully.`);
                     }
                 });
+                return;
             }
-            showSnackbar(t`Target saved successfully.`);
+            await createTarget({
+                variables: {
+                    data: data
+                },
+                update: (cache, response) => {
+                    const createTargetResponse = dotProp.get(
+                        response,
+                        "data.targets.createTarget",
+                        null
+                    );
+                    if (!createTargetResponse) {
+                        return showSnackbar(
+                            t`There is no "data.targets.createTarget" in the response.`
+                        );
+                    }
+                    const { data: target, error } = createTargetResponse;
+                    if (error) {
+                        return showSnackbar(error.message);
+                    } else if (!target) {
+                        return showSnackbar(t`There is no Target data in the response.`);
+                    }
+                    addToListCache(cache, listVariables, target);
+
+                    history.push(`/targets/?id=${encodeURIComponent(target.id)}`);
+
+                    showSnackbar(t`Target saved successfully.`);
+                }
+            });
         },
         [id]
     );
