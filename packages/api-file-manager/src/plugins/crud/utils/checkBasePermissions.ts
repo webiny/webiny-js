@@ -1,4 +1,4 @@
-import { FileManagerContext, FilePermission } from "../../../types";
+import { FileManagerContext, FilePermission } from "~/types";
 import { NotAuthorizedError } from "@webiny/api-security";
 
 export default async (

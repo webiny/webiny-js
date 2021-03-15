@@ -1,4 +1,4 @@
-module.exports = {
+module.exports = ({ path }) => ({
     presets: [
         [
             "@babel/preset-env",
@@ -19,10 +19,11 @@ module.exports = {
         [
             "babel-plugin-module-resolver",
             {
+                cwd: path,
                 alias: {
                     "~": "./src"
                 }
             }
         ]
-    ].filter(Boolean)
-};
+    ]
+});

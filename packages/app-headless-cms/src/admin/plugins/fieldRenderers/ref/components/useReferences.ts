@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import get from "lodash/get";
-import { useApolloClient } from "../../../../hooks";
+import { useApolloClient } from "~/admin/hooks";
 import { createListQuery, createGetByIdsQuery, GET_CONTENT_MODEL } from "./graphql";
 import { getOptions } from "./getOptions";
-import { CmsEditorContentModel } from "../../../../../types";
+import { CmsEditorContentModel } from "~/types";
 
 type ValueEntry = {
     id: string;

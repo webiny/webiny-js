@@ -1,4 +1,4 @@
-import { CmsEditorField, CmsEditorFieldId, FieldLayoutPosition } from "../../../../../../types";
+import { CmsEditorField, CmsEditorFieldId, FieldLayoutPosition } from "~/types";
 import getFieldPosition from "./getFieldPosition";
 
 /**

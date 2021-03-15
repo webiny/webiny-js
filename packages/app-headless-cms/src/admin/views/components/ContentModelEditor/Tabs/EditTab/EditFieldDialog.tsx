@@ -10,13 +10,13 @@ import {
     CmsEditorFieldRendererPlugin,
     CmsEditorFieldTypePlugin,
     CmsEditorFieldValidatorPlugin
-} from "../../../../../../types";
+} from "~/types";
 import { plugins } from "@webiny/plugins";
 import GeneralTab from "./EditFieldDialog/GeneralTab";
 import AppearanceTab from "./EditFieldDialog/AppearanceTab";
 import PredefinedValues from "./EditFieldDialog/PredefinedValues";
 import ValidatorsTab from "./EditFieldDialog/ValidatorsTab";
-import { useContentModelEditor } from "../../../../../views/components/ContentModelEditor/Context";
+import { useContentModelEditor } from "~/admin/views/components/ContentModelEditor/Context";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
 import { Elevation } from "@webiny/ui/Elevation";

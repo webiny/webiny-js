@@ -1,4 +1,4 @@
-import { FileManagerContext } from "../../../types";
+import { FileManagerContext } from "~/types";
 
 export default (context: FileManagerContext) => {
     const { security, i18nContent } = context;

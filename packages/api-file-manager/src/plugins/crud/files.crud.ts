@@ -2,7 +2,7 @@ import mdbid from "mdbid";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { NotAuthorizedError } from "@webiny/api-security";
 import Error from "@webiny/error";
-import { File, FileManagerContext, FilePermission, FilesCRUD } from "../../types";
+import { File, FileManagerContext, FilePermission, FilesCRUD } from "~/types";
 import defaults from "./utils/defaults";
 import { paginateBatch } from "./utils/paginateBatch";
 import { decodeCursor, encodeCursor } from "./utils/cursors";

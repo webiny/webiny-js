@@ -9,7 +9,7 @@ import {
     DEFAULT_TIMEZONE,
     RemoveFieldButton
 } from "./utils";
-import { CmsEditorField } from "../../../../types";
+import { CmsEditorField } from "~/types";
 
 interface DateTimeWithTimezoneProps {
     bind: any;

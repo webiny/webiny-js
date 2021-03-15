@@ -1,4 +1,4 @@
-import { FieldLayoutPosition } from "../../../../../../types";
+import { FieldLayoutPosition } from "~/types";
 
 export default ({ field, data }): FieldLayoutPosition => {
     const id = typeof field === "string" ? field : field.id;

@@ -32,21 +32,31 @@ class ElasticSearch {
             }
         });
 
+        /**
+         * Domain policy defines who can access your Elasticsearch Domain.
+         * For details on Elasticsearch security, read the official documentation:
+         * https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/security.html
+         */
         new aws.elasticsearch.DomainPolicy(`${domainName}-policy`, {
             domainName: this.domain.domainName.apply(v => `${v}`),
-            accessPolicies: {
-                Version: "2012-10-17",
-                Statement: [
-                    {
-                        Action: ["es:*"],
-                        Principal: {
-                            AWS: ["*"]
-                        },
-                        Effect: "Allow",
-                        Resource: this.domain.arn.apply(v => `${v}/*`)
-                    }
-                ]
-            }
+            accessPolicies: Promise.all([aws.getCallerIdentity({})]).then(
+                ([currentCallerIdentity]) => ({
+                    Version: "2012-10-17",
+                    Statement: [
+                        /**
+                         * Allow requests signed with current account
+                         */
+                        {
+                            Effect: "Allow",
+                            Principal: {
+                                AWS: currentCallerIdentity.accountId
+                            },
+                            Action: "es:*",
+                            Resource: this.domain.arn.apply(v => `${v}/*`)
+                        }
+                    ]
+                })
+            )
         });
 
         /**

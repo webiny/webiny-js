@@ -7,7 +7,7 @@ import { Cell, Grid } from "@webiny/ui/Grid";
 import { AutoComplete, Placement } from "@webiny/ui/AutoComplete";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { CmsEditorFieldTypePlugin } from "../../../types";
+import { CmsEditorFieldTypePlugin } from "~/types";
 import { ReactComponent as RefIcon } from "./icons/round-link-24px.svg";
 
 import { i18n } from "@webiny/app/i18n";
