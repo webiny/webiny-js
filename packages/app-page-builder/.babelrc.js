@@ -1,3 +1,1 @@
-const base = require("../../.babel.react");
-
-module.exports = { ...base({ path: __dirname }) };
+module.exports = require("../../.babel.react")({ path: __dirname });
