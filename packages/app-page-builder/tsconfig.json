@@ -33,7 +33,9 @@
     }
   ],
   "compilerOptions": {
+    "baseUrl": ".",
     "paths": {
+      "~/*": ["./src/*"],
       "@webiny/app/*": ["../app/src/*"],
       "@webiny/app": ["../app/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
@@ -52,7 +54,6 @@
       "@webiny/ui": ["../ui/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"]
-    },
-    "baseUrl": "."
+    }
   }
 }

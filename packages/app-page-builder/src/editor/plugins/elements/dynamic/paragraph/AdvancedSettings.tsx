@@ -1,11 +1,10 @@
 import React, { useMemo } from "react";
 import { useRecoilValue } from "recoil";
 import { parse } from "graphql/language";
-import keycode from "keycode";
-import { pageAtom } from "@webiny/app-page-builder/editor/recoil/modules";
+import { pageAtom } from "~/editor/recoil/modules";
 import { validation } from "@webiny/validation";
 import { Typography } from "@webiny/ui/Typography";
-import Accordion from "../../../elementSettings/components/Accordion";
+import Accordion from "~/editor/plugins/elementSettings/components/Accordion";
 import { HintInput } from "../HintInput";
 import {
     ButtonContainer,

@@ -33,7 +33,7 @@ export default {
                     ...utils.defaults.db,
                     query: {
                         PK: PK_SETTINGS(),
-                        SK: SK_SETTINGS
+                        SK: SETTINGS_SECONDARY_KEY
                     },
                     data: {
                         readAPIKey: settings.readAPIKey
@@ -55,7 +55,7 @@ export default {
                 return settingsGet();
             },
             updateContentModelLastChange: async (): Promise<void> => {
-                const data: CmsSettings = {
+                const data: Partial<CmsSettings> = {
                     contentModelLastChange: new Date().toISOString()
                 };
 

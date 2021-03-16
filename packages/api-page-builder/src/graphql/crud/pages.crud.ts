@@ -9,13 +9,6 @@ import omit from "lodash/omit";
 import get from "lodash/get";
 import merge from "lodash/merge";
 import DataLoader from "dataloader";
-
-import {
-    PageHookPlugin,
-    PbContext,
-    Page,
-    PageSecurityPermission
-} from "@webiny/api-page-builder/types";
 import getNormalizedListPagesArgs from "./utils/getNormalizedListPagesArgs";
 import getPKPrefix from "./utils/getPKPrefix";
 import defaults from "./utils/defaults";
@@ -565,7 +558,7 @@ const plugin: ContextPlugin<PbContext> = {
                     if (updateData.path) {
                         updateData.dynamic = updateData.path.includes("{");
                     }
-                    
+
                     console.log("updateData", updateData);
 
                     const newContent = updateData.content;
