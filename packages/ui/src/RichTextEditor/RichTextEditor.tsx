@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useRef } from "react";
 import shortid from "shortid";
-import EditorJS from "./editorjs/editor.js";
+import EditorJS from "@editorjs/editorjs";
 import {
     LogLevels,
     OutputBlockData,
