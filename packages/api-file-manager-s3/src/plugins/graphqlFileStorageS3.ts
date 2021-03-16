@@ -1,8 +1,8 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
 import checkBasePermissions from "@webiny/api-file-manager/plugins/crud/utils/checkBasePermissions";
+import { FileManagerContext } from "@webiny/api-file-manager/types";
 import getPresignedPostPayload from "../utils/getPresignedPostPayload";
-import { FileManagerContext } from "../types";
 
 const BATCH_UPLOAD_MAX_FILES = 20;
 
