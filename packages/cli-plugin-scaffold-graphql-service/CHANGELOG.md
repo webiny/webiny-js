@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.1.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.1.0-beta.0...v5.1.0-beta.1) (2021-03-16)
+
+
+### Bug Fixes
+
+* **cli-plugin-scaffold-graphql-service:** es error message explained ([#1510](https://github.com/webiny/webiny-js/issues/1510)) ([106e3ac](https://github.com/webiny/webiny-js/commit/106e3acfd16255f8038d68c77e94d5e0c598460b))
+
+
+
+
+
 # [5.1.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.0.0...v5.1.0-beta.0) (2021-03-15)
 
 
