@@ -39,15 +39,15 @@ const createTarget = async (
         const { body: hasIndice } = await elasticSearch.indices.exists(esConfig);
         if (!hasIndice) {
             return new ErrorResponse({
-                message: "Elasticsearch index does not exist.",
-                code: "ELASTICSEARCH_INDEX",
+                message: "You must run the install mutation to create the Elasticsearch index.",
+                code: "ELASTICSEARCH_ERROR",
                 data: esConfig
             });
         }
     } catch (ex) {
         return new ErrorResponse({
             message: ex.message || "Error while checking for Elasticsearch index existence.",
-            code: ex.code || "ELASTICSEARCH_INDEX",
+            code: ex.code || "ELASTICSEARCH_ERROR",
             data: ex.data
         });
     }
