@@ -36,13 +36,22 @@ export default (context: FileManagerContext): SettingsCRUD => {
     const PK_SETTINGS = () => `T#${security.getTenant().id}#FM#SETTINGS`;
     const SK_SETTINGS = () => `default`;
 
+    const cache = {};
+
     return {
         async getSettings() {
+            // Check if the settings is in cache
+            if (cache[security.getTenant().id]) {
+                return cache[security.getTenant().id];
+            }
+            // Else fetch settings from DB
             const [[settings]] = await db.read<Settings>({
                 ...defaults.db,
                 query: { PK: PK_SETTINGS(), SK: SK_SETTINGS() },
                 limit: 1
             });
+            // And store it into the cache
+            cache[security.getTenant().id] = settings;
 
             return settings;
         },
@@ -78,6 +87,8 @@ export default (context: FileManagerContext): SettingsCRUD => {
                 query: { PK: PK_SETTINGS(), SK: SK_SETTINGS() },
                 data: updatedSettings
             });
+            // Remove settings from cache
+            cache[security.getTenant().id] = null;
 
             return { ...existingSettings, ...updatedSettings };
         },
@@ -86,6 +97,8 @@ export default (context: FileManagerContext): SettingsCRUD => {
                 ...defaults.db,
                 query: { PK: PK_SETTINGS(), SK: SK_SETTINGS() }
             });
+            // Remove settings from cache
+            cache[security.getTenant().id] = null;
 
             return true;
         }
