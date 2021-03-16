@@ -12,7 +12,6 @@ import {
     ElasticsearchQueryPlugin
 } from "../../../../../types";
 import { decodeElasticsearchCursor } from "../../../../../utils";
-import Error from "@webiny/error";
 import WebinyError from "@webiny/error";
 import { operatorPluginsList } from "./operatorPluginsList";
 import { transformValueForSearch } from "./transformValueForSearch";
@@ -102,7 +101,7 @@ const createElasticsearchSortParams = (
         const match = value.match(sortRegExp);
 
         if (!match) {
-            throw new Error(`Cannot sort by "${value}".`);
+            throw new WebinyError(`Cannot sort by "${value}".`);
         }
 
         const [, field, order] = match;
@@ -110,7 +109,7 @@ const createElasticsearchSortParams = (
         const { isSortable = false, unmappedType, isSystemField = false } = modelFieldOptions;
 
         if (!isSortable) {
-            throw new Error(`Field "${field}" is not sortable.`);
+            throw new WebinyError(`Field "${field}" is not sortable.`);
         }
 
         const name = isSystemField ? field : withParentObject(field);
@@ -127,7 +126,7 @@ const createElasticsearchSortParams = (
 };
 
 const createInitialQueryValue = (args: CreateElasticsearchQueryArgs): ElasticsearchQuery => {
-    const { ownedBy, options } = args;
+    const { ownedBy, where } = args;
 
     const query: ElasticsearchQuery = {
         match: [],
@@ -145,13 +144,17 @@ const createInitialQueryValue = (args: CreateElasticsearchQueryArgs): Elasticsea
         });
     }
 
-    // add more options if necessary
-    const { type } = options || {};
-    if (type) {
+    if (where.published === true) {
         query.must.push({
             term: {
-                "__type.keyword": type
-            }
+                "__type.keyword": "P",
+            },
+        });
+    } else if (where.latest === true) {
+        query.must.push({
+            term: {
+                "__type.keyword": "L",
+            },
         });
     }
     //
@@ -187,9 +190,9 @@ const execElasticsearchBuildQueryPlugins = (
         const { isSearchable = false, isSystemField, field: cmsField } = modelFieldOptions || {};
 
         if (!modelFieldOptions) {
-            throw new Error(`There is no field "${field}".`);
+            throw new WebinyError(`There is no field "${field}".`);
         } else if (!isSearchable) {
-            throw new Error(`Field "${field}" is not searchable.`);
+            throw new WebinyError(`Field "${field}" is not searchable.`);
         }
         const plugin = operatorPlugins[op];
         if (!plugin) {
@@ -283,7 +286,7 @@ const createModelFieldOptions = (context: CmsContext, model: CmsContentModel): M
     return model.fields.reduce((fields, field) => {
         const { fieldId, type } = field;
         if (!pluginFieldTypes[type]) {
-            throw new Error(`There is no plugin for field type "${type}".`);
+            throw new WebinyError(`There is no plugin for field type "${type}".`);
         }
         const { isSearchable, isSortable, unmappedType } = pluginFieldTypes[type];
         fields[fieldId] = {
