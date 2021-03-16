@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cwp-template-aws",
-  "version": "5.1.0-beta.1",
+  "version": "5.1.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -11,11 +11,11 @@
     "directory": "."
   },
   "dependencies": {
-    "@webiny/cli": "^5.1.0-beta.1",
-    "@webiny/cli-plugin-deploy-pulumi": "^5.1.0-beta.1",
-    "@webiny/tracking": "^5.1.0-beta.1",
+    "@webiny/cli": "^5.1.0",
+    "@webiny/cli-plugin-deploy-pulumi": "^5.1.0",
+    "@webiny/tracking": "^5.1.0",
     "chalk": "4.1.0",
-    "create-webiny-project": "^5.1.0-beta.1",
+    "create-webiny-project": "^5.1.0",
     "execa": "4.1.0",
     "fast-glob": "^3.2.5",
     "fs-extra": "9.0.1",
