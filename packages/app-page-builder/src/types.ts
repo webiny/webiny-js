@@ -1,8 +1,8 @@
 import React, { ComponentType, ReactElement, ReactNode } from "react";
-import { DragObjectWithTypeWithTarget } from "@webiny/app-page-builder/editor/components/Droppable";
-import { BaseEventAction, EventAction } from "@webiny/app-page-builder/editor/recoil/eventActions";
-import { PluginsAtomType } from "@webiny/app-page-builder/editor/recoil/modules";
-import { PbState } from "@webiny/app-page-builder/editor/recoil/modules/types";
+import { DragObjectWithTypeWithTarget } from "./editor/components/Droppable";
+import { BaseEventAction, EventAction } from "./editor/recoil/eventActions";
+import { PluginsAtomType } from "./editor/recoil/modules";
+import { PbState } from "./editor/recoil/modules/types";
 import { Plugin } from "@webiny/app/types";
 import { BindComponent } from "@webiny/form/Bind";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
@@ -597,6 +597,17 @@ export type PbRenderResponsiveModePlugin = Plugin & {
     };
 };
 
+export type PbEditorElementPluginArgs = {
+    create?: (defaultValue) => Record<string, any>;
+    settings?: (defaultValue) => Array<string | Array<string | any>>;
+    toolbar?: (defaultValue) => Record<string, any>;
+    elementType?: string;
+};
+
+export type PbRenderElementPluginArgs = {
+    elementType?: string;
+};
+
 // ============== EVENT ACTION HANDLER ================= //
 export interface EventActionHandlerCallableState extends PbState {
     getElementById(id: string): Promise<PbEditorElement>;
@@ -617,6 +628,7 @@ export interface EventActionHandler {
     endBatch: () => void;
     enableHistory: () => void;
     disableHistory: () => void;
+    getElementTree: (element?: PbEditorElement) => Promise<any>;
 }
 
 export interface EventActionHandlerTarget {

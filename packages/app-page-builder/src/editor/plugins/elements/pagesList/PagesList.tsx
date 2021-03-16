@@ -1,11 +1,12 @@
-import * as React from "react";
+import React, { useState } from "react";
 import { useQuery } from "@apollo/react-hooks";
-import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
+import { usePageBuilder } from "../../../../hooks/usePageBuilder";
 import { LIST_PUBLISHED_PAGES } from "./graphql";
 import { plugins } from "@webiny/plugins";
 import { get } from "lodash";
-import { PbPageElementPagesListComponentPlugin } from "@webiny/app-page-builder/types";
-import { useState } from "react";
+import { PbPageElementPagesListComponentPlugin } from "../../../../types";
+import { useRecoilValue } from "recoil";
+import { pageAtom } from "../../../recoil/modules";
 
 const PagesList = props => {
     const { component, ...vars } = props.data;
@@ -15,6 +16,7 @@ const PagesList = props => {
     const pageList = components.find(cmp => cmp.componentName === component);
     const { theme } = usePageBuilder();
     const [page, setPage] = useState(1);
+    const pageAtomValue = useRecoilValue(pageAtom);
 
     if (!pageList) {
         return <div>Selected page list component not found!</div>;
@@ -37,7 +39,8 @@ const PagesList = props => {
             }
         },
         limit: parseInt(vars.resultsPerPage),
-        page
+        page,
+        exclude: [pageAtomValue.path]
     };
 
     const { data, loading } = useQuery(LIST_PUBLISHED_PAGES, {

@@ -1,5 +1,5 @@
 import React from "react";
-import { ReactComponent as Account } from "@webiny/app-admin/assets/icons/round-account_circle-24px.svg";
+import { ReactComponent as Account } from "../../../assets/icons/round-account_circle-24px.svg";
 import { Icon } from "@webiny/ui/Icon";
 
 const DefaultHandle = () => {

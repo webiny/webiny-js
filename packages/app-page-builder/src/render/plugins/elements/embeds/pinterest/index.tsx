@@ -1,12 +1,15 @@
 import React from "react";
-import { PbRenderElementPlugin } from "@webiny/app-page-builder/types";
+import kebabCase from "lodash/kebabCase";
+import { PbRenderElementPluginArgs, PbRenderElementPlugin } from "../../../../../types";
 import PinterestEmbed from "./PinterestEmbed";
 
-export default (): PbRenderElementPlugin => {
+export default (args: PbRenderElementPluginArgs = {}): PbRenderElementPlugin => {
+    const elementType = kebabCase(args.elementType || "pinterest");
+
     return {
-        name: "pb-render-page-element-pinterest",
+        name: `pb-render-page-element-${elementType}`,
         type: "pb-render-page-element",
-        elementType: "pinterest",
+        elementType: elementType,
         render(props) {
             return <PinterestEmbed element={props.element} />;
         }

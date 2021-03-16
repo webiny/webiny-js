@@ -8,7 +8,7 @@ import { Icon } from "@webiny/ui/Icon";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useDialog } from "@webiny/app-admin/hooks/useDialog";
-import { useMutation } from "@webiny/app-headless-cms/admin/hooks";
+import { useMutation } from "../../../../hooks";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import { i18n } from "@webiny/app/i18n";
 import { createDeleteMutation } from "../../../../views/components/ContentModelForm/graphql";
@@ -18,9 +18,9 @@ const t = i18n.ns(
     "app-headless-cms/admin/plugins/content-details/header/content-form-options-menu"
 );
 
-import { ReactComponent as MoreVerticalIcon } from "@webiny/app-headless-cms/admin/icons/more_vert.svg";
-import { ReactComponent as DeleteIcon } from "@webiny/app-headless-cms/admin/icons/delete.svg";
-import { removeEntryFromListCache } from "@webiny/app-headless-cms/admin/plugins/contentDetails/cache";
+import { ReactComponent as MoreVerticalIcon } from "../../../../icons/more_vert.svg";
+import { ReactComponent as DeleteIcon } from "../../../../icons/delete.svg";
+import { removeEntryFromListCache } from "../../cache";
 
 const menuStyles = css({
     width: 250,

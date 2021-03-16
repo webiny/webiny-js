@@ -49,15 +49,23 @@ const writeJson = require("write-json-file");
                 continue;
             }
 
-            Object.keys(lockPackageJson.dependencies)
-                .filter(key => !key.startsWith("@webiny"))
-                .forEach(key => {
-                    const pkgJsonPath = require.resolve(`${key}/package.json`, {
-                        paths: [distDirectory]
-                    });
-                    const { version } = require(pkgJsonPath);
-                    lockPackageJson.dependencies[key] = version;
+            Object.keys(lockPackageJson.dependencies).forEach(key => {
+                if (key.startsWith("@webiny/")) {
+                    lockPackageJson.dependencies[key] = pkg.version;
+                    return;
+                }
+
+                const depVersion = lockPackageJson.dependencies[key];
+                if (depVersion.startsWith("file:")) {
+                    return;
+                }
+
+                const pkgJsonPath = require.resolve(`${key}/package.json`, {
+                    paths: [distDirectory]
                 });
+                const { version } = require(pkgJsonPath);
+                lockPackageJson.dependencies[key] = version;
+            });
 
             await writeJson(distPackageJson, lockPackageJson);
         } catch (err) {

@@ -3,7 +3,7 @@ import { Switch as RmwcSwitch, SwitchProps } from "@rmwc/switch";
 import { FormComponentProps } from "./../types";
 import pick from "lodash/pick";
 import { FormElementMessage } from "../FormElementMessage";
-import { getClasses } from "@webiny/ui/Helpers";
+import { getClasses } from "../Helpers";
 
 type Props = FormComponentProps &
     SwitchProps & {

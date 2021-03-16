@@ -1,5 +1,5 @@
 import * as React from "react";
-import { DelayedOnChange } from "@webiny/app-page-builder/editor/components/DelayedOnChange";
+import { DelayedOnChange } from "../../../components/DelayedOnChange";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import MetaTags from "./MetaTags";

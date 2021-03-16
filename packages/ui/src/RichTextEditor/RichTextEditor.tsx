@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useRef } from "react";
 import shortid from "shortid";
-import EditorJS from "./editorjs/editor.js";
+import EditorJS from "@editorjs/editorjs";
 import {
     LogLevels,
     OutputBlockData,
@@ -8,7 +8,7 @@ import {
     SanitizerConfig,
     ToolSettings
 } from "@editorjs/editorjs/types";
-import { FormElementMessage } from "@webiny/ui/FormElementMessage";
+import { FormElementMessage } from "../FormElementMessage";
 import { css } from "emotion";
 import classNames from "classnames";
 

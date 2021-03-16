@@ -4,7 +4,7 @@ import { Select } from "@webiny/ui/Select";
 import { get } from "lodash";
 import { Input } from "@webiny/ui/Input";
 import { plugins } from "@webiny/plugins";
-import { FbFormLayoutPlugin } from "@webiny/app-form-builder/types";
+import { FbFormLayoutPlugin } from "../../../../../types";
 import { PbThemePlugin } from "@webiny/app-page-builder/types";
 import { RichTextEditor, createPropsFromConfig } from "@webiny/app-admin/components/RichTextEditor";
 

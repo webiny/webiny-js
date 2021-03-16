@@ -3,16 +3,13 @@ const path = require("path");
 const execa = require("execa");
 const crypto = require("crypto");
 const renames = require("./setup/renames");
-const get = require("lodash/get");
 const merge = require("lodash/merge");
-const trimEnd = require("lodash/trimEnd");
 const writeJsonFile = require("write-json-file");
 const loadJsonFile = require("load-json-file");
 const getPackages = require("get-yarn-workspaces");
 const { green } = require("chalk");
 
 const IS_TEST = process.env.NODE_ENV === "test";
-const DEFAULT_BACKEND_URL = "file://";
 
 // Automatic detection could be added here.
 function getDefaultRegion() {
@@ -28,11 +25,7 @@ function random(length = 32) {
 
 const setup = async args => {
     const { isGitAvailable, projectRoot, projectName, templateOptions = {} } = args;
-    const {
-        vpc = false,
-        region = getDefaultRegion(),
-        iac = ["pulumi", { backend: { url: DEFAULT_BACKEND_URL } }]
-    } = templateOptions;
+    const { region = getDefaultRegion() } = templateOptions;
 
     fs.copySync(path.join(__dirname, "template"), projectRoot);
 
@@ -76,41 +69,6 @@ const setup = async args => {
     webinyRoot = webinyRoot.replace("[TEMPLATE_VERSION]", `${name}@${version}`);
     fs.writeFileSync(path.join(projectRoot, "webiny.root.js"), webinyRoot);
 
-    // Keep the needed Pulumi program.
-    // Note: this approach most probably won't work when additional variables are added into the mix (e.g. ability
-    // to choose a different default database, choose exact apps, backend for Pulumi, etc.) For now it works.
-    let move = "default_vpc",
-        remove = "custom_vpc";
-
-    if (vpc) {
-        move = "custom_vpc";
-        remove = "default_vpc";
-    }
-
-    fs.removeSync(path.join(projectRoot, "api", `pulumi_${remove}`));
-    fs.moveSync(
-        path.join(projectRoot, "api", `pulumi_${move}`),
-        path.join(projectRoot, "api", "pulumi"),
-        { overwrite: true }
-    );
-
-    // Set the appropriate backend.url value in Pulumi.yaml files.
-    const [, iacOptions = {}] = iac;
-
-    const pulumiYamlFolders = ["api", "apps/admin", "apps/website"];
-    for (let i = 0; i < pulumiYamlFolders.length; i++) {
-        const pulumiYamlFolder = pulumiYamlFolders[i];
-        const pulumiYamlPath = path.join(projectRoot, pulumiYamlFolder, "Pulumi.yaml");
-        const content = fs.readFileSync(pulumiYamlPath, "utf-8");
-
-        let backendUrl = get(iacOptions, "backend.url") || DEFAULT_BACKEND_URL;
-        if (backendUrl !== DEFAULT_BACKEND_URL) {
-            backendUrl = trimEnd(backendUrl, "/") + "/" + pulumiYamlFolder;
-        }
-
-        fs.writeFileSync(pulumiYamlPath, content.replace("{BACKEND_URL}", backendUrl));
-    }
-
     // Adjust versions - change them from `latest` to current one.
     const latestVersion = version;
 
@@ -124,7 +82,7 @@ const setup = async args => {
         );
 
         depsList.forEach(name => {
-            packageJson.dependencies[name] = `^` + latestVersion;
+            packageJson.dependencies[name] = latestVersion;
         });
 
         await writeJsonFile(packageJsonPath, packageJson);
@@ -140,20 +98,13 @@ const setup = async args => {
             stdio: "inherit"
         };
 
-        await execa("yarn", [], options);
-
-        /*
-        // TODO: finish logging.
-        let logStream;
-        if (log) {
-            logStream = fs.createWriteStream(context.logPath);
-            const runner = execa("yarn", [], options);
-            runner.stdout.pipe(logStream);
-            runner.stderr.pipe(logStream);
-            await runner;
-        } else {
+        try {
             await execa("yarn", [], options);
-        }*/
+        } catch (e) {
+            throw new Error(
+                "Failed while installing project dependencies. Please check the above logs for more information."
+            );
+        }
     }
 
     if (!IS_TEST) {

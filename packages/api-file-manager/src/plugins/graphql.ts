@@ -1,7 +1,6 @@
 import { Response, ErrorResponse, ListResponse } from "@webiny/handler-graphql";
 import { FileInput, FileManagerContext, FilesListOpts, Settings } from "../types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import defaults from "./crud/utils/defaults";
 
 const emptyResolver = () => ({});
 
@@ -118,8 +117,8 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
 
                 listTags: [String]
 
-                # Is File Manager installed?
-                isInstalled: FileManagerBooleanResponse
+                # Get installed version
+                version: String
 
                 getSettings: FileManagerSettingsResponse
             }
@@ -137,6 +136,8 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
 
                 # Install File manager
                 install(srcPrefix: String): FileManagerBooleanResponse
+
+                upgrade(version: String!): FileManagerBooleanResponse
 
                 updateSettings(data: FileManagerSettingsInput): FileManagerSettingsResponse
             }
@@ -185,16 +186,13 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                         return new ErrorResponse(error);
                     }
                 },
-                async isInstalled(_, args, context) {
-                    const { i18nContent, security } = context;
+                async version(_, args, context) {
+                    const { i18nContent, security, fileManager } = context;
                     if (!security.getTenant() || !i18nContent.getLocale()) {
-                        return false;
+                        return null;
                     }
 
-                    const { fileManager } = context;
-
-                    const settings = await fileManager.settings.getSettings();
-                    return new Response(Boolean(settings?.installed));
+                    return await fileManager.system.getVersion();
                 },
                 async getSettings(_, args, context) {
                     return resolve(() => context.fileManager.settings.getSettings());
@@ -214,42 +212,12 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                     return resolve(() => context.fileManager.files.deleteFile(args.id));
                 },
                 async install(_, args, context) {
-                    const { fileManager, elasticSearch } = context;
-                    try {
-                        const settings = await fileManager.settings.getSettings();
-
-                        if (settings && settings.installed) {
-                            return new ErrorResponse({
-                                code: "FILES_INSTALL_ABORTED",
-                                message: "File Manager is already installed."
-                            });
-                        }
-
-                        const data: Partial<Settings> = {
-                            installed: true
-                        };
-
-                        if (args.srcPrefix) {
-                            data.srcPrefix = args.srcPrefix;
-                        }
-
-                        if (!settings) {
-                            await fileManager.settings.createSettings(data);
-                        } else {
-                            await fileManager.settings.updateSettings(data);
-                        }
-
-                        // Create ES index if it doesn't already exist.
-                        const esIndex = defaults.es(context);
-                        const { body: exists } = await elasticSearch.indices.exists(esIndex);
-                        if (!exists) {
-                            await elasticSearch.indices.create(esIndex);
-                        }
-
-                        return new Response(true);
-                    } catch (error) {
-                        return new ErrorResponse(error);
-                    }
+                    return resolve(() =>
+                        context.fileManager.system.install({ srcPrefix: args.srcPrefix })
+                    );
+                },
+                async upgrade(_, args, context) {
+                    return resolve(() => context.fileManager.system.upgrade(args.version));
                 },
                 async updateSettings(_, args: { data: Partial<Settings> }, context) {
                     return resolve(() => context.fileManager.settings.updateSettings(args.data));

@@ -3,7 +3,7 @@ import { plugins } from "@webiny/plugins";
 import styled from "@emotion/styled";
 import { Icon } from "@webiny/ui/Icon";
 import Draggable from "./Draggable";
-import { CmsEditorFieldTypePlugin } from "@webiny/app-headless-cms/types";
+import { CmsEditorFieldTypePlugin } from "~/types";
 
 const FieldContainer = styled("div")({
     padding: "10px 15px",

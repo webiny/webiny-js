@@ -1,5 +1,5 @@
 import React from "react";
-import { AdminDrawerFooterMenuPlugin } from "@webiny/app-admin/types";
+import { AdminDrawerFooterMenuPlugin } from "../../types";
 import { ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
 import { i18n } from "@webiny/app/i18n";

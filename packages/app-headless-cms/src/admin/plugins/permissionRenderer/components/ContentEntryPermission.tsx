@@ -6,7 +6,7 @@ import { i18n } from "@webiny/app/i18n";
 import { Elevation } from "@webiny/ui/Elevation";
 import { PermissionSelector, PermissionSelectorWrapper } from "./PermissionSelector";
 import { Checkbox, CheckboxGroup } from "@webiny/ui/Checkbox";
-import { useCmsData } from "@webiny/app-headless-cms/admin/plugins/permissionRenderer/components/useCmsData";
+import { useCmsData } from "./useCmsData";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 

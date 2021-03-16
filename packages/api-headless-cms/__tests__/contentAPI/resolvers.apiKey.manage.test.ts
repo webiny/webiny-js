@@ -1,5 +1,5 @@
 import { SecurityIdentity } from "@webiny/api-security/types";
-import { CmsContentModelGroup } from "@webiny/api-headless-cms/types";
+import { CmsContentModelGroup } from "../../src/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
@@ -37,12 +37,10 @@ describe("MANAGE - resolvers - api key", () => {
         Authorization: API_TOKEN
     };
 
-    const esCmsIndex = "root-headless-cms";
-
     const manageOpts = { path: "manage/en-US" };
 
     const {
-        elasticSearch,
+        clearAllIndex,
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
@@ -50,7 +48,7 @@ describe("MANAGE - resolvers - api key", () => {
 
     beforeEach(async () => {
         try {
-            await elasticSearch.indices.create({ index: esCmsIndex });
+            await clearAllIndex();
         } catch {
             // Ignore errors
         }
@@ -97,7 +95,7 @@ describe("MANAGE - resolvers - api key", () => {
 
     afterEach(async () => {
         try {
-            await elasticSearch.indices.delete({ index: esCmsIndex });
+            await clearAllIndex();
         } catch (e) {}
     });
 

@@ -1,22 +1,19 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import {
-    DeactivatePluginActionEvent,
-    UpdateElementActionEvent
-} from "@webiny/app-page-builder/editor/recoil/actions";
-import { createBlockElements } from "@webiny/app-page-builder/editor/helpers";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
+import { DeactivatePluginActionEvent, UpdateElementActionEvent } from "../../recoil/actions";
+import { createBlockElements } from "../../helpers";
+import { useEventActionHandler } from "../../hooks/useEventActionHandler";
 import { useMutation } from "@apollo/react-hooks";
-import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
+import { useKeyHandler } from "../../hooks/useKeyHandler";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { plugins } from "@webiny/plugins";
 import { OverlayLayout } from "@webiny/app-admin/components/OverlayLayout";
 import { LeftPanel, RightPanel, SplitView } from "@webiny/app-admin/components/SplitView";
 import { List, ListItem, ListItemGraphic } from "@webiny/ui/List";
 import { Icon } from "@webiny/ui/Icon";
-import { DelayedOnChange } from "@webiny/app-page-builder/editor/components/DelayedOnChange";
+import { DelayedOnChange } from "../../components/DelayedOnChange";
 import { Typography } from "@webiny/ui/Typography";
 
-import { ReactComponent as SearchIcon } from "@webiny/app-page-builder/editor/assets/icons/search.svg";
+import { ReactComponent as SearchIcon } from "../../assets/icons/search.svg";
 import {
     SimpleForm,
     SimpleFormContent,
@@ -25,17 +22,14 @@ import {
 import { useRecoilValue } from "recoil";
 
 import { ReactComponent as AllIcon } from "./icons/round-clear_all-24px.svg";
-import createBlockPlugin from "@webiny/app-page-builder/admin/utils/createBlockPlugin";
+import createBlockPlugin from "../../../admin/utils/createBlockPlugin";
 import BlocksList from "./BlocksList";
 import { DELETE_PAGE_ELEMENT, UPDATE_PAGE_ELEMENT } from "./graphql";
 import EditBlockDialog from "./EditBlockDialog";
 import { listItem, ListItemTitle, listStyle, TitleContent } from "./SearchBlocksStyled";
 import * as Styled from "./StyledComponents";
-import { PbEditorBlockCategoryPlugin, PbEditorBlockPlugin } from "@webiny/app-page-builder/types";
-import {
-    elementWithChildrenByIdSelector,
-    rootElementAtom
-} from "@webiny/app-page-builder/editor/recoil/modules";
+import { PbEditorBlockCategoryPlugin, PbEditorBlockPlugin } from "../../../types";
+import { elementWithChildrenByIdSelector, rootElementAtom } from "../../recoil/modules";
 
 const allBlockCategory: PbEditorBlockCategoryPlugin = {
     type: "pb-editor-block-category",

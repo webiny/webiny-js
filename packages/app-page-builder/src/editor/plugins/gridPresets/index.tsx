@@ -1,4 +1,4 @@
-import { PbEditorGridPresetPluginType } from "@webiny/app-page-builder/types";
+import { PbEditorGridPresetPluginType } from "../../../types";
 import { plugins } from "@webiny/plugins";
 import { ReactComponent as GridIcon66 } from "../../assets/icons/grid-6-6.svg";
 import { ReactComponent as GridIcon633 } from "../../assets/icons/grid-6-3-3.svg";

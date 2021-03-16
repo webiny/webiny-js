@@ -1,9 +1,11 @@
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import { CmsContentEntry, CmsContentModelGroup } from "@webiny/api-headless-cms/types";
+import { CmsContentEntry, CmsContentModelGroup } from "../../src/types";
 import models from "./mocks/contentModels";
 import { useProductManageHandler } from "../utils/useProductManageHandler";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useProductReadHandler } from "../utils/useProductReadHandler";
+
+jest.setTimeout(25000);
 
 const richTextMock = [
     {
@@ -17,16 +19,14 @@ const richTextMock = [
 ];
 
 describe("refField", () => {
-    const esCmsIndex = "root-headless-cms";
-
     const manageOpts = { path: "manage/en-US" };
     const readOpts = { path: "read/en-US" };
 
     const {
-        elasticSearch,
         createContentModelMutation,
         updateContentModelMutation,
-        createContentModelGroupMutation
+        createContentModelGroupMutation,
+        clearAllIndex
     } = useContentGqlHandler(manageOpts);
 
     // This function is not directly within `beforeEach` as we don't always setup the same content model.
@@ -102,13 +102,13 @@ describe("refField", () => {
 
     beforeEach(async () => {
         try {
-            await elasticSearch.indices.create({ index: esCmsIndex });
+            await clearAllIndex();
         } catch {}
     });
 
     afterEach(async () => {
         try {
-            await elasticSearch.indices.delete({ index: esCmsIndex });
+            await clearAllIndex();
         } catch {}
     });
 

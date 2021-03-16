@@ -19,7 +19,7 @@ import {
     DialogOnClose
 } from "@webiny/ui/Dialog";
 import { ButtonDefault } from "@webiny/ui/Button";
-import { addFormToListCache } from "@webiny/app-form-builder/admin/views/cache";
+import { addFormToListCache } from "../cache";
 
 const narrowDialog = css({
     ".mdc-dialog__surface": {

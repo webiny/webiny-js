@@ -1,6 +1,6 @@
 import timeLtePlugin from "../../src/content/plugins/validators/timeLte";
 import timeGtePlugin from "../../src/content/plugins/validators/timeGte";
-import { CmsContentModelFieldValidation } from "@webiny/api-headless-cms/types";
+import { CmsContentModelFieldValidation } from "../../src/types";
 
 const createValidator = (args): CmsContentModelFieldValidation => {
     return {

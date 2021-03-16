@@ -5,28 +5,17 @@ const argv = require("yargs").argv;
 const { Octokit } = require("@octokit/rest");
 
 /**
- * A simple script that will trigger release-latest GitHub workflow, which will checkout the branch passed via the
- * --branch argument, and release and publish all packages with the "latest" tag.
- *
- * Warning: only use this when the "release-x.y.z" branch has been completely tested by the team, and
- * you're absolutely sure the code that's about to be released is fully working and production ready.
+ * A simple script that will trigger release-latest GitHub workflow.
+ * Latest releases are deployed from the "v5" branch.
  */
+
+const RELEASE_BRANCH = "v5";
 
 (async () => {
     try {
         if (!argv.token) {
             throw new Error(
                 `"--token" argument missing. Make sure it contains a valid GitHub access token.`
-            );
-        }
-
-        if (!argv.branch) {
-            throw new Error(`"--branch" argument missing.`);
-        }
-
-        if (!argv.branch.startsWith("release-")) {
-            throw new Error(
-                `--branch argument must be set to a branch name that starts with "release-", for example: "release-4.2.0".`
             );
         }
 
@@ -37,7 +26,7 @@ const { Octokit } = require("@octokit/rest");
         console.log(red(`⚠️⚠️⚠️ I hope you know what you're doing.`));
         console.log(
             cyan(
-                `Triggering a GitHub workflow that will release and publish Webiny of the "${argv.branch}" branch.`
+                `Triggering a GitHub workflow that will release and publish Webiny of the "${RELEASE_BRANCH}" branch.`
             )
         );
 
@@ -48,7 +37,7 @@ const { Octokit } = require("@octokit/rest");
             repo: "webiny-js",
             event_type: "release-latest",
             client_payload: {
-                branch: argv.branch
+                branch: RELEASE_BRANCH
             }
         });
 

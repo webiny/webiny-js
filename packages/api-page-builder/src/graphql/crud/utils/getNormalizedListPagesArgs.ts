@@ -1,4 +1,4 @@
-import { ListPagesArgs } from "@webiny/api-page-builder/types";
+import { ListPagesArgs } from "../../../types";
 
 /**
  * Returns arguments suited to be sent to ElasticSearch's `search` method.
@@ -18,7 +18,7 @@ export default (args: ListPagesArgs) => {
 };
 
 const getQuery = (args: ListPagesArgs) => {
-    const { where, search } = args;
+    const { where, search, exclude } = args;
     const query: Record<string, any> = {
         bool: {
             filter: []
@@ -65,6 +65,38 @@ const getQuery = (args: ListPagesArgs) => {
                 fields: ["title", "snippet"]
             }
         };
+    }
+    // Prepare query to exclude page which match provided id and/or path.
+    if (Array.isArray(exclude) && exclude.length !== 0) {
+        query.bool.must_not = [];
+
+        const paths = [];
+        const pageIds = [];
+
+        exclude.forEach(item => {
+            // Page "path" will always starts with a slash.
+            if (item.includes("/")) {
+                paths.push(item);
+            } else {
+                pageIds.push(item);
+            }
+        });
+
+        if (paths.length) {
+            query.bool.must_not.push({
+                terms: {
+                    "path.keyword": paths
+                }
+            });
+        }
+
+        if (pageIds.length) {
+            query.bool.must_not.push({
+                terms: {
+                    pid: pageIds
+                }
+            });
+        }
     }
 
     return query;

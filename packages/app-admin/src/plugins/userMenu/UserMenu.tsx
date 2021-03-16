@@ -8,7 +8,7 @@ import {
     AdminHeaderUserMenuHandlePlugin,
     AdminHeaderUserMenuPlugin,
     AdminHeaderUserMenuUserInfoPlugin
-} from "@webiny/app-admin/types";
+} from "../../types";
 
 const menuDialog = css({
     "&.mdc-menu": {

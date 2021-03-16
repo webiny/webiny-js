@@ -1,8 +1,5 @@
 import React from "react";
-import {
-    activeElementAtom,
-    elementByIdSelector
-} from "@webiny/app-page-builder/editor/recoil/modules";
+import { activeElementAtom, elementByIdSelector } from "../recoil/modules";
 import { useRecoilValue } from "recoil";
 
 export function withActiveElement() {

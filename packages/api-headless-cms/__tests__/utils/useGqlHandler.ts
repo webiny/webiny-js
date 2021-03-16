@@ -1,5 +1,6 @@
 import dbPlugins from "@webiny/handler-db";
 import elasticSearch from "@webiny/api-plugin-elastic-search-client";
+import dynamoToElastic from "@webiny/api-dynamodb-to-elasticsearch/handler";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import securityPlugins from "@webiny/api-security/authenticator";
@@ -28,6 +29,8 @@ import {
     UPDATE_CONTENT_MODEL_MUTATION
 } from "./graphql/contentModel";
 
+import { simulateStream } from "@webiny/project-utils/testing/dynamodb";
+
 import { INTROSPECTION } from "./graphql/schema";
 import { ApiKey } from "@webiny/api-security-tenancy/types";
 
@@ -54,6 +57,13 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
         region: "local"
     });
 
+    const elasticSearchContext = elasticSearch({
+        endpoint: `http://localhost:${ELASTICSEARCH_PORT}`
+    });
+
+    // Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
+    simulateStream(documentClient, createHandler(elasticSearchContext, dynamoToElastic()));
+
     const handler = createHandler(
         dbPlugins({
             table: "HeadlessCms",
@@ -61,7 +71,47 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
                 documentClient
             })
         }),
-        elasticSearch({ endpoint: `http://localhost:${ELASTICSEARCH_PORT}` }),
+        elasticSearchContext,
+        {
+            type: "context",
+            async apply(context) {
+                await context.elasticSearch.indices.putTemplate({
+                    name: "headless-cms-entries-index",
+                    body: {
+                        index_patterns: ["*headless-cms*"],
+                        settings: {
+                            analysis: {
+                                analyzer: {
+                                    lowercase_analyzer: {
+                                        type: "custom",
+                                        filter: ["lowercase", "trim"],
+                                        tokenizer: "keyword"
+                                    }
+                                }
+                            }
+                        },
+                        mappings: {
+                            properties: {
+                                property: {
+                                    type: "text",
+                                    fields: {
+                                        keyword: {
+                                            type: "keyword",
+                                            ignore_above: 256
+                                        }
+                                    },
+                                    analyzer: "lowercase_analyzer"
+                                },
+                                rawValues: {
+                                    type: "object",
+                                    enabled: false
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        },
         {
             type: "context",
             name: "context-security-tenant",
@@ -118,7 +168,7 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
         securityPlugins(),
         apiKeyAuthentication({ identityType: "api-key" }),
         apiKeyAuthorization({ identityType: "api-key" }),
-        i18nContext,
+        i18nContext(),
         i18nContentPlugins(),
         mockLocalesPlugins(),
         elasticSearchPlugins(),
@@ -178,11 +228,18 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
         return [JSON.parse(response.body), response];
     };
 
+    const elasticSearchClient = new Client({
+        node: `http://localhost:${ELASTICSEARCH_PORT}`
+    });
+
     return {
         until,
-        elasticSearch: new Client({
-            node: `http://localhost:${ELASTICSEARCH_PORT}`
-        }),
+        elasticSearch: elasticSearchClient,
+        clearAllIndex: async () => {
+            await elasticSearchClient.indices.delete({
+                index: "_all"
+            });
+        },
         documentClient,
         sleep: (ms = 333) => {
             return new Promise(resolve => {

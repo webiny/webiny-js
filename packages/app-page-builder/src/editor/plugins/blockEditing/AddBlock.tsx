@@ -1,9 +1,9 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
-import { TogglePluginActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
+import { useEventActionHandler } from "../../hooks/useEventActionHandler";
+import { TogglePluginActionEvent } from "../../recoil/actions";
 import { ButtonFloating } from "@webiny/ui/Button";
-import { ReactComponent as AddIcon } from "@webiny/app-page-builder/editor/assets/icons/add.svg";
+import { ReactComponent as AddIcon } from "../../assets/icons/add.svg";
 
 const SIDEBAR_WIDTH = 300;
 const BottomRight = styled("div")({

@@ -1,8 +1,4 @@
-import {
-    CmsEditorField,
-    CmsEditorFieldId,
-    FieldLayoutPosition
-} from "@webiny/app-headless-cms/types";
+import { CmsEditorField, CmsEditorFieldId, FieldLayoutPosition } from "~/types";
 import getFieldPosition from "./getFieldPosition";
 
 /**

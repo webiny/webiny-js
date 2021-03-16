@@ -3,6 +3,7 @@ const { red, green } = require("chalk");
 const path = require("path");
 const loadEnvVariables = require("../utils/loadEnvVariables");
 const getPulumi = require("../utils/getPulumi");
+const login = require("../utils/login");
 
 const getStackName = folder => {
     folder = folder.split("/").pop();
@@ -38,6 +39,8 @@ module.exports = async (inputs, context) => {
         }
     });
 
+    await login(folder);
+
     const stackName = getStackName(folder);
 
     let stackExists = true;
@@ -49,9 +52,7 @@ module.exports = async (inputs, context) => {
 
     if (!stackExists) {
         context.error(
-            `Could not find Pulumi stack information for ${red(folder)} project application, ${red(
-                env
-            )} environment.`
+            `Project application ${red(folder)} (${red(env)} environment) does not exist.`
         );
         return;
     }
@@ -62,7 +63,13 @@ module.exports = async (inputs, context) => {
 
     await pulumi.run({
         command: "destroy",
-        execa: { stdio: "inherit" },
+        execa: {
+            stdio: "inherit",
+            env: {
+                WEBINY_ENV: env,
+                WEBINY_PROJECT_NAME: context.projectName
+            }
+        },
         args: {
             yes: true
         }

@@ -1,4 +1,4 @@
-import { FileManagerContext } from "@webiny/api-file-manager/types";
+import { FileManagerContext } from "~/types";
 
 export default (context: FileManagerContext) => {
     const { security, i18nContent } = context;

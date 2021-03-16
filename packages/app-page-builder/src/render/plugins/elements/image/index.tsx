@@ -1,12 +1,15 @@
 import React from "react";
+import kebabCase from "lodash/kebabCase";
 import Image from "./Image";
-import { PbRenderElementPlugin } from "@webiny/app-page-builder/types";
+import { PbRenderElementPluginArgs, PbRenderElementPlugin } from "../../../../types";
 
-export default (): PbRenderElementPlugin => {
+export default (args: PbRenderElementPluginArgs = {}): PbRenderElementPlugin => {
+    const elementType = kebabCase(args.elementType || "image");
+
     return {
-        name: "pb-render-page-element-image",
+        name: `pb-render-page-element-${elementType}`,
         type: "pb-render-page-element",
-        elementType: "image",
+        elementType: elementType,
         render(props) {
             return <Image {...props} />;
         }

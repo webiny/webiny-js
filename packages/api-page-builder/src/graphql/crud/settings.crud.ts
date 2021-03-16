@@ -1,16 +1,11 @@
 import { ContextPlugin } from "@webiny/handler/types";
 import defaults from "./utils/defaults";
 import getPKPrefix from "./utils/getPKPrefix";
-import {
-    PbContext,
-    DefaultSettings,
-    SettingsHookPlugin,
-    InstallSettings
-} from "@webiny/api-page-builder/types";
+import { PbContext, DefaultSettings, SettingsHookPlugin } from "../../types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import DataLoader from "dataloader";
 import executeHookCallbacks from "./utils/executeHookCallbacks";
-import { DefaultSettingsModel, InstallSettingsModel } from "@webiny/api-page-builder/utils/models";
+import { DefaultSettingsModel } from "../../utils/models";
 import merge from "lodash/merge";
 import Error from "@webiny/error";
 
@@ -35,16 +30,12 @@ const plugin: ContextPlugin<PbContext> = {
             ...context.pageBuilder,
             settings: {
                 dataLoaders: {
-                    get: new DataLoader<
-                        { PK: string; SK: string },
-                        DefaultSettings | InstallSettings,
-                        string
-                    >(
+                    get: new DataLoader<{ PK: string; SK: string }, DefaultSettings, string>(
                         async keys => {
                             const results = [];
                             for (let i = 0; i < keys.length; i++) {
                                 const { PK, SK } = keys[i];
-                                const [[data]] = await db.read<DefaultSettings | InstallSettings>({
+                                const [[data]] = await db.read<DefaultSettings>({
                                     ...defaults.db,
                                     query: { PK, SK },
                                     limit: 1
@@ -190,52 +181,6 @@ const plugin: ContextPlugin<PbContext> = {
                         );
 
                         return next;
-                    }
-                },
-
-                // Contains the information related to app's installation state (installed or not installed).
-                // Note that these settings are not stored per-locale, only per-tenant.
-                install: {
-                    PK: () => `${getPKPrefix(context, { locale: false })}SETTINGS`,
-                    SK: "install",
-                    async get() {
-                        return context.pageBuilder.settings.dataLoaders.get.load({
-                            PK: this.PK(),
-                            SK: this.SK
-                        }) as Promise<InstallSettings>;
-                    },
-                    async update(next) {
-                        let current = await this.get();
-                        if (!current) {
-                            current = await new InstallSettingsModel().populate({}).toJSON();
-                            await db.create({
-                                ...defaults.db,
-                                data: {
-                                    ...current,
-                                    PK: this.PK(),
-                                    SK: this.SK,
-                                    TYPE,
-                                    type: "install",
-                                    tenant: security.getTenant().id,
-                                    locale: i18nContent.getLocale().code
-                                }
-                            });
-                        }
-
-                        const settings = new InstallSettingsModel()
-                            .populate(current)
-                            .populate(next);
-                        await settings.validate();
-
-                        const data = await settings.toJSON();
-
-                        await db.update({
-                            ...defaults.db,
-                            query: { PK: this.PK(), SK: this.SK },
-                            data
-                        });
-
-                        return settings.toJSON();
                     }
                 }
             }

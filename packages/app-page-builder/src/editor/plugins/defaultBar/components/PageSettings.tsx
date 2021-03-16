@@ -1,12 +1,12 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
+import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
 import {
     DeactivatePluginActionEvent,
     UpdatePageRevisionActionEvent
-} from "@webiny/app-page-builder/editor/recoil/actions";
-import { pageAtom } from "@webiny/app-page-builder/editor/recoil/modules";
+} from "../../../recoil/actions";
+import { pageAtom } from "../../../recoil/modules";
 import { plugins } from "@webiny/plugins";
-import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
+import { useKeyHandler } from "../../../hooks/useKeyHandler";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { OverlayLayout } from "@webiny/app-admin/components/OverlayLayout";
 import { SplitView, LeftPanel, RightPanel } from "@webiny/app-admin/components/SplitView";
@@ -23,7 +23,7 @@ import {
 } from "@webiny/app-admin/components/SimpleForm";
 import { useRecoilValue } from "recoil";
 import { Title, listItem, ListItemTitle, listStyle, TitleContent } from "./PageSettingsStyled";
-import { PbEditorPageSettingsPlugin } from "@webiny/app-page-builder/types";
+import { PbEditorPageSettingsPlugin } from "../../../../types";
 
 type PageSettingsPropsType = {
     [key: string]: any;

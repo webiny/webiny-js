@@ -1,42 +1,49 @@
 import React from "react";
+import kebabCase from "lodash/kebabCase";
 import Block from "./Block";
 import {
     CreateElementActionEvent,
     DeleteElementActionEvent,
     updateElementAction
-} from "@webiny/app-page-builder/editor/recoil/actions";
-import { addElementToParent, createDroppedElement } from "@webiny/app-page-builder/editor/helpers";
+} from "../../../recoil/actions";
+import { addElementToParent, createDroppedElement } from "../../../helpers";
 import {
     DisplayMode,
     EventActionHandlerActionCallableResponse,
     PbEditorPageElementPlugin,
-    PbEditorElement
-} from "@webiny/app-page-builder/types";
-import { AfterDropElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions/afterDropElement";
+    PbEditorElement,
+    PbEditorElementPluginArgs
+} from "../../../../types";
+import { AfterDropElementActionEvent } from "../../../recoil/actions/afterDropElement";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
-export default (): PbEditorPageElementPlugin => {
+export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin => {
+    const elementSettings = [
+        "pb-editor-page-element-style-settings-background",
+        "pb-editor-page-element-style-settings-animation",
+        "pb-editor-page-element-style-settings-border",
+        "pb-editor-page-element-style-settings-shadow",
+        "pb-editor-page-element-style-settings-padding",
+        "pb-editor-page-element-style-settings-margin",
+        "pb-editor-page-element-style-settings-width",
+        "pb-editor-page-element-style-settings-height",
+        "pb-editor-page-element-style-settings-horizontal-align-flex",
+        "pb-editor-page-element-style-settings-vertical-align",
+        "pb-editor-page-element-settings-clone",
+        "pb-editor-page-element-settings-delete"
+    ];
+
+    const elementType = kebabCase(args.elementType || "block");
+
     return {
-        name: "pb-editor-page-element-block",
+        name: `pb-editor-page-element-${elementType}`,
         type: "pb-editor-page-element",
-        elementType: "block",
-        settings: [
-            "pb-editor-page-element-style-settings-background",
-            "pb-editor-page-element-style-settings-animation",
-            "pb-editor-page-element-style-settings-border",
-            "pb-editor-page-element-style-settings-shadow",
-            "pb-editor-page-element-style-settings-padding",
-            "pb-editor-page-element-style-settings-margin",
-            "pb-editor-page-element-style-settings-width",
-            "pb-editor-page-element-style-settings-height",
-            "pb-editor-page-element-style-settings-horizontal-align-flex",
-            "pb-editor-page-element-style-settings-vertical-align",
-            "pb-editor-page-element-settings-clone",
-            "pb-editor-page-element-settings-delete"
-        ],
+        elementType: elementType,
+        settings:
+            typeof args.settings === "function" ? args.settings(elementSettings) : elementSettings,
         create(options = {}) {
-            return {
-                type: "block",
+            const defaultValue = {
+                type: this.elementType,
                 elements: [],
                 data: {
                     settings: {
@@ -72,6 +79,8 @@ export default (): PbEditorPageElementPlugin => {
                 },
                 ...options
             };
+
+            return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
         },
         render(props) {
             return <Block {...props} />;

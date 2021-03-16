@@ -1,7 +1,7 @@
 import React from "react";
 import { plugins } from "@webiny/plugins";
 import { Switch } from "@webiny/react-router";
-import { RoutePlugin } from "@webiny/app/types";
+import { RoutePlugin } from "../types";
 
 export const Routes = () => {
     // We cannot call `sort` on the array returned by the `plugins.byType` call - it is read-only.

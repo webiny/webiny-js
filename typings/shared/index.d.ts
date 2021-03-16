@@ -1,4 +1,3 @@
-// @ts-nocheck
 declare module "*.md" {
     const md: string;
     export default md;
@@ -24,7 +23,7 @@ declare module "*.svg" {
     const src: string;
     export default src;
 }
-
+// @ts-ignore
 declare global {
     // eslint-disable-next-line
     namespace JSX {
@@ -35,4 +34,9 @@ declare global {
             };
         }
     }
+}
+
+declare module "nanoid" {
+    export default function nanoid(size?: number): string;
+    export function customAlphabet (alphabet: string, size: number): () => string
 }

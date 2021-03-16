@@ -1,8 +1,4 @@
-import {
-    CmsEditorContentModel,
-    CmsEditorField,
-    CmsFieldValueTransformer
-} from "@webiny/app-headless-cms/types";
+import { CmsEditorContentModel, CmsEditorField, CmsFieldValueTransformer } from "~/types";
 import { plugins } from "@webiny/plugins";
 
 interface AvailableFieldTransformers {

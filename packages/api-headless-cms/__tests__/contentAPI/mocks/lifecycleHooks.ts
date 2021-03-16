@@ -1,7 +1,4 @@
-import {
-    CmsContentEntryHookPlugin,
-    CmsContentModelHookPlugin
-} from "@webiny/api-headless-cms/types";
+import { CmsContentEntryHookPlugin, CmsContentModelHookPlugin } from "../../../src/types";
 
 class HooksTracker {
     private _tracked: Record<string, number> = {};

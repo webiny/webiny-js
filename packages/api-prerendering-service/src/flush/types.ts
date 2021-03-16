@@ -1,9 +1,8 @@
 import { HandlerPlugin as DefaultHandlerPlugin, Context } from "@webiny/handler/types";
-import { DbRender } from "@webiny/api-prerendering-service/types";
+import { DbRender } from "../types";
 import { ArgsContext } from "@webiny/handler-args/types";
 import { Plugin } from "@webiny/plugins/types";
 import { DbContext } from "@webiny/handler-db/types";
-import debug from "debug";
 
 export type Configuration = {
     website?: {
@@ -26,7 +25,7 @@ export type HandlerContext = Context<DbContext, ArgsContext<HandlerArgs>>;
 export type HandlerPlugin = DefaultHandlerPlugin<HandlerContext>;
 
 export type HookCallbackFunction = (args: {
-    log: debug.Debugger;
+    log: any;
     context: HandlerContext;
     configuration: Configuration;
     args: Args;

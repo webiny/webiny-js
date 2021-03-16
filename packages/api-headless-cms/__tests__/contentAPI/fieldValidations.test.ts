@@ -1,15 +1,13 @@
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import { CmsContentModelGroup } from "@webiny/api-headless-cms/types";
+import { CmsContentModelGroup } from "../../src/types";
 import models from "./mocks/contentModels";
 import { useFruitManageHandler } from "../utils/useFruitManageHandler";
 
 describe("fieldValidations", () => {
-    const esCmsIndex = "root-headless-cms";
-
     const manageOpts = { path: "manage/en-US" };
 
     const {
-        elasticSearch,
+        clearAllIndex,
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
@@ -82,13 +80,13 @@ describe("fieldValidations", () => {
 
     beforeEach(async () => {
         try {
-            await elasticSearch.indices.create({ index: esCmsIndex });
+            await clearAllIndex();
         } catch {}
     });
 
     afterEach(async () => {
         try {
-            await elasticSearch.indices.delete({ index: esCmsIndex });
+            await clearAllIndex();
         } catch {}
     });
     /**

@@ -1,4 +1,4 @@
-import { CmsContentEntryHookPluginArgs } from "@webiny/api-headless-cms/types";
+import { CmsContentEntryHookPluginArgs } from "../../../../types";
 import { markLockedFields } from "./markLockedFields";
 import { runContentEntryLifecycleHooks } from "./runContentEntryLifecycleHooks";
 

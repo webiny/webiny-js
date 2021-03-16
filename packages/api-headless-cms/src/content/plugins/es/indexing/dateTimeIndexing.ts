@@ -1,7 +1,7 @@
 import {
     CmsContentModelDateTimeField,
     CmsModelFieldToElasticsearchPlugin
-} from "@webiny/api-headless-cms/types";
+} from "../../../../types";
 
 const convertTimeToNumber = (time?: string): number | null => {
     if (!time) {
@@ -15,6 +15,12 @@ const convertNumberToTime = (value?: number): string | null => {
     if (value === undefined || value === null) {
         return null;
     }
+    // TODO remove when v5 goes out
+    // this is a fix for pre beta.5
+    if (String(value).match(/^([0-9]{2}):([0-9]{2})/) !== null) {
+        return String(value);
+    }
+    //
     const hours = Math.floor(value / 60 / 60);
 
     const minutes = Math.floor((value - hours * 60 * 60) / 60);
@@ -24,19 +30,22 @@ const convertNumberToTime = (value?: number): string | null => {
     return [hours, minutes, seconds].map(v => String(v).padStart(2, "0")).join(":");
 };
 
-const convertValueFromIndex = (value: string | number, field: CmsContentModelDateTimeField) => {
+const convertValueFromIndex = (
+    value: string | number,
+    field: CmsContentModelDateTimeField
+): string | null => {
     const type = field.settings.type;
     if (type === "time") {
         return convertNumberToTime(value as number);
     } else if (!value) {
         return null;
     } else if (type === "dateTimeWithTimezone") {
-        return value;
+        return value as string;
     } else if (type === "date") {
         const dateValue = new Date(value);
         return dateValue.toISOString().substr(0, 10);
     }
-    return new Date(value);
+    return new Date(value).toISOString();
 };
 
 const convertValueToIndex = (value: string, field: CmsContentModelDateTimeField) => {

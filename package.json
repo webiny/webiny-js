@@ -6,6 +6,7 @@
       "apps/admin/code",
       "apps/website/code",
       "apps/theme",
+      "api/code/dynamoToElastic",
       "api/code/fileManager/*",
       "api/code/graphql",
       "api/code/headlessCMS",
@@ -24,14 +25,14 @@
     "@4tw/cypress-drag-drop": "^1.4.0",
     "@babel/cli": "^7.0.0",
     "@babel/core": "^7.0.0",
-    "@commitlint/cli": "^8.3.5",
-    "@commitlint/config-conventional": "^8.3.4",
+    "@commitlint/cli": "^11.0.0",
+    "@commitlint/config-conventional": "^11.0.0",
     "@testing-library/cypress": "^7.0.2",
     "@types/fs-extra": "^8.0.1",
     "@types/jest": "^24.0.24",
     "@types/jquery": "^3.3.31",
     "@types/node": "^12.12.22",
-    "@types/react": "^16.14.3",
+    "@types/react": "16.14.2",
     "@types/react-dom": "^17.0.0",
     "@typescript-eslint/eslint-plugin": "^4.14.1",
     "@typescript-eslint/parser": "^4.14.1",
@@ -63,6 +64,7 @@
     "eslint-plugin-webiny-i18n": "link:./eslint/webiny-i18n",
     "execa": "^1.0.0",
     "flatten": "^1.0.2",
+    "folder-hash": "^4.0.0",
     "fs-extra": "^7.0.0",
     "get-stream": "^3.0.0",
     "get-yarn-workspaces": "^1.0.2",
@@ -94,7 +96,8 @@
     "semver": "^6.3.0",
     "source-map-support": "^0.5.0",
     "ts-jest": "^26.4.4",
-    "typescript": "^4.1.3",
+    "typescript": "4.1.3",
+    "typescript-transform-paths": "^2.2.3",
     "utf-8-validate": "^5.0.2",
     "verdaccio": "^4.10.0",
     "webpack": "^4.39.2",
@@ -110,7 +113,7 @@
     "check-ts-configs": "node scripts/checkTsConfigs.js",
     "eslint": "eslint \"**/*.{js,jsx,ts,tsx}\" --max-warnings=0",
     "eslint:fix": "yarn eslint --fix",
-    "build": "lerna run build --stream",
+    "build": "node scripts/buildWithCache.js",
     "build:apps": "yarn webiny ws run build --scope='@webiny/app*'",
     "build:api": "yarn webiny ws run build --scope='@webiny/api*' --scope='@webiny/handler*'",
     "watch:apps": "yarn webiny ws run watch --scope='@webiny/app*'",
@@ -135,8 +138,8 @@
     "setup-cypress": "node scripts/setupCypress",
     "test": "jest --config jest.config.js --runInBand --logHeapUsage",
     "validate-packages": "node scripts/validatePackages.js",
-    "lerna:version:latest": "echo 'TODO'",
-    "lerna:publish:latest": "echo 'TODO'",
+    "lerna:version:latest": "yarn lerna version --force-publish --conventional-graduate --yes",
+    "lerna:publish:latest": "yarn lerna publish from-package --yes",
     "lerna:version:beta": "yarn lerna version --conventional-prerelease --force-publish --preid beta --yes",
     "lerna:publish:beta": "yarn lerna publish from-package --dist-tag beta --yes",
     "lerna:version:verdaccio": "yarn lerna:version:beta --no-push --no-changelog",
@@ -156,7 +159,8 @@
     "**/*.{js,ts,tsx}": [
       "prettier --check",
       "eslint --max-warnings=0 --no-ignore",
-      "adio"
+      "adio",
+      "npm run check-ts-configs"
     ]
   },
   "yargs": {
@@ -194,10 +198,12 @@
     }
   },
   "resolutions": {
-    "@types/react": "^16.14.2",
+    "@rmwc/textfield": "link:./packages/ui/rmwc/textfield",
+    "@types/react": "16.14.2",
     "react": "16.14.0",
     "react-dom": "16.14.0",
     "pretty-format": "25.5.0",
-    "@rmwc/textfield": "link:./packages/ui/rmwc/textfield"
+    "typescript": "4.1.3",
+    "apollo-server-core": "2.17.0"
   }
 }

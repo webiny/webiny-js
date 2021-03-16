@@ -18,6 +18,13 @@ const parseDateTime = (value?: string) => {
     if (!value) {
         return {};
     }
+    if (value.includes("T")) {
+        const [formattedDate, formattedTime] = value.split(".")[0].split("T");
+        return {
+            formattedDate,
+            formattedTime
+        };
+    }
     const [formattedDate, formattedTime] = value.split(" ");
     if (!formattedDate || !formattedTime) {
         throw new Error(`Could not extract date and time from "${value}".`);

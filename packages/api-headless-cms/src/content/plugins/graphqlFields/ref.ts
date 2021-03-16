@@ -1,4 +1,4 @@
-import { CmsContext, CmsModelFieldToGraphQLPlugin } from "@webiny/api-headless-cms/types";
+import { CmsContext, CmsModelFieldToGraphQLPlugin } from "../../../types";
 import { createReadTypeName } from "../utils/createTypeName";
 
 const plugin: CmsModelFieldToGraphQLPlugin = {
@@ -6,7 +6,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
     type: "cms-model-field-to-graphql",
     fieldType: "ref",
     isSortable: false,
-    isSearchable: false,
+    isSearchable: true,
     read: {
         createTypeField({ field }) {
             const { models } = field.settings;

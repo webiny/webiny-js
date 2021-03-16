@@ -1,4 +1,4 @@
-import { PbEditorElement } from "@webiny/app-page-builder/types";
+import { PbEditorElement } from "../../../../types";
 
 export type UpdateElementActionArgsType = {
     element: PbEditorElement;

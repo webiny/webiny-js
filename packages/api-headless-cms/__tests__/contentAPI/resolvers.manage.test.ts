@@ -1,6 +1,6 @@
 /* eslint-disable */
 import Error from "@webiny/error";
-import { CmsContentEntry, CmsContentModelGroup } from "@webiny/api-headless-cms/types";
+import { CmsContentEntry, CmsContentModelGroup } from "../../src/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
@@ -19,14 +19,12 @@ interface CreateCategoriesResult {
 describe("MANAGE - Resolvers", () => {
     let contentModelGroup: CmsContentModelGroup;
 
-    const esCmsIndex = "root-headless-cms";
-
     const manageOpts = { path: "manage/en-US" };
     const readOpts = { path: "read/en-US" };
 
     const {
         until,
-        elasticSearch,
+        clearAllIndex,
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
@@ -110,13 +108,13 @@ describe("MANAGE - Resolvers", () => {
 
     beforeEach(async () => {
         try {
-            await elasticSearch.indices.create({ index: esCmsIndex });
+            await clearAllIndex();
         } catch {}
     });
 
     afterEach(async () => {
         try {
-            await elasticSearch.indices.delete({ index: esCmsIndex });
+            await clearAllIndex();
         } catch {}
     });
 

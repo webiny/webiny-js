@@ -1,5 +1,5 @@
-import { UiAtomType } from "@webiny/app-page-builder/editor/recoil/modules";
-import { EventActionHandlerMutationActionCallable } from "@webiny/app-page-builder/types";
+import { UiAtomType } from "../..";
+import { EventActionHandlerMutationActionCallable } from "../../../../../types";
 
 const updateResizeValue: EventActionHandlerMutationActionCallable<UiAtomType, boolean> = (
     state,

@@ -1,7 +1,7 @@
 import * as React from "react";
-import { List, ListItem } from "@webiny/ui/List";
+import { List, ListItem } from "../List";
 import { AccordionItem } from "./AccordionItem";
-import { Elevation } from "@webiny/ui/Elevation";
+import { Elevation } from "../Elevation";
 import { css } from "emotion";
 import classNames from "classnames";
 

@@ -1,6 +1,6 @@
 import dotProp from "dot-prop-immutable";
 import orderBy from "lodash/orderBy";
-import { CmsEditorContentEntry } from "@webiny/app-headless-cms/types";
+import { CmsEditorContentEntry } from "~/types";
 import * as GQL from "../../views/components/ContentModelForm/graphql";
 
 /*
@@ -12,7 +12,7 @@ const sortEntries = (list, sort) => {
         return list;
     }
     const [key, value] = sort.split("_");
-    const order = value.toLowerCase();
+    const order = value.toLowerCase() as "asc" | "desc";
     return orderBy(list, [key], [order]);
 };
 

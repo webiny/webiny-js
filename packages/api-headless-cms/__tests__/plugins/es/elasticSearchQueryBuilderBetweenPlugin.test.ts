@@ -1,15 +1,17 @@
 import { elasticSearchQueryBuilderBetweenPlugin } from "../../../src/content/plugins/es/elasticSearchQueryBuilderBetweenPlugin";
 import { createBlankQuery } from "./helpers";
-import { ElasticsearchQuery } from "@webiny/api-headless-cms/types";
+import { ElasticsearchQuery } from "../../../src/types";
 
 describe("elasticSearchQueryBuilderBetweenPlugin", () => {
     const plugin = elasticSearchQueryBuilderBetweenPlugin();
+    const context: any = {};
 
     it("should apply between correctly", () => {
         const query = createBlankQuery();
         plugin.apply(query, {
             value: [100, 110],
-            field: "id"
+            field: "id",
+            context
         });
 
         const expected: ElasticsearchQuery = {
@@ -35,7 +37,8 @@ describe("elasticSearchQueryBuilderBetweenPlugin", () => {
         const query = createBlankQuery();
         plugin.apply(query, {
             value: [100, 110],
-            field: "id"
+            field: "id",
+            context
         });
 
         const from = new Date();
@@ -43,7 +46,8 @@ describe("elasticSearchQueryBuilderBetweenPlugin", () => {
         to.setTime(from.getTime() + 1000000);
         plugin.apply(query, {
             value: [from, to],
-            field: "date"
+            field: "date",
+            context
         });
 
         const expected: ElasticsearchQuery = {
@@ -78,7 +82,8 @@ describe("elasticSearchQueryBuilderBetweenPlugin", () => {
         expect(() => {
             plugin.apply(query, {
                 value: "notAnArray",
-                field: "id"
+                field: "id",
+                context
             });
         }).toThrow(`You cannot filter "id" with between query and not send an array of values.`);
     });
@@ -93,7 +98,8 @@ describe("elasticSearchQueryBuilderBetweenPlugin", () => {
             expect(() => {
                 plugin.apply(query, {
                     value,
-                    field: "id"
+                    field: "id",
+                    context
                 });
             }).toThrow(`You must pass 2 values in the array for field "id" filtering.`);
         }

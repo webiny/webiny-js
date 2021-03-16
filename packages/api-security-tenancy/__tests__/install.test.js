@@ -3,16 +3,13 @@ import useGqlHandler from "./useGqlHandler";
 describe(`Test "Security" install`, () => {
     const { install, securityGroup } = useGqlHandler({ fullAccess: true });
 
-    test(`should return "isInstalled" false without running install`, async () => {
+    test(`should return null for "version"`, async () => {
         const [response] = await install.isInstalled();
 
         expect(response).toEqual({
             data: {
                 security: {
-                    isInstalled: {
-                        data: false,
-                        error: null
-                    }
+                    version: null
                 }
             }
         });
@@ -60,10 +57,7 @@ describe(`Test "Security" install`, () => {
         expect(response).toEqual({
             data: {
                 security: {
-                    isInstalled: {
-                        data: true,
-                        error: null
-                    }
+                    version: expect.any(String)
                 }
             }
         });

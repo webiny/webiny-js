@@ -1,9 +1,9 @@
 import React from "react";
 import { i18n } from "@webiny/app/i18n";
 import { plugins } from "@webiny/plugins";
-import { ReactComponent as SettingsIcon } from "@webiny/app-admin/assets/icons/round-settings-24px.svg";
+import { ReactComponent as SettingsIcon } from "../assets/icons/round-settings-24px.svg";
 import { WebinyInitPlugin } from "@webiny/app/types";
-import { AdminMenuSettingsPlugin } from "@webiny/app-admin/types";
+import { AdminMenuSettingsPlugin } from "../types";
 
 const t = i18n.namespace("app-admin/menus");
 

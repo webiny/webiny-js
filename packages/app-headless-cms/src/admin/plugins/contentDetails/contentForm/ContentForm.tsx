@@ -1,11 +1,11 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { useMutation } from "@webiny/app-headless-cms/admin/hooks";
-import { ContentModelForm } from "../../../views/components/ContentModelForm";
-import * as GQL from "../../../views/components/ContentModelForm/graphql";
+import { useMutation } from "~/admin/hooks";
+import { ContentModelForm } from "~/admin/views/components/ContentModelForm";
+import * as GQL from "~/admin/views/components/ContentModelForm/graphql";
 import * as GQLCache from "../cache";
-import { CmsEditorContentEntry, CmsEditorContentModel } from "@webiny/app-headless-cms/types";
+import { CmsEditorContentEntry, CmsEditorContentModel } from "~/types";
 import { prepareFormData } from "./prepareFormData";
 
 interface ContentFormProps {
@@ -47,7 +47,7 @@ const ContentForm: React.FunctionComponent<ContentFormProps> = ({
     const [invalidFields, setInvalidFields] = useState<Record<string, string>>({});
 
     const setInvalidFieldValues = errors => {
-        const values = errors.reduce((acc, er) => {
+        const values = (errors || []).reduce((acc, er) => {
             acc[er.fieldId] = er.error;
             return acc;
         }, {});

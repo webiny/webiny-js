@@ -7,15 +7,12 @@ import {
     PbEditorPageElementPlugin,
     PbEditorElement,
     PbEditorPageElementSettingsRenderComponentProps
-} from "@webiny/app-page-builder/types";
+} from "../../../../types";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { IconButton } from "@webiny/ui/Button";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
-import { UpdateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
-import {
-    activeElementAtom,
-    elementWithChildrenByIdSelector
-} from "@webiny/app-page-builder/editor/recoil/modules";
+import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
+import { UpdateElementActionEvent } from "../../../recoil/actions";
+import { activeElementAtom, elementWithChildrenByIdSelector } from "../../../recoil/modules";
 // Components
 import { ContentWrapper } from "../components/StyledComponents";
 import Accordion from "../components/Accordion";

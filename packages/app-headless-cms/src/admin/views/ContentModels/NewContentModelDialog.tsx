@@ -8,7 +8,7 @@ import { Select } from "@webiny/ui/Select";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { validation } from "@webiny/validation";
-import { useQuery, useMutation } from "@webiny/app-headless-cms/admin/hooks";
+import { useQuery, useMutation } from "../../hooks";
 import { i18n } from "@webiny/app/i18n";
 import { ButtonDefault } from "@webiny/ui/Button";
 import * as UID from "@webiny/ui/Dialog";

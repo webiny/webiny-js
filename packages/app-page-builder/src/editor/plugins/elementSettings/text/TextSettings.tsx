@@ -6,6 +6,9 @@ import set from "lodash/set";
 import merge from "lodash/merge";
 import { plugins } from "@webiny/plugins";
 import { Tooltip } from "@webiny/ui/Tooltip";
+import { Grid, Cell } from "@webiny/ui/Grid";
+import { Typography } from "@webiny/ui/Typography";
+import { Link } from "@webiny/react-router";
 import {
     PbEditorPageElementSettingsRenderComponentProps,
     PbEditorResponsiveModePlugin,
@@ -20,10 +23,10 @@ import {
 import Accordion from "../../elementSettings/components/Accordion";
 import Wrapper from "../../elementSettings/components/Wrapper";
 import SelectField from "../../elementSettings/components/SelectField";
-import { BaseColorPicker } from "../../elementSettings/components/ColorPicker";
+import { BaseColorPicker } from "../components/ColorPicker";
 import useUpdateHandlers from "../../elementSettings/useUpdateHandlers";
 import TextAlignment from "./TextAlignment";
-import { applyFallbackDisplayMode } from "@webiny/app-page-builder/editor/plugins/elementSettings/elementSettingsUtils";
+import { applyFallbackDisplayMode } from "../elementSettingsUtils";
 
 const classes = {
     grid: css({
@@ -40,6 +43,14 @@ const classes = {
     }),
     leftCellStyle: css({
         alignSelf: "center"
+    }),
+    warningMessageGrid: css({
+        "&.mdc-layout-grid": {
+            padding: 0,
+            marginTop: -16,
+            marginBottom: 24,
+            color: "var(--mdc-theme-text-secondary-on-background)"
+        }
     })
 };
 const TEXT_SETTINGS_COUNT = 4;
@@ -60,7 +71,7 @@ const TextSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderCom
     }, [displayMode]);
 
     const themeTypographyOptions = useMemo(() => {
-        const { types } = theme.elements[element.type];
+        const { types } = theme.elements[element.type] || { types: [] };
         return types.map(el => (
             <option value={el.className} key={el.label}>
                 {el.label}
@@ -158,10 +169,32 @@ const TextSettings: React.FunctionComponent<PbEditorPageElementSettingsRenderCom
                     leftCellSpan={5}
                     rightCellSpan={7}
                 >
-                    <SelectField value={text.typography} onChange={updateTypography}>
+                    <SelectField
+                        value={text.typography}
+                        onChange={updateTypography}
+                        disabled={themeTypographyOptions.length === 0}
+                    >
                         {themeTypographyOptions}
                     </SelectField>
                 </Wrapper>
+                {themeTypographyOptions.length === 0 && (
+                    <Grid className={classes.warningMessageGrid}>
+                        <Cell span={12}>
+                            <Typography use={"caption"}>
+                                Please add typography options in{" "}
+                                <Link
+                                    to={
+                                        "https://github.com/webiny/webiny-js/blob/next/apps/theme/pageBuilder/index.ts#L21"
+                                    }
+                                    target={"_blank"}
+                                >
+                                    theme
+                                </Link>
+                                .
+                            </Typography>
+                        </Cell>
+                    </Grid>
+                )}
                 <Wrapper
                     containerClassName={classes.grid}
                     label={"Alignment"}

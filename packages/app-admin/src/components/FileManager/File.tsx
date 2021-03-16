@@ -32,6 +32,7 @@ const styles = css({
     border: "1px solid var(--mdc-theme-on-background)",
     borderRadius: 2,
     "> .body": {
+        transition: "200ms ease-in opacity",
         width: COMPONENT_WIDTH,
         height: COMPONENT_HEIGHT,
         overflow: "hidden",
@@ -52,6 +53,12 @@ const styles = css({
             transition: "all 150ms ease-in",
             "& .mdc-icon-button svg": {
                 color: "var(--mdc-theme-secondary)"
+            },
+            "&:hover": {
+                animationName: grow,
+                animationDuration: ".4s",
+                animationTimingFunction: "ease-in",
+                animationDelay: ".2s"
             }
         },
         ".filePreview": {
@@ -70,11 +77,7 @@ const styles = css({
             }
         },
         "&:hover .infoIcon": {
-            opacity: 1,
-            animationName: grow,
-            animationDuration: ".4s",
-            animationTimingFunction: "ease-in-out",
-            animationDelay: ".2s"
+            opacity: 1
         }
     },
     "> .label": {

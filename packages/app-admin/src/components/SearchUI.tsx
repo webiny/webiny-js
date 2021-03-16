@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled";
-import InputField from "@webiny/app-admin/components/SimpleUI/InputField";
+import InputField from "./SimpleUI/InputField";
 import { ReactComponent as SearchIcon } from "../assets/icons/search-24px.svg";
 
 const SearchWrapper = styled("div")({

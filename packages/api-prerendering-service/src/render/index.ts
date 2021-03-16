@@ -7,13 +7,7 @@ import getDbNamespace from "./../utils/getDbNamespace";
 import getRenderUrl from "./../utils/getRenderUrl";
 import getTagUrlLinkPKSK from "./../utils/getTagUrlLinkPKSK";
 import { HandlerPlugin, Configuration, RenderHookPlugin } from "./types";
-import {
-    DbRender,
-    TYPE,
-    HandlerResponse,
-    DbTagUrlLink
-} from "@webiny/api-prerendering-service/types";
-import debug from "debug";
+import { DbRender, TYPE, HandlerResponse, DbTagUrlLink } from "../types";
 import defaults from "./../utils/defaults";
 import omit from "lodash/omit";
 
@@ -21,7 +15,7 @@ const sleep = () => new Promise(resolve => setTimeout(resolve, 1000));
 
 const s3 = new S3({ region: process.env.AWS_REGION });
 
-const log = debug("wby:api-prerendering-service:render");
+const log = console.log;
 
 const storeFile = ({ key, contentType, body, storageName }) => {
     return s3
@@ -30,6 +24,7 @@ const storeFile = ({ key, contentType, body, storageName }) => {
             Key: key,
             ACL: "public-read",
             ContentType: contentType,
+            CacheControl: "max-age=30",
             Body: body
         })
         .promise();

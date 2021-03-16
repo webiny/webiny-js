@@ -3,6 +3,89 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.1.0](https://github.com/webiny/webiny-js/compare/v5.1.0-beta.1...v5.1.0) (2021-03-16)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [5.1.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.1.0-beta.0...v5.1.0-beta.1) (2021-03-16)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [5.1.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.0.0...v5.1.0-beta.0) (2021-03-15)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** schema regeneration last changed date ([#1504](https://github.com/webiny/webiny-js/issues/1504)) ([bff28a0](https://github.com/webiny/webiny-js/commit/bff28a058622b088fa6ed93ff86428fd01c59f24))
+
+
+### Features
+
+* **app-headless-cms:** add support for content model form layouts ([#1507](https://github.com/webiny/webiny-js/issues/1507)) ([f2b65b0](https://github.com/webiny/webiny-js/commit/f2b65b0f593e83948b85832d3234e4d32793a868))
+* enable prefixing ES index with the "ELASTIC_SEARCH_INDEX_PREFIX" env variable ([df42d0c](https://github.com/webiny/webiny-js/commit/df42d0c033aa3fe2cfd00fc4398f3c64789544f4))
+
+
+
+
+
+# [5.0.0](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.5...v5.0.0) (2021-03-09)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [5.0.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.4...v5.0.0-beta.5) (2021-03-09)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** restore content model index creation ([a5db46e](https://github.com/webiny/webiny-js/commit/a5db46e1de18c9023faf34c112907d6934a12e12))
+* return null instead of false when app version is not available ([a4238c4](https://github.com/webiny/webiny-js/commit/a4238c409484b2fcd86c26fa066ef42da3e20f11))
+* **api-headless-cms:** do not create ES index when CM is created ([ae629bc](https://github.com/webiny/webiny-js/commit/ae629bccdff32195509404b4503c3f510ed5442b))
+* **api-headless-cms:** schema cache rebuild ([#1490](https://github.com/webiny/webiny-js/issues/1490)) ([b940455](https://github.com/webiny/webiny-js/commit/b940455d900837b9324358d29dd5ceb4863b7de2))
+* add "Content-Type" response header ([f0876ec](https://github.com/webiny/webiny-js/commit/f0876ecc3820246c34e0006cb6c0b1bcfc3c3bf8))
+* date format for pre-beta5 ([#1437](https://github.com/webiny/webiny-js/issues/1437)) ([bfc5b0a](https://github.com/webiny/webiny-js/commit/bfc5b0a0e4639d4037418f0e62f6a6c653ad82aa))
+* do not allow updating model if it contains a non-existing field ([ec2af11](https://github.com/webiny/webiny-js/commit/ec2af11381647bbeac407103d48a126532d20cd8))
+* do not throw if a plugin is missing ([d9ba74d](https://github.com/webiny/webiny-js/commit/d9ba74d3adf5f1888e08e36385f3f110e005600b))
+* do not throw if a plugin is missing ([f1a2928](https://github.com/webiny/webiny-js/commit/f1a2928986607224397421f50f5aad09cf35b739))
+* do not throw if a plugin is missing ([b4ebafd](https://github.com/webiny/webiny-js/commit/b4ebafd16689d20f3e32cc877cfb30869d72197b))
+* do not throw if a plugin is missing ([3bb721d](https://github.com/webiny/webiny-js/commit/3bb721da2a61be73a7e95edae6f69c2acb2d2088))
+* prevent using reserved "modelId" values ([4a4842c](https://github.com/webiny/webiny-js/commit/4a4842c242f50c1fd9e87ede92b315754d532e68))
+* **api-headless-cms:** add track_total_hits flag to get real total count ([e45f4f6](https://github.com/webiny/webiny-js/commit/e45f4f6934523d0e74b0bd76ab85ff337d83dd59))
+* **api-headless-cms:** allow to list models without throwing error ([#1418](https://github.com/webiny/webiny-js/issues/1418)) ([19adadc](https://github.com/webiny/webiny-js/commit/19adadc5daf9f3ac4f26606ef8d09c0c280cd89a))
+* **api-headless-cms:** do not apply limit to DB read operation ([#1431](https://github.com/webiny/webiny-js/issues/1431)) ([78906aa](https://github.com/webiny/webiny-js/commit/78906aa69114ea74ff808fa695e2b23e13acf700))
+* **api-headless-cms:** ensure modelId uniqueness ([2679bb8](https://github.com/webiny/webiny-js/commit/2679bb85379cb03ddf9266972de9e1f7c4902eae))
+* **api-headless-cms:** ensure modelId uniqueness ([9b02a53](https://github.com/webiny/webiny-js/commit/9b02a53a12d820b71b08efa3bb12925ab5ddc5f7))
+* **api-headless-cms:** es error on list with floats and ints ([#1426](https://github.com/webiny/webiny-js/issues/1426)) ([9d3e2ef](https://github.com/webiny/webiny-js/commit/9d3e2efd5ab117b8a379bfee44a3ade40fb2ace4))
+* **app-headless-cms:** ref field not showing selected value ([#1451](https://github.com/webiny/webiny-js/issues/1451)) ([315f4d3](https://github.com/webiny/webiny-js/commit/315f4d33119952aacd8930edf1b37508708ce0f8))
+
+
+### Features
+
+* add dynamo-to-elastic lambda and ddb stream ([26aac81](https://github.com/webiny/webiny-js/commit/26aac818182da25d39307c716703f5a74bfb200b))
+* enable context expansion ([bdbb377](https://github.com/webiny/webiny-js/commit/bdbb37737e155fc82e58bb494caf0e5ae389dbd9))
+* introduce app upgrades and versions ([#1494](https://github.com/webiny/webiny-js/issues/1494)) ([f4d2b5e](https://github.com/webiny/webiny-js/commit/f4d2b5e73c899077cb1207940f2ab169a880aec9))
+* **api-headless-cms:** add es sorting analyzer and tests ([#1488](https://github.com/webiny/webiny-js/issues/1488)) ([95a27a9](https://github.com/webiny/webiny-js/commit/95a27a9c2122a83eef0651ee1dbfdac67f8c3589))
+* migrate to yarn v2 ([#1407](https://github.com/webiny/webiny-js/issues/1407)) ([46ba7ed](https://github.com/webiny/webiny-js/commit/46ba7ed7df28f98820b358698ef1764f46b5db58))
+* resource tagging and custom infra setups ([#1474](https://github.com/webiny/webiny-js/issues/1474)) ([46da034](https://github.com/webiny/webiny-js/commit/46da034badccd67adb6cf24196c708a8790c6a84))
+* **api-headless-cms:** index ref fields in Elasticsearch ([f47a1d4](https://github.com/webiny/webiny-js/commit/f47a1d4bb717f50cbc04d5e91359f24a24c665c7))
+* **api-headless-cms:** migrate ES write operations to Dynamo table. ([4886906](https://github.com/webiny/webiny-js/commit/4886906f82ba1413131a68a6eb34e09d3b2a52b3))
+* graphql date, datetime, datetimez and time scalars ([#1434](https://github.com/webiny/webiny-js/issues/1434)) ([c3ac73a](https://github.com/webiny/webiny-js/commit/c3ac73a86568fdf9e7cb0c12722bdb087d4502c3))
+
+
+
+
+
 # [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-02-01)
 
 **Note:** Version bump only for package @webiny/api-headless-cms

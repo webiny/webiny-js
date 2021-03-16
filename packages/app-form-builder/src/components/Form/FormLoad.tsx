@@ -2,7 +2,7 @@ import React from "react";
 import { GET_PUBLISHED_FORM } from "./graphql";
 import { useQuery } from "@apollo/react-hooks";
 import FormRender from "./FormRender";
-import { FormLoadComponentPropsType } from "@webiny/app-form-builder/types";
+import { FormLoadComponentPropsType } from "../../types";
 
 const FormLoad = (props: FormLoadComponentPropsType) => {
     const variables = {};

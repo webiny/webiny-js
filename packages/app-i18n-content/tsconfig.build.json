@@ -15,26 +15,9 @@
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
-    "declarationDir": "./dist"
+    "declarationDir": "./dist",
+    "paths": {},
+    "baseUrl": "."
   },
-  "references": [
-    {
-      "path": "../app/tsconfig.build.json"
-    },
-    {
-      "path": "../app-i18n/tsconfig.build.json"
-    },
-    {
-      "path": "../app-admin/tsconfig.build.json"
-    },
-    {
-      "path": "../form/tsconfig.build.json"
-    },
-    {
-      "path": "../ui/tsconfig.build.json"
-    },
-    {
-      "path": "../app-security/tsconfig.build.json"
-    }
-  ]
+  "references": []
 }

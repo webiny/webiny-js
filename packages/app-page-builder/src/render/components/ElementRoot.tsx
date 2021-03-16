@@ -5,7 +5,7 @@ import {
     PbRenderElementAttributesPlugin,
     PbElement,
     PbEditorElement
-} from "@webiny/app-page-builder/types";
+} from "../../types";
 
 type CombineClassNamesType = (...styles) => string;
 const combineClassNames: CombineClassNamesType = (...styles) => {

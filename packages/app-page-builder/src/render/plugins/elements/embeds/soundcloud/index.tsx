@@ -1,12 +1,15 @@
 import React from "react";
-import OEmbed from "@webiny/app-page-builder/render/components/OEmbed";
-import { PbRenderElementPlugin } from "@webiny/app-page-builder/types";
+import kebabCase from "lodash/kebabCase";
+import OEmbed from "../../../../components/OEmbed";
+import { PbRenderElementPluginArgs, PbRenderElementPlugin } from "../../../../../types";
 
-export default (): PbRenderElementPlugin => {
+export default (args: PbRenderElementPluginArgs = {}): PbRenderElementPlugin => {
+    const elementType = kebabCase(args.elementType || "soundcloud");
+
     return {
-        name: "pb-render-page-element-soundcloud",
+        name: `pb-render-page-element-${elementType}`,
         type: "pb-render-page-element",
-        elementType: "soundcloud",
+        elementType: elementType,
         render(props) {
             return <OEmbed element={props.element} />;
         }

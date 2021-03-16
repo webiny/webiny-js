@@ -1,11 +1,11 @@
-import * as React from "react";
+import React, { useState } from "react";
+import { useRouter } from "@webiny/react-router";
 import { useQuery } from "@apollo/react-hooks";
-import { usePageBuilder } from "@webiny/app-page-builder/hooks/usePageBuilder";
+import { usePageBuilder } from "../../../../hooks/usePageBuilder";
 import { LIST_PUBLISHED_PAGES } from "./graphql";
 import { plugins } from "@webiny/plugins";
 import { get } from "lodash";
-import { PbPageElementPagesListComponentPlugin } from "@webiny/app-page-builder/types";
-import { useState } from "react";
+import { PbPageElementPagesListComponentPlugin } from "../../../../types";
 
 declare global {
     // eslint-disable-next-line
@@ -28,6 +28,14 @@ const PagesListRender = props => {
     const pageList = components.find(cmp => cmp.componentName === component);
     const { theme } = usePageBuilder();
     const [page, setPage] = useState(1);
+    const { location } = useRouter();
+
+    // Extract page id from URL.
+    const query = new URLSearchParams(location.search);
+    let pageId;
+    if (query.get("id")) {
+        [pageId] = query.get("id").split("#");
+    }
 
     if (!pageList) {
         return <div>Selected page list component not found!</div>;
@@ -50,7 +58,12 @@ const PagesListRender = props => {
             }
         },
         limit: parseInt(vars.resultsPerPage),
-        page
+        page,
+        /**
+         * When rendering page preview inside admin app there will be no page path/slug present in URL.
+         * In that case we'll use the extracted page id from URL.
+         */
+        exclude: [pageId ? pageId : location.pathname]
     };
 
     const { data, loading } = useQuery(LIST_PUBLISHED_PAGES, {

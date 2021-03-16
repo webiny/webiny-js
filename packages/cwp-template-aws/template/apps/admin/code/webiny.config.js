@@ -12,7 +12,7 @@ const MAP = {
 
 const NO_ENV_MESSAGE = `Please specify the environment via the "--env" argument, for example: "--env dev".`;
 const NO_API_MESSAGE = env => {
-    return `It seems that the API project application isn't deployed!\nBefore continuing, please deploy it by running the following command: yarn webiny app deploy api --env=${env}`;
+    return `It seems that the API project application isn't deployed!\nBefore continuing, please deploy it by running the following command: yarn webiny deploy api --env=${env}`;
 };
 
 module.exports = {

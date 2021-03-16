@@ -1,7 +1,6 @@
 const path = require("path");
 const fs = require("fs-extra");
 const camelCase = require("camelcase");
-const { dim } = require("chalk");
 
 module.exports = {
     type: "cli-command",
@@ -9,9 +8,7 @@ module.exports = {
     create({ yargs, context }) {
         yargs.command(
             "run <command> [options]",
-            `Run command defined in webiny.config.js.\n${dim(
-                "(NOTE: run from folder containing webiny.config.js)"
-            )}`,
+            `Run command defined in webiny.config.js.\nNote: run from folder containing webiny.config.js file.`,
             yargs => {
                 yargs.positional("command", {
                     describe: `Command to run in webiny.config.js`,

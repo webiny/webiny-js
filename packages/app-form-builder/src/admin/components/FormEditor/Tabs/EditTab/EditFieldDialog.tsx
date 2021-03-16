@@ -18,8 +18,8 @@ import ValidatorsTab from "./EditFieldDialog/ValidatorsTab";
 import FieldTypeSelector from "./EditFieldDialog/FieldTypeSelector";
 import { i18n } from "@webiny/app/i18n";
 const t = i18n.namespace("FormEditor.EditFieldDialog");
-import { useFormEditor } from "@webiny/app-form-builder/admin/components/FormEditor/Context";
-import { FbBuilderFieldPlugin, FbFormModelField } from "@webiny/app-form-builder/types";
+import { useFormEditor } from "../../Context";
+import { FbBuilderFieldPlugin, FbFormModelField } from "../../../../../types";
 
 const dialogBody = css({
     "&.webiny-ui-dialog__content": {

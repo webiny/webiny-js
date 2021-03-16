@@ -1,13 +1,13 @@
 import React, { useCallback, useMemo } from "react";
 import get from "lodash/get";
-import { useQuery } from "@webiny/app-headless-cms/admin/hooks";
-import { LIST_CONTENT_MODELS } from "@webiny/app-headless-cms/admin/viewsGraphql";
+import { useQuery } from "../../hooks";
+import { LIST_CONTENT_MODELS } from "../../viewsGraphql";
 import { validation, ValidationError } from "@webiny/validation";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { AutoComplete, Placement } from "@webiny/ui/AutoComplete";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { CmsEditorFieldTypePlugin } from "@webiny/app-headless-cms/types";
+import { CmsEditorFieldTypePlugin } from "~/types";
 import { ReactComponent as RefIcon } from "./icons/round-link-24px.svg";
 
 import { i18n } from "@webiny/app/i18n";

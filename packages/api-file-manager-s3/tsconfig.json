@@ -2,13 +2,29 @@
   "extends": "../../tsconfig",
   "references": [
     {
-      "path": "../validation"
+      "path": "../handler"
     },
     {
       "path": "../handler-graphql"
     },
     {
       "path": "../plugins"
+    },
+    {
+      "path": "../validation"
     }
-  ]
+  ],
+  "compilerOptions": {
+    "paths": {
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
+      "@webiny/handler-graphql": ["../handler-graphql/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/validation/*": ["../validation/src/*"],
+      "@webiny/validation": ["../validation/src"]
+    },
+    "baseUrl": "."
+  }
 }

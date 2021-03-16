@@ -1,4 +1,4 @@
-import { UseContentModelEditorReducerState } from "@webiny/app-headless-cms/types";
+import { UseContentModelEditorReducerState } from "~/types";
 
 export function init(props: UseContentModelEditorReducerState) {
     return {

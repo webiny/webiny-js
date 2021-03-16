@@ -1,6 +1,6 @@
 import { TogglePluginActionArgsType } from "./types";
 import { plugins } from "@webiny/plugins";
-import { EventActionCallable } from "@webiny/app-page-builder/types";
+import { EventActionCallable } from "../../../../types";
 
 export const togglePluginAction: EventActionCallable<TogglePluginActionArgsType> = (
     state,

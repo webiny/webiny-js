@@ -5,8 +5,8 @@ import { css } from "emotion";
 import { IconButton } from "@webiny/ui/Button";
 
 import { Switch } from "@webiny/ui/Switch";
-import { ReactComponent as EditIcon } from "@webiny/app-form-builder/admin/icons/edit.svg";
-import { ReactComponent as DeleteIcon } from "@webiny/app-form-builder/admin/icons/delete.svg";
+import { ReactComponent as EditIcon } from "../../../../../icons/edit.svg";
+import { ReactComponent as DeleteIcon } from "../../../../../icons/delete.svg";
 import { BindComponent } from "@webiny/form/Bind";
 
 const optionsListItemLeft = css({

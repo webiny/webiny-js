@@ -8,10 +8,7 @@ const ERROR_FIELD = /* GraphQL */ `
 export const IS_INSTALLED = /* GraphQL */ `
     query IsInstalled {
         security {
-            isInstalled {
-                data
-                error ${ERROR_FIELD}
-            }
+            version
         }
     }
 `;

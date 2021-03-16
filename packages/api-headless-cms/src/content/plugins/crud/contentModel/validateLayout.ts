@@ -1,4 +1,4 @@
-import { CmsContentModelField, CmsContentModel } from "@webiny/api-headless-cms/types";
+import { CmsContentModelField, CmsContentModel } from "../../../../types";
 
 export const validateLayout = (
     { layout }: CmsContentModel,

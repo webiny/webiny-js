@@ -1,5 +1,5 @@
-import { CmsContentModelGroup, CmsContext } from "@webiny/api-headless-cms/types";
-import { toSlug } from "@webiny/api-headless-cms/utils";
+import { CmsContentModelGroup, CmsContext } from "../../../../types";
+import { toSlug } from "../../../../utils";
 import Error from "@webiny/error";
 import shortid from "shortid";
 

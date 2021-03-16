@@ -16,28 +16,20 @@ describe("Settings crud test", () => {
     });
 
     const {
+        clearAllIndex,
         isInstalledQuery,
-        installMutation: installMutationNoPermission,
-        elasticSearch
+        installMutation: installMutationNoPermission
     } = useAdminGqlHandler({
         ...manageOpts,
         permissions: []
     });
 
-    const esCmsIndex = "root-headless-cms";
-
     beforeEach(async () => {
-        try {
-            await elasticSearch.indices.create({ index: esCmsIndex });
-        } catch {
-            // Ignore errors
-        }
+        await clearAllIndex();
     });
 
     afterEach(async () => {
-        try {
-            await elasticSearch.indices.delete({ index: esCmsIndex });
-        } catch (e) {}
+        await clearAllIndex();
     });
 
     test("cms is not installed yet", async () => {
@@ -45,22 +37,7 @@ describe("Settings crud test", () => {
         expect(response).toEqual({
             data: {
                 cms: {
-                    isInstalled: {
-                        data: false,
-                        error: null
-                    }
-                }
-            }
-        });
-
-        const [afterInsertResponse] = await isInstalledQuery();
-        expect(afterInsertResponse).toEqual({
-            data: {
-                cms: {
-                    isInstalled: {
-                        data: false,
-                        error: null
-                    }
+                    version: null
                 }
             }
         });
@@ -73,10 +50,7 @@ describe("Settings crud test", () => {
         expect(response).toEqual({
             data: {
                 cms: {
-                    isInstalled: {
-                        data: true,
-                        error: null
-                    }
+                    version: expect.any(String)
                 }
             }
         });
@@ -114,7 +88,7 @@ describe("Settings crud test", () => {
                     install: {
                         data: null,
                         error: {
-                            message: "The app is already installed.",
+                            message: "CMS is already installed.",
                             code: "CMS_INSTALLATION_ERROR",
                             data: null
                         }
@@ -141,10 +115,7 @@ describe("Settings crud test", () => {
         expect(isInstalledResponse).toEqual({
             data: {
                 cms: {
-                    isInstalled: {
-                        data: true,
-                        error: null
-                    }
+                    version: expect.any(String)
                 }
             }
         });

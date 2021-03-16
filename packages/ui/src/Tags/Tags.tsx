@@ -1,11 +1,11 @@
 import * as React from "react";
-import { Input } from "@webiny/ui/Input";
-import { Chips, Chip } from "@webiny/ui/Chips";
+import { Input } from "../Input";
+import { Chips, Chip } from "../Chips";
 import { FormComponentProps } from "./../types";
 import { css } from "emotion";
 import keycode from "keycode";
 import { ReactComponent as BaselineCloseIcon } from "./icons/baseline-close-24px.svg";
-import { FormElementMessage } from "@webiny/ui/FormElementMessage";
+import { FormElementMessage } from "../FormElementMessage";
 
 type Props = FormComponentProps & {
     /**

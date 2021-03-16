@@ -1,15 +1,13 @@
-import { CmsContentModel, CmsContentModelGroup } from "@webiny/api-headless-cms/types";
+import { CmsContentModel, CmsContentModelGroup } from "../../src/types";
 import models from "./mocks/contentModels";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { useBugManageHandler } from "../utils/useBugManageHandler";
 
 describe("predefined values", () => {
-    const esCmsIndex = "root-headless-cms";
-
     const manageOpts = { path: "manage/en-US" };
 
     const {
-        elasticSearch,
+        clearAllIndex,
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
@@ -59,13 +57,13 @@ describe("predefined values", () => {
 
     beforeEach(async () => {
         try {
-            await elasticSearch.indices.create({ index: esCmsIndex });
+            await clearAllIndex();
         } catch {}
     });
 
     afterEach(async () => {
         try {
-            await elasticSearch.indices.delete({ index: esCmsIndex });
+            await clearAllIndex();
         } catch {}
     });
 
@@ -81,7 +79,8 @@ describe("predefined values", () => {
             data: {
                 name: "A hard debuggable bug",
                 bugType: "critical",
-                bugValue: 2
+                bugValue: 2,
+                bugFixed: 1
             }
         });
 
@@ -107,7 +106,8 @@ describe("predefined values", () => {
                         },
                         name: "A hard debuggable bug",
                         bugType: "critical",
-                        bugValue: 2
+                        bugValue: 2,
+                        bugFixed: 1
                     },
                     error: null
                 }
@@ -127,7 +127,8 @@ describe("predefined values", () => {
             data: {
                 name: "A hard debuggable bug",
                 bugType: "nonExistingBugType",
-                bugValue: 2
+                bugValue: 2,
+                bugFixed: 3
             }
         });
 
@@ -163,7 +164,8 @@ describe("predefined values", () => {
             data: {
                 name: "A hard debuggable bug",
                 bugType: "critical",
-                bugValue: 4567
+                bugValue: 4567,
+                bugFixed: 3
             }
         });
 
@@ -199,7 +201,8 @@ describe("predefined values", () => {
             data: {
                 name: "A hard debuggable bug",
                 bugType: "nonExistingBug",
-                bugValue: 4567
+                bugValue: 4567,
+                bugFixed: 3
             }
         });
 
@@ -242,7 +245,8 @@ describe("predefined values", () => {
             data: {
                 name: "A hard debuggable bug",
                 bugType: "critical",
-                bugValue: 2
+                bugValue: 2,
+                bugFixed: 3
             }
         });
 
@@ -268,7 +272,8 @@ describe("predefined values", () => {
                         },
                         name: "A hard debuggable bug",
                         bugType: "critical",
-                        bugValue: 2
+                        bugValue: 2,
+                        bugFixed: 3
                     },
                     error: null
                 }
@@ -290,7 +295,8 @@ describe("predefined values", () => {
             data: {
                 name: "A hard debuggable bug",
                 bugType: "critical",
-                bugValue: 3
+                bugValue: 3,
+                bugFixed: 3
             }
         });
 
@@ -316,7 +322,8 @@ describe("predefined values", () => {
                         },
                         name: "A hard debuggable bug",
                         bugType: "critical",
-                        bugValue: 3
+                        bugValue: 3,
+                        bugFixed: 3
                     },
                     error: null
                 }

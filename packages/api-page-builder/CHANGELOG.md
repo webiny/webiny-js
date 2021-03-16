@@ -3,6 +3,81 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.1.0](https://github.com/webiny/webiny-js/compare/v5.1.0-beta.1...v5.1.0) (2021-03-16)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.1.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.1.0-beta.0...v5.1.0-beta.1) (2021-03-16)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.1.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.0.0...v5.1.0-beta.0) (2021-03-15)
+
+
+### Features
+
+* **app-headless-cms:** add support for content model form layouts ([#1507](https://github.com/webiny/webiny-js/issues/1507)) ([f2b65b0](https://github.com/webiny/webiny-js/commit/f2b65b0f593e83948b85832d3234e4d32793a868))
+* enable prefixing ES index with the "ELASTIC_SEARCH_INDEX_PREFIX" env variable ([df42d0c](https://github.com/webiny/webiny-js/commit/df42d0c033aa3fe2cfd00fc4398f3c64789544f4))
+
+
+
+
+
+# [5.0.0](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.5...v5.0.0) (2021-03-09)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.0.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.4...v5.0.0-beta.5) (2021-03-09)
+
+
+### Bug Fixes
+
+* add missing deps and generate new yarn.lock ([e3c2606](https://github.com/webiny/webiny-js/commit/e3c2606636ee82f21a13c7251237a93cbe77f620))
+* add missing deps and run prettier ([c4da81e](https://github.com/webiny/webiny-js/commit/c4da81eeb0bb6f178c63add640c0d8229cc18ab0))
+* assign home and not-found pages to settings ([f32ff3a](https://github.com/webiny/webiny-js/commit/f32ff3a070655bf98cb27ac869a37bde7672ed44))
+* assign homepage and not-found page correctly ([dcea622](https://github.com/webiny/webiny-js/commit/dcea6222b6e1a1f7b57d635c02c4dcfa1e084454))
+* check if the keys exist before accessing ([2ccdccd](https://github.com/webiny/webiny-js/commit/2ccdccd70315fa4ea308d9a8654cda3ca6190891))
+* correct dependencies ([fdcfc00](https://github.com/webiny/webiny-js/commit/fdcfc00e35986cf806203d79679de11f81e5acbe))
+* date format for pre-beta5 ([#1437](https://github.com/webiny/webiny-js/issues/1437)) ([bfc5b0a](https://github.com/webiny/webiny-js/commit/bfc5b0a0e4639d4037418f0e62f6a6c653ad82aa))
+* enable getting pages by PID ([5475cf6](https://github.com/webiny/webiny-js/commit/5475cf68215eab85c4d52e8e900bb3ab22f8fa0d))
+* ensure directory exists before unzipping ([e42fd87](https://github.com/webiny/webiny-js/commit/e42fd87ce2f2088d89f7f4b7b59ae1a1c4a10ee0))
+* remove "error" page ([1be7da7](https://github.com/webiny/webiny-js/commit/1be7da7a59b1068538cabaff4e317ec63cb39ef3))
+* remove "error" page ([a4e182c](https://github.com/webiny/webiny-js/commit/a4e182c30ba3dfa7a4e8514e2d690f2823448bec))
+* remove unused types ([4e46383](https://github.com/webiny/webiny-js/commit/4e46383bb05daf240824dee0bc6c1303921a50f1))
+* return null instead of false when app version is not available ([a4238c4](https://github.com/webiny/webiny-js/commit/a4238c409484b2fcd86c26fa066ef42da3e20f11))
+* send tenant and locale accordingly ([4066136](https://github.com/webiny/webiny-js/commit/4066136498247040ded5651d0cf102918e6950af))
+* sent options to "get" call ([20ee300](https://github.com/webiny/webiny-js/commit/20ee300d1de874ad8ca7207b1ce72f948011907a))
+* update latest page entry on publishing ([9620945](https://github.com/webiny/webiny-js/commit/96209457e441aec6f94ae3fe5ad1202cb782fb87))
+* use "getStackOutput" for more reliable results ([5c6587e](https://github.com/webiny/webiny-js/commit/5c6587ebf7c1b39ef1b67e758d1ddc46a14af12f))
+* **api-page-builder:** optimized page assets ([#1465](https://github.com/webiny/webiny-js/issues/1465)) ([6cab529](https://github.com/webiny/webiny-js/commit/6cab5292271b7a64c6f51543646fb0674017b286))
+* **api-page-builder:** update existing page content ([#1476](https://github.com/webiny/webiny-js/issues/1476)) ([155c329](https://github.com/webiny/webiny-js/commit/155c329ae11cabc7b230541e1297e2c30a4674a5))
+* use the new prerendering service's client ([8a13076](https://github.com/webiny/webiny-js/commit/8a130765caaddc3bd5996cd7fb8b6ba0d84e2040))
+
+
+### Features
+
+* introduce app upgrades and versions ([#1494](https://github.com/webiny/webiny-js/issues/1494)) ([f4d2b5e](https://github.com/webiny/webiny-js/commit/f4d2b5e73c899077cb1207940f2ab169a880aec9))
+* **api-page-builder:** migrate to DDB streams ([af63715](https://github.com/webiny/webiny-js/commit/af637151bb9ee979ecc01809c15d35fb81f8b5ff))
+* **api-page-builder:** welcome to webiny page ([#1435](https://github.com/webiny/webiny-js/issues/1435)) ([12aaeba](https://github.com/webiny/webiny-js/commit/12aaebae4e4d5f19aebee478d81a33ac9b249c53))
+* add page visibility setting ([1419d6f](https://github.com/webiny/webiny-js/commit/1419d6f67dfafbbe9a4d05523585d2fd64cd8b01))
+* migrate to yarn v2 ([#1407](https://github.com/webiny/webiny-js/issues/1407)) ([46ba7ed](https://github.com/webiny/webiny-js/commit/46ba7ed7df28f98820b358698ef1764f46b5db58))
+
+
+
+
+
 # [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-02-01)
 
 **Note:** Version bump only for package @webiny/api-page-builder

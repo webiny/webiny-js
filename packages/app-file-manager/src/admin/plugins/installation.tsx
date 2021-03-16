@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, lazy } from "react";
 import gql from "graphql-tag";
 import { useApolloClient } from "@apollo/react-hooks";
 import { i18n } from "@webiny/app/i18n";
@@ -18,13 +18,7 @@ const t = i18n.ns("app-file-manager/admin/installation");
 const IS_INSTALLED = gql`
     query IsFileManagerInstalled {
         fileManager {
-            isInstalled {
-                data
-                error {
-                    code
-                    message
-                }
-            }
+            version
         }
     }
 `;
@@ -89,13 +83,21 @@ const plugin: AdminInstallationPlugin = {
     title: t`File Manager`,
     dependencies: ["admin-installation-security", "admin-installation-i18n"],
     secure: true,
-    async isInstalled({ client }) {
+    async getInstalledVersion({ client }) {
         const { data } = await client.query({ query: IS_INSTALLED });
-        return data.fileManager.isInstalled.data;
+        return data.fileManager.version;
     },
     render({ onInstalled }) {
         return <FMInstaller onInstalled={onInstalled} />;
-    }
+    },
+    upgrades: [
+        {
+            version: "5.0.0",
+            getComponent() {
+                return lazy(() => import("./upgrades/v5.0.0"));
+            }
+        }
+    ]
 };
 
 export default plugin;

@@ -1,4 +1,4 @@
-import { CmsModelFieldToElasticsearchPlugin } from "@webiny/api-headless-cms/types";
+import { CmsModelFieldToElasticsearchPlugin } from "../../../../types";
 
 const convertToString = (value: number[] | number) => {
     if (Array.isArray(value) === false) {

@@ -7,9 +7,7 @@ const getOutputJson = async (stack, env) => {
         const cwd = getProjectRoot();
         const { stdout } = await execa(
             "yarn",
-            ["webiny", "app", "output", stack, "--env", env, "--json", "--no-debug"].filter(
-                Boolean
-            ),
+            ["webiny", "output", stack, "--env", env, "--json", "--no-debug"].filter(Boolean),
             {
                 cwd
             }

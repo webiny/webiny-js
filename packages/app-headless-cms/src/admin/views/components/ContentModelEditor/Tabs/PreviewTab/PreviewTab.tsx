@@ -2,7 +2,7 @@ import React from "react";
 import { css } from "emotion";
 import { Elevation } from "@webiny/ui/Elevation";
 import { i18n } from "@webiny/app/i18n";
-import { CmsEditorContentTab } from "@webiny/app-headless-cms/types";
+import { CmsEditorContentTab } from "~/types";
 import { useContentModelEditor } from "../../Context";
 import { ContentModelForm } from "../../../ContentModelForm";
 

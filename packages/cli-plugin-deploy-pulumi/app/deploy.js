@@ -4,6 +4,7 @@ const notifier = require("node-notifier");
 const path = require("path");
 const loadEnvVariables = require("../utils/loadEnvVariables");
 const getPulumi = require("../utils/getPulumi");
+const login = require("../utils/login");
 const execa = require("execa");
 
 const notify = ({ message }) => {
@@ -39,12 +40,30 @@ const processHooks = async (hook, { context, ...options }) => {
 const SECRETS_PROVIDER = process.env.PULUMI_SECRETS_PROVIDER;
 
 module.exports = async (inputs, context) => {
+    const { env, folder, build } = inputs;
+
+    // If folder not specified, that means we want to deploy the whole project (all project applications).
+    // For that, we look if there are registered plugins that perform that.
+    if (!folder) {
+        const plugin = context.plugins.byName("cli-command-deployment-deploy-all");
+        if (!plugin) {
+            throw new Error(
+                `Cannot continue - "cli-command-deployment-deploy-all" plugin not found.`
+            );
+        }
+
+        return plugin.deploy(inputs, context);
+    }
+
+    if (!env) {
+        throw new Error(`Please specify environment, for example "dev".`);
+    }
+
     const start = new Date();
     const getDuration = () => {
         return (new Date() - start) / 1000;
     };
 
-    const { env, folder, build } = inputs;
     const stackName = getStackName(folder);
 
     await loadEnvVariables(inputs, context);
@@ -71,6 +90,8 @@ module.exports = async (inputs, context) => {
             }
         );
     }
+
+    await login(stackDir);
 
     const pulumi = getPulumi({
         execa: {
@@ -121,7 +142,11 @@ module.exports = async (inputs, context) => {
         await pulumi.run({
             command: "preview",
             execa: {
-                stdio: "inherit"
+                stdio: "inherit",
+                env: {
+                    WEBINY_ENV: env,
+                    WEBINY_PROJECT_NAME: context.projectName
+                }
             }
         });
     } else {
@@ -133,7 +158,11 @@ module.exports = async (inputs, context) => {
                 secretsProvider: SECRETS_PROVIDER
             },
             execa: {
-                stdio: "inherit"
+                stdio: "inherit",
+                env: {
+                    WEBINY_ENV: env,
+                    WEBINY_PROJECT_NAME: context.projectName
+                }
             }
         });
     }

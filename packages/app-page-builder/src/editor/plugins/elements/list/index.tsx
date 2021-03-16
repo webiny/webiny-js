@@ -1,39 +1,51 @@
 import React from "react";
-import { DisplayMode, PbEditorPageElementPlugin } from "../../../../types";
+import kebabCase from "lodash/kebabCase";
+import {
+    DisplayMode,
+    PbEditorPageElementPlugin,
+    PbEditorElementPluginArgs
+} from "../../../../types";
 import List, { className } from "./List";
 import { createInitialTextValue } from "../utils/textUtils";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
-export default (): PbEditorPageElementPlugin => {
+export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin => {
+    const elementType = kebabCase(args.elementType || "list");
+
+    const defaultToolbar = {
+        title: "List",
+        group: "pb-editor-element-group-basic",
+        preview() {
+            return (
+                <div className={className}>
+                    <ul>
+                        <li>List item 1</li>
+                        <li>List item 2</li>
+                        <li>List item 3</li>
+                    </ul>
+                </div>
+            );
+        }
+    };
+
+    const defaultSettings = [
+        "pb-editor-page-element-style-settings-text",
+        "pb-editor-page-element-style-settings-background",
+        "pb-editor-page-element-style-settings-border",
+        "pb-editor-page-element-style-settings-shadow",
+        "pb-editor-page-element-style-settings-padding",
+        "pb-editor-page-element-style-settings-margin",
+        "pb-editor-page-element-settings-clone",
+        "pb-editor-page-element-settings-delete"
+    ];
+
     return {
-        name: "pb-editor-page-element-list",
+        name: `pb-editor-page-element-${elementType}`,
         type: "pb-editor-page-element",
-        elementType: "list",
-        toolbar: {
-            title: "List",
-            group: "pb-editor-element-group-basic",
-            preview() {
-                return (
-                    <div className={className}>
-                        <ul>
-                            <li>List item 1</li>
-                            <li>List item 2</li>
-                            <li>List item 3</li>
-                        </ul>
-                    </div>
-                );
-            }
-        },
-        settings: [
-            "pb-editor-page-element-style-settings-text",
-            "pb-editor-page-element-style-settings-background",
-            "pb-editor-page-element-style-settings-border",
-            "pb-editor-page-element-style-settings-shadow",
-            "pb-editor-page-element-style-settings-padding",
-            "pb-editor-page-element-style-settings-margin",
-            "pb-editor-page-element-settings-clone",
-            "pb-editor-page-element-settings-delete"
-        ],
+        elementType: elementType,
+        toolbar: typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
+        settings:
+            typeof args.settings === "function" ? args.settings(defaultSettings) : defaultSettings,
         target: ["cell", "block"],
         create({ content = {}, ...options }) {
             const previewText =
@@ -44,8 +56,8 @@ export default (): PbEditorPageElementPlugin => {
                     <li>List item 3</li>
                 </ul>`;
 
-            return {
-                type: "list",
+            const defaultValue = {
+                type: this.elementType,
                 elements: [],
                 data: {
                     text: {
@@ -72,6 +84,8 @@ export default (): PbEditorPageElementPlugin => {
                 },
                 ...options
             };
+
+            return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
         },
         render({ element }) {
             return <List elementId={element.id} />;

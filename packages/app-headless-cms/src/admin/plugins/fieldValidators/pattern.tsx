@@ -4,10 +4,7 @@ import { Input } from "@webiny/ui/Input";
 import { Select } from "@webiny/ui/Select";
 import { plugins } from "@webiny/plugins";
 import { validation } from "@webiny/validation";
-import {
-    CmsEditorFieldValidatorPlugin,
-    CmsEditorFieldValidatorPatternPlugin
-} from "@webiny/app-headless-cms/types";
+import { CmsEditorFieldValidatorPlugin, CmsEditorFieldValidatorPatternPlugin } from "~/types";
 
 export default {
     type: "cms-editor-field-validator",

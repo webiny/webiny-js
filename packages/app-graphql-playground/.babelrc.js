@@ -1,1 +1,1 @@
-module.exports = require("../../.babel.react");
+module.exports = require("../../.babel.react")({ path: __dirname });

@@ -1,8 +1,4 @@
-import {
-    CmsFieldTypePlugins,
-    CmsContentModel,
-    CmsModelFieldDefinition
-} from "@webiny/api-headless-cms/types";
+import { CmsFieldTypePlugins, CmsContentModel, CmsModelFieldDefinition } from "../../../types";
 
 interface RenderFields {
     (params: {
@@ -17,9 +13,8 @@ export const renderFields: RenderFields = ({ model, type, fieldTypePlugins }) =>
         .map(f => {
             const plugin = fieldTypePlugins[f.type];
             if (!plugin) {
-                throw Error(
-                    `Missing "cms-model-field-to-graphql" plugin for field type "${f.type}"`
-                );
+                // Let's not render the field if it does not exist in the field plugins.
+                return;
             }
             const defs = fieldTypePlugins[f.type][type].createTypeField({ model, field: f });
 

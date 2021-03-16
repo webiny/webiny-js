@@ -6,11 +6,11 @@ import { plugins } from "@webiny/plugins";
 import { Typography } from "@webiny/ui/Typography";
 import { IconButton } from "@webiny/ui/Button";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { ReactComponent as DeleteIcon } from "@webiny/app-page-builder/editor/assets/icons/close.svg";
-import { ReactComponent as EditIcon } from "@webiny/app-page-builder/editor/assets/icons/edit.svg";
+import { ReactComponent as DeleteIcon } from "../../../editor/assets/icons/close.svg";
+import { ReactComponent as EditIcon } from "../../../editor/assets/icons/edit.svg";
 import { DELETE_PAGE_ELEMENT, UPDATE_PAGE_ELEMENT } from "./graphql";
 import EditElementDialog from "./EditElementDialog";
-import createElementPlugin from "@webiny/app-page-builder/admin/utils/createElementPlugin";
+import createElementPlugin from "../createElementPlugin";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 
 const EditIconWrapper = styled("div")({

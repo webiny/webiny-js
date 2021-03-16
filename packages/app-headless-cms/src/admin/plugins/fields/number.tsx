@@ -1,6 +1,6 @@
 import React from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { CmsEditorFieldTypePlugin } from "@webiny/app-headless-cms/types";
+import { CmsEditorFieldTypePlugin } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import { Input } from "@webiny/ui/Input";
 import PredefinedValuesDynamicFieldset from "./PredefinedValuesDynamicFieldset";

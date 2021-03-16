@@ -3,6 +3,60 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.1.0](https://github.com/webiny/webiny-js/compare/v5.1.0-beta.1...v5.1.0) (2021-03-16)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+# [5.1.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.1.0-beta.0...v5.1.0-beta.1) (2021-03-16)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+# [5.1.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.0.0...v5.1.0-beta.0) (2021-03-15)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+# [5.0.0](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.5...v5.0.0) (2021-03-09)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+# [5.0.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.4...v5.0.0-beta.5) (2021-03-09)
+
+
+### Bug Fixes
+
+* unify messaging ([309bf66](https://github.com/webiny/webiny-js/commit/309bf668d7100c7a26909465f4f78d4eb725d3d5))
+* **cli:** restore telemetry control ([#1430](https://github.com/webiny/webiny-js/issues/1430)) ([2dd0957](https://github.com/webiny/webiny-js/commit/2dd0957c541a2e48d0bac2ed97a76bd9c6c81fbe))
+* improve error reporting ([c497494](https://github.com/webiny/webiny-js/commit/c4974947457775e6d3f8818bb8d7f0e78d306c2d))
+* improve error reporting ([8ca186c](https://github.com/webiny/webiny-js/commit/8ca186cd6d746f66165d7b874c02663958600411))
+* simplify "webinyLog" function ([62562f2](https://github.com/webiny/webiny-js/commit/62562f24c650db0957e7697d49a36eb01b8cd925))
+* simplify "webinyLog" function ([627871e](https://github.com/webiny/webiny-js/commit/627871ee9314b833687d8e588f1236a0ec4a5a31))
+* spread params correctly ([db4dde5](https://github.com/webiny/webiny-js/commit/db4dde5a36d55b42a51f86ae83c869bad67d3740))
+
+
+### Features
+
+* migrate to yarn v2 ([#1407](https://github.com/webiny/webiny-js/issues/1407)) ([46ba7ed](https://github.com/webiny/webiny-js/commit/46ba7ed7df28f98820b358698ef1764f46b5db58))
+
+
+
+
+
 # [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-02-01)
 
 **Note:** Version bump only for package @webiny/cli

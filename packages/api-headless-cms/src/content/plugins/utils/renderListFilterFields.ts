@@ -1,4 +1,5 @@
-import { CmsFieldTypePlugins, CmsContentModel } from "@webiny/api-headless-cms/types";
+import { CmsFieldTypePlugins, CmsContentModel } from "../../../types";
+import get from "lodash/get";
 
 interface RenderListFilterFields {
     (params: {
@@ -38,7 +39,12 @@ export const renderListFilterFields: RenderListFilterFields = ({
 
     for (let i = 0; i < model.fields.length; i++) {
         const field = model.fields[i];
-        const { createListFilters } = fieldTypePlugins[field.type][type];
+        // Every time a client updates content model's fields, we check the type of each field. If a field plugin
+        // for a particular "field.type" doesn't exist on the backend yet, we throw an error. But still, we also
+        // want to be careful when accessing the field plugin here too. It is still possible to have a content model
+        // that contains a field, for which we don't have a plugin registered on the backend. For example, user
+        // could've just removed the plugin from the backend.
+        const createListFilters = get(fieldTypePlugins, `${field.type}.${type}.createListFilters`);
         if (typeof createListFilters === "function") {
             fields.push(createListFilters({ model, field }));
         }

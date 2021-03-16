@@ -7,6 +7,8 @@
     "../api-i18n",
     "../api-file-manager",
     "../api-security",
+    "../api-upgrade",
+    "../error",
     "../handler",
     "../handler-graphql",
     "../validation",
@@ -14,54 +16,16 @@
     "../handler-aws",
     "../handler-db",
     "../api-plugin-elastic-search-client",
+    "../api-dynamodb-to-elasticsearch",
     "../db-dynamodb",
     "../api-security-tenancy"
   ],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
-    "declarationDir": "./dist"
+    "declarationDir": "./dist",
+    "paths": {},
+    "baseUrl": "."
   },
-  "references": [
-    {
-      "path": "../plugins/tsconfig.build.json"
-    },
-    {
-      "path": "../api-i18n/tsconfig.build.json"
-    },
-    {
-      "path": "../api-file-manager/tsconfig.build.json"
-    },
-    {
-      "path": "../api-security/tsconfig.build.json"
-    },
-    {
-      "path": "../handler/tsconfig.build.json"
-    },
-    {
-      "path": "../handler-graphql/tsconfig.build.json"
-    },
-
-    {
-      "path": "../validation/tsconfig.build.json"
-    },
-    {
-      "path": "../api-i18n-content/tsconfig.build.json"
-    },
-    {
-      "path": "../handler-aws/tsconfig.build.json"
-    },
-    {
-      "path": "../handler-db/tsconfig.build.json"
-    },
-    {
-      "path": "../api-plugin-elastic-search-client/tsconfig.build.json"
-    },
-    {
-      "path": "../db-dynamodb/tsconfig.build.json"
-    },
-    {
-      "path": "../api-security-tenancy/tsconfig.build.json"
-    }
-  ]
+  "references": []
 }

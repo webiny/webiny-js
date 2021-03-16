@@ -8,15 +8,7 @@ import { I18NContext } from "@webiny/api-i18n/types";
 import { ElasticSearchClientContext } from "@webiny/api-plugin-elastic-search-client/types";
 import DataLoader from "dataloader";
 import { ClientContext } from "@webiny/handler-client/types";
-import {
-    Category,
-    DefaultSettings,
-    InstallSettings,
-    Menu,
-    Page,
-    PageElement,
-    PageSpecialType
-} from "@webiny/api-page-builder/types";
+import { Category, DefaultSettings, Menu, Page, PageElement, PageSpecialType } from "../types";
 import { PrerenderingServiceClientContext } from "@webiny/api-prerendering-service/client/types";
 
 // CRUD types.
@@ -30,6 +22,7 @@ export type ListPagesArgs = {
         tags?: { query: string[]; rule?: "any" | "all" };
         dynamic?: boolean;
     };
+    exclude?: string[];
     search?: { query?: string };
     sort?: { publishedOn?: SortOrder; createdOn?: SortOrder; title?: SortOrder };
 };
@@ -124,7 +117,7 @@ type DefaultSettingsCrudOptions = { tenant?: string | false; locale?: string | f
 
 export type SettingsCrud = {
     dataLoaders: {
-        get: DataLoader<{ PK: string; SK: string }, DefaultSettings | InstallSettings, string>;
+        get: DataLoader<{ PK: string; SK: string }, DefaultSettings, string>;
     };
     default: {
         PK: (options: Record<string, any>) => string;
@@ -137,12 +130,13 @@ export type SettingsCrud = {
         ) => Promise<DefaultSettings>;
         getSettingsCacheKey: (options?: DefaultSettingsCrudOptions) => string;
     };
-    install: {
-        PK: () => string;
-        SK: "install";
-        get: () => Promise<InstallSettings>;
-        update: (data: Record<string, any>) => Promise<InstallSettings>;
-    };
+};
+
+export type SystemCrud = {
+    getVersion(): Promise<string>;
+    setVersion(version: string): Promise<void>;
+    install(args: { name: string }): Promise<void>;
+    upgrade(version: string, data?: Record<string, any>): Promise<boolean>;
 };
 
 // PBContext types.
@@ -162,6 +156,7 @@ export type PbContext = Context<
             categories: CategoriesCrud;
             menus: MenusCrud;
             settings: SettingsCrud;
+            system: SystemCrud;
         };
     }
 >;

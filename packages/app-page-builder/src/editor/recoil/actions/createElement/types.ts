@@ -1,4 +1,4 @@
-import { EventActionCallable, PbEditorElement } from "@webiny/app-page-builder/types";
+import { EventActionCallable, PbEditorElement } from "../../../../types";
 
 export type CreateElementEventActionArgsType = {
     element: PbEditorElement;

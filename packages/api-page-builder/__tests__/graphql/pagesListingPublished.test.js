@@ -4,6 +4,7 @@ jest.setTimeout(15000);
 
 describe("listing published pages", () => {
     const {
+        createElasticSearchIndex,
         deleteElasticSearchIndex,
         createCategory,
         createPage,
@@ -16,9 +17,13 @@ describe("listing published pages", () => {
 
     let initiallyCreatedPagesIds;
 
-    beforeEach(async () => {
-        initiallyCreatedPagesIds = [];
+    beforeAll(async () => {
         await deleteElasticSearchIndex();
+    });
+
+    beforeEach(async () => {
+        await createElasticSearchIndex();
+        initiallyCreatedPagesIds = [];
         await createCategory({
             data: {
                 slug: `category`,
@@ -49,6 +54,10 @@ describe("listing published pages", () => {
                 });
             }
         }
+    });
+
+    afterEach(async () => {
+        await deleteElasticSearchIndex();
     });
 
     test("sorting", async () => {
@@ -518,6 +527,59 @@ describe("listing published pages", () => {
                 }),
             ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 0
         );
+    });
+
+    test("exclude pages by path and page ids", async () => {
+        const paths = ["/about-us", "/home", "/pricing", "/root", "/features"];
+        const pageIds = [];
+        for (let i = 0; i < 5; i++) {
+            const [response] = await createPage({ category: "category" });
+            const { id, pid } = response.data.pageBuilder.createPage.data;
+
+            await updatePage({
+                id,
+                data: {
+                    title: `page-${paths[i]}`,
+                    path: paths[i]
+                }
+            });
+
+            await publishPage({
+                id
+            });
+
+            pageIds.push(pid);
+        }
+
+        // Just in case, ensure all pages are present.
+        await until(
+            () => listPublishedPages({ sort: { createdOn: "desc" } }),
+            ([res]) => res.data.pageBuilder.listPublishedPages.data[0].path === "/features"
+        ).then(([res]) => expect(res.data.pageBuilder.listPublishedPages.data.length).toBe(8));
+
+        // Now let's check the exclude page by path and pid.
+        await until(
+            () =>
+                listPublishedPages({
+                    exclude: ["/about-us", "/pricing", pageIds[1]],
+                    sort: { createdOn: "desc" }
+                }),
+            ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 5
+        ).then(([res]) => {
+            expect(res.data.pageBuilder.listPublishedPages.data).toMatchObject([
+                { path: "/features" },
+                { path: "/root" },
+                {
+                    title: `page-c`
+                },
+                {
+                    title: `page-b`
+                },
+                {
+                    title: `page-a`
+                }
+            ]);
+        });
     });
 
     test("sort by publishedOn", async () => {

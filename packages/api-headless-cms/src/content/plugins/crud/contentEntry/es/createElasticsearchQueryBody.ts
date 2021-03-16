@@ -10,8 +10,8 @@ import {
     CmsContentEntryListArgs,
     CmsContentModelField,
     ElasticsearchQueryPlugin
-} from "@webiny/api-headless-cms/types";
-import { decodeElasticsearchCursor } from "@webiny/api-headless-cms/utils";
+} from "../../../../../types";
+import { decodeElasticsearchCursor } from "../../../../../utils";
 import Error from "@webiny/error";
 import WebinyError from "@webiny/error";
 import { operatorPluginsList } from "./operatorPluginsList";
@@ -127,29 +127,16 @@ const createElasticsearchSortParams = (
 };
 
 const createInitialQueryValue = (args: CreateElasticsearchQueryArgs): ElasticsearchQuery => {
-    const { ownedBy, options, model, context } = args;
+    const { ownedBy, options } = args;
 
     const query: ElasticsearchQuery = {
         match: [],
-        must: [
-            // always search by given model id
-            {
-                term: {
-                    "modelId.keyword": model.modelId
-                }
-            },
-            // and in the given locale
-            {
-                term: {
-                    "locale.keyword": context.cms.getLocale().code
-                }
-            }
-        ],
+        must: [],
         mustNot: [],
         should: []
     };
 
-    // when permission has own property, this value is passed into the fn
+    // When permission has "only own records" set, we'll have "ownedBy" passed into this function.
     if (ownedBy) {
         query.must.push({
             term: {
@@ -347,6 +334,8 @@ export const createElasticsearchQueryBody = (params: CreateElasticsearchParams) 
         sort: createElasticsearchSortParams({ sort, modelFields, parentObject, model }),
         size: limit + 1,
         // eslint-disable-next-line
-        search_after: decodeElasticsearchCursor(after) || undefined
+        search_after: decodeElasticsearchCursor(after) || undefined,
+        // eslint-disable-next-line
+        track_total_hits: true
     };
 };

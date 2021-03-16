@@ -1,12 +1,12 @@
 import * as React from "react";
 import { Plugin } from "@webiny/plugins/types";
-import { ReCaptchaComponent } from "@webiny/app-form-builder/components/Form/components/createReCaptchaComponent";
-import { TermsOfServiceComponent } from "@webiny/app-form-builder/components/Form/components/createTermsOfServiceComponent";
+import { ReCaptchaComponent } from "./components/Form/components/createReCaptchaComponent";
+import { TermsOfServiceComponent } from "./components/Form/components/createTermsOfServiceComponent";
 import {
     BindComponent,
-    FormChildrenFunctionParams,
+    FormRenderPropParams,
     Form,
-    FormChildrenFunctionParamsSubmit
+    FormRenderPropParamsSubmit
 } from "@webiny/form";
 import { ApolloClient } from "apollo-client";
 import { SecurityContextValue } from "@webiny/app-security";
@@ -77,7 +77,7 @@ export type FbBuilderFieldPlugin = Plugin & {
         icon: React.ReactNode;
         createField: (props?: { [key: string]: any }) => FbFormModelField;
         renderSettings?: (params: {
-            form: FormChildrenFunctionParams;
+            form: FormRenderPropParams;
             afterChangeLabel: (value: string) => void;
             uniqueFieldIdValidator: (fieldId: string) => void;
         }) => React.ReactNode;
@@ -207,7 +207,7 @@ export type FbEditorTrigger = Plugin & {
         icon: React.ReactElement<any>;
         renderSettings(params: {
             Bind: BindComponent;
-            submit: FormChildrenFunctionParamsSubmit;
+            submit: FormRenderPropParamsSubmit;
             form: FbFormModel;
         }): React.ReactElement<any>;
     };

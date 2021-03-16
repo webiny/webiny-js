@@ -1,10 +1,7 @@
-import { PluginsAtomType } from "@webiny/app-page-builder/editor/recoil/modules";
+import { PluginsAtomType } from "../../modules";
 import { DeactivatePluginActionArgsType } from "./types";
 import { plugins } from "@webiny/plugins";
-import {
-    EventActionCallable,
-    EventActionHandlerActionCallableResponse
-} from "@webiny/app-page-builder/types";
+import { EventActionCallable, EventActionHandlerActionCallableResponse } from "../../../../types";
 
 const removePlugin = (state: PluginsAtomType, name: string): PluginsAtomType => {
     const plugin = plugins.byName(name);

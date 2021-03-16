@@ -1,42 +1,54 @@
 import React from "react";
-import { DisplayMode, PbEditorPageElementPlugin } from "../../../../types";
+import kebabCase from "lodash/kebabCase";
+import {
+    DisplayMode,
+    PbEditorPageElementPlugin,
+    PbEditorElementPluginArgs
+} from "../../../../types";
 import Text, { textClassName } from "./Paragraph";
 import { createInitialTextValue } from "../utils/textUtils";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
-export default (): PbEditorPageElementPlugin => {
+export default (args: PbEditorElementPluginArgs = {}): PbEditorPageElementPlugin => {
     const defaultText = `Lorem ipsum dolor sit amet, consectetur adipiscing elit.
      Suspendisse varius enim in eros elementum tristique.
      Duis cursus, mi quis viverra ornare, eros dolor interdum nulla, ut commodo diam libero vitae erat.
      Aenean faucibus nibh et justo cursus id rutrum lorem imperdiet. Nunc ut sem vitae risus tristique posuere.`;
 
+    const elementType = kebabCase(args.elementType || "paragraph");
+
+    const defaultToolbar = {
+        title: "Paragraph",
+        group: "pb-editor-element-group-basic",
+        preview() {
+            return <p className={textClassName}>{defaultText}</p>;
+        }
+    };
+
+    const defaultSettings = [
+        "pb-editor-page-element-style-settings-text",
+        "pb-editor-page-element-style-settings-background",
+        "pb-editor-page-element-style-settings-border",
+        "pb-editor-page-element-style-settings-shadow",
+        "pb-editor-page-element-style-settings-padding",
+        "pb-editor-page-element-style-settings-margin",
+        "pb-editor-page-element-settings-clone",
+        "pb-editor-page-element-settings-delete"
+    ];
+
     return {
-        name: "pb-editor-page-element-paragraph",
+        name: `pb-editor-page-element-${elementType}`,
         type: "pb-editor-page-element",
-        elementType: "paragraph",
-        toolbar: {
-            title: "Paragraph",
-            group: "pb-editor-element-group-basic",
-            preview() {
-                return <p className={textClassName}>{defaultText}</p>;
-            }
-        },
-        settings: [
-            "pb-editor-page-element-style-settings-text",
-            "pb-editor-page-element-style-settings-background",
-            "pb-editor-page-element-style-settings-border",
-            "pb-editor-page-element-style-settings-shadow",
-            "pb-editor-page-element-style-settings-padding",
-            "pb-editor-page-element-style-settings-margin",
-            "pb-editor-page-element-settings-clone",
-            "pb-editor-page-element-settings-delete"
-        ],
+        elementType: elementType,
+        toolbar: typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
+        settings:
+            typeof args.settings === "function" ? args.settings(defaultSettings) : defaultSettings,
         target: ["cell", "block"],
         create({ content = {}, ...options }) {
             const previewText = content.text || defaultText;
 
-            return {
-                type: "paragraph",
+            const defaultValue = {
+                type: this.elementType,
                 elements: [],
                 data: {
                     text: {
@@ -63,6 +75,8 @@ export default (): PbEditorPageElementPlugin => {
                 },
                 ...options
             };
+
+            return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
         },
         render({ element }) {
             return <Text elementId={element.id} />;

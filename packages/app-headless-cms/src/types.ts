@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Plugin } from "@webiny/plugins/types";
 import { ReactElement, ReactNode } from "react";
-import { BindComponent, FormChildrenFunctionParams, Form, FormOnSubmit } from "@webiny/form";
+import { BindComponent, FormRenderPropParams, Form, FormOnSubmit } from "@webiny/form";
 import { ApolloClient } from "apollo-client";
 import { IconPrefix, IconName } from "@fortawesome/fontawesome-svg-core";
 import Label from "./admin/views/components/ContentModelForm/ContentFormRender/components/Label";
@@ -111,7 +111,7 @@ export interface CmsEditorFieldTypePlugin extends Plugin {
          * ```
          */
         renderSettings?: (params: {
-            form: FormChildrenFunctionParams;
+            form: FormRenderPropParams;
             afterChangeLabel: (value: string) => void;
             uniqueFieldIdValidator: (fieldId: string) => void;
             contentModel: CmsEditorContentModel;
@@ -131,7 +131,7 @@ export interface CmsEditorFieldTypePlugin extends Plugin {
          * ```
          */
         renderPredefinedValues?: (params: {
-            form: FormChildrenFunctionParams;
+            form: FormRenderPropParams;
             getBind: (index?: number) => any;
         }) => React.ReactNode;
         /**
@@ -267,6 +267,7 @@ export interface CmsEditorContentModel {
         id: string;
         name: string;
     };
+    description?: string;
     version: number;
     layout?: CmsEditorFieldsLayout;
     fields: CmsEditorField[];
@@ -455,4 +456,40 @@ export interface CmsFieldValueTransformer extends Plugin {
      * A transformer function that takes a value and returns a new one.
      */
     transform: (value: any, field: CmsEditorField) => any;
+}
+
+/**
+ * Define a custom form layout renderer for a specific content model.
+ */
+export interface CmsContentFormRendererPlugin extends Plugin {
+    /**
+     * A plugin type.
+     */
+    type: "cms-content-form-renderer";
+    /**
+     * Content model ID that will use this renderer.
+     */
+    modelId: string;
+
+    /**
+     * A function that will render a custom form layout.
+     */
+    render(props: {
+        /**
+         * Content model that is being rendered.
+         */
+        contentModel: CmsEditorContentModel;
+        /**
+         * Content entry data handled by the Form element.
+         */
+        data: Record<string, any>;
+        /**
+         * A component to bind data to the Form.
+         */
+        Bind: BindComponent;
+        /**
+         * Content model fields to render.
+         */
+        fields: Record<string, React.ReactElement>;
+    }): React.ReactNode;
 }

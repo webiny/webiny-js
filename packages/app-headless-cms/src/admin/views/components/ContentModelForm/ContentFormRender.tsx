@@ -1,14 +1,15 @@
-import React, { useEffect, useRef, useMemo } from "react";
-import { Form, FormOnSubmit } from "@webiny/form";
-import {
-    CmsEditorContentModel,
-    CmsEditorFieldRendererPlugin
-} from "@webiny/app-headless-cms/types";
+import React, { useEffect, useRef, useMemo, useCallback } from "react";
+import { Form, FormOnSubmit, FormRenderPropParams } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { plugins } from "@webiny/plugins";
-import RenderFieldElement from "./ContentFormRender/RenderFieldElement";
 import styled from "@emotion/styled";
+import {
+    CmsContentFormRendererPlugin,
+    CmsEditorContentModel,
+    CmsEditorFieldRendererPlugin
+} from "~/types";
+import RenderFieldElement from "./ContentFormRender/RenderFieldElement";
 
 const FormWrapper = styled("div")({
     height: "calc(100vh - 260px)",
@@ -49,6 +50,50 @@ export const ContentFormRender: React.FunctionComponent<ContentFormRenderProps> 
         []
     );
 
+    const formRenderer = plugins
+        .byType<CmsContentFormRendererPlugin>("cms-content-form-renderer")
+        .find(pl => pl.modelId === contentModel.modelId);
+
+    const renderDefaultLayout = useCallback(({ Bind }: FormRenderPropParams) => {
+        return (
+            <Grid>
+                {fields.map((row, rowIndex) => (
+                    <React.Fragment key={rowIndex}>
+                        {row.map(field => (
+                            <Cell span={Math.floor(12 / row.length)} key={field.id}>
+                                <RenderFieldElement
+                                    field={field}
+                                    Bind={Bind}
+                                    renderPlugins={renderPlugins}
+                                    contentModel={contentModel}
+                                />
+                            </Cell>
+                        ))}
+                    </React.Fragment>
+                ))}
+            </Grid>
+        );
+    }, []);
+
+    const renderCustomLayout = useCallback(
+        (formRenderProps: FormRenderPropParams) => {
+            const fields = contentModel.fields.reduce((acc, field) => {
+                acc[field.fieldId] = (
+                    <RenderFieldElement
+                        field={field}
+                        Bind={formRenderProps.Bind}
+                        renderPlugins={renderPlugins}
+                        contentModel={contentModel}
+                    />
+                );
+
+                return acc;
+            }, {});
+            return formRenderer.render({ ...formRenderProps, contentModel, fields });
+        },
+        [formRenderer]
+    );
+
     return (
         <Form
             onChange={onChange}
@@ -57,26 +102,10 @@ export const ContentFormRender: React.FunctionComponent<ContentFormRenderProps> 
             ref={ref}
             invalidFields={invalidFields}
         >
-            {({ Bind }) => (
+            {formProps => (
                 <FormWrapper data-testid={"cms-content-form"}>
                     {loading && <CircularProgress />}
-                    <Grid>
-                        {/* Let's render all form fields. */}
-                        {fields.map((row, rowIndex) => (
-                            <React.Fragment key={rowIndex}>
-                                {row.map(field => (
-                                    <Cell span={Math.floor(12 / row.length)} key={field.id}>
-                                        <RenderFieldElement
-                                            field={field}
-                                            Bind={Bind}
-                                            renderPlugins={renderPlugins}
-                                            contentModel={contentModel}
-                                        />
-                                    </Cell>
-                                ))}
-                            </React.Fragment>
-                        ))}
-                    </Grid>
+                    {formRenderer ? renderCustomLayout(formProps) : renderDefaultLayout(formProps)}
                 </FormWrapper>
             )}
         </Form>

@@ -1,4 +1,4 @@
-import { I18NLocaleContextPlugin } from "@webiny/api-i18n/types";
+import { I18NLocaleContextPlugin } from "../types";
 
 export default [
     {

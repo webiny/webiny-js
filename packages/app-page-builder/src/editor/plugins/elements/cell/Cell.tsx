@@ -1,8 +1,8 @@
 import React from "react";
 import styled from "@emotion/styled";
-import DropZone from "@webiny/app-page-builder/editor/components/DropZone";
-import Element from "@webiny/app-page-builder/editor/components/Element";
-import { DragObjectWithTypeWithTarget } from "@webiny/app-page-builder/editor/components/Droppable";
+import DropZone from "../../../components/DropZone";
+import Element from "../../../components/Element";
+import { DragObjectWithTypeWithTarget } from "../../../components/Droppable";
 
 const CellStyle = styled("div")({
     position: "relative"

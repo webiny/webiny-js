@@ -3,21 +3,14 @@ import dataURLtoBlob from "dataurl-to-blob";
 import SaveDialog from "./SaveDialog";
 import pick from "lodash.pick";
 import get from "lodash/get";
-import createElementPlugin from "@webiny/app-page-builder/admin/utils/createElementPlugin";
-import createBlockPlugin from "@webiny/app-page-builder/admin/utils/createBlockPlugin";
-import {
-    activeElementAtom,
-    elementWithChildrenByIdSelector
-} from "@webiny/app-page-builder/editor/recoil/modules";
+import createElementPlugin from "../../../../admin/utils/createElementPlugin";
+import createBlockPlugin from "../../../../admin/utils/createBlockPlugin";
+import { activeElementAtom, elementByIdSelector } from "../../../recoil/modules";
 import { useApolloClient } from "@apollo/react-hooks";
-import { cloneDeep } from "lodash";
 import { plugins } from "@webiny/plugins";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
-import {
-    CREATE_PAGE_ELEMENT,
-    UPDATE_PAGE_ELEMENT
-} from "@webiny/app-page-builder/admin/graphql/pages";
+import { useKeyHandler } from "../../../hooks/useKeyHandler";
+import { CREATE_PAGE_ELEMENT, UPDATE_PAGE_ELEMENT } from "../../../../admin/graphql/pages";
 import { useRecoilValue } from "recoil";
 import { CREATE_FILE } from "./SaveDialog/graphql";
 import { FileUploaderPlugin } from "@webiny/app/types";
@@ -25,17 +18,16 @@ import {
     PbEditorPageElementPlugin,
     PbEditorPageElementSaveActionPlugin,
     PbEditorElement
-} from "@webiny/app-page-builder/types";
+} from "../../../../types";
+import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
 
-const removeIdsAndPaths = el => {
+const removeIds = el => {
     delete el.id;
-    delete el.path;
 
     el.elements = el.elements.map(el => {
         delete el.id;
-        delete el.path;
         if (el.elements && el.elements.length) {
-            el = removeIdsAndPaths(el);
+            el = removeIds(el);
         }
 
         return el;
@@ -70,14 +62,15 @@ const pluginOnSave = (element: PbEditorElement): PbEditorElement => {
 
 const SaveAction: React.FunctionComponent = ({ children }) => {
     const activeElementId = useRecoilValue(activeElementAtom);
-    const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
+    const element = useRecoilValue(elementByIdSelector(activeElementId));
     const { addKeyHandler, removeKeyHandler } = useKeyHandler();
+    const { getElementTree } = useEventActionHandler();
     const { showSnackbar } = useSnackbar();
     const [isDialogOpened, setOpenDialog] = useState<boolean>(false);
     const client = useApolloClient();
 
     const onSubmit = async formData => {
-        formData.content = pluginOnSave(removeIdsAndPaths(cloneDeep(element)));
+        formData.content = pluginOnSave(removeIds(await getElementTree(element)));
 
         const meta = await getDataURLImageDimensions(formData.preview);
         const blob = dataURLtoBlob(formData.preview);

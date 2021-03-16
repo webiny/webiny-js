@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Checkbox as RmwcCheckbox } from "@rmwc/checkbox";
-import { FormElementMessage } from "@webiny/ui/FormElementMessage";
+import { FormElementMessage } from "../FormElementMessage";
 import { FormComponentProps } from "./../types";
 
 type Props = FormComponentProps & {

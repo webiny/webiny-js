@@ -3,6 +3,63 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.1.0](https://github.com/webiny/webiny-js/compare/v5.1.0-beta.1...v5.1.0) (2021-03-16)
+
+**Note:** Version bump only for package @webiny/api-prerendering-service
+
+
+
+
+
+# [5.1.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.1.0-beta.0...v5.1.0-beta.1) (2021-03-16)
+
+**Note:** Version bump only for package @webiny/api-prerendering-service
+
+
+
+
+
+# [5.1.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.0.0...v5.1.0-beta.0) (2021-03-15)
+
+
+### Features
+
+* **app-headless-cms:** add support for content model form layouts ([#1507](https://github.com/webiny/webiny-js/issues/1507)) ([f2b65b0](https://github.com/webiny/webiny-js/commit/f2b65b0f593e83948b85832d3234e4d32793a868))
+
+
+
+
+
+# [5.0.0](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.5...v5.0.0) (2021-03-09)
+
+**Note:** Version bump only for package @webiny/api-prerendering-service
+
+
+
+
+
+# [5.0.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.4...v5.0.0-beta.5) (2021-03-09)
+
+
+### Bug Fixes
+
+* add cache-control header ([c1ca49d](https://github.com/webiny/webiny-js/commit/c1ca49d22522709df998638905684a8c353788ef))
+* add missing dependency ([28bd99c](https://github.com/webiny/webiny-js/commit/28bd99c0f571db021220907cd3526dcf2734a34a))
+* correct dependencies ([6ed61e8](https://github.com/webiny/webiny-js/commit/6ed61e82540e8d4361ad7b55b6c0a31f32d232fd))
+* correct import ([68c646a](https://github.com/webiny/webiny-js/commit/68c646ad769e1a4ca4346ac176a870f10041fab0))
+* remove "debug" library ([d7c1882](https://github.com/webiny/webiny-js/commit/d7c188272cf60a59eb6a7261470507d1b2cb15f0))
+* update TS configs ([c35f5a8](https://github.com/webiny/webiny-js/commit/c35f5a864a2f723b7f19c1e8983bd0cb1ee1393b))
+
+
+### Features
+
+* create a simple client for the prerendering service ([d6639f6](https://github.com/webiny/webiny-js/commit/d6639f6960ce211090514a787f606c26d4747314))
+* migrate to yarn v2 ([#1407](https://github.com/webiny/webiny-js/issues/1407)) ([46ba7ed](https://github.com/webiny/webiny-js/commit/46ba7ed7df28f98820b358698ef1764f46b5db58))
+
+
+
+
+
 # [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-02-01)
 
 **Note:** Version bump only for package @webiny/api-prerendering-service

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useSecurity } from "..";
-import { SecureRouteErrorPlugin } from "@webiny/app-security/types";
+import { SecureRouteErrorPlugin } from "../types";
 import { plugins } from "@webiny/plugins";
 
 let warned = false;

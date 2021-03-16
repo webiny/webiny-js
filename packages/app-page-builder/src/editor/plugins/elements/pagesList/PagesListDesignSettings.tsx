@@ -1,14 +1,19 @@
 import * as React from "react";
 import { plugins } from "@webiny/plugins";
 import { validation } from "@webiny/validation";
-import { PbPageElementPagesListComponentPlugin } from "@webiny/app-page-builder/types";
+import { PbPageElementPagesListComponentPlugin } from "../../../../types";
 import Accordion from "../../elementSettings/components/Accordion";
 import Wrapper from "../../elementSettings/components/Wrapper";
 import InputField from "../../elementSettings/components/InputField";
 import SelectField from "../../elementSettings/components/SelectField";
-import { classes } from "../../elementSettings/components/StyledComponents";
+import {
+    ButtonContainer,
+    classes,
+    SimpleButton
+} from "../../elementSettings/components/StyledComponents";
+import { Cell, Grid } from "@webiny/ui/Grid";
 
-const PagesListDesignSettings = ({ Bind }) => {
+const PagesListDesignSettings = ({ Bind, submit }) => {
     const components = plugins.byType<PbPageElementPagesListComponentPlugin>(
         "pb-page-element-pages-list-component"
     );
@@ -51,6 +56,13 @@ const PagesListDesignSettings = ({ Bind }) => {
                         <InputField />
                     </Bind>
                 </Wrapper>
+                <Grid className={classes.simpleGrid}>
+                    <Cell span={12}>
+                        <ButtonContainer>
+                            <SimpleButton onClick={submit}>Save</SimpleButton>
+                        </ButtonContainer>
+                    </Cell>
+                </Grid>
             </React.Fragment>
         </Accordion>
     );

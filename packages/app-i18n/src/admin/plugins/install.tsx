@@ -6,7 +6,7 @@ import { Form } from "@webiny/form";
 import { Alert } from "@webiny/ui/Alert";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { ButtonPrimary } from "@webiny/ui/Button";
-import LocaleCodesAutoComplete from "@webiny/app-i18n/admin/views/I18NLocales/LocaleCodesAutoComplete";
+import LocaleCodesAutoComplete from "../views/I18NLocales/LocaleCodesAutoComplete";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { validation } from "@webiny/validation";
 import {
@@ -21,13 +21,7 @@ const t = i18n.ns("app-i18n/admin/installation");
 const IS_INSTALLED = gql`
     query IsI18NInstalled {
         i18n {
-            isInstalled {
-                data
-                error {
-                    code
-                    message
-                }
-            }
+            version
         }
     }
 `;
@@ -105,9 +99,9 @@ export default {
     title: "I18N",
     dependencies: ["admin-installation-security"],
     secure: true,
-    async isInstalled({ client }) {
+    async getInstalledVersion({ client }) {
         const { data } = await client.query({ query: IS_INSTALLED });
-        return data.i18n.isInstalled.data;
+        return data.i18n.version;
     },
     render({ onInstalled }) {
         return <I18NInstaller onInstalled={onInstalled} />;

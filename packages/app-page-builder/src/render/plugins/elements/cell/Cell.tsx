@@ -1,7 +1,7 @@
-import Element from "@webiny/app-page-builder/render/components/Element";
-import ElementAnimation from "@webiny/app-page-builder/render/components/ElementAnimation";
-import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
-import { PbElement } from "@webiny/app-page-builder/types";
+import Element from "../../../components/Element";
+import ElementAnimation from "../../../components/ElementAnimation";
+import { ElementRoot } from "../../../components/ElementRoot";
+import { PbElement } from "../../../../types";
 import React from "react";
 
 type GridPropsType = {

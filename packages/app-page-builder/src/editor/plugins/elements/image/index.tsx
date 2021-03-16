@@ -1,16 +1,18 @@
 import React from "react";
 import styled from "@emotion/styled";
+import kebabCase from "lodash/kebabCase";
 import ImageSettings from "./ImageSettings";
 import Image from "./Image";
 import { imageCreatedEditorAction } from "./imageCreatedEditorAction";
-import { CreateElementActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
+import { CreateElementActionEvent } from "../../../recoil/actions";
 import { ReactComponent as ImageIcon } from "./round-image-24px.svg";
 import {
     PbEditorPageElementPlugin,
     PbEditorPageElementStyleSettingsPlugin,
     PbEditorEventActionPlugin,
-    DisplayMode
-} from "@webiny/app-page-builder/types";
+    DisplayMode,
+    PbEditorElementPluginArgs
+} from "../../../../types";
 import { Plugin } from "@webiny/plugins/types";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 
@@ -23,39 +25,49 @@ const PreviewBox = styled("div")({
     }
 });
 
-export default (): Plugin[] => {
+export default (args: PbEditorElementPluginArgs = {}): Plugin[] => {
+    const elementType = kebabCase(args.elementType || "image");
+
+    const defaultToolbar = {
+        title: "Image",
+        group: "pb-editor-element-group-basic",
+        preview() {
+            return (
+                <PreviewBox>
+                    <ImageIcon />
+                </PreviewBox>
+            );
+        }
+    };
+
+    const defaultSettings = [
+        "pb-editor-page-element-style-settings-image",
+        ["pb-editor-page-element-style-settings-background", { image: false }],
+        "pb-editor-page-element-style-settings-link",
+        "pb-editor-page-element-style-settings-border",
+        "pb-editor-page-element-style-settings-shadow",
+        "pb-editor-page-element-style-settings-horizontal-align-flex",
+        "pb-editor-page-element-style-settings-padding",
+        "pb-editor-page-element-style-settings-margin",
+        "pb-editor-page-element-settings-clone",
+        "pb-editor-page-element-settings-delete"
+    ];
+
     return [
         {
-            name: "pb-editor-page-element-image",
+            name: `pb-editor-page-element-${elementType}`,
             type: "pb-editor-page-element",
-            elementType: "image",
-            toolbar: {
-                title: "Image",
-                group: "pb-editor-element-group-basic",
-                preview() {
-                    return (
-                        <PreviewBox>
-                            <ImageIcon />
-                        </PreviewBox>
-                    );
-                }
-            },
-            settings: [
-                "pb-editor-page-element-style-settings-image",
-                ["pb-editor-page-element-style-settings-background", { image: false }],
-                "pb-editor-page-element-style-settings-link",
-                "pb-editor-page-element-style-settings-border",
-                "pb-editor-page-element-style-settings-shadow",
-                "pb-editor-page-element-style-settings-horizontal-align-flex",
-                "pb-editor-page-element-style-settings-padding",
-                "pb-editor-page-element-style-settings-margin",
-                "pb-editor-page-element-settings-clone",
-                "pb-editor-page-element-settings-delete"
-            ],
+            elementType: elementType,
+            toolbar:
+                typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
+            settings:
+                typeof args.settings === "function"
+                    ? args.settings(defaultSettings)
+                    : defaultSettings,
             target: ["cell", "block"],
             create(options) {
-                return {
-                    type: "image",
+                const defaultValue = {
+                    type: this.elementType,
                     elements: [],
                     data: {
                         settings: {
@@ -75,6 +87,8 @@ export default (): Plugin[] => {
                     },
                     ...options
                 };
+
+                return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
             },
             render({ element }) {
                 return <Image element={element} />;

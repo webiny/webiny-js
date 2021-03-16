@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { CrudContext, CrudContextValue } from "@webiny/app-admin/contexts/Crud";
+import { CrudContext, CrudContextValue } from "../../contexts/Crud";
 
 export function useCrud() {
     const context = useContext(CrudContext) as CrudContextValue;

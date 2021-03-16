@@ -20,6 +20,7 @@ class Cloudfront {
             ],
             defaultRootObject: "index.html",
             defaultCacheBehavior: {
+                compress: true,
                 targetOriginId: appS3Bucket.arn,
                 viewerProtocolPolicy: "redirect-to-https",
                 allowedMethods: ["GET", "HEAD", "OPTIONS"],
@@ -28,6 +29,7 @@ class Cloudfront {
                     cookies: { forward: "none" },
                     queryString: false
                 },
+                // MinTTL <= DefaultTTL <= MaxTTL
                 minTtl: 0,
                 defaultTtl: 600,
                 maxTtl: 600

@@ -1,9 +1,10 @@
-import { ContextPlugin } from "@webiny/handler/types";
+import { ContextPluginInterface } from "@webiny/handler/types";
 import { TenancyContext, Tenant } from "./types";
 import tenantCrud from "./crud/tenants.crud";
 import userCrud from "./crud/users.crud";
 import groupCrud from "./crud/groups.crud";
 import apiKeyCrud from "./crud/apiKey.crud";
+import systemCrud from "./crud/system.crud";
 
 const tenantCache = {};
 
@@ -19,7 +20,7 @@ const getCurrentTenant = async (context: TenancyContext): Promise<Tenant> => {
     return tenantCache[tenantId];
 };
 
-export default {
+export default (): ContextPluginInterface<TenancyContext> => ({
     type: "context",
     apply: async context => {
         let __tenant = null;
@@ -43,7 +44,8 @@ export default {
         context.security.users = userCrud(context);
         context.security.groups = groupCrud(context);
         context.security.apiKeys = apiKeyCrud(context);
+        context.security.system = systemCrud(context);
 
         __tenant = await getCurrentTenant(context);
     }
-} as ContextPlugin<TenancyContext>;
+});

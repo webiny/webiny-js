@@ -1,9 +1,9 @@
 import React from "react";
 import DefaultEditorBar from "./DefaultEditorBar";
-import { activeElementAtom, pluginsAtom } from "@webiny/app-page-builder/editor/recoil/modules";
+import { activeElementAtom, pluginsAtom } from "../../recoil/modules";
 import { plugins } from "@webiny/plugins";
 import { useRecoilValue } from "recoil";
-import { PbEditorBarPlugin } from "@webiny/app-page-builder/types";
+import { PbEditorBarPlugin } from "../../../types";
 
 const Bar: React.FC = () => {
     const activeElementId = useRecoilValue(activeElementAtom);

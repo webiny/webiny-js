@@ -1,11 +1,17 @@
 import * as React from "react";
 import { css } from "emotion";
-import { TagsMultiAutocomplete } from "@webiny/app-page-builder/admin/components/TagsMultiAutocomplete";
-import { CategoriesAutocomplete } from "@webiny/app-page-builder/admin/components/CategoriesAutocomplete";
+import { TagsMultiAutocomplete } from "../../../../admin/components/TagsMultiAutocomplete";
+import { CategoriesAutocomplete } from "../../../../admin/components/CategoriesAutocomplete";
 import Accordion from "../../elementSettings/components/Accordion";
 import Wrapper from "../../elementSettings/components/Wrapper";
 import SelectField from "../../elementSettings/components/SelectField";
-import { classes, COLORS } from "../../elementSettings/components/StyledComponents";
+import {
+    ButtonContainer,
+    classes,
+    COLORS,
+    SimpleButton
+} from "../../elementSettings/components/StyledComponents";
+import { Cell, Grid } from "@webiny/ui/Grid";
 
 const autoCompleteStyle = css({
     "& .mdc-text-field": {
@@ -29,7 +35,7 @@ const autoCompleteStyle = css({
     }
 });
 
-const PagesListFilterSettings = ({ Bind }) => {
+const PagesListFilterSettings = ({ Bind, submit }) => {
     return (
         <Accordion title={"Filter"} defaultValue={true}>
             <React.Fragment>
@@ -82,6 +88,13 @@ const PagesListFilterSettings = ({ Bind }) => {
                         )}
                     </Bind>
                 </Wrapper>
+                <Grid className={classes.simpleGrid}>
+                    <Cell span={12}>
+                        <ButtonContainer>
+                            <SimpleButton onClick={submit}>Save</SimpleButton>
+                        </ButtonContainer>
+                    </Cell>
+                </Grid>
             </React.Fragment>
         </Accordion>
     );

@@ -5,14 +5,11 @@ const fs = require("fs-extra");
 const Listr = require("listr");
 const path = require("path");
 const writeJson = require("write-json-file");
-const indentString = require("indent-string");
 const rimraf = require("rimraf");
 const { sendEvent } = require("@webiny/tracking");
 const getPackageJson = require("./getPackageJson");
 const checkProjectName = require("./checkProjectName");
 const yaml = require("js-yaml");
-const getYarnVersion = require("./getYarnVersion");
-const semver = require("semver");
 
 module.exports = async function createProject({
     projectName,
@@ -92,16 +89,13 @@ module.exports = async function createProject({
                 // Setup yarn@2
                 title: "Setup yarn@^2",
                 task: async () => {
-                    const yarnVersion = await getYarnVersion();
-                    if (semver.satisfies(yarnVersion, "^1.22.0")) {
-                        await execa("yarn", ["set", "version", "berry"], { cwd: projectRoot });
-                    }
+                    await execa("yarn", ["set", "version", "berry"], { cwd: projectRoot });
 
-                    fs.copySync(
-                        path.join(__dirname, "files", "example.yarnrc.yml"),
-                        path.join(projectRoot, ".yarnrc.yml"),
-                        { overwrite: true }
-                    );
+                    const yamlPath = path.join(projectRoot, ".yarnrc.yml");
+                    const parsedYaml = yaml.load(fs.readFileSync(yamlPath, "utf-8"));
+
+                    // Default settings are applied here. Currently we only apply the `nodeLinker` param.
+                    parsedYaml.nodeLinker = "node-modules";
 
                     // Enables adding additional params into the `.yarnrc.yml` file.
                     if (assignToYarnRc) {
@@ -115,12 +109,11 @@ module.exports = async function createProject({
                         }
 
                         if (parsedAssignToYarnRc) {
-                            const yamlPath = path.join(projectRoot, ".yarnrc.yml");
-                            const parsedYaml = yaml.load(fs.readFileSync(yamlPath, "utf-8"));
                             Object.assign(parsedYaml, parsedAssignToYarnRc);
-                            fs.writeFileSync(yamlPath, yaml.dump(parsedYaml));
                         }
                     }
+
+                    fs.writeFileSync(yamlPath, yaml.dump(parsedYaml));
                 }
             },
             {
@@ -165,84 +158,81 @@ module.exports = async function createProject({
         ].filter(Boolean)
     );
 
-    let logPath = "cwp-logs.txt";
-    if (log.length > 0) {
-        logPath = log;
-    }
-    const context = { logPath };
-    await tasks
-        .run(context)
-        .then(() => {
-            let templateName = context.templateName;
+    // The `context` object will be filled with additional values in the `tasks.run` process.
+    const context = {};
 
-            console.log(`Starting ${green(templateName)} template ...`);
-            if (templateName.startsWith("file:")) {
-                templateName = templateName.replace("file:", "");
-            }
+    try {
+        await tasks.run(context);
 
-            const templatePath = path.dirname(
-                require.resolve(path.join(templateName, "package.json"), {
-                    paths: [projectRoot]
-                })
-            );
+        let templateName = context.templateName;
 
-            console.log();
-            return new Promise(resolve => {
-                setTimeout(() => {
-                    resolve();
-                    let parsedTemplateOptions = {};
-                    if (templateOptions) {
-                        try {
-                            parsedTemplateOptions = JSON.parse(templateOptions);
-                        } catch {
-                            console.log(
-                                yellow("Warning: could not parse provided --template-options JSON.")
-                            );
-                        }
-                    }
+        console.log(`Starting ${green(templateName)} template ...`);
+        if (templateName.startsWith("file:")) {
+            templateName = templateName.replace("file:", "");
+        }
 
-                    return require(templatePath)({
-                        isGitAvailable,
-                        projectName,
-                        projectRoot,
-                        interactive,
-                        templateOptions: parsedTemplateOptions
-                    });
-                }, 500);
-            });
-        })
-        .catch(async err => {
-            await sendEvent({
-                event: "create-webiny-project-error",
-                data: {
-                    errorMessage: err.message,
-                    errorStack: err.stack
-                }
-            });
+        const templatePath = path.dirname(
+            require.resolve(path.join(templateName, "package.json"), {
+                paths: [projectRoot]
+            })
+        );
 
-            console.log(
-                [
-                    "",
-                    "ERROR OUTPUT:",
-                    "----------------------------------------",
-                    err.message,
-                    "----------------------------------------",
-                    "",
-                    "Please open an issue including the error output at https://github.com/webiny/webiny-js/issues/new.",
-                    "You can also get in touch with us on our Slack Community: https://www.webiny.com/slack",
-                    ""
-                ]
-                    .map(line => indentString(line, 2))
-                    .join("\n")
-            );
-
-            console.log(`\nWriting log to ${green(path.resolve(logPath))}...`);
-            fs.writeFileSync(path.resolve(logPath), err.toString());
-            console.log("Cleaning up project...");
-            rimraf.sync(projectRoot);
-            console.log("Project cleaned!");
-            process.exit(1);
+        await new Promise(resolve => {
+            setTimeout(() => {
+                resolve();
+            }, 500);
         });
 
-    await sendEvent({ event: "create-webiny-project-end" });
+        let parsedTemplateOptions = {};
+        if (templateOptions) {
+            try {
+                parsedTemplateOptions = JSON.parse(templateOptions);
+            } catch {
+                console.log(yellow("Warning: could not parse provided --template-options JSON."));
+            }
+        }
+
+        console.log();
+        await require(templatePath)({
+            log,
+            isGitAvailable,
+            projectName,
+            projectRoot,
+            interactive,
+            templateOptions: parsedTemplateOptions
+        });
+
+        await sendEvent({ event: "create-webiny-project-end" });
+    } catch (err) {
+        await sendEvent({
+            event: "create-webiny-project-error",
+            data: {
+                errorMessage: err.message,
+                errorStack: err.stack
+            }
+        });
+
+        console.log(
+            [
+                "",
+                "ERROR OUTPUT:",
+                "----------------------------------------",
+                err.message,
+                "----------------------------------------",
+                "",
+                "Please open an issue including the error output at https://github.com/webiny/webiny-js/issues/new.",
+                "You can also get in touch with us on our Slack Community: https://www.webiny.com/slack",
+                ""
+            ].join("\n")
+        );
+
+        console.log(`Writing log to ${green(path.resolve(log))}...`);
+        fs.writeFileSync(path.resolve(log), err.toString());
+        console.log("Cleaning up project...");
+        rimraf.sync(projectRoot);
+        console.log("Project cleaned!");
+
+        await sendEvent({ event: "create-webiny-project-end" });
+        process.exit(1);
+    }
 };

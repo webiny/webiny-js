@@ -1,0 +1,11 @@
+{
+  "extends": "PATH_TO_TSCONFIG",
+  "include": ["src", "__tests__/**/*.ts"],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./src/*"]
+    }
+  },
+  "references": []
+}

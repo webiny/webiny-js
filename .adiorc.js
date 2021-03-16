@@ -1,4 +1,6 @@
 const get = require("lodash.get");
+const getWorkspaces = require("get-yarn-workspaces");
+const path = require("path");
 
 module.exports = {
     parser: {
@@ -19,7 +21,7 @@ module.exports = {
         }
     },
     ignore: {
-        src: ["path", "os", "fs", "util", "events", "crypto", "aws-sdk", "url"],
+        src: ["path", "os", "fs", "util", "events", "crypto", "aws-sdk", "url", "~"],
         dependencies: [
             "@babel/runtime",
             // Packages below are defined as peerDependencies in many 3rd party packages
@@ -28,6 +30,7 @@ module.exports = {
             "@emotion/core",
             "@svgr/webpack",
             "@types/react",
+            "@webiny/cli",
             "prop-types",
             "apollo-cache",
             "apollo-client",
@@ -40,5 +43,7 @@ module.exports = {
         peerDependencies: true
     },
     ignoreDirs: ["node_modules/", "dist/", "build/"],
-    packages: ["packages/*", "api/code/api", "apps/admin/code", "apps/website/code"]
+    packages: getWorkspaces().map(pkg =>
+        pkg.replace(/\//g, path.sep).replace(process.cwd() + path.sep, "")
+    )
 };

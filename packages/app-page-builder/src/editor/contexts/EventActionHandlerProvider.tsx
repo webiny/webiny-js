@@ -28,7 +28,7 @@ import {
     EventActionHandler,
     EventActionHandlerTarget,
     EventActionHandlerCallableState
-} from "@webiny/app-page-builder/types";
+} from "../../types";
 import {
     Snapshot,
     useGotoRecoilSnapshot,
@@ -279,6 +279,7 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
 
     const eventActionHandler = useMemo<EventActionHandler>(
         () => ({
+            getElementTree,
             on: (target, callable) => {
                 const name = getEventActionClassName(target);
                 if (!has(name)) {

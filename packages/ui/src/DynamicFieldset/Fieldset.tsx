@@ -1,6 +1,6 @@
 import * as React from "react";
 import dotProp from "dot-prop-immutable";
-import { FormElementMessage } from "@webiny/ui/FormElementMessage";
+import { FormElementMessage } from "../FormElementMessage";
 
 interface ChildrenRenderProp {
     actions: { add: Function; remove: Function };

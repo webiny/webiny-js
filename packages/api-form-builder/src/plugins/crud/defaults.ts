@@ -14,14 +14,28 @@ export default {
             }
         ]
     },
+    esDb: {
+        table: process.env.DB_TABLE_ELASTICSEARCH,
+        keys: [
+            {
+                primary: true,
+                unique: true,
+                name: "primary",
+                fields: [{ name: "PK" }, { name: "SK" }]
+            }
+        ]
+    },
     es(context: Context<SecurityContext, TenancyContext>) {
         const tenant = context.security.getTenant();
-        if (tenant) {
-            return {
-                index: tenant.id + "-form-builder"
-            };
+        if (!tenant) {
+            throw new Error("Tenant missing.");
         }
 
-        throw new Error("Tenant missing.");
+        const index = tenant.id + "-form-builder";
+        const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX;
+        if (prefix) {
+            return { index: prefix + index };
+        }
+        return { index };
     }
 };

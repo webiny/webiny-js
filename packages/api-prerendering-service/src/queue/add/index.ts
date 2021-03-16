@@ -1,10 +1,9 @@
 import { HandlerPlugin, QueueAddHookPlugin } from "./types";
 import { TYPE, DbQueueJob } from "../../types";
-import { HandlerResponse } from "@webiny/api-prerendering-service/types";
-import debug from "debug";
+import { HandlerResponse } from "../../types";
 import mdbid from "mdbid";
 
-const log = debug("wby:api-prerendering-service:queue:add");
+const log = console.log;
 
 export default (): HandlerPlugin => ({
     type: "handler",

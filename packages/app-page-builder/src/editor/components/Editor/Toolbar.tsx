@@ -1,16 +1,13 @@
 import React, { useEffect, useRef } from "react";
 import styled from "@emotion/styled";
-import { useEventActionHandler } from "@webiny/app-page-builder/editor/hooks/useEventActionHandler";
-import { DeactivatePluginActionEvent } from "@webiny/app-page-builder/editor/recoil/actions";
-import { activePluginsByTypeNamesSelector } from "@webiny/app-page-builder/editor/recoil/modules";
+import { useEventActionHandler } from "../../hooks/useEventActionHandler";
+import { DeactivatePluginActionEvent } from "../../recoil/actions";
+import { activePluginsByTypeNamesSelector } from "../../recoil/modules";
 import { css } from "emotion";
 import { Drawer, DrawerContent } from "@webiny/ui/Drawer";
 import { plugins } from "@webiny/plugins";
-import { useKeyHandler } from "@webiny/app-page-builder/editor/hooks/useKeyHandler";
-import {
-    PbEditorToolbarBottomPlugin,
-    PbEditorToolbarTopPlugin
-} from "@webiny/app-page-builder/types";
+import { useKeyHandler } from "../../hooks/useKeyHandler";
+import { PbEditorToolbarBottomPlugin, PbEditorToolbarTopPlugin } from "../../../types";
 import { useRecoilValue } from "recoil";
 
 const ToolbarDrawerContainer = styled("div")({

@@ -8,6 +8,7 @@ import { BaseI18NContentContext } from "@webiny/api-i18n-content/types";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { HttpContext } from "@webiny/handler-http/types";
 import { DbContext } from "@webiny/handler-db/types";
+import { FileManagerContext } from "@webiny/api-file-manager/types";
 
 interface BaseCmsValuesObject {
     /**
@@ -22,10 +23,6 @@ interface BaseCmsValuesObject {
      * returns an instance of current locale
      */
     getLocale: () => I18NLocale;
-    /**
-     * returns instance of app settings
-     */
-    getSettings: () => CmsSettings;
     /**
      * Means this request is a READ API
      */
@@ -53,6 +50,7 @@ export interface CmsContext
         DbContext,
         HttpContext,
         I18NContext,
+        FileManagerContext,
         BaseI18NContentContext,
         ElasticSearchClientContext,
         TenancyContext {
@@ -288,6 +286,10 @@ export interface CmsContentModel {
      * Unique ID for the content model. Created from name if not defined by user.
      */
     modelId: string;
+    /**
+     * Locale this model belongs to.
+     */
+    locale: string;
     /**
      * Content model group reference object.
      */
@@ -630,13 +632,9 @@ export interface CreatedBy {
  */
 export interface CmsSettings {
     /**
-     * Is the CMS installed?
-     */
-    isInstalled: boolean;
-    /**
      * Last content model change. Used to cache GraphQL schema.
      */
-    contentModelLastChange: Date;
+    contentModelLastChange: string;
     /**
      * Internal API key used to access Read API
      */
@@ -644,7 +642,7 @@ export interface CmsSettings {
 }
 
 /**
- * Settings crud in context.
+ * Settings CRUD in context.
  *
  * @category Context
  */
@@ -659,17 +657,9 @@ export interface CmsSettingsContext {
         get: () => Promise<CmsSettings | null>;
     };
     /**
-     * Last content model change. Used to cache GraphQL schema.
-     */
-    contentModelLastChange: Date;
-    /**
      * Gets settings model from the database.
      */
     get: () => Promise<CmsSettings | null>;
-    /**
-     * Install the CMS.
-     */
-    install: () => Promise<CmsSettings>;
     /**
      * Updates settings model with a new date.
      */
@@ -677,8 +667,15 @@ export interface CmsSettingsContext {
     /**
      * Get the datetime when content model last changed.
      */
-    getContentModelLastChange: () => Date;
+    getContentModelLastChange: () => Promise<Date>;
 }
+
+export type CmsSystemContext = {
+    getVersion(): Promise<string>;
+    setVersion(version: string): Promise<void>;
+    install(): Promise<void>;
+    upgrade(version: string): Promise<boolean>;
+};
 
 /**
  * A GraphQL args.data parameter received when creating content model group.
@@ -724,6 +721,10 @@ export interface CmsContentModelGroup {
      * Slug for the group. Must be unique.
      */
     slug: string;
+    /**
+     * Locale this group belongs to.
+     */
+    locale: string;
     /**
      * Description for the group.
      */
@@ -951,7 +952,7 @@ export interface ContentModelManagerPlugin extends Plugin {
     modelId?: string[] | string;
     /**
      * Create a CmsContentModelManager for specific type - or new default one.
-     * For reference in how is this plugin run check [contentModelManagerFactory](https://github.com/webiny/webiny-js/blob/f15676/packages/api-headless-cms/src/content/plugins/crud/contentModel/contentModelManagerFactory.ts)
+     * For reference in how is this plugin run check [contentModelManagerFactory](https://github.com/webiny/webiny-js/blob/f15676/packages/api-headless-cms/src/content/plugins/CRUD/contentModel/contentModelManagerFactory.ts)
      */
     create(context: CmsContext, model: CmsContentModel): Promise<CmsContentModelManager>;
 }
@@ -1200,7 +1201,7 @@ export interface CmsContentEntryListArgs {
 }
 
 /**
- * List entries crud options.
+ * List entries CRUD options.
  *
  * @category ContentEntry
  */
@@ -1230,7 +1231,7 @@ export interface CmsContentEntryMeta {
 }
 
 /**
- * Content entry crud methods in the context.
+ * Content entry CRUD methods in the context.
  *
  * @category Context
  * @category ContentEntry
@@ -1325,21 +1326,21 @@ export interface CmsContentEntryContext {
 }
 
 /**
- * A cms part of the context that has all the crud operations.
+ * A cms part of the context that has all the CRUD operations.
  *
  * @category Context
  */
 interface CmsCrudContextObject {
     /**
-     * Settings crud methods.
+     * Settings CRUD methods.
      */
     settings: CmsSettingsContext;
     /**
-     * Content model group crud methods.
+     * Content model group CRUD methods.
      */
     groups: CmsContentModelGroupContext;
     /**
-     * Content model crud methods.
+     * Content model CRUD methods.
      */
     models: CmsContentModelContext;
     /**
@@ -1347,9 +1348,13 @@ interface CmsCrudContextObject {
      */
     getModel: (modelId: string) => Promise<CmsContentModelManager>;
     /**
-     * Content entry crud methods.
+     * Content entry CRUD methods.
      */
     entries: CmsContentEntryContext;
+    /**
+     * System CRUD methods
+     */
+    system: CmsSystemContext;
 }
 
 /**
@@ -1668,6 +1673,10 @@ export interface CmsContentIndexEntry extends CmsContentEntry {
      */
     rawValues: Record<string, any>;
     /**
+     * Version of Webiny this entry was created with.
+     */
+    webinyVersion?: string;
+    /**
      * Dev can add what ever keys they want and need. Just need to be careful not to break the entry.
      */
     [key: string]: any;
@@ -1919,10 +1928,10 @@ export interface CmsContentModelHookPlugin extends Plugin {
  * @category ContentEntry
  * @category LifecycleHook
  */
-export interface CmsContentEntryHookPluginArgs {
+export interface CmsContentEntryHookPluginArgs<T = CmsContext> {
     model: CmsContentModel;
     entry: CmsContentEntry;
-    context: CmsContext;
+    context: T;
 }
 /**
  * A plugin type that defines lifecycle hooks for content entry.
@@ -1931,81 +1940,81 @@ export interface CmsContentEntryHookPluginArgs {
  * @category ContentEntry
  * @category LifecycleHook
  */
-export interface CmsContentEntryHookPlugin extends Plugin {
+export interface CmsContentEntryHookPlugin<T extends ContextInterface = CmsContext> extends Plugin {
     type: "cms-content-entry-hook";
     /**
      * A hook triggered before entry is stored.
      * At this point, entry for storage and elastic search is already built so you cannot modify them.
      */
-    beforeCreate?: (args: CmsContentEntryHookPluginArgs) => void;
+    beforeCreate?: (args: CmsContentEntryHookPluginArgs<T>) => void;
     /**
      * A hook triggered after entry is stored to the database and Elasticsearch.
      */
-    afterCreate?: (args: CmsContentEntryHookPluginArgs) => void;
+    afterCreate?: (args: CmsContentEntryHookPluginArgs<T>) => void;
     /**
      * @see CmsContentEntryHookPlugin.beforeCreate
      */
-    beforeCreateRevisionFrom?: (args: CmsContentEntryHookPluginArgs) => void;
+    beforeCreateRevisionFrom?: (args: CmsContentEntryHookPluginArgs<T>) => void;
     /**
      * @see CmsContentEntryHookPlugin.afterCreate
      */
-    afterCreateRevisionFrom?: (args: CmsContentEntryHookPluginArgs) => void;
+    afterCreateRevisionFrom?: (args: CmsContentEntryHookPluginArgs<T>) => void;
     /**
      * A hook triggered before entry is updated in the database.
      * It can be modified but we do not recommend it.
      */
-    beforeUpdate?: (args: CmsContentEntryHookPluginArgs) => void;
+    beforeUpdate?: (args: CmsContentEntryHookPluginArgs<T>) => void;
     /**
      * A hook triggered after entry is updated in the database and Elasticsearch.
      */
-    afterUpdate?: (args: CmsContentEntryHookPluginArgs) => void;
+    afterUpdate?: (args: CmsContentEntryHookPluginArgs<T>) => void;
     /**
      * A hook triggered before deleting a certain revision (id#revision).
      */
-    beforeDeleteRevision?: (args: CmsContentEntryHookPluginArgs) => void;
+    beforeDeleteRevision?: (args: CmsContentEntryHookPluginArgs<T>) => void;
     /**
      * A hook triggered after deleting certain revision from the database and Elasticsearch.
      * In a case that deleted revision is only one, deleteEntry is called just to make sure that nothing is left in storage.
      */
-    afterDeleteRevision?: (args: CmsContentEntryHookPluginArgs) => void;
+    afterDeleteRevision?: (args: CmsContentEntryHookPluginArgs<T>) => void;
     /**
      * A hook triggered before deleting an entry with all its revisions.
      */
-    beforeDelete?: (args: CmsContentEntryHookPluginArgs) => void;
+    beforeDelete?: (args: CmsContentEntryHookPluginArgs<T>) => void;
     /**
      * A hook triggered after deleting an entry from the database and Elasticsearch.
      */
-    afterDelete?: (args: CmsContentEntryHookPluginArgs) => void;
+    afterDelete?: (args: CmsContentEntryHookPluginArgs<T>) => void;
     /**
      * A hook triggered before publishing of an entry.
      */
-    beforePublish?: (args: CmsContentEntryHookPluginArgs) => void;
+    beforePublish?: (args: CmsContentEntryHookPluginArgs<T>) => void;
     /**
      * A hook triggered after publishing of an entry. Publish is stored in both database and Elasticsearch.
      */
-    afterPublish?: (args: CmsContentEntryHookPluginArgs) => void;
+    afterPublish?: (args: CmsContentEntryHookPluginArgs<T>) => void;
     /**
      * A hook triggered before unpublishing of an entry.
      */
-    beforeUnpublish?: (args: CmsContentEntryHookPluginArgs) => void;
+    beforeUnpublish?: (args: CmsContentEntryHookPluginArgs<T>) => void;
     /**
      * A hook triggered after unpublishing of an entry. Publish is stored in both database and Elasticsearch.
      */
-    afterUnpublish?: (args: CmsContentEntryHookPluginArgs) => void;
+    afterUnpublish?: (args: CmsContentEntryHookPluginArgs<T>) => void;
     /**
      * A hook triggered before requesting changes of an entry.
      */
-    beforeRequestChanges?: (args: CmsContentEntryHookPluginArgs) => void;
+    beforeRequestChanges?: (args: CmsContentEntryHookPluginArgs<T>) => void;
     /**
      * A hook triggered after requesting changes of an entry.
      */
-    afterRequestChanges?: (args: CmsContentEntryHookPluginArgs) => void;
+    afterRequestChanges?: (args: CmsContentEntryHookPluginArgs<T>) => void;
     /**
      * A hook triggered before requesting review of an entry.
      */
-    beforeRequestReview?: (args: CmsContentEntryHookPluginArgs) => void;
+    beforeRequestReview?: (args: CmsContentEntryHookPluginArgs<T>) => void;
     /**
      * A hook triggered after requesting review of an entry.
      */
-    afterRequestReview?: (args: CmsContentEntryHookPluginArgs) => void;
+    afterRequestReview?: (args: CmsContentEntryHookPluginArgs<T>) => void;
 }

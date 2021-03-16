@@ -5,7 +5,10 @@ import middleware from "./middleware";
 export default (...plugins) => async (...args) => {
     const context = {
         plugins: new PluginsContainer(plugins),
-        args
+        args,
+        // @ts-ignore
+        // this is injected using webpack.DefinePlugin at build time
+        WEBINY_VERSION: process.env.WEBINY_VERSION
     };
 
     try {

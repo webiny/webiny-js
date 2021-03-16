@@ -10,7 +10,7 @@ import { AdminLayout } from "@webiny/app-admin/components/AdminLayout";
 import { RoutePlugin } from "@webiny/app/types";
 import { ReactComponent as InfoIcon } from "./graphql.svg";
 import Playground from "./Playground";
-import { GraphQLPlaygroundTabPlugin } from "@webiny/app-graphql-playground/types";
+import { GraphQLPlaygroundTabPlugin } from "../types";
 // @ts-ignore
 import placeholder from "!!raw-loader!./placeholder.graphql";
 

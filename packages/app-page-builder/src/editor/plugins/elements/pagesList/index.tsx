@@ -1,18 +1,20 @@
 import React from "react";
 import styled from "@emotion/styled";
+import kebabCase from "lodash/kebabCase";
 import { PluginCollection } from "@webiny/plugins/types";
 import {
     PbEditorPageElementPlugin,
     PbEditorPageElementAdvancedSettingsPlugin,
-    DisplayMode
-} from "@webiny/app-page-builder/types";
+    DisplayMode,
+    PbEditorElementPluginArgs
+} from "../../../../types";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 import { ReactComponent as PageListIcon } from "./page-list-icon.svg";
 import PagesList from "./PagesList";
 import PagesListFilterSettings from "./PagesListFilterSettings";
 import PagesListDesignSettings from "./PagesListDesignSettings";
 
-export default (): PluginCollection => {
+export default (args: PbEditorElementPluginArgs = {}): PluginCollection => {
     const PreviewBox = styled("div")({
         textAlign: "center",
         margin: "0 auto",
@@ -22,28 +24,38 @@ export default (): PluginCollection => {
         }
     });
 
+    const elementType = kebabCase(args.elementType || "pages-list");
+
+    const defaultToolbar = {
+        title: "List of pages",
+        group: "pb-editor-element-group-basic",
+        preview() {
+            return (
+                <PreviewBox>
+                    <PageListIcon />
+                </PreviewBox>
+            );
+        }
+    };
+
+    const defaultSettings = ["pb-editor-page-element-settings-delete"];
+
     return [
         {
-            name: "pb-editor-page-element-pages-list",
+            name: `pb-editor-page-element-${elementType}`,
             type: "pb-editor-page-element",
-            elementType: "pages-list",
-            toolbar: {
-                title: "List of pages",
-                group: "pb-editor-element-group-basic",
-                preview() {
-                    return (
-                        <PreviewBox>
-                            <PageListIcon />
-                        </PreviewBox>
-                    );
-                }
-            },
-            settings: ["pb-editor-page-element-settings-delete"],
+            elementType: elementType,
+            toolbar:
+                typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
+            settings:
+                typeof args.settings === "function"
+                    ? args.settings(defaultSettings)
+                    : defaultSettings,
             target: ["cell", "block"],
             onCreate: "open-settings",
             create(options = {}) {
-                return {
-                    type: "pages-list",
+                const defaultValue = {
+                    type: this.elementType,
                     data: {
                         resultsPerPage: 10,
                         component: "default",
@@ -60,6 +72,8 @@ export default (): PluginCollection => {
                     },
                     ...options
                 };
+
+                return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
             },
             render({ element }) {
                 return <PagesList data={element.data} />;

@@ -1,6 +1,10 @@
 const { basename } = require("path");
 const merge = require("merge");
 const tsPreset = require("ts-jest/presets/js-with-babel/jest-preset");
+const { version } = require("@webiny/cli/package.json");
+
+process.env.DB_TABLE_ELASTICSEARCH = "ElasticSearchStream";
+process.env.WEBINY_VERSION = version;
 
 module.exports = ({ path }, presets = []) => {
     const name = basename(path);
@@ -14,8 +18,12 @@ module.exports = ({ path }, presets = []) => {
         },
         moduleDirectories: ["node_modules"],
         moduleFileExtensions: ["ts", "js", "tsx"],
+        moduleNameMapper: {
+            "~/(.*)": `${path}/src/$1`
+        },
         modulePathIgnorePatterns: [],
         globals: {
+            WEBINY_VERSION: version,
             "ts-jest": {
                 isolatedModules: true,
                 babelConfig: `${path}/.babelrc.js`,

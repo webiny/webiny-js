@@ -2,16 +2,15 @@ import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { contentEntryHooks, hooksTracker } from "./mocks/lifecycleHooks";
 import models from "./mocks/contentModels";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import { CmsContentModelGroup } from "@webiny/api-headless-cms/types";
+import { CmsContentModelGroup } from "../../src/types";
 import { SecurityIdentity } from "@webiny/api-security";
 
 describe("contentEntryHooks", () => {
     let contentModelGroup: CmsContentModelGroup;
-    const esCmsIndex = "root-headless-cms";
     const manageOpts = { path: "manage/en-US" };
 
     const {
-        elasticSearch,
+        clearAllIndex,
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
@@ -62,14 +61,14 @@ describe("contentEntryHooks", () => {
     beforeEach(async () => {
         await setupContentModel();
         try {
-            await elasticSearch.indices.create({ index: esCmsIndex });
+            await clearAllIndex();
         } catch {}
         hooksTracker.reset();
     });
 
     afterEach(async () => {
         try {
-            await elasticSearch.indices.delete({ index: esCmsIndex });
+            await clearAllIndex();
         } catch {}
     });
 

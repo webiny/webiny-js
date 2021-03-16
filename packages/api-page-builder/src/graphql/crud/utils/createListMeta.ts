@@ -1,4 +1,4 @@
-import { ListMeta } from "@webiny/api-page-builder/types";
+import { ListMeta } from "../../../types";
 
 type Params = {
     page: number;

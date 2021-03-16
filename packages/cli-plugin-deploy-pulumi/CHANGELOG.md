@@ -3,6 +3,64 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.1.0](https://github.com/webiny/webiny-js/compare/v5.1.0-beta.1...v5.1.0) (2021-03-16)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.1.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.1.0-beta.0...v5.1.0-beta.1) (2021-03-16)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.1.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.0.0...v5.1.0-beta.0) (2021-03-15)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.0.0](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.5...v5.0.0) (2021-03-09)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.0.0-beta.5](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.4...v5.0.0-beta.5) (2021-03-09)
+
+
+### Bug Fixes
+
+* change env variable name ([0ac1274](https://github.com/webiny/webiny-js/commit/0ac1274352cc47c9c52bfa6653157fd145248663))
+* improve error message ([4c95452](https://github.com/webiny/webiny-js/commit/4c954525ac7f1f147d0563f9742e02737fe5aabb))
+* make notifications work on Windows after deploy ([2b9bec3](https://github.com/webiny/webiny-js/commit/2b9bec31fab685cbdb7e1fc0826520de8909a92f))
+* remove redundant login call ([443ae74](https://github.com/webiny/webiny-js/commit/443ae742cc183f3e0b9eeb00bb2ab10ccc92ccc1))
+* remove standalone "pulumi" command ([b95ca1e](https://github.com/webiny/webiny-js/commit/b95ca1e5c06245ee07bb73b9680be3b74ba66aab))
+* use "--" for passing Pulumi commands ([0b90316](https://github.com/webiny/webiny-js/commit/0b903165dfd9b3cef66d0bfbb60c8450bab3c4df))
+
+
+### Features
+
+* add login calls ([69887d0](https://github.com/webiny/webiny-js/commit/69887d0d2be100003d1b398f82ea4b40bed2180d))
+* automatically login when deploying stacks ([a3ba451](https://github.com/webiny/webiny-js/commit/a3ba45113bbd16d4f8d45bfb4fb4e064d93fb87d))
+* create login function ([db42819](https://github.com/webiny/webiny-js/commit/db42819edbccecbd53409926fa39dbccff246af6))
+* forward `WEBINY_ENV` variable into Pulumi code ([0e065aa](https://github.com/webiny/webiny-js/commit/0e065aa6510e2982cb728538919890ad411c30f3))
+* remove `app` commands section ([ed277d4](https://github.com/webiny/webiny-js/commit/ed277d447de91875bf0543d7d007afe390b61bd3))
+* resource tagging and custom infra setups ([#1474](https://github.com/webiny/webiny-js/issues/1474)) ([46da034](https://github.com/webiny/webiny-js/commit/46da034badccd67adb6cf24196c708a8790c6a84))
+
+
+
+
+
 # [5.0.0-beta.4](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.3...v5.0.0-beta.4) (2021-02-01)
 
 

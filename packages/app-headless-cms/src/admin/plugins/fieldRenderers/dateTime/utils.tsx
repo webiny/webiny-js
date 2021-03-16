@@ -165,12 +165,8 @@ export const UTC_TIMEZONES = [
  * @returns Current date string in format `YYYY-MM-DD`
  */
 export const getCurrentDateString = () => {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = today.getMonth() + 1; // months start from 0
-    const formattedMonth = month < 10 ? `0${month}` : month;
-    const date = today.getDate();
-    return `${year}-${formattedMonth}-${date}`;
+    const today = new Date().toISOString();
+    return today.substr(0, 10);
 };
 
 export const DEFAULT_TIME = "00:00:00";

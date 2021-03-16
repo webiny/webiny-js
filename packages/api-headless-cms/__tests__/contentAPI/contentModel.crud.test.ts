@@ -1,10 +1,11 @@
-import { CmsContentModelFieldInput, CmsContentModelGroup } from "@webiny/api-headless-cms/types";
+import { CmsContentModelFieldInput, CmsContentModelGroup } from "../../src/types";
 import mdbid from "mdbid";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import * as helpers from "../utils/helpers";
 import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { contentModelHooks, hooksTracker } from "./mocks/lifecycleHooks";
+import { useBugManageHandler } from "../utils/useBugManageHandler";
 
 const getTypeFields = type => {
     return type.fields.filter(f => f.name !== "_empty").map(f => f.name);
@@ -17,11 +18,10 @@ const getTypeObject = (schema, type) => {
 jest.setTimeout(15000);
 
 describe("content model test", () => {
-    const esCmsIndex = "root-headless-cms";
     const readHandlerOpts = { path: "read/en-US" };
     const manageHandlerOpts = { path: "manage/en-US" };
 
-    const { createContentModelGroupMutation, elasticSearch } = useContentGqlHandler(
+    const { clearAllIndex, createContentModelGroupMutation } = useContentGqlHandler(
         manageHandlerOpts
     );
 
@@ -38,7 +38,7 @@ describe("content model test", () => {
         });
         contentModelGroup = createCMG.data.createContentModelGroup.data;
         try {
-            await elasticSearch.indices.create({ index: esCmsIndex });
+            await clearAllIndex();
         } catch {
             // Ignore errors
         }
@@ -48,7 +48,7 @@ describe("content model test", () => {
 
     afterEach(async () => {
         try {
-            await elasticSearch.indices.delete({ index: esCmsIndex });
+            await clearAllIndex();
         } catch {}
     });
 
@@ -97,8 +97,8 @@ describe("content model test", () => {
 
         const [createResponse] = await createContentModelMutation({
             data: {
-                name: "Content model",
-                modelId: "content-model",
+                name: "Test Content model",
+                modelId: "test-content-model",
                 group: contentModelGroup.id
             }
         });
@@ -107,10 +107,10 @@ describe("content model test", () => {
             data: {
                 createContentModel: {
                     data: {
-                        name: "Content model",
+                        name: "Test Content model",
                         description: null,
                         titleFieldId: "id",
-                        modelId: "contentModel",
+                        modelId: "testContentModel",
                         createdBy: helpers.identity,
                         createdOn: expect.stringMatching(/^20/),
                         savedOn: expect.stringMatching(/^20/),
@@ -220,8 +220,8 @@ describe("content model test", () => {
 
         const [createResponse] = await createContentModelMutation({
             data: {
-                name: "Content model",
-                modelId: "content-model",
+                name: "Test Content model",
+                modelId: "test-content-model",
                 group: contentModelGroup.id
             }
         });
@@ -311,8 +311,8 @@ describe("content model test", () => {
 
         const [createResponse] = await createContentModelMutation({
             data: {
-                name: "Content model",
-                modelId: "content-model",
+                name: "Test Content model",
+                modelId: "test-content-model",
                 group: contentModelGroup.id
             }
         });
@@ -410,8 +410,8 @@ describe("content model test", () => {
         );
         const [createResponse] = await createContentModelMutation({
             data: {
-                name: "Content model",
-                modelId: "content-model",
+                name: "Test Content model",
+                modelId: "test-content-model",
                 group: contentModelGroup.id
             }
         });
@@ -499,8 +499,8 @@ describe("content model test", () => {
         );
         const [createResponse] = await createContentModelMutation({
             data: {
-                name: "Content model",
-                modelId: "content-model",
+                name: "Test Content model",
+                modelId: "test-content-model",
                 group: contentModelGroup.id
             }
         });
@@ -559,8 +559,8 @@ describe("content model test", () => {
 
         const [response] = await createContentModelMutation({
             data: {
-                name: "Content model",
-                modelId: "content-model",
+                name: "Test Content model",
+                modelId: "test-content-model",
                 group: contentModelGroup.id
             }
         });
@@ -589,8 +589,8 @@ describe("content model test", () => {
 
         const [createResponse] = await createContentModelMutation({
             data: {
-                name: "Content model",
-                modelId: "content-model",
+                name: "Test Content model",
+                modelId: "test-content-model",
                 group: contentModelGroup.id
             }
         });
@@ -632,8 +632,8 @@ describe("content model test", () => {
 
         const [createResponse] = await createContentModelMutation({
             data: {
-                name: "Content model",
-                modelId: "content-model",
+                name: "Test Content model",
+                modelId: "test-content-model",
                 group: contentModelGroup.id
             }
         });
@@ -660,5 +660,104 @@ describe("content model test", () => {
         expect(hooksTracker.isExecutedOnce("contentModel:afterUpdate")).toEqual(false);
         expect(hooksTracker.isExecutedOnce("contentModel:beforeDelete")).toEqual(true);
         expect(hooksTracker.isExecutedOnce("contentModel:afterDelete")).toEqual(true);
+    });
+
+    test("should refresh the schema when added new field", async () => {
+        const { createContentModelMutation, updateContentModelMutation } = useContentGqlHandler(
+            manageHandlerOpts
+        );
+        const { listBugs } = useBugManageHandler(manageHandlerOpts);
+
+        const bugModel = models.find(m => m.modelId === "bug");
+        // Create initial record
+        const [createBugModelResponse] = await createContentModelMutation({
+            data: {
+                name: bugModel.name,
+                modelId: bugModel.modelId,
+                group: contentModelGroup.id
+            }
+        });
+
+        const removedFields = [];
+
+        const initialFields = Array.from(bugModel.fields);
+        const initialLayouts = Array.from(bugModel.layout);
+
+        removedFields.push(initialFields.pop());
+        removedFields.push(initialFields.pop());
+
+        initialLayouts.pop();
+        initialLayouts.pop();
+
+        await updateContentModelMutation({
+            modelId: createBugModelResponse.data.createContentModel.data.modelId,
+            data: {
+                fields: initialFields,
+                layout: initialLayouts
+            }
+        });
+
+        const [listResponse] = await listBugs({
+            where: {
+                name: "test"
+            },
+            sort: ["createdOn_DESC"]
+        });
+        // should not be able to query bugType or bugValue fields (they are defined in the graphql query)
+        expect(listResponse).toEqual({
+            errors: [
+                {
+                    message: `Cannot query field "bugValue" on type "Bug". Did you mean "bugType"?`,
+                    locations: expect.any(Array)
+                },
+                {
+                    message: `Cannot query field "bugFixed" on type "Bug". Did you mean "bugType"?`,
+                    locations: expect.any(Array)
+                }
+            ]
+        });
+
+        // update model with new field so it can regenerate the schema
+        const [updateFieldsBugModelResponse] = await updateContentModelMutation({
+            modelId: createBugModelResponse.data.createContentModel.data.modelId,
+            data: {
+                fields: initialFields.concat(removedFields),
+                layout: initialLayouts.concat(removedFields.map(f => [f.id]))
+            }
+        });
+
+        expect(updateFieldsBugModelResponse).toEqual({
+            data: {
+                updateContentModel: {
+                    data: expect.any(Object),
+                    error: null
+                }
+            }
+        });
+
+        // make sure that we can query newly added fields
+        const [listResponseAfterUpdate] = await listBugs({
+            where: {
+                name: "test",
+                bugType: "t1",
+                bugValue: 3,
+                bugFixed: 2
+            },
+            sort: ["createdOn_DESC"]
+        });
+
+        expect(listResponseAfterUpdate).toEqual({
+            data: {
+                listBugs: {
+                    data: [],
+                    meta: {
+                        totalCount: 0,
+                        hasMoreItems: false,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
     });
 });

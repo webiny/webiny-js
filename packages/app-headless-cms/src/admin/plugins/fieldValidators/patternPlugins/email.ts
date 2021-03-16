@@ -1,4 +1,4 @@
-import { CmsEditorFieldValidatorPatternPlugin } from "@webiny/app-headless-cms/types";
+import { CmsEditorFieldValidatorPatternPlugin } from "~/types";
 
 export default {
     type: "cms-editor-field-validator-pattern",

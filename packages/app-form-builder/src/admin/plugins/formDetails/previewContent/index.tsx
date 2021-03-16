@@ -6,10 +6,7 @@ import FormPreview from "./FormPreview";
 import Header from "./Header";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { i18n } from "@webiny/app/i18n";
-import {
-    FbFormDetailsPluginRenderParams,
-    FbFormDetailsPluginType
-} from "@webiny/app-form-builder/types";
+import { FbFormDetailsPluginRenderParams, FbFormDetailsPluginType } from "../../../../types";
 
 const t = i18n.namespace("FormsApp.FormDetails.PreviewContent");
 

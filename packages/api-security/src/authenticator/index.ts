@@ -1,23 +1,28 @@
 import minimatch from "minimatch";
-import { ContextPlugin } from "@webiny/handler/types";
+import { ContextPluginInterface } from "@webiny/handler/types";
 import { SecurityIdentity } from "./SecurityIdentity";
-import { SecurityAuthenticationPlugin, SecurityAuthorizationPlugin } from "../types";
+import {
+    SecurityAuthenticationPlugin,
+    SecurityAuthorizationPlugin,
+    SecurityContext,
+    SecurityPermission
+} from "../types";
 
-export default () => [
+export default (): ContextPluginInterface<SecurityContext>[] => [
     {
         type: "context",
         name: "context-security",
         async apply(context) {
             if (!context.security) {
-                context.security = {};
+                context.security = {} as any;
             }
 
             Object.assign(context.security, {
                 identity: null,
                 getIdentity() {
-                    return context.security.identity;
+                    return (context.security as any).identity;
                 },
-                async getPermission(permission) {
+                async getPermission(permission): Promise<SecurityPermission | null> {
                     const perms = await context.security.getPermissions();
                     const exactMatch = perms.find(p => p.name === permission);
                     if (exactMatch) {
@@ -32,7 +37,7 @@ export default () => [
 
                     return null;
                 },
-                async getPermissions() {
+                async getPermissions(): Promise<SecurityPermission[]> {
                     const authorizationPlugins = context.plugins.byType<
                         SecurityAuthorizationPlugin
                     >("security-authorization");
@@ -46,6 +51,13 @@ export default () => [
 
                     // Returning an empty array since not a single plugin returned any permissions.
                     return [];
+                },
+                async hasFullAccess(): Promise<boolean> {
+                    const permissions = (await context.security.getPermissions()) as SecurityPermission[];
+
+                    return permissions.some(permission => {
+                        return permission.name === "*";
+                    });
                 }
             });
 
@@ -56,10 +68,10 @@ export default () => [
             for (let i = 0; i < authenticationPlugins.length; i++) {
                 const identity = await authenticationPlugins[i].authenticate(context);
                 if (identity instanceof SecurityIdentity) {
-                    context.security.identity = identity;
+                    (context.security as any).identity = identity;
                     return;
                 }
             }
         }
-    } as ContextPlugin
+    }
 ];

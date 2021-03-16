@@ -9,12 +9,21 @@ const defaultHandler = useGqlHandler({
 });
 
 describe("Pages Security Test", () => {
-    const { deleteElasticSearchIndex, createCategory, until } = useGqlHandler();
+    const {
+        createElasticSearchIndex,
+        deleteElasticSearchIndex,
+        createCategory,
+        until
+    } = useGqlHandler();
 
     let initialCategory;
 
-    beforeEach(async () => {
+    beforeAll(async () => {
         await deleteElasticSearchIndex();
+    });
+
+    beforeEach(async () => {
+        await createElasticSearchIndex();
 
         await createCategory({
             data: {
@@ -24,6 +33,10 @@ describe("Pages Security Test", () => {
                 layout: `layout`
             }
         }).then(([res]) => (initialCategory = res.data.pageBuilder.createCategory.data));
+    });
+
+    afterEach(async () => {
+        await deleteElasticSearchIndex();
     });
 
     test(`"listPages" only returns entries to which the identity has access to`, async () => {

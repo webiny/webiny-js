@@ -1,8 +1,8 @@
 import { Plugin } from "@webiny/plugins/types";
-import { Context } from "@webiny/handler/types";
+import { Context, ContextInterface } from "@webiny/handler/types";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { DbContext } from "@webiny/handler-db/types";
-import { SecurityContext } from "@webiny/api-security/types";
+import { SecurityContextBase } from "@webiny/api-security/types";
 import { HttpContext } from "@webiny/handler-http/types";
 
 export type SecurityIdentityProviderPlugin<TData = Record<string, any>> = Plugin & {
@@ -128,6 +128,11 @@ export type ApiKeyInput = {
     permissions: SecurityPermission[];
 };
 
+export type SystemCRUD = {
+    getVersion(): Promise<string>;
+    setVersion(version: string): Promise<void>;
+};
+
 export type TenantsCRUD = {
     getRootTenant(): Promise<Tenant>;
     getTenant(id: string): Promise<Tenant>;
@@ -188,20 +193,12 @@ export type TenancyContextObject = {
     users?: UsersCRUD;
     groups?: GroupsCRUD;
     apiKeys?: ApiKeysCRUD;
+    system?: SystemCRUD;
 };
 
-export interface BaseTenancyContextInterface {
-    security: TenancyContextObject;
+export interface TenancyContext extends ContextInterface, HttpContext, DbContext {
+    security: TenancyContextObject & SecurityContextBase;
 }
-
-export type TenancyContext = Context<
-    HttpContext,
-    DbContext,
-    SecurityContext,
-    {
-        security: TenancyContextObject;
-    }
->;
 
 // Helper types when working with database
 export type DbItemSecurityUser2Tenant = {

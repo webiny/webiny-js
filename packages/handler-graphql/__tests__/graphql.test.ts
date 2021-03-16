@@ -34,7 +34,7 @@ const booksSchema: GraphQLSchemaPlugin = {
         `,
         resolvers: {
             Query: {
-                books(_, args, context) {
+                books(_, args, context: any) {
                     console.group("books resolver");
                     const books = context.getBooks();
                     console.groupEnd();

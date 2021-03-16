@@ -17,20 +17,14 @@ import {
     SimpleFormFooter,
     SimpleFormContent
 } from "@webiny/app-admin/components/SimpleForm";
-import { SecurityInstallationFormPlugin } from "@webiny/app-security-tenancy/types";
+import { SecurityInstallationFormPlugin } from "../types";
 
 const t = i18n.ns("app-security/admin/installation");
 
 const IS_INSTALLED = gql`
     query IsSecurityInstalled {
         security {
-            isInstalled {
-                data
-                error {
-                    code
-                    message
-                }
-            }
+            version
         }
     }
 `;
@@ -166,9 +160,9 @@ export default [
         type: "admin-installation",
         secure: false,
         title: "Security",
-        async isInstalled({ client }) {
+        async getInstalledVersion({ client }) {
             const { data } = await client.query({ query: IS_INSTALLED });
-            return data.security.isInstalled.data;
+            return data.security.version;
         },
         render({ onInstalled }) {
             return <Install onInstalled={onInstalled} />;

@@ -1,5 +1,5 @@
 import { GraphQLScalarPlugin, GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { CmsContext } from "@webiny/api-headless-cms/types";
+import { CmsContext } from "../../../types";
 import {
     RefInput,
     Number as NumberScalar,

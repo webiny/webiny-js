@@ -1,6 +1,6 @@
-import { HandlerArgs as RenderHandlerArgs } from "@webiny/api-prerendering-service/render/types";
-import { HandlerArgs as FlushHandlerArgs } from "@webiny/api-prerendering-service/flush/types";
-import { HandlerArgs as QueueHandlerArgs } from "@webiny/api-prerendering-service/queue/add/types";
+import { HandlerArgs as RenderHandlerArgs } from "../render/types";
+import { HandlerArgs as FlushHandlerArgs } from "../flush/types";
+import { HandlerArgs as QueueHandlerArgs } from "../queue/add/types";
 
 export type PrerenderingServiceClientContext = {
     prerenderingServiceClient: {

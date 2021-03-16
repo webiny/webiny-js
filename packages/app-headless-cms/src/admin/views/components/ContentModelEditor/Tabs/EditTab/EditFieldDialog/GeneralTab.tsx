@@ -4,14 +4,14 @@ import { Input } from "@webiny/ui/Input";
 import { Switch } from "@webiny/ui/Switch";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { validation } from "@webiny/validation";
-import { CmsEditorField, CmsEditorFieldTypePlugin } from "@webiny/app-headless-cms/types";
-import { FormChildrenFunctionParams } from "@webiny/form/Form";
+import { CmsEditorField, CmsEditorFieldTypePlugin } from "~/types";
+import { FormRenderPropParams } from "@webiny/form/Form";
 
 import { useContentModelEditor } from "../../../Context";
 
 type GeneralTabProps = {
     field: CmsEditorField;
-    form: FormChildrenFunctionParams;
+    form: FormRenderPropParams;
     fieldPlugin: CmsEditorFieldTypePlugin;
 };
 

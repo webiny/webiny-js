@@ -1,5 +1,5 @@
 import { Context, ContextPlugin } from "@webiny/handler/types";
-import { CmsContext, CmsSettings } from "@webiny/api-headless-cms/types";
+import { CmsContext } from "../types";
 
 interface CmsHttpParameters {
     type: string;
@@ -31,14 +31,6 @@ const setContextCmsVariables = async (context: CmsContext): Promise<void> => {
         throw new Error(`There is no locale "${context.cms.locale}" in the system.`);
     }
     context.cms.getLocale = () => locale;
-
-    // Need to load settings because of the timestamp of last change to content models.
-    // Based on that timestamp, we cache/refresh the schema definition.
-    const settings = await context.cms.settings.noAuth().get();
-    context.cms.getSettings = (): CmsSettings => ({
-        ...settings,
-        contentModelLastChange: context.cms.settings.contentModelLastChange
-    });
 };
 // eslint-disable-next-line
 export default (options: any = {}): ContextPlugin<CmsContext> => ({

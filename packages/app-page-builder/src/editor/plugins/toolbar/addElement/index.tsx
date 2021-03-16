@@ -1,8 +1,8 @@
 import React from "react";
 import Action from "../Action";
 import AddElement from "./AddElement";
-import { ReactComponent as AddIcon } from "@webiny/app-page-builder/editor/assets/icons/add_circle_outline.svg";
-import { PbEditorToolbarTopPlugin } from "@webiny/app-page-builder/types";
+import { ReactComponent as AddIcon } from "../../../assets/icons/add_circle_outline.svg";
+import { PbEditorToolbarTopPlugin } from "../../../../types";
 
 export default {
     name: "pb-editor-toolbar-add-element",

@@ -12,6 +12,8 @@ import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { SecurityIdentity } from "@webiny/api-security";
 import elasticSearch from "@webiny/api-plugin-elastic-search-client";
+import { simulateStream } from "@webiny/project-utils/testing/dynamodb";
+import dynamoToElastic from "@webiny/api-dynamodb-to-elasticsearch/handler";
 import { Client } from "@elastic/elasticsearch";
 import formBuilderPlugins from "../src/plugins";
 // Graphql
@@ -86,19 +88,26 @@ const until = async (execute, until, options = {}) => {
 const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
 
 export default ({ permissions, identity, tenant } = {}) => {
+    const documentClient = new DocumentClient({
+        convertEmptyValues: true,
+        endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
+        sslEnabled: false,
+        region: "local"
+    });
+
+    const elasticSearchContext = elasticSearch({
+        endpoint: `http://localhost:${ELASTICSEARCH_PORT}`
+    });
+
+    // Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
+    simulateStream(documentClient, createHandler(elasticSearchContext, dynamoToElastic()));
+
     const handler = createHandler(
         dbPlugins({
             table: "FormBuilder",
-            driver: new DynamoDbDriver({
-                documentClient: new DocumentClient({
-                    convertEmptyValues: true,
-                    endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
-                    sslEnabled: false,
-                    region: "local"
-                })
-            })
+            driver: new DynamoDbDriver({ documentClient })
         }),
-        elasticSearch({ endpoint: `http://localhost:${ELASTICSEARCH_PORT}` }),
+        elasticSearchContext,
         apolloServerPlugins(),
         securityPlugins(),
         {
@@ -109,7 +118,7 @@ export default ({ permissions, identity, tenant } = {}) => {
                 };
             }
         },
-        i18nContext,
+        i18nContext(),
         i18nContentPlugins(),
         mockLocalesPlugins(),
         fileManagerPlugins(),

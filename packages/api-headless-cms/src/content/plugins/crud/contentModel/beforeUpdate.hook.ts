@@ -2,8 +2,9 @@ import {
     CmsContentModel,
     CmsContentModelField,
     CmsContext,
+    CmsModelFieldToGraphQLPlugin,
     CmsModelLockedFieldPlugin
-} from "@webiny/api-headless-cms/types";
+} from "../../../../types";
 import WebinyError from "@webiny/error";
 import { runContentModelLifecycleHooks } from "./runContentModelLifecycleHooks";
 
@@ -75,9 +76,26 @@ export const beforeUpdateHook = async (args: Args) => {
         ...model,
         ...data
     };
+
     const { titleFieldId } = combinedModel;
-    // there should be fields/locked fields in either model or data to be updated
+
+    // There should be fields/locked fields in either model or data to be updated.
     const { fields = [], lockedFields = [] } = combinedModel;
+
+    // Let's inspect the fields of the received content model. We prevent saving of a content model if it
+    // contains a field for which a "cms-model-field-to-graphql" plugin does not exist on the backend.
+    const fieldTypePlugins = context.plugins.byType<CmsModelFieldToGraphQLPlugin>(
+        "cms-model-field-to-graphql"
+    );
+
+    for (let i = 0; i < fields.length; i++) {
+        const field = fields[i];
+        if (!fieldTypePlugins.find(item => item.fieldType === field.type)) {
+            throw new Error(
+                `Cannot update content model because of the unknown "${field.type}" field.`
+            );
+        }
+    }
 
     data.titleFieldId = getContentModelTitleFieldId(fields, titleFieldId);
 

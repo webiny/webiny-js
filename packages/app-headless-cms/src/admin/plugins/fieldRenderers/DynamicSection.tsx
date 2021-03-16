@@ -3,7 +3,7 @@ import { css } from "emotion";
 import { i18n } from "@webiny/app/i18n";
 import { Cell, Grid } from "@webiny/ui/Grid";
 import { ButtonDefault } from "@webiny/ui/Button";
-import { CmsEditorField } from "@webiny/app-headless-cms/types";
+import { CmsEditorField } from "~/types";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");

@@ -5,6 +5,7 @@ export type HandlerArgs = any[];
 export interface ContextInterface {
     plugins: PluginsContainer;
     args: HandlerArgs;
+    readonly WEBINY_VERSION: string;
 }
 
 export type Context<
@@ -21,6 +22,7 @@ export type Context<
 > = {
     plugins: PluginsContainer;
     args: HandlerArgs;
+    readonly WEBINY_VERSION: string;
 } & C0 &
     C1 &
     C2 &
@@ -31,6 +33,12 @@ export type Context<
     C7 &
     C8 &
     C9;
+
+export interface ContextPluginInterface<T extends ContextInterface = ContextInterface>
+    extends Plugin {
+    type: "context";
+    apply: (context: T) => Promise<void>;
+}
 
 export type ContextPlugin<
     C0 = Context,

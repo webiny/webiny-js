@@ -2,16 +2,10 @@
   "extends": "../../tsconfig",
   "references": [
     {
-      "path": "../plugins"
-    },
-    {
-      "path": "../db"
+      "path": "../error"
     },
     {
       "path": "../handler"
-    },
-    {
-      "path": "../handler-db"
     },
     {
       "path": "../handler-args"
@@ -20,7 +14,32 @@
       "path": "../handler-client"
     },
     {
-      "path": "../error"
+      "path": "../handler-db"
+    },
+    {
+      "path": "../plugins"
+    },
+    {
+      "path": "../db"
     }
-  ]
+  ],
+  "compilerOptions": {
+    "paths": {
+      "@webiny/error/*": ["../error/src/*"],
+      "@webiny/error": ["../error/src"],
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/handler-args/*": ["../handler-args/src/*"],
+      "@webiny/handler-args": ["../handler-args/src"],
+      "@webiny/handler-client/*": ["../handler-client/src/*"],
+      "@webiny/handler-client": ["../handler-client/src"],
+      "@webiny/handler-db/*": ["../handler-db/src/*"],
+      "@webiny/handler-db": ["../handler-db/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/db/*": ["../db/src/*"],
+      "@webiny/db": ["../db/src"]
+    },
+    "baseUrl": "."
+  }
 }

@@ -3,10 +3,19 @@
   "include": ["src"],
   "references": [
     {
-      "path": "../plugins"
+      "path": "../handler"
     },
     {
-      "path": "../handler"
+      "path": "../plugins"
     }
-  ]
+  ],
+  "compilerOptions": {
+    "paths": {
+      "@webiny/handler/*": ["../handler/src/*"],
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"]
+    },
+    "baseUrl": "."
+  }
 }

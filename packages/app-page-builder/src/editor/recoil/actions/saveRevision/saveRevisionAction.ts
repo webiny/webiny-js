@@ -1,7 +1,7 @@
 import { SaveRevisionActionArgsType } from "./types";
 import { ToggleSaveRevisionStateActionEvent } from "./event";
-import { EventActionCallable } from "@webiny/app-page-builder/types";
-import { PageAtomType } from "@webiny/app-page-builder/editor/recoil/modules";
+import { EventActionCallable } from "../../../../types";
+import { PageAtomType } from "../../modules";
 import gql from "graphql-tag";
 import lodashIsEqual from "lodash/isEqual";
 import lodashDebounce from "lodash/debounce";

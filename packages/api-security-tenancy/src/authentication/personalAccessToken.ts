@@ -2,7 +2,7 @@ import { SecurityAuthenticationPlugin } from "@webiny/api-security/types";
 import { Context as HandlerContext } from "@webiny/handler/types";
 import { HttpContext } from "@webiny/handler-http/types";
 import { SecurityIdentity } from "@webiny/api-security";
-import { TenancyContext } from "@webiny/api-security-tenancy/types";
+import { TenancyContext } from "../types";
 type Context = HandlerContext<HttpContext, TenancyContext>;
 
 export default ({ identityType }) => {

@@ -6,8 +6,8 @@ import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDi
 import { useDialog } from "@webiny/app-admin/hooks/useDialog";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { ReactComponent as DeleteIcon } from "@webiny/app-page-builder/admin/assets/delete.svg";
-import { DELETE_PAGE, LIST_PAGES } from "@webiny/app-page-builder/admin/graphql/pages";
+import { ReactComponent as DeleteIcon } from "../../../../assets/delete.svg";
+import { DELETE_PAGE, LIST_PAGES } from "../../../../graphql/pages";
 import { i18n } from "@webiny/app/i18n";
 import cloneDeep from "lodash/cloneDeep";
 import usePermission from "../../../../../hooks/usePermission";

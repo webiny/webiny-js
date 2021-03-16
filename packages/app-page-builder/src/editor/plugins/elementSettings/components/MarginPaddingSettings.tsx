@@ -1,6 +1,8 @@
 import React, { useCallback, useMemo } from "react";
-import { get, set, startCase } from "lodash";
-import { useRecoilValue } from "recoil";
+import get from "lodash/get";
+import set from "lodash/set";
+import startCase from "lodash/startCase";
+import { useRecoilCallback, useRecoilValue } from "recoil";
 import classNames from "classnames";
 import { css } from "emotion";
 import { Typography } from "@webiny/ui/Typography";
@@ -34,7 +36,7 @@ import {
     BottomRight
 } from "./StyledComponents";
 import Accordion from "./Accordion";
-import { applyFallbackDisplayMode } from "@webiny/app-page-builder/editor/plugins/elementSettings/elementSettingsUtils";
+import { applyFallbackDisplayMode } from "../elementSettingsUtils";
 
 const classes = {
     gridContainerClass: css({
@@ -150,7 +152,6 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
     const { displayMode } = useRecoilValue(uiAtom);
     const activeElementId = useRecoilValue(activeElementAtom);
     const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
-    const advanced = get(element, `${valueKey}.${displayMode}.advanced`, false);
 
     const { config: activeEditorModeConfig } = useMemo(() => {
         return plugins
@@ -163,6 +164,15 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
         [displayMode]
     );
 
+    const advanced = get(
+        element,
+        `${valueKey}.${displayMode}.advanced`,
+        get(fallbackValue, "advanced", false)
+    );
+    // Keep track of whether we're using "advanced" value from fallback.
+    const isAdvancedValueFallback =
+        get(element, `${valueKey}.${displayMode}.advanced`) === undefined;
+
     const { getUpdateValue } = useUpdateHandlers({
         element,
         dataNamespace: valueKey,
@@ -172,7 +182,11 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
                 return;
             }
             const changeInTopValue = name.includes(".top");
-            const advanced = get(newElement, `${valueKey}.${displayMode}.advanced`);
+            const advanced = get(
+                newElement,
+                `${valueKey}.${displayMode}.advanced`,
+                get(fallbackValue, "advanced", false)
+            );
             // Update all values in advanced settings
             if (!advanced && changeInTopValue) {
                 // Modify the element directly.
@@ -182,6 +196,10 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
                 set(newElement, `${valueKey}.${displayMode}.left`, newValue);
                 // Also set "all"
                 set(newElement, `${valueKey}.${displayMode}.all`, newValue);
+            }
+            // Set "advanced" value if we're using fallback value to show cascade style
+            if (isAdvancedValueFallback) {
+                set(newElement, `${valueKey}.${displayMode}.advanced`, advanced);
             }
         }
     });
@@ -194,33 +212,25 @@ const MarginPaddingSettings: React.FunctionComponent<PMSettingsPropsType &
         [advanced, displayMode, getUpdateValue]
     );
 
-    const updateValueTop = useCallback(
-        value => {
-            getUpdateValue(`${displayMode}.top`)(value);
-        },
-        [displayMode, getUpdateValue]
-    );
+    const updateValueTop = useRecoilCallback(({ snapshot }) => async value => {
+        const { displayMode } = await snapshot.getPromise(uiAtom);
+        getUpdateValue(`${displayMode}.top`)(value);
+    });
 
-    const updateValueRight = useCallback(
-        value => {
-            getUpdateValue(`${displayMode}.right`)(value);
-        },
-        [displayMode, getUpdateValue]
-    );
+    const updateValueRight = useRecoilCallback(({ snapshot }) => async value => {
+        const { displayMode } = await snapshot.getPromise(uiAtom);
+        getUpdateValue(`${displayMode}.right`)(value);
+    });
 
-    const updateValueBottom = useCallback(
-        value => {
-            getUpdateValue(`${displayMode}.bottom`)(value);
-        },
-        [displayMode, getUpdateValue]
-    );
+    const updateValueBottom = useRecoilCallback(({ snapshot }) => async value => {
+        const { displayMode } = await snapshot.getPromise(uiAtom);
+        getUpdateValue(`${displayMode}.bottom`)(value);
+    });
 
-    const updateValueLeft = useCallback(
-        value => {
-            getUpdateValue(`${displayMode}.left`)(value);
-        },
-        [displayMode, getUpdateValue]
-    );
+    const updateValueLeft = useRecoilCallback(({ snapshot }) => async value => {
+        const { displayMode } = await snapshot.getPromise(uiAtom);
+        getUpdateValue(`${displayMode}.left`)(value);
+    });
 
     const [top, right, bottom, left] = useMemo(() => {
         return SIDES.map(side => {

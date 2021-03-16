@@ -1,4 +1,4 @@
-import { FbEditorFieldGroup } from "@webiny/app-form-builder/types";
+import { FbEditorFieldGroup } from "../../../../types";
 
 const plugin: FbEditorFieldGroup = {
     name: "form-editor-field-group-contact",

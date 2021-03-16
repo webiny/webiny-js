@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-i18n-content",
-  "version": "5.0.0-beta.4",
+  "version": "5.1.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -11,10 +11,10 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/api-i18n": "^5.0.0-beta.4",
-    "@webiny/api-security": "^5.0.0-beta.4",
-    "@webiny/handler": "^5.0.0-beta.4",
-    "@webiny/handler-graphql": "^5.0.0-beta.4"
+    "@webiny/api-i18n": "^5.1.0",
+    "@webiny/api-security": "^5.1.0",
+    "@webiny/handler": "^5.1.0",
+    "@webiny/handler-graphql": "^5.1.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { useRecoilValue } from "recoil";
 import { useMutation } from "@apollo/react-hooks";
 import set from "lodash/set";
@@ -8,13 +8,12 @@ import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { ButtonPrimary } from "@webiny/ui/Button";
-import { useSecurity } from "@webiny/app-security";
-import { GET_PAGE } from "@webiny/app-page-builder/admin/graphql/pages";
+import { GET_PAGE } from "../../../../admin/graphql/pages";
 import { pageAtom } from "../../../recoil/modules";
 import { PUBLISH_PAGE } from "./PublishPageButton/graphql";
+import usePermission from "../../../../hooks/usePermission";
 
 const PublishPageButton: React.FunctionComponent = () => {
-    const { identity } = useSecurity();
     const page = useRecoilValue(pageAtom);
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
@@ -62,20 +61,9 @@ const PublishPageButton: React.FunctionComponent = () => {
             });
         }
     });
+    const { canPublish } = usePermission();
 
-    const pbPagePermission = useMemo(() => identity.getPermission("pb.page"), []);
-    if (!pbPagePermission) {
-        return null;
-    }
-
-    if (pbPagePermission.own && page.createdBy.id !== identity.login) {
-        return null;
-    }
-
-    if (
-        !pbPagePermission.pw ||
-        (typeof pbPagePermission.pw === "string" && !pbPagePermission.pw.includes("p"))
-    ) {
+    if (!canPublish()) {
         return null;
     }
 

@@ -2,7 +2,7 @@
 import * as React from "react";
 import styled from "@emotion/styled";
 import Spinner from "react-spinner-material";
-import { Typography } from "@webiny/ui/Typography";
+import { Typography } from "../Typography";
 
 type Props = {
     label?: React.ReactNode;

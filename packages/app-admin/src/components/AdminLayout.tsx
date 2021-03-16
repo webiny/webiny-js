@@ -1,6 +1,6 @@
 import * as React from "react";
 import { renderPlugins } from "@webiny/app/plugins";
-import { AdminLayoutComponentPlugin } from "@webiny/app-admin/types";
+import { AdminLayoutComponentPlugin } from "../types";
 
 export const AdminLayout = ({ children }: { children: React.ReactNode }) => {
     return (

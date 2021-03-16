@@ -1,14 +1,13 @@
 import { HandlerPlugin, ProcessHookPlugin } from "./types";
 import { DbQueueJob, DbRender, DbTagUrlLink } from "../../types";
-import { HandlerResponse } from "@webiny/api-prerendering-service/types";
-import defaults from "@webiny/api-prerendering-service/utils/defaults";
-import getTagUrlLinkPKSK from "@webiny/api-prerendering-service/utils/getTagUrlLinkPKSK";
-import debug from "debug";
+import { HandlerResponse } from "../../types";
+import defaults from "../../utils/defaults";
+import getTagUrlLinkPKSK from "../../utils/getTagUrlLinkPKSK";
 import hash from "object-hash";
 import chunk from "lodash/chunk";
 import pluralize from "pluralize";
 
-const log = debug("wby:api-prerendering-service:queue:process");
+const log = console.log;
 
 type Configuration = {
     handlers: {

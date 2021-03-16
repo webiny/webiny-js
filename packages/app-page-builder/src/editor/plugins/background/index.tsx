@@ -1,6 +1,6 @@
 import React from "react";
 import Background from "./Background";
-import { PbEditorContentPlugin } from "@webiny/app-page-builder/types";
+import { PbEditorContentPlugin } from "../../../types";
 
 export default {
     name: "pb-editor-content-background",

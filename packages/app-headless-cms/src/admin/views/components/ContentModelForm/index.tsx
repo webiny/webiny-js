@@ -1,7 +1,7 @@
 import React from "react";
 import { cloneDeep, pick } from "lodash";
 import { ContentFormRender } from "./ContentFormRender";
-import { CmsContentModelFormProps } from "@webiny/app-headless-cms/types";
+import { CmsContentModelFormProps } from "~/types";
 
 export const ContentModelForm: React.FC<CmsContentModelFormProps> = props => {
     const { contentModel: contentModelRaw } = props;

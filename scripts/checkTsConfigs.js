@@ -113,21 +113,21 @@ const TSCONFIG = {
                     });
                 }
 
-                const tsConfigBuildJsonReferences = wpObject.tsConfigBuildJson.references || [];
-
-                const path = join(depPackageRelativePath, "tsconfig.build.json").replace(
-                    /\\/g,
-                    "/"
-                );
-                exists = tsConfigBuildJsonReferences.find(item => item.path === path);
-                if (!exists) {
-                    errorsCount++;
-                    wpErrors.push({
-                        package: wpObject,
-                        message: `missing "${wpWbyDepObject.packageJson.name}" in "references" property`,
-                        file: TSCONFIG.BUILD
-                    });
-                }
+                //const tsConfigBuildJsonReferences = wpObject.tsConfigBuildJson.references || [];
+                //
+                //const path = join(depPackageRelativePath, "tsconfig.build.json").replace(
+                //    /\\/g,
+                //    "/"
+                //);
+                //exists = tsConfigBuildJsonReferences.find(item => item.path === path);
+                //if (!exists) {
+                //    errorsCount++;
+                //    wpErrors.push({
+                //        package: wpObject,
+                //        message: `missing "${wpWbyDepObject.packageJson.name}" in "references" property`,
+                //        file: TSCONFIG.BUILD
+                //    });
+                //}
             }
         }
 

@@ -3,14 +3,14 @@ import styled from "@emotion/styled";
 import classNames from "classnames";
 import Loader from "./Loader";
 import NoData from "./NoData";
-import { Typography } from "@webiny/ui/Typography";
+import { Typography } from "../../Typography";
 import { css } from "emotion";
 import noop from "lodash/noop";
 import isEmpty from "lodash/isEmpty";
 
-import { Checkbox } from "@webiny/ui/Checkbox";
-import { Menu, MenuItem } from "@webiny/ui/Menu";
-import { Grid, Cell } from "@webiny/ui/Grid";
+import { Checkbox } from "../../Checkbox";
+import { Menu, MenuItem } from "../../Menu";
+import { Grid, Cell } from "../../Grid";
 
 import {
     RefreshIcon,
@@ -20,7 +20,7 @@ import {
     NextPageIcon,
     OptionsIcon
 } from "./icons";
-import { List, ListItem, ListProps } from "@webiny/ui/List";
+import { List, ListItem, ListProps } from "..";
 import { DataListModalOverlayProvider } from "./DataListModalOverlay";
 import { PaginationProp, SortersProp } from "./types";
 
@@ -172,13 +172,13 @@ type Props = {
     multiSelectActions?: React.ReactNode;
 
     // Provide callback that will be executed once user selects all list items.
-    multiSelectAll: (value: boolean) => void;
+    multiSelectAll?: (value: boolean) => void;
 
     // Callback which returns true if all items were selected, otherwise returns false.
-    isAllMultiSelected: () => boolean;
+    isAllMultiSelected?: () => boolean;
 
     // Callback which returns true if none of the items were selected, otherwise returns false.
-    isNoneMultiSelected: () => boolean;
+    isNoneMultiSelected?: () => boolean;
 
     showOptions?: { [key: string]: any };
 

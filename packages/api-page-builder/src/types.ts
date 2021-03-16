@@ -156,7 +156,3 @@ export type DefaultSettings = {
         notFound: string;
     };
 };
-
-export type InstallSettings = {
-    installed: boolean;
-};

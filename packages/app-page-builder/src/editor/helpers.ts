@@ -1,8 +1,8 @@
 import invariant from "invariant";
-import shortid from "shortid";
+import { customAlphabet } from "nanoid";
 import { set } from "dot-prop-immutable";
 import omit from "lodash/omit";
-import { DragObjectWithTypeWithTarget } from "@webiny/app-page-builder/editor/components/Droppable";
+import { DragObjectWithTypeWithTarget } from "./components/Droppable";
 import { plugins } from "@webiny/plugins";
 import {
     PbEditorBlockPlugin,
@@ -10,7 +10,10 @@ import {
     PbEditorPageElementSettingsPlugin,
     PbEditorPageElementStyleSettingsPlugin,
     PbEditorElement
-} from "@webiny/app-page-builder/types";
+} from "../types";
+
+const ALPHANUMERIC = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+export const getNanoid = customAlphabet(ALPHANUMERIC, 10);
 
 type FlattenElementsType = {
     [id: string]: PbEditorElement;
@@ -49,14 +52,14 @@ export const createElement: CreateElement = (type, options = {}, parent) => {
     invariant(plugin, `Missing element plugin for type "${type}"!`);
 
     return {
-        id: shortid.generate(),
+        id: getNanoid(),
         data: {
             settings: {}
         },
         elements: [],
         parent: parent ? parent.id : undefined,
         type,
-        ...plugin.create(options, parent)
+        ...addElementId(plugin.create(options, parent))
     };
 };
 
@@ -88,7 +91,7 @@ export const createDroppedElement = (
 ): PbEditorElement => {
     if (source.id) {
         return {
-            id: shortid.generate(),
+            id: getNanoid(),
             type: source.type,
             elements: (source as any).elements || [],
             data: (source as any).data || {},
@@ -98,6 +101,17 @@ export const createDroppedElement = (
 
     return createElement(source.type, {}, target);
 };
+// Add unique id to elements recur
+const addElementId = (element: Omit<PbEditorElement, "id">) => {
+    element.id = getNanoid();
+
+    if (Array.isArray(element.elements)) {
+        element.elements = element.elements.map((el: PbEditorElement) => {
+            return addElementId(el);
+        });
+    }
+    return element;
+};
 
 export const createBlockElements = (name: string) => {
     const plugin = plugins.byName<PbEditorBlockPlugin>(name);
@@ -105,10 +119,10 @@ export const createBlockElements = (name: string) => {
     invariant(plugin, `Missing block plugin "${name}"!`);
 
     return {
-        id: shortid.generate(),
+        id: getNanoid(),
         data: {},
         elements: [],
-        ...plugin.create()
+        ...addElementId(plugin.create())
     };
 };
 

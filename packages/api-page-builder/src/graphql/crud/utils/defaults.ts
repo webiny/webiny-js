@@ -1,4 +1,4 @@
-import { PbContext } from "@webiny/api-page-builder/types";
+import { PbContext } from "../../types";
 
 export default {
     db: {
@@ -12,14 +12,28 @@ export default {
             }
         ]
     },
+    esDb: {
+        table: process.env.DB_TABLE_ELASTICSEARCH,
+        keys: [
+            {
+                primary: true,
+                unique: true,
+                name: "primary",
+                fields: [{ name: "PK" }, { name: "SK" }]
+            }
+        ]
+    },
     es(context: PbContext) {
         const tenant = context.security.getTenant();
-        if (tenant) {
-            return {
-                index: tenant.id + "-page-builder"
-            };
+        if (!tenant) {
+            throw new Error("Tenant missing.");
         }
 
-        throw new Error("Tenant missing.");
+        const index = tenant.id + "-page-builder";
+        const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX;
+        if (prefix) {
+            return { index: prefix + index };
+        }
+        return { index };
     }
 };
