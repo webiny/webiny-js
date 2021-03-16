@@ -13,7 +13,11 @@ type TextPropsType = {
     rootClassName?: string;
     text?: string;
 };
-const TextElement: React.FunctionComponent<TextPropsType> = ({ element, rootClassName, text = null }) => {
+const TextElement: React.FunctionComponent<TextPropsType> = ({
+    element,
+    rootClassName,
+    text = null
+}) => {
     const {
         responsiveDisplayMode: { displayMode }
     } = usePageBuilder();
