@@ -12,6 +12,9 @@
     },
     {
       "path": "../validation"
+    },
+    {
+      "path": "../api-file-manager"
     }
   ],
   "compilerOptions": {
