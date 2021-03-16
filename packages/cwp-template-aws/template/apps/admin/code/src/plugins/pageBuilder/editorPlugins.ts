@@ -75,7 +75,7 @@ export default [
     blockEditing,
     // Elements
     document(),
-    grid,
+    grid(),
     block(),
     gridBlock,
     cell(),

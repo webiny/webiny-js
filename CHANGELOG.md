@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.1.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.0.0...v5.1.0-beta.0) (2021-03-15)
+
+
+### Bug Fixes
+
+* **cli-plugin-scaffold-graphql-service:** es index check on create ([#1509](https://github.com/webiny/webiny-js/issues/1509)) ([35e25de](https://github.com/webiny/webiny-js/commit/35e25de549aa4442f4e1c1cc4982dd9799a81af7))
+* add protected flag to mission-critical resources ([322dbaa](https://github.com/webiny/webiny-js/commit/322dbaadd18fad79d3ab73b9e08d84a8aaeb2fbe))
+* add the 2nd subnet to "subnetIds" ([2fbf1f3](https://github.com/webiny/webiny-js/commit/2fbf1f3518c426cb9acc724619fd7e85b1c54ff7))
+* deny public access to ES domain ([#1503](https://github.com/webiny/webiny-js/issues/1503)) ([80aaa8f](https://github.com/webiny/webiny-js/commit/80aaa8fa0f97f264e3a5dc3f31857294518b0402))
+* remove double slash ([c5344e1](https://github.com/webiny/webiny-js/commit/c5344e1727489cafc797cd9152867ece46981ade))
+* update babel configs in templates ([b33096f](https://github.com/webiny/webiny-js/commit/b33096ff34ac2a745ead452f127a039a12c72aac))
+* **api-headless-cms:** schema regeneration last changed date ([#1504](https://github.com/webiny/webiny-js/issues/1504)) ([bff28a0](https://github.com/webiny/webiny-js/commit/bff28a058622b088fa6ed93ff86428fd01c59f24))
+* **cli-plugin-scaffold-admin-app-module:** accessing non-objects error ([#1505](https://github.com/webiny/webiny-js/issues/1505)) ([1e2e36b](https://github.com/webiny/webiny-js/commit/1e2e36b907244ef8f844ca25f4db9228c300b870))
+* **cwp-template-aws:** add missing devDependencies ([#1496](https://github.com/webiny/webiny-js/issues/1496)) ([e340ff6](https://github.com/webiny/webiny-js/commit/e340ff6bb3cbda3159ddc17d1fe0631dde54084a))
+
+
+### Features
+
+* **app-headless-cms:** add support for content model form layouts ([#1507](https://github.com/webiny/webiny-js/issues/1507)) ([f2b65b0](https://github.com/webiny/webiny-js/commit/f2b65b0f593e83948b85832d3234e4d32793a868))
+* add the ability to use ~ for import paths within packages ([#1508](https://github.com/webiny/webiny-js/issues/1508)) ([0a17a6f](https://github.com/webiny/webiny-js/commit/0a17a6f7463a93ad7c0f5b3a7cd1d7dbfc5e0012))
+* enable prefixing ES index with the "ELASTIC_SEARCH_INDEX_PREFIX" env variable ([df42d0c](https://github.com/webiny/webiny-js/commit/df42d0c033aa3fe2cfd00fc4398f3c64789544f4))
+* **app-page-builder:** add options to element plugin factory ([#1502](https://github.com/webiny/webiny-js/issues/1502)) ([68c2715](https://github.com/webiny/webiny-js/commit/68c2715673b52c8fe573c86b8cf71f88cf1d740d))
+
+
+
+
+
 # [5.0.0](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.5...v5.0.0) (2021-03-09)
 
 **Note:** Version bump only for package webiny-js

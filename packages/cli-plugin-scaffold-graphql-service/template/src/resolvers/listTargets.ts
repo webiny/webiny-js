@@ -67,7 +67,10 @@ const listTargets = async (
     } catch (ex) {
         return new ListErrorResponse({
             code: ex.code || "ELASTICSEARCH_ERROR",
-            message: ex.message,
+            message:
+                ex.message === "index_not_found_exception"
+                    ? "You must run the install mutation to create the Elasticsearch index."
+                    : ex.message,
             data: ex
         });
     }
