@@ -35,6 +35,7 @@ function ContentEntriesMultiAutocomplete({ bind, field }) {
     return (
         <MultiAutoComplete
             {...bind}
+            useMultipleSelectionList
             onChange={onChange}
             loading={loading}
             value={entries}
