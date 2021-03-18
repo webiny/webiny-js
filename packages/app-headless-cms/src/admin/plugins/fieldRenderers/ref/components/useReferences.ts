@@ -100,14 +100,10 @@ export const useReferences = ({ bind, field }) => {
             return;
         }
 
-        const missingData = values.filter(
-            item => !allEntries.current.find(entry => entry.id === item)
-        );
-
-        if (missingData.length) {
+        if (values.length) {
             setLoading(true);
 
-            client.query({ query: GET_BY_IDS, variables: { revisions: missingData } }).then(res => {
+            client.query({ query: GET_BY_IDS, variables: { revisions: values } }).then(res => {
                 setLoading(false);
                 const entries = res.data.content.data;
 
@@ -121,7 +117,7 @@ export const useReferences = ({ bind, field }) => {
                 );
             });
         }
-    }, [bind.value, GET_BY_IDS, model]);
+    }, [GET_BY_IDS]);
 
     /**
      * onChange callback will update internal component state using the previously loaded entries by IDs.
@@ -129,16 +125,7 @@ export const useReferences = ({ bind, field }) => {
      */
     const onChange = useCallback(values => {
         setSearch("");
-        setValueEntries(
-            values.map(item => {
-                const entry = allEntries.current.find(entry => entry.id === item.id);
-                return {
-                    id: entry.id,
-                    published: entry.meta.status === "published",
-                    name: entry.meta.title
-                };
-            })
-        );
+        setValueEntries(values);
 
         // Update parent form
         bind.onChange(values.map(item => ({ modelId, entryId: item.id })));
