@@ -7,8 +7,8 @@ export const createListQuery = model => {
     const ucFirstModelId = upperFirst(model.modelId);
 
     return gql`
-        query CmsList${ucFirstPluralizedModelId}($where: ${ucFirstModelId}ListWhereInput) {
-            content: list${ucFirstPluralizedModelId}(where: $where) {
+        query CmsList${ucFirstPluralizedModelId}($limit: Int, $where: ${ucFirstModelId}ListWhereInput) {
+            content: list${ucFirstPluralizedModelId}(limit: $limit, where: $where) {
                 data {
                     id
                     meta {
