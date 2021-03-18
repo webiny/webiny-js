@@ -104,7 +104,7 @@ const SaveAction: React.FunctionComponent = ({ children }) => {
             variables: formData.overwrite
                 ? {
                       id: element.source,
-                      data: pick(formData, ["content", "id"])
+                      data: pick(formData, ["content", "id", "preview"])
                   }
                 : { data: pick(formData, ["type", "category", "preview", "name", "content"]) }
         });
