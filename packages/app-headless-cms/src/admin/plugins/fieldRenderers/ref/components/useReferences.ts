@@ -45,7 +45,7 @@ export const useReferences = ({ bind, field }) => {
         setLoading(true);
         const { data } = await client.query({
             query: LIST_CONTENT,
-            variables: { where: { [`${titleFieldId}_contains`]: search } }
+            variables: { limit: 10, where: { [`${titleFieldId}_contains`]: search } }
         });
         setLoading(false);
 
