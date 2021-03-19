@@ -71,9 +71,10 @@ const entryStorageTransformFactory = (
             const plugin = fieldByIdToPluginMap[fieldId];
             const field = modelFieldIdToFieldMap[fieldId];
             values[fieldId] = await plugin[operation]({
+                model,
+                entry,
                 field,
                 context,
-                model,
                 value: entry.values[fieldId]
             });
         }
@@ -103,9 +104,10 @@ const entryFieldStorageTransformFactory = (
             return value;
         }
         return await plugin[operation]({
+            model,
+            entry,
             field,
             context,
-            model,
             value: entry.values[field.fieldId]
         });
     };
