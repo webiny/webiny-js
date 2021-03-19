@@ -5,13 +5,7 @@ export type Args = {
     type: string;
     size: number;
     buffer: Buffer;
-    settings?: Record<string, any>;
     keyPrefix?: string;
-};
-
-type FileManagerSettings = {
-    uploadMinFileSize: number;
-    uploadMaxFileSize: number;
 };
 
 export type Result = Record<string, any>;
@@ -23,19 +17,18 @@ export interface FileStoragePlugin {
 
 export class FileStorage {
     storagePlugin: FileStoragePlugin;
-    settings: FileManagerSettings;
     context: FileManagerContext;
-    constructor({ storagePlugin, settings, context }) {
+    constructor({ storagePlugin, context }) {
         this.storagePlugin = storagePlugin;
-        this.settings = settings;
         this.context = context;
     }
 
     async upload(args): Promise<Result> {
+        const settings = await this.context.fileManager.settings.getSettings();
         // Add file to cloud storage.
         const { file: fileData } = await this.storagePlugin.upload({
             ...args,
-            settings: args.settings || this.settings
+            settings
         });
 
         const { fileManager } = this.context;
@@ -48,6 +41,7 @@ export class FileStorage {
     }
 
     async uploadFiles(args) {
+        const settings = await this.context.fileManager.settings.getSettings();
         // Upload files to cloud storage.
         const promises = [];
         for (let i = 0; i < args.files.length; i++) {
@@ -55,7 +49,7 @@ export class FileStorage {
             promises.push(
                 this.storagePlugin.upload({
                     ...item,
-                    settings: args.settings || this.settings
+                    settings
                 })
             );
         }
