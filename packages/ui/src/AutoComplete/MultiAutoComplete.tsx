@@ -90,8 +90,13 @@ function paginateMultipleSelection(multipleSelection, limit, page, search) {
         ? multipleSelection.map((item, index) => ({ ...item, index }))
         : [];
 
-    if (search) {
-        data = data.filter(item => item.name.includes(search));
+    if (typeof search === "string" && search) {
+        data = data.filter(item => {
+            return (
+                typeof item.name === "string" &&
+                item.name.toLowerCase().includes(search.toLowerCase())
+            );
+        });
     }
 
     const lastPage = Math.ceil(data.length / limit);
