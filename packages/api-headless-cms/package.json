@@ -36,6 +36,7 @@
     "@webiny/validation": "^5.1.0",
     "boolean": "^3.0.2",
     "dataloader": "^2.0.0",
+    "dot-prop-immutable": "^1.4.0",
     "jsonpack": "^1.1.5",
     "lodash": "^4.5.0",
     "pluralize": "^8.0.0",
