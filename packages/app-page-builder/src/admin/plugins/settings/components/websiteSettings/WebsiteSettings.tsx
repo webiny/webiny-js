@@ -59,7 +59,10 @@ const WebsiteSettings = () => {
         }
     });
 
-    const editPage = useCallback(id => history.push(`/page-builder/editor/${id}`), []);
+    const editPage = useCallback(id => {
+        console.log("[WEBSITE]");
+        history.push(`/page-builder/editor/${id}`);
+    }, []);
 
     return (
         <Form

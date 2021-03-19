@@ -2322,6 +2322,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@editorjs/editorjs@npm:^2.19.3":
+  version: 2.19.3
+  resolution: "@editorjs/editorjs@npm:2.19.3"
+  dependencies:
+    codex-notifier: ^1.1.2
+    codex-tooltip: ^1.0.1
+  checksum: b02811d4b50f87a59d8ac91f9c0d02380066dda76cd623da1966407765c64231b0e4df089a78af8bc935c231fdc76455acebc9f46be7320dbb982864737a42d3
+  languageName: node
+  linkType: hard
+
 "@editorjs/list@npm:^1.6.0":
   version: 1.6.2
   resolution: "@editorjs/list@npm:1.6.2"
@@ -7328,7 +7338,6 @@ __metadata:
   dependencies:
     "@babel/cli": ^7.5.5
     "@babel/core": ^7.5.5
-    "@webiny/api-file-manager": ^5.1.0
     "@webiny/handler": ^5.1.0
     "@webiny/handler-graphql": ^5.1.0
     "@webiny/plugins": ^5.1.0
@@ -7377,6 +7386,7 @@ __metadata:
     object-hash: ^1.3.1
     rimraf: ^3.0.2
     sanitize-filename: ^1.6.3
+    ttypescript: ^1.5.12
     typescript: ^4.1.3
   languageName: unknown
   linkType: soft
@@ -8109,6 +8119,7 @@ __metadata:
     rimraf: ^3.0.2
     shortid: ^2.2.14
     timeago-react: ^2.0.0
+    ttypescript: ^1.5.12
     typescript: ^4.1.3
   languageName: unknown
   linkType: soft
@@ -9161,7 +9172,7 @@ __metadata:
     "@babel/preset-env": ^7.5.5
     "@babel/preset-typescript": ^7.8.3
     "@babel/runtime": ^7.5.5
-    "@editorjs/editorjs": ^2.19.1
+    "@editorjs/editorjs": ^2.19.3
     "@emotion/core": ^10.0.17
     "@emotion/styled": ^10.0.17
     "@material/base": ^3.1.0
@@ -29823,7 +29834,7 @@ resolve@1.12.2:
   languageName: node
   linkType: hard
 
-"resolve@^1.1.6, resolve@^1.10.0, resolve@^1.10.1, resolve@^1.11.0, resolve@^1.12.0, resolve@^1.13.1, resolve@^1.14.2, resolve@^1.17.0, resolve@^1.18.1, resolve@^1.19.0, resolve@^1.3.2, resolve@^1.4.0, resolve@^1.7.1, resolve@^1.8.1":
+"resolve@>=1.9.0, resolve@^1.1.6, resolve@^1.10.0, resolve@^1.10.1, resolve@^1.11.0, resolve@^1.12.0, resolve@^1.13.1, resolve@^1.14.2, resolve@^1.17.0, resolve@^1.18.1, resolve@^1.19.0, resolve@^1.3.2, resolve@^1.4.0, resolve@^1.7.1, resolve@^1.8.1":
   version: 1.20.0
   resolution: "resolve@npm:1.20.0"
   dependencies:
@@ -29842,7 +29853,7 @@ resolve@1.12.2:
   languageName: node
   linkType: hard
 
-"resolve@patch:resolve@^1.1.6#builtin<compat/resolve>, resolve@patch:resolve@^1.10.0#builtin<compat/resolve>, resolve@patch:resolve@^1.10.1#builtin<compat/resolve>, resolve@patch:resolve@^1.11.0#builtin<compat/resolve>, resolve@patch:resolve@^1.12.0#builtin<compat/resolve>, resolve@patch:resolve@^1.13.1#builtin<compat/resolve>, resolve@patch:resolve@^1.14.2#builtin<compat/resolve>, resolve@patch:resolve@^1.17.0#builtin<compat/resolve>, resolve@patch:resolve@^1.18.1#builtin<compat/resolve>, resolve@patch:resolve@^1.19.0#builtin<compat/resolve>, resolve@patch:resolve@^1.3.2#builtin<compat/resolve>, resolve@patch:resolve@^1.4.0#builtin<compat/resolve>, resolve@patch:resolve@^1.7.1#builtin<compat/resolve>, resolve@patch:resolve@^1.8.1#builtin<compat/resolve>":
+"resolve@patch:resolve@>=1.9.0#builtin<compat/resolve>, resolve@patch:resolve@^1.1.6#builtin<compat/resolve>, resolve@patch:resolve@^1.10.0#builtin<compat/resolve>, resolve@patch:resolve@^1.10.1#builtin<compat/resolve>, resolve@patch:resolve@^1.11.0#builtin<compat/resolve>, resolve@patch:resolve@^1.12.0#builtin<compat/resolve>, resolve@patch:resolve@^1.13.1#builtin<compat/resolve>, resolve@patch:resolve@^1.14.2#builtin<compat/resolve>, resolve@patch:resolve@^1.17.0#builtin<compat/resolve>, resolve@patch:resolve@^1.18.1#builtin<compat/resolve>, resolve@patch:resolve@^1.19.0#builtin<compat/resolve>, resolve@patch:resolve@^1.3.2#builtin<compat/resolve>, resolve@patch:resolve@^1.4.0#builtin<compat/resolve>, resolve@patch:resolve@^1.7.1#builtin<compat/resolve>, resolve@patch:resolve@^1.8.1#builtin<compat/resolve>":
   version: 1.20.0
   resolution: "resolve@patch:resolve@npm%3A1.20.0#builtin<compat/resolve>::version=1.20.0&hash=3388aa"
   dependencies:
@@ -30107,6 +30118,7 @@ resolve@1.12.2:
     source-map-support: ^0.5.0
     ts-jest: ^26.4.4
     typescript: 4.1.3
+    typescript-transform-paths: ^2.2.3
     utf-8-validate: ^5.0.2
     verdaccio: ^4.10.0
     webpack: ^4.39.2
@@ -32814,6 +32826,21 @@ resolve@1.12.2:
   languageName: node
   linkType: hard
 
+"ttypescript@npm:^1.5.12":
+  version: 1.5.12
+  resolution: "ttypescript@npm:1.5.12"
+  dependencies:
+    resolve: ">=1.9.0"
+  peerDependencies:
+    ts-node: ">=8.0.2"
+    typescript: ">=3.2.2"
+  bin:
+    ttsc: bin/tsc
+    ttsserver: bin/tsserver
+  checksum: bd9fc416ac6f534ab50411b4be73d0465f24de4e53542fc54f0fd671fac5a18464196122f94a97a90ae13c70c76a9a70570eca9e7c8d86f6b4b9670430495558
+  languageName: node
+  linkType: hard
+
 "tunnel-agent@npm:^0.6.0":
   version: 0.6.0
   resolution: "tunnel-agent@npm:0.6.0"
@@ -32941,6 +32968,17 @@ resolve@1.12.2:
   version: 0.0.6
   resolution: "typedarray@npm:0.0.6"
   checksum: c9ef0176aaf32593514c31e5c6edc1db970847aff6e1f0a0570a6ac0cc996335792f394c2fcec59cc76691d22a01888ea073a2f3c6930cfcf7c519addf4e2ad7
+  languageName: node
+  linkType: hard
+
+"typescript-transform-paths@npm:^2.2.3":
+  version: 2.2.3
+  resolution: "typescript-transform-paths@npm:2.2.3"
+  dependencies:
+    minimatch: ^3.0.4
+  peerDependencies:
+    typescript: ">=3.6.5"
+  checksum: efbbc9a1fa4a64a377face7f6035c768a0aace7711850cbe6dc15eb762c1e0449f5a13f0360da80a60ed045f8b8361e3d3a7e2649bda45a2a2c142c7a7ee81ab
   languageName: node
   linkType: hard
 
