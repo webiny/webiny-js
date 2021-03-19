@@ -44,6 +44,9 @@ const style = {
             ".mdc-list-item": {
                 borderBottom: "1px solid var(--mdc-theme-on-background)"
             }
+        }),
+        secondaryText: css({
+            color: "var(--mdc-theme-text-secondary-on-background)"
         })
     }
 };
@@ -83,7 +86,9 @@ function Spinner() {
 const DEFAULT_PER_PAGE = 10;
 function paginateMultipleSelection(multipleSelection, limit, page, search) {
     // Assign a real index, so that later when we press delete, we know what is the actual index we're deleting.
-    let data = multipleSelection.map((item, index) => ({ ...item, index }));
+    let data = Array.isArray(multipleSelection)
+        ? multipleSelection.map((item, index) => ({ ...item, index }))
+        : [];
 
     if (search) {
         data = data.filter(item => item.name.includes(search));
@@ -102,20 +107,19 @@ function paginateMultipleSelection(multipleSelection, limit, page, search) {
         to = from + (data.length - 1);
     }
 
-    return [
-        data,
-        {
-            hasData: data.length > 0,
-            totalCount,
-            from,
-            to,
-            page: page,
-            lastPage,
-            limit,
-            hasPrevious: page > 1,
-            hasNext: page < lastPage
-        }
-    ];
+    const meta = {
+        hasData: data.length > 0,
+        totalCount,
+        from,
+        to,
+        page: page,
+        lastPage,
+        limit,
+        hasPrevious: page > 1,
+        hasNext: page < lastPage
+    };
+
+    return { data, meta };
 }
 
 export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, State> {
@@ -278,13 +282,8 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
     renderMultipleSelection() {
         const { value, onChange, disabled, useMultipleSelectionList, description } = this.props;
 
-        const hasItems = Array.isArray(value) && value.length;
-        if (!hasItems) {
-            return null;
-        }
-
         if (useMultipleSelectionList) {
-            const [data, meta] = paginateMultipleSelection(
+            const { data, meta } = paginateMultipleSelection(
                 value,
                 DEFAULT_PER_PAGE,
                 this.state.multipleSelectionPage,
@@ -307,7 +306,7 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
                         </div>
 
                         <div className={style.pagination.pages}>
-                            <div>
+                            <div className={meta.hasData ? "" : style.pagination.secondaryText}>
                                 {meta.from} - {meta.to} of {meta.totalCount}
                             </div>
                             <div>
@@ -335,30 +334,43 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
                         </div>
                     </div>
                     <List className={style.pagination.list}>
-                        {data.map((item, index) => (
-                            <ListItem key={`${getOptionValue(item, this.props)}-${index}`}>
-                                {getOptionText(item, this.props)}
-                                <ListItemMeta>
-                                    <Icon
-                                        icon={<DeleteIcon />}
-                                        onClick={() => {
-                                            if (onChange) {
-                                                onChange([
-                                                    ...value.slice(0, item.index),
-                                                    ...value.slice(item.index + 1)
-                                                ]);
-                                            }
-                                        }}
-                                    />
-                                </ListItemMeta>
+                        {meta.hasData ? (
+                            data.map((item, index) => (
+                                <ListItem key={`${getOptionValue(item, this.props)}-${index}`}>
+                                    {getOptionText(item, this.props)}
+                                    <ListItemMeta>
+                                        <Icon
+                                            icon={<DeleteIcon />}
+                                            onClick={() => {
+                                                if (onChange) {
+                                                    onChange([
+                                                        ...value.slice(0, item.index),
+                                                        ...value.slice(item.index + 1)
+                                                    ]);
+                                                }
+                                            }}
+                                        />
+                                    </ListItemMeta>
+                                </ListItem>
+                            ))
+                        ) : (
+                            <ListItem>
+                                <span className={style.pagination.secondaryText}>
+                                    Nothing to show.
+                                </span>
                             </ListItem>
-                        ))}
+                        )}
                     </List>
                     <div>
                         <FormElementMessage>{description}</FormElementMessage>
                     </div>
                 </>
             );
+        }
+
+        const hasItems = Array.isArray(value) && value.length;
+        if (!hasItems) {
+            return null;
         }
 
         return (
