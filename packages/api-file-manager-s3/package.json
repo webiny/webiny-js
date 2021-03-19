@@ -10,6 +10,7 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
+    "@webiny/api-file-manager": "^5.1.0",
     "@webiny/handler": "^5.1.0",
     "@webiny/handler-graphql": "^5.1.0",
     "@webiny/plugins": "^5.1.0",
