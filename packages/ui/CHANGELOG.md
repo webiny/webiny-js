@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.2.0](https://github.com/webiny/webiny-js/compare/v5.2.0-beta.0...v5.2.0) (2021-03-19)
+
+
+### Bug Fixes
+
+* make search case-insensitive ([fd4d94d](https://github.com/webiny/webiny-js/commit/fd4d94d8844a52e1679b0a23c58f722c97534f98))
+
+
+
+
+
 # [5.2.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.1.0...v5.2.0-beta.0) (2021-03-19)
 
 
