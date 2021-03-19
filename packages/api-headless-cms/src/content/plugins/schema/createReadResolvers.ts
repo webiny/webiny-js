@@ -1,12 +1,12 @@
-import { CmsContentModel, CmsFieldTypePlugins, CmsContext } from "../../../types";
+import { get, set } from "dot-prop-immutable";
 import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
+import { CmsContentModel, CmsFieldTypePlugins, CmsContext } from "../../../types";
 import { createReadTypeName, createTypeName } from "../utils/createTypeName";
 import { commonFieldResolvers } from "./resolvers/commonFieldResolvers";
 import { resolveGet } from "./resolvers/read/resolveGet";
 import { resolveList } from "./resolvers/read/resolveList";
 import { pluralizedTypeName } from "../utils/pluralizedTypeName";
 import { entryFieldFromStorageTransform } from "../utils/entryStorage";
-import get from "lodash/get";
 
 interface CreateReadResolvers {
     (params: {
@@ -38,18 +38,22 @@ export const createReadResolvers: CreateReadResolvers = ({ models, model, fieldT
 
             const resolver = createResolver ? createResolver({ models, model, field }) : null;
 
-            resolvers[field.fieldId] = async (entry, args, context: CmsContext, info) => {
+            resolvers[field.fieldId] = async (storageEntry, args, context: CmsContext, info) => {
                 // Get transformed value (eg. data decompression)
-                entry.values[field.fieldId] = await entryFieldFromStorageTransform({
+                const transformedValue = await entryFieldFromStorageTransform({
                     context,
                     model,
-                    entry,
+                    entry: storageEntry,
                     field,
-                    value: entry.values[field.fieldId]
+                    value: storageEntry.values[field.fieldId]
                 });
+
+                const entry = set(storageEntry, `values.${field.fieldId}`, transformedValue);
+
                 if (!resolver) {
                     return entry.values[field.fieldId];
                 }
+
                 return await resolver(entry, args, context, info);
             };
 
