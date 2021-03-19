@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.2.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.1.0...v5.2.0-beta.0) (2021-03-19)
+
+
+### Bug Fixes
+
+* add "limit" argument ([7e235e1](https://github.com/webiny/webiny-js/commit/7e235e1d9f2f31161a384db47b8c3f4d772cd404))
+* add status property ([92f1306](https://github.com/webiny/webiny-js/commit/92f130630d934a7f5105de638a7e870653f1401f))
+* set limit 10 ([dbf7884](https://github.com/webiny/webiny-js/commit/dbf7884c4b3c226e8d8e2f2516e87045134113eb))
+* simplify options data loading ([5757082](https://github.com/webiny/webiny-js/commit/5757082cc4f1e3ae3822c75d75ecb4a6d0b6eb6f))
+* use "useMultipleSelectionList" prop on reference field ([07933ca](https://github.com/webiny/webiny-js/commit/07933ca40ae0214793d9896221e992a40f347f4c))
+
+
+
+
+
 # [5.1.0](https://github.com/webiny/webiny-js/compare/v5.1.0-beta.1...v5.1.0) (2021-03-16)
 
 **Note:** Version bump only for package @webiny/app-headless-cms
