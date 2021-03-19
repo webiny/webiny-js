@@ -1,17 +1,20 @@
 import React from "react";
+import kebabCase from "lodash/kebabCase";
 import OEmbed from "../../../../components/OEmbed";
-import { PbRenderElementPlugin } from "../../../../../types";
+import { PbRenderElementPluginArgs, PbRenderElementPlugin } from "../../../../../types";
 import VimeoEmbed from "./VimeoEmbed";
 
-export default (): PbRenderElementPlugin => {
+export default (args: PbRenderElementPluginArgs = {}): PbRenderElementPlugin => {
     const renderEmbed = props => {
         return <VimeoEmbed {...props} />;
     };
 
+    const elementType = kebabCase(args.elementType || "vimeo");
+
     return {
-        name: "pb-render-page-element-vimeo",
+        name: `pb-render-page-element-${elementType}`,
         type: "pb-render-page-element",
-        elementType: "vimeo",
+        elementType: elementType,
         render(props) {
             return <OEmbed element={props.element} renderEmbed={renderEmbed} />;
         }

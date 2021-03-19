@@ -1,7 +1,7 @@
 import { boolean } from "boolean";
 import { GraphQLSchema } from "graphql";
 import { makeExecutableSchema } from "@graphql-tools/schema";
-import { CmsContext, CmsSettings } from "../types";
+import { CmsContext } from "../types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { NotAuthorizedError, NotAuthorizedResponse } from "@webiny/api-security";
 import { ErrorResponse } from "@webiny/handler-graphql";
@@ -44,23 +44,9 @@ const respond = (http, result: unknown) => {
 };
 const schemaList = new Map<string, SchemaCache>();
 
-const getLastModelChange = (settings?: CmsSettings): Date => {
-    if (!settings || !settings.contentModelLastChange) {
-        return new Date();
-    }
-    if (settings.contentModelLastChange instanceof Date) {
-        return settings.contentModelLastChange;
-    }
-    try {
-        return new Date(settings.contentModelLastChange);
-    } catch {
-        return new Date();
-    }
-};
 const generateCacheKey = async (args: Args): Promise<string> => {
     const { context, locale, type } = args;
-    const settings = await context.cms.settings.noAuth().get();
-    const lastModelChange = getLastModelChange(settings);
+    const lastModelChange = await context.cms.settings.getContentModelLastChange();
     return [locale.code, type, lastModelChange.toISOString()].join("#");
 };
 

@@ -6,8 +6,11 @@
     "outDir": "dist",
     "rootDir": "src",
     "declarationDir": "dist",
-    "paths": {},
-    "noEmit": false
+    "noEmit": false,
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./src/*"]
+    }
   },
   "references": []
 }

@@ -51,7 +51,7 @@ Start by running the `yarn verdaccio:start` command, which will, as the script n
 Once you have Verdaccio up and running, you'll also need to change the default NPM registry. Meaning, when you run `npx create-webiny-project ...`, you want it to start fetching packages from Verdaccio, not real NPM. Verdaccio runs on localhost, on port 4873, so, in your terminal, run the following command:
 
 ```
-npm config set registry http://localhost:4873/
+npm config set registry http://localhost:4873
 ```
 
 Note that this will only help you with `npx`, but won't help you when a new project foundation is created, and the dependencies start to get pulled. This is because we're using yarn2, which actually doesn't respect the values that were written by the `npm config set ...` command we just executed.
@@ -62,7 +62,7 @@ It's super important that, when you're testing your npx project, you also pass t
 --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
 ```
 
-This will set the necessary values in yarn2 config file, which will be located in your newly created project.
+This will set the necessary values in yarn2 config file, which will be located in your newly created project. But don't worry about it right now, this will be revisited in step 4.
 
 > Yarn2 projects don't rely on global configurations and is not installed globally, but on per-project basis. This allows having multiple versions of yarn2, for different projects.
 
@@ -83,6 +83,11 @@ yarn lerna:publish:verdaccio
 ```
 
 This will publish the packages to Verdaccio. Once it's done, you can start testing.
+
+> You can also execute both commands immediately with: 
+> ```
+> yarn lerna:version:verdaccio && yarn lerna:publish:verdaccio
+> ```
 
 #### 4. Test
 
@@ -146,3 +151,9 @@ On Linux/Mac, the shared cache folder should be located in: `/Users/adrian/Libra
 In these folders, most probably, you'll also have the `\Berry\cache` folder. But, there were also cases where this folder did not exist.
 
 Deleting the mentioned cache folders should help with the issue of still receiving old packages in your testing sessions.
+
+With all of this being said, you can also try the [following command](https://yarnpkg.com/features/offline-cache#cleaning-the-cache):
+
+```bash
+yarn cache clean --mirror
+````

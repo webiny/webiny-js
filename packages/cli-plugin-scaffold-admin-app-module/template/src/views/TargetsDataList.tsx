@@ -1,4 +1,5 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
+import dotProp from "dot-prop-immutable";
 import { i18n } from "@webiny/app/i18n";
 import {
     DataList,
@@ -25,6 +26,7 @@ import { useMutation, useQuery } from "@apollo/react-hooks";
 import { TargetItem, DataListChildProps } from "../types";
 import { DELETE_TARGET, LIST_TARGETS } from "./graphql";
 import { removeFromListCache } from "./cache";
+import { QueryResult } from "@apollo/react-common";
 
 const t = i18n.ns("admin-app-target/data-list");
 
@@ -35,6 +37,13 @@ interface Props {
     setLimit: (value: number) => void;
     sorters: { label: string; value: string }[];
 }
+
+const extractQueryGraphQLError = (listQuery: QueryResult): string | null => {
+    if (!listQuery.error || !listQuery.error.message) {
+        return null;
+    }
+    return listQuery.error.message;
+};
 
 const TargetsDataList: React.FunctionComponent<Props> = ({ sortBy, setSortBy, limit, sorters }) => {
     const { history } = useRouter();
@@ -60,7 +69,11 @@ const TargetsDataList: React.FunctionComponent<Props> = ({ sortBy, setSortBy, li
                         id: target.id
                     },
                     update: (cache, response) => {
-                        const { error } = response.data.targets.deleteTarget;
+                        const error = dotProp.get(
+                            response,
+                            "data.targets.deleteTarget.error",
+                            null
+                        );
                         if (error) {
                             return showSnackbar(error.message);
                         }
@@ -101,8 +114,17 @@ const TargetsDataList: React.FunctionComponent<Props> = ({ sortBy, setSortBy, li
 
     const loading = [listQuery, deleteMutation].some(item => !!item.loading);
 
-    const data = listQuery.loading ? [] : listQuery.data.targets.listTargets.data;
-
+    const data = listQuery.loading
+        ? []
+        : dotProp.get(listQuery, "data.targets.listTargets.data", []);
+    const error = extractQueryGraphQLError(listQuery);
+    // there is a possibility to receive graphql errors so show those as well
+    useEffect(() => {
+        if (!error) {
+            return;
+        }
+        showSnackbar(error);
+    }, [error]);
     return (
         <DataList
             loading={loading}

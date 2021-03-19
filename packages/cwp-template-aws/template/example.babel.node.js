@@ -1,10 +1,10 @@
-const babel = {
+module.exports = ({ path }) => ({
     presets: [
         [
             "@babel/preset-env",
             {
                 targets: {
-                    node: "10.14.0"
+                    node: "12"
                 }
             }
         ],
@@ -15,8 +15,15 @@ const babel = {
         ["@babel/plugin-proposal-object-rest-spread", { useBuiltIns: true }],
         ["@babel/plugin-transform-runtime", { useESModules: false }],
         ["babel-plugin-dynamic-import-node"],
-        ["babel-plugin-lodash"]
-    ].filter(Boolean)
-};
-
-module.exports = babel;
+        ["babel-plugin-lodash"],
+        [
+            "babel-plugin-module-resolver",
+            {
+                cwd: path,
+                alias: {
+                    "~": "./src"
+                }
+            }
+        ]
+    ]
+});

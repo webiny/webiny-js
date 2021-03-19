@@ -1,6 +1,6 @@
 import React from "react";
 import get from "lodash/get";
-import { CmsEditorFieldRendererPlugin } from "../../../../types";
+import { CmsEditorFieldRendererPlugin } from "~/types";
 import { i18n } from "@webiny/app/i18n";
 import DateTimeWithoutTimezone from "./DateTimeWithoutTimezone";
 import DateTimeWithTimezone from "./DateTimeWithTimezone";

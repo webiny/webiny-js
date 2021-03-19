@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import get from "lodash/get";
-import { useApolloClient } from "../../../../hooks";
+import { useApolloClient } from "~/admin/hooks";
 import { createListQuery, createGetByIdsQuery, GET_CONTENT_MODEL } from "./graphql";
 import { getOptions } from "./getOptions";
-import { CmsEditorContentModel } from "../../../../../types";
+import { CmsEditorContentModel } from "~/types";
 
 type ValueEntry = {
     id: string;
@@ -45,7 +45,7 @@ export const useReferences = ({ bind, field }) => {
         setLoading(true);
         const { data } = await client.query({
             query: LIST_CONTENT,
-            variables: { where: { [`${titleFieldId}_contains`]: search } }
+            variables: { limit: 10, where: { [`${titleFieldId}_contains`]: search } }
         });
         setLoading(false);
 
@@ -100,14 +100,10 @@ export const useReferences = ({ bind, field }) => {
             return;
         }
 
-        const missingData = values.filter(
-            item => !allEntries.current.find(entry => entry.id === item)
-        );
-
-        if (missingData.length) {
+        if (values.length) {
             setLoading(true);
 
-            client.query({ query: GET_BY_IDS, variables: { revisions: missingData } }).then(res => {
+            client.query({ query: GET_BY_IDS, variables: { revisions: values } }).then(res => {
                 setLoading(false);
                 const entries = res.data.content.data;
 
@@ -121,7 +117,7 @@ export const useReferences = ({ bind, field }) => {
                 );
             });
         }
-    }, [bind.value, GET_BY_IDS, model]);
+    }, [GET_BY_IDS]);
 
     /**
      * onChange callback will update internal component state using the previously loaded entries by IDs.
@@ -129,16 +125,7 @@ export const useReferences = ({ bind, field }) => {
      */
     const onChange = useCallback(values => {
         setSearch("");
-        setValueEntries(
-            values.map(item => {
-                const entry = allEntries.current.find(entry => entry.id === item.id);
-                return {
-                    id: entry.id,
-                    published: entry.meta.status === "published",
-                    name: entry.meta.title
-                };
-            })
-        );
+        setValueEntries(values);
 
         // Update parent form
         bind.onChange(values.map(item => ({ modelId, entryId: item.id })));

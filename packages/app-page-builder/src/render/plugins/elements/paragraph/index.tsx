@@ -1,12 +1,15 @@
 import React from "react";
+import kebabCase from "lodash/kebabCase";
 import Paragraph from "./Paragraph";
-import { PbRenderElementPlugin } from "../../../../types";
+import { PbRenderElementPluginArgs, PbRenderElementPlugin } from "../../../../types";
 
-export default (): PbRenderElementPlugin => {
+export default (args: PbRenderElementPluginArgs = {}): PbRenderElementPlugin => {
+    const elementType = kebabCase(args.elementType || "paragraph");
+
     return {
-        name: "pb-render-page-element-paragraph",
+        name: `pb-render-page-element-${elementType}`,
         type: "pb-render-page-element",
-        elementType: "paragraph",
+        elementType: elementType,
         render(props) {
             return <Paragraph {...props} />;
         }

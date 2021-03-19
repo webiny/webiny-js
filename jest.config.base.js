@@ -18,6 +18,9 @@ module.exports = ({ path }, presets = []) => {
         },
         moduleDirectories: ["node_modules"],
         moduleFileExtensions: ["ts", "js", "tsx"],
+        moduleNameMapper: {
+            "~/(.*)": `${path}/src/$1`
+        },
         modulePathIgnorePatterns: [],
         globals: {
             WEBINY_VERSION: version,

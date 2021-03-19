@@ -3,6 +3,60 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.2.0](https://github.com/webiny/webiny-js/compare/v5.2.0-beta.0...v5.2.0) (2021-03-19)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [5.2.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.1.0...v5.2.0-beta.0) (2021-03-19)
+
+
+### Bug Fixes
+
+* add missing dependency ([3d15fd3](https://github.com/webiny/webiny-js/commit/3d15fd35270145dbc4504fbfe3a4e8ad957ebc80))
+* cache compressed rich text content ([1f918ab](https://github.com/webiny/webiny-js/commit/1f918ab28105750e0e308aadf041273f3417b134))
+* ensure maximum of 100 items are requested via the `batchGet` call ([7bc1208](https://github.com/webiny/webiny-js/commit/7bc120844a0a2a2ff6ac9880334fef9c1b09a0c7))
+
+
+
+
+
+# [5.1.0](https://github.com/webiny/webiny-js/compare/v5.1.0-beta.1...v5.1.0) (2021-03-16)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [5.1.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.1.0-beta.0...v5.1.0-beta.1) (2021-03-16)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [5.1.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.0.0...v5.1.0-beta.0) (2021-03-15)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** schema regeneration last changed date ([#1504](https://github.com/webiny/webiny-js/issues/1504)) ([bff28a0](https://github.com/webiny/webiny-js/commit/bff28a058622b088fa6ed93ff86428fd01c59f24))
+
+
+### Features
+
+* **app-headless-cms:** add support for content model form layouts ([#1507](https://github.com/webiny/webiny-js/issues/1507)) ([f2b65b0](https://github.com/webiny/webiny-js/commit/f2b65b0f593e83948b85832d3234e4d32793a868))
+* enable prefixing ES index with the "ELASTIC_SEARCH_INDEX_PREFIX" env variable ([df42d0c](https://github.com/webiny/webiny-js/commit/df42d0c033aa3fe2cfd00fc4398f3c64789544f4))
+
+
+
+
+
 # [5.0.0](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.5...v5.0.0) (2021-03-09)
 
 **Note:** Version bump only for package @webiny/api-headless-cms

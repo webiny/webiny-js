@@ -22,6 +22,11 @@ export const LIST_TARGETS = gql`
                         type
                     }
                 }
+                error {
+                    message
+                    code
+                    data
+                }
             }
         }
     }

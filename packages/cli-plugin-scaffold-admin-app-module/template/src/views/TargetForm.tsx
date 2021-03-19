@@ -1,4 +1,5 @@
 import React, { useCallback } from "react";
+import dotProp from "dot-prop-immutable";
 import { i18n } from "@webiny/app/i18n";
 import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
@@ -49,16 +50,13 @@ const TargetForm: React.FunctionComponent<Props> = ({ limit, sortBy }) => {
         variables: { id },
         skip: !id,
         onCompleted: data => {
-            if (!data?.targets?.getTarget?.data?.error) {
-                return;
-            }
-            const { error } = data.targets.getTarget.data;
+            const error = dotProp.get(data, "targets.getTarget.data.error", null);
             if (!error) {
                 return;
             }
 
             history.push("/targets");
-            showSnackbar(error.message);
+            showSnackbar(error.message || "Unspecified error.");
         }
     });
 
@@ -80,41 +78,64 @@ const TargetForm: React.FunctionComponent<Props> = ({ limit, sortBy }) => {
                         data: data
                     },
                     update: (cache, response) => {
-                        const { data: target, error } = response.data?.targets?.updateTarget || {};
+                        const updateTargetResponse = dotProp.get(
+                            response,
+                            "data.targets.updateTarget",
+                            null
+                        );
+                        if (!updateTargetResponse) {
+                            return showSnackbar(
+                                t`There is no "data.targets.updateTarget" in the response.`
+                            );
+                        }
+                        const { data: target, error } = updateTargetResponse;
                         if (error) {
                             return showSnackbar(error.message);
                         } else if (!target) {
                             return showSnackbar(t`There is no Target data in the response.`);
                         }
                         updateToListCache(cache, listVariables, target);
-                    }
-                });
-            } else {
-                await createTarget({
-                    variables: {
-                        data: data
-                    },
-                    update: (cache, response) => {
-                        const { data: target, error } = response.data?.targets?.createTarget || {};
-                        if (error) {
-                            return showSnackbar(error.message);
-                        } else if (!target) {
-                            return showSnackbar(t`There is no Target data in the response.`);
-                        }
-                        addToListCache(cache, listVariables, target);
 
-                        history.push(`/targets/?id=${encodeURIComponent(target.id)}`);
+                        showSnackbar(t`Target saved successfully.`);
                     }
                 });
+                return;
             }
-            showSnackbar(t`Target saved successfully.`);
+            await createTarget({
+                variables: {
+                    data: data
+                },
+                update: (cache, response) => {
+                    const createTargetResponse = dotProp.get(
+                        response,
+                        "data.targets.createTarget",
+                        null
+                    );
+                    if (!createTargetResponse) {
+                        return showSnackbar(
+                            t`There is no "data.targets.createTarget" in the response.`
+                        );
+                    }
+                    const { data: target, error } = createTargetResponse;
+                    if (error) {
+                        return showSnackbar(error.message);
+                    } else if (!target) {
+                        return showSnackbar(t`There is no Target data in the response.`);
+                    }
+                    addToListCache(cache, listVariables, target);
+
+                    history.push(`/targets/?id=${encodeURIComponent(target.id)}`);
+
+                    showSnackbar(t`Target saved successfully.`);
+                }
+            });
         },
         [id]
     );
 
     const loading = [getQuery, createMutation, updateMutation].some(item => !!item.loading);
 
-    const targetData = getQuery.data?.targets?.getTarget?.data;
+    const targetData = dotProp.get(getQuery, "data.targets.getTarget.data", null);
 
     const showEmptyView = !newTarget && !loading && !targetData;
     // Render "No content" selected view.
