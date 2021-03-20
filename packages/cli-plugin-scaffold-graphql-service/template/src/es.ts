@@ -1,9 +1,9 @@
-import { ListBooksWhere } from "./types";
+import { ListTargetsWhere } from "./types";
 
 /**
  * A basic filtering functionality for Elasticsearch.
  */
-export const createElasticsearchQuery = (where?: ListBooksWhere) => {
+export const createElasticsearchQuery = (where?: ListTargetsWhere) => {
     if (!where || Object.keys(where).length === 0) {
         return undefined;
     }
