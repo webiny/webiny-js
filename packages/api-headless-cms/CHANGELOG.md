@@ -3,6 +3,43 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.1](https://github.com/webiny/webiny-js/compare/v5.2.1-beta.0...v5.2.1) (2021-03-21)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+## [5.2.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.2.0...v5.2.1-beta.0) (2021-03-21)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [5.2.0](https://github.com/webiny/webiny-js/compare/v5.2.0-beta.0...v5.2.0) (2021-03-19)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [5.2.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.1.0...v5.2.0-beta.0) (2021-03-19)
+
+
+### Bug Fixes
+
+* add missing dependency ([3d15fd3](https://github.com/webiny/webiny-js/commit/3d15fd35270145dbc4504fbfe3a4e8ad957ebc80))
+* cache compressed rich text content ([1f918ab](https://github.com/webiny/webiny-js/commit/1f918ab28105750e0e308aadf041273f3417b134))
+* ensure maximum of 100 items are requested via the `batchGet` call ([7bc1208](https://github.com/webiny/webiny-js/commit/7bc120844a0a2a2ff6ac9880334fef9c1b09a0c7))
+
+
+
+
+
 # [5.1.0](https://github.com/webiny/webiny-js/compare/v5.1.0-beta.1...v5.1.0) (2021-03-16)
 
 **Note:** Version bump only for package @webiny/api-headless-cms

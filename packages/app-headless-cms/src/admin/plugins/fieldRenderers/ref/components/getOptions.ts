@@ -12,6 +12,7 @@ export const getOptions = (entries = [], extraOptions = null) => {
             return {
                 id: item.id,
                 name: name,
+                published: item.meta.status === "published",
                 ...extraData
             };
         })

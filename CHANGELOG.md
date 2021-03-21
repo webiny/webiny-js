@@ -3,6 +3,61 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.1](https://github.com/webiny/webiny-js/compare/v5.2.1-beta.0...v5.2.1) (2021-03-21)
+
+**Note:** Version bump only for package webiny-js
+
+
+
+
+
+## [5.2.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.2.0...v5.2.1-beta.0) (2021-03-21)
+
+
+### Bug Fixes
+
+* **cli-plugin-scaffold-graphql-service:** hardcoded books in import ([#1524](https://github.com/webiny/webiny-js/issues/1524)) ([9f1e728](https://github.com/webiny/webiny-js/commit/9f1e7284260995c2c534714abc1f17a3c523929e))
+
+
+
+
+
+# [5.2.0](https://github.com/webiny/webiny-js/compare/v5.2.0-beta.0...v5.2.0) (2021-03-19)
+
+
+### Bug Fixes
+
+* make search case-insensitive ([fd4d94d](https://github.com/webiny/webiny-js/commit/fd4d94d8844a52e1679b0a23c58f722c97534f98))
+
+
+
+
+
+# [5.2.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.1.0...v5.2.0-beta.0) (2021-03-19)
+
+
+### Bug Fixes
+
+* add "limit" argument ([7e235e1](https://github.com/webiny/webiny-js/commit/7e235e1d9f2f31161a384db47b8c3f4d772cd404))
+* add missing dependency ([3d15fd3](https://github.com/webiny/webiny-js/commit/3d15fd35270145dbc4504fbfe3a4e8ad957ebc80))
+* add nothing-to-show message ([2335f22](https://github.com/webiny/webiny-js/commit/2335f22a7f419681e26289d866afaedabace294c))
+* add status property ([92f1306](https://github.com/webiny/webiny-js/commit/92f130630d934a7f5105de638a7e870653f1401f))
+* cache compressed rich text content ([1f918ab](https://github.com/webiny/webiny-js/commit/1f918ab28105750e0e308aadf041273f3417b134))
+* ensure maximum of 100 items are requested via the `batchGet` call ([7bc1208](https://github.com/webiny/webiny-js/commit/7bc120844a0a2a2ff6ac9880334fef9c1b09a0c7))
+* set limit 10 ([dbf7884](https://github.com/webiny/webiny-js/commit/dbf7884c4b3c226e8d8e2f2516e87045134113eb))
+* simplify options data loading ([5757082](https://github.com/webiny/webiny-js/commit/5757082cc4f1e3ae3822c75d75ecb4a6d0b6eb6f))
+* update yarn.lock ([26f4029](https://github.com/webiny/webiny-js/commit/26f40297ca7ed3a3d8065fffcea4bb172c601d97))
+* use "useMultipleSelectionList" prop on reference field ([07933ca](https://github.com/webiny/webiny-js/commit/07933ca40ae0214793d9896221e992a40f347f4c))
+
+
+### Features
+
+* introduce `useMultipleSelectionList` prop ([a427147](https://github.com/webiny/webiny-js/commit/a427147de806abcf872e0ce0e95a5fb557d05c43))
+
+
+
+
+
 # [5.1.0](https://github.com/webiny/webiny-js/compare/v5.1.0-beta.1...v5.1.0) (2021-03-16)
 
 **Note:** Version bump only for package webiny-js

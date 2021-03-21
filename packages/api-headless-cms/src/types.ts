@@ -1804,8 +1804,9 @@ export interface CmsModelFieldToElasticsearchPlugin extends Plugin {
  * @category Storage
  */
 export interface CmsModelFieldToStoragePluginToStorageArgs {
-    field: CmsContentModelField;
     model: CmsContentModel;
+    entry: CmsContentEntry;
+    field: CmsContentModelField;
     context: CmsContext;
     /**
      * The value to be transformed to storage type from the original one.
@@ -1823,8 +1824,9 @@ export interface CmsModelFieldToStoragePluginToStorageArgs {
  * @category Storage
  */
 export interface CmsModelFieldToStoragePluginFromStorageArgs {
-    field: CmsContentModelField;
     model: CmsContentModel;
+    entry: CmsContentEntry;
+    field: CmsContentModelField;
     context: CmsContext;
     /**
      * The value to be transformed from storage type into the original one.
