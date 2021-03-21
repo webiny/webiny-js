@@ -13,11 +13,11 @@
     "@pulumi/pulumi": "^2.21.2",
     "@webiny/cli": "^5.2.0",
     "@webiny/pulumi-sdk": "^5.2.0",
-    "chalk": "4.1.0",
-    "execa": "4.1.0",
-    "lodash": "4.17.20",
-    "node-notifier": "7.0.2",
-    "ora": "4.1.1"
+    "chalk": "^4.1.0",
+    "execa": "^5.0.0",
+    "lodash": "^4.17.21",
+    "node-notifier": "^9.0.1",
+    "ora": "^5.4.0"
   },
   "license": "MIT",
   "publishConfig": {

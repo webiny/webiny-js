@@ -18,7 +18,7 @@
     "fecha": "^2.3.3",
     "lodash": "^4.17.4",
     "short-hash": "^1.0.0",
-    "yargs": "12.0.5"
+    "yargs": "^16.2.0"
   },
   "peerDependencies": {
     "react": "16.14.0"

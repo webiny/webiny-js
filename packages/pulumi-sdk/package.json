@@ -17,8 +17,8 @@
     "@pulumi/aws": "^3.22.0",
     "@pulumi/pulumi": "^2.21.2",
     "decompress": "^4.2.1",
-    "download": "^5.0.3",
-    "execa": "^4.0.3",
+    "download": "^8.0.0",
+    "execa": "^5.0.0",
     "lodash": "^4.17.4",
     "tar": "^6.0.5"
   },

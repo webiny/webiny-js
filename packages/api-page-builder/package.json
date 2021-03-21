@@ -12,7 +12,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@commodo/fields": "beta",
+    "@commodo/fields": "^1.2.1",
     "@webiny/api-file-manager": "^5.2.0",
     "@webiny/api-i18n": "^5.2.0",
     "@webiny/api-i18n-content": "^5.2.0",
@@ -34,7 +34,7 @@
     "commodo-fields-object": "^1.0.6",
     "dataloader": "^2.0.0",
     "extract-zip": "^1.6.7",
-    "fs-extra": "^7.0.0",
+    "fs-extra": "^9.1.0",
     "jsonpack": "^1.1.5",
     "load-json-file": "^6.2.0",
     "lodash": "^4.17.11",

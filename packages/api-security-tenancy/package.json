@@ -10,7 +10,7 @@
   "author": "Webiny LTD",
   "license": "MIT",
   "dependencies": {
-    "@commodo/fields": "1.1.2-beta.20",
+    "@commodo/fields": "^1.2.1",
     "@webiny/api-security": "^5.2.0",
     "@webiny/db-dynamodb": "^5.2.0",
     "@webiny/handler": "^5.2.0",

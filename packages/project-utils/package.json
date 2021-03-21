@@ -52,7 +52,6 @@
     "react": "16.14.0",
     "react-dev-utils": "10.2.1",
     "react-dom": "16.14.0",
-    "react-native-web": "0.12.3",
     "read-json-sync": "2.0.1",
     "resolve": "1.12.2",
     "resolve-url-loader": "3.1.1",
@@ -85,7 +84,8 @@
         "babel-plugin-lodash",
         "chalk",
         "raw-loader",
-        "node-sass"
+        "node-sass",
+        "postcss"
       ]
     }
   },

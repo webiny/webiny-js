@@ -15,17 +15,17 @@
   "dependencies": {
     "@webiny/plugins": "^5.2.0",
     "@webiny/tracking": "^5.2.0",
-    "camelcase": "5.3.1",
-    "chalk": "2.4.2",
-    "dotenv": "8.2.0",
-    "execa": "2.1.0",
-    "find-up": "4.1.0",
-    "fs-extra": "9.0.1",
-    "load-json-file": "6.2.0",
-    "public-ip": "4.0.3",
-    "semver": "7.3.4",
-    "write-json-file": "4.3.0",
-    "yargs": "14.2.3"
+    "camelcase": "^5.3.1",
+    "chalk": "^4.1.0",
+    "dotenv": "^8.2.0",
+    "execa": "^5.0.0",
+    "find-up": "^5.0.0",
+    "fs-extra": "^9.1.0",
+    "load-json-file": "^6.2.0",
+    "public-ip": "^4.0.3",
+    "semver": "^7.3.4",
+    "write-json-file": "^4.3.0",
+    "yargs": "^16.2.0"
   },
   "license": "MIT",
   "publishConfig": {

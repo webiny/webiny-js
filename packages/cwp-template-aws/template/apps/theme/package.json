@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "@editorjs/editorjs": "^2.19.1",
+    "@editorjs/editorjs": "^2.19.3",
     "@webiny/app-page-builder": "^5.0.0-beta.0",
     "@webiny/form": "^5.0.0-beta.0",
     "@webiny/plugins": "^5.0.0-beta.0",
@@ -15,11 +15,11 @@
     "classnames": "^2.2.6",
     "emotion": "^10.0.17",
     "graphql": "^14.7.0",
-    "graphql-tag": "2.10.1",
+    "graphql-tag": "^2.11.0",
     "invariant": "^2.2.4",
     "lodash.get": "^4.4.2",
     "react": "^16.14.0",
     "react-hamburger-menu": "^1.1.1",
-    "react-helmet": "^5.2.0"
+    "react-helmet": "^6.1.0"
   }
 }

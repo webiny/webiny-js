@@ -1,9 +1,9 @@
-const os = require("os");
-const tar = require("tar");
-const fs = require("fs");
-const download = require("download");
-const path = require("path");
-const decompress = require("decompress");
+import os from "os";
+import tar from "tar";
+import fs from "fs";
+import path from "path";
+import decompress from "decompress";
+import download from "download";
 
 export default async (downloadFolder, beforeInstall, afterInstall) => {
     if (fs.existsSync(downloadFolder)) {

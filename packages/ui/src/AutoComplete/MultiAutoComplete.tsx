@@ -421,7 +421,6 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
         return (
             <div className={classNames(autoCompleteStyle, props.className)}>
                 <Downshift
-                    defaultSelectedItem={null}
                     // @ts-ignore
                     className={autoCompleteStyle}
                     itemToString={item => item && getOptionText(item, props)}

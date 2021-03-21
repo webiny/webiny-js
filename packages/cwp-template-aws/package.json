@@ -14,17 +14,16 @@
     "@webiny/cli": "^5.2.0",
     "@webiny/cli-plugin-deploy-pulumi": "^5.2.0",
     "@webiny/tracking": "^5.2.0",
-    "chalk": "4.1.0",
-    "create-webiny-project": "^5.2.0",
-    "execa": "4.1.0",
+    "chalk": "^4.1.0",
+    "execa": "^5.0.0",
     "fast-glob": "^3.2.5",
-    "fs-extra": "9.0.1",
-    "get-yarn-workspaces": "1.0.2",
-    "inquirer": "7.3.3",
-    "load-json-file": "6.2.0",
-    "lodash": "4.17.20",
-    "ora": "4.1.1",
-    "write-json-file": "4.3.0"
+    "fs-extra": "^9.1.0",
+    "get-yarn-workspaces": "^1.0.2",
+    "inquirer": "^8.0.0",
+    "load-json-file": "^6.2.0",
+    "lodash": "^4.17.21",
+    "ora": "^5.4.0",
+    "write-json-file": "^4.3.0"
   },
   "devDependencies": {
     "dotenv": "^8.2.0"
