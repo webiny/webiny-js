@@ -1,6 +1,6 @@
 {
   "name": "@webiny/handler-aws",
-  "version": "5.2.1-beta.0",
+  "version": "5.2.1",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -15,10 +15,10 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/handler": "^5.2.1-beta.0",
-    "@webiny/handler-args": "^5.2.1-beta.0",
-    "@webiny/handler-client": "^5.2.1-beta.0",
-    "@webiny/handler-http": "^5.2.1-beta.0"
+    "@webiny/handler": "^5.2.1",
+    "@webiny/handler-args": "^5.2.1",
+    "@webiny/handler-client": "^5.2.1",
+    "@webiny/handler-http": "^5.2.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
