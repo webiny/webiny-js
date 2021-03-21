@@ -1,4 +1,4 @@
-import { merge } from "lodash";
+import merge from "lodash/merge";
 import locales from "./graphql/locales";
 import installation from "./graphql/installation";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";

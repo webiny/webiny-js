@@ -1,6 +1,6 @@
 import React from "react";
 import { PbRenderElementPlugin } from "@webiny/app-page-builder/types";
-import { get } from "lodash";
+import get from "lodash/get";
 
 export default (): PbRenderElementPlugin => ({
     name: "pb-render-element-typeform",

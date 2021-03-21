@@ -16,7 +16,6 @@ module.exports = ({ path }) => {
             ["@babel/plugin-proposal-object-rest-spread", { useBuiltIns: true }],
             ["@babel/plugin-transform-runtime", { useESModules: false }],
             ["babel-plugin-dynamic-import-node"],
-            ["babel-plugin-lodash"],
             [
                 "babel-plugin-module-resolver",
                 {

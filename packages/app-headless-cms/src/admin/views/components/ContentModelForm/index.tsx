@@ -1,5 +1,6 @@
 import React from "react";
-import { cloneDeep, pick } from "lodash";
+import cloneDeep from "lodash/cloneDeep";
+import pick from "lodash/pick";
 import { ContentFormRender } from "./ContentFormRender";
 import { CmsContentModelFormProps } from "~/types";
 

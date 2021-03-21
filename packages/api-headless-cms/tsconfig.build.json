@@ -3,33 +3,31 @@
   "include": ["src"],
   "exclude": [
     "node_modules",
-    "./backup",
+    "**/__tests__/**",
+    "./dist",
+    "../api-file-manager",
+    "../api-headless-cms",
     "../api-i18n",
     "../api-i18n-content",
     "../api-plugin-elastic-search-client",
-    "../api-dynamodb-to-elasticsearch",
     "../api-security",
     "../api-security-tenancy",
-    "../api-file-manager",
     "../api-upgrade",
     "../commodo",
     "../error",
-    "../db-dynamodb",
     "../handler",
-    "../handler-aws",
     "../handler-db",
     "../handler-graphql",
     "../handler-http",
     "../plugins",
-    "../validation",
-    "./jest.config.js"
+    "../validation"
   ],
+  "references": [],
   "compilerOptions": {
-    "outDir": "dist",
-    "rootDir": "src",
-    "declarationDir": "dist",
-    "paths": {},
-    "baseUrl": "."
-  },
-  "references": []
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "baseUrl": ".",
+    "paths": { "~/*": ["./src/*"] }
+  }
 }

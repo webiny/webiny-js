@@ -1,6 +1,7 @@
 import React from "react";
 import { css } from "emotion";
-import { cloneDeep, debounce } from "lodash";
+import cloneDeep from "lodash/cloneDeep";
+import debounce from "lodash/debounce";
 import { Switch } from "@webiny/ui/Switch";
 import {
     SimpleForm,

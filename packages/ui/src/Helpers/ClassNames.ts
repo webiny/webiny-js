@@ -1,5 +1,5 @@
 import classnames from "classnames";
-import { clone } from "lodash";
+import clone from "lodash/clone";
 
 /**
  * This is a pass-through that modifies your object's props and creates the required className prop by merging

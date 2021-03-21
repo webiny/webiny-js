@@ -1,4 +1,4 @@
-import { get } from "lodash";
+import get from "lodash/get";
 import kebabCase from "lodash/kebabCase";
 import { PbRenderElementStylePlugin } from "../../../../types";
 import { applyPerDeviceStyleWithFallback } from "../../../utils";

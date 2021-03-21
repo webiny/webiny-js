@@ -1,4 +1,4 @@
-import { flow } from "lodash";
+import flow from "lodash/flow";
 import { validation } from "@webiny/validation";
 import {
     withFields,

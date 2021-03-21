@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback } from "react";
 import { css } from "emotion";
-import { get } from "lodash";
+import get from "lodash/get";
 
 function appendSDK(props) {
     const { sdk, global, element } = props;

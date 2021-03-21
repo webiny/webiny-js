@@ -1,6 +1,6 @@
 import React from "react";
 import { css } from "emotion";
-import { get } from "lodash";
+import get from "lodash/get";
 import { useRouter } from "@webiny/react-router";
 import { ButtonDefault } from "@webiny/ui/Button";
 import { Icon } from "@webiny/ui/Icon";

@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
-import { get, cloneDeep } from "lodash";
+import get from "lodash/get";
+import cloneDeep from "lodash/cloneDeep";
 import { useApolloClient } from "@apollo/react-hooks";
 import { Input } from "@webiny/ui/Input";
 import { Form } from "@webiny/form";

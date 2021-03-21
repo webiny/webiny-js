@@ -1,5 +1,5 @@
 import * as React from "react";
-import { get } from "lodash";
+import get from "lodash/get";
 import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Switch } from "@webiny/ui/Switch";

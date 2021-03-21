@@ -1,5 +1,5 @@
 import React, { useMemo, useEffect } from "react";
-import { sortBy } from "lodash";
+import sortBy from "lodash/sortBy";
 import { Drawer, DrawerContent, DrawerHeader } from "@webiny/ui/Drawer";
 import { List, ListItem } from "@webiny/ui/List";
 import { IconButton } from "@webiny/ui/Button";

@@ -1,4 +1,4 @@
-import { get } from "lodash";
+import get from "lodash/get";
 import kebabCase from "lodash/kebabCase";
 import camelCase from "lodash/camelCase";
 import { PbRenderElementStylePlugin } from "../../../../types";

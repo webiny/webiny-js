@@ -1,5 +1,5 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { merge } from "lodash";
+import merge from "lodash/merge";
 import system from "./graphql/system";
 
 const emptyResolver = () => ({});

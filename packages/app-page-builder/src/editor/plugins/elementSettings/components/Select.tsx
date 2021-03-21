@@ -1,6 +1,6 @@
 import React from "react";
 import { activeElementAtom, elementWithChildrenByIdSelector } from "../../../recoil/modules";
-import { get } from "lodash";
+import get from "lodash/get";
 import { Typography } from "@webiny/ui/Typography";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Select as SelectCmp } from "@webiny/ui/Select";

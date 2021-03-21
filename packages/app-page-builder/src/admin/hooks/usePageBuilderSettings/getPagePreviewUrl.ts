@@ -1,4 +1,4 @@
-import { trimEnd } from "lodash";
+import trimEnd from "lodash/trimEnd";
 
 export default ({ page: { path, id }, websiteUrl }) => {
     let previewUrl = "";

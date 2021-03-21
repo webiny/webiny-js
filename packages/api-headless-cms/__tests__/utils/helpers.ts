@@ -1,4 +1,4 @@
-import { pick } from "lodash";
+import pick from "lodash/pick";
 import { SecurityIdentity } from "@webiny/api-security";
 
 export interface PermissionsArg {

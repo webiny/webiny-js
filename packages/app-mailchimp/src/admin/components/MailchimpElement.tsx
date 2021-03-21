@@ -1,7 +1,7 @@
 import * as React from "react";
 import { ElementRoot } from "@webiny/app-page-builder/render/components/ElementRoot";
 import { Form } from "@webiny/form";
-import { get } from "lodash";
+import get from "lodash/get";
 import { plugins } from "@webiny/plugins";
 import { PbPageElementMailchimpComponentPlugin } from "../../types";
 import { i18n } from "@webiny/app/i18n";

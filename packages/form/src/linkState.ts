@@ -1,5 +1,5 @@
-import { noop } from "lodash";
-import { set } from "lodash/fp";
+import noop from "lodash/noop";
+import set from "lodash/fp/set";
 
 export const linkState = (component: any, key: string) => {
     return (value: any, inlineCallback: Function = noop): Promise<any> => {

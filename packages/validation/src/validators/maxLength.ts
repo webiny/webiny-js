@@ -1,4 +1,3 @@
-import _ from "lodash";
 import ValidationError from "./../validationError";
 
 export default (value: any, params: Array<string>) => {
@@ -7,17 +6,17 @@ export default (value: any, params: Array<string>) => {
     }
 
     let lengthOfValue = null;
-    if (_.has(value, "length")) {
+    if (Array.isArray(value)) {
         lengthOfValue = value.length;
-    } else if (_.isObject(value)) {
-        lengthOfValue = _.keys(value).length;
+    } else if (typeof value === "object") {
+        lengthOfValue = Object.keys(value).length;
     }
 
     if (lengthOfValue === null || lengthOfValue <= params[0]) {
         return;
     }
 
-    if (_.isString(value)) {
+    if (typeof value === "string") {
         throw new ValidationError("Value requires " + params[0] + " characters at most.");
     }
     throw new ValidationError("Value requires " + params[0] + " items at most.");

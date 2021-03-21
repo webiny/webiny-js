@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { cloneDeep } from "lodash";
+import cloneDeep from "lodash/cloneDeep";
 import { merge } from "dot-prop-immutable";
 import { useEventActionHandler } from "../../../hooks/useEventActionHandler";
 import { UpdateElementActionEvent } from "../../../recoil/actions";

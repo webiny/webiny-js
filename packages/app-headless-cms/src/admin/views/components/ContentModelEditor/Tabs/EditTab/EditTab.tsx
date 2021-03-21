@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from "react";
-import { get, cloneDeep } from "lodash";
+import get from "lodash/get";
+import cloneDeep from "lodash/cloneDeep";
 import { Icon } from "@webiny/ui/Icon";
 import { ReactComponent as HandleIcon } from "~/admin/icons/round-drag_indicator-24px.svg";
 import { CmsEditorContentTab, FieldLayoutPosition } from "~/types";

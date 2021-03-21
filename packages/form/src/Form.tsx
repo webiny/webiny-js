@@ -1,5 +1,10 @@
 import * as React from "react";
-import _ from "lodash";
+import has from "lodash/has";
+import get from "lodash/get";
+import cloneDeep from "lodash/cloneDeep";
+import isEqual from "lodash/isEqual";
+import isPlainObject from "lodash/isPlainObject";
+import each from "lodash/each";
 import set from "lodash/fp/set";
 import { createBind } from "./Bind";
 import { linkState } from "./linkState";
@@ -69,14 +74,14 @@ export class Form extends React.Component<FormProps, State> {
 
     static getDerivedStateFromProps({ data, invalidFields = {} }: FormProps, state: State) {
         // If we received new `data`, overwrite current `data` in the state
-        if (!_.isEqual(state.originalData, data)) {
+        if (!isEqual(state.originalData, data)) {
             return { data, originalData: data, validation: {} };
         }
 
         // Check for validation errors
-        let validation = _.cloneDeep(state.validation);
-        if (_.isPlainObject(invalidFields) && Object.keys(invalidFields).length) {
-            _.each(invalidFields, (message, name) => {
+        let validation = cloneDeep(state.validation);
+        if (isPlainObject(invalidFields) && Object.keys(invalidFields).length) {
+            each(invalidFields, (message, name) => {
                 validation = {
                     ...validation,
                     [name]: {
@@ -88,7 +93,7 @@ export class Form extends React.Component<FormProps, State> {
         }
 
         // Return new state only if something has changed
-        return !_.isEqual(validation, state.validation) ? { validation } : null;
+        return !isEqual(validation, state.validation) ? { validation } : null;
     }
 
     static executeValidators = async (
@@ -158,7 +163,7 @@ export class Form extends React.Component<FormProps, State> {
                 const inputNames = Object.keys(this.inputs);
                 inputNames.forEach(name => {
                     const defaultValue = this.inputs[name].defaultValue;
-                    if (!_.has(data, name) && typeof defaultValue !== "undefined") {
+                    if (!has(data, name) && typeof defaultValue !== "undefined") {
                         data = set(name, defaultValue, data);
                     }
                 });
@@ -214,9 +219,9 @@ export class Form extends React.Component<FormProps, State> {
         if ((this.props.validateOnFirstSubmit && !this.state.wasSubmitted) || !this.inputs[name]) {
             return Promise.resolve(null);
         }
-        const value = _.get(this.state.data, name, this.inputs[name].defaultValue);
+        const value = get(this.state.data, name, this.inputs[name].defaultValue);
         const { validators } = this.inputs[name];
-        const hasValidators = _.keys(validators).length;
+        const hasValidators = Object.keys(validators).length;
 
         // Validate input
         const formData = {
@@ -340,7 +345,7 @@ export class Form extends React.Component<FormProps, State> {
 
     render() {
         const children = this.props.children;
-        if (!_.isFunction(children)) {
+        if (typeof children !== "function") {
             throw new Error("Form must have a function as its only child!");
         }
 
@@ -350,7 +355,7 @@ export class Form extends React.Component<FormProps, State> {
             "webiny-form-container",
             { onKeyDown: this.__onKeyDown },
             children({
-                data: _.cloneDeep(this.state.data),
+                data: cloneDeep(this.state.data),
                 setValue: this.__setValue,
                 form: this,
                 submit: this.submit,

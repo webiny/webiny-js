@@ -1,5 +1,5 @@
 const OG_IMAGE_DIMENSIONS_PROPERTIES = ["og:image:width", "og:image:height"];
-import { get } from "lodash";
+import get from "lodash/get";
 
 export default async ({ data, value, setValue }) => {
     let meta = [];

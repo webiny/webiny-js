@@ -1,7 +1,7 @@
 import { SecurityIdentity } from "@webiny/api-security";
-import { CmsContext } from "@webiny/api-headless-cms/types";
 import { SecurityContext } from "@webiny/api-security/types";
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
+import { CmsContext } from "~/types";
 
 const identityType = "read-api-key";
 
@@ -12,7 +12,7 @@ export default () => [
             const { headers } = context.http.request;
             const header = headers["Authorization"] || headers["authorization"];
             const token = header ? header.split(" ").pop() : null;
-            if (!token || token !== context.cms.getSettings().readAPIKey) {
+            if (!token || token !== (await context.cms.getReadAPIKey())) {
                 return;
             }
 

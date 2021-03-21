@@ -4,7 +4,7 @@ module.exports = ({ path }) => ({
             "@babel/preset-env",
             {
                 targets: {
-                    browsers: ["last 2 versions", "safari >= 7"]
+                    browsers: ["last 2 versions", "safari >= 11"]
                 },
                 // Allow importing core-js in entrypoint and use browserlist to select polyfills
                 useBuiltIns: "entry",
@@ -22,7 +22,6 @@ module.exports = ({ path }) => ({
     ],
     plugins: [
         "babel-plugin-macros",
-        "babel-plugin-lodash",
         "@babel/plugin-proposal-class-properties",
         "@babel/plugin-proposal-throw-expressions",
         [
@@ -34,15 +33,7 @@ module.exports = ({ path }) => ({
                 useESModules: false
             }
         ],
-        "@babel/plugin-proposal-optional-chaining",
-        "@babel/plugin-proposal-nullish-coalescing-operator",
         ["babel-plugin-emotion", { autoLabel: true }],
-        [
-            "@babel/plugin-proposal-object-rest-spread",
-            {
-                useBuiltIns: true
-            }
-        ],
         [
             "babel-plugin-named-asset-import",
             {

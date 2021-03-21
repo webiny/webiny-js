@@ -8,7 +8,8 @@ import {
 } from "@webiny/app-admin/components/SimpleForm";
 import { useFormEditor } from "../../../Context";
 import { Form } from "@webiny/form";
-import { cloneDeep, debounce } from "lodash";
+import cloneDeep from "lodash/cloneDeep";
+import debounce from "lodash/debounce";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { validation } from "@webiny/validation";

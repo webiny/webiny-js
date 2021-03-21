@@ -1,4 +1,4 @@
-import _ from "lodash";
+import get from "lodash/get";
 import hash from "short-hash";
 import * as fecha from "fecha";
 import accounting from "accounting";
@@ -62,7 +62,7 @@ export default class I18N {
             throw Error("I18N text namespace not defined.");
         }
 
-        base = _.get(base, "raw.0", base);
+        base = get(base, "raw.0", base);
 
         let translation = this.getTranslation(namespace + "." + hash(base));
 
@@ -187,7 +187,7 @@ export default class I18N {
         if (!outputFormat) {
             outputFormat = this.getPriceFormat();
         } else {
-            outputFormat = _.assign({}, this.defaultFormats.price, outputFormat);
+            outputFormat = Object.assign({}, this.defaultFormats.price, outputFormat);
         }
 
         // Convert placeholders to accounting's placeholders.
@@ -214,7 +214,7 @@ export default class I18N {
         if (!outputFormat) {
             outputFormat = this.getNumberFormat();
         } else {
-            outputFormat = _.assign({}, this.defaultFormats.number, outputFormat);
+            outputFormat = Object.assign({}, this.defaultFormats.number, outputFormat);
         }
         return accounting.formatNumber(
             value,
@@ -284,7 +284,7 @@ export default class I18N {
      */
 
     mergeTranslations(translations: Translations) {
-        return _.assign(this.translations, translations);
+        return Object.assign(this.translations, translations);
     }
 
     /**
@@ -388,34 +388,38 @@ export default class I18N {
      * Returns current format to be used when outputting dates.
      */
     getDateFormat(): string {
-        return _.get(this.locale, "formats.date", this.defaultFormats.date);
+        return get(this.locale, "formats.date", this.defaultFormats.date);
     }
 
     /**
      * Returns current format to be used when outputting time.
      */
     getTimeFormat(): string {
-        return _.get(this.locale, "formats.time", this.defaultFormats.time);
+        return get(this.locale, "formats.time", this.defaultFormats.time);
     }
 
     /**
      * Returns current format to be used when outputting date/time.
      */
     getDateTimeFormat(): string {
-        return _.get(this.locale, "formats.datetime", this.defaultFormats.datetime);
+        return get(this.locale, "formats.datetime", this.defaultFormats.datetime);
     }
 
     /**
      * Returns current format to be used when outputting prices.
      */
     getPriceFormat(): PriceFormat {
-        return _.assign({}, this.defaultFormats.price, _.get(this.locale, "formats.price", {}));
+        return Object.assign({}, this.defaultFormats.price, get(this.locale, "formats.price", {}));
     }
 
     /**
      * Returns current format to be used when outputting numbers.
      */
     getNumberFormat(): NumberFormat {
-        return _.assign({}, this.defaultFormats.number, _.get(this.locale, "formats.number", {}));
+        return Object.assign(
+            {},
+            this.defaultFormats.number,
+            get(this.locale, "formats.number", {})
+        );
     }
 }

@@ -1,4 +1,4 @@
-import { get } from "lodash";
+import get from "lodash/get";
 import gql from "graphql-tag";
 import { Form } from "@webiny/form";
 import { Mutation } from "@apollo/react-components";

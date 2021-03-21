@@ -22,7 +22,6 @@ module.exports = ({ path }) => ({
     ],
     plugins: [
         "babel-plugin-macros",
-        "babel-plugin-lodash",
         "@babel/plugin-proposal-class-properties",
         "@babel/plugin-proposal-throw-expressions",
         [
@@ -34,8 +33,6 @@ module.exports = ({ path }) => ({
                 useESModules: false
             }
         ],
-        "@babel/plugin-proposal-optional-chaining",
-        "@babel/plugin-proposal-nullish-coalescing-operator",
         ["babel-plugin-emotion", { autoLabel: true }],
         [
             "@babel/plugin-proposal-object-rest-spread",

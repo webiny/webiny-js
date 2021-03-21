@@ -1,6 +1,6 @@
 import { useUi } from "@webiny/app/hooks/useUi";
 import { default as localStorage } from "store";
-import { get } from "lodash";
+import get from "lodash/get";
 import { set } from "dot-prop-immutable";
 
 const LOCAL_STORAGE_KEY = "webiny_apps_menu_sections";

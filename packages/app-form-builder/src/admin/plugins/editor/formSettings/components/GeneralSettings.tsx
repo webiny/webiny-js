@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
-import { get } from "lodash";
+import get from "lodash/get";
 import { Input } from "@webiny/ui/Input";
 import { plugins } from "@webiny/plugins";
 import { FbFormLayoutPlugin } from "../../../../../types";

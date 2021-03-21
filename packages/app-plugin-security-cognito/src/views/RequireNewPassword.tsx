@@ -1,5 +1,5 @@
 import * as React from "react";
-import { lowerCase } from "lodash";
+import lowerCase from "lodash/lowerCase";
 import { Form } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { ButtonPrimary } from "@webiny/ui/Button";

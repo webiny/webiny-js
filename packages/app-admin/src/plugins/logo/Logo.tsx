@@ -1,5 +1,5 @@
 import React from "react";
-import { isEqual } from "lodash";
+import isEqual from "lodash/isEqual";
 import { ReactComponent as WebinyLogo } from "../../assets/images/webiny-logo.svg";
 import { Link } from "@webiny/react-router";
 

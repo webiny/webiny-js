@@ -4,7 +4,7 @@ import {
     FormSubmitResponseType
 } from "../../../types";
 import { plugins } from "@webiny/plugins";
-import { get } from "lodash";
+import get from "lodash/get";
 
 type HandleFormTriggersArgs = {
     props: FbFormRenderComponentProps;

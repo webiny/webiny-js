@@ -8,7 +8,7 @@ import keycode from "keycode";
 import { autoCompleteStyle, suggestionList } from "./styles";
 import { AutoCompleteBaseProps } from "./types";
 import { getOptionValue, getOptionText, findInAliases } from "./utils";
-import { isEqual } from "lodash";
+import isEqual from "lodash/isEqual";
 import MaterialSpinner from "react-spinner-material";
 import { css } from "emotion";
 

@@ -1,7 +1,8 @@
-import { get, set } from "lodash";
+import { ApolloClient } from "apollo-client";
+import get from "lodash/get";
+import set from "lodash/set";
 import { FbFormRenderComponentProps } from "../../../types";
 import { SAVE_FORM_VIEW } from "./graphql";
-import { ApolloClient } from "apollo-client";
 
 const saveFormView = ({ data, client }: FbFormRenderComponentProps) => {
     // SSR?

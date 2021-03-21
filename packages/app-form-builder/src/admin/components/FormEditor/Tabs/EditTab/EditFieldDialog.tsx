@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { cloneDeep } from "lodash";
+import cloneDeep from "lodash/cloneDeep";
 import { css } from "emotion";
 import styled from "@emotion/styled";
 import {

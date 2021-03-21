@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect } from "react";
 import { css } from "emotion";
-import { isEqual } from "lodash";
-import { get } from "lodash";
+import isEqual from "lodash/isEqual";
+import get from "lodash/get";
 import { PbEditorElement } from "../../../../../types";
 import useRenderEmptyEmbed from "../../../elements/utils/oembed/useRenderEmptyEmbed";
 

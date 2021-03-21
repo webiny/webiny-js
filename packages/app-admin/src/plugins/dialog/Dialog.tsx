@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { get } from "lodash";
+import get from "lodash/get";
 import { useUi } from "@webiny/app/hooks/useUi";
 import { Dialog, DialogAccept, DialogTitle, DialogActions, DialogContent } from "@webiny/ui/Dialog";
 

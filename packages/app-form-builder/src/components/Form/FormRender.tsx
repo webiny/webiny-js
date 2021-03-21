@@ -1,5 +1,6 @@
 import { plugins } from "@webiny/plugins";
-import { cloneDeep, get } from "lodash";
+import cloneDeep from "lodash/cloneDeep";
+import get from "lodash/get";
 import React, { useEffect, useRef, useMemo } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import { createReCaptchaComponent, createTermsOfServiceComponent } from "./components";

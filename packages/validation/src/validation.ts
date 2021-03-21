@@ -1,4 +1,5 @@
-import _ from "lodash";
+import trim from "lodash/trim";
+import isEmpty from "lodash/isEmpty";
 import ValidationError from "./validationError";
 import { Validator, ValidateOptions, ParsedValidators } from "./types";
 
@@ -70,11 +71,11 @@ class Validation {
         validators: string,
         options: ValidateOptions = {}
     ): Promise<boolean | ValidationError> {
-        if (_.isString(validators) && _.isEmpty(validators)) {
+        if (typeof validators === "string" && isEmpty(validators)) {
             return true;
         }
 
-        if (!_.isString(validators)) {
+        if (typeof validators !== "string") {
             throw new Error(invalidRules);
         }
 
@@ -107,11 +108,11 @@ class Validation {
         validators: string,
         options: ValidateOptions = {}
     ): boolean | ValidationError {
-        if (_.isString(validators) && _.isEmpty(validators)) {
+        if (typeof validators === "string" && isEmpty(validators)) {
             return true;
         }
 
-        if (!_.isString(validators)) {
+        if (typeof validators !== "string") {
             throw new Error(invalidRules);
         }
 
@@ -161,7 +162,7 @@ class Validation {
 
         const parsedValidators: ParsedValidators = {};
         validate.forEach((v: string) => {
-            const params = _.trim(v).split(":");
+            const params = trim(v).split(":");
             const vName = params.shift();
             parsedValidators[vName] = params;
         });

@@ -1,6 +1,8 @@
 import React from "react";
 import shortid from "shortid";
-import { get, cloneDeep, pick } from "lodash";
+import get from "lodash/get";
+import cloneDeep from "lodash/cloneDeep";
+import pick from "lodash/pick";
 import { GET_CONTENT_MODEL, UPDATE_CONTENT_MODEL } from "./graphql";
 import { getFieldPosition, moveField, moveRow, deleteField } from "./functions";
 import { plugins } from "@webiny/plugins";

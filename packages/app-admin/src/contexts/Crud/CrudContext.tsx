@@ -5,7 +5,7 @@ import { useDialog } from "../../hooks/useDialog";
 import { useDataList } from "@webiny/app/hooks/useDataList";
 import { useRouter } from "@webiny/react-router";
 import { getData, getError } from "./functions";
-import { get } from "lodash";
+import get from "lodash/get";
 import { i18n } from "@webiny/app/i18n";
 
 type CrudProviderProps = {

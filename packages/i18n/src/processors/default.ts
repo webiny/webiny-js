@@ -1,16 +1,17 @@
-import _ from "lodash";
+import trim from "lodash/trim";
+import has from "lodash/has";
 import { Processor } from "../types";
 
 const processTextPart = (part: string, values: Object, modifiers): string => {
-    if (!_.startsWith(part, "{")) {
+    if (!part.startsWith("{")) {
         return part;
     }
 
-    const parts = _.trim(part, "{}").split("|");
+    const parts = trim(part, "{}").split("|");
 
     const [variable, modifier] = parts;
 
-    if (!_.has(values, variable)) {
+    if (has(values, variable)) {
         return `{${variable}}`;
     }
 

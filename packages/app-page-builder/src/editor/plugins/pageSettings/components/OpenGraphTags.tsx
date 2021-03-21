@@ -1,5 +1,5 @@
 import * as React from "react";
-import { trim } from "lodash";
+import trim from "lodash/trim";
 import { DynamicFieldset } from "@webiny/ui/DynamicFieldset";
 import { ButtonPrimary, ButtonSecondary } from "@webiny/ui/Button";
 import { Grid, Cell } from "@webiny/ui/Grid";

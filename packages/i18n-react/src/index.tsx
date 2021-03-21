@@ -1,4 +1,5 @@
-import _ from "lodash";
+import trim from "lodash/trim";
+import has from "lodash/has";
 import React from "react";
 import { Processor } from "@webiny/i18n/types";
 
@@ -19,17 +20,17 @@ declare global {
 }
 
 const processTextPart = (part: string, values: any, modifiers): any => {
-    if (!_.startsWith(part, "{")) {
+    if (!part.startsWith("{")) {
         return part;
     }
 
-    part = _.trim(part, "{}");
+    part = trim(part, "{}");
 
     const parts = part.split("|");
 
     const [variable, modifier] = parts;
 
-    if (!_.has(values, variable)) {
+    if (!has(values, variable)) {
         return variable;
     }
 

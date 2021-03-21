@@ -1,4 +1,4 @@
-import { get } from "lodash";
+import get from "lodash/get";
 
 const process = ({ data, form }) => {
     const responseHandler = get(form, "get.response");

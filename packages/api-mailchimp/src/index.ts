@@ -2,7 +2,7 @@ import { ListErrorResponse, ListResponse, ErrorResponse } from "@webiny/handler-
 import { hasPermission } from "@webiny/api-security";
 import mailchimpSettings from "./mailchimpSettings.model";
 import MailchimpApi from "./MailchimpApi";
-import { get } from "lodash";
+import get from "lodash/get";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { ContextInterface, ContextPlugin } from "@webiny/handler/types";
 

@@ -6,7 +6,7 @@ import { TagsMultiAutocomplete } from "../../../../admin/components/TagsMultiAut
 import { Input } from "@webiny/ui/Input";
 import { Select } from "@webiny/ui/Select";
 import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
-import { get } from "lodash";
+import get from "lodash/get";
 import appendOgImageDimensions from "./appendOgImageDimensions";
 import { validation } from "@webiny/validation";
 import { PbPageLayoutPlugin } from "../../../../types";

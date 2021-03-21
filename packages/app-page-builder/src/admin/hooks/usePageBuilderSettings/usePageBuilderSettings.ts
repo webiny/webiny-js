@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import gql from "graphql-tag";
-import { get } from "lodash";
+import get from "lodash/get";
 
 const DATA_FIELDS = /* GraphQL */ `
     {

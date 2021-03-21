@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { css } from "emotion";
 import styled from "@emotion/styled";
-import { camelCase, cloneDeep } from "lodash";
+import camelCase from "lodash/camelCase";
+import cloneDeep from "lodash/cloneDeep";
 import { OptionsListItem, AddOptionInput, EditFieldOptionDialog } from "./OptionsListComponents";
 // @ts-ignore
 import { sortableContainer, sortableElement, sortableHandle } from "react-sortable-hoc";

@@ -24,7 +24,6 @@
     "@types/webpack-env": "1.15.2",
     "@webiny/cli": "^5.1.0",
     "babel-loader": "8.0.6",
-    "babel-plugin-lodash": "3.3.4",
     "babel-plugin-named-asset-import": "0.3.7",
     "babel-preset-react-app": "9.1.2",
     "boolean": "3.0.2",
@@ -82,7 +81,6 @@
         "@babel/plugin-syntax-object-rest-spread",
         "@svgr/webpack",
         "@types/webpack-env",
-        "babel-plugin-lodash",
         "chalk",
         "raw-loader",
         "node-sass"

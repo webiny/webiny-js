@@ -6,7 +6,7 @@ import { useQuery, useMutation } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { GET_SETTINGS, UPDATE_SETTINGS } from "./graphql";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { get } from "lodash";
+import get from "lodash/get";
 import { validation } from "@webiny/validation";
 
 import {

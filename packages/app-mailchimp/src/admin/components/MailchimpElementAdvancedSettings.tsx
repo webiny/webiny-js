@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useApolloClient } from "@apollo/react-hooks";
 import { Query } from "@apollo/react-components";
 import gql from "graphql-tag";
-import { get } from "lodash";
+import get from "lodash/get";
 import { css } from "emotion";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";

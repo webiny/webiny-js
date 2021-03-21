@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { cloneDeep } from "lodash";
+import cloneDeep from "lodash/cloneDeep";
 import { css } from "emotion";
 import { Dialog, DialogContent, DialogTitle, DialogActions, DialogButton } from "@webiny/ui/Dialog";
 import { Form } from "@webiny/form";
