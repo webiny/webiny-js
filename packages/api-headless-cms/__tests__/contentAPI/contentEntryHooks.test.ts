@@ -208,7 +208,7 @@ describe("contentEntryHooks", () => {
     });
 
     test("should execute hooks on delete revision", async () => {
-        const { createCategory, deleteCategory } = useCategoryManageHandler(manageOpts, [
+        const { createCategory, deleteCategory, sleep } = useCategoryManageHandler(manageOpts, [
             contentEntryHooks()
         ]);
 
@@ -218,6 +218,9 @@ describe("contentEntryHooks", () => {
                 slug: "category"
             }
         });
+
+        // unfortunately we need to wait for elasticsearch to create the index so we avoid the error
+        await sleep(1000);
 
         const { id } = createResponse.data.createCategory.data;
 
@@ -257,7 +260,7 @@ describe("contentEntryHooks", () => {
     });
 
     test("should execute hooks on delete whole entry and its versions", async () => {
-        const { createCategory, deleteCategory } = useCategoryManageHandler(manageOpts, [
+        const { createCategory, deleteCategory, sleep } = useCategoryManageHandler(manageOpts, [
             contentEntryHooks()
         ]);
 
@@ -267,6 +270,8 @@ describe("contentEntryHooks", () => {
                 slug: "category"
             }
         });
+
+        await sleep(2000);
 
         const { id: revisionId } = createResponse.data.createCategory.data;
 

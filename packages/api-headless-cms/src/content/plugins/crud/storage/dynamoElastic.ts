@@ -62,5 +62,5 @@ const contentEntryStorageOperationsProvider = (): CmsContentEntryStorageOperatio
 export default () => [
     contentModelGroupStorageOperationsProvider(),
     contentModelStorageOperationsProvider(),
-    contentEntryStorageOperationsProvider(),
+    contentEntryStorageOperationsProvider()
 ];

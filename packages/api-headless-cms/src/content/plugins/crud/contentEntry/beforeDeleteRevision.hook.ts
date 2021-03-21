@@ -1,16 +1,8 @@
 import { runContentEntryLifecycleHooks } from "./runContentEntryLifecycleHooks";
-import {
-    CmsContentEntryStorageOperations,
-    CmsContentEntryStorageOperationsBeforeDeleteRevisionArgs, CmsContentModel, CmsContext
-} from "../../../../types";
+import { CmsContentEntryBeforeDeleteRevisionHookArgs } from "../../../../types";
 
-interface Args extends CmsContentEntryStorageOperationsBeforeDeleteRevisionArgs {
-    context: CmsContext;
-    model: CmsContentModel;
-    storageOperations: CmsContentEntryStorageOperations;
-}
 export const beforeDeleteRevisionHook = async (
-    args: Args
+    args: CmsContentEntryBeforeDeleteRevisionHookArgs
 ): Promise<void> => {
     if (args.storageOperations.beforeDeleteRevision) {
         await args.storageOperations.beforeDeleteRevision(args.model, args);

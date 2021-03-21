@@ -281,7 +281,7 @@ describe("content model test", () => {
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         await until(
             () => listCategories().then(([data]) => data),
-            ({ data }) => data.listCategories.data.length === 1,
+            ({ data }) => data.listCategories.data.length > 0,
             { name: "list categories to check ES has indexed newly created" }
         );
 
