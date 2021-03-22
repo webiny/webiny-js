@@ -1,5 +1,6 @@
 import { validation } from "@webiny/validation";
-import { pipe, object } from "@webiny/commodo";
+import pipe from "@ramda/pipe";
+import { object } from "commodo-fields-object";
 import { withFields, string, setOnce, onSet, boolean, fields } from "@commodo/fields";
 import idValidation from "./idValidation";
 
