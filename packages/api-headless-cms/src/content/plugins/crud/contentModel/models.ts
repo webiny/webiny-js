@@ -1,5 +1,5 @@
 import { validation } from "@webiny/validation";
-import pipe from "@ramda/pipe";
+import flow from "lodash/flow";
 import { object } from "commodo-fields-object";
 import { withFields, string, setOnce, onSet, boolean, fields } from "@commodo/fields";
 import idValidation from "./idValidation";
@@ -20,7 +20,7 @@ const RendererModel = withFields({
 
 export const ContentModelFieldModel = withFields({
     id: string({ validation: requiredShortString }),
-    fieldId: pipe(
+    fieldId: flow(
         onSet(value => value && value.trim()),
         setOnce()
     )(string({ validation: idValidation })),
