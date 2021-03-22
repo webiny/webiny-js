@@ -4,6 +4,7 @@
   "exclude": [
     "node_modules",
     "./dist",
+    "../api-file-manager",
     "../validation",
     "../handler-graphql",
     "../plugins",
@@ -16,5 +17,9 @@
     "paths": {},
     "baseUrl": "."
   },
-  "references": []
+  "references": [
+    {
+      "path": "../api-file-manager/tsconfig.build.json"
+    }
+  ]
 }

@@ -45,6 +45,7 @@ const Revisions: React.FunctionComponent = () => {
         <Menu
             className={menuList}
             onSelect={evt => {
+                console.log("[REVISIONS]");
                 history.push(`/page-builder/editor/${revisions[evt.detail.index].id}`);
             }}
             handle={

@@ -4,14 +4,52 @@ import MaterialSpinner from "react-spinner-material";
 import { Input } from "../Input";
 import { Chips, Chip } from "../Chips";
 import { getOptionValue, getOptionText, findInAliases } from "./utils";
-
-import { ReactComponent as BaselineCloseIcon } from "./icons/baseline-close-24px.svg";
+import { List, ListItem, ListItemMeta } from "@webiny/ui/List";
+import { IconButton } from "@webiny/ui/Button";
+import { Icon } from "@webiny/ui/Icon";
 import classNames from "classnames";
 import { Elevation } from "../Elevation";
 import { Typography } from "../Typography";
 import { autoCompleteStyle, suggestionList } from "./styles";
-
 import { AutoCompleteBaseProps } from "./types";
+import { FormElementMessage } from "../FormElementMessage";
+
+import { ReactComponent as BaselineCloseIcon } from "./icons/baseline-close-24px.svg";
+import { ReactComponent as PrevIcon } from "./icons/navigate_before-24px.svg";
+import { ReactComponent as NextIcon } from "./icons/navigate_next-24px.svg";
+import { ReactComponent as PrevAllIcon } from "./icons/skip_previous-24px.svg";
+import { ReactComponent as NextAllIcon } from "./icons/skip_next-24px.svg";
+import { ReactComponent as DeleteIcon } from "./icons/delete.svg";
+
+import { css } from "emotion";
+const style = {
+    pagination: {
+        bar: css({
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            borderBottom: "2px solid #fa5723",
+            padding: "6px 0"
+        }),
+        pages: css({
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center"
+        }),
+        searchInput: css({
+            height: "42px !important"
+        }),
+        list: css({
+            padding: "0 0 5px 0 !important",
+            ".mdc-list-item": {
+                borderBottom: "1px solid var(--mdc-theme-on-background)"
+            }
+        }),
+        secondaryText: css({
+            color: "var(--mdc-theme-text-secondary-on-background)"
+        })
+    }
+};
 
 export type MultiAutoCompleteProps = AutoCompleteBaseProps & {
     /**
@@ -24,16 +62,69 @@ export type MultiAutoCompleteProps = AutoCompleteBaseProps & {
      */
     allowFreeInput?: boolean;
 
-    /* If true, will show a loading spinner on the right side of the input. */
+    /**
+     *  If true, will show a loading spinner on the right side of the input.
+     */
     loading?: boolean;
+
+    /**
+     * Use data list instead of default Chips component. Useful when expecting a lot of data.
+     */
+    useMultipleSelectionList?: boolean;
 };
 
 type State = {
     inputValue: string;
+    multipleSelectionPage: number;
+    multipleSelectionSearch: string;
 };
 
 function Spinner() {
     return <MaterialSpinner size={24} spinnerColor={"#fa5723"} spinnerWidth={2} visible />;
+}
+
+const DEFAULT_PER_PAGE = 10;
+function paginateMultipleSelection(multipleSelection, limit, page, search) {
+    // Assign a real index, so that later when we press delete, we know what is the actual index we're deleting.
+    let data = Array.isArray(multipleSelection)
+        ? multipleSelection.map((item, index) => ({ ...item, index }))
+        : [];
+
+    if (typeof search === "string" && search) {
+        data = data.filter(item => {
+            return (
+                typeof item.name === "string" &&
+                item.name.toLowerCase().includes(search.toLowerCase())
+            );
+        });
+    }
+
+    const lastPage = Math.ceil(data.length / limit);
+    const totalCount = data.length;
+
+    page = page || lastPage;
+    data = data.slice((page - 1) * limit, page * limit);
+
+    let from = 0;
+    let to = 0;
+    if (data.length) {
+        from = (page - 1) * limit + 1;
+        to = from + (data.length - 1);
+    }
+
+    const meta = {
+        hasData: data.length > 0,
+        totalCount,
+        from,
+        to,
+        page: page,
+        lastPage,
+        limit,
+        hasPrevious: page > 1,
+        hasNext: page < lastPage
+    };
+
+    return { data, meta };
 }
 
 export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, State> {
@@ -43,13 +134,16 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
         unique: true,
         options: [],
         useSimpleValues: false,
+        useMultipleSelectionList: false,
         renderItem(item: any) {
             return <Typography use={"body2"}>{getOptionText(item, this.props)}</Typography>;
         }
     };
 
     state = {
-        inputValue: ""
+        inputValue: "",
+        multipleSelectionPage: 0,
+        multipleSelectionSearch: ""
     };
 
     /**
@@ -60,6 +154,14 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
     assignedValueAfterClearing = {
         set: false,
         selection: null
+    };
+
+    setMultipleSelectionPage = multipleSelectionPage => {
+        this.setState({ multipleSelectionPage });
+    };
+
+    setMultipleSelectionSearch = multipleSelectionSearch => {
+        this.setState({ multipleSelectionSearch });
     };
 
     getOptions() {
@@ -183,30 +285,114 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
      * @returns {*}
      */
     renderMultipleSelection() {
-        const { value, onChange, disabled } = this.props;
+        const { value, onChange, disabled, useMultipleSelectionList, description } = this.props;
 
-        return (
-            <React.Fragment>
-                {Array.isArray(value) && value.length ? (
-                    <Chips disabled={disabled}>
-                        {value.map((item, index) => (
-                            <Chip
-                                label={getOptionText(item, this.props)}
-                                key={`${getOptionValue(item, this.props)}-${index}`}
-                                trailingIcon={<BaselineCloseIcon />}
-                                onRemove={() => {
-                                    if (onChange) {
-                                        onChange([
-                                            ...value.slice(0, index),
-                                            ...value.slice(index + 1)
-                                        ]);
-                                    }
+        if (useMultipleSelectionList) {
+            const { data, meta } = paginateMultipleSelection(
+                value,
+                DEFAULT_PER_PAGE,
+                this.state.multipleSelectionPage,
+                this.state.multipleSelectionSearch
+            );
+
+            return (
+                <>
+                    <div className={style.pagination.bar}>
+                        <div>
+                            <Input
+                                className={style.pagination.searchInput}
+                                placeholder={"Search selected..."}
+                                value={this.state.multipleSelectionSearch}
+                                onChange={value => {
+                                    this.setMultipleSelectionSearch(value);
+                                    this.setMultipleSelectionPage(value ? 1 : 0);
                                 }}
                             />
-                        ))}
-                    </Chips>
-                ) : null}
-            </React.Fragment>
+                        </div>
+
+                        <div className={style.pagination.pages}>
+                            <div className={meta.hasData ? "" : style.pagination.secondaryText}>
+                                {meta.from} - {meta.to} of {meta.totalCount}
+                            </div>
+                            <div>
+                                <IconButton
+                                    icon={<PrevAllIcon />}
+                                    disabled={!meta.hasData || meta.page === 1}
+                                    onClick={() => this.setMultipleSelectionPage(1)}
+                                />
+                                <IconButton
+                                    icon={<PrevIcon />}
+                                    disabled={!meta.hasData || !meta.hasPrevious}
+                                    onClick={() => this.setMultipleSelectionPage(meta.page - 1)}
+                                />
+                                <IconButton
+                                    icon={<NextIcon />}
+                                    disabled={!meta.hasData || !meta.hasNext}
+                                    onClick={() => this.setMultipleSelectionPage(meta.page + 1)}
+                                />
+                                <IconButton
+                                    icon={<NextAllIcon />}
+                                    disabled={!meta.hasData || meta.page === meta.lastPage}
+                                    onClick={() => this.setMultipleSelectionPage(meta.lastPage)}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <List className={style.pagination.list}>
+                        {meta.hasData ? (
+                            data.map((item, index) => (
+                                <ListItem key={`${getOptionValue(item, this.props)}-${index}`}>
+                                    {getOptionText(item, this.props)}
+                                    <ListItemMeta>
+                                        <Icon
+                                            icon={<DeleteIcon />}
+                                            onClick={() => {
+                                                if (onChange) {
+                                                    onChange([
+                                                        ...value.slice(0, item.index),
+                                                        ...value.slice(item.index + 1)
+                                                    ]);
+                                                }
+                                            }}
+                                        />
+                                    </ListItemMeta>
+                                </ListItem>
+                            ))
+                        ) : (
+                            <ListItem>
+                                <span className={style.pagination.secondaryText}>
+                                    Nothing to show.
+                                </span>
+                            </ListItem>
+                        )}
+                    </List>
+                    <div>
+                        <FormElementMessage>{description}</FormElementMessage>
+                    </div>
+                </>
+            );
+        }
+
+        const hasItems = Array.isArray(value) && value.length;
+        if (!hasItems) {
+            return null;
+        }
+
+        return (
+            <Chips disabled={disabled}>
+                {value.map((item, index) => (
+                    <Chip
+                        label={getOptionText(item, this.props)}
+                        key={`${getOptionValue(item, this.props)}-${index}`}
+                        trailingIcon={<BaselineCloseIcon />}
+                        onRemove={() => {
+                            if (onChange) {
+                                onChange([...value.slice(0, index), ...value.slice(index + 1)]);
+                            }
+                        }}
+                    />
+                ))}
+            </Chips>
         );
     }
 
@@ -224,6 +410,8 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
                 textProp, // eslint-disable-line
                 onInput,
                 validation = { isValid: null },
+                useMultipleSelectionList,
+                description,
                 ...otherInputProps
             }
         } = this;
@@ -245,6 +433,7 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
                                 selection
                             };
                             this.downshift.current.clearSelection();
+                            this.setMultipleSelectionPage(0);
                             return;
                         }
 
@@ -268,6 +457,9 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
                                     ...otherInputProps,
                                     // @ts-ignore
                                     validation,
+
+                                    // Only pass description if not using "useMultipleSelectionList".
+                                    description: useMultipleSelectionList ? null : description,
                                     rawOnChange: true,
                                     trailingIcon: this.props.loading && <Spinner />,
                                     onChange: e => e,

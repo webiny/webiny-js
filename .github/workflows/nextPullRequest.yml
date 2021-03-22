@@ -2,7 +2,7 @@ name: Next Branch - Pull Request
 
 on:
   pull_request:
-    branches: [next]
+    branches: [next, v5]
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
