@@ -155,8 +155,6 @@ module.exports = async function createProject({
                           } catch (err) {
                               task.skip("Git repo not initialized", err);
                           }
-
-                          JSON.parse("asd");
                       }
                   }
                 : null
