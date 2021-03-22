@@ -2855,7 +2855,7 @@ export interface CmsContentEntryStorageOperations {
     /**
      * Get all revisions of the given entry id.
      */
-    // getRevisions: (model: CmsContentModel, id: string) => Promise<CmsContentEntry[]>;
+    getRevisions: (model: CmsContentModel, id: string) => Promise<CmsContentEntry[]>;
     /**
      * Gets entry by given args.
      */

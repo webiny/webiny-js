@@ -1118,28 +1118,28 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
             );
         }
     }
-    //
-    // public async getRevisions(model: CmsContentModel, id: string): Promise<CmsContentEntry[]> {
-    //     const { db } = this.context;
-    //     try {
-    //         const [items] = await db.read<CmsContentEntry>({
-    //             ...utils.defaults.db(),
-    //             query: {
-    //                 PK: this.getPrimaryKey(id),
-    //                 SK: { $gte: " " }
-    //             }
-    //         });
-    //         return items;
-    //     } catch (ex) {
-    //         throw new WebinyError(
-    //             ex.message || "Could not read from the database.",
-    //             ex.code || "GET_REVISIONS_ERROR",
-    //             {
-    //                 id
-    //             }
-    //         );
-    //     }
-    // }
+
+    public async getRevisions(model: CmsContentModel, id: string): Promise<CmsContentEntry[]> {
+        const { db } = this.context;
+        try {
+            const [items] = await db.read<CmsContentEntry>({
+                ...utils.defaults.db(),
+                query: {
+                    PK: this.getPrimaryKey(id),
+                    SK: { $beginsWith: "REV#" }
+                }
+            });
+            return items;
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not read from the database.",
+                ex.code || "GET_REVISIONS_ERROR",
+                {
+                    id
+                }
+            );
+        }
+    }
 
     /**
      * A method that creates query arg for the DynamoDB.

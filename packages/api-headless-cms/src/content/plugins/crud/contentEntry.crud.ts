@@ -198,38 +198,7 @@ export default (): ContextPlugin<CmsContext> => ({
             },
 
             getEntryRevisions: async (model, entryId) => {
-                const entries = [];
-                let loadMore = true;
-                let after: string = undefined;
-                try {
-                    while (loadMore) {
-                        const { items, hasMoreItems, cursor } = await storageOperations.list(
-                            model,
-                            {
-                                where: {
-                                    entryId
-                                },
-                                limit: 500,
-                                after
-                            }
-                        );
-                        loadMore = hasMoreItems;
-                        after = cursor;
-                        entries.push(...items);
-                    }
-                    return entries;
-                } catch (ex) {
-                    throw new WebinyError(
-                        ex.message || "Could not search for revisions.",
-                        ex.code || "GET_REVISIONS",
-                        {
-                            model,
-                            entry: {
-                                entryId
-                            }
-                        }
-                    );
-                }
+                return storageOperations.getRevisions(model, entryId);
             },
             get: async (model, args) => {
                 await checkPermissions({ rwd: "r" });
