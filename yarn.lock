@@ -7302,25 +7302,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@webiny/api-cookie-policy@workspace:packages/api-cookie-policy":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-cookie-policy@workspace:packages/api-cookie-policy"
-  dependencies:
-    "@babel/cli": ^7.5.5
-    "@babel/core": ^7.5.5
-    "@babel/preset-env": ^7.5.5
-    "@babel/preset-typescript": ^7.8.3
-    "@babel/runtime": ^7.5.5
-    "@svgr/webpack": ^4.3.2
-    "@webiny/commodo": ^5.2.0
-    "@webiny/handler-graphql": ^5.2.0
-    "@webiny/validation": ^5.2.0
-    lodash: ^4.17.4
-    rimraf: ^3.0.2
-    typescript: ^4.1.3
-  languageName: unknown
-  linkType: soft
-
 "@webiny/api-dynamodb-to-elasticsearch@^5.0.0-beta.4, @webiny/api-dynamodb-to-elasticsearch@^5.2.0, @webiny/api-dynamodb-to-elasticsearch@workspace:packages/api-dynamodb-to-elasticsearch":
   version: 0.0.0-use.local
   resolution: "@webiny/api-dynamodb-to-elasticsearch@workspace:packages/api-dynamodb-to-elasticsearch"
@@ -7443,24 +7424,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-google-tag-manager@workspace:packages/api-google-tag-manager":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-google-tag-manager@workspace:packages/api-google-tag-manager"
-  dependencies:
-    "@babel/cli": ^7.5.5
-    "@babel/core": ^7.5.5
-    "@babel/preset-env": ^7.5.5
-    "@babel/preset-typescript": ^7.8.3
-    "@babel/runtime": ^7.5.5
-    "@svgr/webpack": ^4.3.2
-    "@webiny/commodo": ^5.2.0
-    "@webiny/handler-graphql": ^5.2.0
-    lodash: ^4.17.4
-    rimraf: ^3.0.2
-    typescript: ^4.1.3
-  languageName: unknown
-  linkType: soft
-
 "@webiny/api-headless-cms@^5.0.0-beta.0, @webiny/api-headless-cms@^5.0.0-beta.4, @webiny/api-headless-cms@workspace:packages/api-headless-cms":
   version: 0.0.0-use.local
   resolution: "@webiny/api-headless-cms@workspace:packages/api-headless-cms"
@@ -7555,28 +7518,6 @@ __metadata:
     i18n-locales: ^0.0.2
     jest: ^26.6.3
     jest-dynalite: ^3.2.0
-    lodash: ^4.17.4
-    rimraf: ^3.0.2
-    typescript: ^4.1.3
-  languageName: unknown
-  linkType: soft
-
-"@webiny/api-mailchimp@workspace:packages/api-mailchimp":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-mailchimp@workspace:packages/api-mailchimp"
-  dependencies:
-    "@babel/cli": ^7.5.5
-    "@babel/core": ^7.5.5
-    "@babel/preset-env": ^7.5.5
-    "@babel/preset-react": ^7.0.0
-    "@babel/preset-typescript": ^7.8.3
-    "@babel/runtime": ^7.5.5
-    "@svgr/webpack": ^4.3.2
-    "@webiny/api-security": ^5.2.0
-    "@webiny/commodo": ^5.2.0
-    "@webiny/handler": ^5.2.0
-    "@webiny/handler-graphql": ^5.2.0
-    got: ^9.6.0
     lodash: ^4.17.4
     rimraf: ^3.0.2
     typescript: ^4.1.3
@@ -7847,45 +7788,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/app-cookie-policy@workspace:packages/app-cookie-policy":
-  version: 0.0.0-use.local
-  resolution: "@webiny/app-cookie-policy@workspace:packages/app-cookie-policy"
-  dependencies:
-    "@apollo/react-components": ^3.1.5
-    "@babel/cli": ^7.5.5
-    "@babel/core": ^7.5.5
-    "@babel/preset-env": ^7.5.5
-    "@babel/preset-react": ^7.0.0
-    "@babel/preset-typescript": ^7.8.3
-    "@babel/runtime": ^7.5.5
-    "@svgr/webpack": ^4.3.2
-    "@types/react": ^16.9.56
-    "@webiny/app": ^5.2.0
-    "@webiny/app-admin": ^5.2.0
-    "@webiny/app-page-builder": ^5.2.0
-    "@webiny/app-security": ^5.2.0
-    "@webiny/form": ^5.2.0
-    "@webiny/react-router": ^5.2.0
-    "@webiny/ui": ^5.2.0
-    "@webiny/validation": ^5.2.0
-    apollo-cache: ^1.3.5
-    apollo-client: ^2.6.10
-    apollo-link: ^1.2.14
-    apollo-utilities: ^1.3.4
-    babel-plugin-module-resolver: ^3.1.1
-    babel-plugin-named-asset-import: ^1.0.0-next.3e165448
-    graphql: ^14.7.0
-    graphql-tag: ^2.10.3
-    load-src: ^1.0.0
-    lodash.get: ^4.4.2
-    react: ^16.14.0
-    react-dom: ^16.14.0
-    react-helmet: ^5.2.0
-    rimraf: ^3.0.2
-    typescript: ^4.1.3
-  languageName: unknown
-  linkType: soft
-
 "@webiny/app-file-manager-s3@^5.0.0-beta.0, @webiny/app-file-manager-s3@workspace:packages/app-file-manager-s3":
   version: 0.0.0-use.local
   resolution: "@webiny/app-file-manager-s3@workspace:packages/app-file-manager-s3"
@@ -7991,43 +7893,6 @@ __metadata:
     rimraf: ^3.0.2
     shortid: ^2.2.14
     timeago-react: ^2.0.0
-    typescript: ^4.1.3
-  languageName: unknown
-  linkType: soft
-
-"@webiny/app-google-tag-manager@workspace:packages/app-google-tag-manager":
-  version: 0.0.0-use.local
-  resolution: "@webiny/app-google-tag-manager@workspace:packages/app-google-tag-manager"
-  dependencies:
-    "@apollo/react-components": ^3.1.5
-    "@babel/cli": ^7.5.5
-    "@babel/core": ^7.5.5
-    "@babel/preset-env": ^7.5.5
-    "@babel/preset-react": ^7.0.0
-    "@babel/preset-typescript": ^7.8.3
-    "@babel/runtime": ^7.5.5
-    "@svgr/webpack": ^4.3.2
-    "@types/react": ^16.9.56
-    "@webiny/app": ^5.2.0
-    "@webiny/app-admin": ^5.2.0
-    "@webiny/app-page-builder": ^5.2.0
-    "@webiny/app-security": ^5.2.0
-    "@webiny/form": ^5.2.0
-    "@webiny/react-router": ^5.2.0
-    "@webiny/ui": ^5.2.0
-    apollo-cache: ^1.3.5
-    apollo-client: ^2.6.10
-    apollo-link: ^1.2.14
-    apollo-utilities: ^1.3.4
-    babel-plugin-named-asset-import: ^1.0.0-next.3e165448
-    graphql: ^14.7.0
-    graphql-tag: ^2.10.1
-    lodash.get: ^4.4.2
-    prop-types: ^15.7.2
-    react: ^16.14.0
-    react-dom: ^16.14.0
-    react-helmet: ^5.2.0
-    rimraf: ^3.0.2
     typescript: ^4.1.3
   languageName: unknown
   linkType: soft
@@ -8189,51 +8054,6 @@ __metadata:
     apollo-utilities: ^1.3.4
     babel-plugin-emotion: ^9.2.8
     babel-plugin-named-asset-import: ^1.0.0-next.3e165448
-    graphql: ^14.7.0
-    graphql-tag: ^2.10.1
-    lodash: ^4.17.11
-    prop-types: ^15.7.2
-    react: ^16.14.0
-    react-dom: ^16.14.0
-    react-helmet: ^5.2.0
-    rimraf: ^3.0.2
-    typescript: ^4.1.3
-  languageName: unknown
-  linkType: soft
-
-"@webiny/app-mailchimp@workspace:packages/app-mailchimp":
-  version: 0.0.0-use.local
-  resolution: "@webiny/app-mailchimp@workspace:packages/app-mailchimp"
-  dependencies:
-    "@apollo/react-components": ^3.1.5
-    "@apollo/react-hooks": ^3.1.5
-    "@babel/cli": ^7.5.5
-    "@babel/core": ^7.5.5
-    "@babel/plugin-proposal-class-properties": ^7.5.5
-    "@babel/preset-env": ^7.5.5
-    "@babel/preset-react": ^7.0.0
-    "@babel/preset-typescript": ^7.8.3
-    "@babel/runtime": ^7.5.5
-    "@emotion/core": ^10.0.27
-    "@emotion/styled": ^10.0.17
-    "@svgr/webpack": ^4.3.2
-    "@types/react": ^16.9.56
-    "@webiny/app": ^5.2.0
-    "@webiny/app-admin": ^5.2.0
-    "@webiny/app-page-builder": ^5.2.0
-    "@webiny/app-security": ^5.2.0
-    "@webiny/form": ^5.2.0
-    "@webiny/plugins": ^5.2.0
-    "@webiny/react-router": ^5.2.0
-    "@webiny/ui": ^5.2.0
-    "@webiny/validation": ^5.2.0
-    apollo-cache: ^1.3.5
-    apollo-client: ^2.6.10
-    apollo-link: ^1.2.14
-    apollo-utilities: ^1.3.4
-    babel-plugin-emotion: ^9.2.8
-    babel-plugin-named-asset-import: ^1.0.0-next.3e165448
-    emotion: 10.0.17
     graphql: ^14.7.0
     graphql-tag: ^2.10.1
     lodash: ^4.17.11
@@ -8681,7 +8501,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@webiny/commodo@^5.2.0, @webiny/commodo@workspace:packages/commodo":
+"@webiny/commodo@workspace:packages/commodo":
   version: 0.0.0-use.local
   resolution: "@webiny/commodo@workspace:packages/commodo"
   dependencies:
@@ -11143,19 +10963,6 @@ __metadata:
   dependencies:
     babel-helper-is-void-0: ^0.4.3
   checksum: f8349786dc3646a9fe5de902a185bbc39de04d1fe7335b3bbdf3cb0c84e4b9063c90ee16f79d04b8cb1461efd1dc22074ec2da309ce3a786d9913d51bea5ad88
-  languageName: node
-  linkType: hard
-
-"babel-plugin-module-resolver@npm:^3.1.1":
-  version: 3.2.0
-  resolution: "babel-plugin-module-resolver@npm:3.2.0"
-  dependencies:
-    find-babel-config: ^1.1.0
-    glob: ^7.1.2
-    pkg-up: ^2.0.0
-    reselect: ^3.0.1
-    resolve: ^1.4.0
-  checksum: 55d98a2240daddff925c0b354d8cc5b49971a7673d8046e8e854957003f172801e448acb6ea03c71a947c86709dd08e482d2c57ecbdd4e6423825b1de221040d
   languageName: node
   linkType: hard
 
@@ -17420,7 +17227,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"find-babel-config@npm:^1.1.0, find-babel-config@npm:^1.2.0":
+"find-babel-config@npm:^1.2.0":
   version: 1.2.0
   resolution: "find-babel-config@npm:1.2.0"
   dependencies:
@@ -22831,17 +22638,6 @@ fsevents@^1.2.7:
   version: 1.0.0
   resolution: "load-script@npm:1.0.0"
   checksum: 9f907ee20dfe8068af210be73a072dd61a287566a23b5666b9c6b9957e66eb33cc7c6a790308cf307c373d7ff75265ab1dde779c3fff90d65535fb3a1c0a167a
-  languageName: node
-  linkType: hard
-
-"load-src@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "load-src@npm:1.0.0"
-  dependencies:
-    "@babel/runtime": ^7.2.0
-  peerDependencies:
-    react: ">=0.16.0"
-  checksum: a07658df6b8d7323798ccaa782050ee26d736d35c325722a2ae0afe743abfbf71760cd0b4eeb84094a522e16154fcf542f9f502f57df7a9476287a3852f39f53
   languageName: node
   linkType: hard
 
@@ -29717,13 +29513,6 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"reselect@npm:^3.0.1":
-  version: 3.0.1
-  resolution: "reselect@npm:3.0.1"
-  checksum: 55163bccc651cb32231e77bc0dd0d344778a41a15bb6cc4d2b5cf9af6f42180d20286037ce631493a18a3d90f5e163deebb1ff20bef9ba07dd136e467bb1dbf4
-  languageName: node
-  linkType: hard
-
 "reselect@npm:^4.0.0":
   version: 4.0.0
   resolution: "reselect@npm:4.0.0"
@@ -29844,7 +29633,7 @@ resolve@1.12.2:
   languageName: node
   linkType: hard
 
-"resolve@>=1.9.0, resolve@^1.1.6, resolve@^1.10.0, resolve@^1.10.1, resolve@^1.11.0, resolve@^1.12.0, resolve@^1.13.1, resolve@^1.14.2, resolve@^1.17.0, resolve@^1.18.1, resolve@^1.19.0, resolve@^1.3.2, resolve@^1.4.0, resolve@^1.7.1, resolve@^1.8.1":
+"resolve@>=1.9.0, resolve@^1.1.6, resolve@^1.10.0, resolve@^1.10.1, resolve@^1.11.0, resolve@^1.12.0, resolve@^1.13.1, resolve@^1.14.2, resolve@^1.17.0, resolve@^1.18.1, resolve@^1.19.0, resolve@^1.3.2, resolve@^1.7.1, resolve@^1.8.1":
   version: 1.20.0
   resolution: "resolve@npm:1.20.0"
   dependencies:
@@ -29863,7 +29652,7 @@ resolve@1.12.2:
   languageName: node
   linkType: hard
 
-"resolve@patch:resolve@>=1.9.0#builtin<compat/resolve>, resolve@patch:resolve@^1.1.6#builtin<compat/resolve>, resolve@patch:resolve@^1.10.0#builtin<compat/resolve>, resolve@patch:resolve@^1.10.1#builtin<compat/resolve>, resolve@patch:resolve@^1.11.0#builtin<compat/resolve>, resolve@patch:resolve@^1.12.0#builtin<compat/resolve>, resolve@patch:resolve@^1.13.1#builtin<compat/resolve>, resolve@patch:resolve@^1.14.2#builtin<compat/resolve>, resolve@patch:resolve@^1.17.0#builtin<compat/resolve>, resolve@patch:resolve@^1.18.1#builtin<compat/resolve>, resolve@patch:resolve@^1.19.0#builtin<compat/resolve>, resolve@patch:resolve@^1.3.2#builtin<compat/resolve>, resolve@patch:resolve@^1.4.0#builtin<compat/resolve>, resolve@patch:resolve@^1.7.1#builtin<compat/resolve>, resolve@patch:resolve@^1.8.1#builtin<compat/resolve>":
+"resolve@patch:resolve@>=1.9.0#builtin<compat/resolve>, resolve@patch:resolve@^1.1.6#builtin<compat/resolve>, resolve@patch:resolve@^1.10.0#builtin<compat/resolve>, resolve@patch:resolve@^1.10.1#builtin<compat/resolve>, resolve@patch:resolve@^1.11.0#builtin<compat/resolve>, resolve@patch:resolve@^1.12.0#builtin<compat/resolve>, resolve@patch:resolve@^1.13.1#builtin<compat/resolve>, resolve@patch:resolve@^1.14.2#builtin<compat/resolve>, resolve@patch:resolve@^1.17.0#builtin<compat/resolve>, resolve@patch:resolve@^1.18.1#builtin<compat/resolve>, resolve@patch:resolve@^1.19.0#builtin<compat/resolve>, resolve@patch:resolve@^1.3.2#builtin<compat/resolve>, resolve@patch:resolve@^1.7.1#builtin<compat/resolve>, resolve@patch:resolve@^1.8.1#builtin<compat/resolve>":
   version: 1.20.0
   resolution: "resolve@patch:resolve@npm%3A1.20.0#builtin<compat/resolve>::version=1.20.0&hash=3388aa"
   dependencies:
