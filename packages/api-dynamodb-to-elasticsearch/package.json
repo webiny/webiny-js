@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-dynamodb-to-elasticsearch",
-  "version": "5.2.0",
+  "version": "5.2.1",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -12,8 +12,8 @@
   "author": "Webiny Ltd.",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/api-plugin-elastic-search-client": "^5.2.0",
-    "@webiny/handler": "^5.2.0",
+    "@webiny/api-plugin-elastic-search-client": "^5.2.1",
+    "@webiny/handler": "^5.2.1",
     "aws-sdk": "^2.539.0"
   },
   "devDependencies": {
