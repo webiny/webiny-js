@@ -70,6 +70,14 @@ const getESPublishedEntryData = (context: CmsContext, entry: CmsContentEntry) =>
     };
 };
 
+// const missingIndexMessages = [
+//     "index_not_found_exception",
+//     "search_phase_execution_exception",
+// ];
+// const isMissingEsIndex = (ex: Error): boolean => {
+//     return missingIndexMessages.includes(ex.message);
+// }
+
 interface ConstructorArgs {
     context: CmsContext;
     basePrimaryKey: string;
@@ -347,7 +355,7 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
                 }
             );
         }
-        if (isLatest && !latestEntry) {
+        if (isLatest && !previousEntry) {
             // If we haven't found the previous revision, this must must be the last revision.
             const deleteBatch = db.batch();
             batch
@@ -457,8 +465,10 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
         for (const arg of args) {
             batch.read({
                 ...utils.defaults.db(),
-                query: this.createQueryFromArg(arg),
-                sort: this.createSortFromArg(arg),
+                query: {
+                    ...this.createQueryFromArg(arg),
+                    ...this.createSortFromArg(arg)
+                },
                 limit: 1
             });
         }
@@ -479,7 +489,7 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
                 );
             });
         } catch (ex) {
-            throw new WebinyError(ex.message, ex.code || "MULTIPLE_GET_ENTRY_ERROR", {
+            throw new WebinyError(ex.message, "MULTIPLE_GET_ENTRY_ERROR", {
                 error: ex,
                 args
             });
@@ -505,13 +515,31 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
         });
 
         let response;
+        const esConfig = utils.defaults.es(this.context, model);
         try {
             response = await elasticSearch.search({
-                ...utils.defaults.es(this.context, model),
+                ...esConfig,
                 body
             });
         } catch (ex) {
-            throw new WebinyError(ex.message, ex.code, ex.meta);
+            // TODO check if really necessary
+            // lets pretend that everything is fine but no data
+            // if there are some specific elasticsearch errors
+            // but log them
+            // if (isMissingEsIndex(ex)) {
+            //     console.log(ex);
+            //     return {
+            //         hasMoreItems: false,
+            //         totalCount: 0,
+            //         cursor: null,
+            //         items: [],
+            //     };
+            // }
+            throw new WebinyError(ex.message, ex.code, {
+                error: ex,
+                esConfig,
+                body
+            });
         }
 
         const { hits, total } = response.body.hits;
@@ -1123,20 +1151,23 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
                 arg
             });
         }
+        const { latest, published, version, id, entryId } = arg.where;
         let secondaryKey: string;
-        if (arg.where.latest) {
+        if (latest) {
             secondaryKey = this.getSecondaryKeyLatest();
-        } else if (arg.where.published) {
+        } else if (published) {
             secondaryKey = this.getSecondaryKeyPublished();
-        } else if (arg.where.version !== undefined) {
-            secondaryKey = this.getSecondaryKeyRevision(arg.where.version);
+        } else if (version !== undefined) {
+            secondaryKey = this.getSecondaryKeyRevision(version);
+        } else if (id && Object.keys(arg.where).length === 1) {
+            secondaryKey = this.getSecondaryKeyRevision(id);
         } else {
             throw new WebinyError("Unsupported search parameters.", "SEARCH_UNSUPPORTED", {
                 arg
             });
         }
         return {
-            PK: this.getPrimaryKey(arg.where.id),
+            PK: this.getPrimaryKey(id || entryId),
             SK: secondaryKey
         };
     }
@@ -1148,9 +1179,9 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
         arg: CmsContentEntryStorageOperationsGetArgs
     ): Record<string, 1 | -1> {
         if (!arg.sort) {
-            return undefined;
+            return {};
         } else if (Object.keys(arg.sort).length === 0) {
-            return undefined;
+            return {};
         } else if (Object.keys(arg.sort).length > 1 || !arg.sort[0].startsWith("createdOn_")) {
             throw new WebinyError("Unsupported entry sorting.", "SEARCH_SORT_UNSUPPORTED", {
                 arg
@@ -1186,10 +1217,7 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
      *   3
      */
     private getSecondaryKeyRevision(version: string | number) {
-        if (typeof version === "string") {
-            if (version.includes("#") === false) {
-                return `REV#${version}`;
-            }
+        if (typeof version === "string" && version.includes("#") === true) {
             version = version.split("#").pop();
         }
         return `REV#${utils.zeroPad(version)}`;

@@ -59,10 +59,10 @@ describe("contentEntryHooks", () => {
     };
 
     beforeEach(async () => {
-        await setupContentModel();
         try {
             await clearAllIndex();
         } catch {}
+        await setupContentModel();
         hooksTracker.reset();
     });
 

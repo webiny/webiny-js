@@ -201,19 +201,35 @@ export default (): ContextPlugin<CmsContext> => ({
                 const entries = [];
                 let loadMore = true;
                 let after: string = undefined;
-                while (loadMore) {
-                    const { items, hasMoreItems, cursor } = await storageOperations.list(model, {
-                        where: {
-                            entryId
-                        },
-                        limit: 500,
-                        after
-                    });
-                    loadMore = hasMoreItems;
-                    after = cursor;
-                    entries.push(...items);
+                try {
+                    while (loadMore) {
+                        const { items, hasMoreItems, cursor } = await storageOperations.list(
+                            model,
+                            {
+                                where: {
+                                    entryId
+                                },
+                                limit: 500,
+                                after
+                            }
+                        );
+                        loadMore = hasMoreItems;
+                        after = cursor;
+                        entries.push(...items);
+                    }
+                    return entries;
+                } catch (ex) {
+                    throw new WebinyError(
+                        ex.message || "Could not search for revisions.",
+                        ex.code || "GET_REVISIONS",
+                        {
+                            model,
+                            entry: {
+                                entryId
+                            }
+                        }
+                    );
                 }
-                return entries;
             },
             get: async (model, args) => {
                 await checkPermissions({ rwd: "r" });
@@ -984,7 +1000,7 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 const { items } = await storageOperations.list(model, {
                     where: {
-                        id: entryId
+                        entryId
                     },
                     limit: 1
                 });

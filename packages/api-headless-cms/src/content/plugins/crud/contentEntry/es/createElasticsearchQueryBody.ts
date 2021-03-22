@@ -116,7 +116,7 @@ const createElasticsearchSortParams = (
         }
 
         const [, field, order] = match;
-        const modelFieldOptions = (modelFields[field] || {}) as any;
+        const modelFieldOptions = modelFields[field] || (({} as unknown) as ModelField);
         const { isSortable = false, unmappedType, isSystemField = false } = modelFieldOptions;
 
         if (!isSortable) {
