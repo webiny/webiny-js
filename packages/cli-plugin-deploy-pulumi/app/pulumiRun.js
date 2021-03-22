@@ -39,6 +39,12 @@ module.exports = async (inputs, context) => {
 
     return pulumi.run({
         command,
-        execa: { stdio: "inherit" }
+        execa: {
+            stdio: "inherit",
+            env: {
+                WEBINY_ENV: env,
+                WEBINY_PROJECT_NAME: context.projectName
+            }
+        }
     });
 };
