@@ -18,6 +18,7 @@ module.exports = async function createProject({
     template,
     tag,
     log,
+    cleanup,
     interactive,
     templateOptions,
     assignToYarnrc: assignToYarnRc
@@ -154,6 +155,8 @@ module.exports = async function createProject({
                           } catch (err) {
                               task.skip("Git repo not initialized", err);
                           }
+
+                          JSON.parse('asd')
                       }
                   }
                 : null
@@ -269,9 +272,14 @@ module.exports = async function createProject({
 
         console.log(`Writing log to ${green(path.resolve(log))}...`);
         fs.writeFileSync(path.resolve(log), err.toString());
-        console.log("Cleaning up project...");
-        rimraf.sync(projectRoot);
-        console.log("Project cleaned!");
+
+        if (cleanup) {
+            console.log("Cleaning up generated files and folders...");
+            rimraf.sync(projectRoot);
+            console.log("Done.");
+        } else {
+            console.log('Project cleanup skipped.')
+        }
 
         await sendEvent({ event: "create-webiny-project-end" });
         process.exit(1);
