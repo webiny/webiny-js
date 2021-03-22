@@ -71,6 +71,14 @@ yargs.command(
             type: "string",
             demandOption: false
         });
+        yargs.option("cleanup", {
+            describe: "If an error occurs upon project creation, deletes all generated files.",
+            alias: "c",
+            default: true,
+            type: "boolean",
+            demandOption: false
+        });
+
         yargs.example("$0 <project-name>");
         yargs.example("$0 <project-name> --template=aws");
         yargs.example("$0 <project-name> --template=../path/to/template");
