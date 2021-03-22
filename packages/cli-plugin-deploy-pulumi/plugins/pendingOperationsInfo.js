@@ -15,7 +15,7 @@ module.exports = {
                 `The ${blue(
                     "pending operations"
                 )} Pulumi error you've just experienced can occur if one of the previous deployments has been interrupted, or another deployment is already in progress.`,
-                "To learn more here, please visit https://docs.webiny.com/docs/how-to-guides/deployment/deploy-your-project#the-current-deployment-has-x-resources-with-pending-operations."
+                "To learn more, please visit https://docs.webiny.com/docs/how-to-guides/deployment/deploy-your-project#the-current-deployment-has-x-resources-with-pending-operations."
             ].join(" ")
         );
     }
