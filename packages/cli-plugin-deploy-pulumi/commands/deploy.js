@@ -158,7 +158,8 @@ module.exports = async (inputs, context) => {
                 secretsProvider: SECRETS_PROVIDER
             },
             execa: {
-                stdio: "inherit",
+                // stdio: ["inherit", "inherit", process.stderr],
+                stdio: ['inherit', "inherit", "pipe"],
                 env: {
                     WEBINY_ENV: env,
                     WEBINY_PROJECT_NAME: context.projectName
