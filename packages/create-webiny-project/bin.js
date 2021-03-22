@@ -6,29 +6,22 @@ const chalk = require("chalk");
 const getYarnVersion = require("./utils/getYarnVersion");
 const verifyConfig = require("./utils/verifyConfig");
 
-const currentNodeVersion = process.versions.node;
-const majorVersion = parseInt(currentNodeVersion.split(".")[0]);
-const minorVersion = parseInt(currentNodeVersion.split(".")[1]);
-
-const NODE_VERSION_MIN_MAJOR = 10;
-const NODE_VERSION_MIN_MINOR = 14;
-
 (async () => {
-    if (
-        majorVersion < NODE_VERSION_MIN_MAJOR ||
-        (majorVersion === NODE_VERSION_MIN_MAJOR && minorVersion < NODE_VERSION_MIN_MINOR)
-    ) {
+    const nodeVersion = process.versions.node;
+    if (!semver.satisfies(nodeVersion, "^12 || ^14")) {
         console.error(
             chalk.red(
-                "You are running Node " +
-                    currentNodeVersion +
-                    ".\n" +
-                    `Webiny requires Node ${NODE_VERSION_MIN_MAJOR}.${NODE_VERSION_MIN_MINOR} or higher. \n` +
-                    "Please update your version of Node."
+                [
+                    `You are running Node.js ${nodeVersion}, but Webiny requires version 12 or 14.`,
+                    `Please switch to one of the two and try again.`,
+                    "For more information, please visit https://docs.webiny.com/docs/tutorials/install-webiny#prerequisites."
+                ].join(" ")
             )
         );
         process.exit(1);
     }
+
+    process.exit();
 
     try {
         const yarnVersion = await getYarnVersion();
