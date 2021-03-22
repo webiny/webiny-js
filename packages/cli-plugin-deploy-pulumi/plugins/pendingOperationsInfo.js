@@ -1,12 +1,12 @@
+const { blue } = require("chalk");
 const MATCH_STRING = 'remove that operation from the "pending_operations" section of the file';
-const { blue} = require("chalk");
 
 module.exports = {
     type: "cli-command-error",
     handle: ({ context, error }) => {
         const { message } = error;
-        const pendingOperationError = typeof message === "string" && message.includes(MATCH_STRING);
-        if (!pendingOperationError) {
+        const isError = typeof message === "string" && message.includes(MATCH_STRING);
+        if (!isError) {
             return;
         }
 
