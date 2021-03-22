@@ -204,7 +204,7 @@ describe("refField", () => {
                             displayName: "User 123",
                             type: "admin"
                         },
-                        savedOn: review.savedOn,
+                        savedOn: expect.stringMatching(/^20/),
                         text: "review text",
                         rating: 5,
                         meta: {
@@ -279,7 +279,7 @@ describe("refField", () => {
                                 modelId: "product"
                             },
                             rating: 5,
-                            savedOn: review.savedOn,
+                            savedOn: expect.stringMatching(/^20/),
                             text: review.text
                         }
                     ],
@@ -321,7 +321,7 @@ describe("refField", () => {
                     data: {
                         id: review.id,
                         createdOn: review.createdOn,
-                        savedOn: review.savedOn,
+                        savedOn: expect.stringMatching(/^20/),
                         text: "review text",
                         rating: 5,
                         product: {
