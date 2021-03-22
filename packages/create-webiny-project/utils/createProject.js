@@ -156,7 +156,7 @@ module.exports = async function createProject({
                               task.skip("Git repo not initialized", err);
                           }
 
-                          JSON.parse('asd')
+                          JSON.parse("asd");
                       }
                   }
                 : null
@@ -278,7 +278,7 @@ module.exports = async function createProject({
             rimraf.sync(projectRoot);
             console.log("Done.");
         } else {
-            console.log('Project cleanup skipped.')
+            console.log("Project cleanup skipped.");
         }
 
         await sendEvent({ event: "create-webiny-project-end" });

@@ -159,7 +159,7 @@ module.exports = async (inputs, context) => {
             },
             execa: {
                 // stdio: ["inherit", "inherit", process.stderr],
-                stdio: ['inherit', "inherit", "pipe"],
+                stdio: ["inherit", "inherit", "pipe"],
                 env: {
                     WEBINY_ENV: env,
                     WEBINY_PROJECT_NAME: context.projectName

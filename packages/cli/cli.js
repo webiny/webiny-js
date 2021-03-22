@@ -58,7 +58,7 @@ yargs
                 context.debug(error);
             }
 
-            console.log()
+            console.log();
             const plugins = context.plugins.byType("cli-command-error");
             for (let i = 0; i < plugins.length; i++) {
                 const plugin = plugins[i];
