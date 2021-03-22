@@ -21,8 +21,6 @@ const verifyConfig = require("./utils/verifyConfig");
         process.exit(1);
     }
 
-    process.exit();
-
     try {
         const yarnVersion = await getYarnVersion();
         if (!semver.satisfies(yarnVersion, "^1.22.0 || ^2")) {
