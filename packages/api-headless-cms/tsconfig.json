@@ -21,9 +21,6 @@
       "path": "../api-upgrade"
     },
     {
-      "path": "../commodo"
-    },
-    {
       "path": "../db-dynamodb"
     },
     {
@@ -71,8 +68,6 @@
       "@webiny/api-file-manager": ["../api-file-manager/src"],
       "@webiny/api-upgrade/*": ["../api-upgrade/src/*"],
       "@webiny/api-upgrade": ["../api-upgrade/src"],
-      "@webiny/commodo/*": ["../commodo/src/*"],
-      "@webiny/commodo": ["../commodo/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/error/*": ["../error/src/*"],
