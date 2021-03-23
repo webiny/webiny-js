@@ -7452,7 +7452,6 @@ __metadata:
     "@webiny/api-security": ^5.2.1
     "@webiny/api-security-tenancy": ^5.2.1
     "@webiny/api-upgrade": ^5.2.1
-    "@webiny/commodo": ^5.2.1
     "@webiny/db-dynamodb": ^5.2.1
     "@webiny/error": ^5.2.1
     "@webiny/handler": ^5.2.1
@@ -8506,7 +8505,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@webiny/commodo@^5.2.1, @webiny/commodo@workspace:packages/commodo":
+"@webiny/commodo@workspace:packages/commodo":
   version: 0.0.0-use.local
   resolution: "@webiny/commodo@workspace:packages/commodo"
   dependencies:
