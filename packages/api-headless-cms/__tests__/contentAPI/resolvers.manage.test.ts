@@ -499,7 +499,14 @@ describe("MANAGE - Resolvers", () => {
         // Wait until the new category revision is propagated to ES index
         const response = await until(
             () => listCategories().then(([data]) => data),
-            ({ data }) => data.listCategories.data[0].id === newEntry.id
+            ({ data }) => {
+                const entry = data.listCategories.data[0];
+                if (!entry) {
+                    return false;
+                }
+                return entry.id === newEntry.id && entry.savedOn === newEntry.savedOn;
+            },
+            { name: "list after create revision", wait: 500, tries: 10 }
         );
 
         expect(response).toEqual({
@@ -588,7 +595,8 @@ describe("MANAGE - Resolvers", () => {
             createCategoryFrom,
             getCategory,
             listCategories,
-            deleteCategory
+            deleteCategory,
+            sleep
         } = useCategoryManageHandler(manageOpts);
 
         const [revision1] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
@@ -616,13 +624,14 @@ describe("MANAGE - Resolvers", () => {
         );
 
         // Delete latest revision
-        await deleteCategory({ revision: id3 });
+        const [x] = await deleteCategory({ revision: id3 });
 
+        const y = x;
         // Wait until the previous revision is indexed in Elastic as "latest"
         await until(
             () => listCategories().then(([data]) => data),
             ({ data }) => data.listCategories.data[0].id === id2,
-            { name: "delete latest revision" }
+            { name: "delete latest revision", wait: 500, tries: 10 }
         );
 
         // Make sure revision #2 is now "latest"
@@ -630,6 +639,7 @@ describe("MANAGE - Resolvers", () => {
         const { data: data2 } = list2.data.listCategories;
         expect(data2.length).toBe(1);
         expect(data2[0].id).toEqual(id2);
+        expect(data2[0].meta.version).toEqual(2);
 
         // Delete revision #1; Revision #2 should still be "latest"
         await deleteCategory({ revision: id });

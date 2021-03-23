@@ -175,7 +175,11 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
     ) {
         const { db } = this.context;
 
-        const { originalEntry, data, latestEntry } = args;
+        const {
+            originalEntryRevision: originalEntry,
+            data,
+            latestEntryRevision: latestEntry
+        } = args;
 
         const storageData = await entryToStorageTransform(this.context, model, data);
 
@@ -255,7 +259,7 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
         args: CmsContentEntryStorageOperationsDeleteArgs
     ): Promise<boolean> {
         const { db } = this.context;
-        const { entry } = args;
+        const { entryRevision: entry } = args;
 
         const primaryKey = this.getPrimaryKey(entry.id);
 
@@ -314,23 +318,28 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
         args: CmsContentEntryStorageOperationsDeleteRevisionArgs
     ): Promise<boolean> {
         const { db } = this.context;
-        const { entry, latestEntry, publishedEntry, previousEntry } = args;
+        const {
+            entryRevision,
+            latestEntryRevision,
+            publishedEntryRevision,
+            previousEntryRevision
+        } = args;
 
-        const revisionId = this.createRevisionId(entry.id, entry.version);
+        const revisionId = this.createRevisionId(entryRevision.id, entryRevision.version);
 
-        const primaryKey = this.getPrimaryKey(entry.id);
+        const primaryKey = this.getPrimaryKey(entryRevision.id);
         const batch = db.batch().delete({
             ...utils.defaults.db(),
             query: {
                 PK: primaryKey,
-                SK: this.getSecondaryKeyRevision(entry.version)
+                SK: this.getSecondaryKeyRevision(entryRevision.version)
             }
         });
-        const latestRevisionId = latestEntry
-            ? this.createRevisionId(latestEntry.id, latestEntry.version)
+        const latestRevisionId = latestEntryRevision
+            ? this.createRevisionId(latestEntryRevision.id, latestEntryRevision.version)
             : null;
-        const publishedRevisionId = publishedEntry
-            ? this.createRevisionId(publishedEntry.id, publishedEntry.version)
+        const publishedRevisionId = publishedEntryRevision
+            ? this.createRevisionId(publishedEntryRevision.id, publishedEntryRevision.version)
             : null;
         const isLatest = latestRevisionId === revisionId;
         const isPublished = publishedRevisionId === revisionId;
@@ -355,7 +364,7 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
                 }
             );
         }
-        if (isLatest && !previousEntry) {
+        if (isLatest && !previousEntryRevision) {
             // If we haven't found the previous revision, this must must be the last revision.
             const deleteBatch = db.batch();
             batch
@@ -381,8 +390,8 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
                     ex.code || "DELETE_REVISION_ERROR",
                     {
                         error: ex,
-                        entry,
-                        publishedEntry
+                        entryRevision,
+                        publishedEntryRevision
                     }
                 );
             }
@@ -397,8 +406,8 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
                         SK: this.getSecondaryKeyLatest()
                     },
                     data: {
-                        ...latestEntry,
-                        ...getESLatestEntryData(this.context, previousEntry)
+                        ...latestEntryRevision,
+                        ...getESLatestEntryData(this.context, previousEntryRevision)
                     }
                 })
                 .update({
@@ -411,7 +420,7 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
                         PK: primaryKey,
                         SK: this.getSecondaryKeyLatest(),
                         index: es.index,
-                        data: getESLatestEntryData(this.context, previousEntry)
+                        data: getESLatestEntryData(this.context, previousEntryRevision)
                     }
                 });
         }
@@ -423,9 +432,9 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
                 ex.code || "DELETE_REVISION_ERROR",
                 {
                     error: ex,
-                    entry,
-                    latestEntry,
-                    previousEntry
+                    entryRevision,
+                    latestEntryRevision,
+                    previousEntryRevision
                 }
             );
         }
@@ -449,15 +458,15 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
     /**
      * Used to get records with completely different filtering applied to get each one.
      * Use when cannot use list.
-     */
-    public async getMultiple(
+     * /
+    public async get/Multiple(
         model: CmsContentModel,
         args: CmsContentEntryStorageOperationsGetArgs[]
     ): Promise<(CmsContentEntry | null)[]> {
         const { db } = this.context;
         /**
          * No need to even start a batch if there are no arguments.
-         */
+         * /
         if (args.length === 0) {
             return [];
         }
@@ -465,10 +474,8 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
         for (const arg of args) {
             batch.read({
                 ...utils.defaults.db(),
-                query: {
-                    ...this.createQueryFromArg(arg),
-                    ...this.createSortFromArg(arg)
-                },
+                query: this.createQueryFromArg(arg),
+                sort: this.createSortFromArg(arg),
                 limit: 1
             });
         }
@@ -495,6 +502,7 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
             });
         }
     }
+    */
     /**
      * Implemented search via the Elasticsearch.
      */
@@ -569,7 +577,11 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
         model: CmsContentModel,
         args: CmsContentEntryStorageOperationsUpdateArgs
     ): Promise<CmsContentEntry> {
-        const { originalEntry, data, latestEntry } = args;
+        const {
+            originalEntryRevision: originalEntry,
+            data,
+            latestEntryRevision: latestEntry
+        } = args;
 
         const { db } = this.context;
 
@@ -638,7 +650,11 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
         args: CmsContentEntryStorageOperationsPublishArgs
     ): Promise<CmsContentEntry> {
         const { db } = this.context;
-        const { entry, latestEntry, publishedEntry } = args;
+        const {
+            entry,
+            latestEntryRevision: latestEntry,
+            publishedEntryRevision: publishedEntry
+        } = args;
 
         const primaryKey = this.getPrimaryKey(entry.id);
 
@@ -820,7 +836,7 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
         args: CmsContentEntryStorageOperationsUnpublishArgs
     ): Promise<CmsContentEntry> {
         const { db } = this.context;
-        const { entry, latestEntry } = args;
+        const { entry, latestEntryRevision: latestEntry } = args;
 
         const primaryKey = this.getPrimaryKey(entry.id);
 
@@ -887,7 +903,11 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
         args: CmsContentEntryStorageOperationsRequestChangesArgs
     ): Promise<CmsContentEntry> {
         const { db } = this.context;
-        const { entry, originalEntry, latestEntry } = args;
+        const {
+            entry,
+            originalEntryRevision: originalEntry,
+            latestEntryRevision: latestEntry
+        } = args;
 
         const primaryKey = this.getPrimaryKey(entry.id);
 
@@ -939,7 +959,11 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
         args: CmsContentEntryStorageOperationsRequestReviewArgs
     ): Promise<CmsContentEntry> {
         const { db } = this.context;
-        const { entry, originalEntry, latestEntry } = args;
+        const {
+            entry,
+            originalEntryRevision: originalEntry,
+            latestEntryRevision: latestEntry
+        } = args;
 
         const primaryKey = this.getPrimaryKey(entry.id);
 
@@ -999,8 +1023,7 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
                 query: {
                     PK: this.getPrimaryKey(id),
                     SK: this.getSecondaryKeyRevision(id)
-                },
-                limit: 1
+                }
             });
         }
         try {
@@ -1141,57 +1164,140 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
         }
     }
 
+    public async getRevisionById(
+        model: CmsContentModel,
+        id: string
+    ): Promise<CmsContentEntry | null> {
+        return this.getSingleDbItem({
+            PK: this.getPrimaryKey(id),
+            SK: this.getSecondaryKeyRevision(id)
+        });
+    }
+
+    public async getPublishedRevisionByEntryId(
+        model: CmsContentModel,
+        entryId: string
+    ): Promise<CmsContentEntry | null> {
+        return this.getSingleDbItem({
+            PK: this.getPrimaryKey(entryId),
+            SK: this.getSecondaryKeyPublished()
+        });
+    }
+
+    public async getLatestRevisionByEntryId(
+        model: CmsContentModel,
+        entryId: string
+    ): Promise<CmsContentEntry | null> {
+        return this.getSingleDbItem({
+            PK: this.getPrimaryKey(entryId),
+            SK: this.getSecondaryKeyLatest()
+        });
+    }
+
+    public async getPreviousRevision(
+        model: CmsContentModel,
+        entryId: string,
+        version: number
+    ): Promise<CmsContentEntry | null> {
+        return this.getSingleDbItem(
+            {
+                PK: this.getPrimaryKey(entryId),
+                SK: {
+                    $lt: this.getSecondaryKeyRevision(version)
+                }
+            },
+            {
+                SK: -1
+            }
+        );
+    }
+
+    private async getSingleDbItem(
+        query: { PK: string; SK: string | object },
+        sort?: { SK: number }
+    ): Promise<CmsContentEntry | null> {
+        const { db } = this.context;
+        let entry;
+        try {
+            const [entries] = await db.read<CmsContentEntry>({
+                ...utils.defaults.db(),
+                query,
+                limit: 1
+            });
+            if (entries.length === 0) {
+                return null;
+            }
+            entry = entries.shift();
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not read from the DynamoDB.",
+                ex.code || "DDB_READ_ERROR",
+                {
+                    query,
+                    sort
+                }
+            );
+        }
+        return entry;
+    }
     /**
      * A method that creates query arg for the DynamoDB.
      * There are search limitations on the DDB so we are imposing them in the code.
      */
-    private createQueryFromArg(arg: CmsContentEntryStorageOperationsGetArgs) {
-        if (!arg.where) {
-            throw new WebinyError(`Missing "where" argument.`, "SEARCH_ERROR", {
-                arg
-            });
-        }
-        const { latest, published, version, id, entryId } = arg.where;
-        let secondaryKey: string;
-        if (latest) {
-            secondaryKey = this.getSecondaryKeyLatest();
-        } else if (published) {
-            secondaryKey = this.getSecondaryKeyPublished();
-        } else if (version !== undefined) {
-            secondaryKey = this.getSecondaryKeyRevision(version);
-        } else if (id && Object.keys(arg.where).length === 1) {
-            secondaryKey = this.getSecondaryKeyRevision(id);
-        } else {
-            throw new WebinyError("Unsupported search parameters.", "SEARCH_UNSUPPORTED", {
-                arg
-            });
-        }
-        return {
-            PK: this.getPrimaryKey(id || entryId),
-            SK: secondaryKey
-        };
-    }
+    // private createQueryFromArg(arg: CmsContentEntryStorageOperationsGetArgs) {
+    //     if (!arg.where) {
+    //         throw new WebinyError(`Missing "where" argument.`, "SEARCH_ERROR", {
+    //             arg
+    //         });
+    //     }
+    //     const { latest, published, version, id, entryId, version_lt, version_gt } = arg.where;
+    //     let secondaryKey: string | object = {
+    //         $startsWith: "REV#"
+    //     };
+    //     if (latest) {
+    //         secondaryKey = this.getSecondaryKeyLatest();
+    //     } else if (published) {
+    //         secondaryKey = this.getSecondaryKeyPublished();
+    //     } else if (version !== undefined) {
+    //         secondaryKey = this.getSecondaryKeyRevision(version);
+    //     } else if (version_lt) {
+    //         secondaryKey = {
+    //             $lt: this.getSecondaryKeyRevision(version_lt)
+    //         };
+    //     } else if (version_gt) {
+    //         secondaryKey = {
+    //             $gt: this.getSecondaryKeyRevision(version_gt)
+    //         };
+    //     } else if (Object.keys(arg.where).length === 1) {
+    //         secondaryKey = this.getSecondaryKeyRevision(id);
+    //     }
+    //
+    //     return {
+    //         PK: this.getPrimaryKey(id || entryId),
+    //         SK: secondaryKey
+    //     };
+    // }
     /**
      * A method that creates sort arg for the DynamoDB.
      * There are sorting limitations on the DDB so we are imposing them in the code.
+     * We only allow sorting by createdOn since we are using mdbid() which is incremental
+     * https://www.npmjs.com/package/mdbid
      */
-    private createSortFromArg(
-        arg: CmsContentEntryStorageOperationsGetArgs
-    ): Record<string, 1 | -1> {
-        if (!arg.sort) {
-            return {};
-        } else if (Object.keys(arg.sort).length === 0) {
-            return {};
-        } else if (Object.keys(arg.sort).length > 1 || !arg.sort[0].startsWith("createdOn_")) {
-            throw new WebinyError("Unsupported entry sorting.", "SEARCH_SORT_UNSUPPORTED", {
-                arg
-            });
-        }
-        const sort = arg.sort[0] === "createdOn_ASC" ? 1 : -1;
-        return {
-            SK: sort
-        };
-    }
+    // private createSortFromArg(
+    //     arg: CmsContentEntryStorageOperationsGetArgs
+    // ): Record<string, 1 | -1> {
+    //     if (!arg.sort || Object.keys(arg.sort).length === 0) {
+    //         return undefined;
+    //     } else if (Object.keys(arg.sort).length > 1 || !arg.sort[0].startsWith("createdOn_")) {
+    //         throw new WebinyError("Unsupported entry sorting.", "SEARCH_SORT_UNSUPPORTED", {
+    //             arg
+    //         });
+    //     }
+    //     const sort = arg.sort[0] === "createdOn_ASC" ? 1 : -1;
+    //     return {
+    //         SK: sort
+    //     };
+    // }
 
     private getPrimaryKey(id: string): string {
         /**
@@ -1203,15 +1309,8 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
         }
         return `${this._primaryKey}#${id}`;
     }
-
-    private createRevisionId(id: string, version: number): string {
-        if (id.includes("#")) {
-            id = id.split("#").shift();
-        }
-        return `${id}#${utils.zeroPad(version)}`;
-    }
     /**
-     * Gets a secondary key in form of REV#version on:
+     * Gets a secondary key in form of REV#version from:
      *   id#0003
      *   0003
      *   3
@@ -1226,7 +1325,15 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
     private getSecondaryKeyLatest(): string {
         return "L";
     }
+
     private getSecondaryKeyPublished(): string {
         return "P";
+    }
+
+    private createRevisionId(id: string, version: number): string {
+        if (id.includes("#")) {
+            id = id.split("#").shift();
+        }
+        return `${id}#${utils.zeroPad(version)}`;
     }
 }

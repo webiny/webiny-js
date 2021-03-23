@@ -1289,6 +1289,10 @@ export interface CmsContentEntryContext {
      */
     getByIds: (model: CmsContentModel, revisions: string[]) => Promise<CmsContentEntry[] | null>;
     /**
+     * Get the entry for a model by a given ID.
+     */
+    getById: (model: CmsContentModel, revision: string) => Promise<CmsContentEntry>;
+    /**
      * List entries for a model. Internal method used by get, listLatest and listPublished.
      */
     list: (
@@ -2001,7 +2005,7 @@ export interface CmsContentEntryBeforeCreateHookArgs extends CmsContentEntryHook
  * @category LifecycleHook
  */
 export interface CmsContentEntryAfterCreateHookArgs extends CmsContentEntryHookPluginArgs {
-    entry: CmsContentEntry;
+    entryRevision: CmsContentEntry;
     data: CmsContentEntry;
     input: Record<string, any>;
 }
@@ -2013,8 +2017,8 @@ export interface CmsContentEntryAfterCreateHookArgs extends CmsContentEntryHookP
 export interface CmsContentEntryBeforeCreateFromRevisionHookArgs
     extends CmsContentEntryHookPluginArgs {
     data: CmsContentEntry;
-    originalEntry: CmsContentEntry;
-    latestEntry: CmsContentEntry;
+    originalEntryRevision: CmsContentEntry;
+    latestEntryRevision: CmsContentEntry;
 }
 /**
  * @category ContentEntry
@@ -2023,8 +2027,8 @@ export interface CmsContentEntryBeforeCreateFromRevisionHookArgs
 export interface CmsContentEntryAfterCreateFromRevisionHookArgs
     extends CmsContentEntryHookPluginArgs {
     data: CmsContentEntry;
-    originalEntry: CmsContentEntry;
-    latestEntry: CmsContentEntry;
+    originalEntryRevision: CmsContentEntry;
+    latestEntryRevision: CmsContentEntry;
     entry: CmsContentEntry;
 }
 
@@ -2035,8 +2039,8 @@ export interface CmsContentEntryAfterCreateFromRevisionHookArgs
 export interface CmsContentEntryBeforeUpdateHookArgs extends CmsContentEntryHookPluginArgs {
     data: CmsContentEntry;
     input: Record<string, any>;
-    originalEntry: CmsContentEntry;
-    latestEntry: CmsContentEntry;
+    originalEntryRevision: CmsContentEntry;
+    latestEntryRevision: CmsContentEntry;
 }
 /**
  * @category ContentEntry
@@ -2045,8 +2049,8 @@ export interface CmsContentEntryBeforeUpdateHookArgs extends CmsContentEntryHook
 export interface CmsContentEntryAfterUpdateHookArgs extends CmsContentEntryHookPluginArgs {
     data: CmsContentEntry;
     input: Record<string, any>;
-    originalEntry: CmsContentEntry;
-    latestEntry: CmsContentEntry;
+    originalEntryRevision: CmsContentEntry;
+    latestEntryRevision: CmsContentEntry;
     entry: CmsContentEntry;
 }
 /**
@@ -2054,34 +2058,58 @@ export interface CmsContentEntryAfterUpdateHookArgs extends CmsContentEntryHookP
  * @category LifecycleHook
  */
 export interface CmsContentEntryBeforeDeleteRevisionHookArgs extends CmsContentEntryHookPluginArgs {
-    previousEntry: CmsContentEntry;
-    latestEntry: CmsContentEntry;
-    publishedEntry: CmsContentEntry;
-    entry: CmsContentEntry;
+    /**
+     * Entry that is going to be set as latest entry.
+     */
+    previousEntryRevision: CmsContentEntry;
+    /**
+     * Entry that is currently latest entry.
+     */
+    latestEntryRevision: CmsContentEntry;
+    /**
+     * Entry that is currently published.
+     */
+    publishedEntryRevision: CmsContentEntry;
+    /**
+     * Entry that is going to be deleted.
+     */
+    entryRevision: CmsContentEntry;
 }
 /**
  * @category ContentEntry
  * @category LifecycleHook
  */
 export interface CmsContentEntryAfterDeleteRevisionHookArgs extends CmsContentEntryHookPluginArgs {
-    previousEntry: CmsContentEntry;
-    latestEntry: CmsContentEntry;
-    publishedEntry: CmsContentEntry;
-    entry: CmsContentEntry;
+    /**
+     * Entry that was set as latest entry.
+     */
+    previousEntryRevision: CmsContentEntry;
+    /**
+     * Entry that is currently latest entry.
+     */
+    latestEntryRevision: CmsContentEntry;
+    /**
+     * Entry that is currently published.
+     */
+    publishedEntryRevision: CmsContentEntry;
+    /**
+     * Entry that was deleted.
+     */
+    entryRevision: CmsContentEntry;
 }
 /**
  * @category ContentEntry
  * @category LifecycleHook
  */
 export interface CmsContentEntryBeforeDeleteHookArgs extends CmsContentEntryHookPluginArgs {
-    entry: CmsContentEntry;
+    entryRevision: CmsContentEntry;
 }
 /**
  * @category ContentEntry
  * @category LifecycleHook
  */
 export interface CmsContentEntryAfterDeleteHookArgs extends CmsContentEntryHookPluginArgs {
-    entry: CmsContentEntry;
+    entryRevision: CmsContentEntry;
 }
 /**
  * @category ContentEntry
@@ -2089,9 +2117,9 @@ export interface CmsContentEntryAfterDeleteHookArgs extends CmsContentEntryHookP
  */
 export interface CmsContentEntryBeforePublishHookArgs extends CmsContentEntryHookPluginArgs {
     entry: CmsContentEntry;
-    originalEntry: CmsContentEntry;
-    latestEntry: CmsContentEntry;
-    publishedEntry?: CmsContentEntry;
+    originalEntryRevision: CmsContentEntry;
+    latestEntryRevision: CmsContentEntry;
+    publishedEntryRevision?: CmsContentEntry;
 }
 /**
  * @category ContentEntry
@@ -2099,9 +2127,9 @@ export interface CmsContentEntryBeforePublishHookArgs extends CmsContentEntryHoo
  */
 export interface CmsContentEntryAfterPublishHookArgs extends CmsContentEntryHookPluginArgs {
     entry: CmsContentEntry;
-    originalEntry: CmsContentEntry;
-    latestEntry: CmsContentEntry;
-    publishedEntry?: CmsContentEntry;
+    originalEntryRevision: CmsContentEntry;
+    latestEntryRevision: CmsContentEntry;
+    publishedEntryRevision?: CmsContentEntry;
 }
 /**
  * @category ContentEntry
@@ -2109,9 +2137,9 @@ export interface CmsContentEntryAfterPublishHookArgs extends CmsContentEntryHook
  */
 export interface CmsContentEntryBeforeUnpublishHookArgs extends CmsContentEntryHookPluginArgs {
     entry: CmsContentEntry;
-    originalEntry: CmsContentEntry;
-    latestEntry: CmsContentEntry;
-    publishedEntry: CmsContentEntry;
+    originalEntryRevision: CmsContentEntry;
+    latestEntryRevision: CmsContentEntry;
+    publishedEntryRevision: CmsContentEntry;
 }
 /**
  * @category ContentEntry
@@ -2119,17 +2147,17 @@ export interface CmsContentEntryBeforeUnpublishHookArgs extends CmsContentEntryH
  */
 export interface CmsContentEntryAfterUnpublishHookArgs extends CmsContentEntryHookPluginArgs {
     entry: CmsContentEntry;
-    originalEntry: CmsContentEntry;
-    latestEntry: CmsContentEntry;
-    publishedEntry: CmsContentEntry;
+    originalEntryRevision: CmsContentEntry;
+    latestEntryRevision: CmsContentEntry;
+    publishedEntryRevision: CmsContentEntry;
 }
 /**
  * @category ContentEntry
  * @category LifecycleHook
  */
 export interface CmsContentEntryBeforeRequestChangesHookArgs extends CmsContentEntryHookPluginArgs {
-    originalEntry: CmsContentEntry;
-    latestEntry: CmsContentEntry;
+    originalEntryRevision: CmsContentEntry;
+    latestEntryRevision: CmsContentEntry;
     entry: CmsContentEntry;
 }
 /**
@@ -2137,8 +2165,8 @@ export interface CmsContentEntryBeforeRequestChangesHookArgs extends CmsContentE
  * @category LifecycleHook
  */
 export interface CmsContentEntryAfterRequestChangesHookArgs extends CmsContentEntryHookPluginArgs {
-    originalEntry: CmsContentEntry;
-    latestEntry: CmsContentEntry;
+    originalEntryRevision: CmsContentEntry;
+    latestEntryRevision: CmsContentEntry;
     entry: CmsContentEntry;
 }
 /**
@@ -2146,8 +2174,8 @@ export interface CmsContentEntryAfterRequestChangesHookArgs extends CmsContentEn
  * @category LifecycleHook
  */
 export interface CmsContentEntryBeforeRequestReviewHookArgs extends CmsContentEntryHookPluginArgs {
-    latestEntry: CmsContentEntry;
-    originalEntry: CmsContentEntry;
+    latestEntryRevision: CmsContentEntry;
+    originalEntryRevision: CmsContentEntry;
     entry: CmsContentEntry;
 }
 /**
@@ -2155,8 +2183,8 @@ export interface CmsContentEntryBeforeRequestReviewHookArgs extends CmsContentEn
  * @category LifecycleHook
  */
 export interface CmsContentEntryAfterRequestReviewHookArgs extends CmsContentEntryHookPluginArgs {
-    latestEntry: CmsContentEntry;
-    originalEntry: CmsContentEntry;
+    latestEntryRevision: CmsContentEntry;
+    originalEntryRevision: CmsContentEntry;
     entry: CmsContentEntry;
 }
 /**
@@ -2544,76 +2572,112 @@ export interface CmsContentEntryStorageOperationsAfterCreateArgs {
     input: Record<string, any>;
 }
 export interface CmsContentEntryStorageOperationsBeforeCreateRevisionFromArgs {
-    originalEntry: CmsContentEntry;
-    latestEntry: CmsContentEntry;
+    originalEntryRevision: CmsContentEntry;
+    latestEntryRevision: CmsContentEntry;
     data: CmsContentEntry;
 }
 export interface CmsContentEntryStorageOperationsCreateRevisionFromArgs {
-    originalEntry: CmsContentEntry;
-    latestEntry: CmsContentEntry;
+    originalEntryRevision: CmsContentEntry;
+    latestEntryRevision: CmsContentEntry;
     data: CmsContentEntry;
 }
 export interface CmsContentEntryStorageOperationsAfterCreateRevisionFromArgs {
-    originalEntry: CmsContentEntry;
-    latestEntry: CmsContentEntry;
+    originalEntryRevision: CmsContentEntry;
+    latestEntryRevision: CmsContentEntry;
     data: CmsContentEntry;
     entry: CmsContentEntry;
 }
 export interface CmsContentEntryStorageOperationsBeforeUpdateArgs {
-    originalEntry: CmsContentEntry;
-    latestEntry: CmsContentEntry;
+    originalEntryRevision: CmsContentEntry;
+    latestEntryRevision: CmsContentEntry;
     data: Partial<CmsContentEntry>;
     input: Record<string, any>;
 }
 export interface CmsContentEntryStorageOperationsUpdateArgs {
-    originalEntry: CmsContentEntry;
-    latestEntry: CmsContentEntry;
+    originalEntryRevision: CmsContentEntry;
+    latestEntryRevision: CmsContentEntry;
     data: CmsContentEntry;
     input: Record<string, any>;
 }
 export interface CmsContentEntryStorageOperationsAfterUpdateArgs {
-    originalEntry: CmsContentEntry;
-    latestEntry: CmsContentEntry;
+    originalEntryRevision: CmsContentEntry;
+    latestEntryRevision: CmsContentEntry;
     data: Partial<CmsContentEntry>;
     input: Record<string, any>;
 }
 
 export interface CmsContentEntryStorageOperationsBeforeDeleteRevisionArgs {
-    publishedEntry: CmsContentEntry;
-    latestEntry: CmsContentEntry;
-    previousEntry: CmsContentEntry;
-    entry: CmsContentEntry;
+    /**
+     * Entry that is going to be set as latest entry.
+     */
+    previousEntryRevision: CmsContentEntry;
+    /**
+     * Entry that is currently latest entry.
+     */
+    latestEntryRevision: CmsContentEntry;
+    /**
+     * Entry that is currently published.
+     */
+    publishedEntryRevision: CmsContentEntry;
+    /**
+     * Entry that is going to be deleted.
+     */
+    entryRevision: CmsContentEntry;
 }
 
 export interface CmsContentEntryStorageOperationsDeleteRevisionArgs {
-    publishedEntry: CmsContentEntry;
-    latestEntry: CmsContentEntry;
-    previousEntry: CmsContentEntry;
-    entry: CmsContentEntry;
+    /**
+     * Entry that is going to be set as latest entry.
+     */
+    previousEntryRevision: CmsContentEntry;
+    /**
+     * Entry that is currently latest entry.
+     */
+    latestEntryRevision: CmsContentEntry;
+    /**
+     * Entry that is currently published.
+     */
+    publishedEntryRevision: CmsContentEntry;
+    /**
+     * Entry that is going to be deleted.
+     */
+    entryRevision: CmsContentEntry;
 }
 
 export interface CmsContentEntryStorageOperationsAfterDeleteRevisionArgs {
-    publishedEntry: CmsContentEntry;
-    latestEntry: CmsContentEntry;
-    previousEntry: CmsContentEntry;
-    entry: CmsContentEntry;
+    /**
+     * Entry that was set as latest entry.
+     */
+    previousEntryRevision: CmsContentEntry;
+    /**
+     * Entry that is currently latest entry.
+     */
+    latestEntryRevision: CmsContentEntry;
+    /**
+     * Entry that is currently published.
+     */
+    publishedEntryRevision: CmsContentEntry;
+    /**
+     * Entry that was deleted.
+     */
+    entryRevision: CmsContentEntry;
 }
 
 export interface CmsContentEntryStorageOperationsBeforeDeleteArgs {
-    entry: CmsContentEntry;
+    entryRevision: CmsContentEntry;
 }
 export interface CmsContentEntryStorageOperationsDeleteArgs {
-    entry: CmsContentEntry;
+    entryRevision: CmsContentEntry;
 }
 export interface CmsContentEntryStorageOperationsAfterDeleteArgs {
-    entry: CmsContentEntry;
+    entryRevision: CmsContentEntry;
 }
 
 export interface CmsContentEntryStorageOperationsBeforePublishArgs {
     /**
      * The entry record before it was published.
      */
-    originalEntry: CmsContentEntry;
+    originalEntryRevision: CmsContentEntry;
     /**
      * The modified entry that is going to be saved as published.
      */
@@ -2621,17 +2685,17 @@ export interface CmsContentEntryStorageOperationsBeforePublishArgs {
     /**
      * Latest entry record.
      */
-    latestEntry: CmsContentEntry;
+    latestEntryRevision: CmsContentEntry;
     /**
      * Published entry record, if any.
      */
-    publishedEntry?: CmsContentEntry;
+    publishedEntryRevision?: CmsContentEntry;
 }
 export interface CmsContentEntryStorageOperationsPublishArgs {
     /**
      * The entry record before it was published.
      */
-    originalEntry: CmsContentEntry;
+    originalEntryRevision: CmsContentEntry;
     /**
      * The modified entry that is going to be saved as published.
      */
@@ -2639,17 +2703,17 @@ export interface CmsContentEntryStorageOperationsPublishArgs {
     /**
      * Latest entry record.
      */
-    latestEntry: CmsContentEntry;
+    latestEntryRevision: CmsContentEntry;
     /**
      * Published entry record, if any.
      */
-    publishedEntry?: CmsContentEntry;
+    publishedEntryRevision?: CmsContentEntry;
 }
 export interface CmsContentEntryStorageOperationsAfterPublishArgs {
     /**
      * The entry record before it was published.
      */
-    originalEntry: CmsContentEntry;
+    originalEntryRevision: CmsContentEntry;
     /**
      * The entry record after it was published.
      */
@@ -2657,18 +2721,18 @@ export interface CmsContentEntryStorageOperationsAfterPublishArgs {
     /**
      * Latest entry record.
      */
-    latestEntry: CmsContentEntry;
+    latestEntryRevision: CmsContentEntry;
     /**
      * Published entry record, if any.
      */
-    publishedEntry?: CmsContentEntry;
+    publishedEntryRevision?: CmsContentEntry;
 }
 
 export interface CmsContentEntryStorageOperationsBeforeUnpublishArgs {
     /**
      * The entry record before it was unpublished.
      */
-    originalEntry: CmsContentEntry;
+    originalEntryRevision: CmsContentEntry;
     /**
      * The modified entry that is going to be saved as unpublished.
      */
@@ -2676,18 +2740,18 @@ export interface CmsContentEntryStorageOperationsBeforeUnpublishArgs {
     /**
      * Latest entry record.
      */
-    latestEntry: CmsContentEntry;
+    latestEntryRevision: CmsContentEntry;
     /**
      * Published entry record, if any.
      */
-    publishedEntry: CmsContentEntry;
+    publishedEntryRevision: CmsContentEntry;
 }
 
 export interface CmsContentEntryStorageOperationsUnpublishArgs {
     /**
      * The entry record before it was unpublished.
      */
-    originalEntry: CmsContentEntry;
+    originalEntryRevision: CmsContentEntry;
     /**
      * The modified entry that is going to be saved as unpublished.
      */
@@ -2695,18 +2759,18 @@ export interface CmsContentEntryStorageOperationsUnpublishArgs {
     /**
      * Latest entry record.
      */
-    latestEntry: CmsContentEntry;
+    latestEntryRevision: CmsContentEntry;
     /**
      * Published entry record, if any.
      */
-    publishedEntry: CmsContentEntry;
+    publishedEntryRevision: CmsContentEntry;
 }
 
 export interface CmsContentEntryStorageOperationsAfterUnpublishArgs {
     /**
      * The entry record before it was unpublished.
      */
-    originalEntry: CmsContentEntry;
+    originalEntryRevision: CmsContentEntry;
     /**
      * The entry record after it was unpublished.
      */
@@ -2714,11 +2778,11 @@ export interface CmsContentEntryStorageOperationsAfterUnpublishArgs {
     /**
      * Latest entry record.
      */
-    latestEntry: CmsContentEntry;
+    latestEntryRevision: CmsContentEntry;
     /**
      * Published entry record, if any.
      */
-    publishedEntry: CmsContentEntry;
+    publishedEntryRevision: CmsContentEntry;
 }
 
 export interface CmsContentEntryStorageOperationsBeforeRequestChangesArgs {
@@ -2729,11 +2793,11 @@ export interface CmsContentEntryStorageOperationsBeforeRequestChangesArgs {
     /**
      * Original entry from the storage.
      */
-    originalEntry: CmsContentEntry;
+    originalEntryRevision: CmsContentEntry;
     /**
      * Latest entry from the storage.
      */
-    latestEntry: CmsContentEntry;
+    latestEntryRevision: CmsContentEntry;
 }
 
 export interface CmsContentEntryStorageOperationsRequestChangesArgs {
@@ -2744,11 +2808,11 @@ export interface CmsContentEntryStorageOperationsRequestChangesArgs {
     /**
      * Original entry from the storage.
      */
-    originalEntry: CmsContentEntry;
+    originalEntryRevision: CmsContentEntry;
     /**
      * Latest entry from the storage.
      */
-    latestEntry: CmsContentEntry;
+    latestEntryRevision: CmsContentEntry;
 }
 
 export interface CmsContentEntryStorageOperationsAfterRequestChangesArgs {
@@ -2759,11 +2823,11 @@ export interface CmsContentEntryStorageOperationsAfterRequestChangesArgs {
     /**
      * Original entry from the storage.
      */
-    originalEntry: CmsContentEntry;
+    originalEntryRevision: CmsContentEntry;
     /**
      * Latest entry from the storage.
      */
-    latestEntry: CmsContentEntry;
+    latestEntryRevision: CmsContentEntry;
 }
 
 export interface CmsContentEntryStorageOperationsBeforeRequestReviewArgs {
@@ -2774,11 +2838,11 @@ export interface CmsContentEntryStorageOperationsBeforeRequestReviewArgs {
     /**
      * Original entry from the storage.
      */
-    originalEntry: CmsContentEntry;
+    originalEntryRevision: CmsContentEntry;
     /**
      * Latest entry from the storage.
      */
-    latestEntry: CmsContentEntry;
+    latestEntryRevision: CmsContentEntry;
 }
 
 export interface CmsContentEntryStorageOperationsRequestReviewArgs {
@@ -2789,11 +2853,11 @@ export interface CmsContentEntryStorageOperationsRequestReviewArgs {
     /**
      * Original entry from the storage.
      */
-    originalEntry: CmsContentEntry;
+    originalEntryRevision: CmsContentEntry;
     /**
      * Latest entry from the storage.
      */
-    latestEntry: CmsContentEntry;
+    latestEntryRevision: CmsContentEntry;
 }
 
 export interface CmsContentEntryStorageOperationsAfterRequestReviewArgs {
@@ -2804,11 +2868,11 @@ export interface CmsContentEntryStorageOperationsAfterRequestReviewArgs {
     /**
      * Original entry from the storage.
      */
-    originalEntry: CmsContentEntry;
+    originalEntryRevision: CmsContentEntry;
     /**
      * Latest entry from the storage.
      */
-    latestEntry: CmsContentEntry;
+    latestEntryRevision: CmsContentEntry;
 }
 
 export interface CmsContentEntryStorageOperationsListResponse {
@@ -2856,6 +2920,23 @@ export interface CmsContentEntryStorageOperations {
      * Get all revisions of the given entry id.
      */
     getRevisions: (model: CmsContentModel, id: string) => Promise<CmsContentEntry[]>;
+
+    // getByEntryId(model: CmsContentModel, id: string): Promise<CmsContentEntry | null>;
+    getRevisionById(model: CmsContentModel, id: string): Promise<CmsContentEntry | null>;
+    getPublishedRevisionByEntryId(
+        model: CmsContentModel,
+        entryId: string
+    ): Promise<CmsContentEntry | null>;
+    getLatestRevisionByEntryId(
+        model: CmsContentModel,
+        entryId: string
+    ): Promise<CmsContentEntry | null>;
+    getPreviousRevision(
+        model: CmsContentModel,
+        entryId: string,
+        version: number
+    ): Promise<CmsContentEntry | null>;
+
     /**
      * Gets entry by given args.
      */
@@ -2866,10 +2947,10 @@ export interface CmsContentEntryStorageOperations {
     /**
      * Get entry by given args array. Fetch multiple entries each filtered by its own where statement and sorting.
      */
-    getMultiple: (
-        model: CmsContentModel,
-        args: CmsContentEntryStorageOperationsGetArgs[]
-    ) => Promise<(CmsContentEntry | null)[]>;
+    // getMultiple: (
+    //     model: CmsContentModel,
+    //     args: CmsContentEntryStorageOperationsGetArgs[]
+    // ) => Promise<(CmsContentEntry | null)[]>;
     /**
      * List all entries. Filterable via params.
      */
