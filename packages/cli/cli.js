@@ -13,7 +13,7 @@ yargs
         `To find more information, docs and tutorials, see ${blue("https://docs.webiny.com")}.`
     )
     .epilogue(`Want to contribute? ${blue("https://github.com/webiny/webiny-js")}.`)
-    .fail(function(msg, err, yargs) {
+    .fail(function(msg, error, yargs) {
         if (msg) {
             if (msg.includes("Not enough non-option arguments")) {
                 console.log();
@@ -51,11 +51,21 @@ yargs
             process.exit(1);
         }
 
-        if (err) {
-            context.error(err.message);
+        if (error) {
+            context.error(error.message);
             // Unfortunately, yargs doesn't provide passed args here, so we had to do it via process.argv.
             if (process.argv.includes("--debug")) {
-                context.debug(err);
+                context.debug(error);
+            }
+
+            console.log();
+            const plugins = context.plugins.byType("cli-command-error");
+            for (let i = 0; i < plugins.length; i++) {
+                const plugin = plugins[i];
+                plugin.handle({
+                    error,
+                    context
+                });
             }
         }
 
