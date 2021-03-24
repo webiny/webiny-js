@@ -82,8 +82,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     name: "packageName",
                     message: "Enter the package name",
                     default: answers => {
-                        const componentNamePlural = pluralize(Case.kebab(answers.componentName));
-                        return `@custom-components/${componentNamePlural}`;
+                        return `@custom-components/${Case.kebab(answers.componentName)}`;
                     },
                     validate: packageName => {
                         if (!packageName) {
@@ -298,7 +297,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 indentString(
                     chalk.green(`
 // somewhere in your dependencies
-"${packageName}": "^1.0.0",
+"${packageName}": "^1.0.0"
 `),
                     2
                 )

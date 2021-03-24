@@ -23,7 +23,7 @@ const Target: React.FunctionComponent<Props> = ({ id, value }) => {
         <div style={style}>
             A component with id {id} and value {value === undefined ? "none" : value}.
             <br />
-            Background color is: ${style.backgroundColor}
+            Background color is: {style.backgroundColor ? "none" : style.backgroundColor}
             <br />
             But we can set it to some random one with a click on the{" "}
             <button onClick={changeColor}>button</button>
