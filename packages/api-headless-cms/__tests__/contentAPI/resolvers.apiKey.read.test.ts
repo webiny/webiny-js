@@ -102,7 +102,9 @@ describe("READ - resolvers - api key", () => {
         const { id: categoryId } = category;
 
         // Publish it so it becomes available in the "read" API
-        await publishCategory({ revision: categoryId });
+        const [publishedCategoryResponse] = await publishCategory({ revision: categoryId });
+
+        const publishedCategory = publishedCategoryResponse.data.publishCategory.data;
 
         // See if entries are available via "read" API
         const { getCategory } = useCategoryReadHandler({
@@ -137,7 +139,7 @@ describe("READ - resolvers - api key", () => {
                     data: {
                         id: category.id,
                         createdOn: category.createdOn,
-                        savedOn: category.savedOn,
+                        savedOn: publishedCategory.savedOn,
                         title: category.title,
                         slug: category.slug
                     },
@@ -157,7 +159,9 @@ describe("READ - resolvers - api key", () => {
         const { id: categoryId } = category;
 
         // Publish it so it becomes available in the "read" API
-        await publishCategory({ revision: categoryId });
+        const [publishCategoryResponse] = await publishCategory({ revision: categoryId });
+
+        const publishedCatgory = publishCategoryResponse.data.publishCategory.data;
 
         // See if entries are available via "read" API
         const { listCategories } = useCategoryReadHandler({
@@ -193,7 +197,7 @@ describe("READ - resolvers - api key", () => {
                         {
                             id: category.id,
                             createdOn: category.createdOn,
-                            savedOn: category.savedOn,
+                            savedOn: publishedCatgory.savedOn,
                             title: category.title,
                             slug: category.slug
                         }

@@ -144,6 +144,40 @@ export default (): ContextPlugin<CmsContext> => ({
             return utils.checkPermissions(context, "cms.contentEntry", check);
         };
 
+        /**
+         * A helper to delete the entire entry.
+         */
+        const deleteEntry = async (
+            model: CmsContentModel,
+            entry: CmsContentEntry
+        ): Promise<void> => {
+            try {
+                await beforeDeleteHook({
+                    context,
+                    model,
+                    entry,
+                    storageOperations
+                });
+                await storageOperations.delete(model, {
+                    entry
+                });
+                await afterDeleteHook({
+                    context,
+                    model,
+                    entry,
+                    storageOperations
+                });
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not delete entry.",
+                    ex.code || "DELETE_ERROR",
+                    {
+                        entry
+                    }
+                );
+            }
+        };
+
         const entries: CmsContentEntryContext = {
             operations: storageOperations,
             /**
@@ -785,7 +819,10 @@ export default (): ContextPlugin<CmsContext> => ({
                 //     }
                 // ]);
 
-                const entryRevision = await storageOperations.getRevisionById(model, revisionId);
+                const entryRevisionToDelete = await storageOperations.getRevisionById(
+                    model,
+                    revisionId
+                );
                 const latestEntryRevision = await storageOperations.getLatestRevisionByEntryId(
                     model,
                     entryId
@@ -838,11 +875,11 @@ export default (): ContextPlugin<CmsContext> => ({
                 //     })
                 //     .execute();
 
-                if (!entryRevision) {
+                if (!entryRevisionToDelete) {
                     throw new NotFoundError(`Entry "${revisionId}" was not found!`);
                 }
 
-                utils.checkOwnership(context, permission, entryRevision, "ownedBy");
+                utils.checkOwnership(context, permission, entryRevisionToDelete, "ownedBy");
 
                 // const isLatest = latestEntry?.id === revisionId;
                 // const isPublished = publishedEntry?.id === revisionId;
@@ -994,36 +1031,68 @@ export default (): ContextPlugin<CmsContext> => ({
                 
                 // Execute DB operations
                 await batch.execute();
+                
+                
+                // operations
+                deleteRevision entryRevisionToDelete
+                if is latest entryRevisionToDelete
+                    if previousEntryRevision
+                        set latest previousEntryRevision
+                if entryRevisionToDelete is published
+                    set published previousEntryrevision
                 */
+                /**
+                 * If targeted record is the latest entry record and there is no previous one, we need to run full delete with hooks.
+                 * At this point deleteEntry hooks are not fired.
+                 * TODO determine if not running the deleteRevision hooks is ok.
+                 */
+                if (
+                    entryRevisionToDelete.id === latestEntryRevision?.id &&
+                    !previousEntryRevision
+                ) {
+                    return await deleteEntry(model, entryRevisionToDelete);
+                }
+                /**
+                 * If targeted record is latest entry revision, set the previous one as the new latest
+                 */
+                const entryRevisionToSetAsLatest =
+                    entryRevisionToDelete.id === latestEntryRevision?.id
+                        ? previousEntryRevision
+                        : null;
+                const isPublished = entryRevisionToDelete.id === publishedEntryRevision?.id;
                 try {
                     await beforeDeleteRevisionHook({
                         context,
                         model,
                         storageOperations,
-                        publishedEntryRevision,
-                        latestEntryRevision,
-                        previousEntryRevision,
-                        entryRevision
+                        entryRevisionToDelete,
+                        entryRevisionToSetAsLatest
                     });
-                    await storageOperations.deleteRevision(model, {
-                        publishedEntryRevision,
-                        latestEntryRevision,
-                        previousEntryRevision,
-                        entryRevision
-                    });
+                    // we always unpublish if necessary
+                    if (isPublished) {
+                        await storageOperations.unpublishRevision(model, entryRevisionToDelete);
+                    }
+                    // then we delete the actual revision
+                    await storageOperations.deleteRevision(model, entryRevisionToDelete);
+                    // and then set latest if there is one to be set
+                    if (entryRevisionToSetAsLatest) {
+                        await storageOperations.setRevisionAsLatest(
+                            model,
+                            entryRevisionToSetAsLatest
+                        );
+                    }
                     await afterDeleteRevisionHook({
                         context,
                         model,
                         storageOperations,
-                        publishedEntryRevision,
-                        latestEntryRevision,
-                        previousEntryRevision,
-                        entryRevision
+                        deletedEntryRevision: entryRevisionToDelete,
+                        latestEntryRevision: entryRevisionToSetAsLatest
                     });
                 } catch (ex) {
                     throw new WebinyError(ex.message, ex.code || "DELETE_REVISION_ERROR", {
                         error: ex,
-                        entryRevision
+                        deletedEntryRevision: entryRevisionToDelete,
+                        latestEntryRevision: entryRevisionToSetAsLatest
                     });
                 }
             },
@@ -1095,31 +1164,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     })
                 ]);
                 */
-                try {
-                    await beforeDeleteHook({
-                        context,
-                        model,
-                        entryRevision,
-                        storageOperations
-                    });
-                    await storageOperations.delete(model, {
-                        entryRevision
-                    });
-                    await afterDeleteHook({
-                        context,
-                        model,
-                        entryRevision,
-                        storageOperations
-                    });
-                } catch (ex) {
-                    throw new WebinyError(
-                        ex.message || "Could not delete entry.",
-                        ex.code || "DELETE_ERROR",
-                        {
-                            entry: entryRevision
-                        }
-                    );
-                }
+                return await deleteEntry(model, entryRevision);
             },
             publish: async (model, id) => {
                 const permission = await checkPermissions({ pw: "p" });

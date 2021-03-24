@@ -2061,19 +2061,20 @@ export interface CmsContentEntryBeforeDeleteRevisionHookArgs extends CmsContentE
     /**
      * Entry that is going to be set as latest entry.
      */
-    previousEntryRevision: CmsContentEntry;
+    // previousEntryRevision?: CmsContentEntry;
     /**
      * Entry that is currently latest entry.
      */
-    latestEntryRevision: CmsContentEntry;
+    // latestEntryRevision: CmsContentEntry;
     /**
      * Entry that is currently published.
      */
-    publishedEntryRevision: CmsContentEntry;
+    // publishedEntryRevision?: CmsContentEntry;
     /**
      * Entry that is going to be deleted.
      */
-    entryRevision: CmsContentEntry;
+    entryRevisionToDelete: CmsContentEntry;
+    entryRevisionToSetAsLatest?: CmsContentEntry;
 }
 /**
  * @category ContentEntry
@@ -2083,33 +2084,34 @@ export interface CmsContentEntryAfterDeleteRevisionHookArgs extends CmsContentEn
     /**
      * Entry that was set as latest entry.
      */
-    previousEntryRevision: CmsContentEntry;
+    // previousEntryRevision: CmsContentEntry;
     /**
      * Entry that is currently latest entry.
      */
-    latestEntryRevision: CmsContentEntry;
+    // latestEntryRevision: CmsContentEntry;
     /**
      * Entry that is currently published.
      */
-    publishedEntryRevision: CmsContentEntry;
+    // publishedEntryRevision: CmsContentEntry;
     /**
      * Entry that was deleted.
      */
-    entryRevision: CmsContentEntry;
+    deletedEntryRevision: CmsContentEntry;
+    latestEntryRevision?: CmsContentEntry;
 }
 /**
  * @category ContentEntry
  * @category LifecycleHook
  */
 export interface CmsContentEntryBeforeDeleteHookArgs extends CmsContentEntryHookPluginArgs {
-    entryRevision: CmsContentEntry;
+    entry: CmsContentEntry;
 }
 /**
  * @category ContentEntry
  * @category LifecycleHook
  */
 export interface CmsContentEntryAfterDeleteHookArgs extends CmsContentEntryHookPluginArgs {
-    entryRevision: CmsContentEntry;
+    entry: CmsContentEntry;
 }
 /**
  * @category ContentEntry
@@ -2629,7 +2631,7 @@ export interface CmsContentEntryStorageOperationsDeleteRevisionArgs {
     /**
      * Entry that is going to be set as latest entry.
      */
-    previousEntryRevision: CmsContentEntry;
+    previousEntryRevision?: CmsContentEntry;
     /**
      * Entry that is currently latest entry.
      */
@@ -2637,11 +2639,23 @@ export interface CmsContentEntryStorageOperationsDeleteRevisionArgs {
     /**
      * Entry that is currently published.
      */
-    publishedEntryRevision: CmsContentEntry;
+    publishedEntryRevision?: CmsContentEntry;
     /**
      * Entry that is going to be deleted.
      */
-    entryRevision: CmsContentEntry;
+    // entryRevision: CmsContentEntry;
+    /**
+     * Entry revision to be deleted in the operation.
+     */
+    entryRevisionToDelete: CmsContentEntry;
+    /**
+     * Entry revision to be set as latest in the operation.
+     */
+    entryRevisionToSetLatest?: CmsContentEntry;
+    /**
+     * Entry revision to be published in the operation.
+     */
+    // entryRevisionToPublish?: CmsContentEntry;
 }
 
 export interface CmsContentEntryStorageOperationsAfterDeleteRevisionArgs {
@@ -2664,13 +2678,13 @@ export interface CmsContentEntryStorageOperationsAfterDeleteRevisionArgs {
 }
 
 export interface CmsContentEntryStorageOperationsBeforeDeleteArgs {
-    entryRevision: CmsContentEntry;
+    entry: CmsContentEntry;
 }
 export interface CmsContentEntryStorageOperationsDeleteArgs {
-    entryRevision: CmsContentEntry;
+    entry: CmsContentEntry;
 }
 export interface CmsContentEntryStorageOperationsAfterDeleteArgs {
-    entryRevision: CmsContentEntry;
+    entry: CmsContentEntry;
 }
 
 export interface CmsContentEntryStorageOperationsBeforePublishArgs {
@@ -3031,10 +3045,10 @@ export interface CmsContentEntryStorageOperations {
     /**
      * Delete the entry revision.
      */
-    deleteRevision: (
-        model: CmsContentModel,
-        args: CmsContentEntryStorageOperationsDeleteRevisionArgs
-    ) => Promise<boolean>;
+    // deleteRevision: (
+    //     model: CmsContentModel,
+    //     args: CmsContentEntryStorageOperationsDeleteRevisionArgs
+    // ) => Promise<boolean>;
     /**
      * A hook to be run after the deleteRevision method.
      */
@@ -3151,4 +3165,9 @@ export interface CmsContentEntryStorageOperations {
         model: CmsContentModel,
         args: CmsContentEntryStorageOperationsAfterRequestReviewArgs
     ) => Promise<void>;
+
+    unpublishRevision: (model: CmsContentModel, entry: CmsContentEntry) => Promise<void>;
+    publishRevision: (model: CmsContentModel, entry: CmsContentEntry) => Promise<void>;
+    deleteRevision: (model: CmsContentModel, entry: CmsContentEntry) => Promise<void>;
+    setRevisionAsLatest: (model: CmsContentModel, entry: CmsContentEntry) => Promise<void>;
 }

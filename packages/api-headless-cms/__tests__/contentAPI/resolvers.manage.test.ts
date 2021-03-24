@@ -7,7 +7,7 @@ import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
 import models from "./mocks/contentModels";
 import modelsWithoutValidation from "./mocks/contentModels.noValidation";
 
-jest.setTimeout(10000);
+jest.setTimeout(15000);
 
 interface CreateCategoriesResult {
     fruits: CmsContentEntry;
@@ -595,8 +595,7 @@ describe("MANAGE - Resolvers", () => {
             createCategoryFrom,
             getCategory,
             listCategories,
-            deleteCategory,
-            sleep
+            deleteCategory
         } = useCategoryManageHandler(manageOpts);
 
         const [revision1] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
@@ -620,13 +619,21 @@ describe("MANAGE - Resolvers", () => {
         await until(
             () => listCategories().then(([data]) => data),
             ({ data }) => data.listCategories.data[0].id === id3,
-            { name: "create 2 more revisions" }
+            { name: "after create 2 more revisions" }
         );
 
         // Delete latest revision
-        const [x] = await deleteCategory({ revision: id3 });
+        const [deleteId3Response] = await deleteCategory({ revision: id3 });
 
-        const y = x;
+        expect(deleteId3Response).toEqual({
+            data: {
+                deleteCategory: {
+                    data: true,
+                    error: null
+                }
+            }
+        });
+
         // Wait until the previous revision is indexed in Elastic as "latest"
         await until(
             () => listCategories().then(([data]) => data),
@@ -642,7 +649,16 @@ describe("MANAGE - Resolvers", () => {
         expect(data2[0].meta.version).toEqual(2);
 
         // Delete revision #1; Revision #2 should still be "latest"
-        await deleteCategory({ revision: id });
+        const [deleteIdResponse] = await deleteCategory({ revision: id });
+
+        expect(deleteIdResponse).toEqual({
+            data: {
+                deleteCategory: {
+                    data: true,
+                    error: null
+                }
+            }
+        });
 
         // Get revision #2 and verify it's the only remaining revision of this form
         const [get] = await getCategory({ revision: id2 });
