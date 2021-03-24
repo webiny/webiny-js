@@ -1,11 +1,6 @@
 import StaticLayout from "./layouts/Static";
-import { DefaultErrorPage, DefaultNotFoundPage } from "./components/defaultPages";
 
-import {
-    PbPageLayoutPlugin,
-    PbThemePlugin,
-    PbDefaultPagePlugin
-} from "@webiny/app-page-builder/types";
+import { PbPageLayoutPlugin, PbThemePlugin } from "@webiny/app-page-builder/types";
 
 export default [
     {
@@ -101,15 +96,5 @@ export default [
             title: "Static page",
             component: StaticLayout
         }
-    } as PbPageLayoutPlugin,
-    {
-        name: "pb-default-page-error",
-        type: "pb-default-page",
-        component: DefaultErrorPage
-    } as PbDefaultPagePlugin,
-    {
-        name: "pb-default-page-not-found",
-        type: "pb-default-page",
-        component: DefaultNotFoundPage
-    } as PbDefaultPagePlugin
+    } as PbPageLayoutPlugin
 ];
