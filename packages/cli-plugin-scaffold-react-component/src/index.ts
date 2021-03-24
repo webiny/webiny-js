@@ -157,6 +157,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 { find: "target", replaceWith: Case.camel(name.singular) },
                 { find: "Target", replaceWith: Case.pascal(name.singular) },
                 { find: "TARGET", replaceWith: Case.constant(name.singular) },
+                { find: "PACKAGE_NAME", replaceWith: packageName },
                 { find: "RELATIVE_ROOT_PATH", replaceWith: relativeRootPath.replace(/\\/g, "/") }
             ];
 
