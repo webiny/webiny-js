@@ -1,6 +1,6 @@
 import Target from "./Target";
 
 /**
- * Export the Target component so it is accessible via the PACKAGE_NAME
+ * Export the Target React component so it is accessible via the PACKAGE_NAME
  */
 export { Target };
