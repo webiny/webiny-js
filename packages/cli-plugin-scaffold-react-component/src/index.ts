@@ -63,8 +63,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     name: "location",
                     message: `Enter the package location`,
                     default: answers => {
-                        const componentNamePlural = pluralize(Case.kebab(answers.componentName));
-                        return `packages/${componentNamePlural}`;
+                        return `packages/${Case.kebab(answers.componentName)}`;
                     },
                     validate: location => {
                         if (!location) {
