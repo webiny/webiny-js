@@ -44,16 +44,18 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
     name: "cli-plugin-scaffold-template-react-component",
     type: "cli-plugin-scaffold-template",
     scaffold: {
-        name: "Generate a simple React component package.",
+        name: "Generate a simple React component package",
         questions: () => {
             return [
                 {
                     name: "componentName",
-                    message: "Enter the name of the component",
-                    default: "Display",
+                    message: "Enter the name of the component (in pascal-case)",
+                    default: "DisplayComponent",
                     validate: name => {
                         if (!name.match(/^([a-zA-Z]+)$/)) {
                             return "A valid component name must consist of letters only.";
+                        } else if (!name.match(/^[A-Z]/)) {
+                            return "A valid component name must start with uppercase letter.";
                         }
 
                         return true;
