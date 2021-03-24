@@ -6,8 +6,8 @@ export const beforeCreateHook = async (
     args: CmsContentEntryBeforeCreateHookArgs
 ): Promise<void> => {
     await markLockedFields(args);
-    if (args.storageOperations.beforeCreate) {
-        await args.storageOperations.beforeCreate(args.model, args);
-    }
+    // if (args.storageOperations.beforeCreate) {
+    //     await args.storageOperations.beforeCreate(args.model, args);
+    // }
     await runContentEntryLifecycleHooks("beforeCreate", args);
 };
