@@ -1,32 +1,20 @@
 import React, { useState } from "react";
 
-const colors = ["#FF0000", "#F0F0F0", "#FF00FF", "#FFFFFF", "#00FFFF", "#0000FF"];
-
-interface Style {
-    backgroundColor?: string;
-}
-
 interface Props {
-    id: number;
-    value?: string;
+    id?: number;
 }
-const Target: React.FunctionComponent<Props> = ({ id, value }) => {
-    const [style, setStyle] = useState<Style>({});
+const Target: React.FunctionComponent<Props> = ({ id }) => {
+    const [randomNumber, setRandomNumber] = useState<number>();
 
-    const changeColor = () => {
-        const color = colors[Math.floor(Math.random() * colors.length)];
-        setStyle({
-            backgroundColor: color
-        });
-    };
     return (
-        <div style={style}>
-            A component with id {id} and value {value === undefined ? "none" : value}.
-            <br />
-            Background color is: {style.backgroundColor ? "none" : style.backgroundColor}
-            <br />
-            But we can set it to some random one with a click on the{" "}
-            <button onClick={changeColor}>button</button>
+        <div>
+            <div>ID: {id || "N/A"}</div>
+            <div>Random Number: {randomNumber || "N/A"}</div>
+            <div>
+                <button onClick={() => setRandomNumber(Math.random())}>
+                    Generate Random Number
+                </button>
+            </div>
         </div>
     );
 };
