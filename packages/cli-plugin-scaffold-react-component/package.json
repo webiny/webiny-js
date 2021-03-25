@@ -9,7 +9,10 @@
     "url": "git+https://github.com/webiny/webiny-js.git",
     "directory": "packages/cli-plugin-scaffold-react-component"
   },
-  "author": "",
+  "author": {
+    "name": "Webiny",
+    "url": "https://www.webiny.com"
+  },
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/webiny/webiny-js/issues"
