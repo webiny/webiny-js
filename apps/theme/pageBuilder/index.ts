@@ -43,48 +43,6 @@ export default [
                 quote: {
                     types: [{ className: "webiny-pb-typography-quote", label: "Default" }]
                 }
-            },
-            typography: {
-                h1: {
-                    label: "Heading 1",
-                    component: "h1",
-                    className: "webiny-pb-typography-h1"
-                },
-                h2: {
-                    label: "Heading 2",
-                    component: "h2",
-                    className: "webiny-pb-typography-h2"
-                },
-                h3: {
-                    label: "Heading 3",
-                    component: "h3",
-                    className: "webiny-pb-typography-h3"
-                },
-                h4: {
-                    label: "Heading 4",
-                    component: "h4",
-                    className: "webiny-pb-typography-h4"
-                },
-                h5: {
-                    label: "Heading 5",
-                    component: "h5",
-                    className: "webiny-pb-typography-h5"
-                },
-                h6: {
-                    label: "Heading 6",
-                    component: "h6",
-                    className: "webiny-pb-typography-h6"
-                },
-                paragraph: {
-                    label: "Paragraph",
-                    component: "p",
-                    className: "webiny-pb-typography-body"
-                },
-                description: {
-                    label: "Description",
-                    component: "p",
-                    className: "webiny-pb-typography-description"
-                }
             }
         }
     } as PbThemePlugin,
