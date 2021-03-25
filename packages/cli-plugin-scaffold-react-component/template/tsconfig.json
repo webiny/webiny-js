@@ -1,0 +1,13 @@
+{
+  "extends": "BASE_TSCONFIG_PATH",
+  "include": ["src", "__tests__/**/*.ts"],
+  "references": [],
+  "compilerOptions": {
+    "jsx": "preserve",
+    "noEmit": false,
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./src/*"]
+    }
+  }
+}
