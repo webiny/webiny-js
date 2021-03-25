@@ -321,7 +321,7 @@ import { ${name} } from "${packageName}";
             );
 
             console.log(
-                "Learn more about app development at https://docs.webiny.com/docs/app-development/introduction."
+                "Learn more about app development at https://www.webiny.com/docs/tutorials/create-an-application/introduction."
             );
         }
     }
