@@ -60,6 +60,7 @@ const ContentDataList = ({
     const [filter, setFilter] = useState("");
     const [formData, setFormData] = useState(listQueryVariables);
     const { history } = useRouter();
+    const baseUrl = `/cms/content-entries/${contentModel.modelId}`;
 
     // Get entry ID and search query (if any)
     const query = new URLSearchParams(location.search);
@@ -67,7 +68,7 @@ const ContentDataList = ({
     const searchQuery = query.get("search");
     const updateSearch = useMemo(
         () =>
-            debounce(({ filter, query, baseURL }) => {
+            debounce(({ filter, query }) => {
                 const search = query.get("search");
                 if (typeof search !== "string" && !filter) {
                     return;
@@ -80,22 +81,20 @@ const ContentDataList = ({
                         ...prevState,
                         where: { [searchField]: filter }
                     }));
-                    history.push(`${baseURL}?${query.toString()}`);
+                    history.push(`${baseUrl}?${query.toString()}`);
                 }
             }, 250),
-        [contentModel]
+        [baseUrl]
     );
+
     // Set "filter" from search "query" on page load.
     useEffect(() => {
-        if (!filter && searchQuery) {
+        if (searchQuery) {
             setFilter(searchQuery);
         }
-    }, []);
+    }, [baseUrl]);
 
-    useEffect(() => {
-        const baseURL = `/cms/content-entries/${contentModel.modelId}`;
-        updateSearch({ filter, query, baseURL });
-    }, [filter, query, contentModel.modelId]);
+    useEffect(() => updateSearch({ filter, query }), [baseUrl, filter]);
 
     // Generate a query based on current content model
     const LIST_QUERY = useMemo(() => createListQuery(contentModel), [contentModel.modelId]);
