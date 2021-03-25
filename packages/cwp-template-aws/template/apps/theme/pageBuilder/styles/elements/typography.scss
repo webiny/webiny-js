@@ -93,13 +93,7 @@ h6 {
 }
 
 // Heading default typography styles
-.webiny-pb-typography-heading,
-.webiny-pb-typography-h1,
-.webiny-pb-typography-h2,
-.webiny-pb-typography-h3,
-.webiny-pb-typography-h4,
-.webiny-pb-typography-h5,
-.webiny-pb-typography-h6 {
+.webiny-pb-typography-heading {
   font-family: var(--webiny-theme-typography-secondary-font-family, "Lato, sans-serif");
   color: var(--desktop-color, var(--webiny-theme-color-text-primary, rgb(10, 10, 10)));
   -moz-osx-font-smoothing: grayscale;
@@ -116,44 +110,6 @@ h6 {
 }
 .webiny-pb-media-query--mobile-portrait .webiny-pb-typography-heading {
   color: var(--mobile-portrait-color, var(--webiny-theme-color-text-primary, rgb(10, 10, 10)));
-}
-
-.webiny-pb-typography-h1 {
-  font-weight: 300;
-  letter-spacing: -0.01562em;
-  font-size: 3 * $scale * 1rem;
-  line-height: 3 * $leading;
-  margin-top: 2 * $leading;
-}
-
-.webiny-pb-typography-h2 {
-  font-weight: 300;
-  letter-spacing: -0.00833em;
-  font-size: 2 * $scale * 1rem;
-  line-height: 2 * $leading;
-  margin-top: 2 * $leading;
-}
-
-.webiny-pb-typography-h3 {
-  font-size: 1 * $scale * 1rem;
-  font-weight: 400;
-}
-
-.webiny-pb-typography-h4 {
-  font-size: $scale / 1.5 * 1rem;
-  font-weight: 400;
-  letter-spacing: 0.00735em;
-}
-
-.webiny-pb-typography-h5 {
-  font-size: $scale / 2 * 1rem;
-  font-weight: 400;
-}
-
-.webiny-pb-typography-h6 {
-  font-size: $scale / 3 * 1rem;
-  font-weight: 500;
-  letter-spacing: 0.0125em;
 }
 
 .webiny-pb-typography-body {
