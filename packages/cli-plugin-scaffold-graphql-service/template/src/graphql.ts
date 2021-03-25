@@ -119,11 +119,11 @@ const graphql = /* GraphQL */ `
 
         uninstall: TargetUninstallResponse!
     }
-    # we need to extend the original Query with targets so we can write a query like { targets: { listTargets {...} } }
+    # We need to extend the original Query with targets so we can write a query like { targets: { listTargets {...} } }
     extend type Query {
         targets: TargetQuery
     }
-    # we need to extend the original Mutation with targets so we can write a mutation like { targets: { createTarget {...} } }
+    # We need to extend the original Mutation with targets so we can write a mutation like { targets: { createTarget {...} } }
     extend type Mutation {
         targets: TargetMutation
     }
