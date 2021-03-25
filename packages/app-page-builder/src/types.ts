@@ -175,13 +175,6 @@ export type PbElement = {
 export type PbTheme = {
     colors: { [key: string]: string };
     elements: { [key: string]: any };
-    typography: {
-        [key: string]: {
-            label: string;
-            component: string | React.ComponentType<any>;
-            className: string;
-        };
-    };
 };
 
 export type PbThemePlugin = Plugin & {
