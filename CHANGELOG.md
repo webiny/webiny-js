@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.3.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.2.1...v5.3.0-beta.0) (2021-03-25)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** normalize values before querying ([8e57cea](https://github.com/webiny/webiny-js/commit/8e57cea5305d7550382b2b90289cd1acdb02906a))
+* **app-headless-cms:** prevent filters reset on resetting search input ([3916f68](https://github.com/webiny/webiny-js/commit/3916f68ab2f095bd4ff5479ff6e523df028c96dc))
+* **app-headless-cms:** simplify cache keys for React hooks ([f8d4971](https://github.com/webiny/webiny-js/commit/f8d4971ab47b897e774fd3def8b4fd0547bda6b5))
+* **app-headless-cms:** use "useCallback" instead of "useMemo" ([ac17278](https://github.com/webiny/webiny-js/commit/ac1727866a5c8a4e675f3f70fe9b1b4c373977da))
+* **cli-plugin-scaffold-graphql-service:** graphql types naming ([#1533](https://github.com/webiny/webiny-js/issues/1533)) ([df4c692](https://github.com/webiny/webiny-js/commit/df4c6925837c21d799cb0c0cebc4ba9e56fd23db))
+* add missing permission check ([#1511](https://github.com/webiny/webiny-js/issues/1511)) ([62a8c80](https://github.com/webiny/webiny-js/commit/62a8c80fdfcfdacb9fb362c9c42e094d8c64ebf4))
+* force Node "^12 || ^14" ([b29c972](https://github.com/webiny/webiny-js/commit/b29c9721a12ae888ae229b03872bcf93071212cd))
+* remove extra "here" word ([5fbe4ff](https://github.com/webiny/webiny-js/commit/5fbe4ff1fba8681deed6f84b17073f13c2d15b5f))
+* remove old process.exit call ([5e8afad](https://github.com/webiny/webiny-js/commit/5e8afadb14742e60c1e0a49a8b701f9274bef169))
+* remove package-lock.json ([be5f95d](https://github.com/webiny/webiny-js/commit/be5f95d548ab58682456ae6ec5be2725d16d7134))
+* remove redundant "JSON.parse" ([c4b0ff0](https://github.com/webiny/webiny-js/commit/c4b0ff0e1528daeef432bcfe7ee75bddee8cc47c))
+* remove typography and `PbDefaultPagePlugin` usage from theme ([#1529](https://github.com/webiny/webiny-js/issues/1529)) ([104572d](https://github.com/webiny/webiny-js/commit/104572d1f37b01c3653bc2e17607117d8b5fbc79))
+* send WEBINY_ENV and WEBINY_PROJECT_NAME ([a999ecf](https://github.com/webiny/webiny-js/commit/a999ecf8815a2b2c85487d4f1c022e78fdd92500))
+* update yarn.lock ([939268f](https://github.com/webiny/webiny-js/commit/939268fc023620728bff9ef8db2908c0d0f83419))
+* **create-webiny-project:** add system information on errors ([4977bd4](https://github.com/webiny/webiny-js/commit/4977bd4dcd393b5f3482add882537b092e4ee6c8))
+* update link ([c6eb6b6](https://github.com/webiny/webiny-js/commit/c6eb6b6f479d7c7a83206be04ae17fbdcea5fb7e))
+* update package version ([763e06e](https://github.com/webiny/webiny-js/commit/763e06ef0cfc0322f4a749881911d954755c849d))
+* **cli-plugin-scaffold-graphql-service:** hardcoded books in import ([#1523](https://github.com/webiny/webiny-js/issues/1523)) ([df1e890](https://github.com/webiny/webiny-js/commit/df1e8907bdeaaa995e55dc0f8240bebd32f501a9))
+
+
+### Features
+
+* **cli-plugin-scaffold-react-component:** scaffold to create react comp ([#1530](https://github.com/webiny/webiny-js/issues/1530)) ([7090ebc](https://github.com/webiny/webiny-js/commit/7090ebccfc1393f1b6eeca94ceaa15609f0449d6))
+* **create-webiny-project:** add "--cleanup" argument ([e6c5304](https://github.com/webiny/webiny-js/commit/e6c53045558f2c168da78db6227e5de8abc2165d))
+* add "context.warning" for printing warnings ([a0ac269](https://github.com/webiny/webiny-js/commit/a0ac269f34d9aae3da0e097540375c3c6dfc3c56))
+* add `SubscriptionRequiredException` info message ([c7cf200](https://github.com/webiny/webiny-js/commit/c7cf200afa7c2059222172bb9d6552fc1c109a14))
+* add pending operations info message ([639b6e1](https://github.com/webiny/webiny-js/commit/639b6e1c3134f1793a2dfff980222d6498014424))
+* introduce "cli-command-error" plugins ([00a920f](https://github.com/webiny/webiny-js/commit/00a920f81363198fda1a711b9cff92ed104b4e21))
+
+
+
+
+
 ## [5.2.1](https://github.com/webiny/webiny-js/compare/v5.2.1-beta.0...v5.2.1) (2021-03-21)
 
 **Note:** Version bump only for package webiny-js

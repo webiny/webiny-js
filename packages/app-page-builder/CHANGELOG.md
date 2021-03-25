@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.3.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.2.1...v5.3.0-beta.0) (2021-03-25)
+
+
+### Bug Fixes
+
+* add missing permission check ([#1511](https://github.com/webiny/webiny-js/issues/1511)) ([62a8c80](https://github.com/webiny/webiny-js/commit/62a8c80fdfcfdacb9fb362c9c42e094d8c64ebf4))
+* remove typography and `PbDefaultPagePlugin` usage from theme ([#1529](https://github.com/webiny/webiny-js/issues/1529)) ([104572d](https://github.com/webiny/webiny-js/commit/104572d1f37b01c3653bc2e17607117d8b5fbc79))
+
+
+
+
+
 ## [5.2.1](https://github.com/webiny/webiny-js/compare/v5.2.1-beta.0...v5.2.1) (2021-03-21)
 
 **Note:** Version bump only for package @webiny/app-page-builder
