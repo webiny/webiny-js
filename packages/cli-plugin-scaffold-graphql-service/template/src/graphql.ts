@@ -20,7 +20,7 @@ const graphql = /* GraphQL */ `
         data: JSON
     }
     # target is created by whom?
-    type CreatedByResponse {
+    type TargetCreatedByResponse {
         id: String!
         displayName: String!
         type: String!
@@ -30,7 +30,7 @@ const graphql = /* GraphQL */ `
         id: ID!
         createdOn: DateTime!
         savedOn: DateTime!
-        createdBy: CreatedByResponse!
+        createdBy: TargetCreatedByResponse!
         title: String!
         description: String
         isNice: Boolean!
@@ -85,12 +85,12 @@ const graphql = /* GraphQL */ `
         error: TargetError
     }
     # A type definition to add the Elasticsearch index
-    type InstallResponse {
+    type TargetInstallResponse {
         data: Boolean
         error: TargetError
     }
     # A type definition to remove the Elasticsearch index
-    type UninstallResponse {
+    type TargetUninstallResponse {
         data: Boolean
         error: TargetError
     }
@@ -105,7 +105,7 @@ const graphql = /* GraphQL */ `
             after: String
         ): TargetListResponse!
 
-        isInstalled: InstallResponse!
+        isInstalled: TargetInstallResponse!
     }
 
     type TargetMutation {
@@ -115,9 +115,9 @@ const graphql = /* GraphQL */ `
 
         deleteTarget(id: ID!): TargetDeleteResponse!
 
-        install: InstallResponse!
+        install: TargetInstallResponse!
 
-        uninstall: UninstallResponse!
+        uninstall: TargetUninstallResponse!
     }
     # we need to extend the original Query with targets so we can write a query like { targets: { listTargets {...} } }
     extend type Query {
