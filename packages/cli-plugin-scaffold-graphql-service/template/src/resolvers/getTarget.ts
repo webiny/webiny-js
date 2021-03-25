@@ -1,4 +1,4 @@
-import { Response, NotFoundResponse } from "@webiny/handler-graphql";
+import { Response, NotFoundResponse } from "@webiny/handler-graphql/responses";
 import { utils } from "../utils";
 import { ApplicationContext, GetTargetArgs, ResolverResponse, Target } from "../types";
 

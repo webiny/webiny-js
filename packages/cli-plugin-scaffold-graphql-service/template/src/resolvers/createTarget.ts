@@ -1,7 +1,7 @@
 import mdbid from "mdbid";
 import { utils } from "../utils";
 import { ApplicationContext, CreateTargetArgs, ResolverResponse, Target } from "../types";
-import { ErrorResponse, Response } from "@webiny/handler-graphql";
+import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
 
 const createTarget = async (
     _,

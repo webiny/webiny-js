@@ -44,7 +44,7 @@ const booksSchema: GraphQLSchemaPlugin = {
                     console.log("Find book by name");
                     const book = books.find(b => b.name === name);
                     if (book) {
-                        console.log(`Found book "${book.name}"`);
+                        console.log(`Found book "${book.name}"`, book);
                         return book;
                     }
                     console.log(`Book not found!`);
@@ -121,7 +121,7 @@ describe("GraphQL Handler", () => {
         expect(r2.extensions).toStrictEqual({
             console: [
                 { method: "log", args: ["Find book by name"] },
-                { method: "log", args: ['Found book "Book 1"'] }
+                { method: "log", args: ['Found book "Book 1"', { name: "Book 1"}] }
             ]
         });
         expect(r3.data.book).toBe(null);

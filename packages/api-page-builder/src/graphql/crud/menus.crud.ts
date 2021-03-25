@@ -3,7 +3,7 @@ import defaults from "./utils/defaults";
 import getPKPrefix from "./utils/getPKPrefix";
 import { MenuHookPlugin, PbContext } from "../types";
 import { Menu } from "../../types";
-import { NotFoundError } from "@webiny/handler-graphql";
+import { NotFoundError } from "@webiny/handler-graphql/errors";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
 import Error from "@webiny/error";

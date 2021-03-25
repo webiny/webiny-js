@@ -11,18 +11,14 @@ import elasticSearchPlugins from "./plugins/es";
 import fieldsStoragePlugins from "./plugins/fieldsStorage";
 import internalSecurity from "./plugins/internalSecurity";
 
-interface CmsContentPluginsIndexArgs {
-    debug?: boolean;
-}
-
-export default (options: CmsContentPluginsIndexArgs = {}) => [
+export default () => [
     modelManager(),
     pluginsCrudSetup(),
-    contextSetup(options),
+    contextSetup(),
     contentModelGroupCrud(),
     contentModelCrud(),
     contentEntry(),
-    graphQLHandlerFactory(options),
+    graphQLHandlerFactory(),
     fieldTypePlugins(),
     fieldsStoragePlugins(),
     validatorsPlugins(),

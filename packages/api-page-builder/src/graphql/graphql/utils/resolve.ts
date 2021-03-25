@@ -1,4 +1,4 @@
-import { Response, ErrorResponse } from "@webiny/handler-graphql";
+import { Response, ErrorResponse } from "@webiny/handler-graphql/responses";
 
 export default async fn => {
     try {

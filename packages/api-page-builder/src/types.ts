@@ -1,3 +1,6 @@
+import { PbContext } from "./graphql/types";
+import { Plugin } from "@webiny/plugins/types";
+
 export * from "./graphql/types";
 
 // DB types.
@@ -117,6 +120,7 @@ export interface DataSource {
 }
 
 export interface DataSourceSettings {
+    id: string;
     // "type" refers to the type of data source (CMS, REST, etc. This comes from the data source plugin).
     type: string;
     // A name of the data-source, which will be useful in the UI and to reference the dataset.

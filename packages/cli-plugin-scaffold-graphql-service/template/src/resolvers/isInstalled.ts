@@ -1,4 +1,4 @@
-import { ErrorResponse, Response } from "@webiny/handler-graphql";
+import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
 import { utils } from "../utils";
 import { ApplicationContext } from "../types";
 import { NotAuthorizedResponse } from "@webiny/api-security";

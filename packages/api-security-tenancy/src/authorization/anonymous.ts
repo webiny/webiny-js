@@ -5,6 +5,11 @@ export default () => ({
     type: "security-authorization",
     name: "security-authorization-anonymous",
     async getPermissions({ security }: SecurityContext & TenancyContext) {
+        const identity = security.getIdentity();
+        if (identity) {
+            return;
+        }
+
         const tenant = security.getTenant();
         if (!tenant) {
             return [];

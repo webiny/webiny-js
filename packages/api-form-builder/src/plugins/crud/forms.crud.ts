@@ -3,7 +3,7 @@ import mdbid from "mdbid";
 import slugify from "slugify";
 import pick from "lodash/pick";
 import fetch from "node-fetch";
-import { NotFoundError } from "@webiny/handler-graphql";
+import { NotFoundError } from "@webiny/handler-graphql/errors";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { encodeCursor } from "@webiny/api-file-manager/plugins/crud/utils/cursors";
 import * as utils from "./utils";

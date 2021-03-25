@@ -3,7 +3,7 @@ import mdbid from "mdbid";
 import uniqid from "uniqid";
 import { NotAuthorizedError } from "@webiny/api-security";
 import Error from "@webiny/error";
-import { NotFoundError } from "@webiny/handler-graphql";
+import { NotFoundError } from "@webiny/handler-graphql/errors";
 import trimStart from "lodash/trimStart";
 import omit from "lodash/omit";
 import get from "lodash/get";
@@ -12,7 +12,7 @@ import DataLoader from "dataloader";
 import getNormalizedListPagesArgs from "./utils/getNormalizedListPagesArgs";
 import getPKPrefix from "./utils/getPKPrefix";
 import defaults from "./utils/defaults";
-import { Page, PageHookPlugin, PageSecurityPermission, PbContext, TYPE } from "../../types";
+import { Page, PageHookPlugin, PageSecurityPermission, PbContext, TYPE } from "~/types";
 import createListMeta from "./utils/createListMeta";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
@@ -21,7 +21,7 @@ import normalizePath from "./pages/normalizePath";
 import { compressContent, extractContent } from "./pages/contentCompression";
 import { CreateDataModel, UpdateDataModel, UpdateSettingsModel } from "./pages/models";
 import { getESLatestPageData, getESPublishedPageData } from "./pages/esPageData";
-
+import { loadDynamicPage } from "./dynamicContent/loadDynamicPage";
 import { Args as FlushArgs } from "@webiny/api-prerendering-service/flush/types";
 
 const STATUS_CHANGES_REQUESTED = "changesRequested";
@@ -129,11 +129,15 @@ const plugin: ContextPlugin<PbContext> = {
                         }
                     )
                 },
-                async get(id) {
+                async get(id, options = { auth: true }) {
+                    let permission;
+                    if (options.auth) {
+                        permission = await checkBasePermissions(context, PERMISSION_NAME, {
+                            rwd: "r"
+                        });
+                    }
+
                     const [pid, rev] = id.split("#");
-                    const permission = await checkBasePermissions(context, PERMISSION_NAME, {
-                        rwd: "r"
-                    });
 
                     let page;
                     if (rev) {
@@ -154,8 +158,10 @@ const plugin: ContextPlugin<PbContext> = {
                         throw new NotFoundError("Page not found.");
                     }
 
-                    const identity = context.security.getIdentity();
-                    checkOwnPermissions(identity, permission, page, "ownedBy");
+                    if (options.auth) {
+                        const identity = context.security.getIdentity();
+                        checkOwnPermissions(identity, permission, page, "ownedBy");
+                    }
 
                     // Extract compressed page content.
                     page.content = await extractContent(page.content);
@@ -185,13 +191,17 @@ const plugin: ContextPlugin<PbContext> = {
                         });
                     }
 
-                    const [[page]] = await db.read<Page>({
+                    let [[page]] = await db.read<Page>({
                         ...defaults.db,
                         query: { PK: PK_PAGE_PUBLISHED_PATH(), SK: normalizedPath }
                     });
 
                     if (!page) {
-                        throw notFoundError;
+                        // Try loading dynamic pages
+                        page = await loadDynamicPage(args, context);
+                        if (page) {
+                            return page;
+                        }
                     }
 
                     if (page) {

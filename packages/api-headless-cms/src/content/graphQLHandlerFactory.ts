@@ -1,18 +1,12 @@
-import { boolean } from "boolean";
 import { GraphQLSchema } from "graphql";
 import { makeExecutableSchema } from "@graphql-tools/schema";
-import { CmsContext } from "../types";
 import { I18NLocale } from "@webiny/api-i18n/types";
-import { NotAuthorizedError, NotAuthorizedResponse } from "@webiny/api-security";
-import { ErrorResponse } from "@webiny/handler-graphql";
+import { NotAuthorizedError } from "@webiny/api-security";
 import { PluginCollection } from "@webiny/plugins/types";
-import debugPlugins from "@webiny/handler-graphql/debugPlugins";
 import processRequestBody from "@webiny/handler-graphql/processRequestBody";
 import buildSchemaPlugins from "./plugins/buildSchemaPlugins";
+import { CmsContext } from "../types";
 
-interface CreateGraphQLHandlerOptions {
-    debug?: boolean;
-}
 interface SchemaCache {
     key: string;
     schema: GraphQLSchema;
@@ -109,13 +103,8 @@ const checkEndpointAccess = async (context: CmsContext): Promise<void> => {
     }
 };
 
-export const graphQLHandlerFactory = (
-    options: CreateGraphQLHandlerOptions = {}
-): PluginCollection => {
-    const debug = boolean(options.debug);
-
+export const graphQLHandlerFactory = (): PluginCollection => {
     return [
-        ...(debug ? debugPlugins() : []),
         {
             type: "handler",
             name: "handler-graphql-content-model",
@@ -140,7 +129,18 @@ export const graphQLHandlerFactory = (
                 try {
                     await checkEndpointAccess(context);
                 } catch (ex) {
-                    return respond(http, new NotAuthorizedResponse(ex));
+                    const result = {
+                        data: null,
+                        errors: [
+                            { message: ex.data.reason || ex.message, extensions: { code: ex.code } }
+                        ]
+                    };
+
+                    context.plugins.byType("handler-graphql-after-query").forEach(pl => {
+                        pl.apply(result, context);
+                    });
+
+                    return respond(http, result);
                 }
 
                 try {
@@ -153,38 +153,39 @@ export const graphQLHandlerFactory = (
                     const body: ParsedBody | ParsedBody[] = JSON.parse(http.request.body);
 
                     const result = await processRequestBody(body, schema, context);
+                    
                     return respond(http, result);
                 } catch (ex) {
                     const report = {
-                        error: {
-                            name: ex.constructor.name,
-                            message: ex.message,
-                            data: ex.data || {},
-                            stack: ex.stack
-                        }
+                        errors: [
+                            {
+                                message: ex.message,
+                                extensions: {
+                                    name: ex.constructor.name,
+                                    code: ex.code,
+                                    data: ex.data || {},
+                                    stack: ex.stack
+                                }
+                            }
+                        ]
                     };
+                    
+                    context.plugins.byType("handler-graphql-after-query").forEach(pl => {
+                        pl.apply(report, context);
+                    });
+
                     const body = JSON.stringify(report);
+
                     console.log("[@webiny/api-headless-cms] An error occurred: ", body);
 
-                    if (boolean(options.debug)) {
-                        return context.http.response({
-                            statusCode: 500,
-                            body,
-                            headers: {
-                                ...DEFAULT_HEADERS,
-                                "Cache-Control": "no-store"
-                            }
-                        });
-                    }
-
-                    return respond(
-                        http,
-                        new ErrorResponse({
-                            message: ex.message,
-                            code: ex.code || "GENERAL_ERROR",
-                            data: ex.data || {}
-                        })
-                    );
+                    return context.http.response({
+                        statusCode: 200,
+                        body: JSON.stringify(report, null, 2),
+                        headers: {
+                            ...DEFAULT_HEADERS,
+                            "Cache-Control": "no-store"
+                        }
+                    });
                 }
             }
         }

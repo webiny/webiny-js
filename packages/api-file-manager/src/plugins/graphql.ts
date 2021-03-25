@@ -1,4 +1,4 @@
-import { Response, ErrorResponse, ListResponse } from "@webiny/handler-graphql";
+import { Response, ErrorResponse, ListResponse } from "@webiny/handler-graphql/responses";
 import { FileInput, FileManagerContext, FilesListOpts, Settings } from "../types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 

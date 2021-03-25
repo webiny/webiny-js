@@ -64,7 +64,7 @@ export type PagesCrud = {
     dataLoaders: {
         getPublishedById: DataLoader<{ id: string; preview?: boolean }, Page>;
     };
-    get(id: string): Promise<Page>;
+    get(id: string, options: { auth: boolean }): Promise<Page>;
     listLatest(args: ListPagesArgs): Promise<[Page[], ListMeta]>;
     listPublished(args: ListPagesArgs): Promise<[Page[], ListMeta]>;
     listTags(args: { search: { query: string } }): Promise<string[]>;

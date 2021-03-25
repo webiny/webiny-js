@@ -8,7 +8,7 @@ import {
 } from "../../../types";
 import * as utils from "../../../utils";
 import DataLoader from "dataloader";
-import { NotFoundError } from "@webiny/handler-graphql";
+import { NotFoundError } from "@webiny/handler-graphql/errors";
 import { contentModelManagerFactory } from "./contentModel/contentModelManagerFactory";
 import { CreateContentModelModel, UpdateContentModelModel } from "./contentModel/models";
 import { createFieldModels } from "./contentModel/createFieldModels";

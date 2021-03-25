@@ -1,5 +1,5 @@
-import { ErrorResponse, Response } from "@webiny/handler-graphql";
-import { CmsContext } from "../../types";
+import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
+import { CmsContext } from "~/types";
 
 export default {
     typeDefs: /* GraphQL */ `

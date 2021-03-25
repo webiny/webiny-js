@@ -12,16 +12,12 @@ export default () => [
         }
     },
     {
-        type: "handler-graphql-before-query",
-        apply(context) {
-            // Empty logs
-            context.debug.logs = [];
-        }
-    },
-    {
         type: "handler-graphql-after-query",
         apply(result, context) {
             result["extensions"] = { console: context.debug.logs || [] };
+            
+            // Empty logs
+            context.debug.logs = [];
         }
     }
 ];

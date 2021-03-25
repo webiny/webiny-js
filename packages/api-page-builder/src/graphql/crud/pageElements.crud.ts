@@ -8,7 +8,7 @@ import getPKPrefix from "./utils/getPKPrefix";
 import { PageElement, PbContext } from "../../types";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
-import { NotFoundError } from "@webiny/handler-graphql";
+import { NotFoundError } from "@webiny/handler-graphql/errors";
 
 const CreateDataModel = withFields({
     name: string({ validation: validation.create("required,maxLength:100") }),

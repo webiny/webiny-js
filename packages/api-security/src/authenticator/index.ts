@@ -64,7 +64,7 @@ export default (): ContextPluginInterface<SecurityContext>[] => [
             const authenticationPlugins = context.plugins.byType<SecurityAuthenticationPlugin>(
                 "security-authentication"
             );
-
+            
             for (let i = 0; i < authenticationPlugins.length; i++) {
                 const identity = await authenticationPlugins[i].authenticate(context);
                 if (identity instanceof SecurityIdentity) {

@@ -2,7 +2,7 @@ import mdbid from "mdbid";
 import omit from "lodash/omit";
 import cloneDeep from "lodash/cloneDeep";
 import { ContextPlugin } from "@webiny/handler/types";
-import { NotFoundError } from "@webiny/handler-graphql";
+import { NotFoundError } from "@webiny/handler-graphql/errors";
 import {
     CmsContentEntryContext,
     CmsContentEntryPermission,

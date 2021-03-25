@@ -35,10 +35,6 @@ interface BaseCmsValuesObject {
      * Means this request is a PREVIEW API
      */
     PREVIEW: boolean;
-    /**
-     * Get Read API key
-     */
-    getReadAPIKey: () => Promise<string>;
 }
 /**
  * @description This combines all contexts used in the CMS into a single one.
@@ -673,6 +669,8 @@ export interface CmsSettingsContext {
 export type CmsSystemContext = {
     getVersion(): Promise<string>;
     setVersion(version: string): Promise<void>;
+    getReadAPIKey(): Promise<string>;
+    setReadAPIKey(apiKey: string): Promise<void>;
     install(): Promise<void>;
     upgrade(version: string): Promise<boolean>;
 };

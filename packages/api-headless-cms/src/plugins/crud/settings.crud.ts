@@ -1,4 +1,3 @@
-import crypto from "crypto";
 import { ContextPlugin } from "@webiny/handler/types";
 import * as utils from "../../utils";
 import { CmsContext, CmsSettingsContext, CmsSettingsPermission, CmsSettings } from "../../types";
@@ -17,29 +16,11 @@ export default {
             return utils.checkPermissions(context, "cms.settings");
         };
 
-        const createAPIKey = () => {
-            return crypto.randomBytes(Math.ceil(48 / 2)).toString("hex");
-        };
-
         const settingsGet = async (): Promise<CmsSettings> => {
             const [[settings]] = await db.read<CmsSettings>({
                 ...utils.defaults.db(),
                 query: { PK: PK_SETTINGS(), SK: SETTINGS_SECONDARY_KEY }
             });
-
-            if (settings && !settings.readAPIKey) {
-                settings.readAPIKey = createAPIKey();
-                await db.update({
-                    ...utils.defaults.db,
-                    query: {
-                        PK: PK_SETTINGS(),
-                        SK: SETTINGS_SECONDARY_KEY
-                    },
-                    data: {
-                        readAPIKey: settings.readAPIKey
-                    }
-                });
-            }
 
             return settings;
         };
@@ -66,7 +47,6 @@ export default {
                         data: {
                             PK: PK_SETTINGS(),
                             SK: SETTINGS_SECONDARY_KEY,
-                            readAPIKey: createAPIKey(),
                             ...data
                         }
                     });
@@ -103,11 +83,7 @@ export default {
         };
         context.cms = {
             ...(context.cms || ({} as any)),
-            settings,
-            async getReadAPIKey() {
-                const settings = await settingsGet();
-                return settings ? settings.readAPIKey : null;
-            }
+            settings
         };
     }
 } as ContextPlugin<CmsContext>;

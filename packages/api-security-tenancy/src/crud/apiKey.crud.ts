@@ -6,7 +6,7 @@ import dbArgs from "./dbArgs";
 import mdbid from "mdbid";
 import { ApiKey, ApiKeyPermission, ApiKeysCRUD, TenancyContext } from "../types";
 import { NotAuthorizedError } from "@webiny/api-security";
-import { NotFoundError } from "@webiny/handler-graphql";
+import { NotFoundError } from "@webiny/handler-graphql/errors";
 
 const APIKeyModel = withFields({
     name: string({ validation: validation.create("required") }),

@@ -7,7 +7,7 @@ import { Category, PbContext } from "../../types";
 import { ContextPlugin } from "@webiny/handler/types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import hasRwd from "./utils/hasRwd";
-import { NotFoundError } from "@webiny/handler-graphql";
+import { NotFoundError } from "@webiny/handler-graphql/errors";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
 import Error from "@webiny/error";

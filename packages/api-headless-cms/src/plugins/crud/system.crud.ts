@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import { NotAuthorizedError } from "@webiny/api-security";
 import Error from "@webiny/error";
 import { getApplicablePlugin } from "@webiny/api-upgrade";
@@ -17,6 +18,10 @@ export default {
     apply(context: CmsContext) {
         const { security, db } = context;
         const keys = () => ({ PK: `T#${security.getTenant().id}#SYSTEM`, SK: "CMS" });
+
+        const createReadAPIKey = () => {
+            return crypto.randomBytes(Math.ceil(48 / 2)).toString("hex");
+        };
 
         context.cms = {
             ...context.cms,
@@ -65,6 +70,29 @@ export default {
                             }
                         });
                     }
+                },
+                getReadAPIKey: async () => {
+                    const [[system]] = await db.read({
+                        ...utils.defaults.db(),
+                        query: keys()
+                    });
+
+                    if (!system.readAPIKey) {
+                        const apiKey = createReadAPIKey();
+                        await context.cms.system.setReadAPIKey(apiKey);
+                        return apiKey;
+                    }
+
+                    return system.readAPIKey;
+                },
+                setReadAPIKey: async apiKey => {
+                    await db.update({
+                        ...utils.defaults.db(),
+                        query: keys(),
+                        data: {
+                            readAPIKey: apiKey
+                        }
+                    });
                 },
                 install: async (): Promise<void> => {
                     const identity = context.security.getIdentity();
@@ -130,6 +158,9 @@ export default {
 
                     // Set app version
                     await context.cms.system.setVersion(context.WEBINY_VERSION);
+
+                    // Set internal API key to access Read API
+                    await context.cms.system.setReadAPIKey(createReadAPIKey());
                 },
                 async upgrade(version) {
                     const identity = context.security.getIdentity();

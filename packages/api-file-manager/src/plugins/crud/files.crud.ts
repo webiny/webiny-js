@@ -1,5 +1,5 @@
 import mdbid from "mdbid";
-import { NotFoundError } from "@webiny/handler-graphql";
+import { NotFoundError } from "@webiny/handler-graphql/errors";
 import { NotAuthorizedError } from "@webiny/api-security";
 import Error from "@webiny/error";
 import { File, FileManagerContext, FilePermission, FilesCRUD } from "~/types";

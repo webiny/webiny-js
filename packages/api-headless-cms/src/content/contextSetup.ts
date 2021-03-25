@@ -33,7 +33,7 @@ const setContextCmsVariables = async (context: CmsContext): Promise<void> => {
     context.cms.getLocale = () => locale;
 };
 // eslint-disable-next-line
-export default (options: any = {}): ContextPlugin<CmsContext> => ({
+export default (): ContextPlugin<CmsContext> => ({
     type: "context",
     apply: async context => {
         if (context.http.request.method === "OPTIONS") {

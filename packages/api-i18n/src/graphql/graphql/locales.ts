@@ -2,7 +2,7 @@ import { hasPermission } from "@webiny/api-security";
 import searchLocaleCodes from "./resolvers/searchLocaleCodes";
 import getI18NInformation from "./resolvers/getI18NInformation";
 import { Response, ErrorResponse, NotFoundResponse } from "@webiny/handler-graphql/responses";
-import { compose } from "@webiny/handler-graphql";
+import { compose } from "@webiny/handler-graphql/compose";
 
 export default {
     typeDefs: /* GraphQL */ `

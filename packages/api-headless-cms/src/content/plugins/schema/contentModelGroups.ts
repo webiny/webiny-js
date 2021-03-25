@@ -1,11 +1,11 @@
 import { GraphQLSchemaPlugin, Resolvers } from "@webiny/handler-graphql/types";
-import { ErrorResponse, Response } from "@webiny/handler-graphql";
+import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
 
 import {
     CmsContentModelGroupCreateInput,
     CmsContentModelGroupUpdateInput,
     CmsContext
-} from "../../../types";
+} from "~/types";
 
 interface CreateContentModelGroupArgs {
     data: CmsContentModelGroupCreateInput;

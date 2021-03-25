@@ -1,4 +1,4 @@
-import { ListErrorResponse, ListResponse } from "@webiny/handler-graphql";
+import { ListErrorResponse, ListResponse } from "@webiny/handler-graphql/responses";
 import { utils } from "../utils";
 import {
     createElasticsearchQuery,

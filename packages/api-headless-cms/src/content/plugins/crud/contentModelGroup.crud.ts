@@ -12,7 +12,7 @@ import {
 import * as utils from "../../../utils";
 import { beforeDeleteHook } from "./contentModelGroup/beforeDelete.hook";
 import { beforeCreateHook } from "./contentModelGroup/beforeCreate.hook";
-import { NotFoundError } from "@webiny/handler-graphql";
+import { NotFoundError } from "@webiny/handler-graphql/errors";
 import WebinyError from "@webiny/error";
 
 const CreateContentModelGroupModel = withFields({

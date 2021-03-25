@@ -1,6 +1,6 @@
 import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
 import { CmsContentEntryResolverFactory as ResolverFactory } from "../../../../../types";
-import { NotFoundError } from "@webiny/handler-graphql";
+import { NotFoundError } from "@webiny/handler-graphql/errors";
 
 export const resolveGet: ResolverFactory = ({ model }) => async (root, args, context) => {
     try {

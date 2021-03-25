@@ -2,13 +2,15 @@ import { createHandler } from "@webiny/handler";
 import handlerArgsPlugins from "@webiny/handler-args";
 import handlerHTTPPlugins from "@webiny/handler-http";
 import graphqlServerPlugins from "../src";
+import debugPlugins from "../src/debug";
 
 export default ({ debug = false, plugins = [] } = {}) => {
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler(
+        debug ? debugPlugins() : null,
         handlerArgsPlugins(),
         handlerHTTPPlugins(),
-        graphqlServerPlugins({ debug }),
+        graphqlServerPlugins(),
         ...plugins
     );
 
