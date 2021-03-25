@@ -1,5 +1,48 @@
 import { ElasticsearchQueryBuilderPlugin } from "../../../types";
 
+/**
+ * Before performing the query, we need to escape all special characters.
+ * @see https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#_reserved_characters
+ */
+const ES_RESERVED_CHARACTERS = {
+    // These characters need to be escaped with backslash ("\").
+    escape: [
+        "\\\\",
+        "\\/",
+        "\\+",
+        "\\-",
+        "\\=",
+        "\\&\\&",
+        "\\|\\|",
+        "\\!",
+        "\\(",
+        "\\)",
+        "\\{",
+        "\\}",
+        "\\[",
+        "\\]",
+        "\\^",
+        '\\"',
+        "\\~",
+        "\\*",
+        "\\?",
+        "\\:",
+        "\\>",
+        "\\<"
+    ]
+};
+
+export const normalizeValue = (value: string) => {
+    let result = value;
+    for (let i = 0; i < ES_RESERVED_CHARACTERS.escape.length; i++) {
+        const character = ES_RESERVED_CHARACTERS.escape[i];
+
+        result = result.replace(new RegExp(`${character}`, "g"), ` `);
+    }
+
+    return result ? `*${result}*` : "";
+};
+
 export const elasticSearchQueryBuilderContainsPlugin = (): ElasticsearchQueryBuilderPlugin => ({
     type: "cms-elastic-search-query-builder",
     name: "elastic-search-query-builder-contains",
@@ -9,7 +52,9 @@ export const elasticSearchQueryBuilderContainsPlugin = (): ElasticsearchQueryBui
             query_string: {
                 allow_leading_wildcard: true,
                 fields: [field],
-                query: `*${value}*`
+                query: normalizeValue(value),
+                // @ts-ignore
+                default_operator: "AND"
             }
         });
     }

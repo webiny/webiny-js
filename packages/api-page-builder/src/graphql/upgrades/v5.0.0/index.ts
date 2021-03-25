@@ -49,8 +49,7 @@ const plugin: UpgradePlugin<PbContext> = {
             name: "upgrade-page-builder-es-5.0.0.json",
             type: "application/json",
             size: esJSON.length,
-            buffer: Buffer.from(esJSON),
-            settings: {}
+            buffer: Buffer.from(esJSON)
         });
 
         console.log(`Stored backup of Elasticsearch items to ${file.key}`);
