@@ -66,24 +66,23 @@ const ContentDataList = ({
     const query = new URLSearchParams(location.search);
     const entryId = query.get("id");
     const searchQuery = query.get("search");
-    const updateSearch = useMemo(
-        () =>
-            debounce(({ filter, query }) => {
-                const search = query.get("search");
-                if (typeof search !== "string" && !filter) {
-                    return;
-                }
-                if (filter !== search) {
-                    query.set("search", filter);
-                    // We use the title field with the "contains" operator for doing basic searches.
-                    const searchField = contentModel.titleFieldId + "_contains";
-                    setListQueryVariables(prevState => ({
-                        ...prevState,
-                        where: { [searchField]: filter }
-                    }));
-                    history.push(`${baseUrl}?${query.toString()}`);
-                }
-            }, 250),
+    const updateSearch = useCallback(
+        debounce(({ filter, query }) => {
+            const search = query.get("search");
+            if (typeof search !== "string" && !filter) {
+                return;
+            }
+            if (filter !== search) {
+                query.set("search", filter);
+                // We use the title field with the "contains" operator for doing basic searches.
+                const searchField = contentModel.titleFieldId + "_contains";
+                setListQueryVariables(prevState => ({
+                    ...prevState,
+                    where: { [searchField]: filter }
+                }));
+                history.push(`${baseUrl}?${query.toString()}`);
+            }
+        }, 250),
         [baseUrl]
     );
 
