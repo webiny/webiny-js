@@ -30,6 +30,7 @@ export const GET_PUBLISHED_PAGE = () => {
                         settings {
                             ${pageSettingsFields}
                         }
+                        dataSources
                     }
                     error {
                         code

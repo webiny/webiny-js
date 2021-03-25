@@ -9,6 +9,7 @@ import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import elasticSearch from "@webiny/api-plugin-elastic-search-client";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
+import debugPlugins from "@webiny/handler-graphql/debug";
 
 // File storage S3 plugin for API file manager.
 import fileManagerS3 from "@webiny/api-file-manager-s3";
@@ -17,7 +18,8 @@ import securityPlugins from "./security";
 import headlessCmsPlugins from "@webiny/api-headless-cms/plugins";
 
 export const handler = createHandler(
-    graphqlPlugins({ debug: process.env.DEBUG }),
+    process.env.DEBUG === "true" ? debugPlugins() : null,
+    graphqlPlugins(),
     elasticSearch({ endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}` }),
     dbPlugins({
         table: process.env.DB_TABLE,

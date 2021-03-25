@@ -1,6 +1,7 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createHandler } from "@webiny/handler-aws";
 import graphqlPlugins from "@webiny/handler-graphql";
+import debugPlugins from "@webiny/handler-graphql/debug";
 import i18nPlugins from "@webiny/api-i18n/graphql";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
@@ -17,7 +18,8 @@ import securityPlugins from "./security";
 import headlessCmsPlugins from "@webiny/api-headless-cms/plugins";
 
 export const handler = createHandler(
-    graphqlPlugins({ debug: process.env.DEBUG }),
+    process.env.DEBUG === "true" ? debugPlugins() : null,
+    graphqlPlugins(),
     elasticSearch({ endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}` }),
     dbPlugins({
         table: process.env.DB_TABLE,
