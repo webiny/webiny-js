@@ -1,6 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import get from "lodash/get";
 import debounce from "lodash/debounce";
+import set from "lodash/set";
+import unset from "lodash/unset";
+import cloneDeep from "lodash/cloneDeep";
 import { css } from "emotion";
 import TimeAgo from "timeago-react";
 import pluralize from "pluralize";
@@ -76,10 +79,16 @@ const ContentDataList = ({
                 query.set("search", filter);
                 // We use the title field with the "contains" operator for doing basic searches.
                 const searchField = contentModel.titleFieldId + "_contains";
-                setListQueryVariables(prevState => ({
-                    ...prevState,
-                    where: { [searchField]: filter }
-                }));
+                setListQueryVariables(prev => {
+                    const next = cloneDeep(prev);
+                    if (filter) {
+                        set(next, `where.${searchField}`, filter);
+                    } else {
+                        unset(next, `where.${searchField}`);
+                    }
+
+                    return next;
+                });
                 history.push(`${baseUrl}?${query.toString()}`);
             }
         }, 250),
