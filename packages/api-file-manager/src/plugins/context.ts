@@ -13,16 +13,12 @@ export default {
             return;
         }
 
-        // Get file storage plugin. We get it `byName` because we only support 1 storage plugin.
-        const fileStoragePlugin = context.plugins.byName("api-file-manager-storage");
-
         context.fileManager = {
             ...context.fileManager,
             files: filesCRUD(context),
             system: systemCRUD(context),
             settings: settingsCRUD(context),
             storage: new FileStorage({
-                storagePlugin: fileStoragePlugin,
                 context
             })
         };

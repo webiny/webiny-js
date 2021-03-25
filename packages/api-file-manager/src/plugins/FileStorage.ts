@@ -18,8 +18,9 @@ export interface FileStoragePlugin {
 export class FileStorage {
     storagePlugin: FileStoragePlugin;
     context: FileManagerContext;
-    constructor({ storagePlugin, context }) {
-        this.storagePlugin = storagePlugin;
+    constructor({ context }) {
+        // Get file storage plugin. We get it `byName` because we only support 1 storage plugin.
+        this.storagePlugin = context.plugins.byName("api-file-manager-storage");
         this.context = context;
     }
 
