@@ -2,6 +2,7 @@
   "private": true,
   "workspaces": {
     "packages": [
+      "plugins/*",
       "packages/*",
       "apps/admin/code",
       "apps/website/code",
