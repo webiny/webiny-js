@@ -16,6 +16,7 @@ const plugins: PbEditorPageSettingsPlugin[] = [
         icon: <SettingsIcon />,
         fields: `
             general {
+                snippet
                 image {
                     id
                     src
