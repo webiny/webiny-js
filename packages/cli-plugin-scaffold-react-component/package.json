@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cli-plugin-scaffold-react-component",
-  "version": "5.3.0-beta.0",
+  "version": "5.3.0",
   "description": "Generate a simple React component package.",
   "main": "index.js",
   "types": "index.d.ts",
@@ -19,8 +19,8 @@
   },
   "homepage": "https://github.com/webiny/webiny-js#readme",
   "dependencies": {
-    "@webiny/cli-plugin-scaffold": "^5.3.0-beta.0",
-    "@webiny/error": "^5.3.0-beta.0",
+    "@webiny/cli-plugin-scaffold": "^5.3.0",
+    "@webiny/error": "^5.3.0",
     "case": "^1.6.3",
     "chalk": "^4.1.0",
     "execa": "^5.0.0",
