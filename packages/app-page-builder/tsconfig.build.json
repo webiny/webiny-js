@@ -1,24 +1,27 @@
 {
   "extends": "../../tsconfig.build.json",
-  "include": ["./src", "./custom.d.ts", "./slate.d.ts", "./slate-react.d.ts"],
+  "include": ["src"],
   "exclude": [
     "node_modules",
+    "**/__tests__/**",
+    "./dist",
     "../app",
     "../app-admin",
     "../app-plugin-admin-welcome-screen",
     "../app-security",
+    "../form",
     "../plugins",
     "../react-router",
-    "../form",
+    "../tracking",
     "../ui",
     "../validation"
   ],
+  "references": [],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": {},
-    "baseUrl": "."
-  },
-  "references": []
+    "baseUrl": ".",
+    "paths": { "~/*": ["./src/*"] }
+  }
 }
