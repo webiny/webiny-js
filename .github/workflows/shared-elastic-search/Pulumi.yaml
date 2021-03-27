@@ -1,0 +1,4 @@
+name: shared-elastic-search
+runtime: nodejs
+description: Deploys a single Elastic Search cluster, used for testing purposes.
+main: pulumi/
