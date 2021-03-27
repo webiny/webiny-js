@@ -1,8 +1,6 @@
 const getPulumi = require("../utils/getPulumi");
 const trimEnd = require("lodash/trimEnd");
 
-const LOCAL_FILESYSTEM_BACKEND = "file://";
-
 module.exports = async (projectApplicationFolder, projectRoot) => {
     const pulumi = getPulumi({
         execa: {
@@ -10,7 +8,7 @@ module.exports = async (projectApplicationFolder, projectRoot) => {
         }
     });
 
-    let login = process.env.WEBINY_PULUMI_BACKEND_URL || LOCAL_FILESYSTEM_BACKEND;
+    let login = process.env.WEBINY_PULUMI_BACKEND_URL;
 
     // @see https://www.pulumi.com/docs/intro/concepts/state/#logging-into-the-pulumi-service-backend
     // To use a self-managed backend, specify a storage endpoint URL as pulumi login’s <backend-url> argument:
@@ -20,12 +18,12 @@ module.exports = async (projectApplicationFolder, projectRoot) => {
 
     // If `file://` or `http*`, we don't do anything. Otherwise, we append the stackFolder. For example, if
     // `s3://xyz` was received, and we're deploying `apps/website`, then we end up with `s3://xyz/apps/website`.
-    if (login === LOCAL_FILESYSTEM_BACKEND) {
-        login = LOCAL_FILESYSTEM_BACKEND + projectRoot
-    } else {
-        if (!login.startsWith("http")) {
-            login = trimEnd(login, "/") + "/" + projectApplicationFolder;
-        }
+    if (!login) {
+        login = `file://${projectRoot}`;
+    }
+
+    if (!login.startsWith("http")) {
+        login = trimEnd(login, "/") + "/" + projectApplicationFolder;
     }
 
     await pulumi.run({
