@@ -39,7 +39,7 @@ module.exports = async (inputs, context) => {
         }
     });
 
-    await login(folder);
+    await login(folder, context.paths.projectRoot);
 
     const stackName = getStackName(folder);
 
