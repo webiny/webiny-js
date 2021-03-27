@@ -10,6 +10,7 @@ function runInquirer(cwp) {
         "In order to setup your new Webiny project, please answer the following questions."
     );
     console.log();
+
     return inquirer
         .prompt([
             {
@@ -17,6 +18,7 @@ function runInquirer(cwp) {
                 name: "region",
                 default: "us-east-1",
                 message: "Please choose the AWS region in which your new project will be deployed:",
+                // Some of the regions might be commented out (not all service supported).
                 choices: [
                     { value: "us-east-1", name: "us-east-1 (US East, N. Virginia)" },
                     { value: "us-east-2", name: "us-east-2 (US East, Ohio)" },
@@ -26,7 +28,7 @@ function runInquirer(cwp) {
                     { value: "eu-central-1", name: "eu-central-1 (EU, Frankfurt)" },
                     { value: "eu-west-1", name: "eu-west-1 (EU, Ireland)" },
                     { value: "eu-west-2", name: "eu-west-2 (EU, London)" },
-                    { value: "eu-south-1", name: "eu-south-1 (EU, Milan)" },
+                    /*{ value: "eu-south-1", name: "eu-south-1 (EU, Milan)" },*/
                     { value: "eu-west-3", name: "eu-west-3 (EU, Paris)" },
                     { value: "eu-north-1", name: "eu-north-1 (EU, Stockholm)" },
                     { value: "af-south-1", name: "af-south-1 (Africa, Cape Town)" },
