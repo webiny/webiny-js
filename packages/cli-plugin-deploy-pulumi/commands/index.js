@@ -1,5 +1,6 @@
 const destroy = require("./destroy");
 const deploy = require("./deploy");
+const watch = require("./watch");
 const output = require("./output");
 
 module.exports = [
@@ -46,6 +47,43 @@ module.exports = [
                     await deploy(argv, context);
                     process.exit(0);
                 }
+            );
+
+            yargs.command(
+                "watch [folder]",
+                `Rebuild and deploy specified specified project application while making changes to it`,
+                yargs => {
+                    yargs.example("$0 watch api --env=dev");
+                    yargs.positional("folder", {
+                        describe: `Project application folder`,
+                        type: "string"
+                    });
+                    yargs.option("env", {
+                        describe: `Environment`,
+                        type: "string"
+                    });
+                    yargs.option("build", {
+                        describe: `While making code changes, re-build all relevant packages`,
+                        type: "boolean",
+                        default: true
+                    });
+                    yargs.option("deploy", {
+                        describe: `While making code changes, re-deploy cloud infrastructure`,
+                        type: "boolean",
+                        default: true
+                    });
+                    yargs.option("scope", {
+                        describe: `Scope`,
+                        type: "array",
+                        default: []
+                    });
+                    yargs.option("debug", {
+                        default: false,
+                        describe: `Turn on debug logs`,
+                        type: "boolean"
+                    });
+                },
+                async argv => watch(argv, context)
             );
 
             yargs.command(
