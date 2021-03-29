@@ -21,6 +21,8 @@ const getLogType = type => {
             return `${chalk.blue(type)}`;
         case "error":
             return `${chalk.red(type)}`;
+        case "warning":
+            return `${chalk.yellow(type)}`;
         case "debug":
             return `${chalk.gray(type)}`;
         case "success":
@@ -123,6 +125,10 @@ class Context {
 
     debug(...args) {
         webinyLog("debug", ...args);
+    }
+
+    warning(...args) {
+        webinyLog("warning", ...args);
     }
 
     error(...args) {

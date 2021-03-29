@@ -3,6 +3,42 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.3.0](https://github.com/webiny/webiny-js/compare/v5.3.0-beta.0...v5.3.0) (2021-03-26)
+
+**Note:** Version bump only for package @webiny/api-file-manager-s3
+
+
+
+
+
+# [5.3.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.2.1...v5.3.0-beta.0) (2021-03-25)
+
+
+### Bug Fixes
+
+* add missing permission check ([#1511](https://github.com/webiny/webiny-js/issues/1511)) ([62a8c80](https://github.com/webiny/webiny-js/commit/62a8c80fdfcfdacb9fb362c9c42e094d8c64ebf4))
+* update package version ([763e06e](https://github.com/webiny/webiny-js/commit/763e06ef0cfc0322f4a749881911d954755c849d))
+
+
+
+
+
+## [5.2.1](https://github.com/webiny/webiny-js/compare/v5.2.1-beta.0...v5.2.1) (2021-03-21)
+
+**Note:** Version bump only for package @webiny/api-file-manager-s3
+
+
+
+
+
+## [5.2.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.2.0...v5.2.1-beta.0) (2021-03-21)
+
+**Note:** Version bump only for package @webiny/api-file-manager-s3
+
+
+
+
+
 # [5.2.0](https://github.com/webiny/webiny-js/compare/v5.2.0-beta.0...v5.2.0) (2021-03-19)
 
 **Note:** Version bump only for package @webiny/api-file-manager-s3

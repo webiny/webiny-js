@@ -27,6 +27,8 @@ describe("elasticSearchQueryBuilderContainsPlugin", () => {
                 {
                     query_string: {
                         allow_leading_wildcard: true,
+                        // @ts-ignore
+                        default_operator: "AND",
                         fields: ["name"],
                         query: "*John*"
                     }
@@ -34,6 +36,8 @@ describe("elasticSearchQueryBuilderContainsPlugin", () => {
                 {
                     query_string: {
                         allow_leading_wildcard: true,
+                        // @ts-ignore
+                        default_operator: "AND",
                         fields: ["name"],
                         query: "*Doe*"
                     }

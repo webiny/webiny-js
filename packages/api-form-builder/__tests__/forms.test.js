@@ -195,6 +195,11 @@ describe('Form Builder "Form" Test', () => {
         // Publish revision #1
         await publishRevision({ revision: id });
 
+        await until(
+            () => listForms().then(([data]) => data),
+            ({ data }) => data.formBuilder.listForms.data[0].id === id
+        );
+
         // Get the published form
         const [{ data: get }] = await getPublishedForm({ revision: id });
         expect(get.formBuilder.getPublishedForm.data.id).toEqual(id);

@@ -544,7 +544,7 @@ describe("READ - Resolvers", () => {
             () =>
                 listCategories({
                     where: {
-                        title_contains: "*NIMal*"
+                        title_contains: "NIMal"
                     }
                 }).then(([data]) => data),
             ({ data }) => data.listCategories.data[0].id === animals.id

@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.3.0](https://github.com/webiny/webiny-js/compare/v5.3.0-beta.0...v5.3.0) (2021-03-26)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold-graphql-service
+
+
+
+
+
+# [5.3.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.2.1...v5.3.0-beta.0) (2021-03-25)
+
+
+### Bug Fixes
+
+* **cli-plugin-scaffold-graphql-service:** graphql types naming ([#1533](https://github.com/webiny/webiny-js/issues/1533)) ([df4c692](https://github.com/webiny/webiny-js/commit/df4c6925837c21d799cb0c0cebc4ba9e56fd23db))
+
+
+### Features
+
+* **cli-plugin-scaffold-react-component:** scaffold to create react comp ([#1530](https://github.com/webiny/webiny-js/issues/1530)) ([7090ebc](https://github.com/webiny/webiny-js/commit/7090ebccfc1393f1b6eeca94ceaa15609f0449d6))
+
+
+
+
+
+## [5.2.1](https://github.com/webiny/webiny-js/compare/v5.2.1-beta.0...v5.2.1) (2021-03-21)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold-graphql-service
+
+
+
+
+
+## [5.2.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.2.0...v5.2.1-beta.0) (2021-03-21)
+
+
+### Bug Fixes
+
+* **cli-plugin-scaffold-graphql-service:** hardcoded books in import ([#1524](https://github.com/webiny/webiny-js/issues/1524)) ([9f1e728](https://github.com/webiny/webiny-js/commit/9f1e7284260995c2c534714abc1f17a3c523929e))
+
+
+
+
+
 # [5.2.0](https://github.com/webiny/webiny-js/compare/v5.2.0-beta.0...v5.2.0) (2021-03-19)
 
 **Note:** Version bump only for package @webiny/cli-plugin-scaffold-graphql-service

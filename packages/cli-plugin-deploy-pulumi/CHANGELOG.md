@@ -3,6 +3,48 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.3.0](https://github.com/webiny/webiny-js/compare/v5.3.0-beta.0...v5.3.0) (2021-03-26)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.3.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.2.1...v5.3.0-beta.0) (2021-03-25)
+
+
+### Bug Fixes
+
+* remove extra "here" word ([5fbe4ff](https://github.com/webiny/webiny-js/commit/5fbe4ff1fba8681deed6f84b17073f13c2d15b5f))
+* send WEBINY_ENV and WEBINY_PROJECT_NAME ([a999ecf](https://github.com/webiny/webiny-js/commit/a999ecf8815a2b2c85487d4f1c022e78fdd92500))
+* update link ([c6eb6b6](https://github.com/webiny/webiny-js/commit/c6eb6b6f479d7c7a83206be04ae17fbdcea5fb7e))
+
+
+### Features
+
+* add pending operations info message ([639b6e1](https://github.com/webiny/webiny-js/commit/639b6e1c3134f1793a2dfff980222d6498014424))
+
+
+
+
+
+## [5.2.1](https://github.com/webiny/webiny-js/compare/v5.2.1-beta.0...v5.2.1) (2021-03-21)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+## [5.2.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.2.0...v5.2.1-beta.0) (2021-03-21)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
 # [5.2.0](https://github.com/webiny/webiny-js/compare/v5.2.0-beta.0...v5.2.0) (2021-03-19)
 
 **Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi

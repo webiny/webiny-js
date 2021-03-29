@@ -483,9 +483,7 @@ in the API playground.`,
             );
 
             console.log(
-                `
-Learn more about scaffolding at https://docs.webiny.com/docs/tutorials/create-an-application/introduction
-`
+                "Learn more about API development at https://www.webiny.com/docs/tutorials/create-an-application/api-package."
             );
         }
     }
