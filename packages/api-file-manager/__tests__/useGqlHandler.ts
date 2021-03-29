@@ -11,7 +11,7 @@ import { SecurityIdentity } from "@webiny/api-security";
 import elasticSearch from "@webiny/api-plugin-elastic-search-client";
 import { simulateStream } from "@webiny/project-utils/testing/dynamodb";
 import { Client } from "@elastic/elasticsearch";
-import filesPlugins from "../src/plugins";
+import filesPlugins from "~/plugins";
 
 // Graphql
 import {

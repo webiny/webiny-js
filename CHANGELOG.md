@@ -3,6 +3,154 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.3.0](https://github.com/webiny/webiny-js/compare/v5.3.0-beta.0...v5.3.0) (2021-03-26)
+
+**Note:** Version bump only for package webiny-js
+
+
+
+
+
+# [5.3.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.2.1...v5.3.0-beta.0) (2021-03-25)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** normalize values before querying ([8e57cea](https://github.com/webiny/webiny-js/commit/8e57cea5305d7550382b2b90289cd1acdb02906a))
+* **app-headless-cms:** prevent filters reset on resetting search input ([3916f68](https://github.com/webiny/webiny-js/commit/3916f68ab2f095bd4ff5479ff6e523df028c96dc))
+* **app-headless-cms:** simplify cache keys for React hooks ([f8d4971](https://github.com/webiny/webiny-js/commit/f8d4971ab47b897e774fd3def8b4fd0547bda6b5))
+* **app-headless-cms:** use "useCallback" instead of "useMemo" ([ac17278](https://github.com/webiny/webiny-js/commit/ac1727866a5c8a4e675f3f70fe9b1b4c373977da))
+* **cli-plugin-scaffold-graphql-service:** graphql types naming ([#1533](https://github.com/webiny/webiny-js/issues/1533)) ([df4c692](https://github.com/webiny/webiny-js/commit/df4c6925837c21d799cb0c0cebc4ba9e56fd23db))
+* add missing permission check ([#1511](https://github.com/webiny/webiny-js/issues/1511)) ([62a8c80](https://github.com/webiny/webiny-js/commit/62a8c80fdfcfdacb9fb362c9c42e094d8c64ebf4))
+* force Node "^12 || ^14" ([b29c972](https://github.com/webiny/webiny-js/commit/b29c9721a12ae888ae229b03872bcf93071212cd))
+* remove extra "here" word ([5fbe4ff](https://github.com/webiny/webiny-js/commit/5fbe4ff1fba8681deed6f84b17073f13c2d15b5f))
+* remove old process.exit call ([5e8afad](https://github.com/webiny/webiny-js/commit/5e8afadb14742e60c1e0a49a8b701f9274bef169))
+* remove package-lock.json ([be5f95d](https://github.com/webiny/webiny-js/commit/be5f95d548ab58682456ae6ec5be2725d16d7134))
+* remove redundant "JSON.parse" ([c4b0ff0](https://github.com/webiny/webiny-js/commit/c4b0ff0e1528daeef432bcfe7ee75bddee8cc47c))
+* remove typography and `PbDefaultPagePlugin` usage from theme ([#1529](https://github.com/webiny/webiny-js/issues/1529)) ([104572d](https://github.com/webiny/webiny-js/commit/104572d1f37b01c3653bc2e17607117d8b5fbc79))
+* send WEBINY_ENV and WEBINY_PROJECT_NAME ([a999ecf](https://github.com/webiny/webiny-js/commit/a999ecf8815a2b2c85487d4f1c022e78fdd92500))
+* update yarn.lock ([939268f](https://github.com/webiny/webiny-js/commit/939268fc023620728bff9ef8db2908c0d0f83419))
+* **create-webiny-project:** add system information on errors ([4977bd4](https://github.com/webiny/webiny-js/commit/4977bd4dcd393b5f3482add882537b092e4ee6c8))
+* update link ([c6eb6b6](https://github.com/webiny/webiny-js/commit/c6eb6b6f479d7c7a83206be04ae17fbdcea5fb7e))
+* update package version ([763e06e](https://github.com/webiny/webiny-js/commit/763e06ef0cfc0322f4a749881911d954755c849d))
+* **cli-plugin-scaffold-graphql-service:** hardcoded books in import ([#1523](https://github.com/webiny/webiny-js/issues/1523)) ([df1e890](https://github.com/webiny/webiny-js/commit/df1e8907bdeaaa995e55dc0f8240bebd32f501a9))
+
+
+### Features
+
+* **cli-plugin-scaffold-react-component:** scaffold to create react comp ([#1530](https://github.com/webiny/webiny-js/issues/1530)) ([7090ebc](https://github.com/webiny/webiny-js/commit/7090ebccfc1393f1b6eeca94ceaa15609f0449d6))
+* **create-webiny-project:** add "--cleanup" argument ([e6c5304](https://github.com/webiny/webiny-js/commit/e6c53045558f2c168da78db6227e5de8abc2165d))
+* add "context.warning" for printing warnings ([a0ac269](https://github.com/webiny/webiny-js/commit/a0ac269f34d9aae3da0e097540375c3c6dfc3c56))
+* add `SubscriptionRequiredException` info message ([c7cf200](https://github.com/webiny/webiny-js/commit/c7cf200afa7c2059222172bb9d6552fc1c109a14))
+* add pending operations info message ([639b6e1](https://github.com/webiny/webiny-js/commit/639b6e1c3134f1793a2dfff980222d6498014424))
+* introduce "cli-command-error" plugins ([00a920f](https://github.com/webiny/webiny-js/commit/00a920f81363198fda1a711b9cff92ed104b4e21))
+
+
+
+
+
+## [5.2.1](https://github.com/webiny/webiny-js/compare/v5.2.1-beta.0...v5.2.1) (2021-03-21)
+
+**Note:** Version bump only for package webiny-js
+
+
+
+
+
+## [5.2.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.2.0...v5.2.1-beta.0) (2021-03-21)
+
+
+### Bug Fixes
+
+* **cli-plugin-scaffold-graphql-service:** hardcoded books in import ([#1524](https://github.com/webiny/webiny-js/issues/1524)) ([9f1e728](https://github.com/webiny/webiny-js/commit/9f1e7284260995c2c534714abc1f17a3c523929e))
+
+
+
+
+
+# [5.2.0](https://github.com/webiny/webiny-js/compare/v5.2.0-beta.0...v5.2.0) (2021-03-19)
+
+
+### Bug Fixes
+
+* make search case-insensitive ([fd4d94d](https://github.com/webiny/webiny-js/commit/fd4d94d8844a52e1679b0a23c58f722c97534f98))
+
+
+
+
+
+# [5.2.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.1.0...v5.2.0-beta.0) (2021-03-19)
+
+
+### Bug Fixes
+
+* add "limit" argument ([7e235e1](https://github.com/webiny/webiny-js/commit/7e235e1d9f2f31161a384db47b8c3f4d772cd404))
+* add missing dependency ([3d15fd3](https://github.com/webiny/webiny-js/commit/3d15fd35270145dbc4504fbfe3a4e8ad957ebc80))
+* add nothing-to-show message ([2335f22](https://github.com/webiny/webiny-js/commit/2335f22a7f419681e26289d866afaedabace294c))
+* add status property ([92f1306](https://github.com/webiny/webiny-js/commit/92f130630d934a7f5105de638a7e870653f1401f))
+* cache compressed rich text content ([1f918ab](https://github.com/webiny/webiny-js/commit/1f918ab28105750e0e308aadf041273f3417b134))
+* ensure maximum of 100 items are requested via the `batchGet` call ([7bc1208](https://github.com/webiny/webiny-js/commit/7bc120844a0a2a2ff6ac9880334fef9c1b09a0c7))
+* set limit 10 ([dbf7884](https://github.com/webiny/webiny-js/commit/dbf7884c4b3c226e8d8e2f2516e87045134113eb))
+* simplify options data loading ([5757082](https://github.com/webiny/webiny-js/commit/5757082cc4f1e3ae3822c75d75ecb4a6d0b6eb6f))
+* update yarn.lock ([26f4029](https://github.com/webiny/webiny-js/commit/26f40297ca7ed3a3d8065fffcea4bb172c601d97))
+* use "useMultipleSelectionList" prop on reference field ([07933ca](https://github.com/webiny/webiny-js/commit/07933ca40ae0214793d9896221e992a40f347f4c))
+
+
+### Features
+
+* introduce `useMultipleSelectionList` prop ([a427147](https://github.com/webiny/webiny-js/commit/a427147de806abcf872e0ce0e95a5fb557d05c43))
+
+
+
+
+
+# [5.1.0](https://github.com/webiny/webiny-js/compare/v5.1.0-beta.1...v5.1.0) (2021-03-16)
+
+**Note:** Version bump only for package webiny-js
+
+
+
+
+
+# [5.1.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.1.0-beta.0...v5.1.0-beta.1) (2021-03-16)
+
+
+### Bug Fixes
+
+* **cli-plugin-scaffold-graphql-service:** es error message explained ([#1510](https://github.com/webiny/webiny-js/issues/1510)) ([106e3ac](https://github.com/webiny/webiny-js/commit/106e3acfd16255f8038d68c77e94d5e0c598460b))
+* **cwp-template-aws:** execute plugin factory ([97da0ff](https://github.com/webiny/webiny-js/commit/97da0ff8edf4c3c304c5b072b70412211f9e51bb))
+
+
+
+
+
+# [5.1.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.0.0...v5.1.0-beta.0) (2021-03-15)
+
+
+### Bug Fixes
+
+* **cli-plugin-scaffold-graphql-service:** es index check on create ([#1509](https://github.com/webiny/webiny-js/issues/1509)) ([35e25de](https://github.com/webiny/webiny-js/commit/35e25de549aa4442f4e1c1cc4982dd9799a81af7))
+* add protected flag to mission-critical resources ([322dbaa](https://github.com/webiny/webiny-js/commit/322dbaadd18fad79d3ab73b9e08d84a8aaeb2fbe))
+* add the 2nd subnet to "subnetIds" ([2fbf1f3](https://github.com/webiny/webiny-js/commit/2fbf1f3518c426cb9acc724619fd7e85b1c54ff7))
+* deny public access to ES domain ([#1503](https://github.com/webiny/webiny-js/issues/1503)) ([80aaa8f](https://github.com/webiny/webiny-js/commit/80aaa8fa0f97f264e3a5dc3f31857294518b0402))
+* remove double slash ([c5344e1](https://github.com/webiny/webiny-js/commit/c5344e1727489cafc797cd9152867ece46981ade))
+* update babel configs in templates ([b33096f](https://github.com/webiny/webiny-js/commit/b33096ff34ac2a745ead452f127a039a12c72aac))
+* **api-headless-cms:** schema regeneration last changed date ([#1504](https://github.com/webiny/webiny-js/issues/1504)) ([bff28a0](https://github.com/webiny/webiny-js/commit/bff28a058622b088fa6ed93ff86428fd01c59f24))
+* **cli-plugin-scaffold-admin-app-module:** accessing non-objects error ([#1505](https://github.com/webiny/webiny-js/issues/1505)) ([1e2e36b](https://github.com/webiny/webiny-js/commit/1e2e36b907244ef8f844ca25f4db9228c300b870))
+* **cwp-template-aws:** add missing devDependencies ([#1496](https://github.com/webiny/webiny-js/issues/1496)) ([e340ff6](https://github.com/webiny/webiny-js/commit/e340ff6bb3cbda3159ddc17d1fe0631dde54084a))
+
+
+### Features
+
+* **app-headless-cms:** add support for content model form layouts ([#1507](https://github.com/webiny/webiny-js/issues/1507)) ([f2b65b0](https://github.com/webiny/webiny-js/commit/f2b65b0f593e83948b85832d3234e4d32793a868))
+* add the ability to use ~ for import paths within packages ([#1508](https://github.com/webiny/webiny-js/issues/1508)) ([0a17a6f](https://github.com/webiny/webiny-js/commit/0a17a6f7463a93ad7c0f5b3a7cd1d7dbfc5e0012))
+* enable prefixing ES index with the "ELASTIC_SEARCH_INDEX_PREFIX" env variable ([df42d0c](https://github.com/webiny/webiny-js/commit/df42d0c033aa3fe2cfd00fc4398f3c64789544f4))
+* **app-page-builder:** add options to element plugin factory ([#1502](https://github.com/webiny/webiny-js/issues/1502)) ([68c2715](https://github.com/webiny/webiny-js/commit/68c2715673b52c8fe573c86b8cf71f88cf1d740d))
+
+
+
+
+
 # [5.0.0](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.5...v5.0.0) (2021-03-09)
 
 **Note:** Version bump only for package webiny-js

@@ -221,6 +221,8 @@ export default (): ContextPlugin<CmsContext> => ({
                     input
                 });
 
+                await updateManager(context, resultModel);
+
                 await afterUpdateHook({
                     context,
                     storageOperations,
@@ -229,7 +231,6 @@ export default (): ContextPlugin<CmsContext> => ({
                     input
                 });
 
-                await updateManager(context, resultModel);
                 return resultModel;
             },
             async update(modelId, inputData) {

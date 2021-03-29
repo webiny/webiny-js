@@ -1,16 +1,19 @@
-## Related Issue
-<!--- This project only accepts pull requests related to open issues -->
-<!--- If suggesting a new feature or change, please discuss it in an issue first -->
-<!--- If fixing a bug, there should be an issue describing it with steps to reproduce -->
-<!--- Please link to the issue here: -->
+```## Changes
+<!--- Please describe the changes you're making. Why are they here? How they are solved? -->
+<!--- If your changes include something of a visual nature, it's useful to include screenshots or even short GIFs. -->
+<!--- If solving an existing issue, make sure to link it. -->
 Closes #ISSUE_NUMBER
 
-## Your solution
-<!--- Please describe your solution, have you encountered any issues along the way? -->
-
 ## How Has This Been Tested?
-<!--- Please describe in detail how you tested your changes. -->
-<!--- Include details of your testing environment, and the tests you ran to -->
-<!--- see how your change affects other areas of the code, etc. -->
+<!--- Please describe how you tested your changes. -->
 
-## Screenshots (if relevant):
+## Documentation
+<!-- 
+If needed, make sure that the introduced changes are properly documented on our documentation website (https://www.webiny.com/docs)*. Ask yourself the following questions:
+- Do I need to create an additional documentation page, explaining the changes I made and how to use them?
+- Do I need to update existing documentation pages?
+- Are these changes important for Webiny users? If so, they should be mentioned on the Changelog page**.
+
+* Webiny documentation repository: https://github.com/webiny/docs.webiny.com
+** For example https://www.webiny.com/docs/changelog/5.3.0.
+-->```

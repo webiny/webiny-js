@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const { yellow, red, green } = require("chalk");
+const { yellow, red, green, gray } = require("chalk");
 const execa = require("execa");
 const fs = require("fs-extra");
 const Listr = require("listr");
@@ -11,11 +11,14 @@ const getPackageJson = require("./getPackageJson");
 const checkProjectName = require("./checkProjectName");
 const yaml = require("js-yaml");
 
+const NOT_APPLICABLE = gray("N/A");
+
 module.exports = async function createProject({
     projectName,
     template,
     tag,
     log,
+    cleanup,
     interactive,
     templateOptions,
     assignToYarnrc: assignToYarnRc
@@ -212,13 +215,52 @@ module.exports = async function createProject({
             }
         });
 
+        const node = process.versions.node;
+        const os = process.platform;
+
+        let yarn = NOT_APPLICABLE;
+        try {
+            const subprocess = await execa("yarn", ["--version"], { cwd: projectRoot });
+            yarn = subprocess.stdout;
+        } catch {}
+
+        let cwp = NOT_APPLICABLE;
+        try {
+            const subprocess = await execa("npx", ["create-webiny-project", "--version"]);
+            cwp = subprocess.stdout;
+        } catch {}
+
+        let cwpTemplate = NOT_APPLICABLE;
+        try {
+            const subprocess = await execa("yarn", ["info", "@webiny/cwp-template-aws", "--json"], {
+                cwd: projectRoot
+            });
+            const data = JSON.parse(subprocess.stdout);
+            cwpTemplate = `@webiny/cwp-template-${template}@${data.children.Version}`;
+        } catch {}
+
+        let templateOptionsJson = "{}";
+        if (templateOptions) {
+            try {
+                templateOptionsJson = JSON.stringify(templateOptions);
+            } catch {}
+        }
+
         console.log(
             [
                 "",
-                "ERROR OUTPUT:",
+                `${green("ERROR OUTPUT: ")}`,
                 "----------------------------------------",
                 err.message,
+                "",
+                `${green("SYSTEM INFORMATION: ")}`,
                 "----------------------------------------",
+                `Operating System: ${os}`,
+                `Node: ${node}`,
+                `Yarn: ${yarn}`,
+                `create-webiny-project: ${cwp}`,
+                `Template: ${cwpTemplate}`,
+                `Template Options: ${templateOptionsJson}`,
                 "",
                 "Please open an issue including the error output at https://github.com/webiny/webiny-js/issues/new.",
                 "You can also get in touch with us on our Slack Community: https://www.webiny.com/slack",
@@ -228,9 +270,14 @@ module.exports = async function createProject({
 
         console.log(`Writing log to ${green(path.resolve(log))}...`);
         fs.writeFileSync(path.resolve(log), err.toString());
-        console.log("Cleaning up project...");
-        rimraf.sync(projectRoot);
-        console.log("Project cleaned!");
+
+        if (cleanup) {
+            console.log("Cleaning up generated files and folders...");
+            rimraf.sync(projectRoot);
+            console.log("Done.");
+        } else {
+            console.log("Project cleanup skipped.");
+        }
 
         await sendEvent({ event: "create-webiny-project-end" });
         process.exit(1);

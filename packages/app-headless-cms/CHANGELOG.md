@@ -3,6 +3,93 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.3.0](https://github.com/webiny/webiny-js/compare/v5.3.0-beta.0...v5.3.0) (2021-03-26)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [5.3.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.2.1...v5.3.0-beta.0) (2021-03-25)
+
+
+### Bug Fixes
+
+* **app-headless-cms:** prevent filters reset on resetting search input ([3916f68](https://github.com/webiny/webiny-js/commit/3916f68ab2f095bd4ff5479ff6e523df028c96dc))
+* **app-headless-cms:** simplify cache keys for React hooks ([f8d4971](https://github.com/webiny/webiny-js/commit/f8d4971ab47b897e774fd3def8b4fd0547bda6b5))
+* **app-headless-cms:** use "useCallback" instead of "useMemo" ([ac17278](https://github.com/webiny/webiny-js/commit/ac1727866a5c8a4e675f3f70fe9b1b4c373977da))
+
+
+
+
+
+## [5.2.1](https://github.com/webiny/webiny-js/compare/v5.2.1-beta.0...v5.2.1) (2021-03-21)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+## [5.2.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.2.0...v5.2.1-beta.0) (2021-03-21)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [5.2.0](https://github.com/webiny/webiny-js/compare/v5.2.0-beta.0...v5.2.0) (2021-03-19)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [5.2.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.1.0...v5.2.0-beta.0) (2021-03-19)
+
+
+### Bug Fixes
+
+* add "limit" argument ([7e235e1](https://github.com/webiny/webiny-js/commit/7e235e1d9f2f31161a384db47b8c3f4d772cd404))
+* add status property ([92f1306](https://github.com/webiny/webiny-js/commit/92f130630d934a7f5105de638a7e870653f1401f))
+* set limit 10 ([dbf7884](https://github.com/webiny/webiny-js/commit/dbf7884c4b3c226e8d8e2f2516e87045134113eb))
+* simplify options data loading ([5757082](https://github.com/webiny/webiny-js/commit/5757082cc4f1e3ae3822c75d75ecb4a6d0b6eb6f))
+* use "useMultipleSelectionList" prop on reference field ([07933ca](https://github.com/webiny/webiny-js/commit/07933ca40ae0214793d9896221e992a40f347f4c))
+
+
+
+
+
+# [5.1.0](https://github.com/webiny/webiny-js/compare/v5.1.0-beta.1...v5.1.0) (2021-03-16)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [5.1.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.1.0-beta.0...v5.1.0-beta.1) (2021-03-16)
+
+**Note:** Version bump only for package @webiny/app-headless-cms
+
+
+
+
+
+# [5.1.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.0.0...v5.1.0-beta.0) (2021-03-15)
+
+
+### Features
+
+* **app-headless-cms:** add support for content model form layouts ([#1507](https://github.com/webiny/webiny-js/issues/1507)) ([f2b65b0](https://github.com/webiny/webiny-js/commit/f2b65b0f593e83948b85832d3234e4d32793a868))
+
+
+
+
+
 # [5.0.0](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.5...v5.0.0) (2021-03-09)
 
 **Note:** Version bump only for package @webiny/app-headless-cms

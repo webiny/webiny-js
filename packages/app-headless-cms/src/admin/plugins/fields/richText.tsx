@@ -1,6 +1,6 @@
 import React from "react";
 import { i18n } from "@webiny/app/i18n";
-import { CmsEditorFieldTypePlugin } from "../../../types";
+import { CmsEditorFieldTypePlugin } from "~/types";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { ReactComponent as NotesIcon } from "./icons/round-text_fields-24px.svg";
 import { Input } from "@webiny/ui/Input";

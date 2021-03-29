@@ -1,9 +1,11 @@
 import React from "react";
 import styled from "@emotion/styled";
+import kebabCase from "lodash/kebabCase";
 import {
     PbEditorPageElementPlugin,
     PbEditorPageElementStyleSettingsPlugin,
-    DisplayMode
+    DisplayMode,
+    PbEditorElementPluginArgs
 } from "../../../../types";
 import { createInitialPerDeviceSettingValue } from "../../elementSettings/elementSettingsUtils";
 // Icons
@@ -13,7 +15,7 @@ import IconSettings from "./IconSettings";
 import Icon from "./Icon";
 import { getSvg } from "../utils/iconUtils";
 
-export default () => {
+export default (args: PbEditorElementPluginArgs = {}) => {
     const PreviewBox = styled("div")({
         textAlign: "center",
         height: 50,
@@ -24,37 +26,47 @@ export default () => {
         }
     });
 
+    const elementType = kebabCase(args.elementType || "icon");
+
+    const defaultToolbar = {
+        title: "Icon",
+        group: "pb-editor-element-group-basic",
+        preview() {
+            return (
+                <PreviewBox>
+                    <IconSvg />
+                </PreviewBox>
+            );
+        }
+    };
+
+    const defaultSettings = [
+        "pb-editor-page-element-style-settings-icon",
+        "pb-editor-page-element-style-settings-padding",
+        "pb-editor-page-element-style-settings-margin",
+        [
+            "pb-editor-page-element-style-settings-horizontal-align",
+            { alignments: ["left", "center", "right"] }
+        ],
+        "pb-editor-page-element-settings-clone",
+        "pb-editor-page-element-settings-delete"
+    ];
+
     return [
         {
-            name: "pb-editor-page-element-icon",
+            name: `pb-editor-page-element-${elementType}`,
             type: "pb-editor-page-element",
-            elementType: "icon",
-            toolbar: {
-                title: "Icon",
-                group: "pb-editor-element-group-basic",
-                preview() {
-                    return (
-                        <PreviewBox>
-                            <IconSvg />
-                        </PreviewBox>
-                    );
-                }
-            },
-            settings: [
-                "pb-editor-page-element-style-settings-icon",
-                "pb-editor-page-element-style-settings-padding",
-                "pb-editor-page-element-style-settings-margin",
-                [
-                    "pb-editor-page-element-style-settings-horizontal-align",
-                    { alignments: ["left", "center", "right"] }
-                ],
-                "pb-editor-page-element-settings-clone",
-                "pb-editor-page-element-settings-delete"
-            ],
+            elementType: elementType,
+            toolbar:
+                typeof args.toolbar === "function" ? args.toolbar(defaultToolbar) : defaultToolbar,
+            settings:
+                typeof args.settings === "function"
+                    ? args.settings(defaultSettings)
+                    : defaultSettings,
             target: ["cell", "block"],
             create(options) {
-                return {
-                    type: "icon",
+                const defaultValue = {
+                    type: this.elementType,
                     elements: [],
                     data: {
                         icon: {
@@ -76,6 +88,7 @@ export default () => {
                     },
                     ...options
                 };
+                return typeof args.create === "function" ? args.create(defaultValue) : defaultValue;
             },
             render(props) {
                 return <Icon {...props} />;

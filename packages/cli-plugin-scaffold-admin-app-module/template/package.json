@@ -9,19 +9,19 @@
     "postbuild": "cp package.json dist/ && tsc -p tsconfig.build.json"
   },
   "dependencies": {
+    "@apollo/react-common": "^3.1.4",
     "@apollo/react-hooks": "^3.1.5",
-    "@webiny/react-router": "^5.0.0",
-    "@webiny/plugins": "^5.0.0",
-    "@webiny/app-admin": "^5.0.0",
-    "@webiny/app": "^5.0.0",
-    "@webiny/ui": "^5.0.0",
-    "@webiny/form": "^5.0.0",
-    "@webiny/validation": "^5.0.0",
+    "@webiny/app": "5.2.1",
+    "@webiny/app-admin": "5.2.1",
+    "@webiny/form": "5.2.1",
+    "@webiny/plugins": "5.2.1",
+    "@webiny/react-router": "5.2.1",
+    "@webiny/ui": "5.2.1",
+    "@webiny/validation": "5.2.1",
     "dot-prop-immutable": "^2.1.0",
     "graphql-tag": "^2.11.0",
     "react": "^16.14.0",
-    "react-helmet": "^6.1.0",
-    "lodash": "^4.17.21"
+    "react-helmet": "^6.1.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

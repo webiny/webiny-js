@@ -88,7 +88,7 @@ class FileManager {
             memorySize: 512,
             description: "Serves previously uploaded files.",
             code: new pulumi.asset.AssetArchive({
-                ".": new pulumi.asset.FileArchive("../code/fileManager/download//build")
+                ".": new pulumi.asset.FileArchive("../code/fileManager/download/build")
             }),
             environment: {
                 variables: {

@@ -54,10 +54,12 @@ export const defaults = {
         }
 
         const locale = context.cms.getLocale().code;
-
-        return {
-            index: `${tenant.id}-headless-cms-${locale}-${model.modelId}`.toLowerCase()
-        };
+        const index = `${tenant.id}-headless-cms-${locale}-${model.modelId}`.toLowerCase();
+        const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX;
+        if (prefix) {
+            return { index: prefix + index };
+        }
+        return { index };
     }
 };
 

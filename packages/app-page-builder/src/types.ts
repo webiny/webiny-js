@@ -175,13 +175,6 @@ export type PbElement = {
 export type PbTheme = {
     colors: { [key: string]: string };
     elements: { [key: string]: any };
-    typography: {
-        [key: string]: {
-            label: string;
-            component: string | React.ComponentType<any>;
-            className: string;
-        };
-    };
 };
 
 export type PbThemePlugin = Plugin & {
@@ -196,11 +189,6 @@ export type PbPageLayout = {
 
 export type PbPageLayoutPlugin = Plugin & {
     layout: PbPageLayout;
-};
-
-export type PbDefaultPagePlugin = Plugin & {
-    type: "pb-default-page";
-    component: React.ComponentType<any>;
 };
 
 export type PbPageData = {
@@ -594,6 +582,17 @@ export type PbRenderResponsiveModePlugin = Plugin & {
         maxWidth: number;
         minWidth: number;
     };
+};
+
+export type PbEditorElementPluginArgs = {
+    create?: (defaultValue) => Record<string, any>;
+    settings?: (defaultValue) => Array<string | Array<string | any>>;
+    toolbar?: (defaultValue) => Record<string, any>;
+    elementType?: string;
+};
+
+export type PbRenderElementPluginArgs = {
+    elementType?: string;
 };
 
 // ============== EVENT ACTION HANDLER ================= //

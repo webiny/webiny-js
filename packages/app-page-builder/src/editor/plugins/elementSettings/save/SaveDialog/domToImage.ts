@@ -262,7 +262,7 @@ function makeSvgDataUri(node, width, height) {
         .then(function(xhtml) {
             return (
                 '<foreignObject x="0" y="0" width="100%" height="100%">' +
-                xhtml +
+                encodeURIComponent(xhtml) +
                 "</foreignObject>"
             );
         })

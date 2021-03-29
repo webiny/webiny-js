@@ -25,7 +25,8 @@ type EmbedPluginConfig = {
         renderEmbed?: (props: OEmbedProps) => React.ReactElement;
         init?: (params: { node: HTMLElement }) => void;
     };
-    settings?: Array<string>;
+    settings?: Array<string | Array<string | any>> | Function;
+    create?: Function;
     target?: Array<string>;
     onCreate?: string;
     renderElementPreview?: (params: {
@@ -36,16 +37,21 @@ type EmbedPluginConfig = {
 };
 
 export const createEmbedPlugin = (config: EmbedPluginConfig): PbEditorPageElementPlugin => {
+    const defaultSettings = ["pb-editor-page-element-settings-delete"];
+
     return {
         name: "pb-editor-page-element-" + config.type,
         type: "pb-editor-page-element",
         elementType: config.type,
         toolbar: config.toolbar,
-        settings: config.settings || ["pb-editor-page-element-settings-delete"],
+        settings:
+            typeof config.settings === "function"
+                ? config.settings(defaultSettings)
+                : defaultSettings,
         target: config.target || ["cell", "block", "list-item"],
         // eslint-disable-next-line
         create({ content = {}, ...options }) {
-            return {
+            const defaultValue = {
                 type: config.type,
                 elements: [],
                 data: {
@@ -62,6 +68,8 @@ export const createEmbedPlugin = (config: EmbedPluginConfig): PbEditorPageElemen
                 },
                 ...options
             };
+
+            return typeof config.create === "function" ? config.create(defaultValue) : defaultValue;
         },
         render(props) {
             if (config.render) {

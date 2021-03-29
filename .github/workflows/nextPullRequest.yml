@@ -2,7 +2,7 @@ name: Next Branch - Pull Request
 
 on:
   pull_request:
-    branches: [next]
+    branches: [next, v5]
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: webiny/action-conventional-commits@v1.0.2
+      - uses: webiny/action-conventional-commits@v1.0.3
 
   cache-dependencies-packages:
     name: Cache dependencies and packages

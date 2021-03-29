@@ -1,4 +1,4 @@
-module.exports = {
+module.exports = ({ path }) => ({
     presets: [
         [
             "@babel/preset-env",
@@ -21,6 +21,7 @@ module.exports = {
         ["@babel/preset-typescript", { isTSX: true, allExtensions: true }]
     ],
     plugins: [
+        "babel-plugin-macros",
         "babel-plugin-lodash",
         "@babel/plugin-proposal-class-properties",
         "@babel/plugin-proposal-throw-expressions",
@@ -51,6 +52,15 @@ module.exports = {
                     }
                 }
             }
+        ],
+        [
+            "babel-plugin-module-resolver",
+            {
+                cwd: path,
+                alias: {
+                    "~": "./src"
+                }
+            }
         ]
     ]
-};
+});

@@ -1,6 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import get from "lodash/get";
 import debounce from "lodash/debounce";
+import set from "lodash/set";
+import unset from "lodash/unset";
+import cloneDeep from "lodash/cloneDeep";
 import { css } from "emotion";
 import TimeAgo from "timeago-react";
 import pluralize from "pluralize";
@@ -60,42 +63,46 @@ const ContentDataList = ({
     const [filter, setFilter] = useState("");
     const [formData, setFormData] = useState(listQueryVariables);
     const { history } = useRouter();
+    const baseUrl = `/cms/content-entries/${contentModel.modelId}`;
 
     // Get entry ID and search query (if any)
     const query = new URLSearchParams(location.search);
     const entryId = query.get("id");
     const searchQuery = query.get("search");
-    const updateSearch = useMemo(
-        () =>
-            debounce(({ filter, query, baseURL }) => {
-                const search = query.get("search");
-                if (typeof search !== "string" && !filter) {
-                    return;
-                }
-                if (filter !== search) {
-                    query.set("search", filter);
-                    // We use the title field with the "contains" operator for doing basic searches.
-                    const searchField = contentModel.titleFieldId + "_contains";
-                    setListQueryVariables(prevState => ({
-                        ...prevState,
-                        where: { [searchField]: filter }
-                    }));
-                    history.push(`${baseURL}?${query.toString()}`);
-                }
-            }, 250),
-        [contentModel]
+    const updateSearch = useCallback(
+        debounce(({ filter, query }) => {
+            const search = query.get("search");
+            if (typeof search !== "string" && !filter) {
+                return;
+            }
+            if (filter !== search) {
+                query.set("search", filter);
+                // We use the title field with the "contains" operator for doing basic searches.
+                const searchField = contentModel.titleFieldId + "_contains";
+                setListQueryVariables(prev => {
+                    const next = cloneDeep(prev);
+                    if (filter) {
+                        set(next, `where.${searchField}`, filter);
+                    } else {
+                        unset(next, `where.${searchField}`);
+                    }
+
+                    return next;
+                });
+                history.push(`${baseUrl}?${query.toString()}`);
+            }
+        }, 250),
+        [baseUrl]
     );
+
     // Set "filter" from search "query" on page load.
     useEffect(() => {
-        if (!filter && searchQuery) {
+        if (searchQuery) {
             setFilter(searchQuery);
         }
-    }, []);
+    }, [baseUrl]);
 
-    useEffect(() => {
-        const baseURL = `/cms/content-entries/${contentModel.modelId}`;
-        updateSearch({ filter, query, baseURL });
-    }, [filter, query, contentModel.modelId]);
+    useEffect(() => updateSearch({ filter, query }), [baseUrl, filter]);
 
     // Generate a query based on current content model
     const LIST_QUERY = useMemo(() => createListQuery(contentModel), [contentModel.modelId]);

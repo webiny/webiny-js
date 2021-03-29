@@ -1,7 +1,7 @@
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
-import { FileManagerContext } from "../../../types";
+import { FileManagerContext } from "~/types";
 import { paginateBatch } from "../utils";
-import defaults from "../../crud/utils/defaults";
+import defaults from "~/plugins/crud/utils/defaults";
 
 const plugin: UpgradePlugin<FileManagerContext> = {
     name: "api-upgrade-file-manager",
@@ -48,8 +48,7 @@ const plugin: UpgradePlugin<FileManagerContext> = {
             name: "upgrade-file-manager-es-5.0.0.json",
             type: "application/json",
             size: esJSON.length,
-            buffer: Buffer.from(esJSON),
-            settings: {}
+            buffer: Buffer.from(esJSON)
         });
 
         console.log(`Stored backup of Elasticsearch items to ${file.key}`);

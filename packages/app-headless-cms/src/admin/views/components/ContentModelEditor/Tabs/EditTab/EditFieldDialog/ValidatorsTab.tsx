@@ -11,7 +11,7 @@ import { Form } from "@webiny/form";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { validation } from "@webiny/validation";
 import { Input } from "@webiny/ui/Input";
-import { CmsEditorField } from "../../../../../../../types";
+import { CmsEditorField } from "~/types";
 
 const onEnabledChange = ({ data, validationValue, onChangeValidation, validator }) => {
     if (data) {

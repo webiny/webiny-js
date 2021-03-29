@@ -21,7 +21,7 @@ module.exports = {
         }
     },
     ignore: {
-        src: ["path", "os", "fs", "util", "events", "crypto", "aws-sdk", "url"],
+        src: ["path", "os", "fs", "util", "events", "crypto", "aws-sdk", "url", "~"],
         dependencies: [
             "@babel/runtime",
             // Packages below are defined as peerDependencies in many 3rd party packages

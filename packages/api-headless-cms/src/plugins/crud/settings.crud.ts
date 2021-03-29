@@ -16,7 +16,7 @@ export default {
             return utils.checkPermissions(context, "cms.settings");
         };
 
-        const settingsGet = async () => {
+        const settingsGet = async (): Promise<CmsSettings> => {
             const [[settings]] = await db.read<CmsSettings>({
                 ...utils.defaults.db(),
                 query: { PK: PK_SETTINGS(), SK: SETTINGS_SECONDARY_KEY }
@@ -26,7 +26,6 @@ export default {
         };
 
         const settings: CmsSettingsContext = {
-            contentModelLastChange: new Date(),
             noAuth: () => {
                 return {
                     get: settingsGet
@@ -37,7 +36,22 @@ export default {
                 return settingsGet();
             },
             updateContentModelLastChange: async (): Promise<void> => {
-                const updatedDate = new Date();
+                const data: CmsSettings = {
+                    contentModelLastChange: new Date().toISOString()
+                };
+
+                const settings = await settingsGet();
+                if (!settings) {
+                    await db.create({
+                        ...utils.defaults.db(),
+                        data: {
+                            PK: PK_SETTINGS(),
+                            SK: SETTINGS_SECONDARY_KEY,
+                            ...data
+                        }
+                    });
+                    return;
+                }
 
                 await db.update({
                     ...utils.defaults.db(),
@@ -45,25 +59,21 @@ export default {
                         PK: PK_SETTINGS(),
                         SK: SETTINGS_SECONDARY_KEY
                     },
-                    data: {
-                        lastContentModelChange: updatedDate
-                    }
+                    data
                 });
-
-                context.cms.settings.contentModelLastChange = updatedDate;
             },
             getContentModelLastChange: async (): Promise<Date> => {
-                const settings = await settingsGet();
-                if (!settings.contentModelLastChange) {
-                    return new Date();
-                }
                 try {
+                    const settings = await settingsGet();
+                    if (!settings || !settings.contentModelLastChange) {
+                        return new Date();
+                    }
                     return new Date(settings.contentModelLastChange);
                 } catch (ex) {
                     console.log({
                         error: {
                             message: ex.message,
-                            code: ex.code || "COULD_NOT_PARSE_CONTENT_MODEL_LAST_CHANGE",
+                            code: ex.code || "COULD_NOT_FETCH_CONTENT_MODEL_LAST_CHANGE",
                             data: ex
                         }
                     });

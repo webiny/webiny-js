@@ -3,6 +3,103 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.3.0](https://github.com/webiny/webiny-js/compare/v5.3.0-beta.0...v5.3.0) (2021-03-26)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.3.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.2.1...v5.3.0-beta.0) (2021-03-25)
+
+
+### Bug Fixes
+
+* remove typography and `PbDefaultPagePlugin` usage from theme ([#1529](https://github.com/webiny/webiny-js/issues/1529)) ([104572d](https://github.com/webiny/webiny-js/commit/104572d1f37b01c3653bc2e17607117d8b5fbc79))
+
+
+### Features
+
+* **cli-plugin-scaffold-react-component:** scaffold to create react comp ([#1530](https://github.com/webiny/webiny-js/issues/1530)) ([7090ebc](https://github.com/webiny/webiny-js/commit/7090ebccfc1393f1b6eeca94ceaa15609f0449d6))
+* add `SubscriptionRequiredException` info message ([c7cf200](https://github.com/webiny/webiny-js/commit/c7cf200afa7c2059222172bb9d6552fc1c109a14))
+
+
+
+
+
+## [5.2.1](https://github.com/webiny/webiny-js/compare/v5.2.1-beta.0...v5.2.1) (2021-03-21)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+## [5.2.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.2.0...v5.2.1-beta.0) (2021-03-21)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.2.0](https://github.com/webiny/webiny-js/compare/v5.2.0-beta.0...v5.2.0) (2021-03-19)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.2.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.1.0...v5.2.0-beta.0) (2021-03-19)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.1.0](https://github.com/webiny/webiny-js/compare/v5.1.0-beta.1...v5.1.0) (2021-03-16)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.1.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.1.0-beta.0...v5.1.0-beta.1) (2021-03-16)
+
+
+### Bug Fixes
+
+* **cwp-template-aws:** execute plugin factory ([97da0ff](https://github.com/webiny/webiny-js/commit/97da0ff8edf4c3c304c5b072b70412211f9e51bb))
+
+
+
+
+
+# [5.1.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.0.0...v5.1.0-beta.0) (2021-03-15)
+
+
+### Bug Fixes
+
+* add protected flag to mission-critical resources ([322dbaa](https://github.com/webiny/webiny-js/commit/322dbaadd18fad79d3ab73b9e08d84a8aaeb2fbe))
+* add the 2nd subnet to "subnetIds" ([2fbf1f3](https://github.com/webiny/webiny-js/commit/2fbf1f3518c426cb9acc724619fd7e85b1c54ff7))
+* deny public access to ES domain ([#1503](https://github.com/webiny/webiny-js/issues/1503)) ([80aaa8f](https://github.com/webiny/webiny-js/commit/80aaa8fa0f97f264e3a5dc3f31857294518b0402))
+* remove double slash ([c5344e1](https://github.com/webiny/webiny-js/commit/c5344e1727489cafc797cd9152867ece46981ade))
+* update babel configs in templates ([b33096f](https://github.com/webiny/webiny-js/commit/b33096ff34ac2a745ead452f127a039a12c72aac))
+* **cwp-template-aws:** add missing devDependencies ([#1496](https://github.com/webiny/webiny-js/issues/1496)) ([e340ff6](https://github.com/webiny/webiny-js/commit/e340ff6bb3cbda3159ddc17d1fe0631dde54084a))
+
+
+### Features
+
+* add the ability to use ~ for import paths within packages ([#1508](https://github.com/webiny/webiny-js/issues/1508)) ([0a17a6f](https://github.com/webiny/webiny-js/commit/0a17a6f7463a93ad7c0f5b3a7cd1d7dbfc5e0012))
+
+
+
+
+
 # [5.0.0](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.5...v5.0.0) (2021-03-09)
 
 **Note:** Version bump only for package @webiny/cwp-template-aws

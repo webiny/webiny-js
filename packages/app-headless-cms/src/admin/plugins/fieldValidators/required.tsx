@@ -1,4 +1,4 @@
-import { CmsEditorFieldValidatorPlugin } from "../../../types";
+import { CmsEditorFieldValidatorPlugin } from "~/types";
 
 export default {
     type: "cms-editor-field-validator",

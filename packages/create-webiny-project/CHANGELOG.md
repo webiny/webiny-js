@@ -3,6 +3,89 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.3.0](https://github.com/webiny/webiny-js/compare/v5.3.0-beta.0...v5.3.0) (2021-03-26)
+
+**Note:** Version bump only for package create-webiny-project
+
+
+
+
+
+# [5.3.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.2.1...v5.3.0-beta.0) (2021-03-25)
+
+
+### Bug Fixes
+
+* remove redundant "JSON.parse" ([c4b0ff0](https://github.com/webiny/webiny-js/commit/c4b0ff0e1528daeef432bcfe7ee75bddee8cc47c))
+* **create-webiny-project:** add system information on errors ([4977bd4](https://github.com/webiny/webiny-js/commit/4977bd4dcd393b5f3482add882537b092e4ee6c8))
+* force Node "^12 || ^14" ([b29c972](https://github.com/webiny/webiny-js/commit/b29c9721a12ae888ae229b03872bcf93071212cd))
+* remove old process.exit call ([5e8afad](https://github.com/webiny/webiny-js/commit/5e8afadb14742e60c1e0a49a8b701f9274bef169))
+
+
+### Features
+
+* **create-webiny-project:** add "--cleanup" argument ([e6c5304](https://github.com/webiny/webiny-js/commit/e6c53045558f2c168da78db6227e5de8abc2165d))
+
+
+
+
+
+## [5.2.1](https://github.com/webiny/webiny-js/compare/v5.2.1-beta.0...v5.2.1) (2021-03-21)
+
+**Note:** Version bump only for package create-webiny-project
+
+
+
+
+
+## [5.2.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.2.0...v5.2.1-beta.0) (2021-03-21)
+
+**Note:** Version bump only for package create-webiny-project
+
+
+
+
+
+# [5.2.0](https://github.com/webiny/webiny-js/compare/v5.2.0-beta.0...v5.2.0) (2021-03-19)
+
+**Note:** Version bump only for package create-webiny-project
+
+
+
+
+
+# [5.2.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.1.0...v5.2.0-beta.0) (2021-03-19)
+
+**Note:** Version bump only for package create-webiny-project
+
+
+
+
+
+# [5.1.0](https://github.com/webiny/webiny-js/compare/v5.1.0-beta.1...v5.1.0) (2021-03-16)
+
+**Note:** Version bump only for package create-webiny-project
+
+
+
+
+
+# [5.1.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.1.0-beta.0...v5.1.0-beta.1) (2021-03-16)
+
+**Note:** Version bump only for package create-webiny-project
+
+
+
+
+
+# [5.1.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.0.0...v5.1.0-beta.0) (2021-03-15)
+
+**Note:** Version bump only for package create-webiny-project
+
+
+
+
+
 # [5.0.0](https://github.com/webiny/webiny-js/compare/v5.0.0-beta.5...v5.0.0) (2021-03-09)
 
 **Note:** Version bump only for package create-webiny-project

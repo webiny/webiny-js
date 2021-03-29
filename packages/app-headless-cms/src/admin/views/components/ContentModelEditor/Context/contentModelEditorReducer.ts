@@ -1,4 +1,4 @@
-import { UseContentModelEditorReducerState } from "../../../../../types";
+import { UseContentModelEditorReducerState } from "~/types";
 
 export function init(props: UseContentModelEditorReducerState) {
     return {

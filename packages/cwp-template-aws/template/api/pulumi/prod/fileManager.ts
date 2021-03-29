@@ -16,19 +16,24 @@ class FileManager {
         transform: aws.lambda.Function;
         download: aws.lambda.Function;
     };
-    constructor() {
-        this.bucket = new aws.s3.Bucket("fm-bucket", {
-            acl: "private",
-            forceDestroy: true,
-            corsRules: [
-                {
-                    allowedHeaders: ["*"],
-                    allowedMethods: ["POST", "GET"],
-                    allowedOrigins: ["*"],
-                    maxAgeSeconds: 3000
-                }
-            ]
-        });
+    constructor({ protectedEnvironment }: { protectedEnvironment: boolean }) {
+        this.bucket = new aws.s3.Bucket(
+            "fm-bucket",
+            {
+                acl: "private",
+                // We definitely don't want to force-destroy if "protectedEnvironment" flag is true.
+                forceDestroy: !protectedEnvironment,
+                corsRules: [
+                    {
+                        allowedHeaders: ["*"],
+                        allowedMethods: ["POST", "GET"],
+                        allowedOrigins: ["*"],
+                        maxAgeSeconds: 3000
+                    }
+                ]
+            },
+            { protect: protectedEnvironment }
+        );
 
         this.role = new aws.iam.Role("fm-lambda-role", {
             assumeRolePolicy: {
@@ -97,7 +102,7 @@ class FileManager {
             memorySize: 512,
             description: "Serves previously uploaded files.",
             code: new pulumi.asset.AssetArchive({
-                ".": new pulumi.asset.FileArchive("../code/fileManager/download//build")
+                ".": new pulumi.asset.FileArchive("../code/fileManager/download/build")
             }),
             environment: {
                 variables: {

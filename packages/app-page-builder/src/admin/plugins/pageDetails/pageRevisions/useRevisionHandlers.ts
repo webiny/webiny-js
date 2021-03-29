@@ -23,11 +23,12 @@ export function useRevisionHandlers(props) {
         if (error) {
             return showSnackbar(error.message);
         }
-
+        console.log("[createRevision]");
         history.push(`/page-builder/editor/${encodeURIComponent(data.id)}`);
     }, [revision]);
 
     const editRevision = useCallback(() => {
+        console.log("[editRevision]");
         history.push(`/page-builder/editor/${encodeURIComponent(revision.id)}`);
     }, [revision]);
 
