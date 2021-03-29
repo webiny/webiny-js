@@ -91,7 +91,7 @@ module.exports = async (inputs, context) => {
         );
     }
 
-    await login(stackDir);
+    await login(stackDir, context.paths.projectRoot);
 
     const pulumi = getPulumi({
         execa: {
