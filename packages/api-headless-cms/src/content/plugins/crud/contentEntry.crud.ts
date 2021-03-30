@@ -1059,7 +1059,8 @@ export default (): ContextPlugin<CmsContext> => ({
                     entryRevisionToDelete.id === latestEntryRevision?.id
                         ? previousEntryRevision
                         : null;
-                const isPublished = entryRevisionToDelete.id === publishedEntryRevision?.id;
+                // const isPublished = entryRevisionToDelete.id === publishedEntryRevision?.id;
+
                 try {
                     await beforeDeleteRevisionHook({
                         context,
@@ -1068,6 +1069,13 @@ export default (): ContextPlugin<CmsContext> => ({
                         entryRevisionToDelete,
                         entryRevisionToSetAsLatest
                     });
+                    await storageOperations.deleteRevision(model, {
+                        entryRevisionToDelete,
+                        entryRevisionToSetAsLatest,
+                        publishedEntryRevision,
+                        latestEntryRevision
+                    });
+                    /*
                     // we always unpublish if necessary
                     if (isPublished) {
                         await storageOperations.unpublishRevision(model, entryRevisionToDelete);
@@ -1081,6 +1089,7 @@ export default (): ContextPlugin<CmsContext> => ({
                             entryRevisionToSetAsLatest
                         );
                     }
+                    */
                     await afterDeleteRevisionHook({
                         context,
                         model,

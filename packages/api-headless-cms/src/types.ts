@@ -2629,7 +2629,7 @@ export interface CmsContentEntryStorageOperationsDeleteRevisionArgs {
     /**
      * Entry that is going to be set as latest entry.
      */
-    previousEntryRevision?: CmsContentEntry;
+    // previousEntryRevision?: CmsContentEntry;
     /**
      * Entry that is currently latest entry.
      */
@@ -2649,7 +2649,7 @@ export interface CmsContentEntryStorageOperationsDeleteRevisionArgs {
     /**
      * Entry revision to be set as latest in the operation.
      */
-    entryRevisionToSetLatest?: CmsContentEntry;
+    entryRevisionToSetAsLatest?: CmsContentEntry;
     /**
      * Entry revision to be published in the operation.
      */
@@ -3053,10 +3053,10 @@ export interface CmsContentEntryStorageOperations {
     /**
      * Delete the entry revision.
      */
-    // deleteRevision: (
-    //     model: CmsContentModel,
-    //     args: CmsContentEntryStorageOperationsDeleteRevisionArgs
-    // ) => Promise<boolean>;
+    deleteRevision: (
+        model: CmsContentModel,
+        args: CmsContentEntryStorageOperationsDeleteRevisionArgs
+    ) => Promise<void>;
     /**
      * A hook to be run after the deleteRevision method.
      */
@@ -3077,7 +3077,7 @@ export interface CmsContentEntryStorageOperations {
     delete: (
         model: CmsContentModel,
         args: CmsContentEntryStorageOperationsDeleteArgs
-    ) => Promise<boolean>;
+    ) => Promise<void>;
     /**
      * A hook to be run after the delete method.
      */
@@ -3174,8 +3174,8 @@ export interface CmsContentEntryStorageOperations {
     //     args: CmsContentEntryStorageOperationsAfterRequestReviewArgs
     // ) => Promise<void>;
 
-    unpublishRevision: (model: CmsContentModel, entry: CmsContentEntry) => Promise<void>;
-    publishRevision: (model: CmsContentModel, entry: CmsContentEntry) => Promise<void>;
-    deleteRevision: (model: CmsContentModel, entry: CmsContentEntry) => Promise<void>;
-    setRevisionAsLatest: (model: CmsContentModel, entry: CmsContentEntry) => Promise<void>;
+    // unpublishRevision: (model: CmsContentModel, entry: CmsContentEntry) => Promise<void>;
+    // publishRevision: (model: CmsContentModel, entry: CmsContentEntry) => Promise<void>;
+    // deleteRevision: (model: CmsContentModel, entry: CmsContentEntry) => Promise<void>;
+    // setRevisionAsLatest: (model: CmsContentModel, entry: CmsContentEntry) => Promise<void>;
 }

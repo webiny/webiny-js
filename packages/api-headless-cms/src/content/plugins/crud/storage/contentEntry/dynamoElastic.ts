@@ -4,6 +4,7 @@ import {
     CmsContentEntryStorageOperationsCreateArgs,
     CmsContentEntryStorageOperationsCreateRevisionFromArgs,
     CmsContentEntryStorageOperationsDeleteArgs,
+    CmsContentEntryStorageOperationsDeleteRevisionArgs,
     CmsContentEntryStorageOperationsGetArgs,
     CmsContentEntryStorageOperationsListArgs,
     CmsContentEntryStorageOperationsListResponse,
@@ -34,27 +35,27 @@ export const TYPE_ENTRY = "cms.entry";
 export const TYPE_ENTRY_LATEST = TYPE_ENTRY + ".l";
 export const TYPE_ENTRY_PUBLISHED = TYPE_ENTRY + ".p";
 
-const extractPrimaryId = (id: string): string => {
-    if (id.includes("#") === false) {
-        return id;
-    }
-    return id.split("#").shift();
-};
-const extractEntryPrimaryId = (entry: CmsContentEntry): string => {
-    return extractPrimaryId(entry.id);
-};
+// const extractPrimaryId = (id: string): string => {
+//     if (id.includes("#") === false) {
+//         return id;
+//     }
+//     return id.split("#").shift();
+// };
+// const extractEntryPrimaryId = (entry: CmsContentEntry): string => {
+//     return extractPrimaryId(entry.id);
+// };
 
 const getEntryData = (context: CmsContext, entry: CmsContentEntry) => {
     return {
         ...omit(entry, ["PK", "SK", "published", "latest"]),
-        webinyVersion: context.WEBINY_VERSION
+        webinyVersion: context.WEBINY_VERSION,
+        __type: TYPE_ENTRY
     };
 };
 
 const getESLatestEntryData = (context: CmsContext, entry: CmsContentEntry) => {
     return {
         ...getEntryData(context, entry),
-        entryId: extractEntryPrimaryId(entry),
         latest: true,
         __type: TYPE_ENTRY_LATEST
     };
@@ -63,7 +64,6 @@ const getESLatestEntryData = (context: CmsContext, entry: CmsContentEntry) => {
 const getESPublishedEntryData = (context: CmsContext, entry: CmsContentEntry) => {
     return {
         ...getEntryData(context, entry),
-        entryId: extractEntryPrimaryId(entry),
         published: true,
         __type: TYPE_ENTRY_PUBLISHED
     };
@@ -205,6 +205,7 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
                     ...getEntryData(this.context, storageData)
                 }
             })
+            // Update the "latest" entry item in the Elasticsearch
             .update({
                 ...utils.defaults.esDb(),
                 query: {
@@ -240,7 +241,7 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
     public async delete(
         model: CmsContentModel,
         args: CmsContentEntryStorageOperationsDeleteArgs
-    ): Promise<boolean> {
+    ): Promise<void> {
         const { db } = this.context;
         const { entry } = args;
 
@@ -293,40 +294,134 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
                     .execute();
             })
         ]);
-        return true;
     }
 
-    public async deleteRevision(model: CmsContentModel, entry: CmsContentEntry): Promise<void> {
+    public async deleteRevision(
+        model: CmsContentModel,
+        args: CmsContentEntryStorageOperationsDeleteRevisionArgs
+    ): Promise<void> {
         const { db } = this.context;
+        const {
+            entryRevisionToDelete,
+            entryRevisionToSetAsLatest,
+            publishedEntryRevision,
+            latestEntryRevision
+        } = args;
 
-        const primaryKey = this.getPrimaryKey(entry.id);
-
+        const primaryKey = this.getPrimaryKey(entryRevisionToDelete.id);
+        const esConfig = utils.defaults.es(this.context, model);
+        /**
+         * We need to delete all existing records of the given entry revision.
+         */
         const batch = db.batch();
+        // Delete records of given entry revision.
         batch
             .delete({
                 ...utils.defaults.db(),
                 query: {
                     PK: primaryKey,
-                    SK: this.getSecondaryKeyRevision(entry.id)
+                    SK: this.getSecondaryKeyRevision(entryRevisionToDelete.id)
                 }
             })
             .delete({
                 ...utils.defaults.esDb(),
                 query: {
                     PK: primaryKey,
-                    SK: this.getSecondaryKeyRevision(entry.id)
+                    SK: this.getSecondaryKeyRevision(entryRevisionToDelete.id)
                 }
             });
+        // If revision we are deleting is the published one as well, we need to delete those records as well.
+        if (publishedEntryRevision && entryRevisionToDelete.id === publishedEntryRevision.id) {
+            batch
+                .delete({
+                    ...utils.defaults.db(),
+                    query: {
+                        PK: primaryKey,
+                        SK: this.getSecondaryKeyPublished()
+                    }
+                })
+                .delete({
+                    ...utils.defaults.esDb(),
+                    query: {
+                        PK: primaryKey,
+                        SK: this.getSecondaryKeyPublished()
+                    }
+                });
+        }
+        // If revision we are deleting is the latest one, delete those records.
+        // if (entryRevisionToDelete.id === latestEntryRevision.id){
+        //     batchDelete
+        //         .delete(
+        //             {
+        //                 ...utils.defaults.db(),
+        //                 query: {
+        //                     PK: primaryKey,
+        //                     SK: this.getSecondaryKeyLatest()
+        //                 }
+        //             },
+        //             {
+        //                 ...utils.defaults.esDb(),
+        //                 query: {
+        //                     PK: primaryKey,
+        //                     SK: this.getSecondaryKeyLatest()
+        //                 }
+        //             }
+        //         );
+        // }
+        if (entryRevisionToSetAsLatest) {
+            const originalEntry = await entryFromStorageTransform(
+                this.context,
+                model,
+                entryRevisionToSetAsLatest
+            );
+
+            const esEntry = prepareEntryToIndex({
+                context: this.context,
+                model,
+                originalEntry: cloneDeep(originalEntry),
+                storageEntry: cloneDeep(entryRevisionToSetAsLatest)
+            });
+            // In the end we need to set the new latest entry
+            batch
+                .update({
+                    ...utils.defaults.db(),
+                    query: {
+                        PK: primaryKey,
+                        SK: this.getSecondaryKeyLatest()
+                    },
+                    data: {
+                        ...entryRevisionToSetAsLatest,
+                        TYPE: TYPE_ENTRY_LATEST
+                    }
+                })
+                .update({
+                    ...utils.defaults.esDb(),
+                    query: {
+                        PK: primaryKey,
+                        SK: this.getSecondaryKeyLatest()
+                    },
+                    data: {
+                        PK: primaryKey,
+                        SK: this.getSecondaryKeyLatest(),
+                        index: esConfig.index,
+                        data: getESLatestEntryData(this.context, esEntry)
+                    }
+                });
+        }
         try {
             await batch.execute();
+            // await batchCreate.execute();
         } catch (ex) {
             throw new WebinyError(ex.message, ex.code, {
                 error: ex,
-                entry
+                entryRevisionToDelete,
+                entryRevisionToSetAsLatest,
+                publishedEntryRevision,
+                latestEntryRevision
             });
         }
     }
-
+    /*
     public async publishRevision(model: CmsContentModel, entry: CmsContentEntry): Promise<void> {
         const { db } = this.context;
 
@@ -390,7 +485,8 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
             });
         }
     }
-
+    */
+    /*
     public async unpublishRevision(model: CmsContentModel, entry: CmsContentEntry): Promise<void> {
         const { db } = this.context;
 
@@ -421,7 +517,8 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
             });
         }
     }
-
+    */
+    /*
     public async setRevisionAsLatest(
         model: CmsContentModel,
         entry: CmsContentEntry
@@ -491,6 +588,7 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
             });
         }
     }
+    */
 
     public async get(
         model: CmsContentModel,
