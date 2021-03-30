@@ -51,7 +51,11 @@ export default (): PluginCollection => [
                 <Cell span={12}>
                     <Bind
                         name="password"
-                        validators={data.createdOn ? undefined : validation.create("required")}
+                        validators={
+                            data.createdOn
+                                ? validation.create("minLength:8")
+                                : validation.create("required,minLength:8")
+                        }
                     >
                         <Input
                             autoComplete="off"
