@@ -74,67 +74,27 @@ module.exports = async (inputs, context) => {
 
     if (inputs.build) {
         logs.build.log("Watching packages...");
-        const allPackages = await execa("yarn", [
+
+        const scopes = execa("yarn", [
             "webiny",
             "workspaces",
-            "list",
+            "tree",
             "--json",
-            "--with-path"
+            "--depth",
+            "5",
+            "--folder",
+            inputs.folder
         ]).then(({ stdout }) => JSON.parse(stdout));
-
-        const watchedPackages = [...inputs.scope];
-        if (watchedPackages.length === 0) {
-            // 1. Get all packages withing the project application folder.
-            const projectApplicationPackages = {};
-            for (const pckgName in allPackages) {
-                const pckgPath = allPackages[pckgName];
-                if (pckgPath.startsWith(projectApplication.path.absolute)) {
-                    projectApplicationPackages[pckgName] = pckgPath;
-                }
-            }
-
-            // 2. Get all packages that are located outside of the project application folder.
-            for (const pckgName in projectApplicationPackages) {
-                const packagePath = projectApplicationPackages[pckgName];
-                const packageJsonPath = path.join(packagePath, "package.json");
-                const {
-                    dependencies = {},
-                    devDependencies = {},
-                    peerDependencies = {}
-                } = loadJsonFile.sync(packageJsonPath);
-
-                // Add dependencies.
-                for (const packageName in dependencies) {
-                    if (allPackages[packageName]) {
-                        watchedPackages.push(packageName);
-                    }
-                }
-
-                // Add devDependencies.
-                for (const packageName in devDependencies) {
-                    if (allPackages[packageName]) {
-                        watchedPackages.push(packageName);
-                    }
-                }
-
-                // Add peerDependencies.
-                for (const packageName in peerDependencies) {
-                    if (allPackages[packageName]) {
-                        watchedPackages.push(packageName);
-                    }
-                }
-            }
-
-            watchedPackages.push(...Object.keys(projectApplicationPackages));
-        }
 
         const watchPackages = execa("yarn", [
             "webiny",
             "workspaces",
             "run",
             "watch",
-            "--scope",
-            "@webiny/api-file-manager"
+            ...scopes.reduce((current, item) => {
+                current.push("--scope", item);
+                return current;
+            }, [])
         ]);
 
         watchPackages.stdout.on("data", data => logs.build.log(data.toString()));
