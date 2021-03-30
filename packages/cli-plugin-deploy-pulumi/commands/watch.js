@@ -1,9 +1,8 @@
-const path = require("path");
 const execa = require("execa");
 const blessed = require("blessed");
 const contrib = require("blessed-contrib");
-const loadJsonFile = require("load-json-file");
 const { login, getPulumi, loadEnvVariables, getProjectApplication } = require("../utils");
+const { green } = require("chalk");
 
 const SECRETS_PROVIDER = process.env.PULUMI_SECRETS_PROVIDER;
 
@@ -24,7 +23,7 @@ module.exports = async (inputs, context) => {
     const projectApplication = getProjectApplication(inputs.folder);
 
     if (inputs.deploy) {
-        logs.deploy.log("Watching cloud infrastructure resources...");
+        logs.deploy.log(green("Watching cloud infrastructure resources..."));
         await loadEnvVariables(inputs, context);
 
         const { env } = inputs;
@@ -73,15 +72,16 @@ module.exports = async (inputs, context) => {
     }
 
     if (inputs.build) {
-        logs.build.log("Watching packages...");
+        logs.build.log(green("Watching packages..."));
 
-        const scopes = execa("yarn", [
+        const scopes = await execa("yarn", [
             "webiny",
             "workspaces",
             "tree",
             "--json",
             "--depth",
             "5",
+            "--distinct",
             "--folder",
             inputs.folder
         ]).then(({ stdout }) => JSON.parse(stdout));
