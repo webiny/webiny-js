@@ -6,7 +6,7 @@ module.exports = () => [
         type: "hook-after-deploy",
         name: "hook-after-deploy-pb-update-settings",
         async hook(args, context) {
-            if (args.stack !== "website") {
+            if (args.projectApplication.name !== "website") {
                 return;
             }
 
