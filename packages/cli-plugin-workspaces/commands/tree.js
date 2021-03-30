@@ -1,5 +1,6 @@
 const { createGraph, getPackages } = require("./utils");
 const archy = require("archy");
+const { green } = require("chalk");
 
 module.exports = async ({ json, scope, folder, depth, distinct }) => {
     let folders = [],
@@ -30,8 +31,13 @@ module.exports = async ({ json, scope, folder, depth, distinct }) => {
         return;
     }
 
-    const archyTree = buildArchyTree(tree);
-    console.log(archy(archyTree));
+    if (distinct) {
+        const distinctPackagesArchyTree = buildDistinctPackagesArchyTree(tree);
+        console.log(green(archy(distinctPackagesArchyTree)));
+    } else {
+        const archyTree = buildArchyTree(tree);
+        console.log(green(archy(archyTree)));
+    }
 };
 
 const getDistinct = ({ fragment, list }) => {
@@ -86,6 +92,14 @@ const buildArchyTree = tree => {
     const currentNode = { label: "Found packages:", nodes: [] };
     buildArchyNodes({ packages: tree, currentNode });
     return currentNode;
+};
+
+const buildDistinctPackagesArchyTree = tree => {
+    const distinctPackages = getDistinctPackages(tree);
+    return {
+        label: "Found packages:",
+        nodes: distinctPackages.map(item => ({ label: item }))
+    };
 };
 
 const buildArchyNodes = ({ packages, currentNode }) => {
