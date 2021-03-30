@@ -8360,7 +8360,9 @@ __metadata:
     blessed: ^0.1.81
     blessed-contrib: ^4.8.21
     chalk: 4.1.0
-    execa: 4.1.0
+    execa: 5.0.0
+    find-up: ^5.0.0
+    load-json-file: ^6.2.0
     lodash: 4.17.20
     node-notifier: 7.0.2
     ora: 4.1.1
@@ -8481,6 +8483,7 @@ __metadata:
   resolution: "@webiny/cli-plugin-workspaces@workspace:packages/cli-plugin-workspaces"
   dependencies:
     "@webiny/project-utils": ^5.3.0
+    archy: ^1.0.0
     chalk: 4.1.0
     execa: 5.0.0
     graphlib: 2.1.8
@@ -9781,6 +9784,7 @@ __metadata:
     "@webiny/api-file-manager": ^5.3.0
     "@webiny/cli": 5.3.0
     "@webiny/handler-aws": ^5.3.0
+    "@webiny/project-utils": 5.3.0
   languageName: unknown
   linkType: soft
 
@@ -10064,6 +10068,13 @@ __metadata:
   version: 2.2.0
   resolution: "arch@npm:2.2.0"
   checksum: 4a8d92a9a7ee185fd0f2cbe40f8c3eb6147afa86bf07b03e2cf8c8f024d2f14c42a8cf7ed06a8ce1bbe17d123a19e83d46ebddd77acb49c8ce68194cf99ab711
+  languageName: node
+  linkType: hard
+
+"archy@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "archy@npm:1.0.0"
+  checksum: fed06a0487f79dd89f30a8558f3e8f88011025ded47b10e412a4fc8f842a4ddec6e51af5a117258f5b84bef587cff7d1e056df4f453a7d8752a46e25bf5be7dc
   languageName: node
   linkType: hard
 
