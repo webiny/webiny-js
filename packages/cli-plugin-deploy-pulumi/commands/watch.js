@@ -20,85 +20,93 @@ module.exports = async (inputs, context) => {
 
     screen.render();
 
-    const projectApplication = getProjectApplication(inputs.folder);
+    try {
+        // Get project application metadata.
+        const projectApplication = getProjectApplication(inputs.folder);
 
-    if (inputs.deploy) {
-        logs.deploy.log(green("Watching cloud infrastructure resources..."));
-        await loadEnvVariables(inputs, context);
+        // Add deploy logs.
+        if (inputs.deploy) {
+            logs.deploy.log(green("Watching cloud infrastructure resources..."));
+            await loadEnvVariables(inputs, context);
 
-        const { env } = inputs;
+            const { env } = inputs;
 
-        await login(projectApplication);
+            await login(projectApplication);
 
-        const pulumi = await getPulumi({
-            execa: {
-                cwd: projectApplication.path.absolute
+            const pulumi = await getPulumi({
+                execa: {
+                    cwd: projectApplication.path.absolute
+                }
+            });
+
+            let stackExists = true;
+            try {
+                await pulumi.run(
+                    { command: ["stack", "select", env] },
+                    {
+                        args: {
+                            secretsProvider: SECRETS_PROVIDER
+                        }
+                    }
+                );
+            } catch (e) {
+                stackExists = false;
             }
-        });
 
-        let stackExists = true;
-        try {
-            await pulumi.run(
-                { command: ["stack", "select", env] },
-                {
-                    args: {
-                        secretsProvider: SECRETS_PROVIDER
+            if (!stackExists) {
+                throw new Error(`Please specify an existing environment, for example "dev".`);
+            }
+
+            const watchCloudInfrastructure = pulumi.run({
+                command: "watch",
+                args: {
+                    secretsProvider: SECRETS_PROVIDER
+                },
+                execa: {
+                    env: {
+                        WEBINY_ENV: env,
+                        WEBINY_PROJECT_NAME: context.projectName
                     }
                 }
-            );
-        } catch (e) {
-            stackExists = false;
+            });
+
+            watchCloudInfrastructure.stdout.on("data", data => logs.deploy.log(data.toString()));
+            watchCloudInfrastructure.stderr.on("data", data => logs.deploy.log(data.toString()));
         }
 
-        if (!stackExists) {
-            throw new Error(`Please specify an existing environment, for example "dev".`);
+        // Add build logs.
+        if (inputs.build) {
+            logs.build.log(green("Watching packages..."));
+
+            const scopes = await execa("yarn", [
+                "webiny",
+                "workspaces",
+                "tree",
+                "--json",
+                "--depth",
+                "5",
+                "--distinct",
+                "--folder",
+                inputs.folder
+            ]).then(({ stdout }) => JSON.parse(stdout));
+
+            const watchPackages = execa("yarn", [
+                "webiny",
+                "workspaces",
+                "run",
+                "watch",
+                ...scopes.reduce((current, item) => {
+                    current.push("--scope", item);
+                    return current;
+                }, [])
+            ]);
+
+            watchPackages.stdout.on("data", data => logs.build.log(data.toString()));
+            watchPackages.stderr.on("data", data => logs.build.log(data.toString()));
         }
-
-        const watchCloudInfrastructure = pulumi.run({
-            command: "watch",
-            args: {
-                secretsProvider: SECRETS_PROVIDER
-            },
-            execa: {
-                env: {
-                    WEBINY_ENV: env,
-                    WEBINY_PROJECT_NAME: context.projectName
-                }
-            }
-        });
-
-        watchCloudInfrastructure.stdout.on("data", data => logs.deploy.log(data.toString()));
-        watchCloudInfrastructure.stderr.on("data", data => logs.deploy.log(data.toString()));
-    }
-
-    if (inputs.build) {
-        logs.build.log(green("Watching packages..."));
-
-        const scopes = await execa("yarn", [
-            "webiny",
-            "workspaces",
-            "tree",
-            "--json",
-            "--depth",
-            "5",
-            "--distinct",
-            "--folder",
-            inputs.folder
-        ]).then(({ stdout }) => JSON.parse(stdout));
-
-        const watchPackages = execa("yarn", [
-            "webiny",
-            "workspaces",
-            "run",
-            "watch",
-            ...scopes.reduce((current, item) => {
-                current.push("--scope", item);
-                return current;
-            }, [])
-        ]);
-
-        watchPackages.stdout.on("data", data => logs.build.log(data.toString()));
-        watchPackages.stderr.on("data", data => logs.build.log(data.toString()));
+    } catch (e) {
+        screen.destroy();
+        throw e;
     }
 };
 
