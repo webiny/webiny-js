@@ -1,8 +1,9 @@
-const { buildFunction } = require("./bundling/function");
+const { buildFunction, watchFunction } = require("./bundling/function");
 const { startApp, buildApp } = require("./bundling/app");
 
 module.exports = {
     buildApp,
     startApp,
-    buildFunction
+    buildFunction,
+    watchFunction
 };

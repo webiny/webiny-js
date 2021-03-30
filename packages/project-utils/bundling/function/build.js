@@ -11,7 +11,7 @@ module.exports = (options, context) => {
     }
 
     // Load base webpack config
-    let webpackConfig = require("./webpack.config")({
+    let webpackConfig = require("./webpack.prod.config")({
         entry: options.entry || "./src/index",
         output,
         debug: boolean(options.debug),
@@ -26,24 +26,6 @@ module.exports = (options, context) => {
 
     return new Promise(async (resolve, reject) => {
         context.log(`Start bundling`);
-
-        if (boolean(options.watch)) {
-            return webpack(webpackConfig).watch({}, async (err, stats) => {
-                if (err) {
-                    return reject(err);
-                }
-
-                if (stats.hasErrors()) {
-                    const info = stats.toJson();
-
-                    if (stats.hasErrors()) {
-                        console.error(info.errors);
-                    }
-                }
-
-                context.log(`Finished bundling! Watching for changes...`);
-            });
-        }
 
         return webpack(webpackConfig).run(async (err, stats) => {
             if (err) {
