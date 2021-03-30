@@ -16,7 +16,7 @@
     "blessed": "^0.1.81",
     "blessed-contrib": "^4.8.21",
     "chalk": "4.1.0",
-    "execa": "4.1.0",
+    "execa": "5.0.0",
     "find-up": "^5.0.0",
     "load-json-file": "^6.2.0",
     "lodash": "4.17.20",
