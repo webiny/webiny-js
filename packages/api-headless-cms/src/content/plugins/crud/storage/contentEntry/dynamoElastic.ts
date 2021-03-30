@@ -738,6 +738,7 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
          */
         try {
             await batch.execute();
+            this._dataLoaders.clearAllEntryRevisions(model, entry);
             return entry;
         } catch (ex) {
             throw new WebinyError(

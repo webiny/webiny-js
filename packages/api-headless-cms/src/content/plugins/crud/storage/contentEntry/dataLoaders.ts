@@ -132,36 +132,43 @@ export class DataLoadersHandler {
         model: CmsContentModel,
         ids: readonly string[]
     ): Promise<CmsContentEntry[]> {
-        const items = await this.loadMany("getAllEntryRevisions", model, ids);
+        return await this.loadMany("getAllEntryRevisions", model, ids);
+    }
 
-        return items;
+    public clearAllEntryRevisions(model: CmsContentModel, entry?: CmsContentEntry): void {
+        this.clear("getAllEntryRevisions", model, entry);
     }
 
     public async getRevisionById(
         model: CmsContentModel,
         ids: readonly string[]
     ): Promise<CmsContentEntry[]> {
-        const items = await this.loadMany("getRevisionById", model, ids);
+        return await this.loadMany("getRevisionById", model, ids);
+    }
 
-        return items;
+    public clearRevisionById(model: CmsContentModel, entry?: CmsContentEntry): void {
+        this.clear("getRevisionById", model, entry);
     }
 
     public async getPublishedRevisionByEntryId(
         model: CmsContentModel,
         ids: readonly string[]
     ): Promise<CmsContentEntry[]> {
-        const items = await this.loadMany("getPublishedRevisionByEntryId", model, ids);
-
-        return items;
+        return await this.loadMany("getPublishedRevisionByEntryId", model, ids);
+    }
+    public clearPublishedRevisionByEntryId(model: CmsContentModel, entry?: CmsContentEntry): void {
+        this.clear("getPublishedRevisionByEntryId", model, entry);
     }
 
     public async getLatestRevisionByEntryId(
         model: CmsContentModel,
         ids: readonly string[]
     ): Promise<CmsContentEntry[]> {
-        const items = await this.loadMany("getLatestRevisionByEntryId", model, ids);
+        return await this.loadMany("getLatestRevisionByEntryId", model, ids);
+    }
 
-        return items;
+    public clearLatestRevisionByEntryId(model: CmsContentModel, entry?: CmsContentEntry): void {
+        this.clear("getLatestRevisionByEntryId", model, entry);
     }
 
     private getLoader(name: string, model: CmsContentModel): DataLoader<any, any> {
@@ -214,5 +221,18 @@ export class DataLoadersHandler {
                 results
             }
         );
+    }
+    /**
+     * Helper to clear the cache for certain data loader.
+     * If entry is passed then clear target key only.
+     */
+    private clear(name: string, model: CmsContentModel, entry?: CmsContentEntry): void {
+        const loader = this.getLoader(name, model);
+        if (!entry) {
+            loader.clearAll();
+            return;
+        }
+        loader.clear(entry.id);
+        loader.clear(this._storageOperations.getPrimaryKey(entry.id));
     }
 }
