@@ -19,6 +19,19 @@ const ContentModelMenuItems = ({ Section, Item }) => {
     }
 
     return data.map(contentModelGroup => {
+        // Check if user has "contentEntry" permission for any content model for a content model group
+        const hasContentEntryPermission = contentModelGroup.contentModels.some(contentModel =>
+            canRead({
+                contentModelGroup,
+                contentModel,
+                permissionName: "cms.contentEntry"
+            })
+        );
+
+        if (!hasContentEntryPermission) {
+            return null;
+        }
+
         return (
             <Section
                 key={contentModelGroup.id}
@@ -31,15 +44,7 @@ const ContentModelMenuItems = ({ Section, Item }) => {
                     />
                 }
             >
-                {(contentModelGroup.contentModels.length === 0 ||
-                    contentModelGroup.contentModels.every(
-                        contentModel =>
-                            !canRead({
-                                contentModelGroup,
-                                contentModel,
-                                permissionName: "cms.contentEntry"
-                            })
-                    )) && (
+                {contentModelGroup.contentModels.length === 0 && (
                     <Item style={{ opacity: 0.4 }} key={"empty-item"} label={t`Nothing to show.`} />
                 )}
                 {contentModelGroup.contentModels.map(contentModel =>
