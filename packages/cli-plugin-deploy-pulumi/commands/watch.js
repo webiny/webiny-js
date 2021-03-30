@@ -1,11 +1,9 @@
 const path = require("path");
-const loadEnvVariables = require("../utils/loadEnvVariables");
-const getPulumi = require("../utils/getPulumi");
-const login = require("../utils/login");
 const execa = require("execa");
 const blessed = require("blessed");
 const contrib = require("blessed-contrib");
 const loadJsonFile = require("load-json-file");
+const { login, getPulumi, loadEnvVariables, getProjectApplication } = require("../utils");
 
 const SECRETS_PROVIDER = process.env.PULUMI_SECRETS_PROVIDER;
 
@@ -23,18 +21,19 @@ module.exports = async (inputs, context) => {
 
     screen.render();
 
+    const projectApplication = getProjectApplication(inputs.folder);
+
     if (inputs.deploy) {
         logs.deploy.log("Watching cloud infrastructure resources...");
         await loadEnvVariables(inputs, context);
 
-        const { env, folder } = inputs;
-        const stackDir = path.join(".", folder);
+        const { env } = inputs;
 
-        await login(stackDir, context.paths.projectRoot);
+        await login(projectApplication);
 
-        const pulumi = getPulumi({
+        const pulumi = await getPulumi({
             execa: {
-                cwd: stackDir
+                cwd: projectApplication.path.absolute
             }
         });
 
@@ -87,10 +86,9 @@ module.exports = async (inputs, context) => {
         if (watchedPackages.length === 0) {
             // 1. Get all packages withing the project application folder.
             const projectApplicationPackages = {};
-            const projectApplicationPath = path.join(context.paths.projectRoot, inputs.folder);
             for (const pckgName in allPackages) {
                 const pckgPath = allPackages[pckgName];
-                if (pckgPath.startsWith(projectApplicationPath)) {
+                if (pckgPath.startsWith(projectApplication.path.absolute)) {
                     projectApplicationPackages[pckgName] = pckgPath;
                 }
             }

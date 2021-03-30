@@ -1,20 +1,17 @@
 const { red } = require("chalk");
-const path = require("path");
-const loadEnvVariables = require("../utils/loadEnvVariables");
-const getPulumi = require("../utils/getPulumi");
-const login = require("../utils/login");
+const { login, getPulumi, loadEnvVariables, getProjectApplication } = require("../utils");
 
 module.exports = async (inputs, context) => {
     const { env, folder, json } = inputs;
-    const projectApplicationDir = path.join(".", folder).replace(/\\/g, "/");
-
+    const projectApplication = getProjectApplication(folder)
     await loadEnvVariables(inputs, context);
 
-    await login(folder, context.paths.projectRoot);
+    // Will also install Pulumi, if not already installed.
+    await login(projectApplication);
 
-    const pulumi = getPulumi({
+    const pulumi = await getPulumi({
         execa: {
-            cwd: projectApplicationDir
+            cwd: projectApplication.path.absolute
         }
     });
 

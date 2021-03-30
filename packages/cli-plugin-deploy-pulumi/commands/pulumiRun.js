@@ -1,7 +1,5 @@
 const { green, red } = require("chalk");
-const loadEnvVariables = require("../utils/loadEnvVariables");
-const getPulumi = require("../utils/getPulumi");
-const login = require("../utils/login");
+const { login, getPulumi, loadEnvVariables, getProjectApplication } = require("../utils");
 
 module.exports = async (inputs, context) => {
     const [, ...command] = inputs._;
@@ -9,11 +7,13 @@ module.exports = async (inputs, context) => {
 
     await loadEnvVariables(inputs, context);
 
-    await login(folder, context.paths.projectRoot);
+    const projectApplication = getProjectApplication(folder);
 
-    const pulumi = getPulumi({
+    await login(projectApplication);
+
+    const pulumi = await getPulumi({
         execa: {
-            cwd: folder
+            cwd: projectApplication.path.absolute
         }
     });
 

@@ -1,41 +1,13 @@
-const { join, basename } = require("path");
 const { green } = require("chalk");
-const notifier = require("node-notifier");
-const path = require("path");
-const loadEnvVariables = require("../utils/loadEnvVariables");
-const getPulumi = require("../utils/getPulumi");
-const login = require("../utils/login");
 const execa = require("execa");
-
-const notify = ({ message }) => {
-    return new Promise(resolve => {
-        notifier.notify({
-            title: "Webiny CLI",
-            message,
-            icon: join(__dirname, "logo.png"),
-            sound: false
-        });
-
-        setTimeout(resolve, 100);
-    });
-};
-
-const getStackName = stack => {
-    stack = stack.split("/").pop();
-    return stack === "." ? basename(process.cwd()) : stack;
-};
-
-const processHooks = async (hook, { context, ...options }) => {
-    const plugins = context.plugins.byType(hook);
-
-    for (let i = 0; i < plugins.length; i++) {
-        try {
-            await plugins[i].hook(options, context);
-        } catch (err) {
-            context.error(`Hook ${green(plugins[i].name)} encountered an error: ${err.message}`);
-        }
-    }
-};
+const {
+    loadEnvVariables,
+    getPulumi,
+    getProjectApplication,
+    processHooks,
+    login,
+    notify
+} = require("../utils");
 
 const SECRETS_PROVIDER = process.env.PULUMI_SECRETS_PROVIDER;
 
@@ -64,11 +36,7 @@ module.exports = async (inputs, context) => {
         return (new Date() - start) / 1000;
     };
 
-    const stackName = getStackName(folder);
-
-    await loadEnvVariables(inputs, context);
-
-    const stackDir = path.join(".", folder);
+    const projectApplication = getProjectApplication(folder);
 
     if (build) {
         await execa(
@@ -79,7 +47,7 @@ module.exports = async (inputs, context) => {
                 "run",
                 "build",
                 "--folder",
-                stackDir,
+                projectApplication.path.absolute,
                 "--env",
                 inputs.env,
                 "--debug",
@@ -91,11 +59,12 @@ module.exports = async (inputs, context) => {
         );
     }
 
-    await login(stackDir, context.paths.projectRoot);
+    await loadEnvVariables(inputs, context);
 
-    const pulumi = getPulumi({
+    await login(projectApplication);
+    const pulumi = await getPulumi({
         execa: {
-            cwd: stackDir
+            cwd: projectApplication.path.absolute
         }
     });
 
@@ -126,7 +95,7 @@ module.exports = async (inputs, context) => {
 
     const isFirstDeploy = !stackExists;
 
-    const hookDeployArgs = { isFirstDeploy, context, env, stack: stackName };
+    const hookDeployArgs = { isFirstDeploy, context, env, projectApplication };
 
     if (inputs.preview) {
         context.info(`Skipped "hook-before-deploy" hook.`);
