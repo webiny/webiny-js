@@ -11,7 +11,7 @@ module.exports = (options, context) => {
     }
 
     // Load base webpack config
-    let webpackConfig = require("./webpack.prod.config")({
+    let webpackConfig = require("./webpack.build.config")({
         entry: options.entry || "./src/index",
         output,
         debug: boolean(options.debug),
