@@ -16,7 +16,6 @@ import {
     CmsContentModel,
     CmsContext
 } from "../../../../../types";
-
 import WebinyError from "@webiny/error";
 import * as utils from "../../../../../utils";
 import {
@@ -29,21 +28,11 @@ import { entryFromStorageTransform, entryToStorageTransform } from "../../../uti
 import cloneDeep from "lodash/cloneDeep";
 import omit from "lodash/omit";
 import { STATUS_PUBLISHED, STATUS_UNPUBLISHED } from "../../contentEntry.crud";
-// import * as dataLoaders from "./dataLoaders";
+import { DataLoadersHandler } from "./dataLoaders";
 
 export const TYPE_ENTRY = "cms.entry";
 export const TYPE_ENTRY_LATEST = TYPE_ENTRY + ".l";
 export const TYPE_ENTRY_PUBLISHED = TYPE_ENTRY + ".p";
-
-// const extractPrimaryId = (id: string): string => {
-//     if (id.includes("#") === false) {
-//         return id;
-//     }
-//     return id.split("#").shift();
-// };
-// const extractEntryPrimaryId = (entry: CmsContentEntry): string => {
-//     return extractPrimaryId(entry.id);
-// };
 
 const getEntryData = (context: CmsContext, entry: CmsContentEntry) => {
     return {
@@ -69,7 +58,7 @@ const getESPublishedEntryData = (context: CmsContext, entry: CmsContentEntry) =>
     };
 };
 
-interface ConstructorArgs {
+interface CmsContentEntryCrudDynamoElasticArgs {
     context: CmsContext;
     basePrimaryKey: string;
 }
@@ -81,14 +70,16 @@ interface ConstructorArgs {
 export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntryStorageOperations {
     private readonly _context: CmsContext;
     private readonly _primaryKey: string;
+    private readonly _dataLoaders: DataLoadersHandler;
 
     private get context(): CmsContext {
         return this._context;
     }
 
-    public constructor({ context, basePrimaryKey }: ConstructorArgs) {
+    public constructor({ context, basePrimaryKey }: CmsContentEntryCrudDynamoElasticArgs) {
         this._context = context;
         this._primaryKey = `${basePrimaryKey}#CME`;
+        this._dataLoaders = new DataLoadersHandler(context, this);
     }
 
     public async create(
@@ -110,7 +101,9 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
 
         const batch = db
             .batch()
-            // Create main entry item
+            /**
+             * Create main entry item
+             */
             .create({
                 ...utils.defaults.db(),
                 data: {
@@ -120,7 +113,9 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
                     ...storageEntry
                 }
             })
-            // Create "latest" entry item
+            /**
+             * Create "latest" entry item
+             */
             .create({
                 ...utils.defaults.db(),
                 data: {
@@ -181,7 +176,9 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
         const primaryKey = this.getPrimaryKey(storageData.id);
         const batch = db.batch();
         batch
-            // Create main entry item
+            /**
+             * Create main entry item
+             */
             .create({
                 ...utils.defaults.db(),
                 data: {
@@ -191,7 +188,9 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
                     ...getEntryData(this.context, storageData)
                 }
             })
-            // Update "latest" entry item
+            /**
+             * Update "latest" entry item
+             */
             .update({
                 ...utils.defaults.db(),
                 query: {
@@ -205,7 +204,9 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
                     ...getEntryData(this.context, storageData)
                 }
             })
-            // Update the "latest" entry item in the Elasticsearch
+            /**
+             * Update the "latest" entry item in the Elasticsearch
+             */
             .update({
                 ...utils.defaults.esDb(),
                 query: {
@@ -234,7 +235,9 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
                 }
             );
         }
-        // There are no modifications on the entry created so just return the data.
+        /**
+         * There are no modifications on the entry created so just return the data.
+         */
         return data;
     }
 
@@ -254,7 +257,9 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
                 SK: { $gte: " " }
             }
         });
-        // Load ES entries to delete
+        /**
+         * Load ES entries to delete
+         */
         const [esDbItems] = await db.read({
             ...utils.defaults.esDb(),
             query: {
@@ -263,7 +268,9 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
             }
         });
 
-        // Delete all items from DB and ES DB
+        /**
+         * Delete all items from DB and ES DB
+         */
         await Promise.all([
             utils.paginateBatch(dbItems, 25, async items => {
                 await db
@@ -314,7 +321,9 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
          * We need to delete all existing records of the given entry revision.
          */
         const batch = db.batch();
-        // Delete records of given entry revision.
+        /**
+         * Delete records of given entry revision.
+         */
         batch
             .delete({
                 ...utils.defaults.db(),
@@ -330,7 +339,9 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
                     SK: this.getSecondaryKeyRevision(entryRevisionToDelete.id)
                 }
             });
-        // If revision we are deleting is the published one as well, we need to delete those records as well.
+        /**
+         * If revision we are deleting is the published one as well, we need to delete those records as well.
+         */
         if (publishedEntryRevision && entryRevisionToDelete.id === publishedEntryRevision.id) {
             batch
                 .delete({
@@ -348,26 +359,6 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
                     }
                 });
         }
-        // If revision we are deleting is the latest one, delete those records.
-        // if (entryRevisionToDelete.id === latestEntryRevision.id){
-        //     batchDelete
-        //         .delete(
-        //             {
-        //                 ...utils.defaults.db(),
-        //                 query: {
-        //                     PK: primaryKey,
-        //                     SK: this.getSecondaryKeyLatest()
-        //                 }
-        //             },
-        //             {
-        //                 ...utils.defaults.esDb(),
-        //                 query: {
-        //                     PK: primaryKey,
-        //                     SK: this.getSecondaryKeyLatest()
-        //                 }
-        //             }
-        //         );
-        // }
         if (entryRevisionToSetAsLatest) {
             const originalEntry = await entryFromStorageTransform(
                 this.context,
@@ -381,7 +372,9 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
                 originalEntry: cloneDeep(originalEntry),
                 storageEntry: cloneDeep(entryRevisionToSetAsLatest)
             });
-            // In the end we need to set the new latest entry
+            /**
+             * In the end we need to set the new latest entry
+             */
             batch
                 .update({
                     ...utils.defaults.db(),
@@ -410,7 +403,6 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
         }
         try {
             await batch.execute();
-            // await batchCreate.execute();
         } catch (ex) {
             throw new WebinyError(ex.message, ex.code, {
                 error: ex,
@@ -421,174 +413,6 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
             });
         }
     }
-    /*
-    public async publishRevision(model: CmsContentModel, entry: CmsContentEntry): Promise<void> {
-        const { db } = this.context;
-
-        const primaryKey = this.getPrimaryKey(entry.id);
-
-        const storageEntry = await entryToStorageTransform(this.context, model, entry);
-        const esConfig = utils.defaults.es(this.context, model);
-
-        const esEntry = prepareEntryToIndex({
-            context: this.context,
-            model,
-            originalEntry: cloneDeep(entry),
-            storageEntry: cloneDeep(storageEntry)
-        });
-
-        const batch = db.batch();
-        batch
-            // first we delete existing published entries
-            .delete({
-                ...utils.defaults.db(),
-                query: {
-                    PK: primaryKey,
-                    SK: this.getSecondaryKeyPublished()
-                }
-            })
-            .delete({
-                ...utils.defaults.esDb(),
-                query: {
-                    PK: primaryKey,
-                    SK: this.getSecondaryKeyPublished()
-                }
-            })
-            // then we create new one
-            .create({
-                ...utils.defaults.db(),
-                data: {
-                    PK: primaryKey,
-                    SK: this.getSecondaryKeyPublished(),
-                    TYPE: TYPE_ENTRY_PUBLISHED,
-                    ...storageEntry
-                }
-            })
-            .create({
-                ...utils.defaults.esDb(),
-                data: {
-                    PK: primaryKey,
-                    SK: this.getSecondaryKeyPublished(),
-                    index: esConfig.index,
-                    data: getESPublishedEntryData(this.context, esEntry)
-                }
-            });
-        try {
-            await batch.execute();
-        } catch (ex) {
-            throw new WebinyError(ex.message, ex.code, {
-                error: ex,
-                entry,
-                esConfig,
-                storageEntry,
-                esEntry
-            });
-        }
-    }
-    */
-    /*
-    public async unpublishRevision(model: CmsContentModel, entry: CmsContentEntry): Promise<void> {
-        const { db } = this.context;
-
-        const primaryKey = this.getPrimaryKey(entry.id);
-
-        const batch = db.batch();
-        batch
-            .delete({
-                ...utils.defaults.db(),
-                query: {
-                    PK: primaryKey,
-                    SK: this.getSecondaryKeyPublished()
-                }
-            })
-            .delete({
-                ...utils.defaults.esDb(),
-                query: {
-                    PK: primaryKey,
-                    SK: this.getSecondaryKeyPublished()
-                }
-            });
-        try {
-            await batch.execute();
-        } catch (ex) {
-            throw new WebinyError(ex.message, ex.code, {
-                error: ex,
-                entry
-            });
-        }
-    }
-    */
-    /*
-    public async setRevisionAsLatest(
-        model: CmsContentModel,
-        entry: CmsContentEntry
-    ): Promise<void> {
-        const { db } = this.context;
-
-        const primaryKey = this.getPrimaryKey(entry.id);
-
-        const storageEntry = await entryToStorageTransform(this.context, model, entry);
-        const esConfig = utils.defaults.es(this.context, model);
-
-        const esEntry = prepareEntryToIndex({
-            context: this.context,
-            model,
-            originalEntry: cloneDeep(entry),
-            storageEntry: cloneDeep(storageEntry)
-        });
-
-        const batchDelete = db.batch();
-        batchDelete
-            // first we delete existing latest entries
-            .delete(
-                {
-                    ...utils.defaults.db(),
-                    query: {
-                        PK: primaryKey,
-                        SK: this.getSecondaryKeyLatest()
-                    }
-                },
-                {
-                    ...utils.defaults.esDb(),
-                    query: {
-                        PK: primaryKey,
-                        SK: this.getSecondaryKeyLatest()
-                    }
-                }
-            );
-        // then we create new one
-        const batchCreate = db
-            .batch()
-            .create({
-                ...utils.defaults.db(),
-                data: {
-                    ...storageEntry,
-                    TYPE: TYPE_ENTRY_LATEST
-                }
-            })
-            .create({
-                ...utils.defaults.esDb(),
-                data: {
-                    PK: primaryKey,
-                    SK: this.getSecondaryKeyLatest(),
-                    index: esConfig.index,
-                    data: getESLatestEntryData(this.context, esEntry)
-                }
-            });
-        try {
-            await batchDelete.execute();
-            await batchCreate.execute();
-        } catch (ex) {
-            throw new WebinyError(ex.message, ex.code, {
-                error: ex,
-                entry,
-                esConfig,
-                storageEntry,
-                esEntry
-            });
-        }
-    }
-    */
 
     public async get(
         model: CmsContentModel,
@@ -646,11 +470,15 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
 
         const hasMoreItems = items.length > limit;
         if (hasMoreItems) {
-            // Remove the last item from results, we don't want to include it.
+            /**
+             * Remove the last item from results, we don't want to include it.
+             */
             items.pop();
         }
-        // Cursor is the `sort` value of the last item in the array.
-        // https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html#search-after
+        /**
+         * Cursor is the `sort` value of the last item in the array.
+         * https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html#search-after
+         */
         const cursor =
             items.length > 0 ? utils.encodeElasticsearchCursor(hits[items.length - 1].sort) : null;
         return {
@@ -685,9 +513,7 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
             data
         });
 
-        // are these full id or just generated ones without the version?
         if (latestEntry.id === originalEntry.id) {
-            // prepare the entry for indexing
             const esEntry = prepareEntryToIndex({
                 context: this.context,
                 model,
@@ -796,13 +622,13 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
         const es = utils.defaults.es(this.context, model);
 
         if (publishedEntry) {
-            // If there is a `published` entry already, we need to set it to `unpublished`. We need to
-            // execute two updates: update the previously published entry's status and the published
-            // entry record (PK_ENTRY_PUBLISHED()).
-
-            // DynamoDB does not support `batchUpdate` - so here we load the previously published
-            // entry's data to update its status within a batch operation. If, hopefully,
-            // they introduce a true update batch operation, remove this `read` call.
+            /**
+             * If there is a `published` entry already, we need to set it to `unpublished`. We need to
+             * execute two updates: update the previously published entry's status and the published entry record.
+             * DynamoDB does not support `batchUpdate` - so here we load the previously published
+             * entry's data to update its status within a batch operation. If, hopefully,
+             * they introduce a true update batch operation, remove this `read` call.
+             */
             const [[previouslyPublishedStorageEntry]] = await db.read<CmsContentEntry>({
                 ...utils.defaults.db(),
                 query: {
@@ -815,7 +641,9 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
 
             batch
                 .update({
-                    // Update currently published entry (unpublish it)
+                    /**
+                     * Update currently published entry (unpublish it)
+                     */
                     ...utils.defaults.db(),
                     query: {
                         PK: primaryKey,
@@ -824,7 +652,9 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
                     data: previouslyPublishedStorageEntry
                 })
                 .update({
-                    // Update the helper item in DB with the new published entry ID
+                    /**
+                     * Update the helper item in DB with the new published entry ID
+                     */
                     ...utils.defaults.db(),
                     query: {
                         PK: primaryKey,
@@ -849,7 +679,9 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
             });
         }
 
-        // If we are publishing the latest revision, let's also update the latest revision's status in ES.
+        /**
+         * If we are publishing the latest revision, let's also update the latest revision's status in ES.
+         */
         if (latestEntry && latestEntry.id === entry.id) {
             batch.update({
                 ...utils.defaults.esDb(),
@@ -875,7 +707,9 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
             originalEntry: await entryFromStorageTransform(this.context, model, entry),
             storageEntry: entry
         });
-        // Update the published revision entry in ES.
+        /**
+         * Update the published revision entry in ES.
+         */
         const esData = {
             PK: primaryKey,
             SK: this.getSecondaryKeyPublished(),
@@ -899,7 +733,9 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
             });
         }
 
-        // Finally, execute batch
+        /**
+         * Finally, execute batch
+         */
         try {
             await batch.execute();
             return entry;
@@ -950,7 +786,9 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
                 },
                 data: entry
             });
-        // If we are unpublishing the latest revision, let's also update the latest revision entry's status in ES.
+        /**
+         * If we are unpublishing the latest revision, let's also update the latest revision entry's status in ES.
+         */
         if (latestEntry.id === entry.id) {
             const es = utils.defaults.es(this.context, model);
 
@@ -1006,9 +844,10 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
             data: entry
         });
 
-        // If we updated the latest version, then make sure the changes are propagated to ES too.
+        /**
+         * If we updated the latest version, then make sure the changes are propagated to ES too.
+         */
         if (latestEntry.id === entry.id) {
-            // Index file in "Elastic Search"
             const es = utils.defaults.es(this.context, model);
             batch.update({
                 ...utils.defaults.esDb(),
@@ -1062,9 +901,10 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
             data: entry
         });
 
-        // If we updated the latest version, then make sure the changes are propagated to ES too.
+        /**
+         * If we updated the latest version, then make sure the changes are propagated to ES too.
+         */
         if (latestEntry.id === entry.id) {
-            // Index file in "Elastic Search"
             const es = utils.defaults.es(this.context, model);
             batch.update({
                 query: {
@@ -1103,6 +943,8 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
         if (ids.length === 0) {
             return [];
         }
+        /*
+        
         const { db } = this.context;
         const batch = db.batch();
         for (const id of ids) {
@@ -1144,6 +986,21 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
                 }
             );
         }
+        */
+
+        try {
+            const results = await this._dataLoaders.getAllEntryRevisions(model, ids);
+
+            return results;
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not read multiple entries.",
+                ex.code || "GET_ALL_REVISIONS_BY_IDS_ERROR",
+                {
+                    ids
+                }
+            );
+        }
     }
 
     public async getByIds(
@@ -1153,10 +1010,10 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
         if (ids.length === 0) {
             return [];
         }
+        /*
         const { db } = this.context;
         const batch = db.batch();
         for (const id of ids) {
-            // const [uniqueId, version] = id.split("#");
             batch.read({
                 ...utils.defaults.db(),
                 query: {
@@ -1190,6 +1047,20 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
                 }
             );
         }
+        */
+        try {
+            const results = await this._dataLoaders.getRevisionById(model, ids);
+
+            return results;
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not read multiple entries.",
+                ex.code || "GET_BY_IDS_ERROR",
+                {
+                    ids
+                }
+            );
+        }
     }
 
     public async getPublishedByIds(
@@ -1199,6 +1070,7 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
         if (ids.length === 0) {
             return [];
         }
+        /*
         const { db } = this.context;
         const batch = db.batch();
         for (const id of ids) {
@@ -1236,6 +1108,20 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
                 }
             );
         }
+        */
+        try {
+            const results = await this._dataLoaders.getPublishedRevisionByEntryId(model, ids);
+
+            return results;
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not read multiple entries.",
+                ex.code || "GET_BY_IDS_ERROR",
+                {
+                    ids
+                }
+            );
+        }
     }
 
     public async getLatestByIds(
@@ -1245,6 +1131,7 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
         if (ids.length === 0) {
             return [];
         }
+        /*
         const { db } = this.context;
         const batch = db.batch();
         for (const id of ids) {
@@ -1282,9 +1169,24 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
                 }
             );
         }
+        */
+        try {
+            const results = await this._dataLoaders.getLatestRevisionByEntryId(model, ids);
+
+            return results;
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not read multiple entries.",
+                ex.code || "GET_BY_IDS_ERROR",
+                {
+                    ids
+                }
+            );
+        }
     }
 
     public async getRevisions(model: CmsContentModel, id: string): Promise<CmsContentEntry[]> {
+        /*
         const { db } = this.context;
         try {
             const [items] = await db.read<CmsContentEntry>({
@@ -1299,6 +1201,20 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
             throw new WebinyError(
                 ex.message || "Could not read from the database.",
                 ex.code || "GET_REVISIONS_ERROR",
+                {
+                    id
+                }
+            );
+        }
+        */
+        try {
+            const results = await this._dataLoaders.getAllEntryRevisions(model, [id]);
+
+            return results;
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not read multiple entries.",
+                ex.code || "GET_ALL_REVISIONS_BY_IDS_ERROR",
                 {
                     id
                 }
@@ -1384,7 +1300,7 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
         return entry;
     }
 
-    private getPrimaryKey(id: string): string {
+    public getPrimaryKey(id: string): string {
         /**
          * If ID includes # it means it is composed of ID and VERSION.
          * We need ID only so extract it.
@@ -1400,18 +1316,18 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
      *   0003
      *   3
      */
-    private getSecondaryKeyRevision(version: string | number) {
+    public getSecondaryKeyRevision(version: string | number) {
         if (typeof version === "string" && version.includes("#") === true) {
             version = version.split("#").pop();
         }
         return `REV#${utils.zeroPad(version)}`;
     }
 
-    private getSecondaryKeyLatest(): string {
+    public getSecondaryKeyLatest(): string {
         return "L";
     }
 
-    private getSecondaryKeyPublished(): string {
+    public getSecondaryKeyPublished(): string {
         return "P";
     }
 }

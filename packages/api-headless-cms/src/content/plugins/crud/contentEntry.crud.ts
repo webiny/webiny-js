@@ -117,26 +117,6 @@ export default (): ContextPlugin<CmsContext> => ({
             context
         });
 
-        // const PK_ENTRY = entryId => `${createCmsPK(context)}#CME#${entryId}`;
-        // const SK_REVISION = version => {
-        //     return typeof version === "string" ? `REV#${version}` : `REV#${utils.zeroPad(version)}`;
-        // };
-        // const SK_LATEST = () => "L";
-        // const SK_PUBLISHED = () => "P";
-
-        // const loaders = {
-        //     getAllEntryRevisions: dataLoaders.getAllEntryRevisions(context, { PK_ENTRY }),
-        //     getRevisionById: dataLoaders.getRevisionById(context, { PK_ENTRY }),
-        //     getPublishedRevisionByEntryId: dataLoaders.getPublishedRevisionByEntryId(context, {
-        //         PK_ENTRY,
-        //         SK_PUBLISHED
-        //     }),
-        //     getLatestRevisionByEntryId: dataLoaders.getLatestRevisionByEntryId(context, {
-        //         PK_ENTRY,
-        //         SK_LATEST
-        //     })
-        // };
-
         const checkPermissions = (check: {
             rwd?: string;
             pw?: string;
@@ -187,9 +167,6 @@ export default (): ContextPlugin<CmsContext> => ({
                 const permission = await checkPermissions({ rwd: "r" });
                 utils.checkModelAccess(context, permission, model);
 
-                // const { getRevisionById } = loaders;
-
-                // const entries = (await getRevisionById.loadMany(ids)) as CmsContentEntry[];
                 const entries = await storageOperations.getByIds(model, ids);
 
                 return entries.filter(entry => utils.validateOwnership(context, permission, entry));
@@ -208,14 +185,7 @@ export default (): ContextPlugin<CmsContext> => ({
             getPublishedByIds: async (model: CmsContentModel, ids: string[]) => {
                 const permission = await checkPermissions({ rwd: "r" });
                 utils.checkModelAccess(context, permission, model);
-                // const { getPublishedRevisionByEntryId } = loaders;
 
-                // We only need entry ID (not revision ID) to get published revision for that entry.
-                // const entryIds = ids.map(id => id.split("#")[0]);
-                //
-                // const entries = (await getPublishedRevisionByEntryId.loadMany(
-                //     entryIds
-                // )) as CmsContentEntry[];
                 const entries = await storageOperations.getPublishedByIds(model, ids);
 
                 return entries.filter(entry => utils.validateOwnership(context, permission, entry));
@@ -226,14 +196,7 @@ export default (): ContextPlugin<CmsContext> => ({
             getLatestByIds: async (model: CmsContentModel, ids: string[]) => {
                 const permission = await checkPermissions({ rwd: "r" });
                 utils.checkModelAccess(context, permission, model);
-                // const { getLatestRevisionByEntryId } = loaders;
 
-                // We only need entry ID (not revision ID) to get the latest revision for that entry.
-                // const entryIds = ids.map(id => id.split("#")[0]);
-
-                // const entries = (await getLatestRevisionByEntryId.loadMany(
-                //     entryIds
-                // )) as CmsContentEntry[];
                 const entries = await storageOperations.getLatestByIds(model, ids);
 
                 return entries.filter(entry => utils.validateOwnership(context, permission, entry));
@@ -381,30 +344,6 @@ export default (): ContextPlugin<CmsContext> => ({
                     uniqueId
                 );
 
-                // const [
-                //     originalStorageEntry,
-                //     latestStorageEntry
-                // ] = await storageOperations.get/Multiple(model, [
-                //     {
-                //         where: {
-                //             id: sourceId
-                //         }
-                //     },
-                //     {
-                //         where: {
-                //             entryId: uniqueId,
-                //             latest: true
-                //         }
-                //     }
-                // ]);
-
-                // const [uniqueId, version] = sourceId.split("#");
-                // const originalEntry = await context.cms.entries.get(model, {
-                //     where: {
-                //         id: sourceId
-                //     }
-                // });
-
                 if (!originalStorageEntry) {
                     throw new NotFoundError(
                         `Entry "${sourceId}" of model "${model.modelId}" was not found.`
@@ -422,28 +361,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     ? await entryFromStorageTransform(context, model, latestStorageEntry)
                     : null;
 
-                // const [latestEntryItems] = await context.cms.entries.listLatest(model, {
-                //     where: {
-                //         id: sourceId,
-                //     }
-                // });
-                // const [latestEntry] = latestEntryItems;
                 utils.checkOwnership(context, permission, originalEntryRevision, "ownedBy");
-
-                // const [[[entry]], [[latestEntry]]] = await db
-                //     .batch()
-                //     .read({
-                //         ...utils.defaults.db(),
-                //         query: {PK: PK_ENTRY(uniqueId), SK: SK_REVISION(version)}
-                //     })
-                //     .read({
-                //         ...utils.defaults.db(),
-                //         query: {PK: PK_ENTRY(uniqueId), SK: SK_LATEST()}
-                //     })
-                //     .execute();
-
-                // We need to convert data from DB to its original form before constructing ES index data.
-                // const originalEntryFromStorage = await entryFromStorageTransform(context, model, originalStorageEntry);
 
                 const identity = security.getIdentity();
                 // const nextVersion = parseInt(latestEntry.version as any) + 1;
@@ -451,10 +369,6 @@ export default (): ContextPlugin<CmsContext> => ({
                 const { id, version: nextVersion } = increaseEntryIdVersion(
                     latestEntryRevision ? latestEntryRevision.id : sourceId
                 );
-
-                // const storageEntry = await entryToStorageTransform(context, model, ({
-                //     values: data || {}
-                // } as unknown) as CmsContentEntry);
 
                 const entry: CmsContentEntry = {
                     ...originalEntryRevision,
@@ -512,62 +426,6 @@ export default (): ContextPlugin<CmsContext> => ({
                         }
                     );
                 }
-
-                /*
-                const esEntry = prepareEntryToIndex({
-                    context,
-                    model,
-                    originalEntry: cloneDeep(originalEntry),
-                    storageEntry: cloneDeep(entry)
-                });
-                
-                const {index: esIndex} = utils.defaults.es(context, model);
-                
-                await db
-                    .batch()
-                    // Create main entry item
-                    .create({
-                        ...utils.defaults.db(),
-                        data: {
-                            PK: PK_ENTRY(uniqueId),
-                            SK: SK_REVISION(utils.zeroPad(nextVersion)),
-                            TYPE: TYPE_ENTRY,
-                            ...entry
-                        }
-                    })
-                    // Update "latest" entry item
-                    .update({
-                        ...utils.defaults.db(),
-                        query: {
-                            PK: PK_ENTRY(uniqueId),
-                            SK: SK_LATEST()
-                        },
-                        data: {
-                            PK: PK_ENTRY(uniqueId),
-                            SK: SK_LATEST(),
-                            TYPE: TYPE_ENTRY_LATEST,
-                            ...entry
-                        }
-                    })
-                    .update({
-                        ...utils.defaults.esDb(),
-                        query: {
-                            PK: PK_ENTRY(uniqueId),
-                            SK: SK_LATEST()
-                        },
-                        data: {
-                            PK: PK_ENTRY(uniqueId),
-                            SK: SK_LATEST(),
-                            index: esIndex,
-                            data: getESLatestEntryData(context, esEntry)
-                        }
-                    })
-                    .execute();
-                
-
-                
-                return entry;
-                */
             },
             update: async (model, id, inputData) => {
                 const permission = await checkPermissions({ rwd: "w" });
@@ -588,23 +446,6 @@ export default (): ContextPlugin<CmsContext> => ({
                     entryId
                 );
 
-                // const [
-                //     originalStorageEntry,
-                //     latestOriginalStorageEntry
-                // ] = await storageOperations.get/Multiple(model, [
-                //     {
-                //         where: {
-                //             id: uniqueId,
-                //             version: parseInt(version)
-                //         }
-                //     },
-                //     {
-                //         where: {
-                //             id: uniqueId,
-                //             latest: true
-                //         }
-                //     }
-                // ]);
                 const originalEntryRevision = await entryFromStorageTransform(
                     context,
                     model,
@@ -613,19 +454,6 @@ export default (): ContextPlugin<CmsContext> => ({
                 const latestOriginalEntryRevision = latestOriginalStorageEntry
                     ? await entryFromStorageTransform(context, model, latestOriginalStorageEntry)
                     : null;
-                /*
-                const [[[entry]], [[latestOriginalEntry]]] = await db
-                    .batch()
-                    .read({
-                        ...utils.defaults.db(),
-                        query: {PK: PK_ENTRY(uniqueId), SK: SK_REVISION(version)}
-                    })
-                    .read({
-                        ...utils.defaults.db(),
-                        query: {PK: PK_ENTRY(uniqueId), SK: SK_LATEST()}
-                    })
-                    .execute();
-                */
 
                 if (!originalEntryRevision) {
                     throw new NotFoundError(
@@ -642,12 +470,6 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 utils.checkOwnership(context, permission, originalEntryRevision, "ownedBy");
 
-                /*
-                const preparedForStorageEntry = await entryToStorageTransform(context, model, ({
-                    values: input || {}
-                } as unknown) as CmsContentEntry);
-                
-                */
                 // we always send the full entry to the hooks and updater
                 const updatedEntry: CmsContentEntry = {
                     ...originalEntryRevision,
@@ -659,74 +481,6 @@ export default (): ContextPlugin<CmsContext> => ({
                         ...input
                     }
                 };
-                /*
-                // we need full entry because of "before/after save" hooks
-                const updatedEntry: CmsContentEntry = {
-                    ...originalEntry,
-                    savedOn: new Date().toISOString(),
-                    values: {
-                        // Values from DB
-                        ...originalEntry.values,
-                        // New values
-                        ...input
-                    }
-                };
-                
-                const updatedStorageEntry = {
-                    ...updatedEntry,
-                    values: {
-                        ...updatedEntry.values,
-                        // Transformed values
-                        ...preparedForStorageEntry.values
-                    }
-                };
-                
-                await beforeUpdateHook({model, entry: updatedEntry, context, storageOperations});
-                
-                const batch = db.batch();
-                batch.update({
-                    ...utils.defaults.db(),
-                    query: {PK: PK_ENTRY(uniqueId), SK: SK_REVISION(version)},
-                    data: updatedStorageEntry
-                });
-                
-                if(latestOriginalEntry.id === id) {
-                    // We need to convert data from DB to its original form before constructing ES index data.
-                    const originalEntry = await entryFromStorageTransform(context, model, originalEntry);
-                    // and then prepare the entry for indexing
-                    const esEntry = prepareEntryToIndex({
-                        context,
-                        model,
-                        originalEntry: cloneDeep(originalEntry),
-                        storageEntry: cloneDeep(updatedStorageEntry)
-                    });
-                    const esDoc = {
-                        ...esEntry,
-                        savedOn: updatedStorageEntry.savedOn
-                    };
-                    
-                    const {index: esIndex} = utils.defaults.es(context, model);
-                    
-                    batch.update({
-                        ...utils.defaults.esDb(),
-                        query: {
-                            PK: PK_ENTRY(uniqueId),
-                            SK: SK_LATEST()
-                        },
-                        data: {
-                            PK: PK_ENTRY(uniqueId),
-                            SK: SK_LATEST(),
-                            index: esIndex,
-                            data: omit(getESLatestEntryData(context, esDoc), ["PK", "SK", "TYPE"])
-                        }
-                    });
-                }
-                
-                await batch.execute();
-                
-                await afterUpdateHook({model, entry: updatedEntry, context, storageOperations});
-                
-                */
 
                 try {
                     await beforeUpdateHook({
@@ -776,49 +530,6 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 const [entryId, version] = revisionId.split("#");
 
-                // const [[prevLatestEntry]] = await db.read({
-                //     ...utils.defaults.db(),
-                //     query: {
-                //         PK: "T#root#L#en-US#CMS#CMG#CME#6058e24dfb3cd802f957b7d1",
-                //         SK: { $lt: "REV#0003" }
-                //     },
-                //     // Sorting in descending order will also make sure we only get items starting with REV#
-                //     sort: { SK: -1 },
-                //     limit: 1
-                // });
-                // const x = prevLatestEntry;
-
-                // const items = await storageOperations.get/Multiple(model, [
-                //     {
-                //         where: {
-                //             id: revisionId,
-                //         },
-                //         limit: 1,
-                //     },
-                //     {
-                //         where: {
-                //             entryId: uniqueId,
-                //             latest: true
-                //         },
-                //         limit: 1,
-                //     },
-                //     {
-                //         where: {
-                //             entryId: uniqueId,
-                //             published: true
-                //         },
-                //         limit: 1,
-                //     },
-                //     {
-                //         where: {
-                //             entryId: uniqueId,
-                //             version_lt: parseInt(version),
-                //         },
-                //         sort: ["createdOn_DESC"],
-                //         limit: 1,
-                //     }
-                // ]);
-
                 const entryRevisionToDelete = await storageOperations.getRevisionById(
                     model,
                     revisionId
@@ -837,210 +548,12 @@ export default (): ContextPlugin<CmsContext> => ({
                     parseInt(version)
                 );
 
-                // const [
-                //     entry,
-                //     latestEntry,
-                //     publishedEntry,
-                //     previousEntry
-                // ] = await Promise.all<CmsContentEntry | null>(
-                //     items.map(item =>
-                //         item
-                //             ? entryFromStorageTransform(context, model, item)
-                //             : Promise.resolve(null)
-                //     )
-                // );
-
-                // const [[[entry]], [[latestEntry]], [[publishedEntryData]]] = await db
-                //     .batch()
-                //     .read({
-                //         ...utils.defaults.db(),
-                //         query: {
-                //             PK: PK_ENTRY(uniqueId),
-                //             SK: SK_REVISION(version)
-                //         }
-                //     })
-                //     .read({
-                //         ...utils.defaults.db(),
-                //         query: {
-                //             PK: PK_ENTRY(uniqueId),
-                //             SK: SK_LATEST()
-                //         }
-                //     })
-                //     .read({
-                //         ...utils.defaults.db(),
-                //         query: {
-                //             PK: PK_ENTRY(uniqueId),
-                //             SK: SK_PUBLISHED()
-                //         }
-                //     })
-                //     .execute();
-
                 if (!entryRevisionToDelete) {
                     throw new NotFoundError(`Entry "${revisionId}" was not found!`);
                 }
 
                 utils.checkOwnership(context, permission, entryRevisionToDelete, "ownedBy");
 
-                // const isLatest = latestEntry?.id === revisionId;
-                // const isPublished = publishedEntry?.id === revisionId;
-
-                // if is latest read previous entry
-                // const previousEntry = await storageOperations.get(model, {
-                //     where: {
-                //         id: uniqueId,
-                //         version_lt: parseInt(version)
-                //     },
-                //     sort: ["createdOn_DESC"]
-                // });
-                /*
-                // BATCH 1 delete revision from the database
-                const deleteArgsList: any[] = [
-                    {
-                        where: {
-                            id: uniqueId,
-                            version,
-                        },
-                    },
-                ];
-                // BATCH 1 if published - delete published key
-                if (isPublished) {
-                    deleteArgsList.push({
-                        where: {
-                            id: uniqueId,
-                            published: true,
-                        }
-                    })
-                }
-                // BATCH 1 execute?
-                await storageOperations.deleteMultiple(model, deleteArgsList);
-                
-                // if is latest read previous entry
-                const previousEntry = await storageOperations.get(model, {
-                    where: {
-                        id: uniqueId,
-                        version_lt: parseInt(version),
-                    },
-                    sort: [
-                        "createdOn_DESC",
-                    ]
-                });
-                // if no previous entry, just call delete - no need for BATCH
-                if (!previousEntry) {
-                
-                }
-                
-                // BATCH 2 insert new latest
-                
-                await beforeDeleteRevisionHook({
-                    context,
-                    model,
-                    storageOperations,
-                    publishedEntry,
-                    latestEntry,
-                    entry,
-                });
-                
-                // Delete revision from DB
-                const batch = db.batch().delete({
-                    ...utils.defaults.db(),
-                    query: {
-                        PK: PK_ENTRY(uniqueId),
-                        SK: SK_REVISION(version)
-                    }
-                });
-                
-                const es = utils.defaults.es(context, model);
-                
-
-                
-                // If the entry is published, remove published data, both from DB and ES.
-                if(isPublished) {
-                    batch.delete(
-                        {
-                            ...utils.defaults.db(),
-                            query: {
-                                PK: PK_ENTRY(uniqueId),
-                                SK: SK_PUBLISHED()
-                            }
-                        },
-                        {
-                            ...utils.defaults.esDb(),
-                            query: {
-                                PK: PK_ENTRY(uniqueId),
-                                SK: SK_PUBLISHED()
-                            }
-                        }
-                    );
-                }
-                
-                // If the entry is "latest", set the previous entry as the new latest.
-                // Updates must be made on both DB and ES side.
-                if(isLatest) {
-                    const [[prevLatestEntry]] = await db.read<DbItem<CmsContentEntry>>({
-                        ...utils.defaults.db(),
-                        query: {
-                            PK: PK_ENTRY(uniqueId),
-                            SK: {$lt: SK_REVISION(version)}
-                        },
-                        // Sorting in descending order will also make sure we only get items starting with REV#
-                        sort: {SK: -1},
-                        limit: 1
-                    });
-                    
-                    if(!prevLatestEntry) {
-                        // If we haven't found the previous revision, this must must be the last revision.
-                        // We can safely call `deleteEntry` to remove the whole entry and all of the related data.
-                        const result = entries.deleteEntry(model, uniqueId);
-                        // need to call lifecycle hook because we are ending the execution of this fn here
-                        await afterDeleteRevisionHook({
-                            context,
-                            model,
-                            entry, storageOperations
-                        });
-                        //
-                        return result;
-                    }
-                    
-                    // Update latest entry data.
-                    batch
-                        .update({
-                            ...utils.defaults.db(),
-                            query: {
-                                PK: PK_ENTRY(uniqueId),
-                                SK: SK_LATEST()
-                            },
-                            data: {
-                                ...latestEntry,
-                                ...omit(prevLatestEntry, ["PK", "SK", "TYPE"])
-                            }
-                        })
-                        .update({
-                            ...utils.defaults.esDb(),
-                            query: {
-                                PK: PK_ENTRY(uniqueId),
-                                SK: SK_LATEST()
-                            },
-                            data: {
-                                PK: PK_ENTRY(uniqueId),
-                                SK: SK_LATEST(),
-                                index: es.index,
-                                data: getESLatestEntryData(context, prevLatestEntry)
-                            }
-                        });
-                }
-                
-                // Execute DB operations
-                await batch.execute();
-                
-                
-                // operations
-                deleteRevision entryRevisionToDelete
-                if is latest entryRevisionToDelete
-                    if previousEntryRevision
-                        set latest previousEntryRevision
-                if entryRevisionToDelete is published
-                    set published previousEntryrevision
-                */
                 /**
                  * If targeted record is the latest entry record and there is no previous one, we need to run full delete with hooks.
                  * At this point deleteEntry hooks are not fired.
@@ -1059,7 +572,6 @@ export default (): ContextPlugin<CmsContext> => ({
                     entryRevisionToDelete.id === latestEntryRevision?.id
                         ? previousEntryRevision
                         : null;
-                // const isPublished = entryRevisionToDelete.id === publishedEntryRevision?.id;
 
                 try {
                     await beforeDeleteRevisionHook({
@@ -1075,21 +587,7 @@ export default (): ContextPlugin<CmsContext> => ({
                         publishedEntryRevision,
                         latestEntryRevision
                     });
-                    /*
-                    // we always unpublish if necessary
-                    if (isPublished) {
-                        await storageOperations.unpublishRevision(model, entryRevisionToDelete);
-                    }
-                    // then we delete the actual revision
-                    await storageOperations.deleteRevision(model, entryRevisionToDelete);
-                    // and then set latest if there is one to be set
-                    if (entryRevisionToSetAsLatest) {
-                        await storageOperations.setRevisionAsLatest(
-                            model,
-                            entryRevisionToSetAsLatest
-                        );
-                    }
-                    */
+
                     await afterDeleteRevisionHook({
                         context,
                         model,
@@ -1121,58 +619,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 }
 
                 utils.checkOwnership(context, permission, entryRevision, "ownedBy");
-                /*
-                
-                if(!dbItems.length) {
-                    throw new NotFoundError(`Entry "${entryId}" was not found!`);
-                }
-                
-                utils.checkOwnership(context, permission, entries[0], "ownedBy");
-                
-                // need last entry from the items for hooks
-                const entry = dbItems[dbItems.length - 1];
-                
-                // Load ES entries to delete
-                const [esDbItems] = await db.read({
-                    ...utils.defaults.esDb(),
-                    query: {
-                        PK: PK_ENTRY(entryId),
-                        SK: {$gte: " "}
-                    }
-                });
-                
-                // Delete all items from DB and ES DB
-                await Promise.all([
-                    utils.paginateBatch(dbItems, 25, async items => {
-                        await db
-                            .batch()
-                            .delete(
-                                ...items.map((item: any) => ({
-                                    ...utils.defaults.db(),
-                                    query: {
-                                        PK: item.PK,
-                                        SK: item.SK
-                                    }
-                                }))
-                            )
-                            .execute();
-                    }),
-                    utils.paginateBatch(esDbItems, 25, async items => {
-                        await db
-                            .batch()
-                            .delete(
-                                ...items.map((item: any) => ({
-                                    ...utils.defaults.esDb(),
-                                    query: {
-                                        PK: item.PK,
-                                        SK: item.SK
-                                    }
-                                }))
-                            )
-                            .execute();
-                    })
-                ]);
-                */
+
                 return await deleteEntry(model, entryRevision);
             },
             publish: async (model, id) => {
@@ -1190,30 +637,6 @@ export default (): ContextPlugin<CmsContext> => ({
                     model,
                     uniqueId
                 );
-                // const [
-                //     originalEntry,
-                //     latestEntry,
-                //     publishedEntry
-                // ] = await storageOperations.get/Multiple(model, [
-                //     {
-                //         where: {
-                //             id: uniqueId,
-                //             version: parseInt(version)
-                //         }
-                //     },
-                //     {
-                //         where: {
-                //             id: uniqueId,
-                //             latest: true
-                //         }
-                //     },
-                //     {
-                //         where: {
-                //             id: uniqueId,
-                //             published: true
-                //         }
-                //     }
-                // ]);
 
                 if (!originalEntryRevision) {
                     throw new NotFoundError(
@@ -1268,176 +691,6 @@ export default (): ContextPlugin<CmsContext> => ({
                         }
                     );
                 }
-                /*
-                const ENTRY_PK = PK_ENTRY(uniqueId);
-                const LATEST_SK = SK_LATEST();
-                const PUBLISHED_SK = SK_PUBLISHED();
-                
-                const [
-                    [[entry]],
-                    [[latestEntryData]],
-                    [[publishedEntryData]],
-                    [[latestESData]],
-                    [[publishedESData]]
-                ] = await db
-                    .batch()
-                    .read({
-                        ...utils.defaults.db(),
-                        query: {PK: ENTRY_PK, SK: SK_REVISION(version)}
-                    })
-                    .read({
-                        ...utils.defaults.db(),
-                        query: {PK: ENTRY_PK, SK: LATEST_SK}
-                    })
-                    .read({
-                        ...utils.defaults.db(),
-                        query: {PK: ENTRY_PK, SK: PUBLISHED_SK}
-                    })
-                    .read({
-                        ...utils.defaults.esDb(),
-                        query: {PK: ENTRY_PK, SK: LATEST_SK}
-                    })
-                    .read({
-                        ...utils.defaults.esDb(),
-                        query: {PK: ENTRY_PK, SK: PUBLISHED_SK}
-                    })
-                    .execute();
-                
-                const batch = db.batch();
-                
-                batch.update({
-                    ...utils.defaults.db(),
-                    query: {
-                        PK: ENTRY_PK,
-                        SK: SK_REVISION(version)
-                    },
-                    data: entry
-                });
-                
-                const es = utils.defaults.es(context, model);
-                
-                if(publishedEntryData) {
-                    // If there is a `published` entry already, we need to set it to `unpublished`. We need to
-                    // execute two updates: update the previously published entry's status and the published
-                    // entry record (PK_ENTRY_PUBLISHED()).
-                    
-                    // DynamoDB does not support `batchUpdate` - so here we load the previously published
-                    // entry's data to update its status within a batch operation. If, hopefully,
-                    // they introduce a true update batch operation, remove this `read` call.
-                    
-                    const [[previouslyPublishedEntry]] = await db.read<CmsContentEntry>({
-                        ...utils.defaults.db(),
-                        query: {
-                            PK: ENTRY_PK,
-                            SK: SK_REVISION(utils.zeroPad(publishedEntryData.version))
-                        }
-                    });
-                    
-                    previouslyPublishedEntry.status = STATUS_UNPUBLISHED;
-                    
-                    batch
-                        .update({
-                            // Update currently published entry (unpublish it)
-                            ...utils.defaults.db(),
-                            query: {
-                                PK: ENTRY_PK,
-                                SK: SK_REVISION(utils.zeroPad(publishedEntryData.version))
-                            },
-                            data: previouslyPublishedEntry
-                        })
-                        .update({
-                            // Update the helper item in DB with the new published entry ID
-                            ...utils.defaults.db(),
-                            query: {
-                                PK: ENTRY_PK,
-                                SK: PUBLISHED_SK
-                            },
-                            data: {
-                                PK: ENTRY_PK,
-                                SK: PUBLISHED_SK,
-                                ...publishedEntryData,
-                                ...omit(entry, ["PK", "SK", "TYPE"])
-                            }
-                        });
-                }
-                else {
-                    batch.create({
-                        ...utils.defaults.db(),
-                        data: {
-                            PK: ENTRY_PK,
-                            SK: PUBLISHED_SK,
-                            TYPE: TYPE_ENTRY_PUBLISHED,
-                            ...omit(entry, ["PK", "SK", "TYPE"])
-                        }
-                    });
-                }
-                
-                // If we are publishing the latest revision, let's also update the latest revision's status in ES.
-                if(latestEntryData && latestEntryData.id === id) {
-                    batch.update({
-                        ...utils.defaults.esDb(),
-                        query: {
-                            PK: ENTRY_PK,
-                            SK: LATEST_SK
-                        },
-                        data: {
-                            ...latestESData,
-                            data: {
-                                ...latestESData.data,
-                                status: STATUS_PUBLISHED,
-                                locked: true,
-                                publishedOn: entry.publishedOn
-                            }
-                        }
-                    });
-                }
-                const originalEntry = await entryFromStorageTransform(context, model, entry);
-                const preparedEntry = prepareEntryToIndex({
-                    context,
-                    model,
-                    originalEntry: cloneDeep(originalEntry),
-                    storageEntry: cloneDeep(entry)
-                });
-                
-                // Update the published revision entry in ES.
-                const esData = {
-                    PK: ENTRY_PK,
-                    SK: PUBLISHED_SK,
-                    index: es.index,
-                    data: getESPublishedEntryData(context, preparedEntry)
-                };
-                
-                if(publishedESData) {
-                    batch.update({
-                        ...utils.defaults.esDb(),
-                        query: {
-                            PK: ENTRY_PK,
-                            SK: PUBLISHED_SK
-                        },
-                        data: esData
-                    });
-                }
-                else {
-                    batch.create({
-                        ...utils.defaults.esDb(),
-                        data: esData
-                    });
-                }
-                
-                // Finally, execute batch
-                await batch.execute();
-                
-                // Clear DataLoader cache for this entry.
-                loaders.getAllEntryRevisions.clear(uniqueId);
-                
-                await afterPublishHook({
-                    context,
-                    model,
-                    entry, storageOperations
-                });
-                
-                return entry;
-                */
             },
             requestChanges: async (model, id) => {
                 const permission = await checkPermissions({ pw: "c" });
@@ -1448,23 +701,6 @@ export default (): ContextPlugin<CmsContext> => ({
                     model,
                     entryId
                 );
-                // const [
-                //     originalEntryRevision,
-                //     latestEntryRevision
-                // ] = await storageOperations.get/Multiple(model, [
-                //     {
-                //         where: {
-                //             id: uniqueId,
-                //             version: parseInt(version)
-                //         }
-                //     },
-                //     {
-                //         where: {
-                //             id: uniqueId,
-                //             latest: true
-                //         }
-                //     }
-                // ]);
 
                 if (!originalEntryRevision) {
                     throw new NotFoundError(
@@ -1541,24 +777,6 @@ export default (): ContextPlugin<CmsContext> => ({
                     model,
                     entryId
                 );
-
-                // const [
-                //     originalEntryRevision,
-                //     latestEntryRevision
-                // ] = await storageOperations.get/Multiple(model, [
-                //     {
-                //         where: {
-                //             id: uniqueId,
-                //             version: parseInt(version)
-                //         }
-                //     },
-                //     {
-                //         where: {
-                //             id: uniqueId,
-                //             latest: true
-                //         }
-                //     }
-                // ]);
 
                 if (!originalEntryRevision) {
                     throw new NotFoundError(
@@ -1637,47 +855,6 @@ export default (): ContextPlugin<CmsContext> => ({
                     model,
                     entryId
                 );
-                // const [
-                //     originalEntryRevision,
-                //     latestEntryRevision,
-                //     publishedEntryRevision
-                // ] = await storageOperations.get/Multiple(model, [
-                //     {
-                //         where: {
-                //             id: uniqueId,
-                //             version: parseInt(version)
-                //         }
-                //     },
-                //     {
-                //         where: {
-                //             id: uniqueId,
-                //             latest: true
-                //         }
-                //     },
-                //     {
-                //         where: {
-                //             id: uniqueId,
-                //             published: true
-                //         }
-                //     }
-                // ]);
-                /*
-                const [[[originalEntry]], [[latestEntryData]], [[publishedEntryData]]] = await db
-                    .batch()
-                    .read({
-                        ...utils.defaults.db(),
-                        query: {PK: PK_ENTRY(uniqueId), SK: SK_REVISION(version)}
-                    })
-                    .read({
-                        ...utils.defaults.db(),
-                        query: {PK: PK_ENTRY(uniqueId), SK: SK_LATEST()}
-                    })
-                    .read({
-                        ...utils.defaults.db(),
-                        query: {PK: PK_ENTRY(uniqueId), SK: SK_PUBLISHED()}
-                    })
-                    .execute();
-                */
 
                 if (!originalEntryRevision) {
                     throw new NotFoundError(
@@ -1692,64 +869,6 @@ export default (): ContextPlugin<CmsContext> => ({
                         originalEntry: originalEntryRevision
                     });
                 }
-                /*
-                entry.status = STATUS_UNPUBLISHED;
-                
-                await beforeUnpublishHook({
-                    context,
-                    model,
-                    entry, storageOperations
-                });
-                
-                const batch = db
-                    .batch()
-                    .delete({
-                        ...utils.defaults.db(),
-                        query: {
-                            PK: PK_ENTRY(uniqueId),
-                            SK: SK_PUBLISHED()
-                        }
-                    })
-                    .delete({
-                        ...utils.defaults.esDb(),
-                        query: {
-                            PK: PK_ENTRY(uniqueId),
-                            SK: SK_PUBLISHED()
-                        }
-                    })
-                    .update({
-                        ...utils.defaults.db(),
-                        query: {
-                            PK: PK_ENTRY(uniqueId),
-                            SK: SK_REVISION(version)
-                        },
-                        data: entry
-                    });
-                
-                
-                // If we are unpublishing the latest revision, let's also update the latest revision entry's status in ES.
-                if(latestEntry.id === id) {
-                    const es = utils.defaults.es(context, model);
-                    
-                    batch.update({
-                        ...utils.defaults.esDb(),
-                        query: {
-                            PK: PK_ENTRY(uniqueId),
-                            SK: SK_LATEST()
-                        },
-                        data: {
-                            PK: PK_ENTRY(uniqueId),
-                            SK: SK_LATEST(),
-                            index: es.index,
-                            data: getESLatestEntryData(context, entry)
-                        }
-                    });
-                }
-                
-                await batch.execute();
-                
-                return entry;
-                */
 
                 const entry: CmsContentEntry = {
                     ...originalEntryRevision,
