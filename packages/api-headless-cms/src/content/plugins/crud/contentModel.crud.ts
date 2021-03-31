@@ -30,12 +30,13 @@ export default (): ContextPlugin<CmsContext> => ({
     type: "context",
     name: "context-content-model-storageOperations",
     async apply(context) {
+        const { elasticSearch } = context;
         const pluginType = "cms-content-model-storage-operations-provider";
         const providerPlugins = context.plugins.byType<CmsContentModelStorageOperationsProvider>(
             pluginType
         );
         /**
-         * Storage operations for the content model group.
+         * Storage operations for the content model.
          * Contains logic to save the data into the specific storage.
          */
         const providerPlugin = providerPlugins[providerPlugins.length - 1];
@@ -174,7 +175,7 @@ export default (): ContextPlugin<CmsContext> => ({
                         ...data
                     }
                 });
-
+                */
                 try {
                     const esIndex = utils.defaults.es(context, data);
                     const { body: exists } = await elasticSearch.indices.exists(esIndex);
@@ -188,7 +189,6 @@ export default (): ContextPlugin<CmsContext> => ({
                         ex
                     );
                 }
-                */
 
                 const model = await storageOperations.create({
                     input,

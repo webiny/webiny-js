@@ -1,10 +1,12 @@
 import {
+    CmsContentEntryStorageOperationsProvider,
     CmsContentModelGroupStorageOperationsProvider,
     CmsContentModelStorageOperationsProvider,
     CmsContext
 } from "../../../../types";
 import CmsContentModelGroupCrudDynamoElastic from "./contentModelGroup/dynamoElastic";
 import CmsContentModelCrudDynamoElastic from "./contentModel/dynamoElastic";
+import CmsContentEntryCrudDynamoElastic from "./contentEntry/dynamoElastic";
 import WebinyError from "@webiny/error";
 
 const createBasePrimaryKey = ({ security, cms }: CmsContext): string => {
@@ -21,7 +23,7 @@ const createBasePrimaryKey = ({ security, cms }: CmsContext): string => {
     return `T#${tenant.id}#L#${locale.code}#CMS#CMG`;
 };
 
-const contentModelGroupCrudProvider = (): CmsContentModelGroupStorageOperationsProvider => ({
+const contentModelGroupStorageOperationsProvider = (): CmsContentModelGroupStorageOperationsProvider => ({
     type: "cms-content-model-group-storage-operations-provider",
     name: "cms-content-model-group-storage-operations-ddb-es-crud",
     provide: async ({ context }) => {
@@ -33,7 +35,7 @@ const contentModelGroupCrudProvider = (): CmsContentModelGroupStorageOperationsP
     }
 });
 
-const contentModelCrudProvider = (): CmsContentModelStorageOperationsProvider => ({
+const contentModelStorageOperationsProvider = (): CmsContentModelStorageOperationsProvider => ({
     type: "cms-content-model-storage-operations-provider",
     name: "cms-content-model-storage-operations-ddb-es-crud",
     provide: async ({ context }) => {
@@ -45,8 +47,20 @@ const contentModelCrudProvider = (): CmsContentModelStorageOperationsProvider =>
     }
 });
 
+const contentEntryStorageOperationsProvider = (): CmsContentEntryStorageOperationsProvider => ({
+    type: "cms-content-entry-storage-operations-provider",
+    name: "cms-content-entry-storage-operations-ddb-es-crud",
+    provide: async ({ context }) => {
+        const basePrimaryKey = createBasePrimaryKey(context);
+        return new CmsContentEntryCrudDynamoElastic({
+            context,
+            basePrimaryKey
+        });
+    }
+});
+
 export default () => [
-    contentModelGroupCrudProvider(),
-    contentModelCrudProvider()
-    // contentEntryCrudProvider(),
+    contentModelGroupStorageOperationsProvider(),
+    contentModelStorageOperationsProvider(),
+    contentEntryStorageOperationsProvider()
 ];

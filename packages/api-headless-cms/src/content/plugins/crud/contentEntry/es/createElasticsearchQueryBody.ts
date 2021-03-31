@@ -1,5 +1,4 @@
 import {
-    CmsContentEntryListOptions,
     CmsContentEntryListSort,
     CmsContentEntryListWhere,
     CmsContentModel,
@@ -12,12 +11,13 @@ import {
     ElasticsearchQueryPlugin
 } from "../../../../../types";
 import { decodeElasticsearchCursor } from "../../../../../utils";
-import Error from "@webiny/error";
 import WebinyError from "@webiny/error";
 import { operatorPluginsList } from "./operatorPluginsList";
 import { transformValueForSearch } from "./transformValueForSearch";
 import { searchPluginsList } from "./searchPluginsList";
+import { TYPE_ENTRY_LATEST, TYPE_ENTRY_PUBLISHED } from "../../storage/contentEntry/dynamoElastic";
 
+type ModelFieldPath = string | ((value: string) => string);
 interface ModelField {
     unmappedType?: string;
     isSearchable: boolean;
@@ -25,9 +25,21 @@ interface ModelField {
     type: string;
     isSystemField?: boolean;
     field: CmsContentModelField;
+    path?: ModelFieldPath;
 }
 
 type ModelFields = Record<string, ModelField>;
+
+type UnmappedFieldTypes = {
+    [type: string]: (field: CmsContentModelField) => string | undefined;
+};
+
+interface FieldTypePlugin {
+    unmappedType?: (field: CmsContentModelField) => string | undefined;
+    isSearchable: boolean;
+    isSortable: boolean;
+}
+type FieldTypePlugins = Record<string, FieldTypePlugin>;
 
 interface CreateElasticsearchParams {
     context: CmsContext;
@@ -35,7 +47,6 @@ interface CreateElasticsearchParams {
     args: CmsContentEntryListArgs;
     ownedBy?: string;
     parentObject?: string;
-    options?: CmsContentEntryListOptions;
 }
 
 interface CreateElasticsearchSortParams {
@@ -52,7 +63,6 @@ interface CreateElasticsearchQueryArgs {
     modelFields: ModelFields;
     ownedBy?: string;
     parentObject?: string;
-    options?: CmsContentEntryListOptions;
 }
 
 interface ElasticsearchSortParam {
@@ -102,15 +112,17 @@ const createElasticsearchSortParams = (
         const match = value.match(sortRegExp);
 
         if (!match) {
-            throw new Error(`Cannot sort by "${value}".`);
+            throw new WebinyError(`Cannot sort by "${value}".`);
         }
 
         const [, field, order] = match;
-        const modelFieldOptions = (modelFields[field] || {}) as any;
+        const modelFieldOptions = modelFields[field] || (({} as unknown) as ModelField);
         const { isSortable = false, unmappedType, isSystemField = false } = modelFieldOptions;
 
         if (!isSortable) {
-            throw new Error(`Field "${field}" is not sortable.`);
+            throw new WebinyError(`Field is not sortable.`, "FIELD_NOT_SORTABLE", {
+                field
+            });
         }
 
         const name = isSystemField ? field : withParentObject(field);
@@ -119,15 +131,19 @@ const createElasticsearchSortParams = (
         return {
             [fieldName]: {
                 order: order.toLowerCase() === "asc" ? "asc" : "desc",
-
+                // eslint-disable-next-line
                 unmapped_type: unmappedType
             }
         };
     });
 };
-
+/**
+ * Latest and published are specific in Elasticsearch to that extend that they are tagged in the __type property.
+ * We allow either published or either latest.
+ * Latest is used in the manage API and published in the read API.
+ */
 const createInitialQueryValue = (args: CreateElasticsearchQueryArgs): ElasticsearchQuery => {
-    const { ownedBy, options } = args;
+    const { ownedBy, where } = args;
 
     const query: ElasticsearchQuery = {
         match: [],
@@ -145,19 +161,58 @@ const createInitialQueryValue = (args: CreateElasticsearchQueryArgs): Elasticsea
         });
     }
 
-    // add more options if necessary
-    const { type } = options || {};
-    if (type) {
+    if (where.published === true) {
         query.must.push({
             term: {
-                "__type.keyword": type
+                "__type.keyword": TYPE_ENTRY_PUBLISHED
             }
         });
+    } else if (where.latest === true) {
+        query.must.push({
+            term: {
+                "__type.keyword": TYPE_ENTRY_LATEST
+            }
+        });
+    }
+    // we do not allow not published and not latest
+    else if (where.published === false) {
+        throw new WebinyError(
+            `Cannot call Elasticsearch query with "published" set at false.`,
+            "ELASTICSEARCH_UNSUPPORTED_QUERY",
+            {
+                where
+            }
+        );
+    } else if (where.latest === false) {
+        throw new WebinyError(
+            `Cannot call Elasticsearch query with "latest" set at false.`,
+            "ELASTICSEARCH_UNSUPPORTED_QUERY",
+            {
+                where
+            }
+        );
     }
     //
     return query;
 };
 
+interface CreateFieldPathArgs {
+    field: ModelField;
+    fieldName: string;
+    value: any;
+}
+
+const createFieldPath = (args: CreateFieldPathArgs): string => {
+    const { field, fieldName, value } = args;
+    if (!field.path) {
+        return fieldName;
+    } else if (typeof field.path === "function") {
+        return field.path(value);
+    }
+    return field.path;
+};
+
+const specialFields = ["published", "latest"];
 /*
  * Iterate through where keys and apply plugins where necessary
  */
@@ -166,6 +221,12 @@ const execElasticsearchBuildQueryPlugins = (
 ): ElasticsearchQuery => {
     const { where, modelFields, parentObject, context } = args;
     const query = createInitialQueryValue(args);
+
+    // always remove special fields
+    // these do not exist in elasticsearch
+    for (const sf of specialFields) {
+        delete where[sf];
+    }
 
     const withParentObject = (field: string) => {
         if (!parentObject) {
@@ -183,13 +244,18 @@ const execElasticsearchBuildQueryPlugins = (
 
     for (const key in where) {
         const { field, op } = parseWhereKey(key);
-        const modelFieldOptions = modelFields[field];
-        const { isSearchable = false, isSystemField, field: cmsField } = modelFieldOptions || {};
+        // we do not need to go further if value is undefined
+        // it is a possibility on ownedBy field since it is automatically added to the where args
+        if (where[key] === undefined) {
+            continue;
+        }
+        const modelField = modelFields[field];
+        const { isSearchable = false, isSystemField, field: cmsField } = modelField || {};
 
-        if (!modelFieldOptions) {
-            throw new Error(`There is no field "${field}".`);
+        if (!modelField) {
+            throw new WebinyError(`There is no field "${field}".`);
         } else if (!isSearchable) {
-            throw new Error(`Field "${field}" is not searchable.`);
+            throw new WebinyError(`Field "${field}" is not searchable.`);
         }
         const plugin = operatorPlugins[op];
         if (!plugin) {
@@ -203,7 +269,12 @@ const execElasticsearchBuildQueryPlugins = (
             value: where[key],
             context
         });
-        const fieldWithParent = isSystemField ? null : withParentObject(field);
+        const fieldPath = createFieldPath({
+            field: modelField,
+            fieldName: field,
+            value: where[key]
+        });
+        const fieldWithParent = isSystemField ? fieldPath : withParentObject(fieldPath);
         plugin.apply(query, {
             field: fieldWithParent || field,
             value,
@@ -216,6 +287,18 @@ const execElasticsearchBuildQueryPlugins = (
     return query;
 };
 
+const createSystemField = (field: Partial<CmsContentModelField>): CmsContentModelField => {
+    if (!field.type) {
+        throw new WebinyError(
+            "When creating system field it must have a type, at least.",
+            "SYSTEM_FIELD_ERROR",
+            {
+                field
+            }
+        );
+    }
+    return (field as unknown) as CmsContentModelField;
+};
 /*
  * Create an object with key fieldType and options for that field
  */
@@ -226,9 +309,18 @@ const createModelFieldOptions = (context: CmsContext, model: CmsContentModel): M
             isSystemField: true,
             isSearchable: true,
             isSortable: true,
-            field: ({
+            field: createSystemField({
                 type: "text"
-            } as unknown) as CmsContentModelField
+            })
+        },
+        entryId: {
+            type: "text",
+            isSystemField: true,
+            isSearchable: true,
+            isSortable: true,
+            field: createSystemField({
+                type: "text"
+            })
         },
         savedOn: {
             type: "date",
@@ -236,12 +328,12 @@ const createModelFieldOptions = (context: CmsContext, model: CmsContentModel): M
             isSystemField: true,
             isSearchable: true,
             isSortable: true,
-            field: ({
+            field: createSystemField({
                 type: "date",
                 settings: {
                     type: "dateTimeWithoutTimezone"
                 }
-            } as unknown) as CmsContentModelField
+            })
         },
         createdOn: {
             type: "date",
@@ -249,16 +341,37 @@ const createModelFieldOptions = (context: CmsContext, model: CmsContentModel): M
             isSystemField: true,
             isSearchable: true,
             isSortable: true,
-            field: ({
+            field: createSystemField({
                 type: "text",
                 settings: {
                     type: "dateTimeWithoutTimezone"
                 }
-            } as unknown) as CmsContentModelField
+            })
+        },
+        ownedBy: {
+            type: "text",
+            unmappedType: undefined,
+            isSystemField: true,
+            isSearchable: true,
+            isSortable: false,
+            path: "ownedBy.id",
+            field: createSystemField({
+                type: "text"
+            })
+        },
+        version: {
+            type: "number",
+            unmappedType: undefined,
+            isSystemField: true,
+            isSearchable: true,
+            isSortable: true,
+            field: createSystemField({
+                type: "number"
+            })
         }
     };
     // collect all unmappedType from elastic plugins
-    const unmappedTypes: ModelFields = context.plugins
+    const unmappedTypes: UnmappedFieldTypes = context.plugins
         .byType<CmsModelFieldToElasticsearchPlugin>("cms-model-field-to-elastic-search")
         .reduce((acc, plugin) => {
             if (!plugin.unmappedType) {
@@ -267,8 +380,8 @@ const createModelFieldOptions = (context: CmsContext, model: CmsContentModel): M
             acc[plugin.fieldType] = plugin.unmappedType;
             return acc;
         }, {});
-    // collect all field types from
-    const pluginFieldTypes = context.plugins
+    // collect all field types from the plugins
+    const fieldTypePlugins: FieldTypePlugins = context.plugins
         .byType<CmsModelFieldToGraphQLPlugin>("cms-model-field-to-graphql")
         .reduce((types, plugin) => {
             const { fieldType, isSearchable, isSortable } = plugin;
@@ -282,15 +395,15 @@ const createModelFieldOptions = (context: CmsContext, model: CmsContentModel): M
 
     return model.fields.reduce((fields, field) => {
         const { fieldId, type } = field;
-        if (!pluginFieldTypes[type]) {
-            throw new Error(`There is no plugin for field type "${type}".`);
+        if (!fieldTypePlugins[type]) {
+            throw new WebinyError(`There is no plugin for field type "${type}".`);
         }
-        const { isSearchable, isSortable, unmappedType } = pluginFieldTypes[type];
+        const { isSearchable, isSortable, unmappedType } = fieldTypePlugins[type];
         fields[fieldId] = {
             type,
             isSearchable,
             isSortable,
-            unmappedType: unmappedType ? unmappedType(field) : undefined,
+            unmappedType: typeof unmappedType === "function" ? unmappedType(field) : undefined,
             isSystemField: false,
             field
         };
@@ -300,7 +413,7 @@ const createModelFieldOptions = (context: CmsContext, model: CmsContentModel): M
 };
 
 export const createElasticsearchQueryBody = (params: CreateElasticsearchParams) => {
-    const { context, model, args, ownedBy, parentObject = null, options } = params;
+    const { context, model, args, ownedBy, parentObject = null } = params;
     const { where, after, limit, sort } = args;
 
     const modelFields = createModelFieldOptions(context, model);
@@ -311,8 +424,7 @@ export const createElasticsearchQueryBody = (params: CreateElasticsearchParams) 
         where,
         modelFields,
         ownedBy,
-        parentObject,
-        options
+        parentObject
     });
 
     const queryPlugins = context.plugins.byType<ElasticsearchQueryPlugin>(

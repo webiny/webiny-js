@@ -7,7 +7,7 @@ import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
 import models from "./mocks/contentModels";
 import modelsWithoutValidation from "./mocks/contentModels.noValidation";
 
-jest.setTimeout(10000);
+jest.setTimeout(15000);
 
 interface CreateCategoriesResult {
     fruits: CmsContentEntry;
@@ -499,7 +499,14 @@ describe("MANAGE - Resolvers", () => {
         // Wait until the new category revision is propagated to ES index
         const response = await until(
             () => listCategories().then(([data]) => data),
-            ({ data }) => data.listCategories.data[0].id === newEntry.id
+            ({ data }) => {
+                const entry = data.listCategories.data[0];
+                if (!entry) {
+                    return false;
+                }
+                return entry.id === newEntry.id && entry.savedOn === newEntry.savedOn;
+            },
+            { name: "list after create revision", wait: 500, tries: 10 }
         );
 
         expect(response).toEqual({
@@ -612,17 +619,26 @@ describe("MANAGE - Resolvers", () => {
         await until(
             () => listCategories().then(([data]) => data),
             ({ data }) => data.listCategories.data[0].id === id3,
-            { name: "create 2 more revisions" }
+            { name: "after create 2 more revisions" }
         );
 
         // Delete latest revision
-        await deleteCategory({ revision: id3 });
+        const [deleteId3Response] = await deleteCategory({ revision: id3 });
+
+        expect(deleteId3Response).toEqual({
+            data: {
+                deleteCategory: {
+                    data: true,
+                    error: null
+                }
+            }
+        });
 
         // Wait until the previous revision is indexed in Elastic as "latest"
         await until(
             () => listCategories().then(([data]) => data),
             ({ data }) => data.listCategories.data[0].id === id2,
-            { name: "delete latest revision" }
+            { name: "delete latest revision", wait: 500, tries: 10 }
         );
 
         // Make sure revision #2 is now "latest"
@@ -630,9 +646,19 @@ describe("MANAGE - Resolvers", () => {
         const { data: data2 } = list2.data.listCategories;
         expect(data2.length).toBe(1);
         expect(data2[0].id).toEqual(id2);
+        expect(data2[0].meta.version).toEqual(2);
 
         // Delete revision #1; Revision #2 should still be "latest"
-        await deleteCategory({ revision: id });
+        const [deleteIdResponse] = await deleteCategory({ revision: id });
+
+        expect(deleteIdResponse).toEqual({
+            data: {
+                deleteCategory: {
+                    data: true,
+                    error: null
+                }
+            }
+        });
 
         // Get revision #2 and verify it's the only remaining revision of this form
         const [get] = await getCategory({ revision: id2 });

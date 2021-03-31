@@ -1,8 +1,11 @@
-import { CmsContentEntryHookPluginArgs } from "../../../../types";
 import { runContentEntryLifecycleHooks } from "./runContentEntryLifecycleHooks";
+import { CmsContentEntryBeforeRequestReviewHookArgs } from "../../../../types";
 
 export const beforeRequestReviewHook = async (
-    args: CmsContentEntryHookPluginArgs
+    args: CmsContentEntryBeforeRequestReviewHookArgs
 ): Promise<void> => {
+    // if (args.storageOperations.beforeRequestReview) {
+    //     await args.storageOperations.beforeRequestReview(args.model, args);
+    // }
     await runContentEntryLifecycleHooks("beforeRequestReview", args);
 };

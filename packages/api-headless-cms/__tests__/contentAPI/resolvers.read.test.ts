@@ -34,16 +34,16 @@ const categoryManagerHelper = async manageOpts => {
     const animals = animalsResponse.data.createCategory.data;
 
     // Publish categories so then become available in the "read" API
-    await publishCategory({ revision: fruits.id });
-    await publishCategory({ revision: vegetables.id });
-    await publishCategory({ revision: animals.id });
+    const [publishedFruitsResponse] = await publishCategory({ revision: fruits.id });
+    const [publishedVegetablesResponse] = await publishCategory({ revision: vegetables.id });
+    const [publishedAnimalsResponse] = await publishCategory({ revision: animals.id });
 
     return {
         sleep,
         until,
-        fruits,
-        vegetables,
-        animals,
+        fruits: publishedFruitsResponse.data.publishCategory.data,
+        vegetables: publishedVegetablesResponse.data.publishCategory.data,
+        animals: publishedAnimalsResponse.data.publishCategory.data,
         createCategory,
         publishCategory
     };
@@ -130,7 +130,9 @@ describe("READ - Resolvers", () => {
         const { id: categoryId } = category;
 
         // Publish it so it becomes available in the "read" API
-        await publishCategory({ revision: categoryId });
+        const [publishResponse] = await publishCategory({ revision: categoryId });
+
+        const publishedCategory = publishResponse.data.publishCategory.data;
 
         // See if entries are available via "read" API
         const { getCategory } = useCategoryReadHandler(readOpts);
@@ -152,7 +154,7 @@ describe("READ - Resolvers", () => {
                     data: {
                         id: category.id,
                         createdOn: category.createdOn,
-                        savedOn: category.savedOn,
+                        savedOn: publishedCategory.savedOn,
                         title: category.title,
                         slug: category.slug
                     },
@@ -195,7 +197,9 @@ describe("READ - Resolvers", () => {
         const { id } = category;
 
         // Publish it so it becomes available in the "read" API
-        await publishCategory({ revision: id });
+        const [publishResponse] = await publishCategory({ revision: id });
+
+        const publishedCategory = publishResponse.data.publishCategory.data;
 
         // See if entries are available via "read" API
         const { listCategories } = useCategoryReadHandler(readOpts);
@@ -217,7 +221,7 @@ describe("READ - Resolvers", () => {
                             title: category.title,
                             slug: category.slug,
                             createdOn: category.createdOn,
-                            savedOn: category.savedOn
+                            savedOn: publishedCategory.savedOn
                         }
                     ],
                     error: null,

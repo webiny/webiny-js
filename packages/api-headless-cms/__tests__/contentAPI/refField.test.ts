@@ -108,13 +108,11 @@ describe("refField", () => {
             }
         });
 
-        const product = createProductResponse.data.createProduct.data as CmsContentEntry;
-
-        await publishProduct({
-            revision: product.id
+        const [publishProductResponse] = await publishProduct({
+            revision: createProductResponse.data.createProduct.data.id
         });
 
-        return product;
+        return publishProductResponse.data.publishProduct.data;
     };
 
     const createAuthor = async () => {
@@ -127,13 +125,11 @@ describe("refField", () => {
             }
         });
 
-        const author = createResponse.data.createAuthor.data;
-
-        await publishAuthor({
-            revision: author.id
+        const [publishAuthorResponse] = await publishAuthor({
+            revision: createResponse.data.createAuthor.data.id
         });
 
-        return author;
+        return publishAuthorResponse.data.publishAuthor.data;
     };
 
     beforeEach(async () => {
@@ -187,7 +183,8 @@ describe("refField", () => {
             revision: review.id
         });
 
-        const { publishedOn } = publishResponse.data.publishReview.data.meta;
+        const publishedReview = publishResponse.data.publishReview.data;
+        const { publishedOn } = publishedReview.meta;
 
         const [manageGetResponse] = await manageGetReview({
             revision: review.id
@@ -204,7 +201,7 @@ describe("refField", () => {
                             displayName: "User 123",
                             type: "admin"
                         },
-                        savedOn: review.savedOn,
+                        savedOn: publishedReview.savedOn,
                         text: "review text",
                         rating: 5,
                         meta: {
@@ -321,7 +318,7 @@ describe("refField", () => {
                     data: {
                         id: review.id,
                         createdOn: review.createdOn,
-                        savedOn: review.savedOn,
+                        savedOn: publishedReview.savedOn,
                         text: "review text",
                         rating: 5,
                         product: {
