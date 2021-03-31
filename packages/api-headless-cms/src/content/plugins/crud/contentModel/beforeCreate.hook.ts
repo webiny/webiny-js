@@ -1,4 +1,10 @@
-import { CmsContentModel, CmsContext } from "../../../../types";
+import {
+    CmsContentModel,
+    CmsContentModelCreateHookPluginArgs,
+    CmsContentModelStorageOperations,
+    CmsContentModelStorageOperationsBeforeCreateArgs,
+    CmsContext
+} from "../../../../types";
 import camelCase from "lodash/camelCase";
 import { runContentModelLifecycleHooks } from "./runContentModelLifecycleHooks";
 import pluralize from "pluralize";
@@ -8,10 +14,8 @@ const MAX_MODEL_ID_SEARCH_AMOUNT = 50;
 /**
  * Checks for the uniqueness of provided modelId, against the provided list of models.
  * It also takes plural / singular forms of the provided modelId into account.
- * @param models
- * @param modelId
  */
-const checkModelIdUniqueness = (models, modelId) => {
+const checkModelIdUniqueness = (models: string[], modelId: string) => {
     if (models.includes(modelId) === true) {
         throw Error(`Content model with modelId "${modelId}" already exists.`);
     }
@@ -38,10 +42,8 @@ const checkModelIdUniqueness = (models, modelId) => {
 
 /**
  * Also used to check uniqueness of the provided modelId, although this one just returns a simple boolean value.
- * @param models
- * @param modelId
  */
-const isUniqueModelId = (models, modelId) => {
+const isUniqueModelId = (models: string[], modelId: string) => {
     try {
         checkModelIdUniqueness(models, modelId);
         return true;
@@ -58,21 +60,17 @@ const DISALLOWED_MODEL_IDS = [
     "contentModelGroups"
 ];
 
-const checkModelIdAllowed = modelId => {
+const checkModelIdAllowed = (modelId: string) => {
     if (DISALLOWED_MODEL_IDS.includes(modelId)) {
         throw new Error(`Provided model ID "${modelId}" is not allowed.`);
     }
 };
 
-const isAllowedModelId = modelId => {
+const isAllowedModelId = (modelId: string) => {
     return !DISALLOWED_MODEL_IDS.includes(modelId);
 };
 
-const createNewModelId = async (
-    context: CmsContext,
-    models: string[],
-    model: CmsContentModel
-): Promise<string> => {
+const createNewModelId = (existingModels: string[], model: CmsContentModel): string => {
     const modelIdCamelCase = camelCase(model.name);
     let counter = 0;
     while (true) {
@@ -84,36 +82,44 @@ const createNewModelId = async (
 
         // Let's try generating a new modelId and immediately check for its uniqueness.
         const generatedModelId = `${modelIdCamelCase}${counter || ""}`;
-        if (isAllowedModelId(generatedModelId) && isUniqueModelId(models, generatedModelId)) {
+        if (
+            isAllowedModelId(generatedModelId) &&
+            isUniqueModelId(existingModels, generatedModelId)
+        ) {
             return generatedModelId;
         }
         counter++;
     }
 };
 
-interface Args {
+interface Args extends CmsContentModelStorageOperationsBeforeCreateArgs {
     context: CmsContext;
-    model: CmsContentModel;
+    storageOperations: CmsContentModelStorageOperations;
 }
 
 export const beforeCreateHook = async (args: Args): Promise<void> => {
-    const { context, model } = args;
-    const { modelId } = model;
+    const { context, data, storageOperations, input } = args;
+    const { modelId } = data;
 
-    const models = (await context.cms.models.noAuth().list()).map(m => m.modelId);
+    const models = (await storageOperations.list()).map(m => m.modelId);
     // If there is a modelId assigned, check if it's unique ...
-    if (modelId) {
-        const modelIdCamelCase = camelCase(model.name);
+    if (!!(modelId || "").trim()) {
+        const modelIdCamelCase = camelCase(data.name);
         checkModelIdAllowed(modelIdCamelCase);
         checkModelIdUniqueness(models, modelIdCamelCase);
-        model.modelId = modelIdCamelCase;
+        data.modelId = modelIdCamelCase;
     } else {
         // ... otherwise, assign a unique modelId automatically.
-        model.modelId = await createNewModelId(context, models, model);
+        data.modelId = createNewModelId(models, data);
     }
 
-    await runContentModelLifecycleHooks("beforeCreate", {
+    if (storageOperations.beforeCreate) {
+        await storageOperations.beforeCreate(args);
+    }
+    await runContentModelLifecycleHooks<CmsContentModelCreateHookPluginArgs>("beforeCreate", {
         context,
-        model
+        storageOperations,
+        input,
+        model: data
     });
 };

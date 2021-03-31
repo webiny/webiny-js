@@ -757,6 +757,7 @@ export interface CmsContentModelGroupListArgs {
  * @category ContentModelGroup
  */
 export interface CmsContentModelGroupContext {
+    operations: CmsContentModelGroupStorageOperations;
     /**
      * A function defining usage of a method without authenticating the user.
      */
@@ -1073,6 +1074,7 @@ export interface CmsContentModelManager {
  * @category ContentModel
  */
 export interface CmsContentModelContext {
+    operations: CmsContentModelStorageOperations;
     /**
      * A function defining usage of a method without authenticating the user.
      */
@@ -1110,9 +1112,15 @@ export interface CmsContentModelContext {
     /**
      * Update content model without data validation. Used internally.
      *
+     * @param model - existing content model
+     * @param data - data to be updated
+     *
      * @hidden
      */
-    updateModel: (model: CmsContentModel, data: Partial<CmsContentModel>) => Promise<void>;
+    updateModel: (
+        model: CmsContentModel,
+        data: Partial<CmsContentModel>
+    ) => Promise<CmsContentModel>;
     /**
      * Update content model.
      */
@@ -1876,13 +1884,21 @@ export interface CmsModelFieldToStoragePlugin extends Plugin {
 export interface CmsContentModelHookPluginArgs {
     model: CmsContentModel;
     context: CmsContext;
+    storageOperations: CmsContentModelStorageOperations;
+}
+/**
+ * @category LifecycleHook
+ * @category ContentModel
+ */
+export interface CmsContentModelCreateHookPluginArgs extends CmsContentModelHookPluginArgs {
+    input: CmsContentModelCreateInput;
 }
 /**
  * @category LifecycleHook
  * @category ContentModel
  */
 export interface CmsContentModelUpdateHookPluginArgs extends CmsContentModelHookPluginArgs {
-    data: Partial<CmsContentModel>;
+    input: CmsContentModelUpdateInput;
 }
 /**
  * A plugin type that defines lifecycle hooks for content model.
@@ -1896,11 +1912,11 @@ export interface CmsContentModelHookPlugin extends Plugin {
     /**
      * A hook triggered before the content model is created.
      */
-    beforeCreate?: (args: CmsContentModelHookPluginArgs) => void;
+    beforeCreate?: (args: CmsContentModelCreateHookPluginArgs) => void;
     /**
      * A hook triggered after the content model is created.
      */
-    afterCreate?: (args: CmsContentModelHookPluginArgs) => void;
+    afterCreate?: (args: CmsContentModelCreateHookPluginArgs) => void;
     /**
      * A hook triggered before the content model is updated.
      */
@@ -1908,7 +1924,7 @@ export interface CmsContentModelHookPlugin extends Plugin {
     /**
      * A hook triggered after the content model is updated.
      */
-    afterUpdate?: (args: CmsContentModelHookPluginArgs) => void;
+    afterUpdate?: (args: CmsContentModelUpdateHookPluginArgs) => void;
     /**
      * A hook triggered before the content model is deleted.
      */
@@ -2011,4 +2027,252 @@ export interface CmsContentEntryHookPlugin<T extends ContextInterface = CmsConte
      * A hook triggered after requesting review of an entry.
      */
     afterRequestReview?: (args: CmsContentEntryHookPluginArgs<T>) => void;
+}
+
+interface CmsStorageOperationsProvider<A = any, T = any> extends Plugin {
+    provide: (args: A) => Promise<T>;
+}
+
+/**
+ * Arguments for the group CRUD provider method.
+ */
+interface CmsContentModelGroupStorageOperationsProviderArgs {
+    context: CmsContext;
+}
+/**
+ * A plugin that provides the group CRUD operations implementation.
+ */
+export interface CmsContentModelGroupStorageOperationsProvider
+    extends CmsStorageOperationsProvider<
+        CmsContentModelGroupStorageOperationsProviderArgs,
+        CmsContentModelGroupStorageOperations
+    > {
+    /**
+     * A plugin type.
+     */
+    type: "cms-content-model-group-storage-operations-provider";
+}
+
+export interface CmsContentModelGroupStorageOperationsGetArgs {
+    id: string;
+}
+
+export interface CmsContentModelGroupStorageOperationsListArgs<
+    T extends Record<string, any> = Record<string, any>
+> {
+    where?: T;
+    limit?: number;
+}
+export interface CmsContentModelGroupStorageOperationsBeforeCreateArgs {
+    input: CmsContentModelGroupCreateInput;
+    data: CmsContentModelGroup;
+}
+export interface CmsContentModelGroupStorageOperationsCreateArgs {
+    input: CmsContentModelGroupCreateInput;
+    data: CmsContentModelGroup;
+}
+export interface CmsContentModelGroupStorageOperationsAfterCreateArgs {
+    input: CmsContentModelGroupCreateInput;
+    group: CmsContentModelGroup;
+}
+export interface CmsContentModelGroupStorageOperationsBeforeUpdateArgs {
+    group: CmsContentModelGroup;
+    data: Partial<CmsContentModelGroup>;
+    input: CmsContentModelGroupUpdateInput;
+}
+export interface CmsContentModelGroupStorageOperationsUpdateArgs {
+    group: CmsContentModelGroup;
+    data: Partial<CmsContentModelGroup>;
+    input: CmsContentModelGroupUpdateInput;
+}
+export interface CmsContentModelGroupStorageOperationsAfterUpdateArgs {
+    group: CmsContentModelGroup;
+    data: Partial<CmsContentModelGroup>;
+    input: CmsContentModelGroupUpdateInput;
+}
+
+export interface CmsContentModelGroupStorageOperationsBeforeDeleteArgs {
+    group: CmsContentModelGroup;
+}
+export interface CmsContentModelGroupStorageOperationsDeleteArgs {
+    group: CmsContentModelGroup;
+}
+export interface CmsContentModelGroupStorageOperationsAfterDeleteArgs {
+    group: CmsContentModelGroup;
+}
+/**
+ * Description of the ContentModelGroup CRUD operations.
+ * If user wants to add another database to the application, this is how it is done.
+ * This is just plain read, update, write, delete and list - no authentication or permission checks.
+ */
+export interface CmsContentModelGroupStorageOperations {
+    /**
+     * Gets content model group by given id.
+     */
+    get: (
+        args: CmsContentModelGroupStorageOperationsGetArgs
+    ) => Promise<CmsContentModelGroup | null>;
+    /**
+     * List all content model groups. Filterable via params.
+     */
+    list: (args?: CmsContentModelGroupStorageOperationsListArgs) => Promise<CmsContentModelGroup[]>;
+    /**
+     * A hook to be run before the create method.
+     */
+    beforeCreate?: (args: CmsContentModelGroupStorageOperationsBeforeCreateArgs) => Promise<void>;
+    /**
+     * Create a new content model group.
+     */
+    create: (
+        args: CmsContentModelGroupStorageOperationsCreateArgs
+    ) => Promise<CmsContentModelGroup>;
+    /**
+     * A hook to be run after the create method.
+     */
+    afterCreate?: (args: CmsContentModelGroupStorageOperationsAfterCreateArgs) => Promise<void>;
+    /**
+     * A hook to be run before the update method.
+     */
+    beforeUpdate?: (args: CmsContentModelGroupStorageOperationsBeforeUpdateArgs) => Promise<void>;
+    /**
+     * Update existing content model group.
+     */
+    update: (
+        args: CmsContentModelGroupStorageOperationsUpdateArgs
+    ) => Promise<CmsContentModelGroup>;
+    /**
+     * A hook to be run after the update method.
+     */
+    afterUpdate?: (args: CmsContentModelGroupStorageOperationsAfterUpdateArgs) => Promise<void>;
+    /**
+     * A hook to be run before the delete method.
+     */
+    beforeDelete?: (args: CmsContentModelGroupStorageOperationsBeforeDeleteArgs) => Promise<void>;
+    /**
+     * Delete content model group by given id.
+     */
+    delete: (args: CmsContentModelGroupStorageOperationsDeleteArgs) => Promise<boolean>;
+    /**
+     * A hook to be run after the delete method.
+     */
+    afterDelete?: (args: CmsContentModelGroupStorageOperationsAfterDeleteArgs) => Promise<void>;
+}
+
+/**
+ * Arguments for the model CRUD provider method.
+ */
+interface CmsContentModelStorageOperationsProviderArgs {
+    context: CmsContext;
+}
+/**
+ * A plugin that provides the model CRUD operations implementation.
+ */
+export interface CmsContentModelStorageOperationsProvider
+    extends CmsStorageOperationsProvider<
+        CmsContentModelStorageOperationsProviderArgs,
+        CmsContentModelStorageOperations
+    > {
+    /**
+     * A plugin type.
+     */
+    type: "cms-content-model-storage-operations-provider";
+}
+
+export interface CmsContentModelStorageOperationsGetArgs {
+    id: string;
+}
+
+export interface CmsContentModelStorageOperationsListArgs<
+    T extends Record<string, any> = Record<string, any>
+> {
+    where?: T;
+    limit?: number;
+}
+export interface CmsContentModelStorageOperationsBeforeCreateArgs {
+    input: CmsContentModelCreateInput;
+    data: CmsContentModel;
+}
+export interface CmsContentModelStorageOperationsCreateArgs {
+    input: CmsContentModelCreateInput;
+    data: CmsContentModel;
+}
+export interface CmsContentModelStorageOperationsAfterCreateArgs {
+    input: CmsContentModelCreateInput;
+    model: CmsContentModel;
+}
+export interface CmsContentModelStorageOperationsBeforeUpdateArgs {
+    model: CmsContentModel;
+    data: Partial<CmsContentModel>;
+    input: CmsContentModelUpdateInput;
+}
+export interface CmsContentModelStorageOperationsUpdateArgs {
+    model: CmsContentModel;
+    data: Partial<CmsContentModel>;
+    input: CmsContentModelUpdateInput;
+}
+export interface CmsContentModelStorageOperationsAfterUpdateArgs {
+    model: CmsContentModel;
+    data: Partial<CmsContentModel>;
+    input: CmsContentModelUpdateInput;
+}
+
+export interface CmsContentModelStorageOperationsBeforeDeleteArgs {
+    model: CmsContentModel;
+}
+export interface CmsContentModelStorageOperationsDeleteArgs {
+    model: CmsContentModel;
+}
+export interface CmsContentModelStorageOperationsAfterDeleteArgs {
+    model: CmsContentModel;
+}
+/**
+ * Description of the ContentModelGroup CRUD operations.
+ * If user wants to add another database to the application, this is how it is done.
+ * This is just plain read, update, write, delete and list - no authentication or permission checks.
+ */
+export interface CmsContentModelStorageOperations {
+    /**
+     * Gets content model group by given id.
+     */
+    get: (args: CmsContentModelStorageOperationsGetArgs) => Promise<CmsContentModel | null>;
+    /**
+     * List all content model groups. Filterable via params.
+     */
+    list: (args?: CmsContentModelStorageOperationsListArgs) => Promise<CmsContentModel[]>;
+    /**
+     * A hook to be run before the create method.
+     */
+    beforeCreate?: (args: CmsContentModelStorageOperationsBeforeCreateArgs) => Promise<void>;
+    /**
+     * Create a new content model group.
+     */
+    create: (args: CmsContentModelStorageOperationsCreateArgs) => Promise<CmsContentModel>;
+    /**
+     * A hook to be run after the create method.
+     */
+    afterCreate?: (args: CmsContentModelStorageOperationsAfterCreateArgs) => Promise<void>;
+    /**
+     * A hook to be run before the update method.
+     */
+    beforeUpdate?: (args: CmsContentModelStorageOperationsBeforeUpdateArgs) => Promise<void>;
+    /**
+     * Update existing content model group.
+     */
+    update(args: CmsContentModelStorageOperationsUpdateArgs): Promise<CmsContentModel>;
+    /**
+     * A hook to be run after the update method.
+     */
+    afterUpdate?: (args: CmsContentModelStorageOperationsAfterUpdateArgs) => Promise<void>;
+    /**
+     * A hook to be run before the delete method.
+     */
+    beforeDelete?: (args: CmsContentModelStorageOperationsBeforeDeleteArgs) => Promise<void>;
+    /**
+     * Delete content model group by given id.
+     */
+    delete: (args: CmsContentModelStorageOperationsDeleteArgs) => Promise<boolean>;
+    /**
+     * A hook to be run after the delete method.
+     */
+    afterDelete?: (args: CmsContentModelStorageOperationsAfterDeleteArgs) => Promise<void>;
 }

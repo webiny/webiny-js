@@ -49,25 +49,25 @@ describe("content model test", () => {
             }
         });
 
-        await createContentModelMutation({
+        const [response] = await createContentModelMutation({
             data: {
                 name: "Event",
                 modelId: "event",
                 group: contentModelGroup.id
             }
-        }).then(([response]) => {
-            expect(response).toEqual({
-                data: {
-                    createContentModel: {
+        });
+
+        expect(response).toEqual({
+            data: {
+                createContentModel: {
+                    data: null,
+                    error: {
+                        code: "",
                         data: null,
-                        error: {
-                            code: "",
-                            data: null,
-                            message: 'Content model with modelId "event" already exists.'
-                        }
+                        message: 'Content model with modelId "event" already exists.'
                     }
                 }
-            });
+            }
         });
     });
 
@@ -82,26 +82,26 @@ describe("content model test", () => {
             }
         });
 
-        await createContentModelMutation({
+        const [response] = await createContentModelMutation({
             data: {
                 name: "Events",
                 modelId: "events",
                 group: contentModelGroup.id
             }
-        }).then(([response]) => {
-            expect(response).toEqual({
-                data: {
-                    createContentModel: {
+        });
+
+        expect(response).toEqual({
+            data: {
+                createContentModel: {
+                    data: null,
+                    error: {
+                        code: "",
                         data: null,
-                        error: {
-                            code: "",
-                            data: null,
-                            message:
-                                'Content model with modelId "events" does not exist, but a model with modelId "event" does.'
-                        }
+                        message:
+                            'Content model with modelId "events" does not exist, but a model with modelId "event" does.'
                     }
                 }
-            });
+            }
         });
     });
 
@@ -116,26 +116,26 @@ describe("content model test", () => {
             }
         });
 
-        await createContentModelMutation({
+        const [response] = await createContentModelMutation({
             data: {
                 name: "Event",
                 modelId: "event",
                 group: contentModelGroup.id
             }
-        }).then(([response]) => {
-            expect(response).toEqual({
-                data: {
-                    createContentModel: {
+        });
+
+        expect(response).toEqual({
+            data: {
+                createContentModel: {
+                    data: null,
+                    error: {
+                        code: "",
                         data: null,
-                        error: {
-                            code: "",
-                            data: null,
-                            message:
-                                'Content model with modelId "event" does not exist, but a model with modelId "events" does.'
-                        }
+                        message:
+                            'Content model with modelId "event" does not exist, but a model with modelId "events" does.'
                     }
                 }
-            });
+            }
         });
     });
 
@@ -158,21 +158,21 @@ describe("content model test", () => {
             }
         });
 
-        await listContentModelsQuery().then(([response]) => {
-            expect(response).toMatchObject({
-                data: {
-                    listContentModels: {
-                        data: [
-                            {
-                                modelId: "event"
-                            },
-                            {
-                                modelId: "event1"
-                            }
-                        ]
-                    }
+        const [response] = await listContentModelsQuery();
+
+        expect(response).toMatchObject({
+            data: {
+                listContentModels: {
+                    data: [
+                        {
+                            modelId: "event"
+                        },
+                        {
+                            modelId: "event1"
+                        }
+                    ]
                 }
-            });
+            }
         });
     });
 
@@ -195,21 +195,21 @@ describe("content model test", () => {
             }
         });
 
-        await listContentModelsQuery().then(([response]) => {
-            expect(response).toMatchObject({
-                data: {
-                    listContentModels: {
-                        data: [
-                            {
-                                modelId: "event"
-                            },
-                            {
-                                modelId: "events1"
-                            }
-                        ]
-                    }
+        const [response] = await listContentModelsQuery();
+
+        expect(response).toMatchObject({
+            data: {
+                listContentModels: {
+                    data: [
+                        {
+                            modelId: "event"
+                        },
+                        {
+                            modelId: "events1"
+                        }
+                    ]
                 }
-            });
+            }
         });
     });
 
@@ -232,21 +232,21 @@ describe("content model test", () => {
             }
         });
 
-        await listContentModelsQuery().then(([response]) => {
-            expect(response).toMatchObject({
-                data: {
-                    listContentModels: {
-                        data: [
-                            {
-                                modelId: "event1"
-                            },
-                            {
-                                modelId: "events"
-                            }
-                        ]
-                    }
+        const [response] = await listContentModelsQuery();
+
+        expect(response).toMatchObject({
+            data: {
+                listContentModels: {
+                    data: [
+                        {
+                            modelId: "event1"
+                        },
+                        {
+                            modelId: "events"
+                        }
+                    ]
                 }
-            });
+            }
         });
     });
 });
