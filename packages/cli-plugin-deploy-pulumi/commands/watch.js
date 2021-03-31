@@ -64,6 +64,12 @@ module.exports = async (inputs, context) => {
         if (inputs.deploy) {
             logs.deploy.log(green("Watching cloud infrastructure resources..."));
 
+            const pulumi = await getPulumi({
+                execa: {
+                    cwd: projectApplication.path.absolute
+                }
+            });
+
             const watchCloudInfrastructure = pulumi.run({
                 command: "watch",
                 args: {
@@ -71,7 +77,7 @@ module.exports = async (inputs, context) => {
                 },
                 execa: {
                     env: {
-                        WEBINY_ENV: env,
+                        WEBINY_ENV: inputs.env,
                         WEBINY_PROJECT_NAME: context.projectName
                     }
                 }
@@ -85,23 +91,30 @@ module.exports = async (inputs, context) => {
         if (inputs.build) {
             logs.build.log(green("Watching packages..."));
 
-            const scopes = await execa("yarn", [
-                "webiny",
-                "workspaces",
-                "tree",
-                "--json",
-                "--depth",
-                "5",
-                "--distinct",
-                "--folder",
-                inputs.folder
-            ]).then(({ stdout }) => JSON.parse(stdout));
+            let scopes = [];
+            if (inputs.scope) {
+                scopes = Array.isArray(inputs.scope) ? inputs.scope : [inputs.scope];
+            } else {
+                scopes = await execa("yarn", [
+                    "webiny",
+                    "workspaces",
+                    "tree",
+                    "--json",
+                    "--depth",
+                    inputs.depth || 5,
+                    "--distinct",
+                    "--folder",
+                    inputs.folder
+                ]).then(({ stdout, stderr }) => JSON.parse(stdout));
+            }
 
             const watchPackages = execa("yarn", [
                 "webiny",
                 "workspaces",
                 "run",
                 "watch",
+                "--env",
+                "dev",
                 ...scopes.reduce((current, item) => {
                     current.push("--scope", item);
                     return current;

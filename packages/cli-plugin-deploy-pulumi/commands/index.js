@@ -73,9 +73,13 @@ module.exports = [
                         default: true
                     });
                     yargs.option("scope", {
-                        describe: `Scope`,
-                        type: "array",
-                        default: []
+                        describe: `Override watch scope (list of packages that need to be watched for code changes)`,
+                        type: "string"
+                    });
+                    yargs.option("depth", {
+                        describe: `The level of dependencies that needs to be watched for code changes (does not work when "scope" is passed)`,
+                        type: "number",
+                        default: 5
                     });
                     yargs.option("debug", {
                         default: false,
