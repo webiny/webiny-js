@@ -26,7 +26,7 @@ module.exports = async projectApplication => {
     } else {
         const stateFilesFolder = `${projectApplication.path.project}/.pulumi/${projectApplication.path.relative}`;
         if (!fs.existsSync(stateFilesFolder)) {
-            fs.mkdirSync(stateFilesFolder);
+            fs.mkdirSync(stateFilesFolder, { recursive: true });
         }
         login = `file://${stateFilesFolder}`;
     }
