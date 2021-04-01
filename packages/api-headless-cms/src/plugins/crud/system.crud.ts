@@ -39,11 +39,6 @@ export default {
                         return null;
                     }
 
-                    // const [[system]] = await db.read({
-                    //     ...configurations.db(),
-                    //     query: keys()
-                    // });
-
                     const system = await storageOperations.get();
 
                     // Backwards compatibility check

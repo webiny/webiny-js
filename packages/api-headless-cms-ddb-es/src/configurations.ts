@@ -1,13 +1,44 @@
-import { CmsContentModel, CmsContext, CmsDatabaseConfig } from "@webiny/api-headless-cms/types";
-import baseConfigurations from "@webiny/api-headless-cms/configurations";
+import { CmsContentModel, CmsContext } from "@webiny/api-headless-cms/types";
+
+interface DatabaseConfigKeyFields {
+    name: string;
+}
+
+interface DatabaseConfigKeys {
+    primary: boolean;
+    unique: boolean;
+    name: string;
+    fields: DatabaseConfigKeyFields[];
+}
+
+export interface CmsDatabaseConfig {
+    table: string;
+    keys: DatabaseConfigKeys[];
+}
 
 interface ElasticsearchConfig {
     index: string;
 }
 
-export default {
-    ...baseConfigurations,
-    esDb: (): CmsDatabaseConfig => ({
+interface Configurations {
+    db: () => CmsDatabaseConfig;
+    esDb: () => CmsDatabaseConfig;
+    es: (context: CmsContext, model: CmsContentModel) => ElasticsearchConfig;
+}
+
+const configurations: Configurations = {
+    db: () => ({
+        table: process.env.DB_TABLE_HEADLESS_CMS,
+        keys: [
+            {
+                primary: true,
+                unique: true,
+                name: "primary",
+                fields: [{ name: "PK" }, { name: "SK" }]
+            }
+        ]
+    }),
+    esDb: () => ({
         table:
             process.env.DB_TABLE_HEADLESS_CMS_ELASTICSEARCH || process.env.DB_TABLE_ELASTICSEARCH,
         keys: [
@@ -19,7 +50,7 @@ export default {
             }
         ]
     }),
-    es(context: CmsContext, model: CmsContentModel): ElasticsearchConfig {
+    es(context, model) {
         const tenant = context.security.getTenant();
         if (!tenant) {
             throw new Error(`There is no tenant on "context.security".`);
@@ -34,3 +65,5 @@ export default {
         return { index };
     }
 };
+
+export default configurations;

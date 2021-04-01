@@ -2966,19 +2966,3 @@ export interface CmsSystemStorageOperations {
      */
     update: (data: CmsSystem) => Promise<void>;
 }
-
-interface DatabaseConfigKeyFields {
-    name: string;
-}
-
-interface DatabaseConfigKeys {
-    primary: boolean;
-    unique: boolean;
-    name: string;
-    fields: DatabaseConfigKeyFields[];
-}
-
-export interface CmsDatabaseConfig {
-    table: string;
-    keys: DatabaseConfigKeys[];
-}
