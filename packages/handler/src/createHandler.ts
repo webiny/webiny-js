@@ -1,9 +1,15 @@
 import { PluginsContainer } from "@webiny/plugins";
-import { ContextPlugin, HandlerPlugin, HandlerErrorPlugin } from "./types";
+import {
+    ContextPlugin,
+    Context,
+    HandlerPlugin,
+    HandlerResultPlugin,
+    HandlerErrorPlugin
+} from "./types";
 import middleware from "./middleware";
 
 export default (...plugins) => async (...args) => {
-    const context = {
+    const context: Context = {
         plugins: new PluginsContainer(plugins),
         args,
         // @ts-ignore
@@ -11,6 +17,19 @@ export default (...plugins) => async (...args) => {
         WEBINY_VERSION: process.env.WEBINY_VERSION
     };
 
+    const result = await handle(args, context);
+
+    const handlerPlugins = context.plugins.byType<HandlerResultPlugin>("handler-result");
+    for (let i = 0; i < handlerPlugins.length; i++) {
+        if (handlerPlugins[i].apply) {
+            await handlerPlugins[i].apply(result, context);
+        }
+    }
+
+    return result;
+};
+
+async function handle(args, context: Context) {
     try {
         const contextPlugins = context.plugins.byType<ContextPlugin>("context");
         for (let i = 0; i < contextPlugins.length; i++) {
@@ -32,6 +51,6 @@ export default (...plugins) => async (...args) => {
         console.log(error);
         const handlers = context.plugins.byType<HandlerErrorPlugin>("handler-error");
         const handler = middleware(handlers.map(pl => pl.handle));
-        return await handler(context, error);
+        return handler(context, error);
     }
-};
+}
