@@ -3,8 +3,10 @@ import { createHandler } from "@webiny/handler-aws";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import queueProcessPlugins from "@webiny/api-prerendering-service/queue/process";
+import logsPlugins from "@webiny/handler-logs";
 
 export const handler = createHandler(
+    logsPlugins(),
     queueProcessPlugins({
         handlers: {
             render: process.env.PRERENDERING_RENDER_HANDLER,
