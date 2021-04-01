@@ -3,11 +3,10 @@ import { TYPE, DbQueueJob } from "../../types";
 import { HandlerResponse } from "../../types";
 import mdbid from "mdbid";
 
-const log = console.log;
-
 export default (): HandlerPlugin => ({
     type: "handler",
     async handle(context): Promise<HandlerResponse> {
+        const log = console.log;
         const { invocationArgs } = context;
         const handlerArgs = Array.isArray(invocationArgs) ? invocationArgs : [invocationArgs];
         const handlerHookPlugins = context.plugins.byType<QueueAddHookPlugin>("ps-queue-add-hook");

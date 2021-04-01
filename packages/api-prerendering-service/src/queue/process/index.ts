@@ -7,8 +7,6 @@ import hash from "object-hash";
 import chunk from "lodash/chunk";
 import pluralize from "pluralize";
 
-const log = console.log;
-
 type Configuration = {
     handlers: {
         render: string;
@@ -19,6 +17,7 @@ type Configuration = {
 export default (configuration: Configuration): HandlerPlugin => ({
     type: "handler",
     async handle(context): Promise<HandlerResponse> {
+        const log = console.log;
         try {
             const handlerHookPlugins = context.plugins.byType<ProcessHookPlugin>(
                 "ps-queue-process-hook"
@@ -28,15 +27,6 @@ export default (configuration: Configuration): HandlerPlugin => ({
                 const plugin = handlerHookPlugins[j];
                 if (typeof plugin.beforeProcess === "function") {
                     await plugin.beforeProcess({
-                        context
-                    });
-                }
-            }
-
-            for (let j = 0; j < handlerHookPlugins.length; j++) {
-                const plugin = handlerHookPlugins[j];
-                if (typeof plugin.afterProcess === "function") {
-                    await plugin.afterProcess({
                         context
                     });
                 }
@@ -264,6 +254,16 @@ export default (configuration: Configuration): HandlerPlugin => ({
             }
 
             log("All queue jobs processed, exiting...");
+
+            for (let j = 0; j < handlerHookPlugins.length; j++) {
+                const plugin = handlerHookPlugins[j];
+                if (typeof plugin.afterProcess === "function") {
+                    await plugin.afterProcess({
+                        context
+                    });
+                }
+            }
+
             return { data: null, error: null };
         } catch (e) {
             log("An error occurred while trying to add to prerendering queue...", e);
