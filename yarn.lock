@@ -7752,6 +7752,7 @@ __metadata:
     "@types/react": ^16.9.56
     "@webiny/app": ^5.3.0
     "@webiny/app-security": ^5.3.0
+    "@webiny/cli": ^5.3.0
     "@webiny/form": ^5.3.0
     "@webiny/plugins": ^5.3.0
     "@webiny/react-router": ^5.3.0
@@ -8363,6 +8364,7 @@ __metadata:
     execa: 5.0.0
     find-up: ^5.0.0
     load-json-file: ^6.2.0
+    localtunnel: ^2.0.1
     lodash: 4.17.20
     node-notifier: 7.0.2
     ora: 4.1.1
@@ -8720,6 +8722,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@webiny/handler-logs@^5.3.0, @webiny/handler-logs@workspace:packages/handler-logs":
+  version: 0.0.0-use.local
+  resolution: "@webiny/handler-logs@workspace:packages/handler-logs"
+  dependencies:
+    "@babel/cli": ^7.5.5
+    "@babel/core": ^7.5.5
+    "@babel/preset-env": ^7.5.5
+    "@babel/preset-typescript": ^7.8.3
+    "@babel/runtime": ^7.5.5
+    node-fetch: ^2.6.1
+    rimraf: ^3.0.2
+    typescript: ^4.1.3
+  languageName: unknown
+  linkType: soft
+
 "@webiny/handler@^5.3.0, @webiny/handler@workspace:packages/handler":
   version: 0.0.0-use.local
   resolution: "@webiny/handler@workspace:packages/handler"
@@ -8813,6 +8830,7 @@ __metadata:
     camelcase: 5.3.1
     case-sensitive-paths-webpack-plugin: 2.2.0
     chalk: 3.0.0
+    cp: ^0.2.0
     css-loader: 3.2.0
     eslint: 6.8.0
     eslint-loader: 3.0.2
@@ -9762,6 +9780,7 @@ __metadata:
     "@webiny/api-file-manager": ^5.3.0
     "@webiny/cli": 5.3.0
     "@webiny/handler-aws": ^5.3.0
+    "@webiny/handler-logs": ^5.3.0
     "@webiny/project-utils": 5.3.0
   languageName: unknown
   linkType: soft
@@ -10577,7 +10596,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^0.21.0":
+"axios@npm:0.21.1, axios@npm:^0.21.0":
   version: 0.21.1
   resolution: "axios@npm:0.21.1"
   dependencies:
@@ -12694,6 +12713,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cliui@npm:^7.0.2":
+  version: 7.0.4
+  resolution: "cliui@npm:7.0.4"
+  dependencies:
+    string-width: ^4.2.0
+    strip-ansi: ^6.0.0
+    wrap-ansi: ^7.0.0
+  checksum: c49ac1d13f6dda4beaa11b26f62867e0e9892eb985951187d7c691793e0fe08b9bc15cedfaf4dc6d2e9a4d1516704c0c9dcb671ebcd758dbabb18b5d757fbdb5
+  languageName: node
+  linkType: hard
+
 "clone-deep@npm:^0.2.4":
   version: 0.2.4
   resolution: "clone-deep@npm:0.2.4"
@@ -13581,6 +13611,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cp@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "cp@npm:0.2.0"
+  checksum: 346ea7e4e30455e4c13a3691ed056729b70ed014354f9e85785fca2be5f16fa84d6da0bae95d31514e40765d27e12009b94b06d378e72d7ba5975939461776a5
+  languageName: node
+  linkType: hard
+
 "create-ecdh@npm:^4.0.0":
   version: 4.0.4
   resolution: "create-ecdh@npm:4.0.4"
@@ -14441,6 +14478,18 @@ __metadata:
   dependencies:
     ms: ^2.1.1
   checksum: 3601a6ce96e4698ed3edf0ee6e67ef0317adfcdae2f66a43b23d1b14e8888b422337429b16dbbcba6801e7bfa6cbb8de3128fbacfb8ae1cd9bd7615ea6baf970
+  languageName: node
+  linkType: hard
+
+"debug@npm:4.3.1":
+  version: 4.3.1
+  resolution: "debug@npm:4.3.1"
+  dependencies:
+    ms: 2.1.2
+  peerDependenciesMeta:
+    supports-color:
+      optional: true
+  checksum: 0d41ba5177510e8b388dfd7df143ab0f9312e4abdaba312595461511dac88e9ef8101939d33b4e6d37e10341af6a5301082e4d7d6f3deb4d57bc05fc7d296fad
   languageName: node
   linkType: hard
 
@@ -18014,7 +18063,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"get-caller-file@npm:^2.0.1":
+"get-caller-file@npm:^2.0.1, get-caller-file@npm:^2.0.5":
   version: 2.0.5
   resolution: "get-caller-file@npm:2.0.5"
   checksum: 9dd9e1e2591039ee4c38c897365b904f66f1e650a8c1cb7b7db8ce667fa63e88cc8b13282b74df9d93de481114b3304a0487880d31cd926dfda6efe71455855d
@@ -22785,6 +22834,20 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"localtunnel@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "localtunnel@npm:2.0.1"
+  dependencies:
+    axios: 0.21.1
+    debug: 4.3.1
+    openurl: 1.1.1
+    yargs: 16.2.0
+  bin:
+    lt: bin/lt.js
+  checksum: 09e4b1b92692baa173074c65b78cd33c36e87eb7f1a664e10ffeee5ef6f918cd5b91ac59249f634797ed3067a32f359bb8443ff6c8ff39732dee6566177ecedb
+  languageName: node
+  linkType: hard
+
 "locate-path@npm:^2.0.0":
   version: 2.0.0
   resolution: "locate-path@npm:2.0.0"
@@ -25413,6 +25476,13 @@ fsevents@^1.2.7:
     oc: ./dist/bin/opencollective.js
     opencollective: ./dist/bin/opencollective.js
   checksum: 5426b7551c46de1163157813a2e6ba0abb6654e8c476cad70b447d802a48548c64d853845ea943d0adce14a37a712bc877bddfc3821b204feab911619cabb187
+  languageName: node
+  linkType: hard
+
+"openurl@npm:1.1.1":
+  version: 1.1.1
+  resolution: "openurl@npm:1.1.1"
+  checksum: cbe2e03594b9ceee8b1cfccb505d6bcea852417061952ef46a5dfe53c0aac9ce870f89d5142a9882bdf11e8fdb457655c7cdb2e7c2f5560d98322755eaacca06
   languageName: node
   linkType: hard
 
@@ -34374,6 +34444,17 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
+"wrap-ansi@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "wrap-ansi@npm:7.0.0"
+  dependencies:
+    ansi-styles: ^4.0.0
+    string-width: ^4.1.0
+    strip-ansi: ^6.0.0
+  checksum: 09939dd775ae565bb99a25a6c072fe3775a95fa71751b5533c94265fe986ba3e3ab071a027ab76cf26876bd9afd10ac3c2d06d7c4bcce148bf7d2d9514e3a0df
+  languageName: node
+  linkType: hard
+
 "wrappy@npm:1":
   version: 1.0.2
   resolution: "wrappy@npm:1.0.2"
@@ -34580,6 +34661,13 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
+"y18n@npm:^5.0.5":
+  version: 5.0.5
+  resolution: "y18n@npm:5.0.5"
+  checksum: a7d41b0cccca1c98ebab270a944df48eb3b5352d3be0affb8afc8369823f6aa97a5fbead2c5b35e59a5650cb786b2b37627b45be5ff31f02a80dd3b881aceb17
+  languageName: node
+  linkType: hard
+
 "yallist@npm:^2.1.2":
   version: 2.1.2
   resolution: "yallist@npm:2.1.2"
@@ -34621,7 +34709,7 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
-"yargs-parser@npm:20.x, yargs-parser@npm:^20.2.3":
+"yargs-parser@npm:20.x, yargs-parser@npm:^20.2.2, yargs-parser@npm:^20.2.3":
   version: 20.2.7
   resolution: "yargs-parser@npm:20.2.7"
   checksum: 124e7f1c24c9609d5d1c343f14b83289634e19bb43770708ebb6a19852647aaa0f89edcbf0e5b18a21bee77f54513ab5051518b2950cda69eb607a7c6251aa4f
@@ -34723,6 +34811,21 @@ resolve@^2.0.0-next.3:
     y18n: ^4.0.0
     yargs-parser: ^18.1.2
   checksum: dbf687d6b938f01bbf11e158dde6df906282b70cd9295af0217ee8cefbd83ad09d49fa9458d0d5325b0e66f03df954a38986db96f91e5b46ccdbbaf9a0157b23
+  languageName: node
+  linkType: hard
+
+"yargs@npm:16.2.0":
+  version: 16.2.0
+  resolution: "yargs@npm:16.2.0"
+  dependencies:
+    cliui: ^7.0.2
+    escalade: ^3.1.1
+    get-caller-file: ^2.0.5
+    require-directory: ^2.1.1
+    string-width: ^4.2.0
+    y18n: ^5.0.5
+    yargs-parser: ^20.2.2
+  checksum: a79ce1f043021cd645de1ffebb6149541d382ba68f4a6b5eca5d2ad65af51893371bbd78e240dc3b6cf0cbb419511ba5bda715dec992e4266e6863ea49f14feb
   languageName: node
   linkType: hard
 
