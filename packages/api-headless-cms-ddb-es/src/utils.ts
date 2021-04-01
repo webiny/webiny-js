@@ -12,7 +12,7 @@ export const createBasePrimaryKey = ({ security, cms }: CmsContext): string => {
         throw new WebinyError("Locale missing.", "LOCALE_NOT_FOUND");
     }
 
-    return `T#${tenant.id}#L#${locale.code}#CMS#CMG`;
+    return `T#${tenant.id}#L#${locale.code}#CMS`;
 };
 
 export const encodeElasticsearchCursor = (cursor?: any) => {

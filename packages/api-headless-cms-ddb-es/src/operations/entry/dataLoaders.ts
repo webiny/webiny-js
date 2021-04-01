@@ -1,7 +1,7 @@
 import DataLoader from "dataloader";
 import { CmsContentEntry, CmsContentModel, CmsContext } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
-import CmsContentEntryCrudDynamoElastic from "./CmsContentEntryCrudDynamoElastic";
+import CmsContentEntryDynamoElastic from "./CmsContentEntryDynamoElastic";
 import chunk from "lodash/chunk";
 import configurations from "../../configurations";
 
@@ -25,7 +25,7 @@ const batchLoadKeys = loadChunk => {
 const getAllEntryRevisions = (
     context: CmsContext,
     model: CmsContentModel,
-    storageOperations: CmsContentEntryCrudDynamoElastic
+    storageOperations: CmsContentEntryDynamoElastic
 ) => {
     return new DataLoader<string, CmsContentEntry[]>(async ids => {
         const results = [];
@@ -49,7 +49,7 @@ const getAllEntryRevisions = (
 const getRevisionById = (
     context: CmsContext,
     model: CmsContentModel,
-    storageOperations: CmsContentEntryCrudDynamoElastic
+    storageOperations: CmsContentEntryDynamoElastic
 ) => {
     return batchLoadKeys(keys => {
         const queries = keys.map(id => ({
@@ -71,7 +71,7 @@ const getRevisionById = (
 const getPublishedRevisionByEntryId = (
     context: CmsContext,
     model: CmsContentModel,
-    storageOperations: CmsContentEntryCrudDynamoElastic
+    storageOperations: CmsContentEntryDynamoElastic
 ) => {
     return batchLoadKeys(keys => {
         const queries = keys.map(id => ({
@@ -92,7 +92,7 @@ const getPublishedRevisionByEntryId = (
 const getLatestRevisionByEntryId = (
     context: CmsContext,
     model: CmsContentModel,
-    storageOperations: CmsContentEntryCrudDynamoElastic
+    storageOperations: CmsContentEntryDynamoElastic
 ) => {
     return batchLoadKeys(chunk =>
         context.db
@@ -121,9 +121,9 @@ const dataLoaders = {
 export class DataLoadersHandler {
     private readonly _loaders: Map<string, DataLoader<any, any>> = new Map();
     private readonly _context: CmsContext;
-    private readonly _storageOperations: CmsContentEntryCrudDynamoElastic;
+    private readonly _storageOperations: CmsContentEntryDynamoElastic;
 
-    public constructor(context: CmsContext, storageOperations: CmsContentEntryCrudDynamoElastic) {
+    public constructor(context: CmsContext, storageOperations: CmsContentEntryDynamoElastic) {
         this._context = context;
         this._storageOperations = storageOperations;
     }

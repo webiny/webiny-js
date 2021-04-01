@@ -638,7 +638,7 @@ export interface CmsSettings {
     /**
      * Last content model change. Used to cache GraphQL schema.
      */
-    contentModelLastChange: string;
+    contentModelLastChange: Date;
 }
 
 /**
@@ -2889,6 +2889,38 @@ export enum CONTENT_ENTRY_STATUS {
     UNPUBLISHED = "unpublished",
     CHANGES_REQUESTED = "changesRequested",
     REVIEW_REQUESTED = "reviewRequested"
+}
+
+interface CmsSettingsStorageOperationsProviderArgs {
+    context: CmsContext;
+}
+/**
+ * A plugin that provides the settings storage operations implementation.
+ */
+export interface CmsSettingsStorageOperationsProviderPlugin
+    extends CmsStorageOperationsProvider<
+        CmsSettingsStorageOperationsProviderArgs,
+        CmsSettingsStorageOperations
+    > {
+    /**
+     * A plugin type.
+     */
+    type: "cms-settings-storage-operations-provider";
+}
+
+export interface CmsSettingsStorageOperations {
+    /**
+     * Get the settings from the storage.
+     */
+    get: () => Promise<CmsSettings | null>;
+    /**
+     * Create settings in the storage.
+     */
+    create: (data: CmsSettings) => Promise<void>;
+    /**
+     * Update the settings in the storage.
+     */
+    update: (data: CmsSettings) => Promise<void>;
 }
 
 export interface CmsInstallHooksPlugin extends Plugin {
