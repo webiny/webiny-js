@@ -2923,19 +2923,48 @@ export interface CmsSettingsStorageOperations {
     update: (data: CmsSettings) => Promise<void>;
 }
 
-export interface CmsInstallHooksPlugin extends Plugin {
+interface CmsSystemStorageOperationsProviderArgs {
+    context: CmsContext;
+}
+/**
+ * A plugin that provides the system storage operations implementation.
+ */
+export interface CmsSystemStorageOperationsProviderPlugin
+    extends CmsStorageOperationsProvider<
+        CmsSystemStorageOperationsProviderArgs,
+        CmsSystemStorageOperations
+    > {
     /**
      * A plugin type.
      */
-    type: "cms-install-hooks";
+    type: "cms-system-storage-operations-provider";
+}
+
+export interface CmsSystem {
+    version?: string;
+}
+
+export interface CmsSystemStorageOperations {
     /**
-     * Run before the installation process.
+     * A hook to trigger before the install process.
      */
-    beforeInstall?: (context: CmsContext) => Promise<void>;
+    beforeInstall?: () => Promise<void>;
     /**
-     * Run after the successful install.
+     * A hook to trigger after the install process.
      */
-    afterInstall?: (context: CmsContext) => Promise<void>;
+    afterInstall?: () => Promise<void>;
+    /**
+     * Get the system data.
+     */
+    get: () => Promise<CmsSystem | null>;
+    /**
+     * Create the system info in the storage.
+     */
+    create: (data: CmsSystem) => Promise<void>;
+    /**
+     * Update the system info in the storage.
+     */
+    update: (data: CmsSystem) => Promise<void>;
 }
 
 interface DatabaseConfigKeyFields {
