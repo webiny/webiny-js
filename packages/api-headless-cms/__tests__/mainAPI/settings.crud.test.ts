@@ -132,7 +132,14 @@ describe("Settings crud test", () => {
                         error: {
                             code: "CMS_INSTALLATION_CONTENT_MODEL_GROUP_ERROR",
                             message: "Not authorized!",
-                            data: null
+                            data: {
+                                group: {
+                                    description: "A generic content model group",
+                                    icon: "fas/star",
+                                    name: "Ungrouped",
+                                    slug: "ungrouped"
+                                }
+                            }
                         }
                     }
                 }

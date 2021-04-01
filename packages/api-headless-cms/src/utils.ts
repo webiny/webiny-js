@@ -117,7 +117,7 @@ export const checkOwnership = (
 
     const identity = context.security.getIdentity();
 
-    if (!identity || record[field].id !== identity.id) {
+    if (!identity || !record[field] || record[field].id !== identity.id) {
         throw new NotAuthorizedError({
             data: {
                 reason: `You are not the owner of the record.`
@@ -198,19 +198,3 @@ export const toSlug = text => {
 };
 
 export const zeroPad = version => `${version}`.padStart(4, "0");
-
-export const createCmsPK = (context: CmsContext) => {
-    const { security, cms } = context;
-
-    const tenant = security.getTenant();
-    if (!tenant) {
-        throw new Error("Tenant missing.");
-    }
-
-    const locale = cms.getLocale();
-    if (!locale) {
-        throw new Error("Locale missing.");
-    }
-
-    return `T#${tenant.id}#L#${locale.code}#CMS`;
-};
