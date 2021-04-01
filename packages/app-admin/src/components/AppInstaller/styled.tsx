@@ -20,9 +20,7 @@ export const Wrapper = styled("section")({
             fontWeight: 400,
             letterSpacing: "0.03125em",
             textDecoration: "inherit",
-            textTransform: "inherit",
-            marginTop: "20px",
-            marginBottom: "20px"
+            textTransform: "inherit"
         }
     }
 });
