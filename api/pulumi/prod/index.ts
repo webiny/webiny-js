@@ -19,7 +19,8 @@ export default () => {
         env: {
             DB_TABLE: dynamoDb.table.name,
             DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
-            DEBUG: String(process.env.DEBUG)
+            DEBUG: String(process.env.DEBUG),
+            WEBINY_LOGS_FORWARD_URL: String(process.env.WEBINY_LOGS_FORWARD_URL)
         }
     });
 
@@ -27,7 +28,8 @@ export default () => {
         env: {
             DB_TABLE: dynamoDb.table.name,
             DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
-            DEBUG: String(process.env.DEBUG)
+            DEBUG: String(process.env.DEBUG),
+            WEBINY_LOGS_FORWARD_URL: String(process.env.WEBINY_LOGS_FORWARD_URL)
         },
         bucket: fileManager.bucket
     });
@@ -44,7 +46,8 @@ export default () => {
             PRERENDERING_FLUSH_HANDLER: prerenderingService.functions.flush.arn,
             PRERENDERING_QUEUE_ADD_HANDLER: prerenderingService.functions.queue.add.arn,
             PRERENDERING_QUEUE_PROCESS_HANDLER: prerenderingService.functions.queue.process.arn,
-            S3_BUCKET: fileManager.bucket.id
+            S3_BUCKET: fileManager.bucket.id,
+            WEBINY_LOGS_FORWARD_URL: String(process.env.WEBINY_LOGS_FORWARD_URL)
         }
     });
 
@@ -56,7 +59,8 @@ export default () => {
             DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
             DEBUG: String(process.env.DEBUG),
             ELASTIC_SEARCH_ENDPOINT: elasticSearch.domain.endpoint,
-            S3_BUCKET: fileManager.bucket.id
+            S3_BUCKET: fileManager.bucket.id,
+            WEBINY_LOGS_FORWARD_URL: String(process.env.WEBINY_LOGS_FORWARD_URL)
         }
     });
 

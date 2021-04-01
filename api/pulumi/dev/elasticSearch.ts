@@ -107,6 +107,7 @@ class ElasticSearch {
             environment: {
                 variables: {
                     DEBUG: String(process.env.DEBUG),
+                    WEBINY_LOGS_FORWARD_URL: String(process.env.WEBINY_LOGS_FORWARD_URL),
                     ELASTIC_SEARCH_ENDPOINT: this.domain.endpoint
                 }
             },

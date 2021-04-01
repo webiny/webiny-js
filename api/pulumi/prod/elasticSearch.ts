@@ -91,6 +91,7 @@ class ElasticSearch {
             memorySize: 512,
             environment: {
                 variables: {
+                    WEBINY_LOGS_FORWARD_URL: String(process.env.WEBINY_LOGS_FORWARD_URL),
                     DEBUG: String(process.env.DEBUG),
                     ELASTIC_SEARCH_ENDPOINT: this.domain.endpoint
                 }
