@@ -11,8 +11,6 @@ export const Wrapper = styled("section")({
         whiteSpace: "nowrap"
     },
     ul: {
-        listStyle: "disc",
-        paddingLeft: "var(--mdc-layout-grid-margin-desktop, 24px)",
         li: {
             color: "var(--desktop-color, var(--webiny-theme-color-text-primary, rgb(10, 10, 10)))",
             MozOsxFontSmoothing: "grayscale",
