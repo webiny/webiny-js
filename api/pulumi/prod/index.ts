@@ -19,8 +19,7 @@ export default () => {
         env: {
             DB_TABLE: dynamoDb.table.name,
             DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
-            DEBUG: String(process.env.DEBUG),
-            WEBINY_LOGS_FORWARD_URL: String(process.env.WEBINY_LOGS_FORWARD_URL)
+            DEBUG: String(process.env.DEBUG)
         }
     });
 
@@ -28,8 +27,7 @@ export default () => {
         env: {
             DB_TABLE: dynamoDb.table.name,
             DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
-            DEBUG: String(process.env.DEBUG),
-            WEBINY_LOGS_FORWARD_URL: String(process.env.WEBINY_LOGS_FORWARD_URL)
+            DEBUG: String(process.env.DEBUG)
         },
         bucket: fileManager.bucket
     });

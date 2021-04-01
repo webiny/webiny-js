@@ -17,7 +17,6 @@ export default () => {
 
     const prerenderingService = new PrerenderingService({
         env: {
-            WEBINY_LOGS_FORWARD_URL: String(process.env.WEBINY_LOGS_FORWARD_URL),
             DB_TABLE: dynamoDb.table.name,
             DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
             DEBUG: String(process.env.DEBUG)
@@ -26,7 +25,6 @@ export default () => {
 
     const pageBuilder = new PageBuilder({
         env: {
-            WEBINY_LOGS_FORWARD_URL: String(process.env.WEBINY_LOGS_FORWARD_URL),
             DB_TABLE: dynamoDb.table.name,
             DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
             DEBUG: String(process.env.DEBUG)
