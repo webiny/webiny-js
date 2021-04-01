@@ -1,6 +1,6 @@
 const { dirname } = require("path");
 const findUp = require("find-up");
-const { getProject } = require("@webiny/cli/utils");
+const getProject = require("./getProject");
 
 module.exports = args => {
     // Using "Pulumi.yaml" for the backwards compatibility.

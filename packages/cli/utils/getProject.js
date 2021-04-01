@@ -1,33 +1,21 @@
 const findUp = require("find-up");
-const path = require("path");
+const { dirname } = require("path");
 
-module.exports = args => {
-    const getProjectRoot = getProjectRoot(args);
-    const config = getProjectConfig(args);
-
-    return {
-        // "projectName" because of the backwards compatibility.
-        name: config.projectName || config.name,
-        root: getProjectRoot(args),
-        config
-    };
-};
-
-function getProjectRoot({ cwd } = {}) {
+function getRoot({ cwd } = {}) {
     let root = findUp.sync("webiny.project.js", { cwd });
     if (root) {
-        return path.dirname(root);
+        return dirname(root);
     }
 
     root = findUp.sync("webiny.root.js", { cwd });
     if (root) {
-        return path.dirname(root);
+        return dirname(root);
     }
 
     throw new Error("Couldn't detect Webiny project.");
 }
 
-function getProjectConfig({ cwd } = {}) {
+function getConfig({ cwd } = {}) {
     let path = findUp.sync("webiny.project.js", { cwd });
     if (path) {
         return require(path);
@@ -40,3 +28,14 @@ function getProjectConfig({ cwd } = {}) {
 
     throw new Error("Couldn't detect Webiny project.");
 }
+
+module.exports = args => {
+    const root = getRoot(args);
+    const config = getConfig(args);
+    return {
+        // "projectName" because of the backwards compatibility.
+        name: config.projectName || config.name,
+        root,
+        config
+    };
+};
