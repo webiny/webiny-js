@@ -7,7 +7,8 @@ module.exports = {
     id: "website",
     name: "Website",
     description: "Your project's public website.",
-    config: {
+    cli: {
+        // Default args for the "yarn webiny watch ..." command (we don't need deploy option while developing).
         watch: {
             deploy: false
         }
