@@ -114,7 +114,7 @@ module.exports = async (inputs, context) => {
                 stdio: "inherit",
                 env: {
                     WEBINY_ENV: env,
-                    WEBINY_PROJECT_NAME: context.projectName
+                    WEBINY_PROJECT_NAME: context.project.name
                 }
             }
         });
@@ -127,11 +127,12 @@ module.exports = async (inputs, context) => {
                 secretsProvider: SECRETS_PROVIDER
             },
             execa: {
-                // stdio: ["inherit", "inherit", process.stderr],
+                // We pipe "stderr" so that we can intercept potential received error messages,
+                // and hopefully, show extra information / help to the user.
                 stdio: ["inherit", "inherit", "pipe"],
                 env: {
                     WEBINY_ENV: env,
-                    WEBINY_PROJECT_NAME: context.projectName
+                    WEBINY_PROJECT_NAME: context.project.name
                 }
             }
         });

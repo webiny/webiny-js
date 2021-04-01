@@ -250,6 +250,7 @@ const createScreen = inputs => {
     if (inputs.build) {
         output.logs.build = output.grid.set(rows.current, 0, HEIGHTS.build, 1, contrib.log, {
             label: "Build",
+            scrollable: true,
             scrollOnInput: true
         });
         rows.current += HEIGHTS.build;
@@ -258,6 +259,9 @@ const createScreen = inputs => {
     if (inputs.deploy) {
         output.logs.deploy = output.grid.set(rows.current, 0, HEIGHTS.deploy, 1, contrib.log, {
             label: "Deploy",
+            scrollbar: true,
+            alwaysScroll: true,
+            scrollable: true,
             scrollOnInput: true
         });
         rows.current += HEIGHTS.deploy;
