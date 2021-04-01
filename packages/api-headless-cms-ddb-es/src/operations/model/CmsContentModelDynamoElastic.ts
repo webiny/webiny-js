@@ -14,7 +14,7 @@ interface ConstructorArgs {
     context: CmsContext;
     basePrimaryKey: string;
 }
-export default class CmsContentModelCrudDynamoElastic implements CmsContentModelStorageOperations {
+export default class CmsContentModelDynamoElastic implements CmsContentModelStorageOperations {
     private readonly _context: CmsContext;
     private readonly _primaryKey: string;
 

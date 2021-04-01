@@ -63,7 +63,7 @@ const getESPublishedEntryData = (context: CmsContext, entry: CmsContentEntry) =>
     };
 };
 
-interface CmsContentEntryCrudDynamoElasticArgs {
+interface ConstructorArgs {
     context: CmsContext;
     basePrimaryKey: string;
 }
@@ -72,7 +72,7 @@ interface CmsContentEntryCrudDynamoElasticArgs {
  * This implementation is not a general driver to fetch from DDB/Elastic.
  * Use some other implementation for general-use purpose.
  */
-export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntryStorageOperations {
+export default class CmsContentEntryDynamoElastic implements CmsContentEntryStorageOperations {
     private readonly _context: CmsContext;
     private readonly _primaryKey: string;
     private readonly _dataLoaders: DataLoadersHandler;
@@ -81,7 +81,7 @@ export default class CmsContentEntryCrudDynamoElastic implements CmsContentEntry
         return this._context;
     }
 
-    public constructor({ context, basePrimaryKey }: CmsContentEntryCrudDynamoElasticArgs) {
+    public constructor({ context, basePrimaryKey }: ConstructorArgs) {
         this._context = context;
         this._primaryKey = `${basePrimaryKey}#CME`;
         this._dataLoaders = new DataLoadersHandler(context, this);

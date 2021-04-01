@@ -1,4 +1,4 @@
-import CmsContentModelCrudDynamoElastic from "./CmsContentModelCrudDynamoElastic";
+import CmsContentModelDynamoElastic from "./CmsContentModelDynamoElastic";
 import { CmsContentModelStorageOperationsProvider } from "@webiny/api-headless-cms/types";
 import { createBasePrimaryKey } from "../../utils";
 
@@ -7,7 +7,7 @@ const contentModelStorageOperationsProvider = (): CmsContentModelStorageOperatio
     name: "cms-content-model-storage-operations-ddb-es-crud",
     provide: async ({ context }) => {
         const basePrimaryKey = createBasePrimaryKey(context);
-        return new CmsContentModelCrudDynamoElastic({
+        return new CmsContentModelDynamoElastic({
             context,
             basePrimaryKey
         });

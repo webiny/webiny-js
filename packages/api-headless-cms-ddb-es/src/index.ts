@@ -1,3 +1,4 @@
+import settingsOperationsProvider from "./operations/settings";
 import contentModelGroupStorageOperationsProvider from "./operations/modelGroup";
 import contentModelStorageOperationsProvider from "./operations/model";
 import contentEntryStorageOperationsProvider from "./operations/entry";
@@ -7,6 +8,7 @@ import elasticsearchPlugins from "./elasticsearch";
 import dynamoDbPlugins from "./dynamoDb";
 
 export default () => [
+    settingsOperationsProvider(),
     contentModelGroupStorageOperationsProvider(),
     contentModelStorageOperationsProvider(),
     contentEntryStorageOperationsProvider(),

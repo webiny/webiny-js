@@ -20,7 +20,7 @@ import { decodeElasticsearchCursor } from "../utils";
 import {
     TYPE_ENTRY_LATEST,
     TYPE_ENTRY_PUBLISHED
-} from "../operations/entry/CmsContentEntryCrudDynamoElastic";
+} from "../operations/entry/CmsContentEntryDynamoElastic";
 
 type ModelFieldPath = string | ((value: string) => string);
 interface ModelField {
