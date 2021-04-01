@@ -1,3 +1,4 @@
-const getProjectRoot = require("./getProjectRoot");
-const getProjectConfig = require("./getProjectConfig");
-module.exports = { getProjectRoot, getProjectConfig };
+const getProject = require("./getProject");
+const getProjectApplication = require("./getProjectApplication");
+
+module.exports = { getProject, getProjectApplication };
