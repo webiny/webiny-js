@@ -1,17 +1,16 @@
 const fs = require("fs");
 const path = require("path");
 const chalk = require("chalk");
-const findUp = require("find-up");
 const { PluginsContainer } = require("@webiny/plugins");
+const { getProjectRoot, getProjectConfig } = require("./utils");
 
-const webinyRootPath = findUp.sync("webiny.root.js");
-if (!webinyRootPath) {
+const projectRoot = getProjectRoot();
+if (!projectRoot) {
     console.log(
-        `🚨 Couldn't locate "webiny.root.js"! Webiny CLI relies on that file to find the root of a Webiny project.`
+        `🚨 Couldn't locate "webiny.project.js"! Webiny CLI relies on that file to find the root of a Webiny project.`
     );
     process.exit(1);
 }
-const projectRoot = path.dirname(webinyRootPath);
 
 const getLogType = type => {
     switch (type) {
@@ -44,14 +43,17 @@ class Context {
     constructor() {
         this.loadedEnvFiles = {};
 
-        this.paths = {
-            projectRoot
+        const config = getProjectConfig();
+
+        this.project = {
+            // "projectName" because of the backwards compatibility.
+            name: config.projectName || config.name,
+            root: projectRoot,
+            config
         };
 
-        this.config = require(path.join(projectRoot, "webiny.root.js"));
-
-        // Check if `projectName` was injected properly
-        if (this.config.projectName === "[PROJECT_NAME]") {
+        // Check if `projectName` was injected properly.
+        if (this.project.name === "[PROJECT_NAME]") {
             console.log(
                 [
                     "",
@@ -66,7 +68,6 @@ class Context {
             process.exit(1);
         }
 
-        this.projectName = this.config.projectName;
         this.plugins = new PluginsContainer();
         this.onExitCallbacks = [];
 
@@ -98,7 +99,7 @@ class Context {
                     if (typeof plugin === "string") {
                         let loadedPlugin;
                         try {
-                            loadedPlugin = require(path.join(this.paths.projectRoot, plugin)); // Try loading the package from the project's root
+                            loadedPlugin = require(path.join(this.project.root, plugin)); // Try loading the package from the project's root
                         } catch {
                             // If it fails, perhaps the user still has the package installed somewhere locally...
                             loadedPlugin = require(plugin);
