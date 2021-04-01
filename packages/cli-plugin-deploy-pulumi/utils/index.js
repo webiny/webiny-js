@@ -5,7 +5,6 @@ const notify = require("./notify");
 const login = require("./login");
 const mapStackOutput = require("./mapStackOutput");
 const loadEnvVariables = require("./loadEnvVariables");
-const getProjectApplication = require("./getProjectApplication");
 const getRandomColorForString = require("./getRandomColorForString");
 const { tagResources } = require("./tagResources");
 
@@ -15,7 +14,6 @@ module.exports = {
     loadEnvVariables,
     mapStackOutput,
     tagResources,
-    getProjectApplication,
     processHooks,
     notify,
     login,
