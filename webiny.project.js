@@ -1,5 +1,5 @@
 module.exports = {
-    projectName: "webiny-js",
+    name: "webiny-js",
     cli: {
         plugins: [
             require("@webiny/cli-plugin-workspaces")(),
