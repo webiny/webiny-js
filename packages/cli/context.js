@@ -2,10 +2,10 @@ const fs = require("fs");
 const path = require("path");
 const chalk = require("chalk");
 const { PluginsContainer } = require("@webiny/plugins");
-const { getProjectRoot, getProjectConfig } = require("./utils");
+const { getProject } = require("./utils");
 
-const projectRoot = getProjectRoot();
-if (!projectRoot) {
+const project = getProject();
+if (!project) {
     console.log(
         `🚨 Couldn't locate "webiny.project.js"! Webiny CLI relies on that file to find the root of a Webiny project.`
     );
@@ -43,14 +43,7 @@ class Context {
     constructor() {
         this.loadedEnvFiles = {};
 
-        const config = getProjectConfig();
-
-        this.project = {
-            // "projectName" because of the backwards compatibility.
-            name: config.projectName || config.name,
-            root: projectRoot,
-            config
-        };
+        this.project = project;
 
         // Check if `projectName` was injected properly.
         if (this.project.name === "[PROJECT_NAME]") {
