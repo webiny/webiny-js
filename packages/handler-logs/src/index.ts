@@ -16,7 +16,7 @@ export default () => ({
     type: "handler-result",
     async apply() {
         const url = process.env.WEBINY_LOGS_FORWARD_URL;
-        if (url && logs.length) {
+        if (logs.length && typeof url === "string" && url.startsWith("http")) {
             await fetch(url, {
                 method: "POST",
                 headers: {
