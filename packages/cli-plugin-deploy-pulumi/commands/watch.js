@@ -1,8 +1,18 @@
 const execa = require("execa");
 const blessed = require("blessed");
 const contrib = require("blessed-contrib");
-const { login, getPulumi, loadEnvVariables, getProjectApplication } = require("../utils");
-const { green } = require("chalk");
+const chalk = require("chalk");
+const localtunnel = require("localtunnel");
+const express = require("express");
+const bodyParser = require("body-parser");
+const minimatch = require("minimatch");
+const {
+    login,
+    getPulumi,
+    loadEnvVariables,
+    getProjectApplication,
+    getRandomColorForString
+} = require("../utils");
 
 const SECRETS_PROVIDER = process.env.PULUMI_SECRETS_PROVIDER;
 
@@ -13,6 +23,10 @@ module.exports = async (inputs, context) => {
 
     if (!inputs.build && !inputs.deploy) {
         throw new Error(`Both re-build and re-deploy actions were disabled, can't continue.`);
+    }
+
+    if (typeof inputs.logs === "string" && inputs.logs === "") {
+        inputs.logs = "*";
     }
 
     // Get project application metadata.
@@ -60,9 +74,55 @@ module.exports = async (inputs, context) => {
     screen.render();
 
     try {
+        const logging = {
+            url: null
+        };
+
+        // Forward logs from the cloud to here, using the "localtunnel" library.
+        if (inputs.logs) {
+            const tunnel = await localtunnel({ port: 3010 });
+
+            logging.url = tunnel.url;
+
+            const app = express();
+            app.use(bodyParser.urlencoded({ extended: false }));
+            app.use(bodyParser.json());
+
+            app.post("/", (req, res) => {
+                if (Array.isArray(req.body)) {
+                    req.body.forEach(consoleLog =>
+                        printLog({
+                            consoleLog,
+                            log: logs.logs.log.bind(logs.logs),
+                            pattern: inputs.logs
+                        })
+                    );
+                }
+                res.send("Message received.");
+            });
+
+            app.listen(3010);
+
+            [
+                chalk.green(`Listening for incoming logs on port 3010...`),
+                `Note: everything you log in your code will be forwarded here ${chalk.underline(
+                    "over public internet"
+                )}.`,
+                `To learn more, please visit https://www.webiny.com/docs/todo-article.`
+            ].forEach(logs.logs.log.bind(logs.logs));
+
+            logs.logs.log(""); // Log an empty line.
+
+            if (inputs.logs !== "*") {
+                logs.logs.log(
+                    chalk.gray(`Only showing logs that match the following pattern: ${inputs.logs}`)
+                );
+            }
+        }
+
         // Add deploy logs.
         if (inputs.deploy) {
-            logs.deploy.log(green("Watching cloud infrastructure resources..."));
+            logs.deploy.log(chalk.green("Watching cloud infrastructure resources..."));
 
             const pulumi = await getPulumi({
                 execa: {
@@ -78,18 +138,30 @@ module.exports = async (inputs, context) => {
                 execa: {
                     env: {
                         WEBINY_ENV: inputs.env,
-                        WEBINY_PROJECT_NAME: context.projectName
+                        WEBINY_PROJECT_NAME: context.projectName,
+                        WEBINY_LOGS_FORWARD_URL: logging.url
                     }
                 }
             });
 
             watchCloudInfrastructure.stdout.on("data", data => logs.deploy.log(data.toString()));
             watchCloudInfrastructure.stderr.on("data", data => logs.deploy.log(data.toString()));
+
+            // If logs are enabled, inform user that we're updating the WEBINY_LOGS_FORWARD_URL env variable.
+            if (inputs.logs) {
+                setTimeout(() => {
+                    logs.deploy.log(
+                        `Logs enabled - updating ${chalk.gray(
+                            "WEBINY_LOGS_FORWARD_URL"
+                        )} environment variable...`
+                    );
+                }, 3000);
+            }
         }
 
         // Add build logs.
         if (inputs.build) {
-            logs.build.log(green("Watching packages..."));
+            logs.build.log(chalk.green("Watching packages..."));
 
             let scopes = [];
             if (inputs.scope) {
@@ -113,16 +185,28 @@ module.exports = async (inputs, context) => {
                 "workspaces",
                 "run",
                 "watch",
-                "--env",
-                "dev",
+                /*                "--env",
+                inputs.env,*/
                 ...scopes.reduce((current, item) => {
                     current.push("--scope", item);
                     return current;
                 }, [])
             ]);
 
-            watchPackages.stdout.on("data", data => logs.build.log(data.toString()));
-            watchPackages.stderr.on("data", data => logs.build.log(data.toString()));
+            watchPackages.stdout.on("data", data => {
+                let message = data.toString();
+                if (message.match(/error/i)) {
+                    message = chalk.red(message);
+                }
+                logs.build.log(message);
+            });
+            watchPackages.stderr.on("data", data => {
+                let message = data.toString();
+                if (message.match(/error/i)) {
+                    message = chalk.red(message);
+                }
+                logs.build.log(message);
+            });
         }
     } catch (e) {
         screen.destroy();
@@ -130,11 +214,6 @@ module.exports = async (inputs, context) => {
     }
 };
 
-/**
- * Figures out the number of rows and the layout of each grid that holds logs.
- * Could've we write this better? Yes. But for now as, as this is as far it'll go, it's fine.
- * In the future, if needed, introduce a smarter logic here.
- */
 const createScreen = inputs => {
     // Setup blessed screen.
     const screen = blessed.screen({
@@ -143,41 +222,87 @@ const createScreen = inputs => {
         dockBorders: true
     });
 
-    const { build, deploy } = inputs;
-    const output = { screen, grid: null, logs: { build: null, deploy: null } };
+    const HEIGHTS = {
+        build: 2,
+        deploy: 1,
+        logs: 2
+    };
 
-    if (build && deploy) {
-        output.grid = new contrib.grid({ rows: 3, cols: 1, screen: screen });
-        output.logs.build = output.grid.set(0, 0, 2, 1, contrib.log, {
+    const output = { screen, grid: null, logs: { build: null, deploy: null, logs: null } };
+
+    // Calculate total rows needed.
+    let rows = { total: 0, current: 0 };
+    if (inputs.build) {
+        rows.total += HEIGHTS.build;
+    }
+
+    if (inputs.deploy) {
+        rows.total += HEIGHTS.deploy;
+    }
+
+    if (inputs.logs) {
+        rows.total += HEIGHTS.logs;
+    }
+
+    // Create grid.
+    output.grid = new contrib.grid({ rows: rows.total, cols: 1, screen: screen });
+
+    if (inputs.build) {
+        output.logs.build = output.grid.set(rows.current, 0, HEIGHTS.build, 1, contrib.log, {
             label: "Build",
             scrollOnInput: true
         });
+        rows.current += HEIGHTS.build;
+    }
 
-        output.logs.deploy = output.grid.set(2, 0, 1, 1, contrib.log, {
+    if (inputs.deploy) {
+        output.logs.deploy = output.grid.set(rows.current, 0, HEIGHTS.deploy, 1, contrib.log, {
             label: "Deploy",
             scrollOnInput: true
         });
-
-        return output;
+        rows.current += HEIGHTS.deploy;
     }
 
-    if (deploy) {
-        output.grid = new contrib.grid({ rows: 3, cols: 1, screen: screen });
-        output.logs.deploy = output.grid.set(0, 0, 3, 1, contrib.log, {
-            label: "Deploy",
+    if (inputs.logs) {
+        output.logs.logs = output.grid.set(rows.current, 0, HEIGHTS.logs, 1, contrib.log, {
+            label: "Logs",
             scrollOnInput: true
         });
-
-        return output;
+        rows.current += HEIGHTS.logs;
     }
 
-    if (build) {
-        output.grid = new contrib.grid({ rows: 3, cols: 1, screen: screen });
-        output.logs.build = output.grid.set(0, 0, 3, 1, contrib.log, {
-            label: "Build",
-            scrollOnInput: true
-        });
+    return output;
+};
 
-        return output;
+const printLog = ({ pattern = "*", consoleLog, log }) => {
+    const plainPrefix = `${consoleLog.meta.functionName}:`;
+    const coloredPrefix = chalk.hex(getRandomColorForString(plainPrefix)).bold(plainPrefix);
+
+    let output = "";
+    for (let i = 0; i < consoleLog.args.length; i++) {
+        const arg = consoleLog.args[i];
+        const lines = String(arg).split("\n");
+        if (lines.length === 1) {
+            output += " " + arg;
+        } else {
+            if (output) {
+                if (minimatch(plainPrefix + output, pattern)) {
+                    log(coloredPrefix + output);
+                }
+                output = "";
+            }
+
+            if (minimatch(plainPrefix + arg, pattern)) {
+                lines.forEach(line => {
+                    printLog({ consoleLog: { ...consoleLog, args: [line] }, log, pattern: "*" });
+                });
+            }
+        }
+    }
+
+    if (output) {
+        if (minimatch(plainPrefix + output, pattern)) {
+            log(coloredPrefix + output);
+        }
     }
 };

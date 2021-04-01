@@ -54,6 +54,9 @@ module.exports = [
                 `Rebuild and deploy specified specified project application while making changes to it`,
                 yargs => {
                     yargs.example("$0 watch api --env=dev");
+                    yargs.example("$0 watch api --env=dev --scope my-package-1 --scope my-package-2");
+                    yargs.example("$0 watch api --env=dev --depth 2");
+                    yargs.example("$0 watch api --env=dev --logs \"my-function*\"");
                     yargs.positional("folder", {
                         describe: `Project application folder`,
                         type: "string"
@@ -80,6 +83,10 @@ module.exports = [
                         describe: `The level of dependencies that needs to be watched for code changes (does not work when "scope" is passed)`,
                         type: "number",
                         default: 5
+                    });
+                    yargs.option("logs", {
+                        describe: `Forward logs from deployed application code to your terminal.`,
+                        type: "string"
                     });
                     yargs.option("debug", {
                         default: false,

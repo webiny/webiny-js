@@ -19,6 +19,7 @@
     "execa": "5.0.0",
     "find-up": "^5.0.0",
     "load-json-file": "^6.2.0",
+    "localtunnel": "^2.0.1",
     "lodash": "4.17.20",
     "node-notifier": "7.0.2",
     "ora": "4.1.1"
