@@ -1,13 +1,8 @@
+const path = require("path");
 const { green } = require("chalk");
 const execa = require("execa");
-const {
-    loadEnvVariables,
-    getPulumi,
-    getProjectApplication,
-    processHooks,
-    login,
-    notify
-} = require("../utils");
+const { loadEnvVariables, getPulumi, processHooks, login, notify } = require("../utils");
+const { getProjectApplication } = require("@webiny/cli/utils");
 
 const SECRETS_PROVIDER = process.env.PULUMI_SECRETS_PROVIDER;
 
@@ -36,7 +31,8 @@ module.exports = async (inputs, context) => {
         return (new Date() - start) / 1000;
     };
 
-    const projectApplication = getProjectApplication(folder);
+    // Get project application metadata.
+    const projectApplication = getProjectApplication({ cwd: path.join(process.cwd(), folder) });
 
     if (build) {
         await execa(
@@ -47,7 +43,7 @@ module.exports = async (inputs, context) => {
                 "run",
                 "build",
                 "--folder",
-                projectApplication.path.absolute,
+                projectApplication.root,
                 "--env",
                 inputs.env,
                 "--debug",
@@ -64,7 +60,7 @@ module.exports = async (inputs, context) => {
     await login(projectApplication);
     const pulumi = await getPulumi({
         execa: {
-            cwd: projectApplication.path.absolute
+            cwd: projectApplication.root
         }
     });
 

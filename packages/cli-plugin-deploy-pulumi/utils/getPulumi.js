@@ -3,7 +3,7 @@ const { Pulumi } = require("@webiny/pulumi-sdk");
 const ora = require("ora");
 const merge = require("lodash/merge");
 
-module.exports = async (args = {}) => {
+module.exports = async (args = {}, options = {}) => {
     const spinner = new ora();
 
     const pulumi = new Pulumi(
@@ -34,7 +34,9 @@ module.exports = async (args = {}) => {
     );
 
     // Run install method, just in case Pulumi wasn't installed yet.
-    await pulumi.install();
+    if (options.install !== false) {
+        await pulumi.install();
+    }
 
     return pulumi;
 };

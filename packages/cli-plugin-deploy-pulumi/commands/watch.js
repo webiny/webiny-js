@@ -6,13 +6,9 @@ const localtunnel = require("localtunnel");
 const express = require("express");
 const bodyParser = require("body-parser");
 const minimatch = require("minimatch");
-const {
-    login,
-    getPulumi,
-    loadEnvVariables,
-    getProjectApplication,
-    getRandomColorForString
-} = require("../utils");
+const { login, getPulumi, loadEnvVariables, getRandomColorForString } = require("../utils");
+const { getProjectApplication } = require("@webiny/cli/utils");
+const path = require("path");
 
 const SECRETS_PROVIDER = process.env.PULUMI_SECRETS_PROVIDER;
 
@@ -30,7 +26,9 @@ module.exports = async (inputs, context) => {
     }
 
     // Get project application metadata.
-    const projectApplication = getProjectApplication(inputs.folder);
+    const projectApplication = getProjectApplication({
+        cwd: path.join(process.cwd(), inputs.folder)
+    });
 
     // 1. Initial checks for deploy and build commands. We want to do these before initializing the
     //    blessed screen, because it messes the terminal output a bit. With this approach, we avoid that.
@@ -45,7 +43,7 @@ module.exports = async (inputs, context) => {
 
         const pulumi = await getPulumi({
             execa: {
-                cwd: projectApplication.path.absolute
+                cwd: projectApplication.root
             }
         });
 
@@ -126,7 +124,7 @@ module.exports = async (inputs, context) => {
 
             const pulumi = await getPulumi({
                 execa: {
-                    cwd: projectApplication.path.absolute
+                    cwd: projectApplication.root
                 }
             });
 
