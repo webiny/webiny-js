@@ -1,2 +1,3 @@
 const getProjectRoot = require("./getProjectRoot");
-module.exports = { getProjectRoot };
+const getProjectConfig = require("./getProjectConfig");
+module.exports = { getProjectRoot, getProjectConfig };
