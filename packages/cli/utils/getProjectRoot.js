@@ -1,8 +1,9 @@
 const findUp = require("find-up");
 const path = require("path");
 
-module.exports = () => {
-    const webinyRootPath = findUp.sync("webiny.project.js") || findUp.sync("webiny.root.js");
+module.exports = ({ cwd } = {}) => {
+    const webinyRootPath =
+        findUp.sync("webiny.project.js", { cwd }) || findUp.sync("webiny.root.js", { cwd });
     if (!webinyRootPath) {
         return null;
     }

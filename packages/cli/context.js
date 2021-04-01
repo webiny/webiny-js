@@ -92,8 +92,8 @@ class Context {
     }
 
     loadUserPlugins() {
-        if (this.config.cli) {
-            const plugins = this.config.cli.plugins || [];
+        if (this.project.config.cli) {
+            const plugins = this.project.config.cli.plugins || [];
             this.plugins.register(
                 ...plugins.map(plugin => {
                     if (typeof plugin === "string") {

@@ -64,10 +64,10 @@ const setup = async args => {
     content = content.replace("{PULUMI_SECRETS_PROVIDER}", "passphrase");
     fs.writeFileSync(rootEnvFilePath, content);
 
-    let webinyRoot = fs.readFileSync(path.join(projectRoot, "webiny.root.js"), "utf-8");
-    webinyRoot = webinyRoot.replace("[PROJECT_NAME]", projectName);
-    webinyRoot = webinyRoot.replace("[TEMPLATE_VERSION]", `${name}@${version}`);
-    fs.writeFileSync(path.join(projectRoot, "webiny.root.js"), webinyRoot);
+    let projectFile = fs.readFileSync(path.join(projectRoot, "webiny.package.js"), "utf-8");
+    projectFile = projectFile.replace("[PROJECT_NAME]", projectName);
+    projectFile = projectFile.replace("[TEMPLATE_VERSION]", `${name}@${version}`);
+    fs.writeFileSync(path.join(projectRoot, "webiny.package.js"), projectFile);
 
     // Adjust versions - change them from `latest` to current one.
     const latestVersion = version;

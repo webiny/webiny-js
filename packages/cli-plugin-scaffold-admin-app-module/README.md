@@ -13,7 +13,7 @@ A plugin for @webiny/cli-plugin-scaffold that adds an Admin app module that conn
 yarn add @webiny/cli-plugin-scaffold-admin-app-module
 ```
 
-Add plugin to your project by editing `webiny.root.js`:
+Add plugin to your project by editing `webiny.project.js`:
 
 ```js
 module.exports = {
