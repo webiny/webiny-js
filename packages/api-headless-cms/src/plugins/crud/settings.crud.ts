@@ -1,6 +1,7 @@
 import { ContextPlugin } from "@webiny/handler/types";
 import * as utils from "../../utils";
 import { CmsContext, CmsSettingsContext, CmsSettingsPermission, CmsSettings } from "../../types";
+import configurations from "../../configurations";
 
 const SETTINGS_SECONDARY_KEY = "settings";
 
@@ -18,7 +19,7 @@ export default {
 
         const settingsGet = async (): Promise<CmsSettings> => {
             const [[settings]] = await db.read<CmsSettings>({
-                ...utils.defaults.db(),
+                ...configurations.db(),
                 query: { PK: PK_SETTINGS(), SK: SETTINGS_SECONDARY_KEY }
             });
 
@@ -43,7 +44,7 @@ export default {
                 const settings = await settingsGet();
                 if (!settings) {
                     await db.create({
-                        ...utils.defaults.db(),
+                        ...configurations.db(),
                         data: {
                             PK: PK_SETTINGS(),
                             SK: SETTINGS_SECONDARY_KEY,
@@ -54,7 +55,7 @@ export default {
                 }
 
                 await db.update({
-                    ...utils.defaults.db(),
+                    ...configurations.db(),
                     query: {
                         PK: PK_SETTINGS(),
                         SK: SETTINGS_SECONDARY_KEY

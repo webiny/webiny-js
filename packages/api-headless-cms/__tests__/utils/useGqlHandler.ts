@@ -34,10 +34,7 @@ import { simulateStream } from "@webiny/project-utils/testing/dynamodb";
 import { INTROSPECTION } from "./graphql/schema";
 import { ApiKey } from "@webiny/api-security-tenancy/types";
 
-import elasticSearchPlugins from "../../src/content/plugins/es";
-import fieldsStoragePlugins from "../../src/content/plugins/fieldsStorage";
-
-import { dynamoElastic } from "../../src/storage";
+import dynamoDbElasticStorage from "@webiny/api-headless-cms-ddb-es";
 
 export interface GQLHandlerCallableArgs {
     permissions?: PermissionsArg[];
@@ -173,8 +170,6 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
         i18nContext(),
         i18nContentPlugins(),
         mockLocalesPlugins(),
-        elasticSearchPlugins(),
-        fieldsStoragePlugins(),
         {
             type: "security-authorization",
             name: "security-authorization",
@@ -217,7 +212,7 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
             }
         },
         // this is the storage plugin
-        dynamoElastic(),
+        dynamoDbElasticStorage(),
         //
         plugins
     );

@@ -30,7 +30,6 @@ export default (): ContextPlugin<CmsContext> => ({
     type: "context",
     name: "context-content-model-storageOperations",
     async apply(context) {
-        const { elasticSearch } = context;
         const pluginType = "cms-content-model-storage-operations-provider";
         const providerPlugins = context.plugins.byType<CmsContentModelStorageOperationsProvider>(
             pluginType
@@ -163,32 +162,6 @@ export default (): ContextPlugin<CmsContext> => ({
                 };
 
                 await beforeCreateHook({ context, storageOperations, input, data });
-
-                /*
-                await db.create({
-                    ...utils.defaults.db(),
-                    data: {
-                        PK: PK_CONTENT_MODEL(),
-                        SK: data.modelId,
-                        TYPE: "cms.model",
-                        webinyVersion: context.WEBINY_VERSION,
-                        ...data
-                    }
-                });
-                */
-                try {
-                    const esIndex = utils.defaults.es(context, data);
-                    const { body: exists } = await elasticSearch.indices.exists(esIndex);
-                    if (!exists) {
-                        await elasticSearch.indices.create(esIndex);
-                    }
-                } catch (ex) {
-                    throw new WebinyError(
-                        "Could not create Elasticsearch index.",
-                        "ELASTICSEARCH_INDEX",
-                        ex
-                    );
-                }
 
                 const model = await storageOperations.create({
                     input,

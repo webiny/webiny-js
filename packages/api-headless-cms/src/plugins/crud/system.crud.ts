@@ -2,8 +2,8 @@ import { NotAuthorizedError } from "@webiny/api-security";
 import Error from "@webiny/error";
 import { getApplicablePlugin } from "@webiny/api-upgrade";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
-import * as utils from "../../utils";
-import { CmsContext } from "../../types";
+import { CmsContext, CmsInstallHooksPlugin } from "../../types";
+import configurations from "../../configurations";
 
 const initialContentModelGroup = {
     name: "Ungrouped",
@@ -27,7 +27,7 @@ export default {
                     }
 
                     const [[system]] = await db.read({
-                        ...utils.defaults.db(),
+                        ...configurations.db(),
                         query: keys()
                     });
 
@@ -44,13 +44,13 @@ export default {
                 },
                 async setVersion(version: string) {
                     const [[system]] = await db.read({
-                        ...utils.defaults.db(),
+                        ...configurations.db(),
                         query: keys()
                     });
 
                     if (system) {
                         await db.update({
-                            ...utils.defaults.db(),
+                            ...configurations.db(),
                             query: keys(),
                             data: {
                                 version
@@ -58,7 +58,7 @@ export default {
                         });
                     } else {
                         await db.create({
-                            ...utils.defaults.db(),
+                            ...configurations.db(),
                             data: {
                                 ...keys(),
                                 version
@@ -77,6 +77,16 @@ export default {
                         return;
                     }
 
+                    const installHooks = context.plugins.byType<CmsInstallHooksPlugin>(
+                        "cms-install-hooks"
+                    );
+
+                    for (const hook of installHooks) {
+                        if (!hook.beforeInstall) {
+                            continue;
+                        }
+                        await hook.beforeInstall(context);
+                    }
                     // Add default content model group.
                     try {
                         await context.cms.groups.create(initialContentModelGroup);
@@ -84,48 +94,11 @@ export default {
                         throw new Error(ex.message, "CMS_INSTALLATION_CONTENT_MODEL_GROUP_ERROR");
                     }
 
-                    try {
-                        await context.elasticSearch.indices.putTemplate({
-                            name: "headless-cms-entries-index",
-                            body: {
-                                index_patterns: ["*headless-cms*"],
-                                settings: {
-                                    analysis: {
-                                        analyzer: {
-                                            lowercase_analyzer: {
-                                                type: "custom",
-                                                filter: ["lowercase", "trim"],
-                                                tokenizer: "keyword"
-                                            }
-                                        }
-                                    }
-                                },
-                                mappings: {
-                                    properties: {
-                                        property: {
-                                            type: "text",
-                                            fields: {
-                                                keyword: {
-                                                    type: "keyword",
-                                                    ignore_above: 256
-                                                }
-                                            },
-                                            analyzer: "lowercase_analyzer"
-                                        },
-                                        rawValues: {
-                                            type: "object",
-                                            enabled: false
-                                        }
-                                    }
-                                }
-                            }
-                        });
-                    } catch (err) {
-                        console.log(err);
-                        throw new Error(
-                            "Index template creation failed!",
-                            "CMS_INSTALLATION_INDEX_TEMPLATE_ERROR"
-                        );
+                    for (const hook of installHooks) {
+                        if (!hook.afterInstall) {
+                            continue;
+                        }
+                        await hook.afterInstall(context);
                     }
 
                     // Set app version

@@ -12,6 +12,9 @@
       "path": "../api-security"
     },
     {
+      "path": "../api-headless-cms-ddb-es"
+    },
+    {
       "path": "../api-security-tenancy"
     },
     {
@@ -62,6 +65,8 @@
       "@webiny/api-i18n-content": ["../api-i18n-content/src"],
       "@webiny/api-security/*": ["../api-security/src/*"],
       "@webiny/api-security": ["../api-security/src"],
+      "@webiny/api-headless-cms-ddb-es/*": ["../api-headless-cms-ddb-es/src/*"],
+      "@webiny/api-headless-cms-ddb-es": ["../api-headless-cms-ddb-es/src"],
       "@webiny/api-security-tenancy/*": ["../api-security-tenancy/src/*"],
       "@webiny/api-security-tenancy": ["../api-security-tenancy/src"],
       "@webiny/api-file-manager/*": ["../api-file-manager/src/*"],
