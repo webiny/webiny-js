@@ -84,7 +84,7 @@ module.exports = [
                     yargs.option("depth", {
                         describe: `The level of dependencies that needs to be watched for code changes (does not work when "scope" is passed)`,
                         type: "number",
-                        default: 5
+                        default: 2
                     });
                     yargs.option("logs", {
                         describe: `Forward logs from deployed application code to your terminal.`,

@@ -176,7 +176,7 @@ module.exports = async (inputs, context) => {
                     "tree",
                     "--json",
                     "--depth",
-                    inputs.depth || 5,
+                    inputs.depth,
                     "--distinct",
                     "--folder",
                     inputs.folder
