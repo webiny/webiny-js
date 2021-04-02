@@ -130,11 +130,11 @@ class Context {
     }
 
     resolve(...dir) {
-        return path.resolve(projectRoot, ...dir);
+        return path.resolve(this.project.root, ...dir);
     }
 
     replaceProjectRoot(path) {
-        return path.replace(projectRoot, "<projectRoot>").replace(/\\/g, "/");
+        return path.replace(this.project.root, "<projectRoot>").replace(/\\/g, "/");
     }
 
     /**
