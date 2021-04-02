@@ -24,7 +24,7 @@ export default (args: PbEditorElementPluginArgs = {}) => {
         }
     });
 
-    const elementType = kebabCase(args.elementType || "image-list");
+    const elementType = kebabCase(args.elementType || "images-list");
 
     const defaultToolbar = {
         title: "Image Gallery",
@@ -81,7 +81,7 @@ export default (args: PbEditorElementPluginArgs = {}) => {
         {
             name: "pb-editor-page-element-advanced-settings-images-list-filter",
             type: "pb-editor-page-element-advanced-settings",
-            elementType: "images-list",
+            elementType: elementType,
             render(props) {
                 return <ImagesListImagesSettings {...props} filter />;
             }
@@ -89,7 +89,7 @@ export default (args: PbEditorElementPluginArgs = {}) => {
         {
             name: "pb-editor-page-element-advanced-settings-images-list-design",
             type: "pb-editor-page-element-advanced-settings",
-            elementType: "images-list",
+            elementType: elementType,
             render(props) {
                 return <ImagesListDesignSettings {...props} />;
             }
