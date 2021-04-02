@@ -35,6 +35,10 @@ module.exports = class PluginsContainer {
         return Array.from(plugins);
     }
 
+    findByType(type) {
+        return Object.values(this.plugins).filter(pl => pl.type === type);
+    }
+
     register(...args) {
         assign(...args, this.plugins);
     }
