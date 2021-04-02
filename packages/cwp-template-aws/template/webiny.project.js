@@ -1,6 +1,6 @@
 module.exports = {
     template: "[TEMPLATE_VERSION]",
-    projectName: "[PROJECT_NAME]",
+    name: "[PROJECT_NAME]",
     cli: {
         plugins: [
             require("@webiny/cli-plugin-workspaces")(),
