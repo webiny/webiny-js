@@ -9604,14 +9604,14 @@ __metadata:
   linkType: hard
 
 "ajv@npm:^8.0.1":
-  version: 8.0.4
-  resolution: "ajv@npm:8.0.4"
+  version: 8.0.5
+  resolution: "ajv@npm:8.0.5"
   dependencies:
     fast-deep-equal: ^3.1.1
     json-schema-traverse: ^1.0.0
     require-from-string: ^2.0.2
     uri-js: ^4.2.2
-  checksum: 6d6fbf5083fc35470d1f2c7774d9dd747ff6e44b1c77615101dd1b83bf4d727c20972e677a42bff549e5b588314984fce920b9c90e62a6573bbef9a47a68348a
+  checksum: 721b491110bda18a6e718dc8a3bca091ea8bb1b92e6e809baffc63cb9a5faf1ca424eb1639277ed00bc602f8614e936f3b5d96de28778fe0eedd76bb8c1d39d3
   languageName: node
   linkType: hard
 
