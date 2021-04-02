@@ -34,9 +34,8 @@
     "directory": "dist"
   },
   "scripts": {
-    "build": "rimraf ./dist '*.tsbuildinfo' && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" && yarn postbuild",
-    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" --watch",
-    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
+    "build": "yarn webiny run build",
+    "watch": "yarn webiny run watch"
   },
   "adio": {},
   "gitHead": "2cd812f1b150c10df088a5b2f75a62c9e376c1a4",
