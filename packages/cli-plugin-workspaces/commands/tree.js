@@ -17,7 +17,7 @@ module.exports = async ({ json, scope, folder, depth, distinct }) => {
     const packages = getPackages({ scopes, folders });
     const allPackages = {
         list: getPackages(),
-        graph: createGraph(getPackages())
+        graph: createGraph(getPackages(), { validate: false })
     };
 
     const tree = buildTree({ packages, allPackages, depth });
