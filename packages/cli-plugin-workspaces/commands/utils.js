@@ -3,7 +3,7 @@ const { join, resolve } = require("path");
 const multimatch = require("multimatch");
 const { allWorkspaces } = require("@webiny/project-utils/workspaces");
 
-const createGraph = packages => {
+const createGraph = (packages, options = {}) => {
     const graph = new Graph();
     const packageNames = packages.map(pkg => pkg.name);
 
@@ -26,7 +26,7 @@ const createGraph = packages => {
         });
     });
 
-    validateGraph(graph);
+    options.validate !== false && validateGraph(graph);
 
     return graph;
 };
