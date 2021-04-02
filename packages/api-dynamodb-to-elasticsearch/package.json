@@ -32,7 +32,7 @@
   "scripts": {
     "build": "yarn webiny run build",
     "watch": "yarn webiny run watch"
-  }
+  },
   "adio": {
     "ignoreDirs": [
       "__tests__"
