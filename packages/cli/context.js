@@ -1,8 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 const chalk = require("chalk");
-const { PluginsContainer } = require("@webiny/plugins");
 const { getProject } = require("./utils");
+const PluginsContainer = require("./utils/PluginsContainer");
 
 const project = getProject();
 if (!project) {
