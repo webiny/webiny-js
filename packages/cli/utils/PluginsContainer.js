@@ -40,7 +40,7 @@ module.exports = class PluginsContainer {
     }
 
     register(...args) {
-        assign(...args, this.plugins);
+        assign(args, this.plugins);
     }
 
     unregister(name) {
