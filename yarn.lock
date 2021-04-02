@@ -7333,6 +7333,7 @@ __metadata:
     "@babel/cli": ^7.5.5
     "@babel/core": ^7.5.5
     "@webiny/api-file-manager": ^5.3.0
+    "@webiny/cli": ^5.3.0
     "@webiny/handler": ^5.3.0
     "@webiny/handler-graphql": ^5.3.0
     "@webiny/plugins": ^5.3.0
@@ -7409,6 +7410,7 @@ __metadata:
     "@webiny/api-security": ^5.3.0
     "@webiny/api-security-tenancy": ^5.3.0
     "@webiny/api-upgrade": ^5.3.0
+    "@webiny/cli": ^5.3.0
     "@webiny/db-dynamodb": ^5.3.0
     "@webiny/error": ^5.3.0
     "@webiny/handler": ^5.3.0
@@ -7456,6 +7458,7 @@ __metadata:
     "@webiny/api-security": ^5.3.0
     "@webiny/api-security-tenancy": ^5.3.0
     "@webiny/api-upgrade": ^5.3.0
+    "@webiny/cli": ^5.3.0
     "@webiny/db-dynamodb": ^5.3.0
     "@webiny/error": ^5.3.0
     "@webiny/handler": ^5.3.0
@@ -7497,6 +7500,7 @@ __metadata:
     "@babel/runtime": ^7.5.5
     "@webiny/api-i18n": ^5.3.0
     "@webiny/api-security": ^5.3.0
+    "@webiny/cli": ^5.3.0
     "@webiny/handler": ^5.3.0
     "@webiny/handler-graphql": ^5.3.0
     "@webiny/project-utils": ^5.3.0
@@ -7516,6 +7520,7 @@ __metadata:
     "@babel/runtime": ^7.5.5
     "@webiny/api-security": ^5.3.0
     "@webiny/api-security-tenancy": ^5.3.0
+    "@webiny/cli": ^5.3.0
     "@webiny/db-dynamodb": ^5.3.0
     "@webiny/handler": ^5.3.0
     "@webiny/handler-aws": ^5.3.0
@@ -7557,6 +7562,7 @@ __metadata:
     "@webiny/api-security": ^5.3.0
     "@webiny/api-security-tenancy": ^5.3.0
     "@webiny/api-upgrade": ^5.3.0
+    "@webiny/cli": ^5.3.0
     "@webiny/cli-plugin-deploy-pulumi": ^5.3.0
     "@webiny/db": ^5.3.0
     "@webiny/db-dynamodb": ^5.3.0
@@ -7596,6 +7602,7 @@ __metadata:
     "@babel/cli": ^7.5.5
     "@babel/core": ^7.5.5
     "@elastic/elasticsearch": ^7.9.1
+    "@webiny/cli": ^5.3.0
     "@webiny/handler": ^5.3.0
     "@webiny/project-utils": ^5.3.0
     aws-elasticsearch-connector: ^9.0.0
@@ -7613,6 +7620,7 @@ __metadata:
     "@babel/core": ^7.5.5
     "@webiny/api-security": ^5.3.0
     "@webiny/api-security-tenancy": ^5.3.0
+    "@webiny/cli": ^5.3.0
     "@webiny/handler": ^5.3.0
     "@webiny/handler-graphql": ^5.3.0
     "@webiny/handler-http": ^5.3.0
@@ -7636,6 +7644,7 @@ __metadata:
     "@babel/preset-typescript": ^7.8.3
     "@babel/runtime": ^7.5.5
     "@webiny/api-prerendering-service": ^5.3.0
+    "@webiny/cli": ^5.3.0
     "@webiny/handler": ^5.3.0
     "@webiny/handler-args": ^5.3.0
     "@webiny/plugins": ^5.3.0
@@ -7655,6 +7664,7 @@ __metadata:
     "@babel/preset-env": ^7.5.5
     "@babel/preset-typescript": ^7.8.3
     "@babel/runtime": ^7.5.5
+    "@webiny/cli": ^5.3.0
     "@webiny/db": ^5.3.0
     "@webiny/error": ^5.3.0
     "@webiny/handler": ^5.3.0
@@ -7684,6 +7694,7 @@ __metadata:
     "@babel/core": ^7.5.5
     "@commodo/fields": 1.1.2-beta.20
     "@webiny/api-security": ^5.3.0
+    "@webiny/cli": ^5.3.0
     "@webiny/db-dynamodb": ^5.3.0
     "@webiny/handler": ^5.3.0
     "@webiny/handler-aws": ^5.3.0
@@ -7713,6 +7724,7 @@ __metadata:
     "@babel/preset-env": ^7.5.5
     "@babel/preset-typescript": ^7.8.3
     "@babel/runtime": ^7.5.5
+    "@webiny/cli": ^5.3.0
     "@webiny/error": ^5.3.0
     "@webiny/handler": ^5.3.0
     "@webiny/handler-graphql": ^5.3.0
@@ -7733,6 +7745,7 @@ __metadata:
     "@babel/preset-env": ^7.5.5
     "@babel/runtime": ^7.5.5
     "@types/semver": ^7.3.4
+    "@webiny/cli": ^5.3.0
     "@webiny/error": ^5.3.0
     "@webiny/handler": ^5.3.0
     "@webiny/plugins": ^5.3.0
@@ -7765,6 +7778,7 @@ __metadata:
     "@types/react": ^16.9.56
     "@webiny/app": ^5.3.0
     "@webiny/app-security": ^5.3.0
+    "@webiny/cli": ^5.3.0
     "@webiny/form": ^5.3.0
     "@webiny/plugins": ^5.3.0
     "@webiny/project-utils": ^5.3.0
@@ -7812,6 +7826,7 @@ __metadata:
   dependencies:
     "@babel/cli": ^7.5.5
     "@babel/core": ^7.5.5
+    "@webiny/cli": ^5.3.0
     "@webiny/plugins": ^5.3.0
     "@webiny/project-utils": ^5.3.0
     apollo-client: ^2.6.10
@@ -7841,6 +7856,7 @@ __metadata:
     "@webiny/app": ^5.3.0
     "@webiny/app-admin": ^5.3.0
     "@webiny/app-security": ^5.3.0
+    "@webiny/cli": ^5.3.0
     "@webiny/form": ^5.3.0
     "@webiny/plugins": ^5.3.0
     "@webiny/project-utils": ^5.3.0
@@ -7884,6 +7900,7 @@ __metadata:
     "@webiny/app-page-builder": ^5.3.0
     "@webiny/app-plugin-admin-welcome-screen": ^5.3.0
     "@webiny/app-security": ^5.3.0
+    "@webiny/cli": ^5.3.0
     "@webiny/form": ^5.3.0
     "@webiny/plugins": ^5.3.0
     "@webiny/project-utils": ^5.3.0
@@ -7934,6 +7951,7 @@ __metadata:
     "@webiny/app-admin": ^5.3.0
     "@webiny/app-i18n": ^5.3.0
     "@webiny/app-security": ^5.3.0
+    "@webiny/cli": ^5.3.0
     "@webiny/plugins": ^5.3.0
     "@webiny/project-utils": ^5.3.0
     "@webiny/react-router": ^5.3.0
@@ -7982,6 +8000,7 @@ __metadata:
     "@webiny/app-i18n": ^5.3.0
     "@webiny/app-plugin-admin-welcome-screen": ^5.3.0
     "@webiny/app-security": ^5.3.0
+    "@webiny/cli": ^5.3.0
     "@webiny/error": ^5.3.0
     "@webiny/form": ^5.3.0
     "@webiny/plugins": ^5.3.0
@@ -8037,6 +8056,7 @@ __metadata:
     "@webiny/app-admin": ^5.3.0
     "@webiny/app-i18n": ^5.3.0
     "@webiny/app-security": ^5.3.0
+    "@webiny/cli": ^5.3.0
     "@webiny/form": ^5.3.0
     "@webiny/project-utils": ^5.3.0
     "@webiny/ui": ^5.3.0
@@ -8068,6 +8088,7 @@ __metadata:
     "@webiny/app": ^5.3.0
     "@webiny/app-admin": ^5.3.0
     "@webiny/app-security": ^5.3.0
+    "@webiny/cli": ^5.3.0
     "@webiny/form": ^5.3.0
     "@webiny/project-utils": ^5.3.0
     "@webiny/react-router": ^5.3.0
@@ -8121,6 +8142,7 @@ __metadata:
     "@webiny/app-admin": ^5.3.0
     "@webiny/app-plugin-admin-welcome-screen": ^5.3.0
     "@webiny/app-security": ^5.3.0
+    "@webiny/cli": ^5.3.0
     "@webiny/form": ^5.3.0
     "@webiny/plugins": ^5.3.0
     "@webiny/project-utils": ^5.3.0
@@ -8186,6 +8208,7 @@ __metadata:
     "@emotion/styled": ^10.0.27
     "@webiny/app-admin": ^5.3.0
     "@webiny/app-security": ^5.3.0
+    "@webiny/cli": ^5.3.0
     "@webiny/plugins": ^5.3.0
     "@webiny/project-utils": ^5.3.0
     "@webiny/react-router": ^5.3.0
@@ -8218,6 +8241,7 @@ __metadata:
     "@webiny/app": ^5.3.0
     "@webiny/app-security": ^5.3.0
     "@webiny/app-security-tenancy": ^5.3.0
+    "@webiny/cli": ^5.3.0
     "@webiny/form": ^5.3.0
     "@webiny/plugins": ^5.3.0
     "@webiny/project-utils": ^5.3.0
@@ -8257,6 +8281,7 @@ __metadata:
     "@webiny/app": ^5.3.0
     "@webiny/app-admin": ^5.3.0
     "@webiny/app-security": ^5.3.0
+    "@webiny/cli": ^5.3.0
     "@webiny/form": ^5.3.0
     "@webiny/plugins": ^5.3.0
     "@webiny/project-utils": ^5.3.0
@@ -8294,6 +8319,7 @@ __metadata:
     "@babel/preset-react": ^7.0.0
     "@babel/preset-typescript": ^7.8.3
     "@webiny/app": ^5.3.0
+    "@webiny/cli": ^5.3.0
     "@webiny/plugins": ^5.3.0
     "@webiny/project-utils": ^5.3.0
     babel-plugin-emotion: ^9.2.8
@@ -8322,6 +8348,7 @@ __metadata:
     "@svgr/webpack": ^4.3.2
     "@webiny/app": ^5.3.0
     "@webiny/app-page-builder": ^5.3.0
+    "@webiny/cli": ^5.3.0
     "@webiny/project-utils": ^5.3.0
     "@webiny/validation": ^5.3.0
     babel-plugin-emotion: ^9.2.8
@@ -8348,6 +8375,7 @@ __metadata:
     "@babel/preset-typescript": ^7.8.3
     "@babel/runtime": ^7.5.5
     "@types/react": ^16.9.56
+    "@webiny/cli": ^5.3.0
     "@webiny/i18n": ^5.3.0
     "@webiny/i18n-react": ^5.3.0
     "@webiny/plugins": ^5.3.0
@@ -8504,6 +8532,7 @@ __metadata:
     "@babel/preset-flow": ^7.0.0
     "@babel/runtime": ^7.5.5
     "@types/inquirer": ^7.3.1
+    "@webiny/cli": ^5.3.0
     "@webiny/handler": ^5.3.0
     "@webiny/plugins": ^5.3.0
     "@webiny/project-utils": ^5.3.0
@@ -8560,6 +8589,7 @@ __metadata:
     "@commodo/fields": ^1.2.1
     "@commodo/hooks": ^1.2.1
     "@commodo/name": ^1.3.1
+    "@webiny/cli": ^5.3.0
     "@webiny/project-utils": ^5.3.0
     commodo-fields-date: ^1.0.3
     commodo-fields-float: ^1.0.2
@@ -8600,6 +8630,7 @@ __metadata:
   dependencies:
     "@babel/cli": ^7.5.5
     "@babel/core": ^7.5.5
+    "@webiny/cli": ^5.3.0
     "@webiny/db": ^5.3.0
     "@webiny/project-utils": ^5.3.0
     jest: ^26.6.3
@@ -8615,6 +8646,7 @@ __metadata:
   dependencies:
     "@babel/cli": ^7.5.5
     "@babel/core": ^7.5.5
+    "@webiny/cli": ^5.3.0
     "@webiny/project-utils": ^5.3.0
     rimraf: ^3.0.2
     typescript: ^4.1.3
@@ -8627,6 +8659,7 @@ __metadata:
   dependencies:
     "@babel/cli": ^7.12.10
     "@babel/core": ^7.5.5
+    "@webiny/cli": ^5.3.0
     "@webiny/project-utils": ^5.3.0
     rimraf: ^3.0.2
     typescript: ^4.1.3
@@ -8643,6 +8676,7 @@ __metadata:
     "@babel/preset-env": ^7.5.5
     "@babel/preset-typescript": ^7.8.3
     "@babel/runtime": ^7.5.5
+    "@webiny/cli": ^5.3.0
     "@webiny/project-utils": ^5.3.0
     babel-plugin-lodash: ^3.3.4
     invariant: ^2.2.4
@@ -8663,6 +8697,7 @@ __metadata:
     "@babel/preset-env": ^7.5.5
     "@babel/preset-typescript": ^7.8.3
     "@babel/runtime": ^7.5.5
+    "@webiny/cli": ^5.3.0
     "@webiny/project-utils": ^5.3.0
     rimraf: ^3.0.2
     typescript: ^4.1.3
@@ -8678,6 +8713,7 @@ __metadata:
     "@babel/preset-env": ^7.5.5
     "@babel/preset-typescript": ^7.8.3
     "@babel/runtime": ^7.5.5
+    "@webiny/cli": ^5.3.0
     "@webiny/handler": ^5.3.0
     "@webiny/handler-args": ^5.3.0
     "@webiny/handler-client": ^5.3.0
@@ -8699,6 +8735,7 @@ __metadata:
     "@babel/preset-env": ^7.5.5
     "@babel/preset-typescript": ^7.8.3
     "@babel/runtime": ^7.5.5
+    "@webiny/cli": ^5.3.0
     "@webiny/handler": ^5.3.0
     "@webiny/plugins": ^5.3.0
     "@webiny/project-utils": ^5.3.0
@@ -8718,6 +8755,7 @@ __metadata:
     "@babel/core": ^7.5.5
     "@babel/preset-env": ^7.5.5
     "@babel/runtime": ^7.5.5
+    "@webiny/cli": ^5.3.0
     "@webiny/db": ^5.3.0
     "@webiny/handler": ^5.3.0
     "@webiny/project-utils": ^5.3.0
@@ -8735,6 +8773,7 @@ __metadata:
     "@babel/preset-env": ^7.5.5
     "@babel/runtime": ^7.5.5
     "@graphql-tools/schema": ^7.0.0
+    "@webiny/cli": ^5.3.0
     "@webiny/error": ^5.3.0
     "@webiny/handler": ^5.3.0
     "@webiny/handler-args": ^5.3.0
@@ -8759,6 +8798,7 @@ __metadata:
     "@babel/cli": ^7.5.5
     "@babel/core": ^7.5.5
     "@babel/runtime": ^7.5.5
+    "@webiny/cli": ^5.3.0
     "@webiny/handler": ^5.3.0
     "@webiny/project-utils": ^5.3.0
     merge: ^1.2.1
@@ -8776,6 +8816,7 @@ __metadata:
     "@babel/preset-env": ^7.5.5
     "@babel/preset-typescript": ^7.8.3
     "@babel/runtime": ^7.5.5
+    "@webiny/cli": ^5.3.0
     "@webiny/project-utils": ^5.3.0
     node-fetch: ^2.6.1
     rimraf: ^3.0.2
@@ -8791,6 +8832,7 @@ __metadata:
     "@babel/core": ^7.5.5
     "@babel/preset-env": ^7.5.5
     "@babel/runtime": ^7.5.5
+    "@webiny/cli": ^5.3.0
     "@webiny/plugins": ^5.3.0
     "@webiny/project-utils": ^5.3.0
     rimraf: ^3.0.2
@@ -8808,6 +8850,7 @@ __metadata:
     "@babel/preset-react": ^7.0.0
     "@babel/preset-typescript": ^7.8.3
     "@babel/runtime": ^7.5.5
+    "@webiny/cli": ^5.3.0
     "@webiny/i18n": ^5.3.0
     "@webiny/project-utils": ^5.3.0
     babel-plugin-lodash: ^3.3.4
@@ -8829,6 +8872,7 @@ __metadata:
     "@babel/preset-typescript": ^7.8.3
     "@babel/register": ^7.5.5
     "@babel/runtime": ^7.5.5
+    "@webiny/cli": ^5.3.0
     "@webiny/project-utils": ^5.3.0
     accounting: ^0.4.1
     babel-plugin-lodash: ^3.3.4
@@ -8851,6 +8895,7 @@ __metadata:
     "@babel/cli": ^7.5.5
     "@babel/core": ^7.5.5
     "@babel/runtime": ^7.5.5
+    "@webiny/cli": ^5.3.0
     "@webiny/project-utils": ^5.3.0
     rimraf: ^3.0.2
     typescript: ^4.1.3
@@ -8930,6 +8975,7 @@ __metadata:
     "@pulumi/aws": ^3.22.0
     "@pulumi/pulumi": ^2.21.2
     "@types/node": ^10.0.0
+    "@webiny/cli": ^5.3.0
     "@webiny/project-utils": ^5.3.0
     decompress: ^4.2.1
     download: ^5.0.3
@@ -8951,6 +8997,7 @@ __metadata:
     "@babel/preset-env": ^7.5.5
     "@babel/runtime": ^7.5.5
     "@types/react-router-dom": ^5.1.5
+    "@webiny/cli": ^5.3.0
     "@webiny/plugins": ^5.3.0
     "@webiny/project-utils": ^5.3.0
     apollo-client: ^2.6.8
@@ -8980,6 +9027,7 @@ __metadata:
     "@babel/runtime": ^7.5.5
     "@emotion/core": ^10.0.27
     "@emotion/styled": ^10.0.17
+    "@webiny/cli": ^5.3.0
     "@webiny/project-utils": ^5.3.0
     copy-to-clipboard: ^3.0.8
     execa: ^5.0.0
@@ -9052,6 +9100,7 @@ __metadata:
     "@storybook/addon-links": ^5.0.5
     "@storybook/react": ^5.2.8
     "@svgr/webpack": ^4.3.2
+    "@webiny/cli": ^5.3.0
     "@webiny/form": ^5.3.0
     "@webiny/project-utils": ^5.3.0
     "@webiny/storybook-utils": ^5.3.0
@@ -9109,6 +9158,7 @@ __metadata:
     "@babel/preset-env": ^7.5.5
     "@babel/preset-typescript": ^7.8.3
     "@babel/runtime": ^7.5.5
+    "@webiny/cli": ^5.3.0
     "@webiny/project-utils": ^5.3.0
     babel-plugin-lodash: ^3.3.4
     isnumeric: ^0.3.3
