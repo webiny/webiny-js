@@ -26,19 +26,19 @@ module.exports = async projectApplication => {
         }
     });
 
+    const relativeProjectApplicationPath = relative(
+        projectApplication.project.root,
+        projectApplication.root
+    );
+
     let login = process.env.WEBINY_PULUMI_BACKEND_URL;
     if (login) {
         // Determine if we use as single storage for all Pulumi projects. If so, append project application path.
         const selfManagedBackend = SELF_MANAGED_BACKEND.find(item => login.startsWith(item));
         if (selfManagedBackend) {
-            login = trimEnd(login, "/") + "/" + projectApplication.path.relative;
+            login = trimEnd(login, "/") + "/" + relativeProjectApplicationPath;
         }
     } else {
-        const relativeProjectApplicationPath = relative(
-            projectApplication.project.root,
-            projectApplication.root
-        );
-
         const stateFilesFolder = join(
             projectApplication.project.root,
             ".pulumi",
