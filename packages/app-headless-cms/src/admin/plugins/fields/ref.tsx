@@ -4,7 +4,7 @@ import { useQuery } from "../../hooks";
 import { LIST_CONTENT_MODELS } from "../../viewsGraphql";
 import { validation, ValidationError } from "@webiny/validation";
 import { Cell, Grid } from "@webiny/ui/Grid";
-import { AutoComplete, Placement } from "@webiny/ui/AutoComplete";
+import { MultiAutoComplete, Placement } from "@webiny/ui/AutoComplete";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CmsEditorFieldTypePlugin } from "~/types";
@@ -72,26 +72,23 @@ const plugin: CmsEditorFieldTypePlugin = {
                     <Cell span={12}>
                         <Bind name={"settings.models"} validators={atLeastOneItem}>
                             {bind => {
-                                // At this point we only use index 0.
-                                // (we'll be upgrading this to allow `ref` field to accept different models in the future).
-                                const modelId = get(bind, "value.0.modelId");
-
-                                // Format value prop for AutoComplete component.
-                                const formattedValueForAutoComplete = options.find(
-                                    option => option.id === modelId
+                                // Format value prop for MultiAutoComplete component.
+                                const formattedValueForAutoComplete = options.filter(option =>
+                                    bind.value.some(({ modelId }) => option.id === modelId)
                                 );
 
                                 return (
-                                    <AutoComplete
+                                    <MultiAutoComplete
                                         {...bind}
                                         value={formattedValueForAutoComplete}
-                                        onChange={value => {
-                                            bind.onChange([{ modelId: value }]);
+                                        onChange={values => {
+                                            bind.onChange(
+                                                values.map(value => ({ modelId: value.id }))
+                                            );
                                         }}
-                                        label={t`Content Model`}
+                                        label={t`Content Models`}
                                         description={t`Cannot be changed later`}
                                         options={options}
-                                        placement={Placement.top}
                                         disabled={lockedField && lockedField.modelId}
                                     />
                                 );
