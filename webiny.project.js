@@ -19,7 +19,6 @@ try {
     // This is because packages are built using "yarn webiny run build" command, which
     // invoke the Webiny CLI, and which requires this file. As we can see, above we have
     // requires of allegedly built packages, but on the first build, that's not true.
-
     // In summary, an error will be thrown on the very first build of the repository. After
     // that, it's fine, because packages were built and will be required successfully.
 }
