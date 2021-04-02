@@ -1,7 +1,7 @@
 const fs = require("fs");
 const execa = require("execa");
 const { watchPackage, buildPackage } = require("@webiny/project-utils");
-const ncp = require('ncp');
+const ncp = require("ncp");
 
 module.exports = {
     commands: {
@@ -10,7 +10,7 @@ module.exports = {
             return buildPackage(
                 {
                     ...options,
-                    postbuild:  () => {
+                    postbuild: () => {
                         context.info("Generating TypeScript types...");
                         execa.sync("yarn", ["tsc", "-p", "tsconfig.build.json"], {
                             stdio: "inherit"
@@ -21,7 +21,7 @@ module.exports = {
                         fs.copyFileSync("LICENSE", "./dist/LICENSE");
                         fs.copyFileSync("README.md", "./dist/README.md");
 
-                        return ncp('template', "./dist/template");
+                        return ncp("template", "./dist/template");
                     }
                 },
                 context

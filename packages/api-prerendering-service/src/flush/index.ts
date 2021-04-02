@@ -11,7 +11,6 @@ import getTagUrlLinkPKSK from "./../utils/getTagUrlLinkPKSK";
 
 const s3 = new S3({ region: process.env.AWS_REGION });
 
-
 const deleteFile = ({ key, storageName }) => {
     return s3
         .deleteObject({

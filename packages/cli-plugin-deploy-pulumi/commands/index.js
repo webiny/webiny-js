@@ -54,9 +54,11 @@ module.exports = [
                 `Rebuild and deploy specified specified project application while making changes to it`,
                 yargs => {
                     yargs.example("$0 watch api --env=dev");
-                    yargs.example("$0 watch api --env=dev --scope my-package-1 --scope my-package-2");
+                    yargs.example(
+                        "$0 watch api --env=dev --scope my-package-1 --scope my-package-2"
+                    );
                     yargs.example("$0 watch api --env=dev --depth 2");
-                    yargs.example("$0 watch api --env=dev --logs \"my-function*\"");
+                    yargs.example('$0 watch api --env=dev --logs "my-function*"');
                     yargs.positional("folder", {
                         describe: `Project application folder`,
                         type: "string"

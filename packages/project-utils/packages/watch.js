@@ -14,7 +14,7 @@ module.exports = () => {
             "--watch"
         ],
         {
-            stdio: "inherit",
+            stdio: "inherit"
         }
     );
 };

@@ -50,7 +50,7 @@ module.exports = (options = {}) => ({
 
                         command.option("folder", {
                             describe: `Include only workspaces found in the specified folder`,
-                            type: "string",
+                            type: "string"
                         });
 
                         command.option("depth", {
