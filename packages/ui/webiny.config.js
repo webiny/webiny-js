@@ -1,7 +1,9 @@
+const util = require("util");
 const fs = require("fs");
 const execa = require("execa");
 const { watchPackage, buildPackage } = require("@webiny/project-utils");
-const ncp = require("ncp");
+const ncpBase = require("ncp");
+const ncp = util.promisify(ncpBase.ncp);
 
 module.exports = {
     commands: {
