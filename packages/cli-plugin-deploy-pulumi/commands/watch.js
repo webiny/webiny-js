@@ -175,7 +175,7 @@ module.exports = async (inputs, context) => {
                     "--distinct",
                     "--folder",
                     inputs.folder
-                ]).then(({ stdout, stderr }) => JSON.parse(stdout));
+                ]).then(({ stdout }) => JSON.parse(stdout));
             }
 
             const watchPackages = execa("yarn", [
