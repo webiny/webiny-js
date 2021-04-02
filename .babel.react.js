@@ -44,16 +44,6 @@ module.exports = ({ path }) => ({
             }
         ],
         [
-            "babel-plugin-named-asset-import",
-            {
-                loaderMap: {
-                    svg: {
-                        ReactComponent: "@svgr/webpack![path]"
-                    }
-                }
-            }
-        ],
-        [
             "babel-plugin-module-resolver",
             {
                 cwd: path,

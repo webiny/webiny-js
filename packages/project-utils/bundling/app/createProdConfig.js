@@ -1,13 +1,11 @@
 "use strict";
 const path = require("path");
+const chalk = require("chalk");
 const fs = require("fs-extra");
 const webpack = require("webpack");
-const chalk = require("react-dev-utils/chalk");
-const checkRequiredFiles = require("react-dev-utils/checkRequiredFiles");
-const formatWebpackMessages = require("react-dev-utils/formatWebpackMessages");
-const FileSizeReporter = require("react-dev-utils/FileSizeReporter");
-const printBuildError = require("react-dev-utils/printBuildError");
 const { checkBrowsers } = require("react-dev-utils/browsersHelper");
+const formatWebpackMessages = require("react-dev-utils/formatWebpackMessages");
+const printBuildError = require("react-dev-utils/printBuildError");
 
 module.exports = async (options = {}) => {
     const appIndexJs = options.entry || path.resolve("src", "index.tsx");
@@ -27,19 +25,7 @@ module.exports = async (options = {}) => {
     // Ensure environment variables are read.
     const configFactory = require("./config/webpack.config");
 
-    const measureFileSizesBeforeBuild = FileSizeReporter.measureFileSizesBeforeBuild;
-    const printFileSizesAfterBuild = FileSizeReporter.printFileSizesAfterBuild;
-
-    // These sizes are pretty large. We'll warn for bundles exceeding them.
-    const WARN_AFTER_BUNDLE_GZIP_SIZE = 512 * 1024;
-    const WARN_AFTER_CHUNK_GZIP_SIZE = 1024 * 1024;
-
     const isInteractive = process.stdout.isTTY;
-
-    // Warn and crash if required files are missing
-    if (!checkRequiredFiles([paths.appHtml, paths.appIndexJs])) {
-        process.exit(1);
-    }
 
     // We require that you explicitly set browsers and do not fall back to browsers list defaults.
     await checkBrowsers(paths.appPath, isInteractive);
@@ -51,10 +37,6 @@ module.exports = async (options = {}) => {
         config = options.webpack(config);
     }
 
-    // First, read the current file sizes in build directory.
-    // This lets us display how much they changed later.
-    const existingFileSizes = await measureFileSizesBeforeBuild(paths.appBuild);
-
     // Remove all content but keep the directory so that
     // if you're in it, you don't end up in Trash
     fs.emptyDirSync(paths.appBuild);
@@ -64,53 +46,33 @@ module.exports = async (options = {}) => {
 
     // Start the webpack build
     try {
-        const { stats, previousFileSizes, warnings } = await build(config, existingFileSizes);
+        const { warnings } = await build(config);
         if (warnings.length) {
             console.log(chalk.yellow("Compiled with warnings.\n"));
             console.log(warnings.join("\n\n"));
             console.log(
                 "\nSearch for the " +
-                    chalk.underline(chalk.yellow("keywords")) +
-                    " to learn more about each warning."
+                chalk.underline(chalk.yellow("keywords")) +
+                " to learn more about each warning."
             );
             console.log(
                 "To ignore, add " +
-                    chalk.cyan("// eslint-disable-next-line") +
-                    " to the line before.\n"
+                chalk.cyan("// eslint-disable-next-line") +
+                " to the line before.\n"
             );
         } else {
             console.log(chalk.green("Compiled successfully.\n"));
         }
-
-        console.log("File sizes after gzip:\n");
-        printFileSizesAfterBuild(
-            stats,
-            previousFileSizes,
-            paths.appBuild,
-            WARN_AFTER_BUNDLE_GZIP_SIZE,
-            WARN_AFTER_CHUNK_GZIP_SIZE
-        );
-        console.log();
     } catch (err) {
-        const tscCompileOnError = process.env.TSC_COMPILE_ON_ERROR === "true";
-        if (tscCompileOnError) {
-            console.log(
-                chalk.yellow(
-                    "Compiled with the following type errors (you may want to check these before deploying your app):\n"
-                )
-            );
-            printBuildError(err);
-        } else {
-            console.log(err);
-            console.log(chalk.red("Failed to compile.\n"));
-            printBuildError(err);
-            process.exit(1);
-        }
+        console.log(err);
+        console.log(chalk.red("Failed to compile.\n"));
+        printBuildError(err);
+        process.exit(1);
     }
 };
 
 // Create the production build and print the deployment instructions.
-function build(config, previousFileSizes) {
+function build(config) {
     console.log("Creating an optimized production build...");
 
     const compiler = webpack(config);
@@ -167,7 +129,6 @@ function build(config, previousFileSizes) {
 
             return resolve({
                 stats,
-                previousFileSizes,
                 warnings: messages.warnings
             });
         });
