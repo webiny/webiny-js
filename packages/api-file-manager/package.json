@@ -46,6 +46,7 @@
     "@elastic/elasticsearch-mock": "0.3.0",
     "@shelf/jest-elasticsearch": "^1.0.0",
     "@webiny/api-dynamodb-to-elasticsearch": "^5.3.0",
+    "execa": "^5.0.0",
     "jest": "^26.6.3",
     "jest-dynalite": "^3.2.0",
     "rimraf": "^3.0.2",

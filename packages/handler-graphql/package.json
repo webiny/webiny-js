@@ -20,6 +20,7 @@
     "@webiny/handler": "^5.3.0",
     "@webiny/handler-http": "^5.3.0",
     "@webiny/plugins": "^5.3.0",
+    "@webiny/project-utils": "^5.3.0",
     "boolean": "^3.0.1",
     "graphql": "^14.4.2",
     "graphql-scalars": "^1.7.0",

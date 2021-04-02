@@ -7320,6 +7320,7 @@ __metadata:
     "@babel/runtime": ^7.5.5
     "@webiny/api-plugin-elastic-search-client": ^5.3.0
     "@webiny/handler": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     aws-sdk: ^2.539.0
     typescript: ^4.1.3
   languageName: unknown
@@ -7335,6 +7336,7 @@ __metadata:
     "@webiny/handler": ^5.3.0
     "@webiny/handler-graphql": ^5.3.0
     "@webiny/plugins": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     "@webiny/validation": ^5.3.0
     form-data: ^3.0.0
     node-fetch: ^2.6.1
@@ -7366,6 +7368,7 @@ __metadata:
     "@webiny/api-security": ^5.3.0
     "@webiny/api-security-tenancy": ^5.3.0
     "@webiny/api-upgrade": ^5.3.0
+    "@webiny/cli": ^5.3.0
     "@webiny/error": ^5.3.0
     "@webiny/handler": ^5.3.0
     "@webiny/handler-client": ^5.3.0
@@ -7374,6 +7377,7 @@ __metadata:
     "@webiny/validation": ^5.3.0
     aws-sdk: ^2.539.0
     commodo-fields-object: ^1.0.6
+    execa: ^5.0.0
     jest: ^26.6.3
     jest-dynalite: ^3.2.0
     mdbid: ^1.0.0
@@ -7495,6 +7499,7 @@ __metadata:
     "@webiny/api-security": ^5.3.0
     "@webiny/handler": ^5.3.0
     "@webiny/handler-graphql": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     rimraf: ^3.0.2
     typescript: ^4.1.3
   languageName: unknown
@@ -7518,6 +7523,7 @@ __metadata:
     "@webiny/handler-db": ^5.3.0
     "@webiny/handler-graphql": ^5.3.0
     "@webiny/plugins": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     accept-language-parser: ^1.5.0
     i18n-locales: ^0.0.2
     jest: ^26.6.3
@@ -7591,6 +7597,7 @@ __metadata:
     "@babel/core": ^7.5.5
     "@elastic/elasticsearch": ^7.9.1
     "@webiny/handler": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     aws-elasticsearch-connector: ^9.0.0
     aws-sdk: ^2.539.0
     rimraf: ^3.0.2
@@ -7609,6 +7616,7 @@ __metadata:
     "@webiny/handler": ^5.3.0
     "@webiny/handler-graphql": ^5.3.0
     "@webiny/handler-http": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     jsonwebtoken: ^8.5.1
     jwk-to-pem: ^2.0.1
     node-fetch: ^2.6.1
@@ -7631,6 +7639,7 @@ __metadata:
     "@webiny/handler": ^5.3.0
     "@webiny/handler-args": ^5.3.0
     "@webiny/plugins": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     rimraf: ^3.0.2
     typescript: ^4.1.3
   languageName: unknown
@@ -7653,6 +7662,7 @@ __metadata:
     "@webiny/handler-client": ^5.3.0
     "@webiny/handler-db": ^5.3.0
     "@webiny/plugins": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     chrome-aws-lambda: ^5.5.0
     lodash: ^4.17.20
     mdbid: ^1.0.0
@@ -7681,6 +7691,7 @@ __metadata:
     "@webiny/handler-graphql": ^5.3.0
     "@webiny/handler-http": ^5.3.0
     "@webiny/plugins": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     "@webiny/validation": ^5.3.0
     commodo-fields-object: ^1.0.6
     deep-equal: ^2.0.4
@@ -7706,6 +7717,7 @@ __metadata:
     "@webiny/handler": ^5.3.0
     "@webiny/handler-graphql": ^5.3.0
     "@webiny/plugins": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     minimatch: ^3.0.4
     rimraf: ^3.0.2
     typescript: ^4.1.3
@@ -7724,6 +7736,7 @@ __metadata:
     "@webiny/error": ^5.3.0
     "@webiny/handler": ^5.3.0
     "@webiny/plugins": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     jest: ^26.6.3
     jest-mock-console: ^1.0.0
     rimraf: ^3.0.2
@@ -7752,9 +7765,9 @@ __metadata:
     "@types/react": ^16.9.56
     "@webiny/app": ^5.3.0
     "@webiny/app-security": ^5.3.0
-    "@webiny/cli": ^5.3.0
     "@webiny/form": ^5.3.0
     "@webiny/plugins": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     "@webiny/react-router": ^5.3.0
     "@webiny/ui": ^5.3.0
     "@webiny/validation": ^5.3.0
@@ -7800,6 +7813,7 @@ __metadata:
     "@babel/cli": ^7.5.5
     "@babel/core": ^7.5.5
     "@webiny/plugins": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     apollo-client: ^2.6.10
     graphql: ^14.7.0
     graphql-tag: ^2.11.0
@@ -7829,6 +7843,7 @@ __metadata:
     "@webiny/app-security": ^5.3.0
     "@webiny/form": ^5.3.0
     "@webiny/plugins": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     "@webiny/react-router": ^5.3.0
     "@webiny/ui": ^5.3.0
     apollo-cache: ^1.3.5
@@ -7871,6 +7886,7 @@ __metadata:
     "@webiny/app-security": ^5.3.0
     "@webiny/form": ^5.3.0
     "@webiny/plugins": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     "@webiny/react-router": ^5.3.0
     "@webiny/ui": ^5.3.0
     "@webiny/validation": ^5.3.0
@@ -7919,6 +7935,7 @@ __metadata:
     "@webiny/app-i18n": ^5.3.0
     "@webiny/app-security": ^5.3.0
     "@webiny/plugins": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     "@webiny/react-router": ^5.3.0
     "@webiny/ui": ^5.3.0
     apollo-cache: ^1.3.5
@@ -7968,6 +7985,7 @@ __metadata:
     "@webiny/error": ^5.3.0
     "@webiny/form": ^5.3.0
     "@webiny/plugins": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     "@webiny/react-router": ^5.3.0
     "@webiny/ui": ^5.3.0
     "@webiny/validation": ^5.3.0
@@ -7982,6 +8000,7 @@ __metadata:
     classnames: ^2.2.6
     dot-prop-immutable: ^2.1.0
     emotion: ^10.0.17
+    execa: ^5.0.0
     graphql: ^14.7.0
     graphql-tag: ^2.10.1
     lodash: ^4.17.10
@@ -8019,6 +8038,7 @@ __metadata:
     "@webiny/app-i18n": ^5.3.0
     "@webiny/app-security": ^5.3.0
     "@webiny/form": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     "@webiny/ui": ^5.3.0
     babel-plugin-emotion: ^9.2.8
     babel-plugin-lodash: ^3.3.4
@@ -8049,6 +8069,7 @@ __metadata:
     "@webiny/app-admin": ^5.3.0
     "@webiny/app-security": ^5.3.0
     "@webiny/form": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     "@webiny/react-router": ^5.3.0
     "@webiny/ui": ^5.3.0
     "@webiny/validation": ^5.3.0
@@ -8102,6 +8123,7 @@ __metadata:
     "@webiny/app-security": ^5.3.0
     "@webiny/form": ^5.3.0
     "@webiny/plugins": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     "@webiny/react-router": ^5.3.0
     "@webiny/tracking": ^5.3.0
     "@webiny/ui": ^5.3.0
@@ -8165,6 +8187,7 @@ __metadata:
     "@webiny/app-admin": ^5.3.0
     "@webiny/app-security": ^5.3.0
     "@webiny/plugins": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     "@webiny/react-router": ^5.3.0
     "@webiny/ui": ^5.3.0
     emotion: ^10.0.27
@@ -8197,6 +8220,7 @@ __metadata:
     "@webiny/app-security-tenancy": ^5.3.0
     "@webiny/form": ^5.3.0
     "@webiny/plugins": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     "@webiny/ui": ^5.3.0
     "@webiny/validation": ^5.3.0
     apollo-cache: ^1.3.5
@@ -8235,6 +8259,7 @@ __metadata:
     "@webiny/app-security": ^5.3.0
     "@webiny/form": ^5.3.0
     "@webiny/plugins": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     "@webiny/react-router": ^5.3.0
     "@webiny/ui": ^5.3.0
     "@webiny/validation": ^5.3.0
@@ -8270,6 +8295,7 @@ __metadata:
     "@babel/preset-typescript": ^7.8.3
     "@webiny/app": ^5.3.0
     "@webiny/plugins": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     babel-plugin-emotion: ^9.2.8
     babel-plugin-lodash: ^3.3.4
     babel-plugin-named-asset-import: ^1.0.0-next.3e165448
@@ -8296,6 +8322,7 @@ __metadata:
     "@svgr/webpack": ^4.3.2
     "@webiny/app": ^5.3.0
     "@webiny/app-page-builder": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     "@webiny/validation": ^5.3.0
     babel-plugin-emotion: ^9.2.8
     babel-plugin-named-asset-import: ^1.0.0-next.3e165448
@@ -8324,6 +8351,7 @@ __metadata:
     "@webiny/i18n": ^5.3.0
     "@webiny/i18n-react": ^5.3.0
     "@webiny/plugins": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     "@webiny/react-router": ^5.3.0
     "@webiny/ui": ^5.3.0
     apollo-cache: ^1.3.5
@@ -8360,12 +8388,13 @@ __metadata:
     "@webiny/pulumi-sdk": ^5.3.0
     blessed: ^0.1.81
     blessed-contrib: ^4.8.21
+    body-parser: ^1.19.0
     chalk: 4.1.0
     execa: 5.0.0
-    find-up: ^5.0.0
-    load-json-file: ^6.2.0
+    express: ^4.17.1
     localtunnel: ^2.0.1
     lodash: 4.17.20
+    minimatch: ^3.0.4
     node-notifier: 7.0.2
     ora: 4.1.1
   languageName: unknown
@@ -8382,14 +8411,15 @@ __metadata:
     "@types/inquirer": ^7.3.1
     "@types/ncp": ^2.0.4
     "@types/pluralize": ^0.0.29
+    "@webiny/cli": ^5.3.0
     "@webiny/cli-plugin-scaffold": ^5.3.0
     "@webiny/error": ^5.3.0
     "@webiny/handler": ^5.3.0
     "@webiny/plugins": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     case: ^1.6.3
     chalk: ^4.1.0
     execa: ^5.0.0
-    find-up: ^5.0.0
     indent-string: ^4.0.0
     load-json-file: ^6.2.0
     ncp: ^2.0.0
@@ -8413,10 +8443,12 @@ __metadata:
     "@types/inquirer": ^7.3.1
     "@types/ncp": ^2.0.4
     "@types/pluralize": ^0.0.29
+    "@webiny/cli": ^5.3.0
     "@webiny/cli-plugin-scaffold": ^5.3.0
     "@webiny/error": ^5.3.0
     "@webiny/handler": ^5.3.0
     "@webiny/plugins": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     case: ^1.6.3
     chalk: ^4.1.0
     execa: ^5.0.0
@@ -8443,12 +8475,13 @@ __metadata:
     "@types/inquirer": ^7.3.1
     "@types/ncp": ^2.0.4
     "@types/pluralize": ^0.0.29
+    "@webiny/cli": ^5.3.0
     "@webiny/cli-plugin-scaffold": ^5.3.0
     "@webiny/error": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     case: ^1.6.3
     chalk: ^4.1.0
     execa: ^5.0.0
-    find-up: ^5.0.0
     indent-string: ^4.0.0
     load-json-file: ^6.2.0
     ncp: ^2.0.0
@@ -8473,6 +8506,7 @@ __metadata:
     "@types/inquirer": ^7.3.1
     "@webiny/handler": ^5.3.0
     "@webiny/plugins": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     inquirer: ^7.3.3
     ora: 4.1.1
     rimraf: ^3.0.2
@@ -8526,6 +8560,7 @@ __metadata:
     "@commodo/fields": ^1.2.1
     "@commodo/hooks": ^1.2.1
     "@commodo/name": ^1.3.1
+    "@webiny/project-utils": ^5.3.0
     commodo-fields-date: ^1.0.3
     commodo-fields-float: ^1.0.2
     commodo-fields-int: ^1.0.1
@@ -8566,6 +8601,7 @@ __metadata:
     "@babel/cli": ^7.5.5
     "@babel/core": ^7.5.5
     "@webiny/db": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     jest: ^26.6.3
     jest-dynalite: ^3.2.0
     rimraf: ^3.0.2
@@ -8579,6 +8615,7 @@ __metadata:
   dependencies:
     "@babel/cli": ^7.5.5
     "@babel/core": ^7.5.5
+    "@webiny/project-utils": ^5.3.0
     rimraf: ^3.0.2
     typescript: ^4.1.3
   languageName: unknown
@@ -8590,6 +8627,7 @@ __metadata:
   dependencies:
     "@babel/cli": ^7.12.10
     "@babel/core": ^7.5.5
+    "@webiny/project-utils": ^5.3.0
     rimraf: ^3.0.2
     typescript: ^4.1.3
   languageName: unknown
@@ -8605,6 +8643,7 @@ __metadata:
     "@babel/preset-env": ^7.5.5
     "@babel/preset-typescript": ^7.8.3
     "@babel/runtime": ^7.5.5
+    "@webiny/project-utils": ^5.3.0
     babel-plugin-lodash: ^3.3.4
     invariant: ^2.2.4
     lodash: ^4.17.5
@@ -8624,6 +8663,7 @@ __metadata:
     "@babel/preset-env": ^7.5.5
     "@babel/preset-typescript": ^7.8.3
     "@babel/runtime": ^7.5.5
+    "@webiny/project-utils": ^5.3.0
     rimraf: ^3.0.2
     typescript: ^4.1.3
   languageName: unknown
@@ -8642,6 +8682,7 @@ __metadata:
     "@webiny/handler-args": ^5.3.0
     "@webiny/handler-client": ^5.3.0
     "@webiny/handler-http": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     babel-plugin-lodash: ^3.3.4
     merge: ^1.2.1
     rimraf: ^3.0.2
@@ -8660,6 +8701,7 @@ __metadata:
     "@babel/runtime": ^7.5.5
     "@webiny/handler": ^5.3.0
     "@webiny/plugins": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     babel-plugin-lodash: ^3.3.4
     jest: ^26.6.3
     merge: ^1.2.1
@@ -8678,6 +8720,7 @@ __metadata:
     "@babel/runtime": ^7.5.5
     "@webiny/db": ^5.3.0
     "@webiny/handler": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     rimraf: ^3.0.2
     typescript: ^4.1.3
   languageName: unknown
@@ -8697,6 +8740,7 @@ __metadata:
     "@webiny/handler-args": ^5.3.0
     "@webiny/handler-http": ^5.3.0
     "@webiny/plugins": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     boolean: ^3.0.1
     graphql: ^14.4.2
     graphql-scalars: ^1.7.0
@@ -8716,6 +8760,7 @@ __metadata:
     "@babel/core": ^7.5.5
     "@babel/runtime": ^7.5.5
     "@webiny/handler": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     merge: ^1.2.1
     rimraf: ^3.0.2
     typescript: ^4.1.3
@@ -8731,6 +8776,7 @@ __metadata:
     "@babel/preset-env": ^7.5.5
     "@babel/preset-typescript": ^7.8.3
     "@babel/runtime": ^7.5.5
+    "@webiny/project-utils": ^5.3.0
     node-fetch: ^2.6.1
     rimraf: ^3.0.2
     typescript: ^4.1.3
@@ -8746,6 +8792,7 @@ __metadata:
     "@babel/preset-env": ^7.5.5
     "@babel/runtime": ^7.5.5
     "@webiny/plugins": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     rimraf: ^3.0.2
     typescript: ^4.1.3
   languageName: unknown
@@ -8762,6 +8809,7 @@ __metadata:
     "@babel/preset-typescript": ^7.8.3
     "@babel/runtime": ^7.5.5
     "@webiny/i18n": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     babel-plugin-lodash: ^3.3.4
     lodash: ^4.17.4
     rimraf: ^3.0.2
@@ -8781,6 +8829,7 @@ __metadata:
     "@babel/preset-typescript": ^7.8.3
     "@babel/register": ^7.5.5
     "@babel/runtime": ^7.5.5
+    "@webiny/project-utils": ^5.3.0
     accounting: ^0.4.1
     babel-plugin-lodash: ^3.3.4
     fecha: ^2.3.3
@@ -8802,6 +8851,7 @@ __metadata:
     "@babel/cli": ^7.5.5
     "@babel/core": ^7.5.5
     "@babel/runtime": ^7.5.5
+    "@webiny/project-utils": ^5.3.0
     rimraf: ^3.0.2
     typescript: ^4.1.3
     uniqid: ^5.2.0
@@ -8830,10 +8880,10 @@ __metadata:
     camelcase: 5.3.1
     case-sensitive-paths-webpack-plugin: 2.2.0
     chalk: 3.0.0
-    cp: ^0.2.0
     css-loader: 3.2.0
     eslint: 6.8.0
     eslint-loader: 3.0.2
+    execa: ^5.0.0
     file-loader: 4.3.0
     fs-extra: 8.1.0
     get-yarn-workspaces: 1.0.2
@@ -8880,6 +8930,7 @@ __metadata:
     "@pulumi/aws": ^3.22.0
     "@pulumi/pulumi": ^2.21.2
     "@types/node": ^10.0.0
+    "@webiny/project-utils": ^5.3.0
     decompress: ^4.2.1
     download: ^5.0.3
     execa: ^4.0.3
@@ -8901,6 +8952,7 @@ __metadata:
     "@babel/runtime": ^7.5.5
     "@types/react-router-dom": ^5.1.5
     "@webiny/plugins": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     apollo-client: ^2.6.8
     graphql: ^14.7.0
     react: ^16.14.0
@@ -8928,7 +8980,9 @@ __metadata:
     "@babel/runtime": ^7.5.5
     "@emotion/core": ^10.0.27
     "@emotion/styled": ^10.0.17
+    "@webiny/project-utils": ^5.3.0
     copy-to-clipboard: ^3.0.8
+    execa: ^5.0.0
     highlight.js: ^9.12.0
     prettier: ^1.18.2
     react: ^16.14.0
@@ -8999,6 +9053,7 @@ __metadata:
     "@storybook/react": ^5.2.8
     "@svgr/webpack": ^4.3.2
     "@webiny/form": ^5.3.0
+    "@webiny/project-utils": ^5.3.0
     "@webiny/storybook-utils": ^5.3.0
     "@webiny/validation": ^5.3.0
     babel-loader: ^8.0.0-beta.6
@@ -9010,11 +9065,13 @@ __metadata:
     dot-prop-immutable: ^1.4.0
     downshift: ^2.1.5
     emotion: 10.0.17
+    execa: ^5.0.0
     jest-dom: ^3.0.0
     keycode: ^2.2.0
     load-script: ^1.0.0
     lodash: ^4.17.11
     material-components-web: ^3.1.1
+    ncp: ^2.0.0
     node-sass: ^4.9.3
     nprogress: ^0.2.0
     nuka-carousel: 4.7.1
@@ -9052,6 +9109,7 @@ __metadata:
     "@babel/preset-env": ^7.5.5
     "@babel/preset-typescript": ^7.8.3
     "@babel/runtime": ^7.5.5
+    "@webiny/project-utils": ^5.3.0
     babel-plugin-lodash: ^3.3.4
     isnumeric: ^0.3.3
     jest: ^26.6.3
@@ -9769,6 +9827,7 @@ __metadata:
     "@webiny/api-plugin-elastic-search-client": ^5.3.0
     "@webiny/cli": 5.3.0
     "@webiny/handler-aws": ^5.3.0
+    "@webiny/handler-logs": ^5.3.0
     "@webiny/project-utils": 5.3.0
   languageName: unknown
   linkType: soft
@@ -9792,6 +9851,7 @@ __metadata:
     "@webiny/api-file-manager": ^5.3.0
     "@webiny/cli": 5.3.0
     "@webiny/handler-aws": ^5.3.0
+    "@webiny/handler-logs": ^5.3.0
     "@webiny/project-utils": 5.3.0
   languageName: unknown
   linkType: soft
@@ -9803,6 +9863,7 @@ __metadata:
     "@webiny/api-file-manager": ^5.3.0
     "@webiny/cli": 5.3.0
     "@webiny/handler-aws": ^5.3.0
+    "@webiny/handler-logs": ^5.3.0
     "@webiny/project-utils": 5.3.0
   languageName: unknown
   linkType: soft
@@ -9828,6 +9889,7 @@ __metadata:
     "@webiny/handler-aws": ^5.3.0
     "@webiny/handler-db": ^5.3.0
     "@webiny/handler-graphql": ^5.3.0
+    "@webiny/handler-logs": ^5.3.0
     "@webiny/project-utils": ^5.3.0
   languageName: unknown
   linkType: soft
@@ -9847,6 +9909,7 @@ __metadata:
     "@webiny/db-dynamodb": ^5.3.0
     "@webiny/handler-aws": ^5.3.0
     "@webiny/handler-db": ^5.3.0
+    "@webiny/handler-logs": ^5.3.0
     "@webiny/project-utils": ^5.3.0
   languageName: unknown
   linkType: soft
@@ -9861,6 +9924,7 @@ __metadata:
     "@webiny/db-dynamodb": ^5.3.0
     "@webiny/handler-aws": ^5.3.0
     "@webiny/handler-db": ^5.3.0
+    "@webiny/handler-logs": ^5.3.0
     "@webiny/project-utils": ^5.3.0
   languageName: unknown
   linkType: soft
@@ -9875,6 +9939,7 @@ __metadata:
     "@webiny/db-dynamodb": ^5.3.0
     "@webiny/handler-aws": ^5.3.0
     "@webiny/handler-db": ^5.3.0
+    "@webiny/handler-logs": ^5.3.0
     "@webiny/project-utils": ^5.3.0
   languageName: unknown
   linkType: soft
@@ -9888,6 +9953,7 @@ __metadata:
     "@webiny/db-dynamodb": 5.3.0
     "@webiny/handler-aws": ^5.3.0
     "@webiny/handler-db": ^5.3.0
+    "@webiny/handler-logs": ^5.3.0
     "@webiny/project-utils": ^5.3.0
   languageName: unknown
   linkType: soft
@@ -9901,6 +9967,7 @@ __metadata:
     "@webiny/db-dynamodb": ^5.3.0
     "@webiny/handler-aws": ^5.3.0
     "@webiny/handler-db": ^5.3.0
+    "@webiny/handler-logs": ^5.3.0
     "@webiny/project-utils": ^5.3.0
   languageName: unknown
   linkType: soft
@@ -9914,6 +9981,7 @@ __metadata:
     "@webiny/db-dynamodb": ^5.3.0
     "@webiny/handler-aws": ^5.3.0
     "@webiny/handler-db": ^5.3.0
+    "@webiny/handler-logs": ^5.3.0
     "@webiny/project-utils": ^5.3.0
   languageName: unknown
   linkType: soft
@@ -11447,7 +11515,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"body-parser@npm:1.19.0":
+"body-parser@npm:1.19.0, body-parser@npm:^1.19.0":
   version: 1.19.0
   resolution: "body-parser@npm:1.19.0"
   dependencies:
@@ -13608,13 +13676,6 @@ __metadata:
     path-type: ^4.0.0
     yaml: ^1.10.0
   checksum: 151fcb91773c0ae826fc801eab86f8f818605dbf63c8e5515adf0ff0fec5ede8e614f387f93c088d65527a2ea9021f0cd8c6b6e5c7fef2b77480b5e2c33700dc
-  languageName: node
-  linkType: hard
-
-"cp@npm:^0.2.0":
-  version: 0.2.0
-  resolution: "cp@npm:0.2.0"
-  checksum: 346ea7e4e30455e4c13a3691ed056729b70ed014354f9e85785fca2be5f16fa84d6da0bae95d31514e40765d27e12009b94b06d378e72d7ba5975939461776a5
   languageName: node
   linkType: hard
 
