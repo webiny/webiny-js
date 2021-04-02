@@ -9,6 +9,8 @@ const minimatch = require("minimatch");
 const { login, getPulumi, loadEnvVariables, getRandomColorForString } = require("../utils");
 const { getProjectApplication } = require("@webiny/cli/utils");
 const path = require("path");
+const get = require("lodash/get");
+const merge = require("lodash/merge");
 
 const SECRETS_PROVIDER = process.env.PULUMI_SECRETS_PROVIDER;
 
@@ -29,6 +31,9 @@ module.exports = async (inputs, context) => {
     const projectApplication = getProjectApplication({
         cwd: path.join(process.cwd(), inputs.folder)
     });
+
+    // If exists - read default inputs from "webiny.application.js" file.
+    // merge(inputs, get(projectApplication, "config.cli.watch"))
 
     // 1. Initial checks for deploy and build commands. We want to do these before initializing the
     //    blessed screen, because it messes the terminal output a bit. With this approach, we avoid that.
@@ -183,8 +188,8 @@ module.exports = async (inputs, context) => {
                 "workspaces",
                 "run",
                 "watch",
-                /*                "--env",
-                inputs.env,*/
+                "--env",
+                inputs.env,
                 ...scopes.reduce((current, item) => {
                     current.push("--scope", item);
                     return current;
