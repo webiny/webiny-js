@@ -1,8 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const chalk = require("chalk");
-const { getProject } = require("./utils");
-const PluginsContainer = require("./utils/PluginsContainer");
+const { getProject, PluginsContainer, log } = require("./utils");
 
 const project = getProject();
 if (!project) {
@@ -11,33 +10,6 @@ if (!project) {
     );
     process.exit(1);
 }
-
-const getLogType = type => {
-    switch (type) {
-        case "log":
-            return type;
-        case "info":
-            return `${chalk.blue(type)}`;
-        case "error":
-            return `${chalk.red(type)}`;
-        case "warning":
-            return `${chalk.yellow(type)}`;
-        case "debug":
-            return `${chalk.gray(type)}`;
-        case "success":
-            return `${chalk.green(type)}`;
-    }
-};
-
-const webinyLog = (type, ...args) => {
-    const prefix = `webiny ${getLogType(type)}: `;
-
-    const [first, ...rest] = args;
-    if (typeof first === "string") {
-        return console.log(prefix + first, ...rest);
-    }
-    return console.log(prefix, first, ...rest);
-};
 
 class Context {
     constructor() {
@@ -106,27 +78,27 @@ class Context {
     }
 
     log(...args) {
-        webinyLog("log", ...args);
+        log.log(...args);
     }
 
     info(...args) {
-        webinyLog("info", ...args);
+        log.info(...args);
     }
 
     success(...args) {
-        webinyLog("success", ...args);
+        log.success(...args);
     }
 
     debug(...args) {
-        webinyLog("debug", ...args);
+        log.debug(...args);
     }
 
     warning(...args) {
-        webinyLog("warning", ...args);
+        log.warning(...args);
     }
 
     error(...args) {
-        webinyLog("error", ...args);
+        log.error(...args);
     }
 
     resolve(...dir) {
