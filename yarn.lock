@@ -8569,6 +8569,7 @@ __metadata:
     load-json-file: 6.2.0
     public-ip: 4.0.3
     semver: 7.3.4
+    uniqid: ^5.3.0
     write-json-file: 4.3.0
     yargs: 14.2.3
   bin:
@@ -33412,7 +33413,7 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
-"uniqid@npm:^5.0.3, uniqid@npm:^5.2.0":
+"uniqid@npm:^5.0.3, uniqid@npm:^5.2.0, uniqid@npm:^5.3.0":
   version: 5.3.0
   resolution: "uniqid@npm:5.3.0"
   checksum: 1fcf7eb69ea09dd2cf37ffe72d8bd0f371a95586c3408b10f0018ad32e13fd533ebb7942a0fa75d8b1124ca7b4f417d241483853d6d706afeaca25d3cc7a0dcb
