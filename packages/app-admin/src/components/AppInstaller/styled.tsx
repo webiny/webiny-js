@@ -11,6 +11,8 @@ export const Wrapper = styled("section")({
         whiteSpace: "nowrap"
     },
     ul: {
+        listStyle: "disc",
+        paddingLeft: "var(--mdc-layout-grid-margin-desktop, 24px)",
         li: {
             color: "var(--desktop-color, var(--webiny-theme-color-text-primary, rgb(10, 10, 10)))",
             MozOsxFontSmoothing: "grayscale",
@@ -20,7 +22,9 @@ export const Wrapper = styled("section")({
             fontWeight: 400,
             letterSpacing: "0.03125em",
             textDecoration: "inherit",
-            textTransform: "inherit"
+            textTransform: "inherit",
+            marginTop: 20,
+            marginBottom: 20
         }
     }
 });
