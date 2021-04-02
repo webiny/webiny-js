@@ -64,6 +64,38 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
     simulateStream(documentClient, createHandler(elasticSearchContext, dynamoToElastic()));
 
     const handler = createHandler(
+        // storage plugin
+        // {
+        //     type: "context",
+        //     apply: async context => {
+        //         const packages = await getStorageOperationPackages();
+        //         const targetName = process.env.STORAGE_OPERATION || "ddb-es";
+        //         if (!targetName.trim()) {
+        //             throw new Error(
+        //                 "You must pass name of the storage operation package in the env variable."
+        //             );
+        //         }
+        //         const pkg = packages.find(p => {
+        //             const keywords = p.keywords || [];
+        //             if (keywords.length === 0) {
+        //                 return false;
+        //             }
+        //             return keywords.includes(targetName);
+        //         });
+        //         if (!pkg) {
+        //             throw new Error(
+        //                 `There is no storage operation package with keyword "${targetName}".`
+        //             );
+        //         }
+        //         const plugins = await import(pkg.name);
+        //         if (!plugins.default) {
+        //             throw new Error(`Package "${targetName}" is missing the default export.`);
+        //         }
+        //         context.plugins.register(
+        //             typeof plugins.default === "function" ? plugins.default() : plugins.default
+        //         );
+        //     }
+        // } as ContextPluginInterface,
         dbPlugins({
             table: "HeadlessCms",
             driver: new DynamoDbDriver({
@@ -211,6 +243,7 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
                 };
             }
         },
+
         // this is the storage plugin
         dynamoDbElasticStorage(),
         //
