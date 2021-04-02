@@ -169,7 +169,7 @@ export const useRevision = ({
 
                 showSnackbar(
                     <span>
-                        Successfully unpublished revision <strong>#{revision.version}</strong>!
+                        Successfully unpublished revision <strong>#{revision.meta.version}</strong>!
                     </span>
                 );
             },
