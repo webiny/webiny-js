@@ -1,7 +1,13 @@
+const util = require("util");
 const getPulumi = require("../utils/getPulumi");
 const trimEnd = require("lodash/trimEnd");
 const fs = require("fs");
 const { relative, join } = require("path");
+const ncpBase = require("ncp");
+const ncp = util.promisify(ncpBase.ncp);
+const chalk = require("chalk");
+const rimraf = require("rimraf");
+const { log } = require("@webiny/cli/utils");
 
 // To use a self-managed backend, specify a storage endpoint URL as pulumi login’s <backend-url> argument:
 // s3://<bucket-path>, azblob://<container-path>, gs://<bucket-path>, or file://<fs-path>.
@@ -11,6 +17,9 @@ const { relative, join } = require("path");
 const SELF_MANAGED_BACKEND = ["s3://", "azblob://", "gs://"];
 
 module.exports = async projectApplication => {
+    await copyStateFilesToProjectRoot(projectApplication);
+
+    // Do the login with Pulumi CLI.
     const pulumi = await getPulumi({
         execa: {
             cwd: projectApplication.root
@@ -25,8 +34,16 @@ module.exports = async projectApplication => {
             login = trimEnd(login, "/") + "/" + projectApplication.path.relative;
         }
     } else {
-        const folder = relative(projectApplication.project.root, projectApplication.root);
-        const stateFilesFolder = join(projectApplication.project.root, ".pulumi", folder);
+        const relativeProjectApplicationPath = relative(
+            projectApplication.project.root,
+            projectApplication.root
+        );
+
+        const stateFilesFolder = join(
+            projectApplication.project.root,
+            ".pulumi",
+            relativeProjectApplicationPath
+        );
         if (!fs.existsSync(stateFilesFolder)) {
             fs.mkdirSync(stateFilesFolder, { recursive: true });
         }
@@ -36,4 +53,47 @@ module.exports = async projectApplication => {
     await pulumi.run({
         command: ["login", login]
     });
+
+    return { login };
+};
+
+/**
+ * If existing, let's move all of the state files into the project root's ".pulumi" relativePathFromProjectRoot.
+ * This way we maintain backwards compatibility and no extra steps from users are needed.
+ */
+const copyStateFilesToProjectRoot = async projectApplication => {
+    const relativeProjectApplicationPath = getProjectApplicationRelativePath(projectApplication);
+    const oldStateFolder = join(projectApplication.root, ".pulumi");
+    if (fs.existsSync(oldStateFolder)) {
+        const stateFolder = join(
+            projectApplication.project.root,
+            ".pulumi",
+            relativeProjectApplicationPath,
+            ".pulumi"
+        );
+
+        log.info(
+            `Detected ${chalk.green(".pulumi")} folder in the ${chalk.green(
+                projectApplication.name
+            )} project application (${chalk.green(projectApplication.root)}).`
+        );
+
+        log.info(`Moving the folder to project root (${chalk.green(stateFolder)}).`);
+
+        if (!fs.existsSync(stateFolder)) {
+            fs.mkdirSync(stateFolder, { recursive: true });
+        } else {
+            throw new Error(`Cannot continue, folder ${chalk.green(stateFolder)} is not empty.`);
+        }
+
+        await ncp(oldStateFolder, stateFolder);
+
+        rimraf.sync(join(oldStateFolder));
+
+        log.info(`To learn more, please visit https://www.webiny.com/docs/todo-article.`);
+    }
+};
+
+const getProjectApplicationRelativePath = projectApplication => {
+    return relative(projectApplication.project.root, projectApplication.root);
 };
