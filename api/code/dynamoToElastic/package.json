@@ -9,8 +9,8 @@
     "@webiny/api-dynamodb-to-elasticsearch": "^5.3.0",
     "@webiny/api-plugin-elastic-search-client": "^5.3.0",
     "@webiny/cli": "5.3.0",
-    "@webiny/handler-logs": "^5.3.0",
     "@webiny/handler-aws": "^5.3.0",
+    "@webiny/handler-logs": "^5.3.0",
     "@webiny/project-utils": "5.3.0"
   }
 }

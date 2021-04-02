@@ -9,7 +9,7 @@
     "@webiny/api-file-manager": "^5.3.0",
     "@webiny/cli": "5.3.0",
     "@webiny/handler-aws": "^5.3.0",
-    "@webiny/project-utils": "5.3.0",
-    "@webiny/handler-logs": "^5.3.0"
+    "@webiny/handler-logs": "^5.3.0",
+    "@webiny/project-utils": "5.3.0"
   }
 }
