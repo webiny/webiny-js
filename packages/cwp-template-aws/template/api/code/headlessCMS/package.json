@@ -2,7 +2,8 @@
   "name": "api-headless-cms",
   "version": "0.1.0",
   "scripts": {
-    "build": "yarn webiny run build"
+    "build": "yarn webiny run build",
+    "watch": "yarn webiny run watch"
   },
   "dependencies": {
     "@webiny/api-headless-cms": "latest",
