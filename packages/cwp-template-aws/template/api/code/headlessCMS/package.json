@@ -17,6 +17,7 @@
     "@webiny/db-dynamodb": "latest",
     "@webiny/handler-aws": "latest",
     "@webiny/handler-db": "latest",
+    "@webiny/handler-logs": "latest",
     "@webiny/project-utils": "latest"
   }
 }
