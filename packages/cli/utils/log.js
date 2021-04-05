@@ -27,7 +27,7 @@ const webinyLog = (type, ...args) => {
     return console.log(prefix, first, ...rest);
 };
 
-module.exports = {
+const functions = {
     log(...args) {
         webinyLog("log", ...args);
     },
@@ -52,3 +52,12 @@ module.exports = {
         webinyLog("error", ...args);
     }
 };
+
+functions.log.highlight = chalk.highlight;
+functions.info.highlight = chalk.blue;
+functions.success.highlight = chalk.green;
+functions.debug.highlight = chalk.gray;
+functions.warning.highlight = chalk.yellow;
+functions.error.highlight = chalk.red;
+
+module.exports = functions;
