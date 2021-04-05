@@ -78,29 +78,12 @@ class Context {
         }
     }
 
-    log(...args) {
-        log.log(...args);
-    }
-
-    info(...args) {
-        log.info(...args);
-    }
-
-    success(...args) {
-        log.success(...args);
-    }
-
-    debug(...args) {
-        log.debug(...args);
-    }
-
-    warning(...args) {
-        log.warning(...args);
-    }
-
-    error(...args) {
-        log.error(...args);
-    }
+    log = log.log;
+    info = log.info;
+    success = log.success;
+    debug = log.debug;
+    warning = log.warning;
+    error = log.error;
 
     resolve(...dir) {
         return path.resolve(this.project.root, ...dir);
