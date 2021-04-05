@@ -91,7 +91,7 @@ const copyStateFilesToProjectRoot = async projectApplication => {
 
         rimraf.sync(join(oldStateFolder));
 
-        log.info(`To learn more, please visit https://www.webiny.com/docs/todo-article.`);
+        log.info(`To learn more, please visit https://www.webiny.com/docs/how-to-guides/upgrade-webiny/5.4.0-to-5.5.0#moved-pulumi-folders-to-project-root.`);
     }
 };
 
