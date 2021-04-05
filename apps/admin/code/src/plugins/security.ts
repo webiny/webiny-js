@@ -24,11 +24,7 @@ export default [
     /**
      * Add Cognito password field to user views.
      */
-    cognitoIdentityProvider({
-        passwordPolicy: {
-            minimumLength: 8
-        }
-    }),
+    cognitoIdentityProvider(),
     /**
      * User menu plugins
      */
