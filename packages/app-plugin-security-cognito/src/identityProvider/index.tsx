@@ -1,4 +1,5 @@
 import React from "react";
+import isEmpty from "lodash/isEmpty";
 import { Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { validation } from "@webiny/validation";
@@ -9,24 +10,22 @@ import {
     SecurityUserFormPlugin
 } from "@webiny/app-security-tenancy/types";
 import { PluginCollection } from "@webiny/plugins/types";
-import { CognitoIdentityProviderArgs } from "../types";
+import { CognitoIdentityProviderOptions } from "../types";
 import { createCognitoPasswordValidator } from "./cognitoPasswordValidator";
 
 const t1 = i18n.ns("cognito/user-management/installation-form");
 const t2 = i18n.ns("cognito/user-management/user-account-form");
 const t3 = i18n.ns("cognito/user-management/user-form");
 
-const defaultArgs = {
-    passwordPolicy: {
-        minimumLength: 8,
-        requireLowercase: false,
-        requireNumbers: false,
-        requireSymbols: false,
-        requireUppercase: false
-    }
+const defaultPasswordPolicy = {
+    minimumLength: 8,
+    requireLowercase: false,
+    requireNumbers: false,
+    requireSymbols: false,
+    requireUppercase: false
 };
 
-export default (options: CognitoIdentityProviderArgs = defaultArgs): PluginCollection => [
+export default (options?: CognitoIdentityProviderOptions): PluginCollection => [
     {
         type: "security-installation-form",
         render({ Bind }) {
@@ -59,11 +58,11 @@ export default (options: CognitoIdentityProviderArgs = defaultArgs): PluginColle
     {
         type: "security-user-form",
         render({ Bind, data }) {
-            const passwordValidators = [];
+            const cognitoPasswordPolicy = !isEmpty(options && options.passwordPolicy)
+                ? options.passwordPolicy
+                : defaultPasswordPolicy;
 
-            if (options && options.passwordPolicy) {
-                passwordValidators.push(createCognitoPasswordValidator(options.passwordPolicy));
-            }
+            const passwordValidators = [createCognitoPasswordValidator(cognitoPasswordPolicy)];
 
             if (!data.createdOn) {
                 passwordValidators.push(validation.create("required"));

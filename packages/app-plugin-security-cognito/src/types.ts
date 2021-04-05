@@ -6,6 +6,6 @@ export type PasswordPolicy = {
     requireUppercase?: boolean;
 };
 
-export type CognitoIdentityProviderArgs = {
+export type CognitoIdentityProviderOptions = {
     passwordPolicy?: PasswordPolicy;
 };

@@ -25,7 +25,7 @@ export const createCognitoPasswordValidator = (policy: PasswordPolicy) => (value
     }
 
     if (policy.requireUppercase && !requireUppercase.test(value)) {
-        throw new ValidationError("Value must contain a uppercase character.");
+        throw new ValidationError("Value must contain an uppercase character.");
     }
 
     if (policy.requireSymbols && !requireSymbols.test(value)) {
