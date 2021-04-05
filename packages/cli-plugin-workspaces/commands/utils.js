@@ -48,8 +48,15 @@ const validateGraph = graph => {
     }
 };
 
-const getPackages = ({ script, folders, scopes } = {}) => {
+const getPackages = ({ script, folders, ignoreFolders, scopes, ignoreScopes } = {}) => {
     let packages = allWorkspaces();
+
+    if (ignoreFolders && ignoreFolders.length) {
+        packages = packages.filter(pkgPath => {
+            // Check if workspace path starts with any of the requested folders
+            return !ignoreFolders.some(folder => pkgPath.startsWith(resolve(folder)));
+        });
+    }
 
     if (folders && folders.length) {
         packages = packages.filter(pkgPath => {
@@ -78,6 +85,14 @@ const getPackages = ({ script, folders, scopes } = {}) => {
             const [match] = multimatch(pkg.name, scopes);
 
             return Boolean(match);
+        });
+    }
+
+    if (ignoreScopes && ignoreScopes.length) {
+        packages = packages.filter(pkg => {
+            const [match] = multimatch(pkg.name, ignoreScopes);
+
+            return !Boolean(match);
         });
     }
 

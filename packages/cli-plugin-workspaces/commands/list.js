@@ -5,19 +5,28 @@ const outputJSON = obj => {
     console.log(JSON.stringify(obj, null, 2));
 };
 
-module.exports = async ({ json, withPath, folder, scope }) => {
+module.exports = async ({ json, withPath, folder, ignoreFolder, scope, ignoreScope }) => {
     let folders = [],
-        scopes = [];
+        ignoreFolders = [],
+        scopes = [],
+        ignoreScopes = [];
 
     if (folder) {
         folders = Array.isArray(folder) ? folder : [folder];
+    }
+    if (ignoreFolder) {
+        ignoreFolders = Array.isArray(ignoreFolder) ? ignoreFolder : [ignoreFolder];
     }
 
     if (scope) {
         scopes = Array.isArray(scope) ? scope : [scope];
     }
 
-    const packages = getPackages({ scopes, folders });
+    if (ignoreScope) {
+        ignoreScopes = Array.isArray(ignoreScope) ? scope : [ignoreScope];
+    }
+
+    const packages = getPackages({ scopes, ignoreScopes, folders, ignoreFolders });
 
     const output = packages.reduce((current, item) => {
         current[item.name] = item.path;

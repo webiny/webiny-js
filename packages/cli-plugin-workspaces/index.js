@@ -25,12 +25,22 @@ module.exports = (options = {}) => ({
                         });
 
                         command.option("scope", {
-                            describe: `Include only workspaces that match the given scope (full package name or glob)`,
+                            describe: `Only include workspaces that match specified name or glob`,
+                            type: "string"
+                        });
+
+                        command.option("ignoreScope", {
+                            describe: `Ignore workspaces that match specified name or glob`,
                             type: "string"
                         });
 
                         command.option("folder", {
-                            describe: `Include only workspaces found in the specified folder`,
+                            describe: `Only include workspaces that are located withing the specified folder`,
+                            type: "string"
+                        });
+
+                        command.option("ignoreFolder", {
+                            describe: `Ignore workspaces located within the specified folder`,
                             type: "string"
                         });
 
