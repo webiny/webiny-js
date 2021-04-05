@@ -1,5 +1,4 @@
 import React from "react";
-import isEmpty from "lodash/isEmpty";
 import { Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { validation } from "@webiny/validation";
@@ -25,7 +24,7 @@ const defaultPasswordPolicy = {
     requireUppercase: false
 };
 
-export default (options?: CognitoIdentityProviderOptions): PluginCollection => [
+export default (options: CognitoIdentityProviderOptions = {}): PluginCollection => [
     {
         type: "security-installation-form",
         render({ Bind }) {
@@ -58,11 +57,9 @@ export default (options?: CognitoIdentityProviderOptions): PluginCollection => [
     {
         type: "security-user-form",
         render({ Bind, data }) {
-            const cognitoPasswordPolicy = !isEmpty(options && options.passwordPolicy)
-                ? options.passwordPolicy
-                : defaultPasswordPolicy;
+            const policy = Object.assign({}, defaultPasswordPolicy, options.passwordPolicy || {});
 
-            const passwordValidators = [createCognitoPasswordValidator(cognitoPasswordPolicy)];
+            const passwordValidators = [createCognitoPasswordValidator(policy)];
 
             if (!data.createdOn) {
                 passwordValidators.push(validation.create("required"));
