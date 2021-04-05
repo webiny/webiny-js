@@ -24,6 +24,16 @@ module.exports = (options = {}) => ({
                             default: false
                         });
 
+                        command.option("scope", {
+                            describe: `Include only workspaces that match the given scope (full package name or glob)`,
+                            type: "string"
+                        });
+
+                        command.option("folder", {
+                            describe: `Include only workspaces found in the specified folder`,
+                            type: "string"
+                        });
+
                         command.example("$0 workspaces list");
                     },
                     async argv => {
@@ -44,7 +54,7 @@ module.exports = (options = {}) => ({
                         });
 
                         command.option("scope", {
-                            describe: `Include only workspaces that match the given names or globs`,
+                            describe: `Include only workspaces that match the given scope (full package name or glob)`,
                             type: "string"
                         });
 

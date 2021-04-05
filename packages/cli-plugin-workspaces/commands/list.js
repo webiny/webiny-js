@@ -1,33 +1,44 @@
-const { join } = require("path");
 const chalk = require("chalk");
-const { allWorkspaces } = require("@webiny/project-utils/workspaces");
+const { getPackages } = require("./utils");
 
 const outputJSON = obj => {
     console.log(JSON.stringify(obj, null, 2));
 };
 
-module.exports = async ({ json, withPath }) => {
-    const workspaces = allWorkspaces().reduce((acc, folder) => {
-        const json = require(join(folder, "package.json"));
-        acc[json.name] = folder;
-        return acc;
+module.exports = async ({ json, withPath, folder, scope }) => {
+    let folders = [],
+        scopes = [];
+
+    if (folder) {
+        folders = Array.isArray(folder) ? folder : [folder];
+    }
+
+    if (scope) {
+        scopes = Array.isArray(scope) ? scope : [scope];
+    }
+
+    const packages = getPackages({ scopes, folders });
+
+    const output = packages.reduce((current, item) => {
+        current[item.name] = item.path;
+        return current;
     }, {});
 
     if (json) {
         // `withPath` outputs a key => value object, containing workspace name and absolute path
         if (withPath) {
-            outputJSON(workspaces);
+            outputJSON(output);
         } else {
-            outputJSON(Object.keys(workspaces));
+            outputJSON(Object.keys(output));
         }
         return;
     }
 
-    Object.keys(workspaces).forEach(name => {
+    packages.forEach(item => {
         if (withPath) {
-            console.log(`${chalk.green(name)} (${chalk.blue(workspaces[name])})`);
+            console.log(`${chalk.green(item.name)} (${chalk.blue(item.path)})`);
         } else {
-            console.log(chalk.green(name));
+            console.log(chalk.green(item.name));
         }
     });
 };
