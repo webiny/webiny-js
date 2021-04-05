@@ -23,8 +23,8 @@ export const Wrapper = styled("section")({
             letterSpacing: "0.03125em",
             textDecoration: "inherit",
             textTransform: "inherit",
-            marginTop: 20,
-            marginBottom: 20
+            marginTop: "20px",
+            marginBottom: "20px"
         }
     }
 });
