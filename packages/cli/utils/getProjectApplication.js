@@ -1,4 +1,4 @@
-const { dirname } = require("path");
+const { dirname, basename } = require("path");
 const findUp = require("find-up");
 const getProject = require("./getProject");
 
@@ -23,7 +23,7 @@ module.exports = args => {
     if (projectApplicationConfig) {
         name = projectApplicationConfig.name;
     } else {
-        name = dirname(projectApplicationRoot);
+        name = basename(projectApplicationRoot);
     }
 
     return {
