@@ -1,6 +1,8 @@
+const upgrades = require("./upgrades");
 const { red } = require("chalk");
 
 module.exports = [
+    upgrades,
     {
         type: "cli-command",
         name: "cli-command-upgrade",
