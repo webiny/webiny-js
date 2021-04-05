@@ -10,13 +10,23 @@ import {
 } from "@webiny/app-security-tenancy/types";
 import { PluginCollection } from "@webiny/plugins/types";
 import { CognitoIdentityProviderArgs } from "../types";
-import { cognitoPasswordValidator } from "./cognitoPasswordValidator";
+import { createCognitoPasswordValidator } from "./cognitoPasswordValidator";
 
 const t1 = i18n.ns("cognito/user-management/installation-form");
 const t2 = i18n.ns("cognito/user-management/user-account-form");
 const t3 = i18n.ns("cognito/user-management/user-form");
 
-export default (options?: CognitoIdentityProviderArgs): PluginCollection => [
+const defaultArgs = {
+    passwordPolicy: {
+        minimumLength: 8,
+        requireLowercase: false,
+        requireNumbers: false,
+        requireSymbols: false,
+        requireUppercase: false
+    }
+};
+
+export default (options: CognitoIdentityProviderArgs = defaultArgs): PluginCollection => [
     {
         type: "security-installation-form",
         render({ Bind }) {
@@ -52,9 +62,7 @@ export default (options?: CognitoIdentityProviderArgs): PluginCollection => [
             const passwordValidators = [];
 
             if (options && options.passwordPolicy) {
-                passwordValidators.push(
-                    validation.create(cognitoPasswordValidator(options.passwordPolicy))
-                );
+                passwordValidators.push(createCognitoPasswordValidator(options.passwordPolicy));
             }
 
             if (!data.createdOn) {
