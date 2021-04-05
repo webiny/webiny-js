@@ -15,6 +15,7 @@ class Context {
     constructor() {
         this.loadedEnvFiles = {};
 
+        this.version = require("./package.json").version;
         this.project = project;
 
         // Check if `projectName` was injected properly.
