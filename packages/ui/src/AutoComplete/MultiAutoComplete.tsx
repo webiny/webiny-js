@@ -50,6 +50,15 @@ const style = {
         })
     }
 };
+const listStyles = css({
+    "&.multi-autocomplete__options-list": {
+        listStyle: "none",
+        paddingLeft: 0,
+        "& li": {
+            margin: 0
+        }
+    }
+});
 
 export type MultiAutoCompleteProps = AutoCompleteBaseProps & {
     /**
@@ -237,7 +246,10 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
         if (!options.length) {
             return (
                 <Elevation z={1}>
-                    <ul {...getMenuProps()}>
+                    <ul
+                        className={classNames("multi-autocomplete__options-list", listStyles)}
+                        {...getMenuProps()}
+                    >
                         <li>
                             <Typography use={"body2"}>No results.</Typography>
                         </li>
@@ -249,7 +261,10 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
         const { renderItem } = this.props;
         return (
             <Elevation z={1}>
-                <ul {...getMenuProps()}>
+                <ul
+                    className={classNames("multi-autocomplete__options-list", listStyles)}
+                    {...getMenuProps()}
+                >
                     {options.map((item, index) => {
                         const itemValue = getOptionValue(item, this.props);
 
