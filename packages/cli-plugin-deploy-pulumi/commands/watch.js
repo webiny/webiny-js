@@ -33,7 +33,7 @@ module.exports = async (inputs, context) => {
     });
 
     // If exists - read default inputs from "webiny.application.js" file.
-    merge(inputs, get(projectApplication, "config.cli.watch"));
+    merge(get(projectApplication, "config.cli.watch"), inputs);
 
     // 1. Initial checks for deploy and build commands. We want to do these before initializing the
     //    blessed screen, because it messes the terminal output a bit. With this approach, we avoid that.
