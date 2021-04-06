@@ -1,11 +1,16 @@
 const execa = require("execa");
 const mapStackOutput = require("./mapStackOutput");
+const { getProject } = require("@webiny/cli/utils");
 
 const getOutputJson = async (stack, env) => {
+    const project = getProject();
     try {
         const { stdout } = await execa(
             "yarn",
-            ["webiny", "output", stack, "--env", env, "--json", "--no-debug"].filter(Boolean)
+            ["webiny", "output", stack, "--env", env, "--json", "--no-debug"].filter(Boolean),
+            {
+                cwd: project.root
+            }
         );
 
         // Let's get the output after the first line break. Everything before is just yarn stuff.
