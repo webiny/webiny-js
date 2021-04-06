@@ -54,10 +54,16 @@ const functions = {
 };
 
 functions.log.highlight = chalk.highlight;
+functions.log.hl = chalk.highlight;
 functions.info.highlight = chalk.blue;
+functions.info.hl = chalk.blue;
 functions.success.highlight = chalk.green;
+functions.success.hl = chalk.green;
 functions.debug.highlight = chalk.gray;
+functions.debug.hl = chalk.gray;
 functions.warning.highlight = chalk.yellow;
+functions.warning.hl = chalk.yellow;
 functions.error.highlight = chalk.red;
+functions.error.hl = chalk.red;
 
 module.exports = functions;
