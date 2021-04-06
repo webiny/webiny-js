@@ -184,18 +184,22 @@ module.exports = async (inputs, context) => {
                 ]).then(({ stdout }) => JSON.parse(stdout));
             }
 
-            const watchPackages = execa("yarn", [
-                "webiny",
-                "workspaces",
-                "run",
-                "watch",
-                "--env",
-                inputs.env,
-                ...scopes.reduce((current, item) => {
-                    current.push("--scope", item);
-                    return current;
-                }, [])
-            ]);
+            const watchPackages = execa(
+                "yarn",
+                [
+                    "webiny",
+                    "workspaces",
+                    "run",
+                    "watch",
+                    "--env",
+                    inputs.env,
+                    ...scopes.reduce((current, item) => {
+                        current.push("--scope", item);
+                        return current;
+                    }, [])
+                ],
+                { env: { FORCE_COLOR: true } }
+            );
 
             watchPackages.stdout.on("data", data => {
                 let message = data.toString();
