@@ -202,18 +202,23 @@ module.exports = async (inputs, context) => {
             );
 
             watchPackages.stdout.on("data", data => {
-                let message = data.toString();
-                if (message.match(/error/i)) {
-                    message = chalk.red(message);
-                }
-                logs.build.log(message);
+                const message = data.toString();
+                message
+                    .split("\n")
+                    .filter(Boolean)
+                    .forEach(item => {
+                        logs.build.log(item);
+                    });
             });
+
             watchPackages.stderr.on("data", data => {
-                let message = data.toString();
-                if (message.match(/error/i)) {
-                    message = chalk.red(message);
-                }
-                logs.build.log(message);
+                const message = data.toString();
+                message
+                    .split("\n")
+                    .filter(Boolean)
+                    .forEach(item => {
+                        logs.build.log(item);
+                    });
             });
         }
     } catch (e) {
