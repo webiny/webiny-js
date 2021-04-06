@@ -1,7 +1,13 @@
 const base = require("../../jest.config.base");
-const packagesPresets = require("@webiny/project-utils/testing/presets")([
+const items = require("@webiny/project-utils/testing/presets")([
     "@webiny/api-headless-cms",
     "storage-operations"
 ]);
 
-module.exports = packagesPresets.map(presets => base({ path: __dirname }, presets));
+module.exports = items.map(item => {
+    return {
+        ...base({ path: __dirname }, item.presets),
+        name: item.name,
+        displayName: item.displayName
+    };
+});

@@ -54,7 +54,6 @@ const projects = allWorkspaces()
     }, [])
     .filter(Boolean);
 
-console.log(projects);
 module.exports = {
     projects,
     modulePathIgnorePatterns: ["dist"],

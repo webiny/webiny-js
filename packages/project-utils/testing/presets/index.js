@@ -64,11 +64,24 @@ const getPackagesPresets = targetKeywords => {
             `There are no storage operations packages with keywords ${targetKeywords.join(", ")}.`
         );
     }
-    const packagesPresets = [];
+    const items = [];
+    const identifiers = {};
+
+    const createUniquePackageName = pkg => {
+        const initialName = `custom-${pkg.name.split("/").pop()}`;
+        let name = initialName;
+        let current = 0;
+        while (identifiers[name]) {
+            name = `${initialName}-${current}`;
+            current++;
+        }
+        return name;
+    };
     /**
      * We go through all available packages to build presets for them.
      */
     for (const pkg of packages) {
+        const name = createUniquePackageName(pkg);
         const presetsPath = path.join(pkg.path, "__tests__/presets.js");
         if (!fs.existsSync(presetsPath)) {
             throw new Error(`Missing presets.js of the "${pkg.name}" package.`);
@@ -92,9 +105,12 @@ const getPackagesPresets = targetKeywords => {
                 `The last preset in package "${pkg.name}" must have testEnvironment property defined.`
             );
         }
-        packagesPresets.push(presets.filter(removeEmptyPreset));
+        items.push({
+            name,
+            presets: presets.filter(removeEmptyPreset)
+        });
     }
-    return packagesPresets;
+    return items;
 };
 
 module.exports = targetKeywords => getPackagesPresets(targetKeywords);
