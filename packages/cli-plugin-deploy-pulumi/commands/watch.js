@@ -136,7 +136,8 @@ module.exports = async (inputs, context) => {
             const watchCloudInfrastructure = pulumi.run({
                 command: "watch",
                 args: {
-                    secretsProvider: SECRETS_PROVIDER
+                    secretsProvider: SECRETS_PROVIDER,
+                    color: "always"
                 },
                 execa: {
                     env: {
