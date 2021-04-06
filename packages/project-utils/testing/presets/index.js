@@ -82,12 +82,13 @@ const getPackagesPresets = targetKeywords => {
      */
     for (const pkg of packages) {
         const name = createUniquePackageName(pkg);
-        const presetsPath = path.join(pkg.path, "__tests__/presets.js");
+        const presetsPath = path.join(pkg.path, "__tests__/__api__/presets.js");
         if (!fs.existsSync(presetsPath)) {
-            throw new Error(`Missing presets.js of the "${pkg.name}" package.`);
+            throw new Error(`Missing presets.js of the "${pkg.name}" package: ${presetsPath}`);
         }
         /**
          * We expect presets file to contain an array of presets.
+         * We do not check for the actual contents of the presets arrays since they can be quite different per package.
          */
         const presets = require(presetsPath);
         if (Array.isArray(presets) === false) {
@@ -95,19 +96,13 @@ const getPackagesPresets = targetKeywords => {
         } else if (presets.length === 0) {
             throw new Error(`There are no presets in the file "${presetsPath}".`);
         }
-        /**
-         * Last preset should have test environment defined as it is the environment for the given package.
-         * It overrides previous and default ones.
-         */
-        const last = presets[presets.length - 1];
-        if (!last.testEnvironment) {
-            throw new Error(
-                `The last preset in package "${pkg.name}" must have testEnvironment property defined.`
-            );
-        }
         items.push({
             name,
-            presets: presets.filter(removeEmptyPreset)
+            /**
+             * There is a possibility that there is nothing in some preset - depending on some conditions - so remove those.
+             */
+            presets: presets.filter(removeEmptyPreset),
+            package: pkg
         });
     }
     return items;

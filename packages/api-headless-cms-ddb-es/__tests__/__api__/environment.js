@@ -1,5 +1,9 @@
-const plugins = require("../dist/index");
+/**
+ * For this to work it must load plugins that have already been built
+ */
+const plugins = require("../../dist/index");
 const JestDynaliteEnvironment = require("jest-dynalite/environment");
+//const NodeEnvironment = require("jest-environment-node");
 
 class CmsTestEnvironment extends JestDynaliteEnvironment {
     esClient;
