@@ -254,8 +254,8 @@ const createScreen = inputs => {
     if (inputs.build) {
         output.logs.build = output.grid.set(rows.current, 0, HEIGHTS.build, 1, contrib.log, {
             label: "Build",
-            scrollable: true,
-            scrollOnInput: true
+            scrollOnInput: true,
+            bufferLength: 90
         });
         rows.current += HEIGHTS.build;
     }
@@ -263,10 +263,8 @@ const createScreen = inputs => {
     if (inputs.deploy) {
         output.logs.deploy = output.grid.set(rows.current, 0, HEIGHTS.deploy, 1, contrib.log, {
             label: "Deploy",
-            scrollbar: true,
-            alwaysScroll: true,
-            scrollable: true,
-            scrollOnInput: true
+            scrollOnInput: true,
+            bufferLength: 90
         });
         rows.current += HEIGHTS.deploy;
     }
@@ -274,7 +272,8 @@ const createScreen = inputs => {
     if (inputs.logs) {
         output.logs.logs = output.grid.set(rows.current, 0, HEIGHTS.logs, 1, contrib.log, {
             label: "Logs",
-            scrollOnInput: true
+            scrollOnInput: true,
+            bufferLength: 90
         });
         rows.current += HEIGHTS.logs;
     }
