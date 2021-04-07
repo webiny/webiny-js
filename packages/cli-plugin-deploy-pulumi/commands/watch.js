@@ -19,14 +19,6 @@ module.exports = async (inputs, context) => {
         throw new Error(`Please specify environment, for example "dev".`);
     }
 
-    if (!inputs.build && !inputs.deploy) {
-        throw new Error(`Both re-build and re-deploy actions were disabled, can't continue.`);
-    }
-
-    if (typeof inputs.logs === "string" && inputs.logs === "") {
-        inputs.logs = "*";
-    }
-
     // Get project application metadata.
     const projectApplication = getProjectApplication({
         cwd: path.join(process.cwd(), inputs.folder)
@@ -34,6 +26,17 @@ module.exports = async (inputs, context) => {
 
     // If exists - read default inputs from "webiny.application.js" file.
     merge(get(projectApplication, "config.cli.watch"), inputs);
+
+    inputs.build = inputs.build !== false;
+    inputs.deploy = inputs.deploy !== false;
+    if (typeof inputs.logs === "string" && inputs.logs === "") {
+        inputs.logs = "*";
+    }
+
+    if (inputs.build && !inputs.deploy) {
+        throw new Error(`Both re-build and re-deploy actions were disabled, can't continue.`);
+    }
+
 
     // 1. Initial checks for deploy and build commands. We want to do these before initializing the
     //    blessed screen, because it messes the terminal output a bit. With this approach, we avoid that.
