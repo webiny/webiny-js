@@ -421,6 +421,16 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
                                                 }}
                                             />
                                         </ListItemGraphic>
+                                        <div
+                                            style={{
+                                                color:
+                                                    "var(--mdc-theme-text-secondary-on-background)",
+                                                marginRight: 8,
+                                                minWidth: 32
+                                            }}
+                                        >
+                                            {item.index + 1}.
+                                        </div>{" "}
                                         {getOptionText(item, this.props)}
                                         <ListItemMeta>
                                             <IconButton
