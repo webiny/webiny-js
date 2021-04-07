@@ -6,7 +6,6 @@ import { Chips, Chip } from "../Chips";
 import { getOptionValue, getOptionText, findInAliases } from "./utils";
 import { List, ListItem, ListItemMeta } from "@webiny/ui/List";
 import { IconButton } from "@webiny/ui/Button";
-import { Icon } from "@webiny/ui/Icon";
 import classNames from "classnames";
 import { Elevation } from "../Elevation";
 import { Typography } from "../Typography";
@@ -19,9 +18,11 @@ import { ReactComponent as PrevIcon } from "./icons/navigate_before-24px.svg";
 import { ReactComponent as NextIcon } from "./icons/navigate_next-24px.svg";
 import { ReactComponent as PrevAllIcon } from "./icons/skip_previous-24px.svg";
 import { ReactComponent as NextAllIcon } from "./icons/skip_next-24px.svg";
-import { ReactComponent as DeleteIcon } from "./icons/delete.svg";
+import { ReactComponent as DeleteIcon } from "./icons/baseline-close-24px.svg";
+import { ReactComponent as ReorderIcon } from "./icons/reorder_black_24dp.svg";
 
 import { css } from "emotion";
+import { ListItemGraphic } from "../List";
 const style = {
     pagination: {
         bar: css({
@@ -86,6 +87,8 @@ type State = {
     inputValue: string;
     multipleSelectionPage: number;
     multipleSelectionSearch: string;
+    reorderFormVisible: string;
+    reorderFormValue: string;
 };
 
 function Spinner() {
@@ -152,7 +155,9 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
     state = {
         inputValue: "",
         multipleSelectionPage: 0,
-        multipleSelectionSearch: ""
+        multipleSelectionSearch: "",
+        reorderFormVisible: "",
+        reorderFormValue: ""
     };
 
     /**
@@ -353,26 +358,86 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
                             </div>
                         </div>
                     </div>
+
                     <List className={style.pagination.list}>
                         {meta.hasData ? (
-                            data.map((item, index) => (
-                                <ListItem key={`${getOptionValue(item, this.props)}-${index}`}>
-                                    {getOptionText(item, this.props)}
-                                    <ListItemMeta>
-                                        <Icon
-                                            icon={<DeleteIcon />}
-                                            onClick={() => {
-                                                if (onChange) {
-                                                    onChange([
-                                                        ...value.slice(0, item.index),
-                                                        ...value.slice(item.index + 1)
-                                                    ]);
+                            data.map((item, index) => {
+                                const key = `${getOptionValue(item, this.props)}-${index}`;
+                                if (this.state.reorderFormVisible === key) {
+                                    return (
+                                        <ListItem key={key}>
+                                            <ListItemGraphic>
+                                                <IconButton disabled icon={<ReorderIcon />} />
+                                            </ListItemGraphic>
+                                            <Input
+                                                value={this.state.reorderFormValue}
+                                                onKeyDown={(e: any) => {
+                                                    const key = e.key;
+                                                    if (key !== "Escape" && key !== "Enter") {
+                                                        return;
+                                                    }
+
+                                                    if (key === "Enter") {
+                                                        // Reorder the item.
+                                                        const newValue = [...value];
+                                                        newValue.splice(
+                                                            e.target.value - 1,
+                                                            0,
+                                                            newValue.splice(item.index, 1)[0]
+                                                        );
+
+                                                        onChange(newValue);
+                                                    }
+
+                                                    this.setState({
+                                                        reorderFormVisible: "",
+                                                        reorderFormValue: ""
+                                                    });
+                                                }}
+                                                onChange={value =>
+                                                    this.setState({ reorderFormValue: value })
                                                 }
-                                            }}
-                                        />
-                                    </ListItemMeta>
-                                </ListItem>
-                            ))
+                                                type={"number"}
+                                                autoFocus
+                                                className={style.pagination.searchInput}
+                                                placeholder={
+                                                    "Type a new order number and press Enter, or press Esc to cancel."
+                                                }
+                                            />
+                                            <ListItemMeta>
+                                                <IconButton icon={<DeleteIcon />} disabled />
+                                            </ListItemMeta>
+                                        </ListItem>
+                                    );
+                                }
+
+                                return (
+                                    <ListItem key={key}>
+                                        <ListItemGraphic>
+                                            <IconButton
+                                                icon={<ReorderIcon />}
+                                                onClick={() => {
+                                                    this.setState({ reorderFormVisible: key });
+                                                }}
+                                            />
+                                        </ListItemGraphic>
+                                        {getOptionText(item, this.props)}
+                                        <ListItemMeta>
+                                            <IconButton
+                                                icon={<DeleteIcon />}
+                                                onClick={() => {
+                                                    if (onChange) {
+                                                        onChange([
+                                                            ...value.slice(0, item.index),
+                                                            ...value.slice(item.index + 1)
+                                                        ]);
+                                                    }
+                                                }}
+                                            />
+                                        </ListItemMeta>
+                                    </ListItem>
+                                );
+                            })
                         ) : (
                             <ListItem>
                                 <span className={style.pagination.secondaryText}>
