@@ -85,23 +85,32 @@ export default (context: DbContext & SecurityContext & TenancyContext): UsersCRU
             if (ids.length === 0) {
                 return [];
             }
-            const batch = db.batch();
-            for (const id of ids) {
-                batch.read({
-                    ...dbArgs,
-                    query: {
-                        PK: `U#${id}`,
-                        SK: { $beginsWith: `LINK#` }
-                    }
-                });
-            }
+
+            const reads = Promise.all(
+                ids.map(id => {
+                    return db.read({
+                        ...dbArgs,
+                        query: {
+                            PK: `U#${id}`,
+                            SK: { $beginsWith: `LINK#` }
+                        }
+                    });
+                })
+            );
             try {
-                const results = await batch.execute();
-                const links = results.map(result => result[0]);
-                return links.map(link => ({
-                    group: link.group,
-                    tenant: link.tenant
-                })) as any;
+                const resultGroups = await reads;
+                const links = [];
+                for (const results of resultGroups) {
+                    links.push(
+                        results[0].map(item => {
+                            return {
+                                group: item.group,
+                                tenant: item.tenant
+                            };
+                        })
+                    );
+                }
+                return links;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not execute batch read in getUserAccess.",
