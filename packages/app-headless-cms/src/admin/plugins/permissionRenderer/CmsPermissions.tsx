@@ -27,6 +27,20 @@ const API_ENDPOINTS = [
 export const CMSPermissions = ({ value, onChange }) => {
     const { getLocales } = useI18N();
 
+    const canRead = useCallback((value: any[], permissionName: string) => {
+        const permission = value.find(item => item.name === permissionName);
+
+        if (!permission) {
+            return false;
+        }
+
+        if (typeof permission.rwd !== "string") {
+            return true;
+        }
+
+        return permission.rwd.includes("r");
+    }, []);
+
     const getFormLocales = () => {
         const localePermission = (value || []).find(item => item.name.startsWith("content.i18n"));
         if (!localePermission) {
@@ -118,6 +132,16 @@ export const CMSPermissions = ({ value, onChange }) => {
                     newValue.push(permission);
                 }
             });
+            // Remove dependent permissions.
+            // The "cms.contentModel" permission can only be assigned if the user has the "read" access for the "cms.contentModelGroup".
+            if (!canRead(newValue, "cms.contentModelGroup")) {
+                newValue = newValue.filter(item => item.name !== "cms.contentModel");
+            }
+            // The "cms.contentEntry" permission can only be assigned if the user has the "read" access for the "cms.contentModel".
+            if (!canRead(newValue, "cms.contentModel")) {
+                newValue = newValue.filter(item => item.name !== "cms.contentEntry");
+            }
+
             onChange(newValue);
         },
         [value]
@@ -236,16 +260,6 @@ export const CMSPermissions = ({ value, onChange }) => {
                                 </Cell>
                             </Grid>
                             {data.endpoints.includes("manage") && (
-                                <ContentModelPermission
-                                    locales={locales}
-                                    data={data}
-                                    Bind={Bind}
-                                    entity={"contentModel"}
-                                    title={"Content Models"}
-                                />
-                            )}
-
-                            {data.endpoints.includes("manage") && (
                                 <CustomSection
                                     data={data}
                                     Bind={Bind}
@@ -254,18 +268,30 @@ export const CMSPermissions = ({ value, onChange }) => {
                                 />
                             )}
 
+                            {data.endpoints.includes("manage") &&
+                                canRead(value, "cms.contentModelGroup") && (
+                                    <ContentModelPermission
+                                        locales={locales}
+                                        data={data}
+                                        Bind={Bind}
+                                        entity={"contentModel"}
+                                        title={"Content Models"}
+                                    />
+                                )}
+
                             {(data.endpoints.includes("read") ||
                                 data.endpoints.includes("manage") ||
-                                data.endpoints.includes("preview")) && (
-                                <ContentEntryPermission
-                                    locales={locales}
-                                    data={data}
-                                    Bind={Bind}
-                                    setValue={setValue}
-                                    entity={"contentEntry"}
-                                    title={"Content Entries"}
-                                />
-                            )}
+                                data.endpoints.includes("preview")) &&
+                                canRead(value, "cms.contentModel") && (
+                                    <ContentEntryPermission
+                                        locales={locales}
+                                        data={data}
+                                        Bind={Bind}
+                                        setValue={setValue}
+                                        entity={"contentEntry"}
+                                        title={"Content Entries"}
+                                    />
+                                )}
                         </>
                     )}
                 </Fragment>
