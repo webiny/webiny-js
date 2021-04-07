@@ -1,30 +1,38 @@
-import React from "react";
-import { i18n } from "@webiny/app/i18n";
+import React, { useCallback } from "react";
 import { useSecurity } from "@webiny/app-security";
 import { AdminMenuPlugin } from "@webiny/app-admin/types";
 import HeadlessCmsMenu from "./menus/HeadlessCmsMenu";
 import ContentModelMenuItems from "./menus/ContentModelMenuItems";
-
-const t = i18n.ns("app-headless-cms/admin/menus");
+import ContentModelMenuSection from "./menus/ContentModelMenuSection";
 
 const CmsMenu = ({ Menu, Section, Item }) => {
     const { identity } = useSecurity();
 
-    const contentModels = identity.getPermission("cms.contentModel");
-    const contentModelGroups = identity.getPermission("cms.contentModelGroup");
+    const canRead = useCallback((permissionName: string) => {
+        const permission = identity.getPermission(permissionName);
+        if (!permission) {
+            return false;
+        }
 
-    if (!contentModels && !contentModelGroups) {
+        if (typeof permission.rwd !== "string") {
+            return true;
+        }
+
+        return permission.rwd.includes("r");
+    }, []);
+
+    const canReadContentModels = canRead("cms.contentModel");
+    const canReadContentModelGroups = canRead("cms.contentModelGroup");
+
+    // Don't show the menu if the user doesn't have the "read" access for both "cms.contentModel" and "cms.contentModelGroup".
+    if (!canReadContentModels && !canReadContentModelGroups) {
         return null;
     }
 
     return (
         <HeadlessCmsMenu Menu={Menu}>
             <ContentModelMenuItems Section={Section} Item={Item} />
-            <Section label={t`Content Models`}>
-                {contentModels && <Item label={t`Models`} path="/cms/content-models" />}
-
-                {contentModelGroups && <Item label={t`Groups`} path="/cms/content-model-groups" />}
-            </Section>
+            <ContentModelMenuSection Section={Section} Item={Item} />
         </HeadlessCmsMenu>
     );
 };
