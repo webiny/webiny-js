@@ -19,7 +19,7 @@ export default ({ identityType }) => {
             const user = await security.users.getUser(identity.id);
 
             if (!user) {
-                throw WebinyError(`User "${identity.id}" was not found!`, "USER_NOT_FOUND", {
+                throw new WebinyError(`User "${identity.id}" was not found!`, "USER_NOT_FOUND", {
                     id: identity.id
                 });
             }
