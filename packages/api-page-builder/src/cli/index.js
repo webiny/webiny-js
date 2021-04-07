@@ -59,5 +59,38 @@ module.exports = () => [
                 console.log(e);
             }
         }
+    },
+    {
+        type: "hook-after-deploy",
+        name: "hook-after-deploy-prerender-all-pages",
+        async hook(args, context) {
+            if (args.stack !== "website") {
+                return;
+            }
+
+            console.log("Uploading React application to Amazon S3...");
+            // 1. Get exports from `site` stack, for `args.env` environment.
+            const websiteOutput = await getStackOutput("apps/website", args.env);
+
+            // 2. Get exports from `api` stack, again, for `args.env` environment.
+            const apiOutput = await getStackOutput("api", args.env);
+        }
+    },
+    {
+        type: "hook-after-deploy",
+        name: "hook-after-deploy-rerender-website",
+        async hook(args, context) {
+            if (args.stack !== "website") {
+                return;
+            }
+
+            context.info("Re-rendering website...");
+
+            // 1. Get exports from `site` stack, for `args.env` environment.
+            const websiteOutput = await getStackOutput("apps/website", args.env);
+
+            // 2. Get exports from `api` stack, again, for `args.env` environment.
+            const apiOutput = await getStackOutput("api", args.env);
+        }
     }
 ];
