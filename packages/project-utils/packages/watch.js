@@ -2,15 +2,16 @@ const execa = require("execa");
 
 module.exports = () => {
     return execa.sync(
-        "babel",
+        "yarn",
         [
+            "babel",
             "src",
             "-d",
             "dist",
             "--source-maps",
             "--copy-files",
             "--extensions",
-            `".ts,.tsx"`,
+            `.ts,.tsx`,
             "--watch"
         ],
         {
