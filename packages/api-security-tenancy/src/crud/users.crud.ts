@@ -287,10 +287,7 @@ export default (context: DbContext & SecurityContext & TenancyContext): UsersCRU
                     ...data
                 }
             });
-            // loaders.getUser.clear(login);
-            // loaders.getUserAccess.clear(login);
             await addDataLoaderAccessCache(login, data);
-            // await clearDataLoaderAccessCache(login);
         },
         async unlinkUserFromTenant(login, tenant) {
             const [[link]] = await db.read<DbItemSecurityUser2Tenant>({
@@ -309,7 +306,6 @@ export default (context: DbContext & SecurityContext & TenancyContext): UsersCRU
                     SK: link.SK
                 }
             });
-
             await deleteDataLoaderAccessCache(login, tenant);
         },
         async getUserAccess(login) {
