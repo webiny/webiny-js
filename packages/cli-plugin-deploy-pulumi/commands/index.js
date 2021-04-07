@@ -59,6 +59,8 @@ module.exports = [
                     );
                     yargs.example("$0 watch api --env=dev --depth 2");
                     yargs.example('$0 watch api --env=dev --logs "my-function*"');
+                    yargs.example('$0 watch --env=dev --scope "my/{package1,package2}" ');
+
                     yargs.positional("folder", {
                         describe: `Project application folder`,
                         type: "string"

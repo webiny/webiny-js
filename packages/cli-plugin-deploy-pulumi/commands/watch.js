@@ -19,27 +19,38 @@ module.exports = async (inputs, context) => {
         throw new Error(`Please specify environment, for example "dev".`);
     }
 
-    // Get project application metadata.
-    const projectApplication = getProjectApplication({
-        cwd: path.join(process.cwd(), inputs.folder)
-    });
+    let projectApplication;
+    if (inputs.folder) {
+        // Get project application metadata.
+        projectApplication = getProjectApplication({
+            cwd: path.join(process.cwd(), inputs.folder)
+        });
 
-    // If exists - read default inputs from "webiny.application.js" file.
-    merge(get(projectApplication, "config.cli.watch"), inputs);
+        // If exists - read default inputs from "webiny.application.js" file.
+        inputs = merge({}, get(projectApplication, "config.cli.watch"), inputs);
+    }
 
     inputs.build = inputs.build !== false;
-    inputs.deploy = inputs.deploy !== false;
-    if (typeof inputs.logs === "string" && inputs.logs === "") {
-        inputs.logs = "*";
-    }
+    inputs.deploy = Boolean(projectApplication && inputs.deploy !== false);
 
-    if (inputs.build && !inputs.deploy) {
-        throw new Error(`Both re-build and re-deploy actions were disabled, can't continue.`);
+    if (inputs.deploy) {
+        if (typeof inputs.logs === "string" && inputs.logs === "") {
+            inputs.logs = "*";
+        }
     }
-
 
     // 1. Initial checks for deploy and build commands. We want to do these before initializing the
     //    blessed screen, because it messes the terminal output a bit. With this approach, we avoid that.
+
+    if (!inputs.build && !inputs.deploy) {
+        throw new Error(`Both re-build and re-deploy actions were disabled, can't continue.`);
+    }
+
+    if (!inputs.folder && !inputs.scope) {
+        throw new Error(
+            `Either "folder" or "scope" arguments must be passed. Cannot have both undefined.`
+        );
+    }
 
     // 1.1. Check if the project application and Pulumi stack exist.
     if (inputs.deploy) {
