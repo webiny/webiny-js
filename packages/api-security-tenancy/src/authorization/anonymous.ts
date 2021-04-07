@@ -21,7 +21,7 @@ export default () => {
             // and we need to load permissions from the "anonymous" group.
             const group = await security.groups.getGroup(tenant, "anonymous");
 
-            const permissions = group?.permissions || [];
+            const permissions = group ? group.permissions || [] : [];
             permissionCache.set(tenant.id, permissions);
 
             return permissions;

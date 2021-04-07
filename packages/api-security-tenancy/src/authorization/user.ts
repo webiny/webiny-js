@@ -1,6 +1,13 @@
-import { TenancyContext } from "../types";
+import { TenancyContext, TenantAccess } from "../types";
 import { SecurityContext, SecurityPermission } from "@webiny/api-security/types";
 import WebinyError from "@webiny/error";
+
+const extractPermissions = (tenantAccess?: TenantAccess): SecurityPermission[] | null => {
+    if (!tenantAccess || !tenantAccess.group || !tenantAccess.group.permissions) {
+        return null;
+    }
+    return tenantAccess.group.permissions;
+};
 
 export default ({ identityType }) => {
     const permissionCache = new Map<string, SecurityPermission[] | null>();
@@ -27,7 +34,7 @@ export default ({ identityType }) => {
             const tenant = security.getTenant();
             const permissions = await security.users.getUserAccess(user.login);
             const tenantAccess = permissions.find(set => set.tenant.id === tenant.id);
-            const value = tenantAccess.group.permissions ?? null;
+            const value = extractPermissions(tenantAccess);
 
             permissionCache.set(identity.id, value);
 

@@ -7,6 +7,7 @@ import { SecurityContext } from "@webiny/api-security/types";
 import {
     DbItemSecurityUser2Tenant,
     TenancyContext,
+    Tenant,
     TenantAccess,
     User,
     UserPersonalAccessToken,
@@ -64,8 +65,7 @@ export default (context: DbContext & SecurityContext & TenancyContext): UsersCRU
                     query: {
                         PK: `U#${id}`,
                         SK: "A"
-                    },
-                    limit: 1
+                    }
                 });
             }
             try {
@@ -113,8 +113,8 @@ export default (context: DbContext & SecurityContext & TenancyContext): UsersCRU
                 return links;
             } catch (ex) {
                 throw new WebinyError(
-                    ex.message || "Could not execute batch read in getUserAccess.",
-                    ex.code || "BATCH_READ_ERROR",
+                    ex.message || "Could not execute multiple read in getUserAccess.",
+                    ex.code || "MULTIPLE_READ_ERROR",
                     {
                         ids
                     }
@@ -123,11 +123,39 @@ export default (context: DbContext & SecurityContext & TenancyContext): UsersCRU
         })
     };
 
-    const clearLoaderUserCache = (ids: string) => {
+    const clearLoadersCache = (ids: string) => {
         for (const id of ids) {
             loaders.getUser.clear(id);
             loaders.getUserAccess.clear(id);
         }
+    };
+
+    const updateDataLoaderUserCache = async (id: string, data: Partial<User>) => {
+        const user = await loaders.getUser.load(id);
+        loaders.getUser.clear(id).prime(id, {
+            ...user,
+            ...data
+        });
+    };
+
+    const addDataLoaderAccessCache = async (id: string, data: TenantAccess) => {
+        const access = await loaders.getUserAccess.load(id);
+
+        loaders.getUserAccess.clear(id).prime(id, (access || []).concat([data]));
+    };
+
+    const clearDataLoaderAccessCache = (id: string) => {
+        loaders.getUserAccess.clear(id);
+    };
+
+    const deleteDataLoaderAccessCache = async (id: string, tenant: Tenant) => {
+        const access = await loaders.getUserAccess.load(id);
+
+        const updatedAccess = (access || []).filter(acc => {
+            return acc.tenant.id !== tenant.id;
+        });
+
+        loaders.getUserAccess.clear(id).prime(id, updatedAccess);
     };
 
     return {
@@ -206,7 +234,8 @@ export default (context: DbContext & SecurityContext & TenancyContext): UsersCRU
                 data: updatedAttributes
             });
 
-            clearLoaderUserCache(login);
+            await updateDataLoaderUserCache(login, updatedAttributes);
+            clearDataLoaderAccessCache(login);
 
             return updatedAttributes;
         },
@@ -231,11 +260,22 @@ export default (context: DbContext & SecurityContext & TenancyContext): UsersCRU
             }
             await batch.execute();
 
-            clearLoaderUserCache(login);
+            clearLoadersCache(login);
 
             return true;
         },
         async linkUserToTenant(login, tenant, group) {
+            const data: TenantAccess = {
+                tenant: {
+                    id: tenant.id,
+                    name: tenant.name
+                },
+                group: {
+                    slug: group.slug,
+                    name: group.name,
+                    permissions: group.permissions
+                }
+            };
             await db.create({
                 ...dbArgs,
                 data: {
@@ -244,19 +284,13 @@ export default (context: DbContext & SecurityContext & TenancyContext): UsersCRU
                     GSI1_PK: `T#${tenant.id}`,
                     GSI1_SK: `G#${group.slug}#U#${login}`,
                     TYPE: "security.user2tenant",
-                    tenant: {
-                        id: tenant.id,
-                        name: tenant.name
-                    },
-                    group: {
-                        slug: group.slug,
-                        name: group.name,
-                        permissions: group.permissions
-                    }
+                    ...data
                 }
             });
-
-            clearLoaderUserCache(login);
+            // loaders.getUser.clear(login);
+            // loaders.getUserAccess.clear(login);
+            await addDataLoaderAccessCache(login, data);
+            // await clearDataLoaderAccessCache(login);
         },
         async unlinkUserFromTenant(login, tenant) {
             const [[link]] = await db.read<DbItemSecurityUser2Tenant>({
@@ -276,7 +310,7 @@ export default (context: DbContext & SecurityContext & TenancyContext): UsersCRU
                 }
             });
 
-            clearLoaderUserCache(login);
+            await deleteDataLoaderAccessCache(login, tenant);
         },
         async getUserAccess(login) {
             return loaders.getUserAccess.load(login);
