@@ -1,48 +1,13 @@
 const execa = require("execa");
 const fs = require("fs");
 const rimraf = require("rimraf");
+const { join } = require("path");
+const { log } = require("@webiny/cli/utils");
 
 module.exports = async (options = {}, context) => {
     const start = new Date();
     const getDuration = () => {
         return (new Date() - start) / 1000;
-    };
-
-    // Defined these withing the main build function just so we can access "context" without forwarding it.
-    const defaults = {
-        prebuild: () => {
-            context.info("Deleting existing build files...");
-            rimraf.sync("./dist");
-            rimraf.sync("*.tsbuildinfo");
-        },
-        build: () => {
-            context.info("Building...");
-            return execa.sync(
-                "yarn",
-                [
-                    "babel",
-                    "src",
-                    "-d",
-                    "dist",
-                    "--source-maps",
-                    "--copy-files",
-                    "--extensions",
-                    ".ts,.tsx"
-                ],
-                {
-                    stdio: "inherit"
-                }
-            );
-        },
-        postbuild: () => {
-            context.info("Generating TypeScript types...");
-            execa.sync("yarn", ["tsc", "-p", "tsconfig.build.json"], { stdio: "inherit" });
-
-            context.info("Copying meta files...");
-            fs.copyFileSync("package.json", "./dist/package.json");
-            fs.copyFileSync("LICENSE", "./dist/LICENSE");
-            fs.copyFileSync("README.md", "./dist/README.md");
-        }
     };
 
     const prebuild = options.prebuild || defaults.prebuild;
@@ -60,5 +25,48 @@ module.exports = async (options = {}, context) => {
         await postbuild(options, context);
     }
 
-    context.info(`Done! Build finished in ${getDuration() + "s"}.`);
+    log.info(`Done! Build finished in ${log.info.hl(getDuration() + "s")}.`);
+};
+
+const defaults = {
+    prebuild: () => {
+        log.info("Deleting existing build files...");
+        rimraf.sync("./dist");
+        rimraf.sync("*.tsbuildinfo");
+    },
+    build: () => {
+        log.info("Building...");
+        return execa.sync(
+            "yarn",
+            [
+                "babel",
+                "src",
+                "-d",
+                "dist",
+                "--source-maps",
+                "--copy-files",
+                "--extensions",
+                ".ts,.tsx"
+            ],
+            {
+                stdio: "inherit"
+            }
+        );
+    },
+    postbuild: () => {
+        log.info("Generating TypeScript types...");
+        execa.sync("yarn", ["tsc", "-p", "tsconfig.build.json"], { stdio: "inherit" });
+
+        log.info("Copying meta files...");
+        copyToDist("package.json");
+        copyToDist("LICENSE");
+        copyToDist("README.md");
+    }
+};
+
+const copyToDist = path => {
+    if (fs.existsSync(path)) {
+        fs.copyFileSync(path, join(".", "dist", path));
+        log.info(`Copied ${log.info.hl(path)}.`);
+    }
 };
