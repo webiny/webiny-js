@@ -13,6 +13,7 @@
   "author": "Pavel Denisjuk <pavel@webiny.com>",
   "description": "A tool to bootstrap a Webiny project.",
   "dependencies": {
+    "@webiny/api-file-manager": "^5.3.0",
     "@webiny/tracking": "^5.3.0",
     "camelcase": "5.3.1",
     "chalk": "2.4.2",
@@ -21,7 +22,10 @@
     "find-up": "4.1.0",
     "fs-extra": "9.0.1",
     "load-json-file": "6.2.0",
+    "ncp": "^2.0.0",
+    "prettier": "^1.14.2",
     "public-ip": "4.0.3",
+    "rimraf": "^3.0.2",
     "semver": "7.3.4",
     "uniqid": "^5.3.0",
     "write-json-file": "4.3.0",
@@ -38,7 +42,12 @@
       "/create/template/",
       "/node_modules/",
       "/dist/"
-    ]
+    ],
+    "ignore": {
+      "src": [
+        "@webiny/project-utils"
+      ]
+    }
   },
   "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
 }
