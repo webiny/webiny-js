@@ -7675,6 +7675,7 @@ __metadata:
     "@commodo/fields": 1.1.2-beta.20
     "@webiny/api-security": ^5.3.0
     "@webiny/db-dynamodb": ^5.3.0
+    "@webiny/error": ^5.3.0
     "@webiny/handler": ^5.3.0
     "@webiny/handler-aws": ^5.3.0
     "@webiny/handler-db": ^5.3.0
@@ -7683,6 +7684,7 @@ __metadata:
     "@webiny/plugins": ^5.3.0
     "@webiny/validation": ^5.3.0
     commodo-fields-object: ^1.0.6
+    dataloader: ^2.0.0
     deep-equal: ^2.0.4
     jest: ^26.6.3
     jest-dynalite: ^3.2.0

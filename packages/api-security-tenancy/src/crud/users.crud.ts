@@ -2,16 +2,19 @@ import { withFields, string } from "@commodo/fields";
 import { object } from "commodo-fields-object";
 import { DbContext } from "@webiny/handler-db/types";
 import { validation } from "@webiny/validation";
+import WebinyError from "@webiny/error";
 import { SecurityContext } from "@webiny/api-security/types";
 import {
     DbItemSecurityUser2Tenant,
     TenancyContext,
+    TenantAccess,
     User,
     UserPersonalAccessToken,
     UsersCRUD
 } from "../types";
 import dbArgs from "./dbArgs";
 import mdbid from "mdbid";
+import DataLoader from "dataloader";
 
 const CreateUserDataModel = withFields({
     login: string({ validation: validation.create("required,minLength:2") }),
@@ -48,15 +51,79 @@ type DbUserAccessToken = DbItem<UserPersonalAccessToken>;
 
 export default (context: DbContext & SecurityContext & TenancyContext): UsersCRUD => {
     const { db } = context;
+
+    const loaders = {
+        getUser: new DataLoader<string, User>(async ids => {
+            if (ids.length === 0) {
+                return [];
+            }
+            const batch = db.batch();
+            for (const id of ids) {
+                batch.read({
+                    ...dbArgs,
+                    query: {
+                        PK: `U#${id}`,
+                        SK: "A"
+                    },
+                    limit: 1
+                });
+            }
+            try {
+                const results = await batch.execute();
+                return results.map(res => res[0][0]);
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not execute batch read in getUser.",
+                    ex.code || "BATCH_READ_ERROR",
+                    {
+                        ids
+                    }
+                );
+            }
+        }),
+        getUserAccess: new DataLoader<string, TenantAccess[]>(async ids => {
+            if (ids.length === 0) {
+                return [];
+            }
+            const batch = db.batch();
+            for (const id of ids) {
+                batch.read({
+                    ...dbArgs,
+                    query: {
+                        PK: `U#${id}`,
+                        SK: { $beginsWith: `LINK#` }
+                    }
+                });
+            }
+            try {
+                const results = await batch.execute();
+                const links = results.map(result => result[0]);
+                return links.map(link => ({
+                    group: link.group,
+                    tenant: link.tenant
+                })) as any;
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not execute batch read in getUserAccess.",
+                    ex.code || "BATCH_READ_ERROR",
+                    {
+                        ids
+                    }
+                );
+            }
+        })
+    };
+
+    const clearLoaderUserCache = (ids: string) => {
+        for (const id of ids) {
+            loaders.getUser.clear(id);
+            loaders.getUserAccess.clear(id);
+        }
+    };
+
     return {
         async getUser(login) {
-            const [[user]] = await db.read<User>({
-                ...dbArgs,
-                query: { PK: `U#${login}`, SK: "A" },
-                limit: 1
-            });
-
-            return user;
+            return loaders.getUser.load(login);
         },
         async listUsers({ tenant }) {
             const [users] = await db.read<DbUser>({
@@ -130,6 +197,8 @@ export default (context: DbContext & SecurityContext & TenancyContext): UsersCRU
                 data: updatedAttributes
             });
 
+            clearLoaderUserCache(login);
+
             return updatedAttributes;
         },
         async deleteUser(login) {
@@ -153,6 +222,8 @@ export default (context: DbContext & SecurityContext & TenancyContext): UsersCRU
             }
             await batch.execute();
 
+            clearLoaderUserCache(login);
+
             return true;
         },
         async linkUserToTenant(login, tenant, group) {
@@ -175,6 +246,8 @@ export default (context: DbContext & SecurityContext & TenancyContext): UsersCRU
                     }
                 }
             });
+
+            clearLoaderUserCache(login);
         },
         async unlinkUserFromTenant(login, tenant) {
             const [[link]] = await db.read<DbItemSecurityUser2Tenant>({
@@ -193,20 +266,11 @@ export default (context: DbContext & SecurityContext & TenancyContext): UsersCRU
                     SK: link.SK
                 }
             });
+
+            clearLoaderUserCache(login);
         },
         async getUserAccess(login) {
-            const [links] = await db.read<DbItemSecurityUser2Tenant>({
-                ...dbArgs,
-                query: {
-                    PK: `U#${login}`,
-                    SK: { $beginsWith: `LINK#` }
-                }
-            });
-
-            return links.map(link => ({
-                group: link.group,
-                tenant: link.tenant
-            }));
+            return loaders.getUserAccess.load(login);
         },
         async getUserByPersonalAccessToken(token) {
             const [[pat]] = await db.read<DbUserAccessToken>({
