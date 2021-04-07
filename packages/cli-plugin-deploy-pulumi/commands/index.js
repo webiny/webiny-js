@@ -71,11 +71,11 @@ module.exports = [
                     });
                     yargs.option("build", {
                         describe: `While making code changes, re-build all relevant packages`,
-                        type: "boolean",
+                        type: "boolean"
                     });
                     yargs.option("deploy", {
                         describe: `While making code changes, re-deploy cloud infrastructure`,
-                        type: "boolean",
+                        type: "boolean"
                     });
                     yargs.option("scope", {
                         describe: `Override watch scope (list of packages that need to be watched for code changes)`,
