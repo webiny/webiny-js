@@ -126,7 +126,7 @@ module.exports = async (inputs, context) => {
 
     const isFirstDeploy = !stackExists;
 
-    const hookDeployArgs = { isFirstDeploy, context, env, stack: stackName };
+    const hookDeployArgs = { isFirstDeploy, context, inputs, env, stack: stackName };
 
     if (inputs.preview) {
         context.info(`Skipped "hook-before-deploy" hook.`);
