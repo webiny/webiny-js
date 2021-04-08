@@ -16,9 +16,17 @@ type Configuration = {
     };
 };
 
+type Stats = {
+    jobsFetchedCount: number;
+};
+
 export default (configuration: Configuration): HandlerPlugin => ({
     type: "handler",
-    async handle(context): Promise<HandlerResponse> {
+    async handle(context): Promise<HandlerResponse<{ stats: Stats }>> {
+        const stats: Stats = {
+            jobsFetchedCount: 0
+        };
+
         try {
             const handlerHookPlugins = context.plugins.byType<ProcessHookPlugin>(
                 "ps-queue-process-hook"
@@ -51,11 +59,12 @@ export default (configuration: Configuration): HandlerPlugin => ({
                 }
             });
 
+            stats.jobsFetchedCount = jobs.length;
             log(`Fetched ${jobs.length} ${pluralize("job", jobs.length)}.`);
 
             if (jobs.length === 0) {
                 log("No queue jobs to process. Exiting...");
-                return { data: null, error: null };
+                return { data: { stats }, error: null };
             }
 
             log(`Deleting all jobs from the database so they don't get executed again...`);
@@ -264,10 +273,10 @@ export default (configuration: Configuration): HandlerPlugin => ({
             }
 
             log("All queue jobs processed, exiting...");
-            return { data: null, error: null };
+            return { data: { stats }, error: null };
         } catch (e) {
             log("An error occurred while trying to add to prerendering queue...", e);
-            return { data: null, error: e };
+            return { data: { stats }, error: e };
         }
     }
 });
