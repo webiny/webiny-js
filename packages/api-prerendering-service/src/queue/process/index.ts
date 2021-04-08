@@ -93,7 +93,7 @@ export default (configuration: Configuration): HandlerPlugin => ({
 
             // TODO: if we have a `render-all` job, then we can ignore all of the jobs basically (for DB namespace).
 
-            const uniqueJobs = Object.values<DbQueueJob>(uniqueJobsObject);
+            let uniqueJobs = Object.values<DbQueueJob>(uniqueJobsObject);
 
             log(
                 `Ended up with ${uniqueJobs.length} unique ${pluralize(
@@ -109,6 +109,45 @@ export default (configuration: Configuration): HandlerPlugin => ({
                 render: Record<string, any>;
             } = { flush: {}, render: {} };
 
+            // Let's see if we have the render-all-pages (path: "*"). If we detect it, let's take its dbNamespace
+            // value, and eliminate all other jobs that are scheduled within it.
+            const dbNamespacesWithRenderAllJob = [];
+
+            for (let i = 0; i < uniqueJobs.length; i++) {
+                const uniqueJob = uniqueJobs[i];
+                const { args } = uniqueJob;
+
+                if (args?.render) {
+                    const { path, configuration } = args.render;
+                    if (path === "*") {
+                        const dbNamespace = configuration?.db?.namespace || "";
+                        if (!dbNamespacesWithRenderAllJob.includes(dbNamespace)) {
+                            dbNamespacesWithRenderAllJob.push(dbNamespace);
+                        }
+                    }
+                }
+                // TODO: Ideally, we'd want to add support for processing `flush` jobs as well.
+            }
+
+            // Now, if we have something in the "dbNamespacesWithRenderAllJob" array, let's remove all
+            // jobs for every dbNamespace listed in it.
+            if (dbNamespacesWithRenderAllJob.length > 0) {
+                uniqueJobs = uniqueJobs.filter(job => {
+                    const render = job?.args?.render;
+                    if (!render) {
+                        return true;
+                    }
+
+                    const dbNamespace = render?.configuration?.db?.namespace || "";
+                    if (dbNamespacesWithRenderAllJob.includes(dbNamespace)) {
+                        return false;
+                    }
+
+                    return true;
+                });
+                // TODO: Ideally, we'd want to add support for processing `flush` jobs as well.
+            }
+
             for (let i = 0; i < uniqueJobs.length; i++) {
                 const uniqueJob = uniqueJobs[i];
                 log("Processing unique job.", JSON.stringify(uniqueJob));
@@ -118,80 +157,93 @@ export default (configuration: Configuration): HandlerPlugin => ({
                 const { render /*flush*/ } = args;
 
                 if (render) {
-                    const renderJobs = Array.isArray(render) ? render : [render];
-                    for (let j = 0; j < renderJobs.length; j++) {
-                        const renderJob = renderJobs[j];
-                        const { tag, path, url, configuration } = renderJob;
+                    const { tag, path, url, configuration } = render;
 
-                        const dbNamespace = configuration?.db?.namespace || "";
-                        if (!uniqueDbNamespaces[dbNamespace]) {
-                            uniqueDbNamespaces[dbNamespace] = uniqueDbNamespaces;
-                        }
+                    const dbNamespace = configuration?.db?.namespace || "";
+                    if (!uniqueDbNamespaces[dbNamespace]) {
+                        uniqueDbNamespaces[dbNamespace] = uniqueDbNamespaces;
+                    }
 
-                        if (!uniqueJobsPerOperationPerDbNamespace.render[dbNamespace]) {
-                            uniqueJobsPerOperationPerDbNamespace.render[dbNamespace] = {};
-                        }
+                    if (!uniqueJobsPerOperationPerDbNamespace.render[dbNamespace]) {
+                        uniqueJobsPerOperationPerDbNamespace.render[dbNamespace] = {};
+                    }
 
-                        if (url) {
-                            uniqueJobsPerOperationPerDbNamespace.render[dbNamespace][url] = {
-                                url,
-                                configuration
-                            };
-                        }
+                    if (url) {
+                        uniqueJobsPerOperationPerDbNamespace.render[dbNamespace][url] = {
+                            url,
+                            configuration
+                        };
+                    }
 
-                        if (path) {
+                    if (typeof path === "string") {
+                        if (path === "*") {
+                            // We must re-render all pages.
+                            const PK = [dbNamespace, "PS", "RENDER"].filter(Boolean).join("#");
+                            const [renderData] = await context.db.read<DbRender>({
+                                ...defaults.db,
+                                query: {
+                                    PK,
+                                    SK: { $gte: " " }
+                                }
+                            });
+
+                            for (let j = 0; j < renderData.length; j++) {
+                                const { url, args } = renderData[j];
+                                // We just need the `args` of the `renderData`.
+                                uniqueJobsPerOperationPerDbNamespace.render[dbNamespace][
+                                    url
+                                ] = args;
+                            }
+                        } else if (path.endsWith("*")) {
+                            // Future feature - ability to search by prefix, e.g. "/en/*" or "/categories/books/*".
+                        } else {
                             uniqueJobsPerOperationPerDbNamespace.render[dbNamespace][url] = {
                                 path,
                                 configuration
                             };
                         }
+                    }
 
-                        if (tag) {
-                            // If we must render all pages with a specific tag, let's gather all URLs that contain it.
-                            // TODO: improve - paginate instead of just naively executing read (all).
-                            const [PK] = getTagUrlLinkPKSK({
-                                tag,
-                                dbNamespace
+                    if (tag) {
+                        // If we must render all pages with a specific tag, let's gather all URLs that contain it.
+                        // TODO: improve - paginate instead of just naively executing read (all).
+                        const [PK] = getTagUrlLinkPKSK({
+                            tag,
+                            dbNamespace
+                        });
+
+                        if (PK) {
+                            // A) For tags like { key: "pb-page", value: "abc123" }, we need to use
+                            // `$beginsWith: tag.value` for SK condition. SK is always in `TAG-VALUE#URL` format.
+                            // B) For tags like { key: "pb-page" }, we don't care about tag value (value in SK
+                            // column), so we don't send anything as the SK condition.
+                            const SK = tag.value ? { $beginsWith: tag.value + "#" } : { $gte: " " };
+
+                            // SK ready - let's execute the query.
+                            const [tagUrlLinks] = await context.db.read<DbTagUrlLink>({
+                                ...defaults.db,
+                                query: { PK, SK }
                             });
 
-                            if (PK) {
-                                // A) For tags like { key: "pb-page", value: "abc123" }, we need to use
-                                // `$beginsWith: tag.value` for SK condition. SK is always in `TAG-VALUE#URL` format.
-                                // B) For tags like { key: "pb-page" }, we don't care about tag value (value in SK
-                                // column), so we don't send anything as the SK condition.
-                                const SK = tag.value
-                                    ? { $beginsWith: tag.value + "#" }
-                                    : { $gte: " " };
+                            // TODO: improve - call reads in batches, instead of 1-by-1.
+                            // TODO: Or maybe store a copy of needed data in the link itself?
+                            for (let k = 0; k < tagUrlLinks.length; k++) {
+                                const tagUrlLink = tagUrlLinks[k];
+                                const PK = [dbNamespace, "PS", "RENDER"].filter(Boolean).join("#");
+                                const url = tagUrlLink.url;
 
-                                // SK ready - let's execute the query.
-                                const [tagUrlLinks] = await context.db.read<DbTagUrlLink>({
+                                const [[renderData]] = await context.db.read<DbRender>({
                                     ...defaults.db,
-                                    query: { PK, SK }
+                                    query: {
+                                        PK,
+                                        SK: url
+                                    }
                                 });
 
-                                // TODO: improve - call reads in batches, instead of 1-by-1.
-                                // TODO: Or maybe store a copy of needed data in the link itself?
-                                for (let k = 0; k < tagUrlLinks.length; k++) {
-                                    const tagUrlLink = tagUrlLinks[k];
-                                    const PK = [dbNamespace, "PS", "RENDER"]
-                                        .filter(Boolean)
-                                        .join("#");
-                                    const url = tagUrlLink.url;
-
-                                    const [[renderData]] = await context.db.read<DbRender>({
-                                        ...defaults.db,
-                                        query: {
-                                            PK,
-                                            SK: url
-                                        }
-                                    });
-
-                                    if (renderData) {
-                                        // We just need the `args` of the `renderData`.
-                                        uniqueJobsPerOperationPerDbNamespace.render[dbNamespace][
-                                            url
-                                        ] = renderData.args;
-                                    }
+                                if (renderData) {
+                                    // We just need the `args` of the `renderData`.
+                                    uniqueJobsPerOperationPerDbNamespace.render[dbNamespace][url] =
+                                        renderData.args;
                                 }
                             }
                         }
