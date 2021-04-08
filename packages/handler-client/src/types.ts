@@ -10,9 +10,16 @@ export type InvokeArgs<TInvokeArgsPayload = any> = {
 export type HandlerClientPlugin = Plugin & {
     type: "handler-client";
     name: "handler-client";
-    invoke: <TInvokeArgsPayload = Record<string, any>, TResponse = Record<string, any>>(
+    invoke: <TInvokeArgsPayload = Record<string, any>>(
         params: InvokeArgs<TInvokeArgsPayload>
-    ) => Promise<TResponse>;
+    ) => any;
+};
+
+export type HandlerClientHandlerPlugin = Plugin & {
+    type: "handler-client-handler";
+    invoke: <TArgs = Record<string, any>, TResponse = Record<string, any>>(
+        params: TArgs
+    ) => TResponse | Promise<TResponse>;
 };
 
 export type ClientContext = {
