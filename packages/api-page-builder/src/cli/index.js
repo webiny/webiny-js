@@ -1,5 +1,9 @@
 const LambdaClient = require("aws-sdk/clients/lambda");
 const getStackOutput = require("@webiny/cli-plugin-deploy-pulumi/utils/getStackOutput");
+const S3Client = require("aws-sdk/clients/s3");
+const path = require("path");
+const fs = require("fs");
+const mime = require("mime");
 
 module.exports = () => [
     {
@@ -62,35 +66,65 @@ module.exports = () => [
     },
     {
         type: "hook-after-deploy",
-        name: "hook-after-deploy-prerender-all-pages",
+        name: "hook-after-deploy-upload-rerender",
         async hook(args, context) {
             if (args.stack !== "website") {
                 return;
             }
 
-            console.log("Uploading React application to Amazon S3...");
+            context.info("Uploading Website React application to Amazon S3...");
             // 1. Get exports from `site` stack, for `args.env` environment.
             const websiteOutput = await getStackOutput("apps/website", args.env);
 
-            // 2. Get exports from `api` stack, again, for `args.env` environment.
-            const apiOutput = await getStackOutput("api", args.env);
-        }
-    },
-    {
-        type: "hook-after-deploy",
-        name: "hook-after-deploy-rerender-website",
-        async hook(args, context) {
-            if (args.stack !== "website") {
-                return;
+            // Create an Amazon S3 service client object.
+            const s3 = new S3Client({ region: process.env.AWS_REGION });
+
+            // TODO: for 5.5.0, use the new `projectApplication` object that's sent via hook args.
+            // TODO: also, we will probably gonna need to move all of the plugins in this file to project application.
+            let webContentsRootPath = path.join(process.cwd(), "apps", "website", "code", "build");
+
+            if (!fs.existsSync(webContentsRootPath)) {
+                webContentsRootPath = path.join(process.cwd(), "apps", "site", "code", "build");
             }
+
+            if (!fs.existsSync(webContentsRootPath)) {
+                throw new Error("Cannot continue, build folder not found.");
+            }
+
+            await crawlDirectory(webContentsRootPath, async filePath => {
+                const relativeFilePath = filePath.replace(webContentsRootPath + "/", "");
+
+                await s3
+                    .putObject({
+                        Bucket: websiteOutput.appStorage,
+                        Key: relativeFilePath,
+                        ACL: "public-read",
+                        ContentType: mime.getType(filePath) || undefined,
+                        Body: fs.readFileSync(filePath)
+                    })
+                    .promise();
+                context.success(relativeFilePath);
+            });
+
+            context.success("Website application successfully uploaded.");
 
             context.info("Re-rendering website...");
-
-            // 1. Get exports from `site` stack, for `args.env` environment.
-            const websiteOutput = await getStackOutput("apps/website", args.env);
-
-            // 2. Get exports from `api` stack, again, for `args.env` environment.
-            const apiOutput = await getStackOutput("api", args.env);
+            context.success("Website re-rendered.");
         }
     }
 ];
+
+const crawlDirectory = async (dir, upload) => {
+    const files = fs.readdirSync(dir);
+    for (const file of files) {
+        const filePath = `${dir}/${file}`;
+        const stat = fs.statSync(filePath);
+        if (stat.isDirectory()) {
+            await crawlDirectory(filePath, upload);
+        }
+
+        if (stat.isFile()) {
+            await upload(filePath);
+        }
+    }
+};
