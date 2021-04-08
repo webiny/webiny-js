@@ -6,7 +6,7 @@ export default () => [
         type: "context",
         apply(context) {
             const { invocationArgs } = context;
-            if (!invocationArgs.method) {
+            if (!invocationArgs || !invocationArgs.method) {
                 return;
             }
 
