@@ -1,14 +1,31 @@
 import { Context } from "@webiny/handler/types";
-import { HandlerClientPlugin, InvokeArgs } from "./types";
+import { HandlerClientPlugin, HandlerClientHandlerPlugin, InvokeArgs } from "./types";
+import Error from "@webiny/error";
 
 class HandlerClient {
     plugin: HandlerClientPlugin;
     constructor(context: Context) {
         this.plugin = context.plugins.byName<HandlerClientPlugin>("handler-client");
         if (!this.plugin) {
-            throw new Error(
-                `Couldn't construct HandlerClient - "handler-client-invoke" plugin not found.`
-            );
+            // If not specified, use a fallback plugin that fetches different handlers via plugins.
+            // This might also be useful for testing purposes.
+            this.plugin = {
+                type: "handler-client",
+                name: "handler-client",
+                async invoke({ name, payload, await: useAwait }) {
+                    const plugin = context.plugins.byName<HandlerClientHandlerPlugin>(name);
+                    if (!plugin) {
+                        throw new Error(`Could not find "${name}" handler plugin.`);
+                    }
+
+                    const promise = plugin.invoke(payload);
+                    if (useAwait === false) {
+                        return null;
+                    }
+
+                    return promise;
+                }
+            };
         }
     }
 
