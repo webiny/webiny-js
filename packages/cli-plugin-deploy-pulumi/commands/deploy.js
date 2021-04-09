@@ -175,7 +175,6 @@ module.exports = async (inputs, context) => {
     } else {
         console.log();
         context.success(`Done! Deploy finished in ${green(duration + "s")}.`);
-        notify({ message: `"${folder}" stack deployed in ${duration}s.` });
     }
 
     if (inputs.preview) {
@@ -185,4 +184,6 @@ module.exports = async (inputs, context) => {
         await processHooks("hook-after-deploy", hookDeployArgs);
         context.success(`Hook "hook-after-deploy" completed.`);
     }
+
+    notify({ message: `"${folder}" stack deployed in ${duration}s.` });
 };
