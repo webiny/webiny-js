@@ -23,6 +23,10 @@ describe("Endpoint access", () => {
             rwd: "rwd"
         },
         {
+            name: "cms.contentModelGroup",
+            rwd: "r"
+        },
+        {
             name: "cms.contentModel"
         }
     ];
