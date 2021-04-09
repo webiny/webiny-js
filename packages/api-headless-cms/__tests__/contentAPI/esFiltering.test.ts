@@ -405,7 +405,7 @@ describe("elasticsearch filtering", () => {
         });
     });
 
-    test("should filter fruits by a boolean attribute", async () => {
+    test("should be able to filter fruits by a boolean attribute", async () => {
         await setupFruits();
 
         const handler = useFruitReadHandler({
@@ -415,45 +415,107 @@ describe("elasticsearch filtering", () => {
 
         await waitFruits("should filter fruits by date and sort asc", handler);
 
-        const [response] = await listFruits({
+        await listFruits({
             where: {
                 isSomething: true
             }
-        });
-
-        expect(response).toMatchObject({
-            data: {
-                listFruits: {
-                    data: [
-                        {
-                            createdBy: {
-                                displayName: "User 123",
-                                id: "123",
-                                type: "admin"
-                            },
-                            createdOn: /^20/,
-                            date: /^20/,
-                            dateTime: /^20/,
-                            dateTimeZ: /^20/,
-                            email: "john@doe.com",
-                            id: /.*#0001/,
-                            lowerCase: "lowercase",
-                            name: "Strawberry",
-                            numbers: [5, 6, 7.2, 10.18, 12.05],
-                            savedOn: /^20/,
-                            time: expect.any(String),
-                            upperCase: "UPPERCASE",
-                            url: "https://strawberry.test"
+        }).then(([response]) => {
+            expect(response).toMatchObject({
+                data: {
+                    listFruits: {
+                        data: [
+                            {
+                                createdBy: {
+                                    displayName: "User 123",
+                                    id: "123",
+                                    type: "admin"
+                                },
+                                createdOn: /^20/,
+                                date: /^20/,
+                                dateTime: /^20/,
+                                dateTimeZ: /^20/,
+                                email: "john@doe.com",
+                                id: /.*#0001/,
+                                lowerCase: "lowercase",
+                                name: "Strawberry",
+                                numbers: [5, 6, 7.2, 10.18, 12.05],
+                                savedOn: /^20/,
+                                time: expect.any(String),
+                                upperCase: "UPPERCASE",
+                                url: "https://strawberry.test"
+                            }
+                        ],
+                        error: null,
+                        meta: {
+                            cursor: expect.any(String),
+                            hasMoreItems: false,
+                            totalCount: 1
                         }
-                    ],
-                    error: null,
-                    meta: {
-                        cursor: expect.any(String),
-                        hasMoreItems: false,
-                        totalCount: 1
                     }
                 }
+            });
+        });
+
+        // Let's use the "not" operator.
+        await listFruits({
+            where: {
+                isSomething_not: true
             }
+        }).then(([response]) => {
+            expect(response).toMatchObject({
+                data: {
+                    listFruits: {
+                        data: [
+                            {
+                                createdBy: {
+                                    displayName: "User 123",
+                                    id: "123",
+                                    type: "admin"
+                                },
+                                createdOn: /^20/,
+                                date: /^20/,
+                                dateTime: /^20/,
+                                dateTimeZ: /^20/,
+                                email: "john@doe.com",
+                                id: /.*#0001/,
+                                lowerCase: "banana",
+                                name: "Banana",
+                                numbers: [5, 6, 7.2, 10.18, 12.05],
+                                savedOn: /^20/,
+                                time: expect.any(String),
+                                upperCase: "BANANA",
+                                url: "https://banana.test"
+                            },
+                            {
+                                createdBy: {
+                                    displayName: "User 123",
+                                    id: "123",
+                                    type: "admin"
+                                },
+                                createdOn: /^20/,
+                                date: /^20/,
+                                dateTime: /^20/,
+                                dateTimeZ: /^20/,
+                                email: "john@doe.com",
+                                id: /.*#0001/,
+                                lowerCase: "apple",
+                                name: "Apple",
+                                numbers: [5, 6, 7.2, 10.18, 12.05],
+                                savedOn: /^20/,
+                                time: expect.any(String),
+                                upperCase: "APPLE",
+                                url: "https://apple.test"
+                            }
+                        ],
+                        error: null,
+                        meta: {
+                            cursor: expect.any(String),
+                            hasMoreItems: false,
+                            totalCount: 2
+                        }
+                    }
+                }
+            });
         });
     });
 });
