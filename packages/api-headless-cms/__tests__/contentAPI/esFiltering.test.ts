@@ -50,7 +50,6 @@ describe("elasticsearch filtering", () => {
     const readOpts = { path: "read/en-US" };
 
     const {
-        clearAllIndex,
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
@@ -158,18 +157,6 @@ describe("elasticsearch filtering", () => {
             { name: "list all fruits", tries: 10 }
         );
     };
-
-    beforeEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {}
-    });
-
-    afterEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {}
-    });
 
     test("should filter fruits by date and sort asc", async () => {
         const { apple, strawberry } = await setupFruits();

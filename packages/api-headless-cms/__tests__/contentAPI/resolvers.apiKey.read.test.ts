@@ -33,19 +33,12 @@ describe("READ - resolvers - api key", () => {
     const readOpts = { path: "read/en-US", permissions: [] };
 
     const {
-        clearAllIndex,
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
     } = useContentGqlHandler(manageOpts);
 
     beforeEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {
-            // Ignore errors
-        }
-
         const [createCMG] = await createContentModelGroupMutation({
             data: {
                 name: "Group",
@@ -84,12 +77,6 @@ describe("READ - resolvers - api key", () => {
             console.error(`[beforeEach] ${update.errors[0].message}`);
             process.exit(1);
         }
-    });
-
-    afterEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch (e) {}
     });
 
     test("get entry", async () => {

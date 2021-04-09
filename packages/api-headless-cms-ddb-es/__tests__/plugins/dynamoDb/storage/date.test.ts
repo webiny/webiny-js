@@ -1,5 +1,26 @@
 import dateStoragePlugin from "../../../../src/dynamoDb/storage/date";
 
+const createDefaultArgs = ({ fieldId = "fieldId", type }) => {
+    return {
+        field: {
+            fieldId,
+            settings: {
+                type
+            }
+        }
+    };
+};
+
+const defaultDateArgs = createDefaultArgs({
+    type: "date"
+});
+const defaultTimeArgs = createDefaultArgs({
+    type: "time"
+});
+const defaultDateTimeWithTimezoneArgs = createDefaultArgs({
+    type: "dateTimeWithTimezone"
+});
+
 describe("dateStoragePlugin", () => {
     const correctToStorageDateValues = [
         [new Date("2021-03-31T13:34:55.000Z"), "2021-03-31T13:34:55.000Z"],
@@ -12,11 +33,7 @@ describe("dateStoragePlugin", () => {
             const plugin = dateStoragePlugin();
 
             const result = await plugin.toStorage({
-                field: {
-                    settings: {
-                        type: "date"
-                    }
-                },
+                ...defaultDateArgs,
                 value
             } as any);
 
@@ -36,15 +53,35 @@ describe("dateStoragePlugin", () => {
             const plugin = dateStoragePlugin();
 
             const result = await plugin.fromStorage({
-                field: {
-                    settings: {
-                        type: "date"
-                    }
-                },
+                ...defaultDateArgs,
                 value
             } as any);
 
             expect(result).toEqual(expected);
         }
     );
+
+    it("should not convert time field value", async () => {
+        const plugin = dateStoragePlugin();
+        const value = "11:34:58";
+
+        const result = await plugin.toStorage({
+            ...defaultTimeArgs,
+            value
+        } as any);
+
+        expect(result).toEqual(value);
+    });
+
+    it("should not convert dateTime with tz field value", async () => {
+        const plugin = dateStoragePlugin();
+        const value = "2021-04-08T13:34:59+0100";
+
+        const result = await plugin.toStorage({
+            ...defaultDateTimeWithTimezoneArgs,
+            value
+        } as any);
+
+        expect(result).toEqual(value);
+    });
 });

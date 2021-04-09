@@ -8,6 +8,7 @@ import {
     CmsModelFieldToGraphQLPlugin
 } from "@webiny/api-headless-cms/types";
 import { CmsContentIndexEntry, CmsModelFieldToElasticsearchPlugin } from "../types";
+import WebinyError from "@webiny/error";
 
 interface SetupEntriesIndexHelpersArgs {
     context: CmsContext;
@@ -158,17 +159,28 @@ export const extractEntriesFromIndex = ({
             }
             const targetFieldPlugin = fieldIndexPlugins[field.type] || defaultIndexFieldPlugin;
             if (targetFieldPlugin && targetFieldPlugin.fromIndex) {
-                const calculatedEntry = targetFieldPlugin.fromIndex({
-                    context,
-                    model,
-                    field,
-                    entry: fromIndexEntry,
-                    fieldTypePlugin
-                });
-                fromIndexEntry = {
-                    ...fromIndexEntry,
-                    ...calculatedEntry
-                };
+                try {
+                    const calculatedEntry = targetFieldPlugin.fromIndex({
+                        context,
+                        model,
+                        field,
+                        entry: fromIndexEntry,
+                        fieldTypePlugin
+                    });
+                    fromIndexEntry = {
+                        ...fromIndexEntry,
+                        ...calculatedEntry
+                    };
+                } catch (ex) {
+                    throw new WebinyError(
+                        ex.message || "Could not transform entry field from index.",
+                        ex.code || "FIELD_FROM_INDEX_ERROR",
+                        {
+                            field,
+                            entry: fromIndexEntry
+                        }
+                    );
+                }
             }
         }
         list.push(fromIndexEntry);

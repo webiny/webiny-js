@@ -7,9 +7,7 @@ jest.setTimeout(15000);
 describe("content model test", () => {
     const manageHandlerOpts = { path: "manage/en-US" };
 
-    const { clearAllIndex, createContentModelGroupMutation } = useContentGqlHandler(
-        manageHandlerOpts
-    );
+    const { createContentModelGroupMutation } = useContentGqlHandler(manageHandlerOpts);
 
     let contentModelGroup: CmsContentModelGroup;
 
@@ -23,19 +21,8 @@ describe("content model test", () => {
             }
         });
         contentModelGroup = createCMG.data.createContentModelGroup.data;
-        try {
-            await clearAllIndex();
-        } catch {
-            // Ignore errors
-        }
         // we need to reset this since we are using a singleton
         hooksTracker.reset();
-    });
-
-    afterEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {}
     });
 
     test("should not allow creation of a model with an existing modelId", async () => {

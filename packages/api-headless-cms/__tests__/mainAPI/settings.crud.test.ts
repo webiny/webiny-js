@@ -15,21 +15,9 @@ describe("Settings crud test", () => {
         ...manageOpts
     });
 
-    const {
-        clearAllIndex,
-        isInstalledQuery,
-        installMutation: installMutationNoPermission
-    } = useAdminGqlHandler({
+    const { isInstalledQuery, installMutation: installMutationNoPermission } = useAdminGqlHandler({
         ...manageOpts,
         permissions: []
-    });
-
-    beforeEach(async () => {
-        await clearAllIndex();
-    });
-
-    afterEach(async () => {
-        await clearAllIndex();
     });
 
     test("cms is not installed yet", async () => {

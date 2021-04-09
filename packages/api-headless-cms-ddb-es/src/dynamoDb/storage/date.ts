@@ -6,13 +6,13 @@ import {
 
 const excludeTypes = ["time", "dateTimeWithTimezone"];
 
-export default (): CmsModelFieldToStoragePlugin => ({
+export default (): CmsModelFieldToStoragePlugin<Date | string, string> => ({
     type: "cms-model-field-to-storage",
     name: "cms-model-field-to-storage-datetime",
     fieldType: "datetime",
-    async fromStorage({ field, value }): Promise<Date | string> {
+    async fromStorage({ field, value }) {
         const { type } = (field as CmsContentModelDateTimeField).settings;
-        if (!value || !type || excludeTypes.includes(type) || typeof value !== "string") {
+        if (!value || !type || excludeTypes.includes(type)) {
             return value;
         }
         try {
@@ -21,15 +21,15 @@ export default (): CmsModelFieldToStoragePlugin => ({
             return value;
         }
     },
-    async toStorage({ value, field }): Promise<string> {
+    async toStorage({ value, field }) {
         const { type } = (field as CmsContentModelDateTimeField).settings;
         if (!value || !type || excludeTypes.includes(type)) {
-            return value;
+            return value as string;
         }
-        if (value instanceof Date) {
-            return value.toISOString();
+        if ((value as any).toISOString) {
+            return (value as Date).toISOString();
         } else if (typeof value === "string") {
-            return value;
+            return value as string;
         }
         throw new WebinyError("Error converting value to a storage type.", "TO_STORAGE_ERROR", {
             value,

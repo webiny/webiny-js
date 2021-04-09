@@ -24,7 +24,6 @@ describe("MANAGE - Resolvers", () => {
 
     const {
         until,
-        clearAllIndex,
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
@@ -105,18 +104,6 @@ describe("MANAGE - Resolvers", () => {
 
         return categories;
     };
-
-    beforeEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {}
-    });
-
-    afterEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {}
-    });
 
     test(`get category`, async () => {
         await setupContentModel();
