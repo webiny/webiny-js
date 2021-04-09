@@ -4,7 +4,8 @@ import {
     CmsContentModel,
     CmsContentModelContext,
     CmsContentModelManager,
-    CmsContentModelPermission
+    CmsContentModelPermission,
+    CmsContentModelGroupPermission
 } from "../../../types";
 import * as utils from "../../../utils";
 import DataLoader from "dataloader";
@@ -97,22 +98,32 @@ export default (): ContextPlugin<CmsContext> => ({
             },
             async get(modelId) {
                 const permission = await checkPermissions("r");
+                const groupPermission: CmsContentModelGroupPermission = await utils.checkPermissions(
+                    context,
+                    "cms.contentModelGroup",
+                    { rwd: "r" }
+                );
 
                 const model = await modelsGet(modelId);
 
                 utils.checkOwnership(context, permission, model);
-                utils.checkModelAccess(context, permission, model);
+                utils.checkModelAccess(context, permission, model, groupPermission);
 
                 return model;
             },
             async list() {
                 const permission = await checkPermissions("r");
+                const groupPermission: CmsContentModelGroupPermission = await utils.checkPermissions(
+                    context,
+                    "cms.contentModelGroup",
+                    { rwd: "r" }
+                );
                 const models = await modelsList();
                 return models.filter(model => {
                     if (!utils.validateOwnership(context, permission, model)) {
                         return false;
                     }
-                    return utils.validateModelAccess(context, permission, model);
+                    return utils.validateModelAccess(context, permission, model, groupPermission);
                 });
             },
             async create(data) {
