@@ -172,10 +172,8 @@ module.exports = async (inputs, context) => {
 
     const duration = getDuration();
     if (inputs.preview) {
-        console.log();
         context.success(`Done! Preview finished in ${green(duration + "s")}.`);
     } else {
-        console.log();
         context.success(`Done! Deploy finished in ${green(duration + "s")}.`);
     }
 
