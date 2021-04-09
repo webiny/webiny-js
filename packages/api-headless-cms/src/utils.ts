@@ -1,5 +1,12 @@
 import slugify from "slugify";
-import { CmsContentModelPermission, CmsContentModel, CmsContext, CreatedBy } from "./types";
+import {
+    CmsContentModelPermission,
+    CmsContentModel,
+    CmsContext,
+    CreatedBy,
+    CmsContentModelGroupPermission,
+    CmsContentModelGroup
+} from "./types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { SecurityPermission } from "@webiny/api-security/types";
 
@@ -206,9 +213,10 @@ export const validateOwnership = (
 export const checkModelAccess = (
     context: CmsContext,
     permission: SecurityPermission<CmsContentModelPermission>,
-    model: CmsContentModel
+    model: CmsContentModel,
+    modelGroupPermission: SecurityPermission<CmsContentModelGroupPermission>
 ): void => {
-    if (validateModelAccess(context, permission, model)) {
+    if (validateModelAccess(context, permission, model, modelGroupPermission)) {
         return;
     }
     throw new NotAuthorizedError({
@@ -220,9 +228,12 @@ export const checkModelAccess = (
 export const validateModelAccess = (
     context: CmsContext,
     permission: SecurityPermission<CmsContentModelPermission>,
-    model: CmsContentModel
+    model: CmsContentModel,
+    modelGroupPermission: SecurityPermission<CmsContentModelGroupPermission>
 ): boolean => {
-    const { models, groups } = permission;
+    const { models } = permission;
+
+    const { groups } = modelGroupPermission;
     // when no models or groups defined on permission
     // it means user has access to everything
     if (!models && !groups) {
@@ -244,6 +255,25 @@ export const validateModelAccess = (
         Array.isArray(groups[locale]) === false ||
         groups[locale].includes(model.group.id) === false
     ) {
+        return false;
+    }
+    return true;
+};
+export const validateGroupAccess = (
+    context: CmsContext,
+    permission: SecurityPermission<CmsContentModelGroupPermission>,
+    group: CmsContentModelGroup
+): boolean => {
+    const { groups } = permission;
+    // when no groups defined on permission
+    // it means user has access to everything
+    if (!groups) {
+        return true;
+    }
+    const locale = context.cms.getLocale().code;
+    // when there is no locale in groups, it means that no access was given
+    // this happens when access control was set but no models or groups were added
+    if (Array.isArray(groups[locale]) === false || groups[locale].includes(group.id) === false) {
         return false;
     }
     return true;
