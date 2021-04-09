@@ -7,7 +7,14 @@ import hash from "object-hash";
 import chunk from "lodash/chunk";
 import pluralize from "pluralize";
 
-const log = console.log;
+const IS_TEST = process.env.NODE_ENV === "test";
+const log = (...args) => {
+    if (IS_TEST) {
+        return;
+    }
+
+    return console.log(...args);
+};
 
 type Configuration = {
     handlers: {
@@ -113,11 +120,11 @@ export default (configuration: Configuration): HandlerPlugin => ({
                 // TODO: Ideally, we'd want to add support for processing `flush` jobs as well.
             }
 
-            console.log(
-                `Detected ${renderAllJobs.length} render-all-pages (path: *) ${pluralize(
+            log(
+                `Detected ${Object.values(renderAllJobs).length} render-all-pages (path: *) ${pluralize(
                     "job",
                     Object.values(renderAllJobs).length
-                )}`
+                )}.`
             );
 
             stats.jobs.renderAll = Object.values(renderAllJobs).length;
