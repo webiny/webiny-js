@@ -461,15 +461,18 @@ function FileManagerView(props: FileManagerViewProps) {
                                                   selected: selected.find(
                                                       current => current.src === file.src
                                                   ),
-                                                  onSelect: async () => {
-                                                      if (multiple) {
-                                                          toggleSelected(file);
-                                                          return;
-                                                      }
+                                                  onSelect:
+                                                      typeof onChange === "undefined"
+                                                          ? undefined
+                                                          : async () => {
+                                                                if (multiple) {
+                                                                    toggleSelected(file);
+                                                                    return;
+                                                                }
 
-                                                      await onChange(file);
-                                                      onClose();
-                                                  }
+                                                                await onChange(file);
+                                                                onClose();
+                                                            }
                                               })
                                           )
                                         : renderEmpty({
