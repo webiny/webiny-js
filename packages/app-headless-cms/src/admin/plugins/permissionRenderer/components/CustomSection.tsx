@@ -1,13 +1,24 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { i18n } from "@webiny/app/i18n";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Typography } from "@webiny/ui/Typography";
+import { PermissionSelector, PermissionSelectorWrapper } from "./PermissionSelector";
+import { useCmsData } from "./useCmsData";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
-const CustomSection = ({ Bind, data, entity, title }) => {
+const CustomSection = ({ Bind, data, entity, title, locales }) => {
+    const modelsGroups = useCmsData(locales);
+
+    const getItems = useCallback(
+        (code: string) => {
+            return modelsGroups[code]["groups"];
+        },
+        [modelsGroups]
+    );
+
     return (
         <Elevation z={1} style={{ marginTop: 10 }}>
             <Grid>
@@ -22,18 +33,38 @@ const CustomSection = ({ Bind, data, entity, title }) => {
                                     <option value={"no"}>{t`No access`}</option>
                                     <option value={"full"}>{t`All`}</option>
                                     <option value={"own"}>{t`Only the ones they created`}</option>
+                                    <option
+                                        value={"groups"}
+                                    >{t`Only specific content model groups`}</option>
                                 </Select>
                             </Bind>
                         </Cell>
+                        {data[`${entity}AccessScope`] === "groups" && (
+                            <PermissionSelectorWrapper>
+                                <PermissionSelector
+                                    locales={locales}
+                                    Bind={Bind}
+                                    entity={entity}
+                                    selectorKey={"groups"}
+                                    getItems={getItems}
+                                />
+                            </PermissionSelectorWrapper>
+                        )}
                         <Cell span={12}>
                             <Bind name={`${entity}RWD`}>
                                 <Select
                                     label={t`Primary Actions`}
-                                    disabled={data[`${entity}AccessScope`] !== "full"}
+                                    disabled={[undefined, "own", "no"].includes(
+                                        data[`${entity}AccessScope`]
+                                    )}
                                 >
                                     <option value={"r"}>{t`Read`}</option>
-                                    <option value={"rw"}>{t`Read, write`}</option>
-                                    <option value={"rwd"}>{t`Read, write, delete`}</option>
+                                    {data.endpoints.includes("manage") ? (
+                                        <option value={"rw"}>{t`Read, write`}</option>
+                                    ) : null}
+                                    {data.endpoints.includes("manage") ? (
+                                        <option value={"rwd"}>{t`Read, write, delete`}</option>
+                                    ) : null}
                                 </Select>
                             </Bind>
                         </Cell>
