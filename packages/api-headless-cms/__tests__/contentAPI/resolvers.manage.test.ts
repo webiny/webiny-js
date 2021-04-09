@@ -95,7 +95,7 @@ describe("MANAGE - Resolvers", () => {
             });
             categories[slug] = response.data.createCategory.data;
         }
-        // Wait until the previous revision is indexed in Elastic as "latest"
+        // Wait until the previous revision is indexed
         await until(
             () => listCategories().then(([data]) => data),
             ({ data }) => data.listCategories.data.length === Object.keys(values).length,
@@ -115,7 +115,7 @@ describe("MANAGE - Resolvers", () => {
 
         const { id } = create.data.createCategory.data;
 
-        // Need to wait until the new entry is propagated to Elastic Search index
+        // Need to wait until the new entry is propagated
         await until(
             () => listCategories().then(([data]) => data),
             ({ data }) => data.listCategories.data[0].id === id
@@ -602,7 +602,7 @@ describe("MANAGE - Resolvers", () => {
         const [revision3] = await createCategoryFrom({ revision: id });
         const { id: id3 } = revision3.data.createCategoryFrom.data;
 
-        // Wait until the new revision is indexed in Elastic as "latest"
+        // Wait until the new revision is indexed
         await until(
             () => listCategories().then(([data]) => data),
             ({ data }) => data.listCategories.data[0].id === id3,
@@ -621,7 +621,7 @@ describe("MANAGE - Resolvers", () => {
             }
         });
 
-        // Wait until the previous revision is indexed in Elastic as "latest"
+        // Wait until the previous revision is indexed
         await until(
             () => listCategories().then(([data]) => data),
             ({ data }) => data.listCategories.data[0].id === id2,
@@ -685,7 +685,7 @@ describe("MANAGE - Resolvers", () => {
         const [revision3] = await createCategoryFrom({ revision: id });
         const { id: id3 } = revision3.data.createCategoryFrom.data;
 
-        // Wait until the new revision is indexed in Elastic as "latest"
+        // Wait until the new revision is indexed
         await until(
             () => listLatestCategories().then(([data]) => data),
             ({ data }) => data.listCategories.data[0].id === id3,
@@ -695,7 +695,7 @@ describe("MANAGE - Resolvers", () => {
         // Publish latest revision
         const [res] = await publishCategory({ revision: id3 });
 
-        // Wait until the previous revision is indexed in Elastic as "published"
+        // Wait until the previous revision is indexed
         await until(
             () => listPublishedCategories().then(([data]) => data),
             ({ data }) => data.listCategories.data[0].id === id3,
@@ -721,7 +721,7 @@ describe("MANAGE - Resolvers", () => {
         // Publish the latest revision again
         const [publish2] = await publishCategory({ revision: id3 });
 
-        // Wait until the previous revision is indexed in Elastic as "published"
+        // Wait until the previous revision is indexed
         await until(
             () => listPublishedCategories().then(([data]) => data),
             ({ data }) => data.listCategories.data[0].id === id3,
