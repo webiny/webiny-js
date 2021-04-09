@@ -102,6 +102,8 @@ export default () => {
         apiUrl: cloudfront.cloudfront.domainName.apply(value => `https://${value}`),
         cognitoUserPoolId: cognito.userPool.id,
         cognitoAppClientId: cognito.userPoolClient.id,
-        updatePbSettingsFunction: pageBuilder.functions.updateSettings.arn
+        updatePbSettingsFunction: pageBuilder.functions.updateSettings.arn,
+        psQueueAdd: prerenderingService.functions.queue.add.arn,
+        psQueueProcess: prerenderingService.functions.queue.process.arn
     };
 };
