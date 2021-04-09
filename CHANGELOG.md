@@ -3,6 +3,53 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.4.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.3.0...v5.4.0-beta.0) (2021-04-09)
+
+
+### Bug Fixes
+
+* add dependency ([f62c2a1](https://github.com/webiny/webiny-js/commit/f62c2a1ea8647cfe99bfe81e8d6840f0ef800d0a))
+* add PS functions to output ([f63db57](https://github.com/webiny/webiny-js/commit/f63db570c94b3e4b21b346b3cc8dd05ad9877219))
+* adjust empty line ([0428f71](https://github.com/webiny/webiny-js/commit/0428f71ff072fe9b5da8b31d6c23b0b295898410))
+* adjust empty line ([606f725](https://github.com/webiny/webiny-js/commit/606f72501e458f36ce1ff5965f04593f520a961c))
+* adjust messaging ([1495343](https://github.com/webiny/webiny-js/commit/149534375dad69596fff60fe58223ad3446afc5a))
+* adjust sentence ([6d48cb0](https://github.com/webiny/webiny-js/commit/6d48cb0daa787f25aa6c9d021c38190b3d777b83))
+* check if `invocationArgs` exists ([2e80691](https://github.com/webiny/webiny-js/commit/2e8069194bf3ec699366e65c49149a49561b5aab))
+* correct link ([be9fcd1](https://github.com/webiny/webiny-js/commit/be9fcd1c804e21cf969f586ca5d904073d9ca0bb))
+* handle --no-build flag - skip file upload and prerendering ([5fb2a90](https://github.com/webiny/webiny-js/commit/5fb2a9024c354ad8c9f46f0d75c184ab4007d155))
+* move notification to the end of the process ([61ca8d5](https://github.com/webiny/webiny-js/commit/61ca8d51ce6fe6d5094a7bd6381ed1cda14c7087))
+* remove all jobs on render-all-pages job ([7b2d79f](https://github.com/webiny/webiny-js/commit/7b2d79fa666cebb0707475909cdf775e7348ab70))
+* remove upload of React app files ([4be3eb8](https://github.com/webiny/webiny-js/commit/4be3eb8c62f97aeac34b1af0bec54b5f9aeb4aa8))
+* set all TTLs to zero ([b09aa6d](https://github.com/webiny/webiny-js/commit/b09aa6dd7e6686af4de61ff3016e78e93ac98562))
+* update `pathPattern` ([7b40f71](https://github.com/webiny/webiny-js/commit/7b40f71281a029f2a31261834ced8a8581756976))
+* update dependencies ([ed9c799](https://github.com/webiny/webiny-js/commit/ed9c799879ae62ae406bfa33a66b9cc83c4c7947))
+* update dependencies ([8a301e3](https://github.com/webiny/webiny-js/commit/8a301e347fe3f8d5b9428e47a8f79106aa9f9ae8))
+* update messages ([8458c6c](https://github.com/webiny/webiny-js/commit/8458c6cdc574a37a09009af993dd7a1099550280))
+* update template ([b17a4e2](https://github.com/webiny/webiny-js/commit/b17a4e24be2db72a3d335bee1fcc43637c1f8532))
+* **app-admin:** update AutoComplete and MultiAutoComplete options list style ([#1548](https://github.com/webiny/webiny-js/issues/1548)) ([6c8d770](https://github.com/webiny/webiny-js/commit/6c8d7706f0ad3ce352178f2a968818d90b7cc2fc))
+* **app-page-builder:** update elementType in ImagesList element ([#1550](https://github.com/webiny/webiny-js/issues/1550)) ([0ea5bbf](https://github.com/webiny/webiny-js/commit/0ea5bbf2a9219facd610f10b23b977c86b05f2ad))
+
+
+### Features
+
+* add `HandlerClientHandlerPlugin` type ([dae9567](https://github.com/webiny/webiny-js/commit/dae9567611584778635de52eef81ef4d70edea7f))
+* add order numbers ([a66b946](https://github.com/webiny/webiny-js/commit/a66b9469622cff32d122e0ab9d03515f0cb00d09))
+* add PS functions to output ([b0a8651](https://github.com/webiny/webiny-js/commit/b0a86511bf5102da04b53bf48ed5f8e365108844))
+* add support for local handler execution ([389e9ab](https://github.com/webiny/webiny-js/commit/389e9abc7a771d34f2d880b80f294e90d2390d64))
+* add support for render-all-pages ([0fad0de](https://github.com/webiny/webiny-js/commit/0fad0def17c2b2770fbd64a62414521e53881c1d))
+* add upload of files and complete rerender steps ([cc49996](https://github.com/webiny/webiny-js/commit/cc49996e660740aa7039b6c3466c5017f2d3f11b))
+* on successful upload, re-render whole website ([1bb9f1b](https://github.com/webiny/webiny-js/commit/1bb9f1b375b4f18270ee68ec93a65d6f79690753))
+* pass "inputs" to deploy hook callbacks ([8725553](https://github.com/webiny/webiny-js/commit/8725553b66e022723203f0cc8e9c0b2910bce91b))
+* return stats object as response ([e461157](https://github.com/webiny/webiny-js/commit/e4611571a7dfacc8cf54afb344731b75d6a575a0))
+* use dynamic assets folder name ([cedb2e6](https://github.com/webiny/webiny-js/commit/cedb2e663fe5418a5279d78288a11e7507e60e58))
+* **api-plugin-elastic-search-client:** enable multiple services connect ([8138c19](https://github.com/webiny/webiny-js/commit/8138c19573cd331a82a2a2ec861dc2464bef3d22))
+* **api-security-tenancy:** cache permissions and get user ([7392d27](https://github.com/webiny/webiny-js/commit/7392d274b8a4b11eb313ff9fa6142ad633d7a2c6))
+* **ui:** add reordering controls ([f6f7b21](https://github.com/webiny/webiny-js/commit/f6f7b21f1c032436de570662999d1dd55310dbcd))
+
+
+
+
+
 # [5.3.0](https://github.com/webiny/webiny-js/compare/v5.3.0-beta.0...v5.3.0) (2021-03-26)
 
 **Note:** Version bump only for package webiny-js
