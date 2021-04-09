@@ -23,6 +23,8 @@ module.exports = () => [
             // 3. Let's update relevant Page Builder app's URLs, by invoking the `updateSettings` function,
             // which has been exported from the `api` stack for this exact purpose.
             try {
+                context.success(`Updating Page Builder application's prerendering settings.`);
+
                 const lambdaClient = new LambdaClient({ region: apiOutput.region });
 
                 const response = await lambdaClient
@@ -55,7 +57,7 @@ module.exports = () => [
                     throw error;
                 }
 
-                context.success(`Default Page Builder app's settings updated.`);
+                context.success(`Page Builder application's prerendering settings updated.`);
             } catch (e) {
                 context.error(
                     `An error occurred while trying to update default Page Builder app's settings!`
