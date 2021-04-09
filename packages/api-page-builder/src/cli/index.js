@@ -75,7 +75,9 @@ module.exports = () => [
             }
 
             if (args.inputs.build === false) {
-                context.info(`"--no-build" argument detected - skipping React application upload and prerendering.`);
+                context.info(
+                    `"--no-build" argument detected - skipping React application upload and prerendering.`
+                );
                 return;
             }
 
@@ -115,8 +117,6 @@ module.exports = () => [
 
             context.success("React application uploaded.");
 
-            console.log();
-
             // 2. Get exports from `site` stack, for `args.env` environment.
             const apiOutput = await getStackOutput("api", args.env);
 
@@ -153,14 +153,16 @@ module.exports = () => [
                     })
                     .promise();
 
-                context.success("Successfully issued.");
+                context.success("Website re-render job successfully issued.");
+                context.info(
+                    "Please note that it can take a couple of minutes for the website to be fully updated."
+                );
             } catch (e) {
                 context.error(
                     `An error occurred while trying to update default Page Builder app's settings!`
                 );
                 console.log(e);
             }
-
         }
     }
 ];
