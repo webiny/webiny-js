@@ -41,8 +41,8 @@ class App {
                 },
                 // MinTTL <= DefaultTTL <= MaxTTL
                 minTtl: 0,
-                defaultTtl: 600,
-                maxTtl: 600
+                defaultTtl: 0,
+                maxTtl: 0
             },
             priceClass: "PriceClass_100",
             customErrorResponses: [
