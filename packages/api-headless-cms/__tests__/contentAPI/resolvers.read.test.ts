@@ -985,7 +985,7 @@ describe("READ - Resolvers", () => {
             }
         });
 
-        // wait until we have all products in the elastic
+        // wait until we have all products available
         await until(
             () =>
                 listProducts({
@@ -1076,7 +1076,7 @@ describe("READ - Resolvers", () => {
         const carrot = carrotResponse.data.createProduct.data;
         const korn = kornResponse.data.createProduct.data;
 
-        // wait until we have all products in the elastic
+        // wait until we have all products available
         await until(
             () => listProducts({}).then(([data]) => data),
             ({ data }) => data.listProducts.data.length === 3,
@@ -1179,7 +1179,7 @@ describe("READ - Resolvers", () => {
         const carrot = carrotResponse.data.createProduct.data;
         const korn = kornResponse.data.createProduct.data;
 
-        // wait until we have all products in the elastic
+        // wait until we have all products available
         await until(
             () => listProducts({}).then(([data]) => data),
             ({ data }) => data.listProducts.data.length === 3,

@@ -45,7 +45,7 @@ const bananaData = {
     time: "11:59:01"
 };
 
-describe("elasticsearch filtering", () => {
+describe("filtering", () => {
     const manageOpts = { path: "manage/en-US" };
     const readOpts = { path: "read/en-US" };
 

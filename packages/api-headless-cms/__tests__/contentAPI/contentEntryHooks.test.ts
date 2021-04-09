@@ -209,7 +209,7 @@ describe("contentEntryHooks", () => {
             }
         });
 
-        // unfortunately we need to wait for elasticsearch to create the index so we avoid the error
+        // wait for data to be come available
         await sleep(1000);
 
         const { id } = createResponse.data.createCategory.data;

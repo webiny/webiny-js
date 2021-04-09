@@ -1,20 +1,13 @@
-// import dbPlugins from "@webiny/handler-db";
-// import elasticSearch from "@webiny/api-plugin-elastic-search-client";
-// import dynamoToElastic from "@webiny/api-dynamodb-to-elasticsearch/handler";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import securityPlugins from "@webiny/api-security/authenticator";
 import apiKeyAuthentication from "@webiny/api-security-tenancy/authentication/apiKey";
 import apiKeyAuthorization from "@webiny/api-security-tenancy/authorization/apiKey";
 import { createHandler } from "@webiny/handler-aws";
-// import { DynamoDbDriver } from "@webiny/db-dynamodb";
-// import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { SecurityIdentity } from "@webiny/api-security/types";
-// import { Client } from "@elastic/elasticsearch";
 import { createIdentity, createPermissions, until, PermissionsArg } from "./helpers";
 import { INSTALL_MUTATION, IS_INSTALLED_QUERY } from "./graphql/settings";
-// import { simulateStream } from "@webiny/project-utils/testing/dynamodb";
 import {
     CREATE_CONTENT_MODEL_GROUP_MUTATION,
     DELETE_CONTENT_MODEL_GROUP_MUTATION,
@@ -51,104 +44,8 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
     const tenant = { id: "root", name: "Root", parent: null };
     const { permissions, identity, plugins = [], path } = args || {};
 
-    // const documentClient = new DocumentClient({
-    //     convertEmptyValues: true,
-    //     endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
-    //     sslEnabled: false,
-    //     region: "local"
-    // });
-    //
-    // const elasticSearchContext = elasticSearch({
-    //     endpoint: `http://localhost:9200`
-    // });
-
-    // Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
-    // simulateStream(documentClient, createHandler(elasticSearchContext, dynamoToElastic()));
-
-    // const startPlugins = handlerPluginsStart();
-    // console.log(handlerPluginsLoaded);
-    // console.log(handlerObjects);
-    // console.log(documentClient);
     const handler = createHandler(
         handlerPlugins(),
-        // {
-        //     type: "context",
-        //     apply: async context => {
-        //         const packages = await getStorageOperationPackages();
-        //         const targetName = process.env.STORAGE_OPERATION || "ddb-es";
-        //         if (!targetName.trim()) {
-        //             throw new Error(
-        //                 "You must pass name of the storage operation package in the env variable."
-        //             );
-        //         }
-        //         const pkg = packages.find(p => {
-        //             const keywords = p.keywords || [];
-        //             if (keywords.length === 0) {
-        //                 return false;
-        //             }
-        //             return keywords.includes(targetName);
-        //         });
-        //         if (!pkg) {
-        //             throw new Error(
-        //                 `There is no storage operation package with keyword "${targetName}".`
-        //             );
-        //         }
-        //         const plugins = await import(pkg.name);
-        //         if (!plugins.default) {
-        //             throw new Error(`Package "${targetName}" is missing the default export.`);
-        //         }
-        //         context.plugins.register(
-        //             typeof plugins.default === "function" ? plugins.default() : plugins.default
-        //         );
-        //     }
-        // } as ContextPluginInterface,
-        // dbPlugins({
-        //     table: "HeadlessCms",
-        //     driver: new DynamoDbDriver({
-        //         documentClient
-        //     })
-        // }),
-        // elasticSearchContext,
-        // {
-        //     type: "context",
-        //     async apply(context) {
-        //         await context.elasticSearch.indices.putTemplate({
-        //             name: "headless-cms-entries-index",
-        //             body: {
-        //                 index_patterns: ["*headless-cms*"],
-        //                 settings: {
-        //                     analysis: {
-        //                         analyzer: {
-        //                             lowercase_analyzer: {
-        //                                 type: "custom",
-        //                                 filter: ["lowercase", "trim"],
-        //                                 tokenizer: "keyword"
-        //                             }
-        //                         }
-        //                     }
-        //                 },
-        //                 mappings: {
-        //                     properties: {
-        //                         property: {
-        //                             type: "text",
-        //                             fields: {
-        //                                 keyword: {
-        //                                     type: "keyword",
-        //                                     ignore_above: 256
-        //                                 }
-        //                             },
-        //                             analyzer: "lowercase_analyzer"
-        //                         },
-        //                         rawValues: {
-        //                             type: "object",
-        //                             enabled: false
-        //                         }
-        //                     }
-        //                 }
-        //             }
-        //         });
-        //     }
-        // },
         {
             type: "context",
             name: "context-security-tenant",
