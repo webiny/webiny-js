@@ -30,12 +30,18 @@ describe("Render All Pages Test", () => {
             })
             .then(([result]) => expect(result.length).toBe(6));
 
-        const { data } = await handler();
-
-        // `jobsFetchedCount` must equal to six.
-        expect(data.stats.jobs.retrieved).toBe(6);
-        expect(data.stats.jobs.unique).toBe(1);
-        expect(data.stats.jobs.renderAll).toBe(1);
+        expect(await handler()).toEqual({
+            data: {
+                stats: {
+                    jobs: {
+                        renderAll: 1,
+                        retrieved: 6,
+                        unique: 1
+                    }
+                }
+            },
+            error: null
+        });
     });
 
     it("should have multiple render-all-pages jobs for different DB namespaces", async () => {
@@ -73,10 +79,17 @@ describe("Render All Pages Test", () => {
             })
             .then(([result]) => expect(result.length).toBe(9));
 
-        const { data } = await handler();
-
-        expect(data.stats.jobs.retrieved).toBe(9);
-        expect(data.stats.jobs.unique).toBe(4);
-        expect(data.stats.jobs.renderAll).toBe(4);
+        expect(await handler()).toEqual({
+            data: {
+                stats: {
+                    jobs: {
+                        renderAll: 4,
+                        retrieved: 9,
+                        unique: 4
+                    }
+                }
+            },
+            error: null
+        });
     });
 });
