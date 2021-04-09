@@ -113,10 +113,54 @@ module.exports = () => [
                 context.success(relativeFilePath);
             });
 
-            context.success("Website application successfully uploaded.");
+            context.success("React application uploaded.");
 
-            context.info("Re-rendering website...");
-            context.success("Website re-rendered.");
+            console.log();
+
+            // 2. Get exports from `site` stack, for `args.env` environment.
+            const apiOutput = await getStackOutput("api", args.env);
+
+            context.info("Issuing a complete website re-render job...");
+
+            try {
+                const lambdaClient = new LambdaClient({ region: apiOutput.region });
+
+                const response = await lambdaClient
+                    .invoke({
+                        FunctionName: apiOutput.psQueueAdd,
+                        Payload: JSON.stringify({
+                            render: {
+                                path: "*",
+                                configuration: {
+                                    db: {
+                                        namespace: "T#root"
+                                    }
+                                }
+                            }
+                        })
+                    })
+                    .promise();
+
+                const { error } = JSON.parse(response.Payload);
+                if (error) {
+                    throw error;
+                }
+
+                await lambdaClient
+                    .invoke({
+                        FunctionName: apiOutput.psQueueProcess,
+                        InvocationType: "Event"
+                    })
+                    .promise();
+
+                context.success("Successfully issued.");
+            } catch (e) {
+                context.error(
+                    `An error occurred while trying to update default Page Builder app's settings!`
+                );
+                console.log(e);
+            }
+
         }
     }
 ];
