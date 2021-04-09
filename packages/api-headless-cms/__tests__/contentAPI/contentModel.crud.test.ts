@@ -21,9 +21,7 @@ describe("content model test", () => {
     const readHandlerOpts = { path: "read/en-US" };
     const manageHandlerOpts = { path: "manage/en-US" };
 
-    const { clearAllIndex, createContentModelGroupMutation } = useContentGqlHandler(
-        manageHandlerOpts
-    );
+    const { createContentModelGroupMutation } = useContentGqlHandler(manageHandlerOpts);
 
     let contentModelGroup: CmsContentModelGroup;
 
@@ -37,19 +35,8 @@ describe("content model test", () => {
             }
         });
         contentModelGroup = createCMG.data.createContentModelGroup.data;
-        try {
-            await clearAllIndex();
-        } catch {
-            // Ignore errors
-        }
         // we need to reset this since we are using a singleton
         hooksTracker.reset();
-    });
-
-    afterEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {}
     });
 
     test("base schema should only contain relevant queries and mutations", async () => {

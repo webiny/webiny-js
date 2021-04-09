@@ -459,7 +459,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                 body
             });
         } catch (ex) {
-            throw new WebinyError(ex.message, ex.code, {
+            throw new WebinyError(ex.message, ex.code || "ELASTICSEARCH_ERROR", {
                 error: ex,
                 esConfig,
                 body

@@ -10,7 +10,6 @@ describe("contentEntryHooks", () => {
     const manageOpts = { path: "manage/en-US" };
 
     const {
-        clearAllIndex,
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
@@ -59,17 +58,8 @@ describe("contentEntryHooks", () => {
     };
 
     beforeEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {}
         await setupContentModel();
         hooksTracker.reset();
-    });
-
-    afterEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {}
     });
 
     test("should execute hooks on create", async () => {

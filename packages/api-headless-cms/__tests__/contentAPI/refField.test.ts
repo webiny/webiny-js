@@ -16,8 +16,7 @@ describe("refField", () => {
     const {
         createContentModelMutation,
         updateContentModelMutation,
-        createContentModelGroupMutation,
-        clearAllIndex
+        createContentModelGroupMutation
     } = useContentGqlHandler(manageOpts);
 
     // This function is not directly within `beforeEach` as we don't always setup the same content model.
@@ -131,18 +130,6 @@ describe("refField", () => {
 
         return publishAuthorResponse.data.publishAuthor.data;
     };
-
-    beforeEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {}
-    });
-
-    afterEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {}
-    });
 
     test("should create review connected to a product", async () => {
         const contentModelGroup = await setupContentModelGroup();

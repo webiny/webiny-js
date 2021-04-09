@@ -8,7 +8,6 @@ describe("Content model locked fields", () => {
     const manageOpts = { path: "manage/en-US" };
 
     const {
-        clearAllIndex,
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
@@ -53,18 +52,6 @@ describe("Content model locked fields", () => {
         });
         return update.data.updateContentModel.data;
     };
-
-    beforeEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {}
-    });
-
-    afterEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {}
-    });
 
     test("must mark fields as used and prevent changes on it, as soon as the first entry is saved", async () => {
         const { createCategory } = useCategoryManageHandler({

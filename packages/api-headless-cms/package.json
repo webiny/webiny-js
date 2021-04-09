@@ -19,7 +19,6 @@
     "@commodo/fields": "beta",
     "@graphql-tools/schema": "^7.1.2",
     "@webiny/api-file-manager": "^5.3.0",
-    "@webiny/api-headless-cms-ddb-es": "^5.3.0",
     "@webiny/api-i18n": "^5.3.0",
     "@webiny/api-i18n-content": "^5.3.0",
     "@webiny/api-security": "^5.3.0",

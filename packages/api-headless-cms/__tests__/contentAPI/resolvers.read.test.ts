@@ -56,7 +56,6 @@ describe("READ - Resolvers", () => {
     const readOpts = { path: "read/en-US" };
 
     const {
-        clearAllIndex,
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
@@ -95,12 +94,6 @@ describe("READ - Resolvers", () => {
     };
 
     beforeEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {
-            // Ignore errors
-        }
-
         const [createCMG] = await createContentModelGroupMutation({
             data: {
                 name: "Group",
@@ -112,12 +105,6 @@ describe("READ - Resolvers", () => {
         contentModelGroup = createCMG.data.createContentModelGroup.data;
 
         await setupModel("category", contentModelGroup);
-    });
-
-    afterEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch (e) {}
     });
 
     test("should return a record by id", async () => {

@@ -28,7 +28,6 @@ describe("Endpoint access", () => {
     ];
 
     const {
-        clearAllIndex,
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
@@ -77,18 +76,6 @@ describe("Endpoint access", () => {
             process.exit(1);
         }
     };
-
-    beforeEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {}
-    });
-
-    afterEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {}
-    });
 
     test(`user has access to manage endpoint`, async () => {
         await setupContentModel();

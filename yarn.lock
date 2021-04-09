@@ -7429,7 +7429,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-headless-cms-ddb-es@^5.3.0, @webiny/api-headless-cms-ddb-es@workspace:packages/api-headless-cms-ddb-es":
+"@webiny/api-headless-cms-ddb-es@workspace:packages/api-headless-cms-ddb-es":
   version: 0.0.0-use.local
   resolution: "@webiny/api-headless-cms-ddb-es@workspace:packages/api-headless-cms-ddb-es"
   dependencies:
@@ -7479,7 +7479,6 @@ __metadata:
     "@shelf/jest-elasticsearch": ^1.0.0
     "@webiny/api-dynamodb-to-elasticsearch": ^5.3.0
     "@webiny/api-file-manager": ^5.3.0
-    "@webiny/api-headless-cms-ddb-es": ^5.3.0
     "@webiny/api-i18n": ^5.3.0
     "@webiny/api-i18n-content": ^5.3.0
     "@webiny/api-plugin-elastic-search-client": ^5.3.0

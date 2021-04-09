@@ -1,4 +1,4 @@
-# Tests
+# api-headless-cms
 
 ### Env variables
 
@@ -10,5 +10,5 @@ Custom port for local elasticsearch.
 
 ##### Usage
 ````
-ELASTICSEARCH_PORT=9200 LOCAL_ELASTICSEARCH=true yarn test packages/api-headless-cms
+ELASTICSEARCH_PORT=9200 LOCAL_ELASTICSEARCH=true yarn test packages/api-headless-cms --filter=ddb-es
 ````

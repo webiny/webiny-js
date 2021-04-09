@@ -1497,7 +1497,7 @@ export type CmsContentEntryPermission = SecurityPermission<{
  * @category ContentModelField
  * @category Storage
  */
-export interface CmsModelFieldToStoragePluginToStorageArgs {
+export interface CmsModelFieldToStoragePluginToStorageArgs<T> {
     model: CmsContentModel;
     entry: CmsContentEntry;
     field: CmsContentModelField;
@@ -1505,7 +1505,7 @@ export interface CmsModelFieldToStoragePluginToStorageArgs {
     /**
      * The value to be transformed to storage type from the original one.
      */
-    value: any;
+    value: T;
 }
 
 /**
@@ -1517,7 +1517,7 @@ export interface CmsModelFieldToStoragePluginToStorageArgs {
  * @category ContentModelField
  * @category Storage
  */
-export interface CmsModelFieldToStoragePluginFromStorageArgs {
+export interface CmsModelFieldToStoragePluginFromStorageArgs<T> {
     model: CmsContentModel;
     entry: CmsContentEntry;
     field: CmsContentModelField;
@@ -1525,7 +1525,7 @@ export interface CmsModelFieldToStoragePluginFromStorageArgs {
     /**
      * The value to be transformed from storage type into the original one.
      */
-    value: any;
+    value: T;
 }
 
 /**
@@ -1536,7 +1536,7 @@ export interface CmsModelFieldToStoragePluginFromStorageArgs {
  * @category ContentEntry
  * @category Storage
  */
-export interface CmsModelFieldToStoragePlugin extends Plugin {
+export interface CmsModelFieldToStoragePlugin<Original = any, Converted = any> extends Plugin {
     /**
      * A plugin type
      */
@@ -1558,7 +1558,7 @@ export interface CmsModelFieldToStoragePlugin extends Plugin {
      * }
      * ```
      */
-    toStorage: (args: CmsModelFieldToStoragePluginToStorageArgs) => Promise<any>;
+    toStorage: (args: CmsModelFieldToStoragePluginToStorageArgs<Original>) => Promise<Converted>;
     /**
      * A function that is ran when retrieving the data from the database. You either revert the action you did in the `toStorage` or handle it via some other way available to you.
      *
@@ -1568,7 +1568,9 @@ export interface CmsModelFieldToStoragePlugin extends Plugin {
      * }
      * ```
      */
-    fromStorage: (args: CmsModelFieldToStoragePluginFromStorageArgs) => Promise<any>;
+    fromStorage: (
+        args: CmsModelFieldToStoragePluginFromStorageArgs<Converted>
+    ) => Promise<Original>;
 }
 
 /**
