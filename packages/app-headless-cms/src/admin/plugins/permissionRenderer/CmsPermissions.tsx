@@ -288,7 +288,6 @@ export const CMSPermissions = ({ value, onChange }) => {
                                 {graphQLEndpointAccess && (
                                     <CustomSection
                                         data={data}
-                                        setValue={setValue}
                                         Bind={Bind}
                                         entity={"contentModelGroup"}
                                         title={"Content Model Groups"}
