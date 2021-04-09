@@ -121,7 +121,9 @@ export default (configuration: Configuration): HandlerPlugin => ({
             }
 
             log(
-                `Detected ${Object.values(renderAllJobs).length} render-all-pages (path: *) ${pluralize(
+                `Detected ${
+                    Object.values(renderAllJobs).length
+                } render-all-pages (path: *) ${pluralize(
                     "job",
                     Object.values(renderAllJobs).length
                 )}.`
