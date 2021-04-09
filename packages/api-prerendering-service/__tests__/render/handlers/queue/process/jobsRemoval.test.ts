@@ -26,7 +26,7 @@ describe("Jobs Removal Test", () => {
         const { data } = await handler();
 
         // `jobsFetchedCount` must equal to three.
-        expect(data.stats.jobsFetchedCount).toBe(3);
+        expect(data.stats.jobs.retrieved).toBe(3);
 
         // Finally, no jobs should be returned.
         await dynamoDbDriver
