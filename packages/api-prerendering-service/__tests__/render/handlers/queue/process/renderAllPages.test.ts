@@ -1,7 +1,7 @@
 import useHandler from "./useHandler";
 import mocks from "./mocks/renderAllPages";
 
-describe("Queue Processor Test", () => {
+describe("Render All Pages Test", () => {
     it('should rerender all existing pages when "path: *" is present in the jobs list', async () => {
         const { handler, dynamoDbDriver, defaults } = useHandler();
 
