@@ -35,7 +35,11 @@ if (typeof process.env["GENERATE_SOURCEMAP"] === "undefined") {
 }
 
 // Generates a unique static folder name, for example "static-mi7aan0cqpo".
-const STATIC_FOLDER = "static-" + Math.random().toString(36).replace('0.','');
+const STATIC_FOLDER =
+    "static-" +
+    Math.random()
+        .toString(36)
+        .replace("0.", "");
 
 // Source maps are resource heavy and can cause out of memory issue for large source files.
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== "false";
@@ -197,7 +201,7 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
             devtoolModuleFilenameTemplate: isEnvProduction
                 ? info => path.relative(paths.appSrc, info.absoluteResourcePath).replace(/\\/g, "/")
                 : isEnvDevelopment &&
-                (info => path.resolve(info.absoluteResourcePath).replace(/\\/g, "/")),
+                  (info => path.resolve(info.absoluteResourcePath).replace(/\\/g, "/")),
             // Prevents conflicts when multiple Webpack runtimes (from different apps)
             // are used on the same page.
             jsonpFunction: `webpackJsonp${appPackageJson.name}`,
@@ -255,13 +259,13 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
                         parser: safePostCssParser,
                         map: shouldUseSourceMap
                             ? {
-                                // `inline: false` forces the sourcemap to be output into a
-                                // separate file
-                                inline: false,
-                                // `annotation: true` appends the sourceMappingURL to the end of
-                                // the css file, helping the browser find the sourcemap
-                                annotation: true
-                            }
+                                  // `inline: false` forces the sourcemap to be output into a
+                                  // separate file
+                                  inline: false,
+                                  // `annotation: true` appends the sourceMappingURL to the end of
+                                  // the css file, helping the browser find the sourcemap
+                                  annotation: true
+                              }
                             : false
                     },
                     cssProcessorPluginOptions: {
@@ -537,19 +541,19 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
                     },
                     isEnvProduction
                         ? {
-                            minify: {
-                                removeComments: true,
-                                collapseWhitespace: true,
-                                removeRedundantAttributes: true,
-                                useShortDoctype: true,
-                                removeEmptyAttributes: true,
-                                removeStyleLinkTypeAttributes: true,
-                                keepClosingSlash: true,
-                                minifyJS: true,
-                                minifyCSS: true,
-                                minifyURLs: true
-                            }
-                        }
+                              minify: {
+                                  removeComments: true,
+                                  collapseWhitespace: true,
+                                  removeRedundantAttributes: true,
+                                  useShortDoctype: true,
+                                  removeEmptyAttributes: true,
+                                  removeStyleLinkTypeAttributes: true,
+                                  keepClosingSlash: true,
+                                  minifyJS: true,
+                                  minifyCSS: true,
+                                  minifyURLs: true
+                              }
+                          }
                         : undefined
                 )
             ),
@@ -557,8 +561,8 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
             // a network request.
             // https://github.com/facebook/create-react-app/issues/5358
             isEnvProduction &&
-            shouldInlineRuntimeChunk &&
-            new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime-.+[.]js/]),
+                shouldInlineRuntimeChunk &&
+                new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime-.+[.]js/]),
             // Makes some environment variables available in index.html.
             // The public URL is available as %PUBLIC_URL% in index.html, e.g.:
             // <link rel="icon" href="%PUBLIC_URL%/favicon.ico">
@@ -587,12 +591,12 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
             // See https://github.com/facebook/create-react-app/issues/186
             isEnvDevelopment && new WatchMissingNodeModulesPlugin(paths.appNodeModules),
             isEnvProduction &&
-            new MiniCssExtractPlugin({
-                // Options similar to the same options in webpackOptions.output
-                // both options are optional
-                filename: `${STATIC_FOLDER}/css/[name].[contenthash:8].css`,
-                chunkFilename: `${STATIC_FOLDER}/css/[name].[contenthash:8].chunk.css`
-            }),
+                new MiniCssExtractPlugin({
+                    // Options similar to the same options in webpackOptions.output
+                    // both options are optional
+                    filename: `${STATIC_FOLDER}/css/[name].[contenthash:8].css`,
+                    chunkFilename: `${STATIC_FOLDER}/css/[name].[contenthash:8].chunk.css`
+                }),
             // Generate an asset manifest file with the following content:
             // - "files" key: Mapping of all asset filenames to their corresponding
             //   output file so that tools can pick it up without having to parse
@@ -625,31 +629,31 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
             new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
             // TypeScript type checking
             useTypeScript &&
-            new ForkTsCheckerWebpackPlugin({
-                typescript: resolve.sync("typescript", {
-                    basedir: paths.appNodeModules
+                new ForkTsCheckerWebpackPlugin({
+                    typescript: resolve.sync("typescript", {
+                        basedir: paths.appNodeModules
+                    }),
+                    async: isEnvDevelopment,
+                    useTypescriptIncrementalApi: true,
+                    checkSyntacticErrors: true,
+                    resolveModuleNameModule: process.versions.pnp
+                        ? `${__dirname}/pnpTs.js`
+                        : undefined,
+                    resolveTypeReferenceDirectiveModule: process.versions.pnp
+                        ? `${__dirname}/pnpTs.js`
+                        : undefined,
+                    tsconfig: paths.appTsConfig,
+                    reportFiles: [
+                        "**",
+                        "!**/__tests__/**",
+                        "!**/?(*.)(spec|test).*",
+                        "!**/src/setupProxy.*",
+                        "!**/src/setupTests.*"
+                    ],
+                    silent: true,
+                    // The formatter is invoked directly in WebpackDevServerUtils during development
+                    formatter: isEnvProduction ? typescriptFormatter : undefined
                 }),
-                async: isEnvDevelopment,
-                useTypescriptIncrementalApi: true,
-                checkSyntacticErrors: true,
-                resolveModuleNameModule: process.versions.pnp
-                    ? `${__dirname}/pnpTs.js`
-                    : undefined,
-                resolveTypeReferenceDirectiveModule: process.versions.pnp
-                    ? `${__dirname}/pnpTs.js`
-                    : undefined,
-                tsconfig: paths.appTsConfig,
-                reportFiles: [
-                    "**",
-                    "!**/__tests__/**",
-                    "!**/?(*.)(spec|test).*",
-                    "!**/src/setupProxy.*",
-                    "!**/src/setupTests.*"
-                ],
-                silent: true,
-                // The formatter is invoked directly in WebpackDevServerUtils during development
-                formatter: isEnvProduction ? typescriptFormatter : undefined
-            }),
             new WebpackBar({ name: path.basename(paths.appPath) })
         ].filter(Boolean),
         // Some libraries import Node modules but don't use them in the browser.
