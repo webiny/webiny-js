@@ -8,6 +8,7 @@ jest.setTimeout(25000);
 
 const appleData = {
     name: "Apple",
+    isSomething: false,
     numbers: [5, 6, 7.2, 10.18, 12.05],
     email: "john@doe.com",
     url: "https://apple.test",
@@ -21,6 +22,7 @@ const appleData = {
 
 const strawberryData = {
     name: "Strawberry",
+    isSomething: true,
     numbers: [5, 6, 7.2, 10.18, 12.05],
     email: "john@doe.com",
     url: "https://strawberry.test",
@@ -34,6 +36,7 @@ const strawberryData = {
 
 const bananaData = {
     name: "Banana",
+    isSomething: false,
     numbers: [5, 6, 7.2, 10.18, 12.05],
     email: "john@doe.com",
     url: "https://banana.test",
@@ -396,6 +399,58 @@ describe("elasticsearch filtering", () => {
                         cursor: expect.any(String),
                         hasMoreItems: false,
                         totalCount: 3
+                    }
+                }
+            }
+        });
+    });
+
+    test("should filter fruits by a boolean attribute", async () => {
+        await setupFruits();
+
+        const handler = useFruitReadHandler({
+            ...readOpts
+        });
+        const { listFruits } = handler;
+
+        await waitFruits("should filter fruits by date and sort asc", handler);
+
+        const [response] = await listFruits({
+            where: {
+                isSomething: true
+            }
+        });
+
+        expect(response).toMatchObject({
+            data: {
+                listFruits: {
+                    data: [
+                        {
+                            createdBy: {
+                                displayName: "User 123",
+                                id: "123",
+                                type: "admin"
+                            },
+                            createdOn: /^20/,
+                            date: /^20/,
+                            dateTime: /^20/,
+                            dateTimeZ: /^20/,
+                            email: "john@doe.com",
+                            id: /.*#0001/,
+                            lowerCase: "lowercase",
+                            name: "Strawberry",
+                            numbers: [5, 6, 7.2, 10.18, 12.05],
+                            savedOn: /^20/,
+                            time: expect.any(String),
+                            upperCase: "UPPERCASE",
+                            url: "https://strawberry.test"
+                        }
+                    ],
+                    error: null,
+                    meta: {
+                        cursor: expect.any(String),
+                        hasMoreItems: false,
+                        totalCount: 1
                     }
                 }
             }
