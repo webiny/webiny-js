@@ -17,14 +17,22 @@ type Configuration = {
 };
 
 type Stats = {
-    jobsFetchedCount: number;
+    jobs: {
+        unique: number;
+        retrieved: number;
+        renderAll: number;
+    };
 };
 
 export default (configuration: Configuration): HandlerPlugin => ({
     type: "handler",
     async handle(context): Promise<HandlerResponse<{ stats: Stats }>> {
         const stats: Stats = {
-            jobsFetchedCount: 0
+            jobs: {
+                unique: 0,
+                retrieved: 0,
+                renderAll: 0
+            }
         };
 
         try {
@@ -51,7 +59,7 @@ export default (configuration: Configuration): HandlerPlugin => ({
             }
 
             log("Fetching all of the jobs added to the queue...");
-            const [jobs] = await context.db.read<DbQueueJob>({
+            const [allJobs] = await context.db.read<DbQueueJob>({
                 ...defaults.db,
                 query: {
                     PK: "PS#Q#JOB",
@@ -59,17 +67,17 @@ export default (configuration: Configuration): HandlerPlugin => ({
                 }
             });
 
-            stats.jobsFetchedCount = jobs.length;
-            log(`Fetched ${jobs.length} ${pluralize("job", jobs.length)}.`);
+            stats.jobs.retrieved = allJobs.length;
+            log(`Fetched ${allJobs.length} ${pluralize("job", allJobs.length)}.`);
 
-            if (jobs.length === 0) {
+            if (allJobs.length === 0) {
                 log("No queue jobs to process. Exiting...");
                 return { data: { stats }, error: null };
             }
 
             log(`Deleting all jobs from the database so they don't get executed again...`);
-            for (let i = 0; i < jobs.length; i++) {
-                const { PK, SK } = jobs[i];
+            for (let i = 0; i < allJobs.length; i++) {
+                const { PK, SK } = allJobs[i];
                 await context.db.delete({
                     ...defaults.db,
                     query: {
@@ -79,21 +87,69 @@ export default (configuration: Configuration): HandlerPlugin => ({
                 });
             }
 
-            log(`Deleted ${jobs.length} ${pluralize("job", jobs.length)} from the database.`);
+            log(`Deleted ${allJobs.length} ${pluralize("job", allJobs.length)} from the database.`);
             log("Eliminating duplicate jobs (no need to run the same job twice, right?).");
 
+            // Let's also note all render-all-pages jobs (path: "*").
+            const renderAllJobs: Record<string, DbQueueJob> = {};
+
             const uniqueJobsObject = {};
-            for (let i = 0; i < jobs.length; i++) {
-                const job = jobs[i];
+            for (let i = 0; i < allJobs.length; i++) {
+                const job = allJobs[i];
                 // If job doesn't have args (which should not happen), just ignore the job.
-                if (job.args) {
-                    uniqueJobsObject[hash(job.args)] = job;
+                if (!job.args) {
+                    continue;
                 }
+
+                uniqueJobsObject[hash(job.args)] = job;
+                if (job.args.render) {
+                    const { path, configuration } = job.args.render;
+                    if (path === "*") {
+                        const dbNamespace = configuration?.db?.namespace || "";
+                        renderAllJobs[dbNamespace] = job;
+                    }
+                }
+
+                // TODO: Ideally, we'd want to add support for processing `flush` jobs as well.
             }
 
-            // TODO: if we have a `render-all` job, then we can ignore all of the jobs basically (for DB namespace).
+            console.log(
+                `Detected ${renderAllJobs.length} render-all-pages (path: *) ${pluralize(
+                    "job",
+                    Object.values(renderAllJobs).length
+                )}`
+            );
+
+            stats.jobs.renderAll = Object.values(renderAllJobs).length;
 
             let uniqueJobs = Object.values<DbQueueJob>(uniqueJobsObject);
+
+            // Now, if we have something in the "renderAllJobs" array, let's remove all
+            // jobs for every dbNamespace that is listed in it.
+            if (Object.values(renderAllJobs).length > 0) {
+                uniqueJobs = uniqueJobs.filter(job => {
+                    const render = job?.args?.render;
+                    if (!render) {
+                        return true;
+                    }
+
+                    const dbNamespace = render?.configuration?.db?.namespace || "";
+                    if (renderAllJobs[dbNamespace]) {
+                        return false;
+                    }
+
+                    return true;
+                });
+
+                // TODO: Ideally, we'd want to add support for processing `flush` jobs as well.
+            }
+
+            // Once we've removed all jobs for dbNamespaces that have the render-all-pages job,
+            // let's add these jobs back so they actually get performed below.
+
+            uniqueJobs.push(...Object.values(renderAllJobs));
+
+            stats.jobs.unique = uniqueJobs.length;
 
             log(
                 `Ended up with ${uniqueJobs.length} unique ${pluralize(
@@ -108,45 +164,6 @@ export default (configuration: Configuration): HandlerPlugin => ({
                 flush: Record<string, any>;
                 render: Record<string, any>;
             } = { flush: {}, render: {} };
-
-            // Let's see if we have the render-all-pages (path: "*"). If we detect it, let's take its dbNamespace
-            // value, and eliminate all other jobs that are scheduled within it.
-            const dbNamespacesWithRenderAllJob = [];
-
-            for (let i = 0; i < uniqueJobs.length; i++) {
-                const uniqueJob = uniqueJobs[i];
-                const { args } = uniqueJob;
-
-                if (args?.render) {
-                    const { path, configuration } = args.render;
-                    if (path === "*") {
-                        const dbNamespace = configuration?.db?.namespace || "";
-                        if (!dbNamespacesWithRenderAllJob.includes(dbNamespace)) {
-                            dbNamespacesWithRenderAllJob.push(dbNamespace);
-                        }
-                    }
-                }
-                // TODO: Ideally, we'd want to add support for processing `flush` jobs as well.
-            }
-
-            // Now, if we have something in the "dbNamespacesWithRenderAllJob" array, let's remove all
-            // jobs for every dbNamespace listed in it.
-            if (dbNamespacesWithRenderAllJob.length > 0) {
-                uniqueJobs = uniqueJobs.filter(job => {
-                    const render = job?.args?.render;
-                    if (!render) {
-                        return true;
-                    }
-
-                    const dbNamespace = render?.configuration?.db?.namespace || "";
-                    if (dbNamespacesWithRenderAllJob.includes(dbNamespace)) {
-                        return false;
-                    }
-
-                    return true;
-                });
-                // TODO: Ideally, we'd want to add support for processing `flush` jobs as well.
-            }
 
             for (let i = 0; i < uniqueJobs.length; i++) {
                 const uniqueJob = uniqueJobs[i];
