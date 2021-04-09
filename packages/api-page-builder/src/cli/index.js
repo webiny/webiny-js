@@ -74,7 +74,12 @@ module.exports = () => [
                 return;
             }
 
-            context.info("Uploading Website React application to Amazon S3...");
+            if (args.inputs.build === false) {
+                context.info(`"--no-build" argument detected - skipping React application upload and prerendering.`);
+                return;
+            }
+
+            context.info("Uploading React application...");
             // 1. Get exports from `site` stack, for `args.env` environment.
             const websiteOutput = await getStackOutput("apps/website", args.env);
 
