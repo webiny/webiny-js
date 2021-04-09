@@ -63,6 +63,24 @@ const usePermission = () => {
         [identity]
     );
 
+    /**
+     * @description This checks whether the user has the "write" access for given permission;
+     * without talking the "own" property in account.
+     * @param {string} permissionName
+     * */
+    const canCreate = useCallback(permissionName => {
+        const permission = identity.getPermission(permissionName);
+        if (!permission) {
+            return false;
+        }
+
+        if (typeof permission.rwd !== "string") {
+            return true;
+        }
+
+        return permission.rwd.includes("w");
+    }, []);
+
     const canDelete = useCallback(
         (item, permissionName) => {
             const permission = identity.getPermission(permissionName);
@@ -160,6 +178,7 @@ const usePermission = () => {
     return {
         canRead,
         canEdit,
+        canCreate,
         canDelete,
         canPublish,
         canUnpublish,
