@@ -14,6 +14,9 @@
       "path": "../handler-client"
     },
     {
+      "path": "../handler-aws"
+    },
+    {
       "path": "../handler-db"
     },
     {
@@ -21,6 +24,9 @@
     },
     {
       "path": "../db"
+    },
+    {
+      "path": "../db-dynamodb"
     }
   ],
   "compilerOptions": {
@@ -31,6 +37,8 @@
       "@webiny/handler": ["../handler/src"],
       "@webiny/handler-args/*": ["../handler-args/src/*"],
       "@webiny/handler-args": ["../handler-args/src"],
+      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
+      "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/handler-client/*": ["../handler-client/src/*"],
       "@webiny/handler-client": ["../handler-client/src"],
       "@webiny/handler-db/*": ["../handler-db/src/*"],
@@ -38,7 +46,9 @@
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/db/*": ["../db/src/*"],
-      "@webiny/db": ["../db/src"]
+      "@webiny/db": ["../db/src"],
+      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
+      "@webiny/db-dynamodb": ["../db-dynamodb/src"]
     },
     "baseUrl": "."
   }

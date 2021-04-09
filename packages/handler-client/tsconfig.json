@@ -6,6 +6,9 @@
     },
     {
       "path": "../plugins"
+    },
+    {
+      "path": "../error"
     }
   ],
   "compilerOptions": {
@@ -13,7 +16,9 @@
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"]
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/error/*": ["../error/src/*"],
+      "@webiny/error": ["../error/src"]
     },
     "baseUrl": "."
   }
