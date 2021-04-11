@@ -9,6 +9,7 @@ jest.setTimeout(25000);
 const appleData = {
     name: "Apple",
     isSomething: false,
+    rating: 400,
     numbers: [5, 6, 7.2, 10.18, 12.05],
     email: "john@doe.com",
     url: "https://apple.test",
@@ -23,11 +24,12 @@ const appleData = {
 const strawberryData = {
     name: "Strawberry",
     isSomething: true,
+    rating: 500,
     numbers: [5, 6, 7.2, 10.18, 12.05],
     email: "john@doe.com",
     url: "https://strawberry.test",
-    lowerCase: "lowercase",
-    upperCase: "UPPERCASE",
+    lowerCase: "strawberry",
+    upperCase: "STRAWBERRY",
     date: "2020-12-18",
     dateTime: new Date("2020-12-19T12:12:21").toISOString(),
     dateTimeZ: "2020-12-25T14:52:41+01:00",
@@ -37,6 +39,7 @@ const strawberryData = {
 const bananaData = {
     name: "Banana",
     isSomething: false,
+    rating: 450,
     numbers: [5, 6, 7.2, 10.18, 12.05],
     email: "john@doe.com",
     url: "https://banana.test",
@@ -405,116 +408,182 @@ describe("elasticsearch filtering", () => {
         });
     });
 
-    test("should be able to filter fruits by a boolean attribute", async () => {
-        await setupFruits();
+    describe("GraphQL Data Filtering Tests", () => {
+        test("should be able to filter fruits by a boolean attribute", async () => {
+            await setupFruits();
 
-        const handler = useFruitReadHandler({
-            ...readOpts
-        });
-        const { listFruits } = handler;
+            const handler = useFruitReadHandler({
+                ...readOpts
+            });
+            const { listFruits } = handler;
 
-        await waitFruits("should filter fruits by date and sort asc", handler);
+            await waitFruits("GraphQL filtering by a boolean attribute", handler);
 
-        await listFruits({
-            where: {
-                isSomething: true
-            }
-        }).then(([response]) => {
-            expect(response).toMatchObject({
-                data: {
-                    listFruits: {
-                        data: [
-                            {
-                                createdBy: {
-                                    displayName: "User 123",
-                                    id: "123",
-                                    type: "admin"
-                                },
-                                createdOn: /^20/,
-                                date: /^20/,
-                                dateTime: /^20/,
-                                dateTimeZ: /^20/,
-                                email: "john@doe.com",
-                                id: /.*#0001/,
-                                lowerCase: "lowercase",
-                                name: "Strawberry",
-                                numbers: [5, 6, 7.2, 10.18, 12.05],
-                                savedOn: /^20/,
-                                time: expect.any(String),
-                                upperCase: "UPPERCASE",
-                                url: "https://strawberry.test"
+            await listFruits({
+                where: {
+                    isSomething: true
+                }
+            }).then(([response]) => {
+                expect(response).toMatchObject({
+                    data: {
+                        listFruits: {
+                            data: [
+                                {
+                                    lowerCase: "strawberry",
+                                    name: "Strawberry",
+                                    upperCase: "STRAWBERRY",
+                                    url: "https://strawberry.test"
+                                }
+                            ],
+                            error: null,
+                            meta: {
+                                cursor: expect.any(String),
+                                hasMoreItems: false,
+                                totalCount: 1
                             }
-                        ],
-                        error: null,
-                        meta: {
-                            cursor: expect.any(String),
-                            hasMoreItems: false,
-                            totalCount: 1
                         }
                     }
+                });
+            });
+
+            // Let's use the "not" operator.
+            await listFruits({
+                where: {
+                    isSomething_not: true
                 }
+            }).then(([response]) => {
+                expect(response).toMatchObject({
+                    data: {
+                        listFruits: {
+                            data: [
+                                {
+                                    lowerCase: "banana",
+                                    name: "Banana",
+                                    upperCase: "BANANA",
+                                    url: "https://banana.test"
+                                },
+                                {
+                                    lowerCase: "apple",
+                                    name: "Apple",
+                                    upperCase: "APPLE",
+                                    url: "https://apple.test"
+                                }
+                            ],
+                            error: null,
+                            meta: {
+                                cursor: expect.any(String),
+                                hasMoreItems: false,
+                                totalCount: 2
+                            }
+                        }
+                    }
+                });
             });
         });
 
-        // Let's use the "not" operator.
-        await listFruits({
-            where: {
-                isSomething_not: true
-            }
-        }).then(([response]) => {
-            expect(response).toMatchObject({
-                data: {
-                    listFruits: {
-                        data: [
-                            {
-                                createdBy: {
-                                    displayName: "User 123",
-                                    id: "123",
-                                    type: "admin"
-                                },
-                                createdOn: /^20/,
-                                date: /^20/,
-                                dateTime: /^20/,
-                                dateTimeZ: /^20/,
-                                email: "john@doe.com",
-                                id: /.*#0001/,
-                                lowerCase: "banana",
-                                name: "Banana",
-                                numbers: [5, 6, 7.2, 10.18, 12.05],
-                                savedOn: /^20/,
-                                time: expect.any(String),
-                                upperCase: "BANANA",
-                                url: "https://banana.test"
-                            },
-                            {
-                                createdBy: {
-                                    displayName: "User 123",
-                                    id: "123",
-                                    type: "admin"
-                                },
-                                createdOn: /^20/,
-                                date: /^20/,
-                                dateTime: /^20/,
-                                dateTimeZ: /^20/,
-                                email: "john@doe.com",
-                                id: /.*#0001/,
-                                lowerCase: "apple",
-                                name: "Apple",
-                                numbers: [5, 6, 7.2, 10.18, 12.05],
-                                savedOn: /^20/,
-                                time: expect.any(String),
-                                upperCase: "APPLE",
-                                url: "https://apple.test"
+        test("should be able to filter fruits by a number attribute", async () => {
+            await setupFruits();
+
+            const handler = useFruitReadHandler({
+                ...readOpts
+            });
+            const { listFruits } = handler;
+
+            await waitFruits("GraphQL filtering by a number attribute", handler);
+
+            await listFruits({
+                where: {
+                    rating: 450
+                }
+            }).then(([response]) => {
+                expect(response).toMatchObject({
+                    data: {
+                        listFruits: {
+                            data: [
+                                {
+                                    lowerCase: "banana",
+                                    name: "Banana",
+                                    upperCase: "BANANA",
+                                    url: "https://banana.test"
+                                }
+                            ],
+                            error: null,
+                            meta: {
+                                cursor: expect.any(String),
+                                hasMoreItems: false,
+                                totalCount: 1
                             }
-                        ],
-                        error: null,
-                        meta: {
-                            cursor: expect.any(String),
-                            hasMoreItems: false,
-                            totalCount: 2
                         }
                     }
+                });
+            });
+
+            // Let's use the "not" operator.
+            await listFruits({
+                where: {
+                    rating_not: 450
                 }
+            }).then(([response]) => {
+                expect(response).toMatchObject({
+                    data: {
+                        listFruits: {
+                            data: [
+                                {
+                                    lowerCase: "strawberry",
+                                    name: "Strawberry",
+                                    upperCase: "STRAWBERRY",
+                                    url: "https://strawberry.test"
+                                },
+                                {
+                                    lowerCase: "apple",
+                                    name: "Apple",
+                                    upperCase: "APPLE",
+                                    url: "https://apple.test"
+                                }
+                            ],
+                            error: null,
+                            meta: {
+                                cursor: expect.any(String),
+                                hasMoreItems: false,
+                                totalCount: 2
+                            }
+                        }
+                    }
+                });
+            });
+
+            // Let's use the "in" operator.
+            await listFruits({
+                where: {
+                    rating_in: [450, 500]
+                }
+            }).then(([response]) => {
+                expect(response).toMatchObject({
+                    data: {
+                        listFruits: {
+                            data: [
+                                {
+                                    lowerCase: "banana",
+                                    name: "Banana",
+                                    upperCase: "BANANA",
+                                    url: "https://banana.test"
+                                },
+                                {
+                                    lowerCase: "strawberry",
+                                    name: "Strawberry",
+                                    upperCase: "STRAWBERRY",
+                                    url: "https://strawberry.test"
+                                }
+                            ],
+                            error: null,
+                            meta: {
+                                cursor: expect.any(String),
+                                hasMoreItems: false,
+                                totalCount: 2
+                            }
+                        }
+                    }
+                });
             });
         });
     });
