@@ -4,20 +4,13 @@ import {
     SecurityIdentity,
     SecurityPermission
 } from "@webiny/api-security/types";
-import { TenancyContext, Tenant } from "../types";
 
 type APIKeyAuthorization = {
     identityType?: string;
 };
 
-const createCacheKey = ({
-    tenant,
-    identity
-}: {
-    identity: SecurityIdentity;
-    tenant: Tenant;
-}): string => {
-    return `T#${tenant.id}#I#${identity.id}`;
+const createCacheKey = ({ identity }: { identity: SecurityIdentity }): string => {
+    return `I#${identity.id}`;
 };
 
 export default (config: APIKeyAuthorization = {}): SecurityAuthorizationPlugin => {
@@ -25,7 +18,7 @@ export default (config: APIKeyAuthorization = {}): SecurityAuthorizationPlugin =
     return {
         type: "security-authorization",
         name: "security-authorization-api-key",
-        async getPermissions({ security }: SecurityContext & TenancyContext) {
+        async getPermissions({ security }: SecurityContext) {
             const identityType = config.identityType || "api-key";
 
             const identity = security.getIdentity();
@@ -33,9 +26,7 @@ export default (config: APIKeyAuthorization = {}): SecurityAuthorizationPlugin =
             if (!identity || identity.type !== identityType) {
                 return;
             }
-            const tenant = security.getTenant();
             const cacheKey = createCacheKey({
-                tenant,
                 identity
             });
             if (permissionCache.has(cacheKey)) {
