@@ -5,7 +5,7 @@ export const elasticSearchQueryBuilderEqualPlugin = (): ElasticsearchQueryBuilde
     name: "elastic-search-query-builder-eq",
     operator: "eq",
     apply(query, { field, value }) {
-        if (typeof value === 'string') {
+        if (typeof value === "string") {
             query.must.push({
                 term: {
                     [`${field}.keyword`]: value
@@ -14,7 +14,7 @@ export const elasticSearchQueryBuilderEqualPlugin = (): ElasticsearchQueryBuilde
         } else {
             query.must.push({
                 term: {
-                    [`${field}`]: value
+                    [field]: value
                 }
             });
         }
