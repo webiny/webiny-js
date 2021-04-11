@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.4.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.3.0...v5.4.0-beta.0) (2021-04-09)
+
+
+### Bug Fixes
+
+* **app-page-builder:** update elementType in ImagesList element ([#1550](https://github.com/webiny/webiny-js/issues/1550)) ([0ea5bbf](https://github.com/webiny/webiny-js/commit/0ea5bbf2a9219facd610f10b23b977c86b05f2ad))
+
+
+
+
+
 # [5.3.0](https://github.com/webiny/webiny-js/compare/v5.3.0-beta.0...v5.3.0) (2021-03-26)
 
 **Note:** Version bump only for package @webiny/app-page-builder

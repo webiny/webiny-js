@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.4.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.3.0...v5.4.0-beta.0) (2021-04-09)
+
+
+### Bug Fixes
+
+* **app-admin:** update AutoComplete and MultiAutoComplete options list style ([#1548](https://github.com/webiny/webiny-js/issues/1548)) ([6c8d770](https://github.com/webiny/webiny-js/commit/6c8d7706f0ad3ce352178f2a968818d90b7cc2fc))
+
+
+### Features
+
+* add order numbers ([a66b946](https://github.com/webiny/webiny-js/commit/a66b9469622cff32d122e0ab9d03515f0cb00d09))
+* **ui:** add reordering controls ([f6f7b21](https://github.com/webiny/webiny-js/commit/f6f7b21f1c032436de570662999d1dd55310dbcd))
+
+
+
+
+
 # [5.3.0](https://github.com/webiny/webiny-js/compare/v5.3.0-beta.0...v5.3.0) (2021-03-26)
 
 **Note:** Version bump only for package @webiny/ui
