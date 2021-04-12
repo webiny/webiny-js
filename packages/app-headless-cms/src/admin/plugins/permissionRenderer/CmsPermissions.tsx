@@ -256,7 +256,7 @@ export const CMSPermissions = ({ value, onChange }) => {
                                         <Bind name={"endpoints"}>
                                             <CheckboxGroup
                                                 label={t`API Endpoints`}
-                                                description={t`Each type is served via a separate URL and has a specific purpose. Check out the {link} key topic to learn more.`(
+                                                description={t`Each endpoint has a separate URL and a specific purpose. Check out the {link} key topic to learn more.`(
                                                     {
                                                         link: (
                                                             <Link
