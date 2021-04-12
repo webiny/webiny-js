@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.4.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.1...v5.4.0-beta.2) (2021-04-12)
+
+
+### Bug Fixes
+
+* revert change (use berry a version) ([7819e80](https://github.com/webiny/webiny-js/commit/7819e80ea96089758320fbcb43b1a54ebc812119))
+* upgrade to berry and then downgrade to 2.4.1 ([eac1e98](https://github.com/webiny/webiny-js/commit/eac1e9834497c7f91d2466d58c1646f50947367e))
+* **api-security-tenancy:** check both upper case and lower case header ([#1559](https://github.com/webiny/webiny-js/issues/1559)) ([4e593bf](https://github.com/webiny/webiny-js/commit/4e593bf0f711a2f78369c4ef5b2614590ce475ed))
+* remove whitelist ([f8bc8c3](https://github.com/webiny/webiny-js/commit/f8bc8c38eb86008c81de0eb65833a998b1ee999c))
+* replace "berry" with "2.4.1" ([3ee7f67](https://github.com/webiny/webiny-js/commit/3ee7f67f62d735eb96a6574debf23576fe835d35))
+
+
+### Features
+
+* **api-security-tenancy:** cache keys are based on tenant + identity ([#1558](https://github.com/webiny/webiny-js/issues/1558)) ([6f90361](https://github.com/webiny/webiny-js/commit/6f9036182967b33f0525ea3328afa9eb94c7fcba))
+
+
+
+
+
 # [5.4.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.0...v5.4.0-beta.1) (2021-04-12)
 
 

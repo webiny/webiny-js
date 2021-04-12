@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.4.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.1...v5.4.0-beta.2) (2021-04-12)
+
+
+### Bug Fixes
+
+* remove whitelist ([f8bc8c3](https://github.com/webiny/webiny-js/commit/f8bc8c38eb86008c81de0eb65833a998b1ee999c))
+
+
+
+
+
 # [5.4.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.0...v5.4.0-beta.1) (2021-04-12)
 
 **Note:** Version bump only for package @webiny/cwp-template-aws
