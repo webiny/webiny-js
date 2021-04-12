@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.4.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.0...v5.4.0-beta.1) (2021-04-12)
+
+
+### Bug Fixes
+
+* only use ".keyword" search when the received value is a string ([59539a3](https://github.com/webiny/webiny-js/commit/59539a3abb5c7880c45f20cca41b90dcc0757746))
+* only use ".keyword" search when the received value is a string ([e945e4d](https://github.com/webiny/webiny-js/commit/e945e4d15c9dfaf9dde8b79c9d04a5aef539daf9))
+
+
+
+
+
 # [5.4.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.3.0...v5.4.0-beta.0) (2021-04-09)
 
 
