@@ -17,7 +17,7 @@ const pwOptions = [
     { id: "c", name: t`Request changes` }
 ];
 
-export const ContentEntryPermission = ({ Bind, data, entity, setValue, title }) => {
+export const ContentEntryPermission = ({ Bind, data, entity, setValue, form, title }) => {
     // Set "cms.contentEntry" access scope to "own" if "cms.contentModel" === "own".
     useEffect(() => {
         if (
@@ -27,6 +27,21 @@ export const ContentEntryPermission = ({ Bind, data, entity, setValue, title }) 
             setValue(`${entity}AccessScope`, "own");
         }
     }, [data]);
+
+    // Let's set default values for "accessScopes"
+    useEffect(() => {
+        if (
+            data.endpoints.length > 0 &&
+            !data[`${entity}AccessScope`] &&
+            form.onChangeFns[`${entity}AccessScope`]
+        ) {
+            setValue(`${entity}AccessScope`, "full");
+        }
+    }, [data, form]);
+
+    const disabledPrimaryActions =
+        [undefined, "own", "no"].includes(data[`${entity}AccessScope`]) ||
+        !data.endpoints.includes("manage");
 
     return (
         <Elevation z={1} style={{ marginTop: 10 }}>
@@ -50,11 +65,12 @@ export const ContentEntryPermission = ({ Bind, data, entity, setValue, title }) 
                                     label={t`Access Scope`}
                                     disabled={data[`contentModelAccessScope`] === "own"}
                                 >
-                                    <option value={"no"}>{t`No access`}</option>
                                     <option value={"full"}>{t`All entries`}</option>
-                                    <option
-                                        value={"own"}
-                                    >{t`Only entries created by the user`}</option>
+                                    {data.endpoints.includes("manage") && (
+                                        <option
+                                            value={"own"}
+                                        >{t`Only entries created by the user`}</option>
+                                    )}
                                 </Select>
                             </Bind>
                             {data[`contentModelAccessScope`] === "own" && (
@@ -72,9 +88,7 @@ export const ContentEntryPermission = ({ Bind, data, entity, setValue, title }) 
                             <Bind name={`${entity}RWD`}>
                                 <Select
                                     label={t`Primary Actions`}
-                                    disabled={[undefined, "own", "no"].includes(
-                                        data[`${entity}AccessScope`]
-                                    )}
+                                    disabled={disabledPrimaryActions}
                                 >
                                     <option value={"r"}>{t`Read`}</option>
                                     {data.endpoints.includes("manage") ? (
