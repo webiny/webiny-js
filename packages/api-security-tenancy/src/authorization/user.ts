@@ -1,5 +1,5 @@
-import { TenancyContext, TenantAccess } from "../types";
-import { SecurityContext, SecurityPermission } from "@webiny/api-security/types";
+import { TenancyContext, Tenant, TenantAccess } from "../types";
+import { SecurityContext, SecurityIdentity, SecurityPermission } from "@webiny/api-security/types";
 import WebinyError from "@webiny/error";
 
 const extractPermissions = (tenantAccess?: TenantAccess): SecurityPermission[] | null => {
@@ -7,6 +7,16 @@ const extractPermissions = (tenantAccess?: TenantAccess): SecurityPermission[] |
         return null;
     }
     return tenantAccess.group.permissions;
+};
+
+const createCacheKey = ({
+    tenant,
+    identity
+}: {
+    identity: SecurityIdentity;
+    tenant: Tenant;
+}): string => {
+    return `T#${tenant.id}#I#${identity.id}`;
 };
 
 export default ({ identityType }) => {
@@ -19,8 +29,13 @@ export default ({ identityType }) => {
             if (!identity || identity.type !== identityType) {
                 return null;
             }
-            if (permissionCache.has(identity.id)) {
-                return permissionCache.get(identity.id);
+            const tenant = security.getTenant();
+            const cacheKey = createCacheKey({
+                tenant,
+                identity
+            });
+            if (permissionCache.has(cacheKey)) {
+                return permissionCache.get(cacheKey);
             }
 
             const user = await security.users.getUser(identity.id);
@@ -31,12 +46,11 @@ export default ({ identityType }) => {
                 });
             }
 
-            const tenant = security.getTenant();
             const permissions = await security.users.getUserAccess(user.login);
             const tenantAccess = permissions.find(set => set.tenant.id === tenant.id);
             const value = extractPermissions(tenantAccess);
 
-            permissionCache.set(identity.id, value);
+            permissionCache.set(cacheKey, value);
 
             return value;
         }
