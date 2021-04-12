@@ -11,7 +11,7 @@ const tenantCache = {};
 const getCurrentTenant = async (context: TenancyContext): Promise<Tenant> => {
     const { headers = {} } = context.http.request;
 
-    const tenantId = headers["X-Tenant"] ?? "root";
+    const tenantId = headers["X-Tenant"] || headers["x-tenant"] || "root";
 
     if (!tenantCache[tenantId]) {
         tenantCache[tenantId] = await context.security.tenants.getTenant(tenantId);
