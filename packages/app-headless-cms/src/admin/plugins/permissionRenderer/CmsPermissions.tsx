@@ -178,7 +178,7 @@ export const CMSPermissions = ({ value, onChange }) => {
 
         ENTITIES.forEach(entity => {
             const data = {
-                [`${entity}AccessScope`]: NO_ACCESS,
+                [`${entity}AccessScope`]: FULL_ACCESS,
                 [`${entity}RWD`]: "r",
                 [`${entity}Props`]: {}
             };
@@ -227,7 +227,7 @@ export const CMSPermissions = ({ value, onChange }) => {
 
     return (
         <Form data={formData} onChange={onFormChange}>
-            {({ data, Bind, setValue }) => {
+            {({ data, Bind, setValue, form }) => {
                 const graphQLEndpointAccess =
                     data.endpoints.includes("read") ||
                     data.endpoints.includes("manage") ||
@@ -288,6 +288,8 @@ export const CMSPermissions = ({ value, onChange }) => {
                                 {graphQLEndpointAccess && (
                                     <CustomSection
                                         data={data}
+                                        setValue={setValue}
+                                        form={form}
                                         Bind={Bind}
                                         entity={"contentModelGroup"}
                                         title={"Content Model Groups"}
@@ -301,6 +303,7 @@ export const CMSPermissions = ({ value, onChange }) => {
                                             locales={locales}
                                             data={data}
                                             setValue={setValue}
+                                            form={form}
                                             Bind={Bind}
                                             entity={"contentModel"}
                                             title={"Content Models"}
@@ -315,6 +318,7 @@ export const CMSPermissions = ({ value, onChange }) => {
                                         data={data}
                                         Bind={Bind}
                                         setValue={setValue}
+                                        form={form}
                                         entity={"contentEntry"}
                                         title={"Content Entries"}
                                     />

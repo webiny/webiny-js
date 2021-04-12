@@ -16,6 +16,7 @@ export const ContentModelPermission = ({
     Bind,
     data,
     setValue,
+    form,
     entity,
     title,
     locales,
@@ -32,6 +33,17 @@ export const ContentModelPermission = ({
         }
     }, [data]);
 
+    useEffect(() => {
+        // Let's set default values for "accessScopes"
+        if (
+            data.endpoints.length > 0 &&
+            !data[`${entity}AccessScope`] &&
+            form.onChangeFns[`${entity}AccessScope`]
+        ) {
+            setValue(`${entity}AccessScope`, "full");
+        }
+    }, [data, form]);
+
     const getItems = useCallback(
         (code: string) => {
             let list = get(modelsGroups, `${code}.models`, []);
@@ -47,6 +59,10 @@ export const ContentModelPermission = ({
         [modelsGroups]
     );
 
+    const disabledPrimaryActions =
+        [undefined, "own", "no"].includes(data[`${entity}AccessScope`]) ||
+        !data.endpoints.includes("manage");
+
     return (
         <Elevation z={1} style={{ marginTop: 10 }}>
             <Grid>
@@ -61,9 +77,12 @@ export const ContentModelPermission = ({
                                     label={t`Access Scope`}
                                     disabled={data[`contentModelGroupAccessScope`] === "own"}
                                 >
-                                    <option value={"no"}>{t`No access`}</option>
                                     <option value={"full"}>{t`All`}</option>
-                                    <option value={"own"}>{t`Only the one they created`}</option>
+                                    {data.endpoints.includes("manage") && (
+                                        <option
+                                            value={"own"}
+                                        >{t`Only the one they created`}</option>
+                                    )}
                                     <option
                                         value={"models"}
                                     >{t`Only specific content models`}</option>
@@ -96,9 +115,7 @@ export const ContentModelPermission = ({
                             <Bind name={`${entity}RWD`}>
                                 <Select
                                     label={t`Primary Actions`}
-                                    disabled={[undefined, "own", "no"].includes(
-                                        data[`${entity}AccessScope`]
-                                    )}
+                                    disabled={disabledPrimaryActions}
                                 >
                                     <option value={"r"}>{t`Read`}</option>
                                     {data.endpoints.includes("manage") ? (

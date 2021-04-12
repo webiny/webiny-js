@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Select } from "@webiny/ui/Select";
 import { i18n } from "@webiny/app/i18n";
@@ -9,7 +9,7 @@ import { useCmsData } from "./useCmsData";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
-const CustomSection = ({ Bind, data, entity, title, locales }) => {
+const CustomSection = ({ Bind, data, entity, title, locales, setValue, form }) => {
     const modelsGroups = useCmsData(locales);
 
     const getItems = useCallback(
@@ -18,6 +18,21 @@ const CustomSection = ({ Bind, data, entity, title, locales }) => {
         },
         [modelsGroups]
     );
+
+    useEffect(() => {
+        // Let's set default values for "accessScopes"
+        if (
+            data.endpoints.length > 0 &&
+            !data[`${entity}AccessScope`] &&
+            form.onChangeFns[`${entity}AccessScope`]
+        ) {
+            setValue(`${entity}AccessScope`, "full");
+        }
+    }, [data, setValue, form]);
+
+    const disabledPrimaryActions =
+        [undefined, "own", "no"].includes(data[`${entity}AccessScope`]) ||
+        !data.endpoints.includes("manage");
 
     return (
         <Elevation z={1} style={{ marginTop: 10 }}>
@@ -30,9 +45,12 @@ const CustomSection = ({ Bind, data, entity, title, locales }) => {
                         <Cell span={12}>
                             <Bind name={`${entity}AccessScope`}>
                                 <Select label={t`Access Scope`}>
-                                    <option value={"no"}>{t`No access`}</option>
                                     <option value={"full"}>{t`All`}</option>
-                                    <option value={"own"}>{t`Only the ones they created`}</option>
+                                    {data.endpoints.includes("manage") && (
+                                        <option
+                                            value={"own"}
+                                        >{t`Only the ones they created`}</option>
+                                    )}
                                     <option
                                         value={"groups"}
                                     >{t`Only specific content model groups`}</option>
@@ -54,9 +72,7 @@ const CustomSection = ({ Bind, data, entity, title, locales }) => {
                             <Bind name={`${entity}RWD`}>
                                 <Select
                                     label={t`Primary Actions`}
-                                    disabled={[undefined, "own", "no"].includes(
-                                        data[`${entity}AccessScope`]
-                                    )}
+                                    disabled={disabledPrimaryActions}
                                 >
                                     <option value={"r"}>{t`Read`}</option>
                                     {data.endpoints.includes("manage") ? (
