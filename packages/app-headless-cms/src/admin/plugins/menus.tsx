@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useMemo, useCallback } from "react";
 import { useSecurity } from "@webiny/app-security";
 import { AdminMenuPlugin } from "@webiny/app-admin/types";
 import HeadlessCmsMenu from "./menus/HeadlessCmsMenu";
@@ -23,6 +23,14 @@ const CmsMenu = ({ Menu, Section, Item }) => {
 
     const canReadContentModels = canRead("cms.contentModel");
     const canReadContentModelGroups = canRead("cms.contentModelGroup");
+
+    const canAccessManageEndpoint = useMemo(() => identity.getPermission("cms.endpoint.manage"), [
+        identity
+    ]);
+
+    if (!canAccessManageEndpoint) {
+        return null;
+    }
 
     // Don't show the menu if the user doesn't have the "read" access for both "cms.contentModel" and "cms.contentModelGroup".
     if (!canReadContentModels && !canReadContentModelGroups) {
