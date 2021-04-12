@@ -11,7 +11,7 @@ const t = i18n.ns("app-headless-cms/admin/menus");
 
 const ContentModelMenuItems = ({ Section, Item }) => {
     const response = useQuery(LIST_MENU_CONTENT_GROUPS_MODELS);
-    const { canRead } = usePermission();
+    const { canReadEntries } = usePermission();
 
     const { data } = get(response, "data.listContentModelGroups") || {};
     if (!data) {
@@ -21,10 +21,9 @@ const ContentModelMenuItems = ({ Section, Item }) => {
     return data.map(contentModelGroup => {
         // Check if user has "contentEntry" permission for any content model for a content model group
         const hasContentEntryPermission = contentModelGroup.contentModels.some(contentModel =>
-            canRead({
+            canReadEntries({
                 contentModelGroup,
-                contentModel,
-                permissionName: "cms.contentEntry"
+                contentModel
             })
         );
 
@@ -48,10 +47,9 @@ const ContentModelMenuItems = ({ Section, Item }) => {
                     <Item style={{ opacity: 0.4 }} key={"empty-item"} label={t`Nothing to show.`} />
                 )}
                 {contentModelGroup.contentModels.map(contentModel =>
-                    canRead({
+                    canReadEntries({
                         contentModelGroup,
-                        contentModel,
-                        permissionName: "cms.contentEntry"
+                        contentModel
                     }) ? (
                         <Item
                             key={contentModel.modelId}
