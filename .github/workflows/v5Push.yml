@@ -219,8 +219,8 @@ jobs:
 
       - name: Create a new Webiny project
         run: >
-          npx create-webiny-project@beta test-project
-          --tag beta --no-interactive
+          npx create-webiny-project@alpha test-project
+          --tag alpha --no-interactive
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"eu-central-1"}'
 
@@ -262,8 +262,8 @@ jobs:
 
       - name: Create a new Webiny project
         run: >
-          npx create-webiny-project@beta test-project
-          --tag beta --no-interactive
+          npx create-webiny-project@alpha test-project
+          --tag alpha --no-interactive
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"eu-central-1"}'
 
