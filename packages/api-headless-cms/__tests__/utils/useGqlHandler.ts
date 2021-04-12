@@ -35,17 +35,15 @@ export interface GQLHandlerCallableArgs {
 
 export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
     // @ts-ignore
-    const { handlerPlugins, storagePlugins, handlerObjects } = __getEnvGlobals();
-    if (typeof storagePlugins !== "function") {
-        throw new Error(`There is no global "storagePlugins" function.`);
-    } else if (typeof handlerPlugins !== "function") {
-        throw new Error(`There is no global "handlerPlugins" function.`);
+    const storageOperationsPlugins = __getStorageOperationsPlugins();
+    if (typeof storageOperationsPlugins !== "function") {
+        throw new Error(`There is no global "storageOperationsPlugins" function.`);
     }
     const tenant = { id: "root", name: "Root", parent: null };
     const { permissions, identity, plugins = [], path } = args || {};
 
     const handler = createHandler(
-        handlerPlugins(),
+        storageOperationsPlugins(),
         {
             type: "context",
             name: "context-security-tenant",
@@ -146,11 +144,6 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
                 };
             }
         },
-
-        /**
-         * Plugins that are loaded via the testEnvironment globals
-         */
-        storagePlugins(),
         //
         plugins
     );
@@ -167,7 +160,6 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
     };
 
     return {
-        ...(handlerObjects || {}),
         until,
         sleep: (ms = 333) => {
             return new Promise(resolve => {

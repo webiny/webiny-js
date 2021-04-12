@@ -18,67 +18,65 @@ if (typeof plugins !== "function") {
 
 const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
 
-const getEnvGlobals = ({ elasticsearchClient, documentClient, elasticSearchContext }) => {
+const getStorageOperationsPlugins = ({
+    elasticsearchClient,
+    documentClient,
+    elasticSearchContext
+}) => {
     // Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
     simulateStream(documentClient, createHandler(elasticSearchContext, dynamoToElastic()));
 
-    return {
-        storagePlugins: plugins,
-        handlerPlugins: () => {
-            return [
-                dbPlugins({
-                    table: "HeadlessCms",
-                    driver: new DynamoDbDriver({
-                        documentClient
-                    })
-                }),
-                elasticSearchContext,
-                {
-                    type: "context",
-                    async apply() {
-                        await elasticsearchClient.indices.putTemplate({
-                            name: "headless-cms-entries-index",
-                            body: {
-                                index_patterns: ["*headless-cms*"],
-                                settings: {
-                                    analysis: {
-                                        analyzer: {
-                                            lowercase_analyzer: {
-                                                type: "custom",
-                                                filter: ["lowercase", "trim"],
-                                                tokenizer: "keyword"
-                                            }
-                                        }
-                                    }
-                                },
-                                mappings: {
-                                    properties: {
-                                        property: {
-                                            type: "text",
-                                            fields: {
-                                                keyword: {
-                                                    type: "keyword",
-                                                    ignore_above: 256
-                                                }
-                                            },
-                                            analyzer: "lowercase_analyzer"
-                                        },
-                                        rawValues: {
-                                            type: "object",
-                                            enabled: false
+    return () => {
+        return [
+            plugins(),
+            dbPlugins({
+                table: "HeadlessCms",
+                driver: new DynamoDbDriver({
+                    documentClient
+                })
+            }),
+            elasticSearchContext,
+            {
+                type: "context",
+                async apply() {
+                    await elasticsearchClient.indices.putTemplate({
+                        name: "headless-cms-entries-index",
+                        body: {
+                            index_patterns: ["*headless-cms*"],
+                            settings: {
+                                analysis: {
+                                    analyzer: {
+                                        lowercase_analyzer: {
+                                            type: "custom",
+                                            filter: ["lowercase", "trim"],
+                                            tokenizer: "keyword"
                                         }
                                     }
                                 }
+                            },
+                            mappings: {
+                                properties: {
+                                    property: {
+                                        type: "text",
+                                        fields: {
+                                            keyword: {
+                                                type: "keyword",
+                                                ignore_above: 256
+                                            }
+                                        },
+                                        analyzer: "lowercase_analyzer"
+                                    },
+                                    rawValues: {
+                                        type: "object",
+                                        enabled: false
+                                    }
+                                }
                             }
-                        });
-                    }
+                        }
+                    });
                 }
-            ];
-        },
-        handlerObjects: {
-            elasticSearch: elasticsearchClient,
-            documentClient
-        }
+            }
+        ];
     };
 };
 
@@ -103,8 +101,11 @@ class CmsTestEnvironment extends NodeEnvironment {
                 index: "_all"
             });
         };
-        this.global.__getEnvGlobals = () => {
-            return getEnvGlobals({
+        /**
+         * This is a global function that will be called inside the tests to get all relevant plugins, methods and objects.
+         */
+        this.global.__getStorageOperationsPlugins = () => {
+            return getStorageOperationsPlugins({
                 elasticsearchClient,
                 elasticSearchContext,
                 documentClient
