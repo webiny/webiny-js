@@ -49,7 +49,7 @@ const CustomSection = ({ Bind, data, entity, title, locales, setValue, form }) =
                                     {data.endpoints.includes("manage") && (
                                         <option
                                             value={"own"}
-                                        >{t`Only the ones they created`}</option>
+                                        >{t`Only groups created by the user`}</option>
                                     )}
                                     <option
                                         value={"groups"}
