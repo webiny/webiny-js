@@ -3,6 +3,56 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.4.0](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.3...v5.4.0) (2021-04-13)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.4.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.2...v5.4.0-beta.3) (2021-04-13)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.4.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.1...v5.4.0-beta.2) (2021-04-12)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.4.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.0...v5.4.0-beta.1) (2021-04-12)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.4.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.3.0...v5.4.0-beta.0) (2021-04-09)
+
+
+### Bug Fixes
+
+* adjust empty line ([0428f71](https://github.com/webiny/webiny-js/commit/0428f71ff072fe9b5da8b31d6c23b0b295898410))
+* adjust empty line ([606f725](https://github.com/webiny/webiny-js/commit/606f72501e458f36ce1ff5965f04593f520a961c))
+* move notification to the end of the process ([61ca8d5](https://github.com/webiny/webiny-js/commit/61ca8d51ce6fe6d5094a7bd6381ed1cda14c7087))
+
+
+### Features
+
+* pass "inputs" to deploy hook callbacks ([8725553](https://github.com/webiny/webiny-js/commit/8725553b66e022723203f0cc8e9c0b2910bce91b))
+
+
+
+
+
 # [5.3.0](https://github.com/webiny/webiny-js/compare/v5.3.0-beta.0...v5.3.0) (2021-03-26)
 
 **Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
