@@ -96,6 +96,15 @@ const getPackagesPresets = targetKeywords => {
         } else if (presets.length === 0) {
             throw new Error(`There are no presets in the file "${presetsPath}".`);
         }
+        /**
+         * We expect that last object in the presets array contains testEnvironment path.
+         */
+        const last = presets[presets.length - 1];
+        if (!last.testEnvironment) {
+            throw new Error(
+                `Missing "testEnvironment" in last defined preset in the presets array in file "${presetsPath}".`
+            );
+        }
         items.push({
             name,
             /**
