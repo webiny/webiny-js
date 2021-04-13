@@ -78,11 +78,11 @@ export const ContentModelPermission = ({
                                     disabled={data[`contentModelGroupAccessScope`] === "own"}
                                 >
                                     <option value={"full"}>
-                                        {t`All models defined within {token} groups`({
+                                        {t`All models defined within {token} content model groups`({
                                             token:
                                                 data[`contentModelGroupAccessScope`] === "full"
                                                     ? "all"
-                                                    : ""
+                                                    : "selected"
                                         })}
                                     </option>
                                     {data.endpoints.includes("manage") && (
