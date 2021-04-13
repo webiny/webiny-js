@@ -7429,7 +7429,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-headless-cms-ddb-es@workspace:packages/api-headless-cms-ddb-es":
+"@webiny/api-headless-cms-ddb-es@^5.0.0-beta.0, @webiny/api-headless-cms-ddb-es@^5.0.0-beta.4, @webiny/api-headless-cms-ddb-es@workspace:packages/api-headless-cms-ddb-es":
   version: 0.0.0-use.local
   resolution: "@webiny/api-headless-cms-ddb-es@workspace:packages/api-headless-cms-ddb-es"
   dependencies:
@@ -9907,6 +9907,7 @@ __metadata:
     "@webiny/api-file-manager-s3": ^5.0.0-beta.4
     "@webiny/api-form-builder": ^5.0.0-beta.4
     "@webiny/api-headless-cms": ^5.0.0-beta.4
+    "@webiny/api-headless-cms-ddb-es": ^5.0.0-beta.4
     "@webiny/api-i18n": ^5.0.0-beta.4
     "@webiny/api-i18n-content": ^5.0.0-beta.4
     "@webiny/api-page-builder": ^5.0.0-beta.4
@@ -9929,6 +9930,7 @@ __metadata:
   resolution: "api-headless-cms@workspace:api/code/headlessCMS"
   dependencies:
     "@webiny/api-headless-cms": ^5.0.0-beta.0
+    "@webiny/api-headless-cms-ddb-es": ^5.0.0-beta.0
     "@webiny/api-i18n": ^5.0.0-beta.0
     "@webiny/api-i18n-content": ^5.0.0-beta.0
     "@webiny/api-plugin-elastic-search-client": ^5.0.0-beta.0

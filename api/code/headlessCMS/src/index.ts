@@ -6,11 +6,11 @@ import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import elasticSearch from "@webiny/api-plugin-elastic-search-client";
 import headlessCmsPlugins from "@webiny/api-headless-cms/content";
-import { ddbElasticsearch } from "@webiny/api-headless-cms/storage";
+import cmsDynamoDbElasticsearch from "@webiny/api-headless-cms-ddb-es";
 import securityPlugins from "./security";
 
 export const handler = createHandler(
-    ddbElasticsearch(),
+    cmsDynamoDbElasticsearch(),
     elasticSearch({ endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}` }),
     dbPlugins({
         table: process.env.DB_TABLE,
