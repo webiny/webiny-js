@@ -7452,7 +7452,6 @@ __metadata:
     "@webiny/handler-db": ^5.3.0
     "@webiny/plugins": ^5.3.0
     "@webiny/project-utils": ^5.3.0
-    chalk: ^3.0.0
     dataloader: ^2.0.0
     jest: ^26.6.3
     jest-dynalite: ^3.2.0
@@ -7496,7 +7495,6 @@ __metadata:
     "@webiny/validation": ^5.3.0
     apollo-graphql: ^0.4.1
     boolean: ^3.0.2
-    chalk: ^3.0.0
     commodo-fields-object: ^1.0.6
     dataloader: ^2.0.0
     dot-prop-immutable: ^1.4.0

@@ -91,10 +91,13 @@ class CmsTestEnvironment extends NodeEnvironment {
             convertEmptyValues: true,
             endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
             sslEnabled: false,
-            region: "local"
+            region: "local",
+            accessKeyId: "test",
+            secretAccessKey: "test"
         });
         const elasticSearchContext = elasticSearch({
-            endpoint: `http://localhost:${ELASTICSEARCH_PORT}`
+            endpoint: `http://localhost:${ELASTICSEARCH_PORT}`,
+            auth: {}
         });
         const clearEsIndices = async () => {
             return elasticsearchClient.indices.delete({
