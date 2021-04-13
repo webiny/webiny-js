@@ -4,8 +4,6 @@ const items = require("@webiny/project-utils/testing/presets")(
     "storage-operations"
 );
 
-process.env.AWS_SDK_LOAD_CONFIG = 1;
-
 module.exports = items.map(item => {
     return {
         ...base({ path: __dirname }, item.presets),
