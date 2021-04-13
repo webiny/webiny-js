@@ -209,7 +209,7 @@ export default (configuration: Configuration): HandlerPlugin => ({
                                 // We just need the `args` of the `renderData`.
                                 uniqueJobsPerOperationPerDbNamespace.render[dbNamespace][
                                     url
-                                    ] = args;
+                                ] = args;
                             }
                         } else if (path.endsWith("*")) {
                             // Future feature - ability to search by prefix, e.g. "/en/*" or "/categories/books/*".
