@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-upgrade",
-  "version": "5.4.0-beta.2",
+  "version": "5.4.0-beta.3",
   "main": "index.js",
   "types": "types.ts",
   "license": "MIT",
@@ -12,9 +12,9 @@
   "author": "Webiny Ltd.",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@webiny/error": "^5.4.0-beta.2",
-    "@webiny/handler": "^5.4.0-beta.2",
-    "@webiny/plugins": "^5.4.0-beta.2",
+    "@webiny/error": "^5.4.0-beta.3",
+    "@webiny/handler": "^5.4.0-beta.3",
+    "@webiny/plugins": "^5.4.0-beta.3",
     "semver": "^7.3.4"
   },
   "devDependencies": {

@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.4.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.2...v5.4.0-beta.3) (2021-04-13)
+
+
+### Bug Fixes
+
+* add codex-editor fix to template ([c99a3cb](https://github.com/webiny/webiny-js/commit/c99a3cb6af99a95fe1324d9e2324269440c0b096))
+* add codex-editor fix to template ([71c3a78](https://github.com/webiny/webiny-js/commit/71c3a786ac66f178b87f384570bbb91144431926))
+
+
+
+
+
 # [5.4.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.1...v5.4.0-beta.2) (2021-04-12)
 
 
