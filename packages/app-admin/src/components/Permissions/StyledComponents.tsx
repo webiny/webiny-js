@@ -4,7 +4,8 @@ import { Typography } from "@webiny/ui/Typography";
 
 export const flexClass = css({
     display: "flex",
-    alignItems: "center"
+    alignItems: "center",
+    height: "100%"
 });
 
 export const gridNoPaddingClass = css({
