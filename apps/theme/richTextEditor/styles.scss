@@ -102,3 +102,10 @@
     margin-bottom: 0.75rem;
   }
 }
+/*
+* The context menu of the rich text editor is getting obscured if directly below is another rich text editor.
+* This change help us fix that visual issue.
+*/
+.codex-editor {
+  z-index: unset;
+}

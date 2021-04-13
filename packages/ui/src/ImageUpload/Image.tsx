@@ -22,14 +22,16 @@ type Props = {
     disabled?: boolean;
     loading?: boolean;
     placeholder: string;
-    style?: { [key: string]: any };
+    style?: React.CSSProperties;
     renderImagePreview?: (props: any) => React.ReactElement<any>;
     round?: boolean;
+    containerStyle?: React.CSSProperties;
 };
 
 class Image extends React.Component<Props> {
     static defaultProps = {
-        placeholder: "Select an image"
+        placeholder: "Select an image",
+        containerStyle: { height: "100%" }
     };
 
     renderBlank() {
@@ -109,9 +111,9 @@ class Image extends React.Component<Props> {
     }
 
     render() {
-        const { value, disabled } = this.props;
+        const { value, disabled, containerStyle } = this.props;
         return (
-            <div className={classNames({ disabled })} style={{ height: "100%" }}>
+            <div className={classNames({ disabled })} style={containerStyle}>
                 {this.props.loading && <CircularProgress />}
                 {value && value.src ? this.renderImg() : this.renderBlank()}
             </div>

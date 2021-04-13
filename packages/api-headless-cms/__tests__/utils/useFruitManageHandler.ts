@@ -33,6 +33,8 @@ const fruitFields = `
     dateTime
     dateTimeZ
     time
+    rating
+    isSomething
 `;
 
 const errorFields = `

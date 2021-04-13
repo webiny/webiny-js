@@ -43,6 +43,7 @@ function File(props) {
             uploadImage={showFileManager}
             removeImage={onRemove}
             placeholder={placeholder}
+            containerStyle={{ height: "auto" }}
         />
     );
 }

@@ -3,6 +3,57 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.4.0](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.3...v5.4.0) (2021-04-13)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.4.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.2...v5.4.0-beta.3) (2021-04-13)
+
+
+### Bug Fixes
+
+* add codex-editor fix to template ([c99a3cb](https://github.com/webiny/webiny-js/commit/c99a3cb6af99a95fe1324d9e2324269440c0b096))
+* add codex-editor fix to template ([71c3a78](https://github.com/webiny/webiny-js/commit/71c3a786ac66f178b87f384570bbb91144431926))
+
+
+
+
+
+# [5.4.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.1...v5.4.0-beta.2) (2021-04-12)
+
+
+### Bug Fixes
+
+* remove whitelist ([f8bc8c3](https://github.com/webiny/webiny-js/commit/f8bc8c38eb86008c81de0eb65833a998b1ee999c))
+
+
+
+
+
+# [5.4.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.0...v5.4.0-beta.1) (2021-04-12)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.4.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.3.0...v5.4.0-beta.0) (2021-04-09)
+
+
+### Bug Fixes
+
+* correct link ([be9fcd1](https://github.com/webiny/webiny-js/commit/be9fcd1c804e21cf969f586ca5d904073d9ca0bb))
+* update template ([b17a4e2](https://github.com/webiny/webiny-js/commit/b17a4e24be2db72a3d335bee1fcc43637c1f8532))
+
+
+
+
+
 # [5.3.0](https://github.com/webiny/webiny-js/compare/v5.3.0-beta.0...v5.3.0) (2021-03-26)
 
 **Note:** Version bump only for package @webiny/cwp-template-aws

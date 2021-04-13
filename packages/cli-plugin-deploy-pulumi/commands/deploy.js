@@ -91,7 +91,7 @@ module.exports = async (inputs, context) => {
 
     const isFirstDeploy = !stackExists;
 
-    const hookDeployArgs = { isFirstDeploy, context, env, projectApplication };
+    const hookDeployArgs = { isFirstDeploy, context, env, inputs, projectApplication };
 
     if (inputs.preview) {
         context.info(`Skipped "hook-before-deploy" hook.`);
@@ -102,6 +102,8 @@ module.exports = async (inputs, context) => {
         const continuing = inputs.preview ? `Previewing deployment...` : `Deploying...`;
         context.success(`Hook "hook-before-deploy" completed. ${continuing}`);
     }
+
+    console.log();
 
     if (inputs.preview) {
         await pulumi.run({
@@ -136,14 +138,12 @@ module.exports = async (inputs, context) => {
 
     const duration = getDuration();
     if (inputs.preview) {
-        console.log();
         context.success(`Done! Preview finished in ${green(duration + "s")}.`);
     } else {
-        console.log();
         context.success(`Done! Deploy finished in ${green(duration + "s")}.`);
-        notify({ message: `"${folder}" stack deployed in ${duration}s.` });
     }
 
+    console.log();
     if (inputs.preview) {
         context.info(`Skipped "hook-after-deploy" hook.`);
     } else {
@@ -151,4 +151,6 @@ module.exports = async (inputs, context) => {
         await processHooks("hook-after-deploy", hookDeployArgs);
         context.success(`Hook "hook-after-deploy" completed.`);
     }
+
+    notify({ message: `"${folder}" stack deployed in ${duration}s.` });
 };
