@@ -35,6 +35,8 @@ const ids = {
     field508: shortId.generate(),
     field509: shortId.generate(),
     field510: shortId.generate(),
+    field511: shortId.generate(),
+    field512: shortId.generate(),
     // bug
     field601: shortId.generate(),
     field602: shortId.generate(),
@@ -577,7 +579,9 @@ const models: CmsContentModel[] = [
             [ids.field507],
             [ids.field508],
             [ids.field509],
-            [ids.field510]
+            [ids.field510],
+            [ids.field511],
+            [ids.field512]
         ],
         fields: [
             // required, minLength, maxLength
@@ -942,6 +946,50 @@ const models: CmsContentModel[] = [
                 },
                 listValidation: [],
                 placeholderText: "placeholder text",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            },
+            // boolean
+            {
+                id: ids.field511,
+                multipleValues: false,
+                helpText: "",
+                label: "Is Something",
+                type: "boolean",
+                fieldId: "isSomething",
+                validation: [],
+                settings: {
+                    type: "boolean"
+                },
+                listValidation: [],
+                placeholderText: "",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            },
+            // number
+            {
+                id: ids.field512,
+                multipleValues: false,
+                helpText: "",
+                label: "Rating",
+                type: "number",
+                fieldId: "rating",
+                validation: [],
+                settings: {
+                    type: "number"
+                },
+                listValidation: [],
+                placeholderText: "",
                 predefinedValues: {
                     enabled: false,
                     values: []

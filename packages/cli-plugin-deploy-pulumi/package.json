@@ -1,6 +1,6 @@
 {
   "name": "@webiny/cli-plugin-deploy-pulumi",
-  "version": "5.3.0",
+  "version": "5.4.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -11,8 +11,8 @@
   "description": "A tool to bootstrap a Webiny project.",
   "dependencies": {
     "@pulumi/pulumi": "^2.21.2",
-    "@webiny/cli": "^5.3.0",
-    "@webiny/pulumi-sdk": "^5.3.0",
+    "@webiny/cli": "^5.4.0",
+    "@webiny/pulumi-sdk": "^5.4.0",
     "chalk": "4.1.0",
     "execa": "4.1.0",
     "lodash": "4.17.20",

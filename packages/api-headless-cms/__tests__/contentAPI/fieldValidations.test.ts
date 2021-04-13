@@ -720,7 +720,9 @@ describe("fieldValidations", () => {
                         time: defaultFruitData.time,
                         date: defaultFruitData.date,
                         dateTime: defaultFruitData.dateTime,
-                        dateTimeZ: defaultFruitData.dateTimeZ
+                        dateTimeZ: defaultFruitData.dateTimeZ,
+                        rating: null,
+                        isSomething: null
                     },
                     error: null
                 }
@@ -768,7 +770,9 @@ describe("fieldValidations", () => {
                         time: defaultFruitData.time,
                         date: defaultFruitData.date,
                         dateTime: defaultFruitData.dateTime,
-                        dateTimeZ: defaultFruitData.dateTimeZ
+                        dateTimeZ: defaultFruitData.dateTimeZ,
+                        rating: null,
+                        isSomething: null
                     },
                     error: null
                 }
