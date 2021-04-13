@@ -54,7 +54,7 @@ const removeEmptyPreset = preset => {
     return true;
 };
 
-const getPackagesPresets = targetKeywords => {
+const getPackagesPresets = (targetKeywords, nameSuffix) => {
     if (!targetKeywords || targetKeywords.length === 0) {
         throw new Error(`You must pass keywords to search for in the packages.`);
     }
@@ -65,23 +65,19 @@ const getPackagesPresets = targetKeywords => {
         );
     }
     const items = [];
-    const identifiers = {};
 
-    const createUniquePackageName = pkg => {
-        const initialName = `custom-${pkg.name.split("/").pop()}`;
-        let name = initialName;
-        let current = 0;
-        while (identifiers[name]) {
-            name = `${initialName}-${current}`;
-            current++;
+    const getPackageName = pkg => {
+        const name = pkg.name.split("/").pop();
+        if (typeof nameSuffix !== "string" || !nameSuffix.trim()) {
+            return name;
         }
-        return name;
+        return `${name}-${nameSuffix}`;
     };
     /**
      * We go through all available packages to build presets for them.
      */
     for (const pkg of packages) {
-        const name = createUniquePackageName(pkg);
+        const name = getPackageName(pkg);
         const presetsPath = path.join(pkg.path, "__tests__/__api__/presets.js");
         if (!fs.existsSync(presetsPath)) {
             throw new Error(`Missing presets.js of the "${pkg.name}" package: ${presetsPath}`);
@@ -117,4 +113,5 @@ const getPackagesPresets = targetKeywords => {
     return items;
 };
 
-module.exports = targetKeywords => getPackagesPresets(targetKeywords);
+module.exports = (targetKeywords, nameSuffix = "custom") =>
+    getPackagesPresets(targetKeywords, nameSuffix);
