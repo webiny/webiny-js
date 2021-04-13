@@ -19,7 +19,6 @@
   },
   "homepage": "https://github.com/webiny/webiny-js#readme",
   "dependencies": {
-    "@webiny/cli-plugin-scaffold": "^5.4.0",
     "@webiny/cli": "^5.4.0",
     "@webiny/cli-plugin-scaffold": "^5.4.0",
     "@webiny/error": "^5.4.0",
