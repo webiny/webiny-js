@@ -4,7 +4,7 @@ import { Select } from "@webiny/ui/Select";
 import { i18n } from "@webiny/app/i18n";
 import { PermissionInfo, gridNoPaddingClass } from "@webiny/app-admin/components/Permissions";
 import { Form } from "@webiny/form";
-import CustomSection from "./components/CustomSection";
+import ContentModelGroupPermission from "./components/ContentModelGroupPermission";
 import { ContentModelPermission } from "./components/ContentModelPermission";
 import { ContentEntryPermission } from "./components/ContentEntryPermission";
 import { Checkbox, CheckboxGroup } from "@webiny/ui/Checkbox";
@@ -286,7 +286,7 @@ export const CMSPermissions = ({ value, onChange }) => {
                                     </Cell>
                                 </Grid>
                                 {graphQLEndpointAccess && (
-                                    <CustomSection
+                                    <ContentModelGroupPermission
                                         data={data}
                                         setValue={setValue}
                                         form={form}

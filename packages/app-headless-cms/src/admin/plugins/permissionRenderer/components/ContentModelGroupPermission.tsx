@@ -9,7 +9,7 @@ import { useCmsData } from "./useCmsData";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
-const CustomSection = ({ Bind, data, entity, title, locales, setValue, form }) => {
+const ContentModelGroupPermission = ({ Bind, data, entity, title, locales, setValue, form }) => {
     const modelsGroups = useCmsData(locales);
 
     const getItems = useCallback(
@@ -89,4 +89,4 @@ const CustomSection = ({ Bind, data, entity, title, locales, setValue, form }) =
     );
 };
 
-export default CustomSection;
+export default ContentModelGroupPermission;
