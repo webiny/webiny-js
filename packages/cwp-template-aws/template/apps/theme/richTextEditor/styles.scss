@@ -104,7 +104,7 @@
 }
 /*
 * The context menu of the rich text editor is getting obscured if directly below is another rich text editor.
-* This change help us fix that visual issue.
+* This change fixes this issue.
 */
 .codex-editor {
   z-index: unset;
