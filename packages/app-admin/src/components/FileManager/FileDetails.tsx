@@ -15,7 +15,7 @@ import { Tooltip } from "@webiny/ui/Tooltip";
 import { Icon } from "@webiny/ui/Icon";
 import { Typography } from "@webiny/ui/Typography";
 import { useHotkeys } from "react-hotkeyz";
-import { ReactComponent as DownloadIcon } from "./icons/round-cloud_download-24px.svg";
+import { ReactComponent as CopyContentIcon } from "./icons/content_copy-black-24px.svg";
 import { ReactComponent as DeleteIcon } from "./icons/delete.svg";
 import { ReactComponent as ImageIcon } from "../../assets/icons/insert_photo-24px.svg";
 import { ReactComponent as FileIcon } from "../../assets/icons/insert_drive_file-24px.svg";
@@ -315,10 +315,13 @@ export default function FileDetails(props: FileDetailsProps) {
                     </div>
                     <div className={style.download}>
                         <>
-                            <Tooltip content={<span>{t`Download file`}</span>} placement={"bottom"}>
+                            <Tooltip content={<span>{t`Copy URL`}</span>} placement={"bottom"}>
                                 <IconButton
-                                    onClick={() => window.open(file.src, "_blank")}
-                                    icon={<DownloadIcon style={{ margin: "0 8px 0 0" }} />}
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(file.src);
+                                        showSnackbar(t`URL copied successfully.`);
+                                    }}
+                                    icon={<CopyContentIcon style={{ margin: "0 8px 0 0" }} />}
                                 />
                             </Tooltip>
 

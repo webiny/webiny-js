@@ -115,6 +115,8 @@ export default () => {
         mainTable: dynamoDb.table.name,
         headlessCmsDataTable: headlessCmsTables.dataTable.name,
         headlessCmsESTable: headlessCmsTables.esTable.name,
-        updatePbSettingsFunction: pageBuilder.functions.updateSettings.arn
+        updatePbSettingsFunction: pageBuilder.functions.updateSettings.arn,
+        psQueueAdd: prerenderingService.functions.queue.add.arn,
+        psQueueProcess: prerenderingService.functions.queue.process.arn
     };
 };

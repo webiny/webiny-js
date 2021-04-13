@@ -9,12 +9,22 @@ import {
     SecurityUserFormPlugin
 } from "@webiny/app-security-tenancy/types";
 import { PluginCollection } from "@webiny/plugins/types";
+import { CognitoIdentityProviderOptions } from "../types";
+import { createCognitoPasswordValidator } from "./cognitoPasswordValidator";
 
 const t1 = i18n.ns("cognito/user-management/installation-form");
 const t2 = i18n.ns("cognito/user-management/user-account-form");
 const t3 = i18n.ns("cognito/user-management/user-form");
 
-export default (): PluginCollection => [
+const defaultPasswordPolicy = {
+    minimumLength: 8,
+    requireLowercase: false,
+    requireNumbers: false,
+    requireSymbols: false,
+    requireUppercase: false
+};
+
+export default (options: CognitoIdentityProviderOptions = {}): PluginCollection => [
     {
         type: "security-installation-form",
         render({ Bind }) {
@@ -47,12 +57,17 @@ export default (): PluginCollection => [
     {
         type: "security-user-form",
         render({ Bind, data }) {
+            const policy = Object.assign({}, defaultPasswordPolicy, options.passwordPolicy || {});
+
+            const passwordValidators = [createCognitoPasswordValidator(policy)];
+
+            if (!data.createdOn) {
+                passwordValidators.push(validation.create("required"));
+            }
+
             return (
                 <Cell span={12}>
-                    <Bind
-                        name="password"
-                        validators={data.createdOn ? undefined : validation.create("required")}
-                    >
+                    <Bind name="password" validators={passwordValidators}>
                         <Input
                             autoComplete="off"
                             description={data.id && t3`Type a new password to reset it.`}

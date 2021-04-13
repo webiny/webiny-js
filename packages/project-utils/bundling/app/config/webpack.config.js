@@ -34,6 +34,13 @@ if (typeof process.env["GENERATE_SOURCEMAP"] === "undefined") {
     process.env.GENERATE_SOURCEMAP = "false";
 }
 
+// Generates a unique static folder name, for example "static-mi7aan0cqpo".
+const STATIC_FOLDER =
+    "static-" +
+    Math.random()
+        .toString(36)
+        .replace("0.", "");
+
 // Source maps are resource heavy and can cause out of memory issue for large source files.
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== "false";
 // Some apps do not need the benefits of saving a web request, so not inlining the chunk
@@ -179,14 +186,14 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
             // There will be one main bundle, and one file per asynchronous chunk.
             // In development, it does not produce real files.
             filename: isEnvProduction
-                ? "static/js/[name].[contenthash:8].js"
-                : isEnvDevelopment && "static/js/bundle.js",
+                ? `${STATIC_FOLDER}/js/[name].[contenthash:8].js`
+                : isEnvDevelopment && `${STATIC_FOLDER}/js/bundle.js`,
             // TODO: remove this when upgrading to webpack 5
             futureEmitAssets: true,
             // There are also additional JS chunk files if you use code splitting.
             chunkFilename: isEnvProduction
-                ? "static/js/[name].[contenthash:8].chunk.js"
-                : isEnvDevelopment && "static/js/[name].chunk.js",
+                ? `${STATIC_FOLDER}/js/[name].[contenthash:8].chunk.js`
+                : isEnvDevelopment && `${STATIC_FOLDER}/js/[name].chunk.js`,
             // We inferred the "public path" (such as / or /my-project) from homepage.
             // We use "/" in development.
             publicPath: publicPath,
@@ -373,7 +380,7 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
                             loader: require.resolve("url-loader"),
                             options: {
                                 limit: imageInlineSizeLimit,
-                                name: "static/media/[name].[hash:8].[ext]"
+                                name: `${STATIC_FOLDER}/media/[name].[hash:8].[ext]`
                             }
                         },
                         // Process application JS with Babel.
@@ -514,7 +521,7 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
                             // by webpacks internal loaders.
                             exclude: [/\.(js|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/],
                             options: {
-                                name: "static/media/[name].[hash:8].[ext]"
+                                name: `${STATIC_FOLDER}/media/[name].[hash:8].[ext]`
                             }
                         }
                         // ** STOP ** Are you adding a new loader?
@@ -587,8 +594,8 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
                 new MiniCssExtractPlugin({
                     // Options similar to the same options in webpackOptions.output
                     // both options are optional
-                    filename: "static/css/[name].[contenthash:8].css",
-                    chunkFilename: "static/css/[name].[contenthash:8].chunk.css"
+                    filename: `${STATIC_FOLDER}/css/[name].[contenthash:8].css`,
+                    chunkFilename: `${STATIC_FOLDER}/css/[name].[contenthash:8].chunk.css`
                 }),
             // Generate an asset manifest file with the following content:
             // - "files" key: Mapping of all asset filenames to their corresponding
