@@ -255,8 +255,8 @@ export const CMSPermissions = ({ value, onChange }) => {
                                     <Cell span={12}>
                                         <Bind name={"endpoints"}>
                                             <CheckboxGroup
-                                                label={t`API Endpoints`}
-                                                description={t`Each endpoint has a separate URL and a specific purpose. Check out the {link} key topic to learn more.`(
+                                                label={t`GraphQL API types`}
+                                                description={t`Each type has a separate URL and a specific purpose. Check out the {link} key topic to learn more.`(
                                                     {
                                                         link: (
                                                             <Link

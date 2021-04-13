@@ -51,9 +51,7 @@ const CustomSection = ({ Bind, data, entity, title, locales, setValue, form }) =
                                             value={"own"}
                                         >{t`Only groups created by the user`}</option>
                                     )}
-                                    <option
-                                        value={"groups"}
-                                    >{t`Only specific content model groups`}</option>
+                                    <option value={"groups"}>{t`Only specific groups`}</option>
                                 </Select>
                             </Bind>
                         </Cell>
