@@ -45,13 +45,13 @@ const CustomSection = ({ Bind, data, entity, title, locales, setValue, form }) =
                         <Cell span={12}>
                             <Bind name={`${entity}AccessScope`}>
                                 <Select label={t`Access Scope`}>
-                                    <option value={"full"}>{t`All`}</option>
+                                    <option value={"full"}>{t`All groups`}</option>
+                                    <option value={"groups"}>{t`Only specific groups`}</option>
                                     {data.endpoints.includes("manage") && (
                                         <option
                                             value={"own"}
                                         >{t`Only groups created by the user`}</option>
                                     )}
-                                    <option value={"groups"}>{t`Only specific groups`}</option>
                                 </Select>
                             </Bind>
                         </Cell>
