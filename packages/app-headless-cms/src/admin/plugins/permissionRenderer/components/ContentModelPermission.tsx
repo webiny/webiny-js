@@ -77,17 +77,20 @@ export const ContentModelPermission = ({
                                     label={t`Access Scope`}
                                     disabled={data[`contentModelGroupAccessScope`] === "own"}
                                 >
-                                    <option
-                                        value={"full"}
-                                    >{t`All content models defined by content model groups`}</option>
+                                    <option value={"full"}>
+                                        {t`All models defined within {token} groups`({
+                                            token:
+                                                data[`contentModelGroupAccessScope`] === "full"
+                                                    ? "all"
+                                                    : ""
+                                        })}
+                                    </option>
                                     {data.endpoints.includes("manage") && (
                                         <option
                                             value={"own"}
                                         >{t`Only models created by the user`}</option>
                                     )}
-                                    <option
-                                        value={"models"}
-                                    >{t`Only specific content models`}</option>
+                                    <option value={"models"}>{t`Only specific models`}</option>
                                 </Select>
                             </Bind>
                             {data[`contentModelGroupAccessScope`] === "own" && (
