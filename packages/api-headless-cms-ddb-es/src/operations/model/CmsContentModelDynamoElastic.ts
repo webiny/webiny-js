@@ -9,25 +9,27 @@ import {
 } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
 import configurations from "../../configurations";
+import { createBasePrimaryKey } from "../../utils";
 
 interface ConstructorArgs {
     context: CmsContext;
-    basePrimaryKey: string;
 }
 export default class CmsContentModelDynamoElastic implements CmsContentModelStorageOperations {
     private readonly _context: CmsContext;
-    private readonly _primaryKey: string;
+    private _primaryKey: string;
 
     private get context(): CmsContext {
         return this._context;
     }
 
     private get primaryKey(): string {
+        if (!this._primaryKey) {
+            this._primaryKey = `${createBasePrimaryKey(this.context)}#CM`;
+        }
         return this._primaryKey;
     }
-    public constructor({ context, basePrimaryKey }: ConstructorArgs) {
+    public constructor({ context }: ConstructorArgs) {
         this._context = context;
-        this._primaryKey = `${basePrimaryKey}#CM`;
     }
 
     public async create({

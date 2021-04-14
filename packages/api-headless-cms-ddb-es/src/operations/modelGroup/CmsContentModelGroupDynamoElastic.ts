@@ -10,6 +10,7 @@ import {
 } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
 import configurations from "../../configurations";
+import { createBasePrimaryKey } from "../../utils";
 
 const whereKeySuffix = [
     "_not",
@@ -72,24 +73,25 @@ const whereFilterFactory = (where: Record<string, any> = {}) => {
 
 interface ConstructorArgs {
     context: CmsContext;
-    basePrimaryKey: string;
 }
 export default class CmsContentModelGroupDynamoElastic
     implements CmsContentModelGroupStorageOperations {
     private readonly _context: CmsContext;
-    private readonly _primaryKey: string;
+    private _primaryKey: string;
 
     private get context(): CmsContext {
         return this._context;
     }
 
     private get primaryKey(): string {
+        if (!this._primaryKey) {
+            this._primaryKey = `${createBasePrimaryKey(this.context)}#CMG`;
+        }
         return this._primaryKey;
     }
 
-    public constructor({ context, basePrimaryKey }: ConstructorArgs) {
+    public constructor({ context }: ConstructorArgs) {
         this._context = context;
-        this._primaryKey = `${basePrimaryKey}#CMG`;
     }
 
     public async create({ data }: CmsContentModelGroupStorageOperationsCreateArgs) {

@@ -29,7 +29,7 @@ import {
     extractEntriesFromIndex,
     prepareEntryToIndex
 } from "../../helpers";
-import { encodeElasticsearchCursor, paginateBatch } from "../../utils";
+import { createBasePrimaryKey, encodeElasticsearchCursor, paginateBatch } from "../../utils";
 import {
     entryToStorageTransform,
     entryFromStorageTransform
@@ -65,7 +65,6 @@ const getESPublishedEntryData = (context: CmsContext, entry: CmsContentEntry) =>
 
 interface ConstructorArgs {
     context: CmsContext;
-    basePrimaryKey: string;
 }
 
 /**
@@ -74,16 +73,22 @@ interface ConstructorArgs {
  */
 export default class CmsContentEntryDynamoElastic implements CmsContentEntryStorageOperations {
     private readonly _context: CmsContext;
-    private readonly _primaryKey: string;
+    private _primaryKey: string;
     private readonly _dataLoaders: DataLoadersHandler;
 
     private get context(): CmsContext {
         return this._context;
     }
 
-    public constructor({ context, basePrimaryKey }: ConstructorArgs) {
+    private get primaryKey(): string {
+        if (!this._primaryKey) {
+            this._primaryKey = `${createBasePrimaryKey(this.context)}#CME`;
+        }
+        return this._primaryKey;
+    }
+
+    public constructor({ context }: ConstructorArgs) {
         this._context = context;
-        this._primaryKey = `${basePrimaryKey}#CME`;
         this._dataLoaders = new DataLoadersHandler(context, this);
     }
 
@@ -1122,7 +1127,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         if (id.includes("#")) {
             id = id.split("#").shift();
         }
-        return `${this._primaryKey}#${id}`;
+        return `${this.primaryKey}#${id}`;
     }
     /**
      * Gets a secondary key in form of REV#version from:

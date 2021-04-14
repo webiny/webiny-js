@@ -10,7 +10,6 @@ import cmsDynamoDbElasticsearch from "@webiny/api-headless-cms-ddb-es";
 import securityPlugins from "./security";
 
 export const handler = createHandler(
-    cmsDynamoDbElasticsearch(),
     elasticSearch({ endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}` }),
     dbPlugins({
         table: process.env.DB_TABLE,
@@ -24,5 +23,6 @@ export const handler = createHandler(
     securityPlugins(),
     i18nPlugins(),
     i18nContentPlugins(),
-    headlessCmsPlugins({ debug: Boolean(process.env.DEBUG) })
+    headlessCmsPlugins({ debug: Boolean(process.env.DEBUG) }),
+    cmsDynamoDbElasticsearch()
 );

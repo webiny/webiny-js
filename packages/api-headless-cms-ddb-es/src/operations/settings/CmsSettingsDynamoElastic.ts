@@ -5,10 +5,10 @@ import {
 } from "@webiny/api-headless-cms/types";
 import configurations from "../../configurations";
 import WebinyError from "@webiny/error";
+import { createBasePrimaryKey } from "../../utils";
 
 interface ConstructorArgs {
     context: CmsContext;
-    basePrimaryKey: string;
 }
 // @ts-ignore
 interface CmsSettingsDb extends CmsSettings {
@@ -42,19 +42,21 @@ const SETTINGS_SECONDARY_KEY = "settings";
 
 export default class CmsSettingsDynamoElastic implements CmsSettingsStorageOperations {
     private readonly _context: CmsContext;
-    private readonly _primaryKey: string;
+    private _primaryKey: string;
 
     private get context(): CmsContext {
         return this._context;
     }
 
     private get primaryKey(): string {
+        if (!this._primaryKey) {
+            this._primaryKey = `${createBasePrimaryKey(this.context)}#SETTINGS`;
+        }
         return this._primaryKey;
     }
 
-    public constructor({ context, basePrimaryKey }: ConstructorArgs) {
+    public constructor({ context }: ConstructorArgs) {
         this._context = context;
-        this._primaryKey = `${basePrimaryKey}#SETTINGS`;
     }
 
     public async get(): Promise<CmsSettings> {

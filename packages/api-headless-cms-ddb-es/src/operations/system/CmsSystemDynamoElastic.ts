@@ -1,29 +1,31 @@
 import { CmsContext, CmsSystem, CmsSystemStorageOperations } from "@webiny/api-headless-cms/types";
 import configurations from "../../configurations";
 import WebinyError from "@webiny/error";
+import { createBasePrimaryKey } from "../../utils";
 
 interface ConstructorArgs {
     context: CmsContext;
-    basePrimaryKey: string;
 }
 
 const SYSTEM_SECONDARY_KEY = "CMS";
 
 export default class CmsSystemDynamoElastic implements CmsSystemStorageOperations {
     private readonly _context: CmsContext;
-    private readonly _primaryKey: string;
+    private _primaryKey: string;
 
     private get context(): CmsContext {
         return this._context;
     }
 
     private get primaryKey(): string {
+        if (!this._primaryKey) {
+            this._primaryKey = `${createBasePrimaryKey(this.context)}#SYSTEM`;
+        }
         return this._primaryKey;
     }
 
-    public constructor({ context, basePrimaryKey }: ConstructorArgs) {
+    public constructor({ context }: ConstructorArgs) {
         this._context = context;
-        this._primaryKey = `${basePrimaryKey}#SYSTEM`;
     }
 
     public async get(): Promise<CmsSystem> {
