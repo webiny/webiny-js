@@ -15,6 +15,7 @@ import fileManagerS3 from "@webiny/api-file-manager-s3";
 import formBuilderPlugins from "@webiny/api-form-builder/plugins";
 import securityPlugins from "./security";
 import headlessCmsPlugins from "@webiny/api-headless-cms/plugins";
+import cmsDynamoDbElasticsearch from "@webiny/api-headless-cms-ddb-es";
 
 export const handler = createHandler(
     graphqlPlugins({ debug: process.env.DEBUG }),
@@ -46,5 +47,6 @@ export const handler = createHandler(
     }),
     pageBuilderPlugins(),
     formBuilderPlugins(),
-    headlessCmsPlugins()
+    headlessCmsPlugins(),
+    cmsDynamoDbElasticsearch()
 );

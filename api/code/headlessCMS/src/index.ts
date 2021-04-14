@@ -6,6 +6,7 @@ import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import elasticSearch from "@webiny/api-plugin-elastic-search-client";
 import headlessCmsPlugins from "@webiny/api-headless-cms/content";
+import cmsDynamoDbElasticsearch from "@webiny/api-headless-cms-ddb-es";
 import securityPlugins from "./security";
 
 export const handler = createHandler(
@@ -22,5 +23,6 @@ export const handler = createHandler(
     securityPlugins(),
     i18nPlugins(),
     i18nContentPlugins(),
-    headlessCmsPlugins({ debug: Boolean(process.env.DEBUG) })
+    headlessCmsPlugins({ debug: Boolean(process.env.DEBUG) }),
+    cmsDynamoDbElasticsearch()
 );

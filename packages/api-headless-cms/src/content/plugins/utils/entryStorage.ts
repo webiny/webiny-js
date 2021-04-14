@@ -1,11 +1,11 @@
+import WebinyError from "@webiny/error";
 import {
     CmsContentEntry,
-    CmsContentModelField,
     CmsContentModel,
+    CmsContentModelField,
     CmsContext,
     CmsModelFieldToStoragePlugin
 } from "../../../types";
-import WebinyError from "@webiny/error";
 
 const getStoragePlugins = (context: CmsContext): Record<string, CmsModelFieldToStoragePlugin> => {
     return (

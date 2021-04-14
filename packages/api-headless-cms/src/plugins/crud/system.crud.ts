@@ -1,9 +1,8 @@
 import { NotAuthorizedError } from "@webiny/api-security";
-import Error from "@webiny/error";
 import { getApplicablePlugin } from "@webiny/api-upgrade";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
-import * as utils from "../../utils";
-import { CmsContext } from "../../types";
+import { CmsContext, CmsSystemStorageOperationsProviderPlugin } from "../../types";
+import WebinyError from "@webiny/error";
 
 const initialContentModelGroup = {
     name: "Ungrouped",
@@ -14,9 +13,23 @@ const initialContentModelGroup = {
 
 export default {
     type: "context",
-    apply(context: CmsContext) {
-        const { security, db } = context;
-        const keys = () => ({ PK: `T#${security.getTenant().id}#SYSTEM`, SK: "CMS" });
+    apply: async (context: CmsContext) => {
+        const { security } = context;
+
+        const pluginType = "cms-system-storage-operations-provider";
+        const providerPlugins = context.plugins.byType<CmsSystemStorageOperationsProviderPlugin>(
+            pluginType
+        );
+        const providerPlugin = providerPlugins[providerPlugins.length - 1];
+        if (!providerPlugin) {
+            throw new WebinyError(`Missing "${pluginType}" plugin.`, "PLUGIN_NOT_FOUND", {
+                type: pluginType
+            });
+        }
+
+        const storageOperations = await providerPlugin.provide({
+            context
+        });
 
         context.cms = {
             ...context.cms,
@@ -26,10 +39,7 @@ export default {
                         return null;
                     }
 
-                    const [[system]] = await db.read({
-                        ...utils.defaults.db(),
-                        query: keys()
-                    });
+                    const system = await storageOperations.get();
 
                     // Backwards compatibility check
                     if (!system) {
@@ -43,28 +53,16 @@ export default {
                     return system.version;
                 },
                 async setVersion(version: string) {
-                    const [[system]] = await db.read({
-                        ...utils.defaults.db(),
-                        query: keys()
-                    });
-
-                    if (system) {
-                        await db.update({
-                            ...utils.defaults.db(),
-                            query: keys(),
-                            data: {
-                                version
-                            }
+                    const system = await storageOperations.get();
+                    if (!system) {
+                        await storageOperations.create({
+                            version
                         });
-                    } else {
-                        await db.create({
-                            ...utils.defaults.db(),
-                            data: {
-                                ...keys(),
-                                version
-                            }
-                        });
+                        return;
                     }
+                    await storageOperations.update({
+                        version
+                    });
                 },
                 install: async (): Promise<void> => {
                     const identity = context.security.getIdentity();
@@ -77,55 +75,23 @@ export default {
                         return;
                     }
 
+                    if (storageOperations.beforeInstall) {
+                        await storageOperations.beforeInstall();
+                    }
                     // Add default content model group.
                     try {
                         await context.cms.groups.create(initialContentModelGroup);
                     } catch (ex) {
-                        throw new Error(ex.message, "CMS_INSTALLATION_CONTENT_MODEL_GROUP_ERROR");
-                    }
-
-                    try {
-                        await context.elasticSearch.indices.putTemplate({
-                            name: "headless-cms-entries-index",
-                            body: {
-                                index_patterns: ["*headless-cms*"],
-                                settings: {
-                                    analysis: {
-                                        analyzer: {
-                                            lowercase_analyzer: {
-                                                type: "custom",
-                                                filter: ["lowercase", "trim"],
-                                                tokenizer: "keyword"
-                                            }
-                                        }
-                                    }
-                                },
-                                mappings: {
-                                    properties: {
-                                        property: {
-                                            type: "text",
-                                            fields: {
-                                                keyword: {
-                                                    type: "keyword",
-                                                    ignore_above: 256
-                                                }
-                                            },
-                                            analyzer: "lowercase_analyzer"
-                                        },
-                                        rawValues: {
-                                            type: "object",
-                                            enabled: false
-                                        }
-                                    }
-                                }
+                        throw new WebinyError(
+                            ex.message,
+                            "CMS_INSTALLATION_CONTENT_MODEL_GROUP_ERROR",
+                            {
+                                group: initialContentModelGroup
                             }
-                        });
-                    } catch (err) {
-                        console.log(err);
-                        throw new Error(
-                            "Index template creation failed!",
-                            "CMS_INSTALLATION_INDEX_TEMPLATE_ERROR"
                         );
+                    }
+                    if (storageOperations.beforeInstall) {
+                        await storageOperations.beforeInstall();
                     }
 
                     // Set app version

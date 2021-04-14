@@ -34,16 +34,16 @@ const categoryManagerHelper = async manageOpts => {
     const animals = animalsResponse.data.createCategory.data;
 
     // Publish categories so then become available in the "read" API
-    await publishCategory({ revision: fruits.id });
-    await publishCategory({ revision: vegetables.id });
-    await publishCategory({ revision: animals.id });
+    const [publishedFruitsResponse] = await publishCategory({ revision: fruits.id });
+    const [publishedVegetablesResponse] = await publishCategory({ revision: vegetables.id });
+    const [publishedAnimalsResponse] = await publishCategory({ revision: animals.id });
 
     return {
         sleep,
         until,
-        fruits,
-        vegetables,
-        animals,
+        fruits: publishedFruitsResponse.data.publishCategory.data,
+        vegetables: publishedVegetablesResponse.data.publishCategory.data,
+        animals: publishedAnimalsResponse.data.publishCategory.data,
         createCategory,
         publishCategory
     };
@@ -56,7 +56,6 @@ describe("READ - Resolvers", () => {
     const readOpts = { path: "read/en-US" };
 
     const {
-        clearAllIndex,
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
@@ -95,12 +94,6 @@ describe("READ - Resolvers", () => {
     };
 
     beforeEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {
-            // Ignore errors
-        }
-
         const [createCMG] = await createContentModelGroupMutation({
             data: {
                 name: "Group",
@@ -114,12 +107,6 @@ describe("READ - Resolvers", () => {
         await setupModel("category", contentModelGroup);
     });
 
-    afterEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch (e) {}
-    });
-
     test("should return a record by id", async () => {
         // Use "manage" API to create and publish entries
         const { until, createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
@@ -130,7 +117,9 @@ describe("READ - Resolvers", () => {
         const { id: categoryId } = category;
 
         // Publish it so it becomes available in the "read" API
-        await publishCategory({ revision: categoryId });
+        const [publishResponse] = await publishCategory({ revision: categoryId });
+
+        const publishedCategory = publishResponse.data.publishCategory.data;
 
         // See if entries are available via "read" API
         const { getCategory } = useCategoryReadHandler(readOpts);
@@ -152,7 +141,7 @@ describe("READ - Resolvers", () => {
                     data: {
                         id: category.id,
                         createdOn: category.createdOn,
-                        savedOn: category.savedOn,
+                        savedOn: publishedCategory.savedOn,
                         title: category.title,
                         slug: category.slug
                     },
@@ -195,7 +184,9 @@ describe("READ - Resolvers", () => {
         const { id } = category;
 
         // Publish it so it becomes available in the "read" API
-        await publishCategory({ revision: id });
+        const [publishResponse] = await publishCategory({ revision: id });
+
+        const publishedCategory = publishResponse.data.publishCategory.data;
 
         // See if entries are available via "read" API
         const { listCategories } = useCategoryReadHandler(readOpts);
@@ -217,7 +208,7 @@ describe("READ - Resolvers", () => {
                             title: category.title,
                             slug: category.slug,
                             createdOn: category.createdOn,
-                            savedOn: category.savedOn
+                            savedOn: publishedCategory.savedOn
                         }
                     ],
                     error: null,
@@ -994,7 +985,7 @@ describe("READ - Resolvers", () => {
             }
         });
 
-        // wait until we have all products in the elastic
+        // wait until we have all products available
         await until(
             () =>
                 listProducts({
@@ -1085,7 +1076,7 @@ describe("READ - Resolvers", () => {
         const carrot = carrotResponse.data.createProduct.data;
         const korn = kornResponse.data.createProduct.data;
 
-        // wait until we have all products in the elastic
+        // wait until we have all products available
         await until(
             () => listProducts({}).then(([data]) => data),
             ({ data }) => data.listProducts.data.length === 3,
@@ -1188,7 +1179,7 @@ describe("READ - Resolvers", () => {
         const carrot = carrotResponse.data.createProduct.data;
         const korn = kornResponse.data.createProduct.data;
 
-        // wait until we have all products in the elastic
+        // wait until we have all products available
         await until(
             () => listProducts({}).then(([data]) => data),
             ({ data }) => data.listProducts.data.length === 3,

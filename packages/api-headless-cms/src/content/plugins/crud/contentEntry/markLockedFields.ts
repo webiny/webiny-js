@@ -8,7 +8,7 @@ import WebinyError from "@webiny/error";
 
 interface Args {
     model: CmsContentModel;
-    entry: CmsContentEntry;
+    data: CmsContentEntry;
     context: CmsContext;
 }
 export const markLockedFields = async ({ model, context }: Args): Promise<void> => {
