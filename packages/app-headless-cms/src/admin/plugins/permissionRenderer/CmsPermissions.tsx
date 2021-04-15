@@ -25,6 +25,9 @@ const API_ENDPOINTS = [
     { id: "preview", name: "Preview" }
 ];
 
+const GRAPHQL_API_TYPES_LINK =
+    "https://www.webiny.com/docs/key-topics/webiny-applications/headless-cms/graphql-api/#graphql-api-types";
+
 export const CMSPermissions = ({ value, onChange }) => {
     const { getLocales } = useI18N();
 
@@ -256,20 +259,17 @@ export const CMSPermissions = ({ value, onChange }) => {
                                         <Bind name={"endpoints"}>
                                             <CheckboxGroup
                                                 label={t`GraphQL API types`}
-                                                description={t`Each type has a separate URL and a specific purpose. Check out the {link} key topic to learn more.`(
-                                                    {
-                                                        link: (
-                                                            <Link
-                                                                to={
-                                                                    "https://www.webiny.com/docs/key-topics/webiny-applications/headless-cms/graphql-api/#graphql-api-types"
-                                                                }
-                                                                target={"_blank"}
-                                                            >
-                                                                Headless CMS GraphQL API
-                                                            </Link>
-                                                        )
-                                                    }
-                                                )}
+                                                description={t`Each type has a separate URL and a specific purpose.
+                                                 Check out the {link} key topic to learn more.`({
+                                                    link: (
+                                                        <Link
+                                                            to={GRAPHQL_API_TYPES_LINK}
+                                                            target={"_blank"}
+                                                        >
+                                                            Headless CMS GraphQL API
+                                                        </Link>
+                                                    )
+                                                })}
                                             >
                                                 {({ getValue, onChange }) =>
                                                     API_ENDPOINTS.map(({ id, name }) => (
