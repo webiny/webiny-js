@@ -9,16 +9,13 @@ const minimatch = require("minimatch");
 const { login, getPulumi, loadEnvVariables, getRandomColorForString } = require("../utils");
 const { getProjectApplication } = require("@webiny/cli/utils");
 const path = require("path");
+const fs = require("fs");
 const get = require("lodash/get");
 const merge = require("lodash/merge");
 
 const SECRETS_PROVIDER = process.env.PULUMI_SECRETS_PROVIDER;
 
 module.exports = async (inputs, context) => {
-    if (!inputs.env) {
-        throw new Error(`Please specify environment, for example "dev".`);
-    }
-
     let projectApplication;
     if (inputs.folder) {
         // Get project application metadata.
@@ -50,6 +47,31 @@ module.exports = async (inputs, context) => {
         throw new Error(
             `Either "folder" or "scope" arguments must be passed. Cannot have both undefined.`
         );
+    }
+
+    let mainWs;
+    if (inputs.devServer) {
+        const express = require("express");
+        const WebSocket = require("ws");
+        const http = require("http");
+
+        const app = express();
+
+        const server = http.createServer(app);
+        const wss = new WebSocket.Server({ server });
+
+        wss.on("connection", ws => {
+            mainWs = ws;
+        });
+
+        //start our server
+        server.listen(process.env.PORT || 3011, () => {
+            console.log(`Server started on port ${server.address().port}.`);
+        });
+
+        app.get("/", (req, res) => {
+            res.send(fs.readFileSync(path.join(__dirname, "./watchDevServer.html")).toString());
+        });
     }
 
     // 1.1. Check if the project application and Pulumi stack exist.
@@ -162,8 +184,18 @@ module.exports = async (inputs, context) => {
                 }
             });
 
-            watchCloudInfrastructure.stdout.on("data", data => logs.deploy.log(data.toString()));
-            watchCloudInfrastructure.stderr.on("data", data => logs.deploy.log(data.toString()));
+            watchCloudInfrastructure.stdout.on("data", data => {
+                if (mainWs) {
+                    mainWs.send("deploy:" + data.toString());
+                }
+                logs.deploy.log(data.toString());
+            });
+            watchCloudInfrastructure.stderr.on("data", data => {
+                if (mainWs) {
+                    mainWs.send("deploy:" + data.toString());
+                }
+                logs.deploy.log(data.toString());
+            });
 
             // If logs are enabled, inform user that we're updating the WEBINY_LOGS_FORWARD_URL env variable.
             if (inputs.logs) {
@@ -217,6 +249,10 @@ module.exports = async (inputs, context) => {
 
             watchPackages.stdout.on("data", data => {
                 const message = data.toString();
+
+                if (mainWs) {
+                    mainWs.send("build:" + message);
+                }
                 message
                     .split("\n")
                     .filter(Boolean)
@@ -227,6 +263,9 @@ module.exports = async (inputs, context) => {
 
             watchPackages.stderr.on("data", data => {
                 const message = data.toString();
+                if (mainWs) {
+                    mainWs.send("build:" + message);
+                }
                 message
                     .split("\n")
                     .filter(Boolean)

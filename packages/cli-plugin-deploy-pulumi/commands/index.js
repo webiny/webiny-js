@@ -90,6 +90,13 @@ module.exports = [
                         describe: `Forward logs from deployed application code to your terminal.`,
                         type: "string"
                     });
+
+                    yargs.option("devServer", {
+                        describe: `[PREVIEW] Instead of terminal, starts a dev server and displays all output in your browser.`,
+                        type: "boolean",
+                        default: false
+                    });
+
                     yargs.option("debug", {
                         default: false,
                         describe: `Turn on debug logs`,
