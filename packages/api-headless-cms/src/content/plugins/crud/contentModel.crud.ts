@@ -4,8 +4,7 @@ import {
     CmsContentModel,
     CmsContentModelContext,
     CmsContentModelManager,
-    CmsContentModelPermission,
-    CmsContentModelGroupPermission
+    CmsContentModelPermission
 } from "../../../types";
 import * as utils from "../../../utils";
 import DataLoader from "dataloader";
@@ -54,7 +53,7 @@ export default (): ContextPlugin<CmsContext> => ({
             return manager;
         };
 
-        const checkPermissions = (check: string): Promise<CmsContentModelPermission> => {
+        const checkModelPermissions = (check: string): Promise<CmsContentModelPermission> => {
             return utils.checkPermissions(context, "cms.contentModel", { rwd: check });
         };
 
@@ -97,37 +96,28 @@ export default (): ContextPlugin<CmsContext> => ({
                 };
             },
             async get(modelId) {
-                const permission = await checkPermissions("r");
-                const groupPermission: CmsContentModelGroupPermission = await utils.checkPermissions(
-                    context,
-                    "cms.contentModelGroup",
-                    { rwd: "r" }
-                );
+                const permission = await checkModelPermissions("r");
 
                 const model = await modelsGet(modelId);
 
                 utils.checkOwnership(context, permission, model);
-                utils.checkModelAccess(context, permission, model, groupPermission);
+                await utils.checkModelAccess(context, model);
 
                 return model;
             },
             async list() {
-                const permission = await checkPermissions("r");
-                const groupPermission: CmsContentModelGroupPermission = await utils.checkPermissions(
-                    context,
-                    "cms.contentModelGroup",
-                    { rwd: "r" }
-                );
+                const permission = await checkModelPermissions("r");
                 const models = await modelsList();
-                return models.filter(model => {
+
+                return utils.filterAsync(models, async model => {
                     if (!utils.validateOwnership(context, permission, model)) {
                         return false;
                     }
-                    return utils.validateModelAccess(context, permission, model, groupPermission);
+                    return utils.validateModelAccess(context, model);
                 });
             },
             async create(data) {
-                await checkPermissions("w");
+                await checkModelPermissions("w");
 
                 const createdData = new CreateContentModelModel().populate(data);
                 await createdData.validate();
@@ -217,7 +207,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 await afterUpdateHook({ context, model: combinedModel });
             },
             async update(modelId, data) {
-                await checkPermissions("w");
+                await checkModelPermissions("w");
 
                 // Get a model record; this will also perform ownership validation.
                 const model = await context.cms.models.get(modelId);
@@ -270,7 +260,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 return fullModel;
             },
             async delete(modelId) {
-                await checkPermissions("d");
+                await checkModelPermissions("d");
 
                 const model = await context.cms.models.get(modelId);
 
