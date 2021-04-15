@@ -7,7 +7,7 @@ import { i18n } from "@webiny/app/i18n";
 import { Elevation } from "@webiny/ui/Elevation";
 import { PermissionSelector, PermissionSelectorWrapper } from "./PermissionSelector";
 import { useCmsData } from "./useCmsData";
-import { Note } from "./Styled";
+import { Note } from "./StyledComponents";
 import ContentModelList from "./ContentModelList";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");

@@ -6,7 +6,7 @@ import { Select } from "@webiny/ui/Select";
 import { i18n } from "@webiny/app/i18n";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Checkbox, CheckboxGroup } from "@webiny/ui/Checkbox";
-import { Note } from "./Styled";
+import { Note } from "./StyledComponents";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
