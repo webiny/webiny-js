@@ -34,9 +34,8 @@ export type Context<
     C8 &
     C9;
 
-export interface ContextPluginInterface<T extends ContextInterface = ContextInterface>
-    extends Plugin {
-    type: "context";
+export interface BeforeHandlerPlugin<T extends ContextInterface = ContextInterface> extends Plugin {
+    type: "before-handler";
     apply: (context: T) => Promise<void>;
 }
 
