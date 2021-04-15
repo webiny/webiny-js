@@ -210,13 +210,11 @@ export const validateOwnership = (
  * model access is checking for both specific model or group access
  * if permission has specific models set as access pattern then groups will not matter (although both can be set)
  */
-export const checkModelAccess = (
+export const checkModelAccess = async (
     context: CmsContext,
-    permission: SecurityPermission<CmsContentModelPermission>,
-    model: CmsContentModel,
-    modelGroupPermission: SecurityPermission<CmsContentModelGroupPermission>
-): void => {
-    if (validateModelAccess(context, permission, model, modelGroupPermission)) {
+    model: CmsContentModel
+): Promise<void> => {
+    if (await validateModelAccess(context, model)) {
         return;
     }
     throw new NotAuthorizedError({
@@ -225,15 +223,23 @@ export const checkModelAccess = (
         }
     });
 };
-export const validateModelAccess = (
+export const validateModelAccess = async (
     context: CmsContext,
-    permission: SecurityPermission<CmsContentModelPermission>,
-    model: CmsContentModel,
-    modelGroupPermission: SecurityPermission<CmsContentModelGroupPermission>
-): boolean => {
-    const { models } = permission;
-
+    model: CmsContentModel
+): Promise<boolean> => {
+    const modelGroupPermission: CmsContentModelGroupPermission = await checkPermissions(
+        context,
+        "cms.contentModelGroup",
+        { rwd: "r" }
+    );
     const { groups } = modelGroupPermission;
+
+    const modelPermission: CmsContentModelPermission = await checkPermissions(
+        context,
+        "cms.contentModel",
+        { rwd: "r" }
+    );
+    const { models } = modelPermission;
     // when no models or groups defined on permission
     // it means user has access to everything
     if (!models && !groups) {
