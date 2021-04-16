@@ -7,6 +7,36 @@ import { useProductManageHandler } from "../utils/useProductManageHandler";
 
 jest.setTimeout(25000);
 
+const createPermissions = ({ groups, models }: { groups?: string[]; models?: string[] }) => [
+    {
+        name: "cms.settings"
+    },
+    {
+        name: "cms.contentModelGroup",
+        rwd: "r",
+        groups: groups ? { "en-US": groups } : undefined
+    },
+    {
+        name: "cms.contentModel",
+        rwd: "r",
+        models: models ? { "en-US": models } : undefined
+    },
+    {
+        name: "cms.contentEntry",
+        rwd: "r"
+    },
+    {
+        name: "cms.endpoint.read"
+    },
+    {
+        name: "cms.endpoint.preview"
+    },
+    {
+        name: "content.i18n",
+        locales: ["en-US"]
+    }
+];
+
 const categoryManagerHelper = async manageOpts => {
     // Use "manage" API to create and publish entries
     const { until, createCategory, publishCategory, sleep } = useCategoryManageHandler(manageOpts);
@@ -225,6 +255,141 @@ describe("READ - Resolvers", () => {
                         hasMoreItems: false,
                         totalCount: 1,
                         cursor: expect.any(String)
+                    }
+                }
+            }
+        });
+    });
+
+    test(`list entries with specific group and model permissions`, async () => {
+        // Use "manage" API to create and publish entries
+        const { until, createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
+
+        // Create an entry
+        const [create] = await createCategory({ data: { title: "Title 1", slug: "slug-1" } });
+        const category = create.data.createCategory.data;
+        const { id } = category;
+
+        // Publish it so it becomes available in the "read" API
+        await publishCategory({ revision: id });
+
+        // See if entries are available via "read" API
+        const { listCategories } = useCategoryReadHandler(
+            Object.assign({}, readOpts, {
+                permissions: createPermissions({
+                    groups: [contentModelGroup.id],
+                    models: ["category"]
+                })
+            })
+        );
+
+        // If this `until` resolves successfully, we know entry is accessible via the "read" API
+        await until(
+            () => listCategories().then(([data]) => data),
+            ({ data }) => data.listCategories.data.length > 0
+        );
+
+        const [response] = await listCategories();
+
+        expect(response).toEqual({
+            data: {
+                listCategories: {
+                    data: [
+                        {
+                            id: category.id,
+                            title: category.title,
+                            slug: category.slug,
+                            createdOn: category.createdOn,
+                            savedOn: category.savedOn
+                        }
+                    ],
+                    error: null,
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
+                        cursor: expect.any(String)
+                    }
+                }
+            }
+        });
+    });
+
+    test(`should return an error when getting entry without specific group permissions`, async () => {
+        // Use "manage" API to create and publish entries
+        const { createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
+
+        // Create an entry
+        const [create] = await createCategory({ data: { title: "Title 1", slug: "slug-1" } });
+        const category = create.data.createCategory.data;
+        const { id } = category;
+
+        // Publish it so it becomes available in the "read" API
+        await publishCategory({ revision: id });
+
+        // See if entries are available via "read" API
+        const { getCategory } = useCategoryReadHandler(
+            Object.assign({}, readOpts, {
+                permissions: createPermissions({
+                    groups: ["someOtherGroupId"]
+                })
+            })
+        );
+
+        const [response] = await getCategory({
+            where: {
+                id
+            }
+        });
+
+        expect(response).toEqual({
+            data: {
+                getCategory: {
+                    data: null,
+                    error: {
+                        code: "SECURITY_NOT_AUTHORIZED",
+                        data: {
+                            reason: 'Not allowed to access model "category".'
+                        },
+                        message: "Not authorized!"
+                    }
+                }
+            }
+        });
+    });
+
+    test(`should return an error when getting entry without specific model permissions`, async () => {
+        // Use "manage" API to create and publish entries
+        const { createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
+
+        // Create an entry
+        const [create] = await createCategory({ data: { title: "Title 1", slug: "slug-1" } });
+        const category = create.data.createCategory.data;
+        const { id } = category;
+
+        // Publish it so it becomes available in the "read" API
+        await publishCategory({ revision: id });
+
+        // See if entries are available via "read" API
+        const { getCategory } = useCategoryReadHandler(
+            Object.assign({}, readOpts, {
+                permissions: createPermissions({
+                    models: ["someOtherModelId"]
+                })
+            })
+        );
+
+        const [response] = await getCategory({ where: { id } });
+
+        expect(response).toEqual({
+            data: {
+                getCategory: {
+                    data: null,
+                    error: {
+                        code: "SECURITY_NOT_AUTHORIZED",
+                        data: {
+                            reason: 'Not allowed to access model "category".'
+                        },
+                        message: "Not authorized!"
                     }
                 }
             }
