@@ -246,8 +246,16 @@ export const validateModelAccess = async (
         return true;
     }
     const locale = context.cms.getLocale().code;
-    // when there is no locale in models or groups, it means that no access was given
-    // this happens when access control was set but no models or groups were added
+    // Check whether the model is question belongs to "content model groups" for which user has permission.
+    if (groups) {
+        if (
+            Array.isArray(groups[locale]) === false ||
+            groups[locale].includes(model.group.id) === false
+        ) {
+            return false;
+        }
+    }
+    // Check whether the model is question belongs to "content models" for which user has permission.
     if (models) {
         if (
             Array.isArray(models[locale]) === false ||
@@ -255,14 +263,8 @@ export const validateModelAccess = async (
         ) {
             return false;
         }
-        return true;
     }
-    if (
-        Array.isArray(groups[locale]) === false ||
-        groups[locale].includes(model.group.id) === false
-    ) {
-        return false;
-    }
+
     return true;
 };
 export const validateGroupAccess = (
