@@ -1,17 +1,16 @@
 const execa = require("execa");
-const blessed = require("blessed");
-const contrib = require("blessed-contrib");
 const chalk = require("chalk");
 const localtunnel = require("localtunnel");
 const express = require("express");
 const bodyParser = require("body-parser");
-const minimatch = require("minimatch");
 const { login, getPulumi, loadEnvVariables, getRandomColorForString } = require("../utils");
 const { getProjectApplication } = require("@webiny/cli/utils");
 const path = require("path");
-const fs = require("fs");
 const get = require("lodash/get");
 const merge = require("lodash/merge");
+const browserOutput = require("./watch/output/browserOutput");
+const terminalOutput = require("./watch/output/terminalOutput");
+const minimatch = require("minimatch");
 
 const SECRETS_PROVIDER = process.env.PULUMI_SECRETS_PROVIDER;
 
@@ -30,15 +29,17 @@ module.exports = async (inputs, context) => {
     inputs.build = inputs.build !== false;
     inputs.deploy = Boolean(projectApplication && inputs.deploy !== false);
 
+    if (inputs.deploy && !inputs.env) {
+        throw new Error(`Please specify environment, for example "dev".`);
+    }
+
     if (inputs.deploy) {
         if (typeof inputs.logs === "string" && inputs.logs === "") {
             inputs.logs = "*";
         }
     }
 
-    // 1. Initial checks for deploy and build commands. We want to do these before initializing the
-    //    blessed screen, because it messes the terminal output a bit. With this approach, we avoid that.
-
+    // 1. Initial checks for deploy and build commands.
     if (!inputs.build && !inputs.deploy) {
         throw new Error(`Both re-build and re-deploy actions were disabled, can't continue.`);
     }
@@ -47,31 +48,6 @@ module.exports = async (inputs, context) => {
         throw new Error(
             `Either "folder" or "scope" arguments must be passed. Cannot have both undefined.`
         );
-    }
-
-    let mainWs;
-    if (inputs.devServer) {
-        const express = require("express");
-        const WebSocket = require("ws");
-        const http = require("http");
-
-        const app = express();
-
-        const server = http.createServer(app);
-        const wss = new WebSocket.Server({ server });
-
-        wss.on("connection", ws => {
-            mainWs = ws;
-        });
-
-        //start our server
-        server.listen(process.env.PORT || 3011, () => {
-            console.log(`Server started on port ${server.address().port}.`);
-        });
-
-        app.get("/", (req, res) => {
-            res.send(fs.readFileSync(path.join(__dirname, "./watchDevServer.html")).toString());
-        });
     }
 
     // 1.1. Check if the project application and Pulumi stack exist.
@@ -107,10 +83,8 @@ module.exports = async (inputs, context) => {
         }
     }
 
-    // 2. Create screen on which we'll show logs.
-    const { screen, logs } = createScreen(inputs);
-
-    screen.render();
+    let output = inputs.output === "browser" ? browserOutput : terminalOutput;
+    await output.initialize(inputs);
 
     try {
         const logging = {
@@ -129,13 +103,13 @@ module.exports = async (inputs, context) => {
 
             app.post("/", (req, res) => {
                 if (Array.isArray(req.body)) {
-                    req.body.forEach(consoleLog =>
+                    req.body.forEach(consoleLog => {
                         printLog({
+                            output,
                             consoleLog,
-                            log: logs.logs.log.bind(logs.logs),
                             pattern: inputs.logs
-                        })
-                    );
+                        });
+                    });
                 }
                 res.send("Message received.");
             });
@@ -148,20 +122,26 @@ module.exports = async (inputs, context) => {
                     "over public internet"
                 )}.`,
                 `To learn more, please visit https://www.webiny.com/docs/todo-article.`
-            ].forEach(logs.logs.log.bind(logs.logs));
+            ].forEach(message => output.log({ type: "logs", message }));
 
-            logs.logs.log(""); // Log an empty line.
+            output.log({ type: "logs", message: "" });
 
             if (inputs.logs !== "*") {
-                logs.logs.log(
-                    chalk.gray(`Only showing logs that match the following pattern: ${inputs.logs}`)
-                );
+                output.log({
+                    type: "logs",
+                    message: chalk.gray(
+                        `Only showing logs that match the following pattern: ${inputs.logs}`
+                    )
+                });
             }
         }
 
         // Add deploy logs.
         if (inputs.deploy) {
-            logs.deploy.log(chalk.green("Watching cloud infrastructure resources..."));
+            output.log({
+                type: "deploy",
+                message: chalk.green("Watching cloud infrastructure resources...")
+            });
 
             const pulumi = await getPulumi({
                 execa: {
@@ -185,33 +165,38 @@ module.exports = async (inputs, context) => {
             });
 
             watchCloudInfrastructure.stdout.on("data", data => {
-                if (mainWs) {
-                    mainWs.send("deploy:" + data.toString());
-                }
-                logs.deploy.log(data.toString());
+                output.log({
+                    type: "deploy",
+                    message: data.toString()
+                });
             });
+
             watchCloudInfrastructure.stderr.on("data", data => {
-                if (mainWs) {
-                    mainWs.send("deploy:" + data.toString());
-                }
-                logs.deploy.log(data.toString());
+                output.log({
+                    type: "deploy",
+                    message: data.toString()
+                });
             });
 
             // If logs are enabled, inform user that we're updating the WEBINY_LOGS_FORWARD_URL env variable.
             if (inputs.logs) {
                 setTimeout(() => {
-                    logs.deploy.log(
-                        `Logs enabled - updating ${chalk.gray(
+                    output.log({
+                        type: "deploy",
+                        message: `Logs enabled - updating ${chalk.gray(
                             "WEBINY_LOGS_FORWARD_URL"
                         )} environment variable...`
-                    );
+                    });
                 }, 3000);
             }
         }
 
         // Add build logs.
         if (inputs.build) {
-            logs.build.log(chalk.green("Watching packages..."));
+            output.log({
+                type: "build",
+                message: chalk.green("Watching packages...")
+            });
 
             let scopes = [];
             if (inputs.scope) {
@@ -248,130 +233,35 @@ module.exports = async (inputs, context) => {
             );
 
             watchPackages.stdout.on("data", data => {
-                const message = data.toString();
-
-                if (mainWs) {
-                    mainWs.send("build:" + message);
-                }
-                message
-                    .split("\n")
-                    .filter(Boolean)
-                    .forEach(item => {
-                        logs.build.log(item);
-                    });
+                output.log({
+                    type: "build",
+                    message: data.toString()
+                });
             });
 
             watchPackages.stderr.on("data", data => {
-                const message = data.toString();
-                if (mainWs) {
-                    mainWs.send("build:" + message);
-                }
-                message
-                    .split("\n")
-                    .filter(Boolean)
-                    .forEach(item => {
-                        logs.build.log(item);
-                    });
+                output.log({
+                    type: "build",
+                    message: data.toString()
+                });
             });
         }
     } catch (e) {
-        screen.destroy();
+        output.error(e);
         throw e;
     }
 };
 
-const createScreen = inputs => {
-    // Setup blessed screen.
-    const screen = blessed.screen({
-        smartCSR: true,
-        useBCE: true,
-        dockBorders: true
-    });
-
-    const HEIGHTS = {
-        build: 2,
-        deploy: 1,
-        logs: 2
-    };
-
-    const output = { screen, grid: null, logs: { build: null, deploy: null, logs: null } };
-
-    // Calculate total rows needed.
-    let rows = { total: 0, current: 0 };
-    if (inputs.build) {
-        rows.total += HEIGHTS.build;
-    }
-
-    if (inputs.deploy) {
-        rows.total += HEIGHTS.deploy;
-    }
-
-    if (inputs.logs) {
-        rows.total += HEIGHTS.logs;
-    }
-
-    // Create grid.
-    output.grid = new contrib.grid({ rows: rows.total, cols: 1, screen: screen });
-
-    if (inputs.build) {
-        output.logs.build = output.grid.set(rows.current, 0, HEIGHTS.build, 1, contrib.log, {
-            label: "Build",
-            scrollOnInput: true,
-            bufferLength: 90
-        });
-        rows.current += HEIGHTS.build;
-    }
-
-    if (inputs.deploy) {
-        output.logs.deploy = output.grid.set(rows.current, 0, HEIGHTS.deploy, 1, contrib.log, {
-            label: "Deploy",
-            scrollOnInput: true,
-            bufferLength: 90
-        });
-        rows.current += HEIGHTS.deploy;
-    }
-
-    if (inputs.logs) {
-        output.logs.logs = output.grid.set(rows.current, 0, HEIGHTS.logs, 1, contrib.log, {
-            label: "Logs",
-            scrollOnInput: true,
-            bufferLength: 90
-        });
-        rows.current += HEIGHTS.logs;
-    }
-
-    return output;
-};
-
-const printLog = ({ pattern = "*", consoleLog, log }) => {
+const printLog = ({ pattern = "*", consoleLog, output }) => {
     const plainPrefix = `${consoleLog.meta.functionName}:`;
-    const coloredPrefix = chalk.hex(getRandomColorForString(plainPrefix)).bold(plainPrefix);
-
-    let output = "";
-    for (let i = 0; i < consoleLog.args.length; i++) {
-        const arg = consoleLog.args[i];
-        const lines = String(arg).split("\n");
-        if (lines.length === 1) {
-            output += " " + arg;
-        } else {
-            if (output) {
-                if (minimatch(plainPrefix + output, pattern)) {
-                    log(coloredPrefix + output);
-                }
-                output = "";
-            }
-
-            if (minimatch(plainPrefix + arg, pattern)) {
-                lines.forEach(line => {
-                    printLog({ consoleLog: { ...consoleLog, args: [line] }, log, pattern: "*" });
-                });
-            }
-        }
-    }
-
-    if (output) {
-        if (minimatch(plainPrefix + output, pattern)) {
-            log(coloredPrefix + output);
+    let message = consoleLog.args.join(" ").trim();
+    if (message) {
+        if (minimatch(plainPrefix, pattern)) {
+            const coloredPrefix = chalk.hex(getRandomColorForString(plainPrefix)).bold(plainPrefix);
+            output.log({
+                type: "logs",
+                message: coloredPrefix + message
+            });
         }
     }
 };

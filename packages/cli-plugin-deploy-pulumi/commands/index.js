@@ -91,10 +91,10 @@ module.exports = [
                         type: "string"
                     });
 
-                    yargs.option("devServer", {
-                        describe: `[PREVIEW] Instead of terminal, starts a dev server and displays all output in your browser.`,
-                        type: "boolean",
-                        default: false
+                    yargs.option("output", {
+                        describe: `Specify the output destination to which all of the logs will be forwarded.`,
+                        default: "terminal",
+                        type: "string"
                     });
 
                     yargs.option("debug", {

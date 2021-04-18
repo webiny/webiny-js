@@ -1,0 +1,70 @@
+<html>
+  <head>
+    <title>Webiny</title>
+  </head>
+  <div class="panes">
+    <div class="pane" id="pane-build">
+      <h1>Build</h1>
+      <code id="build"></code>
+    </div>
+    <div class="pane" id="pane-deploy">
+      <h1>Deploy</h1>
+      <code id="deploy"></code>
+    </div>
+    <div class="pane" id="pane-logs">
+      <h1>Logs</h1>
+      <code id="logs"></code>
+    </div>
+  </div>
+
+  <script>
+    const socket = new WebSocket("ws://localhost:{PORT}");
+    socket.onmessage = function(event) {
+      console.log(event.data)
+      const { type, message } = JSON.parse(event.data);
+      const code = document.getElementById(type);
+      code.innerHTML += `<p>${message}</p>`;
+      code.scrollTo(0, code.scrollHeight);
+    };
+  </script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #161719;
+      color: #c5c8c6;
+    }
+
+    .panes {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    .pane {
+      display: flex;
+      flex-direction: column;
+      resize: vertical;
+      height: 33vh;
+    }
+
+    .pane h1 {
+      color: #ededed;
+      background-color: #202020;
+      font-family: "Lucida Grande";
+      font-size: 1.5em;
+      display: block;
+      padding: 10px;
+    }
+
+    .pane > code {
+      overflow: scroll;
+      font: 1.1rem Monaco, monospace;
+      padding: 10px;
+    }
+  </style>
+</html>
