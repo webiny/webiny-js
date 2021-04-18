@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { BindComponentRenderProp, Form } from "@webiny/form";
 import { FbFormModelField, FormLayoutComponent } from "@webiny/app-form-builder/types";
 import { validation } from "@webiny/validation";
-import { plugins } from "@webiny/plugins";
+import { RichTextRenderer } from "@webiny/rich-text-renderer";
 
 import Input from "./fields/Input";
 import Select from "./fields/Select";
@@ -10,19 +10,6 @@ import Radio from "./fields/Radio";
 import Checkbox from "./fields/Checkbox";
 import Textarea from "./fields/Textarea";
 import HelperMessage from "./components/HelperMessage";
-import { RTEDataRendererPlugin } from "../../types";
-
-const renderRTEContent = data => {
-    const renderer = plugins
-        .byType<RTEDataRendererPlugin>("rte-data-renderer")
-        .find(pl => pl.outputType === "react");
-
-    if (!renderer) {
-        throw Error(`Missing "rte-data-renderer" for "react"`);
-    }
-
-    return renderer.render(data);
-};
 
 /**
  * This is the default form layout component, in which we render all the form fields. We also render terms of service
@@ -196,7 +183,7 @@ const DefaultFormLayout: FormLayoutComponent = ({
                                                 htmlFor={"webiny-tos-checkbox"}
                                                 className="webiny-fb-form-field__checkbox-label"
                                             >
-                                                {renderRTEContent(message)}
+                                                <RichTextRenderer data={message} />
                                             </label>
                                         </div>
                                     </div>
@@ -230,9 +217,11 @@ const DefaultFormLayout: FormLayoutComponent = ({
                 >
                     <div className="webiny-fb-form-form__success-message">
                         <div className="webiny-fb-form-field__label webiny-pb-typography-h3">
-                            {formData.settings.successMessage
-                                ? renderRTEContent(formData.settings.successMessage)
-                                : "Thanks!"}
+                            {formData.settings.successMessage ? (
+                                <RichTextRenderer data={formData.settings.successMessage} />
+                            ) : (
+                                "Thanks!"
+                            )}
                         </div>
                     </div>
                 </div>

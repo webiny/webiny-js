@@ -4,10 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "@editorjs/editorjs": "^2.19.1",
     "@webiny/app-page-builder": "^5.0.0-beta.0",
     "@webiny/form": "^5.0.0-beta.0",
-    "@webiny/plugins": "^5.0.0-beta.0",
     "@webiny/react-router": "^5.0.0-beta.0",
     "@webiny/app-form-builder": "^5.0.0-beta.0",
     "@webiny/validation": "^5.0.0-beta.0",
