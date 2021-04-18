@@ -6,6 +6,7 @@ const path = require("path");
 const Convert = require("ansi-to-html");
 const open = require("open");
 const { log } = require("@webiny/cli/utils");
+const Handlebars = require("handlebars");
 
 let server = {
     app: null,
@@ -26,14 +27,16 @@ module.exports = {
 
             const port = args.port || 3011;
             server.app.get("/", (req, res) => {
-                let html = fs.readFileSync(path.join(__dirname, "./browser/panes.html")).toString();
-                html = html.replace("{PORT}", String(port));
-                res.send(html);
+                const html = fs
+                    .readFileSync(path.join(__dirname, "./browser/panes.html"))
+                    .toString();
+                const template = Handlebars.compile(html);
+                res.send(template({ ...args, port }));
             });
 
             server.httpServer.listen(port, () => {
                 const destination = "http://localhost:" + port;
-                log.info(`Forwarding all output to ${log.info.hl(destination)}...`);
+                log.success(`Development server started at ${log.success.hl(destination)}.`);
                 open(destination);
             });
 
