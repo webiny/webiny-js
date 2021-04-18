@@ -5,6 +5,7 @@ const fs = require("fs");
 const path = require("path");
 const Convert = require("ansi-to-html");
 const open = require("open");
+const { log } = require("@webiny/cli/utils");
 
 let server = {
     app: null,
@@ -31,8 +32,9 @@ module.exports = {
             });
 
             server.httpServer.listen(port, () => {
-                console.log(`Dev server started on port ${port}.`);
-                open("http://localhost:" + port);
+                const destination = "http://localhost:" + port;
+                log.info(`Forwarding all output to ${log.info.hl(destination)}...`);
+                open(destination);
             });
 
             server.wss.on("connection", ws => {
