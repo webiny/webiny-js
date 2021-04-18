@@ -34,7 +34,7 @@ export type FbBuilderFormFieldValidatorPlugin = Plugin & {
 };
 
 export type FbFormFieldPatternValidatorPlugin = Plugin & {
-    type: "form-editor-field-validator-pattern";
+    type: "fb-form-field-validator-pattern";
     pattern: {
         name: string;
         message: string;
