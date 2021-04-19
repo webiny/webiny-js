@@ -7,9 +7,9 @@ import url from "url";
 export default () => {
     return {
         type: "ps-render-hook",
-        afterRender: async ({ log, configuration, args }) => {
+        afterRender: async ({ configuration, args }) => {
             // Let's create a cache invalidation request.
-            log("Trying to send a CloudFront cache invalidation request...");
+            console.log("Trying to send a CloudFront cache invalidation request...");
 
             let distributionId = args?.configuration?.meta?.cloudfront?.distributionId;
             if (!distributionId) {
@@ -17,25 +17,25 @@ export default () => {
             }
 
             if (!distributionId) {
-                log(`Exiting... CloudFront "distributionId" not provided.`);
+                console.log(`Exiting... CloudFront "distributionId" not provided.`);
                 return;
             }
 
-            log("Trying to get the path that needs to be invalidated...");
+            console.log("Trying to get the path that needs to be invalidated...");
             let path = args.path;
             if (!path) {
-                log(`Path wasn't passed via "args.path", trying to extract it from "args.url"...`);
+                console.log(`Path wasn't passed via "args.path", trying to extract it from "args.url"...`);
                 path = url.parse(args.url).pathname;
             }
 
             if (!path) {
-                log(`Aborting the cache invalidation attempt... "path" not detected.`);
+                console.log(`Aborting the cache invalidation attempt... "path" not detected.`);
                 return;
             }
 
             path += "*";
 
-            log(
+            console.log(
                 `Proceeding with issuing a cache invalidation request to CloudFront distribution "${distributionId}", path "${path}".`
             );
 
