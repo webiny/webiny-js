@@ -1589,6 +1589,10 @@ export interface ElasticsearchQueryBuilderValueSearchPlugin extends Plugin {
      * Transform value that is going to be searched for in the Elasticsearch.
      */
     transform: (args: ElasticsearchQueryBuilderValueSearchPluginArgs) => any;
+    /**
+     * Create a path to search in the Elasticsearch. Default one is values.fieldId.
+     */
+    createPath?: (args: Omit<ElasticsearchQueryBuilderValueSearchPluginArgs, "value">) => string;
 }
 
 /**
