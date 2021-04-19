@@ -4,8 +4,10 @@ import { noopener } from "posthtml-noopener";
 import injectApolloState from "./injectApolloState";
 import injectRenderId from "./injectRenderId";
 import injectRenderTs from "./injectRenderTs";
+import injectTenantLocale from "./injectTenantLocale";
 import getPsTags from "./getPsTags";
 import shortid from "shortid";
+import { Args as BaseHandlerArgs, Configuration, HandlerContext } from "./types";
 
 const windowSet = (page, name, value) => {
     page.evaluateOnNewDocument(`
@@ -18,12 +20,87 @@ const windowSet = (page, name, value) => {
 
 export type File = { type: string; body: any; name: string; meta: Record<string, any> };
 
-let browser;
-export default async (url: string, { log }): Promise<File[]> => {
-    const renderId = shortid.generate();
-    const renderTs = new Date().getTime();
+export default async (url: string, args: Args): Promise<[File[], Meta]> => {
+    const id = shortid.generate();
+    const ts = new Date().getTime();
 
-    log(`Rendering "${url}" (render ID: ${renderId})...`);
+    console.log(`Rendering "${url}" (render ID: ${id})...`);
+
+    const renderUrl =
+        typeof args.renderUrlFunction === "function"
+            ? args.renderUrlFunction
+            : defaultRenderUrlFunction;
+    const render = await renderUrl(url, args);
+
+    // Process HTML.
+    // TODO: should be plugins (will also eliminate lower @ts-ignore instructions).
+    console.log("Processing HTML...");
+
+    const allArgs = { render, args, url, id, ts };
+    const { html } = await posthtml([
+        noopener(),
+        // @ts-ignore
+        injectRenderId(allArgs),
+        // @ts-ignore
+        injectRenderTs(allArgs),
+        // @ts-ignore
+        injectApolloState(allArgs),
+        // @ts-ignore
+        injectTenantLocale(allArgs)
+    ]).process(render.content);
+
+    console.log("Processing HTML done.");
+
+    console.log(`Rendering "${url}" completed.`);
+
+    // TODO: should be plugins.
+    return [
+        [
+            {
+                name: "index.html",
+                body: html,
+                type: "text/html",
+                meta: {
+                    tags: getPsTags(html)
+                }
+            },
+            {
+                name: "graphql.json",
+                body: JSON.stringify(render.meta.gqlCache),
+                type: "application/json",
+                meta: {}
+            }
+        ],
+        allArgs
+    ];
+};
+
+let browser;
+
+type RenderResult = {
+    content: string;
+    meta: Record<string, any>;
+};
+
+type Args = {
+    context: HandlerContext;
+    args: BaseHandlerArgs;
+    configuration: Configuration;
+    renderUrlFunction?: (url: string) => RenderResult;
+};
+
+type Meta = {
+    url: string;
+    id: string;
+    ts: number;
+    render: RenderResult;
+    args: Args;
+};
+
+export const defaultRenderUrlFunction = async (
+    url: string,
+    args: Args
+): Promise<RenderResult> => {
     if (!browser) {
         browser = await chromium.puppeteer.launch({
             args: chromium.args,
@@ -36,8 +113,18 @@ export default async (url: string, { log }): Promise<File[]> => {
 
     const browserPage = await browser.newPage();
 
-    // Currently, this variable is not used but lets keep it here as an example of setting page window variables.
+    // Can be used to add additional logic - e.g. skip a GraphQL query to be made when in pre-rendering process.
     windowSet(browserPage, "__PS_RENDER__", true);
+
+    const tenant = args?.args?.configuration?.meta?.tenant;
+    if (tenant) {
+        windowSet(browserPage, "__PS_TENANT__", "root");
+    }
+
+    const locale = args?.args?.configuration?.meta?.locale;
+    if (locale) {
+        windowSet(browserPage, "__PS_LOCALE__", "en-GB");
+    }
 
     // Don't load these resources during prerender.
     const skipResources = ["image", "stylesheet"];
@@ -53,7 +140,7 @@ export default async (url: string, { log }): Promise<File[]> => {
         }
     });
 
-    // TODO: should be a plugin
+    // TODO: should be a plugin.
     browserPage.on("response", async response => {
         const request = response.request();
         const url = request.url();
@@ -80,34 +167,17 @@ export default async (url: string, { log }): Promise<File[]> => {
     // Load URL and wait for all network requests to settle.
     await browserPage.goto(url, { waitUntil: "networkidle0" });
 
-    // Process HTML.
-    // TODO: should be plugins.
-    log("Processing HTML...");
-    const { html } = await posthtml([
-        noopener(),
-        injectRenderId(browserPage, { log, renderId }),
-        injectRenderTs(browserPage, { log, renderTs }),
-        injectApolloState(browserPage, { log })
-    ]).process(await browserPage.content());
-    log("Processing HTML done.");
+    const apolloState = await browserPage.evaluate(() => {
+        // @ts-ignore
+        return window.getApolloState();
+    });
 
-    log(`Rendering "${url}" completed.`);
-
-    // TODO: should be plugins.
-    return [
-        {
-            name: "index.html",
-            body: html,
-            type: "text/html",
-            meta: {
-                tags: getPsTags(html)
-            }
-        },
-        {
-            name: "graphql.json",
-            body: JSON.stringify(gqlCache),
-            type: "application/json",
-            meta: {}
+    return {
+        content: await browserPage.content(),
+        // TODO: ideally, meta should be assigned here in a more "plugins style" way, not hardcoded.
+        meta: {
+            gqlCache,
+            apolloState
         }
-    ];
+    };
 };

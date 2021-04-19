@@ -28,7 +28,6 @@ export type HandlerContext = Context<DbContext, ArgsContext<HandlerArgs>>;
 export type HandlerPlugin = DefaultHandlerPlugin<HandlerContext>;
 
 export type HookCallbackFunction = (args: {
-    log: any;
     context: HandlerContext;
     configuration: Configuration;
     args: Args;
