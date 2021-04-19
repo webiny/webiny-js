@@ -1,7 +1,7 @@
-# @webiny/rich-text-renderer
+# @webiny/react-rich-text-renderer
 
-[![](https://img.shields.io/npm/dw/@webiny/rich-text-renderer.svg)](https://www.npmjs.com/package/@webiny/rich-text-renderer)
-[![](https://img.shields.io/npm/v/@webiny/rich-text-renderer.svg)](https://www.npmjs.com/package/@webiny/rich-text-renderer)
+[![](https://img.shields.io/npm/dw/@webiny/react-rich-text-renderer.svg)](https://www.npmjs.com/package/@webiny/react-rich-text-renderer)
+[![](https://img.shields.io/npm/v/@webiny/react-rich-text-renderer.svg)](https://www.npmjs.com/package/@webiny/react-rich-text-renderer)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
@@ -14,13 +14,13 @@ Webiny uses https://editorjs.io/ as a go to Rich Text Editor, with some addition
 ## Install
 
 ```
-npm install --save @webiny/rich-text-renderer
+npm install --save @webiny/react-rich-text-renderer
 ```
 
 Or if you prefer yarn:
 
 ```
-yarn add @webiny/rich-text-renderer
+yarn add @webiny/react-rich-text-renderer
 ```
 
 ## Usage
@@ -28,7 +28,7 @@ yarn add @webiny/rich-text-renderer
 Fetch your data from Headless CMS, then pass it to the component like this:
 
 ```tsx
-import { RichTextRenderer } from "@webiny/rich-text-renderer";
+import { RichTextRenderer } from "@webiny/react-rich-text-renderer";
 
 // Load content from Headless CMS (here we show what your content might look like).
 const content = [
@@ -51,7 +51,7 @@ const content = [
 You can override the default renderers or add new renderers for your custom block types like this:
 
 ```tsx
-import { RichTextRenderer, RichTextBlockRenderer } from "@webiny/rich-text-renderer";
+import { RichTextRenderer, RichTextBlockRenderer } from "@webiny/react-rich-text-renderer";
 
 const customRenderers: Record<string, RichTextBlockRenderer> = {
   // Override the default renderer for "delimiter" block

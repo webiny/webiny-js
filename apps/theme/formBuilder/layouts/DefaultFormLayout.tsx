@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { BindComponentRenderProp, Form } from "@webiny/form";
 import { FbFormModelField, FormLayoutComponent } from "@webiny/app-form-builder/types";
 import { validation } from "@webiny/validation";
-import { RichTextRenderer } from "@webiny/rich-text-renderer";
+import { RichTextRenderer } from "@webiny/react-rich-text-renderer";
 
 import Input from "./fields/Input";
 import Select from "./fields/Select";

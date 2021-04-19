@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/rich-text-renderer",
+  "name": "@webiny/react-rich-text-renderer",
   "version": "5.4.0",
   "main": "index.js",
   "repository": {
