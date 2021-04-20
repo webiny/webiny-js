@@ -1,5 +1,6 @@
 import mergeWith from "lodash/mergeWith";
 import isEmpty from "lodash/isEmpty";
+import { CmsContentModel } from "./types";
 
 type Group = {
     [code: string]: string[];
@@ -23,7 +24,10 @@ enum AccessTypes {
     CONTENT_ENTRY = "cms.contentEntry"
 }
 
-export const migrateCMSPermissions = (permissions: CMSPermission[]): CMSPermission[] => {
+export const migrateCMSPermissions = async (
+    permissions: CMSPermission[],
+    getModel: (modelId: string) => Promise<CmsContentModel>
+): Promise<CMSPermission[]> => {
     // First we've to know whether is a "full" access or "custom" access.
     const fullAccess = permissions.find(permission => permission.name === AccessTypes.FULL);
 
@@ -63,15 +67,14 @@ export const migrateCMSPermissions = (permissions: CMSPermission[]): CMSPermissi
                 newPermissions[entity] = DEFAULT_PERMISSIONS[entity];
             }
 
-            // Handle specific cases
+            // Handle specific cases.
             if (entity === AccessTypes.CONTENT_MODEL_GROUP) {
                 // Just to be on the safer side.
                 if (newPermissions[entity].own) {
                     setAccessScopeToOwn(newPermissions, entity);
                 }
             }
-
-            // Handle specific cases
+            // Handle specific cases.
             if (entity === AccessTypes.CONTENT_MODEL) {
                 // Just to be on the safer side.
                 if (newPermissions[entity].own) {
@@ -86,7 +89,7 @@ export const migrateCMSPermissions = (permissions: CMSPermission[]): CMSPermissi
                     moveGroups(newPermissions, entity);
                 }
             }
-
+            // Handle specific cases.
             if (entity === AccessTypes.CONTENT_ENTRY) {
                 // Just to be on the safer side.
                 if (newPermissions[entity].own) {
@@ -107,6 +110,41 @@ export const migrateCMSPermissions = (permissions: CMSPermission[]): CMSPermissi
             }
         }
     );
+
+    /*
+     * Sync "models" and "groups".
+     * If there is a model from "cms.contentModel" permission's models property;
+     * whose content group is missing from "cms.contentModelGroup" permission's groups property;
+     * we add that into "cms.contentModelGroup" permission.
+     *
+     * Why?
+     * Because, now the user must need to have at least READ permission on "cms.contentModelGroup" to access a model defined by "cms.contentModel".
+     * */
+    const contentModels = newPermissions[AccessTypes.CONTENT_MODEL].models;
+
+    if (!isEmpty(contentModels)) {
+        const contentModelGroups = newPermissions[AccessTypes.CONTENT_MODEL_GROUP].groups || {};
+
+        const locales = Object.keys(contentModels);
+        for (let i = 0; i < locales.length; i++) {
+            const code = locales[i];
+            for (let j = 0; j < contentModels[code].length; j++) {
+                const modelId = contentModels[code][j];
+                // Check if we've access to it's contentModelGroup.
+                const { group } = await getModel(modelId);
+
+                if (isEmpty(contentModelGroups[code])) {
+                    contentModelGroups[code] = [];
+                }
+                if (!contentModelGroups[code].includes(group.id)) {
+                    contentModelGroups[code].push(group.id);
+                }
+            }
+        }
+
+        // Update "groups" value in permission.
+        newPermissions[AccessTypes.CONTENT_MODEL_GROUP].groups = contentModelGroups;
+    }
 
     return Object.values(newPermissions);
 };
