@@ -65,15 +65,17 @@ export const SimpleFormHeader = (props: {
 }) => {
     return (
         <Grid className={header}>
-            <Cell span={6} className={title}>
+            <Cell span={props.children ? 6 : 12} className={title}>
                 <React.Fragment>
                     {props.icon && <Icon className={icon} icon={props.icon} />}
                     <Typography use="headline5">{props.title}</Typography>
                 </React.Fragment>
             </Cell>
-            <Cell span={6} className={actions}>
-                {props.children}
-            </Cell>
+            {props.children && (
+                <Cell span={6} className={actions}>
+                    {props.children}
+                </Cell>
+            )}
         </Grid>
     );
 };
