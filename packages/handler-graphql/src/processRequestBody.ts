@@ -1,14 +1,22 @@
-import { graphql } from "graphql";
+import { graphql, GraphQLSchema } from "graphql";
+import { GraphQLAfterQueryPlugin, GraphQLBeforeQueryPlugin, GraphQLRequestBody } from "./types";
+import { Context } from "@webiny/handler/types";
 
-const processRequestBody = async (body, schema, context) => {
+const processRequestBody = async (
+    body: GraphQLRequestBody,
+    schema: GraphQLSchema,
+    context: Context
+) => {
     const { query, variables, operationName } = body;
 
-    context.plugins.byType("handler-graphql-before-query").forEach(pl => pl.apply(context));
+    context.plugins
+        .byType<GraphQLBeforeQueryPlugin>("graphql-before-query")
+        .forEach(pl => pl.apply({ body, schema, context }));
 
     const result = await graphql(schema, query, {}, context, variables, operationName);
 
-    context.plugins.byType("handler-graphql-after-query").forEach(pl => {
-        pl.apply(result, context);
+    context.plugins.byType<GraphQLAfterQueryPlugin>("graphql-after-query").forEach(pl => {
+        pl.apply({ result, body, schema, context });
     });
 
     return result;

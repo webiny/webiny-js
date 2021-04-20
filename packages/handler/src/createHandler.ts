@@ -1,11 +1,5 @@
 import { PluginsContainer } from "@webiny/plugins";
-import {
-    ContextPlugin,
-    Context,
-    HandlerPlugin,
-    HandlerResultPlugin,
-    HandlerErrorPlugin
-} from "./types";
+import { Context, HandlerResultPlugin, ContextPlugin, HandlerPlugin, HandlerErrorPlugin, BeforeHandlerPlugin } from "./types";
 import middleware from "./middleware";
 
 export default (...plugins) => async (...args) => {
@@ -35,6 +29,13 @@ async function handle(args, context: Context) {
         for (let i = 0; i < contextPlugins.length; i++) {
             if (contextPlugins[i].apply) {
                 await contextPlugins[i].apply(context);
+            }
+        }
+
+        const beforeHandlerPlugins = context.plugins.byType<BeforeHandlerPlugin>("before-handler");
+        for (let i = 0; i < beforeHandlerPlugins.length; i++) {
+            if (beforeHandlerPlugins[i].apply) {
+                await beforeHandlerPlugins[i].apply(context);
             }
         }
 
