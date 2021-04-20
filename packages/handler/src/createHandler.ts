@@ -1,5 +1,12 @@
 import { PluginsContainer } from "@webiny/plugins";
-import { Context, HandlerResultPlugin, ContextPlugin, HandlerPlugin, HandlerErrorPlugin, BeforeHandlerPlugin } from "./types";
+import {
+    Context,
+    HandlerResultPlugin,
+    ContextPlugin,
+    HandlerPlugin,
+    HandlerErrorPlugin,
+    BeforeHandlerPlugin
+} from "./types";
 import middleware from "./middleware";
 
 export default (...plugins) => async (...args) => {
