@@ -72,7 +72,7 @@ yargs.command(
             demandOption: false
         });
         yargs.option("cleanup", {
-            describe: "If an error occurs upon project creation, deletes all generated files.",
+            describe: "If an error occurs upon project creation, deletes all generated files",
             alias: "c",
             default: true,
             type: "boolean",

@@ -28,17 +28,20 @@ const deploy = (stack, env, inputs) =>
 module.exports = async (inputs, context) => {
     const { env = "dev" } = inputs;
 
-    // 0. Let's just make sure Pulumi is installed.
-    const installed = await getPulumi().install();
+    // 0. Let's just make sure Pulumi is installed. But, let skip installation starting internally.
+    const pulumi = await getPulumi({}, { install: false });
+
+    // 0.1 Calling the install manually here, we get to know if the installation was initiated or not.
+    const installed = await pulumi.install();
 
     // If we just installed Pulumi, let's add a new line.
     installed && console.log();
 
     // 1. Get exports from `website` stack, for `args.env` environment.
-    const apiStackOutput = await getStackOutput("api", env);
-    const appsAdmin = await getStackOutput("apps/admin", env);
-    const appsWebsite = await getStackOutput("apps/website", env);
-    const isFirstDeployment = !apiStackOutput && !appsAdmin && !appsWebsite;
+    const apiOutput = await getStackOutput("api", env);
+    const adminOutput = await getStackOutput("apps/admin", env);
+    const websiteOutput = await getStackOutput("apps/website", env);
+    const isFirstDeployment = !apiOutput && !adminOutput && !websiteOutput;
     if (isFirstDeployment) {
         context.info(
             `This is your first time deploying the project (${green(

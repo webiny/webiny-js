@@ -9,7 +9,6 @@ import util from "util";
 import ncpBase from "ncp";
 import readJson from "load-json-file";
 import writeJson from "write-json-file";
-import findUp from "find-up";
 import pluralize from "pluralize";
 import Case from "case";
 import { replaceInPath } from "replace-in-path";
@@ -18,6 +17,7 @@ import indentString from "indent-string";
 import WebinyError from "@webiny/error";
 import execa from "execa";
 import validateNpmPackageName from "validate-npm-package-name";
+import { getProjectRoot } from "@webiny/cli/utils";
 
 const ncp = util.promisify(ncpBase.ncp);
 
@@ -113,11 +113,10 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 throw new WebinyError(`Destination folder ${fullLocation} already exists.`);
             }
 
-            const projectRootPath = path.dirname(
-                findUp.sync("webiny.root.js", {
-                    cwd: fullLocation
-                })
-            );
+            const projectRootPath = getProjectRoot({
+                cwd: fullLocation
+            });
+
             const locationRelative = path.relative(projectRootPath, fullLocation);
 
             const relativeRootPath = path.relative(fullLocation, projectRootPath);

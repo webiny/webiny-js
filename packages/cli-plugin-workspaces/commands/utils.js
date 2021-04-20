@@ -3,7 +3,7 @@ const { join, resolve } = require("path");
 const multimatch = require("multimatch");
 const { allWorkspaces } = require("@webiny/project-utils/workspaces");
 
-const createGraph = packages => {
+const createGraph = (packages, options = {}) => {
     const graph = new Graph();
     const packageNames = packages.map(pkg => pkg.name);
 
@@ -26,7 +26,7 @@ const createGraph = packages => {
         });
     });
 
-    validateGraph(graph);
+    options.validate !== false && validateGraph(graph);
 
     return graph;
 };
@@ -48,35 +48,55 @@ const validateGraph = graph => {
     }
 };
 
-const getPackages = ({ script, folders, scopes }) => {
-    return allWorkspaces()
-        .filter(pkgPath => {
-            if (!folders.length) {
-                return true;
-            }
+const getPackages = ({ script, folders, ignoreFolders, scopes, ignoreScopes } = {}) => {
+    let packages = allWorkspaces();
+
+    if (ignoreFolders && ignoreFolders.length) {
+        packages = packages.filter(pkgPath => {
+            // Check if workspace path starts with any of the requested folders
+            return !ignoreFolders.some(folder => pkgPath.startsWith(resolve(folder)));
+        });
+    }
+
+    if (folders && folders.length) {
+        packages = packages.filter(pkgPath => {
             // Check if workspace path starts with any of the requested folders
             return folders.some(folder => pkgPath.startsWith(resolve(folder)));
-        })
-        .map(folder => {
-            const json = require(join(folder, "package.json"));
-            return {
-                json,
-                name: json.name,
-                path: folder
-            };
-        })
-        .filter(pkg => {
-            return Boolean(pkg.json.scripts && pkg.json.scripts[script]);
-        })
-        .filter(pkg => {
-            if (!scopes.length) {
-                return true;
-            }
+        });
+    }
 
+    packages = packages.map(folder => {
+        const json = require(join(folder, "package.json"));
+        return {
+            json,
+            name: json.name,
+            path: folder
+        };
+    });
+
+    if (script) {
+        packages = packages.filter(pkg => {
+            return Boolean(pkg.json.scripts && pkg.json.scripts[script]);
+        });
+    }
+
+    if (scopes && scopes.length) {
+        packages = packages.filter(pkg => {
             const [match] = multimatch(pkg.name, scopes);
 
             return Boolean(match);
         });
+    }
+
+    if (ignoreScopes && ignoreScopes.length) {
+        packages = packages.filter(pkg => {
+            const [match] = multimatch(pkg.name, ignoreScopes);
+
+            return !Boolean(match);
+        });
+    }
+
+    return packages;
 };
 
 const normalizeArray = value => {
