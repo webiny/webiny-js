@@ -1,6 +1,15 @@
 import { CmsContext, CmsModelFieldToGraphQLPlugin } from "../../../types";
 import { createReadTypeName } from "../utils/createTypeName";
 
+const createListFilters = ({ field }) => {
+    return `
+        ${field.fieldId}: String
+        ${field.fieldId}_in: [String!]
+        ${field.fieldId}_not: String
+        ${field.fieldId}_not_in: [String!]
+    `;
+};
+
 const plugin: CmsModelFieldToGraphQLPlugin = {
     name: "cms-model-field-to-graphql-ref",
     type: "cms-model-field-to-graphql",
@@ -52,7 +61,8 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
 
                 return revisions[0];
             };
-        }
+        },
+        createListFilters
     },
     manage: {
         createSchema() {
@@ -84,7 +94,8 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             }
 
             return field.fieldId + ": RefFieldInput";
-        }
+        },
+        createListFilters
     }
 };
 

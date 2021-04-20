@@ -1,7 +1,8 @@
-const { buildFunction } = require("@webiny/project-utils");
+const { buildFunction, watchFunction } = require("@webiny/project-utils");
 
 module.exports = {
     commands: {
-        build: buildFunction
+        build: buildFunction,
+        watch: watchFunction
     }
 };

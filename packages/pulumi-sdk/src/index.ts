@@ -38,10 +38,8 @@ export class Pulumi {
         this.defaultArgs = options;
     }
 
-    async run(rawArgs: RunArgs) {
+    run(rawArgs: RunArgs) {
         const args = merge({}, this.defaultArgs, rawArgs);
-
-        await this.install(rawArgs);
 
         if (!Array.isArray(args.command)) {
             args.command = [args.command];

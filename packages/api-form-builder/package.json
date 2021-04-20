@@ -47,6 +47,7 @@
     "@elastic/elasticsearch": "^7.9.1",
     "@shelf/jest-elasticsearch": "^1.0.0",
     "@webiny/api-dynamodb-to-elasticsearch": "^5.4.0",
+    "@webiny/cli": "^5.4.0",
     "@webiny/project-utils": "^5.4.0",
     "csvtojson": "^2.0.10",
     "jest": "^26.6.3",
@@ -59,9 +60,8 @@
     "directory": "dist"
   },
   "scripts": {
-    "build": "rimraf ./dist '*.tsbuildinfo' && babel src -d dist --source-maps --copy-files --extensions \".ts\" && yarn postbuild",
-    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts\" --watch",
-    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
+    "build": "yarn webiny run build",
+    "watch": "yarn webiny run watch"
   },
   "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
 }

@@ -18,6 +18,7 @@ import {
     TsConfigJson
 } from "@webiny/cli-plugin-scaffold/types";
 import validateNpmPackageName from "validate-npm-package-name";
+import { getProjectRoot } from "@webiny/cli/utils";
 
 const ncp = util.promisify(ncpBase.ncp);
 
@@ -100,11 +101,10 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             const { location, entityName, packageName: initialPackageName } = input;
             const fullLocation = path.resolve(location);
 
-            const projectRootPath = path.dirname(
-                findUp.sync("webiny.root.js", {
-                    cwd: fullLocation
-                })
-            );
+            const projectRootPath = getProjectRoot({
+                cwd: fullLocation
+            });
+
             const locationRelative = path.relative(projectRootPath, fullLocation);
 
             const packageName = createPackageName({

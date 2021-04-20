@@ -80,7 +80,7 @@ module.exports = {
                     // Get all existing environments
                     const glob = require("fast-glob");
                     const pulumiFiles = await glob(["**/Pulumi.*.yaml"], {
-                        cwd: context.paths.projectRoot,
+                        cwd: context.project.root,
                         onlyFiles: true,
                         ignore: ["**/node_modules/**"]
                     });

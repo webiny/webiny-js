@@ -62,7 +62,9 @@ class FileManager {
             }),
             layers: [getLayerArn("webiny-v4-sharp", String(process.env.AWS_REGION))],
             environment: {
-                variables: { S3_BUCKET: this.bucket.id }
+                variables: {
+                    S3_BUCKET: this.bucket.id
+                }
             },
             vpcConfig: {
                 subnetIds: vpc.subnets.private.map(subNet => subNet.id),
@@ -81,7 +83,9 @@ class FileManager {
                 ".": new pulumi.asset.FileArchive("../code/fileManager/manage/build")
             }),
             environment: {
-                variables: { S3_BUCKET: this.bucket.id }
+                variables: {
+                    S3_BUCKET: this.bucket.id
+                }
             },
             vpcConfig: {
                 subnetIds: vpc.subnets.private.map(subNet => subNet.id),

@@ -13,7 +13,7 @@ A plugin for @webiny/cli that provides scaffolding capabilities by means of scaf
 yarn add @webiny/cli-plugin-scaffold
 ```
 
-Add plugin to your project by editing `webiny.root.js`:
+Add plugin to your project by editing `webiny.project.js`:
 
 ```js
 module.exports = {

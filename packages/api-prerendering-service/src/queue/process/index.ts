@@ -56,15 +56,6 @@ export default (configuration: Configuration): HandlerPlugin => ({
                 }
             }
 
-            for (let j = 0; j < handlerHookPlugins.length; j++) {
-                const plugin = handlerHookPlugins[j];
-                if (typeof plugin.afterProcess === "function") {
-                    await plugin.afterProcess({
-                        context
-                    });
-                }
-            }
-
             log("Fetching all of the jobs added to the queue...");
             const [allJobs] = await context.db.read<DbQueueJob>({
                 ...defaults.db,
@@ -350,7 +341,17 @@ export default (configuration: Configuration): HandlerPlugin => ({
                 // TODO: probably a good amount of code can be copied from above render processing.
             }
 
-            log("All queue jobs processed, exiting...");
+            log(`All queue jobs processed, triggering "afterProcess" hook...`);
+
+            for (let j = 0; j < handlerHookPlugins.length; j++) {
+                const plugin = handlerHookPlugins[j];
+                if (typeof plugin.afterProcess === "function") {
+                    await plugin.afterProcess({
+                        context
+                    });
+                }
+            }
+
             return { data: { stats }, error: null };
         } catch (e) {
             log("An error occurred while trying to add to prerendering queue...", e);

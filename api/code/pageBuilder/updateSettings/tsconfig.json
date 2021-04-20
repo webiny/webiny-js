@@ -4,6 +4,7 @@
     { "path": "../../../../packages/api-page-builder" },
     { "path": "../../../../packages/api-i18n" },
     { "path": "../../../../packages/handler-aws" },
+    { "path": "../../../../packages/handler-logs" },
     { "path": "../../../../packages/handler-db" },
     { "path": "../../../../packages/db-dynamodb" }
   ]

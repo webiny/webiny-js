@@ -13,7 +13,7 @@ A plugin for @webiny/cli-plugin-scaffold that generates a simple React component
 yarn add @webiny/cli-plugin-scaffold-react-component
 ```
 
-Add the plugin to your project by editing `webiny.root.js`:
+Add the plugin to your project by editing `webiny.project.js`:
 
 ```js
 module.exports = {
