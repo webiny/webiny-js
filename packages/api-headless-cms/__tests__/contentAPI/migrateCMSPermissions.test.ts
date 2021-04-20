@@ -1,267 +1,68 @@
 import { migrateCMSPermissions } from "../../src/migrateCMSPermissions";
+import * as mocked from "./mocks/cmsContentPermissions";
 
 describe("migrate CMS permissions from v5.4.0 to v5.5.0", () => {
     test("should return same permission in case of 'full access'", async () => {
         const permissions = [{ name: "cms.*" }];
 
-        const result = migrateCMSPermissions(permissions);
+        const result = await migrateCMSPermissions(permissions, mocked.mockedGetModel);
 
         expect(result).toEqual(permissions);
     });
 
-    test("case 1", () => {
-        const prevPermissions = [
-            {
-                name: "cms.contentModel",
-                models: { "en-US": ["iPhone", "mac"] },
-                rwd: "r",
-                own: false,
-                pw: null
-            },
-            { name: "cms.contentModelGroup", rwd: "r", own: false, pw: null },
-            {
-                name: "cms.contentEntry",
-                groups: { "en-US": ["607976acdbbbbb0008a9d2cc", "607976e3746db30008452c8f"] },
-                rwd: "r",
-                own: false,
-                pw: null
-            }
-        ];
+    test(`should move "groups" from contentEntry to contentModelGroup`, async () => {
+        const result = await migrateCMSPermissions(
+            mocked.permissionsOne.input,
+            mocked.mockedGetModel
+        );
 
-        const nextPermissions = [
-            {
-                name: "cms.contentModelGroup",
-                rwd: "r",
-                own: false,
-                pw: null,
-                groups: { "en-US": ["607976acdbbbbb0008a9d2cc", "607976e3746db30008452c8f"] }
-            },
-            {
-                name: "cms.contentModel",
-                models: { "en-US": ["iPhone", "mac"] },
-                rwd: "r",
-                own: false,
-                pw: null
-            },
-            {
-                name: "cms.contentEntry",
-                rwd: "r",
-                own: false,
-                pw: null
-            }
-        ];
-
-        const result = migrateCMSPermissions(prevPermissions);
-
-        expect(result).toEqual(nextPermissions);
+        expect(result).toEqual(mocked.permissionsOne.output);
     });
 
-    test("case 2", () => {
-        const prevPermissions = [
-            {
-                name: "cms.contentModel",
-                models: { "en-US": ["iPhone", "watch"], "en-UK": ["tv+"] },
-                groups: { "en-US": ["someGroupId"] },
-                rwd: "r",
-                own: false,
-                pw: null
-            },
-            {
-                name: "cms.contentModelGroup",
-                rwd: "r",
-                own: false,
-                pw: null,
-                groups: { "en-US": ["dummyId", "607976e3746db30008452c8f"] }
-            },
-            {
-                name: "cms.contentEntry",
-                groups: { "en-US": ["607976acdbbbbb0008a9d2cc", "607976e3746db30008452c8f"] },
-                models: { "en-US": ["iPhone", "mac"] },
-                rwd: "r",
-                own: false,
-                pw: null
-            }
-        ];
+    test(`should move "models" from contentEntry to contentModel`, async () => {
+        const result = await migrateCMSPermissions(
+            mocked.permissionTwo.input,
+            mocked.mockedGetModel
+        );
 
-        const nextPermissions = [
-            {
-                name: "cms.contentModelGroup",
-                rwd: "r",
-                own: false,
-                pw: null,
-                groups: {
-                    "en-US": [
-                        "dummyId",
-                        "607976e3746db30008452c8f",
-                        "someGroupId",
-                        "607976acdbbbbb0008a9d2cc"
-                    ]
-                }
-            },
-            {
-                name: "cms.contentModel",
-                models: { "en-US": ["iPhone", "watch", "mac"], "en-UK": ["tv+"] },
-                rwd: "r",
-                own: false,
-                pw: null
-            },
-            {
-                name: "cms.contentEntry",
-                rwd: "r",
-                own: false,
-                pw: null
-            }
-        ];
+        expect(result).toEqual(mocked.permissionTwo.output);
+    });
 
-        const result = migrateCMSPermissions(prevPermissions);
+    test(`should add missing "groups" in contentModelGroup`, async () => {
+        const result = await migrateCMSPermissions(
+            mocked.permissionThree.input,
+            mocked.mockedGetModel
+        );
 
-        expect(result).toEqual(nextPermissions);
+        expect(result).toEqual(mocked.permissionThree.output);
     });
 });
 
 describe(`should handle "own" access scope`, () => {
-    test(`case 1`, () => {
-        const prevPermissions = [
-            {
-                name: "cms.contentModel",
-                rwd: "rwd",
-                own: true,
-                pw: null
-            },
-            {
-                name: "cms.contentEntry",
-                groups: { "en-US": ["607976acdbbbbb0008a9d2cc", "607976e3746db30008452c8f"] },
-                models: { "en-US": ["iPhone", "mac"] },
-                rwd: "r",
-                own: false,
-                pw: null
-            }
-        ];
+    test(`should add missing "read" access to contentModelGroup`, async () => {
+        const result = await migrateCMSPermissions(
+            mocked.ownPermissionOne.input,
+            mocked.mockedGetModel
+        );
 
-        const nextPermissions = [
-            {
-                name: "cms.contentModelGroup",
-                rwd: "r",
-                own: false
-            },
-            {
-                name: "cms.contentModel",
-                rwd: "rwd",
-                own: true,
-                pw: null
-            },
-            {
-                name: "cms.contentEntry",
-                rwd: "rwd",
-                own: true,
-                pw: null
-            }
-        ];
-
-        const result = migrateCMSPermissions(prevPermissions);
-
-        expect(result).toEqual(nextPermissions);
+        expect(result).toEqual(mocked.ownPermissionOne.output);
     });
 
-    test("case 2", () => {
-        const prevPermissions = [
-            {
-                name: "cms.contentModelGroup",
-                rwd: "r",
-                own: true
-            },
-            {
-                name: "cms.contentModel",
-                rwd: "rwd",
-                own: true,
-                pw: null
-            },
-            {
-                name: "cms.contentEntry",
-                groups: { "en-US": ["607976acdbbbbb0008a9d2cc", "607976e3746db30008452c8f"] },
-                models: { "en-US": ["iPhone", "mac"] },
-                rwd: "r",
-                own: false,
-                pw: null
-            }
-        ];
+    test(`should update contentEntry access scope to "own" if contentModel has "own" access scope`, async () => {
+        const result = await migrateCMSPermissions(
+            mocked.ownPermissionTwo.input,
+            mocked.mockedGetModel
+        );
 
-        const nextPermissions = [
-            {
-                name: "cms.contentModelGroup",
-                rwd: "rwd",
-                own: true
-            },
-            {
-                name: "cms.contentModel",
-                rwd: "rwd",
-                own: true,
-                pw: null
-            },
-            {
-                name: "cms.contentEntry",
-                rwd: "rwd",
-                own: true,
-                pw: null
-            }
-        ];
-
-        const result = migrateCMSPermissions(prevPermissions);
-
-        expect(result).toEqual(nextPermissions);
+        expect(result).toEqual(mocked.ownPermissionTwo.output);
     });
 
-    test("case 3", () => {
-        const prevPermissions = [
-            {
-                name: "cms.contentEntry",
-                groups: { "en-US": ["607976acdbbbbb0008a9d2cc", "607976e3746db30008452c8f"] },
-                models: { "en-US": ["iPhone", "mac"] },
-                rwd: "r",
-                own: true,
-                pw: null
-            }
-        ];
+    test(`should add missing "read" access to contentModelGroup and contentModel`, async () => {
+        const result = await migrateCMSPermissions(
+            mocked.ownPermissionThree.input,
+            mocked.mockedGetModel
+        );
 
-        const nextPermissions = [
-            {
-                name: "cms.contentModelGroup",
-                rwd: "r",
-                own: false
-            },
-            {
-                name: "cms.contentModel",
-                rwd: "r",
-                own: false
-            },
-            {
-                name: "cms.contentEntry",
-                rwd: "rwd",
-                own: true,
-                pw: null
-            }
-        ];
-
-        const result = migrateCMSPermissions(prevPermissions);
-
-        expect(result).toEqual(nextPermissions);
+        expect(result).toEqual(mocked.ownPermissionThree.output);
     });
-});
-
-test("Sample", () => {
-    const permissions = [
-        { name: "content.i18n" },
-        { name: "cms.endpoints.manage" },
-        { name: "cms.*" },
-        { name: "fm.file" }
-    ];
-
-    const cmsOnly = permissions.filter(p => p.name.includes("cms."));
-    const cmsEndpointsOnly = permissions.filter(p => p.name.includes("cms.endpoints."));
-    const rest = permissions.filter(p => !p.name.includes("cms."));
-
-    expect(cmsEndpointsOnly).toHaveLength(1);
-    console.log(cmsEndpointsOnly);
-    expect(cmsOnly).toEqual([{ name: "cms.endpoints.manage" }, { name: "cms.*" }]);
-    expect(rest).toEqual([{ name: "content.i18n" }, { name: "fm.file" }]);
 });
