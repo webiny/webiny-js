@@ -2,21 +2,23 @@ import WebinyError from "@webiny/error";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { CmsContext } from "../../../types";
 import { migrateCMSPermissions } from "../../../migrateCMSPermissions";
+import { isCmsContentPermission } from "./helpers";
 
 const plugin: UpgradePlugin<CmsContext> = {
     name: "api-upgrade-cms",
     type: "api-upgrade",
     app: "headless-cms",
-    version: "5.5.0-next.0", // TODO: change it to v5.5.0 after testing.
+    version: "5.5.0",
     async apply(context) {
         console.log("Started CMS permissions migration.");
+        // Migrate "Groups"
         try {
-            const { security } = context;
+            const { security, cms } = context;
             const tenant = security.getTenant();
             // Check if there is any "SecurityGroup" that contains "cms" permissions.
             const securityGroups = await security.groups.listGroups(tenant);
             const securityGroupsWithCmsPermission = securityGroups.filter(group =>
-                group.permissions.some(permission => permission.name.includes("cms."))
+                group.permissions.some(isCmsContentPermission)
             );
             const exists = securityGroupsWithCmsPermission.length > 0;
             if (!exists) {
@@ -24,30 +26,27 @@ const plugin: UpgradePlugin<CmsContext> = {
                 return;
             }
 
-            //  Get each such group
+            // For each such group, migrate permissions.
             for (let i = 0; i < securityGroupsWithCmsPermission.length; i++) {
                 const securityGroup = securityGroupsWithCmsPermission[i];
                 console.log(`Updating permission for group: ${securityGroup.slug}`);
-                // Migrate CMS permissions
+                // Filter CMS content permissions.
                 const CMSContentPermissions = securityGroup.permissions.filter(
-                    permission =>
-                        permission.name.includes("cms.") &&
-                        !permission.name.includes("cms.endpoint.")
+                    isCmsContentPermission
                 );
                 const restPermissions = securityGroup.permissions.filter(
-                    permission =>
-                        !(
-                            permission.name.includes("cms.") &&
-                            !permission.name.includes("cms.endpoint.")
-                        )
+                    permission => !isCmsContentPermission(permission)
                 );
 
                 if (CMSContentPermissions.length === 0) {
                     console.log("Skipping...");
                     continue;
                 }
-
-                const newCMSContentPermissions = migrateCMSPermissions(CMSContentPermissions);
+                // Migrate CMS permissions
+                const newCMSContentPermissions = await migrateCMSPermissions(
+                    CMSContentPermissions,
+                    cms.models.get
+                );
 
                 const newPermissions = [...restPermissions, ...newCMSContentPermissions];
                 console.log(`Saving new permissions for group: ${securityGroup.slug}`);
@@ -59,10 +58,62 @@ const plugin: UpgradePlugin<CmsContext> = {
             }
 
             // Indicate completion
-            console.log("Finish CMS permissions migration.");
+            console.log("Finish CMS permissions migration for [Security groups].");
         } catch (e) {
             console.log(e);
-            throw new WebinyError("CMS permissions migration failed!");
+            throw new WebinyError("[Security groups] CMS permissions migration failed!");
+        }
+
+        // Migrate "API Keys"
+        try {
+            const { security, cms } = context;
+            // Check if there is any "APIKey" that contains "cms" permissions.
+            const ApiKeys = await security.apiKeys.listApiKeys();
+            const ApiKeysWithCmsPermission = ApiKeys.filter(key =>
+                key.permissions.some(isCmsContentPermission)
+            );
+            const exists = ApiKeysWithCmsPermission.length > 0;
+            if (!exists) {
+                console.log("No API keys with CMS permissions exists.");
+                return;
+            }
+
+            // For each such API key, migrate permissions.
+            for (let i = 0; i < ApiKeysWithCmsPermission.length; i++) {
+                const apiKey = ApiKeysWithCmsPermission[i];
+                console.log(`Updating permission for API key: ${apiKey.name}`);
+                // Filter CMS content permissions.
+                const CMSContentPermissions = apiKey.permissions.filter(isCmsContentPermission);
+                const restPermissions = apiKey.permissions.filter(
+                    permission => !isCmsContentPermission(permission)
+                );
+
+                if (CMSContentPermissions.length === 0) {
+                    console.log("Skipping...");
+                    continue;
+                }
+                // Migrate CMS permissions.
+                const newCMSContentPermissions = await migrateCMSPermissions(
+                    CMSContentPermissions,
+                    cms.models.get
+                );
+
+                const newPermissions = [...restPermissions, ...newCMSContentPermissions];
+                console.log(`Saving new permissions for API key: ${apiKey.name}`);
+                console.log("newPermissions: ", JSON.stringify(newPermissions, null, 2));
+                // Save API key
+                await security.apiKeys.updateApiKey(apiKey.id, {
+                    name: apiKey.name,
+                    description: apiKey.description,
+                    permissions: newPermissions
+                });
+            }
+
+            // Indicate completion
+            console.log("Finish CMS permissions migration for API keys.");
+        } catch (e) {
+            console.log(e);
+            throw new WebinyError("[API keys] CMS permissions migration failed!");
         }
     }
 };
