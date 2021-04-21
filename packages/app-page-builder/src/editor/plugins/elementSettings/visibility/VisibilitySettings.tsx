@@ -8,7 +8,7 @@ import { Switch } from "@webiny/ui/Switch";
 import {
     PbEditorPageElementSettingsRenderComponentProps,
     PbEditorResponsiveModePlugin
-} from "../../../../types";
+} from "~/types";
 import {
     activeElementAtom,
     elementWithChildrenByIdSelector,
