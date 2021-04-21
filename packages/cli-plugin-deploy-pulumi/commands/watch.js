@@ -245,6 +245,15 @@ module.exports = async (inputs, context) => {
                     message: data.toString()
                 });
             });
+
+            context.onExit(() => {
+                return new Promise(resolve => {
+                    const kill = require("tree-kill");
+                    kill(watchPackages.pid, "SIGTERM", () => {
+                        resolve();
+                    });
+                });
+            });
         }
     } catch (e) {
         output.error(e);
