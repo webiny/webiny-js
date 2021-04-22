@@ -9004,6 +9004,7 @@ __metadata:
     execa: ^4.0.3
     lodash: ^4.17.4
     rimraf: ^3.0.2
+    semver: ^7.3.5
     tar: ^6.0.5
     typescript: ^4.1.3
   languageName: unknown
