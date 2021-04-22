@@ -29,7 +29,9 @@
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
+    "@webiny/cli": "^5.4.0",
     "@webiny/handler-args": "^5.4.0",
+    "@webiny/project-utils": "^5.4.0",
     "jest": "^26.6.3",
     "jest-mock-console": "^1.0.0",
     "rimraf": "^3.0.2",
@@ -40,9 +42,8 @@
     "directory": "dist"
   },
   "scripts": {
-    "build": "rimraf ./dist '*.tsbuildinfo' && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" && yarn postbuild",
-    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" --watch",
-    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
+    "build": "yarn webiny run build",
+    "watch": "yarn webiny run watch"
   },
   "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
 }

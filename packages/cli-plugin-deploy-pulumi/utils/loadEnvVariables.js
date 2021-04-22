@@ -10,7 +10,7 @@ const path = require("path");
 module.exports = async (inputs, context) => {
     const { folder, env, debug } = inputs;
 
-    const projectRoot = context.paths.projectRoot;
+    const projectRoot = context.project.root;
 
     if (env) {
         await context.loadEnv(path.resolve(projectRoot, folder, `.env.${env}`), { debug });

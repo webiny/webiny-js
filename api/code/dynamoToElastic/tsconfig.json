@@ -2,6 +2,7 @@
   "extends": "../../../tsconfig",
   "references": [
     { "path": "../../../packages/handler-aws" },
+    { "path": "../../../packages/handler-logs" },
     {
       "path": "../../../packages/api-plugin-elastic-search-client"
     },

@@ -5,8 +5,8 @@ const { green } = require("chalk");
 module.exports = {
     type: "hook-before-deploy",
     name: "hook-before-deploy-es-service-role",
-    async hook({ stack }, context) {
-        if (stack !== "api") {
+    async hook({ projectApplication }, context) {
+        if (projectApplication.name !== "api") {
             return;
         }
 
