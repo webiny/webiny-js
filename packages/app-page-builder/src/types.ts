@@ -463,6 +463,9 @@ export type PbEditorToolbarTopPlugin = Plugin & {
     renderAction(): ReactElement;
     renderDialog?: () => ReactElement;
     renderDrawer?: () => ReactElement;
+    toolbar?: {
+        drawerClassName?: string;
+    };
 };
 
 export type PbEditorToolbarBottomPlugin = Plugin & {
