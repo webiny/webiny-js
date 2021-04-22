@@ -5,6 +5,7 @@
     "node_modules",
     "dist",
     "../db-dynamodb",
+    "../error",
     "../handler",
     "../handler-http",
     "../handler-db",

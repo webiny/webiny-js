@@ -1,7 +1,7 @@
 const { green, red } = require("chalk");
-const loadEnvVariables = require("../utils/loadEnvVariables");
-const getPulumi = require("../utils/getPulumi");
-const login = require("../utils/login");
+const { login, getPulumi, loadEnvVariables } = require("../utils");
+const { getProjectApplication } = require("@webiny/cli/utils");
+const path = require("path");
 
 module.exports = async (inputs, context) => {
     const [, ...command] = inputs._;
@@ -9,11 +9,16 @@ module.exports = async (inputs, context) => {
 
     await loadEnvVariables(inputs, context);
 
-    await login(folder);
+    // Get project application metadata.
+    const projectApplication = getProjectApplication({
+        cwd: path.join(process.cwd(), inputs.folder)
+    });
 
-    const pulumi = getPulumi({
+    await login(projectApplication);
+
+    const pulumi = await getPulumi({
         execa: {
-            cwd: folder
+            cwd: projectApplication.root
         }
     });
 

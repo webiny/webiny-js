@@ -203,6 +203,7 @@ const UsersForm = () => {
                                         description="Assign to security group"
                                         title="Group"
                                         icon={<SecurityIcon />}
+                                        open
                                     >
                                         <Cell span={12} style={{ marginBottom: "8px" }}>
                                             <Bind

@@ -197,13 +197,22 @@ const execElasticsearchBuildQueryPlugins = (
                 operator: op
             });
         }
+        const fieldSearchPlugin = searchPlugins[modelFieldOptions.type];
         const value = transformValueForSearch({
             plugins: searchPlugins,
             field: cmsField,
             value: where[key],
             context
         });
-        const fieldWithParent = isSystemField ? null : withParentObject(field);
+        // A possibility to build field custom path in the elasticsearch
+        const customFieldPath =
+            fieldSearchPlugin && typeof fieldSearchPlugin.createPath === "function"
+                ? fieldSearchPlugin.createPath({
+                      field: modelFieldOptions.field,
+                      context
+                  })
+                : null;
+        const fieldWithParent = isSystemField ? null : customFieldPath || withParentObject(field);
         plugin.apply(query, {
             field: fieldWithParent || field,
             value,

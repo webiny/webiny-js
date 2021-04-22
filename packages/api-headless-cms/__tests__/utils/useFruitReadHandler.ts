@@ -21,6 +21,8 @@ const fruitFields = `
     dateTime
     dateTimeZ
     time
+    isSomething
+    rating
 `;
 
 const errorFields = `

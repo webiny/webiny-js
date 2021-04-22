@@ -1,30 +1,10 @@
-const { basename } = require("path");
 const { red, green } = require("chalk");
+const { loadEnvVariables, getPulumi, processHooks, login } = require("../utils");
+const { getProjectApplication } = require("@webiny/cli/utils");
 const path = require("path");
-const loadEnvVariables = require("../utils/loadEnvVariables");
-const getPulumi = require("../utils/getPulumi");
-const login = require("../utils/login");
-
-const getStackName = folder => {
-    folder = folder.split("/").pop();
-    return folder === "." ? basename(process.cwd()) : folder;
-};
-
-const processHooks = async (hook, { context, ...options }) => {
-    const plugins = context.plugins.byType(hook);
-
-    for (let i = 0; i < plugins.length; i++) {
-        try {
-            await plugins[i].hook(options, context);
-        } catch (err) {
-            context.error(`Hook ${green(plugins[i].name)} encountered an error: ${err.message}`);
-        }
-    }
-};
 
 module.exports = async (inputs, context) => {
     const { env, folder } = inputs;
-    const stacksDir = path.join(".", folder);
 
     const start = new Date();
     const getDuration = () => {
@@ -33,15 +13,18 @@ module.exports = async (inputs, context) => {
 
     await loadEnvVariables(inputs, context);
 
-    const pulumi = getPulumi({
+    // Get project application metadata.
+    const projectApplication = getProjectApplication({
+        cwd: path.join(process.cwd(), inputs.folder)
+    });
+
+    const pulumi = await getPulumi({
         execa: {
-            cwd: stacksDir
+            cwd: projectApplication.root
         }
     });
 
-    await login(folder);
-
-    const stackName = getStackName(folder);
+    await login(projectApplication);
 
     let stackExists = true;
     try {
@@ -57,7 +40,7 @@ module.exports = async (inputs, context) => {
         return;
     }
 
-    const hooksParams = { context, env, stack: stackName };
+    const hooksParams = { context, env, projectApplication };
 
     await processHooks("hook-before-destroy", hooksParams);
 

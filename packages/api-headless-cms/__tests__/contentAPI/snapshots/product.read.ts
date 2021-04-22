@@ -57,6 +57,11 @@ export default /* GraphQL */ `
         title_contains: String
         title_not_contains: String
 
+        category: String
+        category_in: [String!]
+        category_not: String
+        category_not_in: [String!]
+
         price: Number
         price_not: Number
         price_in: [Number]

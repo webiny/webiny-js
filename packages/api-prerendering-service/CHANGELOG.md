@@ -3,6 +3,57 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.4.0](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.3...v5.4.0) (2021-04-13)
+
+**Note:** Version bump only for package @webiny/api-prerendering-service
+
+
+
+
+
+# [5.4.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.2...v5.4.0-beta.3) (2021-04-13)
+
+**Note:** Version bump only for package @webiny/api-prerendering-service
+
+
+
+
+
+# [5.4.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.1...v5.4.0-beta.2) (2021-04-12)
+
+**Note:** Version bump only for package @webiny/api-prerendering-service
+
+
+
+
+
+# [5.4.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.0...v5.4.0-beta.1) (2021-04-12)
+
+**Note:** Version bump only for package @webiny/api-prerendering-service
+
+
+
+
+
+# [5.4.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.3.0...v5.4.0-beta.0) (2021-04-09)
+
+
+### Bug Fixes
+
+* remove all jobs on render-all-pages job ([7b2d79f](https://github.com/webiny/webiny-js/commit/7b2d79fa666cebb0707475909cdf775e7348ab70))
+* update dependencies ([ed9c799](https://github.com/webiny/webiny-js/commit/ed9c799879ae62ae406bfa33a66b9cc83c4c7947))
+* update dependencies ([8a301e3](https://github.com/webiny/webiny-js/commit/8a301e347fe3f8d5b9428e47a8f79106aa9f9ae8))
+
+
+### Features
+
+* add support for render-all-pages ([0fad0de](https://github.com/webiny/webiny-js/commit/0fad0def17c2b2770fbd64a62414521e53881c1d))
+* return stats object as response ([e461157](https://github.com/webiny/webiny-js/commit/e4611571a7dfacc8cf54afb344731b75d6a575a0))
+
+
+
+
+
 # [5.3.0](https://github.com/webiny/webiny-js/compare/v5.3.0-beta.0...v5.3.0) (2021-03-26)
 
 **Note:** Version bump only for package @webiny/api-prerendering-service

@@ -1,5 +1,6 @@
 import React from "react";
 import LazyLoad from "react-lazy-load";
+import classNames from "classnames";
 import { css, keyframes } from "emotion";
 import { Ripple } from "@webiny/ui/Ripple";
 import { IconButton } from "@webiny/ui/Button";
@@ -88,6 +89,9 @@ const styles = css({
         fontSize: "0.8rem",
         color: "var(--mdc-theme-on-surface)",
         backgroundColor: "var(--mdc-theme-on-background)"
+    },
+    "&.disable-select": {
+        cursor: "auto"
     }
 });
 
@@ -107,7 +111,10 @@ export default React.memo(
         const { file, selected, onSelect, children, showFileDetails } = props;
 
         return (
-            <div className={styles} data-testid={"fm-list-wrapper-file"}>
+            <div
+                className={classNames(styles, { "disable-select": !onSelect })}
+                data-testid={"fm-list-wrapper-file"}
+            >
                 <div className={"body"}>
                     <div className={"checkedIcon"} onClick={onSelect}>
                         {selected ? <Checked /> : null}

@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: webiny/action-conventional-commits@v1.0.2
+      - uses: webiny/action-conventional-commits@v1.0.3
 
   cache-dependencies-packages:
     name: Cache dependencies and packages
@@ -214,8 +214,8 @@ jobs:
 
       - name: Create a new Webiny project
         run: >
-          npx create-webiny-project@beta test-project
-          --tag beta --no-interactive
+          npx create-webiny-project@next test-project
+          --tag next --no-interactive
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"eu-central-1","vpc":false}'
 
