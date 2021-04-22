@@ -5,7 +5,7 @@ import {
     I18NContext,
     I18NContextObject,
     I18NLocaleContextPlugin
-} from "./types";
+} from "~/types";
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
 import localesCRUD from "./crud/locales.crud";
 import systemCRUD from "./crud/system.crud";

@@ -1,6 +1,6 @@
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
 import { SecurityContext } from "@webiny/api-security/types";
-import { I18NContext } from "../types";
+import { I18NContext } from "~/types";
 
 export default {
     typeDefs: /* GraphQL */ `

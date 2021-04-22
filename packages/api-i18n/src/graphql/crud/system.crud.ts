@@ -1,6 +1,6 @@
 import { DbContext } from "@webiny/handler-db/types";
 import dbArgs from "./utils/dbArgs";
-import { I18NContext, SystemCRUD } from "../types";
+import { I18NContext, SystemCRUD } from "~/types";
 
 export default (context: DbContext & I18NContext): SystemCRUD => {
     const { db, i18n, security } = context;
