@@ -3,6 +3,46 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.4.0...v5.5.0-beta.0) (2021-04-22)
+
+
+### Bug Fixes
+
+* add dependency ([13d9006](https://github.com/webiny/webiny-js/commit/13d9006fbb06538b965e0aed070315554dd62a0f))
+* add missing findByType method ([f7a8564](https://github.com/webiny/webiny-js/commit/f7a8564c52f39e57c335ca1c522ca64f835f9080))
+* change order of loading ([fca16a9](https://github.com/webiny/webiny-js/commit/fca16a99f7af242bbba305551db1c6960aa78876))
+* correct project root variable ([39c996f](https://github.com/webiny/webiny-js/commit/39c996f8be7f2ec858d4f6b13f8565703b8dea3c))
+* directly assign all "log" functions ([8cff513](https://github.com/webiny/webiny-js/commit/8cff5138f62fa0dfb0cf411242a948939b49873e))
+* export PluginsContainer ([e9a29c0](https://github.com/webiny/webiny-js/commit/e9a29c0c8f440e9e6f571ae5a38daa5192d7c1ce))
+* remove unnecessary spread ([9516953](https://github.com/webiny/webiny-js/commit/9516953f5f858e78934f6f2e0e0986cd5587fb7c))
+* update dependencies ([9132196](https://github.com/webiny/webiny-js/commit/9132196cf9ccb7180b9e77cc4204f4185d058d76))
+* update dependencies ([80dbdab](https://github.com/webiny/webiny-js/commit/80dbdabc4cfb95ffe763ca2aedd81116b9d50512))
+* use folder basename as a fallback name ([b85da10](https://github.com/webiny/webiny-js/commit/b85da10f00d6f531c62fb3dc5ccc2bdd4d99eb30))
+* **cli:** simplify PluginsContainer ([b3daa70](https://github.com/webiny/webiny-js/commit/b3daa707adbfbc21f6874cfef08870a619154421))
+* update dependency ([ad46474](https://github.com/webiny/webiny-js/commit/ad464746633e9a3a3e2a2c6cf41e6416bfc56288))
+* use "getProject" utility ([b291ec5](https://github.com/webiny/webiny-js/commit/b291ec538804a9f25669f6fe44b58a052c4ec50c))
+* use newly added log utility ([a05bf3c](https://github.com/webiny/webiny-js/commit/a05bf3c2882bda37ef4a3a78ca9cf07dedf58009))
+* use own PluginsContainer ([6c34707](https://github.com/webiny/webiny-js/commit/6c3470731d243ffa2ccfc723b4c819dfdecbed42))
+
+
+### Features
+
+* add "highlight" function for every log type ([f24b5b0](https://github.com/webiny/webiny-js/commit/f24b5b0609ac61dce3807593986fcdb8cf28a218))
+* add "id" property ([2212bc2](https://github.com/webiny/webiny-js/commit/2212bc28c85cdfd5e1f6f805d1e8b0ab154d7731))
+* add `hl` functions ([22512d9](https://github.com/webiny/webiny-js/commit/22512d96c65706ddd6de63a6e652f6772b826801))
+* add standalone logging function ([37b21ce](https://github.com/webiny/webiny-js/commit/37b21ce7f1e0fd4fa6dc3089ea83fa02e61765af))
+* create "webiny upgrade" command ([04e684a](https://github.com/webiny/webiny-js/commit/04e684afaaccb3c96d6c60c768a443f998e2dce9))
+* create 5.5.0 migration script ([4dd7d77](https://github.com/webiny/webiny-js/commit/4dd7d778823a2d79aec1c050457b516fb8808f9f))
+* create 5.5.0 migration script ([8aee6bc](https://github.com/webiny/webiny-js/commit/8aee6bcded9c0934d86fae725977d0f7b799c064))
+* **cli:** add current version to context ([90bff22](https://github.com/webiny/webiny-js/commit/90bff228a55cf6aa93fe586deed9f6edc362b1a7))
+* create getProject and getProjectApplication utilities ([3d7cacd](https://github.com/webiny/webiny-js/commit/3d7cacd563deeffa71ce32944a45e48969547808))
+* create getProject and getProjectApplication utils ([47390b9](https://github.com/webiny/webiny-js/commit/47390b905cc8b82443a22b91649a3b2d23af7654))
+* create project config and project root utility functions ([3c4042e](https://github.com/webiny/webiny-js/commit/3c4042e894345abdf1791c5ea63fbdd65a00a7d9))
+
+
+
+
+
 # [5.4.0](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.3...v5.4.0) (2021-04-13)
 
 **Note:** Version bump only for package @webiny/cli

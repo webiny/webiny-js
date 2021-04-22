@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.4.0...v5.5.0-beta.0) (2021-04-22)
+
+
+### Bug Fixes
+
+* add missing "@webiny/cli" dependency ([f99bf3e](https://github.com/webiny/webiny-js/commit/f99bf3ea31ad4b9d560011181431cd9732a1a8c4))
+* add tenant and locale to prerendered pages ([eb90a23](https://github.com/webiny/webiny-js/commit/eb90a23eae0c2b2d5e16833f99fd9d84094382ad))
+* correct __PS_RENDER_TENANT__ / __PS_RENDER_LOCALE__ variables ([0088dc8](https://github.com/webiny/webiny-js/commit/0088dc8aca79a97d78bf4cf6dec51310d4487e7b))
+* correct import path ([fa11b72](https://github.com/webiny/webiny-js/commit/fa11b7205afb10aea10c41c99c6779116a8f0a2a))
+* move log function into the handler function ([ab47109](https://github.com/webiny/webiny-js/commit/ab47109545e8ed45a71bd05377ee48a7f67bded4))
+* update dependencies ([9c9696d](https://github.com/webiny/webiny-js/commit/9c9696dfcf99e35307da1acf6d73f6bf730c0e1c))
+* update dependencies ([7067da6](https://github.com/webiny/webiny-js/commit/7067da66ff2a70c340b93d8cde0ad36caa4e4640))
+
+
+### Features
+
+* add "__PS_NOT_FOUND_PAGE__" variable for not-found page ([2ef3cf4](https://github.com/webiny/webiny-js/commit/2ef3cf45c70fe9f5a0542e750965fdf047fad0d5))
+* use new build and watch commands ([4a534a1](https://github.com/webiny/webiny-js/commit/4a534a11d2afe4ca4cddd49f2f80fe2a7e90058a))
+
+
+
+
+
 # [5.4.0](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.3...v5.4.0) (2021-04-13)
 
 **Note:** Version bump only for package @webiny/api-prerendering-service
