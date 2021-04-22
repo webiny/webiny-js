@@ -44,9 +44,9 @@ module.exports = async (inputs, context) => {
         throw new Error(`Both re-build and re-deploy actions were disabled, can't continue.`);
     }
 
-    if (!inputs.folder && !inputs.scope) {
+    if (!inputs.folder && !inputs.package) {
         throw new Error(
-            `Either "folder" or "scope" arguments must be passed. Cannot have both undefined.`
+            `Either "folder" or "package" arguments must be passed. Cannot have both undefined.`
         );
     }
 
@@ -198,11 +198,11 @@ module.exports = async (inputs, context) => {
                 message: chalk.green("Watching packages...")
             });
 
-            let scopes = [];
-            if (inputs.scope) {
-                scopes = Array.isArray(inputs.scope) ? inputs.scope : [inputs.scope];
+            let packages = [];
+            if (inputs.package) {
+                packages = Array.isArray(inputs.package) ? inputs.package : [inputs.package];
             } else {
-                scopes = await execa("yarn", [
+                packages = await execa("yarn", [
                     "webiny",
                     "workspaces",
                     "tree",
@@ -224,7 +224,7 @@ module.exports = async (inputs, context) => {
                     "watch",
                     "--env",
                     inputs.env,
-                    ...scopes.reduce((current, item) => {
+                    ...packages.reduce((current, item) => {
                         current.push("--scope", item);
                         return current;
                     }, [])
