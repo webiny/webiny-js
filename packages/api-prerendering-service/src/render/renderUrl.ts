@@ -115,12 +115,14 @@ export const defaultRenderUrlFunction = async (url: string, args: Args): Promise
 
     const tenant = args?.args?.configuration?.meta?.tenant;
     if (tenant) {
-        windowSet(browserPage, "__PS_TENANT__", "root");
+        console.log("Setting tenant (__PS_RENDER_TENANT__) to window object....");
+        windowSet(browserPage, "__PS_RENDER_TENANT__", tenant);
     }
 
     const locale = args?.args?.configuration?.meta?.locale;
     if (locale) {
-        windowSet(browserPage, "__PS_LOCALE__", "en-GB");
+        console.log("Setting locale (__PS_RENDER_LOCALE__) to window object....");
+        windowSet(browserPage, "__PS_RENDER_LOCALE__", locale);
     }
 
     // Don't load these resources during prerender.
