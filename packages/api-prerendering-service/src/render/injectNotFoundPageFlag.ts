@@ -1,6 +1,4 @@
 export default args => async tree => {
-    console.log('idemooo')
-    console.log(JSON.stringify(args.args.args))
     const meta = args?.args?.args?.configuration?.meta;
     if (!meta || !meta.notFoundPage) {
         return;

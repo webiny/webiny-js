@@ -79,7 +79,7 @@ export default [
                                 path: page.path,
                                 configuration: {
                                     meta: {
-                                        notFoundPage: true,
+                                        notFoundPage: true
                                     },
                                     storage: { folder: NOT_FOUND_FOLDER }
                                 }
