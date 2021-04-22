@@ -1,10 +1,10 @@
-import { SaveRevisionActionArgsType } from "./types";
-import { ToggleSaveRevisionStateActionEvent } from "./event";
-import { EventActionCallable } from "../../../../types";
-import { PageAtomType } from "../../modules";
 import gql from "graphql-tag";
 import lodashIsEqual from "lodash/isEqual";
 import lodashDebounce from "lodash/debounce";
+import { SaveRevisionActionArgsType } from "./types";
+import { ToggleSaveRevisionStateActionEvent } from "./event";
+import { EventActionCallable } from "~/types";
+import { PageAtomType } from "../../modules";
 
 type PageRevisionType = Pick<PageAtomType, "title" | "snippet" | "path" | "settings"> & {
     category: string;
@@ -29,7 +29,7 @@ let debouncedSave = null;
 export const saveRevisionAction: EventActionCallable<SaveRevisionActionArgsType> = async (
     state,
     meta,
-    args
+    args = {}
 ) => {
     if (state.page.locked) {
         return {};
@@ -76,27 +76,27 @@ export const saveRevisionAction: EventActionCallable<SaveRevisionActionArgsType>
         debouncedSave.cancel();
     }
 
-    debouncedSave = lodashDebounce(() => {
-        (async () => {
-            meta.eventActionHandler.trigger(
-                new ToggleSaveRevisionStateActionEvent({ saving: true })
-            );
+    const runSave = async () => {
+        meta.eventActionHandler.trigger(new ToggleSaveRevisionStateActionEvent({ saving: true }));
 
-            await meta.client.mutate({
-                mutation: updatePage,
-                variables: {
-                    id: state.page.id,
-                    data
-                }
-            });
+        await meta.client.mutate({
+            mutation: updatePage,
+            variables: {
+                id: state.page.id,
+                data
+            }
+        });
 
-            meta.eventActionHandler.trigger(
-                new ToggleSaveRevisionStateActionEvent({ saving: false })
-            );
-            triggerOnFinish(args);
-        })();
-    }, 2000);
-    debouncedSave();
+        meta.eventActionHandler.trigger(new ToggleSaveRevisionStateActionEvent({ saving: false }));
+        triggerOnFinish(args);
+    };
+
+    if (args && args.debounce === false) {
+        runSave();
+    } else {
+        debouncedSave = lodashDebounce(runSave, 2000);
+        debouncedSave();
+    }
 
     return {};
 };

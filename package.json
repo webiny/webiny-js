@@ -2,6 +2,7 @@
   "private": true,
   "workspaces": {
     "packages": [
+      "plugins/cli-plugin-generate-ts-configs",
       "packages/*",
       "apps/admin/code",
       "apps/website/code",

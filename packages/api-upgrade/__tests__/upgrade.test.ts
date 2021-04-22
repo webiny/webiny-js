@@ -111,4 +111,37 @@ describe("api upgrade", () => {
 
         expect(plugin).toEqual(upgradePlugins[0]);
     });
+
+    it(`should work with "deployedVersion" containing pre-id`, async () => {
+        const upgradePlugins: UpgradePlugin[] = [
+            {
+                type: "api-upgrade",
+                app: "test",
+                version: "5.5.0",
+                async apply() {
+                    // Install 5.5.0
+                }
+            }
+        ];
+
+        const plugin = getApplicablePlugin({
+            upgradeToVersion: "5.5.0",
+            deployedVersion: "5.5.0-next.0",
+            upgradePlugins: upgradePlugins,
+            installedAppVersion: "5.0.0"
+        });
+
+        expect(plugin).toEqual(upgradePlugins[0]);
+        // Should throw UPGRADE_VERSION_MISMATCH error if deployedVersion after deployedVersion doesn't match.
+        expect(() =>
+            getApplicablePlugin({
+                upgradeToVersion: "5.5.0",
+                deployedVersion: "5.5.1-next.0",
+                upgradePlugins: [],
+                installedAppVersion: "5.0.0"
+            })
+        ).toThrowError(
+            new Error(`The requested upgrade version does not match the deployed version.`)
+        );
+    });
 });

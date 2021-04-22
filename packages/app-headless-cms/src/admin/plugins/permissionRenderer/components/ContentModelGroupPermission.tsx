@@ -1,37 +1,23 @@
 import React, { useCallback, useEffect } from "react";
-import get from "lodash/get";
 import { Grid, Cell } from "@webiny/ui/Grid";
-import { Typography } from "@webiny/ui/Typography";
 import { Select } from "@webiny/ui/Select";
 import { i18n } from "@webiny/app/i18n";
 import { Elevation } from "@webiny/ui/Elevation";
+import { Typography } from "@webiny/ui/Typography";
 import { PermissionSelector, PermissionSelectorWrapper } from "./PermissionSelector";
 import { useCmsData } from "./useCmsData";
-import { Note } from "./StyledComponents";
-import ContentModelList from "./ContentModelList";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
-export const ContentModelPermission = ({
-    Bind,
-    data,
-    setValue,
-    form,
-    entity,
-    title,
-    locales,
-    selectedContentModelGroups
-}) => {
+const ContentModelGroupPermission = ({ Bind, data, entity, title, locales, setValue, form }) => {
     const modelsGroups = useCmsData(locales);
-    // Set "cms.contentModel" access scope to "own" if "cms.contentModelGroup" === "own".
-    useEffect(() => {
-        if (
-            get(data, `contentModelGroupAccessScope`) === "own" &&
-            get(data, `${entity}AccessScope`) !== "own"
-        ) {
-            setValue(`${entity}AccessScope`, "own");
-        }
-    }, [data]);
+
+    const getItems = useCallback(
+        (code: string) => {
+            return modelsGroups[code]["groups"];
+        },
+        [modelsGroups]
+    );
 
     useEffect(() => {
         // Let's set default values for "accessScopes"
@@ -42,22 +28,7 @@ export const ContentModelPermission = ({
         ) {
             setValue(`${entity}AccessScope`, "full");
         }
-    }, [data, form]);
-
-    const getItems = useCallback(
-        (code: string) => {
-            let list = get(modelsGroups, `${code}.models`, []);
-
-            const groups = (selectedContentModelGroups && selectedContentModelGroups[code]) || [];
-            if (groups.length) {
-                // Filter by groups
-                list = list.filter(item => groups.includes(item.group.id));
-            }
-
-            return list;
-        },
-        [modelsGroups]
-    );
+    }, [data, setValue, form]);
 
     const disabledPrimaryActions =
         [undefined, "own", "no"].includes(data[`${entity}AccessScope`]) ||
@@ -73,43 +44,28 @@ export const ContentModelPermission = ({
                     <Grid style={{ padding: 0, paddingBottom: 24 }}>
                         <Cell span={12}>
                             <Bind name={`${entity}AccessScope`}>
-                                <Select
-                                    label={t`Access Scope`}
-                                    disabled={data[`contentModelGroupAccessScope`] === "own"}
-                                    description={t`The list of available models is defined by the options set in the content model groups section above.`}
-                                >
-                                    <option value={"full"}>{t`All models`}</option>
-                                    <option value={"models"}>{t`Only specific models`}</option>
+                                <Select label={t`Access Scope`}>
+                                    <option value={"full"}>{t`All groups`}</option>
+                                    <option value={"groups"}>{t`Only specific groups`}</option>
                                     {data.endpoints.includes("manage") && (
                                         <option
                                             value={"own"}
-                                        >{t`Only models created by the user`}</option>
+                                        >{t`Only groups created by the user`}</option>
                                     )}
                                 </Select>
                             </Bind>
-                            {data[`contentModelGroupAccessScope`] === "own" && (
-                                <Note>
-                                    <Typography use={"caption"}>
-                                        <span className={"highlight"}>Content Model</span>
-                                        &nbsp;{t`access depends upon`}&nbsp;
-                                        <span className={"highlight"}>Content Model Group</span>
-                                    </Typography>
-                                </Note>
-                            )}
                         </Cell>
-                        {data[`${entity}AccessScope`] === "models" && (
+                        {data[`${entity}AccessScope`] === "groups" && (
                             <PermissionSelectorWrapper>
                                 <PermissionSelector
                                     locales={locales}
                                     Bind={Bind}
                                     entity={entity}
-                                    selectorKey={"models"}
+                                    selectorKey={"groups"}
                                     getItems={getItems}
-                                    RenderItems={ContentModelList}
                                 />
                             </PermissionSelectorWrapper>
                         )}
-
                         <Cell span={12}>
                             <Bind name={`${entity}RWD`}>
                                 <Select
@@ -132,3 +88,5 @@ export const ContentModelPermission = ({
         </Elevation>
     );
 };
+
+export default ContentModelGroupPermission;

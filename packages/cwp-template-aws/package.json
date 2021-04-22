@@ -15,7 +15,6 @@
     "@webiny/cli-plugin-deploy-pulumi": "^5.4.0",
     "@webiny/tracking": "^5.4.0",
     "chalk": "4.1.0",
-    "create-webiny-project": "^5.4.0",
     "execa": "4.1.0",
     "fast-glob": "^3.2.5",
     "fs-extra": "9.0.1",
