@@ -12,7 +12,6 @@
     "../form",
     "../plugins",
     "../react-router",
-    "../tracking",
     "../ui",
     "../validation"
   ],
