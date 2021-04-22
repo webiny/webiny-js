@@ -8,10 +8,16 @@
       "path": "../app-admin"
     },
     {
+      "path": "../app-i18n"
+    },
+    {
       "path": "../app-plugin-admin-welcome-screen"
     },
     {
       "path": "../app-security"
+    },
+    {
+      "path": "../app-security-tenancy"
     },
     {
       "path": "../form"
@@ -35,10 +41,14 @@
       "@webiny/app": ["../app/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
+      "@webiny/app-i18n/*": ["../app-i18n/src/*"],
+      "@webiny/app-i18n": ["../app-i18n/src"],
       "@webiny/app-plugin-admin-welcome-screen/*": ["../app-plugin-admin-welcome-screen/src/*"],
       "@webiny/app-plugin-admin-welcome-screen": ["../app-plugin-admin-welcome-screen/src"],
       "@webiny/app-security/*": ["../app-security/src/*"],
       "@webiny/app-security": ["../app-security/src"],
+      "@webiny/app-security-tenancy/*": ["../app-security-tenancy/src/*"],
+      "@webiny/app-security-tenancy": ["../app-security-tenancy/src"],
       "@webiny/form/*": ["../form/src/*"],
       "@webiny/form": ["../form/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
