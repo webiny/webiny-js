@@ -1,4 +1,4 @@
-import renderUrl, { File } from "./render";
+import renderUrl, { File } from "./renderUrl";
 import path from "path";
 import S3 from "aws-sdk/clients/s3";
 import getStorageName from "./../utils/getStorageName";
