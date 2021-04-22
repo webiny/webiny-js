@@ -215,22 +215,22 @@ module.exports = async (inputs, context) => {
                 ]).then(({ stdout }) => JSON.parse(stdout));
             }
 
-            const watchPackages = execa(
-                "yarn",
-                [
-                    "webiny",
-                    "workspaces",
-                    "run",
-                    "watch",
-                    "--env",
-                    inputs.env,
-                    ...packages.reduce((current, item) => {
-                        current.push("--scope", item);
-                        return current;
-                    }, [])
-                ],
-                { env: { FORCE_COLOR: true } }
-            );
+            const commandArgs = [
+                "webiny",
+                "workspaces",
+                "run",
+                "watch",
+                ...packages.reduce((current, item) => {
+                    current.push("--scope", item);
+                    return current;
+                }, [])
+            ];
+
+            if (inputs.env) {
+                commandArgs.push("--env", inputs.env);
+            }
+
+            const watchPackages = execa("yarn", commandArgs, { env: { FORCE_COLOR: true } });
 
             watchPackages.stdout.on("data", data => {
                 output.log({
