@@ -121,7 +121,7 @@ module.exports = async (inputs, context) => {
                 `Note: everything you log in your code will be forwarded here ${chalk.underline(
                     "over public internet"
                 )}.`,
-                `To learn more, please visit https://www.webiny.com/docs/todo-article.`
+                `To learn more, please visit https://www.webiny.com/docs/how-to-guides/development/use-watch-command#enabling-logs-forwarding.`
             ].forEach(message => output.log({ type: "logs", message }));
 
             output.log({ type: "logs", message: "" });
@@ -243,6 +243,15 @@ module.exports = async (inputs, context) => {
                 output.log({
                     type: "build",
                     message: data.toString()
+                });
+            });
+
+            context.onExit(() => {
+                return new Promise(resolve => {
+                    const kill = require("tree-kill");
+                    kill(watchPackages.pid, "SIGTERM", () => {
+                        resolve();
+                    });
                 });
             });
         }

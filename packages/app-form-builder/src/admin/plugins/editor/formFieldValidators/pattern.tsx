@@ -11,7 +11,7 @@ import {
 
 export default {
     type: "form-editor-field-validator",
-    name: "form-editor-field-validator-pattern",
+    name: "fb-form-field-validator-pattern",
     validator: {
         name: "pattern",
         label: "Pattern",
@@ -23,7 +23,7 @@ export default {
         renderSettings({ Bind, setValue, setMessage, data }) {
             const inputsDisabled = data.settings.preset !== "custom";
             const presetPlugins = plugins.byType<FbFormFieldPatternValidatorPlugin>(
-                "form-editor-field-validator-pattern"
+                "fb-form-field-validator-pattern"
             );
 
             // TODO: @ts-adrian neda mi da dolje posaljem

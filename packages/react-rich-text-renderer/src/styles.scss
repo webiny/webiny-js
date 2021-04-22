@@ -11,6 +11,7 @@
     letter-spacing: 0.2em;
   }
 }
+
 .rte-block-paragraph {
   font-family: inherit;
   box-sizing: border-box;
@@ -19,10 +20,12 @@
   color: rgba(17, 24, 39, 1);
   margin: 0 0 1rem;
 }
+
 .rte-block-image {
   max-width: 100%;
   margin: 0 0 1.5rem;
 }
+
 .rte-block-heading {
   font-family: inherit;
   box-sizing: border-box;
@@ -30,30 +33,37 @@
   font-weight: 700;
   color: rgba(17, 24, 39, 1);
 }
+
 .rte-block-heading--h1 {
   font-size: 3rem;
   line-height: 1;
 }
+
 .rte-block-heading--h2 {
   font-size: 2.25rem;
   line-height: 2.5rem;
 }
+
 .rte-block-heading--h3 {
   font-size: 1.875rem;
   line-height: 2.25rem;
 }
+
 .rte-block-heading--h4 {
   font-size: 1.5rem;
   line-height: 2rem;
 }
+
 .rte-block-heading--h5 {
   font-size: 1.25rem;
   line-height: 1.75rem;
 }
+
 .rte-block-heading--h6 {
   font-size: 1.125rem;
   line-height: 1.75rem;
 }
+
 .rte-block-blockquote {
   font-size: 1.125rem;
   line-height: 1.7777778;
@@ -85,6 +95,7 @@
     }
   }
 }
+
 .rte-block-list {
   list-style: inherit;
   line-height: 1.15;
@@ -101,11 +112,4 @@
     border: 0 solid currentColor;
     margin-bottom: 0.75rem;
   }
-}
-/*
-* The context menu of the rich text editor is getting obscured if directly below is another rich text editor.
-* This change fixes this issue.
-*/
-.codex-editor {
-  z-index: unset;
 }
