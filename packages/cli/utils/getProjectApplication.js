@@ -19,14 +19,17 @@ module.exports = args => {
         projectApplicationConfig = require(projectApplicationRootFile);
     }
 
-    let name;
+    let name, id;
     if (projectApplicationConfig) {
+        id = projectApplicationConfig.id;
         name = projectApplicationConfig.name;
     } else {
         name = basename(projectApplicationRoot);
+        id = name;
     }
 
     return {
+        id,
         name,
         root: projectApplicationRoot,
         config: projectApplicationConfig,
