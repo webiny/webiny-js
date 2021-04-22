@@ -46,7 +46,6 @@
     "@shelf/jest-elasticsearch": "^1.0.0",
     "@webiny/api-dynamodb-to-elasticsearch": "^5.5.0-beta.0",
     "@webiny/cli": "^5.5.0-beta.0",
-    "@webiny/project-utils": "^5.4.0",
     "execa": "^5.0.0",
     "jest": "^26.6.3",
     "jest-dynalite": "^3.2.0",

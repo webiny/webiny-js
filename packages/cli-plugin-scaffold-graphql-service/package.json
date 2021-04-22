@@ -39,7 +39,6 @@
     "@types/inquirer": "^7.3.1",
     "@types/ncp": "^2.0.4",
     "@types/pluralize": "^0.0.29",
-    "@webiny/cli": "^5.4.0",
     "@webiny/handler": "^5.5.0-beta.0",
     "@webiny/plugins": "^5.5.0-beta.0",
     "@webiny/project-utils": "^5.5.0-beta.0",
