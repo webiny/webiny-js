@@ -5,6 +5,7 @@ import injectApolloState from "./injectApolloState";
 import injectRenderId from "./injectRenderId";
 import injectRenderTs from "./injectRenderTs";
 import injectTenantLocale from "./injectTenantLocale";
+import injectNotFoundPageFlag from "./injectNotFoundPageFlag";
 import getPsTags from "./getPsTags";
 import shortid from "shortid";
 import { Args as BaseHandlerArgs, Configuration, HandlerContext } from "./types";
@@ -46,7 +47,9 @@ export default async (url: string, args: Args): Promise<[File[], Meta]> => {
         // @ts-ignore
         injectApolloState(allArgs),
         // @ts-ignore
-        injectTenantLocale(allArgs)
+        injectTenantLocale(allArgs),
+        // @ts-ignore
+        injectNotFoundPageFlag(allArgs)
     ]).process(render.content);
 
     console.log("Processing HTML done.");
@@ -123,6 +126,12 @@ export const defaultRenderUrlFunction = async (url: string, args: Args): Promise
     if (locale) {
         console.log("Setting locale (__PS_RENDER_LOCALE__) to window object....");
         windowSet(browserPage, "__PS_RENDER_LOCALE__", locale);
+    }
+
+    const notFoundPage = args?.args?.configuration?.meta?.notFoundPage;
+    if (notFoundPage) {
+        console.log("Setting locale (__PS_NOT_FOUND_PAGE__) to window object....");
+        windowSet(browserPage, "__PS_NOT_FOUND_PAGE__", true);
     }
 
     // Don't load these resources during prerender.
