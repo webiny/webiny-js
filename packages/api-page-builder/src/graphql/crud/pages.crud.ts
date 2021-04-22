@@ -1358,7 +1358,7 @@ const plugin: ContextPlugin<PbContext> = {
                             current?.prerendering?.meta,
                             {
                                 tenant: context.security.getTenant().id,
-                                locale: i18nContent.getLocale().code,
+                                locale: i18nContent.getLocale().code
                             }
                         );
 

@@ -24,7 +24,9 @@ export default () => {
             console.log("Trying to get the path that needs to be invalidated...");
             let path = args.path;
             if (!path) {
-                console.log(`Path wasn't passed via "args.path", trying to extract it from "args.url"...`);
+                console.log(
+                    `Path wasn't passed via "args.path", trying to extract it from "args.url"...`
+                );
                 path = url.parse(args.url).pathname;
             }
 

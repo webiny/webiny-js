@@ -97,10 +97,7 @@ type Meta = {
     args: Args;
 };
 
-export const defaultRenderUrlFunction = async (
-    url: string,
-    args: Args
-): Promise<RenderResult> => {
+export const defaultRenderUrlFunction = async (url: string, args: Args): Promise<RenderResult> => {
     if (!browser) {
         browser = await chromium.puppeteer.launch({
             args: chromium.args,
