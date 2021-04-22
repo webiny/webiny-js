@@ -1,6 +1,8 @@
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 import { get } from "lodash";
+import { useTenancy } from "@webiny/app-security-tenancy/hooks/useTenancy";
+import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 
 const DATA_FIELDS = /* GraphQL */ `
     {
@@ -56,6 +58,8 @@ export const UPDATE_SETTINGS = gql`
 
 export function usePageBuilderSettings() {
     const getSettingsQuery = useQuery(GET_SETTINGS);
+    const { tenant } = useTenancy();
+    const { getCurrentLocale } = useI18N();
 
     const settings = get(getSettingsQuery, "data.pageBuilder.getSettings.data") || {};
     const defaultSettings = get(getSettingsQuery, "data.pageBuilder.getDefaultSettings.data") || {};
@@ -74,7 +78,13 @@ export function usePageBuilderSettings() {
         }
 
         // We must append `preview` query param if page status is not `published`.
-        return url + "?preview=" + encodeURIComponent(page.id);
+        const query = [
+            "preview=" + encodeURIComponent(page.id),
+            "__locale=" + getCurrentLocale("content"),
+            tenant ? "__tenant=" + tenant : null
+        ];
+
+        return url + "?" + query.filter(Boolean).join("&");
     };
 
     const isSpecialPage = (page, type: "home" | "notFound") => {
