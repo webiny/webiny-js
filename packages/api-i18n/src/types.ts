@@ -29,6 +29,7 @@ export type I18NContextObject = {
 export type SystemCRUD = {
     getVersion(): Promise<string>;
     setVersion(version: string): Promise<void>;
+    install(args: { code: string }): Promise<void>;
 };
 
 export interface I18NContext extends ContextInterface, ClientContext, TenancyContext {

@@ -47,6 +47,12 @@ export default (context: DbContext & I18NContext): SystemCRUD => {
                     }
                 });
             }
+        },
+        async install(args) {
+            const { i18n } = context;
+            await i18n.locales.create({ code: args.code, default: true });
+            await i18n.locales.updateDefault(args.code);
+            await i18n.system.setVersion(context.WEBINY_VERSION);
         }
     };
 };
