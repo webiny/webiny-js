@@ -31,20 +31,20 @@ const plugin: UpgradePlugin<CmsContext> = {
                 const securityGroup = securityGroupsWithCmsPermission[i];
                 console.log(`Updating permission for group: ${securityGroup.slug}`);
                 // Filter CMS content permissions.
-                const CMSContentPermissions = securityGroup.permissions.filter(
+                const CmsContentPermissions = securityGroup.permissions.filter(
                     isCmsContentPermission
                 );
                 const restPermissions = securityGroup.permissions.filter(
                     permission => !isCmsContentPermission(permission)
                 );
 
-                if (CMSContentPermissions.length === 0) {
+                if (CmsContentPermissions.length === 0) {
                     console.log("Skipping...");
                     continue;
                 }
                 // Migrate CMS permissions
                 const newCMSContentPermissions = await migrateCMSPermissions(
-                    CMSContentPermissions,
+                    CmsContentPermissions,
                     cms.models.get
                 );
 
@@ -83,18 +83,18 @@ const plugin: UpgradePlugin<CmsContext> = {
                 const apiKey = ApiKeysWithCmsPermission[i];
                 console.log(`Updating permission for API key: ${apiKey.name}`);
                 // Filter CMS content permissions.
-                const CMSContentPermissions = apiKey.permissions.filter(isCmsContentPermission);
+                const CmsContentPermissions = apiKey.permissions.filter(isCmsContentPermission);
                 const restPermissions = apiKey.permissions.filter(
                     permission => !isCmsContentPermission(permission)
                 );
 
-                if (CMSContentPermissions.length === 0) {
+                if (CmsContentPermissions.length === 0) {
                     console.log("Skipping...");
                     continue;
                 }
                 // Migrate CMS permissions.
                 const newCMSContentPermissions = await migrateCMSPermissions(
-                    CMSContentPermissions,
+                    CmsContentPermissions,
                     cms.models.get
                 );
 
