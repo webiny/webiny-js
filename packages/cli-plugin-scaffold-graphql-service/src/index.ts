@@ -18,7 +18,7 @@ import {
     TsConfigJson
 } from "@webiny/cli-plugin-scaffold/types";
 import validateNpmPackageName from "validate-npm-package-name";
-import { getProjectRoot } from "@webiny/cli/utils";
+import { getProject } from "@webiny/cli/utils";
 
 const ncp = util.promisify(ncpBase.ncp);
 
@@ -101,11 +101,11 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             const { location, entityName, packageName: initialPackageName } = input;
             const fullLocation = path.resolve(location);
 
-            const projectRootPath = getProjectRoot({
+            const project = getProject({
                 cwd: fullLocation
             });
 
-            const locationRelative = path.relative(projectRootPath, fullLocation);
+            const locationRelative = path.relative(project.root, fullLocation);
 
             const packageName = createPackageName({
                 initial: initialPackageName,
@@ -134,7 +134,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             oraSpinner.start(`Creating service files in ${chalk.green(fullLocation)}...`);
 
-            const relativeRootPath = path.relative(fullLocation, projectRootPath);
+            const relativeRootPath = path.relative(fullLocation, project.root);
 
             await fs.mkdirSync(location, { recursive: true });
 
@@ -217,7 +217,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     `package.json`
                 )}...`
             );
-            const rootPackageJsonPath = path.join(projectRootPath, "package.json");
+            const rootPackageJsonPath = path.join(project.root, "package.json");
             const rootPackageJson = await readJson<PackageJson>(rootPackageJsonPath);
             if (!rootPackageJson.workspaces.packages.includes(location)) {
                 rootPackageJson.workspaces.packages.push(location);
