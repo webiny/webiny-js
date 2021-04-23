@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.2...v5.5.0-beta.3) (2021-04-23)
+
+
+### Bug Fixes
+
+* use new CLI utils ([2acd4fd](https://github.com/webiny/webiny-js/commit/2acd4fd7fea2af22b2335aa74cd9effed110c0f7))
+
+
+
+
+
 # [5.5.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.1...v5.5.0-beta.2) (2021-04-23)
 
 **Note:** Version bump only for package @webiny/cli-plugin-scaffold-react-component
