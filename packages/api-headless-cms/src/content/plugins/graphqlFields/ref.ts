@@ -5,6 +5,15 @@ const createUnionTypeName = (model, field) => {
     return `${createReadTypeName(model.modelId)}${createReadTypeName(field.fieldId)}`;
 };
 
+const createListFilters = ({ field }) => {
+    return `
+        ${field.fieldId}: String
+        ${field.fieldId}_in: [String!]
+        ${field.fieldId}_not: String
+        ${field.fieldId}_not_in: [String!]
+    `;
+};
+
 const typeNameToModelId = new Map();
 
 const plugin: CmsModelFieldToGraphQLPlugin = {
@@ -96,7 +105,8 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                     .join("\n"),
                 resolvers: {}
             };
-        }
+        },
+        createListFilters
     },
     manage: {
         createSchema() {
@@ -128,7 +138,8 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             }
 
             return field.fieldId + ": RefFieldInput";
-        }
+        },
+        createListFilters
     }
 };
 

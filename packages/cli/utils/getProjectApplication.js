@@ -1,0 +1,38 @@
+const { dirname, basename } = require("path");
+const findUp = require("find-up");
+const getProject = require("./getProject");
+
+module.exports = args => {
+    // Using "Pulumi.yaml" for the backwards compatibility.
+    const projectApplicationRootFile =
+        findUp.sync("webiny.application.js", { cwd: args.cwd }) ||
+        findUp.sync("Pulumi.yaml", { cwd: args.cwd });
+
+    if (!projectApplicationRootFile) {
+        throw new Error(`Could not detect project application in given directory (${args.cwd}).`);
+    }
+
+    const projectApplicationRoot = dirname(projectApplicationRootFile);
+
+    let projectApplicationConfig;
+    if (projectApplicationRootFile.endsWith("webiny.application.js")) {
+        projectApplicationConfig = require(projectApplicationRootFile);
+    }
+
+    let name, id;
+    if (projectApplicationConfig) {
+        id = projectApplicationConfig.id;
+        name = projectApplicationConfig.name;
+    } else {
+        name = basename(projectApplicationRoot);
+        id = name;
+    }
+
+    return {
+        id,
+        name,
+        root: projectApplicationRoot,
+        config: projectApplicationConfig,
+        project: getProject(args)
+    };
+};

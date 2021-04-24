@@ -17,6 +17,14 @@ const createIdentity = (permissions: any[] = []): SecurityIdentity => {
             },
             {
                 name: "cms.endpoint.read"
+            },
+            {
+                name: "cms.contentModelGroup",
+                rwd: "r"
+            },
+            {
+                name: "cms.contentModel",
+                rwd: "r"
             }
         ].concat(permissions)
     };

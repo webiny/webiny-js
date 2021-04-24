@@ -4,11 +4,12 @@ import { Select } from "@webiny/ui/Select";
 import { i18n } from "@webiny/app/i18n";
 import { PermissionInfo, gridNoPaddingClass } from "@webiny/app-admin/components/Permissions";
 import { Form } from "@webiny/form";
-import CustomSection from "./components/CustomSection";
+import ContentModelGroupPermission from "./components/ContentModelGroupPermission";
 import { ContentModelPermission } from "./components/ContentModelPermission";
 import { ContentEntryPermission } from "./components/ContentEntryPermission";
 import { Checkbox, CheckboxGroup } from "@webiny/ui/Checkbox";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
+import { Link } from "@webiny/react-router";
 
 const t = i18n.ns("app-headless-cms/admin/plugins/permissionRenderer");
 
@@ -24,8 +25,25 @@ const API_ENDPOINTS = [
     { id: "preview", name: "Preview" }
 ];
 
+const GRAPHQL_API_TYPES_LINK =
+    "https://www.webiny.com/docs/key-topics/webiny-applications/headless-cms/graphql-api/#graphql-api-types";
+
 export const CMSPermissions = ({ value, onChange }) => {
     const { getLocales } = useI18N();
+
+    const canRead = useCallback((value: any[], permissionName: string) => {
+        const permission = value.find(item => item.name === permissionName);
+
+        if (!permission) {
+            return false;
+        }
+
+        if (typeof permission.rwd !== "string") {
+            return true;
+        }
+
+        return permission.rwd.includes("r");
+    }, []);
 
     const getFormLocales = () => {
         const localePermission = (value || []).find(item => item.name.startsWith("content.i18n"));
@@ -118,6 +136,16 @@ export const CMSPermissions = ({ value, onChange }) => {
                     newValue.push(permission);
                 }
             });
+            // Remove dependent permissions.
+            // The "cms.contentModel" permission can only be assigned if the user has the "read" access for the "cms.contentModelGroup".
+            if (!canRead(newValue, "cms.contentModelGroup")) {
+                newValue = newValue.filter(item => item.name !== "cms.contentModel");
+            }
+            // The "cms.contentEntry" permission can only be assigned if the user has the "read" access for the "cms.contentModel".
+            if (!canRead(newValue, "cms.contentModel")) {
+                newValue = newValue.filter(item => item.name !== "cms.contentEntry");
+            }
+
             onChange(newValue);
         },
         [value]
@@ -153,7 +181,7 @@ export const CMSPermissions = ({ value, onChange }) => {
 
         ENTITIES.forEach(entity => {
             const data = {
-                [`${entity}AccessScope`]: NO_ACCESS,
+                [`${entity}AccessScope`]: FULL_ACCESS,
                 [`${entity}RWD`]: "r",
                 [`${entity}Props`]: {}
             };
@@ -194,82 +222,112 @@ export const CMSPermissions = ({ value, onChange }) => {
 
     const locales = getFormLocales();
 
+    const getSelectedContentModelGroups = useCallback(data => {
+        if (data && data.contentModelGroupAccessScope === "groups" && data.contentModelGroupProps) {
+            return data.contentModelGroupProps.groups;
+        }
+    }, []);
+
     return (
         <Form data={formData} onChange={onFormChange}>
-            {({ data, Bind, setValue }) => (
-                <Fragment>
-                    <Grid className={gridNoPaddingClass}>
-                        <Cell span={6}>
-                            <PermissionInfo title={t`Access Level`} />
-                        </Cell>
-                        <Cell span={6}>
-                            <Bind name={"accessLevel"}>
-                                <Select label={t`Access Level`}>
-                                    <option value={NO_ACCESS}>{t`No access`}</option>
-                                    <option value={FULL_ACCESS}>{t`Full access`}</option>
-                                    <option value={CUSTOM_ACCESS}>{t`Custom access`}</option>
-                                </Select>
-                            </Bind>
-                        </Cell>
-                    </Grid>
-                    {data.accessLevel === CUSTOM_ACCESS && (
-                        <>
-                            <Grid>
-                                <Cell span={12}>
-                                    <Bind name={"endpoints"}>
-                                        <CheckboxGroup
-                                            label={t`API Endpoints`}
-                                            description={t`API endpoints with different purpose and type of data returned.`}
-                                        >
-                                            {({ getValue, onChange }) =>
-                                                API_ENDPOINTS.map(({ id, name }) => (
-                                                    <Checkbox
-                                                        key={id}
-                                                        label={name}
-                                                        value={getValue(id)}
-                                                        onChange={onChange(id)}
-                                                    />
-                                                ))
-                                            }
-                                        </CheckboxGroup>
-                                    </Bind>
-                                </Cell>
-                            </Grid>
-                            {data.endpoints.includes("manage") && (
-                                <ContentModelPermission
-                                    locales={locales}
-                                    data={data}
-                                    Bind={Bind}
-                                    entity={"contentModel"}
-                                    title={"Content Models"}
-                                />
-                            )}
+            {({ data, Bind, setValue, form }) => {
+                const graphQLEndpointAccess =
+                    data.endpoints.includes("read") ||
+                    data.endpoints.includes("manage") ||
+                    data.endpoints.includes("preview");
 
-                            {data.endpoints.includes("manage") && (
-                                <CustomSection
-                                    data={data}
-                                    Bind={Bind}
-                                    entity={"contentModelGroup"}
-                                    title={"Content Model Groups"}
-                                />
-                            )}
+                return (
+                    <Fragment>
+                        <Grid className={gridNoPaddingClass}>
+                            <Cell span={6}>
+                                <PermissionInfo title={t`Access Level`} />
+                            </Cell>
+                            <Cell span={6}>
+                                <Bind name={"accessLevel"}>
+                                    <Select label={t`Access Level`}>
+                                        <option value={NO_ACCESS}>{t`No access`}</option>
+                                        <option value={FULL_ACCESS}>{t`Full access`}</option>
+                                        <option value={CUSTOM_ACCESS}>{t`Custom access`}</option>
+                                    </Select>
+                                </Bind>
+                            </Cell>
+                        </Grid>
+                        {data.accessLevel === CUSTOM_ACCESS && (
+                            <>
+                                <Grid>
+                                    <Cell span={12}>
+                                        <Bind name={"endpoints"}>
+                                            <CheckboxGroup
+                                                label={t`GraphQL API types`}
+                                                description={t`Each type has a separate URL and a specific purpose.
+                                                 Check out the {link} key topic to learn more.`({
+                                                    link: (
+                                                        <Link
+                                                            to={GRAPHQL_API_TYPES_LINK}
+                                                            target={"_blank"}
+                                                        >
+                                                            Headless CMS GraphQL API
+                                                        </Link>
+                                                    )
+                                                })}
+                                            >
+                                                {({ getValue, onChange }) =>
+                                                    API_ENDPOINTS.map(({ id, name }) => (
+                                                        <Checkbox
+                                                            key={id}
+                                                            label={name}
+                                                            value={getValue(id)}
+                                                            onChange={onChange(id)}
+                                                        />
+                                                    ))
+                                                }
+                                            </CheckboxGroup>
+                                        </Bind>
+                                    </Cell>
+                                </Grid>
+                                {graphQLEndpointAccess && (
+                                    <ContentModelGroupPermission
+                                        data={data}
+                                        setValue={setValue}
+                                        form={form}
+                                        Bind={Bind}
+                                        entity={"contentModelGroup"}
+                                        title={"Content Model Groups"}
+                                        locales={locales}
+                                    />
+                                )}
 
-                            {(data.endpoints.includes("read") ||
-                                data.endpoints.includes("manage") ||
-                                data.endpoints.includes("preview")) && (
-                                <ContentEntryPermission
-                                    locales={locales}
-                                    data={data}
-                                    Bind={Bind}
-                                    setValue={setValue}
-                                    entity={"contentEntry"}
-                                    title={"Content Entries"}
-                                />
-                            )}
-                        </>
-                    )}
-                </Fragment>
-            )}
+                                {graphQLEndpointAccess &&
+                                    canRead(value, "cms.contentModelGroup") && (
+                                        <ContentModelPermission
+                                            locales={locales}
+                                            data={data}
+                                            setValue={setValue}
+                                            form={form}
+                                            Bind={Bind}
+                                            entity={"contentModel"}
+                                            title={"Content Models"}
+                                            selectedContentModelGroups={getSelectedContentModelGroups(
+                                                data
+                                            )}
+                                        />
+                                    )}
+
+                                {graphQLEndpointAccess && canRead(value, "cms.contentModel") && (
+                                    <ContentEntryPermission
+                                        data={data}
+                                        Bind={Bind}
+                                        setValue={setValue}
+                                        form={form}
+                                        entity={"contentEntry"}
+                                        title={"Content Entries"}
+                                    />
+                                )}
+                            </>
+                        )}
+                    </Fragment>
+                );
+            }}
         </Form>
     );
 };

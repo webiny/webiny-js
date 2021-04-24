@@ -1,4 +1,5 @@
 import * as React from "react";
+import { OutputBlockData } from "@editorjs/editorjs";
 import { termsOfServiceEnabled } from "./../functions";
 import { FbFormModel, FbFormRenderComponentProps } from "../../../types";
 
@@ -11,7 +12,7 @@ type CreateTermsOfServiceComponentArgs = {
 type ChildrenFunction = (params: {
     onChange: (value: boolean) => void;
     errorMessage: String;
-    message: Record<string, any>;
+    message: OutputBlockData[];
 }) => React.ReactNode;
 
 export type TermsOfServiceProps = {

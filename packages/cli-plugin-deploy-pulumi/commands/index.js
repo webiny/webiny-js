@@ -1,5 +1,6 @@
 const destroy = require("./destroy");
 const deploy = require("./deploy");
+const watch = require("./watch");
 const output = require("./output");
 
 module.exports = [
@@ -46,6 +47,64 @@ module.exports = [
                     await deploy(argv, context);
                     process.exit(0);
                 }
+            );
+
+            yargs.command(
+                "watch [folder]",
+                `Rebuild and deploy specified specified project application while making changes to it`,
+                yargs => {
+                    yargs.example("$0 watch api --env=dev");
+                    yargs.example(
+                        "$0 watch api --env=dev --scope my-package-1 --scope my-package-2"
+                    );
+                    yargs.example("$0 watch api --env=dev --depth 2");
+                    yargs.example('$0 watch api --env=dev --logs "my-function*"');
+                    yargs.example('$0 watch --env=dev --scope "my/{package1,package2}" ');
+
+                    yargs.positional("folder", {
+                        describe: `Project application folder`,
+                        type: "string"
+                    });
+                    yargs.option("env", {
+                        describe: `Environment`,
+                        type: "string"
+                    });
+                    yargs.option("build", {
+                        describe: `While making code changes, re-build all relevant packages`,
+                        type: "boolean"
+                    });
+                    yargs.option("deploy", {
+                        describe: `While making code changes, re-deploy cloud infrastructure`,
+                        type: "boolean"
+                    });
+                    yargs.option("package", {
+                        alias: "p",
+                        describe: `Override watch packages (list of packages that need to be watched for code changes)`,
+                        type: "string"
+                    });
+                    yargs.option("depth", {
+                        describe: `The level of dependencies that needs to be watched for code changes (does not work when "scope" is passed)`,
+                        type: "number",
+                        default: 2
+                    });
+                    yargs.option("logs", {
+                        describe: `Forward logs from deployed application code to your terminal.`,
+                        type: "string"
+                    });
+
+                    yargs.option("output", {
+                        describe: `Specify the output destination to which all of the logs will be forwarded.`,
+                        default: "terminal",
+                        type: "string"
+                    });
+
+                    yargs.option("debug", {
+                        default: false,
+                        describe: `Turn on debug logs`,
+                        type: "boolean"
+                    });
+                },
+                async argv => watch(argv, context)
             );
 
             yargs.command(

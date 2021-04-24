@@ -1,11 +1,15 @@
-import { GraphQLScalarType, GraphQLFieldResolver as BaseGraphQLFieldResolver } from "graphql";
+import {
+    GraphQLScalarType,
+    GraphQLFieldResolver as BaseGraphQLFieldResolver,
+    GraphQLSchema
+} from "graphql";
 import { Plugin } from "@webiny/plugins/types";
 import { ContextInterface } from "@webiny/handler/types";
 
-export type GraphQLScalarPlugin = Plugin & {
+export interface GraphQLScalarPlugin extends Plugin {
     type: "graphql-scalar";
     scalar: GraphQLScalarType;
-};
+}
 
 export interface HandlerGraphQLOptions {
     debug?: boolean | string;
@@ -20,23 +24,47 @@ export type GraphQLFieldResolver<
 // `GraphQLSchemaPlugin` types.
 export type Types = string | (() => string | Promise<string>);
 
-export type GraphQLSchemaPluginTypeArgs = {
+export interface GraphQLSchemaPluginTypeArgs {
     context?: any;
     args?: any;
     source?: any;
-};
+}
 
 export type Resolvers<TContext> =
     | GraphQLScalarType
     | GraphQLFieldResolver<any, Record<string, any>, TContext>
     | { [property: string]: Resolvers<TContext> };
 
-export type GraphQLSchemaDefinition<TContext> = {
+export interface GraphQLSchemaDefinition<TContext> {
     typeDefs: Types;
     resolvers?: Resolvers<TContext>;
-};
+}
 
-export type GraphQLSchemaPlugin<TContext extends ContextInterface = ContextInterface> = Plugin<{
+export interface GraphQLSchemaPlugin<TContext extends ContextInterface = ContextInterface>
+    extends Plugin {
     type: "graphql-schema";
     schema: GraphQLSchemaDefinition<TContext>;
-}>;
+}
+
+export interface GraphQLRequestBody {
+    query: string;
+    variables: Record<string, any>;
+    operationName: string;
+}
+
+export interface GraphQLBeforeQueryPlugin<TContext extends ContextInterface = ContextInterface>
+    extends Plugin {
+    type: "graphql-before-query";
+    apply(params: { body: GraphQLRequestBody; schema: GraphQLSchema; context: TContext }): void;
+}
+
+export interface GraphQLAfterQueryPlugin<TContext extends ContextInterface = ContextInterface>
+    extends Plugin {
+    type: "graphql-after-query";
+    apply(params: {
+        result: any;
+        body: GraphQLRequestBody;
+        schema: GraphQLSchema;
+        context: TContext;
+    }): void;
+}

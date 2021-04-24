@@ -1,57 +1,25 @@
 const fs = require("fs");
 const path = require("path");
 const chalk = require("chalk");
-const findUp = require("find-up");
-const { PluginsContainer } = require("@webiny/plugins");
+const { getProject, PluginsContainer, log } = require("./utils");
 
-const webinyRootPath = findUp.sync("webiny.root.js");
-if (!webinyRootPath) {
+const project = getProject();
+if (!project) {
     console.log(
-        `🚨 Couldn't locate "webiny.root.js"! Webiny CLI relies on that file to find the root of a Webiny project.`
+        `🚨 Couldn't locate "webiny.project.js"! Webiny CLI relies on that file to find the root of a Webiny project.`
     );
     process.exit(1);
 }
-const projectRoot = path.dirname(webinyRootPath);
-
-const getLogType = type => {
-    switch (type) {
-        case "log":
-            return type;
-        case "info":
-            return `${chalk.blue(type)}`;
-        case "error":
-            return `${chalk.red(type)}`;
-        case "warning":
-            return `${chalk.yellow(type)}`;
-        case "debug":
-            return `${chalk.gray(type)}`;
-        case "success":
-            return `${chalk.green(type)}`;
-    }
-};
-
-const webinyLog = (type, ...args) => {
-    const prefix = `webiny ${getLogType(type)}: `;
-
-    const [first, ...rest] = args;
-    if (typeof first === "string") {
-        return console.log(prefix + first, ...rest);
-    }
-    return console.log(prefix, first, ...rest);
-};
 
 class Context {
     constructor() {
         this.loadedEnvFiles = {};
 
-        this.paths = {
-            projectRoot
-        };
+        this.version = require("./package.json").version;
+        this.project = project;
 
-        this.config = require(path.join(projectRoot, "webiny.root.js"));
-
-        // Check if `projectName` was injected properly
-        if (this.config.projectName === "[PROJECT_NAME]") {
+        // Check if `projectName` was injected properly.
+        if (this.project.name === "[PROJECT_NAME]") {
             console.log(
                 [
                     "",
@@ -66,7 +34,6 @@ class Context {
             process.exit(1);
         }
 
-        this.projectName = this.config.projectName;
         this.plugins = new PluginsContainer();
         this.onExitCallbacks = [];
 
@@ -91,14 +58,14 @@ class Context {
     }
 
     loadUserPlugins() {
-        if (this.config.cli) {
-            const plugins = this.config.cli.plugins || [];
+        if (this.project.config.cli) {
+            const plugins = this.project.config.cli.plugins || [];
             this.plugins.register(
                 ...plugins.map(plugin => {
                     if (typeof plugin === "string") {
                         let loadedPlugin;
                         try {
-                            loadedPlugin = require(path.join(this.paths.projectRoot, plugin)); // Try loading the package from the project's root
+                            loadedPlugin = require(path.join(this.project.root, plugin)); // Try loading the package from the project's root
                         } catch {
                             // If it fails, perhaps the user still has the package installed somewhere locally...
                             loadedPlugin = require(plugin);
@@ -111,36 +78,19 @@ class Context {
         }
     }
 
-    log(...args) {
-        webinyLog("log", ...args);
-    }
-
-    info(...args) {
-        webinyLog("info", ...args);
-    }
-
-    success(...args) {
-        webinyLog("success", ...args);
-    }
-
-    debug(...args) {
-        webinyLog("debug", ...args);
-    }
-
-    warning(...args) {
-        webinyLog("warning", ...args);
-    }
-
-    error(...args) {
-        webinyLog("error", ...args);
-    }
+    log = log.log;
+    info = log.info;
+    success = log.success;
+    debug = log.debug;
+    warning = log.warning;
+    error = log.error;
 
     resolve(...dir) {
-        return path.resolve(projectRoot, ...dir);
+        return path.resolve(this.project.root, ...dir);
     }
 
     replaceProjectRoot(path) {
-        return path.replace(projectRoot, "<projectRoot>").replace(/\\/g, "/");
+        return path.replace(this.project.root, "<projectRoot>").replace(/\\/g, "/");
     }
 
     /**

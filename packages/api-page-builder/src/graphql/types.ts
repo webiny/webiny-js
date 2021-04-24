@@ -42,12 +42,12 @@ export type Tag = { key: string; value?: string };
 
 export type TagItem = {
     tag: Tag;
-    configuration?: { storage?: { folder?: string; name?: string } };
+    configuration?: { meta?: Record<string, any>; storage?: { folder?: string; name?: string } };
 };
 
 export type PathItem = {
     path: string;
-    configuration?: { storage?: { folder?: string; name?: string } };
+    configuration?: { meta?: Record<string, any>; storage?: { folder?: string; name?: string } };
 };
 
 export type RenderArgs = {

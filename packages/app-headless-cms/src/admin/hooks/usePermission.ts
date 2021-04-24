@@ -3,6 +3,9 @@ import { useSecurity } from "@webiny/app-security";
 import get from "lodash/get";
 import { useI18N } from "@webiny/app-i18n/hooks/useI18N";
 
+type ContentModelGroup = { id: string; [key: string]: any };
+type ContentModel = { modelId: string; [key: string]: any };
+
 const usePermission = () => {
     const { identity } = useSecurity();
     const { getCurrentLocale } = useI18N();
@@ -11,27 +14,33 @@ const usePermission = () => {
 
     const hasFullAccess = useMemo(() => identity.getPermission("cms.*"), []);
 
-    const canRead = useCallback(
-        ({ contentModelGroup, contentModel, permissionName }) => {
+    const canReadEntries = useCallback(
+        ({
+            contentModelGroup,
+            contentModel
+        }: {
+            contentModelGroup: ContentModelGroup;
+            contentModel: ContentModel;
+        }) => {
             if (hasFullAccess) {
                 return true;
             }
 
-            const permission = identity.getPermission(permissionName);
+            const permission = identity.getPermission("cms.contentEntry");
+            const contentModelPermission = identity.getPermission("cms.contentModel");
+            const contentModelGroupPermission = identity.getPermission("cms.contentModelGroup");
 
             if (!permission) {
                 return false;
             }
-            if (permission.own) {
-                return get(contentModel, "createdBy.id") === identity.login;
-            }
+
             // Check "contentModel" list.
-            const models = get(permission, `models.${currentLocale}`);
+            const models = get(contentModelPermission, `models.${currentLocale}`);
             if (Array.isArray(models)) {
                 return models.includes(contentModel.modelId);
             }
             // Check "contentModelGroup" list.
-            const groups = get(permission, `groups.${currentLocale}`);
+            const groups = get(contentModelGroupPermission, `groups.${currentLocale}`);
             if (Array.isArray(groups)) {
                 return groups.includes(contentModelGroup.id);
             }
@@ -40,7 +49,7 @@ const usePermission = () => {
                 return permission.rwd.includes("r");
             }
 
-            return false;
+            return true;
         },
         [identity, hasFullAccess, currentLocale]
     );
@@ -62,6 +71,24 @@ const usePermission = () => {
         },
         [identity]
     );
+
+    /**
+     * @description This checks whether the user has the "write" access for given permission;
+     * without talking the "own" property in account.
+     * @param {string} permissionName
+     * */
+    const canCreate = useCallback(permissionName => {
+        const permission = identity.getPermission(permissionName);
+        if (!permission) {
+            return false;
+        }
+
+        if (typeof permission.rwd !== "string") {
+            return true;
+        }
+
+        return permission.rwd.includes("w");
+    }, []);
 
     const canDelete = useCallback(
         (item, permissionName) => {
@@ -158,8 +185,9 @@ const usePermission = () => {
     );
 
     return {
-        canRead,
+        canReadEntries,
         canEdit,
+        canCreate,
         canDelete,
         canPublish,
         canUnpublish,

@@ -1,4 +1,4 @@
-import { ContextPluginInterface } from "@webiny/handler/types";
+import { ContextPlugin } from "@webiny/handler/types";
 import acceptLanguageParser from "accept-language-parser";
 import {
     ContextI18NGetLocales,
@@ -56,7 +56,7 @@ const getLocaleFromHeaders = (http, localeContext = "default") => {
     return { acceptLanguageHeader, contextLocaleHeader };
 };
 
-export default (): ContextPluginInterface<I18NContext & TenancyContext> => ({
+export default (): ContextPlugin<I18NContext, TenancyContext> => ({
     type: "context",
     apply: async context => {
         context.i18n = {

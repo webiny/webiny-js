@@ -1,13 +1,8 @@
-export default (page, { log }) => async tree => {
-    log("Injecting Apollo state into HTML.");
-
-    const apolloState = await page.evaluate(() => {
-        // @ts-ignore
-        return window.getApolloState();
-    });
+export default ({ render }) => async tree => {
+    console.log("Injecting Apollo state into HTML.");
 
     const apolloScript = `<script>window.__APOLLO_STATE__ = ${JSON.stringify(
-        apolloState
+        render.meta.apolloState
     )};</script>`;
 
     tree.match({ tag: "body" }, node => {

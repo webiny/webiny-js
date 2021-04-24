@@ -13,7 +13,7 @@ A plugin for @webiny/cli-plugin-scaffold that adds a GraphQL service.
 yarn add @webiny/cli-plugin-scaffold-graphql-service
 ```
 
-Add plugin to your project by editing `webiny.root.js`:
+Add plugin to your project by editing `webiny.project.js`:
 
 ```js
 module.exports = {

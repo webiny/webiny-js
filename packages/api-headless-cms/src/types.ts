@@ -1586,6 +1586,10 @@ export interface ElasticsearchQueryBuilderValueSearchPlugin extends Plugin {
      * Transform value that is going to be searched for in the Elasticsearch.
      */
     transform: (args: ElasticsearchQueryBuilderValueSearchPluginArgs) => any;
+    /**
+     * Create a path to search in the Elasticsearch. Default one is values.fieldId.
+     */
+    createPath?: (args: Omit<ElasticsearchQueryBuilderValueSearchPluginArgs, "value">) => string;
 }
 
 /**
@@ -1625,6 +1629,12 @@ export type CmsContentModelPermission = SecurityPermission<{
 export type CmsContentModelGroupPermission = SecurityPermission<{
     own: boolean;
     rwd: string;
+    /**
+     * A object representing `key: group.id` values where key is locale code.
+     */
+    groups?: {
+        [key: string]: string[];
+    };
 }>;
 /**
  * The security permission for content entry.
