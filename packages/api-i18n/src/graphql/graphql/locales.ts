@@ -8,7 +8,7 @@ import NotAuthorizedResponse from "@webiny/api-security/NotAuthorizedResponse";
 
 const plugin: GraphQLSchemaPlugin<I18NContext & SecurityContext> = {
     type: "graphql-schema",
-    name: "graphql-schema-i18n-installation",
+    name: "graphql-schema-i18n-locales",
     schema: {
         typeDefs: /* GraphQL */ `
             type I18NCreatedBy {
