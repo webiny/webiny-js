@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import get from "lodash/get";
 import { useApolloClient } from "~/admin/hooks";
-import { createListQuery, createGetByIdsQuery, GET_CONTENT_MODEL } from "./graphql";
+import { createListQuery, createGetByIdsQuery, GET_CONTENT_MODELS } from "./graphql";
 import { getOptions } from "./getOptions";
 import { CmsEditorContentModel } from "~/types";
 
@@ -61,7 +61,7 @@ export const useReferences = ({ bind, field }) => {
         // Fetch ref content model data, to get its title field.
         setLoading(true);
         const refContentModelQuery = await client.query({
-            query: GET_CONTENT_MODEL,
+            query: GET_CONTENT_MODELS,
             variables: { modelId }
         });
 

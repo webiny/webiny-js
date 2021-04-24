@@ -2,7 +2,7 @@ import gql from "graphql-tag";
 import upperFirst from "lodash/upperFirst";
 import pluralize from "pluralize";
 
-export const createListQuery = model => {
+export const createListQuery = models => {
     const ucFirstPluralizedModelId = upperFirst(pluralize(model.modelId));
     const ucFirstModelId = upperFirst(model.modelId);
 
@@ -68,9 +68,9 @@ export const createGetQuery = model => {
     `;
 };
 
-export const GET_CONTENT_MODEL = gql`
-    query CmsGetContentModel($modelId: ID!) {
-        getContentModel(modelId: $modelId) {
+export const GET_CONTENT_MODELS = gql`
+    query CmsGetContentModels {
+        listContentModels {
             data {
                 modelId
                 titleFieldId

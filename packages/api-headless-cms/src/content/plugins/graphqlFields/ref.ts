@@ -5,6 +5,8 @@ const createUnionTypeName = (model, field) => {
     return `${createReadTypeName(model.modelId)}${createReadTypeName(field.fieldId)}`;
 };
 
+const typeNameToModelId = new Map();
+
 const plugin: CmsModelFieldToGraphQLPlugin = {
     name: "cms-model-field-to-graphql-ref",
     type: "cms-model-field-to-graphql",
@@ -21,12 +23,17 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             return field.fieldId + `: ${field.multipleValues ? `[${gqlType}]` : gqlType}`;
         },
         createResolver({ field }) {
+            // Create a map of model types and corresponding modelIds so resolvers don't need to perform the lookup.
+            for (const item of field.settings.models) {
+                typeNameToModelId.set(createReadTypeName(item.modelId), item.modelId);
+            }
+
             return async (instance, args, { cms }: CmsContext, info) => {
-                const { returnType } = info;
-                
-                console.log("returnType", returnType);
-                
-                const { modelId } = field.settings.models[0];
+                const modelId = typeNameToModelId.get(info.returnType.toString());
+
+                if (!modelId) {
+                    return null;
+                }
 
                 // Get model manager, to get access to CRUD methods
                 const model = await cms.getModel(modelId);

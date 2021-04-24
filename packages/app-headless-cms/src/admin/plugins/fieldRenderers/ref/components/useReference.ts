@@ -1,18 +1,20 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import get from "lodash/get";
 import { useApolloClient } from "~/admin/hooks";
-import { createListQuery, createGetQuery, GET_CONTENT_MODEL } from "./graphql";
+import { createListQuery, createGetQuery, GET_CONTENT_MODELS } from "./graphql";
 import { getOptions } from "./getOptions";
 import { CmsEditorContentModel, CmsEditorField } from "~/types";
 
 interface ValueEntry {
     id: string;
+    modelId: string;
     published: boolean;
     name: string;
 }
 interface DataEntry {
     id: string;
     meta: {
+        modelId: string;
         status: "published" | "draft";
         title: string;
     };
@@ -34,7 +36,7 @@ type EntryCollection = Record<string, DataEntry>;
 
 const convertQueryDataToEntryList = (data: DataEntry[]): EntryCollection => {
     return data.reduce((collection, entry) => {
-        collection[entry.id] = entry;
+        collection[`${entry.meta.modelId}:${entry.id}`] = entry;
         return collection;
     }, {});
 };
@@ -43,6 +45,7 @@ const convertValueEntryToData = (entry: ValueEntry): DataEntry => {
     return {
         id: entry.id,
         meta: {
+            modelId: entry.modelId,
             status: entry.published ? "published" : "draft",
             title: entry.name
         }
@@ -52,6 +55,7 @@ const convertValueEntryToData = (entry: ValueEntry): DataEntry => {
 const convertDataEntryToValue = (entry: DataEntry): ValueEntry => {
     return {
         id: entry.id,
+        modelId: entry.meta.modelId,
         published: entry.meta.status === "published",
         name: entry.meta.title
     };
@@ -69,7 +73,7 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
     const client = useApolloClient();
     const [search, setSearch] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
-    const [model, setModel] = useState<CmsEditorContentModel>(null);
+    const [models, setModels] = useState<CmsEditorContentModel[]>(null);
     const [LIST_CONTENT, setListContent] = useState<any>(null);
     const [GET_CONTENT, setGetContent] = useState<any>(null);
     const [entries, setEntries] = useState<EntryCollection>({});
@@ -84,9 +88,7 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
             return;
         }
 
-        const { titleFieldId } = model;
-
-        if (!LIST_CONTENT || !search || !titleFieldId) {
+        if (!LIST_CONTENT || !search) {
             return;
         }
 
@@ -113,17 +115,14 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
         // Fetch ref content model data, to get its title field.
         setLoading(true);
         const refContentModelQuery = await client.query({
-            query: GET_CONTENT_MODEL,
-            variables: { modelId }
+            query: GET_CONTENT_MODELS
         });
 
-        const refContentModel = get(refContentModelQuery, `data.getContentModel.data`, {});
-        setModel(refContentModel);
+        const contentModels = get(refContentModelQuery, `data.listContentModels.data`, []);
+        setModels(contentModels);
 
-        // Once we have the refContentModel loaded, this will construct proper list and get queries.
-        setListContent(createListQuery(refContentModel));
-        setGetContent(createGetQuery(refContentModel));
-
+        // Once we have contentModels loaded, this will construct proper list query.
+        setListContent(createListQuery(contentModels));
         setLoading(false);
     };
 
@@ -151,7 +150,7 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
     }, [modelId, LIST_CONTENT]);
 
     useEffect(() => {
-        if (!value || !model || !model.titleFieldId || !GET_CONTENT) {
+        if (!value || !models) {
             setValueEntry(() => null);
             return;
         }
@@ -166,6 +165,7 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
         }
 
         setLoading(true);
+        const GET_CONTENT = createGetQuery(models.find(model => model.modelId === value.modelId));
         client.query({ query: GET_CONTENT, variables: { revision: value } }).then(res => {
             setLoading(false);
             const dataEntry: DataEntry | null = res.data.content.data;
@@ -184,7 +184,7 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
                 return convertDataEntryToValue(dataEntry);
             });
         });
-    }, [value, GET_CONTENT, model]);
+    }, [value, GET_CONTENT, models]);
 
     const onChange = useCallback(value => {
         if (value !== null) {
@@ -193,7 +193,8 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
             setValueEntry(() => {
                 return convertDataEntryToValue(entry);
             });
-            return bind.onChange({ modelId, entryId: value });
+            const [modelId, entryId] = value.split(":");
+            return bind.onChange({ modelId, entryId });
         }
 
         setValueEntry(() => null);
