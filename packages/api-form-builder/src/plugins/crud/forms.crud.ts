@@ -984,7 +984,7 @@ export default {
 
                     const [uniqueId] = formId.split("#");
 
-                    const must: Record<string, any>[] = [
+                    const filter: Record<string, any>[] = [
                         { term: { "__type.keyword": "fb.submission" } },
                         { term: { "locale.keyword": i18nContent.locale.code } },
                         // Load all form submissions no matter the revision
@@ -995,14 +995,12 @@ export default {
                     const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
                     if (sharedIndex) {
                         const tenant = security.getTenant();
-                        must.push({ term: { "tenant.keyword": tenant.id } });
+                        filter.push({ term: { "tenant.keyword": tenant.id } });
                     }
 
                     const body: Record<string, any> = {
                         query: {
-                            constant_score: {
-                                filter: { bool: { must } }
-                            }
+                            bool: { filter }
                         },
                         size: limit + 1,
                         sort: [{ createdOn: { order: sort.createdOn > 0 ? "asc" : "desc" } }]
@@ -1186,6 +1184,7 @@ export default {
                                     __type: "fb.submission",
                                     webinyVersion: context.WEBINY_VERSION,
                                     createdOn: new Date().toISOString(),
+                                    tenant: context.security.getTenant().id,
                                     ...submission
                                 }
                             }
