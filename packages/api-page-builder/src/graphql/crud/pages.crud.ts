@@ -209,7 +209,10 @@ const plugin: ContextPlugin<PbContext> = {
                     const permission = await checkBasePermissions(context, PERMISSION_NAME, {
                         rwd: "r"
                     });
-                    const { sort, from, size, query, page } = getNormalizedListPagesArgs(args);
+                    const { sort, from, size, query, page } = getNormalizedListPagesArgs(
+                        args,
+                        context
+                    );
 
                     query.bool.filter.push(
                         {
@@ -245,7 +248,10 @@ const plugin: ContextPlugin<PbContext> = {
                 },
 
                 async listPublished(args) {
-                    const { sort, from, size, query, page } = getNormalizedListPagesArgs(args);
+                    const { sort, from, size, query, page } = getNormalizedListPagesArgs(
+                        args,
+                        context
+                    );
 
                     query.bool.filter.push(
                         {
@@ -277,9 +283,22 @@ const plugin: ContextPlugin<PbContext> = {
                         throw new Error("Please provide at least two characters.");
                     }
 
+                    let query = undefined;
+                    // When ES index is shared between tenants, we need to filter records by tenant ID
+                    const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
+                    if (sharedIndex) {
+                        const tenant = context.security.getTenant();
+                        query = {
+                            bool: {
+                                filter: [{ term: { "tenant.keyword": tenant.id } }]
+                            }
+                        };
+                    }
+
                     const response = await elasticSearch.search({
                         ...ES_DEFAULTS(),
                         body: {
+                            query,
                             size: 0,
                             aggs: {
                                 tags: {

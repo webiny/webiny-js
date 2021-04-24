@@ -19,6 +19,7 @@ const TYPE_FORM_SUBMISSION = "fb.formSubmission";
 
 const getESDataForLatestRevision = (form: FbForm, context: FormBuilderContext) => ({
     __type: "fb.form",
+    tenant: context.security.getTenant().id,
     webinyVersion: context.WEBINY_VERSION,
     id: form.id,
     createdOn: form.createdOn,
@@ -121,6 +122,13 @@ export default {
                         must.push({
                             term: { "ownedBy.id.keyword": identity.id }
                         });
+                    }
+
+                    // When ES index is shared between tenants, we need to filter records by tenant ID
+                    const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
+                    if (sharedIndex) {
+                        const tenant = security.getTenant();
+                        must.push({ term: { "tenant.keyword": tenant.id } });
                     }
 
                     const body = {
@@ -982,6 +990,13 @@ export default {
                         // Load all form submissions no matter the revision
                         { term: { "form.parent.keyword": uniqueId } }
                     ];
+
+                    // When ES index is shared between tenants, we need to filter records by tenant ID
+                    const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
+                    if (sharedIndex) {
+                        const tenant = security.getTenant();
+                        must.push({ term: { "tenant.keyword": tenant.id } });
+                    }
 
                     const body: Record<string, any> = {
                         query: {
