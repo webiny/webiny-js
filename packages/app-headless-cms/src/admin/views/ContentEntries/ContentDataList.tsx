@@ -62,12 +62,12 @@ type ContentDataListProps = {
 };
 
 const ContentDataList = ({
-                             contentModel,
-                             canCreate,
-                             listQueryVariables,
-                             setListQueryVariables,
-                             sorters
-                         }: ContentDataListProps) => {
+    contentModel,
+    canCreate,
+    listQueryVariables,
+    setListQueryVariables,
+    sorters
+}: ContentDataListProps) => {
     const [fetchMoreLoading, setFetchMoreLoading] = useState(false);
     const [filter, setFilter] = useState("");
     const [formData, setFormData] = useState(listQueryVariables);

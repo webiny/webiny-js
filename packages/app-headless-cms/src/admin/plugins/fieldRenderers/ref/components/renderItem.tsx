@@ -9,7 +9,8 @@ const ModelId = styled("span")({
 export const renderItem = item => {
     return (
         <Typography use={"body2"}>
-            {item.name}<br/>
+            {item.name}
+            <br />
             <ModelId>Model: {item.modelName}</ModelId>
         </Typography>
     );

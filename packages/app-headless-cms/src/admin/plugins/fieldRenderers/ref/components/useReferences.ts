@@ -67,7 +67,7 @@ export const useReferences = ({ bind, field }) => {
         }
 
         setLoading(true);
-        
+
         client
             .query({ query: GQL.GET_CONTENT_ENTRIES, variables: { entries: values } })
             .then(res => {
