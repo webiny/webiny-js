@@ -38,28 +38,37 @@ const classes = {
 
 const DATA_NAMESPACE = "data.settings.visibility";
 
-const VisibilitySettings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps & {
-    options: any;
-}> = ({ defaultAccordionValue }) => {
+export const useVisibilitySetting = elementId => {
     const { displayMode } = useRecoilValue(uiAtom);
-    const activeElementId = useRecoilValue(activeElementAtom);
-    const element = useRecoilValue(elementWithChildrenByIdSelector(activeElementId));
-
-    const { config: activeDisplayModeConfig } = useMemo(() => {
-        return plugins
-            .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
-            .find(pl => pl.config.displayMode === displayMode);
-    }, [displayMode]);
-
+    const element = useRecoilValue(elementWithChildrenByIdSelector(elementId));
     const { getUpdateValue } = useUpdateHandlers({
         element,
         dataNamespace: DATA_NAMESPACE
     });
 
     const updateVisibility = useCallback(
-        (value: string) => getUpdateValue(`${displayMode}.hidden`)(value),
+        (value: boolean) => getUpdateValue(`${displayMode}.hidden`)(value),
         [getUpdateValue, displayMode]
     );
+
+    return {
+        element,
+        updateVisibility
+    };
+};
+
+const VisibilitySettings: React.FunctionComponent<PbEditorPageElementSettingsRenderComponentProps & {
+    options: any;
+}> = ({ defaultAccordionValue }) => {
+    const { displayMode } = useRecoilValue(uiAtom);
+    const activeElementId = useRecoilValue(activeElementAtom);
+    const { element, updateVisibility } = useVisibilitySetting(activeElementId);
+
+    const { config: activeDisplayModeConfig } = useMemo(() => {
+        return plugins
+            .byType<PbEditorResponsiveModePlugin>("pb-editor-responsive-mode")
+            .find(pl => pl.config.displayMode === displayMode);
+    }, [displayMode]);
 
     const fallbackValue = useMemo(
         () =>
