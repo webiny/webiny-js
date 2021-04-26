@@ -10,7 +10,7 @@ import {
 } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
 import configurations from "../../configurations";
-import { createBasePrimaryKey } from "../../utils";
+import { createBasePartitionKey } from "../../utils";
 
 const whereKeySuffix = [
     "_not",
@@ -85,7 +85,7 @@ export default class CmsContentModelGroupDynamo
 
     private get primaryKey(): string {
         if (!this._primaryKey) {
-            this._primaryKey = `${createBasePrimaryKey(this.context)}#CMG`;
+            this._primaryKey = `${createBasePartitionKey(this.context)}#CMG`;
         }
         return this._primaryKey;
     }

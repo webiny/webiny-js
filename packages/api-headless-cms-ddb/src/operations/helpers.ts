@@ -13,3 +13,19 @@ export const getDocumentClient = (context: CmsContext): DocumentClient => {
     }
     return driver.documentClient;
 };
+
+export const getTable = (context: CmsContext): string => {
+    const db = context.db as any;
+    if (!db) {
+        throw new WebinyError(
+            "Missing db on context.",
+            "DB_ERROR"
+        );
+    } else if (!db.table) {
+        throw new WebinyError(
+            "Missing table on context.db.",
+            "TABLE_ERROR"
+        );
+    }
+    return db.table;
+};

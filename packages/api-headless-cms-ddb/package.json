@@ -29,7 +29,7 @@
     "@webiny/handler-aws": "^5.3.0",
     "@webiny/handler-db": "^5.3.0",
     "@webiny/plugins": "^5.3.0",
-      "aws-sdk": "^2.892.0",
+    "aws-sdk": "^2.892.0",
     "dataloader": "^2.0.0",
     "dynamodb-toolbox": "^0.3.3",
     "jsonpack": "^1.1.5",

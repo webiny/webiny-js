@@ -9,7 +9,7 @@ import {
 } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
 import configurations from "../../configurations";
-import { createBasePrimaryKey } from "../../utils";
+import { createBasePartitionKey } from "../../utils";
 
 interface ConstructorArgs {
     context: CmsContext;
@@ -24,7 +24,7 @@ export default class CmsContentModelDynamo implements CmsContentModelStorageOper
 
     private get primaryKey(): string {
         if (!this._primaryKey) {
-            this._primaryKey = `${createBasePrimaryKey(this.context)}#CM`;
+            this._primaryKey = `${createBasePartitionKey(this.context)}#CM`;
         }
         return this._primaryKey;
     }
