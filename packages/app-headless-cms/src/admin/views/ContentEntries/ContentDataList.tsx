@@ -30,6 +30,11 @@ const rightAlign = css({
     alignItems: "flex-end !important",
     justifyContent: "center !important"
 });
+
+const ModelId = styled("span")({
+    color: "var(--mdc-theme-text-secondary-on-background)"
+});
+
 const InlineLoaderWrapper = styled("div")({
     position: "absolute",
     bottom: 0,
@@ -41,10 +46,13 @@ const InlineLoaderWrapper = styled("div")({
     height: 40,
     backgroundColor: "var(--mdc-theme-surface)"
 });
+
 const listItemMinHeight = css({
     minHeight: "66px !important"
 });
+
 type Sorter = { label: string; value: string };
+
 type ContentDataListProps = {
     contentModel: any;
     canCreate: boolean;
@@ -52,13 +60,14 @@ type ContentDataListProps = {
     setListQueryVariables: (prevState?: any) => void;
     sorters: Sorter[];
 };
+
 const ContentDataList = ({
-    contentModel,
-    canCreate,
-    listQueryVariables,
-    setListQueryVariables,
-    sorters
-}: ContentDataListProps) => {
+                             contentModel,
+                             canCreate,
+                             listQueryVariables,
+                             setListQueryVariables,
+                             sorters
+                         }: ContentDataListProps) => {
     const [fetchMoreLoading, setFetchMoreLoading] = useState(false);
     const [filter, setFilter] = useState("");
     const [formData, setFormData] = useState(listQueryVariables);
@@ -208,7 +217,15 @@ const ContentDataList = ({
         <UIList.DataList
             loading={loading}
             data={filteredData}
-            title={pluralize(contentModel.name)}
+            title={
+                <span>
+                    {pluralize(contentModel.name)}
+                    <br />
+                    <Typography use={"subtitle1"}>
+                        <ModelId>Model ID: {contentModel.modelId}</ModelId>
+                    </Typography>
+                </span>
+            }
             actions={
                 canCreate ? (
                     <ButtonSecondary data-testid="new-record-button" onClick={onCreate}>
