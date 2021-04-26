@@ -1,11 +1,13 @@
 import React, { CSSProperties, ReactElement, useMemo } from "react";
+import kebabCase from "lodash/kebabCase";
 import { plugins } from "@webiny/plugins";
 import {
     PbRenderElementStylePlugin,
     PbRenderElementAttributesPlugin,
     PbElement,
     PbEditorElement
-} from "../../types";
+} from "~/types";
+import { usePageBuilder } from "~/hooks/usePageBuilder";
 
 type CombineClassNamesType = (...styles) => string;
 const combineClassNames: CombineClassNamesType = (...styles) => {
@@ -66,8 +68,17 @@ const ElementRootComponent: React.FunctionComponent<ElementRootProps> = ({
         }, {});
     }, [shallowElement.id]);
 
+    const {
+        responsiveDisplayMode: { displayMode }
+    } = usePageBuilder();
+
     // required due to re-rendering when set content atom and still nothing in elements atom
     if (!element) {
+        return null;
+    }
+    // Handle element visibility.// Use per-device style
+    const visibility = finalStyle[`--${kebabCase(displayMode)}-visibility`];
+    if (visibility === "hidden") {
         return null;
     }
 
