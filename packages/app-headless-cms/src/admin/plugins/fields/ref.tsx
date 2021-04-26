@@ -4,7 +4,7 @@ import { useQuery } from "../../hooks";
 import { LIST_CONTENT_MODELS } from "../../viewsGraphql";
 import { validation, ValidationError } from "@webiny/validation";
 import { Cell, Grid } from "@webiny/ui/Grid";
-import { MultiAutoComplete, Placement } from "@webiny/ui/AutoComplete";
+import { MultiAutoComplete } from "@webiny/ui/AutoComplete";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { CmsEditorFieldTypePlugin } from "~/types";
