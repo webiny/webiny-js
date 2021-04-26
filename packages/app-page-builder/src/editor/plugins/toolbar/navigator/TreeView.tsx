@@ -2,9 +2,25 @@ import React, { useCallback } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import get from "lodash/get";
 import { Typography } from "@webiny/ui/Typography";
+import { Icon } from "@webiny/ui/Icon";
 import { activeElementAtom, elementByIdSelector, uiAtom } from "~/editor/recoil/modules";
+import { ReactComponent as VisibilityOffIcon } from "~/editor/assets/icons/visibility_off_24px.svg";
+import { useVisibilitySetting } from "~/editor/plugins/elementSettings/visibility/VisibilitySettings";
 import { ElementTypeContainer } from "./StyledComponents";
 import CollapsableList from "./CollapsableList";
+import BlockMover from "./BlockMover";
+
+const ElementVisibilityAction = ({ elementId }: { elementId: string }) => {
+    const { updateVisibility } = useVisibilitySetting(elementId);
+
+    return (
+        <Icon
+            onClick={() => updateVisibility(false)}
+            icon={<VisibilityOffIcon />}
+            className={"collapsable__header-icon"}
+        />
+    );
+};
 
 const TreeViewItem = ({ element, level, children }) => {
     const elementId = element.id;
@@ -55,7 +71,10 @@ const TreeViewItem = ({ element, level, children }) => {
             }
             disableAction={element.elements.length <= 0}
             active={activeElement === elementId}
-            hidden={hidden}
+            mover={<BlockMover type={element.type} id={element.id} />}
+            elementVisibilityAction={
+                hidden ? <ElementVisibilityAction elementId={elementId} /> : null
+            }
         >
             {children}
         </CollapsableList>

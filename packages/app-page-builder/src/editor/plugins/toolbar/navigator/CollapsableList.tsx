@@ -1,25 +1,25 @@
 import React, { useState, ReactElement } from "react";
 import classNames from "classnames";
-import { Icon } from "@webiny/ui/Icon";
-import { ReactComponent as VisibilityOffIcon } from "~/editor/assets/icons/visibility_off_24px.svg";
 import { EmptyBlock, Collapsable, ArrowRight } from "./StyledComponents";
 
 type CollapsableListProps = {
     children: ReactElement | ReactElement[];
     header: ReactElement;
+    mover: ReactElement;
     level: number;
     disableAction: boolean;
     active: boolean;
-    hidden: boolean;
+    elementVisibilityAction: ReactElement;
 };
 
 const CollapsableList = ({
     children,
     header,
+    mover,
     level,
     disableAction,
     active,
-    hidden
+    elementVisibilityAction
 }: CollapsableListProps) => {
     const [isOpen, setOpen] = useState(true);
     const list = Array.from(new Array(level)).map((_, i) => i);
@@ -44,9 +44,8 @@ const CollapsableList = ({
                     <ArrowRight className={classNames({ ["open"]: isOpen })} />
                 </button>
                 {header}
-                {hidden && (
-                    <Icon icon={<VisibilityOffIcon />} className={"collapsable__header-icon"} />
-                )}
+                {elementVisibilityAction}
+                {mover}
             </div>
             <div className={`collapsable__content ${isOpen ? "" : "collapsed"}`}>
                 {React.Children.map(children, content =>
