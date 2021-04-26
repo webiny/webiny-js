@@ -3,6 +3,59 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.3...v5.5.0) (2021-04-26)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+# [5.5.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.2...v5.5.0-beta.3) (2021-04-23)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+# [5.5.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.1...v5.5.0-beta.2) (2021-04-23)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+# [5.5.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.0...v5.5.0-beta.1) (2021-04-22)
+
+**Note:** Version bump only for package @webiny/project-utils
+
+
+
+
+
+# [5.5.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.4.0...v5.5.0-beta.0) (2021-04-22)
+
+
+### Bug Fixes
+
+* add yarn and remove unnecessary quotes ([98a9810](https://github.com/webiny/webiny-js/commit/98a9810ea61cb0ee913e5a713782aa074e8e3948))
+* correct path ([8148d58](https://github.com/webiny/webiny-js/commit/8148d58b9f1583a4973727dc5421e8c856b6cd48))
+* ensure file exists before copying ([781a31d](https://github.com/webiny/webiny-js/commit/781a31d6b0dbc6e85bf3ae0190461ad4e20f1b38))
+* update dependencies ([7067da6](https://github.com/webiny/webiny-js/commit/7067da66ff2a70c340b93d8cde0ad36caa4e4640))
+
+
+### Features
+
+* **project-utils:** add prebuild, build, postbuild stages ([99d6369](https://github.com/webiny/webiny-js/commit/99d63693a2481588972b212aa789bfac5d28860d))
+* create build / watch webpack configs ([2f3992f](https://github.com/webiny/webiny-js/commit/2f3992f517ddcfbd416ca97e64000c15b922a6ea))
+* create utils for building and watching packages ([adc3843](https://github.com/webiny/webiny-js/commit/adc38437547fb1b56507bccfef21c585523b883a))
+
+
+
+
+
 # [5.4.0](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.3...v5.4.0) (2021-04-13)
 
 **Note:** Version bump only for package @webiny/project-utils
