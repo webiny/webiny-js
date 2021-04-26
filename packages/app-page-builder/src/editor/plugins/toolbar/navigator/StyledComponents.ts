@@ -1,8 +1,8 @@
 import styled from "@emotion/styled";
 
-export const NavigatorTitle = styled("div")({
-    padding: 10
-});
+export const NavigatorTitle = styled("div")(`
+    padding: 16px 12px;
+`);
 
 export const ElementTypeContainer = styled("div")({
     flexGrow: 1,
@@ -13,16 +13,19 @@ export const Collapsable = styled("div")(`
   background-color: transparent;
 
   .collapsable__header {
+    box-sizing: border-box;
     width: 100%;
     display: flex;
-    padding: 4px 0px;
+    padding: 4px;
     text-transform: capitalize;
+    border: 1px solid var(--mdc-theme-background);
         
     &:hover {
       background-color: var(--mdc-theme-background);
     }
     &.active {
-      background-color: var(--mdc-theme-on-background);
+      background-color: var(--mdc-theme-background);
+      color: var(--mdc-theme-primary);
     }
     
     .collapsable__header-action {
@@ -37,8 +40,9 @@ export const Collapsable = styled("div")(`
     
     .collapsable__header-icon {
         width: 16px;
-        padding: 0px 24px;
+        padding: 0px 16px;
         color: var(--mdc-theme-text-secondary-on-background);
+        cursor: pointer;
     }
   }
 
@@ -65,4 +69,22 @@ export const ArrowRight = styled("div")(`
 
 export const EmptyBlock = styled("div")(`
     width: 12px;
+`);
+
+export const MoverWrapper = styled("div")(`
+    button {
+        padding: 0px;
+        box-sizing: border-box;
+        svg {
+            width: 16px;
+            height: 16px;
+        }
+    }
+    button:first-of-type {
+        margin-right: 4px;
+    }
+    button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
 `);
