@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import get from "lodash/get";
 import { useApolloClient } from "~/admin/hooks";
-import { createListQuery, createGetByIdsQuery, GET_CONTENT_MODELS } from "./graphql";
+import * as GQL from "./graphql";
 import { getOptions } from "./getOptions";
-import { CmsEditorContentModel } from "~/types";
 
 type ValueEntry = {
     id: string;
+    modelId: string;
+    modelName: string;
     published: boolean;
     name: string;
 };
@@ -21,31 +21,23 @@ export const useReferences = ({ bind, field }) => {
     const client = useApolloClient();
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(false);
-    const [model, setModel] = useState<CmsEditorContentModel>(null);
-    const [LIST_CONTENT, setListContent] = useState(null);
-    const [GET_BY_IDS, setGetByIds] = useState(null);
     const [entries, setEntries] = useState([]);
     const [latestEntries, setLatestEntries] = useState([]);
     const [valueEntries, setValueEntries] = useState<ValueEntry[]>([]);
 
-    const { modelId } = field.settings.models[0];
-    const values = bind.value ? bind.value.map(v => v.entryId) : [];
+    const { models } = field.settings;
+    const modelsHash = models.join(",");
+    const values = bind.value ? bind.value : [];
 
     const searchEntries = async () => {
         if (!search) {
             return;
         }
 
-        const { titleFieldId } = model;
-
-        if (!LIST_CONTENT || !search || !titleFieldId) {
-            return;
-        }
-
         setLoading(true);
         const { data } = await client.query({
-            query: LIST_CONTENT,
-            variables: { limit: 10, where: { [`${titleFieldId}_contains`]: search } }
+            query: GQL.SEARCH_CONTENT_ENTRIES,
+            variables: { modelIds: models.map(m => m.modelId), query: search }
         });
         setLoading(false);
 
@@ -57,53 +49,28 @@ export const useReferences = ({ bind, field }) => {
         searchEntries();
     }, [search]);
 
-    const prepareData = async () => {
-        // Fetch ref content model data, to get its title field.
-        setLoading(true);
-        const refContentModelQuery = await client.query({
-            query: GET_CONTENT_MODELS,
-            variables: { modelId }
-        });
-
-        const refContentModel = get(refContentModelQuery, `data.getContentModel.data`, {});
-        setModel(refContentModel);
-
-        // Once we have the refContentModel loaded, this will construct proper list and get queries.
-        setListContent(createListQuery(refContentModel));
-        setGetByIds(createGetByIdsQuery(refContentModel));
-
-        setLoading(false);
-    };
-
     useEffect(() => {
-        prepareData();
-    }, [modelId]);
-
-    useEffect(() => {
-        if (!LIST_CONTENT) {
-            return;
-        }
-
         client
             .query({
-                query: LIST_CONTENT,
-                variables: { limit: 10 }
+                query: GQL.SEARCH_CONTENT_ENTRIES,
+                variables: { modelIds: models.map(m => m.modelId), query: "__latest__", limit: 10 }
             })
             .then(({ data }) => {
                 setLatestEntries(data.content.data);
                 allEntries.current = [...data.content.data];
             });
-    }, [LIST_CONTENT]);
+    }, [modelsHash]);
 
     useEffect(() => {
-        if (!values || !values.length || !model || !model.titleFieldId || !GET_BY_IDS) {
+        if (!values || !values.length) {
             return;
         }
 
-        if (values.length) {
-            setLoading(true);
-
-            client.query({ query: GET_BY_IDS, variables: { revisions: values } }).then(res => {
+        setLoading(true);
+        
+        client
+            .query({ query: GQL.GET_CONTENT_ENTRIES, variables: { entries: values } })
+            .then(res => {
                 setLoading(false);
                 const entries = res.data.content.data;
 
@@ -111,13 +78,14 @@ export const useReferences = ({ bind, field }) => {
                 setValueEntries(
                     entries.map(entry => ({
                         id: entry.id,
-                        published: entry.meta.status === "published",
-                        name: entry.meta.title
+                        modelId: entry.model.modelId,
+                        modelName: entry.model.name,
+                        published: entry.status === "published",
+                        name: entry.title
                     }))
                 );
             });
-        }
-    }, [GET_BY_IDS]);
+    }, []);
 
     /**
      * onChange callback will update internal component state using the previously loaded entries by IDs.
@@ -128,7 +96,7 @@ export const useReferences = ({ bind, field }) => {
         setValueEntries(values);
 
         // Update parent form
-        bind.onChange(values.map(item => ({ modelId, entryId: item.id })));
+        bind.onChange(values.map(item => ({ modelId: item.modelId, entryId: item.id })));
     }, []);
 
     // Format options for the Autocomplete component.

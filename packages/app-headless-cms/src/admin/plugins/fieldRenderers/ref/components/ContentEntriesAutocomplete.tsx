@@ -4,6 +4,7 @@ import { AutoComplete } from "@webiny/ui/AutoComplete";
 import { i18n } from "@webiny/app/i18n";
 import { Link } from "@webiny/react-router";
 import { useReference } from "./useReference";
+import { renderItem } from "./renderItem";
 
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
@@ -24,6 +25,7 @@ function ContentEntriesAutocomplete({ bind, field }) {
     return (
         <AutoComplete
             {...bind}
+            renderItem={renderItem}
             onChange={onChange}
             loading={loading}
             value={value ? value.id : null}
