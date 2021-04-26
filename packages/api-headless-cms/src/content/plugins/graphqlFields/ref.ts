@@ -1,4 +1,4 @@
-import { CmsContext, CmsModelFieldToGraphQLPlugin } from "../../../types";
+import { CmsContentEntry, CmsContext, CmsModelFieldToGraphQLPlugin } from "../../../types";
 import { createReadTypeName } from "../utils/createTypeName";
 
 const createUnionTypeName = (model, field) => {
@@ -14,7 +14,14 @@ const createListFilters = ({ field }) => {
     `;
 };
 
-const typeNameToModelId = new Map();
+const appendTypename = (entries: CmsContentEntry[], typename: string) => {
+    return entries.map(item => {
+        item["__typename"] = typename;
+        return item;
+    });
+};
+
+const modelIdToTypeName = new Map();
 
 const plugin: CmsModelFieldToGraphQLPlugin = {
     name: "cms-model-field-to-graphql-ref",
@@ -34,19 +41,10 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
         createResolver({ field }) {
             // Create a map of model types and corresponding modelIds so resolvers don't need to perform the lookup.
             for (const item of field.settings.models) {
-                typeNameToModelId.set(createReadTypeName(item.modelId), item.modelId);
+                modelIdToTypeName.set(item.modelId, createReadTypeName(item.modelId));
             }
 
-            return async (instance, args, { cms }: CmsContext, info) => {
-                const modelId = typeNameToModelId.get(info.returnType.toString());
-
-                if (!modelId) {
-                    return null;
-                }
-
-                // Get model manager, to get access to CRUD methods
-                const model = await cms.getModel(modelId);
-
+            return async (instance, args, { cms }: CmsContext) => {
                 // Get field value for this entry
                 const value = instance.values[field.fieldId];
 
@@ -55,19 +53,38 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                 }
 
                 if (field.multipleValues) {
-                    const ids = value.map(ref => ref.entryId);
-
-                    if (!ids.length) {
+                    if (!value.length) {
                         return [];
                     }
 
-                    const entries = cms.READ
-                        ? // `read` API works with `published` data
-                          await model.getPublishedByIds(ids)
-                        : // `preview` API works with `latest` data
-                          await model.getLatestByIds(ids);
-                    return entries.filter(Boolean);
+                    const entriesByModel = value.reduce((acc, ref) => {
+                        if (!acc[ref.modelId]) {
+                            acc[ref.modelId] = [];
+                        }
+                        acc[ref.modelId].push(ref.entryId);
+                        return acc;
+                    }, {});
+
+                    const getters = Object.keys(entriesByModel).map(async modelId => {
+                        // Get model manager, to get access to CRUD methods
+                        const model = await cms.getModel(modelId);
+
+                        const entries: CmsContentEntry[] = cms.READ
+                            ? // `read` API works with `published` data
+                              await model.getPublishedByIds(entriesByModel[modelId])
+                            : // `preview` and `manage` with `latest` data
+                              await model.getLatestByIds(entriesByModel[modelId]);
+
+                        return appendTypename(entries, modelIdToTypeName.get(modelId));
+                    });
+
+                    return await Promise.all(getters).then(results =>
+                        results.reduce((result, item) => result.concat(item), [])
+                    );
                 }
+
+                // Get model manager, to get access to CRUD methods
+                const model = await cms.getModel(value.modelId);
 
                 const revisions = cms.READ
                     ? // `read` API works with `published` data
@@ -75,7 +92,7 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                     : // `preview` API works with `latest` data
                       await model.getLatestByIds([value.entryId]);
 
-                return revisions[0];
+                return { ...revisions[0], __typename: modelIdToTypeName.get(value.modelId) };
             };
         },
         createSchema({ models }) {
@@ -84,7 +101,13 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                 // Generate a dedicated union type for every `ref` field which has more than 1 content model assigned.
                 model.fields
                     .filter(field => field.type === "ref" && field.settings.models.length > 1)
-                    .forEach(field => unionFields.push({ model, field }));
+                    .forEach(field =>
+                        unionFields.push({
+                            model,
+                            field,
+                            typeName: createUnionTypeName(model, field)
+                        })
+                    );
             }
 
             if (!unionFields.length) {
@@ -94,11 +117,8 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
             return {
                 typeDefs: unionFields
                     .map(
-                        ({ model, field }) =>
-                            `union ${createUnionTypeName(
-                                model,
-                                field
-                            )} = ${field.settings.models
+                        ({ field, typeName }) =>
+                            `union ${typeName} = ${field.settings.models
                                 .map(({ modelId }) => createReadTypeName(modelId))
                                 .join(" | ")}`
                     )

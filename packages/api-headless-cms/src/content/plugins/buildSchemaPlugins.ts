@@ -18,5 +18,5 @@ export default async (context: CmsContext): Promise<GraphQLSchemaPlugin<CmsConte
         contentModelGroups(context),
         // Dynamic schema
         ...(await generateSchemaPlugins(context))
-    ];
+    ].filter(Boolean);
 };
