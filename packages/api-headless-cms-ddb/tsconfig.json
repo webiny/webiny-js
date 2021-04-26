@@ -1,0 +1,46 @@
+{
+  "extends": "../../tsconfig",
+  "include": ["src", "__tests__/**/*.ts"],
+  "references": [
+    {
+      "path": "../api-headless-cms"
+    },
+    {
+      "path": "../api-upgrade"
+    },
+    {
+      "path": "../error"
+    },
+    {
+      "path": "../plugins"
+    },
+    {
+      "path": "../handler-db"
+    },
+    {
+      "path": "../handler-aws"
+    },
+    {
+      "path": "../db-dynamodb"
+    }
+  ],
+  "compilerOptions": {
+    "paths": {
+      "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
+      "@webiny/api-headless-cms": ["../api-headless-cms/src"],
+      "@webiny/api-upgrade/*": ["../api-upgrade/src/*"],
+      "@webiny/api-upgrade": ["../api-upgrade/src"],
+      "@webiny/error/*": ["../error/src/*"],
+      "@webiny/error": ["../error/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/handler-db/*": ["../handler-db/src/*"],
+      "@webiny/handler-db": ["../handler-db/src"],
+      "@webiny/handler-aws/*": ["../handler-aws/src/*"],
+      "@webiny/handler-aws": ["../handler-aws/src"],
+      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
+      "@webiny/db-dynamodb": ["../db-dynamodb/src"]
+    },
+    "baseUrl": "."
+  }
+}
