@@ -9,6 +9,7 @@ import togglePluginPlugin from "./togglePlugin/plugin";
 import updateElementPlugin from "./updateElement/plugin";
 import updatePagePlugin from "./updatePage/plugin";
 import afterDropElementPlugin from "./afterDropElement/plugin";
+import moveBlockPlugin from "./moveBlock/plugin";
 
 export default () => [
     cloneElementPlugin(),
@@ -21,5 +22,6 @@ export default () => [
     deactivatePluginPlugin(),
     deleteElementPlugin(),
     updatePagePlugin(),
+    moveBlockPlugin(),
     ...dragPlugin()
 ];
