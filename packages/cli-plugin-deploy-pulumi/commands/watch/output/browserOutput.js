@@ -21,26 +21,33 @@ module.exports = {
     async initialize(args = {}) {
         return new Promise(resolve => {
             server.app = express();
+            let connected = false;
 
             server.httpServer = http.createServer(server.app);
             server.wss = new WebSocket.Server({ server: server.httpServer });
 
             const port = args.port || 3011;
+            const logs = "logs" in args ? "true" : "false";
             server.app.get("/", (req, res) => {
                 const html = fs
                     .readFileSync(path.join(__dirname, "./browser/panes.html"))
                     .toString();
                 const template = Handlebars.compile(html);
-                res.send(template({ ...args, port }));
+                res.send(template({ ...args, port, logs }));
             });
 
             server.httpServer.listen(port, () => {
                 const destination = "http://localhost:" + port;
                 log.success(`Development server started at ${log.success.hl(destination)}.`);
-                open(destination);
+                setTimeout(() => {
+                    if (!connected) {
+                        open(destination);
+                    }
+                }, 3000);
             });
 
             server.wss.on("connection", ws => {
+                connected = true;
                 server.connection = ws;
                 // Once the connection from the browser has succeeded, finish the initialization process.
                 resolve();
