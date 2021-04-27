@@ -28,7 +28,7 @@ export const moveBlockAction: EventActionCallable<MoveBlockActionArgsType> = asy
         sourcePosition: source.position,
         targetPosition: target.position
     });
-    console.log("Now over to updateElement action");
+
     return updateElementAction(state, meta, {
         element: root,
         history: true
