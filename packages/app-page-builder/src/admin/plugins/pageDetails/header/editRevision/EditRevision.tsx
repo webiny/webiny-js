@@ -28,7 +28,6 @@ const EditRevision = props => {
         if (error) {
             return showSnackbar(error.message);
         }
-        console.log("[EditRevision]");
         history.push(`/page-builder/editor/${encodeURIComponent(data.id)}`);
     }, [page]);
 
