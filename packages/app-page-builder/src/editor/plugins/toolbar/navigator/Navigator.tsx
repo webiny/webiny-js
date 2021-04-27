@@ -7,6 +7,7 @@ import { NavigatorTitle } from "./StyledComponents";
 import { TreeView } from "./TreeView";
 import { ReactComponent as UnfoldMoreIcon } from "./assets/unfold_more_24px.svg";
 import { ReactComponent as UnfoldLessIcon } from "./assets/unfold_less_24px.svg";
+import { AfterUpdateElementsActionEvent } from "~/editor/recoil/actions";
 
 const t = i18n.ns("app-page-builder/editor/plugins/toolbar/navigator");
 
@@ -18,16 +19,23 @@ export const NavigatorContext = createContext({
 const Navigator = () => {
     const [elementTree, setElementTree] = useState(null);
     const [expandAll, setExpandAll] = useState(false);
-    const { getElementTree } = useEventActionHandler();
+    const eventHandler = useEventActionHandler();
 
     const refreshElementTree = async () => {
         try {
-            const elementTree = await getElementTree();
+            const elementTree = await eventHandler.getElementTree();
             setElementTree(elementTree);
         } catch (e) {
             console.log("Failed!");
         }
     };
+    // Update element tree on "AfterUpdateElementsActionEvent"
+    useEffect(() => {
+        eventHandler.on(AfterUpdateElementsActionEvent, () => {
+            refreshElementTree();
+            return {};
+        });
+    }, []);
 
     // Get initial element tree.
     useEffect(() => {
