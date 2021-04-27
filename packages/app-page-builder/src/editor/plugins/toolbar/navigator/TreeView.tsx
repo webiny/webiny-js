@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useContext } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import get from "lodash/get";
 import { Typography } from "@webiny/ui/Typography";
@@ -8,7 +8,9 @@ import { ReactComponent as VisibilityOffIcon } from "~/editor/assets/icons/visib
 import { useVisibilitySetting } from "~/editor/plugins/elementSettings/visibility/VisibilitySettings";
 import { ElementTypeContainer } from "./StyledComponents";
 import CollapsableList from "./CollapsableList";
-import BlockMover from "./BlockMover";
+import DragBlockIndicator from "./DragBlockIndicator";
+import { useMoveBlock, useSortableList } from "./navigatorHooks";
+import { NavigatorContext } from "./Navigator";
 
 const ElementVisibilityAction = ({ elementId }: { elementId: string }) => {
     const { updateVisibility } = useVisibilitySetting(elementId);
@@ -22,13 +24,25 @@ const ElementVisibilityAction = ({ elementId }: { elementId: string }) => {
     );
 };
 
-const TreeViewItem = ({ element, level, children }) => {
+const TreeViewItem = ({ element, level, children, index }) => {
     const elementId = element.id;
     const { displayMode } = useRecoilValue(uiAtom);
     const [activeElement, setActiveElementAtomValue] = useRecoilState(activeElementAtom);
     const [{ isHighlighted, data: elementData }, setElementAtomValue] = useRecoilState(
         elementByIdSelector(elementId)
     );
+    const { move } = useMoveBlock(elementId);
+    const { refresh } = useContext(NavigatorContext);
+    // Use "Drag&Drop"
+    const { ref: dragAndDropRef, handlerId, isDragging } = useSortableList({
+        move,
+        id: elementId,
+        index,
+        type: element.type,
+        endDrag: () => {
+            refresh();
+        }
+    });
 
     const onMouseOver = useCallback(
         (ev): void => {
@@ -56,6 +70,7 @@ const TreeViewItem = ({ element, level, children }) => {
     }, []);
 
     const hidden = get(elementData, `settings.visibility.${displayMode}.hidden`, false);
+    const contentStyles = isDragging ? { opacity: 0.5 } : { opacity: 1 };
 
     return (
         <CollapsableList
@@ -65,16 +80,19 @@ const TreeViewItem = ({ element, level, children }) => {
                     onMouseOver={onMouseOver}
                     onMouseOut={onMouseOut}
                     onClick={() => activateElement(elementId)}
+                    ref={element.type === "block" ? dragAndDropRef : null}
+                    data-handler-id={handlerId}
                 >
-                    <Typography use={"subtitle2"}>{element.type}</Typography>
+                    <Typography use={"subtitle2"} className={"title"}>
+                        {element.type}
+                    </Typography>
+                    {hidden ? <ElementVisibilityAction elementId={elementId} /> : null}
+                    <DragBlockIndicator type={element.type} />
                 </ElementTypeContainer>
             }
             disableAction={element.elements.length <= 0}
             active={activeElement === elementId}
-            mover={<BlockMover type={element.type} id={element.id} />}
-            elementVisibilityAction={
-                hidden ? <ElementVisibilityAction elementId={elementId} /> : null
-            }
+            style={contentStyles}
         >
             {children}
         </CollapsableList>
@@ -93,8 +111,8 @@ export const TreeView = ({ element, level }: TreeViewProps) => {
 
     return (
         <>
-            {element.elements.map(item => (
-                <TreeViewItem key={item.id} element={item} level={level}>
+            {element.elements.map((item, index) => (
+                <TreeViewItem key={item.id} element={item} level={level} index={index}>
                     <TreeView element={item} level={level + 1} />
                 </TreeViewItem>
             ))}

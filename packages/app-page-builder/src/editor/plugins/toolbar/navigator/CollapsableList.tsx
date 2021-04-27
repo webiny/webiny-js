@@ -5,27 +5,25 @@ import { EmptyBlock, Collapsable, ArrowRight } from "./StyledComponents";
 type CollapsableListProps = {
     children: ReactElement | ReactElement[];
     header: ReactElement;
-    mover: ReactElement;
     level: number;
     disableAction: boolean;
     active: boolean;
-    elementVisibilityAction: ReactElement;
+    style?: React.CSSProperties;
 };
 
 const CollapsableList = ({
     children,
     header,
-    mover,
     level,
     disableAction,
     active,
-    elementVisibilityAction
+    style
 }: CollapsableListProps) => {
     const [isOpen, setOpen] = useState(true);
     const list = Array.from(new Array(level)).map((_, i) => i);
 
     return (
-        <Collapsable className="collapsable">
+        <Collapsable className="collapsable" style={style}>
             <div
                 className={classNames("collapsable__header", {
                     active: active,
@@ -44,8 +42,6 @@ const CollapsableList = ({
                     <ArrowRight className={classNames({ ["open"]: isOpen })} />
                 </button>
                 {header}
-                {elementVisibilityAction}
-                {mover}
             </div>
             <div className={`collapsable__content ${isOpen ? "" : "collapsed"}`}>
                 {React.Children.map(children, content =>

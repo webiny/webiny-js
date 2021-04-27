@@ -4,10 +4,21 @@ export const NavigatorTitle = styled("div")(`
     padding: 16px 12px;
 `);
 
-export const ElementTypeContainer = styled("div")({
-    flexGrow: 1,
-    cursor: "pointer"
-});
+export const ElementTypeContainer = styled("div")(`
+    display: flex;
+    flex-grow: 1;
+    cursor: pointer;
+    
+    .title {
+        flex-grow: 1;
+    }
+    
+    svg.drag-indicator {
+        cursor: move;
+        width: 20px;
+        height: 20px;
+    }
+`);
 
 export const Collapsable = styled("div")(` 
   background-color: transparent;
@@ -47,6 +58,7 @@ export const Collapsable = styled("div")(`
   }
 
   .collapsable__content {
+    opacity: inherit;
     width: 100%;
 
     &.collapsed {
@@ -69,22 +81,4 @@ export const ArrowRight = styled("div")(`
 
 export const EmptyBlock = styled("div")(`
     width: 12px;
-`);
-
-export const MoverWrapper = styled("div")(`
-    button {
-        padding: 0px;
-        box-sizing: border-box;
-        svg {
-            width: 16px;
-            height: 16px;
-        }
-    }
-    button:first-of-type {
-        margin-right: 4px;
-    }
-    button:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
 `);
