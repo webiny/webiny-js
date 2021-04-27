@@ -1,15 +1,15 @@
 import React, { useEffect, useRef } from "react";
+import { useRecoilValue } from "recoil";
 import classNames from "classnames";
 import styled from "@emotion/styled";
-import { useEventActionHandler } from "../../hooks/useEventActionHandler";
-import { DeactivatePluginActionEvent } from "../../recoil/actions";
-import { activePluginsByTypeNamesSelector } from "../../recoil/modules";
 import { css } from "emotion";
 import { Drawer, DrawerContent } from "@webiny/ui/Drawer";
 import { plugins } from "@webiny/plugins";
-import { useKeyHandler } from "../../hooks/useKeyHandler";
-import { PbEditorToolbarBottomPlugin, PbEditorToolbarTopPlugin } from "../../../types";
-import { useRecoilValue } from "recoil";
+import { PbEditorToolbarBottomPlugin, PbEditorToolbarTopPlugin } from "~/types";
+import { useKeyHandler } from "~/editor/hooks/useKeyHandler";
+import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
+import { DeactivatePluginActionEvent } from "~/editor/recoil/actions";
+import { activePluginsByTypeNamesSelector } from "~/editor/recoil/modules";
 
 const ToolbarDrawerContainer = styled("div")({
     top: 64,
@@ -55,6 +55,9 @@ const drawerStyle = css({
         ".mdc-drawer__content": {
             width: "100%"
         }
+    },
+    "&.mdc-drawer": {
+        height: "calc(100% - 64px)"
     }
 });
 type ToolbarDrawerProps = {
