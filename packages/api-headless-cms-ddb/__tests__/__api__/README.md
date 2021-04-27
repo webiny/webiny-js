@@ -6,5 +6,5 @@ None
 
 ##### Usage
 ````
-yarn test packages/api-headless-cms --filter=ddb
+yarn test packages/api-headless-cms --keyword=cms:ddb --keyword=cms:base
 ````

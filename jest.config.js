@@ -17,6 +17,20 @@ const createPackageJestSetupPath = pkg => {
     return setupPath;
 };
 
+const getPackageKeywords = pkg => {
+    const file = path.join(pkg, "package.json");
+    if (!fs.existsSync(file)) {
+        throw new Error(`Missing package.json "${file}".`);
+    }
+    const content = fs.readFileSync(file).toString();
+    try {
+        const json = JSON.parse(content);
+        return Array.isArray(json.keywords) ? json.keywords : [];
+    } catch (ex) {
+        throw new Error(`Could not parse package.json "${file}".`);
+    }
+};
+
 const hasPackageJestConfig = pkg => {
     return !!createPackageJestConfigPath(pkg);
 };
@@ -39,6 +53,35 @@ const createPackageName = initialName => {
     return name;
 };
 
+const createPackageFilter = (args = []) => {
+    const filters = args
+        .filter(arg => {
+            return arg.startsWith("--keyword=");
+        })
+        .map(arg => {
+            return arg.replace("--keyword=", "");
+        });
+    return (packageKeywords = []) => {
+        if (
+            !packageKeywords ||
+            filters.length === 0 ||
+            (packageKeywords.length === 0 && filters.length === 0)
+        ) {
+            return true;
+        }
+        for (const filter of filters) {
+            // a single keyword in the argument
+            const result = packageKeywords.includes(filter);
+            if (result) {
+                return true;
+            }
+        }
+        return false;
+    };
+};
+
+const isPackageAllowed = createPackageFilter(process.argv);
+
 const projects = allWorkspaces()
     .reduce((collection, pkg) => {
         const hasConfig = hasPackageJestConfig(pkg);
@@ -47,7 +90,13 @@ const projects = allWorkspaces()
 
         if (!hasConfig && !setup) {
             return collection;
-        } else if (setup && (Array.isArray(setup) === true || setup["0"] !== undefined)) {
+        }
+        const keywords = getPackageKeywords(pkg);
+        if (!isPackageAllowed(keywords)) {
+            return collection;
+        }
+
+        if (setup && (Array.isArray(setup) === true || setup["0"] !== undefined)) {
             for (const key in setup) {
                 const name = createPackageName(setup[key].name);
                 if (!setup.hasOwnProperty(key)) {
@@ -66,6 +115,10 @@ const projects = allWorkspaces()
     }, [])
     .filter(Boolean);
 
+if (projects.length === 0) {
+    console.log(`There are no packages found. Please check the filters if you are using those.`);
+    process.exit(1);
+}
 module.exports = {
     projects,
     modulePathIgnorePatterns: ["dist"],
