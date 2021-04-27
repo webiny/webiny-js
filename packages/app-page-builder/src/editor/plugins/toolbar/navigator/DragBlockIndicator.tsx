@@ -21,7 +21,11 @@ const DragBlockIndicator: React.FunctionComponent<MoverProps> = ({ type }) => {
         return null;
     }
 
-    return <DragIndicatorIcon ref={drag} className={"drag-indicator"} />;
+    return (
+        <div ref={drag}>
+            <DragIndicatorIcon className={"drag-indicator"} />
+        </div>
+    );
 };
 
 export default DragBlockIndicator;
