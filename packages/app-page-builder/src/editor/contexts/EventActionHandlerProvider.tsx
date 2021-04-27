@@ -38,6 +38,7 @@ import {
     useRecoilValue,
     useSetRecoilState
 } from "recoil";
+import { AfterUpdateElementsActionEvent } from "~/editor/recoil/actions";
 
 type ListType = Map<symbol, EventActionCallable>;
 type RegistryType = Map<string, ListType>;
@@ -94,6 +95,7 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
     const revisionsAtomValue = useRecoilValue(revisionsAtom);
     const snapshot = useRecoilSnapshot();
 
+    const eventActionHandlerRef = useRef<EventActionHandler>(null);
     const sidebarAtomValueRef = useRef(null);
     const rootElementAtomValueRef = useRef(null);
     const pageAtomValueRef = useRef(null);
@@ -146,6 +148,8 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
             });
             return item.id;
         });
+
+        eventActionHandlerRef.current.trigger(new AfterUpdateElementsActionEvent());
     });
 
     const takeSnapshot = useRecoilCallback(({ snapshot }) => () => {
@@ -277,7 +281,7 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
         }
     };
 
-    const eventActionHandler = useMemo<EventActionHandler>(
+    eventActionHandlerRef.current = useMemo<EventActionHandler>(
         () => ({
             getElementTree,
             on: (target, callable) => {
@@ -391,7 +395,7 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
             const r =
                 (await cb(
                     getCallableState({ ...initialState, ...results.state }),
-                    { client: apolloClient, eventActionHandler },
+                    { client: apolloClient, eventActionHandler: eventActionHandlerRef.current },
                     args
                 )) || {};
             results.state = {
@@ -419,7 +423,7 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
     };
 
     return (
-        <EventActionHandlerContext.Provider value={eventActionHandler}>
+        <EventActionHandlerContext.Provider value={eventActionHandlerRef.current}>
             {children}
         </EventActionHandlerContext.Provider>
     );
