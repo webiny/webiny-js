@@ -69,7 +69,7 @@
 
         myLayout.on(`data-${state.type}`, message => {
           const element = container.getElement();
-          element.append(`<p>${message}</p>`);
+          element.append(`<pre>${message}</pre>`);
           element[0].scrollTo(0, element[0].scrollHeight);
         });
       });
@@ -161,6 +161,9 @@
 
       .lm_content {
         overflow: scroll;
+      }
+      
+      pre {
         font-family: MonoLisa, Menlo, Monaco, "Courier New", monospace;
         font-size: 1em;
       }
