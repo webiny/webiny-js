@@ -65,9 +65,14 @@ const TreeViewItem = ({ element, level, children, index }) => {
         setElementAtomValue({ isHighlighted: false } as any);
     }, [elementId]);
 
-    const activateElement = useCallback((id: string) => {
-        setActiveElementAtomValue(id);
-    }, []);
+    const handleOnClick = useCallback(() => {
+        setActiveElementAtomValue(elementId);
+
+        const elementRef = document.getElementById(elementId);
+        if (elementRef) {
+            elementRef.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+    }, [elementId]);
 
     const hidden = get(elementData, `settings.visibility.${displayMode}.hidden`, false);
     const contentStyles = isDragging ? { opacity: 0.5 } : { opacity: 1 };
@@ -79,7 +84,7 @@ const TreeViewItem = ({ element, level, children, index }) => {
                 <ElementTypeContainer
                     onMouseOver={onMouseOver}
                     onMouseOut={onMouseOut}
-                    onClick={() => activateElement(elementId)}
+                    onClick={handleOnClick}
                     ref={element.type === "block" ? dragAndDropRef : null}
                     data-handler-id={handlerId}
                 >
