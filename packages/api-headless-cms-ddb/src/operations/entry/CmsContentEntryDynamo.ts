@@ -23,7 +23,7 @@ import {
 } from "@webiny/api-headless-cms/types";
 import configurations from "../../configurations";
 import { zeroPad } from "@webiny/api-headless-cms/utils";
-import { createBasePrimaryKey, paginateBatch } from "../../utils";
+import { createBasePartitionKey, paginateBatch } from "../../utils";
 import {
     entryToStorageTransform,
     entryFromStorageTransform
@@ -69,40 +69,40 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
     private readonly _context: CmsContext;
     private _primaryKey: string;
     private readonly _dataLoaders: DataLoadersHandler;
-    
+
     private get context(): CmsContext {
         return this._context;
     }
-    
+
     private get primaryKey(): string {
         if (!this._primaryKey) {
-            this._primaryKey = `${createBasePrimaryKey(this.context)}#CME`;
+            this._primaryKey = `${createBasePartitionKey(this.context)}#CME`;
         }
         return this._primaryKey;
     }
-    
+
     public constructor({ context }: ConstructorArgs) {
         this._context = context;
         this._dataLoaders = new DataLoadersHandler(context, this);
     }
-    
+
     public async create(
         model: CmsContentModel,
         { data }: CmsContentEntryStorageOperationsCreateArgs
     ): Promise<CmsContentEntry> {
         const { db } = this.context;
-        
+
         const storageEntry = await entryToStorageTransform(this.context, model, data);
-        
+
         const esEntry = prepareEntryToIndex({
             context: this.context,
             model,
             originalEntry: cloneDeep(data),
             storageEntry: cloneDeep(storageEntry)
         });
-        
+
         const { index: esIndex } = configurations.es(this.context, model);
-        
+
         const batch = db
             .batch()
             /**
@@ -138,7 +138,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
                     data: getESLatestEntryData(this.context, esEntry)
                 }
             });
-        
+
         try {
             await batch.execute();
         } catch (ex) {
@@ -151,24 +151,24 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
                 }
             );
         }
-        
+
         return storageEntry;
     }
-    
+
     public async createRevisionFrom(
         model: CmsContentModel,
         args: CmsContentEntryStorageOperationsCreateRevisionFromArgs
     ) {
         const { db } = this.context;
-        
+
         const {
             originalEntryRevision: originalEntry,
             data,
             latestEntryRevision: latestEntry
         } = args;
-        
+
         const storageData = await entryToStorageTransform(this.context, model, data);
-        
+
         const esEntry = prepareEntryToIndex({
             context: this.context,
             model,
@@ -176,7 +176,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             storageEntry: cloneDeep(storageData)
         });
         const { index: esIndex } = configurations.es(this.context, model);
-        
+
         const primaryKey = this.getPrimaryKey(storageData.id);
         const batch = db.batch();
         batch
@@ -244,16 +244,16 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
          */
         return data;
     }
-    
+
     public async delete(
         model: CmsContentModel,
         args: CmsContentEntryStorageOperationsDeleteArgs
     ): Promise<void> {
         const { db } = this.context;
         const { entry } = args;
-        
+
         const primaryKey = this.getPrimaryKey(entry.id);
-        
+
         const [dbItems] = await db.read<CmsContentEntry>({
             ...configurations.db(),
             query: {
@@ -271,7 +271,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
                 SK: { $gte: " " }
             }
         });
-        
+
         /**
          * Delete all items from DB and ES DB
          */
@@ -306,7 +306,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             })
         ]);
     }
-    
+
     public async deleteRevision(
         model: CmsContentModel,
         args: CmsContentEntryStorageOperationsDeleteRevisionArgs
@@ -318,7 +318,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             publishedEntryRevision,
             latestEntryRevision
         } = args;
-        
+
         const primaryKey = this.getPrimaryKey(entryRevisionToDelete.id);
         const esConfig = configurations.es(this.context, model);
         /**
@@ -369,7 +369,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
                 model,
                 entryRevisionToSetAsLatest
             );
-            
+
             const esEntry = prepareEntryToIndex({
                 context: this.context,
                 model,
@@ -417,7 +417,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             });
         }
     }
-    
+
     public async get(
         model: CmsContentModel,
         args: CmsContentEntryStorageOperationsGetArgs
@@ -449,7 +449,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             context: this.context,
             parentObject: "values"
         });
-        
+
         let response;
         const esConfig = configurations.es(this.context, model);
         try {
@@ -464,14 +464,14 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
                 body
             });
         }
-        
+
         const { hits, total } = response.body.hits;
         const items = extractEntriesFromIndex({
             context: this.context,
             model,
             entries: hits.map(item => item._source)
         });
-        
+
         const hasMoreItems = items.length > limit;
         if (hasMoreItems) {
             /**
@@ -501,13 +501,13 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             data,
             latestEntryRevision: latestEntry
         } = args;
-        
+
         const { db } = this.context;
-        
+
         const primaryKey = this.getPrimaryKey(originalEntry.id);
-        
+
         const batch = db.batch();
-        
+
         batch.update({
             ...configurations.db(),
             query: {
@@ -516,7 +516,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             },
             data
         });
-        
+
         if (latestEntry.id === originalEntry.id) {
             const esEntry = prepareEntryToIndex({
                 context: this.context,
@@ -528,9 +528,9 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
                 ...esEntry,
                 savedOn: data.savedOn
             };
-            
+
             const { index: esIndex } = configurations.es(this.context, model);
-            
+
             batch.update({
                 ...configurations.esDb(),
                 query: {
@@ -561,7 +561,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             );
         }
     }
-    
+
     public async publish(
         model: CmsContentModel,
         args: CmsContentEntryStorageOperationsPublishArgs
@@ -572,9 +572,9 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             latestEntryRevision: latestEntry,
             publishedEntryRevision: publishedEntry
         } = args;
-        
+
         const primaryKey = this.getPrimaryKey(entry.id);
-        
+
         const readBatch = db
             .batch()
             .read({
@@ -611,9 +611,9 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
                 }
             );
         }
-        
+
         const batch = db.batch();
-        
+
         batch.update({
             ...configurations.db(),
             query: {
@@ -622,9 +622,9 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             },
             data: entry
         });
-        
+
         const es = configurations.es(this.context, model);
-        
+
         if (publishedEntry) {
             /**
              * If there is a `published` entry already, we need to set it to `unpublished`. We need to
@@ -640,9 +640,9 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
                     SK: this.getSecondaryKeyRevision(publishedEntry.version)
                 }
             });
-            
+
             previouslyPublishedStorageEntry.status = CONTENT_ENTRY_STATUS.UNPUBLISHED;
-            
+
             batch
                 .update({
                     /**
@@ -682,7 +682,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
                 }
             });
         }
-        
+
         /**
          * If we are publishing the latest revision, let's also update the latest revision's status in ES.
          */
@@ -704,7 +704,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
                 }
             });
         }
-        
+
         const preparedEntryData = prepareEntryToIndex({
             context: this.context,
             model,
@@ -720,7 +720,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             index: es.index,
             data: getESPublishedEntryData(this.context, preparedEntryData)
         };
-        
+
         if (publishedESEntryData) {
             batch.update({
                 ...configurations.esDb(),
@@ -736,7 +736,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
                 data: esData
             });
         }
-        
+
         /**
          * Finally, execute batch
          */
@@ -757,16 +757,16 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             );
         }
     }
-    
+
     public async unpublish(
         model: CmsContentModel,
         args: CmsContentEntryStorageOperationsUnpublishArgs
     ): Promise<CmsContentEntry> {
         const { db } = this.context;
         const { entry, latestEntryRevision: latestEntry } = args;
-        
+
         const primaryKey = this.getPrimaryKey(entry.id);
-        
+
         const batch = db
             .batch()
             .delete({
@@ -796,7 +796,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
          */
         if (latestEntry.id === entry.id) {
             const es = configurations.es(this.context, model);
-            
+
             batch.update({
                 ...configurations.esDb(),
                 query: {
@@ -811,7 +811,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
                 }
             });
         }
-        
+
         try {
             await batch.execute();
             return entry;
@@ -826,7 +826,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             );
         }
     }
-    
+
     public async requestChanges(
         model: CmsContentModel,
         args: CmsContentEntryStorageOperationsRequestChangesArgs
@@ -837,9 +837,9 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             originalEntryRevision: originalEntry,
             latestEntryRevision: latestEntry
         } = args;
-        
+
         const primaryKey = this.getPrimaryKey(entry.id);
-        
+
         const batch = db.batch().update({
             ...configurations.db(),
             query: {
@@ -848,7 +848,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             },
             data: entry
         });
-        
+
         /**
          * If we updated the latest version, then make sure the changes are propagated to ES too.
          */
@@ -868,7 +868,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
                 }
             });
         }
-        
+
         try {
             await batch.execute();
         } catch (ex) {
@@ -883,7 +883,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
         }
         return entry;
     }
-    
+
     public async requestReview(
         model: CmsContentModel,
         args: CmsContentEntryStorageOperationsRequestReviewArgs
@@ -894,9 +894,9 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             originalEntryRevision: originalEntry,
             latestEntryRevision: latestEntry
         } = args;
-        
+
         const primaryKey = this.getPrimaryKey(entry.id);
-        
+
         const batch = db.batch().update({
             ...configurations.db(),
             query: {
@@ -905,7 +905,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             },
             data: entry
         });
-        
+
         /**
          * If we updated the latest version, then make sure the changes are propagated to ES too.
          */
@@ -924,7 +924,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
                 }
             });
         }
-        
+
         try {
             await batch.execute();
             return entry;
@@ -940,7 +940,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             );
         }
     }
-    
+
     public async getAllRevisionsByIds(
         model: CmsContentModel,
         ids: readonly string[]
@@ -960,7 +960,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             );
         }
     }
-    
+
     public async getByIds(
         model: CmsContentModel,
         ids: readonly string[]
@@ -980,7 +980,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             );
         }
     }
-    
+
     public async getPublishedByIds(
         model: CmsContentModel,
         ids: readonly string[]
@@ -1000,7 +1000,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             );
         }
     }
-    
+
     public async getLatestByIds(
         model: CmsContentModel,
         ids: readonly string[]
@@ -1020,7 +1020,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             );
         }
     }
-    
+
     public async getRevisions(model: CmsContentModel, id: string): Promise<CmsContentEntry[]> {
         try {
             return await this._dataLoaders.getAllEntryRevisions(model, [id]);
@@ -1034,7 +1034,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             );
         }
     }
-    
+
     public async getRevisionById(
         model: CmsContentModel,
         id: string
@@ -1044,7 +1044,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             SK: this.getSecondaryKeyRevision(id)
         });
     }
-    
+
     public async getPublishedRevisionByEntryId(
         model: CmsContentModel,
         entryId: string
@@ -1054,7 +1054,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             SK: this.getSecondaryKeyPublished()
         });
     }
-    
+
     public async getLatestRevisionByEntryId(
         model: CmsContentModel,
         entryId: string
@@ -1064,7 +1064,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             SK: this.getSecondaryKeyLatest()
         });
     }
-    
+
     public async getPreviousRevision(
         model: CmsContentModel,
         entryId: string,
@@ -1082,7 +1082,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             }
         );
     }
-    
+
     private async getSingleDynamoDbItem(
         query: { PK: string; SK: string | object },
         sort?: { SK: -1 | 1 }
@@ -1112,7 +1112,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
         }
         return entry;
     }
-    
+
     public getPrimaryKey(id: string): string {
         /**
          * If ID includes # it means it is composed of ID and VERSION.
@@ -1135,11 +1135,11 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
         }
         return `REV#${zeroPad(version)}`;
     }
-    
+
     public getSecondaryKeyLatest(): string {
         return "L";
     }
-    
+
     public getSecondaryKeyPublished(): string {
         return "P";
     }

@@ -4,12 +4,9 @@
   "exclude": [
     "node_modules",
     "../api-headless-cms",
-    "../api-upgrade",
     "../handler-db",
-    "../handler-aws",
     "../db-dynamodb",
     "../error",
-    "../plugins",
     "./jest.config.js"
   ],
   "compilerOptions": {

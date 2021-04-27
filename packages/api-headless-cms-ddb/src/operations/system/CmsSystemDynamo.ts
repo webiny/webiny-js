@@ -2,8 +2,8 @@ import { CmsContext, CmsSystem, CmsSystemStorageOperations } from "@webiny/api-h
 import configurations from "../../configurations";
 import WebinyError from "@webiny/error";
 import { createBasePartitionKey } from "../../utils";
-import {Entity, Table} from "dynamodb-toolbox";
-import {getDocumentClient, getTable} from "../helpers";
+import { Entity, Table } from "dynamodb-toolbox";
+import { getDocumentClient, getTable } from "../helpers";
 
 interface ConstructorArgs {
     context: CmsContext;
@@ -30,26 +30,25 @@ export default class CmsSystemDynamo implements CmsSystemStorageOperations {
 
     public constructor({ context }: ConstructorArgs) {
         this._context = context;
-        const documentClient = getDocumentClient(context);
         this._table = new Table({
             name: configurations.db().table || getTable(context),
             partitionKey: "PK",
             sortKey: "SK",
-            DocumentClient: documentClient,
+            DocumentClient: getDocumentClient(context)
         });
         this._entity = new Entity({
             name: "System",
             table: this._table,
             attributes: {
                 PK: {
-                    partitionKey: true,
+                    partitionKey: true
                 },
                 SK: {
-                    sortKey: true,
+                    sortKey: true
                 },
                 version: {
-                    type: "string",
-                },
+                    type: "string"
+                }
             }
         });
     }
@@ -57,9 +56,9 @@ export default class CmsSystemDynamo implements CmsSystemStorageOperations {
     public async get(): Promise<CmsSystem> {
         const response = await this._entity.get({
             PK: this.partitionKey,
-            SK: SYSTEM_SORT_KEY,
+            SK: SYSTEM_SORT_KEY
         });
-        
+
         if (!response || !response.Item) {
             return null;
         }
@@ -71,15 +70,14 @@ export default class CmsSystemDynamo implements CmsSystemStorageOperations {
             const result = await this._entity.put({
                 PK: this.partitionKey,
                 SK: SYSTEM_SORT_KEY,
-                ...data,
+                ...data
             });
             if (!result) {
                 throw new WebinyError(
                     "Could not create the system data - no result.",
-                    "CREATE_SYSTEM_ERROR",
-                )
+                    "CREATE_SYSTEM_ERROR"
+                );
             }
-            
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not create the system data.",
@@ -97,13 +95,13 @@ export default class CmsSystemDynamo implements CmsSystemStorageOperations {
             const result = await this._entity.update({
                 PK: this.partitionKey,
                 SK: SYSTEM_SORT_KEY,
-                ...data,
-            })
+                ...data
+            });
             if (!result) {
                 throw new WebinyError(
                     "Could not update the system data - no result.",
-                    "CREATE_SYSTEM_ERROR",
-                )
+                    "CREATE_SYSTEM_ERROR"
+                );
             }
         } catch (ex) {
             throw new WebinyError(

@@ -1,5 +1,4 @@
 import {
-    CmsContentModelGroup,
     CmsContentModelGroupStorageOperations,
     CmsContentModelGroupStorageOperationsCreateArgs,
     CmsContentModelGroupStorageOperationsDeleteArgs,
@@ -11,158 +10,222 @@ import {
 import WebinyError from "@webiny/error";
 import configurations from "../../configurations";
 import { createBasePartitionKey } from "../../utils";
-
-const whereKeySuffix = [
-    "_not",
-    "_not_in",
-    "_in",
-    "_gt",
-    "_gte",
-    "_lt",
-    "_lte",
-    "_not_between",
-    "_between"
-].join("|");
-
-const removeWhereKeySuffix = (key: string): string => {
-    return key.replace(new RegExp(`${whereKeySuffix}$`), "");
-};
-
-const compare = (key: string, compareValue: any, value: any): boolean => {
-    if (key.endsWith("_not")) {
-        return String(value) !== compareValue;
-    } else if (key.endsWith("_not_in")) {
-        return !compareValue.includes(value);
-    } else if (key.endsWith("_in")) {
-        return compareValue.includes(value);
-    } else if (key.endsWith("_gt")) {
-        return value > compareValue;
-    } else if (key.endsWith("_gte")) {
-        return value >= compareValue;
-    } else if (key.endsWith("_lt")) {
-        return value < compareValue;
-    } else if (key.endsWith("_lte")) {
-        return value <= compareValue;
-    } else if (key.endsWith("_not_between")) {
-        if (!Array.isArray(compareValue) || compareValue.length === 0) {
-            throw new WebinyError(`Wrong compareValue for "${key}".`);
-        }
-        return value < compareValue[0] && value > compareValue[1];
-    } else if (key.endsWith("_between")) {
-        if (!Array.isArray(compareValue) || compareValue.length === 0) {
-            throw new WebinyError(`Wrong compareValue for "${key}".`);
-        }
-        return value >= compareValue[0] && value <= compareValue[1];
-    }
-    return compareValue === value;
-};
-
-const whereFilterFactory = (where: Record<string, any> = {}) => {
-    return model => {
-        if (!where) {
-            return true;
-        }
-        for (const key in where) {
-            const whereValue = where[key];
-            const value = model[removeWhereKeySuffix(key)];
-            return compare(key, whereValue, value);
-        }
-        return true;
-    };
-};
+import { Entity, Table } from "dynamodb-toolbox";
+import { getDocumentClient, getTable, whereFilterFactory } from "../helpers";
 
 interface ConstructorArgs {
     context: CmsContext;
 }
-export default class CmsContentModelGroupDynamo
-    implements CmsContentModelGroupStorageOperations {
+
+export default class CmsContentModelGroupDynamo implements CmsContentModelGroupStorageOperations {
     private readonly _context: CmsContext;
-    private _primaryKey: string;
+    private _partitionKey: string;
+    private readonly _table: Table;
+    private readonly _entity: Entity<any>;
 
     private get context(): CmsContext {
         return this._context;
     }
 
-    private get primaryKey(): string {
-        if (!this._primaryKey) {
-            this._primaryKey = `${createBasePartitionKey(this.context)}#CMG`;
+    private get partitionKey(): string {
+        if (!this._partitionKey) {
+            this._partitionKey = `${createBasePartitionKey(this.context)}#CMG`;
         }
-        return this._primaryKey;
+        return this._partitionKey;
     }
 
     public constructor({ context }: ConstructorArgs) {
         this._context = context;
+        this._table = new Table({
+            name: configurations.db().table || getTable(context),
+            partitionKey: "PK",
+            sortKey: "SK",
+            DocumentClient: getDocumentClient(context)
+        });
+        this._entity = new Entity({
+            name: "ContentModelGroup",
+            table: this._table,
+            attributes: {
+                PK: {
+                    partitionKey: true
+                },
+                SK: {
+                    sortKey: true
+                },
+                TYPE: {
+                    type: "string"
+                },
+                webinyVersion: {
+                    type: "string"
+                },
+                id: {
+                    type: "string"
+                },
+                name: {
+                    type: "string"
+                },
+                slug: {
+                    type: "string"
+                },
+                locale: {
+                    type: "string"
+                },
+                description: {
+                    type: "string"
+                },
+                icon: {
+                    type: "string"
+                },
+                createdBy: {
+                    type: "map"
+                },
+                createdOn: {
+                    type: "string"
+                },
+                savedOn: {
+                    type: "string"
+                }
+            }
+        });
     }
 
     public async create({ data }: CmsContentModelGroupStorageOperationsCreateArgs) {
-        const { db } = this.context;
         const dbData = {
-            PK: this.primaryKey,
+            PK: this.partitionKey,
             SK: data.id,
             TYPE: "cms.group",
             ...data,
             webinyVersion: this.context.WEBINY_VERSION
         };
 
-        await db.create({
-            ...configurations.db(),
-            data: dbData
-        });
-        return dbData;
+        try {
+            const result = await this._entity.put(dbData);
+            if (!result) {
+                throw new WebinyError(
+                    "Could not create the content model group - no result.",
+                    "CREATE_CONTENT_MODEL_GROUP_ERROR"
+                );
+            }
+            return dbData;
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not create content model group.",
+                ex.code || "CREATE_CONTENT_MODEL_GROUP_ERROR",
+                {
+                    error: ex,
+                    data: dbData
+                }
+            );
+        }
     }
     public async delete({ group }: CmsContentModelGroupStorageOperationsDeleteArgs) {
-        const { db } = this.context;
         const { id } = group;
-        await db.delete({
-            ...configurations.db(),
-            query: {
-                PK: this.primaryKey,
+        try {
+            const result = await this._entity.delete({
+                PK: this.partitionKey,
                 SK: id
+            });
+            if (!result) {
+                throw new WebinyError(
+                    "Could not delete content model group - no result.",
+                    "DELETE_CONTENT_MODEL_GROUP_ERROR",
+                    {
+                        id
+                    }
+                );
             }
-        });
+        } catch (ex) {
+            throw new WebinyError(
+                "Could not delete content model group.",
+                "DELETE_CONTENT_MODEL_GROUP_ERROR",
+                {
+                    id
+                }
+            );
+        }
         return true;
     }
     public async get({ id }: CmsContentModelGroupStorageOperationsGetArgs) {
-        const { db } = this.context;
-        const [[group]] = await db.read<CmsContentModelGroup>({
-            ...configurations.db(),
-            query: { PK: this.primaryKey, SK: id }
+        const response = await this._entity.get({
+            PK: this.partitionKey,
+            SK: id
         });
-        return group || null;
+
+        if (!response || !response.Item) {
+            return null;
+        }
+        return response.Item;
     }
     public async list({ where, limit }: CmsContentModelGroupStorageOperationsListArgs) {
-        const { db } = this.context;
-        const [groups] = await db.read<CmsContentModelGroup>({
-            ...configurations.db(),
-            query: {
-                PK: this.primaryKey,
-                SK: { $gt: " " }
+        let groups;
+        try {
+            const result = await this._entity.query(
+                this.partitionKey,
+                {
+                    limit
+                },
+                {}
+            );
+            if (!result || !Array.isArray(result.Items)) {
+                throw new WebinyError(
+                    "Could not list content model groups - not an array.",
+                    "LIST_CONTENT_MODEL_GROUP_ERROR",
+                    {
+                        where,
+                        limit
+                    }
+                );
             }
-        });
+            groups = result.Items;
+        } catch (ex) {
+            throw new WebinyError(
+                "Could not list content model groups.",
+                "LIST_CONTENT_MODEL_GROUP_ERROR",
+                {
+                    where,
+                    limit
+                }
+            );
+        }
 
         const whereKeys = Object.keys(where || {});
         if (whereKeys.length === 0) {
             return groups;
         }
 
-        const filteredGroups = groups.filter(whereFilterFactory(where));
-
-        return typeof limit !== "undefined" ? filteredGroups.slice(0, limit) : filteredGroups;
+        return groups.filter(whereFilterFactory(where));
     }
 
     public async update({ group, data }: CmsContentModelGroupStorageOperationsUpdateArgs) {
-        const { db } = this.context;
-        await db.update({
-            ...configurations.db(),
-            query: { PK: this.primaryKey, SK: group.id },
-            data: {
-                ...data,
-                webinyVersion: this.context.WEBINY_VERSION
-            }
-        });
-        return {
-            ...group,
-            ...data
+        const dbData = {
+            PK: this.partitionKey,
+            SK: group.id,
+            TYPE: "cms.group",
+            ...data,
+            webinyVersion: this.context.WEBINY_VERSION
         };
+
+        try {
+            const result = await this._entity.update(dbData);
+            if (!result) {
+                throw new WebinyError(
+                    "Could not create the content model group - no result.",
+                    "CREATE_CONTENT_MODEL_GROUP_ERROR"
+                );
+            }
+            return {
+                ...group,
+                ...data
+            };
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not create content model group.",
+                ex.code || "CREATE_CONTENT_MODEL_GROUP_ERROR",
+                {
+                    error: ex,
+                    data: dbData
+                }
+            );
+        }
     }
 }

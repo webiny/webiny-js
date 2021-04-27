@@ -11,10 +11,7 @@ if (typeof plugins !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
 }
 
-const getStorageOperationsPlugins = ({
-    documentClient,
-}) => {
-
+const getStorageOperationsPlugins = ({ documentClient }) => {
     return () => {
         return [
             plugins(),
@@ -23,7 +20,7 @@ const getStorageOperationsPlugins = ({
                 driver: new DynamoDbDriver({
                     documentClient
                 })
-            }),
+            })
         ];
     };
 };

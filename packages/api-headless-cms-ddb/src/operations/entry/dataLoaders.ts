@@ -12,11 +12,11 @@ const batchLoadKeys = loadChunk => {
         // So, we are creating chunks that consist of a maximum of 100 keys.
         const keysChunks = chunk(keys, 100);
         const promises = [];
-        
+
         keysChunks.forEach(chunk => {
             promises.push(new Promise(resolve => resolve(loadChunk(chunk))));
         });
-        
+
         const entriesChunks = await Promise.all(promises);
         return entriesChunks.reduce((current, item) => current.concat(item), []);
     });
@@ -29,7 +29,7 @@ const getAllEntryRevisions = (
 ) => {
     return new DataLoader<string, CmsContentEntry[]>(async ids => {
         const results = [];
-        
+
         for (const id of ids) {
             const [entries] = await context.db.read({
                 ...configurations.db(),
@@ -38,10 +38,10 @@ const getAllEntryRevisions = (
                     SK: { $beginsWith: "REV#" }
                 }
             });
-            
+
             results.push(entries);
         }
-        
+
         return results;
     });
 };
@@ -59,7 +59,7 @@ const getRevisionById = (
                 SK: storageOperations.getSecondaryKeyRevision(id)
             }
         }));
-        
+
         return context.db
             .batch()
             .read(...queries)
@@ -122,34 +122,34 @@ export class DataLoadersHandler {
     private readonly _loaders: Map<string, DataLoader<any, any>> = new Map();
     private readonly _context: CmsContext;
     private readonly _storageOperations: CmsContentEntryDynamo;
-    
+
     public constructor(context: CmsContext, storageOperations: CmsContentEntryDynamo) {
         this._context = context;
         this._storageOperations = storageOperations;
     }
-    
+
     public async getAllEntryRevisions(
         model: CmsContentModel,
         ids: readonly string[]
     ): Promise<CmsContentEntry[]> {
         return await this.loadMany("getAllEntryRevisions", model, ids);
     }
-    
+
     public clearAllEntryRevisions(model: CmsContentModel, entry?: CmsContentEntry): void {
         this.clear("getAllEntryRevisions", model, entry);
     }
-    
+
     public async getRevisionById(
         model: CmsContentModel,
         ids: readonly string[]
     ): Promise<CmsContentEntry[]> {
         return await this.loadMany("getRevisionById", model, ids);
     }
-    
+
     public clearRevisionById(model: CmsContentModel, entry?: CmsContentEntry): void {
         this.clear("getRevisionById", model, entry);
     }
-    
+
     public async getPublishedRevisionByEntryId(
         model: CmsContentModel,
         ids: readonly string[]
@@ -159,18 +159,18 @@ export class DataLoadersHandler {
     public clearPublishedRevisionByEntryId(model: CmsContentModel, entry?: CmsContentEntry): void {
         this.clear("getPublishedRevisionByEntryId", model, entry);
     }
-    
+
     public async getLatestRevisionByEntryId(
         model: CmsContentModel,
         ids: readonly string[]
     ): Promise<CmsContentEntry[]> {
         return await this.loadMany("getLatestRevisionByEntryId", model, ids);
     }
-    
+
     public clearLatestRevisionByEntryId(model: CmsContentModel, entry?: CmsContentEntry): void {
         this.clear("getLatestRevisionByEntryId", model, entry);
     }
-    
+
     private getLoader(name: string, model: CmsContentModel): DataLoader<any, any> {
         if (!dataLoaders[name]) {
             throw new WebinyError("Unknown data loader.", "UNKNOWN_DATA_LOADER", {
@@ -186,7 +186,7 @@ export class DataLoadersHandler {
         }
         return this._loaders.get(loaderKey);
     }
-    
+
     private async loadMany(
         loader: string,
         model: CmsContentModel,
