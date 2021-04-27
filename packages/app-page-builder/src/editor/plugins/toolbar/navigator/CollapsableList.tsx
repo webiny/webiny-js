@@ -10,6 +10,7 @@ type CollapsableListProps = {
     disableAction: boolean;
     active: boolean;
     style?: React.CSSProperties;
+    headerStyle?: React.CSSProperties;
 };
 
 const CollapsableList = ({
@@ -18,7 +19,8 @@ const CollapsableList = ({
     level,
     disableAction,
     active,
-    style
+    style,
+    headerStyle
 }: CollapsableListProps) => {
     const [isOpen, setOpen] = useState(true);
     const { expandAll } = useContext(NavigatorContext);
@@ -35,6 +37,7 @@ const CollapsableList = ({
                     active: active,
                     collapsed: !isOpen
                 })}
+                style={headerStyle}
             >
                 {list.map(i => (
                     <EmptyBlock key={i} />

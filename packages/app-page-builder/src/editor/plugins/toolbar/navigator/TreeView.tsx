@@ -34,7 +34,7 @@ const TreeViewItem = ({ element, level, children, index }) => {
     const { move } = useMoveBlock(elementId);
     const { refresh } = useContext(NavigatorContext);
     // Use "Drag&Drop"
-    const { ref: dragAndDropRef, handlerId, isDragging } = useSortableList({
+    const { ref: dragAndDropRef, handlerId, isDragging, isOver } = useSortableList({
         move,
         id: elementId,
         index,
@@ -77,6 +77,14 @@ const TreeViewItem = ({ element, level, children, index }) => {
     const hidden = get(elementData, `settings.visibility.${displayMode}.hidden`, false);
     const contentStyles = isDragging ? { opacity: 0.5 } : { opacity: 1 };
 
+    let headerStyle = {};
+    if (isOver && element.type === "block") {
+        headerStyle = { backgroundColor: "rgb(204,229,255)" };
+    }
+    if (isOver && element.type !== "block") {
+        headerStyle = { backgroundColor: "var(--mdc-theme-error)", opacity: "0.5" };
+    }
+
     return (
         <CollapsableList
             level={level}
@@ -85,7 +93,7 @@ const TreeViewItem = ({ element, level, children, index }) => {
                     onMouseOver={onMouseOver}
                     onMouseOut={onMouseOut}
                     onClick={handleOnClick}
-                    ref={element.type === "block" ? dragAndDropRef : null}
+                    ref={dragAndDropRef}
                     data-handler-id={handlerId}
                 >
                     <Typography use={"subtitle2"} className={"title"}>
@@ -98,6 +106,7 @@ const TreeViewItem = ({ element, level, children, index }) => {
             disableAction={element.elements.length <= 0}
             active={activeElement === elementId}
             style={contentStyles}
+            headerStyle={headerStyle}
         >
             {children}
         </CollapsableList>
