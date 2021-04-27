@@ -1,6 +1,7 @@
-import React, { useState, ReactElement } from "react";
+import React, { useState, useContext, useEffect, ReactElement } from "react";
 import classNames from "classnames";
 import { EmptyBlock, Collapsable, ArrowRight } from "./StyledComponents";
+import { NavigatorContext } from "~/editor/plugins/toolbar/navigator/Navigator";
 
 type CollapsableListProps = {
     children: ReactElement | ReactElement[];
@@ -20,7 +21,12 @@ const CollapsableList = ({
     style
 }: CollapsableListProps) => {
     const [isOpen, setOpen] = useState(true);
+    const { expandAll } = useContext(NavigatorContext);
     const list = Array.from(new Array(level)).map((_, i) => i);
+
+    useEffect(() => {
+        setOpen(expandAll);
+    }, [expandAll]);
 
     return (
         <Collapsable className="collapsable" style={style}>

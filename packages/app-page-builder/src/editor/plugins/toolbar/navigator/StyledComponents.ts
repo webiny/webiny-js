@@ -1,7 +1,19 @@
 import styled from "@emotion/styled";
 
 export const NavigatorTitle = styled("div")(`
-    padding: 16px 12px;
+    display: flex;
+    justify-content: space-between;
+    padding: 16px 0px 16px 12px;
+    
+    & .action {
+        border: none;
+        background: transparent;
+        
+        & svg {
+            width: 20px;
+            height: 20px;
+        }
+    }
 `);
 
 export const ElementTypeContainer = styled("div")(`
