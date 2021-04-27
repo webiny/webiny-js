@@ -173,16 +173,6 @@ export const createEmptyElement: CreateEmptyElementCallableType = ({ id, type })
     };
 };
 
-export const swap = (arr: any[], source: number, target: number): any[] => {
-    const newArray = [...arr];
-
-    const temp = newArray[source];
-    newArray[source] = newArray[target];
-    newArray[target] = temp;
-
-    return newArray;
-};
-
 export const updateBlockPosition = ({ parent, sourcePosition, targetPosition }) => {
     if (sourcePosition === targetPosition) {
         return parent;
@@ -190,6 +180,15 @@ export const updateBlockPosition = ({ parent, sourcePosition, targetPosition }) 
 
     return {
         ...parent,
-        elements: swap(parent.elements, sourcePosition, targetPosition)
+        elements: moveInPlace(parent.elements, sourcePosition, targetPosition)
     };
+};
+
+export const moveInPlace = (arr: any[], from: number, to: number): any[] => {
+    const newArray = [...arr];
+
+    const [item] = newArray.splice(from, 1);
+    newArray.splice(to, 0, item);
+
+    return newArray;
 };
