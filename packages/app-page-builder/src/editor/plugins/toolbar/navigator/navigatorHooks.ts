@@ -63,11 +63,12 @@ export const useSortableList = ({
     endDrag
 }: UseSortableListArgs) => {
     const ref = useRef<HTMLDivElement>(null);
-    const [{ handlerId }, drop] = useDrop({
+    const [{ handlerId, isOver }, drop] = useDrop({
         accept: BLOCK,
         collect(monitor) {
             return {
-                handlerId: monitor.getHandlerId()
+                handlerId: monitor.getHandlerId(),
+                isOver: monitor.isOver() && monitor.isOver({ shallow: true })
             };
         },
         drop(item: DragItem) {
@@ -106,7 +107,8 @@ export const useSortableList = ({
             if (typeof endDrag === "function") {
                 return endDrag(item, monitor);
             }
-        }
+        },
+        canDrag: type === BLOCK
     });
 
     drag(drop(ref));
@@ -117,6 +119,7 @@ export const useSortableList = ({
         handlerId,
         drag,
         drop,
-        preview
+        preview,
+        isOver
     };
 };
