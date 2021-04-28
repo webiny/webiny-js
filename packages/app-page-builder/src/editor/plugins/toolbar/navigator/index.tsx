@@ -9,6 +9,9 @@ const drawerClassName = css({
     "&.mdc-drawer--dismissible": {
         width: "280px !important",
         maxWidth: "280px !important"
+    },
+    "&.mdc-drawer": {
+        height: "calc(100% - 64px)"
     }
 });
 

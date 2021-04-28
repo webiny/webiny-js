@@ -55,9 +55,6 @@ const drawerStyle = css({
         ".mdc-drawer__content": {
             width: "100%"
         }
-    },
-    "&.mdc-drawer": {
-        height: "calc(100% - 64px)"
     }
 });
 type ToolbarDrawerProps = {
