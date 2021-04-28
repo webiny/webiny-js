@@ -310,12 +310,6 @@ function FileManagerView(props: FileManagerViewProps) {
         const errors = [];
         await Promise.all(
             list.map(async file => {
-                // If type is missing, let's use the default "application/octet-stream" type,
-                // which is also the default type that the Amazon S3 would use.
-                if (!file.type) {
-                    file.type = "application/octet-stream";
-                }
-
                 try {
                     const response = await getFileUploader()(file, { apolloClient });
                     await createFile({ variables: { data: response } });
