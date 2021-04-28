@@ -34,7 +34,7 @@ const getAllEntryRevisions = (
             const [entries] = await context.db.read({
                 ...configurations.db(),
                 query: {
-                    PK: storageOperations.getPrimaryKey(id),
+                    PK: storageOperations.getPartitionKey(id),
                     SK: { $beginsWith: "REV#" }
                 }
             });
@@ -55,8 +55,8 @@ const getRevisionById = (
         const queries = keys.map(id => ({
             ...configurations.db(),
             query: {
-                PK: storageOperations.getPrimaryKey(id),
-                SK: storageOperations.getSecondaryKeyRevision(id)
+                PK: storageOperations.getPartitionKey(id),
+                SK: storageOperations.getSortKeyRevision(id)
             }
         }));
 
@@ -77,8 +77,8 @@ const getPublishedRevisionByEntryId = (
         const queries = keys.map(id => ({
             ...configurations.db(),
             query: {
-                PK: storageOperations.getPrimaryKey(id),
-                SK: storageOperations.getSecondaryKeyPublished()
+                PK: storageOperations.getPartitionKey(id),
+                SK: storageOperations.getSortKeyPublished()
             }
         }));
         return context.db
@@ -101,8 +101,8 @@ const getLatestRevisionByEntryId = (
                 ...chunk.map(id => ({
                     ...configurations.db(),
                     query: {
-                        PK: storageOperations.getPrimaryKey(id),
-                        SK: storageOperations.getSecondaryKeyLatest()
+                        PK: storageOperations.getPartitionKey(id),
+                        SK: storageOperations.getSortKeyLatest()
                     }
                 }))
             )
@@ -233,6 +233,6 @@ export class DataLoadersHandler {
             return;
         }
         loader.clear(entry.id);
-        loader.clear(this._storageOperations.getPrimaryKey(entry.id));
+        loader.clear(this._storageOperations.getPartitionKey(entry.id));
     }
 }
