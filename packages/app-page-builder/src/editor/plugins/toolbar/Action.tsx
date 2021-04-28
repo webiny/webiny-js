@@ -25,13 +25,18 @@ type ActionPropsType = {
     onClick?: () => any;
     tooltip?: string;
     plugin?: string;
+    /*
+     * If set "true", will close all other active plugins of same type.
+     * */
+    closeOtherInGroup?: boolean;
 };
 const Action: React.FunctionComponent<ActionPropsType> = ({
     id,
     icon,
     onClick,
     tooltip,
-    plugin
+    plugin,
+    closeOtherInGroup
 }) => {
     const handler = useEventActionHandler();
     const isActive = useRecoilValue(isPluginActiveSelector(plugin));
@@ -42,17 +47,18 @@ const Action: React.FunctionComponent<ActionPropsType> = ({
         }
         handler.trigger(
             new TogglePluginActionEvent({
-                name: plugin
+                name: plugin,
+                closeOtherInGroup: closeOtherInGroup
             })
         );
-    }, [plugin]);
+    }, [plugin, closeOtherInGroup]);
 
     const clickHandler = useCallback(() => {
         if (typeof onClick === "function") {
             return onClick();
         }
         togglePlugin();
-    }, [plugin]);
+    }, [plugin, closeOtherInGroup]);
 
     const btnIcon = getButtonIcon(icon, isActive);
 
