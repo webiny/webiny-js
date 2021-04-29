@@ -467,10 +467,7 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          * }
          * ```
          */
-        createSchema?(params: {
-            models: CmsContentModel[];
-            model: CmsContentModel;
-        }): GraphQLSchemaDefinition<CmsContext>;
+        createSchema?(params: { models: CmsContentModel[] }): GraphQLSchemaDefinition<CmsContext>;
     };
     manage: {
         /**
@@ -1632,6 +1629,12 @@ export type CmsContentModelPermission = SecurityPermission<{
 export type CmsContentModelGroupPermission = SecurityPermission<{
     own: boolean;
     rwd: string;
+    /**
+     * A object representing `key: group.id` values where key is locale code.
+     */
+    groups?: {
+        [key: string]: string[];
+    };
 }>;
 /**
  * The security permission for content entry.

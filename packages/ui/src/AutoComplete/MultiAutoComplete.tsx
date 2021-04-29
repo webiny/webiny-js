@@ -81,6 +81,11 @@ export type MultiAutoCompleteProps = AutoCompleteBaseProps & {
      * Use data list instead of default Chips component. Useful when expecting a lot of data.
      */
     useMultipleSelectionList?: boolean;
+
+    /**
+     * Render list item when `useMultipleSelectionList` is used.
+     */
+    renderListItemLabel?: Function;
 };
 
 type State = {
@@ -149,6 +154,9 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
         useMultipleSelectionList: false,
         renderItem(item: any) {
             return <Typography use={"body2"}>{getOptionText(item, this.props)}</Typography>;
+        },
+        renderListItemLabel(item: any) {
+            return getOptionText(item, this.props);
         }
     };
 
@@ -305,7 +313,14 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
      * @returns {*}
      */
     renderMultipleSelection() {
-        const { value, onChange, disabled, useMultipleSelectionList, description } = this.props;
+        const {
+            value,
+            onChange,
+            disabled,
+            useMultipleSelectionList,
+            description,
+            renderListItemLabel
+        } = this.props;
 
         if (useMultipleSelectionList) {
             const { data, meta } = paginateMultipleSelection(
@@ -431,7 +446,7 @@ export class MultiAutoComplete extends React.Component<MultiAutoCompleteProps, S
                                         >
                                             {item.index + 1}.
                                         </div>{" "}
-                                        {getOptionText(item, this.props)}
+                                        {renderListItemLabel.call(this, item)}
                                         <ListItemMeta>
                                             <IconButton
                                                 icon={<DeleteIcon />}

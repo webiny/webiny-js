@@ -17,7 +17,7 @@ import indentString from "indent-string";
 import WebinyError from "@webiny/error";
 import execa from "execa";
 import validateNpmPackageName from "validate-npm-package-name";
-import { getProjectRoot } from "@webiny/cli/utils";
+import { getProject } from "@webiny/cli/utils";
 
 const ncp = util.promisify(ncpBase.ncp);
 
@@ -116,15 +116,15 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 throw new WebinyError(`Destination folder ${fullLocation} already exists.`);
             }
 
-            const projectRootPath = getProjectRoot({
+            const project = getProject({
                 cwd: fullLocation
             });
 
-            const locationRelative = path.relative(projectRootPath, fullLocation);
+            const locationRelative = path.relative(project.root, fullLocation);
 
-            const relativeRootPath = path.relative(fullLocation, projectRootPath);
+            const relativeRootPath = path.relative(fullLocation, project.root);
 
-            const baseTsConfigFullPath = path.resolve(projectRootPath, "tsconfig.json");
+            const baseTsConfigFullPath = path.resolve(project.root, "tsconfig.json");
             const baseTsConfigRelativePath = path.relative(fullLocation, baseTsConfigFullPath);
 
             const baseTsConfigBuildJsonPath = baseTsConfigFullPath.replace(
@@ -239,7 +239,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             });
 
             // Add package to workspaces
-            const rootPackageJsonPath = path.join(projectRootPath, "package.json");
+            const rootPackageJsonPath = path.join(project.root, "package.json");
             const rootPackageJson = await readJson<PackageJson>(rootPackageJsonPath);
             if (!rootPackageJson.workspaces.packages.includes(location)) {
                 rootPackageJson.workspaces.packages.push(location);

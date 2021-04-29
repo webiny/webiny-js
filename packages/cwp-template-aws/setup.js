@@ -121,7 +121,7 @@ const setup = async args => {
                     "yarn webiny --help"
                 )} in your ${green(projectName)} directory.`,
                 "",
-                "Want to delve deeper into Webiny? Check out https://docs.webiny.com!",
+                "Want to dive deeper into Webiny? Check out https://webiny.com/docs/!",
                 "Like the project? Star us on https://github.com/webiny/webiny-js!",
                 "",
                 "Need help? Join our Slack community! https://www.webiny.com/slack",

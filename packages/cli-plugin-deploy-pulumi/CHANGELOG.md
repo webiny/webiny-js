@@ -3,6 +3,93 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.3...v5.5.0) (2021-04-26)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.5.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.2...v5.5.0-beta.3) (2021-04-23)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.5.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.1...v5.5.0-beta.2) (2021-04-23)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.5.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.0...v5.5.0-beta.1) (2021-04-22)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.5.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.4.0...v5.5.0-beta.0) (2021-04-22)
+
+
+### Bug Fixes
+
+* add backwards compatibility ([ceac91a](https://github.com/webiny/webiny-js/commit/ceac91ad2befce094eee6e3ff5db536e3f6509bf))
+* add bufferLength property ([6bb5acc](https://github.com/webiny/webiny-js/commit/6bb5acceab556566269f402b43652e909c9546c4))
+* add missing dependencies ([c72b399](https://github.com/webiny/webiny-js/commit/c72b399d6c17817457cd58d37757938cfcaf634b))
+* add missing dependencies ([f31e9e8](https://github.com/webiny/webiny-js/commit/f31e9e86e459a9cefe86e77bede2bc04180ecd8b))
+* add recursive flag ([286c30d](https://github.com/webiny/webiny-js/commit/286c30db64f00c41613321b841b988eae7b863eb))
+* bring back "env" argument ([c41e9a0](https://github.com/webiny/webiny-js/commit/c41e9a010c808326cc3015cfc7414c4b4ac95198))
+* calculate project app's root against Pulumi.yaml file ([05e89e1](https://github.com/webiny/webiny-js/commit/05e89e15b53eca4be245c7cc25741f02ef6e1c23))
+* change "scope" to "package" (with "p" alias) ([eb75434](https://github.com/webiny/webiny-js/commit/eb75434513e024081f98f15fc9e81e76928391d0))
+* change "scope" to "package" (with "p" alias) ([a516203](https://github.com/webiny/webiny-js/commit/a5162037550986d99630a563618e96f20386b0da))
+* correct docs link ([0197bae](https://github.com/webiny/webiny-js/commit/0197bae3e7f504cffe233b6aee8a214e13bbc0f7))
+* correct link ([46c2f17](https://github.com/webiny/webiny-js/commit/46c2f1721a39247b0f9634d49139a64ed53a5780))
+* correct self-managed-backend path construction ([ca19e30](https://github.com/webiny/webiny-js/commit/ca19e30056252a0000cef2894274221a98190317))
+* display logs with colors ([692e97e](https://github.com/webiny/webiny-js/commit/692e97ecfa0739eb33948a5fba3db1c117e081e3))
+* display multi-line logs correctly ([91c67ee](https://github.com/webiny/webiny-js/commit/91c67eef40bfde200152b58b28df6da56a75b904))
+* display Pulumi logs with colors ([f5f0b9c](https://github.com/webiny/webiny-js/commit/f5f0b9ca689b5e6bec44212eca2341f0544c836f))
+* ensure command is executed from project root ([0201785](https://github.com/webiny/webiny-js/commit/02017850ce98f04972dc1fa8566a42d00ddb5a1d))
+* make template dynamic ([2a7b8b6](https://github.com/webiny/webiny-js/commit/2a7b8b648ad7ffc82a23ea785ab7e7b8f9a843ab))
+* normalize inputs ([022e126](https://github.com/webiny/webiny-js/commit/022e1264e1aafc682982f32fe35c872f7f1dccb4))
+* send "--env" only if present ([3236313](https://github.com/webiny/webiny-js/commit/3236313c582b11a0d3bfd3ceee373e7867b29c6b))
+* **cli-plugin-deploy-pulumi:** use onExit to tree-kill execa processes ([2330569](https://github.com/webiny/webiny-js/commit/2330569966ccd8237053785581544ed65e1b708f))
+* handle init errors ([0b78a9c](https://github.com/webiny/webiny-js/commit/0b78a9c64a246a3fe3521e67a2512e4154202348))
+* include PULUMI_LOGIN to stay backwards compatible ([2d5e145](https://github.com/webiny/webiny-js/commit/2d5e145e629ef307e1a5e22b11dd525c7cb62094))
+* move initial checks to the top ([25413dd](https://github.com/webiny/webiny-js/commit/25413dd5d9cc770874718d3284d19162dd19128b))
+* reduce default depth to 2 ([155f60e](https://github.com/webiny/webiny-js/commit/155f60e1600c8481d49c9e85107354f234c71983))
+* remove ansi-to-html ([44134f1](https://github.com/webiny/webiny-js/commit/44134f109dc51d1bb1959f93f7aaa004a8a81579))
+* remove getProjectApplication from utils ([a568455](https://github.com/webiny/webiny-js/commit/a568455c337b622f5fab3e497891a19ba63fcb69))
+* reorder merging of inputs ([072b365](https://github.com/webiny/webiny-js/commit/072b365a2cfeb5497ccc0f521d09bba2dcb9de94))
+* reword message ([c0961e0](https://github.com/webiny/webiny-js/commit/c0961e0408ca8600628b5abf30bc28a0caa94167))
+* update "login" calls ([7190d59](https://github.com/webiny/webiny-js/commit/7190d598df6c0c760776c3a175461e6045bd42ef))
+* update code to latest code changes ([d96a454](https://github.com/webiny/webiny-js/commit/d96a4549eb9d00024b33ca778e59a5e0f0ef7a3c))
+* update dependencies ([7067da6](https://github.com/webiny/webiny-js/commit/7067da66ff2a70c340b93d8cde0ad36caa4e4640))
+* update dependencies ([c17ae8a](https://github.com/webiny/webiny-js/commit/c17ae8a26a1f35520165852f2a30670356b4fac6))
+* utilize functions from "@webiny/cli/utils" ([cce49b9](https://github.com/webiny/webiny-js/commit/cce49b9fe27fb0ec3acb6c109bb0c851a4d6ba50))
+
+
+### Features
+
+* add "depth" and "scope" args ([27ca553](https://github.com/webiny/webiny-js/commit/27ca55382d04fa8e742ef186fa64201afe59ab42))
+* add ability to just pass scopes (without application) ([405a29d](https://github.com/webiny/webiny-js/commit/405a29df5fae77d3eacbc6fd1729b352efb559aa))
+* add logs to the watch command ([27a2498](https://github.com/webiny/webiny-js/commit/27a2498f88e751a7659325ca7ce019a88303dea5))
+* create "browser" watch output ([1fba2af](https://github.com/webiny/webiny-js/commit/1fba2af55762333546b01b831ac642e8c10788e4))
+* create getProject and getProjectApplication utils ([47390b9](https://github.com/webiny/webiny-js/commit/47390b905cc8b82443a22b91649a3b2d23af7654))
+* create watch command ([836b118](https://github.com/webiny/webiny-js/commit/836b118f9b44868fbf5a07a82c1c06066cebc94e))
+* enable loading defaults from project app file ([e1a8429](https://github.com/webiny/webiny-js/commit/e1a8429b8a2436e9b7040551087d8e5131fe6bc8))
+* print first message in green ([74c1284](https://github.com/webiny/webiny-js/commit/74c1284d6e77859197744e7eae64328f55731b25))
+
+
+
+
+
 # [5.4.0](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.3...v5.4.0) (2021-04-13)
 
 **Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi

@@ -344,14 +344,13 @@ const Search = (props: Props) => {
 
 export const DataList = (props: Props) => {
     let render = null;
-    const renderChildren = typeof props.children === "function" ? props.children(props) : null;
 
     if (props.loading) {
         render = props.loader;
     } else if (isEmpty(props.data)) {
         render = props.noData;
     } else {
-        render = renderChildren;
+        render = typeof props.children === "function" ? props.children(props) : null;
     }
 
     return (

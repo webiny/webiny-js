@@ -77,8 +77,9 @@ module.exports = [
                         describe: `While making code changes, re-deploy cloud infrastructure`,
                         type: "boolean"
                     });
-                    yargs.option("scope", {
-                        describe: `Override watch scope (list of packages that need to be watched for code changes)`,
+                    yargs.option("package", {
+                        alias: "p",
+                        describe: `Override watch packages (list of packages that need to be watched for code changes)`,
                         type: "string"
                     });
                     yargs.option("depth", {
