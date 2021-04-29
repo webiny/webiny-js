@@ -24,3 +24,5 @@ export type SecurityScopesListPlugin = Plugin & {
 export type SecureRouteErrorPlugin = Plugin & {
     render(): React.ReactElement;
 };
+
+export type FullAccessPermission = { name: "*" };
