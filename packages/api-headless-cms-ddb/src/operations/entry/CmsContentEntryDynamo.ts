@@ -353,7 +353,8 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
         model: CmsContentModel,
         args: CmsContentEntryStorageOperationsListArgs
     ): Promise<CmsContentEntryStorageOperationsListResponse> {
-        const { limit, where, after, sort } = args;
+        const { limit: initialLimit, where, after, sort } = args;
+        const limit = !initialLimit || initialLimit <= 0 ? 100 : initialLimit;
         // make sure we get only the entry records
         const baseFilters: FilterExpressions = [
             {
@@ -388,11 +389,12 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
 
         const scanner = async (previousResults, items) => {
             let result;
+            const options = {
+                filters,
+                limit: limit + 1
+            };
             if (!previousResults && items.length === 0) {
-                result = await this._entity.scan({
-                    filters,
-                    limit: limit + 1
-                });
+                result = await this._entity.scan(options);
             } else if (previousResults && typeof previousResults.next === "function") {
                 result = await previousResults.next();
             } else {
@@ -402,9 +404,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
                 throw new WebinyError(
                     "Error when scanning for content entries - no result.",
                     "SCAN_ERROR",
-                    {
-                        filters
-                    }
+                    options
                 );
             }
             return result;
