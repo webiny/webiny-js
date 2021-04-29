@@ -2,7 +2,7 @@ import DataLoader from "dataloader";
 import { CmsContentEntry, CmsContentModel, CmsContext } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
 import CmsContentEntryDynamo from "./CmsContentEntryDynamo";
-import chunk from "lodash/chunk";
+import lodashChunk from "lodash.chunk";
 import configurations from "../../configurations";
 
 // Used in functions below. Ensures we are batch getting 100 keys at most.
@@ -10,7 +10,7 @@ const batchLoadKeys = loadChunk => {
     return new DataLoader<string, CmsContentEntry>(async keys => {
         // DynamoDB allows getting a maximum of 100 items in a single database call.
         // So, we are creating chunks that consist of a maximum of 100 keys.
-        const keysChunks = chunk(keys, 100);
+        const keysChunks = lodashChunk(keys, 100);
         const promises = [];
 
         keysChunks.forEach(chunk => {

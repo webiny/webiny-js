@@ -7457,7 +7457,9 @@ __metadata:
     jest-dynalite: ^3.2.0
     jest-environment-node: ^26.6.2
     jsonpack: ^1.1.5
-    lodash: ^4.5.0
+    lodash.chunk: ^4.2.0
+    lodash.clonedeep: ^4.5.0
+    lodash.omit: ^4.5.0
     mdbid: ^1.0.0
     prettier: ^1.19.1
     rimraf: ^3.0.2
@@ -7478,21 +7480,19 @@ __metadata:
     "@commodo/fields-storage-nedb": ^2.0.0-next.15
     "@types/jsonpack": ^1.1.0
     "@webiny/api-headless-cms": ^5.3.0
-    "@webiny/api-upgrade": ^5.3.0
     "@webiny/db-dynamodb": ^5.3.0
     "@webiny/error": ^5.3.0
-    "@webiny/handler-aws": ^5.3.0
     "@webiny/handler-db": ^5.3.0
-    "@webiny/plugins": ^5.3.0
     "@webiny/project-utils": ^5.3.0
-    aws-sdk: ^2.892.0
+    aws-sdk: 2.868.0
     dataloader: ^2.0.0
     dynamodb-toolbox: ^0.3.3
     jest: ^26.6.3
     jest-dynalite: ^3.2.0
     jest-environment-node: ^26.6.2
     jsonpack: ^1.1.5
-    lodash: ^4.5.0
+    lodash.chunk: ^4.2.0
+    lodash.sortby: ^4.5.0
     mdbid: ^1.0.0
     prettier: ^1.19.1
     rimraf: ^3.0.2
@@ -10687,7 +10687,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-sdk@npm:^2.0.0, aws-sdk@npm:^2.539.0":
+"aws-sdk@npm:2.868.0, aws-sdk@npm:^2.0.0, aws-sdk@npm:^2.539.0":
   version: 2.868.0
   resolution: "aws-sdk@npm:2.868.0"
   dependencies:
@@ -10701,23 +10701,6 @@ __metadata:
     uuid: 3.3.2
     xml2js: 0.4.19
   checksum: ce7fd59a7dfe94c44ecabc02341a8097d554e407d1326775f6ff224aaf7716bea0b0b046cfd94d040ae6e892fe9c161f8808ade9ce3a67eb753aacc35daed781
-  languageName: node
-  linkType: hard
-
-"aws-sdk@npm:^2.892.0":
-  version: 2.892.0
-  resolution: "aws-sdk@npm:2.892.0"
-  dependencies:
-    buffer: 4.9.2
-    events: 1.1.1
-    ieee754: 1.1.13
-    jmespath: 0.15.0
-    querystring: 0.2.0
-    sax: 1.2.1
-    url: 0.10.3
-    uuid: 3.3.2
-    xml2js: 0.4.19
-  checksum: 59e6a292e92415c9cbf96cb59134f9f311b37f09a563786600f0f3595fa6397d84c624a823d28ecbb593e8cd1e9928e4b86e9e034bfb5c0ad6231ff1d4dcaa79
   languageName: node
   linkType: hard
 
@@ -23026,6 +23009,13 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"lodash.omit@npm:^4.5.0":
+  version: 4.5.0
+  resolution: "lodash.omit@npm:4.5.0"
+  checksum: b0bca85eb18f178902819b7a78f1770448c86b43407235085d987ea9711246ef8880acc3a0009bef8ac9fbb9ab104d58e0087e0a62ff59d9300e6e25e723ae51
+  languageName: node
+  linkType: hard
+
 "lodash.once@npm:^4.0.0, lodash.once@npm:^4.1.1":
   version: 4.1.1
   resolution: "lodash.once@npm:4.1.1"
@@ -23054,7 +23044,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"lodash.sortby@npm:^4.7.0":
+"lodash.sortby@npm:^4.5.0, lodash.sortby@npm:^4.7.0":
   version: 4.7.0
   resolution: "lodash.sortby@npm:4.7.0"
   checksum: 43cde11276c66da7b3eda5e9f00dc6edc276d2bcf0a5969ffc62b612cd1c4baf2eff5e84cee11383005722c460a9ca0f521fad4fa1cd2dc1ef013ee4da2dfe63

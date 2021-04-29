@@ -21,6 +21,7 @@ import {
 } from "@webiny/api-headless-cms/types";
 import configurations from "../../configurations";
 import { zeroPad } from "@webiny/api-headless-cms/utils";
+import lodashSortBy from "lodash.sortby";
 import {
     createBasePartitionKey,
     decodePaginationCursor,
@@ -31,6 +32,7 @@ import { Entity, Table } from "dynamodb-toolbox";
 import { getDocumentClient, getTable } from "../helpers";
 import { createFilters } from "./filters";
 import { queryOptions as DDBToolboxQueryOptions } from "dynamodb-toolbox/dist/classes/Table";
+import { FilterExpressions } from "dynamodb-toolbox/dist/lib/expressionBuilder";
 
 export const TYPE_ENTRY = "cms.entry";
 export const TYPE_ENTRY_LATEST = TYPE_ENTRY + ".l";
@@ -47,6 +49,34 @@ interface GetSingleDynamoDBItemArgs {
     order?: string;
 }
 
+const sortEntryItems = (items: CmsContentEntry[], sortBy: string[]): void => {
+    if (!sortBy || sortBy.length === 0) {
+        return;
+    }
+    if (sortBy.length > 1) {
+        throw new WebinyError("Sorting is limited to a single field", "SORT_ERROR", {
+            sort: sortBy
+        });
+    }
+    const [sort] = sortBy;
+    const r = sort.split("_");
+    if (r.length !== 2) {
+        throw new WebinyError(
+            "Problem in determining the sorting for the entry items.",
+            "SORT_ERROR",
+            {
+                sort
+            }
+        );
+    }
+    const [field, order = "ASC"] = r;
+    lodashSortBy(items, field);
+    if (order !== "DESC") {
+        return;
+    }
+    items.reverse();
+};
+
 /**
  * We do not use transactions in this storage operations implementation due to their cost.
  */
@@ -59,10 +89,6 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
 
     private get context(): CmsContext {
         return this._context;
-    }
-
-    private get partitionKey(): string {
-        return this._partitionKey;
     }
 
     public constructor({ context }: ConstructorArgs) {
@@ -138,8 +164,9 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
 
     public async create(
         model: CmsContentModel,
-        { data }: CmsContentEntryStorageOperationsCreateArgs
+        args: CmsContentEntryStorageOperationsCreateArgs
     ): Promise<CmsContentEntry> {
+        const { data } = args;
         const storageEntry = await entryToStorageTransform(this.context, model, data);
 
         const partitionKey = this.getPartitionKey(data.id);
@@ -326,13 +353,36 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
         model: CmsContentModel,
         args: CmsContentEntryStorageOperationsListArgs
     ): Promise<CmsContentEntryStorageOperationsListResponse> {
-        const { limit, where, after } = args;
+        const { limit, where, after, sort } = args;
+        // make sure we get only the entry records
+        const baseFilters: FilterExpressions = [
+            {
+                attr: "PK",
+                beginsWith: this._partitionKey
+            }
+        ];
+        // we need to take care of latest and published filters since there are no attributes for that on the model
+        if (where.latest !== undefined) {
+            baseFilters.push({
+                attr: "TYPE",
+                eq: TYPE_ENTRY_LATEST
+            });
+            delete where["latest"];
+        } else if (where.published !== undefined) {
+            baseFilters.push({
+                attr: "TYPE",
+                eq: TYPE_ENTRY_PUBLISHED
+            });
+            delete where["published"];
+        }
 
-        const filters = createFilters({
-            context: this.context,
-            model,
-            where
-        });
+        const filters = baseFilters.concat(
+            createFilters({
+                context: this.context,
+                model,
+                where
+            })
+        );
 
         let items: CmsContentEntry[] = [];
 
@@ -340,7 +390,8 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             let result;
             if (!previousResults && items.length === 0) {
                 result = await this._entity.scan({
-                    filters
+                    filters,
+                    limit: limit + 1
                 });
             } else if (previousResults && typeof previousResults.next === "function") {
                 result = await previousResults.next();
@@ -365,26 +416,14 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
                 items.push(...results.Items);
                 previousResults = results;
             }
-            // const result = await this._entity.scan({
-            //     filters,
-            //     limit: limit + 1,
-            // });
-            // if (!result || !result.Items || !Array.isArray(result.items)) {
-            //     throw new WebinyError(
-            //         "Error when scanning for content entries - no result",
-            //         "SCAN_ERROR",
-            //         {
-            //             filters,
-            //         }
-            //     );
-            // }
-            // items.push(...result.Items);
         } catch (ex) {
             throw new WebinyError(ex.message, ex.code || "SCAN_ERROR", {
                 error: ex,
                 filters
             });
         }
+
+        sortEntryItems(items, sort);
 
         const hasMoreItems = items.length > limit;
         const start = decodePaginationCursor(after) || 0;
@@ -1121,7 +1160,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
         if (id.includes("#")) {
             id = id.split("#").shift();
         }
-        return `${this.partitionKey}#${id}`;
+        return `${this._partitionKey}#${id}`;
     }
     /**
      * Gets a secondary key in form of REV#version from:

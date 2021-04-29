@@ -47,7 +47,9 @@ export default class CmsContentModelDynamo implements CmsContentModelStorageOper
         }
         return this._partitionKey;
     }
-    public constructor({ context }: ConstructorArgs) {
+
+    public constructor(args: ConstructorArgs) {
+        const { context } = args;
         this._context = context;
         this._table = new Table({
             name: configurations.db().table || getTable(context),
@@ -111,9 +113,10 @@ export default class CmsContentModelDynamo implements CmsContentModelStorageOper
         });
     }
 
-    public async create({
-        data
-    }: CmsContentModelStorageOperationsCreateArgs): Promise<CmsContentModel> {
+    public async create(
+        args: CmsContentModelStorageOperationsCreateArgs
+    ): Promise<CmsContentModel> {
+        const { data } = args;
         try {
             await this._entity.put({
                 PK: this.partitionKey,
@@ -134,7 +137,8 @@ export default class CmsContentModelDynamo implements CmsContentModelStorageOper
         }
     }
 
-    public async delete({ model }: CmsContentModelStorageOperationsDeleteArgs): Promise<boolean> {
+    public async delete(args: CmsContentModelStorageOperationsDeleteArgs): Promise<boolean> {
+        const { model } = args;
         try {
             await this._entity.delete({
                 PK: this.partitionKey,
@@ -147,15 +151,16 @@ export default class CmsContentModelDynamo implements CmsContentModelStorageOper
         }
         return true;
     }
-    public async get({
-        id
-    }: CmsContentModelStorageOperationsGetArgs): Promise<CmsContentModel | null> {
+    public async get(
+        args: CmsContentModelStorageOperationsGetArgs
+    ): Promise<CmsContentModel | null> {
+        const { id } = args;
         try {
             const result = await this._entity.get({
                 PK: this.partitionKey,
                 SK: id
             });
-            if (!result || !result.Item) {
+            if (!result) {
                 throw new WebinyError(
                     "Could not get content model - no result.",
                     "GET_CONTENT_MODEL_ERROR",
@@ -164,6 +169,8 @@ export default class CmsContentModelDynamo implements CmsContentModelStorageOper
                         SK: id
                     }
                 );
+            } else if (!result.Item) {
+                return null;
             }
             return ensureEmptyArraysExist(result.Item);
         } catch (ex) {
@@ -194,10 +201,10 @@ export default class CmsContentModelDynamo implements CmsContentModelStorageOper
         }
     }
 
-    public async update({
-        model,
-        data
-    }: CmsContentModelStorageOperationsUpdateArgs): Promise<CmsContentModel> {
+    public async update(
+        args: CmsContentModelStorageOperationsUpdateArgs
+    ): Promise<CmsContentModel> {
+        const { model, data } = args;
         const dbData = {
             PK: this.partitionKey,
             SK: model.modelId,
