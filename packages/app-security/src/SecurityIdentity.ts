@@ -43,11 +43,7 @@ export class SecurityIdentity {
         }
 
         // Try matching using patterns
-        if (perms.find(p => minimatch(permission, p.name))) {
-            return { name: permission };
-        }
-
-        return null;
+        return perms.find(p => minimatch(permission, p.name));
     }
 
     logout() {
