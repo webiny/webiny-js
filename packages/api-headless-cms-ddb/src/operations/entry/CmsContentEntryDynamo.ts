@@ -327,12 +327,19 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
         const { limit: initialLimit, where, after, sort } = args;
         const limit = !initialLimit || initialLimit <= 0 ? 100 : initialLimit;
         // make sure we get only the entry records
-        const baseFilters: FilterExpressions = [
-            {
+        const baseFilters: FilterExpressions = [];
+        if (where.entryId !== undefined) {
+            baseFilters.push({
+                attr: "PK",
+                eq: this.getPartitionKey(where.entryId)
+            });
+            delete where["entryId"];
+        } else {
+            baseFilters.push({
                 attr: "PK",
                 beginsWith: this._partitionKey
-            }
-        ];
+            });
+        }
         // we need to take care of latest and published filters since there are no attributes for that on the model
         if (where.latest !== undefined) {
             baseFilters.push({
@@ -394,7 +401,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             });
         }
 
-        sortEntryItems({
+        items = sortEntryItems({
             model,
             items,
             sort
@@ -466,9 +473,10 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
         // }
         try {
             await this._entity.update({
+                ...originalEntry,
+                ...data,
                 PK: partitionKey,
-                SK: this.getSortKeyRevision(originalEntry.version),
-                ...data
+                SK: this.getSortKeyRevision(originalEntry.version)
             });
             return {
                 ...originalEntry,
@@ -618,6 +626,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
         } else {
             items.push(
                 this._entity.putBatch({
+                    ...entry,
                     PK: partitionKey,
                     SK: this.getSortKeyPublished(),
                     TYPE: TYPE_ENTRY_PUBLISHED
@@ -723,9 +732,9 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
                 SK: this.getSortKeyPublished()
             }),
             this._entity.putBatch({
+                ...entry,
                 PK: partitionKey,
-                SK: this.getSortKeyRevision(entry.version),
-                entry
+                SK: this.getSortKeyRevision(entry.version)
             })
         ];
 
@@ -759,9 +768,9 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
         if (latestEntry.id === entry.id) {
             items.push(
                 this._entity.putBatch({
+                    ...entry,
                     PK: partitionKey,
-                    SK: this.getSortKeyLatest(),
-                    entry
+                    SK: this.getSortKeyLatest()
                 })
             );
             // const es = configurations.es(this.context, model);
@@ -1104,7 +1113,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             if (result.Items.length === 0) {
                 return null;
             }
-            return result.items.shift();
+            return result.Items.shift();
             // const [entries] = await db.read<CmsContentEntry>({
             //     ...configurations.db(),
             //     query,

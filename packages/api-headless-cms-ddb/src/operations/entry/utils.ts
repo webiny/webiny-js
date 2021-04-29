@@ -132,10 +132,10 @@ interface SortEntryItemsArgs {
     items: CmsContentEntry[];
     sort: string[];
 }
-export const sortEntryItems = (args: SortEntryItemsArgs): void => {
+export const sortEntryItems = (args: SortEntryItemsArgs): CmsContentEntry[] => {
     const { model, items, sort } = args;
     if (!sort || sort.length === 0) {
-        return;
+        return items;
     }
     if (sort.length > 1) {
         throw new WebinyError("Sorting is limited to a single field", "SORT_ERROR", {
@@ -151,9 +151,9 @@ export const sortEntryItems = (args: SortEntryItemsArgs): void => {
     const fields = defaultSystemFields.concat(model.fields.map(field => field.fieldId));
 
     const { field, reverse } = extractSort(firstSort, fields);
-    lodashSortBy(items, field);
-    if (!reverse) {
-        return;
+    const newItems = lodashSortBy(items, field);
+    if (reverse) {
+        newItems.reverse();
     }
-    items.reverse();
+    return newItems;
 };
