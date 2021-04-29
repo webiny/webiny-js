@@ -24,10 +24,12 @@ export default ({
     }
 
     const { identity } = useSecurity();
-    const hasPermission = permission ? identity.getPermission(permission) : true;
+    const matchedPermission = identity.getPermission(permission);
+
+    const hasPermission = Boolean(matchedPermission);
 
     if (typeof children === "function") {
-        return children({ hasPermission });
+        return children({ hasPermission, permission: matchedPermission });
     }
 
     return hasPermission ? children : null;
