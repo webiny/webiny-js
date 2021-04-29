@@ -16,7 +16,7 @@ import {
 } from "../recoil/modules";
 
 import { PbState } from "../recoil/modules/types";
-import { EventAction } from "../recoil/eventActions/EventAction";
+import { EventAction } from "~/editor/recoil/eventActions";
 import {
     EventActionHandlerCallableArgs,
     EventActionCallable,
@@ -28,7 +28,7 @@ import {
     EventActionHandler,
     EventActionHandlerTarget,
     EventActionHandlerCallableState
-} from "../../types";
+} from "~/types";
 import {
     Snapshot,
     useGotoRecoilSnapshot,
@@ -38,7 +38,6 @@ import {
     useRecoilValue,
     useSetRecoilState
 } from "recoil";
-import { AfterUpdateElementsActionEvent } from "~/editor/recoil/actions";
 
 type ListType = Map<symbol, EventActionCallable>;
 type RegistryType = Map<string, ListType>;
@@ -148,8 +147,6 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
             });
             return item.id;
         });
-
-        eventActionHandlerRef.current.trigger(new AfterUpdateElementsActionEvent());
     });
 
     const takeSnapshot = useRecoilCallback(({ snapshot }) => () => {
