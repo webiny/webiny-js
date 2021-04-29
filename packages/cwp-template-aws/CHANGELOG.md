@@ -3,6 +3,71 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.5.0](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.3...v5.5.0) (2021-04-26)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.5.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.2...v5.5.0-beta.3) (2021-04-23)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.5.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.1...v5.5.0-beta.2) (2021-04-23)
+
+
+### Bug Fixes
+
+* update template ([7ae51df](https://github.com/webiny/webiny-js/commit/7ae51df923b8c49c9d6590449e878d9f854c26db))
+
+
+
+
+
+# [5.5.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.0...v5.5.0-beta.1) (2021-04-22)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.5.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.4.0...v5.5.0-beta.0) (2021-04-22)
+
+
+### Bug Fixes
+
+* update template with new Apollo links plugins ([fdaf3fd](https://github.com/webiny/webiny-js/commit/fdaf3fdbee1b56d378c17b4fdce910d56a46033e))
+* **app-page-builder:** load page snippet and remove debounce on settings save ([#1537](https://github.com/webiny/webiny-js/issues/1537)) ([d8f94e2](https://github.com/webiny/webiny-js/commit/d8f94e27e16138394992ed5439e609c54edc2780))
+* **cwp-template-aws:** update template (watch command in package.json in "api") ([2f14c08](https://github.com/webiny/webiny-js/commit/2f14c0808413c1f91c1621fe8e461bc42813be39))
+* **cwp-template-aws:** update template (WEBINY_LOGS_FORWARD_URL) ([56179a8](https://github.com/webiny/webiny-js/commit/56179a822d6f05ad75f0f532ea08bdfe31705d0b))
+* **cwp-template-aws:** update template (webiny.application.js) ([e98a1df](https://github.com/webiny/webiny-js/commit/e98a1dfdceccdd0030fb92994cf52db15289b09c))
+* **cwp-template-aws:** update template (webiny.config.js in "api") ([570fb11](https://github.com/webiny/webiny-js/commit/570fb11fcf024bd088fc005b365d957c9a2d8e38))
+* **cwp-template-aws:** update template add handler-logs package to GQL and CMS) ([430a7dd](https://github.com/webiny/webiny-js/commit/430a7dda9556060135ec1281073c67f9bc05050a))
+* add missing "@webiny/cli" dependency ([f99bf3e](https://github.com/webiny/webiny-js/commit/f99bf3ea31ad4b9d560011181431cd9732a1a8c4))
+* change "projectName" to "name" ([c6cec9f](https://github.com/webiny/webiny-js/commit/c6cec9f3bef6c0b359d1605374a23670a3fec4c2))
+* correct argument name ([b5276a6](https://github.com/webiny/webiny-js/commit/b5276a61335d2ddbe327d15634de7a83639e20a9))
+* correct filename ([17b3b73](https://github.com/webiny/webiny-js/commit/17b3b730f45e7fff0c8d3ebec08301e850e025b8))
+* remove "beta" tag ([b502de7](https://github.com/webiny/webiny-js/commit/b502de7c47080ccc08dda828073eadb3aafb4704))
+* rename file ([8d2dea0](https://github.com/webiny/webiny-js/commit/8d2dea072b198dd56cf3e83b63ddb9949befef3d))
+* update code to latest code changes ([d96a454](https://github.com/webiny/webiny-js/commit/d96a4549eb9d00024b33ca778e59a5e0f0ef7a3c))
+
+
+### Features
+
+* **react-rich-text-renderer:** create a Rich Text renderer component ([#1566](https://github.com/webiny/webiny-js/issues/1566)) ([a11109b](https://github.com/webiny/webiny-js/commit/a11109b0a34af5d062ad60f4ddb8d975d0aa1ee2))
+* add "watch" command ([bcbd0a1](https://github.com/webiny/webiny-js/commit/bcbd0a178ec1f1c9c2ef831499f686eed8f87345))
+
+
+
+
+
 # [5.4.0](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.3...v5.4.0) (2021-04-13)
 
 **Note:** Version bump only for package @webiny/cwp-template-aws

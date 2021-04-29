@@ -105,7 +105,7 @@ export default (): ContextPlugin<CmsContext> => ({
             })
         };
 
-        const checkPermissions = (check: {
+        const checkEntryPermissions = (check: {
             rwd?: string;
             pw?: string;
         }): Promise<CmsContentEntryPermission> => {
@@ -117,8 +117,8 @@ export default (): ContextPlugin<CmsContext> => ({
              * Get entries by exact revision IDs from the database.
              */
             getByIds: async (model: CmsContentModel, ids: string[]) => {
-                const permission = await checkPermissions({ rwd: "r" });
-                utils.checkModelAccess(context, permission, model);
+                const permission = await checkEntryPermissions({ rwd: "r" });
+                await utils.checkModelAccess(context, model);
 
                 const { getRevisionById } = loaders;
 
@@ -130,8 +130,8 @@ export default (): ContextPlugin<CmsContext> => ({
              * Get latest published revisions by entry IDs.
              */
             getPublishedByIds: async (model: CmsContentModel, ids: string[]) => {
-                const permission = await checkPermissions({ rwd: "r" });
-                utils.checkModelAccess(context, permission, model);
+                const permission = await checkEntryPermissions({ rwd: "r" });
+                await utils.checkModelAccess(context, model);
                 const { getPublishedRevisionByEntryId } = loaders;
 
                 // We only need entry ID (not revision ID) to get published revision for that entry.
@@ -147,8 +147,8 @@ export default (): ContextPlugin<CmsContext> => ({
              * Get latest revisions by entry IDs.
              */
             getLatestByIds: async (model: CmsContentModel, ids: string[]) => {
-                const permission = await checkPermissions({ rwd: "r" });
-                utils.checkModelAccess(context, permission, model);
+                const permission = await checkEntryPermissions({ rwd: "r" });
+                await utils.checkModelAccess(context, model);
                 const { getLatestRevisionByEntryId } = loaders;
 
                 // We only need entry ID (not revision ID) to get the latest revision for that entry.
@@ -164,7 +164,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 return loaders.getAllEntryRevisions.load(entryId);
             },
             get: async (model, args) => {
-                await checkPermissions({ rwd: "r" });
+                await checkEntryPermissions({ rwd: "r" });
                 const [[item]] = await context.cms.entries.list(model, {
                     ...args,
                     limit: 1
@@ -176,8 +176,8 @@ export default (): ContextPlugin<CmsContext> => ({
                 return item;
             },
             list: async (model: CmsContentModel, args = {}, options = {}) => {
-                const permission = await checkPermissions({ rwd: "r" });
-                utils.checkModelAccess(context, permission, model);
+                const permission = await checkEntryPermissions({ rwd: "r" });
+                await utils.checkModelAccess(context, model);
 
                 const limit = createElasticsearchLimit(args.limit, 50);
 
@@ -257,8 +257,8 @@ export default (): ContextPlugin<CmsContext> => ({
                 );
             },
             create: async (model, inputData) => {
-                const permission = await checkPermissions({ rwd: "w" });
-                utils.checkModelAccess(context, permission, model);
+                await checkEntryPermissions({ rwd: "w" });
+                await utils.checkModelAccess(context, model);
 
                 // Make sure we only work with fields that are defined in the model.
                 const data = model.fields.reduce((acc, field) => {
@@ -346,8 +346,8 @@ export default (): ContextPlugin<CmsContext> => ({
                 return storageEntry;
             },
             createRevisionFrom: async (model, sourceId, data = {}) => {
-                const permission = await checkPermissions({ rwd: "w" });
-                utils.checkModelAccess(context, permission, model);
+                await checkEntryPermissions({ rwd: "w" });
+                await utils.checkModelAccess(context, model);
 
                 // Entries are identified by a common parent ID + Revision number
                 const [uniqueId, version] = sourceId.split("#");
@@ -465,8 +465,8 @@ export default (): ContextPlugin<CmsContext> => ({
                 return newEntry;
             },
             update: async (model, id, inputData) => {
-                const permission = await checkPermissions({ rwd: "w" });
-                utils.checkModelAccess(context, permission, model);
+                const permission = await checkEntryPermissions({ rwd: "w" });
+                await utils.checkModelAccess(context, model);
 
                 // Make sure we only work with fields that are defined in the model.
                 const data = model.fields.reduce((acc, field) => {
@@ -580,8 +580,8 @@ export default (): ContextPlugin<CmsContext> => ({
                 return updatedStorageEntry;
             },
             deleteRevision: async (model, revisionId) => {
-                const permission = await checkPermissions({ rwd: "d" });
-                utils.checkModelAccess(context, permission, model);
+                const permission = await checkEntryPermissions({ rwd: "d" });
+                await utils.checkModelAccess(context, model);
 
                 const [uniqueId, version] = revisionId.split("#");
 
@@ -724,8 +724,8 @@ export default (): ContextPlugin<CmsContext> => ({
                 });
             },
             deleteEntry: async (model, entryId) => {
-                const permission = await checkPermissions({ rwd: "d" });
-                utils.checkModelAccess(context, permission, model);
+                const permission = await checkEntryPermissions({ rwd: "d" });
+                await utils.checkModelAccess(context, model);
 
                 const [dbItems] = await db.read<CmsContentEntry>({
                     ...utils.defaults.db(),
@@ -798,8 +798,8 @@ export default (): ContextPlugin<CmsContext> => ({
                 });
             },
             publish: async (model, id) => {
-                const permission = await checkPermissions({ pw: "p" });
-                utils.checkModelAccess(context, permission, model);
+                const permission = await checkEntryPermissions({ pw: "p" });
+                await utils.checkModelAccess(context, model);
 
                 const [uniqueId, version] = id.split("#");
                 const ENTRY_PK = PK_ENTRY(uniqueId);
@@ -989,7 +989,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 return entry;
             },
             requestChanges: async (model, id) => {
-                const permission = await checkPermissions({ pw: "c" });
+                const permission = await checkEntryPermissions({ pw: "c" });
                 const [uniqueId, version] = id.split("#");
 
                 const [[[entry]], [[latestEntryData]]] = await db
@@ -1077,7 +1077,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 return updatedEntry;
             },
             requestReview: async (model, id) => {
-                const permission = await checkPermissions({ pw: "r" });
+                const permission = await checkEntryPermissions({ pw: "r" });
                 const [uniqueId, version] = id.split("#");
 
                 const [[[entry]], [[latestEntryData]]] = await db
@@ -1157,7 +1157,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 return updatedEntry;
             },
             unpublish: async (model, id) => {
-                const permission = await checkPermissions({ pw: "u" });
+                const permission = await checkEntryPermissions({ pw: "u" });
 
                 const [uniqueId, version] = id.split("#");
 

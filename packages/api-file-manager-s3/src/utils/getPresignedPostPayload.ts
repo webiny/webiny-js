@@ -16,6 +16,12 @@ const sanitizeFileSizeValue = (value, defaultValue) => {
 };
 
 export default async (data, settings) => {
+    // If type is missing, let's use the default "application/octet-stream" type,
+    // which is also the default type that the Amazon S3 would use.
+    if (!data.type) {
+        data.type = "application/octet-stream";
+    }
+
     const contentType = data.type;
     if (!contentType) {
         throw Error(`File's content type could not be resolved.`);
@@ -25,6 +31,7 @@ export default async (data, settings) => {
     if (key) {
         key = uniqueId() + "-" + key;
     }
+
     if (data.keyPrefix) {
         key = `${sanitizeFilename(data.keyPrefix)}-${key}`;
     }

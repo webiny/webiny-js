@@ -1,7 +1,6 @@
 import { UpgradePlugin } from "./types";
 import Error from "@webiny/error";
-import { gt, lt } from "semver";
-
+import { gt, lt, coerce } from "semver";
 interface RunUpgradeArgs {
     /**
      * Version of Webiny that is currently deployed (context.WEBINY_VERSION).
@@ -24,9 +23,9 @@ interface RunUpgradeArgs {
      */
     upgradePlugins: UpgradePlugin[];
 }
-
 export function getApplicablePlugin(args: RunUpgradeArgs): UpgradePlugin {
-    const { deployedVersion, upgradePlugins, installedAppVersion, upgradeToVersion } = args;
+    const { upgradePlugins, installedAppVersion, upgradeToVersion } = args;
+    const { version: deployedVersion } = coerce(args.deployedVersion);
 
     if (upgradeToVersion !== deployedVersion) {
         throw new Error(

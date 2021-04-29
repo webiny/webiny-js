@@ -1,4 +1,5 @@
 export type SaveRevisionActionArgsType = {
+    debounce?: boolean;
     onFinish?: () => void;
 };
 

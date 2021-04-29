@@ -31,12 +31,11 @@ const storeFile = ({ key, contentType, body, storageName }) => {
 export default (configuration?: Configuration): HandlerPlugin => ({
     type: "handler",
     async handle(context): Promise<HandlerResponse> {
-        const log = console.log;
         const { invocationArgs } = context;
         const handlerArgs = Array.isArray(invocationArgs) ? invocationArgs : [invocationArgs];
         const handlerHookPlugins = context.plugins.byType<RenderHookPlugin>("ps-render-hook");
 
-        log("Received args: ", JSON.stringify(invocationArgs));
+        console.log("Received args: ", JSON.stringify(invocationArgs));
 
         try {
             await sleep();
@@ -47,7 +46,6 @@ export default (configuration?: Configuration): HandlerPlugin => ({
                     const plugin = handlerHookPlugins[j];
                     if (typeof plugin.beforeRender === "function") {
                         await plugin.beforeRender({
-                            log,
                             context,
                             configuration,
                             args
@@ -71,16 +69,17 @@ export default (configuration?: Configuration): HandlerPlugin => ({
                 });
 
                 // TODO: will need to add flushing of all files created in the render process.
-
-                const files = await renderUrl(url, {
-                    log
+                const [files] = await renderUrl(url, {
+                    context,
+                    configuration,
+                    args
                 });
 
                 for (let j = 0; j < files.length; j++) {
                     const file = files[j];
                     const key = path.join(storageFolder, file.name);
 
-                    log(`Storing file "${key}" to storage "${storageName}".`);
+                    console.log(`Storing file "${key}" to storage "${storageName}".`);
                     await storeFile({
                         storageName,
                         key,
@@ -107,7 +106,7 @@ export default (configuration?: Configuration): HandlerPlugin => ({
                 // Let's delete existing tag / URL links.
                 // TODO: improve - no need to do any DB calls if tags didn't change. So, let's
                 // TODO: compare tags in `currentIndexHtml` and `newIndexHtml`.
-                log("Checking if there are existing tag / URL links to remove...");
+                console.log("Checking if there are existing tag / URL links to remove...");
                 if (currentRenderData) {
                     // Get currently stored tags and delete all tag-URL links.
                     const currentIndexHtml = currentRenderData.files.find(item =>
@@ -115,7 +114,7 @@ export default (configuration?: Configuration): HandlerPlugin => ({
                     );
                     const currentIndexHtmlTags = currentIndexHtml?.meta?.tags;
                     if (Array.isArray(currentIndexHtmlTags) && currentIndexHtmlTags.length) {
-                        log(
+                        console.log(
                             "There are existing tag / URL links to be deleted...",
                             currentIndexHtmlTags
                         );
@@ -130,18 +129,18 @@ export default (configuration?: Configuration): HandlerPlugin => ({
                         }
 
                         await batch.execute();
-                        log("Existing tag / URL links deleted.");
+                        console.log("Existing tag / URL links deleted.");
                     } else {
-                        log("There are no existing tag / URL links to delete.");
+                        console.log("There are no existing tag / URL links to delete.");
                     }
                 }
 
                 // Let's save tags - we link each distinct tag with the URL.
-                log("Checking if there are new tag / URL links to save...");
+                console.log("Checking if there are new tag / URL links to save...");
                 const newIndexHtml = files.find((item: File) => item.name.endsWith(".html"));
                 const newIndexHtmlTags = newIndexHtml?.meta?.tags;
                 if (Array.isArray(newIndexHtmlTags) && newIndexHtmlTags.length) {
-                    log("There are new tag / URL links to be saved...", newIndexHtmlTags);
+                    console.log("There are new tag / URL links to be saved...", newIndexHtmlTags);
                     const batch = context.db.batch();
 
                     for (let k = 0; k < newIndexHtmlTags.length; k++) {
@@ -165,16 +164,15 @@ export default (configuration?: Configuration): HandlerPlugin => ({
                     }
 
                     await batch.execute();
-                    log("New tag / URL links saved.");
+                    console.log("New tag / URL links saved.");
                 } else {
-                    log("There are no new tag / URL links to save.");
+                    console.log("There are no new tag / URL links to save.");
                 }
 
                 for (let j = 0; j < handlerHookPlugins.length; j++) {
                     const plugin = handlerHookPlugins[j];
                     if (typeof plugin.afterRender === "function") {
                         await plugin.afterRender({
-                            log,
                             context,
                             configuration,
                             args
@@ -185,7 +183,8 @@ export default (configuration?: Configuration): HandlerPlugin => ({
 
             return { data: null, error: null };
         } catch (e) {
-            log("An error occurred while prerendering...", e);
+            console.log("An error occurred while prerendering...", e);
+            console.log(JSON.stringify(e.message));
             return { data: null, error: e };
         }
     }

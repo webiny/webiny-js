@@ -1374,7 +1374,11 @@ const plugin: ContextPlugin<PbContext> = {
 
                         const meta = merge(
                             defaults?.prerendering?.meta,
-                            current?.prerendering?.meta
+                            current?.prerendering?.meta,
+                            {
+                                tenant: context.security.getTenant().id,
+                                locale: i18nContent.getLocale().code
+                            }
                         );
 
                         const { paths, tags } = args;
