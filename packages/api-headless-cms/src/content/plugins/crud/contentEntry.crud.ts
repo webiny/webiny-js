@@ -226,15 +226,18 @@ export default (): ContextPlugin<CmsContext> => ({
                 // Possibly only get records which are owned by current user
                 // Or if searching for the owner set that value - in the case that user can see other entries than their own
                 const ownedBy = permission.own ? context.security.getIdentity().id : where.ownedBy;
+                const listWhere = {
+                    ...where
+                };
+                if (ownedBy !== undefined) {
+                    listWhere.ownedBy = ownedBy;
+                }
 
                 const { hasMoreItems, totalCount, cursor, items } = await storageOperations.list(
                     model,
                     {
                         ...args,
-                        where: {
-                            ...where,
-                            ownedBy
-                        }
+                        where: listWhere
                     }
                 );
 

@@ -2242,6 +2242,7 @@ export interface CmsContentEntryStorageOperationsListArgs<
     T extends Record<string, any> = Record<string, any>
 > {
     where?: T;
+    sort?: CmsContentEntryListSort;
     limit?: number;
     after?: string;
 }
