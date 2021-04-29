@@ -10,7 +10,7 @@ import updateElementPlugin from "./updateElement/plugin";
 import updatePagePlugin from "./updatePage/plugin";
 import afterDropElementPlugin from "./afterDropElement/plugin";
 import moveBlockPlugin from "./moveBlock/plugin";
-import afterUpdateElementsPlugin from "./afterUpdateElements/plugin";
+import afterUpdateElementsPlugin from "./updateElementTree/plugin";
 
 export default () => [
     cloneElementPlugin(),

@@ -9,5 +9,5 @@ export * from "./togglePlugin";
 export * from "./updateElement";
 export * from "./updatePage";
 export * from "./saveRevision";
-export * from "./afterUpdateElements";
+export * from "./updateElementTree";
 export * from "./plugins";

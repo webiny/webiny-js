@@ -1,14 +1,14 @@
 import { PbEditorEventActionPlugin } from "~/types";
-import { AfterUpdateElementsActionEvent } from "./event";
+import { UpdateElementTreeActionEvent } from "./event";
 
 export default () => {
     return {
         type: "pb-editor-event-action-plugin",
-        name: "pb-editor-event-action-drop-basic-element",
+        name: "pb-editor-event-action-update-element-tree",
         onEditorMount: handler => {
             // @ts-ignore
-            return handler.on(AfterUpdateElementsActionEvent, () => {
-                console.log("Running [AfterUpdateElementsActionEvent] action.");
+            return handler.on(UpdateElementTreeActionEvent, () => {
+                console.log("Running [UpdateElementTreeActionEvent] action.");
                 return {};
             });
         }
