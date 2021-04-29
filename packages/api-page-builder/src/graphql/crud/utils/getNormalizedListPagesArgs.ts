@@ -1,12 +1,12 @@
-import { ListPagesArgs } from "../../../types";
+import { ListPagesArgs, PbContext } from "../../../types";
 
 /**
  * Returns arguments suited to be sent to ElasticSearch's `search` method.
  * @param args
  */
-export default (args: ListPagesArgs) => {
+export default (args: ListPagesArgs, context: PbContext) => {
     const normalized = {
-        query: getQuery(args),
+        query: getQuery(args, context),
         sort: getSort(args.sort),
         size: args.limit ?? 10,
         from: 0,
@@ -17,13 +17,20 @@ export default (args: ListPagesArgs) => {
     return normalized;
 };
 
-const getQuery = (args: ListPagesArgs) => {
+const getQuery = (args: ListPagesArgs, context: PbContext) => {
     const { where, search, exclude } = args;
     const query: Record<string, any> = {
         bool: {
             filter: []
         }
     };
+
+    // When ES index is shared between tenants, we need to filter records by tenant ID
+    const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
+    if (sharedIndex) {
+        const tenant = context.security.getTenant();
+        query.bool.filter.push({ term: { "tenant.keyword": tenant.id } });
+    }
 
     if (where) {
         if (where.category) {

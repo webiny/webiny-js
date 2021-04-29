@@ -1,6 +1,3 @@
-import { merge } from "lodash";
-import locales from "./graphql/locales";
-import installation from "./graphql/installation";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 
 const emptyResolver = () => ({});
@@ -53,21 +50,15 @@ const plugin: GraphQLSchemaPlugin = {
                 message: String
                 data: JSON
             }
-            ${installation.typeDefs}
-            ${locales.typeDefs}
         `,
-        resolvers: merge(
-            {
-                Query: {
-                    i18n: emptyResolver
-                },
-                Mutation: {
-                    i18n: emptyResolver
-                }
+        resolvers: {
+            Query: {
+                i18n: emptyResolver
             },
-            installation.resolvers,
-            locales.resolvers
-        )
+            Mutation: {
+                i18n: emptyResolver
+            }
+        }
     }
 };
 

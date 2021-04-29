@@ -17,6 +17,7 @@ const getFileDocForES = (
     locale: string,
     context: FileManagerContext
 ) => ({
+    tenant: context.security.getTenant().id,
     id: file.id,
     createdOn: file.createdOn,
     key: file.key,
@@ -274,6 +275,13 @@ export default (context: FileManagerContext) => {
                 { term: { "locale.keyword": i18nContent.locale.code } }
             ];
 
+            // When ES index is shared between tenants, we need to filter records by tenant ID
+            const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
+            if (sharedIndex) {
+                const tenant = security.getTenant();
+                must.push({ term: { "tenant.keyword": tenant.id } });
+            }
+
             if (permission.own === true) {
                 must.push({ term: { "createdBy.id.keyword": identity.id } });
                 must.push({ term: { "createdBy.type.keyword": identity.type } });
@@ -347,11 +355,26 @@ export default (context: FileManagerContext) => {
             const { i18nContent } = context;
             const esDefaults = defaults.es(context);
 
+            const must: any = [
+                {
+                    term: { "locale.keyword": i18nContent.locale.code }
+                }
+            ];
+
+            // When ES index is shared between tenants, we need to filter records by tenant ID
+            const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
+            if (sharedIndex) {
+                const tenant = security.getTenant();
+                must.push({ term: { "tenant.keyword": tenant.id } });
+            }
+
             const response = await context.elasticSearch.search({
                 ...esDefaults,
                 body: {
                     query: {
-                        term: { "locale.keyword": i18nContent.locale.code }
+                        bool: {
+                            must: must
+                        }
                     },
                     size: 0,
                     aggs: {

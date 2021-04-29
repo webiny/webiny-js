@@ -5,7 +5,7 @@ import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { ElasticSearchClientContext } from "@webiny/api-plugin-elastic-search-client/types";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
-import { I18NContext } from "@webiny/api-i18n/graphql/types";
+import { I18NContext } from "@webiny/api-i18n/types";
 
 type FbFormTriggerData = Record<string, any>;
 type FbSubmissionData = Record<string, any>;

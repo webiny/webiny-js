@@ -210,13 +210,22 @@ const plugin: ContextPlugin<PbContext> = {
                     // In that case, this is searching over an index that doesn't exist, and throws an error.
                     // So for that case, if the error is `index_not_found_exception`, then let's just ignore it.
                     try {
+                        const filter: any = [{ term: { "category.keyword": category.slug } }];
+
+                        // When ES index is shared between tenants, we need to filter records by tenant ID
+                        const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
+                        if (sharedIndex) {
+                            const tenant = context.security.getTenant();
+                            filter.push({ term: { "tenant.keyword": tenant.id } });
+                        }
+
                         const response = await context.elasticSearch.search({
                             ...ES_DEFAULTS(),
                             body: {
                                 size: 1,
                                 query: {
                                     bool: {
-                                        filter: [{ term: { "category.keyword": category.slug } }]
+                                        filter
                                     }
                                 }
                             }

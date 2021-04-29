@@ -29,7 +29,9 @@ export default {
             throw new Error("Tenant missing.");
         }
 
-        const index = tenant.id + "-page-builder";
+        const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
+        const index = `${sharedIndex ? "root" : tenant.id}-page-builder`;
+
         const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX;
         if (prefix) {
             return { index: prefix + index };

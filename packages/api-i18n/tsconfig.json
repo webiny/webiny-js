@@ -31,6 +31,7 @@
   ],
   "compilerOptions": {
     "paths": {
+      "~/*": ["./src/*"],
       "@webiny/api-security/*": ["../api-security/src/*"],
       "@webiny/api-security": ["../api-security/src"],
       "@webiny/api-security-tenancy/*": ["../api-security-tenancy/src/*"],

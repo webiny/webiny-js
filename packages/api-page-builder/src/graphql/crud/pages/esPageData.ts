@@ -3,6 +3,7 @@ import { PbContext } from "../../types";
 export const getESPageData = (context: PbContext, page) => {
     return {
         __type: "page",
+        tenant: context.security.getTenant().id,
         webinyVersion: context.WEBINY_VERSION,
         id: page.id,
         pid: page.pid,
