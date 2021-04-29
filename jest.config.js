@@ -91,6 +91,7 @@ const projects = allWorkspaces()
         if (!hasConfig && !setup) {
             return collection;
         }
+        // we need to filter out the packages that do not match required keywords, if any
         const keywords = getPackageKeywords(pkg);
         if (!isPackageAllowed(keywords)) {
             return collection;
@@ -98,15 +99,23 @@ const projects = allWorkspaces()
 
         if (setup && (Array.isArray(setup) === true || setup["0"] !== undefined)) {
             for (const key in setup) {
-                const name = createPackageName(setup[key].name);
                 if (!setup.hasOwnProperty(key)) {
                     continue;
                 }
+                const subPackage = setup[key];
+                // we need to filter out the subpackage as well
+                if (!isPackageAllowed(subPackage.keywords)) {
+                    continue;
+                }
+                // keywords does not exist in jest config so remove it
+                // there will be error if not removed
+                delete subPackage["keywords"];
+                const name = createPackageName(subPackage.name);
                 collection.push({
-                    ...setup[key],
+                    ...subPackage,
                     name: name,
                     displayName: name,
-                    rootDir: setup[key].rootDir || pkg
+                    rootDir: subPackage.rootDir || pkg
                 });
             }
             return collection;

@@ -8,6 +8,7 @@ module.exports = items.map(item => {
     return {
         ...base({ path: __dirname }, item.presets),
         name: item.name,
-        displayName: item.name
+        displayName: item.name,
+        keywords: item.package.keywords
     };
 });
