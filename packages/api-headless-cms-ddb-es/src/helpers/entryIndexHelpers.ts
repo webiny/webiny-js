@@ -1,4 +1,4 @@
-import lodashCloneDeep from "lodash/cloneDeep";
+import lodashCloneDeep from "lodash.clonedeep";
 import Error from "@webiny/error";
 import {
     CmsContentEntry,

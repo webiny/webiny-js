@@ -1,5 +1,5 @@
 import richTextIndexing from "../../../../src/elasticsearch/indexing/richTextIndexing";
-import cloneDeep from "lodash/cloneDeep";
+import lodashCloneDeep from "lodash.clonedeep";
 import {
     CmsContentEntry,
     CmsContentModelField,
@@ -70,9 +70,9 @@ describe("richTextIndexing", () => {
         const plugin = richTextIndexing();
 
         const result = plugin.toIndex({
-            toIndexEntry: cloneDeep(mockInputEntry) as any,
-            originalEntry: cloneDeep(mockInputEntry) as any,
-            storageEntry: cloneDeep(mockInputEntry) as any,
+            toIndexEntry: lodashCloneDeep(mockInputEntry) as any,
+            originalEntry: lodashCloneDeep(mockInputEntry) as any,
+            storageEntry: lodashCloneDeep(mockInputEntry) as any,
             field: mockField,
             model: mockModel,
             context: mockContext,
@@ -86,7 +86,7 @@ describe("richTextIndexing", () => {
     test("fromIndex should return transformed objects", () => {
         const plugin = richTextIndexing();
         const result = plugin.fromIndex({
-            entry: cloneDeep(mockIndexedEntry) as any,
+            entry: lodashCloneDeep(mockIndexedEntry) as any,
             field: mockField,
             model: mockModel,
             context: mockContext,

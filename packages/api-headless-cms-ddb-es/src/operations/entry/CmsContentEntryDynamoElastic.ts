@@ -1,6 +1,6 @@
 import WebinyError from "@webiny/error";
-import cloneDeep from "lodash/cloneDeep";
-import omit from "lodash/omit";
+import lodashCloneDeep from "lodash.clonedeep";
+import lodashOmit from "lodash.omit";
 import { DataLoadersHandler } from "./dataLoaders";
 import {
     CmsContentEntry,
@@ -41,7 +41,7 @@ export const TYPE_ENTRY_PUBLISHED = TYPE_ENTRY + ".p";
 
 const getEntryData = (context: CmsContext, entry: CmsContentEntry) => {
     return {
-        ...omit(entry, ["PK", "SK", "published", "latest"]),
+        ...lodashOmit(entry, ["PK", "SK", "published", "latest"]),
         webinyVersion: context.WEBINY_VERSION,
         __type: TYPE_ENTRY
     };
@@ -103,8 +103,8 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         const esEntry = prepareEntryToIndex({
             context: this.context,
             model,
-            originalEntry: cloneDeep(data),
-            storageEntry: cloneDeep(storageEntry)
+            originalEntry: lodashCloneDeep(data),
+            storageEntry: lodashCloneDeep(storageEntry)
         });
 
         const { index: esIndex } = configurations.es(this.context, model);
@@ -178,8 +178,8 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         const esEntry = prepareEntryToIndex({
             context: this.context,
             model,
-            originalEntry: cloneDeep(data),
-            storageEntry: cloneDeep(storageData)
+            originalEntry: lodashCloneDeep(data),
+            storageEntry: lodashCloneDeep(storageData)
         });
         const { index: esIndex } = configurations.es(this.context, model);
 
@@ -379,8 +379,8 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
             const esEntry = prepareEntryToIndex({
                 context: this.context,
                 model,
-                originalEntry: cloneDeep(originalEntry),
-                storageEntry: cloneDeep(entryRevisionToSetAsLatest)
+                originalEntry: lodashCloneDeep(originalEntry),
+                storageEntry: lodashCloneDeep(entryRevisionToSetAsLatest)
             });
             /**
              * In the end we need to set the new latest entry
@@ -527,8 +527,8 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
             const esEntry = prepareEntryToIndex({
                 context: this.context,
                 model,
-                originalEntry: cloneDeep(originalEntry),
-                storageEntry: cloneDeep(data)
+                originalEntry: lodashCloneDeep(originalEntry),
+                storageEntry: lodashCloneDeep(data)
             });
             const esDoc = {
                 ...esEntry,
