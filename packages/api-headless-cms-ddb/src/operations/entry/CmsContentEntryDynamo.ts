@@ -21,7 +21,6 @@ import {
 } from "@webiny/api-headless-cms/types";
 import configurations from "../../configurations";
 import { zeroPad } from "@webiny/api-headless-cms/utils";
-import lodashSortBy from "lodash.sortby";
 import {
     createBasePartitionKey,
     decodePaginationCursor,
@@ -30,7 +29,7 @@ import {
 import { entryToStorageTransform } from "@webiny/api-headless-cms/transformers";
 import { Entity, Table } from "dynamodb-toolbox";
 import { getDocumentClient, getTable } from "../helpers";
-import { createFilters } from "./filters";
+import { createFilters, sortEntryItems } from "./utils";
 import { queryOptions as DDBToolboxQueryOptions } from "dynamodb-toolbox/dist/classes/Table";
 import { FilterExpressions } from "dynamodb-toolbox/dist/lib/expressionBuilder";
 
@@ -48,34 +47,6 @@ interface GetSingleDynamoDBItemArgs {
     op?: "eq" | "lt" | "lte" | "gt" | "gte" | "between" | "beginsWith";
     order?: string;
 }
-
-const sortEntryItems = (items: CmsContentEntry[], sortBy: string[]): void => {
-    if (!sortBy || sortBy.length === 0) {
-        return;
-    }
-    if (sortBy.length > 1) {
-        throw new WebinyError("Sorting is limited to a single field", "SORT_ERROR", {
-            sort: sortBy
-        });
-    }
-    const [sort] = sortBy;
-    const r = sort.split("_");
-    if (r.length !== 2) {
-        throw new WebinyError(
-            "Problem in determining the sorting for the entry items.",
-            "SORT_ERROR",
-            {
-                sort
-            }
-        );
-    }
-    const [field, order = "ASC"] = r;
-    lodashSortBy(items, field);
-    if (order !== "DESC") {
-        return;
-    }
-    items.reverse();
-};
 
 /**
  * We do not use transactions in this storage operations implementation due to their cost.
@@ -423,7 +394,11 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             });
         }
 
-        sortEntryItems(items, sort);
+        sortEntryItems({
+            model,
+            items,
+            sort
+        });
 
         const hasMoreItems = items.length > limit;
         const start = decodePaginationCursor(after) || 0;

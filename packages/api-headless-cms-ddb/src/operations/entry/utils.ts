@@ -1,7 +1,9 @@
-import { CmsContentModel, CmsContext } from "@webiny/api-headless-cms/types";
+import { CmsContentEntry, CmsContentModel, CmsContext } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
+import lodashSortBy from "lodash.sortby";
 
 const defaultSystemFields = ["id", "createdOn", "savedOn", "createdBy", "ownedBy"];
+const VALUES_ATTRIBUTE = "values";
 
 const createOperation = (operation: string | null | undefined, value: any): Record<string, any> => {
     if (!operation) {
@@ -39,11 +41,10 @@ interface ExtractArgs {
     key: string;
     fields: string[];
     systemFields: string[];
-    parent: string;
     value: any;
 }
-const extract = (args: ExtractArgs): Record<string, any> => {
-    const { key, fields, systemFields, parent, value } = args;
+const extractFilter = (args: ExtractArgs): Record<string, any> => {
+    const { key, fields, systemFields, value } = args;
     const [attr, rawOp = "eq"] = key.split("_", 1);
     const isSystemField = systemFields.includes(attr);
     if (fields.includes(attr) === false && !isSystemField) {
@@ -60,7 +61,7 @@ const extract = (args: ExtractArgs): Record<string, any> => {
     }
     const operation = createOperation(rawOp, value);
     return {
-        attr: isSystemField ? attr : `${parent}.${attr}`,
+        attr: isSystemField ? attr : `${VALUES_ATTRIBUTE}.${attr}`,
         ...operation
     };
 };
@@ -85,15 +86,74 @@ export const createFilters = (args: CreateFiltersArgs): any[] | undefined => {
             return filters;
         }
 
-        const filter = extract({
+        const filter = extractFilter({
             key,
             systemFields: defaultSystemFields,
             fields,
-            parent: "values",
             value
         });
 
         filters.push(filter);
         return filters;
     }, []);
+};
+
+const extractSort = (sortBy: string, fields: string[]): { field: string; reverse: boolean } => {
+    const result = sortBy.split("_");
+    if (result.length !== 2) {
+        throw new WebinyError(
+            "Problem in determining the sorting for the entry items.",
+            "SORT_ERROR",
+            {
+                sortBy
+            }
+        );
+    }
+    const [field, order] = result;
+
+    const isSystemField = defaultSystemFields.includes(field);
+    if (fields.includes(field) === false && !isSystemField) {
+        throw new WebinyError(
+            "Sorting field does not exist in the content model.",
+            "SORTING_FIELD_ERROR",
+            {
+                field,
+                fields
+            }
+        );
+    }
+    return {
+        field: isSystemField ? field : `${VALUES_ATTRIBUTE}.${field}`,
+        reverse: order === "DESC"
+    };
+};
+interface SortEntryItemsArgs {
+    model: CmsContentModel;
+    items: CmsContentEntry[];
+    sort: string[];
+}
+export const sortEntryItems = (args: SortEntryItemsArgs): void => {
+    const { model, items, sort } = args;
+    if (!sort || sort.length === 0) {
+        return;
+    }
+    if (sort.length > 1) {
+        throw new WebinyError("Sorting is limited to a single field", "SORT_ERROR", {
+            sort: sort
+        });
+    }
+    const [firstSort] = sort;
+    if (!firstSort) {
+        throw new WebinyError("Empty sort array item.", "SORT_ERROR", {
+            sort
+        });
+    }
+    const fields = defaultSystemFields.concat(model.fields.map(field => field.fieldId));
+
+    const { field, reverse } = extractSort(firstSort, fields);
+    lodashSortBy(items, field);
+    if (!reverse) {
+        return;
+    }
+    items.reverse();
 };
