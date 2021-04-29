@@ -34,3 +34,5 @@ export interface SecurityContextBase {
 export interface SecurityContext extends ContextInterface {
     security: SecurityContextBase;
 }
+
+export type FullAccessPermission = { name: "*" };
