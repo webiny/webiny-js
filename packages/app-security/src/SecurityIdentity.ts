@@ -35,15 +35,15 @@ export class SecurityIdentity {
         this.permissions = permissions;
     }
 
-    getPermission(permission): SecurityPermission {
+    getPermission(name: string): SecurityPermission {
         const perms = this.permissions || [];
-        const exactMatch = perms.find(p => p.name === permission);
+        const exactMatch = perms.find(p => p.name === name);
         if (exactMatch) {
             return exactMatch;
         }
 
         // Try matching using patterns
-        return perms.find(p => minimatch(permission, p.name));
+        return perms.find(p => minimatch(name, p.name));
     }
 
     logout() {
