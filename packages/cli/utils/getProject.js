@@ -1,12 +1,16 @@
 const findUp = require("find-up");
 const { dirname } = require("path");
+const { importModule } = require("./importModule");
+
+const projectConfigs = ["webiny.project.js", "webiny.project.ts"];
 
 function getRoot({ cwd } = {}) {
-    let root = findUp.sync("webiny.project.js", { cwd });
+    let root = findUp.sync(projectConfigs, { cwd });
     if (root) {
         return dirname(root);
     }
 
+    // For backwards compatibility
     root = findUp.sync("webiny.root.js", { cwd });
     if (root) {
         return dirname(root);
@@ -16,9 +20,9 @@ function getRoot({ cwd } = {}) {
 }
 
 function getConfig({ cwd } = {}) {
-    let path = findUp.sync("webiny.project.js", { cwd });
+    let path = findUp.sync(projectConfigs, { cwd });
     if (path) {
-        return require(path);
+        return importModule(path);
     }
 
     path = findUp.sync("webiny.root.js", { cwd });

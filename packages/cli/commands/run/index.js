@@ -1,6 +1,5 @@
-const path = require("path");
-const fs = require("fs-extra");
 const camelCase = require("camelcase");
+const findUp = require("find-up");
 
 module.exports = {
     type: "cli-command",
@@ -8,26 +7,23 @@ module.exports = {
     create({ yargs, context }) {
         yargs.command(
             "run <command> [options]",
-            `Run command defined in webiny.config.js.\nNote: run from folder containing webiny.config.js file.`,
+            `Run command defined in webiny.config.{js,ts}.\nNote: run from folder containing webiny.config.{js,ts} file.`,
             yargs => {
                 yargs.positional("command", {
-                    describe: `Command to run in webiny.config.js`,
+                    describe: `Command to run in webiny.config.{js,ts}`,
                     type: "string"
                 });
             },
             async argv => {
-                const webinyConfig = path.resolve("webiny.config.js");
-                if (fs.existsSync(webinyConfig)) {
-                    const config = require(webinyConfig);
-                    const command = camelCase(argv.command);
-                    if (config.commands && typeof config.commands[command] === "function") {
-                        return await config.commands[command]({ ...argv }, context);
-                    }
-
-                    throw Error(`Command "${command}" is not defined in "webiny.config.js"!`);
+                const configFile = findUp.sync(["webiny.config.ts", "webiny.config.js"]);
+                const config = context.import(configFile);
+                
+                const command = camelCase(argv.command);
+                if (config.commands && typeof config.commands[command] === "function") {
+                    return await config.commands[command]({ ...argv }, context);
                 }
 
-                throw Error(`"webiny.config.js" does not exist in current directory!`);
+                throw Error(`Command "${command}" is not defined in "${configFile}"!`);
             }
         );
     }
