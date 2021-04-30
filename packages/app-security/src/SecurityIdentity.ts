@@ -1,6 +1,5 @@
 import minimatch from "minimatch";
-
-export type SecurityPermission = { name: string; [key: string]: any };
+import { SecurityPermission } from "./types";
 
 export type SecurityIdentityData = {
     login: string;

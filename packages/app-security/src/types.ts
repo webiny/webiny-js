@@ -5,3 +5,5 @@ export type SecureRouteErrorPlugin = Plugin & {
 };
 
 export type FullAccessPermission = { name: "*" };
+
+export type SecurityPermission = { name: string; [key: string]: any };
