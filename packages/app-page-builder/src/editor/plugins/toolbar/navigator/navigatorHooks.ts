@@ -7,7 +7,7 @@ import { MoveBlockActionEvent } from "~/editor/recoil/actions";
 import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
 import { DraggableItem } from "~/editor/components/Draggable";
 
-const BLOCK = "block";
+export const BLOCK = "block";
 
 export const useMoveBlock = elementId => {
     const rootElementId = useRecoilValue(rootElementAtom);
@@ -94,7 +94,7 @@ export const useSortableList = ({
     });
 
     const [{ isDragging }, drag, preview] = useDrag({
-        item: { type, target: [BLOCK], id, index } as DraggableItem,
+        item: { type, target: [BLOCK], id, index, dragInNavigator: true } as DraggableItem,
         collect: monitor => ({
             isDragging: monitor.isDragging()
         }),
