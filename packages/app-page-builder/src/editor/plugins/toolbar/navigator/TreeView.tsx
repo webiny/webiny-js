@@ -9,7 +9,7 @@ import { useVisibilitySetting } from "~/editor/plugins/elementSettings/visibilit
 import { ElementTypeContainer } from "./StyledComponents";
 import CollapsableList from "./CollapsableList";
 import DragBlockIndicator from "./DragBlockIndicator";
-import { useMoveBlock, useSortableList } from "./navigatorHooks";
+import { BLOCK, useMoveBlock, useSortableList } from "./navigatorHooks";
 import { NavigatorContext } from "./Navigator";
 
 const ElementVisibilityAction = ({ elementId }: { elementId: string }) => {
@@ -24,6 +24,19 @@ const ElementVisibilityAction = ({ elementId }: { elementId: string }) => {
     );
 };
 
+const getStyles = ({ isOver, elementType }: { isOver: boolean; elementType: string }) => {
+    const contentStyle = isOver && elementType !== BLOCK ? { opacity: 0.5 } : { opacity: 1 };
+    const headerStyle =
+        isOver && elementType === BLOCK
+            ? { ...contentStyle, backgroundColor: "var(--mdc-theme-secondary)" }
+            : { ...contentStyle };
+
+    return {
+        contentStyle,
+        headerStyle
+    };
+};
+
 const TreeViewItem = ({ element, level, children, index }) => {
     const elementId = element.id;
     const { displayMode } = useRecoilValue(uiAtom);
@@ -34,7 +47,7 @@ const TreeViewItem = ({ element, level, children, index }) => {
     const { move } = useMoveBlock(elementId);
     const { refresh } = useContext(NavigatorContext);
     // Use "Drag&Drop"
-    const { ref: dragAndDropRef, handlerId, isDragging, isOver } = useSortableList({
+    const { ref: dragAndDropRef, handlerId, isOver } = useSortableList({
         move,
         id: elementId,
         index,
@@ -75,15 +88,7 @@ const TreeViewItem = ({ element, level, children, index }) => {
     }, [elementId]);
 
     const hidden = get(elementData, `settings.visibility.${displayMode}.hidden`, false);
-    const contentStyles = isDragging ? { opacity: 0.5 } : { opacity: 1 };
-
-    let headerStyle = {};
-    if (isOver && element.type === "block") {
-        headerStyle = { backgroundColor: "rgb(204,229,255)" };
-    }
-    if (isOver && element.type !== "block") {
-        headerStyle = { backgroundColor: "var(--mdc-theme-error)", opacity: "0.5" };
-    }
+    const { contentStyle, headerStyle } = getStyles({ isOver, elementType: element.type });
 
     return (
         <CollapsableList
@@ -105,7 +110,7 @@ const TreeViewItem = ({ element, level, children, index }) => {
             }
             disableAction={element.elements.length <= 0}
             active={activeElement === elementId}
-            style={contentStyles}
+            style={contentStyle}
             headerStyle={headerStyle}
         >
             {children}
