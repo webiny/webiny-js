@@ -1,17 +1,25 @@
 import * as React from "react";
 import { useSecurity } from "..";
+import { SecurityPermission } from "../types";
 
 let warned = false;
 
-export default ({
+interface ChildrenRenderFunctionArgs<T extends SecurityPermission> {
+    hasPermission: boolean;
+    permission: T;
+}
+
+interface Props<T extends SecurityPermission> {
+    children: ((args: ChildrenRenderFunctionArgs<T>) => React.ReactElement) | React.ReactElement;
+    scopes?: string[];
+    permission?: string;
+}
+
+function SecureView<T extends SecurityPermission>({
     children,
     scopes,
     permission
-}: {
-    children: any;
-    scopes?: string[];
-    permission?: string;
-}): React.ReactElement => {
+}: Props<T>): React.ReactElement {
     if (!permission && scopes) {
         !warned &&
             console.warn(
@@ -24,7 +32,7 @@ export default ({
     }
 
     const { identity } = useSecurity();
-    const matchedPermission = identity.getPermission(permission);
+    const matchedPermission = identity.getPermission<T>(permission);
 
     const hasPermission = Boolean(matchedPermission);
 
@@ -33,4 +41,6 @@ export default ({
     }
 
     return hasPermission ? children : null;
-};
+}
+
+export default SecureView;
