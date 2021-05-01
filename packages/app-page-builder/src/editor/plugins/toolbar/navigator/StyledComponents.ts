@@ -63,6 +63,7 @@ export const Collapsable = styled("div")(`
     
     .collapsable__header-icon {
         width: 16px;
+        height: 16px;
         padding: 0px 16px;
         color: var(--mdc-theme-text-secondary-on-background);
         cursor: pointer;
