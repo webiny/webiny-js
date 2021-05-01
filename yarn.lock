@@ -8173,6 +8173,7 @@ __metadata:
     dataurl-to-blob: ^0.0.1
     dot-prop-immutable: ^1.4.0
     emotion: ^10.0.17
+    execa: ^5.0.0
     graphql: ^14.7.0
     graphql-tag: ^2.10.1
     invariant: ^2.2.4
