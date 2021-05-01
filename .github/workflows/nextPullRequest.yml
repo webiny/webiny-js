@@ -42,8 +42,7 @@ jobs:
         run: yarn --immutable
 
       - name: Build packages
-        if: steps.cached-packages.outputs.cache-hit != 'true'
-        run: node scripts/buildWithCache.js
+        run: yarn lerna run build --stream
 
   code-analysis:
     needs: cache-dependencies-packages
