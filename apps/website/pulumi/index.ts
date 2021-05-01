@@ -19,7 +19,7 @@ export = async () => {
         appId: app.cloudfront.id,
         appStorage: app.bucket.id,
         appUrl: app.cloudfront.domainName.apply(value => `https://${value}`),
-        // These are the Cloudfront and S3 bucket that will deliver static pages to the actual website visitors. 
+        // These are the Cloudfront and S3 bucket that will deliver static pages to the actual website visitors.
         // The static HTML snapshots delivered from them still rely on the app's S3 bucket
         // defined above, for serving static assets (JS, CSS, images).
         deliveryId: delivery.cloudfront.id,
