@@ -65,10 +65,10 @@ class Context {
     async loadUserPlugins() {
         if (this.project.config.cli) {
             let plugins = this.project.config.cli.plugins || [];
-            if(typeof plugins === "function") {
+            if (typeof plugins === "function") {
                 plugins = await plugins();
             }
-            
+
             this.plugins.register(
                 ...plugins.map(plugin => {
                     if (typeof plugin === "string") {

@@ -17,7 +17,7 @@ module.exports = {
             async argv => {
                 const configFile = findUp.sync(["webiny.config.ts", "webiny.config.js"]);
                 const config = context.import(configFile);
-                
+
                 const command = camelCase(argv.command);
                 if (config.commands && typeof config.commands[command] === "function") {
                     return await config.commands[command]({ ...argv }, context);
