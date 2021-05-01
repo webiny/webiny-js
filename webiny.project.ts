@@ -2,6 +2,12 @@ export default {
     name: "webiny-js",
     cli: {
         plugins: async () => {
+            /**
+             * In webiny-js repo, we need to handle cases when packages are not yet built.
+             * Imports of those packages will fail, and we need to handle it gracefully.
+             * Using `Promise.allSettled` we get all promises back, and can filter based on the 
+             * their status. Even if all imports fail, it is ok to continue with process execution.
+             */
             const modules = await Promise.allSettled([
                 import("@webiny/cli-plugin-workspaces"),
                 import("@webiny/cli-plugin-deploy-pulumi"),

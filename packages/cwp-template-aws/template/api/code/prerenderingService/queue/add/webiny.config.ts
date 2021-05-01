@@ -1,13 +1,13 @@
-const { buildFunction, watchFunction } = require("@webiny/project-utils");
+import { buildFunction, watchFunction } from "@webiny/project-utils";
 
-module.exports = {
+export default {
     commands: {
         build(options, context) {
             return buildFunction(
                 {
                     ...options,
                     webpack(config) {
-                        config.externals.push("chrome-aws-lambda");
+                        (config.externals as any).push("chrome-aws-lambda");
                         return config;
                     }
                 },
@@ -19,7 +19,7 @@ module.exports = {
                 {
                     ...options,
                     webpack(config) {
-                        config.externals.push("chrome-aws-lambda");
+                        (config.externals as any).push("chrome-aws-lambda");
                         return config;
                     }
                 },

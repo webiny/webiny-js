@@ -3,7 +3,7 @@
  * https://www.webiny.com/docs/key-topics/cloud-infrastructure/website/introduction
  */
 
-module.exports = {
+export default {
     id: "website",
     name: "Website",
     description: "Your project's public website.",
