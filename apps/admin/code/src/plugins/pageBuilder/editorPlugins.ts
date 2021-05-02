@@ -38,6 +38,7 @@ import gridBlock from "@webiny/app-page-builder/editor/plugins/blocks/gridBlock"
 import blocksCategories from "@webiny/app-page-builder/editor/plugins/blocksCategories";
 // Toolbar
 import addElement from "@webiny/app-page-builder/editor/plugins/toolbar/addElement";
+import navigator from "@webiny/app-page-builder/editor/plugins/toolbar/navigator";
 import saving from "@webiny/app-page-builder/editor/plugins/toolbar/saving";
 import { undo, redo } from "@webiny/app-page-builder/editor/plugins/toolbar/undoRedo";
 // Element settings
@@ -57,6 +58,7 @@ import save from "@webiny/app-page-builder/editor/plugins/elementSettings/save";
 import link from "@webiny/app-page-builder/editor/plugins/elementSettings/link";
 import gridSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/grid";
 import textSettings from "@webiny/app-page-builder/editor/plugins/elementSettings/text";
+import visibility from "@webiny/app-page-builder/editor/plugins/elementSettings/visibility";
 // Default bar
 import defaultBarPlugins from "@webiny/app-page-builder/editor/plugins/defaultBar";
 // Responsive editor mode
@@ -112,6 +114,7 @@ export default [
     blocksCategories,
     // Toolbar
     addElement,
+    navigator(),
     saving,
     undo,
     redo,
@@ -132,6 +135,7 @@ export default [
     link,
     gridSettings,
     textSettings,
+    visibility,
     // Default bar
     defaultBarPlugins,
     // Responsive editor mode
