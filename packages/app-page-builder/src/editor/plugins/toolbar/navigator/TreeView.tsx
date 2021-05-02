@@ -28,7 +28,11 @@ const getStyles = ({ isOver, elementType }: { isOver: boolean; elementType: stri
     const contentStyle = isOver && elementType !== BLOCK ? { opacity: 0.5 } : { opacity: 1 };
     const headerStyle =
         isOver && elementType === BLOCK
-            ? { ...contentStyle, backgroundColor: "var(--mdc-theme-secondary)" }
+            ? {
+                  ...contentStyle,
+                  backgroundColor: "rgba(0,204,176,0.6)",
+                  color: "var(--mdc-theme-surface)"
+              }
             : { ...contentStyle };
 
     return {

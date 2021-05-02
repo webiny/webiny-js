@@ -26,6 +26,7 @@ export const ElementTypeContainer = styled("div")(`
     }
     
     svg.drag-indicator {
+        fill: currentColor;
         cursor: move;
         width: 20px;
         height: 20px;
@@ -52,6 +53,7 @@ export const Collapsable = styled("div")(`
     }
     
     .collapsable__header-action {
+        color: currentColor;
         border: none;
         background-color: transparent;
         margin-right: 5px;
@@ -83,7 +85,7 @@ export const Collapsable = styled("div")(`
 export const ArrowRight = styled("div")(`
     width: 0;
     height: 0; 
-    border-left: 5px solid black;
+    border-left: 5px solid currentColor;
     border-top: 5px solid transparent;
     border-bottom: 5px solid transparent;
     
