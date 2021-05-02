@@ -11,6 +11,7 @@ type CollapsableListProps = {
     active: boolean;
     style?: React.CSSProperties;
     headerStyle?: React.CSSProperties;
+    inActivePath: boolean;
 };
 
 const CollapsableList = ({
@@ -20,7 +21,8 @@ const CollapsableList = ({
     disableAction,
     active,
     style,
-    headerStyle
+    headerStyle,
+    inActivePath
 }: CollapsableListProps) => {
     const [isOpen, setOpen] = useState(true);
     const { expandAll } = useContext(NavigatorContext);
@@ -29,6 +31,12 @@ const CollapsableList = ({
     useEffect(() => {
         setOpen(expandAll);
     }, [expandAll]);
+    // Open list item if it's in active path
+    useEffect(() => {
+        if (inActivePath) {
+            setOpen(true);
+        }
+    }, [inActivePath]);
 
     return (
         <Collapsable className="collapsable" style={style}>

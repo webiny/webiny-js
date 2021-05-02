@@ -11,14 +11,12 @@ import { UpdateElementTreeActionEvent } from "~/editor/recoil/actions";
 
 const t = i18n.ns("app-page-builder/editor/plugins/toolbar/navigator");
 
-export const NavigatorContext = createContext({
-    refresh: () => null,
-    expandAll: false
-});
+export const NavigatorContext = createContext(null);
 
 const Navigator = () => {
     const [elementTree, setElementTree] = useState(null);
     const [expandAll, setExpandAll] = useState(false);
+    const [activeElementPath, setActiveElementPath] = useState([]);
     const eventHandler = useEventActionHandler();
 
     const refreshElementTree = async () => {
@@ -47,7 +45,14 @@ const Navigator = () => {
     });
 
     return (
-        <NavigatorContext.Provider value={{ refresh: refreshElementTree, expandAll }}>
+        <NavigatorContext.Provider
+            value={{
+                refresh: refreshElementTree,
+                expandAll,
+                activeElementPath,
+                setActiveElementPath
+            }}
+        >
             <NavigatorTitle>
                 <Typography use={"subtitle1"}>Navigator</Typography>
                 <button

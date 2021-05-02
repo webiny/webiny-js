@@ -1,4 +1,4 @@
-import React, { useCallback, useContext } from "react";
+import React, { useCallback, useContext, useEffect } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import get from "lodash/get";
 import { Typography } from "@webiny/ui/Typography";
@@ -44,8 +44,8 @@ const TreeViewItem = ({ element, level, children, index }) => {
     const [{ isHighlighted, data: elementData }, setElementAtomValue] = useRecoilState(
         elementByIdSelector(elementId)
     );
+    const { refresh, activeElementPath, setActiveElementPath } = useContext(NavigatorContext);
     const { move } = useMoveBlock(elementId);
-    const { refresh } = useContext(NavigatorContext);
     // Use "Drag&Drop"
     const { ref: dragAndDropRef, handlerId, isOver } = useSortableList({
         move,
@@ -56,6 +56,12 @@ const TreeViewItem = ({ element, level, children, index }) => {
             refresh();
         }
     });
+    // Set active element path in context.
+    useEffect(() => {
+        if (activeElement === elementId) {
+            setActiveElementPath(element.path);
+        }
+    }, [activeElement, elementId]);
 
     const onMouseOver = useCallback(
         (ev): void => {
@@ -110,6 +116,7 @@ const TreeViewItem = ({ element, level, children, index }) => {
             }
             disableAction={element.elements.length <= 0}
             active={activeElement === elementId}
+            inActivePath={activeElementPath.includes(elementId)}
             style={contentStyle}
             headerStyle={headerStyle}
         >
