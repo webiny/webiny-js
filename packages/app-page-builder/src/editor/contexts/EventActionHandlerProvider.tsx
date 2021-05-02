@@ -153,9 +153,12 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
         return snapshot;
     });
 
-    const getElementTree = async element => {
+    const getElementTree = async (element, path = []) => {
         if (!element) {
             element = await getElementById(rootElementAtomValue);
+        }
+        if (element.parent) {
+            path.push(element.parent);
         }
         return {
             id: element.id,
@@ -163,9 +166,10 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
             data: element.data,
             elements: await Promise.all(
                 element.elements.map(async child => {
-                    return getElementTree(await getElementById(child));
+                    return getElementTree(await getElementById(child), [...path]);
                 })
-            )
+            ),
+            path
         };
     };
 
