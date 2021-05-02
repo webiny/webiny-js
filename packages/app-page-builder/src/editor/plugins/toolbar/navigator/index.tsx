@@ -15,23 +15,24 @@ const drawerClassName = css({
     }
 });
 
-export default {
-    name: "pb-editor-toolbar-navigator",
-    type: "pb-editor-toolbar-top",
-    renderAction() {
-        return (
-            <Action
-                tooltip={"Navigator"}
-                plugin={this.name}
-                icon={<NavigatorIcon />}
-                closeOtherInGroup={true}
-            />
-        );
-    },
-    renderDrawer() {
-        return <Navigator />;
-    },
-    toolbar: {
-        drawerClassName
-    }
-} as PbEditorToolbarTopPlugin;
+export default () =>
+    ({
+        name: "pb-editor-toolbar-navigator",
+        type: "pb-editor-toolbar-top",
+        renderAction() {
+            return (
+                <Action
+                    tooltip={"Navigator"}
+                    plugin={this.name}
+                    icon={<NavigatorIcon />}
+                    closeOtherInGroup={true}
+                />
+            );
+        },
+        renderDrawer() {
+            return <Navigator />;
+        },
+        toolbar: {
+            drawerClassName
+        }
+    } as PbEditorToolbarTopPlugin);
