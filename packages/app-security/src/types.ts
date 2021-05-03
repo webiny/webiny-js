@@ -4,6 +4,11 @@ export type SecureRouteErrorPlugin = Plugin & {
     render(): React.ReactElement;
 };
 
-export type FullAccessPermission = { name: "*" };
+export interface FullAccessPermission {
+    name: "*";
+}
 
-export type SecurityPermission = { name: string; [key: string]: any };
+export interface SecurityPermission {
+    name: string;
+    [key: string]: any;
+}
