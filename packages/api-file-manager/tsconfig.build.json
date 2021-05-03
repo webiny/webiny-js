@@ -14,7 +14,8 @@
     "../validation",
     "../api-i18n-content",
     "../api-plugin-elastic-search-client",
-    "../api-dynamodb-to-elasticsearch"
+    "../api-dynamodb-to-elasticsearch",
+    "../api-i18n"
   ],
   "compilerOptions": {
     "rootDir": "./src",

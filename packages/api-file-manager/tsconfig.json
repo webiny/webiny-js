@@ -34,6 +34,9 @@
     },
     {
       "path": "../api-dynamodb-to-elasticsearch"
+    },
+    {
+      "path": "../api-i18n"
     }
   ],
   "compilerOptions": {
