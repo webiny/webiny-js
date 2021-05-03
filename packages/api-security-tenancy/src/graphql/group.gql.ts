@@ -1,5 +1,4 @@
 import deepEqual from "deep-equal";
-import { hasPermission } from "@webiny/api-security";
 import {
     ErrorResponse,
     ListErrorResponse,
@@ -7,14 +6,13 @@ import {
     NotFoundResponse,
     Response
 } from "@webiny/handler-graphql/responses";
-import { GroupInput, TenancyContext } from "../types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { Context as HandlerContext } from "@webiny/handler/types";
 import { SecurityContext } from "@webiny/api-security/types";
+import NotAuthorizedResponse from "@webiny/api-security/NotAuthorizedResponse";
+import { GroupInput, TenancyContext } from "../types";
 
-type Context = HandlerContext<TenancyContext, SecurityContext>;
-
-const plugin: GraphQLSchemaPlugin = {
+const plugin: GraphQLSchemaPlugin<HandlerContext<TenancyContext, SecurityContext>> = {
     type: "graphql-schema",
     name: "graphql-schema-security-group",
     schema: {
@@ -64,127 +62,123 @@ const plugin: GraphQLSchemaPlugin = {
 
         resolvers: {
             SecurityQuery: {
-                getGroup: hasPermission("security.group")(
-                    async (_, { slug }: { slug: string }, context: Context) => {
-                        try {
-                            const tenant = context.security.getTenant();
-                            const group = await context.security.groups.getGroup(tenant, slug);
+                getGroup: async (_, { slug }: { slug: string }, context) => {
+                    const { security } = context;
+                    const permission = await security.getPermission("security.group");
 
-                            if (!group) {
-                                return new NotFoundResponse(
-                                    `Unable to find group with slug: ${slug}`
-                                );
-                            }
-
-                            return new Response(group);
-                        } catch (e) {
-                            return new ErrorResponse({
-                                message: e.message,
-                                code: e.code,
-                                data: e.data || null
-                            });
-                        }
+                    if (!permission) {
+                        return new NotAuthorizedResponse();
                     }
-                ),
-                listGroups: hasPermission("security.group")(async (_, args, context: Context) => {
+
                     try {
-                        const tenant = context.security.getTenant();
-                        const groupList = await context.security.groups.listGroups(tenant);
+                        const tenant = security.getTenant();
+                        const group = await security.groups.getGroup(tenant, slug);
+
+                        if (!group) {
+                            return new NotFoundResponse(`Unable to find group with slug: ${slug}`);
+                        }
+
+                        return new Response(group);
+                    } catch (e) {
+                        return new ErrorResponse(e);
+                    }
+                },
+                listGroups: async (_, args, context) => {
+                    const { security } = context;
+                    const permission = await security.getPermission("security.group");
+
+                    if (!permission) {
+                        return new NotAuthorizedResponse();
+                    }
+
+                    try {
+                        const tenant = security.getTenant();
+                        const groupList = await security.groups.listGroups(tenant);
 
                         return new ListResponse(groupList);
                     } catch (e) {
-                        return new ListErrorResponse({
-                            message: e.message,
-                            code: e.code,
-                            data: e.data || null
-                        });
+                        return new ListErrorResponse(e);
                     }
-                })
+                }
             },
             SecurityMutation: {
-                createGroup: hasPermission("security.group")(
-                    async (_, { data }: { data: GroupInput }, context: Context) => {
-                        try {
-                            const tenant = context.security.getTenant();
-                            const groupData = await context.security.groups.createGroup(
-                                tenant,
-                                data
-                            );
+                createGroup: async (_, { data }: { data: GroupInput }, context) => {
+                    const { security } = context;
+                    const permission = await security.getPermission("security.group");
 
-                            return new Response(groupData);
-                        } catch (e) {
-                            return new ErrorResponse({
-                                code: e.code,
-                                message: e.message,
-                                data: e.data
-                            });
-                        }
+                    if (!permission) {
+                        return new NotAuthorizedResponse();
                     }
-                ),
-                updateGroup: hasPermission("security.group")(
-                    async (
-                        _,
-                        { slug, data }: { slug: string; data: Omit<GroupInput, "slug" | "system"> },
-                        context: Context
-                    ) => {
-                        try {
-                            const tenant = context.security.getTenant();
-                            const existingGroup = await context.security.groups.getGroup(
-                                tenant,
-                                slug
-                            );
 
-                            if (!existingGroup) {
-                                return new NotFoundResponse(`Group "${slug}" was not found!`);
-                            }
+                    try {
+                        const tenant = security.getTenant();
+                        const groupData = await security.groups.createGroup(tenant, data);
 
-                            const permissionsChanged = !deepEqual(
-                                data.permissions,
-                                existingGroup.permissions
-                            );
-
-                            await context.security.groups.updateGroup(tenant, slug, data);
-                            Object.assign(existingGroup, data);
-
-                            if (permissionsChanged) {
-                                await context.security.groups.updateUserLinks(
-                                    tenant,
-                                    existingGroup
-                                );
-                            }
-
-                            return new Response(existingGroup);
-                        } catch (e) {
-                            return new ErrorResponse({
-                                code: e.code,
-                                message: e.message,
-                                data: e.data || null
-                            });
-                        }
+                        return new Response(groupData);
+                    } catch (e) {
+                        return new ErrorResponse(e);
                     }
-                ),
-                deleteGroup: hasPermission("security.group")(
-                    async (_, { slug }: { slug: string }, context: Context) => {
-                        try {
-                            const tenant = context.security.getTenant();
-                            const group = await context.security.groups.getGroup(tenant, slug);
+                },
+                updateGroup: async (
+                    _,
+                    { slug, data }: { slug: string; data: Omit<GroupInput, "slug" | "system"> },
+                    context
+                ) => {
+                    const { security } = context;
+                    const permission = await security.getPermission("security.group");
 
-                            if (!group) {
-                                return new NotFoundResponse(`Group "${slug}" was not found!`);
-                            }
-
-                            await context.security.groups.deleteGroup(tenant, slug);
-
-                            return new Response(true);
-                        } catch (e) {
-                            return new ErrorResponse({
-                                message: e.message,
-                                code: e.code,
-                                data: e.data || null
-                            });
-                        }
+                    if (!permission) {
+                        return new NotAuthorizedResponse();
                     }
-                )
+
+                    try {
+                        const tenant = security.getTenant();
+                        const existingGroup = await security.groups.getGroup(tenant, slug);
+
+                        if (!existingGroup) {
+                            return new NotFoundResponse(`Group "${slug}" was not found!`);
+                        }
+
+                        const permissionsChanged = !deepEqual(
+                            data.permissions,
+                            existingGroup.permissions
+                        );
+
+                        await security.groups.updateGroup(tenant, slug, data);
+                        Object.assign(existingGroup, data);
+
+                        if (permissionsChanged) {
+                            await security.groups.updateUserLinks(tenant, existingGroup);
+                        }
+
+                        return new Response(existingGroup);
+                    } catch (e) {
+                        return new ErrorResponse(e);
+                    }
+                },
+                deleteGroup: async (_, { slug }: { slug: string }, context) => {
+                    const { security } = context;
+                    const permission = await security.getPermission("security.group");
+
+                    if (!permission) {
+                        return new NotAuthorizedResponse();
+                    }
+
+                    try {
+                        const tenant = security.getTenant();
+                        const group = await security.groups.getGroup(tenant, slug);
+
+                        if (!group) {
+                            return new NotFoundResponse(`Group "${slug}" was not found!`);
+                        }
+
+                        await security.groups.deleteGroup(tenant, slug);
+
+                        return new Response(true);
+                    } catch (e) {
+                        return new ErrorResponse(e);
+                    }
+                }
             }
         }
     }

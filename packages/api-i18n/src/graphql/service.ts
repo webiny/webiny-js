@@ -1,5 +1,5 @@
 import i18nContext from "./context";
-import { ContextI18NGetLocales } from "../types";
+import { ContextI18NGetLocales } from "~/types";
 
 let localesCache;
 

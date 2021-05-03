@@ -62,8 +62,9 @@ type DbItem<T> = T & {
 const getESLatestEntryData = (context: CmsContext, entry: CmsContentEntry) => {
     return {
         ...entry,
-        latest: true,
         __type: TYPE_ENTRY_LATEST,
+        tenant: context.security.getTenant().id,
+        latest: true,
         webinyVersion: context.WEBINY_VERSION
     };
 };
@@ -71,8 +72,9 @@ const getESLatestEntryData = (context: CmsContext, entry: CmsContentEntry) => {
 const getESPublishedEntryData = (context: CmsContext, entry: CmsContentEntry) => {
     return {
         ...entry,
-        published: true,
         __type: TYPE_ENTRY_PUBLISHED,
+        tenant: context.security.getTenant().id,
+        published: true,
         webinyVersion: context.WEBINY_VERSION
     };
 };
