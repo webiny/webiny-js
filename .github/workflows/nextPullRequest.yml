@@ -110,13 +110,6 @@ jobs:
           path: .webiny/cached-packages
           key: cached-packages-${{ runner.os }}-${{ github.ref }}
 
-      - name: Upload Cached Files (Test)
-        uses: actions/upload-artifact@v2
-        with:
-          name: cached-packages-test-${{ runner.os }}
-          retention-days: 1
-          path: .webiny
-
       - name: Build packages
         run: node scripts/buildWithCache.js
 
