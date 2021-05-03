@@ -160,8 +160,9 @@ function partialBuild(workspacePackages) {
     for (let i = 0; i < topologicallySortedPackagesList.length; i++) {
         const pckg = topologicallySortedPackagesList[i];
         if (workspacePackages.find(item => item.packageJson.name === pckg.name)) {
-            execa.sync("yarn", ["lerna", "run", "build", "--stream", "--scope", pckg.name], {
-                stdio: "inherit"
+            execa.sync("yarn", ["build"], {
+                stdio: "inherit",
+                cwd: pckg.location
             });
         }
     }
