@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Plugin } from "@webiny/plugins/types";
 import { BindComponent } from "@webiny/form/Bind";
-import { SecurityPermission } from "@webiny/app-security/SecurityIdentity";
+import { SecurityPermission } from "@webiny/app-security/types";
 
 export type SecurityViewProps = {
     Bind: BindComponent;
