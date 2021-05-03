@@ -17,6 +17,7 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@commodo/fields": "1.1.2-beta.20",
+    "@webiny/api-i18n": "^5.5.0",
     "@webiny/api-i18n-content": "^5.5.0",
     "@webiny/api-plugin-elastic-search-client": "^5.5.0",
     "@webiny/api-security": "^5.5.0",
@@ -69,6 +70,9 @@
       "src": [
         "aws-sdk",
         "sharp"
+      ],
+      "dependencies": [
+        "@webiny/api-i18n"
       ]
     }
   },
