@@ -7365,7 +7365,6 @@ __metadata:
     "@elastic/elasticsearch-mock": 0.3.0
     "@shelf/jest-elasticsearch": ^1.0.0
     "@webiny/api-dynamodb-to-elasticsearch": ^5.5.0
-    "@webiny/api-i18n": ^5.5.0
     "@webiny/api-i18n-content": ^5.5.0
     "@webiny/api-plugin-elastic-search-client": ^5.5.0
     "@webiny/api-security": ^5.5.0

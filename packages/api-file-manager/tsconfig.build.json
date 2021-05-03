@@ -1,30 +1,32 @@
 {
-  "extends": "../../tsconfig.build.json",
-  "include": ["./src"],
-  "exclude": [
-    "node_modules",
-    "./dist",
-    "../api-security",
-    "../api-upgrade",
-    "../error",
-    "../api-security-tenancy",
-    "../handler-graphql",
-    "../handler",
-    "../handler-client",
-    "../validation",
-    "../api-i18n-content",
-    "../api-plugin-elastic-search-client",
-    "../api-dynamodb-to-elasticsearch",
-    "../api-i18n"
-  ],
-  "compilerOptions": {
-    "rootDir": "./src",
-    "outDir": "./dist",
-    "declarationDir": "./dist",
-    "baseUrl": ".",
-    "paths": {
-      "~/*": ["./src/*"]
-    }
-  },
-  "references": []
+	"extends": "../../tsconfig.build.json",
+	"include": [
+		"./src"
+	],
+	"exclude": [
+		"node_modules",
+		"./dist",
+		"../api-security",
+		"../api-upgrade",
+		"../error",
+		"../api-security-tenancy",
+		"../handler-graphql",
+		"../handler",
+		"../handler-client",
+		"../validation",
+		"../api-i18n-content",
+		"../api-plugin-elastic-search-client",
+		"../api-dynamodb-to-elasticsearch"
+	],
+	"compilerOptions": {
+		"rootDir": "./src",
+		"outDir": "./dist",
+		"declarationDir": "./dist",
+		"baseUrl": ".",
+		"paths": {
+			"~/*": [
+				"./src/*"
+			]
+		}
+	}
 }
