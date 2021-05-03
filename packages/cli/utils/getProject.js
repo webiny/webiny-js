@@ -37,8 +37,10 @@ module.exports = args => {
     const root = getRoot(args);
     const config = getConfig(args);
     return {
-        // "projectName" because of the backwards compatibility.
-        name: config.projectName || config.name,
+        get name() {
+            // Check "projectName" for backwards compatibility.
+            return process.env.WEBINY_PROJECT_NAME || config.projectName || config.name;
+        },
         root,
         config
     };
