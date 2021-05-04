@@ -1597,7 +1597,7 @@ export interface ElasticsearchQueryBuilderValueSearchPlugin extends Plugin {
  *
  * @category SecurityPermission
  */
-export interface CmsSettingsPermission extends SecurityPermission {}
+export interface CmsSettingsPermission extends SecurityPermission {} // eslint-disable-line
 /**
  * A security permission for content model.
  *
