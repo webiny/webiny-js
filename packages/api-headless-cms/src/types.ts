@@ -1571,6 +1571,25 @@ export interface CmsModelFieldToStoragePlugin<Original = any, Converted = any> e
     fromStorage: (
         args: CmsModelFieldToStoragePluginFromStorageArgs<Converted>
     ) => Promise<Original>;
+    /**
+     * Convert search args to the ones required by the storage engine.
+     */
+    convertToSearch?: CmsModelFieldToStoragePluginToStorageSearchConverter;
+}
+
+export type CmsModelFieldToStoragePluginToStorageSearchConverter = (
+    args: CmsModelFieldToStoragePluginToStorageSearchArgs
+) => CmsModelFieldToStoragePluginToStorageSearchValue;
+
+interface CmsModelFieldToStoragePluginToStorageSearchArgs {
+    model: CmsContentModel;
+    field: CmsContentModelField;
+    value: any;
+}
+
+interface CmsModelFieldToStoragePluginToStorageSearchValue {
+    value: string | number | boolean | string[] | number[];
+    attr: string;
 }
 
 /**

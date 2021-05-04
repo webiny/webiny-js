@@ -7486,6 +7486,8 @@ __metadata:
     "@webiny/project-utils": ^5.3.0
     aws-sdk: 2.868.0
     dataloader: ^2.0.0
+    date-fns: ^2.21.1
+    dot-prop: ^6.0.1
     dynamodb-toolbox: ^0.3.3
     jest: ^26.6.3
     jest-dynalite: ^3.2.0
@@ -14451,6 +14453,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"date-fns@npm:^2.21.1":
+  version: 2.21.1
+  resolution: "date-fns@npm:2.21.1"
+  checksum: 00a2ddea1047c4ce6eaadda76a0ee0782d1cfe65061641bbff94f7a70d2d6ab12dac89e027b39d49710bdb2cf264bc1a4e096b0324c7de79699296a4c19f4a40
+  languageName: node
+  linkType: hard
+
 "date-now@npm:^0.1.4":
   version: 0.1.4
   resolution: "date-now@npm:0.1.4"
@@ -15415,6 +15424,15 @@ __metadata:
   dependencies:
     is-obj: ^2.0.0
   checksum: 76e6693d8803eeff9cb920988446bf223cf1f6e5b1c0c2fe07a66906392134931a481b11e3c0bd852c5cfc97fad65258bcb4359169ad1d8d624cb3f56932be98
+  languageName: node
+  linkType: hard
+
+"dot-prop@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "dot-prop@npm:6.0.1"
+  dependencies:
+    is-obj: ^2.0.0
+  checksum: 06793b868079d70bffce4f0ac7e32055778723cc90b6e0bb12a2dff157298e693fb9ac7733556e4bb2d54de9d670a0b6a67610295cb1119a204fb7e340fafe54
   languageName: node
   linkType: hard
 

@@ -538,7 +538,8 @@ describe("READ - Resolvers", () => {
                         title_contains: "NIMal"
                     }
                 }).then(([data]) => data),
-            ({ data }) => data.listCategories.data[0].id === animals.id
+            ({ data }) => data.listCategories.data[0].id === animals.id,
+            { name: "list categories with NIMal" }
         );
 
         expect(result).toEqual({
@@ -992,7 +993,7 @@ describe("READ - Resolvers", () => {
                     where: {}
                 }).then(([data]) => data),
             ({ data }) => data.listProducts.data.length === 3,
-            { name: "list all products in vegetables categories", tries: 10 }
+            { name: "list all products in vegetables categories - range", tries: 10, wait: 1000 }
         );
 
         const [response] = await listProducts({
@@ -1080,7 +1081,11 @@ describe("READ - Resolvers", () => {
         await until(
             () => listProducts({}).then(([data]) => data),
             ({ data }) => data.listProducts.data.length === 3,
-            { name: "list all products in vegetables categories", tries: 10, wait: 1000 }
+            {
+                name: "list all products in vegetables categories - sort title",
+                tries: 10,
+                wait: 1000
+            }
         );
 
         const [responseAsc] = await listProducts({
@@ -1183,7 +1188,11 @@ describe("READ - Resolvers", () => {
         await until(
             () => listProducts({}).then(([data]) => data),
             ({ data }) => data.listProducts.data.length === 3,
-            { name: "list all products in vegetables categories", tries: 10, wait: 1000 }
+            {
+                name: "list all products in vegetables categories - sort price",
+                tries: 10,
+                wait: 1000
+            }
         );
 
         const [responseAsc] = await listProducts({

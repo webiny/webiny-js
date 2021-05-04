@@ -17,6 +17,7 @@ import {
     CmsContentEntryStorageOperationsUpdateArgs,
     CmsContentModel,
     CmsContext,
+    CmsModelFieldToStoragePlugin,
     CONTENT_ENTRY_STATUS
 } from "@webiny/api-headless-cms/types";
 import configurations from "../../configurations";
@@ -29,7 +30,7 @@ import {
 import { entryToStorageTransform } from "@webiny/api-headless-cms/transformers";
 import { Entity, Table } from "dynamodb-toolbox";
 import { getDocumentClient, getTable } from "../helpers";
-import { createFilters, sortEntryItems } from "./utils";
+import { createFilters, filterItems, SearchConverters, sortEntryItems } from "./utils";
 import { queryOptions as DDBToolboxQueryOptions } from "dynamodb-toolbox/dist/classes/Table";
 import { FilterExpressions } from "dynamodb-toolbox/dist/lib/expressionBuilder";
 
@@ -57,6 +58,8 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
     private readonly _dataLoaders: DataLoadersHandler;
     private readonly _table: Table;
     private readonly _entity: Entity<any>;
+
+    private _searchConverters: SearchConverters;
 
     private get context(): CmsContext {
         return this._context;
@@ -327,7 +330,12 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
         const { limit: initialLimit, where, after, sort } = args;
         const limit = !initialLimit || initialLimit <= 0 ? 100 : initialLimit;
         // make sure we get only the entry records
-        const baseFilters: FilterExpressions = [];
+        const baseFilters: FilterExpressions = [
+            {
+                attr: "modelId",
+                eq: model.modelId
+            }
+        ];
         if (where.entryId !== undefined) {
             baseFilters.push({
                 attr: "PK",
@@ -355,20 +363,20 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             delete where["published"];
         }
 
-        const filters = baseFilters.concat(
-            createFilters({
-                context: this.context,
-                model,
-                where
-            })
-        );
+        const filters = createFilters({
+            base: baseFilters,
+            context: this.context,
+            model,
+            where,
+            converters: this.getConverters()
+        });
 
         let items: CmsContentEntry[] = [];
 
         const scanner = async (previousResults, items) => {
             let result;
             const options = {
-                filters,
+                filters: filters.native,
                 limit: limit + 1
             };
             if (!previousResults && items.length === 0) {
@@ -401,22 +409,24 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             });
         }
 
+        items = filterItems(items, filters.code);
+        const totalCount = items.length;
+
         items = sortEntryItems({
             model,
             items,
             sort
         });
 
-        const hasMoreItems = items.length > limit;
         const start = decodePaginationCursor(after) || 0;
-        if (hasMoreItems) {
-            items = items.slice(start, limit);
-        }
+        const hasMoreItems = totalCount > start + limit;
+        const end = limit > totalCount + start + limit ? undefined : start + limit;
+        items = items.slice(start, end);
 
         const cursor = items.length > 0 ? encodePaginationCursor(start + limit) : null;
         return {
             hasMoreItems,
-            totalCount: items.length,
+            totalCount,
             cursor,
             items
         };
@@ -1165,5 +1175,20 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
 
     public getSortKeyPublished(): string {
         return "P";
+    }
+
+    private getConverters(): SearchConverters {
+        if (!this._searchConverters) {
+            this._searchConverters = this.context.plugins
+                .byType<CmsModelFieldToStoragePlugin>("cms-model-field-to-storage")
+                .reduce((converters, plugin) => {
+                    if (typeof plugin.convertToSearch !== "function") {
+                        return converters;
+                    }
+                    converters[plugin.fieldType] = plugin.convertToSearch;
+                    return converters;
+                }, {} as SearchConverters);
+        }
+        return this._searchConverters;
     }
 }
