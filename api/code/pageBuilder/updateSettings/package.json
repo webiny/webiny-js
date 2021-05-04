@@ -1,15 +1,15 @@
 {
-  "name": "api-page-builder-update-settings",
-  "version": "0.1.0",
-  "scripts": {
-    "build": "yarn webiny run build"
-  },
-  "dependencies": {
-    "@webiny/api-page-builder": "^5.0.0-beta.0",
-    "@webiny/cli": "5.0.0-beta.4",
-    "@webiny/db-dynamodb": "5.0.0-beta.4",
-    "@webiny/handler-aws": "^5.0.0-beta.0",
-    "@webiny/handler-db": "^5.0.0-beta.0",
-    "@webiny/project-utils": "^5.0.0-beta.0"
-  }
+	"name": "api-page-builder-update-settings",
+	"version": "0.1.0",
+	"scripts": {
+		"build": "yarn webiny run build"
+	},
+	"dependencies": {
+		"@webiny/api-page-builder": "^5.3.0",
+		"@webiny/cli": "^5.3.0",
+		"@webiny/db-dynamodb": "^5.3.0",
+		"@webiny/handler-aws": "^5.3.0",
+		"@webiny/handler-db": "^5.3.0",
+		"@webiny/project-utils": "^5.3.0"
+	}
 }

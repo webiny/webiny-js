@@ -1,7 +1,9 @@
 const path = require("path");
 const webpack = require("webpack");
 const WebpackBar = require("webpackbar");
+const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 const { version } = require("@webiny/project-utils/package.json");
+const typescriptFormatter = require("./typescriptFormatter");
 
 module.exports = ({ entry, output, debug = false, babelOptions, define }) => {
     const definitions = define ? JSON.parse(define) : {};
@@ -19,11 +21,9 @@ module.exports = ({ entry, output, debug = false, babelOptions, define }) => {
         externals: [/^aws-sdk/],
         mode: "production",
         optimization: {
-            // We do not want to minimize our code.
-            minimize: false
+            minimize: true
         },
         performance: {
-            // Turn off size warnings for entry points
             hints: false
         },
         plugins: [
@@ -31,12 +31,21 @@ module.exports = ({ entry, output, debug = false, babelOptions, define }) => {
                 "process.env.WEBINY_VERSION": JSON.stringify(process.env.WEBINY_VERSION || version),
                 ...definitions
             }),
+            new ForkTsCheckerWebpackPlugin({
+                typescript: true,
+                formatter: typescriptFormatter
+            }),
             new WebpackBar({ name: path.basename(process.cwd()) })
         ],
         // Run babel on all .js files and skip those in node_modules
         module: {
-            exprContextCritical: false,
             rules: [
+                {
+                    test: /\.m?js/,
+                    resolve: {
+                        fullySpecified: false
+                    }
+                },
                 {
                     test: /\.(js|ts)$/,
                     loader: require.resolve("babel-loader"),

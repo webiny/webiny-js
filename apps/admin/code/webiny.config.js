@@ -19,11 +19,17 @@ module.exports = {
     commands: {
         async start(options, context) {
             invariant(options.env, NO_ENV_MESSAGE);
+            
+            //const output = await getStackOutput("api", options.env, MAP);
+            //invariant(output, NO_API_MESSAGE(options.env));
 
-            const output = await getStackOutput("api", options.env, MAP);
-            invariant(output, NO_API_MESSAGE(options.env));
-
-            Object.assign(process.env, output);
+            Object.assign(process.env, {
+                "REACT_APP_USER_POOL_REGION": "eu-central-1",
+                "REACT_APP_GRAPHQL_API_URL": "https://d1an0vk1rc3dyd.cloudfront.net/graphql",
+                "REACT_APP_API_URL": "https://d1an0vk1rc3dyd.cloudfront.net",
+                "REACT_APP_USER_POOL_ID": "eu-central-1_78MoHxwVF",
+                "REACT_APP_USER_POOL_WEB_CLIENT_ID": "210td4s0p22e8sthbl2cso34p6"
+            });
 
             // Start local development
             await startApp(options, context);
@@ -31,10 +37,16 @@ module.exports = {
         async build(options, context) {
             invariant(options.env, NO_ENV_MESSAGE);
 
-            const output = await getStackOutput("api", options.env, MAP);
-            invariant(output, NO_API_MESSAGE(options.env));
+            //const output = await getStackOutput("api", options.env, MAP);
+            //invariant(output, NO_API_MESSAGE(options.env));
 
-            Object.assign(process.env, output);
+            Object.assign(process.env, {
+                "REACT_APP_USER_POOL_REGION": "eu-central-1",
+                "REACT_APP_GRAPHQL_API_URL": "https://d1an0vk1rc3dyd.cloudfront.net/graphql",
+                "REACT_APP_API_URL": "https://d1an0vk1rc3dyd.cloudfront.net",
+                "REACT_APP_USER_POOL_ID": "eu-central-1_78MoHxwVF",
+                "REACT_APP_USER_POOL_WEB_CLIENT_ID": "210td4s0p22e8sthbl2cso34p6"
+            });
 
             // Bundle app for deployment
             await buildApp(options, context);

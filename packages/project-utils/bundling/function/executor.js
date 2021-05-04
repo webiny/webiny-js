@@ -34,11 +34,8 @@ module.exports = (options, context) => {
                 }
 
                 if (stats.hasErrors()) {
-                    const info = stats.toJson();
-
-                    if (stats.hasErrors()) {
-                        console.error(info.errors);
-                    }
+                    const info = stats.toJson({ all: false, errors: true });
+                    console.error(info.errors);
                 }
 
                 context.log(`Finished bundling! Watching for changes...`);
@@ -51,13 +48,15 @@ module.exports = (options, context) => {
             }
 
             if (stats.hasErrors()) {
-                const info = stats.toJson();
+                const { errors } = stats.toJson({ all: false, errors: true });
+                errors.forEach(error => {
+                    console.log(error.message);
+                });
 
-                if (stats.hasErrors()) {
-                    console.error(info.errors);
-                }
-
-                return reject("Build failed!");
+                // Print an empty line
+                console.log();
+                
+                return reject(new Error("Build failed!"));
             }
 
             context.log(`Finished bundling`);

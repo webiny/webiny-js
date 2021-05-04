@@ -4,8 +4,6 @@ const chalk = require("chalk");
 const fs = require("fs-extra");
 const webpack = require("webpack");
 const { checkBrowsers } = require("react-dev-utils/browsersHelper");
-const formatWebpackMessages = require("react-dev-utils/formatWebpackMessages");
-const printBuildError = require("react-dev-utils/printBuildError");
 
 module.exports = async (options = {}) => {
     const appIndexJs = options.entry || path.resolve("src", "index.tsx");
@@ -46,27 +44,10 @@ module.exports = async (options = {}) => {
 
     // Start the webpack build
     try {
-        const { warnings } = await build(config);
-        if (warnings.length) {
-            console.log(chalk.yellow("Compiled with warnings.\n"));
-            console.log(warnings.join("\n\n"));
-            console.log(
-                "\nSearch for the " +
-                chalk.underline(chalk.yellow("keywords")) +
-                " to learn more about each warning."
-            );
-            console.log(
-                "To ignore, add " +
-                chalk.cyan("// eslint-disable-next-line") +
-                " to the line before.\n"
-            );
-        } else {
-            console.log(chalk.green("Compiled successfully.\n"));
-        }
+        await build(config);
     } catch (err) {
-        console.log(err);
+        console.log(err.message);
         console.log(chalk.red("Failed to compile.\n"));
-        printBuildError(err);
         process.exit(1);
     }
 };
@@ -78,59 +59,22 @@ function build(config) {
     const compiler = webpack(config);
     return new Promise((resolve, reject) => {
         compiler.run((err, stats) => {
-            let messages;
             if (err) {
-                if (!err.message) {
-                    return reject(err);
-                }
-
-                let errMessage = err.message;
-
-                // Add additional information for postcss errors
-                if (Object.prototype.hasOwnProperty.call(err, "postcssNode")) {
-                    errMessage +=
-                        "\nCompileError: Begins at CSS selector " + err["postcssNode"].selector;
-                }
-
-                messages = formatWebpackMessages({
-                    errors: [errMessage],
-                    warnings: []
-                });
-            } else {
-                messages = formatWebpackMessages(
-                    stats.toJson({
-                        all: false,
-                        warnings: true,
-                        errors: true
-                    })
-                );
+                return reject(err);
             }
-            if (messages.errors.length) {
-                // Only keep the first error. Others are often indicative
-                // of the same problem, but confuse the reader with noise.
-                if (messages.errors.length > 1) {
-                    messages.errors.length = 1;
-                }
-                return reject(new Error(messages.errors.join("\n\n")));
-            }
-            if (
-                process.env.CI &&
-                (typeof process.env.CI !== "string" || process.env.CI.toLowerCase() !== "false") &&
-                messages.warnings.length
-            ) {
-                console.log(
-                    chalk.yellow(
-                        "\nTreating warnings as errors because process.env.CI = true.\n" +
-                            "Most CI servers set it automatically.\n"
-                    )
-                );
-                return reject(new Error(messages.warnings.join("\n\n")));
-            }
-
-            return resolve({
-                stats,
-                warnings: messages.warnings
-            });
+            
+            console.log(
+                stats.toString({
+                    all: false,
+                    colors: true,
+                    assets: true,
+                    modules: false,
+                    entrypoints: true,
+                    warnings: true,
+                    errors: true
+                })
+            );
+            return resolve();
         });
     });
 }

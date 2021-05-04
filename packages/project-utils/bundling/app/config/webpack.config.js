@@ -2,18 +2,17 @@
 
 const path = require("path");
 const webpack = require("webpack");
-const resolve = require("resolve");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const InlineChunkHtmlPlugin = require("react-dev-utils/InlineChunkHtmlPlugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
+const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
+const InlineChunkHtmlPlugin = require("react-dev-utils/InlineChunkHtmlPlugin");
 const InterpolateHtmlPlugin = require("react-dev-utils/InterpolateHtmlPlugin");
 const getCSSModuleLocalIdent = require("react-dev-utils/getCSSModuleLocalIdent");
-const getClientEnvironment = require("./env");
 const ModuleNotFoundPlugin = require("react-dev-utils/ModuleNotFoundPlugin");
-const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
-const typescriptFormatter = require("react-dev-utils/typescriptFormatter");
 const WebpackBar = require("webpackbar");
+const getClientEnvironment = require("./env");
+const typescriptFormatter = require("../utils/typescriptFormatter");
 
 const materialNodeModules = require.resolve("@material/base/package.json").split("@material")[0];
 const sassIncludePaths = [
@@ -57,22 +56,16 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
         babelCustomizer = v => v;
     }
 
-    // Variable used for enabling profiling in Production
-    // passed into alias object. Uses a flag if passed into the build command
-    const isEnvProductionProfile = isEnvProduction && process.argv.includes("--profile");
-
     // Webpack uses `publicPath` to determine where the app is being served from.
     // It requires a trailing slash, or the file assets will get an incorrect path.
     // In development, we always serve from the root. This makes config easier.
     const publicPath = isEnvProduction ? paths.servedPath : isEnvDevelopment && "/";
-    // Some apps do not use client-side routing with pushState.
-    // For these, "homepage" can be set to "." to enable relative asset paths.
-    const shouldUseRelativeAssetPaths = publicPath === "./";
 
     // `publicUrl` is just like `publicPath`, but we will provide it to our app
     // as %PUBLIC_URL% in `index.html` and `process.env.PUBLIC_URL` in JavaScript.
     // Omit trailing slash as %PUBLIC_URL%/xyz looks better than %PUBLIC_URL%xyz.
     const publicUrl = isEnvProduction ? publicPath.slice(0, -1) : isEnvDevelopment && "";
+
     // Get environment variables to inject into our app.
     const env = getClientEnvironment(publicUrl);
 
@@ -82,7 +75,7 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
             isEnvDevelopment && require.resolve("style-loader"),
             isEnvProduction && {
                 loader: MiniCssExtractPlugin.loader,
-                options: shouldUseRelativeAssetPaths ? { publicPath: "../../" } : {}
+                options: {}
             },
             {
                 loader: require.resolve("css-loader"),
@@ -128,7 +121,7 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
             : isEnvDevelopment && "cheap-module-source-map",
         // These are the "entry points" to our application.
         // This means they will be the "root" imports that are included in JS bundle.
-        entry: paths.appIndexJs,
+        entry: [require.resolve("./errorOverlay"), paths.appIndexJs],
         output: {
             // The build folder.
             path: paths.appBuild,
@@ -159,6 +152,9 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
             minimize: isEnvProduction
         },
         resolve: {
+            fallback: {
+                path: require.resolve("path-browserify")
+            },
             modules: [
                 "node_modules",
                 paths.appNodeModules,
@@ -168,8 +164,6 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
         },
         module: {
             rules: [
-                // Disable require.ensure as it's not a standard language feature.
-                { parser: { requireEnsure: false } },
                 {
                     test: /\.m?js/,
                     resolve: {
@@ -220,7 +214,7 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
                         },
                         {
                             test: /\.svg$/i,
-                            use: [require.resolve("@svgr/webpack"), require.resolve("url-loader")],
+                            use: [require.resolve("@svgr/webpack"), require.resolve("url-loader")]
                         },
                         // Process application JS with Babel.
                         // The preset includes JSX, Flow, TypeScript, and some ESnext features.
@@ -244,34 +238,6 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
                                 compact: isEnvProduction
                             })
                         },
-                        // Process any JS outside of the app with Babel.
-                        // Unlike the application JS, we only compile the standard ES features.
-                        // {
-                        //     test: /\.(js|mjs)$/,
-                        //     exclude: /@babel(?:\/|\\{1,2})runtime/,
-                        //     loader: require.resolve("babel-loader"),
-                        //     options: {
-                        //         babelrc: false,
-                        //         configFile: false,
-                        //         compact: false,
-                        //         sourceType: "unambiguous",
-                        //         presets: [
-                        //             [
-                        //                 require.resolve("babel-preset-react-app/dependencies"),
-                        //                 { helpers: true }
-                        //             ]
-                        //         ],
-                        //         cacheDirectory: true,
-                        //         // See #6846 for context on why cacheCompression is disabled
-                        //         cacheCompression: false,
-                        //
-                        //         // Babel sourcemaps are needed for debugging into node_modules
-                        //         // code.  Without the options below, debuggers like VSCode
-                        //         // show incorrect code and set breakpoints on the wrong lines.
-                        //         sourceMaps: shouldUseSourceMap,
-                        //         inputSourceMap: shouldUseSourceMap
-                        //     }
-                        // },
                         // "postcss" loader applies autoprefixer to our CSS.
                         // "css" loader resolves paths in CSS and adds assets as dependencies.
                         // "style" loader turns CSS into JS modules that inject <style> tags.
@@ -345,11 +311,7 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
                         // that fall through the other loaders.
                         {
                             loader: require.resolve("file-loader"),
-                            // Exclude `js` files to keep "css" loader working as it injects
-                            // its runtime that would otherwise be processed through "file" loader.
-                            // Also exclude `html` and `json` extensions so they get processed
-                            // by webpacks internal loaders.
-                            exclude: [/\.(js|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/],
+                            exclude: /(^|\.(svg|js|mjs|jsx|ts|tsx|html|json))$/,
                             options: {
                                 name: "static/media/[name].[hash:8].[ext]"
                             }
@@ -366,16 +328,16 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
             // Inlines the webpack runtime script. This script is too small to warrant
             // a network request.
             // https://github.com/facebook/create-react-app/issues/5358
-            // isEnvProduction &&
-            //     shouldInlineRuntimeChunk &&
-            //     new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime-.+[.]js/]),
+            isEnvProduction &&
+                shouldInlineRuntimeChunk &&
+                new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime-.+[.]js/]),
             // Makes some environment variables available in index.html.
             // The public URL is available as %PUBLIC_URL% in index.html, e.g.:
             // <link rel="icon" href="%PUBLIC_URL%/favicon.ico">
             // In production, it will be an empty string unless you specify "homepage"
             // in `package.json`, in which case it will be the pathname of that URL.
             // In development, this will be an empty string.
-            //new InterpolateHtmlPlugin(HtmlWebpackPlugin, env.raw),
+            new InterpolateHtmlPlugin(HtmlWebpackPlugin, env.raw),
             // This gives some necessary context to module not found errors, such as
             // the requesting resource.
             new ModuleNotFoundPlugin(paths.appPath),
@@ -385,8 +347,6 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
             // during a production build.
             // Otherwise React will be compiled in the very slow development mode.
             new webpack.DefinePlugin(env.stringified),
-            // This is necessary to emit hot updates (currently CSS only):
-            isEnvDevelopment && new webpack.HotModuleReplacementPlugin(),
             isEnvProduction &&
                 new MiniCssExtractPlugin({
                     // Options similar to the same options in webpackOptions.output
@@ -400,24 +360,24 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
             //   `index.html`
             // - "entrypoints" key: Array of files which are included in `index.html`,
             //   can be used to reconstruct the HTML if necessary
-            // new WebpackManifestPlugin({
-            //     fileName: "asset-manifest.json",
-            //     publicPath: publicPath,
-            //     generate: (seed, files, entrypoints) => {
-            //         const manifestFiles = files.reduce((manifest, file) => {
-            //             manifest[file.name] = file.path;
-            //             return manifest;
-            //         }, seed);
-            //         const entrypointFiles = entrypoints.main.filter(
-            //             fileName => !fileName.endsWith(".map")
-            //         );
-            //
-            //         return {
-            //             files: manifestFiles,
-            //             entrypoints: entrypointFiles
-            //         };
-            //     }
-            // }),
+            new WebpackManifestPlugin({
+                fileName: "asset-manifest.json",
+                publicPath: publicPath,
+                generate: (seed, files, entrypoints) => {
+                    const manifestFiles = files.reduce((manifest, file) => {
+                        manifest[file.name] = file.path;
+                        return manifest;
+                    }, seed);
+                    const entrypointFiles = entrypoints.main.filter(
+                        fileName => !fileName.endsWith(".map")
+                    );
+
+                    return {
+                        files: manifestFiles,
+                        entrypoints: entrypointFiles
+                    };
+                }
+            }),
             // Moment.js is an extremely popular library that bundles large locale files
             // by default due to how Webpack interprets its code. This is a practical
             // solution that requires the user to opt into importing specific locales.
@@ -429,8 +389,10 @@ module.exports = function(webpackEnv, { paths, babelCustomizer }) {
                 typescript: true,
                 async: isEnvDevelopment,
                 // The formatter is invoked directly in WebpackDevServerUtils during development
-                formatter: isEnvProduction ? typescriptFormatter : undefined
-            })
+                formatter: isEnvProduction ? typescriptFormatter : undefined,
+                logger: { infrastructure: "silent", issues: "silent", devServer: false }
+            }),
+            new WebpackBar({ name: path.basename(paths.appPath) })
         ].filter(Boolean)
     };
 };
