@@ -13,9 +13,10 @@ export type SecurityAuthenticationPlugin = Plugin & {
     authenticate(context: ContextInterface): Promise<null> | Promise<SecurityIdentity>;
 };
 
-export type SecurityPermission<T = Record<string, any>> = T & {
+export interface SecurityPermission {
     name: string;
-};
+    [key: string]: any;
+}
 
 export interface SecurityAuthorizationPlugin extends Plugin {
     type: "security-authorization";
@@ -35,4 +36,6 @@ export interface SecurityContext extends ContextInterface {
     security: SecurityContextBase;
 }
 
-export type FullAccessPermission = { name: "*" };
+export interface FullAccessPermission {
+    name: "*";
+}

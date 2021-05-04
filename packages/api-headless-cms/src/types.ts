@@ -1597,14 +1597,14 @@ export interface ElasticsearchQueryBuilderValueSearchPlugin extends Plugin {
  *
  * @category SecurityPermission
  */
-export type CmsSettingsPermission = SecurityPermission;
+export interface CmsSettingsPermission extends SecurityPermission {}
 /**
  * A security permission for content model.
  *
  * @category SecurityPermission
  * @category ContentModel
  */
-export type CmsContentModelPermission = SecurityPermission<{
+export interface CmsContentModelPermission extends SecurityPermission {
     own: boolean;
     rwd: string;
     /**
@@ -1619,14 +1619,15 @@ export type CmsContentModelPermission = SecurityPermission<{
     groups?: {
         [key: string]: string[];
     };
-}>;
+}
+
 /**
  * The security permission for content model groups.
  *
  * @category SecurityPermission
  * @category ContentModelGroup
  */
-export type CmsContentModelGroupPermission = SecurityPermission<{
+export interface CmsContentModelGroupPermission extends SecurityPermission {
     own: boolean;
     rwd: string;
     /**
@@ -1635,14 +1636,15 @@ export type CmsContentModelGroupPermission = SecurityPermission<{
     groups?: {
         [key: string]: string[];
     };
-}>;
+}
+
 /**
  * The security permission for content entry.
  *
  * @category SecurityPermission
  * @category ContentEntry
  */
-export type CmsContentEntryPermission = SecurityPermission<{
+export interface CmsContentEntryPermission extends SecurityPermission {
     own: boolean;
     rwd: string;
     pw: string;
@@ -1658,7 +1660,7 @@ export type CmsContentEntryPermission = SecurityPermission<{
     groups?: {
         [key: string]: string[];
     };
-}>;
+}
 
 /**
  * A definition of the entry that is being prepared for the Elasticsearch.

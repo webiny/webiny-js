@@ -161,9 +161,7 @@ export type PbContext = Context<
 >;
 
 // Permissions.
-export type PbSecurityPermission<TName, TExtraProps = {}> = SecurityPermission<{
-    name: TName;
-
+export interface PbSecurityPermission extends SecurityPermission {
     // Can user operate only on content he created?
     own?: boolean;
 
@@ -172,23 +170,26 @@ export type PbSecurityPermission<TName, TExtraProps = {}> = SecurityPermission<{
     // "w" - write
     // "d" - delete
     rwd?: string;
-}> &
-    TExtraProps;
+}
 
-export type MenuSecurityPermission = PbSecurityPermission<"pb.menu">;
-export type CategorySecurityPermission = PbSecurityPermission<"pb.category">;
+export interface MenuSecurityPermission extends PbSecurityPermission {
+    name: "pb.menu";
+}
 
-export type PageSecurityPermission = PbSecurityPermission<
-    "pb.page",
-    {
-        // Determines which of the following publishing workflow actions are allowed:
-        // "r" - request review (for unpublished page)
-        // "c" - request change (for unpublished page on which a review was requested)
-        // "p" - publish
-        // "u" - unpublish
-        pw: string;
-    }
->;
+export interface CategorySecurityPermission extends PbSecurityPermission {
+    name: "pb.category";
+}
+
+export interface PageSecurityPermission extends PbSecurityPermission {
+    name: "pb.page";
+
+    // Determines which of the following publishing workflow actions are allowed:
+    // "r" - request review (for unpublished page)
+    // "c" - request change (for unpublished page on which a review was requested)
+    // "p" - publish
+    // "u" - unpublish
+    pw: string;
+}
 
 // Hook plugins.
 export type HookCallbackFunction<A1 = any, A2 = any, A3 = any> = (
