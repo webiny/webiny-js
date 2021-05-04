@@ -18,7 +18,6 @@ export default function GroupSelect({ value, ...props }: FormComponentProps) {
         <Select
             {...props}
             value={loading ? "" : selectValue}
-            description={"Choose a content model group"}
             label={"Content model group"}
             options={options}
         />
