@@ -2,6 +2,7 @@ import WebinyError from "@webiny/error";
 import { DataLoadersHandler } from "./dataLoaders";
 import {
     CmsContentEntry,
+    CmsContentEntryListWhere,
     CmsContentEntryStorageOperations,
     CmsContentEntryStorageOperationsCreateArgs,
     CmsContentEntryStorageOperationsCreateRevisionFromArgs,
@@ -329,6 +330,18 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
     ): Promise<CmsContentEntryStorageOperationsListResponse> {
         const { limit: initialLimit, where, after, sort } = args;
         const limit = !initialLimit || initialLimit <= 0 ? 100 : initialLimit;
+        /**
+         * There is no need to go further if we have a id or entryId in where args
+         */
+        if (where.id || where.id_in || where.entryId) {
+            const items = await this.findAllById({ model, where });
+            return {
+                hasMoreItems: false,
+                items,
+                cursor: null,
+                totalCount: items.length
+            };
+        }
         // make sure we get only the entry records
         const baseFilters: FilterExpressions = [
             {
@@ -373,13 +386,13 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
 
         let items: CmsContentEntry[] = [];
 
-        const scanner = async (previousResults, items) => {
+        const scanner = async previousResults => {
             let result;
             const options = {
                 filters: filters.native,
                 limit: limit + 1
             };
-            if (!previousResults && items.length === 0) {
+            if (!previousResults) {
                 result = await this._entity.scan(options);
             } else if (previousResults && typeof previousResults.next === "function") {
                 result = await previousResults.next();
@@ -398,7 +411,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
         try {
             let previousResults = undefined;
             let results;
-            while ((results = await scanner(previousResults, items))) {
+            while ((results = await scanner(previousResults))) {
                 items.push(...results.Items);
                 previousResults = results;
             }
@@ -1190,5 +1203,142 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
                 }, {} as SearchConverters);
         }
         return this._searchConverters;
+    }
+    /**
+     * We use this method when there are exact IDs to be found. This is quite faster than the query or scan operations.
+     */
+    private async findAllById(args: {
+        model: CmsContentModel;
+        where: CmsContentEntryListWhere;
+    }): Promise<CmsContentEntry[]> {
+        const { where } = args;
+        /**
+         * There must be some of the conditions in the where.
+         */
+        if (!where.id && !where.id_in && !where.entryId) {
+            throw new WebinyError(
+                "Access to findAllById is allowed only if there is id, id_in or entryId in where argument.",
+                "FIND_BY_ID_ERROR",
+                args
+            );
+        } else if (
+            /**
+             * Also there cannot be multiple conditions.
+             */
+            (where.id && where.id_in) ||
+            (where.id && where.entryId) ||
+            (where.id_in && where.entryId)
+        ) {
+            throw new WebinyError(
+                "There cannot be multiple condition combinations - id, id_in or entryId.",
+                "FIND_BY_ID_ERROR",
+                args
+            );
+        }
+        const batches = [];
+        const published = where.published === true;
+        const latest = where.latest === true;
+        /**
+         *
+         */
+        const idList = where.id_in ? where.id_in : where.id ? [where.id] : null;
+        if (idList) {
+            for (const id of idList) {
+                const sortKey = published
+                    ? this.getSortKeyPublished()
+                    : latest
+                    ? this.getSortKeyLatest()
+                    : this.getSortKeyRevision(id);
+                batches.push(
+                    this._entity.getBatch({
+                        PK: this.getPartitionKey(id),
+                        SK: sortKey
+                    })
+                );
+            }
+        }
+        const entryIdList = where.entryId_in
+            ? where.entryId_in
+            : where.entryId
+            ? [where.entryId]
+            : null;
+        if (entryIdList) {
+            const sortKey = published
+                ? this.getSortKeyPublished()
+                : latest
+                ? this.getSortKeyLatest()
+                : null;
+            if (!sortKey) {
+                throw new WebinyError(
+                    "Trying to find an entry by where.entryId or where.entryId_in condition but no published or latest condition defined.",
+                    "FIND_BY_ID_ERROR",
+                    args
+                );
+            }
+            for (const entryId of entryIdList) {
+                batches.push(
+                    this._entity.getBatch({
+                        PK: this.getPartitionKey(entryId),
+                        SK: sortKey
+                    })
+                );
+            }
+        }
+
+        const fetcher = async (previousResults: any): Promise<any> => {
+            let result;
+            if (!previousResults) {
+                result = await this._table.batchGet(batches, {
+                    parse: true
+                });
+            } else if (previousResults && typeof previousResults.next === "function") {
+                result = await previousResults.next();
+                if (result === false) {
+                    return null;
+                }
+            } else {
+                return null;
+            }
+            if (!result || !result.Responses || Object.keys(result.Responses).length === 0) {
+                throw new WebinyError(
+                    "Error when fetching entries in batch - no result.",
+                    "FIND_BY_ID_FETCHER_ERROR",
+                    args
+                );
+            }
+            return result;
+        };
+
+        try {
+            // const result = await this._table.batchGet(batches, {
+            //     parse: true,
+            // });
+            // if (!result || !result.Items || !Array.isArray(result.Items)) {
+            //     throw new WebinyError(
+            //         "Error when fetching batch get - no result.",
+            //         "FIND_BY_ID_ERROR",
+            //         args
+            //     );
+            // }
+            const items = [];
+            let previousResults = undefined;
+            let results;
+            while ((results = await fetcher(previousResults))) {
+                for (const table in results.Responses) {
+                    if (!results.Responses.hasOwnProperty(table)) {
+                        continue;
+                    }
+                    items.push(...results.Responses[table]);
+                }
+                previousResults = results;
+            }
+            return items;
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Batch execute error in findAllById.",
+                ex.code || "BATCH_EXECUTE_ERROR",
+                args
+            );
+        }
     }
 }

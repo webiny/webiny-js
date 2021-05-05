@@ -1186,6 +1186,11 @@ export interface CmsContentEntryListWhere {
     id_not?: string;
     id_not_in?: string[];
     /**
+     * Generated ID without the version.
+     */
+    entryId?: string;
+    entryId_in?: string[];
+    /**
      * Entry is owned by whom?
      *
      * Can be sent via the API or set internal if user can see only their own entries.
@@ -1571,25 +1576,6 @@ export interface CmsModelFieldToStoragePlugin<Original = any, Converted = any> e
     fromStorage: (
         args: CmsModelFieldToStoragePluginFromStorageArgs<Converted>
     ) => Promise<Original>;
-    /**
-     * Convert search args to the ones required by the storage engine.
-     */
-    convertToSearch?: CmsModelFieldToStoragePluginToStorageSearchConverter;
-}
-
-export type CmsModelFieldToStoragePluginToStorageSearchConverter = (
-    args: CmsModelFieldToStoragePluginToStorageSearchArgs
-) => CmsModelFieldToStoragePluginToStorageSearchValue;
-
-interface CmsModelFieldToStoragePluginToStorageSearchArgs {
-    model: CmsContentModel;
-    field: CmsContentModelField;
-    value: any;
-}
-
-interface CmsModelFieldToStoragePluginToStorageSearchValue {
-    value: string | number | boolean | string[] | number[];
-    attr: string;
 }
 
 /**

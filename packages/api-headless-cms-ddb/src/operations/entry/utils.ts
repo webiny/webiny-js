@@ -1,24 +1,13 @@
-import {
-    CmsContentEntry,
-    CmsContentModel,
-    CmsContentModelField,
-    CmsContext,
-    CmsModelFieldToStoragePluginToStorageSearchConverter
-} from "@webiny/api-headless-cms/types";
+import { CmsContentEntry, CmsContentModel, CmsContext } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
 import lodashSortBy from "lodash.sortby";
 import { FilterExpressions } from "dynamodb-toolbox/dist/lib/expressionBuilder";
 import dotProp from "dot-prop";
 
-export type SearchConverters = Record<string, CmsModelFieldToStoragePluginToStorageSearchConverter>;
-
-const defaultSystemFields = ["id", "createdOn", "savedOn", "createdBy", "ownedBy"];
-const codeOperations = ["contains", "in"];
+const defaultSystemFieldIds = ["id", "createdOn", "savedOn", "createdBy", "ownedBy"];
 const VALUES_ATTRIBUTE = "values";
 
-const createOperation = (
-    operation: string
-): { operation: string; negate?: boolean; code: boolean } => {
+const createOperation = (operation: string): { operation: string; negate?: boolean } => {
     switch (operation) {
         case "eq":
         case "lt":
@@ -29,8 +18,7 @@ const createOperation = (
         case "between":
         case "contains":
             return {
-                operation,
-                code: codeOperations.includes(operation)
+                operation
             };
         case "not_eq":
         case "not_in":
@@ -39,8 +27,7 @@ const createOperation = (
             const op = operation.replace("not_", "");
             return {
                 operation: op,
-                negate: true,
-                code: codeOperations.includes(op)
+                negate: true
             };
     }
     throw new WebinyError("Operation not supported.", "OP_NOT_SUPPORTED", {
@@ -50,11 +37,9 @@ const createOperation = (
 
 interface ExtractArgs {
     key: string;
-    fieldIds: string[];
+    fields: string[];
     model: CmsContentModel;
-    fields: Record<string, CmsContentModelField>;
     systemFields: string[];
-    converters: SearchConverters;
     value: any;
 }
 
@@ -62,47 +47,32 @@ interface ExtractResult {
     attr: string;
     operation: string;
     negate: boolean;
-    code: boolean;
     value: any;
 }
 
-const defaultConverter: CmsModelFieldToStoragePluginToStorageSearchConverter = ({
-    field,
-    value
-}) => {
-    return {
-        attr: field.fieldId,
-        value
-    };
-};
-
 const extractFilter = (args: ExtractArgs): ExtractResult => {
-    const { key, fieldIds, systemFields, model, fields, converters, value } = args;
+    const { key, fields, systemFields, value } = args;
     const result = key.split("_");
     const attr = result.shift();
     const rawOp = result.length === 0 ? "eq" : result.join("_");
     const isSystemField = systemFields.includes(attr);
-    if (fieldIds.includes(attr) === false && !isSystemField) {
+    if (fields.includes(attr) === false && !isSystemField) {
         throw new WebinyError(
             "Filtering field does not exist in the content model.",
             "FILTERING_FIELD_ERROR",
             {
                 key,
                 attr,
-                fieldIds
+                fields
             }
         );
     }
-    const field = fields[attr];
-    const converter = field && converters[field.type] ? converters[field.type] : defaultConverter;
-    const { attr: targetAttr, value: targetValue } = converter({ model, field, value });
-    const { operation, negate, code } = createOperation(rawOp);
+    const { operation, negate } = createOperation(rawOp);
     return {
-        attr: isSystemField ? targetAttr : `${VALUES_ATTRIBUTE}.${targetAttr}`,
+        attr: isSystemField ? attr : `${VALUES_ATTRIBUTE}.${attr}`,
         operation,
         negate,
-        code,
-        value: targetValue
+        value
     };
 };
 
@@ -111,7 +81,6 @@ interface CreateFiltersArgs {
     context: CmsContext;
     model: CmsContentModel;
     where?: Record<string, any>;
-    converters: SearchConverters;
 }
 
 interface CodeFilter {
@@ -121,29 +90,15 @@ interface CodeFilter {
     negate?: boolean;
 }
 
-interface CreateFiltersResult {
-    native: FilterExpressions;
-    code: CodeFilter[];
-}
-
-export const createFilters = (args: CreateFiltersArgs): CreateFiltersResult => {
-    const { base: baseFilters, model, where, converters } = args;
+export const createFilters = (args: CreateFiltersArgs): FilterExpressions => {
+    const { base: baseFilters, model, where } = args;
     const keys = Object.keys(where);
-    const native = [].concat(baseFilters);
-    const code = [];
+    const filters = [].concat(baseFilters);
     if (!where || keys.length === 0) {
-        return {
-            native,
-            code
-        };
+        return filters;
     }
 
-    const fieldIds = defaultSystemFields.concat(model.fields.map(field => field.fieldId));
-
-    const fields = model.fields.reduce((acc, field) => {
-        acc[field.fieldId] = field;
-        return acc;
-    }, {});
+    const fields = defaultSystemFieldIds.concat(model.fields.map(field => field.fieldId));
 
     for (const key in where) {
         if (where.hasOwnProperty(key) === false) {
@@ -155,29 +110,18 @@ export const createFilters = (args: CreateFiltersArgs): CreateFiltersResult => {
         }
         const filter = extractFilter({
             key,
-            systemFields: defaultSystemFields,
-            fieldIds,
+            systemFields: defaultSystemFieldIds,
             model,
             fields,
-            value,
-            converters
+            value
         });
-        if (filter.code) {
-            code.push({
-                attr: filter.attr,
-                negate: filter.negate,
-                operation: filter.operation,
-                value: filter.value
-            });
-            continue;
-        }
-        native.push({
+        filters.push({
             attr: filter.attr,
             negate: filter.negate,
             [filter.operation]: filter.value
         });
     }
-    return { native, code };
+    return filters;
 };
 const filterMatch = (item: CmsContentEntry, filter: CodeFilter): boolean => {
     const value: string | undefined = dotProp.get(item, filter.attr, "");
@@ -231,7 +175,7 @@ const extractSort = (sortBy: string, fields: string[]): { field: string; reverse
     }
     const [field, order] = result;
 
-    const isSystemField = defaultSystemFields.includes(field);
+    const isSystemField = defaultSystemFieldIds.includes(field);
     if (fields.includes(field) === false && !isSystemField) {
         throw new WebinyError(
             "Sorting field does not exist in the content model.",
@@ -270,7 +214,7 @@ export const sortEntryItems = (args: SortEntryItemsArgs): CmsContentEntry[] => {
             sort
         });
     }
-    const fields = defaultSystemFields.concat(model.fields.map(field => field.fieldId));
+    const fields = defaultSystemFieldIds.concat(model.fields.map(field => field.fieldId));
 
     const { field, reverse } = extractSort(firstSort, fields);
     const newItems = lodashSortBy(items, field);

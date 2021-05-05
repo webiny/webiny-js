@@ -716,7 +716,8 @@ describe("READ - Resolvers", () => {
                     },
                     sort: ["createdOn_ASC"]
                 }).then(([data]) => data),
-            ({ data }) => data.listCategories.data.length === 3
+            ({ data }) => data.listCategories.data.length === 3,
+            { name: "list entries with createdOn greater than given date" }
         );
 
         expect(result).toEqual({

@@ -4,6 +4,7 @@ import contentModelGroupStorageOperationsProvider from "./operations/modelGroup"
 import contentModelStorageOperationsProvider from "./operations/model";
 import contentEntryStorageOperationsProvider from "./operations/entry";
 import dynamoDbPlugins from "./dynamoDb";
+import filterPlugins from "./filters";
 
 export default () => [
     settingsOperationsProvider(),
@@ -11,5 +12,6 @@ export default () => [
     contentModelGroupStorageOperationsProvider(),
     contentModelStorageOperationsProvider(),
     contentEntryStorageOperationsProvider(),
-    dynamoDbPlugins()
+    dynamoDbPlugins(),
+    filterPlugins()
 ];
