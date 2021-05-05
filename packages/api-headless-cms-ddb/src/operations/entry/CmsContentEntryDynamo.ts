@@ -379,7 +379,12 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
         const scanner = async previousResults => {
             let result;
             const options = {
-                // filters: filters,
+                filters: [
+                    {
+                        attr: "modelId",
+                        eq: model.modelId
+                    }
+                ],
                 limit: limit + 1
             };
             if (!previousResults) {
@@ -411,14 +416,14 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             });
         }
 
-        items = filterItems({ items, where, model, context: this.context });
-        const totalCount = items.length;
-
         items = sortEntryItems({
             model,
             items,
             sort
         });
+
+        items = filterItems({ items, where, model, context: this.context });
+        const totalCount = items.length;
 
         const start = decodePaginationCursor(after) || 0;
         const hasMoreItems = totalCount > start + limit;
@@ -1232,10 +1237,12 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
                 ? this.getSortKeyPublished()
                 : latest
                 ? this.getSortKeyLatest()
+                : where.version
+                ? this.getSortKeyRevision(where.version)
                 : null;
             if (!sortKey) {
                 throw new WebinyError(
-                    "Trying to find an entry by where.entryId or where.entryId_in condition but no published or latest condition defined.",
+                    "Trying to find an entry by where.entryId or where.entryId_in condition but no version, published or latest condition defined.",
                     "FIND_BY_ID_ERROR",
                     args
                 );

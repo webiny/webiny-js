@@ -610,20 +610,15 @@ export default (): ContextPlugin<CmsContext> => ({
                 const permission = await checkPermissions({ rwd: "d" });
                 utils.checkModelAccess(context, permission, model);
 
-                const { items } = await storageOperations.list(model, {
-                    where: {
-                        entryId
-                    },
-                    limit: 1
-                });
-                const entryRevision = items.length > 0 ? items.shift() : null;
-                if (!entryRevision) {
+                const entry = await storageOperations.getLatestRevisionByEntryId(model, entryId);
+
+                if (!entry) {
                     throw new NotFoundError("Entry not found!");
                 }
 
-                utils.checkOwnership(context, permission, entryRevision, "ownedBy");
+                utils.checkOwnership(context, permission, entry, "ownedBy");
 
-                return await deleteEntry(model, entryRevision);
+                return await deleteEntry(model, entry);
             },
             publish: async (model, id) => {
                 const permission = await checkPermissions({ pw: "p" });

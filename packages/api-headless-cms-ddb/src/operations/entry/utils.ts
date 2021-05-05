@@ -102,18 +102,9 @@ const getFilterPlugins = (context: CmsContext): Record<string, CmsFieldValueFilt
     }, {});
 };
 const createFilters = (args: CreateFiltersArgs): ItemFilter[] => {
-    const { model, where, context } = args;
+    const { where, context } = args;
     const plugins = getFilterPlugins(context);
-    const baseFilters: ItemFilter[] = [
-        {
-            fieldId: "modelId",
-            target: "modelId",
-            matches: plugins["eq"].matches,
-            negate: false,
-            compareValue: model.modelId
-        }
-    ];
-    const filters = Object.keys(where).map(key => {
+    return Object.keys(where).map(key => {
         const { field, operation, negate } = extractWhereArgs(key);
         const target = defaultSystemFieldIds.includes(field)
             ? field
@@ -127,7 +118,6 @@ const createFilters = (args: CreateFiltersArgs): ItemFilter[] => {
             compareValue: where[key]
         };
     });
-    return baseFilters.concat(filters);
 };
 const transformValue = (field: CmsContentModelField | undefined, value: any): any => {
     if (!field) {
