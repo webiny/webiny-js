@@ -13,6 +13,9 @@
     },
     {
       "path": "../db-dynamodb"
+    },
+    {
+      "path": "../plugins"
     }
   ],
   "compilerOptions": {
@@ -24,7 +27,9 @@
       "@webiny/handler-db/*": ["../handler-db/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
-      "@webiny/db-dynamodb": ["../db-dynamodb/src"]
+      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"]
     },
     "baseUrl": "."
   }

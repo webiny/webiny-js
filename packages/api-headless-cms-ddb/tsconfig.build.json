@@ -7,6 +7,7 @@
     "../handler-db",
     "../db-dynamodb",
     "../error",
+    "../plugins",
     "./jest.config.js"
   ],
   "compilerOptions": {

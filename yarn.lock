@@ -1946,6 +1946,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:7.13.17":
+  version: 7.13.17
+  resolution: "@babel/runtime@npm:7.13.17"
+  dependencies:
+    regenerator-runtime: ^0.13.4
+  checksum: c32e5e2833348b586bc919c0fbc8efbd2fdd79451cce56ed5962ace6ff74ea44fbb8723dcd3f08e52ce07e88e37f4c02cd5021855417d365558e41de38d277a8
+  languageName: node
+  linkType: hard
+
 "@babel/runtime@npm:7.9.0":
   version: 7.9.0
   resolution: "@babel/runtime@npm:7.9.0"
@@ -7483,6 +7492,7 @@ __metadata:
     "@webiny/db-dynamodb": ^5.3.0
     "@webiny/error": ^5.3.0
     "@webiny/handler-db": ^5.3.0
+    "@webiny/plugins": ^5.5.0
     "@webiny/project-utils": ^5.3.0
     aws-sdk: 2.868.0
     dataloader: ^2.0.0
@@ -8891,6 +8901,16 @@ __metadata:
     uniqid: ^5.2.0
   languageName: unknown
   linkType: soft
+
+"@webiny/plugins@npm:^5.5.0":
+  version: 5.5.0
+  resolution: "@webiny/plugins@npm:5.5.0"
+  dependencies:
+    "@babel/runtime": 7.13.17
+    uniqid: 5.3.0
+  checksum: 56b91ea8bc0ebedcdbb84c0a39ddf9c0257fb5dd18172acdd41bbf31743c1fc5e657f16722ecb6d182421e35465cf0587d5cfb7ec773e19361ffcdc5f5976b98
+  languageName: node
+  linkType: hard
 
 "@webiny/project-utils@^5.0.0-beta.0, @webiny/project-utils@^5.0.0-beta.4, @webiny/project-utils@^5.3.0, @webiny/project-utils@^5.4.0, @webiny/project-utils@workspace:packages/project-utils":
   version: 0.0.0-use.local
@@ -33093,7 +33113,7 @@ resolve@1.12.2:
   languageName: node
   linkType: hard
 
-"uniqid@npm:^5.0.3, uniqid@npm:^5.2.0":
+"uniqid@npm:5.3.0, uniqid@npm:^5.0.3, uniqid@npm:^5.2.0":
   version: 5.3.0
   resolution: "uniqid@npm:5.3.0"
   checksum: 1fcf7eb69ea09dd2cf37ffe72d8bd0f371a95586c3408b10f0018ad32e13fd533ebb7942a0fa75d8b1124ca7b4f417d241483853d6d706afeaca25d3cc7a0dcb

@@ -1,5 +1,4 @@
-// @ts-ignore
-import { PluginsContainer } from "../../../../plugins";
+import { PluginsContainer } from "@webiny/plugins";
 import filterPlugins from "../../../src/filters";
 import { CmsFieldValueFilterPlugin } from "../../../src/types";
 
