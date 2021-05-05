@@ -13,21 +13,13 @@ describe("filters", () => {
 
     const operations = [
         ["eq"],
-        ["not_eq"],
         ["in"],
-        ["not_in"],
         ["gt"],
-        ["not_gt"],
         ["gte"],
-        ["not_gte"],
         ["lt"],
-        ["not_lt"],
         ["lte"],
-        ["not_lte"],
         ["contains"],
-        ["not_contains"],
-        ["between"],
-        ["not_between"]
+        ["between"]
     ];
 
     const findFilterPlugin = (operation: string): CmsFieldValueFilterPlugin<any> => {
@@ -68,14 +60,14 @@ describe("filters", () => {
         [false, true]
     ];
     test.each(notEqualList)("values should not be equal", (inputValue: any, compareValue: any) => {
-        const plugin = findFilterPlugin("not_eq");
+        const plugin = findFilterPlugin("eq");
 
         const result = plugin.matches({
             inputValue,
             compareValue
         });
 
-        expect(result).toBe(true);
+        expect(result).toBe(false);
     });
 
     const inList = [
@@ -104,14 +96,14 @@ describe("filters", () => {
         [false, ["false", "4", new Date()]]
     ];
     test.each(notInList)("values should not be in", (inputValue: any, compareValue: any) => {
-        const plugin = findFilterPlugin("not_in");
+        const plugin = findFilterPlugin("in");
 
         const result = plugin.matches({
             inputValue,
             compareValue
         });
 
-        expect(result).toBe(true);
+        expect(result).toBe(false);
     });
 
     const gtList = [
@@ -145,14 +137,14 @@ describe("filters", () => {
         [new Date("2021-01-03T00:23:23.000Z"), new Date("2021-01-04T00:23:23.000Z")]
     ];
     test.each(notGtList)("value should not be greater", (inputValue: any, compareValue: any) => {
-        const plugin = findFilterPlugin("not_gt");
+        const plugin = findFilterPlugin("gt");
 
         const result = plugin.matches({
             inputValue,
             compareValue
         });
 
-        expect(result).toBe(true);
+        expect(result).toBe(false);
     });
 
     const gteList = [
@@ -191,14 +183,14 @@ describe("filters", () => {
     test.each(notGteList)(
         "value should not be greater or equal",
         (inputValue: any, compareValue: any) => {
-            const plugin = findFilterPlugin("not_gte");
+            const plugin = findFilterPlugin("gte");
 
             const result = plugin.matches({
                 inputValue,
                 compareValue
             });
 
-            expect(result).toBe(true);
+            expect(result).toBe(false);
         }
     );
 
@@ -233,14 +225,14 @@ describe("filters", () => {
         [new Date("2021-01-03T00:23:23.000Z"), new Date("2021-01-02T23:23:23.000Z")]
     ];
     test.each(notLtList)("value should not be lesser", (inputValue: any, compareValue: any) => {
-        const plugin = findFilterPlugin("not_lt");
+        const plugin = findFilterPlugin("lt");
 
         const result = plugin.matches({
             inputValue,
             compareValue
         });
 
-        expect(result).toBe(true);
+        expect(result).toBe(false);
     });
 
     const lteList = [
@@ -278,14 +270,14 @@ describe("filters", () => {
     test.each(notLteList)(
         "value should not be lesser or equal",
         (inputValue: any, compareValue: any) => {
-            const plugin = findFilterPlugin("not_lte");
+            const plugin = findFilterPlugin("lte");
 
             const result = plugin.matches({
                 inputValue,
                 compareValue
             });
 
-            expect(result).toBe(true);
+            expect(result).toBe(false);
         }
     );
 
@@ -309,14 +301,14 @@ describe("filters", () => {
         ["some text with description", "with some"]
     ];
     test.each(notContainsList)("value should not contain", (inputValue: any, compareValue: any) => {
-        const plugin = findFilterPlugin("not_contains");
+        const plugin = findFilterPlugin("contains");
 
         const result = plugin.matches({
             inputValue,
             compareValue
         });
 
-        expect(result).toBe(true);
+        expect(result).toBe(false);
     });
 
     const betweenList = [
@@ -357,7 +349,7 @@ describe("filters", () => {
     test.each(notBetweenList)(
         "values should not be in between",
         (inputValue: any, compareValue: any) => {
-            const plugin = findFilterPlugin("not_between");
+            const plugin = findFilterPlugin("between");
 
             const result = plugin.matches({
                 inputValue,

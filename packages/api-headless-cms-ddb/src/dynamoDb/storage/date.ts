@@ -24,6 +24,9 @@ export default (): CmsModelFieldToStoragePlugin<Date | string, string> => ({
     async toStorage({ value, field }) {
         const { type } = (field as CmsContentModelDateTimeField).settings;
         if (!value || !type || excludeTypes.includes(type)) {
+            if (value && (value as Date).toISOString) {
+                return (value as Date).toISOString();
+            }
             return value as string;
         }
         if ((value as any).toISOString) {
