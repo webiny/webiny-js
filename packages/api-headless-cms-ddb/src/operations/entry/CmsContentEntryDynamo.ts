@@ -18,7 +18,6 @@ import {
     CmsContentEntryStorageOperationsUpdateArgs,
     CmsContentModel,
     CmsContext,
-    CmsModelFieldToStoragePlugin,
     CONTENT_ENTRY_STATUS
 } from "@webiny/api-headless-cms/types";
 import configurations from "../../configurations";
@@ -31,9 +30,8 @@ import {
 import { entryToStorageTransform } from "@webiny/api-headless-cms/transformers";
 import { Entity, Table } from "dynamodb-toolbox";
 import { getDocumentClient, getTable } from "../helpers";
-import { createFilters, filterItems, SearchConverters, sortEntryItems } from "./utils";
+import { filterItems, sortEntryItems } from "./utils";
 import { queryOptions as DDBToolboxQueryOptions } from "dynamodb-toolbox/dist/classes/Table";
-import { FilterExpressions } from "dynamodb-toolbox/dist/lib/expressionBuilder";
 
 export const TYPE_ENTRY = "cms.entry";
 export const TYPE_ENTRY_LATEST = TYPE_ENTRY + ".l";
@@ -59,8 +57,6 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
     private readonly _dataLoaders: DataLoadersHandler;
     private readonly _table: Table;
     private readonly _entity: Entity<any>;
-
-    private _searchConverters: SearchConverters;
 
     private get context(): CmsContext {
         return this._context;
@@ -342,6 +338,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
                 totalCount: items.length
             };
         }
+        /*
         // make sure we get only the entry records
         const baseFilters: FilterExpressions = [
             {
@@ -375,21 +372,14 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             });
             delete where["published"];
         }
-
-        const filters = createFilters({
-            base: baseFilters,
-            context: this.context,
-            model,
-            where,
-            converters: this.getConverters()
-        });
+        */
 
         let items: CmsContentEntry[] = [];
 
         const scanner = async previousResults => {
             let result;
             const options = {
-                filters: filters.native,
+                // filters: filters,
                 limit: limit + 1
             };
             if (!previousResults) {
@@ -417,12 +407,11 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             }
         } catch (ex) {
             throw new WebinyError(ex.message, ex.code || "SCAN_ERROR", {
-                error: ex,
-                filters
+                error: ex
             });
         }
 
-        items = filterItems(items, filters.code);
+        items = filterItems({ items, where, model, context: this.context });
         const totalCount = items.length;
 
         items = sortEntryItems({
@@ -1137,16 +1126,6 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
                 return null;
             }
             return result.Items.shift();
-            // const [entries] = await db.read<CmsContentEntry>({
-            //     ...configurations.db(),
-            //     query,
-            //     sort,
-            //     limit: 1
-            // });
-            // if (entries.length === 0) {
-            //     return null;
-            // }
-            // return entries.shift();
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not read from the DynamoDB.",
@@ -1164,7 +1143,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
          * If ID includes # it means it is composed of ID and VERSION.
          * We need ID only so extract it.
          */
-        if (id.includes("#")) {
+        if (id.match("#") !== null) {
             id = id.split("#").shift();
         }
         return `${this._partitionKey}#${id}`;
@@ -1190,20 +1169,6 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
         return "P";
     }
 
-    private getConverters(): SearchConverters {
-        if (!this._searchConverters) {
-            this._searchConverters = this.context.plugins
-                .byType<CmsModelFieldToStoragePlugin>("cms-model-field-to-storage")
-                .reduce((converters, plugin) => {
-                    if (typeof plugin.convertToSearch !== "function") {
-                        return converters;
-                    }
-                    converters[plugin.fieldType] = plugin.convertToSearch;
-                    return converters;
-                }, {} as SearchConverters);
-        }
-        return this._searchConverters;
-    }
     /**
      * We use this method when there are exact IDs to be found. This is quite faster than the query or scan operations.
      */

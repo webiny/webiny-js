@@ -1,162 +1,176 @@
-import { CmsContentEntry, CmsContentModel, CmsContext } from "@webiny/api-headless-cms/types";
+import {
+    CmsContentEntry,
+    CmsContentEntryListWhere,
+    CmsContentModel,
+    CmsContentModelField,
+    CmsContext
+} from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
 import lodashSortBy from "lodash.sortby";
-import { FilterExpressions } from "dynamodb-toolbox/dist/lib/expressionBuilder";
 import dotProp from "dot-prop";
-
-const defaultSystemFieldIds = ["id", "createdOn", "savedOn", "createdBy", "ownedBy"];
-const VALUES_ATTRIBUTE = "values";
-
-const createOperation = (operation: string): { operation: string; negate?: boolean } => {
-    switch (operation) {
-        case "eq":
-        case "lt":
-        case "lte":
-        case "gt":
-        case "gte":
-        case "in":
-        case "between":
-        case "contains":
-            return {
-                operation
-            };
-        case "not_eq":
-        case "not_in":
-        case "not_between":
-        case "not_contains":
-            const op = operation.replace("not_", "");
-            return {
-                operation: op,
-                negate: true
-            };
-    }
-    throw new WebinyError("Operation not supported.", "OP_NOT_SUPPORTED", {
-        operation
-    });
-};
-
-interface ExtractArgs {
-    key: string;
-    fields: string[];
-    model: CmsContentModel;
-    systemFields: string[];
-    value: any;
-}
-
-interface ExtractResult {
-    attr: string;
-    operation: string;
-    negate: boolean;
-    value: any;
-}
-
-const extractFilter = (args: ExtractArgs): ExtractResult => {
-    const { key, fields, systemFields, value } = args;
-    const result = key.split("_");
-    const attr = result.shift();
-    const rawOp = result.length === 0 ? "eq" : result.join("_");
-    const isSystemField = systemFields.includes(attr);
-    if (fields.includes(attr) === false && !isSystemField) {
-        throw new WebinyError(
-            "Filtering field does not exist in the content model.",
-            "FILTERING_FIELD_ERROR",
-            {
-                key,
-                attr,
-                fields
-            }
-        );
-    }
-    const { operation, negate } = createOperation(rawOp);
-    return {
-        attr: isSystemField ? attr : `${VALUES_ATTRIBUTE}.${attr}`,
-        operation,
-        negate,
-        value
-    };
-};
+import {
+    format as formatDateTime,
+    parse as parseDateTime,
+    parseISO as parseISODateTime
+} from "date-fns";
+import { CmsFieldValueFilterArgs, CmsFieldValueFilterPlugin } from "../../types";
 
 interface CreateFiltersArgs {
-    base: FilterExpressions;
     context: CmsContext;
     model: CmsContentModel;
-    where?: Record<string, any>;
+    where: CmsContentEntryListWhere;
 }
 
-interface CodeFilter {
-    attr: string;
-    operation: string;
-    value: any;
-    negate?: boolean;
+interface ItemFilter {
+    fieldId: string;
+    target: string;
+    matches: (args: CmsFieldValueFilterArgs<any, any>) => boolean;
+    negate: boolean;
+    compareValue: any;
 }
 
-export const createFilters = (args: CreateFiltersArgs): FilterExpressions => {
-    const { base: baseFilters, model, where } = args;
-    const keys = Object.keys(where);
-    const filters = [].concat(baseFilters);
-    if (!where || keys.length === 0) {
-        return filters;
-    }
+interface FilterItemsArgs {
+    items: CmsContentEntry[];
+    where: CmsContentEntryListWhere;
+    model: CmsContentModel;
+    context: CmsContext;
+}
 
-    const fields = defaultSystemFieldIds.concat(model.fields.map(field => field.fieldId));
-
-    for (const key in where) {
-        if (where.hasOwnProperty(key) === false) {
-            continue;
-        }
-        const value = where[key];
-        if (value === undefined) {
-            continue;
-        }
-        const filter = extractFilter({
-            key,
-            systemFields: defaultSystemFieldIds,
-            model,
-            fields,
-            value
-        });
-        filters.push({
-            attr: filter.attr,
-            negate: filter.negate,
-            [filter.operation]: filter.value
-        });
-    }
-    return filters;
+const defaultSystemFieldIds = ["id", "createdOn", "savedOn", "createdBy", "ownedBy"];
+const fieldPathsTransformations = {
+    createdBy: "createdBy.id",
+    ownedBy: "ownedBy.id"
 };
-const filterMatch = (item: CmsContentEntry, filter: CodeFilter): boolean => {
-    const value: string | undefined = dotProp.get(item, filter.attr, "");
-    if (filter.operation === "contains") {
-        if (!value) {
-            return false;
+const dateTimeField = (id: string): CmsContentModelField => {
+    return {
+        id,
+        type: "datetime",
+        fieldId: id,
+        multipleValues: false,
+        listValidation: [],
+        validation: [],
+        renderer: {
+            name: "renderer"
+        },
+        predefinedValues: {
+            enabled: false,
+            values: []
+        },
+        placeholderText: id,
+        helpText: id,
+        label: id,
+        settings: {
+            type: "datetime"
         }
-        const result = value.match(new RegExp(filter.value, "i")) !== null;
-        return filter.negate ? result === false : result;
-    } else if (filter.operation === "in") {
-        if (Array.isArray(filter.value) === false) {
-            throw new WebinyError("Filter value must be an array.", "FILTER_VALUE_ERROR", {
-                filter
-            });
-        }
-        let isIn = false;
-        for (const search of filter.value) {
-            if (value === search) {
-                isIn = true;
-            }
-        }
-        return filter.negate ? !isIn : isIn;
+    };
+};
+const defaultSystemFields = {
+    createdOn: dateTimeField("createdOn"),
+    savedOn: dateTimeField("createdOn")
+};
+const VALUES_ATTRIBUTE = "values";
+
+const extractWhereArgs = (key: string) => {
+    const result = key.split("_");
+    const field = result.shift();
+    const rawOp = result.length === 0 ? "eq" : result.join("_");
+
+    const negate = rawOp.match("not_") !== null;
+    const operation = rawOp.replace("not_", "");
+    return { field, operation, negate };
+};
+const getFilterPlugins = (context: CmsContext): Record<string, CmsFieldValueFilterPlugin<any>> => {
+    const plugins = context.plugins.byType<CmsFieldValueFilterPlugin<any>>(
+        "cms-field-value-filter"
+    );
+    if (plugins.length === 0) {
+        throw new WebinyError("Missing filtering plugins.", "FILTERING_PLUGINS_ERROR");
     }
-    throw new WebinyError("Unsupported code filter.", "UNSUPPORTED_CODE_FILTER", {
-        item,
-        filter
+    return plugins.reduce((matchers, plugin) => {
+        if (matchers[plugin.operation]) {
+            throw new WebinyError(
+                "Cannot have multiple filter plugins for one operation.",
+                "FILTERING_PLUGINS_ERROR",
+                {
+                    plugin,
+                    operation: plugin.operation
+                }
+            );
+        }
+        matchers[plugin.operation] = plugin;
+        return matchers;
+    }, {});
+};
+const createFilters = (args: CreateFiltersArgs): ItemFilter[] => {
+    const { model, where, context } = args;
+    const plugins = getFilterPlugins(context);
+    const baseFilters: ItemFilter[] = [
+        {
+            fieldId: "modelId",
+            target: "modelId",
+            matches: plugins["eq"].matches,
+            negate: false,
+            compareValue: model.modelId
+        }
+    ];
+    const filters = Object.keys(where).map(key => {
+        const { field, operation, negate } = extractWhereArgs(key);
+        const target = defaultSystemFieldIds.includes(field)
+            ? field
+            : `${VALUES_ATTRIBUTE}.${field}`;
+
+        return {
+            fieldId: field,
+            target,
+            matches: plugins[operation].matches,
+            negate,
+            compareValue: where[key]
+        };
     });
+    return baseFilters.concat(filters);
 };
-export const filterItems = (items: CmsContentEntry[], filters: CodeFilter[]): CmsContentEntry[] => {
+const transformValue = (field: CmsContentModelField | undefined, value: any): any => {
+    if (!field) {
+        return value;
+    } else if (field.type === "datetime" && field.settings && field.settings.type) {
+        const type = field.settings.type;
+        if (type === "time") {
+            const parsed = parseDateTime(value, "HH:mm:ss", new Date());
+            const [hours, minutes, seconds] = formatDateTime(parsed, "HH:mm:ss")
+                .split(":")
+                .map(Number);
+            return hours * 60 * 60 + minutes * 60 + seconds;
+        }
+        return parseISODateTime(value);
+    } else if (field.type === "number") {
+        return Number(value);
+    }
+    return value;
+};
+export const filterItems = (args: FilterItemsArgs): CmsContentEntry[] => {
+    const { items, where, context, model } = args;
+
+    const modelFields = model.fields.reduce((acc, field) => {
+        acc[field.fieldId] = field;
+        return acc;
+    }, {});
+
+    const filters = createFilters({
+        context,
+        model,
+        where
+    });
     return items.filter(item => {
         for (const filter of filters) {
-            const result = filterMatch(item, filter);
-            if (!result) {
-                return false;
-            }
+            const target = fieldPathsTransformations[filter.fieldId] || filter.target;
+            const value = dotProp.get(item, target);
+
+            const field = modelFields[filter.fieldId] || defaultSystemFields[filter.fieldId];
+            const result = filter.matches({
+                fieldValue: transformValue(field, value),
+                compareValue: transformValue(field, filter.compareValue)
+            });
+            return filter.negate ? !result : result;
         }
         return true;
     });
@@ -217,9 +231,9 @@ export const sortEntryItems = (args: SortEntryItemsArgs): CmsContentEntry[] => {
     const fields = defaultSystemFieldIds.concat(model.fields.map(field => field.fieldId));
 
     const { field, reverse } = extractSort(firstSort, fields);
-    const newItems = lodashSortBy(items, field);
-    if (reverse) {
-        newItems.reverse();
+    const newItems: CmsContentEntry[] = lodashSortBy(items, field);
+    if (!reverse) {
+        return newItems;
     }
-    return newItems;
+    return newItems.reverse();
 };

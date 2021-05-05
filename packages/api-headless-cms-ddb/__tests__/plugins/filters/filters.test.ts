@@ -40,11 +40,11 @@ describe("filters", () => {
         [true, true],
         [false, false]
     ];
-    test.each(equalList)("values should be equal", (inputValue: any, compareValue: any) => {
+    test.each(equalList)("values should be equal", (fieldValue: any, compareValue: any) => {
         const plugin = findFilterPlugin("eq");
 
         const result = plugin.matches({
-            inputValue,
+            fieldValue,
             compareValue
         });
 
@@ -58,11 +58,11 @@ describe("filters", () => {
         [true, false],
         [false, true]
     ];
-    test.each(notEqualList)("values should not be equal", (inputValue: any, compareValue: any) => {
+    test.each(notEqualList)("values should not be equal", (fieldValue: any, compareValue: any) => {
         const plugin = findFilterPlugin("eq");
 
         const result = plugin.matches({
-            inputValue,
+            fieldValue,
             compareValue
         });
 
@@ -76,11 +76,11 @@ describe("filters", () => {
         [true, [true, false, "2", 1]],
         [false, [false, "4", new Date()]]
     ];
-    test.each(inList)("values should be in", (inputValue: any, compareValue: any) => {
+    test.each(inList)("values should be in", (fieldValue: any, compareValue: any) => {
         const plugin = findFilterPlugin("in");
 
         const result = plugin.matches({
-            inputValue,
+            fieldValue,
             compareValue
         });
 
@@ -94,11 +94,11 @@ describe("filters", () => {
         [true, ["true", false, "2", 1]],
         [false, ["false", "4", new Date()]]
     ];
-    test.each(notInList)("values should not be in", (inputValue: any, compareValue: any) => {
+    test.each(notInList)("values should not be in", (fieldValue: any, compareValue: any) => {
         const plugin = findFilterPlugin("in");
 
         const result = plugin.matches({
-            inputValue,
+            fieldValue,
             compareValue
         });
 
@@ -113,11 +113,11 @@ describe("filters", () => {
         [new Date("2021-01-02T23:24:23.000Z"), new Date("2021-01-02T23:23:23.000Z")],
         [new Date("2021-01-03T00:23:23.000Z"), new Date("2021-01-02T23:23:23.000Z")]
     ];
-    test.each(gtList)("value should be greater", (inputValue: any, compareValue: any) => {
+    test.each(gtList)("value should be greater", (fieldValue: any, compareValue: any) => {
         const plugin = findFilterPlugin("gt");
 
         const result = plugin.matches({
-            inputValue,
+            fieldValue,
             compareValue
         });
 
@@ -135,11 +135,11 @@ describe("filters", () => {
         [new Date("2021-01-02T23:24:23.000Z"), new Date("2021-01-03T00:24:23.000Z")],
         [new Date("2021-01-03T00:23:23.000Z"), new Date("2021-01-04T00:23:23.000Z")]
     ];
-    test.each(notGtList)("value should not be greater", (inputValue: any, compareValue: any) => {
+    test.each(notGtList)("value should not be greater", (fieldValue: any, compareValue: any) => {
         const plugin = findFilterPlugin("gt");
 
         const result = plugin.matches({
-            inputValue,
+            fieldValue,
             compareValue
         });
 
@@ -160,11 +160,11 @@ describe("filters", () => {
         [new Date("2021-01-03T00:23:23.000Z"), new Date("2021-01-02T23:23:23.000Z")],
         [new Date("2021-01-03T23:23:23.000Z"), new Date("2021-01-03T23:23:23.000Z")]
     ];
-    test.each(gteList)("value should be greater or equal", (inputValue: any, compareValue: any) => {
+    test.each(gteList)("value should be greater or equal", (fieldValue: any, compareValue: any) => {
         const plugin = findFilterPlugin("gte");
 
         const result = plugin.matches({
-            inputValue,
+            fieldValue,
             compareValue
         });
 
@@ -181,11 +181,11 @@ describe("filters", () => {
     ];
     test.each(notGteList)(
         "value should not be greater or equal",
-        (inputValue: any, compareValue: any) => {
+        (fieldValue: any, compareValue: any) => {
             const plugin = findFilterPlugin("gte");
 
             const result = plugin.matches({
-                inputValue,
+                fieldValue,
                 compareValue
             });
 
@@ -201,11 +201,11 @@ describe("filters", () => {
         [new Date("2021-01-02T23:24:23.000Z"), new Date("2021-01-03T00:25:23.000Z")],
         [new Date("2021-01-03T00:23:23.000Z"), new Date("2021-01-04T00:23:24.000Z")]
     ];
-    test.each(ltList)("value should be lesser", (inputValue: any, compareValue: any) => {
+    test.each(ltList)("value should be lesser", (fieldValue: any, compareValue: any) => {
         const plugin = findFilterPlugin("lt");
 
         const result = plugin.matches({
-            inputValue,
+            fieldValue,
             compareValue
         });
 
@@ -223,11 +223,11 @@ describe("filters", () => {
         [new Date("2021-01-02T23:24:23.000Z"), new Date("2021-01-02T23:23:23.000Z")],
         [new Date("2021-01-03T00:23:23.000Z"), new Date("2021-01-02T23:23:23.000Z")]
     ];
-    test.each(notLtList)("value should not be lesser", (inputValue: any, compareValue: any) => {
+    test.each(notLtList)("value should not be lesser", (fieldValue: any, compareValue: any) => {
         const plugin = findFilterPlugin("lt");
 
         const result = plugin.matches({
-            inputValue,
+            fieldValue,
             compareValue
         });
 
@@ -248,11 +248,11 @@ describe("filters", () => {
         [new Date("2021-01-03T00:23:23.000Z"), new Date("2021-01-04T00:23:24.000Z")],
         [new Date("2021-01-03T00:23:23.000Z"), new Date("2021-01-03T00:23:23.000Z")]
     ];
-    test.each(lteList)("value should be lesser or equal", (inputValue: any, compareValue: any) => {
+    test.each(lteList)("value should be lesser or equal", (fieldValue: any, compareValue: any) => {
         const plugin = findFilterPlugin("lte");
 
         const result = plugin.matches({
-            inputValue,
+            fieldValue,
             compareValue
         });
 
@@ -268,11 +268,11 @@ describe("filters", () => {
     ];
     test.each(notLteList)(
         "value should not be lesser or equal",
-        (inputValue: any, compareValue: any) => {
+        (fieldValue: any, compareValue: any) => {
             const plugin = findFilterPlugin("lte");
 
             const result = plugin.matches({
-                inputValue,
+                fieldValue,
                 compareValue
             });
 
@@ -284,11 +284,11 @@ describe("filters", () => {
         ["some text with description", "with"],
         ["some text with description", "text with"]
     ];
-    test.each(containsList)("value should contain", (inputValue: any, compareValue: any) => {
+    test.each(containsList)("value should contain", (fieldValue: any, compareValue: any) => {
         const plugin = findFilterPlugin("contains");
 
         const result = plugin.matches({
-            inputValue,
+            fieldValue,
             compareValue
         });
 
@@ -299,11 +299,11 @@ describe("filters", () => {
         ["some text with description", "with text"],
         ["some text with description", "with some"]
     ];
-    test.each(notContainsList)("value should not contain", (inputValue: any, compareValue: any) => {
+    test.each(notContainsList)("value should not contain", (fieldValue: any, compareValue: any) => {
         const plugin = findFilterPlugin("contains");
 
         const result = plugin.matches({
-            inputValue,
+            fieldValue,
             compareValue
         });
 
@@ -322,11 +322,11 @@ describe("filters", () => {
             [new Date("2021-01-02T23:23:22.999Z"), new Date("2021-01-02T23:23:23.001Z")]
         ]
     ];
-    test.each(betweenList)("values should be in between", (inputValue: any, compareValue: any) => {
+    test.each(betweenList)("values should be in between", (fieldValue: any, compareValue: any) => {
         const plugin = findFilterPlugin("between");
 
         const result = plugin.matches({
-            inputValue,
+            fieldValue,
             compareValue
         });
 
@@ -347,11 +347,11 @@ describe("filters", () => {
     ];
     test.each(notBetweenList)(
         "values should not be in between",
-        (inputValue: any, compareValue: any) => {
+        (fieldValue: any, compareValue: any) => {
             const plugin = findFilterPlugin("between");
 
             const result = plugin.matches({
-                inputValue,
+                fieldValue,
                 compareValue
             });
 

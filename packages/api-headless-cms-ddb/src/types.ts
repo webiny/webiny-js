@@ -1,10 +1,10 @@
 import { Plugin } from "@webiny/plugins/types";
 
-interface CmsFieldValueFilterArgs<I, V> {
+export interface CmsFieldValueFilterArgs<I, V> {
     /**
      * Value to compare.
      */
-    inputValue: I;
+    fieldValue: I;
     /**
      * Value to compare to.
      */
