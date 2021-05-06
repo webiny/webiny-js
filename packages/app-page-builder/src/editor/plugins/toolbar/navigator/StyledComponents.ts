@@ -18,6 +18,7 @@ export const NavigatorTitle = styled("div")(`
 
 export const ElementTypeContainer = styled("div")(`
     display: flex;
+    align-items: center;
     flex-grow: 1;
     cursor: pointer;
     
