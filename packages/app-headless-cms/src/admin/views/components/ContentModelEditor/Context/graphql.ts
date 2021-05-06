@@ -33,6 +33,10 @@ export const FIELDS_FIELDS = `
 
 export const MODEL_FIELDS = `
     name
+    group {
+        id
+        name
+    }
     description
     modelId
     savedOn

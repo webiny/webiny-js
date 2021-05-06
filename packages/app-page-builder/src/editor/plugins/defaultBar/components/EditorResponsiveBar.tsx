@@ -6,8 +6,9 @@ import { plugins } from "@webiny/plugins";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { Typography } from "@webiny/ui/Typography";
-import { PbEditorResponsiveModePlugin } from "../../../../types";
+import { PbEditorResponsiveModePlugin } from "~/types";
 import { uiAtom, setDisplayModeMutation } from "../../../recoil/modules";
+import { usePageBuilder } from "~/hooks/usePageBuilder";
 
 const classes = {
     wrapper: css({
@@ -84,9 +85,17 @@ const classes = {
 
 const EditorResponsiveBar = () => {
     const [{ displayMode, pagePreviewDimension }, setUiAtomValue] = useRecoilState(uiAtom);
+    const {
+        responsiveDisplayMode: { setDisplayMode }
+    } = usePageBuilder();
     const setEditorMode = useCallback(
         displayMode => {
             setUiAtomValue(prev => setDisplayModeMutation(prev, displayMode));
+            /**
+             * We are updating the "displayMode" in PageBuilder context.
+             * Because "ElementRoot" needs its value to apply "visibility" element style setting.
+             */
+            setDisplayMode(displayMode);
         },
         [uiAtom]
     );

@@ -34,6 +34,12 @@ export const cloneElementAction: EventActionCallable<CloneElementActionArgsType>
 
     return {
         state: {},
-        actions: [new UpdateElementActionEvent({ element: newElement, history: true })]
+        actions: [
+            new UpdateElementActionEvent({
+                element: newElement,
+                history: true,
+                triggerUpdateElementTree: true
+            })
+        ]
     };
 };

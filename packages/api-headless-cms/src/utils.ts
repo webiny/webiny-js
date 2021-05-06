@@ -60,8 +60,12 @@ export const defaults = {
             throw new Error(`There is no tenant on "context.security".`);
         }
 
+        const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
         const locale = context.cms.getLocale().code;
-        const index = `${tenant.id}-headless-cms-${locale}-${model.modelId}`.toLowerCase();
+        const index = [sharedIndex ? "root" : tenant.id, "headless-cms", locale, model.modelId]
+            .join("-")
+            .toLowerCase();
+
         const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX;
         if (prefix) {
             return { index: prefix + index };
@@ -269,7 +273,7 @@ export const validateModelAccess = async (
 };
 export const validateGroupAccess = (
     context: CmsContext,
-    permission: SecurityPermission<CmsContentModelGroupPermission>,
+    permission: CmsContentModelGroupPermission,
     group: CmsContentModelGroup
 ): boolean => {
     const { groups } = permission;

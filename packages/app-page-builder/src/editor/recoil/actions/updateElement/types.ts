@@ -1,6 +1,7 @@
-import { PbEditorElement } from "../../../../types";
+import { PbEditorElement } from "~/types";
 
 export type UpdateElementActionArgsType = {
     element: PbEditorElement;
     history: boolean;
+    triggerUpdateElementTree?: boolean;
 };

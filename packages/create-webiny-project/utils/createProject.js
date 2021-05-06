@@ -10,6 +10,7 @@ const { sendEvent } = require("@webiny/tracking");
 const getPackageJson = require("./getPackageJson");
 const checkProjectName = require("./checkProjectName");
 const yaml = require("js-yaml");
+const findUp = require("find-up");
 
 const NOT_APPLICABLE = gray("N/A");
 
@@ -34,6 +35,24 @@ module.exports = async function createProject({
         console.log(`\nSorry, target folder ${red(projectName)} already exists!`);
         process.exit(1);
     }
+
+    // Before create any files, check if there are yarn.lock or package.json anywhere up in the tree.
+    await Promise.all([findUp("yarn.lock"), findUp("package.json")])
+        .then(files => files.filter(Boolean))
+        .then(files => {
+            if (files.length) {
+                const messages = [
+                    "\nThe following file(s) will cause problems with project root detection:\n",
+                    ...files.map(file => red(file) + "\n"),
+                    `\nMake sure you delete all ${red("yarn.lock")} and ${red(
+                        "package.json"
+                    )} files higher in the hierarchy.`
+                ];
+
+                console.log(messages.join(""));
+                process.exit(1);
+            }
+        });
 
     // Check if @webiny/cli is installed globally and warn user
     try {

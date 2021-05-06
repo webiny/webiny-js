@@ -6,18 +6,6 @@ const editorClass = css({
     width: "100%",
     "&:focus": {
         outline: "none"
-    },
-    "& b": {
-        fontWeight: "bold"
-    },
-    "& u": {
-        textDecoration: "underline"
-    },
-    "& i": {
-        fontStyle: "italic"
-    },
-    "& h1,h2,h3,h4,h5,h6": {
-        fontSize: "unset"
     }
 });
 

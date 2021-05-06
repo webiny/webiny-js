@@ -23,7 +23,6 @@
     "dist",
     "./scripts/**",
     "**jest**",
-    "./packages/cli-plugin-workspaces",
     "./packages/cli-plugin-deploy-pulumi",
     "./packages/cli",
     "./packages/create-webiny-project",

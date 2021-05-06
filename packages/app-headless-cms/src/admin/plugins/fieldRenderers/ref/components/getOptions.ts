@@ -1,7 +1,7 @@
 export const getOptions = (entries = [], extraOptions = null) => {
     return entries
         .map(item => {
-            const name = item.meta.title;
+            const name = item.title;
 
             if (!name) {
                 return null;
@@ -11,8 +11,10 @@ export const getOptions = (entries = [], extraOptions = null) => {
 
             return {
                 id: item.id,
+                modelId: item.model.modelId,
+                modelName: item.model.name,
                 name: name,
-                published: item.meta.status === "published",
+                published: item.status === "published",
                 ...extraData
             };
         })

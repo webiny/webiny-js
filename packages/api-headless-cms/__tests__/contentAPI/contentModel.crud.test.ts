@@ -101,6 +101,9 @@ describe("content model test", () => {
         expect(getTypeFields(ManageQuery)).toEqual([
             "getContentModel",
             "listContentModels",
+            "searchContentEntries",
+            "getContentEntry",
+            "getContentEntries",
             "getContentModelGroup",
             "listContentModelGroups"
         ]);

@@ -127,7 +127,7 @@ const createElasticsearchSortParams = (
 };
 
 const createInitialQueryValue = (args: CreateElasticsearchQueryArgs): ElasticsearchQuery => {
-    const { ownedBy, options } = args;
+    const { ownedBy, options, context } = args;
 
     const query: ElasticsearchQuery = {
         match: [],
@@ -135,6 +135,13 @@ const createInitialQueryValue = (args: CreateElasticsearchQueryArgs): Elasticsea
         mustNot: [],
         should: []
     };
+
+    // When ES index is shared between tenants, we need to filter records by tenant ID
+    const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
+    if (sharedIndex) {
+        const tenant = context.security.getTenant();
+        query.must.push({ term: { "tenant.keyword": tenant.id } });
+    }
 
     // When permission has "only own records" set, we'll have "ownedBy" passed into this function.
     if (ownedBy) {
