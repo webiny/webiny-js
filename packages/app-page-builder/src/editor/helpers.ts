@@ -10,7 +10,7 @@ import {
     PbEditorPageElementSettingsPlugin,
     PbEditorPageElementStyleSettingsPlugin,
     PbEditorElement
-} from "../types";
+} from "~/types";
 
 const ALPHANUMERIC = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 export const getNanoid = customAlphabet(ALPHANUMERIC, 10);
@@ -171,4 +171,24 @@ export const createEmptyElement: CreateEmptyElementCallableType = ({ id, type })
         },
         elements: []
     };
+};
+
+export const updateBlockPosition = ({ parent, sourcePosition, targetPosition }) => {
+    if (sourcePosition === targetPosition) {
+        return parent;
+    }
+
+    return {
+        ...parent,
+        elements: moveInPlace(parent.elements, sourcePosition, targetPosition)
+    };
+};
+
+export const moveInPlace = (arr: any[], from: number, to: number): any[] => {
+    const newArray = [...arr];
+
+    const [item] = newArray.splice(from, 1);
+    newArray.splice(to, 0, item);
+
+    return newArray;
 };

@@ -28,7 +28,7 @@ import { DELETE_PAGE_ELEMENT, UPDATE_PAGE_ELEMENT } from "./graphql";
 import EditBlockDialog from "./EditBlockDialog";
 import { listItem, ListItemTitle, listStyle, TitleContent } from "./SearchBlocksStyled";
 import * as Styled from "./StyledComponents";
-import { PbEditorBlockCategoryPlugin, PbEditorBlockPlugin } from "../../../types";
+import { PbEditorBlockCategoryPlugin, PbEditorBlockPlugin } from "~/types";
 import { elementWithChildrenByIdSelector, rootElementAtom } from "../../recoil/modules";
 
 const allBlockCategory: PbEditorBlockCategoryPlugin = {
@@ -112,7 +112,8 @@ const SearchBar = () => {
             eventActionHandler.trigger(
                 new UpdateElementActionEvent({
                     element,
-                    history: true
+                    history: true,
+                    triggerUpdateElementTree: true
                 })
             );
 

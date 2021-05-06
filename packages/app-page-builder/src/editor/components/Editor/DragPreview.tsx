@@ -32,7 +32,7 @@ const onOffsetChange = monitor => () => {
 const DragPreview = () => {
     const [dragHelperOpacity, setDragHelperOpacity] = useState(0);
 
-    const { isDragging } = useDragLayer((monitor: DragLayerMonitor) => {
+    const { isDragging, item } = useDragLayer((monitor: DragLayerMonitor) => {
         if (!subscribedToOffsetChange) {
             // @ts-ignore
             monitor.subscribeToOffsetChange(onOffsetChange(monitor));
@@ -40,7 +40,8 @@ const DragPreview = () => {
         }
 
         return {
-            isDragging: monitor.isDragging()
+            isDragging: monitor.isDragging(),
+            item: monitor.getItem()
         };
     });
 
@@ -65,6 +66,10 @@ const DragPreview = () => {
     }, [isDragging]);
 
     if (!isDragging) {
+        return null;
+    }
+    // We don't want to show the drag preview for items being drag in the navigator.
+    if (item && item.dragInNavigator) {
         return null;
     }
 
