@@ -1,4 +1,4 @@
-import { Configuration as WebpackConfig, DefinePlugin } from "webpack";
+import { Configuration as WebpackConfig, DefinePlugin, Loader } from "webpack";
 
 interface BabelConfig {
     [key: string]: any;
@@ -41,3 +41,4 @@ export function buildFunction(options: FunctionBuildOptions, context: any): Prom
 export function watchFunction(options: FunctionBuildOptions, context: any): Promise<void>;
 export function buildPackage(options: PackageBuildOptions, context: any): Promise<void>;
 export function watchPackage(): Promise<void>;
+export function traverseLoaders(loaders: Loader[], onLoader: (loader: Loader) => void): void;
