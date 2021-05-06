@@ -167,7 +167,7 @@ describe("MANAGE - Resolvers", () => {
         // Publish it so it becomes available in the "read" API
         const [publish] = await publishCategory({ revision: id });
 
-        const { error } = publish.data.publishCategory;
+        const { data: publishedCategory, error } = publish.data.publishCategory;
         if (error) {
             throw new Error(error);
         }
@@ -195,7 +195,7 @@ describe("MANAGE - Resolvers", () => {
                                 displayName: "User 123",
                                 type: "admin"
                             },
-                            savedOn: category.savedOn,
+                            savedOn: publishedCategory.savedOn,
                             meta: {
                                 locked: true,
                                 modelId: "category",
@@ -818,7 +818,8 @@ describe("MANAGE - Resolvers", () => {
             ...defaultQueryVars,
             where: {
                 id_in: [animals.id, vegetables.id]
-            }
+            },
+            sort: ["savedOn_ASC"]
         });
 
         expect(listInResponse).toEqual({
@@ -828,7 +829,7 @@ describe("MANAGE - Resolvers", () => {
                     meta: {
                         hasMoreItems: false,
                         totalCount: 2,
-                        cursor: expect.any(String)
+                        cursor: null
                     },
                     error: null
                 }

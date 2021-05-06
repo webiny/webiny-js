@@ -25,7 +25,7 @@ const customFieldPlugin = (): CmsModelFieldToGraphQLPlugin => ({
     }
 });
 
-describe("content model test", () => {
+describe("content model test no field plugin", () => {
     const readHandlerOpts = { path: "read/en-US" };
     const manageHandlerOpts = { path: "manage/en-US" };
 

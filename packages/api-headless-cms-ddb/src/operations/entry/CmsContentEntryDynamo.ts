@@ -32,6 +32,8 @@ import { Entity, Table } from "dynamodb-toolbox";
 import { getDocumentClient, getTable } from "../helpers";
 import { filterItems, sortEntryItems } from "./utils";
 import { queryOptions as DDBToolboxQueryOptions } from "dynamodb-toolbox/dist/classes/Table";
+import { FilterExpressions } from "dynamodb-toolbox/dist/lib/expressionBuilder";
+import { parseISO as parseISODateTime } from "date-fns";
 
 export const TYPE_ENTRY = "cms.entry";
 export const TYPE_ENTRY_LATEST = TYPE_ENTRY + ".l";
@@ -48,12 +50,15 @@ interface GetSingleDynamoDBItemArgs {
     order?: string;
 }
 
+const GSI1 = "GSI1";
+
 /**
  * We do not use transactions in this storage operations implementation due to their cost.
  */
 export default class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
     private readonly _context: CmsContext;
     private readonly _partitionKey: string;
+    private readonly _modelPartitionKey: string;
     private readonly _dataLoaders: DataLoadersHandler;
     private readonly _table: Table;
     private readonly _entity: Entity<any>;
@@ -65,13 +70,20 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
     public constructor({ context }: ConstructorArgs) {
         this._context = context;
         this._partitionKey = `${createBasePartitionKey(this.context)}#CME`;
+        this._modelPartitionKey = `${this._partitionKey}#M`;
         this._dataLoaders = new DataLoadersHandler(context, this);
 
         this._table = new Table({
             name: configurations.db().table || getTable(context),
             partitionKey: "PK",
             sortKey: "SK",
-            DocumentClient: getDocumentClient(context)
+            DocumentClient: getDocumentClient(context),
+            indexes: {
+                [GSI1]: {
+                    partitionKey: "GSI1_PK",
+                    sortKey: "GSI1_SK"
+                }
+            }
         });
 
         this._entity = new Entity({
@@ -79,10 +91,18 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             table: this._table,
             attributes: {
                 PK: {
+                    type: "string",
                     partitionKey: true
                 },
                 SK: {
+                    type: "string",
                     sortKey: true
+                },
+                GSI1_PK: {
+                    type: "string"
+                },
+                GSI1_SK: {
+                    type: "number"
                 },
                 TYPE: {
                     type: "string"
@@ -147,14 +167,18 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
                 ...storageEntry,
                 PK: partitionKey,
                 SK: this.getSortKeyRevision(data.version),
-                TYPE: TYPE_ENTRY
+                TYPE: TYPE_ENTRY,
+                GSI1_PK: this.getGSIEntryPartitionKey(model),
+                GSI1_SK: this.getGSISortKey(storageEntry)
             }),
             // Create latest entry item
             this._entity.putBatch({
                 ...storageEntry,
                 PK: partitionKey,
                 SK: this.getSortKeyLatest(),
-                TYPE: TYPE_ENTRY_LATEST
+                TYPE: TYPE_ENTRY_LATEST,
+                GSI1_PK: this.getGSILatestPartitionKey(model),
+                GSI1_SK: this.getGSISortKey(storageEntry)
             })
         ];
 
@@ -193,14 +217,18 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
                 ...storageEntry,
                 PK: partitionKey,
                 SK: this.getSortKeyRevision(storageEntry.version),
-                TYPE: TYPE_ENTRY
+                TYPE: TYPE_ENTRY,
+                GSI1_PK: this.getGSIEntryPartitionKey(model),
+                GSI1_SK: this.getGSISortKey(storageEntry)
             }),
             // Update latest entry item
             this._entity.putBatch({
                 ...storageEntry,
                 PK: partitionKey,
                 SK: this.getSortKeyLatest(),
-                TYPE: TYPE_ENTRY_LATEST
+                TYPE: TYPE_ENTRY_LATEST,
+                GSI1_PK: this.getGSILatestPartitionKey(model),
+                GSI1_SK: this.getGSISortKey(storageEntry)
             })
         ];
         try {
@@ -289,7 +317,9 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
                     ...entryRevisionToSetAsLatest,
                     PK: partitionKey,
                     SK: this.getSortKeyLatest(),
-                    TYPE: TYPE_ENTRY_LATEST
+                    TYPE: TYPE_ENTRY_LATEST,
+                    GSI1_PK: this.getGSILatestPartitionKey(model),
+                    GSI1_SK: this.getGSISortKey(entryRevisionToSetAsLatest)
                 })
             );
         }
@@ -338,59 +368,48 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
                 totalCount: items.length
             };
         }
-        /*
-        // make sure we get only the entry records
+
+        let items: CmsContentEntry[] = [];
+
+        // TODO remove when introduced model partition key
         const baseFilters: FilterExpressions = [
             {
                 attr: "modelId",
                 eq: model.modelId
             }
         ];
-        if (where.entryId !== undefined) {
-            baseFilters.push({
-                attr: "PK",
-                eq: this.getPartitionKey(where.entryId)
-            });
-            delete where["entryId"];
-        } else {
-            baseFilters.push({
-                attr: "PK",
-                beginsWith: this._partitionKey
-            });
-        }
-        // we need to take care of latest and published filters since there are no attributes for that on the model
-        if (where.latest !== undefined) {
+        if (where.latest) {
             baseFilters.push({
                 attr: "TYPE",
                 eq: TYPE_ENTRY_LATEST
             });
-            delete where["latest"];
-        } else if (where.published !== undefined) {
+        } else if (where.published) {
             baseFilters.push({
                 attr: "TYPE",
                 eq: TYPE_ENTRY_PUBLISHED
             });
-            delete where["published"];
+        } else {
+            baseFilters.push({
+                attr: "TYPE",
+                eq: TYPE_ENTRY
+            });
         }
-        */
-
-        let items: CmsContentEntry[] = [];
+        delete where["latest"];
+        delete where["published"];
 
         const scanner = async previousResults => {
             let result;
             const options = {
-                filters: [
-                    {
-                        attr: "modelId",
-                        eq: model.modelId
-                    }
-                ],
+                filters: baseFilters,
                 limit: limit + 1
             };
             if (!previousResults) {
                 result = await this._entity.scan(options);
             } else if (previousResults && typeof previousResults.next === "function") {
                 result = await previousResults.next();
+                if (result === false) {
+                    return null;
+                }
             } else {
                 return null;
             }
@@ -416,14 +435,15 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             });
         }
 
+        items = filterItems({ items, where, model, context: this.context });
+
+        const totalCount = items.length;
+
         items = sortEntryItems({
             model,
             items,
             sort
         });
-
-        items = filterItems({ items, where, model, context: this.context });
-        const totalCount = items.length;
 
         const start = decodePaginationCursor(after) || 0;
         const hasMoreItems = totalCount > start + limit;
@@ -564,13 +584,56 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
         //     );
         // }
 
+        /**
+         * We need to update:
+         *  - current entry revision sort key
+         *  - published sort key
+         *  - latest sort key - if entry updated is actually latest
+         *  - previous published entry to unpublished status - if any previously published entry
+         */
         const items = [
             this._entity.putBatch({
                 ...entry,
                 PK: partitionKey,
-                SK: this.getSortKeyRevision(entry.version)
+                SK: this.getSortKeyRevision(entry.version),
+                TYPE: TYPE_ENTRY,
+                GSI1_PK: this.getGSIEntryPartitionKey(model),
+                GSI1_SK: this.getGSISortKey(entry)
+            }),
+            this._entity.putBatch({
+                ...entry,
+                PK: partitionKey,
+                SK: this.getSortKeyPublished(),
+                TYPE: TYPE_ENTRY_PUBLISHED,
+                GSI1_PK: this.getGSIPublishedPartitionKey(model),
+                GSI1_SK: this.getGSISortKey(entry)
             })
         ];
+        if (entry.id === latestEntry.id) {
+            items.push(
+                this._entity.putBatch({
+                    ...entry,
+                    PK: partitionKey,
+                    SK: this.getSortKeyLatest(),
+                    TYPE: TYPE_ENTRY_LATEST,
+                    GSI1_PK: this.getGSILatestPartitionKey(model),
+                    GSI1_SK: this.getGSISortKey(entry)
+                })
+            );
+        }
+        if (publishedEntry) {
+            items.push(
+                this._entity.putBatch({
+                    ...publishedEntry,
+                    PK: partitionKey,
+                    SK: this.getSortKeyRevision(publishedEntry.version),
+                    TYPE: TYPE_ENTRY,
+                    status: CONTENT_ENTRY_STATUS.UNPUBLISHED,
+                    GSI1_PK: this.getGSIEntryPartitionKey(model),
+                    GSI1_SK: this.getGSISortKey(publishedEntry)
+                })
+            );
+        }
 
         // const batch = db.batch();
         //
@@ -585,80 +648,78 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
 
         // const es = configurations.es(this.context, model);
 
-        if (publishedEntry) {
-            /**
-             * If there is a `published` entry already, we need to set it to `unpublished`. We need to
-             * execute two updates: update the previously published entry's status and the published entry record.
-             * DynamoDB does not support `batchUpdate` - so here we load the previously published
-             * entry's data to update its status within a batch operation. If, hopefully,
-             * they introduce a true update batch operation, remove this `read` call.
-             */
-            // const [[previouslyPublishedStorageEntry]] = await db.read<CmsContentEntry>({
-            //     ...configurations.db(),
-            //     query: {
-            //         PK: partitionKey,
-            //         SK: this.getSortKeyRevision(publishedEntry.version)
-            //     }
-            // });
-
-            // previouslyPublishedStorageEntry.status = CONTENT_ENTRY_STATUS.UNPUBLISHED;
-
-            items.push(
-                this._entity.putBatch({
-                    ...publishedEntry,
-                    PK: partitionKey,
-                    SK: this.getSortKeyRevision(publishedEntry.version),
-                    TYPE: TYPE_ENTRY,
-                    status: CONTENT_ENTRY_STATUS.UNPUBLISHED
-                })
-            );
-            // batch
-            //     .update({
-            //         /**
-            //          * Update currently published entry (unpublish it)
-            //          */
-            //         ...configurations.db(),
-            //         query: {
-            //             PK: partitionKey,
-            //             SK: this.getSortKeyRevision(publishedEntry.version)
-            //         },
-            //         data: previouslyPublishedStorageEntry
-            //     })
-            //     .update({
-            //         /**
-            //          * Update the helper item in DB with the new published entry ID
-            //          */
-            //         ...configurations.db(),
-            //         query: {
-            //             PK: partitionKey,
-            //             SK: this.getSortKeyPublished()
-            //         },
-            //         data: {
-            //             PK: partitionKey,
-            //             SK: this.getSortKeyPublished(),
-            //             ...getEntryData(this.context, publishedEntry),
-            //             ...getEntryData(this.context, entry)
-            //         }
-            //     });
-        } else {
-            items.push(
-                this._entity.putBatch({
-                    ...entry,
-                    PK: partitionKey,
-                    SK: this.getSortKeyPublished(),
-                    TYPE: TYPE_ENTRY_PUBLISHED
-                })
-            );
-            // batch.create({
-            //     ...configurations.db(),
-            //     data: {
-            //         PK: partitionKey,
-            //         SK: this.getSortKeyPublished(),
-            //         TYPE: TYPE_ENTRY_PUBLISHED,
-            //         ...getEntryData(this.context, entry)
-            //     }
-            // });
-        }
+        // if (publishedEntry) {
+        /**
+         * If there is a `published` entry already, we need to set it to `unpublished`. We need to
+         * execute two updates: update the previously published entry's status and the published entry record.
+         * DynamoDB does not support `batchUpdate` - so here we load the previously published
+         * entry's data to update its status within a batch operation. If, hopefully,
+         * they introduce a true update batch operation, remove this `read` call.
+         */
+        // const [[previouslyPublishedStorageEntry]] = await db.read<CmsContentEntry>({
+        //     ...configurations.db(),
+        //     query: {
+        //         PK: partitionKey,
+        //         SK: this.getSortKeyRevision(publishedEntry.version)
+        //     }
+        // });
+        // previouslyPublishedStorageEntry.status = CONTENT_ENTRY_STATUS.UNPUBLISHED;
+        // items.push(
+        //     this._entity.putBatch({
+        //         ...publishedEntry,
+        //         PK: partitionKey,
+        //         SK: this.getSortKeyRevision(publishedEntry.version),
+        //         TYPE: TYPE_ENTRY,
+        //         status: CONTENT_ENTRY_STATUS.UNPUBLISHED
+        //     }),
+        // );
+        // batch
+        //     .update({
+        //         /**
+        //          * Update currently published entry (unpublish it)
+        //          */
+        //         ...configurations.db(),
+        //         query: {
+        //             PK: partitionKey,
+        //             SK: this.getSortKeyRevision(publishedEntry.version)
+        //         },
+        //         data: previouslyPublishedStorageEntry
+        //     })
+        //     .update({
+        //         /**
+        //          * Update the helper item in DB with the new published entry ID
+        //          */
+        //         ...configurations.db(),
+        //         query: {
+        //             PK: partitionKey,
+        //             SK: this.getSortKeyPublished()
+        //         },
+        //         data: {
+        //             PK: partitionKey,
+        //             SK: this.getSortKeyPublished(),
+        //             ...getEntryData(this.context, publishedEntry),
+        //             ...getEntryData(this.context, entry)
+        //         }
+        //     });
+        // } else {
+        // items.push(
+        //     this._entity.putBatch({
+        //         ...entry,
+        //         PK: partitionKey,
+        //         SK: this.getSortKeyPublished(),
+        //         TYPE: TYPE_ENTRY_PUBLISHED
+        //     })
+        // );
+        // batch.create({
+        //     ...configurations.db(),
+        //     data: {
+        //         PK: partitionKey,
+        //         SK: this.getSortKeyPublished(),
+        //         TYPE: TYPE_ENTRY_PUBLISHED,
+        //         ...getEntryData(this.context, entry)
+        //     }
+        // });
+        // }
 
         /**
          * If we are publishing the latest revision, let's also update the latest revision's status in ES.
@@ -742,7 +803,12 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
         const { entry, latestEntryRevision: latestEntry } = args;
 
         const partitionKey = this.getPartitionKey(entry.id);
-
+        /**
+         * We need to:
+         *  - delete currently published entry
+         *  - update current entry revision with new data
+         *  - update latest entry status - if entry being unpublished is latest
+         */
         const items = [
             this._entity.deleteBatch({
                 PK: partitionKey,
@@ -751,9 +817,25 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             this._entity.putBatch({
                 ...entry,
                 PK: partitionKey,
-                SK: this.getSortKeyRevision(entry.version)
+                SK: this.getSortKeyRevision(entry.version),
+                TYPE: TYPE_ENTRY,
+                GSI1_PK: this.getGSIEntryPartitionKey(model),
+                GSI1_SK: this.getGSISortKey(entry)
             })
         ];
+
+        if (entry.id === latestEntry.id) {
+            items.push(
+                this._entity.putBatch({
+                    ...entry,
+                    PK: partitionKey,
+                    SK: this.getSortKeyLatest(),
+                    TYPE: TYPE_ENTRY_LATEST,
+                    GSI1_PK: this.getGSILatestPartitionKey(model),
+                    GSI1_SK: this.getGSISortKey(entry)
+                })
+            );
+        }
 
         // const batch = db
         //     .batch()
@@ -782,30 +864,31 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
         /**
          * If we are unpublishing the latest revision, let's also update the latest revision entry's status in ES.
          */
-        if (latestEntry.id === entry.id) {
-            items.push(
-                this._entity.putBatch({
-                    ...entry,
-                    PK: partitionKey,
-                    SK: this.getSortKeyLatest()
-                })
-            );
-            // const es = configurations.es(this.context, model);
-            //
-            // batch.update({
-            //     ...configurations.esDb(),
-            //     query: {
-            //         PK: primaryKey,
-            //         SK: this.getSortKeyLatest()
-            //     },
-            //     data: {
-            //         PK: primaryKey,
-            //         SK: this.getSortKeyLatest(),
-            //         index: es.index,
-            //         data: getESLatestEntryData(this.context, entry)
-            //     }
-            // });
-        }
+        // if (latestEntry.id === entry.id) {
+        //     items.push(
+        //         this._entity.putBatch({
+        //             ...entry,
+        //             TYPE: TYPE_ENTRY_LATEST,
+        //             PK: partitionKey,
+        //             SK: this.getSortKeyLatest()
+        //         })
+        //     );
+        // const es = configurations.es(this.context, model);
+        //
+        // batch.update({
+        //     ...configurations.esDb(),
+        //     query: {
+        //         PK: primaryKey,
+        //         SK: this.getSortKeyLatest()
+        //     },
+        //     data: {
+        //         PK: primaryKey,
+        //         SK: this.getSortKeyLatest(),
+        //         index: es.index,
+        //         data: getESLatestEntryData(this.context, entry)
+        //     }
+        // });
+        // }
 
         try {
             await this._table.batchWrite(items);
@@ -835,13 +918,32 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
 
         const partitionKey = this.getPartitionKey(entry.id);
 
+        /**
+         * We need to:
+         *  - update the existing entry
+         *  - update latest version - if existing entry is the latest version
+         */
         const items = [
             this._entity.putBatch({
                 ...entry,
                 PK: partitionKey,
-                SK: this.getSortKeyRevision(entry.version)
+                SK: this.getSortKeyRevision(entry.version),
+                GSI1_PK: this.getGSIEntryPartitionKey(model),
+                GSI1_SK: this.getGSISortKey(entry)
             })
         ];
+        if (latestEntry.id === entry.id) {
+            items.push(
+                this._entity.putBatch({
+                    ...entry,
+                    PK: partitionKey,
+                    SK: this.getSortKeyLatest(),
+                    TYPE: TYPE_ENTRY_LATEST,
+                    GSI1_PK: this.getGSILatestPartitionKey(model),
+                    GSI1_SK: this.getGSISortKey(entry)
+                })
+            );
+        }
 
         // const batch = db.batch().update({
         //     ...configurations.db(),
@@ -855,30 +957,32 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
         /**
          * If we updated the latest version, then make sure the changes are propagated to ES too.
          */
-        if (latestEntry.id === entry.id) {
-            items.push(
-                this._entity.putBatch({
-                    ...entry,
-                    PK: partitionKey,
-                    SK: this.getSortKeyLatest(),
-                    TYPE: TYPE_ENTRY_LATEST
-                })
-            );
-            // const es = configurations.es(this.context, model);
-            // batch.update({
-            //     ...configurations.esDb(),
-            //     query: {
-            //         PK: partitionKey,
-            //         SK: this.getSortKeyLatest()
-            //     },
-            //     data: {
-            //         PK: partitionKey,
-            //         SK: this.getSortKeyLatest(),
-            //         index: es.index,
-            //         data: getESLatestEntryData(this.context, entry)
-            //     }
-            // });
-        }
+        // if (latestEntry.id === entry.id) {
+        // items.push(
+        //     this._entity.putBatch({
+        //         ...entry,
+        //         PK: partitionKey,
+        //         SK: this.getSortKeyLatest(),
+        //         TYPE: TYPE_ENTRY_LATEST,
+        //         GSI1_PK: this.getGSILatestPartitionKey(model),
+        //         GSI1_SK: this.getGSISortKey(entry)
+        //     })
+        // );
+        // const es = configurations.es(this.context, model);
+        // batch.update({
+        //     ...configurations.esDb(),
+        //     query: {
+        //         PK: partitionKey,
+        //         SK: this.getSortKeyLatest()
+        //     },
+        //     data: {
+        //         PK: partitionKey,
+        //         SK: this.getSortKeyLatest(),
+        //         index: es.index,
+        //         data: getESLatestEntryData(this.context, entry)
+        //     }
+        // });
+        // }
 
         try {
             await this._table.batchWrite(items);
@@ -888,7 +992,8 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
                 ex.code || "REQUEST_CHANGES_ERROR",
                 {
                     entry,
-                    originalEntry
+                    originalEntry,
+                    latestEntry
                 }
             );
         }
@@ -907,14 +1012,32 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
         } = args;
 
         const partitionKey = this.getPartitionKey(entry.id);
-
+        /**
+         * We need to:
+         *  - update existing entry
+         *  - update latest entry - if existing entry is the latest entry
+         */
         const items = [
             this._entity.putBatch({
                 ...entry,
                 PK: partitionKey,
-                SK: this.getSortKeyRevision(entry.version)
+                SK: this.getSortKeyRevision(entry.version),
+                GSI1_PK: this.getGSIEntryPartitionKey(model),
+                GSI1_SK: this.getGSISortKey(entry)
             })
         ];
+        if (latestEntry.id === entry.id) {
+            items.push(
+                this._entity.putBatch({
+                    ...entry,
+                    PK: partitionKey,
+                    SK: this.getSortKeyLatest(),
+                    TYPE: TYPE_ENTRY_LATEST,
+                    GSI1_PK: this.getGSILatestPartitionKey(model),
+                    GSI1_SK: this.getGSISortKey(entry)
+                })
+            );
+        }
 
         // const batch = db.batch().update({
         //     ...configurations.db(),
@@ -928,29 +1051,31 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
         /**
          * If we updated the latest version, then make sure the changes are propagated to ES too.
          */
-        if (latestEntry.id === entry.id) {
-            items.push(
-                this._entity.putBatch({
-                    ...entry,
-                    TYPE: TYPE_ENTRY_LATEST,
-                    PK: partitionKey,
-                    SK: this.getSortKeyLatest()
-                })
-            );
-            // const es = configurations.es(this.context, model);
-            // batch.update({
-            //     query: {
-            //         PK: partitionKey,
-            //         SK: this.getSortKeyLatest()
-            //     },
-            //     data: {
-            //         PK: partitionKey,
-            //         SK: this.getSortKeyLatest(),
-            //         index: es.index,
-            //         data: getESLatestEntryData(this.context, entry)
-            //     }
-            // });
-        }
+        // if (latestEntry.id === entry.id) {
+        //     items.push(
+        //         this._entity.putBatch({
+        //             ...entry,
+        //             PK: partitionKey,
+        //             SK: this.getSortKeyLatest(),
+        //             TYPE: TYPE_ENTRY_LATEST,
+        //             GSI1_PK: this.getGSILatestPartitionKey(model),
+        //             GSI1_SK: this.getGSISortKey(entry)
+        //         })
+        //     );
+        // const es = configurations.es(this.context, model);
+        // batch.update({
+        //     query: {
+        //         PK: partitionKey,
+        //         SK: this.getSortKeyLatest()
+        //     },
+        //     data: {
+        //         PK: partitionKey,
+        //         SK: this.getSortKeyLatest(),
+        //         index: es.index,
+        //         data: getESLatestEntryData(this.context, entry)
+        //     }
+        // });
+        // }
 
         try {
             await this._table.batchWrite(items);
@@ -1152,6 +1277,26 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             id = id.split("#").shift();
         }
         return `${this._partitionKey}#${id}`;
+    }
+
+    private getGSIPartitionKey(type: "L" | "P" | "E", model: CmsContentModel) {
+        return `${this._partitionKey}#${model.modelId}#${type}`;
+    }
+
+    private getGSIEntryPartitionKey(model: CmsContentModel): string {
+        return this.getGSIPartitionKey("E", model);
+    }
+    private getGSILatestPartitionKey(model: CmsContentModel): string {
+        return this.getGSIPartitionKey("L", model);
+    }
+
+    private getGSIPublishedPartitionKey(model: CmsContentModel): string {
+        return this.getGSIPartitionKey("P", model);
+    }
+
+    private getGSISortKey(entry: CmsContentEntry): number {
+        const parsed = parseISODateTime(entry.savedOn);
+        return Number(parsed.getMilliseconds());
     }
     /**
      * Gets a secondary key in form of REV#version from:

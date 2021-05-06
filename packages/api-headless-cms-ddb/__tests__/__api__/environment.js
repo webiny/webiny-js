@@ -6,6 +6,7 @@ const NodeEnvironment = require("jest-environment-node");
  * For this to work it must load plugins that have already been built
  */
 const plugins = require("../../dist/index").default;
+//const plugins = require("../../src/index.ts");
 
 if (typeof plugins !== "function") {
     throw new Error(`Loaded plugins file must export a function that returns an array of plugins.`);
