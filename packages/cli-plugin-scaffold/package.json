@@ -1,7 +1,7 @@
 {
   "name": "@webiny/cli-plugin-scaffold",
   "version": "5.5.0",
-  "main": "dist/index.js",
+  "main": "index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git",

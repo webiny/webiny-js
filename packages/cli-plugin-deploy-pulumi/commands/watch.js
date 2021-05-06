@@ -158,7 +158,7 @@ module.exports = async (inputs, context) => {
                 execa: {
                     env: {
                         WEBINY_ENV: inputs.env,
-                        WEBINY_PROJECT_NAME: context.projectName,
+                        WEBINY_PROJECT_NAME: context.project.name,
                         WEBINY_LOGS_FORWARD_URL: logging.url
                     }
                 }
