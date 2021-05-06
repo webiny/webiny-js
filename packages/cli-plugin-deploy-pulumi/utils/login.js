@@ -31,8 +31,12 @@ module.exports = async projectApplication => {
         projectApplication.root
     );
 
-    // Still using "PULUMI_LOGIN" for backwards compatibility purposes.
-    let login = process.env.WEBINY_PULUMI_BACKEND_URL || process.env.PULUMI_LOGIN;
+    // A couple of variations here, just to preserve backwards compatibility.
+    let login =
+        process.env.WEBINY_PULUMI_BACKEND ||
+        process.env.WEBINY_PULUMI_BACKEND_URL ||
+        process.env.PULUMI_LOGIN;
+
     if (login) {
         // Determine if we use as single storage for all Pulumi projects. If so, append project application path.
         const selfManagedBackend = SELF_MANAGED_BACKEND.find(item => login.startsWith(item));

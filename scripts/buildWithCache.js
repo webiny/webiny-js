@@ -99,7 +99,12 @@ async function build() {
         }
     }
 
-    buildPackages(packagesNoCache);
+    const isFullBuild = packagesNoCache.length === workspacesPackages.length;
+    if (isFullBuild) {
+        fullBuild(packagesNoCache);
+    } else {
+        partialBuild(packagesNoCache);
+    }
 
     console.log("Packages built, updating cache...");
     for (let i = 0; i < packagesNoCache.length; i++) {
@@ -128,7 +133,7 @@ async function getPackageSourceHash(workspacePackage) {
     return hash;
 }
 
-function buildPackages(workspacePackages) {
+function fullBuild(workspacePackages) {
     execa.sync(
         "yarn",
         [
@@ -145,4 +150,21 @@ function buildPackages(workspacePackages) {
             stdio: "inherit"
         }
     );
+}
+
+function partialBuild(workspacePackages) {
+    const topologicallySortedPackagesList = JSON.parse(
+        execa.sync("yarn", ["lerna", "list", "--toposort", "--json"]).stdout
+    );
+
+    for (let i = 0; i < topologicallySortedPackagesList.length; i++) {
+        const pckg = topologicallySortedPackagesList[i];
+        if (workspacePackages.find(item => item.packageJson.name === pckg.name)) {
+            console.log(`Building ${pckg.name}...`);
+            execa.sync("yarn", ["build"], {
+                stdio: "inherit",
+                cwd: pckg.location
+            });
+        }
+    }
 }

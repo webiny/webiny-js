@@ -16,7 +16,7 @@ import {
 } from "../recoil/modules";
 
 import { PbState } from "../recoil/modules/types";
-import { EventAction } from "../recoil/eventActions/EventAction";
+import { EventAction } from "~/editor/recoil/eventActions";
 import {
     EventActionHandlerCallableArgs,
     EventActionCallable,
@@ -28,7 +28,7 @@ import {
     EventActionHandler,
     EventActionHandlerTarget,
     EventActionHandlerCallableState
-} from "../../types";
+} from "~/types";
 import {
     Snapshot,
     useGotoRecoilSnapshot,
@@ -94,6 +94,7 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
     const revisionsAtomValue = useRecoilValue(revisionsAtom);
     const snapshot = useRecoilSnapshot();
 
+    const eventActionHandlerRef = useRef<EventActionHandler>(null);
     const sidebarAtomValueRef = useRef(null);
     const rootElementAtomValueRef = useRef(null);
     const pageAtomValueRef = useRef(null);
@@ -152,9 +153,12 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
         return snapshot;
     });
 
-    const getElementTree = async element => {
+    const getElementTree = async (element, path = []) => {
         if (!element) {
             element = await getElementById(rootElementAtomValue);
+        }
+        if (element.parent) {
+            path.push(element.parent);
         }
         return {
             id: element.id,
@@ -162,9 +166,10 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
             data: element.data,
             elements: await Promise.all(
                 element.elements.map(async child => {
-                    return getElementTree(await getElementById(child));
+                    return getElementTree(await getElementById(child), [...path]);
                 })
-            )
+            ),
+            path
         };
     };
 
@@ -277,7 +282,7 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
         }
     };
 
-    const eventActionHandler = useMemo<EventActionHandler>(
+    eventActionHandlerRef.current = useMemo<EventActionHandler>(
         () => ({
             getElementTree,
             on: (target, callable) => {
@@ -391,7 +396,7 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
             const r =
                 (await cb(
                     getCallableState({ ...initialState, ...results.state }),
-                    { client: apolloClient, eventActionHandler },
+                    { client: apolloClient, eventActionHandler: eventActionHandlerRef.current },
                     args
                 )) || {};
             results.state = {
@@ -419,7 +424,7 @@ export const EventActionHandlerProvider: React.FunctionComponent<any> = ({ child
     };
 
     return (
-        <EventActionHandlerContext.Provider value={eventActionHandler}>
+        <EventActionHandlerContext.Provider value={eventActionHandlerRef.current}>
             {children}
         </EventActionHandlerContext.Provider>
     );

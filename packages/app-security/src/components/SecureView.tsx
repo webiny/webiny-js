@@ -1,34 +1,31 @@
 import * as React from "react";
 import { useSecurity } from "..";
+import { SecurityPermission } from "../types";
 
-let warned = false;
+interface ChildrenRenderFunctionArgs<T extends SecurityPermission> {
+    hasPermission: boolean;
+    permission: T;
+}
 
-export default ({
-    children,
-    scopes,
-    permission
-}: {
-    children: any;
-    scopes?: string[];
+interface Props<T extends SecurityPermission> {
+    children: ((args: ChildrenRenderFunctionArgs<T>) => React.ReactElement) | React.ReactElement;
     permission?: string;
-}): React.ReactElement => {
-    if (!permission && scopes) {
-        !warned &&
-            console.warn(
-                `DEPRECATION WARNING: <SecureView> "scopes" prop is deprecated. Please upgrade to "permission" prop! [${scopes.join(
-                    ","
-                )}]`
-            );
-        warned = true;
-        permission = scopes[0];
-    }
+}
 
+function SecureView<T extends SecurityPermission>({
+    children,
+    permission
+}: Props<T>): React.ReactElement {
     const { identity } = useSecurity();
-    const hasPermission = permission ? identity.getPermission(permission) : true;
+    const matchedPermission = identity.getPermission<T>(permission);
+
+    const hasPermission = Boolean(matchedPermission);
 
     if (typeof children === "function") {
-        return children({ hasPermission });
+        return children({ hasPermission, permission: matchedPermission });
     }
 
     return hasPermission ? children : null;
-};
+}
+
+export default SecureView;
