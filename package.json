@@ -133,7 +133,7 @@
     "prettier": "prettier \"**/**/*.{js,jsx,ts,tsx,json}\" --config .prettierrc.js",
     "prettier:check": "yarn prettier --check",
     "prettier:fix": "yarn prettier --write",
-    "setup-repo": "node scripts/setupRepo",
+    "setup-project": "node scripts/setupProject",
     "setup-env-files": "node scripts/setupEnvFiles",
     "setup-ci-cypress": "node scripts/setupCiCypress",
     "setup-cypress": "node scripts/setupCypress",
