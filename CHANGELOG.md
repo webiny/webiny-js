@@ -3,6 +3,52 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.6.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.5.1-beta.0...v5.6.0-beta.0) (2021-05-06)
+
+
+### Bug Fixes
+
+* improve setup-repo script ([5fbe464](https://github.com/webiny/webiny-js/commit/5fbe4649f5f461201c2a45d8096ab010d6410dad))
+* **app-headless-cms:** add content model group selector ([#1591](https://github.com/webiny/webiny-js/issues/1591)) ([af220e5](https://github.com/webiny/webiny-js/commit/af220e59cff0517487044075b89626cbda6f4842))
+* add generic type definition for `getPermission` function ([e4cb805](https://github.com/webiny/webiny-js/commit/e4cb8058f28282fa25d5b04be1ffa21a6873a60f))
+* add missing type definitions for function bundling ([349e587](https://github.com/webiny/webiny-js/commit/349e58724ec88cf3ba45181986e8fefe7ccfb6ae))
+* correct import statement ([8013b7b](https://github.com/webiny/webiny-js/commit/8013b7b392c082aaff1b13d5c458eabb98023723))
+* export "SecurityPermission" type from types.ts ([6af3a03](https://github.com/webiny/webiny-js/commit/6af3a039103d5bea7600512340c6ee1ad0ad021e))
+* remove "_URL" suffix from "WEBINY_PULUMI_BACKEND_URL" ([7d6093e](https://github.com/webiny/webiny-js/commit/7d6093e65810396e098df6790776b6b1bb7006ba))
+* remove "scopes" and deprecation warning ([398b397](https://github.com/webiny/webiny-js/commit/398b39790ef676d9edc7243c3b39ffb13e7d0099))
+* remove "security-scopes-list" plugin type ([14a0586](https://github.com/webiny/webiny-js/commit/14a0586ea12ea15a396f86a2d354a526399c55f3))
+* undo change ([651e9c7](https://github.com/webiny/webiny-js/commit/651e9c7f48cc03a662c7d70d1e454f1aaf7f20bc))
+* use "application/octet-stream" as a fallback MIME type (if none provided) ([ebf7d67](https://github.com/webiny/webiny-js/commit/ebf7d67419cd019badb0147870b2ba9a07e699d7))
+* use interface instead of type ([be076cf](https://github.com/webiny/webiny-js/commit/be076cf8856bfa8789e8ea9a4a55149e70f9074c))
+* use interface instead of type ([25b023a](https://github.com/webiny/webiny-js/commit/25b023aa0358ca221f6403cfe31587f6896045bc))
+* **app-page-builder:** move PB text element formatting styles to theme ([#1582](https://github.com/webiny/webiny-js/issues/1582)) ([fbab2d8](https://github.com/webiny/webiny-js/commit/fbab2d85a830105a91fa3cb8924287c5a8c80981))
+* **cli-plugin-deploy-pulumi:** add a return to not hide info bar prematurely ([88356bf](https://github.com/webiny/webiny-js/commit/88356bf13e88aa2cc9b7b57be9966d969dacbbe2))
+* **cli-plugin-deploy-pulumi:** use <pre> tag to output log messages ([6dd35a3](https://github.com/webiny/webiny-js/commit/6dd35a3578fc90fca3a4020a99267839b0118734))
+* **cwp-template-aws:** update text element styles in theme  ([#1588](https://github.com/webiny/webiny-js/issues/1588)) ([d65b8d6](https://github.com/webiny/webiny-js/commit/d65b8d686af9bc5b74bc71f08364d79aedd04488))
+* undo change ([b57baa2](https://github.com/webiny/webiny-js/commit/b57baa236c8d757400652ea50834865b6eb27a68))
+* use "application/octet-stream" as a fallback MIME type (if none provided) ([a0233c6](https://github.com/webiny/webiny-js/commit/a0233c655d6af1b283d14358a16b7bd5a7a1c489))
+
+
+### Features
+
+* **app-page-builder:** add navigator toolbar for element's tree view ([#1579](https://github.com/webiny/webiny-js/issues/1579)) ([9b6cf8c](https://github.com/webiny/webiny-js/commit/9b6cf8c7926fdd35b3d09af41c574111f1b86ed7))
+* **project-utils:** add traverseLoaders helper function ([#1595](https://github.com/webiny/webiny-js/issues/1595)) ([fa9998a](https://github.com/webiny/webiny-js/commit/fa9998a3b7b222e75ea15354be424739c764c776))
+* add support for multiple content models on the same ref field ([#1572](https://github.com/webiny/webiny-js/issues/1572)) ([cf347cc](https://github.com/webiny/webiny-js/commit/cf347cc5cd4772ae9dc7efe232486d191355fe43))
+* add support for TS config files ([#1584](https://github.com/webiny/webiny-js/issues/1584)) ([b9c3e29](https://github.com/webiny/webiny-js/commit/b9c3e29901f2220a61de31874eb36f17f6e603f0))
+* add tags to React apps resources ([#1585](https://github.com/webiny/webiny-js/issues/1585)) ([1c91c0e](https://github.com/webiny/webiny-js/commit/1c91c0edfe87cde59e94e43461c64a506b6140dd))
+* ES index sharing for multi-tenancy ([#1575](https://github.com/webiny/webiny-js/issues/1575)) ([54ab395](https://github.com/webiny/webiny-js/commit/54ab395e45773ed98814bf2339c4a9166bd234d1))
+* export "FullAccessPermission" ([b8a1ec4](https://github.com/webiny/webiny-js/commit/b8a1ec446e805e47c5094fa87e51e5e9cec34e94))
+* export "FullAccessPermission" ([3454d99](https://github.com/webiny/webiny-js/commit/3454d99ce5b72a61de3032f0f713f2f960a8cfb8))
+* improve "children" prop type ([4f7e159](https://github.com/webiny/webiny-js/commit/4f7e15994bc38b6bd78996b533b6a0153d83153f))
+* instead of required permission, return matched permission ([98b0a06](https://github.com/webiny/webiny-js/commit/98b0a06dc4c37bdefbb3158ee5d73b24c5f1e166))
+* **api-page-builder:** add missing Not Found page data ([#1587](https://github.com/webiny/webiny-js/issues/1587)) ([6767c1a](https://github.com/webiny/webiny-js/commit/6767c1a16dca508d62b1dce7b6895f927bddad52))
+* **cli-plugin-deploy-pulumi:** improve pane rendering and socket connection ([fbd894f](https://github.com/webiny/webiny-js/commit/fbd894f63df88de839269afe6300a1a600612116))
+* **create-webiny-project:** check for existence of yarn.lock and package.json ([2531f68](https://github.com/webiny/webiny-js/commit/2531f687cbae95b5ac909d34b19fd8629f30ae52))
+
+
+
+
+
 ## [5.5.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.5.0...v5.5.1-beta.0) (2021-04-27)
 
 
