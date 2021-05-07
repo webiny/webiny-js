@@ -1,5 +1,10 @@
 import styled from "@emotion/styled";
 
+export interface HighlightItem {
+    top: boolean;
+    bottom: boolean;
+}
+
 export const NavigatorTitle = styled("div")(`
     display: flex;
     justify-content: space-between;
@@ -34,8 +39,32 @@ export const ElementTypeContainer = styled("div")(`
     }
 `);
 
-export const Collapsable = styled("div")(` 
+export const Collapsable = styled<"div", { highlightItem: HighlightItem }>("div")(
+    ({ highlightItem }) => ` 
+  position: relative;
   background-color: transparent;
+  
+  &::before {
+    display: ${highlightItem.top ? "block" : "none"};
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--mdc-theme-secondary);
+  }
+  
+  &::after {
+  display: ${highlightItem.bottom ? "block" : "none"};
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--mdc-theme-secondary);
+  }
 
   .collapsable__header {
     box-sizing: border-box;
@@ -81,7 +110,8 @@ export const Collapsable = styled("div")(`
       display: none;
     }
   }
-`);
+`
+);
 
 export const ArrowRight = styled("div")(`
     width: 0;
