@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.6.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.5.1-beta.0...v5.6.0-beta.0) (2021-05-06)
+
+
+### Bug Fixes
+
+* remove "_URL" suffix from "WEBINY_PULUMI_BACKEND_URL" ([7d6093e](https://github.com/webiny/webiny-js/commit/7d6093e65810396e098df6790776b6b1bb7006ba))
+* **cli-plugin-deploy-pulumi:** add a return to not hide info bar prematurely ([88356bf](https://github.com/webiny/webiny-js/commit/88356bf13e88aa2cc9b7b57be9966d969dacbbe2))
+* **cli-plugin-deploy-pulumi:** use <pre> tag to output log messages ([6dd35a3](https://github.com/webiny/webiny-js/commit/6dd35a3578fc90fca3a4020a99267839b0118734))
+
+
+### Features
+
+* add support for TS config files ([#1584](https://github.com/webiny/webiny-js/issues/1584)) ([b9c3e29](https://github.com/webiny/webiny-js/commit/b9c3e29901f2220a61de31874eb36f17f6e603f0))
+* ES index sharing for multi-tenancy ([#1575](https://github.com/webiny/webiny-js/issues/1575)) ([54ab395](https://github.com/webiny/webiny-js/commit/54ab395e45773ed98814bf2339c4a9166bd234d1))
+* **cli-plugin-deploy-pulumi:** improve pane rendering and socket connection ([fbd894f](https://github.com/webiny/webiny-js/commit/fbd894f63df88de839269afe6300a1a600612116))
+
+
+
+
+
 ## [5.5.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.5.0...v5.5.1-beta.0) (2021-04-27)
 
 **Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi

@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.6.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.5.1-beta.0...v5.6.0-beta.0) (2021-05-06)
+
+
+### Bug Fixes
+
+* **app-headless-cms:** add content model group selector ([#1591](https://github.com/webiny/webiny-js/issues/1591)) ([af220e5](https://github.com/webiny/webiny-js/commit/af220e59cff0517487044075b89626cbda6f4842))
+
+
+### Features
+
+* add support for multiple content models on the same ref field ([#1572](https://github.com/webiny/webiny-js/issues/1572)) ([cf347cc](https://github.com/webiny/webiny-js/commit/cf347cc5cd4772ae9dc7efe232486d191355fe43))
+
+
+
+
+
 ## [5.5.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.5.0...v5.5.1-beta.0) (2021-04-27)
 
 **Note:** Version bump only for package @webiny/app-headless-cms
