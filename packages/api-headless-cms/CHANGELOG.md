@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.6.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.1...v5.6.0-beta.2) (2021-05-07)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** use RefInput on model group field ([3b56155](https://github.com/webiny/webiny-js/commit/3b56155a6a25073a5006959a77d7852076ae0bf3))
+
+
+
+
+
 # [5.6.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.0...v5.6.0-beta.1) (2021-05-07)
 
 **Note:** Version bump only for package @webiny/api-headless-cms
