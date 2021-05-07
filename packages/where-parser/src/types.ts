@@ -8,3 +8,8 @@ export interface Condition {
     negate?: boolean;
     validate?: (args: { value: any; attr: string }) => void;
 }
+
+export interface WhereParserResult {
+    AND?: WhereParserResult;
+    OR?: WhereParserResult;
+}

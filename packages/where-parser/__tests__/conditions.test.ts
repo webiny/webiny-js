@@ -23,8 +23,8 @@ describe("conditions", () => {
     test.each(requiredConditions)(
         "all required conditions should exist - %s",
         (required: string) => {
-            const found = Object.keys(availableConditions).filter(key => {
-                return availableConditions[key].key === required;
+            const found = availableConditions.all().filter(c => {
+                return c.key === required;
             });
 
             expect(found).toHaveLength(1);
@@ -32,17 +32,10 @@ describe("conditions", () => {
     );
 
     it("should not contain conditions that are not in the list", () => {
-        const conditions = Object.keys(availableConditions).map(key => availableConditions[key]);
+        const conditions = availableConditions.all();
         for (const c of conditions) {
             const isRequired = requiredConditions.includes(c.key);
             expect(isRequired).toBe(true);
-        }
-    });
-
-    it("should match available conditions keys to internal ones", () => {
-        for (const key in availableConditions) {
-            const c = availableConditions[key];
-            expect(key).toEqual(c.key);
         }
     });
 });

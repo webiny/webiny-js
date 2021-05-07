@@ -20,7 +20,7 @@ describe("condition - contains", () => {
     test.each(supportedValues)(
         "contains should not throw an error on validation when value is supported - %s",
         (name: string, value: any) => {
-            const containsCondition = availableConditions["contains"];
+            const containsCondition = availableConditions.get("contains");
 
             expect(() => {
                 containsCondition.validate({
@@ -34,7 +34,7 @@ describe("condition - contains", () => {
     test.each(unsupportedValues)(
         "contains should throw an error on validation when value is not supported - %s",
         (name: string, value: any) => {
-            const containsCondition = availableConditions["contains"];
+            const containsCondition = availableConditions.get("contains");
 
             expect(() => {
                 containsCondition.validate({
@@ -48,7 +48,7 @@ describe("condition - contains", () => {
     test.each(supportedValues)(
         "not_contains should not throw an error on validation when value is supported - %s",
         (name: string, value: any) => {
-            const notContainsCondition = availableConditions["not_contains"];
+            const notContainsCondition = availableConditions.get("not_contains");
 
             expect(() => {
                 notContainsCondition.validate({
@@ -62,7 +62,7 @@ describe("condition - contains", () => {
     test.each(unsupportedValues)(
         "not_contains should throw an error on validation when value is not supported - %s",
         (name: string, value: any) => {
-            const notContainsCondition = availableConditions["not_contains"];
+            const notContainsCondition = availableConditions.get("not_contains");
 
             expect(() => {
                 notContainsCondition.validate({
