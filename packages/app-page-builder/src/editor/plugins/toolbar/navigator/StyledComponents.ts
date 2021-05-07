@@ -52,7 +52,7 @@ export const Collapsable = styled<"div", { highlightItem: HighlightItem }>("div"
     left: 0;
     width: 100%;
     height: 2px;
-    background-color: var(--mdc-theme-secondary);
+    background-color: var(--mdc-theme-primary);
   }
   
   &::after {
@@ -63,7 +63,7 @@ export const Collapsable = styled<"div", { highlightItem: HighlightItem }>("div"
     left: 0;
     width: 100%;
     height: 2px;
-    background-color: var(--mdc-theme-secondary);
+    background-color: var(--mdc-theme-primary);
   }
 
   .collapsable__header {
@@ -72,7 +72,7 @@ export const Collapsable = styled<"div", { highlightItem: HighlightItem }>("div"
     display: flex;
     padding: 4px;
     text-transform: capitalize;
-    border: 1px solid var(--mdc-theme-background);
+    border-top: 1px solid var(--mdc-theme-background);
         
     &:hover {
       background-color: var(--mdc-theme-background);
@@ -108,6 +108,17 @@ export const Collapsable = styled<"div", { highlightItem: HighlightItem }>("div"
 
     &.collapsed {
       display: none;
+    }
+  }
+  
+  &:last-child {
+    .collapsable__header {
+        border-bottom: 1px solid var(--mdc-theme-background);
+    }
+  }
+  &:only-child {
+    .collapsable__header {
+        border-bottom: none;
     }
   }
 `
