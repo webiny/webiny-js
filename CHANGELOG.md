@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.6.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.0...v5.6.0-beta.1) (2021-05-07)
+
+
+### Bug Fixes
+
+* **cwp-template:** update path to api-i18n types ([cd1a7d9](https://github.com/webiny/webiny-js/commit/cd1a7d9d5327b8ea1874997a8d28e0e92dd6f34e))
+
+
+
+
+
 # [5.6.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.5.1-beta.0...v5.6.0-beta.0) (2021-05-06)
 
 
