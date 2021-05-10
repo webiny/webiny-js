@@ -193,17 +193,17 @@ export type SettingsCRUD = {
     updateSettings(data: Partial<Settings>): Promise<Settings>;
 };
 
-export type FbFormPermission = SecurityPermission<{
+export interface FbFormPermission extends SecurityPermission {
     name: "fb.form";
     rwd: string;
     pw: string;
     own: boolean;
     submissions: boolean;
-}>;
+}
 
-export type FbFormSettingsPermission = SecurityPermission<{
+export interface FbFormSettingsPermission extends SecurityPermission {
     name: "fb.settings";
-}>;
+}
 
 export type FormBuilderContext = Context<
     TenancyContext,

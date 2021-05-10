@@ -19,11 +19,11 @@ export type FileManagerContext = Context<
     }
 >;
 
-export type FilePermission = SecurityPermission<{
+export interface FilePermission extends SecurityPermission {
     name: "fm.file";
     rwd?: string;
     own?: boolean;
-}>;
+}
 
 export type File = {
     id: string;

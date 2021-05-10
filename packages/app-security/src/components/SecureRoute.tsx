@@ -3,26 +3,13 @@ import { useSecurity } from "..";
 import { SecureRouteErrorPlugin } from "../types";
 import { plugins } from "@webiny/plugins";
 
-let warned = false;
-
 export default ({
     children,
-    scopes,
     permission
 }: {
     children: any;
-    scopes?: string[];
     permission?: string;
 }): React.ReactElement => {
-    if (!permission && scopes) {
-        !warned &&
-            console.warn(
-                `DEPRECATION WARNING: <SecureRoute> "scopes" prop is deprecated. Please upgrade to "permission" prop.`
-            );
-        warned = true;
-        permission = scopes[0];
-    }
-
     const { identity } = useSecurity();
     const hasPermission = permission ? identity.getPermission(permission) : true;
 

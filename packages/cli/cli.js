@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 const yargs = require("yargs");
 const { blue, red } = require("chalk");
-const { createCommands } = require("./commands");
 const context = require("./context");
+const { createCommands } = require("./commands");
 
 yargs
     .usage("Usage: $0 <command> [options]")
@@ -72,7 +72,8 @@ yargs
         process.exit(1);
     });
 
-createCommands(yargs, context);
-
-// Run
-yargs.argv;
+(async () => {
+    await createCommands(yargs, context);
+    // Run
+    yargs.argv;
+})();

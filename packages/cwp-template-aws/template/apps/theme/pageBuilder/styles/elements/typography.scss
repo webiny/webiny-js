@@ -66,6 +66,20 @@ h6 {
   font-size: 1.125rem;
   line-height: 1.75rem;
 }
+// Formatting styles for text
+.webiny-pb-page-element-text {
+  & b {
+    font-weight: bold;
+  }
+
+  & u {
+    text-decoration: underline;
+  }
+
+  & i {
+    font-style: italic;
+  }
+}
 
 // Blockquote default typography styles
 .webiny-pb-typography-quote {

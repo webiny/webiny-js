@@ -48,7 +48,7 @@ module.exports = async (inputs, context) => {
             stdio: "inherit",
             env: {
                 WEBINY_ENV: env,
-                WEBINY_PROJECT_NAME: context.projectName
+                WEBINY_PROJECT_NAME: context.project.name
             }
         }
     });
