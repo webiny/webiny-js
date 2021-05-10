@@ -9,7 +9,13 @@ export interface Condition {
     validate?: (args: { value: any; attr: string }) => void;
 }
 
+interface WhereParserResultItem {
+    attr: string;
+    operation: string;
+    value: any;
+}
+
 export interface WhereParserResult {
-    AND?: WhereParserResult;
-    OR?: WhereParserResult;
+    AND?: WhereParserResultItem[] | WhereParserResult[];
+    OR?: WhereParserResultItem[] | WhereParserResult[];
 }

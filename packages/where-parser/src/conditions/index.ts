@@ -52,9 +52,6 @@ class ConditionContainer {
 
     public unregister(item: Condition | string): void {
         const key = typeof item === "string" ? item : item.key;
-        if (!key) {
-            return;
-        }
         this._items.delete(key);
         this._items.delete(`not_${key}`);
     }

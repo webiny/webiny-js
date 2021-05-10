@@ -1,148 +1,173 @@
 import WebinyError from "@webiny/error";
 import { keyParser } from "./parsers/keyParser";
+import { WhereParserResult } from "./types";
 
-const AND_SYNTAX = "AND";
-const OR_SYNTAX = "OR";
-const SYNTAX_KEYS = [AND_SYNTAX, OR_SYNTAX];
+export enum Syntax {
+    AND = "AND",
+    OR = "OR"
+}
+
+const SYNTAX_KEYS = [Syntax.AND as string, Syntax.OR as string];
 
 interface WhereParserArgs {
     attributes: string[];
     where: Record<string, any>;
 }
 
-const isSyntaxCheck = (key: string): boolean => {
+const isSyntaxKey = (key: string): boolean => {
     return SYNTAX_KEYS.includes(key);
 };
-// const isAttributeCheck = (attributes: string[], key: string): boolean => {
-//     return attributes.includes(key);
-// };
-/**
- * What we need to do:
- *  - check that target is array
- *  - check that has no empty values
- *  - check that each object in the array has only one key and it is not an array
- */
-const validateSyntaxValue = (target: any): boolean => {
-    // in the case target is not defined or not an array
-    if (!target || Array.isArray(target) === false || target.length === 0) {
-        throw new WebinyError(
-            "Value in the syntax keyword must be a non-empty array.",
-            "SYNTAX_ERROR",
-            {
-                target
-            }
-        );
-    }
-    // check what is in the array - cannot be empty
-    const values = target.filter(v => !!v);
-    if (values.lenght === 0 || values.length !== target.length) {
-        throw new WebinyError(
-            "Value in the syntax keyword cannot have empty values.",
-            "SYNTAX_ERROR",
-            {
-                target
-            }
-        );
-    }
-    for (const value of values) {
-        if (typeof value !== "object" || Array.isArray(value)) {
-            throw new WebinyError(
-                "Value in the syntax keyword array must be an object and not an array.",
-                "SYNTAX_ERROR",
-                {
-                    target,
-                    value
-                }
-            );
-        }
-        const keys = Object.keys(value);
-        if (keys.length > 1) {
-            throw new WebinyError(
-                "Value in the syntax keyword array value cannot have more than one attribute.",
-                "SYNTAX_ERROR",
-                {
-                    target,
-                    value
-                }
-            );
-        }
-    }
-    return true;
-};
 
-const extractSyntaxValues = (items?: any[]) => {
-    if (!Array.isArray(items)) {
-        throw new WebinyError(
-            "Cannot send a non-array to extract the values.",
-            "SYNTAX_VALUES_ERROR",
-            {
-                items
+const extractValues = (target: any) => {
+    if (
+        typeof target === "object" &&
+        target instanceof Date === false &&
+        Array.isArray(target) === false
+    ) {
+        const values = [];
+        for (const key in target) {
+            if (!target.hasOwnProperty(key)) {
+                continue;
+            } else if (isSyntaxKey(key)) {
+                values.push({
+                    [key]: extractValues(target[key])
+                });
+                continue;
             }
-        );
-    }
-    return items.map(item => {
-        const keys = Object.keys(item);
-        const key = keys.shift();
-        const value = item[key];
-        const keyParserResult = keyParser(key);
-        if (!keyParserResult) {
-            throw new WebinyError("Parsed key produces no result.", "KEY_PARSE_ERROR", {
-                key
+            const { attr, operation } = keyParser(key);
+            values.push({
+                attr,
+                operation,
+                value: target[key]
             });
         }
-        return {
-            ...keyParserResult,
-            value
-        };
+        return values;
+    } else if (Array.isArray(target)) {
+        const values = [];
+        for (const obj of target) {
+            for (const key in obj) {
+                if (!obj.hasOwnProperty(key)) {
+                    continue;
+                }
+                if (isSyntaxKey(key)) {
+                    values.push({
+                        [key]: extractValues(obj[key])
+                    });
+                    continue;
+                }
+                const { attr, operation } = keyParser(key);
+                values.push({
+                    attr,
+                    operation,
+                    value: obj[key]
+                });
+            }
+        }
+        return values;
+    }
+    throw new WebinyError("Unsupported object syntax.", "UNSUPPORTED_OBJECT_SYNTAX", {
+        target
     });
 };
 
-const extractValues = (where: any): any => {
-    const values = {};
-    for (const key in where) {
-        if (where.hasOwnProperty(key) === false) {
-            continue;
-        }
-        const value = where[key];
-        const isSyntax = isSyntaxCheck(key);
-
-        let syntaxKeyword = AND_SYNTAX;
-        /**
-         * When key is syntax, its value MUST be an array that is not empty
-         */
-        if (isSyntax) {
-            validateSyntaxValue(value);
-            syntaxKeyword = key;
-        }
-        const keyParserResult = !isSyntax ? keyParser(key) : null;
-        if (isSyntax) {
-            values[syntaxKeyword] = extractSyntaxValues(value);
-        } else if (keyParserResult) {
-            if (!values[syntaxKeyword]) {
-                values[syntaxKeyword] = [];
-            }
-            values[syntaxKeyword].push({
-                ...keyParserResult,
-                value
-            });
-        } else {
-            throw new WebinyError(
-                "Key must be either syntax or a parsable attribute with operation.",
-                "SYNTAX_ERROR",
-                {
-                    key,
-                    value
-                }
-            );
-        }
-    }
-    return values;
-};
-export const whereParser = (args: WhereParserArgs): Record<string, any> => {
+export const parseWhere = <T extends any = WhereParserResult>(args: WhereParserArgs): T => {
     const { where } = args;
     const keys = Object.keys(where || {});
     if (keys.length === 0) {
-        return {};
+        return {} as any;
     }
-    return extractValues(where);
+    /**
+     * First level of the object MUST be a syntax key.
+     * If there is none, we are adding it.
+     * If there is a at least one syntax and some other keys, we put everything in the AND.
+     */
+    let result: any = undefined;
+    const hasAndSyntaxKey = keys.includes(Syntax.AND);
+    const hasOrSyntaxKey = keys.includes(Syntax.OR);
+    if (!hasAndSyntaxKey && !hasOrSyntaxKey) {
+        result = {
+            [Syntax.AND]: extractValues(where)
+        };
+    } else if (hasAndSyntaxKey && hasOrSyntaxKey && keys.length === 2) {
+        result = extractValues(where);
+    } else if ((hasAndSyntaxKey || hasOrSyntaxKey) && keys.length > 1) {
+        result = {
+            [Syntax.AND]: extractValues(where)
+        };
+    } else if ((hasAndSyntaxKey || hasOrSyntaxKey) && keys.length === 1) {
+        const syntaxKey = hasAndSyntaxKey ? Syntax.AND : Syntax.OR;
+        result = {
+            [syntaxKey]: extractValues(where[syntaxKey])
+        };
+    }
+    /**
+     * This should never ever happen, just leave the check in case of some really strange input.
+     */
+    if (!result) {
+        throw new WebinyError("Could not parse the given object.", "PARSE_ERROR", {
+            where
+        });
+    }
+    /**
+     * If result is an array, take only the first result.
+     * If there are more values in the array, something is wrong.
+     */
+    if (Array.isArray(result) === false) {
+        return result;
+    }
+    if (result.length === 1) {
+        return result.shift();
+    }
+    /**
+     * There should be no keys that are no syntax ones in the top level array objects
+     */
+    let resultHasAnd = false;
+    let resultHasOr = false;
+    for (const value of result) {
+        const rKeys = Object.keys(value);
+        if (rKeys.length > 1) {
+            throw new WebinyError(
+                "Cannot have more than one syntax condition in the top level of the array.",
+                "RESULT_SYNTAX_ERROR",
+                {
+                    result,
+                    value
+                }
+            );
+        } else if (rKeys.includes(Syntax.AND)) {
+            if (resultHasAnd) {
+                throw new WebinyError(
+                    "Cannot have more than one AND syntax condition in the top level of the array.",
+                    "RESULT_SYNTAX_ERROR",
+                    {
+                        value
+                    }
+                );
+            }
+            resultHasAnd = true;
+            continue;
+        } else if (rKeys.includes(Syntax.OR)) {
+            if (resultHasOr) {
+                throw new WebinyError(
+                    "Cannot have more than one OR syntax condition in the top level of the array.",
+                    "RESULT_SYNTAX_ERROR",
+                    {
+                        value
+                    }
+                );
+            }
+            resultHasOr = true;
+            continue;
+        }
+        throw new WebinyError("Top level object key must be a syntax key.", "RESULT_SYNTAX_ERROR", {
+            value,
+            keys: rKeys
+        });
+    }
+    return result.reduce((acc, value) => {
+        const rKeys = Object.keys(value);
+        const key = rKeys.shift();
+        acc[key] = value[key];
+        return acc;
+    }, {});
 };
