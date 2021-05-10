@@ -6,7 +6,6 @@ import { Octokit } from "octokit";
 export default async (args: { octokit: Octokit; org: string; repo: string }) => {
     const { octokit, org, repo } = args;
     const branch = "main";
-    const folder = "./githubActions/workflows/**/*";
 
     const currentCommit = await getCurrentCommit(octokit, org, repo, branch);
 
@@ -15,12 +14,8 @@ export default async (args: { octokit: Octokit; org: string; repo: string }) => 
     const filesPaths = [];
     readDirectory(cwd, filesPaths);
 
-    console.log({ filesPaths });
-    console.log({ cwd });
-    process.exit();
-
     const filesBlobs = await Promise.all(filesPaths.map(createBlobForFile(octokit, org, repo)));
-    const pathsForBlobs = filesPaths.map(fullPath => path.relative(folder, fullPath));
+    const pathsForBlobs = filesPaths.map(fullPath => path.relative(cwd, fullPath));
 
     const newTree = await createNewTree(
         octokit,
@@ -31,7 +26,7 @@ export default async (args: { octokit: Octokit; org: string; repo: string }) => 
         currentCommit.treeSha
     );
 
-    const commitMessage = `ci: create ci/cd pipeline`;
+    const commitMessage = `ci: create Webiny CI/CD pipeline`;
     const newCommit = await createNewCommit(
         octokit,
         org,
@@ -94,7 +89,8 @@ const createNewTree = async (
     octokit: Octokit,
     owner: string,
     repo: string,
-    blobs: octokit.rest.gitCreateBlobResponse[],
+    // blobs: octokit.rest.gitCreateBlobResponse[], TODO: check this type.
+    blobs: any[],
     paths: string[],
     parentTreeSha: string
 ) => {
@@ -104,7 +100,8 @@ const createNewTree = async (
         mode: `100644`,
         type: `blob`,
         sha
-    })) as octokit.rest.gitCreateTreeParamsTree[];
+    // })) as octokit.rest.gitCreateTreeParamsTree[]; TODO: check this type.
+    })) as any[];
 
     const { data } = await octokit.rest.git.createTree({
         owner,
@@ -112,6 +109,7 @@ const createNewTree = async (
         tree,
         base_tree: parentTreeSha
     });
+
     return data;
 };
 

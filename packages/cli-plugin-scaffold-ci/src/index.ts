@@ -50,6 +50,9 @@ let octokit: Octokit;
 type Await<T> = T extends PromiseLike<infer U> ? U : T;
 let user: Await<ReturnType<typeof octokit.rest.users.getAuthenticated>>["data"];
 
+const GH_CREATE_TOKEN_URL =
+    "https://github.com/settings/tokens/new?scopes=repo,workflow&description=Webiny%20CI/CD%20Set%20Up%20Token";
+
 export default (): CliCommandScaffoldTemplate<Input> => ({
     name: "cli-plugin-scaffold-template-ci",
     type: "cli-plugin-scaffold-template",
@@ -67,11 +70,11 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 {
                     name: "githubAccessToken",
                     type: "password",
-                    message: `Paste your GitHub personal access token (create a new one via https://github.com/settings/tokens/new?scopes=repo&description=123):`,
+                    message: `Paste your GitHub personal access token (create a new one via ${GH_CREATE_TOKEN_URL}):`,
                     required: true,
                     validate: async answer => {
                         // TODO: remove this.
-                        answer = "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";
+                        answer = "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";
 
                         octokit = new Octokit({ auth: answer });
 
@@ -80,7 +83,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                                 .getAuthenticated()
                                 .then(({ data }) => data);
                             return true;
-                        } catch {
+                        } catch (e) {
                             return "Invalid GitHub personal access token provided.";
                         }
                     }
@@ -150,17 +153,11 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             }
 
             oraSpinner.start(`Committing and pushing GitHub Actions workflows...`);
-            try {
-                await commitWorkflows({
-                    octokit,
-                    org: user.login,
-                    repo: "pvt" || newRepoName || existingRepoName
-                });
-            } catch (e) {
-                console.log(e);
-            }
-
-            return;
+            await commitWorkflows({
+                octokit,
+                org: user.login,
+                repo: "pvt" || newRepoName || existingRepoName
+            });
 
             oraSpinner.stopAndPersist({
                 symbol: chalk.green("✔"),
@@ -173,6 +170,16 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 )}, and ${chalk.green("prod")} branches`
             );
 
+            const { data: refData } = await octokit.rest.git.getRef({
+                owner: user,
+                repo: 'pvt',
+                ref: `heads/${branch}`
+            });
+            const commitSha = refData.object.sha;
+
+            https://api.github.com/repos/camosuit/test1/git/refs/heads/
+
+            octokit.rest.repos.getHead
             oraSpinner.stopAndPersist({
                 symbol: chalk.green("✔"),
                 text: `Long-lived ${chalk.green("dev")}, ${chalk.green(
@@ -184,38 +191,6 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
         },
         onSuccess: async ({ input }) => {
             return;
-            const { componentName, location, packageName: initialPackageName } = input;
-
-            const name = Case.pascal(componentName);
-            const packageName = createPackageName({
-                initial: initialPackageName,
-                location
-            });
-
-            console.log("1. Include the package in your applications package.json file:");
-            console.log(
-                indentString(
-                    chalk.green(`
-// somewhere in your dependencies
-"${packageName}": "^1.0.0"
-`),
-                    2
-                )
-            );
-
-            console.log("2. Import your component:");
-            console.log(
-                indentString(
-                    chalk.green(`
-// at the top of the file
-import { ${name} } from "${packageName}";
-
-// use in the code
-<${name} />
-`),
-                    2
-                )
-            );
 
             console.log(
                 "Learn more about app development at https://www.webiny.com/docs/tutorials/create-an-application/introduction."
