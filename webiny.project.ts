@@ -8,7 +8,7 @@ export default {
              * Imports of those packages will fail, and it is ok to continue with process execution.
              */
             try {
-                const modules = await Promise.all([
+                const modules = await Promise.allSettled([
                     import("@webiny/cli-plugin-workspaces"),
                     import("@webiny/cli-plugin-deploy-pulumi"),
                     import("@webiny/api-page-builder/cli"),
@@ -19,8 +19,19 @@ export default {
                     import("@webiny/cli-plugin-scaffold-react-component")
                 ]);
 
-                return modules.map(m => m.default());
+                return modules.map(m => {
+                    // Use only "fulfilled" imports.
+                    if (m.status === "fulfilled") {
+                        try {
+                            return m.value.default();
+                        } catch {
+                            // This one is most like not built yet.
+                            return null;
+                        }
+                    }
+                }).filter(Boolean);
             } catch (e) {
+                // If the whole promise fails, act as if there are no plugins.
                 return [];
             }
         }
