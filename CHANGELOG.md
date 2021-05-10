@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.6.0](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.2...v5.6.0) (2021-05-10)
+
+
+### Bug Fixes
+
+* add folder argument ([41fa7d9](https://github.com/webiny/webiny-js/commit/41fa7d92569cfcf5b452d1b5c7ff8f707f58be3c))
+
+
+
+
+
 # [5.6.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.1...v5.6.0-beta.2) (2021-05-07)
 
 
