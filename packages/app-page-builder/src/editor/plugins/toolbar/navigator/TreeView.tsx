@@ -24,20 +24,22 @@ const ElementVisibilityAction = ({ elementId }: { elementId: string }) => {
     );
 };
 
-const getStyles = ({ isOver, elementType }: { isOver: boolean; elementType: string }) => {
-    const contentStyle = isOver && elementType !== BLOCK ? { opacity: 0.5 } : { opacity: 1 };
-    const headerStyle =
-        isOver && elementType === BLOCK
-            ? {
-                  ...contentStyle,
-                  backgroundColor: "rgba(0,204,176,0.6)",
-                  color: "var(--mdc-theme-surface)"
-              }
-            : { ...contentStyle };
-
+const getHighlightItemProps = ({ dropItemAbove, isOver, elementType }) => {
+    if (!isOver || elementType !== BLOCK) {
+        return {
+            top: false,
+            bottom: false
+        };
+    }
+    if (dropItemAbove) {
+        return {
+            top: true,
+            bottom: false
+        };
+    }
     return {
-        contentStyle,
-        headerStyle
+        top: false,
+        bottom: true
     };
 };
 
@@ -51,7 +53,7 @@ const TreeViewItem = ({ element, level, children, index }) => {
     const { refresh, activeElementPath, setActiveElementPath } = useContext(NavigatorContext);
     const { move } = useMoveBlock(elementId);
     // Use "Drag&Drop"
-    const { ref: dragAndDropRef, handlerId, isOver } = useSortableList({
+    const { ref: dragAndDropRef, handlerId, isOver, dropItemAbove } = useSortableList({
         move,
         id: elementId,
         index,
@@ -98,11 +100,17 @@ const TreeViewItem = ({ element, level, children, index }) => {
     }, [elementId]);
 
     const hidden = get(elementData, `settings.visibility.${displayMode}.hidden`, false);
-    const { contentStyle, headerStyle } = getStyles({ isOver, elementType: element.type });
+    const contentStyle = isOver && element.type !== BLOCK ? { opacity: 0.5 } : { opacity: 1 };
+    const highlightItem = getHighlightItemProps({
+        isOver,
+        dropItemAbove,
+        elementType: element.type
+    });
 
     return (
         <CollapsableList
             level={level}
+            highlightItem={highlightItem}
             header={
                 <ElementTypeContainer
                     onMouseOver={onMouseOver}
@@ -122,7 +130,6 @@ const TreeViewItem = ({ element, level, children, index }) => {
             active={activeElement === elementId}
             inActivePath={activeElementPath.includes(elementId)}
             style={contentStyle}
-            headerStyle={headerStyle}
         >
             {children}
         </CollapsableList>
