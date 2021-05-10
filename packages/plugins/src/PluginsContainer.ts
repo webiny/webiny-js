@@ -42,7 +42,7 @@ export class PluginsContainer {
         this.register(...args);
     }
 
-    public byName<T extends Plugin = Plugin>(name: T["name"]): T {
+    public byName<T extends Plugin>(name: T["name"]): T {
         return this.plugins[name] as T;
     }
 

@@ -1,9 +1,10 @@
 import React from "react";
 import shortid from "shortid";
+import ApolloClient from "apollo-client";
 import { get, cloneDeep, pick } from "lodash";
+import { plugins } from "@webiny/plugins";
 import { GET_CONTENT_MODEL, UPDATE_CONTENT_MODEL } from "./graphql";
 import { getFieldPosition, moveField, moveRow, deleteField } from "./functions";
-import { plugins } from "@webiny/plugins";
 
 import {
     CmsEditorFieldsLayout,
@@ -13,11 +14,11 @@ import {
     CmsEditorFieldTypePlugin,
     CmsEditorContentModel
 } from "~/types";
-import ApolloClient from "apollo-client";
+import { LIST_MENU_CONTENT_GROUPS_MODELS } from "~/admin/viewsGraphql";
 
 type PickedCmsEditorContentModel = Pick<
     CmsEditorContentModel,
-    "layout" | "fields" | "name" | "settings" | "description" | "titleFieldId"
+    "layout" | "fields" | "name" | "settings" | "description" | "titleFieldId" | "group"
 >;
 /**
  * cleanup is required because backend always expects string value in predefined values entries
@@ -121,6 +122,7 @@ export default ContentModelEditorContext => {
             },
             saveContentModel: async (data = state.data) => {
                 const modelData: PickedCmsEditorContentModel = pick(data, [
+                    "group",
                     "layout",
                     "fields",
                     "name",
@@ -133,7 +135,8 @@ export default ContentModelEditorContext => {
                     variables: {
                         modelId: data.modelId,
                         data: cleanupModelData(modelData)
-                    }
+                    },
+                    refetchQueries: [{ query: LIST_MENU_CONTENT_GROUPS_MODELS }]
                 });
 
                 setPristine(true);

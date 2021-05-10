@@ -273,7 +273,7 @@ export const validateModelAccess = async (
 };
 export const validateGroupAccess = (
     context: CmsContext,
-    permission: SecurityPermission<CmsContentModelGroupPermission>,
+    permission: CmsContentModelGroupPermission,
     group: CmsContentModelGroup
 ): boolean => {
     const { groups } = permission;

@@ -1,9 +1,10 @@
 const fs = require("fs");
 const path = require("path");
 const chalk = require("chalk");
-const { getProject, PluginsContainer, log } = require("./utils");
+const { importModule, getProject, PluginsContainer, log } = require("./utils");
 
 const project = getProject();
+
 if (!project) {
     console.log(
         `🚨 Couldn't locate "webiny.project.js"! Webiny CLI relies on that file to find the root of a Webiny project.`
@@ -57,9 +58,17 @@ class Context {
         this.onExitCallbacks.push(callback);
     }
 
-    loadUserPlugins() {
+    import(name) {
+        return importModule(name);
+    }
+
+    async loadUserPlugins() {
         if (this.project.config.cli) {
-            const plugins = this.project.config.cli.plugins || [];
+            let plugins = this.project.config.cli.plugins || [];
+            if (typeof plugins === "function") {
+                plugins = await plugins();
+            }
+
             this.plugins.register(
                 ...plugins.map(plugin => {
                     if (typeof plugin === "string") {

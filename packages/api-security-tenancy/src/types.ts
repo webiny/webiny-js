@@ -216,4 +216,6 @@ export type DbItemSecurityUser2Tenant = {
     };
 };
 
-export type ApiKeyPermission = SecurityPermission<{ name: "security.apiKey" }>;
+export interface ApiKeyPermission extends SecurityPermission {
+    name: "security.apiKey";
+}

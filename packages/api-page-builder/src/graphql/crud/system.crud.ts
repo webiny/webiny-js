@@ -4,6 +4,7 @@ import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { getApplicablePlugin } from "@webiny/api-upgrade";
 import executeHookCallbacks from "./utils/executeHookCallbacks";
 import { preparePageData } from "./install/welcome-to-webiny-page-data";
+import { notFoundPageData } from "./install/notFoundPageData";
 import savePageAssets from "./install/utils/savePageAssets";
 import defaults from "./utils/defaults";
 import { InstallHookPlugin, PbContext } from "../../types";
@@ -160,6 +161,7 @@ export default {
                             {
                                 title: "Not Found",
                                 path: "/not-found",
+                                content: notFoundPageData,
                                 // Do not show the page in page lists, only direct get is possible.
                                 visibility: {
                                     get: { latest: true, published: true },
