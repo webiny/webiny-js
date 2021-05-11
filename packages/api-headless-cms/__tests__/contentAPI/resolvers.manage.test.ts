@@ -217,7 +217,7 @@ describe("MANAGE - Resolvers", () => {
                     meta: {
                         hasMoreItems: false,
                         totalCount: 1,
-                        cursor: expect.any(String)
+                        cursor: null
                     }
                 }
             }
@@ -503,7 +503,7 @@ describe("MANAGE - Resolvers", () => {
                     meta: {
                         hasMoreItems: false,
                         totalCount: 1,
-                        cursor: expect.any(String)
+                        cursor: null
                     },
                     error: null
                 }
@@ -746,7 +746,7 @@ describe("MANAGE - Resolvers", () => {
                     meta: {
                         hasMoreItems: false,
                         totalCount: 4,
-                        cursor: expect.any(String)
+                        cursor: null
                     },
                     error: null
                 }
@@ -767,7 +767,7 @@ describe("MANAGE - Resolvers", () => {
                     meta: {
                         hasMoreItems: false,
                         totalCount: 1,
-                        cursor: expect.any(String)
+                        cursor: null
                     },
                     error: null
                 }
@@ -787,7 +787,7 @@ describe("MANAGE - Resolvers", () => {
                     meta: {
                         hasMoreItems: false,
                         totalCount: 3,
-                        cursor: expect.any(String)
+                        cursor: null
                     },
                     error: null
                 }
@@ -807,7 +807,7 @@ describe("MANAGE - Resolvers", () => {
                     meta: {
                         hasMoreItems: false,
                         totalCount: 2,
-                        cursor: expect.any(String)
+                        cursor: null
                     },
                     error: null
                 }
@@ -850,7 +850,7 @@ describe("MANAGE - Resolvers", () => {
                     meta: {
                         hasMoreItems: false,
                         totalCount: 2,
-                        cursor: expect.any(String)
+                        cursor: null
                     },
                     error: null
                 }

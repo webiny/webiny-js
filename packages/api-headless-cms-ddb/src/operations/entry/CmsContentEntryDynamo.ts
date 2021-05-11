@@ -450,7 +450,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
         const end = limit > totalCount + start + limit ? undefined : start + limit;
         items = items.slice(start, end);
 
-        const cursor = items.length > 0 ? encodePaginationCursor(start + limit) : null;
+        const cursor = totalCount > start + limit ? encodePaginationCursor(start + limit) : null;
         return {
             hasMoreItems,
             totalCount,
@@ -1296,7 +1296,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
 
     private getGSISortKey(entry: CmsContentEntry): number {
         const parsed = parseISODateTime(entry.savedOn);
-        return Number(parsed.getMilliseconds());
+        return Number(parsed.getTime());
     }
     /**
      * Gets a secondary key in form of REV#version from:
