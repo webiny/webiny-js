@@ -48,6 +48,24 @@ const sanitizeTransformArgs = (args: { [key: string]: any }): Object => {
     return output;
 };
 
+const getSizes = (width: any): string | null => {
+    // Check if width was set as percentage, with "%" in the value.
+    if (typeof width === "string" && width.endsWith("%")) {
+        return `${parseInt(width)}vw`;
+    }
+    // Check if width was set as viewport width, with "vw" in the value.
+    if (typeof width === "string" && width.endsWith("vw")) {
+        return `${parseInt(width)}vw`;
+    }
+
+    // Check if width was set as relative, with "em" in the value.
+    if (typeof width === "string" && width.endsWith("em")) {
+        return `${parseInt(width)}em`;
+    }
+
+    return null;
+};
+
 const isFixedImageWidth = width => {
     if (Number.isFinite(width)) {
         return true;
@@ -101,6 +119,7 @@ export default () => {
         render(props: { [key: string]: any }) {
             const { transform, srcSet: srcSetInitial, ...imageProps } = props;
             let srcSet = srcSetInitial;
+            let sizes;
             const src = imageProps.src;
             if (srcSet && srcSet === "auto") {
                 srcSet = {};
@@ -114,9 +133,10 @@ export default () => {
                         transform: { ...transform, width }
                     });
                 });
+                sizes = getSizes(forcedWidth);
             }
 
-            return <Image {...imageProps} srcSet={srcSet} src={src} />;
+            return <Image {...imageProps} srcSet={srcSet} src={src} sizes={sizes} />;
         }
     };
 
