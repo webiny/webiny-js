@@ -1946,15 +1946,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:7.13.17":
-  version: 7.13.17
-  resolution: "@babel/runtime@npm:7.13.17"
-  dependencies:
-    regenerator-runtime: ^0.13.4
-  checksum: c32e5e2833348b586bc919c0fbc8efbd2fdd79451cce56ed5962ace6ff74ea44fbb8723dcd3f08e52ce07e88e37f4c02cd5021855417d365558e41de38d277a8
-  languageName: node
-  linkType: hard
-
 "@babel/runtime@npm:7.9.0":
   version: 7.9.0
   resolution: "@babel/runtime@npm:7.9.0"
@@ -7492,18 +7483,19 @@ __metadata:
     "@webiny/db-dynamodb": ^5.3.0
     "@webiny/error": ^5.3.0
     "@webiny/handler-db": ^5.3.0
-    "@webiny/plugins": ^5.5.0
+    "@webiny/plugins": ^5.3.0
     "@webiny/project-utils": ^5.3.0
     aws-sdk: 2.868.0
     dataloader: ^2.0.0
     date-fns: ^2.21.1
-    dot-prop: ^6.0.1
+    dot-prop: ^5.3.0
     dynamodb-toolbox: ^0.3.3
     jest: ^26.6.3
     jest-dynalite: ^3.2.0
     jest-environment-node: ^26.6.2
     jsonpack: ^1.1.5
     lodash.chunk: ^4.2.0
+    lodash.clonedeep: ^4.5.0
     lodash.sortby: ^4.5.0
     mdbid: ^1.0.0
     prettier: ^1.19.1
@@ -8901,16 +8893,6 @@ __metadata:
     uniqid: ^5.2.0
   languageName: unknown
   linkType: soft
-
-"@webiny/plugins@npm:^5.5.0":
-  version: 5.5.0
-  resolution: "@webiny/plugins@npm:5.5.0"
-  dependencies:
-    "@babel/runtime": 7.13.17
-    uniqid: 5.3.0
-  checksum: 56b91ea8bc0ebedcdbb84c0a39ddf9c0257fb5dd18172acdd41bbf31743c1fc5e657f16722ecb6d182421e35465cf0587d5cfb7ec773e19361ffcdc5f5976b98
-  languageName: node
-  linkType: hard
 
 "@webiny/project-utils@^5.0.0-beta.0, @webiny/project-utils@^5.0.0-beta.4, @webiny/project-utils@^5.3.0, @webiny/project-utils@^5.4.0, @webiny/project-utils@workspace:packages/project-utils":
   version: 0.0.0-use.local
@@ -15438,21 +15420,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dot-prop@npm:^5.1.0, dot-prop@npm:^5.2.0":
+"dot-prop@npm:^5.1.0, dot-prop@npm:^5.2.0, dot-prop@npm:^5.3.0":
   version: 5.3.0
   resolution: "dot-prop@npm:5.3.0"
   dependencies:
     is-obj: ^2.0.0
   checksum: 76e6693d8803eeff9cb920988446bf223cf1f6e5b1c0c2fe07a66906392134931a481b11e3c0bd852c5cfc97fad65258bcb4359169ad1d8d624cb3f56932be98
-  languageName: node
-  linkType: hard
-
-"dot-prop@npm:^6.0.1":
-  version: 6.0.1
-  resolution: "dot-prop@npm:6.0.1"
-  dependencies:
-    is-obj: ^2.0.0
-  checksum: 06793b868079d70bffce4f0ac7e32055778723cc90b6e0bb12a2dff157298e693fb9ac7733556e4bb2d54de9d670a0b6a67610295cb1119a204fb7e340fafe54
   languageName: node
   linkType: hard
 
@@ -33113,7 +33086,7 @@ resolve@1.12.2:
   languageName: node
   linkType: hard
 
-"uniqid@npm:5.3.0, uniqid@npm:^5.0.3, uniqid@npm:^5.2.0":
+"uniqid@npm:^5.0.3, uniqid@npm:^5.2.0":
   version: 5.3.0
   resolution: "uniqid@npm:5.3.0"
   checksum: 1fcf7eb69ea09dd2cf37ffe72d8bd0f371a95586c3408b10f0018ad32e13fd533ebb7942a0fa75d8b1124ca7b4f417d241483853d6d706afeaca25d3cc7a0dcb

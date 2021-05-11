@@ -32,8 +32,8 @@ import { Entity, Table } from "dynamodb-toolbox";
 import { getDocumentClient, getTable } from "../helpers";
 import { filterItems, sortEntryItems } from "./utils";
 import { queryOptions as DDBToolboxQueryOptions } from "dynamodb-toolbox/dist/classes/Table";
+import lodashCloneDeep from "lodash.clonedeep";
 import { FilterExpressions } from "dynamodb-toolbox/dist/lib/expressionBuilder";
-import { parseISO as parseISODateTime } from "date-fns";
 
 export const TYPE_ENTRY = "cms.entry";
 export const TYPE_ENTRY_LATEST = TYPE_ENTRY + ".l";
@@ -50,7 +50,7 @@ interface GetSingleDynamoDBItemArgs {
     order?: string;
 }
 
-const GSI1 = "GSI1";
+const GSI1_INDEX = "GSI1";
 
 /**
  * We do not use transactions in this storage operations implementation due to their cost.
@@ -79,7 +79,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             sortKey: "SK",
             DocumentClient: getDocumentClient(context),
             indexes: {
-                [GSI1]: {
+                [GSI1_INDEX]: {
                     partitionKey: "GSI1_PK",
                     sortKey: "GSI1_SK"
                 }
@@ -102,7 +102,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
                     type: "string"
                 },
                 GSI1_SK: {
-                    type: "number"
+                    type: "string"
                 },
                 TYPE: {
                     type: "string"
@@ -354,11 +354,12 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
         model: CmsContentModel,
         args: CmsContentEntryStorageOperationsListArgs
     ): Promise<CmsContentEntryStorageOperationsListResponse> {
-        const { limit: initialLimit, where, after, sort } = args;
+        const { limit: initialLimit, where: originalWhere, after, sort } = args;
         const limit = !initialLimit || initialLimit <= 0 ? 100 : initialLimit;
         /**
          * There is no need to go further if we have a id or entryId in where args
          */
+        /*
         if (where.id || where.id_in || where.entryId) {
             const items = await this.findAllById({ model, where });
             return {
@@ -369,42 +370,21 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             };
         }
 
+        */
         let items: CmsContentEntry[] = [];
 
-        // TODO remove when introduced model partition key
-        const baseFilters: FilterExpressions = [
-            {
-                attr: "modelId",
-                eq: model.modelId
-            }
-        ];
-        if (where.latest) {
-            baseFilters.push({
-                attr: "TYPE",
-                eq: TYPE_ENTRY_LATEST
-            });
-        } else if (where.published) {
-            baseFilters.push({
-                attr: "TYPE",
-                eq: TYPE_ENTRY_PUBLISHED
-            });
-        } else {
-            baseFilters.push({
-                attr: "TYPE",
-                eq: TYPE_ENTRY
-            });
-        }
-        delete where["latest"];
-        delete where["published"];
+        const queryOptions = this.createQueryOptions({
+            where: originalWhere,
+            model
+        });
 
-        const scanner = async previousResults => {
+        const scanner = async (partitionKey: string, previousResults: any) => {
             let result;
-            const options = {
-                filters: baseFilters,
-                limit: limit + 1
-            };
             if (!previousResults) {
-                result = await this._entity.scan(options);
+                result = await this._entity.query(partitionKey, {
+                    filters: queryOptions.filters,
+                    index: queryOptions.targetIndex
+                });
             } else if (previousResults && typeof previousResults.next === "function") {
                 result = await previousResults.next();
                 if (result === false) {
@@ -416,8 +396,11 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             if (!result || !result.Items || !Array.isArray(result.Items)) {
                 throw new WebinyError(
                     "Error when scanning for content entries - no result.",
-                    "SCAN_ERROR",
-                    options
+                    "QUERY_ERROR",
+                    {
+                        partitionKey,
+                        index: queryOptions.targetIndex
+                    }
                 );
             }
             return result;
@@ -425,9 +408,11 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
         try {
             let previousResults = undefined;
             let results;
-            while ((results = await scanner(previousResults))) {
-                items.push(...results.Items);
-                previousResults = results;
+            for (const partitionKey of queryOptions.queryPartitionKeys) {
+                while ((results = await scanner(partitionKey, previousResults))) {
+                    items.push(...results.Items);
+                    previousResults = results;
+                }
             }
         } catch (ex) {
             throw new WebinyError(ex.message, ex.code || "SCAN_ERROR", {
@@ -435,7 +420,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             });
         }
 
-        items = filterItems({ items, where, model, context: this.context });
+        items = filterItems({ items, where: queryOptions.where, model, context: this.context });
 
         const totalCount = items.length;
 
@@ -1279,12 +1264,12 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
         return `${this._partitionKey}#${id}`;
     }
 
-    private getGSIPartitionKey(type: "L" | "P" | "E", model: CmsContentModel) {
+    private getGSIPartitionKey(type: "L" | "P" | "A", model: CmsContentModel) {
         return `${this._partitionKey}#${model.modelId}#${type}`;
     }
 
     private getGSIEntryPartitionKey(model: CmsContentModel): string {
-        return this.getGSIPartitionKey("E", model);
+        return this.getGSIPartitionKey("A", model);
     }
     private getGSILatestPartitionKey(model: CmsContentModel): string {
         return this.getGSIPartitionKey("L", model);
@@ -1294,9 +1279,10 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
         return this.getGSIPartitionKey("P", model);
     }
 
-    private getGSISortKey(entry: CmsContentEntry): number {
-        const parsed = parseISODateTime(entry.savedOn);
-        return Number(parsed.getTime());
+    private getGSISortKey(entry: CmsContentEntry): string {
+        return entry.id;
+        // const parsed = parseISODateTime(entry.savedOn);
+        // return Number(parsed.getTime());
     }
     /**
      * Gets a secondary key in form of REV#version from:
@@ -1318,144 +1304,97 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
     public getSortKeyPublished(): string {
         return "P";
     }
-
     /**
-     * We use this method when there are exact IDs to be found. This is quite faster than the query or scan operations.
+     * Method to build the query partition keys, always an array, and create the target index:
+     * - if undefined then it is primary
+     * - if populated then it is that given one (and partition keys are reflecting that)
      */
-    private async findAllById(args: {
-        model: CmsContentModel;
+    private createQueryOptions({
+        where: originalWhere,
+        model
+    }: {
         where: CmsContentEntryListWhere;
-    }): Promise<CmsContentEntry[]> {
-        const { where } = args;
+        model: CmsContentModel;
+    }): {
+        targetIndex?: string;
+        queryPartitionKeys: string[];
+        where: CmsContentEntryListWhere;
+        filters: FilterExpressions;
+    } {
+        const filters: FilterExpressions = [];
+        const where = lodashCloneDeep(originalWhere);
+        let targetIndex: string | undefined = undefined;
         /**
-         * There must be some of the conditions in the where.
+         * if we have id or entry ID, we will query via the primary key
+         * just add all the possible IDs to find
          */
-        if (!where.id && !where.id_in && !where.entryId) {
-            throw new WebinyError(
-                "Access to findAllById is allowed only if there is id, id_in or entryId in where argument.",
-                "FIND_BY_ID_ERROR",
-                args
-            );
-        } else if (
-            /**
-             * Also there cannot be multiple conditions.
-             */
-            (where.id && where.id_in) ||
-            (where.id && where.entryId) ||
-            (where.id_in && where.entryId)
-        ) {
-            throw new WebinyError(
-                "There cannot be multiple condition combinations - id, id_in or entryId.",
-                "FIND_BY_ID_ERROR",
-                args
-            );
+        const queryPartitionKeys: string[] = [];
+        if (where.id) {
+            queryPartitionKeys.push(where.id);
         }
-        const batches = [];
-        const published = where.published === true;
-        const latest = where.latest === true;
-        /**
-         *
-         */
-        const idList = where.id_in ? where.id_in : where.id ? [where.id] : null;
-        if (idList) {
-            for (const id of idList) {
-                const sortKey = published
-                    ? this.getSortKeyPublished()
-                    : latest
-                    ? this.getSortKeyLatest()
-                    : this.getSortKeyRevision(id);
-                batches.push(
-                    this._entity.getBatch({
-                        PK: this.getPartitionKey(id),
-                        SK: sortKey
-                    })
-                );
-            }
+        if (where.entryId) {
+            queryPartitionKeys.push(where.entryId);
         }
-        const entryIdList = where.entryId_in
-            ? where.entryId_in
-            : where.entryId
-            ? [where.entryId]
-            : null;
-        if (entryIdList) {
-            const sortKey = published
-                ? this.getSortKeyPublished()
-                : latest
-                ? this.getSortKeyLatest()
-                : where.version
-                ? this.getSortKeyRevision(where.version)
-                : null;
-            if (!sortKey) {
-                throw new WebinyError(
-                    "Trying to find an entry by where.entryId or where.entryId_in condition but no version, published or latest condition defined.",
-                    "FIND_BY_ID_ERROR",
-                    args
-                );
-            }
-            for (const entryId of entryIdList) {
-                batches.push(
-                    this._entity.getBatch({
-                        PK: this.getPartitionKey(entryId),
-                        SK: sortKey
-                    })
-                );
-            }
+        if (where.id_in) {
+            queryPartitionKeys.push(...where.id_in);
+        }
+        if (where.entryId_in) {
+            queryPartitionKeys.push(...where.entryId_in);
         }
 
-        const fetcher = async (previousResults: any): Promise<any> => {
-            let result;
-            if (!previousResults) {
-                result = await this._table.batchGet(batches, {
-                    parse: true
-                });
-            } else if (previousResults && typeof previousResults.next === "function") {
-                result = await previousResults.next();
-                if (result === false) {
-                    return null;
-                }
+        /**
+         * if we do not have any of the IDs, we will query via the GSI1_PK
+         * just depending on the entry type
+         * at this point there will probably be a lot of results
+         * we will apply some basic dynamodb filters so we dont get much data from the db
+         * it is still going to get charged tho
+         */
+        if (queryPartitionKeys.length === 0) {
+            targetIndex = GSI1_INDEX;
+            if (where.published) {
+                queryPartitionKeys.push(this.getGSIPartitionKey("P", model));
+            } else if (where.latest) {
+                queryPartitionKeys.push(this.getGSIPartitionKey("L", model));
             } else {
-                return null;
+                queryPartitionKeys.push(this.getGSIPartitionKey("A", model));
             }
-            if (!result || !result.Responses || Object.keys(result.Responses).length === 0) {
-                throw new WebinyError(
-                    "Error when fetching entries in batch - no result.",
-                    "FIND_BY_ID_FETCHER_ERROR",
-                    args
-                );
-            }
-            return result;
-        };
-
-        try {
-            // const result = await this._table.batchGet(batches, {
-            //     parse: true,
-            // });
-            // if (!result || !result.Items || !Array.isArray(result.Items)) {
-            //     throw new WebinyError(
-            //         "Error when fetching batch get - no result.",
-            //         "FIND_BY_ID_ERROR",
-            //         args
-            //     );
-            // }
-            const items = [];
-            let previousResults = undefined;
-            let results;
-            while ((results = await fetcher(previousResults))) {
-                for (const table in results.Responses) {
-                    if (!results.Responses.hasOwnProperty(table)) {
-                        continue;
-                    }
-                    items.push(...results.Responses[table]);
-                }
-                previousResults = results;
-            }
-            return items;
-        } catch (ex) {
-            throw new WebinyError(
-                ex.message || "Batch execute error in findAllById.",
-                ex.code || "BATCH_EXECUTE_ERROR",
-                args
-            );
         }
+        /**
+         * if index is the primary one, we can filter records by type (latest, published or regular)
+         * so we do not need to filter in the code
+         */
+        if (!targetIndex) {
+            if (where.published) {
+                filters.push({
+                    attr: "TYPE",
+                    eq: TYPE_ENTRY_PUBLISHED
+                });
+            } else if (where.latest) {
+                filters.push({
+                    attr: "TYPE",
+                    eq: TYPE_ENTRY_LATEST
+                });
+            } else {
+                filters.push({
+                    attr: "TYPE",
+                    eq: TYPE_ENTRY
+                });
+            }
+        }
+        /**
+         * we remove all the used where conditions
+         */
+        delete where["id"];
+        delete where["id_in"];
+        delete where["entryId"];
+        delete where["entryId_in"];
+        delete where["published"];
+        delete where["latest"];
+        return {
+            targetIndex,
+            queryPartitionKeys,
+            where,
+            filters
+        };
     }
 }
