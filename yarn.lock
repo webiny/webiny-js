@@ -9072,6 +9072,7 @@ __metadata:
     "@editorjs/editorjs": ^2.20.1
     "@types/react": ^16.9.56
     "@webiny/cli": ^5.5.0
+    "@webiny/project-utils": ^5.5.0
     babel-plugin-named-asset-import: ^1.0.0-next.3e165448
     classnames: ^2.3.1
     react: ^16.14.0
