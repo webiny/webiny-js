@@ -32,7 +32,7 @@ export interface CliCommandPlugin extends Plugin {
  * @category ScaffoldQuestions
  * @category Template
  */
-interface CliCommandScaffoldQuestionsCallableArgs {
+export interface CliCommandScaffoldQuestionsCallableArgs {
     context: ContextInterface;
 }
 
@@ -43,7 +43,7 @@ interface CliCommandScaffoldQuestionsCallableArgs {
  * @category ScaffoldQuestions
  * @category Template
  */
-type CliCommandScaffoldQuestionsCallable = (
+export type CliCommandScaffoldQuestionsCallable = (
     args: CliCommandScaffoldQuestionsCallableArgs
 ) => QuestionCollection;
 
@@ -53,7 +53,7 @@ type CliCommandScaffoldQuestionsCallable = (
  * @category Scaffold
  * @category Template
  */
-interface CliCommandScaffoldCallableArgs<T extends Record<string, any>> {
+export interface CliCommandScaffoldCallableArgs<T extends Record<string, any>> {
     input: T;
     context: ContextInterface;
     wait: (ms?: number) => Promise<void>;
@@ -66,7 +66,7 @@ interface CliCommandScaffoldCallableArgs<T extends Record<string, any>> {
  * @category Scaffold
  * @category Template
  */
-interface CliCommandScaffoldCallableWithErrorArgs<T extends Record<string, any>>
+export interface CliCommandScaffoldCallableWithErrorArgs<T extends Record<string, any>>
     extends CliCommandScaffoldCallableArgs<T> {
     error: Error;
 }
