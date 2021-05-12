@@ -2,24 +2,23 @@ import path from "path";
 import fs from "fs";
 import { readFile } from "fs-extra";
 import { Octokit } from "octokit";
+import getCurrentCommit from "./getCurrentCommit";
 
-export default async (args: { octokit: Octokit; org: string; repo: string }) => {
-    const { octokit, org, repo } = args;
-    const branch = "main";
+export default async (args: { octokit: Octokit; owner: string; repo: string; branch: string }) => {
+    const currentCommit = await getCurrentCommit(args);
+    const { octokit, owner, repo, branch } = args;
 
-    const currentCommit = await getCurrentCommit(octokit, org, repo, branch);
-
-    const cwd = path.join(__dirname, "githubActions", "workflows");
+    const cwd = path.join(__dirname, "workflows");
 
     const filesPaths = [];
     readDirectory(cwd, filesPaths);
 
-    const filesBlobs = await Promise.all(filesPaths.map(createBlobForFile(octokit, org, repo)));
+    const filesBlobs = await Promise.all(filesPaths.map(createBlobForFile(octokit, owner, repo)));
     const pathsForBlobs = filesPaths.map(fullPath => path.relative(cwd, fullPath));
 
     const newTree = await createNewTree(
         octokit,
-        org,
+        owner,
         repo,
         filesBlobs,
         pathsForBlobs,
@@ -29,32 +28,13 @@ export default async (args: { octokit: Octokit; org: string; repo: string }) => 
     const commitMessage = `ci: create Webiny CI/CD pipeline`;
     const newCommit = await createNewCommit(
         octokit,
-        org,
+        owner,
         repo,
         commitMessage,
         newTree.sha,
         currentCommit.commitSha
     );
-    await setBranchToCommit(octokit, org, repo, branch, newCommit.sha);
-};
-
-const getCurrentCommit = async (octokit: Octokit, org: string, repo: string, branch: string) => {
-    const { data: refData } = await octokit.rest.git.getRef({
-        owner: org,
-        repo,
-        ref: `heads/${branch}`
-    });
-    const commitSha = refData.object.sha;
-    const { data: commitData } = await octokit.rest.git.getCommit({
-        owner: org,
-        repo,
-        commit_sha: commitSha
-    });
-
-    return {
-        commitSha,
-        treeSha: commitData.tree.sha
-    };
+    await setBranchToCommit(octokit, owner, repo, branch, newCommit.sha);
 };
 
 function readDirectory(dir, files) {
@@ -67,9 +47,7 @@ function readDirectory(dir, files) {
     });
 }
 
-// ===============================================================================================
-
-// Notice that readFile's utf8 is typed differently from Github's utf-8
+// Notice that readFile's utf8 is typed differently from Github's utf-8.
 const getFileAsUTF8 = (filePath: string) => readFile(filePath, "utf8");
 
 const createBlobForFile = (octokit: Octokit, org: string, repo: string) => async (
@@ -100,7 +78,7 @@ const createNewTree = async (
         mode: `100644`,
         type: `blob`,
         sha
-    // })) as octokit.rest.gitCreateTreeParamsTree[]; TODO: check this type.
+        // })) as octokit.rest.gitCreateTreeParamsTree[]; TODO: check this type.
     })) as any[];
 
     const { data } = await octokit.rest.git.createTree({
