@@ -104,7 +104,7 @@ const createFilters = (args: CreateFiltersArgs): ItemFilter[] => {
     });
     const valuePathPlugins = getMappedPlugins<CmsFieldFilterPathPlugin>({
         context,
-        type: "cms-field-filter-path-transform",
+        type: "cms-field-filter-path",
         property: "fieldType"
     });
     return Object.keys(where).map(key => {
@@ -260,7 +260,7 @@ const getMappedPlugins = <T extends Plugin>(args: {
     const { context, type, property, allowOverrides } = args;
     const plugins = context.plugins.byType<T>(type);
     if (plugins.length === 0) {
-        throw new WebinyError("There are no plugins of type.", "PLUGINS_ERROR", {
+        throw new WebinyError(`There are no plugins of type "${type}".`, "PLUGINS_ERROR", {
             type
         });
     }
@@ -277,7 +277,7 @@ const getMappedPlugins = <T extends Plugin>(args: {
             );
         } else if (allowOverrides !== true && collection[key]) {
             throw new WebinyError(
-                "Plugin with given mapping property already exists.",
+                `Plugin with given mapping property "${key}" already exists.`,
                 "EXISTING_PLUGIN_PROPERTY_ERROR",
                 {
                     type,
@@ -305,7 +305,7 @@ export const buildModelFields = ({
     });
     const valuePathPlugins = getMappedPlugins<CmsFieldFilterPathPlugin>({
         context,
-        type: "cms-field-filter-path-transform",
+        type: "cms-field-filter-path",
         property: "fieldType"
     });
     const fields: ModelFieldRecords = Object.values(systemFields).reduce((collection, field) => {

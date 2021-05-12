@@ -58,6 +58,10 @@ interface GetSingleDynamoDBItemArgs {
 
 const GSI1_INDEX = "GSI1";
 
+const configurationDefaults: CmsContentEntryConfiguration = {
+    defaultLimit: 100,
+    maxLimit: undefined
+};
 /**
  * We do not use transactions in this storage operations implementation due to their cost.
  */
@@ -74,9 +78,16 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
         return this._context;
     }
 
+    private get configuration(): CmsContentEntryConfiguration {
+        return this._configuration;
+    }
+
     public constructor({ context, configuration }: ConstructorArgs) {
         this._context = context;
-        this._configuration = configuration;
+        this._configuration = {
+            ...configurationDefaults,
+            ...(configuration || {})
+        };
         this._partitionKey = `${createBasePartitionKey(this.context)}#CME`;
         this._modelPartitionKey = `${this._partitionKey}#M`;
         this._dataLoaders = new DataLoadersHandler(context, this);
@@ -367,8 +378,8 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
          * There is no max limit imposed because that is up to the devs using this.
          * Default is some reasonable number for us but users can set their own when initializing the plugin.
          */
-        const defaultLimit = this._configuration.defaultLimit || 100;
-        const maxLimit = this._configuration.maxLimit || defaultLimit;
+        const defaultLimit = this.configuration.defaultLimit || configurationDefaults.defaultLimit;
+        const maxLimit = this.configuration.maxLimit || defaultLimit;
         const limit =
             !initialLimit || initialLimit <= 0
                 ? initialLimit > maxLimit
@@ -449,7 +460,7 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
                 }
             }
         } catch (ex) {
-            throw new WebinyError(ex.message, ex.code || "SCAN_ERROR", {
+            throw new WebinyError(ex.message, "SCAN_ERROR", {
                 error: ex
             });
         }
@@ -1321,7 +1332,7 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
     }
 
     private getGSIPartitionKey(type: "L" | "P" | "A", model: CmsContentModel) {
-        return `${this._partitionKey}#${model.modelId}#${type}`;
+        return `${this._partitionKey}#M#${model.modelId}#${type}`;
     }
 
     private getGSIEntryPartitionKey(model: CmsContentModel): string {
