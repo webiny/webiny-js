@@ -30,7 +30,7 @@ import {
 import { entryToStorageTransform } from "@webiny/api-headless-cms/transformers";
 import { Entity, Table } from "dynamodb-toolbox";
 import { getDocumentClient, getTable } from "../helpers";
-import { filterItems, sortEntryItems } from "./utils";
+import { filterItems, buildModelFields, sortEntryItems } from "./utils";
 import { queryOptions as DDBToolboxQueryOptions } from "dynamodb-toolbox/dist/classes/Table";
 import lodashCloneDeep from "lodash.clonedeep";
 import { FilterExpressions } from "dynamodb-toolbox/dist/lib/expressionBuilder";
@@ -355,44 +355,56 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
         args: CmsContentEntryStorageOperationsListArgs
     ): Promise<CmsContentEntryStorageOperationsListResponse> {
         const { limit: initialLimit, where: originalWhere, after, sort } = args;
-        const limit = !initialLimit || initialLimit <= 0 ? 100 : initialLimit;
         /**
-         * There is no need to go further if we have a id or entryId in where args
+         * There is no max limit imposed because that is up to the devs using this.
+         * Default is some reasonable number.
          */
-        /*
-        if (where.id || where.id_in || where.entryId) {
-            const items = await this.findAllById({ model, where });
-            return {
-                hasMoreItems: false,
-                items,
-                cursor: null,
-                totalCount: items.length
-            };
-        }
+        const limit = !initialLimit || initialLimit <= 0 ? 100 : initialLimit;
 
-        */
-        let items: CmsContentEntry[] = [];
+        const items: CmsContentEntry[] = [];
 
         const queryOptions = this.createQueryOptions({
             where: originalWhere,
             model
         });
-
+        /**
+         * A method to query the database at the given partition key with the built query options.
+         * Method runs in the loop until it reads everything it needs to.
+         * We could impose the limit on the records read but there is no point since we MUST read everything to be able
+         * to filter and sort the data.
+         */
         const scanner = async (partitionKey: string, previousResults: any) => {
             let result;
+            /**
+             * In the case there is no previous result we must make a new query.
+             * This is the first query on the given partition key.
+             */
             if (!previousResults) {
                 result = await this._entity.query(partitionKey, {
                     filters: queryOptions.filters,
                     index: queryOptions.targetIndex
                 });
             } else if (previousResults && typeof previousResults.next === "function") {
+                /**
+                 * In the case we have a previous result and it has a next method, we run it.
+                 * In the case result of the next method is false, it means it has nothing else to read
+                 * and we return a null to keep the query from repeating.
+                 */
                 result = await previousResults.next();
                 if (result === false) {
                     return null;
                 }
             } else {
+                /**
+                 * This could probably never happen but keep it here just in case to break the query loop.
+                 * Basically, either previousResult does not exist or it exists and has a next method
+                 * and at that point a result returned will be null and loop should not start again.
+                 */
                 return null;
             }
+            /**
+             * We have expectations that a result contains a Items array and if not, something went wrong, very wrong.
+             */
             if (!result || !result.Items || !Array.isArray(result.Items)) {
                 throw new WebinyError(
                     "Error when scanning for content entries - no result.",
@@ -406,9 +418,16 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
             return result;
         };
         try {
-            let previousResults = undefined;
             let results;
+            /**
+             * We run the scanner method on all the partition keys that were built in the createQueryOptions() method.
+             * Partition keys are always built as array because of the possibility that we might need to read from different partitions
+             * which is the case if where condition is something like id_in or entryId_in.
+             * If we are reading from the GSI1_PK it is a single partition but we keep it as an array
+             * just to make it easier to read in all of the cases.
+             */
             for (const partitionKey of queryOptions.queryPartitionKeys) {
+                let previousResults = undefined;
                 while ((results = await scanner(partitionKey, previousResults))) {
                     items.push(...results.Items);
                     previousResults = results;
@@ -419,28 +438,50 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
                 error: ex
             });
         }
-
-        items = filterItems({ items, where: queryOptions.where, model, context: this.context });
-
-        const totalCount = items.length;
-
-        items = sortEntryItems({
-            model,
+        /**
+         * We need a object containing field, transformers and paths.
+         * Just build it here and pass on into other methods that require it to avoid mapping multiple times.
+         */
+        const modelFields = buildModelFields({
+            context: this.context,
+            model
+        });
+        /**
+         * Filter the read items via the code.
+         * It will build the filters out of the where input and transform the values it is using.
+         */
+        const filteredItems = filterItems({
             items,
-            sort
+            where: queryOptions.where,
+            context: this.context,
+            fields: modelFields
+        });
+
+        const totalCount = filteredItems.length;
+        /**
+         * Sorting is also done via the code.
+         * It takes the sort input and sorts by it via the lodash sortBy method.
+         */
+        const sortedItems = sortEntryItems({
+            items: filteredItems,
+            sort,
+            fields: modelFields
         });
 
         const start = decodePaginationCursor(after) || 0;
         const hasMoreItems = totalCount > start + limit;
         const end = limit > totalCount + start + limit ? undefined : start + limit;
-        items = items.slice(start, end);
-
+        const slicedItems = sortedItems.slice(start, end);
+        /**
+         * Although we do not need a cursor here, we will use it as such to keep it standardized.
+         * Number is simply encoded.
+         */
         const cursor = totalCount > start + limit ? encodePaginationCursor(start + limit) : null;
         return {
             hasMoreItems,
             totalCount,
             cursor,
-            items
+            items: slicedItems
         };
     }
     public async update(
