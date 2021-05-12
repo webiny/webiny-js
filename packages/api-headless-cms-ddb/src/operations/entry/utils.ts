@@ -48,44 +48,22 @@ interface FilterItemsArgs {
     fields: ModelFieldRecords;
 }
 
-// const fieldPathsTransformations = {
-//     createdBy: "createdBy.id",
-//     ownedBy: "ownedBy.id"
-// };
-// const dateTimeField = (id: string): CmsContentModelField => {
-//     return {
-//         id,
-//         type: "datetime",
-//         fieldId: id,
-//         multipleValues: false,
-//         listValidation: [],
-//         validation: [],
-//         renderer: {
-//             name: "renderer"
-//         },
-//         predefinedValues: {
-//             enabled: false,
-//             values: []
-//         },
-//         placeholderText: id,
-//         helpText: id,
-//         label: id,
-//         settings: {
-//             type: "datetime"
-//         }
-//     };
-// };
-// const defaultSystemFields = {
-//     createdOn: dateTimeField("createdOn"),
-//     savedOn: dateTimeField("createdOn")
-// };
 const VALUES_ATTRIBUTE = "values";
 
 const extractWhereArgs = (key: string) => {
     const result = key.split("_");
     const fieldId = result.shift();
     const rawOp = result.length === 0 ? "eq" : result.join("_");
-
+    /**
+     * When rawOp is not, it means it is equal negated so just return that.
+     */
+    if (rawOp === "not") {
+        return {
+            fieldId,
+            operation: "eq",
+            negate: true
+        };
+    }
     const negate = rawOp.match("not_") !== null;
     const operation = rawOp.replace("not_", "");
     return { fieldId, operation, negate };
@@ -112,9 +90,13 @@ const createFilters = (args: CreateFiltersArgs): ItemFilter[] => {
 
         const field: ModelField = fields[fieldId];
         if (!field) {
-            throw new WebinyError("There is no field with the fieldId.", "FIELD_ERROR", {
-                fieldId
-            });
+            throw new WebinyError(
+                `There is no field with the fieldId "${fieldId}".`,
+                "FIELD_ERROR",
+                {
+                    fieldId
+                }
+            );
         }
 
         const transformValuePlugin: CmsFieldFilterValueTransformPlugin =
@@ -138,15 +120,21 @@ const createFilters = (args: CreateFiltersArgs): ItemFilter[] => {
 
         const valuePath = `${basePath}${targetValuePath}`;
 
-        // const compareValue = transformValuePlugin ? transformValuePlugin.transform({
-        //     field,
-        //     value: where[key],
-        // }) : where[key];
+        const filterPlugin = filterPlugins[operation];
+        if (!filterPlugin) {
+            throw new WebinyError(
+                `There is no filter plugin for operation "${operation}".`,
+                "FILTER_PLUGIN_ERROR",
+                {
+                    operation
+                }
+            );
+        }
 
         return {
             fieldId,
             valuePath,
-            matches: filterPlugins[operation].matches,
+            matches: filterPlugin.matches,
             negate,
             compareValue: where[key],
             transformValue: (value: any) => {
@@ -173,9 +161,15 @@ export const filterItems = (args: FilterItemsArgs): CmsContentEntry[] => {
         for (const filter of filters) {
             const { compareValue, valuePath, transformValue } = filter;
             const value = dotProp.get(item, valuePath);
+            const transformedFieldValue = Array.isArray(value)
+                ? value.map(transformValue)
+                : transformValue(value);
+            const transformedCompareValue = Array.isArray(compareValue)
+                ? compareValue.map(transformValue)
+                : transformValue(compareValue);
             const matched = filter.matches({
-                fieldValue: transformValue(value),
-                compareValue: transformValue(compareValue)
+                fieldValue: transformedFieldValue,
+                compareValue: transformedCompareValue
             });
             if ((filter.negate ? !matched : matched) === false) {
                 return false;
@@ -309,8 +303,7 @@ export const buildModelFields = ({
         property: "fieldType"
     });
     const fields: ModelFieldRecords = Object.values(systemFields).reduce((collection, field) => {
-        const transformValuePlugin: CmsFieldFilterValueTransformPlugin =
-            transformValuePlugins[field.type];
+        const transformValuePlugin = transformValuePlugins[field.type];
         const valuePathPlugin = valuePathPlugins[field.type];
         let valuePath: string;
         if (valuePathPlugin) {
@@ -319,7 +312,7 @@ export const buildModelFields = ({
             });
         }
         collection[field.fieldId] = {
-            field,
+            def: field,
             valueTransformer: (value: any) => {
                 if (!transformValuePlugin) {
                     return value;
@@ -331,11 +324,10 @@ export const buildModelFields = ({
         };
 
         return collection;
-    }, {});
+    }, {} as ModelFieldRecords);
 
     return model.fields.reduce((collection, field) => {
-        const transformValuePlugin: CmsFieldFilterValueTransformPlugin =
-            transformValuePlugins[field.type];
+        const transformValuePlugin = transformValuePlugins[field.type];
         const valuePathPlugin = valuePathPlugins[field.type];
         let valuePath: string;
         if (valuePathPlugin) {

@@ -6,17 +6,17 @@ const id = ({
     fieldId: "id"
 } as unknown) as CmsContentModelField;
 const createdOn = ({
-    id: "id",
+    id: "createdOn",
     type: "datetime",
     fieldId: "createdOn"
 } as unknown) as CmsContentModelField;
 const savedOn = ({
-    id: "id",
+    id: "savedOn",
     type: "datetime",
-    fieldId: "createdOn"
+    fieldId: "savedOn"
 } as unknown) as CmsContentModelField;
 const createdBy = ({
-    id: "id",
+    id: "createdBy",
     type: "plainObject",
     fieldId: "createdBy",
     settings: {
@@ -24,7 +24,7 @@ const createdBy = ({
     }
 } as unknown) as CmsContentModelField;
 const ownedBy = ({
-    id: "id",
+    id: "ownedBy",
     type: "plainObject",
     fieldId: "ownedBy",
     settings: {

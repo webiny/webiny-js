@@ -5,6 +5,7 @@ export default (): CmsFieldValueFilterPlugin<string> => ({
     name: "cms-field-value-filter-contains",
     operation: "contains",
     matches: ({ fieldValue, compareValue }) => {
-        return fieldValue.match(compareValue) !== null;
+        const re = new RegExp(compareValue, "i");
+        return fieldValue.match(re) !== null;
     }
 });

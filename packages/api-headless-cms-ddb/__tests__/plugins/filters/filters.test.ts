@@ -281,8 +281,8 @@ describe("filters", () => {
     );
 
     const containsList = [
-        ["some text with description", "with"],
-        ["some text with description", "text with"]
+        ["some text witH description", "wIth"],
+        ["some texT witH description", "text wiTh"]
     ];
     test.each(containsList)("value should contain", (fieldValue: any, compareValue: any) => {
         const plugin = findFilterPlugin("contains");
@@ -296,8 +296,8 @@ describe("filters", () => {
     });
 
     const notContainsList = [
-        ["some text with description", "with text"],
-        ["some text with description", "with some"]
+        ["Some text wiTh description", "with tExt"],
+        ["sOme text with description", "with soMe"]
     ];
     test.each(notContainsList)("value should not contain", (fieldValue: any, compareValue: any) => {
         const plugin = findFilterPlugin("contains");

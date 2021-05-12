@@ -213,9 +213,9 @@ describe("READ - Resolvers", () => {
                     ],
                     error: null,
                     meta: {
+                        cursor: null,
                         hasMoreItems: false,
-                        totalCount: 1,
-                        cursor: expect.any(String)
+                        totalCount: 1
                     }
                 }
             }
@@ -368,7 +368,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 3
                     },
@@ -409,7 +409,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 3
                     },
@@ -461,7 +461,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 3
                     },
@@ -514,7 +514,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 3
                     },
@@ -555,7 +555,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 1
                     },
@@ -602,7 +602,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 2
                     },
@@ -649,7 +649,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 2
                     },
@@ -689,7 +689,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 1
                     },
@@ -747,7 +747,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 3
                     },
@@ -787,7 +787,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 1
                     },
@@ -870,7 +870,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 2
                     },
@@ -922,7 +922,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 2
                     },
@@ -942,7 +942,7 @@ describe("READ - Resolvers", () => {
             ...manageOpts
         });
 
-        await createProduct({
+        const [potatoResponse] = await createProduct({
             data: {
                 title: "Potato",
                 price: 100.05,
@@ -956,6 +956,7 @@ describe("READ - Resolvers", () => {
                 }
             }
         });
+        const potato = potatoResponse.data.createProduct.data;
 
         await createProduct({
             data: {
@@ -972,7 +973,7 @@ describe("READ - Resolvers", () => {
             }
         });
 
-        await createProduct({
+        const [kornResponse] = await createProduct({
             data: {
                 title: "Korn",
                 price: 99.1,
@@ -986,6 +987,7 @@ describe("READ - Resolvers", () => {
                 }
             }
         });
+        const korn = kornResponse.data.createProduct.data;
 
         // wait until we have all products available
         await until(
@@ -1007,9 +1009,9 @@ describe("READ - Resolvers", () => {
         expect(response).toEqual({
             data: {
                 listProducts: {
-                    data: expect.any(Array),
+                    data: [korn, potato],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 2
                     },
@@ -1098,7 +1100,7 @@ describe("READ - Resolvers", () => {
                 listProducts: {
                     data: [carrot, korn, potato],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 3
                     },
@@ -1116,7 +1118,7 @@ describe("READ - Resolvers", () => {
                 listProducts: {
                     data: [potato, korn, carrot],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 3
                     },
@@ -1205,7 +1207,7 @@ describe("READ - Resolvers", () => {
                 listProducts: {
                     data: [potato, korn, carrot],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 3
                     },
@@ -1223,7 +1225,7 @@ describe("READ - Resolvers", () => {
                 listProducts: {
                     data: [carrot, korn, potato],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 3
                     },

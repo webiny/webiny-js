@@ -10,7 +10,7 @@ export default (): CmsFieldFilterValueTransformPlugin<Date | string | number, nu
      * Always transform into the milliseconds.
      */
     transform: ({ field, value }) => {
-        const { type = "datetimeWithoutTimezone" } = field.settings || {};
+        const { type } = field.settings || {};
         if (!type) {
             throw new WebinyError("Missing type settings value.", "FIELD_SETTINGS_ERROR", {
                 field
@@ -28,8 +28,9 @@ export default (): CmsFieldFilterValueTransformPlugin<Date | string | number, nu
             const v = value instanceof Date ? value.toISOString() : value;
             const parsedDateTime = parse(v, "HH:mm:ss", d);
             return (parsedDateTime.getTime() - d.getTime()) / 1000;
+        } else if (typeof (value as any).getTime === "function") {
+            return (value as Date).getTime();
         }
-        const parsedDateTime = value instanceof Date ? value : parseISO(value as any);
-        return parsedDateTime.getTime();
+        return parseISO(value as any).getTime();
     }
 });
