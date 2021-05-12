@@ -39,8 +39,14 @@ export const TYPE_ENTRY = "cms.entry";
 export const TYPE_ENTRY_LATEST = TYPE_ENTRY + ".l";
 export const TYPE_ENTRY_PUBLISHED = TYPE_ENTRY + ".p";
 
+export interface CmsContentEntryConfiguration {
+    defaultLimit?: number;
+    maxLimit?: number;
+}
+
 interface ConstructorArgs {
     context: CmsContext;
+    configuration: CmsContentEntryConfiguration;
 }
 
 interface GetSingleDynamoDBItemArgs {
@@ -55,8 +61,9 @@ const GSI1_INDEX = "GSI1";
 /**
  * We do not use transactions in this storage operations implementation due to their cost.
  */
-export default class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
+export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
     private readonly _context: CmsContext;
+    private readonly _configuration: CmsContentEntryConfiguration;
     private readonly _partitionKey: string;
     private readonly _modelPartitionKey: string;
     private readonly _dataLoaders: DataLoadersHandler;
@@ -67,8 +74,9 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
         return this._context;
     }
 
-    public constructor({ context }: ConstructorArgs) {
+    public constructor({ context, configuration }: ConstructorArgs) {
         this._context = context;
+        this._configuration = configuration;
         this._partitionKey = `${createBasePartitionKey(this.context)}#CME`;
         this._modelPartitionKey = `${this._partitionKey}#M`;
         this._dataLoaders = new DataLoadersHandler(context, this);
@@ -357,9 +365,16 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
         const { limit: initialLimit, where: originalWhere, after, sort } = args;
         /**
          * There is no max limit imposed because that is up to the devs using this.
-         * Default is some reasonable number.
+         * Default is some reasonable number for us but users can set their own when initializing the plugin.
          */
-        const limit = !initialLimit || initialLimit <= 0 ? 100 : initialLimit;
+        const defaultLimit = this._configuration.defaultLimit || 100;
+        const maxLimit = this._configuration.maxLimit || defaultLimit;
+        const limit =
+            !initialLimit || initialLimit <= 0
+                ? initialLimit > maxLimit
+                    ? maxLimit
+                    : defaultLimit
+                : initialLimit;
 
         const items: CmsContentEntry[] = [];
 
@@ -376,7 +391,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
         const scanner = async (partitionKey: string, previousResults: any) => {
             let result;
             /**
-             * In the case there is no previous result we must make a new query.
+             * In case there is no previous result we must make a new query.
              * This is the first query on the given partition key.
              */
             if (!previousResults) {
@@ -386,8 +401,8 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
                 });
             } else if (previousResults && typeof previousResults.next === "function") {
                 /**
-                 * In the case we have a previous result and it has a next method, we run it.
-                 * In the case result of the next method is false, it means it has nothing else to read
+                 * In case we have a previous result and it has a next method, we run it.
+                 * In case result of the next method is false, it means it has nothing else to read
                  * and we return a null to keep the query from repeating.
                  */
                 result = await previousResults.next();
@@ -403,7 +418,7 @@ export default class CmsContentEntryDynamo implements CmsContentEntryStorageOper
                 return null;
             }
             /**
-             * We have expectations that a result contains a Items array and if not, something went wrong, very wrong.
+             * We expect the result to contain an Items array and if not, something went wrong, very wrong.
              */
             if (!result || !result.Items || !Array.isArray(result.Items)) {
                 throw new WebinyError(
