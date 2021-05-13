@@ -648,12 +648,13 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 utils.checkOwnership(context, permission, originalEntryRevision, "ownedBy");
 
+                const currentDate = new Date().toISOString();
                 const entry: CmsContentEntry = {
                     ...originalEntryRevision,
                     status: STATUS_PUBLISHED,
                     locked: true,
-                    savedOn: new Date().toISOString(),
-                    publishedOn: new Date().toISOString()
+                    savedOn: currentDate,
+                    publishedOn: currentDate
                 };
 
                 try {

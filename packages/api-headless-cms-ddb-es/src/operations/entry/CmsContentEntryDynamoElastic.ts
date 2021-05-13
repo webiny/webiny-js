@@ -659,7 +659,10 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                         PK: primaryKey,
                         SK: this.getSecondaryKeyRevision(publishedEntry.version)
                     },
-                    data: previouslyPublishedStorageEntry
+                    data: {
+                        ...previouslyPublishedStorageEntry,
+                        savedOn: entry.savedOn
+                    }
                 })
                 .update({
                     /**
@@ -705,6 +708,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                         ...((latestESEntryData as any).data || {}),
                         status: CONTENT_ENTRY_STATUS.PUBLISHED,
                         locked: true,
+                        savedOn: entry.savedOn,
                         publishedOn: entry.publishedOn
                     }
                 }
