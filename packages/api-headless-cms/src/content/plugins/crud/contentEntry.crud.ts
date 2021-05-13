@@ -226,22 +226,29 @@ export default (): ContextPlugin<CmsContext> => ({
                 // Possibly only get records which are owned by current user
                 // Or if searching for the owner set that value - in the case that user can see other entries than their own
                 const ownedBy = permission.own ? context.security.getIdentity().id : where.ownedBy;
+                const listWhere = {
+                    ...where
+                };
+                if (ownedBy !== undefined) {
+                    listWhere.ownedBy = ownedBy;
+                }
 
                 const { hasMoreItems, totalCount, cursor, items } = await storageOperations.list(
                     model,
                     {
                         ...args,
-                        where: {
-                            ...where,
-                            ownedBy
-                        }
+                        where: listWhere
                     }
                 );
 
                 const meta = {
                     hasMoreItems,
                     totalCount,
-                    cursor
+                    /**
+                     * Cursor should be null if there are no more items to load.
+                     * Just make sure of that, disregarding what is returned from the storageOperations.list method.
+                     */
+                    cursor: hasMoreItems ? cursor : null
                 };
 
                 return [items, meta];
@@ -607,20 +614,15 @@ export default (): ContextPlugin<CmsContext> => ({
                 const permission = await checkPermissions({ rwd: "d" });
                 utils.checkModelAccess(context, permission, model);
 
-                const { items } = await storageOperations.list(model, {
-                    where: {
-                        entryId
-                    },
-                    limit: 1
-                });
-                const entryRevision = items.length > 0 ? items.shift() : null;
-                if (!entryRevision) {
+                const entry = await storageOperations.getLatestRevisionByEntryId(model, entryId);
+
+                if (!entry) {
                     throw new NotFoundError("Entry not found!");
                 }
 
-                utils.checkOwnership(context, permission, entryRevision, "ownedBy");
+                utils.checkOwnership(context, permission, entry, "ownedBy");
 
-                return await deleteEntry(model, entryRevision);
+                return await deleteEntry(model, entry);
             },
             publish: async (model, id) => {
                 const permission = await checkPermissions({ pw: "p" });
@@ -646,12 +648,13 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 utils.checkOwnership(context, permission, originalEntryRevision, "ownedBy");
 
+                const currentDate = new Date().toISOString();
                 const entry: CmsContentEntry = {
                     ...originalEntryRevision,
                     status: STATUS_PUBLISHED,
                     locked: true,
-                    savedOn: new Date().toISOString(),
-                    publishedOn: new Date().toISOString()
+                    savedOn: currentDate,
+                    publishedOn: currentDate
                 };
 
                 try {

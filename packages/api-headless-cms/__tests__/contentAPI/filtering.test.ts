@@ -187,7 +187,7 @@ describe("filtering", () => {
                     data: [apple, strawberry],
                     error: null,
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 2
                     }
@@ -219,7 +219,7 @@ describe("filtering", () => {
                     data: [strawberry, apple],
                     error: null,
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 2
                     }
@@ -252,7 +252,7 @@ describe("filtering", () => {
                     data: [banana],
                     error: null,
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 1
                     }
@@ -285,7 +285,7 @@ describe("filtering", () => {
                     data: [strawberry, apple],
                     error: null,
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 2
                     }
@@ -325,7 +325,7 @@ describe("filtering", () => {
                     data: [apple, banana],
                     error: null,
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 2
                     }
@@ -357,7 +357,7 @@ describe("filtering", () => {
                     data: [strawberry, banana],
                     error: null,
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 2
                     }
@@ -386,7 +386,7 @@ describe("filtering", () => {
                     data: [apple, banana, strawberry],
                     error: null,
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 3
                     }
@@ -424,7 +424,7 @@ describe("filtering", () => {
                             ],
                             error: null,
                             meta: {
-                                cursor: expect.any(String),
+                                cursor: null,
                                 hasMoreItems: false,
                                 totalCount: 1
                             }
@@ -458,7 +458,7 @@ describe("filtering", () => {
                             ],
                             error: null,
                             meta: {
-                                cursor: expect.any(String),
+                                cursor: null,
                                 hasMoreItems: false,
                                 totalCount: 2
                             }
@@ -496,7 +496,7 @@ describe("filtering", () => {
                             ],
                             error: null,
                             meta: {
-                                cursor: expect.any(String),
+                                cursor: null,
                                 hasMoreItems: false,
                                 totalCount: 1
                             }
@@ -530,7 +530,7 @@ describe("filtering", () => {
                             ],
                             error: null,
                             meta: {
-                                cursor: expect.any(String),
+                                cursor: null,
                                 hasMoreItems: false,
                                 totalCount: 2
                             }
@@ -564,7 +564,7 @@ describe("filtering", () => {
                             ],
                             error: null,
                             meta: {
-                                cursor: expect.any(String),
+                                cursor: null,
                                 hasMoreItems: false,
                                 totalCount: 2
                             }

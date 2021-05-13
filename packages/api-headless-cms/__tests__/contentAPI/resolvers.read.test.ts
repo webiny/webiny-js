@@ -213,9 +213,9 @@ describe("READ - Resolvers", () => {
                     ],
                     error: null,
                     meta: {
+                        cursor: null,
                         hasMoreItems: false,
-                        totalCount: 1,
-                        cursor: expect.any(String)
+                        totalCount: 1
                     }
                 }
             }
@@ -368,7 +368,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 3
                     },
@@ -409,7 +409,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 3
                     },
@@ -461,7 +461,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 3
                     },
@@ -514,7 +514,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 3
                     },
@@ -538,7 +538,8 @@ describe("READ - Resolvers", () => {
                         title_contains: "NIMal"
                     }
                 }).then(([data]) => data),
-            ({ data }) => data.listCategories.data[0].id === animals.id
+            ({ data }) => data.listCategories.data[0].id === animals.id,
+            { name: "list categories with NIMal" }
         );
 
         expect(result).toEqual({
@@ -554,7 +555,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 1
                     },
@@ -601,7 +602,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 2
                     },
@@ -648,7 +649,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 2
                     },
@@ -688,7 +689,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 1
                     },
@@ -715,7 +716,8 @@ describe("READ - Resolvers", () => {
                     },
                     sort: ["createdOn_ASC"]
                 }).then(([data]) => data),
-            ({ data }) => data.listCategories.data.length === 3
+            ({ data }) => data.listCategories.data.length === 3,
+            { name: "list entries with createdOn greater than given date" }
         );
 
         expect(result).toEqual({
@@ -745,7 +747,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 3
                     },
@@ -785,7 +787,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 1
                     },
@@ -868,7 +870,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 2
                     },
@@ -920,7 +922,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 2
                     },
@@ -940,7 +942,7 @@ describe("READ - Resolvers", () => {
             ...manageOpts
         });
 
-        await createProduct({
+        const [potatoResponse] = await createProduct({
             data: {
                 title: "Potato",
                 price: 100.05,
@@ -954,6 +956,7 @@ describe("READ - Resolvers", () => {
                 }
             }
         });
+        const potato = potatoResponse.data.createProduct.data;
 
         await createProduct({
             data: {
@@ -970,7 +973,7 @@ describe("READ - Resolvers", () => {
             }
         });
 
-        await createProduct({
+        const [kornResponse] = await createProduct({
             data: {
                 title: "Korn",
                 price: 99.1,
@@ -984,6 +987,7 @@ describe("READ - Resolvers", () => {
                 }
             }
         });
+        const korn = kornResponse.data.createProduct.data;
 
         // wait until we have all products available
         await until(
@@ -992,7 +996,7 @@ describe("READ - Resolvers", () => {
                     where: {}
                 }).then(([data]) => data),
             ({ data }) => data.listProducts.data.length === 3,
-            { name: "list all products in vegetables categories", tries: 10 }
+            { name: "list all products in vegetables categories - range", tries: 10, wait: 1000 }
         );
 
         const [response] = await listProducts({
@@ -1005,9 +1009,9 @@ describe("READ - Resolvers", () => {
         expect(response).toEqual({
             data: {
                 listProducts: {
-                    data: expect.any(Array),
+                    data: [korn, potato],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 2
                     },
@@ -1080,7 +1084,11 @@ describe("READ - Resolvers", () => {
         await until(
             () => listProducts({}).then(([data]) => data),
             ({ data }) => data.listProducts.data.length === 3,
-            { name: "list all products in vegetables categories", tries: 10, wait: 1000 }
+            {
+                name: "list all products in vegetables categories - sort title",
+                tries: 10,
+                wait: 1000
+            }
         );
 
         const [responseAsc] = await listProducts({
@@ -1092,7 +1100,7 @@ describe("READ - Resolvers", () => {
                 listProducts: {
                     data: [carrot, korn, potato],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 3
                     },
@@ -1110,7 +1118,7 @@ describe("READ - Resolvers", () => {
                 listProducts: {
                     data: [potato, korn, carrot],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 3
                     },
@@ -1183,7 +1191,11 @@ describe("READ - Resolvers", () => {
         await until(
             () => listProducts({}).then(([data]) => data),
             ({ data }) => data.listProducts.data.length === 3,
-            { name: "list all products in vegetables categories", tries: 10, wait: 1000 }
+            {
+                name: "list all products in vegetables categories - sort price",
+                tries: 10,
+                wait: 1000
+            }
         );
 
         const [responseAsc] = await listProducts({
@@ -1195,7 +1207,7 @@ describe("READ - Resolvers", () => {
                 listProducts: {
                     data: [potato, korn, carrot],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 3
                     },
@@ -1213,7 +1225,7 @@ describe("READ - Resolvers", () => {
                 listProducts: {
                     data: [carrot, korn, potato],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 3
                     },

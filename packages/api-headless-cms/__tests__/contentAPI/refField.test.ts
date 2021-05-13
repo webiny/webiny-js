@@ -263,13 +263,13 @@ describe("refField", () => {
                                 modelId: "product"
                             },
                             rating: 5,
-                            savedOn: review.savedOn,
+                            savedOn: publishedReview.savedOn,
                             text: review.text
                         }
                     ],
                     error: null,
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 1
                     }

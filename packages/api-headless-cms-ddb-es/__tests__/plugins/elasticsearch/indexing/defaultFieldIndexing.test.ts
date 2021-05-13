@@ -1,5 +1,5 @@
 import defaultFieldIndexPlugin from "../../../../src/elasticsearch/indexing/defaultFieldIndexing";
-import cloneDeep from "lodash/cloneDeep";
+import lodashCloneDeep from "lodash.clonedeep";
 import {
     CmsContentEntry,
     CmsContentModelField,
@@ -99,9 +99,9 @@ describe("defaultFieldIndexPlugin", () => {
         const plugin = defaultFieldIndexPlugin();
 
         const result = plugin.toIndex({
-            toIndexEntry: cloneDeep(mockInputEntry) as any,
-            originalEntry: cloneDeep(mockInputEntry) as any,
-            storageEntry: cloneDeep(mockInputEntry) as any,
+            toIndexEntry: lodashCloneDeep(mockInputEntry) as any,
+            originalEntry: lodashCloneDeep(mockInputEntry) as any,
+            storageEntry: lodashCloneDeep(mockInputEntry) as any,
             field: mockRichTextField,
             model: mockModel,
             context: mockContext,
@@ -114,7 +114,7 @@ describe("defaultFieldIndexPlugin", () => {
     test("fromIndex should return transformed objects", () => {
         const plugin = defaultFieldIndexPlugin();
         const result = plugin.fromIndex({
-            entry: cloneDeep(mockIndexedEntry) as any,
+            entry: lodashCloneDeep(mockIndexedEntry) as any,
             field: mockRichTextField,
             model: mockModel,
             context: mockContext,
@@ -142,9 +142,9 @@ describe("defaultFieldIndexPlugin", () => {
         const plugin = defaultFieldIndexPlugin();
 
         const result = plugin.toIndex({
-            toIndexEntry: cloneDeep(mockInputEntry) as any,
-            originalEntry: cloneDeep(mockInputEntry) as any,
-            storageEntry: cloneDeep(mockInputEntry) as any,
+            toIndexEntry: lodashCloneDeep(mockInputEntry) as any,
+            originalEntry: lodashCloneDeep(mockInputEntry) as any,
+            storageEntry: lodashCloneDeep(mockInputEntry) as any,
             field: mockTextField,
             model: mockModel,
             context: mockContext,
@@ -158,7 +158,7 @@ describe("defaultFieldIndexPlugin", () => {
         const plugin = defaultFieldIndexPlugin();
 
         const result = plugin.fromIndex({
-            entry: cloneDeep(mockIndexedEntry) as any,
+            entry: lodashCloneDeep(mockIndexedEntry) as any,
             field: mockTextField,
             model: mockModel,
             context: mockContext,

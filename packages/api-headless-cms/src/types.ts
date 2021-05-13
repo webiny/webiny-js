@@ -1186,6 +1186,11 @@ export interface CmsContentEntryListWhere {
     id_not?: string;
     id_not_in?: string[];
     /**
+     * Generated ID without the version.
+     */
+    entryId?: string;
+    entryId_in?: string[];
+    /**
      * Entry is owned by whom?
      *
      * Can be sent via the API or set internal if user can see only their own entries.
@@ -2242,6 +2247,7 @@ export interface CmsContentEntryStorageOperationsListArgs<
     T extends Record<string, any> = Record<string, any>
 > {
     where?: T;
+    sort?: CmsContentEntryListSort;
     limit?: number;
     after?: string;
 }

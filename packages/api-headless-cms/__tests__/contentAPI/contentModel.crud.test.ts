@@ -270,7 +270,7 @@ describe("content model test", () => {
         await until(
             () => listCategories().then(([data]) => data),
             ({ data }) => data.listCategories.data.length > 0,
-            { name: "list categories to check ES has indexed newly created" }
+            { name: "list categories to check that categories are available" }
         );
 
         const [response] = await deleteContentModelMutation({

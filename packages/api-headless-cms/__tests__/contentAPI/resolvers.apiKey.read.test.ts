@@ -190,7 +190,7 @@ describe("READ - resolvers - api key", () => {
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 1
                     },

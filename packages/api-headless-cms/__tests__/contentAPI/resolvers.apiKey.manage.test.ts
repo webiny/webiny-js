@@ -252,7 +252,7 @@ describe("MANAGE - resolvers - api key", () => {
         const listResponse = await until(
             () => listCategories({}, headers).then(([data]) => data),
             ({ data }) => data.listCategories.data[0].slug === updatedCategory.slug,
-            { name: `waiting for ${updatedCategory.slug}` }
+            { name: `waiting for green-vegetables slug on list categories` }
         );
 
         expect(listResponse).toEqual({
@@ -288,9 +288,9 @@ describe("MANAGE - resolvers - api key", () => {
                         }
                     ],
                     meta: {
+                        cursor: null,
                         hasMoreItems: false,
-                        totalCount: 1,
-                        cursor: expect.any(String)
+                        totalCount: 1
                     },
                     error: null
                 }

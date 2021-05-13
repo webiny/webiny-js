@@ -2,7 +2,7 @@ import { CmsContentModelGroup } from "../../src/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { hooksTracker } from "./mocks/lifecycleHooks";
 
-describe("content model test", () => {
+describe("content model test reserved model ids", () => {
     const manageHandlerOpts = { path: "manage/en-US" };
 
     const { createContentModelGroupMutation } = useContentGqlHandler(manageHandlerOpts);

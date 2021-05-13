@@ -29,6 +29,9 @@ module.exports = ({ path }, presets = []) => {
                 babelConfig: `${path}/.babelrc.js`,
                 diagnostics: false
             }
-        }
+        },
+        collectCoverage: false,
+        collectCoverageFrom: ["packages/**/*.{ts,tsx,js,jsx}"],
+        coverageReporters: ["html"]
     });
 };
