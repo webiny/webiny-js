@@ -1,4 +1,3 @@
-import WebinyError from "@webiny/error";
 import { CmsFieldFilterValueTransformPlugin } from "../../types";
 import { parse, parseISO } from "date-fns";
 
@@ -11,14 +10,9 @@ export default (): CmsFieldFilterValueTransformPlugin<Date | string | number, nu
      */
     transform: ({ field, value }) => {
         const { type } = field.settings || {};
-        if (!type) {
-            throw new WebinyError("Missing type settings value.", "FIELD_SETTINGS_ERROR", {
-                field
-            });
-        }
         /**
-         * If field type is type we check if value is possibly a number already and return if yes.
-         * Otherwise parse the time as the given format and return new number value.
+         * If field type is time, we check if value is already a number and return if yes.
+         * Otherwise parse the time as the predefined format and return new number value.
          */
         if (type === "time") {
             if (typeof value === "number" || isNaN(value as any) === false) {
@@ -28,7 +22,10 @@ export default (): CmsFieldFilterValueTransformPlugin<Date | string | number, nu
             const v = value instanceof Date ? value.toISOString() : value;
             const parsedDateTime = parse(v, "HH:mm:ss", d);
             return (parsedDateTime.getTime() - d.getTime()) / 1000;
-        } else if (typeof (value as any).getTime === "function") {
+        } else if (value && typeof (value as any).getTime === "function") {
+            /**
+             * In this case we assume this is a date object and we just get the time.
+             */
             return (value as Date).getTime();
         }
         return parseISO(value as any).getTime();

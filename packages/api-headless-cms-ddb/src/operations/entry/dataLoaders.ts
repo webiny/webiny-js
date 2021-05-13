@@ -1,25 +1,46 @@
 import DataLoader from "dataloader";
 import { CmsContentEntry, CmsContentModel, CmsContext } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
-import CmsContentEntryDynamo from "./CmsContentEntryDynamo";
-import lodashChunk from "lodash.chunk";
-import configurations from "../../configurations";
+import { CmsContentEntryDynamo } from "./CmsContentEntryDynamo";
 
-// Used in functions below. Ensures we are batch getting 100 keys at most.
-const batchLoadKeys = loadChunk => {
-    return new DataLoader<string, CmsContentEntry>(async keys => {
-        // DynamoDB allows getting a maximum of 100 items in a single database call.
-        // So, we are creating chunks that consist of a maximum of 100 keys.
-        const keysChunks = lodashChunk(keys, 100);
-        const promises = [];
+/**
+ * *** GLOBAL NOTE ***
+ * When records are received from the batch get, we get them in all sorts of order.
+ * What we need for DataLoader to work properly we must have id > records order.
+ * So in the order IDs got into the DataLoader, its records must go out in the same order / bundle.
+ */
 
-        keysChunks.forEach(chunk => {
-            promises.push(new Promise(resolve => resolve(loadChunk(chunk))));
-        });
+const flatResponses = (responses: Record<string, CmsContentEntry[]>): CmsContentEntry[] => {
+    const entries = [];
+    const values = Object.values(responses);
+    for (const items of values) {
+        entries.push(...items);
+    }
+    return entries;
+};
 
-        const entriesChunks = await Promise.all(promises);
-        return entriesChunks.reduce((current, item) => current.concat(item), []);
-    });
+const executeBatchGet = async (storageOperations: CmsContentEntryDynamo, batch: any[]) => {
+    const items = [];
+    const result = await storageOperations.table.batchGet(batch);
+    if (!result) {
+        return items;
+    }
+    if (result.Responses) {
+        items.push(...flatResponses(result.Responses));
+    }
+    if (typeof result.next === "function") {
+        let previous = result;
+        let nResult;
+        while ((nResult = await previous.next())) {
+            items.push(...flatResponses(nResult.Responses));
+            previous = nResult;
+            if (!nResult || typeof nResult.next !== "function") {
+                return items;
+            }
+        }
+    }
+
+    return items;
 };
 
 const getAllEntryRevisions = (
@@ -28,21 +49,17 @@ const getAllEntryRevisions = (
     storageOperations: CmsContentEntryDynamo
 ) => {
     return new DataLoader<string, CmsContentEntry[]>(async ids => {
-        const results = [];
-
-        for (const id of ids) {
-            const [entries] = await context.db.read({
-                ...configurations.db(),
-                query: {
-                    PK: storageOperations.getPartitionKey(id),
-                    SK: { $beginsWith: "REV#" }
+        const promises = ids.map(id => {
+            const partitionKey = storageOperations.getPartitionKey(id);
+            return storageOperations.runQuery({
+                partitionKey,
+                options: {
+                    beginsWith: "REV#"
                 }
             });
+        });
 
-            results.push(entries);
-        }
-
-        return results;
+        return Promise.all(promises);
     });
 };
 
@@ -51,20 +68,23 @@ const getRevisionById = (
     model: CmsContentModel,
     storageOperations: CmsContentEntryDynamo
 ) => {
-    return batchLoadKeys(keys => {
-        const queries = keys.map(id => ({
-            ...configurations.db(),
-            query: {
+    return new DataLoader<string, CmsContentEntry>(async ids => {
+        const batch = ids.map(id => {
+            return storageOperations.entity.getBatch({
                 PK: storageOperations.getPartitionKey(id),
                 SK: storageOperations.getSortKeyRevision(id)
-            }
-        }));
+            });
+        });
 
-        return context.db
-            .batch()
-            .read(...queries)
-            .execute()
-            .then(results => results.map(result => result[0]));
+        const items = await executeBatchGet(storageOperations, batch);
+
+        return ids.map(id => {
+            return items.filter(item => {
+                const partitionKey = storageOperations.getPartitionKey(id);
+                const sortKey = storageOperations.getSortKeyRevision(id);
+                return item.PK === partitionKey && item.SK === sortKey;
+            });
+        }) as any;
     });
 };
 
@@ -73,19 +93,22 @@ const getPublishedRevisionByEntryId = (
     model: CmsContentModel,
     storageOperations: CmsContentEntryDynamo
 ) => {
-    return batchLoadKeys(keys => {
-        const queries = keys.map(id => ({
-            ...configurations.db(),
-            query: {
+    return new DataLoader<string, CmsContentEntry>(async ids => {
+        const sortKey = storageOperations.getSortKeyPublished();
+        const batch = ids.map(id => {
+            return storageOperations.entity.getBatch({
                 PK: storageOperations.getPartitionKey(id),
-                SK: storageOperations.getSortKeyPublished()
-            }
-        }));
-        return context.db
-            .batch()
-            .read(...queries)
-            .execute()
-            .then(results => results.map(result => result[0]));
+                SK: sortKey
+            });
+        });
+
+        const items = await executeBatchGet(storageOperations, batch);
+        return ids.map(id => {
+            return items.filter(item => {
+                const partitionKey = storageOperations.getPartitionKey(id);
+                return item.PK === partitionKey && item.SK === sortKey;
+            });
+        }) as any;
     });
 };
 
@@ -94,21 +117,23 @@ const getLatestRevisionByEntryId = (
     model: CmsContentModel,
     storageOperations: CmsContentEntryDynamo
 ) => {
-    return batchLoadKeys(chunk =>
-        context.db
-            .batch()
-            .read(
-                ...chunk.map(id => ({
-                    ...configurations.db(),
-                    query: {
-                        PK: storageOperations.getPartitionKey(id),
-                        SK: storageOperations.getSortKeyLatest()
-                    }
-                }))
-            )
-            .execute()
-            .then(results => results.map(result => result[0]))
-    );
+    return new DataLoader<string, CmsContentEntry>(async ids => {
+        const sortKey = storageOperations.getSortKeyLatest();
+        const batch = ids.map(id => {
+            return storageOperations.entity.getBatch({
+                PK: storageOperations.getPartitionKey(id),
+                SK: sortKey
+            });
+        });
+
+        const items = await executeBatchGet(storageOperations, batch);
+        return ids.map(id => {
+            return items.filter(item => {
+                const partitionKey = storageOperations.getPartitionKey(id);
+                return item.PK === partitionKey && item.SK === sortKey;
+            });
+        }) as any;
+    });
 };
 
 const dataLoaders = {

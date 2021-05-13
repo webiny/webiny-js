@@ -244,7 +244,11 @@ export default (): ContextPlugin<CmsContext> => ({
                 const meta = {
                     hasMoreItems,
                     totalCount,
-                    cursor
+                    /**
+                     * Cursor should be null if there are no more items to load.
+                     * Just make sure of that, disregarding what is returned from the storageOperations.list method.
+                     */
+                    cursor: hasMoreItems ? cursor : null
                 };
 
                 return [items, meta];

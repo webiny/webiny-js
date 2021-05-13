@@ -31,9 +31,8 @@ import { entryToStorageTransform } from "@webiny/api-headless-cms/transformers";
 import { Entity, Table } from "dynamodb-toolbox";
 import { getDocumentClient, getTable } from "../helpers";
 import { filterItems, buildModelFields, sortEntryItems } from "./utils";
-import { queryOptions as DDBToolboxQueryOptions } from "dynamodb-toolbox/dist/classes/Table";
+import { queryOptions as DynamoDBToolboxQueryOptions } from "dynamodb-toolbox/dist/classes/Table";
 import lodashCloneDeep from "lodash.clonedeep";
-import { FilterExpressions } from "dynamodb-toolbox/dist/lib/expressionBuilder";
 
 export const TYPE_ENTRY = "cms.entry";
 export const TYPE_ENTRY_LATEST = TYPE_ENTRY + ".l";
@@ -54,6 +53,11 @@ interface GetSingleDynamoDBItemArgs {
     value: any;
     op?: "eq" | "lt" | "lte" | "gt" | "gte" | "between" | "beginsWith";
     order?: string;
+}
+
+interface RunQueryArgs {
+    options?: DynamoDBToolboxQueryOptions;
+    partitionKey: string;
 }
 
 const GSI1_INDEX = "GSI1";
@@ -80,6 +84,14 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
 
     private get configuration(): CmsContentEntryConfiguration {
         return this._configuration;
+    }
+
+    public get table() {
+        return this._table;
+    }
+
+    public get entity() {
+        return this._entity;
     }
 
     public constructor({ context, configuration }: ConstructorArgs) {
@@ -403,13 +415,13 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
          * Method runs in the loop until it reads everything it needs to.
          * We could impose the limit on the records read but there is no point since we MUST read everything to be able
          * to filter and sort the data.
-         */
+         * /
         const scanner = async (partitionKey: string, previousResults: any) => {
             let result;
             /**
              * In case there is no previous result we must make a new query.
              * This is the first query on the given partition key.
-             */
+             * /
             if (!previousResults) {
                 result = await this._entity.query(partitionKey, {
                     filters: queryOptions.filters,
@@ -420,7 +432,7 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
                  * In case we have a previous result and it has a next method, we run it.
                  * In case result of the next method is false, it means it has nothing else to read
                  * and we return a null to keep the query from repeating.
-                 */
+                 * /
                 result = await previousResults.next();
                 if (result === false) {
                     return null;
@@ -430,12 +442,12 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
                  * This could probably never happen but keep it here just in case to break the query loop.
                  * Basically, either previousResult does not exist or it exists and has a next method
                  * and at that point a result returned will be null and loop should not start again.
-                 */
+                 * /
                 return null;
             }
             /**
              * We expect the result to contain an Items array and if not, something went wrong, very wrong.
-             */
+             * /
             if (!result || !result.Items || !Array.isArray(result.Items)) {
                 throw new WebinyError(
                     "Error when scanning for content entries - no result.",
@@ -448,21 +460,21 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
             }
             return result;
         };
+        */
         try {
-            let results;
             /**
-             * We run the scanner method on all the partition keys that were built in the createQueryOptions() method.
+             * We run the query method on all the partition keys that were built in the createQueryOptions() method.
              * Partition keys are always built as array because of the possibility that we might need to read from different partitions
              * which is the case if where condition is something like id_in or entryId_in.
              * If we are reading from the GSI1_PK it is a single partition but we keep it as an array
              * just to make it easier to read in all of the cases.
              */
             for (const partitionKey of queryOptions.queryPartitionKeys) {
-                let previousResults = undefined;
-                while ((results = await scanner(partitionKey, previousResults))) {
-                    items.push(...results.Items);
-                    previousResults = results;
-                }
+                const results = await this.runQuery({
+                    partitionKey,
+                    options: queryOptions.options
+                });
+                items.push(...results);
             }
         } catch (ex) {
             throw new WebinyError(ex.message, "SCAN_ERROR", {
@@ -963,7 +975,7 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
         args: GetSingleDynamoDBItemArgs
     ): Promise<CmsContentEntry | null> {
         const { partitionKey, op = "eq", value, order = "ASC" } = args;
-        const queryOptions: DDBToolboxQueryOptions = {
+        const queryOptions: DynamoDBToolboxQueryOptions = {
             [op]: value,
             reverse: order === "DESC",
             limit: 1
@@ -1058,14 +1070,15 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
         where: CmsContentEntryListWhere;
         model: CmsContentModel;
     }): {
-        targetIndex?: string;
         queryPartitionKeys: string[];
         where: CmsContentEntryListWhere;
-        filters: FilterExpressions;
+        options: DynamoDBToolboxQueryOptions;
     } {
-        const filters: FilterExpressions = [];
+        const options: DynamoDBToolboxQueryOptions = {
+            filters: [],
+            index: undefined
+        };
         const where = lodashCloneDeep(originalWhere);
-        let targetIndex: string | undefined = undefined;
         /**
          * if we have id or entry ID, we will query via the primary key
          * just add all the possible IDs to find
@@ -1085,14 +1098,13 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
         }
 
         /**
-         * if we do not have any of the IDs, we will query via the GSI1_PK
-         * just depending on the entry type
-         * at this point there will probably be a lot of results
-         * we will apply some basic dynamodb filters so we dont get much data from the db
-         * it is still going to get charged tho
+         * If we do not have any of the IDs, we will query via the GSI1_PK just depending on the entry type
+         * At this point there will probably be a lot of results
+         * but we will apply some basic dynamodb filters so we dont get much data from the db
+         * NOTE: It is still going to get charged tho
          */
         if (queryPartitionKeys.length === 0) {
-            targetIndex = GSI1_INDEX;
+            options.index = GSI1_INDEX;
             if (where.published) {
                 queryPartitionKeys.push(this.getGSIPartitionKey("P", model));
             } else if (where.latest) {
@@ -1102,25 +1114,16 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
             }
         }
         /**
-         * if index is the primary one, we can filter records by type (latest, published or regular)
+         * If index is the primary one, we can filter records by type (latest, published or regular)
          * so we do not need to filter in the code
          */
-        if (!targetIndex) {
+        if (!options.index) {
             if (where.published) {
-                filters.push({
-                    attr: "TYPE",
-                    eq: TYPE_ENTRY_PUBLISHED
-                });
+                options.eq = this.getSortKeyPublished();
             } else if (where.latest) {
-                filters.push({
-                    attr: "TYPE",
-                    eq: TYPE_ENTRY_LATEST
-                });
+                options.eq = this.getSortKeyLatest();
             } else {
-                filters.push({
-                    attr: "TYPE",
-                    eq: TYPE_ENTRY
-                });
+                options.beginsWith = "REV#";
             }
         }
         /**
@@ -1133,10 +1136,68 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
         delete where["published"];
         delete where["latest"];
         return {
-            targetIndex,
+            options,
             queryPartitionKeys,
-            where,
-            filters
+            where
         };
+    }
+    /**
+     * A method to query the database at the given partition key with the built query options.
+     * Method runs in the loop until it reads everything it needs to.
+     * We could impose the limit on the records read but there is no point since we MUST read everything to be able
+     * to filter and sort the data.
+     */
+    public async runQuery(args: RunQueryArgs): Promise<CmsContentEntry[]> {
+        let previousResult = undefined;
+        let results;
+        const items: CmsContentEntry[] = [];
+        while ((results = await this.query(previousResult, args))) {
+            items.push(...results.Items);
+            previousResult = results;
+        }
+        return items;
+    }
+
+    private async query(previousResult, args: RunQueryArgs) {
+        const { partitionKey, options } = args;
+        let result;
+        /**
+         * In case there is no previous result we must make a new query.
+         * This is the first query on the given partition key.
+         */
+        if (!previousResult) {
+            result = await this._entity.query(partitionKey, options);
+        } else if (typeof previousResult.next === "function") {
+            /**
+             * In case we have a previous result and it has a next method, we run it.
+             * In case result of the next method is false, it means it has nothing else to read
+             * and we return a null to keep the query from repeating.
+             */
+            result = await previousResult.next();
+            if (result === false) {
+                return null;
+            }
+        } else {
+            /**
+             * This could probably never happen but keep it here just in case to break the query loop.
+             * Basically, either previousResult does not exist or it exists and has a next method
+             * and at that point a result returned will be null and loop should not start again.
+             */
+            return null;
+        }
+        /**
+         * We expect the result to contain an Items array and if not, something went wrong, very wrong.
+         */
+        if (!result || !result.Items || !Array.isArray(result.Items)) {
+            throw new WebinyError(
+                "Error when querying for content entries - no result.",
+                "QUERY_ERROR",
+                {
+                    partitionKey,
+                    options
+                }
+            );
+        }
+        return result;
     }
 }
