@@ -9,7 +9,7 @@ export default (): CmsFieldFilterPathPlugin => ({
         if (index !== undefined) {
             paths.push(String(index));
         }
-        paths.push("id");
+        paths.push("entryId");
         return paths.join(".");
     }
 });
