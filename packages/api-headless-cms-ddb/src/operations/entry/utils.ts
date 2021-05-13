@@ -182,7 +182,7 @@ export const filterItems = (args: FilterItemsArgs): CmsContentEntry[] => {
 const extractSort = (
     sortBy: string,
     fields: ModelFieldRecords
-): { valuePath: string; reverse: boolean } => {
+): { valuePath: string; reverse: boolean; fieldId: string } => {
     const result = sortBy.split("_");
     if (result.length !== 2) {
         throw new WebinyError(
@@ -193,22 +193,23 @@ const extractSort = (
             }
         );
     }
-    const [field, order] = result;
+    const [fieldId, order] = result;
 
-    const modelField = fields[field];
+    const modelField = fields[fieldId];
 
     if (!modelField) {
         throw new WebinyError(
             "Sorting field does not exist in the content model.",
             "SORTING_FIELD_ERROR",
             {
-                field,
+                fieldId,
                 fields
             }
         );
     }
     const valuePath = modelField.valuePath;
     return {
+        fieldId,
         valuePath,
         reverse: order === "DESC"
     };
@@ -221,11 +222,12 @@ interface SortEntryItemsArgs {
 }
 
 export const sortEntryItems = (args: SortEntryItemsArgs): CmsContentEntry[] => {
-    const { items, sort, fields } = args;
-    if (!sort || sort.length === 0) {
+    const { items, sort = [], fields } = args;
+    if (items.length <= 1) {
         return items;
-    }
-    if (sort.length > 1) {
+    } else if (sort.length === 0) {
+        sort.push("savedOn_DESC");
+    } else if (sort.length > 1) {
         throw new WebinyError("Sorting is limited to a single field", "SORT_ERROR", {
             sort: sort
         });
@@ -237,8 +239,31 @@ export const sortEntryItems = (args: SortEntryItemsArgs): CmsContentEntry[] => {
         });
     }
 
-    const { valuePath, reverse } = extractSort(firstSort, fields);
-    const newItems: CmsContentEntry[] = lodashSortBy(items, valuePath);
+    const { fieldId, valuePath, reverse } = extractSort(firstSort, fields);
+    const field = fields[fieldId];
+
+    const itemsToSort = items.map(item => {
+        return {
+            id: item.id,
+            value: field.valueTransformer(dotProp.get(item, valuePath))
+        };
+    });
+    const sortedItems: { id: string; value: any }[] = lodashSortBy(itemsToSort, "value");
+    const newItems = sortedItems.map(s => {
+        const item = items.find(i => i.id === s.id);
+        if (item) {
+            return item;
+        }
+        throw new WebinyError(
+            "Could not find item by given id after the sorting.",
+            "SORTING_ITEMS_ERROR",
+            {
+                id: s.id,
+                sortingBy: fieldId,
+                reverse
+            }
+        );
+    });
     if (!reverse) {
         return newItems;
     }
