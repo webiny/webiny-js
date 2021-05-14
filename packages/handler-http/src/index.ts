@@ -1,6 +1,14 @@
 import { HttpContext } from "./types";
 import { ContextPlugin, HandlerErrorPlugin } from "@webiny/handler/types";
 
+const DEFAULT_HEADERS = {
+    "Cache-Control": "no-store",
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "*",
+    "Access-Control-Allow-Methods": "OPTIONS,POST"
+};
+
 export default () => [
     {
         type: "context",
@@ -52,7 +60,7 @@ export default () => [
                         stack: error.stack
                     }
                 }),
-                headers: { "Cache-Control": "no-store", "Content-Type": "application/json" }
+                headers: DEFAULT_HEADERS
             });
         }
     } as HandlerErrorPlugin<HttpContext>
