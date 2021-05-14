@@ -8,6 +8,10 @@ const LIST_DATA = gql`
             data {
                 id: modelId
                 label: name
+                group {
+                    id
+                    label: name
+                }
             }
         }
         listContentModelGroups {

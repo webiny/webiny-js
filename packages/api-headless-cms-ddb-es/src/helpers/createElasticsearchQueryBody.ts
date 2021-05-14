@@ -148,7 +148,7 @@ const createElasticsearchSortParams = (
  * Latest is used in the manage API and published in the read API.
  */
 const createInitialQueryValue = (args: CreateElasticsearchQueryArgs): ElasticsearchQuery => {
-    const { ownedBy, where } = args;
+    const { ownedBy, where, context } = args;
 
     const query: ElasticsearchQuery = {
         match: [],
@@ -156,6 +156,13 @@ const createInitialQueryValue = (args: CreateElasticsearchQueryArgs): Elasticsea
         mustNot: [],
         should: []
     };
+
+    // When ES index is shared between tenants, we need to filter records by tenant ID
+    const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
+    if (sharedIndex) {
+        const tenant = context.security.getTenant();
+        query.must.push({ term: { "tenant.keyword": tenant.id } });
+    }
 
     // When permission has "only own records" set, we'll have "ownedBy" passed into this function.
     if (ownedBy) {
@@ -201,22 +208,6 @@ const createInitialQueryValue = (args: CreateElasticsearchQueryArgs): Elasticsea
     return query;
 };
 
-interface CreateFieldPathArgs {
-    field: ModelField;
-    fieldName: string;
-    value: any;
-}
-
-const createFieldPath = (args: CreateFieldPathArgs): string => {
-    const { field, fieldName, value } = args;
-    if (!field.path) {
-        return fieldName;
-    } else if (typeof field.path === "function") {
-        return field.path(value);
-    }
-    return field.path;
-};
-
 const specialFields = ["published", "latest"];
 /*
  * Iterate through where keys and apply plugins where necessary
@@ -248,12 +239,12 @@ const execElasticsearchBuildQueryPlugins = (
     const searchPlugins = searchPluginsList(context);
 
     for (const key in where) {
-        const { field, op } = parseWhereKey(key);
         // we do not need to go further if value is undefined
         // it is a possibility on ownedBy field since it is automatically added to the where args
         if (where[key] === undefined) {
             continue;
         }
+        const { field, op } = parseWhereKey(key);
         const modelField = modelFields[field];
         const { isSearchable = false, isSystemField, field: cmsField } = modelField || {};
 
@@ -268,18 +259,22 @@ const execElasticsearchBuildQueryPlugins = (
                 operator: op
             });
         }
+        const fieldSearchPlugin = searchPlugins[modelField.type];
         const value = transformValueForSearch({
             plugins: searchPlugins,
             field: cmsField,
             value: where[key],
             context
         });
-        const fieldPath = createFieldPath({
-            field: modelField,
-            fieldName: field,
-            value: where[key]
-        });
-        const fieldWithParent = isSystemField ? fieldPath : withParentObject(fieldPath);
+        // A possibility to build field custom path in the elasticsearch
+        const customFieldPath =
+            fieldSearchPlugin && typeof fieldSearchPlugin.createPath === "function"
+                ? fieldSearchPlugin.createPath({
+                      field: modelField.field,
+                      context
+                  })
+                : null;
+        const fieldWithParent = isSystemField ? null : customFieldPath || withParentObject(field);
         plugin.apply(query, {
             field: fieldWithParent || field,
             value,

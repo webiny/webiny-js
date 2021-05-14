@@ -73,6 +73,7 @@ const PageSettingsContent: React.FunctionComponent<PageSettingsContentPropsType>
     const savePage = useCallback(pageValue => {
         eventActionHandler.trigger(
             new UpdatePageRevisionActionEvent({
+                debounce: false,
                 page: pageValue,
                 onFinish: () => {
                     showSnackbar("Settings saved");

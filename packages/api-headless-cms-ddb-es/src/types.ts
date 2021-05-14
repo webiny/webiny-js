@@ -244,10 +244,6 @@ export interface CmsContentIndexEntry extends CmsContentEntry {
      */
     rawValues: Record<string, any>;
     /**
-     * Version of Webiny this entry was created with.
-     */
-    webinyVersion?: string;
-    /**
      * A first part of the ID, without the revision.
      * For example, we can search for all the revisions of the given entry.
      */

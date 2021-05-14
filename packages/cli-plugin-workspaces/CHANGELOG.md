@@ -3,6 +3,101 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.6.0](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.2...v5.6.0) (2021-05-10)
+
+**Note:** Version bump only for package @webiny/cli-plugin-workspaces
+
+
+
+
+
+# [5.6.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.1...v5.6.0-beta.2) (2021-05-07)
+
+**Note:** Version bump only for package @webiny/cli-plugin-workspaces
+
+
+
+
+
+# [5.6.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.0...v5.6.0-beta.1) (2021-05-07)
+
+**Note:** Version bump only for package @webiny/cli-plugin-workspaces
+
+
+
+
+
+# [5.6.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.5.1-beta.0...v5.6.0-beta.0) (2021-05-06)
+
+**Note:** Version bump only for package @webiny/cli-plugin-workspaces
+
+
+
+
+
+## [5.5.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.5.0...v5.5.1-beta.0) (2021-04-27)
+
+**Note:** Version bump only for package @webiny/cli-plugin-workspaces
+
+
+
+
+
+# [5.5.0](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.3...v5.5.0) (2021-04-26)
+
+**Note:** Version bump only for package @webiny/cli-plugin-workspaces
+
+
+
+
+
+# [5.5.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.2...v5.5.0-beta.3) (2021-04-23)
+
+**Note:** Version bump only for package @webiny/cli-plugin-workspaces
+
+
+
+
+
+# [5.5.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.1...v5.5.0-beta.2) (2021-04-23)
+
+**Note:** Version bump only for package @webiny/cli-plugin-workspaces
+
+
+
+
+
+# [5.5.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.0...v5.5.0-beta.1) (2021-04-22)
+
+**Note:** Version bump only for package @webiny/cli-plugin-workspaces
+
+
+
+
+
+# [5.5.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.4.0...v5.5.0-beta.0) (2021-04-22)
+
+
+### Bug Fixes
+
+* enable graph validation ([f8f7c61](https://github.com/webiny/webiny-js/commit/f8f7c610ccaa00d64e3a44a476c2d2abf8f2268e))
+* finish distinct flag handling ([df6ec62](https://github.com/webiny/webiny-js/commit/df6ec6268455edbb1f6f38e0c86a63c16d70fa54))
+* make "getPackages" args optional ([dbdca09](https://github.com/webiny/webiny-js/commit/dbdca0920975dd5be1927867dc66e93785a63c94))
+* skip graph validation ([53d11b9](https://github.com/webiny/webiny-js/commit/53d11b957f650707c746ad99c82de4f4c9f9d436))
+* update dependencies ([c17ae8a](https://github.com/webiny/webiny-js/commit/c17ae8a26a1f35520165852f2a30670356b4fac6))
+
+
+### Features
+
+* add --ignore-folder && --ignore-scope args ([f62e517](https://github.com/webiny/webiny-js/commit/f62e51732fb9d32cb27ce5d33fdabbbd649d0d7e))
+* **ws list:** add support for scope and folder args ([e08a28d](https://github.com/webiny/webiny-js/commit/e08a28d7473fd164a4bd736ab96e207e5bf369a4))
+* add ability to skip graph validation ([e0ef6cc](https://github.com/webiny/webiny-js/commit/e0ef6cc74b89cc8abc0700c2745667b83fec31d0))
+* create "ws tree" command ([aae0e9d](https://github.com/webiny/webiny-js/commit/aae0e9de2741e18d7e468638d908ecda180c3890))
+
+
+
+
+
 # [5.4.0](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.3...v5.4.0) (2021-04-13)
 
 **Note:** Version bump only for package @webiny/cli-plugin-workspaces

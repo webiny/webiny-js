@@ -1,76 +1,48 @@
 import gql from "graphql-tag";
-import upperFirst from "lodash/upperFirst";
-import pluralize from "pluralize";
 
-export const createListQuery = model => {
-    const ucFirstPluralizedModelId = upperFirst(pluralize(model.modelId));
-    const ucFirstModelId = upperFirst(model.modelId);
+const fields = `
+data {
+    id
+    status
+    title
+    model {
+        modelId
+        name
+    }
+}
+error {
+    code
+    message
+}
+`;
 
-    return gql`
-        query CmsList${ucFirstPluralizedModelId}($limit: Int, $where: ${ucFirstModelId}ListWhereInput) {
-            content: list${ucFirstPluralizedModelId}(limit: $limit, where: $where) {
-                data {
-                    id
-                    meta {
-                        status
-                        modelId
-                        title
-                    }
-                }
-                error {
-                    code
-                    message
-                }
-            }
+export const SEARCH_CONTENT_ENTRIES = gql`
+    query CmsSearchContentEntries($modelIds: [ID!]!, $query: String!, $limit: Int) {
+        content: searchContentEntries(modelIds: $modelIds, query: $query, limit: $limit) {
+            ${fields}
         }
-    `;
-};
+    }
+`;
 
-export const createGetByIdsQuery = model => {
-    const ucFirstPluralizedModelId = upperFirst(pluralize(model.modelId));
-
-    return gql`
-        query CmsGet${ucFirstPluralizedModelId}ByIds($revisions: [ID!]!) {
-            content: get${ucFirstPluralizedModelId}ByIds(revisions: $revisions) {
-                data {
-                    id
-                    meta {
-                        status
-                        modelId
-                        title
-                    }
-                }
-                error {
-                    code
-                    message
-                }
-            }
+export const GET_CONTENT_ENTRIES = gql`
+    query CmsGetContentEntries($entries: [CmsModelEntryInput!]!) {
+        content: getContentEntries(entries: $entries) {
+            ${fields}
         }
-    `;
-};
+    }
+`;
 
-export const createGetQuery = model => {
-    const ucFirstModelId = upperFirst(model.modelId);
-
-    return gql`
-        query CmsGet${ucFirstModelId}($revision:ID!) {
-            content: get${ucFirstModelId}(revision: $revision) {
-                data {
-                    id
-                    meta {
-                        status
-                        modelId
-                        title
-                    }
-                }
-            }
+export const GET_CONTENT_ENTRY = gql`
+    query CmsGetContentEntry($entry: CmsModelEntryInput!) {
+        content: getContentEntry(entry: $entry) {
+            ${fields}
         }
-    `;
-};
+    }
+`;
 
-export const GET_CONTENT_MODEL = gql`
-    query CmsGetContentModel($modelId: ID!) {
-        getContentModel(modelId: $modelId) {
+export const GET_CONTENT_MODELS = gql`
+    query CmsGetContentModels {
+        listContentModels {
             data {
                 modelId
                 titleFieldId

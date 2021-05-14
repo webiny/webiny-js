@@ -1,28 +1,31 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import get from "lodash/get";
 import { useApolloClient } from "~/admin/hooks";
-import { createListQuery, createGetQuery, GET_CONTENT_MODEL } from "./graphql";
+import * as GQL from "./graphql";
 import { getOptions } from "./getOptions";
-import { CmsEditorContentModel, CmsEditorField } from "~/types";
+import { CmsEditorField } from "~/types";
 
 interface ValueEntry {
     id: string;
+    modelId: string;
+    modelName: string;
     published: boolean;
     name: string;
 }
 interface DataEntry {
     id: string;
-    meta: {
-        status: "published" | "draft";
-        title: string;
+    model: {
+        modelId: string;
+        name: string;
     };
+    status: "published" | "draft";
+    title: string;
 }
 interface UseReferenceHookArgs {
     bind: any;
     field: CmsEditorField;
 }
 interface UseReferenceHookValue {
-    onChange: (value: any) => void;
+    onChange: (value: any, entry: ValueEntry) => void;
     setSearch: (value: string) => void;
     value: ValueEntry | null;
     loading: boolean;
@@ -42,18 +45,22 @@ const convertQueryDataToEntryList = (data: DataEntry[]): EntryCollection => {
 const convertValueEntryToData = (entry: ValueEntry): DataEntry => {
     return {
         id: entry.id,
-        meta: {
-            status: entry.published ? "published" : "draft",
-            title: entry.name
-        }
+        model: {
+            modelId: entry.modelId,
+            name: entry.modelName
+        },
+        status: entry.published ? "published" : "draft",
+        title: entry.name
     };
 };
 
 const convertDataEntryToValue = (entry: DataEntry): ValueEntry => {
     return {
         id: entry.id,
-        published: entry.meta.status === "published",
-        name: entry.meta.title
+        modelId: entry.model.modelId,
+        modelName: entry.model.name,
+        published: entry.status === "published",
+        name: entry.title
     };
 };
 
@@ -69,31 +76,25 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
     const client = useApolloClient();
     const [search, setSearch] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
-    const [model, setModel] = useState<CmsEditorContentModel>(null);
-    const [LIST_CONTENT, setListContent] = useState<any>(null);
-    const [GET_CONTENT, setGetContent] = useState<any>(null);
     const [entries, setEntries] = useState<EntryCollection>({});
     const [latestEntries, setLatestEntries] = useState<EntryCollection>({});
     const [valueEntry, setValueEntry] = useState<ValueEntry>(null);
 
-    const { modelId } = field.settings.models[0];
-    const value = bind.value ? bind.value.entryId : null;
+    const { models } = field.settings;
+    const modelsHash = models.join(",");
+
+    const value = bind.value;
+    const valueHash = value ? value.id : null;
 
     const searchEntries = async () => {
         if (!search) {
             return;
         }
 
-        const { titleFieldId } = model;
-
-        if (!LIST_CONTENT || !search || !titleFieldId) {
-            return;
-        }
-
         setLoading(true);
         const { data } = await client.query({
-            query: LIST_CONTENT,
-            variables: { where: { [`${titleFieldId}_contains`]: search } }
+            query: GQL.SEARCH_CONTENT_ENTRIES,
+            variables: { modelIds: models.map(m => m.modelId), query: search }
         });
 
         setLoading(false);
@@ -109,37 +110,11 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
         searchEntries();
     }, [search]);
 
-    const prepareData = async () => {
-        // Fetch ref content model data, to get its title field.
-        setLoading(true);
-        const refContentModelQuery = await client.query({
-            query: GET_CONTENT_MODEL,
-            variables: { modelId }
-        });
-
-        const refContentModel = get(refContentModelQuery, `data.getContentModel.data`, {});
-        setModel(refContentModel);
-
-        // Once we have the refContentModel loaded, this will construct proper list and get queries.
-        setListContent(createListQuery(refContentModel));
-        setGetContent(createGetQuery(refContentModel));
-
-        setLoading(false);
-    };
-
     useEffect(() => {
-        prepareData();
-    }, [modelId]);
-
-    useEffect(() => {
-        if (!LIST_CONTENT) {
-            return;
-        }
-
         client
             .query({
-                query: LIST_CONTENT,
-                variables: { limit: 10 }
+                query: GQL.SEARCH_CONTENT_ENTRIES,
+                variables: { modelIds: models.map(m => m.modelId), query: "__latest__", limit: 10 }
             })
             .then(({ data }) => {
                 const latestEntryData = convertQueryDataToEntryList(data.content.data);
@@ -148,15 +123,15 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
                 setLatestEntries(latestEntryData);
                 Object.assign(allEntries.current, latestEntryData);
             });
-    }, [modelId, LIST_CONTENT]);
+    }, [modelsHash]);
 
     useEffect(() => {
-        if (!value || !model || !model.titleFieldId || !GET_CONTENT) {
+        if (!value || !models) {
             setValueEntry(() => null);
             return;
         }
 
-        const entry = allEntries.current[value];
+        const entry = allEntries.current[valueHash];
         if (entry) {
             // if entry exists set valueEntry to that one so we do not load new one
             setValueEntry(() => {
@@ -166,34 +141,39 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
         }
 
         setLoading(true);
-        client.query({ query: GET_CONTENT, variables: { revision: value } }).then(res => {
-            setLoading(false);
-            const dataEntry: DataEntry | null = res.data.content.data;
-            if (!dataEntry) {
-                return;
-            }
-            allEntries.current[dataEntry.id] = dataEntry;
-            setLatestEntries(prev => {
-                return {
-                    ...prev,
-                    [dataEntry.id]: dataEntry
-                };
+        client
+            .query({
+                query: GQL.GET_CONTENT_ENTRY,
+                variables: { entry: { modelId: value.modelId, entryId: value.entryId } }
+            })
+            .then(res => {
+                setLoading(false);
+                const dataEntry: DataEntry | null = res.data.content.data;
+                if (!dataEntry) {
+                    return;
+                }
+                allEntries.current[dataEntry.id] = dataEntry;
+                setLatestEntries(prev => {
+                    return {
+                        ...prev,
+                        [dataEntry.id]: dataEntry
+                    };
+                });
+                // Calculate a couple of props for the Autocomplete component.
+                setValueEntry(() => {
+                    return convertDataEntryToValue(dataEntry);
+                });
             });
-            // Calculate a couple of props for the Autocomplete component.
-            setValueEntry(() => {
-                return convertDataEntryToValue(dataEntry);
-            });
-        });
-    }, [value, GET_CONTENT, model]);
+    }, [valueHash, modelsHash]);
 
-    const onChange = useCallback(value => {
+    const onChange = useCallback((value, entry) => {
         if (value !== null) {
-            const entry = allEntries.current[value];
             setSearch("");
+
             setValueEntry(() => {
-                return convertDataEntryToValue(entry);
+                return entry;
             });
-            return bind.onChange({ modelId, entryId: value });
+            return bind.onChange({ modelId: entry.modelId, entryId: entry.id });
         }
 
         setValueEntry(() => null);
@@ -211,6 +191,7 @@ export const useReference: UseReferenceHook = ({ bind, field }) => {
     if (valueEntry && outputOptions.some(opt => opt.id === valueEntry.id) === false) {
         outputOptions.push(valueEntry);
     }
+
     return {
         onChange,
         setSearch,

@@ -4,8 +4,10 @@ import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import renderPlugins from "@webiny/api-prerendering-service/render";
 import renderAwsPlugins from "@webiny/api-prerendering-service-aws/render";
+import logsPlugins from "@webiny/handler-logs";
 
 export const handler = createHandler(
+    logsPlugins(),
     renderPlugins(),
     renderAwsPlugins(),
     dbPlugins({

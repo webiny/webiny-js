@@ -102,6 +102,7 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 const group = await groupsGet(id);
                 utils.checkOwnership(context, permission, group);
+                utils.validateGroupAccess(context, permission, group);
 
                 return group;
             },
@@ -110,9 +111,12 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 const response = await groupsList(args);
 
-                return response.filter(group =>
-                    utils.validateOwnership(context, permission, group)
-                );
+                return response.filter(group => {
+                    if (!utils.validateOwnership(context, permission, group)) {
+                        return false;
+                    }
+                    return utils.validateGroupAccess(context, permission, group);
+                });
             },
             create: async inputData => {
                 await checkPermissions("w");

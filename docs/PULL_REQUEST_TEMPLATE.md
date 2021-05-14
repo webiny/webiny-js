@@ -1,4 +1,4 @@
-```## Changes
+## Changes
 <!--- Please describe the changes you're making. Why are they here? How they are solved? -->
 <!--- If your changes include something of a visual nature, it's useful to include screenshots or even short GIFs. -->
 <!--- If solving an existing issue, make sure to link it. -->
@@ -16,4 +16,4 @@ If needed, make sure that the introduced changes are properly documented on our 
 
 * Webiny documentation repository: https://github.com/webiny/docs.webiny.com
 ** For example https://www.webiny.com/docs/changelog/5.3.0.
--->```
+-->

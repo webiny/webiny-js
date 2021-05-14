@@ -58,7 +58,7 @@ export const createReadResolvers: CreateReadResolvers = ({ models, model, fieldT
                     return entry.values[field.fieldId];
                 }
 
-                return await resolver(entry, args, context, info);
+                return await resolver(entry, args, context, info, field);
             };
 
             return resolvers;

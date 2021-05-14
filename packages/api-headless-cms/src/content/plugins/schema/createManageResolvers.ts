@@ -1,4 +1,5 @@
-import { CmsContentModel, CmsFieldTypePlugins, CmsContext, CmsContentEntry } from "../../../types";
+import { CmsContentModel, CmsFieldTypePlugins, CmsContext } from "../../../types";
+import get from "lodash/get";
 import { commonFieldResolvers } from "./resolvers/commonFieldResolvers";
 import { resolveGet } from "./resolvers/manage/resolveGet";
 import { resolveList } from "./resolvers/manage/resolveList";
@@ -15,7 +16,7 @@ import { resolveCreateFrom } from "./resolvers/manage/resolveCreateFrom";
 import { createManageTypeName, createTypeName } from "../utils/createTypeName";
 import { pluralizedTypeName } from "../utils/pluralizedTypeName";
 import { entryFieldFromStorageTransform } from "../utils/entryStorage";
-import get from "lodash/get";
+import { getEntryTitle } from "../utils/getEntryTitle";
 
 interface CreateManageResolvers {
     (params: {
@@ -25,31 +26,6 @@ interface CreateManageResolvers {
         fieldTypePlugins: CmsFieldTypePlugins;
     }): any;
 }
-
-const getModelTitle = (model: CmsContentModel, entry: CmsContentEntry): string => {
-    if (!model.titleFieldId) {
-        return entry.id;
-    }
-    const titleValue = entry.values[model.titleFieldId];
-    if (!titleValue) {
-        return entry.id;
-    }
-    const field = model.fields.find(f => f.fieldId === model.titleFieldId);
-    if (!field) {
-        return titleValue;
-    }
-    const { enabled = false, values } = field.predefinedValues;
-    if (!enabled || Array.isArray(values) === false) {
-        return titleValue;
-    }
-    for (const value of values) {
-        // needs to be loose because titleValue can be a number and value can be a string - but it must match
-        if (value.value == titleValue) {
-            return value.label;
-        }
-    }
-    return titleValue;
-};
 
 export const createManageResolvers: CreateManageResolvers = ({
     models,
@@ -115,7 +91,7 @@ export const createManageResolvers: CreateManageResolvers = ({
         ),
         [`${mTypeName}Meta`]: {
             title(entry) {
-                return getModelTitle(model, entry);
+                return getEntryTitle(model, entry);
             },
             status(entry) {
                 return entry.status;

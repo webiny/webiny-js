@@ -3,6 +3,118 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.6.0](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.2...v5.6.0) (2021-05-10)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [5.6.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.1...v5.6.0-beta.2) (2021-05-07)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** use RefInput on model group field ([3b56155](https://github.com/webiny/webiny-js/commit/3b56155a6a25073a5006959a77d7852076ae0bf3))
+
+
+
+
+
+# [5.6.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.0...v5.6.0-beta.1) (2021-05-07)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [5.6.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.5.1-beta.0...v5.6.0-beta.0) (2021-05-06)
+
+
+### Bug Fixes
+
+* use interface instead of type ([be076cf](https://github.com/webiny/webiny-js/commit/be076cf8856bfa8789e8ea9a4a55149e70f9074c))
+
+
+### Features
+
+* add support for multiple content models on the same ref field ([#1572](https://github.com/webiny/webiny-js/issues/1572)) ([cf347cc](https://github.com/webiny/webiny-js/commit/cf347cc5cd4772ae9dc7efe232486d191355fe43))
+* ES index sharing for multi-tenancy ([#1575](https://github.com/webiny/webiny-js/issues/1575)) ([54ab395](https://github.com/webiny/webiny-js/commit/54ab395e45773ed98814bf2339c4a9166bd234d1))
+
+
+
+
+
+## [5.5.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.5.0...v5.5.1-beta.0) (2021-04-27)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [5.5.0](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.3...v5.5.0) (2021-04-26)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [5.5.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.2...v5.5.0-beta.3) (2021-04-23)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [5.5.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.1...v5.5.0-beta.2) (2021-04-23)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [5.5.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.0...v5.5.0-beta.1) (2021-04-22)
+
+**Note:** Version bump only for package @webiny/api-headless-cms
+
+
+
+
+
+# [5.5.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.4.0...v5.5.0-beta.0) (2021-04-22)
+
+
+### Bug Fixes
+
+* **api-headless-cms:** export contentModel crud plugin ([2c10e2d](https://github.com/webiny/webiny-js/commit/2c10e2df2698f7f2e87e7be2a1ca94825c9b43b0))
+* **api-headless-cms:** update validateModelAccess function ([36449d8](https://github.com/webiny/webiny-js/commit/36449d8b651031c80aa186e3facb2f39df115931))
+* add missing "@webiny/cli" dependency ([f99bf3e](https://github.com/webiny/webiny-js/commit/f99bf3ea31ad4b9d560011181431cd9732a1a8c4))
+
+
+### Features
+
+* **api-headless-cms:** add cms permission migration for API keys ([2cb07b2](https://github.com/webiny/webiny-js/commit/2cb07b2468ce10a0323ce5af0ad1634459d3efb5))
+* **api-headless-cms:** add filterAsync helper function ([35bf612](https://github.com/webiny/webiny-js/commit/35bf612bdb2fc541329f2172307c5f90e0cc0b16))
+* **api-headless-cms:** add missing groups in contentModelGroup permission ([e7096a9](https://github.com/webiny/webiny-js/commit/e7096a9d004b8e3ed3e3fbc16d9a6176bbbd90f9))
+* **api-headless-cms:** add read permission check for group and model ([bf32479](https://github.com/webiny/webiny-js/commit/bf32479ba92db0d418a889b770f40a8b7c307955))
+* **api-headless-cms:** add validateGroupAccess check ([b5d2f7b](https://github.com/webiny/webiny-js/commit/b5d2f7bbd93b3bfbb93777e624ef7dc29f82a994))
+* **api-headless-cms:** add validateGroupAccess helper ([a4b747f](https://github.com/webiny/webiny-js/commit/a4b747f8eca3c8864310505526fb1606d3357f68))
+* **api-headless-cms:** migrate cms permissions ([728be2a](https://github.com/webiny/webiny-js/commit/728be2a30b134826f993b00785c0117ac477a5df))
+* **api-headless-cms:** search via ref field id ([#1567](https://github.com/webiny/webiny-js/issues/1567)) ([4bb65cf](https://github.com/webiny/webiny-js/commit/4bb65cf7659d88060a8c705b1a01b5df817fa8b4))
+* **api-headless-cms:** update permission check for models ([a377638](https://github.com/webiny/webiny-js/commit/a377638e2ca4ffa1808dede08687be60ee17ec92))
+* **api-headless-cms:** update types ([d5edc6b](https://github.com/webiny/webiny-js/commit/d5edc6bdbbd60d03cbe451afa8fadc699d87b416))
+* use new build and watch commands ([4a534a1](https://github.com/webiny/webiny-js/commit/4a534a11d2afe4ca4cddd49f2f80fe2a7e90058a))
+
+
+
+
+
 # [5.4.0](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.3...v5.4.0) (2021-04-13)
 
 **Note:** Version bump only for package @webiny/api-headless-cms

@@ -8,8 +8,10 @@ import elasticSearch from "@webiny/api-plugin-elastic-search-client";
 import headlessCmsPlugins from "@webiny/api-headless-cms/content";
 import cmsDynamoDbElasticsearch from "@webiny/api-headless-cms-ddb-es";
 import securityPlugins from "./security";
+import logsPlugins from "@webiny/handler-logs";
 
 export const handler = createHandler(
+    logsPlugins(),
     elasticSearch({ endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}` }),
     dbPlugins({
         table: process.env.DB_TABLE,

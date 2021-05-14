@@ -63,7 +63,8 @@ const CellContainer: React.FunctionComponent<CellPropsType> = ({ elementId, isAc
         handler.trigger(
             new TogglePluginActionEvent({
                 name: "pb-editor-toolbar-add-element",
-                params: { id, path, type }
+                params: { id, path, type },
+                closeOtherInGroup: true
             })
         );
     };

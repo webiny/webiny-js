@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-headless-cms",
-  "version": "5.4.0",
+  "version": "5.6.0",
   "main": "index.js",
   "keywords": [
     "cms:base"
@@ -21,20 +21,20 @@
     "@babel/runtime": "^7.5.5",
     "@commodo/fields": "beta",
     "@graphql-tools/schema": "^7.1.2",
-    "@webiny/api-file-manager": "^5.4.0",
-    "@webiny/api-i18n": "^5.4.0",
-    "@webiny/api-i18n-content": "^5.4.0",
-    "@webiny/api-security": "^5.4.0",
-    "@webiny/api-security-tenancy": "^5.4.0",
-    "@webiny/api-upgrade": "^5.4.0",
-    "@webiny/error": "^5.4.0",
-    "@webiny/handler": "^5.4.0",
-    "@webiny/handler-aws": "^5.4.0",
-    "@webiny/handler-db": "^5.4.0",
-    "@webiny/handler-graphql": "^5.4.0",
-    "@webiny/handler-http": "^5.4.0",
-    "@webiny/plugins": "^5.4.0",
-    "@webiny/validation": "^5.4.0",
+    "@webiny/api-file-manager": "^5.6.0",
+    "@webiny/api-i18n": "^5.6.0",
+    "@webiny/api-i18n-content": "^5.6.0",
+    "@webiny/api-security": "^5.6.0",
+    "@webiny/api-security-tenancy": "^5.6.0",
+    "@webiny/api-upgrade": "^5.6.0",
+    "@webiny/error": "^5.6.0",
+    "@webiny/handler": "^5.6.0",
+    "@webiny/handler-aws": "^5.6.0",
+    "@webiny/handler-db": "^5.6.0",
+    "@webiny/handler-graphql": "^5.6.0",
+    "@webiny/handler-http": "^5.6.0",
+    "@webiny/plugins": "^5.6.0",
+    "@webiny/validation": "^5.6.0",
     "boolean": "^3.0.2",
     "commodo-fields-object": "^1.0.6",
     "dataloader": "^2.0.0",
@@ -50,7 +50,8 @@
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-flow": "^7.0.0",
     "@commodo/fields-storage-nedb": "^2.0.0-next.15",
-    "@webiny/project-utils": "^5.4.0",
+    "@webiny/cli": "^5.6.0",
+    "@webiny/project-utils": "^5.6.0",
     "apollo-graphql": "^0.4.1",
     "get-yarn-workspaces": "^1.0.2",
     "graphql": "^14.6.0",
@@ -67,9 +68,8 @@
     "directory": "dist"
   },
   "scripts": {
-    "build": "rimraf ./dist '*.tsbuildinfo' && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" && yarn postbuild",
-    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" --watch",
-    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
+    "build": "yarn webiny run build",
+    "watch": "yarn webiny run watch"
   },
   "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
 }

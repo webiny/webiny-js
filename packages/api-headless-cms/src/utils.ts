@@ -1,5 +1,12 @@
 import slugify from "slugify";
-import { CmsContentModelPermission, CmsContentModel, CmsContext, CreatedBy } from "./types";
+import {
+    CmsContentModelPermission,
+    CmsContentModel,
+    CmsContext,
+    CreatedBy,
+    CmsContentModelGroupPermission,
+    CmsContentModelGroup
+} from "./types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { SecurityPermission } from "@webiny/api-security/types";
 
@@ -143,12 +150,11 @@ export const validateOwnership = (
  * model access is checking for both specific model or group access
  * if permission has specific models set as access pattern then groups will not matter (although both can be set)
  */
-export const checkModelAccess = (
+export const checkModelAccess = async (
     context: CmsContext,
-    permission: SecurityPermission<CmsContentModelPermission>,
     model: CmsContentModel
-): void => {
-    if (validateModelAccess(context, permission, model)) {
+): Promise<void> => {
+    if (await validateModelAccess(context, model)) {
         return;
     }
     throw new NotAuthorizedError({
@@ -157,20 +163,39 @@ export const checkModelAccess = (
         }
     });
 };
-export const validateModelAccess = (
+export const validateModelAccess = async (
     context: CmsContext,
-    permission: SecurityPermission<CmsContentModelPermission>,
     model: CmsContentModel
-): boolean => {
-    const { models, groups } = permission;
+): Promise<boolean> => {
+    const modelGroupPermission: CmsContentModelGroupPermission = await checkPermissions(
+        context,
+        "cms.contentModelGroup",
+        { rwd: "r" }
+    );
+    const { groups } = modelGroupPermission;
+
+    const modelPermission: CmsContentModelPermission = await checkPermissions(
+        context,
+        "cms.contentModel",
+        { rwd: "r" }
+    );
+    const { models } = modelPermission;
     // when no models or groups defined on permission
     // it means user has access to everything
     if (!models && !groups) {
         return true;
     }
     const locale = context.cms.getLocale().code;
-    // when there is no locale in models or groups, it means that no access was given
-    // this happens when access control was set but no models or groups were added
+    // Check whether the model is question belongs to "content model groups" for which user has permission.
+    if (groups) {
+        if (
+            Array.isArray(groups[locale]) === false ||
+            groups[locale].includes(model.group.id) === false
+        ) {
+            return false;
+        }
+    }
+    // Check whether the model is question belongs to "content models" for which user has permission.
     if (models) {
         if (
             Array.isArray(models[locale]) === false ||
@@ -178,12 +203,25 @@ export const validateModelAccess = (
         ) {
             return false;
         }
+    }
+
+    return true;
+};
+export const validateGroupAccess = (
+    context: CmsContext,
+    permission: CmsContentModelGroupPermission,
+    group: CmsContentModelGroup
+): boolean => {
+    const { groups } = permission;
+    // when no groups defined on permission
+    // it means user has access to everything
+    if (!groups) {
         return true;
     }
-    if (
-        Array.isArray(groups[locale]) === false ||
-        groups[locale].includes(model.group.id) === false
-    ) {
+    const locale = context.cms.getLocale().code;
+    // when there is no locale in groups, it means that no access was given
+    // this happens when access control was set but no models or groups were added
+    if (Array.isArray(groups[locale]) === false || groups[locale].includes(group.id) === false) {
         return false;
     }
     return true;
@@ -198,3 +236,47 @@ export const toSlug = text => {
 };
 
 export const zeroPad = version => `${version}`.padStart(4, "0");
+
+export const createCmsPK = (context: CmsContext) => {
+    const { security, cms } = context;
+
+    const tenant = security.getTenant();
+    if (!tenant) {
+        throw new Error("Tenant missing.");
+    }
+
+    const locale = cms.getLocale();
+    if (!locale) {
+        throw new Error("Locale missing.");
+    }
+
+    return `T#${tenant.id}#L#${locale.code}#CMS`;
+};
+
+export const paginateBatch = async <T = Record<string, any>>(
+    items: T[],
+    perPage: number,
+    execute: (items: T[]) => Promise<any>
+) => {
+    const pages = Math.ceil(items.length / perPage);
+    for (let i = 0; i < pages; i++) {
+        await execute(items.slice(i * perPage, i * perPage + perPage));
+    }
+};
+
+export const filterAsync = async <T = Record<string, any>>(
+    items: T[],
+    predicate: (T) => Promise<boolean>
+): Promise<T[]> => {
+    const filteredItems = [];
+
+    for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        const valid = await predicate(item);
+        if (valid) {
+            filteredItems.push(item);
+        }
+    }
+
+    return filteredItems;
+};

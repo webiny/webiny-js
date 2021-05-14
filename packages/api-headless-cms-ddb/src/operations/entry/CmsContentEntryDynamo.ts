@@ -141,6 +141,9 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
                 webinyVersion: {
                     type: "string"
                 },
+                tenant: {
+                    type: "string"
+                },
                 entryId: {
                     type: "string"
                 },

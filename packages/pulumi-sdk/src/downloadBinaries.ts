@@ -4,6 +4,15 @@ const fs = require("fs");
 const download = require("download");
 const path = require("path");
 const decompress = require("decompress");
+const semver = require("semver");
+
+// We gotta sanitize the package version, since on a few occasions, we've detected the Pulumi version
+// can look like the following: "2.25.2+dirty". We want to ensure only "2.25.2" is returned.
+// @see https://github.com/pulumi/pulumi/issues/6847
+const getPulumiVersion = () => {
+    const { version } = require("@pulumi/pulumi/package.json");
+    return semver.clean(version);
+};
 
 export default async (downloadFolder, beforeInstall, afterInstall) => {
     if (fs.existsSync(downloadFolder)) {
@@ -39,7 +48,7 @@ export default async (downloadFolder, beforeInstall, afterInstall) => {
 };
 
 async function setupDarwin(downloadFolder) {
-    const { version } = require("@pulumi/pulumi/package.json");
+    const version = getPulumiVersion();
     const filename = `pulumi-v${version}-darwin-x64.tar.gz`;
     const downloadUrl = "https://get.pulumi.com/releases/sdk/" + filename;
 
@@ -54,7 +63,7 @@ async function setupDarwin(downloadFolder) {
 }
 
 async function setupWindows(downloadFolder) {
-    const { version } = require("@pulumi/pulumi/package.json");
+    const version = getPulumiVersion();
     const filename = `pulumi-v${version}-windows-x64.zip`;
     const downloadUrl = "https://get.pulumi.com/releases/sdk/" + filename;
 
@@ -68,7 +77,7 @@ async function setupWindows(downloadFolder) {
 }
 
 async function setupLinux(downloadFolder) {
-    const { version } = require("@pulumi/pulumi/package.json");
+    const version = getPulumiVersion();
     const filename = `pulumi-v${version}-linux-x64.tar.gz`;
     const downloadUrl = "https://get.pulumi.com/releases/sdk/" + filename;
 

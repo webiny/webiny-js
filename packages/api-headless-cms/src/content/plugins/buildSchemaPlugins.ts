@@ -1,6 +1,7 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { CmsContext } from "../../types";
 import contentModels from "./schema/contentModels";
+import contentEntries from "./schema/contentEntries";
 import contentModelGroups from "./schema/contentModelGroups";
 import baseSchema from "./schema/baseSchema";
 import { generateSchemaPlugins } from "./schema/schemaPlugins";
@@ -13,8 +14,9 @@ export default async (context: CmsContext): Promise<GraphQLSchemaPlugin<CmsConte
         // Base GQL types and scalars
         baseSchema(context),
         contentModels(context),
+        contentEntries(context),
         contentModelGroups(context),
         // Dynamic schema
         ...(await generateSchemaPlugins(context))
-    ];
+    ].filter(Boolean);
 };

@@ -102,13 +102,13 @@ jobs:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
-      - name: Install dependencies
-        run: yarn --immutable
-
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
           key: cached-packages-${{ runner.os }}-${{ github.ref }}
+
+      - name: Install dependencies
+        run: yarn --immutable
 
       - name: Build packages
         run: node scripts/buildWithCache.js

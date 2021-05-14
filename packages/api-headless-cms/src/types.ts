@@ -970,6 +970,15 @@ export interface ContentModelManagerPlugin extends Plugin {
  */
 export interface CmsContentEntry {
     /**
+     * A version of the webiny this entry was created with.
+     * This can be used when upgrading the system so we know which entries to update.
+     */
+    webinyVersion: string;
+    /**
+     * Tenant id which is this entry for. Can be used in case of shared storage.
+     */
+    tenant: string;
+    /**
      * Generated ID of the entry. It is shared across all the records in the database that represent a single entry.
      * So version 1, 2, ..., 2371 will have the same value in this field to link them together.
      */
@@ -1436,14 +1445,14 @@ export type CmsContentEntryResolverFactory<TSource = any, TArgs = any, TContext 
  *
  * @category SecurityPermission
  */
-export type CmsSettingsPermission = SecurityPermission;
+export interface CmsSettingsPermission extends SecurityPermission {} // eslint-disable-line
 /**
  * A security permission for content model.
  *
  * @category SecurityPermission
  * @category ContentModel
  */
-export type CmsContentModelPermission = SecurityPermission<{
+export interface CmsContentModelPermission extends SecurityPermission {
     own: boolean;
     rwd: string;
     /**
@@ -1458,24 +1467,32 @@ export type CmsContentModelPermission = SecurityPermission<{
     groups?: {
         [key: string]: string[];
     };
-}>;
+}
+
 /**
  * The security permission for content model groups.
  *
  * @category SecurityPermission
  * @category ContentModelGroup
  */
-export type CmsContentModelGroupPermission = SecurityPermission<{
+export interface CmsContentModelGroupPermission extends SecurityPermission {
     own: boolean;
     rwd: string;
-}>;
+    /**
+     * A object representing `key: group.id` values where key is locale code.
+     */
+    groups?: {
+        [key: string]: string[];
+    };
+}
+
 /**
  * The security permission for content entry.
  *
  * @category SecurityPermission
  * @category ContentEntry
  */
-export type CmsContentEntryPermission = SecurityPermission<{
+export interface CmsContentEntryPermission extends SecurityPermission {
     own: boolean;
     rwd: string;
     pw: string;
@@ -1491,7 +1508,7 @@ export type CmsContentEntryPermission = SecurityPermission<{
     groups?: {
         [key: string]: string[];
     };
-}>;
+}
 
 /**
  * A argument definition for CmsModelFieldToStoragePlugin.toStorage

@@ -10,7 +10,7 @@ module.exports = () => [
         type: "hook-after-deploy",
         name: "hook-after-deploy-pb-update-settings",
         async hook(args, context) {
-            if (args.stack !== "website") {
+            if (args.projectApplication.id !== "website") {
                 return;
             }
 
@@ -70,16 +70,16 @@ module.exports = () => [
         type: "hook-after-deploy",
         name: "hook-after-deploy-upload-rerender",
         async hook(args, context) {
-            if (args.stack !== "website") {
+            if (args.projectApplication.id !== "website") {
                 return;
             }
 
-            if (args.inputs.build === false) {
+            /*if (args.inputs.build === false) {
                 context.info(
                     `"--no-build" argument detected - skipping React application upload and prerendering.`
                 );
                 return;
-            }
+            }*/
 
             context.info("Uploading React application...");
             // 1. Get exports from `site` stack, for `args.env` environment.
@@ -88,8 +88,6 @@ module.exports = () => [
             // Create an Amazon S3 service client object.
             const s3 = new S3Client({ region: process.env.AWS_REGION });
 
-            // TODO: for 5.5.0, use the new `projectApplication` object that's sent via hook args.
-            // TODO: also, we will probably gonna need to move all of the plugins in this file to project application.
             let webContentsRootPath = path.join(process.cwd(), "apps", "website", "code", "build");
 
             if (!fs.existsSync(webContentsRootPath)) {

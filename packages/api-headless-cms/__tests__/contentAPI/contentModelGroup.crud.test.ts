@@ -29,6 +29,30 @@ const createContentModelGroupData = ({
     };
 };
 
+const createPermissions = groups => [
+    {
+        name: "cms.settings"
+    },
+    {
+        name: "cms.contentModelGroup",
+        rwd: "rwd",
+        groups: groups ? { "en-US": groups } : undefined
+    },
+    {
+        name: "cms.endpoint.read"
+    },
+    {
+        name: "cms.endpoint.manage"
+    },
+    {
+        name: "cms.endpoint.preview"
+    },
+    {
+        name: "content.i18n",
+        locales: ["en-US"]
+    }
+];
+
 describe("Content model group crud test", () => {
     const {
         getContentModelGroupQuery,
@@ -301,5 +325,48 @@ describe("Content model group crud test", () => {
                 }
             }
         });
+    });
+
+    test("list specific content model groups", async () => {
+        // Create few content model groups
+        const prefixes = Array.from(Array(TestHelperEnum.MODELS_AMOUNT).keys()).map(prefix => {
+            return createContentModelGroupPrefix(prefix);
+        });
+        const groups = [];
+        for (const prefix of prefixes) {
+            const modelData = createContentModelGroupData({ prefix });
+
+            const [response] = await createContentModelGroupMutation({
+                data: modelData
+            });
+
+            expect(response).toEqual({
+                data: {
+                    createContentModelGroup: {
+                        data: {
+                            id: expect.any(String),
+                            ...modelData,
+                            createdOn: expect.stringMatching(/^20/),
+                            savedOn: expect.stringMatching(/^20/),
+                            createdBy: identity
+                        },
+                        error: null
+                    }
+                }
+            });
+
+            groups.push(response.data.createContentModelGroup.data.id);
+        }
+
+        // Create listGroups query with permission for only specific groups
+        const { listContentModelGroupsQuery: listGroups } = useContentGqlHandler({
+            path: "manage/en-us",
+            permissions: createPermissions([groups[0]])
+        });
+
+        const [response] = await listGroups();
+        // Should only return valid content model group
+        expect(response.data.listContentModelGroups.data.length).toEqual(1);
+        expect(response.data.listContentModelGroups.data[0].id).toEqual(groups[0]);
     });
 });

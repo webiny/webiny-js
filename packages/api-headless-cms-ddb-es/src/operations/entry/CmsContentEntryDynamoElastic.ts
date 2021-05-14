@@ -42,7 +42,6 @@ export const TYPE_ENTRY_PUBLISHED = TYPE_ENTRY + ".p";
 const getEntryData = (context: CmsContext, entry: CmsContentEntry) => {
     return {
         ...lodashOmit(entry, ["PK", "SK", "published", "latest"]),
-        webinyVersion: context.WEBINY_VERSION,
         __type: TYPE_ENTRY
     };
 };

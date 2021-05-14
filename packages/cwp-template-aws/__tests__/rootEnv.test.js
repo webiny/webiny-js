@@ -2,11 +2,16 @@ const setup = require("../setup");
 const path = require("path");
 const fs = require("fs-extra");
 const writeJsonFile = require("write-json-file");
-const getPackageJson = require("create-webiny-project/utils/getPackageJson");
 const dotenv = require("dotenv");
 
 const PROJECT_NAME = "test-123";
 const PROJECT_ROOT = path.join(__dirname, PROJECT_NAME);
+
+const getPackageJson = projectName => ({
+    name: projectName,
+    version: "0.1.0",
+    private: true
+});
 
 describe("root .env file generation test", () => {
     beforeAll(async () => {

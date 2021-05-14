@@ -49,6 +49,9 @@
     },
     {
       "path": "../../../packages/handler-graphql"
+    },
+    {
+      "path": "../../../packages/handler-logs"
     }
   ]
 }

@@ -4,6 +4,7 @@ import { AutoComplete } from "@webiny/ui/AutoComplete";
 import { i18n } from "@webiny/app/i18n";
 import { Link } from "@webiny/react-router";
 import { useReference } from "./useReference";
+import { renderItem } from "./renderItem";
 
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
@@ -15,18 +16,16 @@ function ContentEntriesAutocomplete({ bind, field }) {
         field
     });
 
-    // Currently we only support 1 model in the `ref` field, so we use index 0 (this will be upgraded in the future).
-    const { modelId } = field.settings.models[0];
-
     let unpublishedEntryInfo = null;
     if (value && !value.published) {
-        const link = `/cms/content-entries/${modelId}?id=${encodeURIComponent(value.id)}`;
+        const link = `/cms/content-entries/${value.modelId}?id=${encodeURIComponent(value.id)}`;
         unpublishedEntryInfo = label({ publishItLink: <Link to={link}>{t`publish it`}</Link> });
     }
 
     return (
         <AutoComplete
             {...bind}
+            renderItem={renderItem}
             onChange={onChange}
             loading={loading}
             value={value ? value.id : null}

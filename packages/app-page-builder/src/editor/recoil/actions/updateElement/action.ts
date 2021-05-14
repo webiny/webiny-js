@@ -1,12 +1,12 @@
-import { SaveRevisionActionEvent } from "..";
+import { UpdateElementTreeActionEvent, SaveRevisionActionEvent } from "..";
+import { EventActionCallable } from "~/types";
+import { flattenElements } from "~/editor/helpers";
 import { UpdateElementActionArgsType } from "./types";
-import { EventActionCallable } from "../../../../types";
-import { flattenElements } from "../../../helpers";
 
 export const updateElementAction: EventActionCallable<UpdateElementActionArgsType> = (
     state,
     { client },
-    { element, history }
+    { element, history, triggerUpdateElementTree }
 ) => {
     const actions = [];
     if (history === true) {
@@ -16,6 +16,10 @@ export const updateElementAction: EventActionCallable<UpdateElementActionArgsTyp
             );
         }
         actions.push(new SaveRevisionActionEvent());
+    }
+    // Add "UpdateElementTreeActionEvent" to actions.
+    if (triggerUpdateElementTree) {
+        actions.push(new UpdateElementTreeActionEvent());
     }
 
     const flattenedContent = flattenElements(element);

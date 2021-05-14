@@ -24,7 +24,7 @@ export const generateSchemaPlugins = async (
 
     const models = await cms.models.noAuth().list();
 
-    const schemas = getSchemaFromFieldPlugins({ fieldTypePlugins, type: cms.type });
+    const schemas = getSchemaFromFieldPlugins({ models, fieldTypePlugins, type: cms.type });
 
     const newPlugins: GraphQLSchemaPlugin<CmsContext>[] = schemas.map((s, i) => ({
         name: "graphql-schema-cms-field-types-" + i,

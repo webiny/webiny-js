@@ -39,8 +39,6 @@
   "compilerOptions": {
     "paths": {
       "~/*": ["./src/*"],
-      "@webiny/api-i18n/*": ["../api-i18n/src/*"],
-      "@webiny/api-i18n": ["../api-i18n/src"],
       "@webiny/api-i18n-content/*": ["../api-i18n-content/src/*"],
       "@webiny/api-i18n-content": ["../api-i18n-content/src"],
       "@webiny/api-plugin-elastic-search-client/*": ["../api-plugin-elastic-search-client/src/*"],

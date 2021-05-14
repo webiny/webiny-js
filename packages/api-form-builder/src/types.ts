@@ -5,7 +5,7 @@ import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { ElasticSearchClientContext } from "@webiny/api-plugin-elastic-search-client/types";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
-import { I18NContext } from "@webiny/api-i18n/graphql/types";
+import { I18NContext } from "@webiny/api-i18n/types";
 
 type FbFormTriggerData = Record<string, any>;
 type FbSubmissionData = Record<string, any>;
@@ -193,17 +193,17 @@ export type SettingsCRUD = {
     updateSettings(data: Partial<Settings>): Promise<Settings>;
 };
 
-export type FbFormPermission = SecurityPermission<{
+export interface FbFormPermission extends SecurityPermission {
     name: "fb.form";
     rwd: string;
     pw: string;
     own: boolean;
     submissions: boolean;
-}>;
+}
 
-export type FbFormSettingsPermission = SecurityPermission<{
+export interface FbFormSettingsPermission extends SecurityPermission {
     name: "fb.settings";
-}>;
+}
 
 export type FormBuilderContext = Context<
     TenancyContext,

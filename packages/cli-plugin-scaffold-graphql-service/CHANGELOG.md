@@ -3,6 +3,108 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.6.0](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.2...v5.6.0) (2021-05-10)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold-graphql-service
+
+
+
+
+
+# [5.6.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.1...v5.6.0-beta.2) (2021-05-07)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold-graphql-service
+
+
+
+
+
+# [5.6.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.0...v5.6.0-beta.1) (2021-05-07)
+
+
+### Bug Fixes
+
+* **cwp-template:** update path to api-i18n types ([cd1a7d9](https://github.com/webiny/webiny-js/commit/cd1a7d9d5327b8ea1874997a8d28e0e92dd6f34e))
+
+
+
+
+
+# [5.6.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.5.1-beta.0...v5.6.0-beta.0) (2021-05-06)
+
+
+### Features
+
+* add support for TS config files ([#1584](https://github.com/webiny/webiny-js/issues/1584)) ([b9c3e29](https://github.com/webiny/webiny-js/commit/b9c3e29901f2220a61de31874eb36f17f6e603f0))
+
+
+
+
+
+## [5.5.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.5.0...v5.5.1-beta.0) (2021-04-27)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold-graphql-service
+
+
+
+
+
+# [5.5.0](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.3...v5.5.0) (2021-04-26)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold-graphql-service
+
+
+
+
+
+# [5.5.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.2...v5.5.0-beta.3) (2021-04-23)
+
+
+### Bug Fixes
+
+* use new CLI utils ([2acd4fd](https://github.com/webiny/webiny-js/commit/2acd4fd7fea2af22b2335aa74cd9effed110c0f7))
+
+
+
+
+
+# [5.5.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.1...v5.5.0-beta.2) (2021-04-23)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold-graphql-service
+
+
+
+
+
+# [5.5.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.0...v5.5.0-beta.1) (2021-04-22)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold-graphql-service
+
+
+
+
+
+# [5.5.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.4.0...v5.5.0-beta.0) (2021-04-22)
+
+
+### Bug Fixes
+
+* add missing "@webiny/cli" dependency ([f99bf3e](https://github.com/webiny/webiny-js/commit/f99bf3ea31ad4b9d560011181431cd9732a1a8c4))
+* promisify "ncp" before executing it ([9a0cefc](https://github.com/webiny/webiny-js/commit/9a0cefc7cfd5ae5ceac766900e7a4dddcc40de89))
+* remove "beta" tag ([712a8ef](https://github.com/webiny/webiny-js/commit/712a8ef36b3b3764091db834ac89dde1fbc18ba9))
+* update dependencies ([7067da6](https://github.com/webiny/webiny-js/commit/7067da66ff2a70c340b93d8cde0ad36caa4e4640))
+* utilize functions from "@webiny/cli/utils" ([cce49b9](https://github.com/webiny/webiny-js/commit/cce49b9fe27fb0ec3acb6c109bb0c851a4d6ba50))
+
+
+### Features
+
+* **cli-plugin-scaffold-*:** add new watch and build commands ([6ab87ba](https://github.com/webiny/webiny-js/commit/6ab87ba10f6c648bd1630dd8fe96869f95c64a35))
+* **cli-plugin-scaffold-*:** use new build and watch commands ([3cac889](https://github.com/webiny/webiny-js/commit/3cac889422b082895fac2f200869a104a905cd3c))
+
+
+
+
+
 # [5.4.0](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.3...v5.4.0) (2021-04-13)
 
 **Note:** Version bump only for package @webiny/cli-plugin-scaffold-graphql-service

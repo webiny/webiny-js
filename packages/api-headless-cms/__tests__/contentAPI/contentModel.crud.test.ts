@@ -17,6 +17,35 @@ const getTypeObject = (schema, type) => {
 
 jest.setTimeout(15000);
 
+const createPermissions = ({ models, groups }: { models?: string[]; groups?: string[] }) => [
+    {
+        name: "cms.settings"
+    },
+    {
+        name: "cms.contentModelGroup",
+        rwd: "rwd",
+        groups: groups ? { "en-US": groups } : undefined
+    },
+    {
+        name: "cms.contentModel",
+        rwd: "rwd",
+        models: models ? { "en-US": models } : undefined
+    },
+    {
+        name: "cms.endpoint.read"
+    },
+    {
+        name: "cms.endpoint.manage"
+    },
+    {
+        name: "cms.endpoint.preview"
+    },
+    {
+        name: "content.i18n",
+        locales: ["en-US"]
+    }
+];
+
 describe("content model test", () => {
     const readHandlerOpts = { path: "read/en-US" };
     const manageHandlerOpts = { path: "manage/en-US" };
@@ -59,6 +88,9 @@ describe("content model test", () => {
         expect(getTypeFields(ManageQuery)).toEqual([
             "getContentModel",
             "listContentModels",
+            "searchContentEntries",
+            "getContentEntry",
+            "getContentEntries",
             "getContentModelGroup",
             "listContentModelGroups"
         ]);
@@ -746,5 +778,105 @@ describe("content model test", () => {
                 }
             }
         });
+    });
+
+    test("should list only specific content models", async () => {
+        const { createContentModelMutation } = useContentGqlHandler(manageHandlerOpts);
+
+        const createdContentModels = [];
+
+        for (let i = 0; i < 3; i++) {
+            const [createResponse] = await createContentModelMutation({
+                data: {
+                    name: `Test Content model instance-${i}`,
+                    modelId: `test-content-model-${i}`,
+                    group: contentModelGroup.id
+                }
+            });
+            createdContentModels.push(createResponse.data.createContentModel.data);
+        }
+
+        const { listContentModelsQuery: listModels } = useContentGqlHandler(
+            Object.assign({}, manageHandlerOpts, {
+                permissions: createPermissions({ models: [createdContentModels[0].modelId] })
+            })
+        );
+
+        const [response] = await listModels();
+
+        expect(response.data.listContentModels.data.length).toEqual(1);
+    });
+
+    test("error when getting model without specific group permission", async () => {
+        const { createContentModelMutation } = useContentGqlHandler(manageHandlerOpts);
+
+        const createdContentModels = [];
+
+        for (let i = 0; i < 3; i++) {
+            const [createResponse] = await createContentModelMutation({
+                data: {
+                    name: `Test Content model instance-${i}`,
+                    modelId: `test-content-model-${i}`,
+                    group: contentModelGroup.id
+                }
+            });
+            createdContentModels.push(createResponse.data.createContentModel.data);
+        }
+        // Get model with group permissions
+        const permissions = createPermissions({
+            models: [createdContentModels[0].modelId],
+            groups: ["some-group-id"]
+        });
+        const { getContentModelQuery: getModel } = useContentGqlHandler(
+            Object.assign({}, manageHandlerOpts, {
+                permissions: permissions
+            })
+        );
+        // Should return an error while getting a model without required group permission.
+        const [response] = await getModel({
+            modelId: createdContentModels[0].modelId
+        });
+
+        expect(response.data.getContentModel.data).toEqual(null);
+        expect(response.data.getContentModel.error).toEqual({
+            code: "SECURITY_NOT_AUTHORIZED",
+            data: { reason: 'Not allowed to access model "testContentModelInstance0".' },
+            message: "Not authorized!"
+        });
+    });
+
+    test("should be able to get model with specific group permission", async () => {
+        const { createContentModelMutation } = useContentGqlHandler(manageHandlerOpts);
+
+        const createdContentModels = [];
+
+        for (let i = 0; i < 3; i++) {
+            const [createResponse] = await createContentModelMutation({
+                data: {
+                    name: `Test Content model instance-${i}`,
+                    modelId: `test-content-model-${i}`,
+                    group: contentModelGroup.id
+                }
+            });
+            createdContentModels.push(createResponse.data.createContentModel.data);
+        }
+
+        // Get model with group permissions
+        const permissions = createPermissions({
+            models: [createdContentModels[0].modelId],
+            groups: [contentModelGroup.id]
+        });
+        const { getContentModelQuery: getModelB } = useContentGqlHandler(
+            Object.assign({}, manageHandlerOpts, {
+                permissions: permissions
+            })
+        );
+        // Should return an error while getting a model without required group permission.
+        const [response] = await getModelB({
+            modelId: createdContentModels[0].modelId
+        });
+
+        expect(response.data.getContentModel.data).toEqual(createdContentModels[0]);
+        expect(response.data.getContentModel.error).toEqual(null);
     });
 });

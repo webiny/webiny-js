@@ -16,6 +16,33 @@ interface CreateCategoriesResult {
     trees: CmsContentEntry;
 }
 
+const createPermissions = ({ groups, models }: { groups?: string[]; models?: string[] }) => [
+    {
+        name: "cms.settings"
+    },
+    {
+        name: "cms.contentModelGroup",
+        rwd: "r",
+        groups: groups ? { "en-US": groups } : undefined
+    },
+    {
+        name: "cms.contentModel",
+        rwd: "r",
+        models: models ? { "en-US": models } : undefined
+    },
+    {
+        name: "cms.contentEntry",
+        rwd: "r"
+    },
+    {
+        name: "cms.endpoint.manage"
+    },
+    {
+        name: "content.i18n",
+        locales: ["en-US"]
+    }
+];
+
 describe("MANAGE - Resolvers", () => {
     let contentModelGroup: CmsContentModelGroup;
 
@@ -150,6 +177,96 @@ describe("MANAGE - Resolvers", () => {
                 ]
             }
         });
+    });
+
+    test(`error when getting category without specific groups and models permissions`, async () => {
+        await setupContentModel();
+        const { createCategory, listCategories } = useCategoryManageHandler(manageOpts);
+
+        const [create] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
+
+        const { id } = create.data.createCategory.data;
+
+        // Need to wait until the new entry is propagated to Elastic Search index
+        await until(
+            () => listCategories().then(([data]) => data),
+            ({ data }) => data.listCategories.data[0].id === id
+        );
+
+        const { getCategory } = useCategoryManageHandler(
+            Object.assign({}, manageOpts, {
+                permissions: createPermissions({
+                    groups: [contentModelGroup.id],
+                    models: ["someOtherModelId"]
+                })
+            })
+        );
+
+        const [response] = await getCategory({ revision: id });
+
+        expect(response.data.getCategory.data).toEqual(null);
+        expect(response.data.getCategory.error).toEqual({
+            code: "SECURITY_NOT_AUTHORIZED",
+            data: {
+                reason: 'Not allowed to access model "category".'
+            },
+            message: "Not authorized!"
+        });
+    });
+
+    test(`get category with specific groups and models permissions`, async () => {
+        await setupContentModel();
+        const { createCategory, listCategories } = useCategoryManageHandler(manageOpts);
+
+        const [create] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
+
+        const { id } = create.data.createCategory.data;
+
+        // Need to wait until the new entry is propagated to Elastic Search index
+        await until(
+            () => listCategories().then(([data]) => data),
+            ({ data }) => data.listCategories.data[0].id === id
+        );
+
+        const { getCategory } = useCategoryManageHandler(
+            Object.assign({}, manageOpts, {
+                permissions: createPermissions({
+                    groups: [contentModelGroup.id],
+                    models: ["category"]
+                })
+            })
+        );
+
+        const [response] = await getCategory({ revision: id });
+
+        expect(response.data.getCategory.data).toEqual({
+            id,
+            createdOn: expect.stringMatching(/^20/),
+            createdBy: {
+                id: "123",
+                displayName: "User 123",
+                type: "admin"
+            },
+            savedOn: expect.stringMatching(/^20/),
+            title: "Hardware",
+            slug: "hardware",
+            meta: {
+                title: "Hardware",
+                modelId: "category",
+                version: 1,
+                locked: false,
+                publishedOn: null,
+                status: "draft",
+                revisions: [
+                    {
+                        id: expect.any(String),
+                        title: "Hardware",
+                        slug: "hardware"
+                    }
+                ]
+            }
+        });
+        expect(response.data.getCategory.error).toEqual(null);
     });
 
     test(`list categories (no parameters)`, async () => {

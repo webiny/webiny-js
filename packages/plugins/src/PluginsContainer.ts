@@ -42,11 +42,11 @@ export class PluginsContainer {
         this.register(...args);
     }
 
-    public byName<T extends Plugin = Plugin>(name: string): T {
+    public byName<T extends Plugin>(name: T["name"]): T {
         return this.plugins[name] as T;
     }
 
-    public byType<T extends Plugin>(type: string): T[] {
+    public byType<T extends Plugin>(type: T["type"]): T[] {
         if (this._byTypeCache[type]) {
             return Array.from(this._byTypeCache[type]) as T[];
         }
@@ -55,7 +55,7 @@ export class PluginsContainer {
         return Array.from(plugins);
     }
 
-    public atLeastOneByType<T extends Plugin>(type: string): T[] {
+    public atLeastOneByType<T extends Plugin>(type: T["type"]): T[] {
         const list = this.byType<T>(type);
         if (list.length === 0) {
             throw new Error(`There are no plugins by type "${type}".`);
@@ -63,7 +63,7 @@ export class PluginsContainer {
         return list;
     }
 
-    public oneByType<T extends Plugin>(type: string): T {
+    public oneByType<T extends Plugin>(type: T["type"]): T {
         const list = this.atLeastOneByType<T>(type);
         if (list.length > 1) {
             throw new Error(
@@ -90,7 +90,7 @@ export class PluginsContainer {
         delete this.plugins[name];
     }
 
-    private findByType<T extends Plugin>(type: string): T[] {
+    private findByType<T extends Plugin>(type: T["type"]): T[] {
         return Object.values(this.plugins).filter((pl: Plugin) => pl.type === type) as T[];
     }
 }
