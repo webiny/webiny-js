@@ -102,12 +102,12 @@ const Install = ({ onInstalled }) => {
                             )}
                             <Cell span={12}>Let&apos;s create your admin user:</Cell>
                             <Cell span={12}>
-                                <Bind name="firstName" validators={validation.create("required")}>
+                                <Bind name="firstName" validators={validation.create("required,minLength:2")}>
                                     <Input label={t`First Name`} />
                                 </Bind>
                             </Cell>
                             <Cell span={12}>
-                                <Bind name="lastName" validators={validation.create("required")}>
+                                <Bind name="lastName" validators={validation.create("required,minLength:2")}>
                                     <Input label={t`Last Name`} />
                                 </Bind>
                             </Cell>
