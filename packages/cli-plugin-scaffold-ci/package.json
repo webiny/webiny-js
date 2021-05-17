@@ -31,6 +31,7 @@
     "octokit": "^1.0.4",
     "pluralize": "^8.0.0",
     "replace-in-path": "^1.0.4",
+    "terminal-link": "^2.0.0",
     "validate-npm-package-name": "^3.0.0",
     "write-json-file": "^4.3.0"
   },

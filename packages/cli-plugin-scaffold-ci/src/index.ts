@@ -1,4 +1,7 @@
-import { CliCommandScaffoldTemplate } from "@webiny/cli-plugin-scaffold/types";
+import {
+    CliCommandScaffoldCallableArgs,
+    CliCommandScaffoldTemplate
+} from "@webiny/cli-plugin-scaffold/types";
 import githubActions from "./githubActions";
 import { CliPluginsScaffoldCi } from "./types";
 
@@ -6,6 +9,17 @@ interface Input {
     provider: string;
     [key: string]: any;
 }
+
+const runHookCallback = async (hookName: string, args: CliCommandScaffoldCallableArgs<Input>[]) => {
+    const [{ input, context }] = args;
+    const plugin = context.plugins
+        .byType<CliPluginsScaffoldCi<Input>>("cli-plugin-scaffold-ci")
+        .find(item => item.provider === input.provider);
+
+    if (typeof plugin[hookName] === "function") {
+        await plugin[hookName](...args);
+    }
+};
 
 export default (): [CliCommandScaffoldTemplate<Input>, CliPluginsScaffoldCi<Input>] => [
     {
@@ -27,17 +41,16 @@ export default (): [CliCommandScaffoldTemplate<Input>, CliPluginsScaffoldCi<Inpu
                 ];
             },
             generate: async (...args) => {
-                const [{ input, context }] = args;
-                const plugin = context.plugins
-                    .byType<CliPluginsScaffoldCi<Input>>("cli-plugin-scaffold-ci")
-                    .find(item => item.provider === input.provider);
-
-                await plugin.generate(...args);
+                await runHookCallback("generate", args);
             },
-            onSuccess: async () => {
-                console.log(
-                    "Learn more about app development at https://www.webiny.com/docs/tutorials/create-an-application/introduction."
-                );
+            onGenerate: async (...args) => {
+                await runHookCallback("onGenerate", args);
+            },
+            onSuccess: async (...args) => {
+                await runHookCallback("onSuccess", args);
+            },
+            onError: async (...args) => {
+                await runHookCallback("onError", args);
             }
         }
     },
