@@ -93,9 +93,13 @@ interface CliCommandScaffold<T extends Record<string, any>> {
      */
     generate: (args: CliCommandScaffoldCallableArgs<T>) => Promise<any>;
     /**
+     * Trigger when generator is about to be executed (before its execution).
+     */
+    onGenerate?: (args: CliCommandScaffoldCallableArgs<T>) => Promise<void>;
+    /**
      * Trigger when generator completes.
      */
-    onSuccess: (args: CliCommandScaffoldCallableArgs<T>) => Promise<void>;
+    onSuccess?: (args: CliCommandScaffoldCallableArgs<T>) => Promise<void>;
     /**
      * Trigger when there is a generator error.
      */
