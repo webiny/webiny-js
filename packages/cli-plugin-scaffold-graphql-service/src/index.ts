@@ -293,9 +293,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             });
 
             // Update package tsconfig.build "extends" path
-            ora.start(
-                `Updating package tsconfig.build extends path to root tsconfig.build...`
-            );
+            ora.start(`Updating package tsconfig.build extends path to root tsconfig.build...`);
             const tsConfigBuildPath = tsConfigPath.replace("tsconfig.json", "tsconfig.build.json");
             const tsConfigBuild = await readJson<TsConfigJson>(tsConfigBuildPath);
             tsConfigBuild.extends = baseTsConfigRelativePath.replace(
@@ -309,9 +307,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             });
 
             // Update root tsconfig.build.json file paths
-            ora.start(
-                `Updating base tsconfig compilerOptions.paths to contain the package...`
-            );
+            ora.start(`Updating base tsconfig compilerOptions.paths to contain the package...`);
             if (!baseTsConfigBuildJson.compilerOptions) {
                 baseTsConfigBuildJson.compilerOptions = {};
             }

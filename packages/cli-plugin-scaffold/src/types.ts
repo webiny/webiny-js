@@ -58,7 +58,7 @@ export interface CliCommandScaffoldCallableArgs<T extends Record<string, any>> {
     input: T;
     context: ContextInterface;
     wait: (ms?: number) => Promise<void>;
-    inquirer: typeof inquirer,
+    inquirer: typeof inquirer;
     ora: Ora;
 }
 

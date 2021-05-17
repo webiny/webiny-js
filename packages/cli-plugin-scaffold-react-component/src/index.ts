@@ -134,9 +134,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             );
             const baseTsConfigBuildJson = await readJson<TsConfigJson>(baseTsConfigBuildJsonPath);
 
-            ora.start(
-                `Creating new Admin app module files in ${chalk.green(fullLocation)}...`
-            );
+            ora.start(`Creating new Admin app module files in ${chalk.green(fullLocation)}...`);
 
             await fs.mkdirSync(fullLocation, { recursive: true });
 
@@ -237,9 +235,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             }
 
             // Update root tsconfig.build.json file paths
-            ora.start(
-                `Updating base tsconfig compilerOptions.paths to contain the package...`
-            );
+            ora.start(`Updating base tsconfig compilerOptions.paths to contain the package...`);
             if (!baseTsConfigBuildJson.compilerOptions) {
                 baseTsConfigBuildJson.compilerOptions = {};
             }

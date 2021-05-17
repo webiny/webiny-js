@@ -131,7 +131,6 @@ const plugin: CliPluginsScaffoldCi<Input> = {
             }
 
             // TODO: AWS secrets, want to paste them now or later?
-
         ];
     },
     onGenerate: async ({ input, inquirer }) => {

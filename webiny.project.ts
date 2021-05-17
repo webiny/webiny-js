@@ -20,17 +20,19 @@ export default {
                     import("@webiny/cli-plugin-scaffold-ci")
                 ]);
 
-                return modules.map(m => {
-                    // Use only "fulfilled" imports.
-                    if (m.status === "fulfilled") {
-                        try {
-                            return m.value.default();
-                        } catch {
-                            // This one is most like not built yet.
-                            return null;
+                return modules
+                    .map(m => {
+                        // Use only "fulfilled" imports.
+                        if (m.status === "fulfilled") {
+                            try {
+                                return m.value.default();
+                            } catch {
+                                // This one is most like not built yet.
+                                return null;
+                            }
                         }
-                    }
-                }).filter(Boolean);
+                    })
+                    .filter(Boolean);
             } catch (e) {
                 // If the whole promise fails, act as if there are no plugins.
                 return [];
