@@ -46,6 +46,9 @@ module.exports = async (inputs, context) => {
 
     await pulumi.run({
         command: "destroy",
+        args: {
+            debug: inputs.debug
+        },
         execa: {
             stdio: "inherit",
             env: {
