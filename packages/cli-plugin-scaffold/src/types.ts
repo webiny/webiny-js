@@ -2,6 +2,7 @@ import { QuestionCollection } from "inquirer";
 import { ContextInterface } from "@webiny/handler/types";
 import { Plugin } from "@webiny/plugins/types";
 import { Ora } from "ora";
+import inquirer from "inquirer";
 
 /**
  * Arguments for CliPlugin.create
@@ -57,7 +58,8 @@ export interface CliCommandScaffoldCallableArgs<T extends Record<string, any>> {
     input: T;
     context: ContextInterface;
     wait: (ms?: number) => Promise<void>;
-    oraSpinner: Ora;
+    inquirer: typeof inquirer,
+    ora: Ora;
 }
 
 /**
