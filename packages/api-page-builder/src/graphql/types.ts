@@ -5,7 +5,11 @@ import { DbContext } from "@webiny/handler-db/types";
 import { SecurityContext, SecurityPermission } from "@webiny/api-security/types";
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
 import { I18NContext } from "@webiny/api-i18n/types";
-import { ElasticSearchClientContext } from "@webiny/api-plugin-elastic-search-client/types";
+import {
+    ElasticSearchClientContext,
+    ElasticsearchQuery,
+    ElasticsearchSort
+} from "@webiny/api-plugin-elastic-search-client/types";
 import DataLoader from "dataloader";
 import { ClientContext } from "@webiny/handler-client/types";
 import { Category, DefaultSettings, Menu, Page, PageElement, PageSpecialType } from "../types";
@@ -269,3 +273,33 @@ export type InstallHookPlugin = Plugin<{
     beforeInstall: (context: PbContext) => void;
     afterInstall: (context: PbContext) => void;
 }>;
+
+interface PbElasticsearchQueryPluginArgs {
+    query: ElasticsearchQuery;
+    args: Record<string, any>;
+    context: PbContext;
+}
+
+interface PbElasticsearchSortPluginArgs {
+    sort: ElasticsearchSort;
+    args: Record<string, any>;
+    context: PbContext;
+}
+
+/**
+ * Modify ES query in `listPublished` CRUD method
+ */
+export interface PbElasticsearchSearchPublishedPagesPlugin extends Plugin {
+    type: "pb.elasticsearch.search-published-pages";
+    modifyQuery: (args: PbElasticsearchQueryPluginArgs) => void;
+    modifySort: (args: PbElasticsearchSortPluginArgs) => void;
+}
+
+/**
+ * Modify ES query in `listLatest` CRUD method
+ */
+export interface PbElasticsearchSearchLatestPagesPlugin extends Plugin {
+    type: "pb.elasticsearch.search-latest-pages";
+    modifyQuery: (args: PbElasticsearchQueryPluginArgs) => void;
+    modifySort: (args: PbElasticsearchSortPluginArgs) => void;
+}

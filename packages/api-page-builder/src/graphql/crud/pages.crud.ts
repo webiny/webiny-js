@@ -13,7 +13,15 @@ import merge from "lodash/merge";
 import getPKPrefix from "./utils/getPKPrefix";
 import DataLoader from "dataloader";
 
-import { Page, PageHookPlugin, PageSecurityPermission, PbContext, TYPE } from "../../types";
+import {
+    PbElasticsearchSearchLatestPagesPlugin,
+    PbElasticsearchSearchPublishedPagesPlugin,
+    Page,
+    PageHookPlugin,
+    PageSecurityPermission,
+    PbContext,
+    TYPE
+} from "../../types";
 import createListMeta from "./utils/createListMeta";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
@@ -214,7 +222,7 @@ const plugin: ContextPlugin<PbContext> = {
                         context
                     );
 
-                    query.bool.filter.push(
+                    query.filter.push(
                         {
                             term: { "locale.keyword": i18nContent.getLocale().code }
                         },
@@ -224,15 +232,37 @@ const plugin: ContextPlugin<PbContext> = {
                     // If users can only manage own records, let's add the special filter.
                     if (permission.own === true) {
                         const identity = context.security.getIdentity();
-                        query.bool.filter.push({
+                        query.filter.push({
                             term: { "createdBy.id.keyword": identity.id }
                         });
+                    }
+
+                    const listLatestPlugins = context.plugins.byType<
+                        PbElasticsearchSearchLatestPagesPlugin
+                    >("pb.elasticsearch.search-latest-pages");
+
+                    for (const plugin of listLatestPlugins) {
+                        // Apply query modifications
+                        if (typeof plugin.modifyQuery === "function") {
+                            plugin.modifyQuery({ query, args, context });
+                        }
+
+                        // Apply sort modifications
+                        if (typeof plugin.modifySort === "function") {
+                            plugin.modifySort({ sort, args, context });
+                        }
                     }
 
                     const response = await elasticSearch.search({
                         ...ES_DEFAULTS(),
                         body: {
-                            query,
+                            query: {
+                                bool: {
+                                    must: query.must.length > 0 ? query.must : undefined,
+                                    must_not: query.mustNot.length > 0 ? query.mustNot : undefined,
+                                    filter: query.filter.length > 0 ? query.filter : undefined
+                                }
+                            },
                             from,
                             size,
                             sort
@@ -253,17 +283,39 @@ const plugin: ContextPlugin<PbContext> = {
                         context
                     );
 
-                    query.bool.filter.push(
+                    query.filter.push(
                         {
                             term: { "locale.keyword": i18nContent.getLocale().code }
                         },
                         { term: { published: true } }
                     );
 
+                    const listPublishedPlugins = context.plugins.byType<
+                        PbElasticsearchSearchPublishedPagesPlugin
+                    >("pb.elasticsearch.search-published-pages");
+
+                    for (const plugin of listPublishedPlugins) {
+                        // Apply query modifications
+                        if (typeof plugin.modifyQuery === "function") {
+                            plugin.modifyQuery({ query, args, context });
+                        }
+
+                        // Apply sort modifications
+                        if (typeof plugin.modifySort === "function") {
+                            plugin.modifySort({ sort, args, context });
+                        }
+                    }
+
                     const response = await elasticSearch.search({
                         ...ES_DEFAULTS(),
                         body: {
-                            query,
+                            query: {
+                                bool: {
+                                    must: query.must.length > 0 ? query.must : undefined,
+                                    must_not: query.mustNot.length > 0 ? query.mustNot : undefined,
+                                    filter: query.filter.length > 0 ? query.filter : undefined
+                                }
+                            },
                             from,
                             size,
                             sort
