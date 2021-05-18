@@ -1,19 +1,14 @@
 import { onError } from "apollo-link-error";
-
-const WEBINY_SHOW_ALERT_ON_ERROR = "wby_show_alert_on_error";
+import { print } from "graphql/language";
+import createOverlay from "./errorOverlay";
+import { boolean } from "boolean";
 
 export default () => {
-    return onError(({ networkError }) => {
-        if (networkError) {
-            const alreadyShown = localStorage.getItem(WEBINY_SHOW_ALERT_ON_ERROR);
+    return onError(({ networkError, operation }) => {
+        const debug = boolean(process.env.REACT_APP_DEBUG);
 
-            if (
-                (networkError.name === "ServerError" || networkError.message.includes("500")) &&
-                !alreadyShown
-            ) {
-                localStorage.setItem(WEBINY_SHOW_ALERT_ON_ERROR, "true");
-                alert("Something went wrong! Please check browser console for more information.");
-            }
+        if (networkError && debug) {
+            createOverlay({ query: print(operation.query), networkError });
         }
     });
 };
