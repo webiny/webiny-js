@@ -1,13 +1,10 @@
 const { version } = require("@webiny/project-utils/package.json");
 
 const applyDefaults = () => {
-    if (!("SKIP_PREFLIGHT_CHECK" in process.env)) {
-        process.env.SKIP_PREFLIGHT_CHECK = true;
-    }
-
     if (!("INLINE_RUNTIME_CHUNK" in process.env)) {
-        process.env.INLINE_RUNTIME_CHUNK = true;
+        process.env.INLINE_RUNTIME_CHUNK = "true";
     }
+    process.env.REACT_APP_DEBUG = process.env.DEBUG;
 };
 
 module.exports.buildApp = options => {
