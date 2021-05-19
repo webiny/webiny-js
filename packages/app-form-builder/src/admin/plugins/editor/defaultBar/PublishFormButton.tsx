@@ -31,9 +31,11 @@ const PublishFormButton = () => {
         <ConfirmationDialog
             title={t`Publish form`}
             message={t`You are about to publish this form, are you sure want to continue?`}
+            data-testid={"fb.editor.default-bar.publish-dialog"}
         >
             {({ showConfirmation }) => (
                 <ButtonPrimary
+                    data-testid={"fb.editor.default-bar.publish"}
                     onClick={async () => {
                         showConfirmation(async () => {
                             await publish({

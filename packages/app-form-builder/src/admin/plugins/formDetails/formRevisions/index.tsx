@@ -8,7 +8,11 @@ const plugin: FbFormDetailsPluginType = {
     type: "forms-form-details-revision-content",
     render({ form, revisions, loading }) {
         return (
-            <Tab label={"Revisions"} disabled={loading}>
+            <Tab
+                label={"Revisions"}
+                disabled={loading}
+                data-testid={"fb.form-details.tab.revisions"}
+            >
                 <RevisionsList form={form} revisions={revisions} loading={loading} />
             </Tab>
         );

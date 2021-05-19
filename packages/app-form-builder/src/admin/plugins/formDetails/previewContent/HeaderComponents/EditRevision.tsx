@@ -20,6 +20,7 @@ const EditRevision = ({ revision, form }) => {
         return (
             <Tooltip content={"Edit"} placement={"top"}>
                 <IconButton
+                    data-testid={"fb.form-preview.header.edit-revision"}
                     icon={<EditIcon />}
                     onClick={() =>
                         history.push(`/form-builder/forms/${encodeURIComponent(revision.id)}`)
@@ -31,7 +32,11 @@ const EditRevision = ({ revision, form }) => {
 
     return (
         <Tooltip content={"New draft based on this version..."} placement={"top"}>
-            <IconButton icon={<EditIcon />} onClick={createRevision} />
+            <IconButton
+                data-testid={"fb.form-preview.header.create-revision"}
+                icon={<EditIcon />}
+                onClick={createRevision}
+            />
         </Tooltip>
     );
 };

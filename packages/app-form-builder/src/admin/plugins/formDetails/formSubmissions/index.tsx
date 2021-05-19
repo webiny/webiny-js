@@ -26,7 +26,11 @@ export default [
             }
 
             return (
-                <Tab label={t`Submissions`} disabled={loading}>
+                <Tab
+                    label={t`Submissions`}
+                    disabled={loading}
+                    data-testid={"fb.form-details.tab.submissions"}
+                >
                     <RenderBlock>
                         <div style={{ position: "relative" }}>
                             {loading && <CircularProgress />}

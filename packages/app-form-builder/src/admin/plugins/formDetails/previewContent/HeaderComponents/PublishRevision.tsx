@@ -28,9 +28,11 @@ const PublishRevision = ({ revision }: PublishRevisionProps) => {
                         message={
                             "You are about to publish this form, are you sure want to continue?"
                         }
+                        data-testid={"fb.form-preview.header.publish-dialog"}
                     >
                         {({ showConfirmation }) => (
                             <IconButton
+                                data-testid={"fb.form-preview.header.publish"}
                                 icon={<PublishIcon />}
                                 onClick={() =>
                                     showConfirmation(async () => {
@@ -64,9 +66,11 @@ const PublishRevision = ({ revision }: PublishRevisionProps) => {
                         message={
                             "You are about to unpublish this form, are you sure want to continue?"
                         }
+                        data-testid={"fb.form-preview.header.unpublish-dialog"}
                     >
                         {({ showConfirmation }) => (
                             <IconButton
+                                data-testid={"fb.form-preview.header.unpublish"}
                                 icon={<UnpublishIcon />}
                                 onClick={() =>
                                     showConfirmation(async () => {

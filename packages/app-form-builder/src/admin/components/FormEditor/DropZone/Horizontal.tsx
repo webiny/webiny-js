@@ -69,6 +69,7 @@ const Horizontal = ({ last, onDrop, isVisible }: HorizontalProps) => {
                         left: 0,
                         zIndex: isDragging ? 1000 : -1
                     }}
+                    data-testid={last ? "fb.editor.dropzone.horizontal-last" : ""}
                 >
                     <OuterDiv isOver={isOver} isDragging={isDragging} last={last}>
                         <InnerDiv>
