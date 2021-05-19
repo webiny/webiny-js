@@ -29,7 +29,7 @@ import {
     extractEntriesFromIndex,
     prepareEntryToIndex
 } from "../../helpers";
-import { createBasePrimaryKey, encodeElasticsearchCursor, paginateBatch } from "../../utils";
+import { createBasePartitionKey, encodeElasticsearchCursor, paginateBatch } from "../../utils";
 import {
     entryToStorageTransform,
     entryFromStorageTransform
@@ -72,18 +72,18 @@ interface ConstructorArgs {
  */
 export default class CmsContentEntryDynamoElastic implements CmsContentEntryStorageOperations {
     private readonly _context: CmsContext;
-    private _primaryKey: string;
+    private _partitionKey: string;
     private readonly _dataLoaders: DataLoadersHandler;
 
     private get context(): CmsContext {
         return this._context;
     }
 
-    private get primaryKey(): string {
-        if (!this._primaryKey) {
-            this._primaryKey = `${createBasePrimaryKey(this.context)}#CME`;
+    private get partitionKey(): string {
+        if (!this._partitionKey) {
+            this._partitionKey = `${createBasePartitionKey(this.context)}#CME`;
         }
-        return this._primaryKey;
+        return this._partitionKey;
     }
 
     public constructor({ context }: ConstructorArgs) {
@@ -1130,7 +1130,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         if (id.includes("#")) {
             id = id.split("#").shift();
         }
-        return `${this.primaryKey}#${id}`;
+        return `${this.partitionKey}#${id}`;
     }
     /**
      * Gets a secondary key in form of REV#version from:

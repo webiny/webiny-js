@@ -5,7 +5,7 @@ import {
 } from "@webiny/api-headless-cms/types";
 import configurations from "../../configurations";
 import WebinyError from "@webiny/error";
-import { createBasePrimaryKey } from "../../utils";
+import { createBasePartitionKey } from "../../utils";
 
 interface ConstructorArgs {
     context: CmsContext;
@@ -42,17 +42,17 @@ const SETTINGS_SECONDARY_KEY = "settings";
 
 export default class CmsSettingsDynamoElastic implements CmsSettingsStorageOperations {
     private readonly _context: CmsContext;
-    private _primaryKey: string;
+    private _partitionKey: string;
 
     private get context(): CmsContext {
         return this._context;
     }
 
-    private get primaryKey(): string {
-        if (!this._primaryKey) {
-            this._primaryKey = `${createBasePrimaryKey(this.context)}#SETTINGS`;
+    private get partitionKey(): string {
+        if (!this._partitionKey) {
+            this._partitionKey = `${createBasePartitionKey(this.context)}#SETTINGS`;
         }
-        return this._primaryKey;
+        return this._partitionKey;
     }
 
     public constructor({ context }: ConstructorArgs) {
@@ -64,7 +64,7 @@ export default class CmsSettingsDynamoElastic implements CmsSettingsStorageOpera
         const [[settings]] = await db.read<CmsSettingsDb>({
             ...configurations.db(),
             query: {
-                PK: this.primaryKey,
+                PK: this.partitionKey,
                 SK: SETTINGS_SECONDARY_KEY
             }
         });
@@ -81,7 +81,7 @@ export default class CmsSettingsDynamoElastic implements CmsSettingsStorageOpera
             await db.create({
                 ...configurations.db(),
                 data: {
-                    PK: this.primaryKey,
+                    PK: this.partitionKey,
                     SK: SETTINGS_SECONDARY_KEY,
                     ...dbData
                 }
@@ -104,7 +104,7 @@ export default class CmsSettingsDynamoElastic implements CmsSettingsStorageOpera
             await db.update({
                 ...configurations.db(),
                 query: {
-                    PK: this.primaryKey,
+                    PK: this.partitionKey,
                     SK: SETTINGS_SECONDARY_KEY
                 },
                 data: convertToDbData(data)
