@@ -68,7 +68,8 @@ export class Tabs extends React.Component<TabsProps, State> {
                     children: child.props.children,
                     icon: child.props.icon,
                     disabled: child.props.disabled,
-                    style: child.props.style
+                    style: child.props.style,
+                    "data-testid": child.props["data-testid"]
                 };
             });
 
@@ -96,6 +97,7 @@ export class Tabs extends React.Component<TabsProps, State> {
                             tag={"div"}
                             style={style}
                             key={item.label + "-" + index}
+                            data-testid={item["data-testid"]}
                             {...(item.icon ? { icon: item.icon } : {})}
                             {...(item.label ? { label: item.label } : {})}
                         />

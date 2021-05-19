@@ -108,6 +108,10 @@ export type AccordionItemProps = {
      * Render item opened by default
      */
     open?: boolean;
+    /**
+     * For testing purpose
+     */
+    "data-testid"?: string;
 };
 
 const AccordionItem = (props: AccordionItemProps) => {
@@ -126,6 +130,7 @@ const AccordionItem = (props: AccordionItemProps) => {
                     "webiny-ui-accordion-item__list-item"
                 )}
                 onClick={toggleState}
+                data-testid={props["data-testid"]}
             >
                 {props.icon && (
                     <ListItemGraphic>
