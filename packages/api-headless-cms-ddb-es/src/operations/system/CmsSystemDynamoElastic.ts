@@ -1,7 +1,14 @@
 import { CmsContext, CmsSystem, CmsSystemStorageOperations } from "@webiny/api-headless-cms/types";
 import configurations from "../../configurations";
 import WebinyError from "@webiny/error";
-import { createBasePrimaryKey } from "../../utils";
+export const createBasePartitionKey = ({ security }: CmsContext): string => {
+    const tenant = security.getTenant();
+    if (!tenant) {
+        throw new WebinyError("Tenant missing.", "TENANT_NOT_FOUND");
+    }
+
+    return `T#${tenant.id}`;
+};
 
 interface ConstructorArgs {
     context: CmsContext;
@@ -11,17 +18,21 @@ const SYSTEM_SECONDARY_KEY = "CMS";
 
 export default class CmsSystemDynamoElastic implements CmsSystemStorageOperations {
     private readonly _context: CmsContext;
-    private _primaryKey: string;
+    private _partitionKey: string;
 
     private get context(): CmsContext {
         return this._context;
     }
 
-    private get primaryKey(): string {
-        if (!this._primaryKey) {
-            this._primaryKey = `${createBasePrimaryKey(this.context)}#SYSTEM`;
+    private get partitionKey(): string {
+        if (!this._partitionKey) {
+            const tenant = this._context.security.getTenant();
+            if (!tenant) {
+                throw new WebinyError("Tenant missing.", "TENANT_NOT_FOUND");
+            }
+            this._partitionKey = `T#${tenant.id}#SYSTEM`;
         }
-        return this._primaryKey;
+        return this._partitionKey;
     }
 
     public constructor({ context }: ConstructorArgs) {
@@ -33,10 +44,11 @@ export default class CmsSystemDynamoElastic implements CmsSystemStorageOperation
         const [[system]] = await db.read<CmsSystem>({
             ...configurations.db(),
             query: {
-                PK: this.primaryKey,
+                PK: this.partitionKey,
                 SK: SYSTEM_SECONDARY_KEY
             }
         });
+
         return system || null;
     }
 
@@ -46,7 +58,7 @@ export default class CmsSystemDynamoElastic implements CmsSystemStorageOperation
             await db.create({
                 ...configurations.db(),
                 data: {
-                    PK: this.primaryKey,
+                    PK: this.partitionKey,
                     SK: SYSTEM_SECONDARY_KEY,
                     ...data
                 }
@@ -69,7 +81,7 @@ export default class CmsSystemDynamoElastic implements CmsSystemStorageOperation
             await db.update({
                 ...configurations.db(),
                 query: {
-                    PK: this.primaryKey,
+                    PK: this.partitionKey,
                     SK: SYSTEM_SECONDARY_KEY
                 },
                 data

@@ -10,7 +10,7 @@ import {
 } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
 import configurations from "../../configurations";
-import { createBasePrimaryKey } from "../../utils";
+import { createBasePartitionKey } from "../../utils";
 
 const whereKeySuffix = [
     "_not",
@@ -77,17 +77,17 @@ interface ConstructorArgs {
 export default class CmsContentModelGroupDynamoElastic
     implements CmsContentModelGroupStorageOperations {
     private readonly _context: CmsContext;
-    private _primaryKey: string;
+    private _partitionKey: string;
 
     private get context(): CmsContext {
         return this._context;
     }
 
-    private get primaryKey(): string {
-        if (!this._primaryKey) {
-            this._primaryKey = `${createBasePrimaryKey(this.context)}#CMG`;
+    private get partitionKey(): string {
+        if (!this._partitionKey) {
+            this._partitionKey = `${createBasePartitionKey(this.context)}#CMG`;
         }
-        return this._primaryKey;
+        return this._partitionKey;
     }
 
     public constructor({ context }: ConstructorArgs) {
@@ -97,7 +97,7 @@ export default class CmsContentModelGroupDynamoElastic
     public async create({ data }: CmsContentModelGroupStorageOperationsCreateArgs) {
         const { db } = this.context;
         const dbData = {
-            PK: this.primaryKey,
+            PK: this.partitionKey,
             SK: data.id,
             TYPE: "cms.group",
             ...data,
@@ -116,7 +116,7 @@ export default class CmsContentModelGroupDynamoElastic
         await db.delete({
             ...configurations.db(),
             query: {
-                PK: this.primaryKey,
+                PK: this.partitionKey,
                 SK: id
             }
         });
@@ -126,7 +126,7 @@ export default class CmsContentModelGroupDynamoElastic
         const { db } = this.context;
         const [[group]] = await db.read<CmsContentModelGroup>({
             ...configurations.db(),
-            query: { PK: this.primaryKey, SK: id }
+            query: { PK: this.partitionKey, SK: id }
         });
         return group || null;
     }
@@ -135,7 +135,7 @@ export default class CmsContentModelGroupDynamoElastic
         const [groups] = await db.read<CmsContentModelGroup>({
             ...configurations.db(),
             query: {
-                PK: this.primaryKey,
+                PK: this.partitionKey,
                 SK: { $gt: " " }
             }
         });
@@ -154,7 +154,7 @@ export default class CmsContentModelGroupDynamoElastic
         const { db } = this.context;
         await db.update({
             ...configurations.db(),
-            query: { PK: this.primaryKey, SK: group.id },
+            query: { PK: this.partitionKey, SK: group.id },
             data: {
                 ...data,
                 webinyVersion: this.context.WEBINY_VERSION

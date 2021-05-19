@@ -9,24 +9,24 @@ import {
 } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
 import configurations from "../../configurations";
-import { createBasePrimaryKey } from "../../utils";
+import { createBasePartitionKey } from "../../utils";
 
 interface ConstructorArgs {
     context: CmsContext;
 }
 export default class CmsContentModelDynamoElastic implements CmsContentModelStorageOperations {
     private readonly _context: CmsContext;
-    private _primaryKey: string;
+    private _partitionKey: string;
 
     private get context(): CmsContext {
         return this._context;
     }
 
-    private get primaryKey(): string {
-        if (!this._primaryKey) {
-            this._primaryKey = `${createBasePrimaryKey(this.context)}#CM`;
+    private get partitionKey(): string {
+        if (!this._partitionKey) {
+            this._partitionKey = `${createBasePartitionKey(this.context)}#CM`;
         }
-        return this._primaryKey;
+        return this._partitionKey;
     }
     public constructor({ context }: ConstructorArgs) {
         this._context = context;
@@ -58,7 +58,7 @@ export default class CmsContentModelDynamoElastic implements CmsContentModelStor
             await db.create({
                 ...configurations.db(),
                 data: {
-                    PK: this.primaryKey,
+                    PK: this.partitionKey,
                     SK: data.modelId,
                     TYPE: "cms.model",
                     webinyVersion: this.context.WEBINY_VERSION,
@@ -81,7 +81,7 @@ export default class CmsContentModelDynamoElastic implements CmsContentModelStor
         await db.delete({
             ...configurations.db(),
             query: {
-                PK: this.primaryKey,
+                PK: this.partitionKey,
                 SK: model.modelId
             }
         });
@@ -108,7 +108,7 @@ export default class CmsContentModelDynamoElastic implements CmsContentModelStor
         const [[model]] = await db.read<CmsContentModel>({
             ...configurations.db(),
             query: {
-                PK: this.primaryKey,
+                PK: this.partitionKey,
                 SK: id
             }
         });
@@ -120,7 +120,7 @@ export default class CmsContentModelDynamoElastic implements CmsContentModelStor
         const [models] = await db.read<CmsContentModel>({
             ...configurations.db(),
             query: {
-                PK: this.primaryKey,
+                PK: this.partitionKey,
                 SK: {
                     $gt: " "
                 }
@@ -138,7 +138,7 @@ export default class CmsContentModelDynamoElastic implements CmsContentModelStor
         await db.update({
             ...configurations.db(),
             query: {
-                PK: this.primaryKey,
+                PK: this.partitionKey,
                 SK: model.modelId
             },
             data: {
