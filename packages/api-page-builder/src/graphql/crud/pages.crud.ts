@@ -601,7 +601,7 @@ const plugin: ContextPlugin<PbContext> = {
                             data: {
                                 ...latestPageKeys,
                                 index: ES_DEFAULTS().index,
-                                data: getESLatestPageData(context, data)
+                                data: getESLatestPageData(context, data as Page)
                             }
                         });
                     }

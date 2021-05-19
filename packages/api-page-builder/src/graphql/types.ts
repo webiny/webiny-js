@@ -322,6 +322,12 @@ export type PbInstallPlugin = Plugin<{
     afterInstall: CallbackFunction<PbInstallAfterInstallParams>;
 }>;
 
+interface PbElasticsearchPageDataPluginArgs {
+    data: Record<string, any>;
+    page: Page;
+    context: PbContext;
+}
+
 interface PbElasticsearchQueryPluginArgs {
     query: ElasticsearchQuery;
     args: Record<string, any>;
@@ -332,6 +338,14 @@ interface PbElasticsearchSortPluginArgs {
     sort: ElasticsearchSort;
     args: Record<string, any>;
     context: PbContext;
+}
+
+/**
+ * Modify page data stored into Elasticsearch
+ */
+export interface PbElasticsearchPageDataPlugin extends Plugin {
+    type: "pb.elasticsearch.page-data";
+    apply: (args: PbElasticsearchPageDataPluginArgs) => void;
 }
 
 /**
