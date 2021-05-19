@@ -1,7 +1,6 @@
 import { CmsContext, CmsSystem, CmsSystemStorageOperations } from "@webiny/api-headless-cms/types";
 import configurations from "../../configurations";
 import WebinyError from "@webiny/error";
-import { createBasePartitionKey } from "../../utils";
 import { Entity, Table } from "dynamodb-toolbox";
 import { getDocumentClient, getTable } from "../helpers";
 
@@ -23,7 +22,11 @@ export default class CmsSystemDynamo implements CmsSystemStorageOperations {
 
     private get partitionKey(): string {
         if (!this._partitionKey) {
-            this._partitionKey = `${createBasePartitionKey(this.context)}#SYSTEM`;
+            const tenant = this._context.security.getTenant();
+            if (!tenant) {
+                throw new WebinyError("Tenant missing.", "TENANT_NOT_FOUND");
+            }
+            this._partitionKey = `T#${tenant.id}#SYSTEM`;
         }
         return this._partitionKey;
     }
