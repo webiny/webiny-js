@@ -129,7 +129,7 @@ describe("Page Settings Test", () => {
         );
 
         // Note that partial updates don't work correctly because of the way how `populate` works.
-        // When sending an object to a `fields` Commodo fields, it wont take it and try to merge it with the
+        // When sending an object to a `fields` Commodo fields, it wont try to merge it with the
         // current value. Instead, it will just create a new model instance, populate it, and assign that as
         // the new field value. For now, we didn't bother with this behaviour.
         await updatePage({

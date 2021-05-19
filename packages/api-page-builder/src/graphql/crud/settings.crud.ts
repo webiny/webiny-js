@@ -1,7 +1,13 @@
 import { ContextPlugin } from "@webiny/handler/types";
 import defaults from "./utils/defaults";
 import getPKPrefix from "./utils/getPKPrefix";
-import { PbContext, DefaultSettings, SettingsHookPlugin } from "../../types";
+import {
+    PbContext,
+    DefaultSettings,
+    PbSettingsPlugin,
+    PbSettingsBeforeUpdateParams,
+    PbSettingsAfterUpdateParams
+} from "../../types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import DataLoader from "dataloader";
 import executeHookCallbacks from "./utils/executeHookCallbacks";
@@ -24,7 +30,7 @@ const plugin: ContextPlugin<PbContext> = {
     async apply(context) {
         const { db, security, i18nContent } = context;
 
-        const hookPlugins = context.plugins.byType<SettingsHookPlugin>("pb-settings-hook");
+        const settingsPlugins = context.plugins.byType<PbSettingsPlugin>("pb-settings");
 
         context.pageBuilder = {
             ...context.pageBuilder,
@@ -148,15 +154,17 @@ const plugin: ContextPlugin<PbContext> = {
                             }
                         }
 
-                        await executeHookCallbacks(
-                            hookPlugins,
+                        await executeHookCallbacks<PbSettingsPlugin["beforeUpdate"]>(
+                            settingsPlugins,
                             "beforeUpdate",
-                            context,
-                            previous,
-                            next,
                             {
-                                diff: {
-                                    pages: changedPages
+                                context,
+                                previousSettings: previous,
+                                nextSettings: next,
+                                meta: {
+                                    diff: {
+                                        pages: changedPages
+                                    }
                                 }
                             }
                         );
@@ -167,15 +175,17 @@ const plugin: ContextPlugin<PbContext> = {
                             data: next
                         });
 
-                        await executeHookCallbacks(
-                            hookPlugins,
+                        await executeHookCallbacks<PbSettingsPlugin["afterUpdate"]>(
+                            settingsPlugins,
                             "afterUpdate",
-                            context,
-                            previous,
-                            next,
                             {
-                                diff: {
-                                    pages: changedPages
+                                context,
+                                previousSettings: previous,
+                                nextSettings: next,
+                                meta: {
+                                    diff: {
+                                        pages: changedPages
+                                    }
                                 }
                             }
                         );
