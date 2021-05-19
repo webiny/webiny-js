@@ -16,7 +16,11 @@ const validationPlugin: PbPagePlugin = {
 
         await updateSettingsModel.validate();
 
-        Object.assign(updateData.settings, await updateSettingsModel.toJSON());
+        updateData.settings = Object.assign(
+            {},
+            updateData.settings,
+            await updateSettingsModel.toJSON()
+        );
     }
 };
 
