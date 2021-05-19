@@ -242,6 +242,11 @@ export interface PageUnpublishParams {
     page: Page;
 }
 
+export interface PageNotFoundParams {
+    context: PbContext;
+    args: Record<string, any>;
+}
+
 export interface PbPagePlugin extends Plugin {
     type: "pb-page";
     beforeCreate?: CallbackFunction<PageCreateParams>;
@@ -254,6 +259,7 @@ export interface PbPagePlugin extends Plugin {
     afterPublish?: CallbackFunction<PagePublishParams>;
     beforeUnpublish?: CallbackFunction<PageUnpublishParams>;
     afterUnpublish?: CallbackFunction<PageUnpublishParams>;
+    notFound?: (args: PageNotFoundParams) => Promise<Page | undefined>;
 }
 
 export interface MenuHookParams {

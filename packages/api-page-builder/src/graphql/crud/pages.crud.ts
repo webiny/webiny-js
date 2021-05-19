@@ -195,13 +195,21 @@ const plugin: ContextPlugin<PbContext> = {
                         });
                     }
 
-                    const [[page]] = await db.read<Page>({
+                    let [[page]] = await db.read<Page>({
                         ...defaults.db,
                         query: { PK: PK_PAGE_PUBLISHED_PATH(), SK: normalizedPath }
                     });
 
                     if (!page) {
-                        throw notFoundError;
+                        // Try loading dynamic pages
+                        for (const plugin of pagePlugins) {
+                            if (typeof plugin.notFound === "function") {
+                                page = await plugin.notFound({ args, context });
+                                if (page) {
+                                    break;
+                                }
+                            }
+                        }
                     }
 
                     if (page) {
