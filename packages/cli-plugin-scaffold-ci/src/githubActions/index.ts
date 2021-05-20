@@ -2,7 +2,6 @@ import { CliPluginsScaffoldCi } from "../types";
 import { Octokit } from "octokit";
 import chalk from "chalk";
 import commitWorkflows from "./commitWorkflows";
-import terminalLink from "terminal-link";
 import validateNpmPackageName from "validate-npm-package-name";
 import open from "open";
 
@@ -30,6 +29,8 @@ const NEW_TOKEN_URL =
 
 const LONG_LIVED_BRANCHES = ["dev", "staging", "prod"];
 
+let generateErrorsCount = 0;
+
 const plugin: CliPluginsScaffoldCi<Input> = {
     type: "cli-plugin-scaffold-ci",
     name: "cli-plugin-scaffold-ci-github",
@@ -37,16 +38,40 @@ const plugin: CliPluginsScaffoldCi<Input> = {
     questions: () => {
         return [
             {
+                name: "githubAccessTokenCreate",
+                message: () => {
+                    return `In order to proceed, you will need a GitHub personal access token. Do you want to create a new one?`;
+                },
+                type: "list",
+                default: true,
+                choices: async () => {
+                    return [
+                        {
+                            name: "No, I already have my GitHub personal access token",
+                            value: false
+                        },
+                        {
+                            name: "Yes, I want to create a new GitHub personal access token",
+                            value: true
+                        }
+                    ];
+                }
+            },
+            {
                 name: "githubAccessToken",
                 type: "password",
                 message: () => {
-                    const newPatTokenLink = terminalLink("a new one", NEW_TOKEN_URL, {
-                        fallback: () => "a new one via " + NEW_TOKEN_URL
-                    });
-                    return `Paste your GitHub personal access token (or create ${newPatTokenLink}):`;
+                    return `Your GitHub personal access token:`;
                 },
                 required: true,
+                when: answers => {
+                    answers.githubAccessTokenCreate && open(NEW_TOKEN_URL);
+                    return true;
+                },
                 validate: async answer => {
+                    // TODO: remove this.
+                    answer = "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";
+
                     octokit = new Octokit({ auth: answer });
 
                     try {
@@ -232,21 +257,29 @@ const plugin: CliPluginsScaffoldCi<Input> = {
 
         // 2. Let's commit GitHub Actions workflows.
         ora.start(`Creating GitHub Actions workflows...`);
-        await commitWorkflows({
-            octokit,
-            owner: repo.owner.login,
-            repo: repo.name,
-            branch: repo.default_branch,
-            author: {
-                name: user.name,
-                email: user.email
-            }
-        });
+        try {
+            await commitWorkflows({
+                octokit,
+                owner: repo.owner.login,
+                repo: repo.name,
+                branch: repo.default_branch,
+                author: {
+                    name: user.name,
+                    email: user.email
+                }
+            });
 
-        ora.stopAndPersist({
-            symbol: chalk.green("✔"),
-            text: `GitHub Actions workflows created.`
-        });
+            ora.stopAndPersist({
+                symbol: chalk.green("✔"),
+                text: `GitHub Actions workflows created.`
+            });
+        } catch (e) {
+            generateErrorsCount++;
+            ora.stopAndPersist({
+                symbol: chalk.red("✘"),
+                text: `Creation of GitHub Actions workflows failed with the following message: ${e.message}`
+            });
+        }
 
         // 3. Create protected (long-lived) branches.
         ora.start(
@@ -255,30 +288,42 @@ const plugin: CliPluginsScaffoldCi<Input> = {
             )}, and ${chalk.green("prod")} branches...`
         );
 
-        const latestCommitSha = await octokit.rest.git
-            .getRef({
-                owner: repo.owner.login,
-                repo: repo.name,
-                ref: `heads/${repo.default_branch}`
-            })
-            .then(({ data }) => data.object.sha);
+        try {
+            const latestCommitSha = await octokit.rest.git
+                .getRef({
+                    owner: repo.owner.login,
+                    repo: repo.name,
+                    ref: `heads/${repo.default_branch}`
+                })
+                .then(({ data }) => data.object.sha);
 
-        for (let i = 0; i < LONG_LIVED_BRANCHES.length; i++) {
-            const longLivedBranch = LONG_LIVED_BRANCHES[i];
-            await octokit.rest.git.createRef({
-                owner: repo.owner.login,
-                repo: repo.name,
-                ref: `refs/heads/${longLivedBranch}`,
-                sha: latestCommitSha
+            for (let i = 0; i < LONG_LIVED_BRANCHES.length; i++) {
+                const longLivedBranch = LONG_LIVED_BRANCHES[i];
+                await octokit.rest.git.createRef({
+                    owner: repo.owner.login,
+                    repo: repo.name,
+                    ref: `refs/heads/${longLivedBranch}`,
+                    sha: latestCommitSha
+                });
+            }
+
+            ora.stopAndPersist({
+                symbol: chalk.green("✔"),
+                text: `Long-lived ${chalk.green("dev")}, ${chalk.green(
+                    "staging"
+                )}, and ${chalk.green("prod")} branches created.`
+            });
+        } catch (e) {
+            generateErrorsCount++;
+            ora.stopAndPersist({
+                symbol: chalk.red("✘"),
+                text: `Creation of long-lived ${chalk.green("dev")}, ${chalk.green(
+                    "staging"
+                )}, and ${chalk.green("prod")} branches failed with the following message: ${
+                    e.message
+                }`
             });
         }
-
-        ora.stopAndPersist({
-            symbol: chalk.green("✔"),
-            text: `Long-lived ${chalk.green("dev")}, ${chalk.green("staging")}, and ${chalk.green(
-                "prod"
-            )} branches created.`
-        });
 
         // 4. Protecting branches...
         ora.start(`Enabling protection for created long-lived branches...`);
@@ -307,6 +352,7 @@ const plugin: CliPluginsScaffoldCi<Input> = {
                 text: `Protection enabled for created long-lived branches.`
             });
         } catch (e) {
+            generateErrorsCount++;
             ora.stopAndPersist({
                 symbol: chalk.red("✘"),
                 text: `Enabling protection for long-lived branches failed with the following message: ${e.message}`
@@ -316,48 +362,80 @@ const plugin: CliPluginsScaffoldCi<Input> = {
         // 5. Make "dev" branch the default one.
         ora.start(`Setting ${chalk.green("dev")} as the default branch.`);
 
-        await octokit.rest.repos.update({
-            owner: repo.owner.login,
-            repo: repo.name,
-            branch: repo.default_branch,
-            default_branch: "dev"
-        });
+        try {
+            await octokit.rest.repos.update({
+                owner: repo.owner.login,
+                repo: repo.name,
+                branch: repo.default_branch,
+                default_branch: "dev"
+            });
 
-        ora.stopAndPersist({
-            symbol: chalk.green("✔"),
-            text: `Set ${chalk.green("dev")} as the default branch.`
-        });
+            ora.stopAndPersist({
+                symbol: chalk.green("✔"),
+                text: `Set ${chalk.green("dev")} as the default branch.`
+            });
+        } catch (e) {
+            generateErrorsCount++;
+            ora.stopAndPersist({
+                symbol: chalk.red("✘"),
+                text: `Setting ${chalk.green(
+                    "dev"
+                )} as the default branch failed with the following message: ${e.message}`
+            });
+        }
 
         // 6. Create code repository environments
 
         ora.start(
             `Creating ${chalk.green("dev")}, ${chalk.green("staging")}, and ${chalk.green(
                 "prod"
-            )} code repository...`
+            )} code repository environments...`
         );
 
         // TODO: add an environment for PRs - ephemeral environments.
-        for (let i = 0; i < LONG_LIVED_BRANCHES.length; i++) {
-            const branch = LONG_LIVED_BRANCHES[i];
-            await octokit.rest.repos.createOrUpdateEnvironment({
-                owner: repo.owner.login,
-                repo: repo.name,
-                environment_name: branch,
-                reviewers: [{ type: "User", id: user.id }],
-                deployment_branch_policy: null
+        try {
+            for (let i = 0; i < LONG_LIVED_BRANCHES.length; i++) {
+                const branch = LONG_LIVED_BRANCHES[i];
+                await octokit.rest.repos.createOrUpdateEnvironment({
+                    owner: repo.owner.login,
+                    repo: repo.name,
+                    environment_name: branch,
+                    reviewers: [{ type: "User", id: user.id }],
+                    deployment_branch_policy: null
+                });
+            }
+
+            ora.stopAndPersist({
+                symbol: chalk.green("✔"),
+                text: `${chalk.green("dev")}, ${chalk.green("staging")}, and ${chalk.green(
+                    "prod"
+                )} code repository environments created.`
+            });
+        } catch (e) {
+            generateErrorsCount++;
+            ora.stopAndPersist({
+                symbol: chalk.red("✘"),
+                text: `Creation of ${chalk.green("dev")}, ${chalk.green(
+                    "staging"
+                )}, and ${chalk.green(
+                    "prod"
+                )} code repository environments failed with the following message: ${e.message}`
             });
         }
-
-        ora.stopAndPersist({
-            symbol: chalk.green("✔"),
-            text: `${chalk.green("dev")}, ${chalk.green("staging")}, and ${chalk.green(
-                "prod"
-            )} code repository environments created.`
-        });
     },
     onSuccess: async () => {
         console.log();
-        console.log(`${chalk.green("✔")} CI/CD pipeline successfully set up.`);
+
+        if (generateErrorsCount) {
+            console.log(
+                `${chalk.yellow(
+                    "✔"
+                )} CI/CD partially set up (total errors: ${chalk.yellow(generateErrorsCount)}).`
+            );
+        } else {
+            console.log(`${chalk.green("✔")} CI/CD pipeline successfully set up.`);
+        }
+
         console.log();
 
         console.log(`Check out the created code repository here:`);
@@ -370,7 +448,10 @@ const plugin: CliPluginsScaffoldCi<Input> = {
         console.log(url);
         console.log();
 
-        open(url);
+        // On errors, let's not automatically open next steps. Let's let the
+        // user see what were the errors. He can still go to next steps because
+        // the link is displayed on the screen in any case.
+        generateErrorsCount === 0 && open(url);
     }
 };
 
