@@ -77,9 +77,9 @@ const Editor: React.FunctionComponent = () => {
         [ready]
     );
 
-    const [createPageFrom] = useMutation(CREATE_PAGE_FROM);
+    const [createPageFrom] = useMutation(CREATE_PAGE_FROM());
 
-    useQuery(GET_PAGE, {
+    useQuery(GET_PAGE(), {
         variables: { id: decodeURIComponent(params.id) },
         fetchPolicy: "network-only",
         onCompleted: async data => {
