@@ -4,6 +4,7 @@ import chalk from "chalk";
 import commitWorkflows from "./commitWorkflows";
 import terminalLink from "terminal-link";
 import validateNpmPackageName from "validate-npm-package-name";
+import open from "open";
 
 type Await<T> = T extends PromiseLike<infer U> ? U : T;
 
@@ -26,9 +27,8 @@ let repo: Await<ReturnType<typeof octokit.rest.repos.createForAuthenticatedUser>
 
 const NEW_TOKEN_URL =
     "https://github.com/settings/tokens/new?scopes=repo,workflow&description=webiny-cicd-token";
-const newPatTokenLink = terminalLink("a new one", NEW_TOKEN_URL, {
-    fallback: () => "a new one via " + NEW_TOKEN_URL
-});
+
+const LONG_LIVED_BRANCHES = ["dev", "staging", "prod"];
 
 const plugin: CliPluginsScaffoldCi<Input> = {
     type: "cli-plugin-scaffold-ci",
@@ -39,7 +39,12 @@ const plugin: CliPluginsScaffoldCi<Input> = {
             {
                 name: "githubAccessToken",
                 type: "password",
-                message: `Paste your GitHub personal access token (or create ${newPatTokenLink}):`,
+                message: () => {
+                    const newPatTokenLink = terminalLink("a new one", NEW_TOKEN_URL, {
+                        fallback: () => "a new one via " + NEW_TOKEN_URL
+                    });
+                    return `Paste your GitHub personal access token (or create ${newPatTokenLink}):`;
+                },
                 required: true,
                 validate: async answer => {
                     octokit = new Octokit({ auth: answer });
@@ -170,6 +175,12 @@ const plugin: CliPluginsScaffoldCi<Input> = {
 
         console.log(`- set ${chalk.green("dev")} as the default branch`);
 
+        console.log(
+            `- create ${chalk.green("dev")}, ${chalk.green("staging")}, and ${chalk.green(
+                "prod"
+            )} code repository environments`
+        );
+
         const { proceed } = await prompt({
             name: "proceed",
             message: `Are you sure you want to continue?`,
@@ -252,9 +263,8 @@ const plugin: CliPluginsScaffoldCi<Input> = {
             })
             .then(({ data }) => data.object.sha);
 
-        const longLivedBranches = ["dev", "staging", "prod"];
-        for (let i = 0; i < longLivedBranches.length; i++) {
-            const longLivedBranch = longLivedBranches[i];
+        for (let i = 0; i < LONG_LIVED_BRANCHES.length; i++) {
+            const longLivedBranch = LONG_LIVED_BRANCHES[i];
             await octokit.rest.git.createRef({
                 owner: repo.owner.login,
                 repo: repo.name,
@@ -274,8 +284,8 @@ const plugin: CliPluginsScaffoldCi<Input> = {
         ora.start(`Enabling protection for created long-lived branches...`);
 
         try {
-            for (let i = 0; i < longLivedBranches.length; i++) {
-                const longLivedBranch = longLivedBranches[i];
+            for (let i = 0; i < LONG_LIVED_BRANCHES.length; i++) {
+                const longLivedBranch = LONG_LIVED_BRANCHES[i];
                 await octokit.rest.repos.updateBranchProtection({
                     owner: repo.owner.login,
                     repo: repo.name,
@@ -318,44 +328,49 @@ const plugin: CliPluginsScaffoldCi<Input> = {
             text: `Set ${chalk.green("dev")} as the default branch.`
         });
 
-        // 4. These should automatically deploy three stages. Test it out.
+        // 6. Create code repository environments
 
-        // 5. Success
+        ora.start(
+            `Creating ${chalk.green("dev")}, ${chalk.green("staging")}, and ${chalk.green(
+                "prod"
+            )} code repository...`
+        );
 
-        // 6. How will the user know which are the URLs to deployed infra? He would need to go to GH actions right?
-
-        // 7. You can delete the 'main' btw.
-        // TODO: tell the user to commit all files if new repo.
-        // add Link to the repo
-        return;
-    },
-    onSuccess: async ({ input }) => {
-        const { newRepoName } = input;
-
-        console.log();
-        console.log(`${chalk.green("✔")} CI/CD pipeline successfully set up.`);
-
-        console.log();
-        console.log(chalk.bold("Next steps:"));
-
-        const githubLink = terminalLink("GitHub", repo.html_url, {
-            fallback: () => `GitHub (${repo.url})`
-        });
-
-        if (newRepoName) {
-            console.log(`- push your project files into the ${chalk.green("dev")} branch`);
-            console.log(`- delete the initial default (${chalk.green(`main`)}) branch (optional)`);
+        // TODO: add an environment for PRs - ephemeral environments.
+        for (let i = 0; i < LONG_LIVED_BRANCHES.length; i++) {
+            const branch = LONG_LIVED_BRANCHES[i];
+            await octokit.rest.repos.createOrUpdateEnvironment({
+                owner: repo.owner.login,
+                repo: repo.name,
+                environment_name: branch,
+                reviewers: [{ type: "User", id: user.id }],
+                deployment_branch_policy: null
+            });
         }
 
-        console.log(`- start developing by branching from the ${chalk.green("dev")} branch`);
-        console.log(`- browse the ${chalk.green(repo.full_name)} repository on ${githubLink}`);
-
-        const DOCS_URL = "https://www.webiny.com/docs/todo";
-        const docsLink = terminalLink("documentation", DOCS_URL, {
-            fallback: () => `documentation (${DOCS_URL})`
+        ora.stopAndPersist({
+            symbol: chalk.green("✔"),
+            text: `${chalk.green("dev")}, ${chalk.green("staging")}, and ${chalk.green(
+                "prod"
+            )} code repository environments created.`
         });
+    },
+    onSuccess: async () => {
+        console.log();
+        console.log(`${chalk.green("✔")} CI/CD pipeline successfully set up.`);
+        console.log();
 
-        console.log(`- check out the ${docsLink} for more information`);
+        console.log(`Check out the created code repository here:`);
+        console.log(repo.html_url);
+        console.log();
+
+        const url =
+            "https://www.webiny.com/docs/how-to-guides/webiny-cli/scaffolding/ci-cd#next-steps";
+        console.log(`For next steps, please open the following link:`);
+        console.log(url);
+        console.log();
+
+        open(url);
     }
 };
 
