@@ -70,7 +70,9 @@ const I18NLocalesDataList = () => {
         refetchQueries: [{ query: LIST_LOCALES }]
     });
 
-    const { showConfirmation } = useConfirmationDialog();
+    const { showConfirmation } = useConfirmationDialog({
+        dataTestId: "app-i18n.data-list.delete-dialog"
+    });
 
     const filterLocales = useCallback(
         ({ code }) => {
@@ -169,7 +171,7 @@ const I18NLocalesDataList = () => {
             modalOverlayAction={<DataListModalOverlayAction icon={<FilterIcon />} />}
         >
             {({ data }) => (
-                <ScrollList>
+                <ScrollList data-testid="default-data-list">
                     {data.map(item => (
                         <ListItem key={item.code} selected={item.code === code}>
                             <ListItemText
@@ -183,7 +185,10 @@ const I18NLocalesDataList = () => {
 
                             <ListItemMeta>
                                 <ListActions>
-                                    <DeleteIcon onClick={() => deleteItem(item)} />
+                                    <DeleteIcon
+                                        onClick={() => deleteItem(item)}
+                                        data-testid={"app-i18n.data-list-item.delete"}
+                                    />
                                 </ListActions>
                             </ListItemMeta>
                         </ListItem>
