@@ -51,7 +51,7 @@ const ErrorOverlay = ({ query, networkError }) => {
                         {t`
                         This screen is only visible if {message} environment variable is set.
                         Read more about it in the {link}. `({
-                            message: <span className={"highlight"}>`DEBUG=true`</span>,
+                            message: <span className={"highlight"}>`REACT_APP_DEBUG=true`</span>,
                             link: (
                                 <a
                                     href={ENVIRONMENT_VARIABLES_ARTICLE_LINK}
