@@ -9,9 +9,13 @@ module.exports = {
             await setTracking(true);
             await sendEvent({ event: "enable-tracking" });
             context.info(
-                `Tracking of Webiny stats is now ${context.info.hl("enabled")}! Thank you for helping us in making Webiny better!`
+                `Tracking of Webiny stats is now ${context.info.hl(
+                    "enabled"
+                )}! Thank you for helping us in making Webiny better!`
             );
-            context.info(`For more information, please visit the following link: https://www.webiny.com/telemetry.`)
+            context.info(
+                `For more information, please visit the following link: https://www.webiny.com/telemetry.`
+            );
         });
 
         yargs.command("disable-tracking", "Disable tracking of Webiny stats.", async () => {
