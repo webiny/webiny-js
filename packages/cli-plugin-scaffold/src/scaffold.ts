@@ -54,7 +54,7 @@ export const scaffold = async (args: ScaffoldArgs) => {
             await scaffold.onGenerate(callbackArgs);
         }
 
-        oraInstance.start(`Generating template...\n`);
+        console.log("Scaffolding...");
         await scaffold.generate(callbackArgs);
 
         if (typeof scaffold.onSuccess === "function") {
