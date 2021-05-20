@@ -44,7 +44,7 @@ context("I18N app", () => {
         });
         cy.findByTestId("app-i18n.data-list.delete-dialog").within(() => {
             cy.findByText(/Confirmation/i);
-            cy.get(".webiny-ui-dialog__actions > :nth-child(2)").click();
+            cy.findByText(/confirm$/i).click();
         });
         // Locale shouldn't be in the list
         cy.findByTestId("default-data-list").within(() => {
@@ -85,7 +85,7 @@ context("I18N app", () => {
         });
         cy.findByTestId("app-i18n.data-list.delete-dialog").within(() => {
             cy.findByText(/Confirmation/i);
-            cy.get(".webiny-ui-dialog__actions > :nth-child(2)").click();
+            cy.findByText(/confirm$/i).click();
         });
         // Locale shouldn't be in the list
         cy.findByTestId("default-data-list").within(() => {

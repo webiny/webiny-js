@@ -14,7 +14,7 @@ context("I18N app", () => {
         cy.wait(500);
         cy.findByTestId("app-i18n.data-list.delete-dialog").within(() => {
             cy.findByText(/Confirmation/i);
-            cy.get(".webiny-ui-dialog__actions > :nth-child(2)").click();
+            cy.findByText(/confirm$/i).click();
         });
 
         cy.findByText(
