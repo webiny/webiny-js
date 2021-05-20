@@ -4,7 +4,9 @@ export const OverlayWrapper = styled("div")(`
     width: 100vw;
     height: 100vh;
     position: fixed;
-    z-index: 11;
+    top: 0;
+    left: 0;
+    z-index: 105; // The highest z-index value is 100 for Dialogs
     
     .inner {
         box-sizing: border-box;
@@ -12,6 +14,7 @@ export const OverlayWrapper = styled("div")(`
         flex-direction: column;
         width: 100%;
         height: 100%;
+        overflow: auto;
         background-color: white;
         padding: 1rem;
     }
