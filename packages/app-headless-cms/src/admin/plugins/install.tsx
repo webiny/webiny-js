@@ -104,9 +104,9 @@ const plugin: AdminInstallationPlugin = {
             }
         },
         {
-            version: "5.7.0",
+            version: "5.8.0",
             getComponent() {
-                return lazy(() => import("./upgrades/v5.7.0"));
+                return lazy(() => import("./upgrades/v5.8.0"));
             }
         }
     ]

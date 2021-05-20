@@ -42,7 +42,7 @@ const Upgrade = ({ onInstalled }) => {
             .mutate({
                 mutation: UPGRADE,
                 variables: {
-                    version: "5.7.0"
+                    version: "5.8.0"
                 }
             })
             .then(({ data }) => {

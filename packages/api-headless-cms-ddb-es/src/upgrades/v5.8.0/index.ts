@@ -145,9 +145,9 @@ const fetchEntries = async <T>(args: FetchEntriesArgs): Promise<T[]> => {
 
 export default (): UpgradePlugin<CmsContext> => ({
     type: "api-upgrade",
-    name: "api-upgrade-5.7.0",
+    name: "api-upgrade-5.8.0",
     app: "headless-cms",
-    version: "5.7.0",
+    version: "5.8.0",
     async apply(context: CmsContext): Promise<void> {
         const { i18n, elasticSearch } = context;
         console.log("Started with the update of CMS entries.");
