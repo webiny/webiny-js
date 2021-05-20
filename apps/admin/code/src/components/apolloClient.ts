@@ -6,7 +6,7 @@ import {
     createOmitTypenameLink,
     createSetContextLink,
     createConsoleLink,
-    createErrorLogger
+    createNetworkErrorLink
 } from "@webiny/app/graphql";
 import { plugins } from "@webiny/plugins";
 import { CacheGetObjectIdPlugin } from "@webiny/app/types";
@@ -15,9 +15,9 @@ export const createApolloClient = ({ uri }) => {
     return new ApolloClient({
         link: ApolloLink.from([
             /**
-             * This link checks for `server error` in network error, logs it to browser console and show an alert in browser.
+             * This link checks for `NetworkError`, and show a ErrorOverlay in the browser.
              */
-            createErrorLogger(),
+            createNetworkErrorLink(),
             /**
              * This link checks for `extensions.console` in the response, and logs it to browser console.
              */
