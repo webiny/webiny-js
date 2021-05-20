@@ -63,7 +63,10 @@
     ]
   },
   "scripts": {
-    "test": "jest --config jest.config.js",
+    "test": "jest --config jest.config.js --passWithNoTests",
+    "test:unit": "cross-env TEST_TYPE=unit yarn test",
+    "test:integration": "cross-env TEST_TYPE=integration yarn test",
+    "test:e2e": "cross-env TEST_TYPE=e2e yarn test",
     "eslint": "eslint \"**/*.{js,jsx,ts,tsx}\" --max-warnings=0",
     "eslint:fix": "yarn eslint --fix",
     "prettier": "prettier \"**/**/*.{js,jsx,ts,tsx,json}\" --config .prettierrc.js",

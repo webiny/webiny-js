@@ -4,13 +4,8 @@ on:
   push:
     branches: [prod]
 
-env:
-  NODE_OPTIONS: --max_old_space_size=4096
-  AWS_ACCESS_KEY_ID: ${{ secrets.PROD_AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
-  PULUMI_SECRETS_PROVIDER: ${{ secrets.PROD_PULUMI_SECRETS_PROVIDER }}
-  PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PROD_PULUMI_CONFIG_PASSPHRASE }}
-  WEBINY_PULUMI_BACKEND: ${{ secrets.PROD_WEBINY_PULUMI_BACKEND }}
+# Ensures only one deployment to "staging" environment can be in progress at the same time.
+concurrency: environment
 
 jobs:
   # This first step ensures we don't run the workflow if the repository is empty.
@@ -30,8 +25,16 @@ jobs:
   build-test-deploy:
     name: Build and test
     needs: repository-check
-    if: needs.repository-check.outputs.ready == 'true'
     runs-on: ubuntu-latest
+    if: needs.repository-check.outputs.ready == 'true'
+    environment: prod
+    env:
+      NODE_OPTIONS: --max_old_space_size=4096
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
+      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
+      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}
     steps:
       - uses: actions/setup-node@v2
         with:
@@ -45,6 +48,7 @@ jobs:
         with:
           path: .yarn/cache
           key: yarn-${{ hashFiles('**/yarn.lock') }}
+
 
       - name: Install dependencies
         run: yarn --immutable
@@ -64,10 +68,10 @@ jobs:
       - name: Run tests
         run: yarn test
 
-      # 5. Deploy to "prod" environment. Note that we do not deploy if the WEBINY_PULUMI_BACKEND
-      # variable is missing. We want to have a single central storage of our cloud infrastructure
-      # state files, for example an Amazon S3 bucket or Pulumi Service.
-      # https://www.webiny.com/docs/how-to-guides/development/workflows/cloud-infrastructure-state-files
+      # 5. Deploy to "prod" environment (we skip deployment if the WEBINY_PULUMI_BACKEND is missing).
+      # We want to have a single central storage of our cloud infrastructure state files, for example
+      # - an Amazon S3 bucket or Pulumi Service.
+      # https://www.webiny.com/docs/key-topics/ci-cd/cloud-infrastructure-state-files
       - name: Deploy
         if: env.WEBINY_PULUMI_BACKEND
         run: yarn webiny deploy --env prod
