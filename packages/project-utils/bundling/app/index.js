@@ -4,7 +4,6 @@ const applyDefaults = () => {
     if (!("INLINE_RUNTIME_CHUNK" in process.env)) {
         process.env.INLINE_RUNTIME_CHUNK = "true";
     }
-    process.env.REACT_APP_DEBUG = process.env.DEBUG;
 };
 
 module.exports.buildApp = options => {
@@ -20,6 +19,9 @@ module.exports.buildApp = options => {
 
 module.exports.startApp = options => {
     applyDefaults();
+    if (!("REACT_APP_DEBUG" in process.env)) {
+        process.env.REACT_APP_DEBUG = "true";
+    }
     process.env.NODE_ENV = "development";
     if (!process.env.REACT_APP_WEBINY_VERSION) {
         process.env.REACT_APP_WEBINY_VERSION = version;
