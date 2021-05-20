@@ -21,8 +21,12 @@
   "dependencies": {
     "@webiny/cli": "^5.5.0",
     "@webiny/cli-plugin-scaffold": "^5.5.0",
+    "@webiny/plugins": "^5.5.0",
     "chalk": "^4.1.0",
+    "fs-extra": "^7.0.0",
+    "js-base64": "^3.6.0",
     "octokit": "^1.0.4",
+    "open": "^8.0.6",
     "terminal-link": "^2.0.0",
     "validate-npm-package-name": "^3.0.0"
   },
