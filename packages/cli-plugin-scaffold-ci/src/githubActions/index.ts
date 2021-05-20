@@ -69,9 +69,6 @@ const plugin: CliPluginsScaffoldCi<Input> = {
                     return true;
                 },
                 validate: async answer => {
-                    // TODO: remove this.
-                    answer = "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";
-
                     octokit = new Octokit({ auth: answer });
 
                     try {
@@ -159,8 +156,6 @@ const plugin: CliPluginsScaffoldCi<Input> = {
                     });
                 }
             }
-
-            // TODO: AWS secrets, want to paste them now or later?
         ];
     },
     onGenerate: async ({ input, inquirer }) => {
