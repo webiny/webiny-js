@@ -1,6 +1,6 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useRecoilValue } from "recoil";
-import { useDrag, useDrop } from "react-dnd";
+import { useDrag, useDrop, DropTargetMonitor } from "react-dnd";
 import { elementByIdSelector, rootElementAtom } from "~/editor/recoil/modules";
 import { MoveBlockActionArgsType } from "~/editor/recoil/actions/moveBlock/types";
 import { MoveBlockActionEvent } from "~/editor/recoil/actions";
@@ -38,13 +38,15 @@ export const useMoveBlock = elementId => {
         move
     };
 };
-
+interface XYCoord {
+    x: number;
+    y: number;
+}
 interface DragItem {
     index: number;
     id: string;
     type: string;
 }
-
 interface UseSortableListArgs {
     index: number;
     id: string;
@@ -63,6 +65,9 @@ export const useSortableList = ({
     endDrag
 }: UseSortableListArgs) => {
     const ref = useRef<HTMLDivElement>(null);
+    const [dropItemAbove, setDropItemAbove] = useState(false);
+    const isDraggingDownwardsRef = useRef<boolean>(false);
+
     const [{ handlerId, isOver }, drop] = useDrop({
         accept: BLOCK,
         collect(monitor) {
@@ -77,19 +82,62 @@ export const useSortableList = ({
             }
             const dragIndex = item.index;
             const dropIndex = index;
+            const draggingDownwards = isDraggingDownwardsRef.current;
 
-            // Don't replace items with themselves
-            if (dragIndex === dropIndex) {
+            // Calculate effective drop position.
+            let effectiveDropIndex;
+            if (draggingDownwards) {
+                effectiveDropIndex = dropItemAbove ? dropIndex - 1 : dropIndex;
+            } else {
+                effectiveDropIndex = dropItemAbove ? dropIndex : dropIndex + 1;
+            }
+
+            // Don't replace items with themselves.
+            if (dragIndex === effectiveDropIndex) {
                 return;
             }
 
             // Time to actually perform the action
-            move(dragIndex, dropIndex);
+            move(dragIndex, effectiveDropIndex);
             // Note: we're mutating the monitor item here!
             // Generally it's better to avoid mutations,
             // but it's good here for the sake of performance
             // to avoid expensive index searches.
             item.index = dropIndex;
+        },
+        hover(item: DragItem, monitor: DropTargetMonitor) {
+            if (!ref.current) {
+                return;
+            }
+            const dragIndex = item.index;
+            const hoverIndex = index;
+
+            // Don't replace items with themselves
+            if (dragIndex === hoverIndex) {
+                return;
+            }
+
+            // Set dragging downwards
+            isDraggingDownwardsRef.current = dragIndex < hoverIndex;
+
+            // Determine rectangle on screen
+            const hoverBoundingRect = ref.current?.getBoundingClientRect();
+
+            // Get vertical middle
+            const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+
+            // Determine mouse position
+            const clientOffset = monitor.getClientOffset();
+
+            // Get pixels to the top
+            const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
+
+            // Perform the "drop above" move, only when the cursor is above 50% of the item's height.
+            const dropAbove = hoverClientY < hoverMiddleY;
+            setDropItemAbove(dropAbove);
+        },
+        canDrop() {
+            return type === BLOCK;
         }
     });
 
@@ -120,6 +168,7 @@ export const useSortableList = ({
         drag,
         drop,
         preview,
-        isOver
+        isOver,
+        dropItemAbove
     };
 };

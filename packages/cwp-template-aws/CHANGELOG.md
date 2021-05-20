@@ -3,6 +3,61 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.6.0](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.2...v5.6.0) (2021-05-10)
+
+
+### Bug Fixes
+
+* add folder argument ([41fa7d9](https://github.com/webiny/webiny-js/commit/41fa7d92569cfcf5b452d1b5c7ff8f707f58be3c))
+
+
+
+
+
+# [5.6.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.1...v5.6.0-beta.2) (2021-05-07)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.6.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.0...v5.6.0-beta.1) (2021-05-07)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
+# [5.6.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.5.1-beta.0...v5.6.0-beta.0) (2021-05-06)
+
+
+### Bug Fixes
+
+* improve setup-repo script ([5fbe464](https://github.com/webiny/webiny-js/commit/5fbe4649f5f461201c2a45d8096ab010d6410dad))
+* **cwp-template-aws:** update text element styles in theme  ([#1588](https://github.com/webiny/webiny-js/issues/1588)) ([d65b8d6](https://github.com/webiny/webiny-js/commit/d65b8d686af9bc5b74bc71f08364d79aedd04488))
+
+
+### Features
+
+* **app-page-builder:** add navigator toolbar for element's tree view ([#1579](https://github.com/webiny/webiny-js/issues/1579)) ([9b6cf8c](https://github.com/webiny/webiny-js/commit/9b6cf8c7926fdd35b3d09af41c574111f1b86ed7))
+* add support for TS config files ([#1584](https://github.com/webiny/webiny-js/issues/1584)) ([b9c3e29](https://github.com/webiny/webiny-js/commit/b9c3e29901f2220a61de31874eb36f17f6e603f0))
+* add tags to React apps resources ([#1585](https://github.com/webiny/webiny-js/issues/1585)) ([1c91c0e](https://github.com/webiny/webiny-js/commit/1c91c0edfe87cde59e94e43461c64a506b6140dd))
+* **create-webiny-project:** check for existence of yarn.lock and package.json ([2531f68](https://github.com/webiny/webiny-js/commit/2531f687cbae95b5ac909d34b19fd8629f30ae52))
+
+
+
+
+
+## [5.5.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.5.0...v5.5.1-beta.0) (2021-04-27)
+
+**Note:** Version bump only for package @webiny/cwp-template-aws
+
+
+
+
+
 # [5.5.0](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.3...v5.5.0) (2021-04-26)
 
 **Note:** Version bump only for package @webiny/cwp-template-aws
