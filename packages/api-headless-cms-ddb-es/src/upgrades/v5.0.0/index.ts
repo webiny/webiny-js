@@ -19,7 +19,7 @@ interface Hit {
 }
 
 const plugin = (): UpgradePlugin<CmsContext> => ({
-    name: "api-upgrade-cms",
+    name: "api-upgrade-cms-5.0.0",
     type: "api-upgrade",
     app: "headless-cms",
     version: "5.0.0",

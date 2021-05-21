@@ -5,7 +5,7 @@ import { migrateCMSPermissions } from "../../../migrateCMSPermissions";
 import { isCmsContentPermission } from "./helpers";
 
 const plugin: UpgradePlugin<CmsContext> = {
-    name: "api-upgrade-cms",
+    name: "api-upgrade-cms-5.5.0",
     type: "api-upgrade",
     app: "headless-cms",
     version: "5.5.0",

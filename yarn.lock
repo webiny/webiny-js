@@ -7507,6 +7507,7 @@ __metadata:
     "@webiny/plugins": ^5.3.0
     "@webiny/project-utils": ^5.3.0
     dataloader: ^2.0.0
+    dynamodb-toolbox: ^0.3.4
     jest: ^26.6.3
     jest-dynalite: ^3.2.0
     jest-environment-node: ^26.6.2
@@ -15907,7 +15908,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dynamodb-toolbox@npm:^0.3.3":
+"dynamodb-toolbox@npm:^0.3.3, dynamodb-toolbox@npm:^0.3.4":
   version: 0.3.4
   resolution: "dynamodb-toolbox@npm:0.3.4"
   checksum: 84d96aa86fc7b7f9cd06c6be9feadbf6e48c854a607fc65323bc1dceac531fd79b4387d22f466ece2cbc736d624573c04379fd227d9e89e623ece83e8da41972
