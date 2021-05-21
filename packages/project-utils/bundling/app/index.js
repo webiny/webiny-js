@@ -1,12 +1,8 @@
 const { version } = require("@webiny/project-utils/package.json");
 
 const applyDefaults = () => {
-    if (!("SKIP_PREFLIGHT_CHECK" in process.env)) {
-        process.env.SKIP_PREFLIGHT_CHECK = true;
-    }
-
     if (!("INLINE_RUNTIME_CHUNK" in process.env)) {
-        process.env.INLINE_RUNTIME_CHUNK = true;
+        process.env.INLINE_RUNTIME_CHUNK = "true";
     }
 };
 
@@ -23,6 +19,9 @@ module.exports.buildApp = options => {
 
 module.exports.startApp = options => {
     applyDefaults();
+    if (!("REACT_APP_DEBUG" in process.env)) {
+        process.env.REACT_APP_DEBUG = "true";
+    }
     process.env.NODE_ENV = "development";
     if (!process.env.REACT_APP_WEBINY_VERSION) {
         process.env.REACT_APP_WEBINY_VERSION = version;
