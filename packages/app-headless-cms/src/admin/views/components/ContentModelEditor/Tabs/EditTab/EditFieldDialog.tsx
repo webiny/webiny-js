@@ -145,7 +145,10 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
                         <>
                             <DialogContent className={dialogBody}>
                                 <Tabs>
-                                    <Tab label={t`General`}>
+                                    <Tab
+                                        label={t`General`}
+                                        data-testid={"cms.editor.field.tabs.general"}
+                                    >
                                         <GeneralTab
                                             form={form}
                                             field={form.data as CmsEditorField}
@@ -166,7 +169,10 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
                                     </Tab>
 
                                     {form.data.multipleValues && (
-                                        <Tab label={"Validators"}>
+                                        <Tab
+                                            label={"Validators"}
+                                            data-testid={"cms.editor.field.tabs.validators"}
+                                        >
                                             <Grid>
                                                 <Cell span={12}>
                                                     <Typography use={"headline5"}>
@@ -222,7 +228,10 @@ const EditFieldDialog = ({ field, onSubmit, ...props }: EditFieldDialogProps) =>
                                     {!form.data.multipleValues &&
                                         Array.isArray(fieldPlugin.field.validators) &&
                                         fieldPlugin.field.validators.length > 0 && (
-                                            <Tab label={"Validators"}>
+                                            <Tab
+                                                label={"Validators"}
+                                                data-testid={"cms.editor.field.tabs.validators"}
+                                            >
                                                 <ValidatorsTab
                                                     field={current}
                                                     form={form}

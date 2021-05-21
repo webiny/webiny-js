@@ -68,10 +68,10 @@ export default function EditorContent() {
                 </LeftPanel>
                 <RightPanel span={8}>
                     <Tabs className={formTabs} ref={tabsRef} onActivate={e => setActiveTabIndex(e)}>
-                        <Tab label={"Edit"}>
+                        <Tab label={"Edit"} data-testid={"cms.editor.tab.edit"}>
                             <EditTab activeTab={activeTabIndex === 0} />
                         </Tab>
-                        <Tab label={"Preview"}>
+                        <Tab label={"Preview"} data-testid={"cms.editor.tab.preview"}>
                             <PreviewTab activeTab={activeTabIndex === 1} />
                         </Tab>
                     </Tabs>

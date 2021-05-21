@@ -76,7 +76,7 @@ const Field = props => {
 
     const lockedFields = data.lockedFields || [];
     return (
-        <FieldContainer>
+        <FieldContainer data-testid={`cms.editor.field-row`}>
             <Info>
                 <Typography use={"subtitle1"}>{field.label}</Typography>
                 <Typography use={"caption"}>
@@ -86,7 +86,11 @@ const Field = props => {
                 </Typography>
             </Info>
             <Actions>
-                <IconButton icon={<EditIcon />} onClick={() => onEdit(field)} />
+                <IconButton
+                    icon={<EditIcon />}
+                    onClick={() => onEdit(field)}
+                    data-testid={"cms.editor.edit-field"}
+                />
                 <Menu className={menuStyles} handle={<IconButton icon={<MoreVerticalIcon />} />}>
                     {editorFieldOptionPlugins.map(pl =>
                         React.cloneElement(pl.render(), { key: pl.name })

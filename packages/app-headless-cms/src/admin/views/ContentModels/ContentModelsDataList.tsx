@@ -63,7 +63,9 @@ const ContentModelsDataList = ({ canCreate, onCreate }: ContentModelsDataListPro
     const { history } = useRouter();
     const client = useApolloClient();
     const { showSnackbar } = useSnackbar();
-    const { showConfirmation } = useConfirmationDialog();
+    const { showConfirmation } = useConfirmationDialog({
+        dataTestId: "cms-delete-content-model-dialog"
+    });
     const { data, loading } = useQuery(GQL.LIST_CONTENT_MODELS);
     const { canDelete, canEdit } = usePermission();
 
@@ -226,6 +228,7 @@ const ContentModelsDataList = ({ canCreate, onCreate }: ContentModelsDataListPro
                                             >
                                                 <DeleteIcon
                                                     onClick={() => deleteRecord(contentModel)}
+                                                    data-testid={"cms-delete-content-model-button"}
                                                 />
                                             </Tooltip>
                                         )}
