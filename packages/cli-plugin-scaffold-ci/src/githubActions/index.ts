@@ -423,9 +423,9 @@ const plugin: CliPluginsScaffoldCi<Input> = {
 
         if (generateErrorsCount) {
             console.log(
-                `${chalk.yellow(
-                    "✔"
-                )} CI/CD partially set up (total errors: ${chalk.yellow(generateErrorsCount)}).`
+                `${chalk.yellow("✔")} CI/CD partially set up (total errors: ${chalk.yellow(
+                    generateErrorsCount
+                )}).`
             );
         } else {
             console.log(`${chalk.green("✔")} CI/CD pipeline successfully set up.`);
