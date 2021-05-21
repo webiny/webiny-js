@@ -149,6 +149,7 @@ type FileDetailsProps = {
 };
 export default function FileDetails(props: FileDetailsProps) {
     const { file, uploadFile, validateFiles } = props;
+    const isImage = file.name.match(/.(jpg|jpeg|png|gif)$/i)
     const filePlugin = getFileTypePlugin(file);
     const actions = get(filePlugin, "fileDetails.actions") || [];
 
@@ -264,7 +265,7 @@ export default function FileDetails(props: FileDetailsProps) {
             >
                 {({ showConfirmation }) => {
                     return (
-                        <Tooltip content={<span>{t`Delete image`}</span>} placement={"bottom"}>
+                        <Tooltip content={isImage ? <span>{t`Delete image`}</span> : <span>{t`Delete file`}</span>} placement={"bottom"}>
                             <IconButton
                                 data-testid={"fm-delete-file-button"}
                                 icon={<DeleteIcon style={{ margin: "0 8px 0 0" }} />}
