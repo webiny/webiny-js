@@ -359,6 +359,13 @@ Thanks goes to these wonderful people:
                         <sub><b>Darsh Shah</b></sub>
                     </a>
                     <br />
+                </td><td align="center">
+                    <a href="https://github.com/ankurvr">
+                        <img src="https://avatars.githubusercontent.com/u/3338156?v=4" width="100px;" alt="Ankur Raiyani"/>
+                        <br />
+                        <sub><b>Ankur Raiyani</b></sub>
+                    </a>
+                    <br />
                 </td></tr>
 </table>
 <!-- markdownlint-enable -->
