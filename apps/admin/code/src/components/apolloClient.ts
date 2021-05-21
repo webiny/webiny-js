@@ -5,7 +5,8 @@ import { InMemoryCache } from "apollo-cache-inmemory";
 import {
     createOmitTypenameLink,
     createSetContextLink,
-    createConsoleLink
+    createConsoleLink,
+    createNetworkErrorLink
 } from "@webiny/app/graphql";
 import { plugins } from "@webiny/plugins";
 import { CacheGetObjectIdPlugin } from "@webiny/app/types";
@@ -13,6 +14,10 @@ import { CacheGetObjectIdPlugin } from "@webiny/app/types";
 export const createApolloClient = ({ uri }) => {
     return new ApolloClient({
         link: ApolloLink.from([
+            /**
+             * This link checks for `NetworkError`, and show a ErrorOverlay in the browser.
+             */
+            createNetworkErrorLink(),
             /**
              * This link checks for `extensions.console` in the response, and logs it to browser console.
              */
