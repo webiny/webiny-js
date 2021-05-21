@@ -3,7 +3,7 @@
   "include": ["src"],
   "references": [
     {
-      "path": "../error"
+      "path": "../plugins"
     },
     {
       "path": "../cli-plugin-scaffold"
@@ -11,8 +11,8 @@
   ],
   "compilerOptions": {
     "paths": {
-      "@webiny/error/*": ["../error/src/*"],
-      "@webiny/error": ["../error/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"],
       "@webiny/cli-plugin-scaffold/*": ["../cli-plugin-scaffold/src/*"],
       "@webiny/cli-plugin-scaffold": ["../cli-plugin-scaffold/src"]
     },
