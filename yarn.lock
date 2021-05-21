@@ -8434,6 +8434,7 @@ __metadata:
     "@babel/preset-react": ^7.0.0
     "@babel/preset-typescript": ^7.8.3
     "@babel/runtime": ^7.5.5
+    "@emotion/styled": ^10.0.17
     "@types/react": ^16.9.56
     "@webiny/cli": ^5.6.0
     "@webiny/i18n": ^5.6.0
@@ -8446,8 +8447,10 @@ __metadata:
     apollo-client: ^2.6.8
     apollo-link: ^1.2.14
     apollo-link-context: ^1.0.20
+    apollo-link-error: ^1.1.13
     apollo-utilities: ^1.3.4
     babel-plugin-lodash: ^3.3.4
+    boolean: ^3.0.1
     graphql: ^14.5.8
     invariant: ^2.2.4
     lodash: ^4.17.4
@@ -8872,6 +8875,7 @@ __metadata:
     "@webiny/cli": ^5.6.0
     "@webiny/handler": ^5.6.0
     "@webiny/project-utils": ^5.6.0
+    boolean: ^3.0.1
     merge: ^1.2.1
     rimraf: ^3.0.2
     typescript: ^4.1.3
@@ -10232,6 +10236,17 @@ __metadata:
     apollo-link: ^1.2.14
     tslib: ^1.9.3
   checksum: bb26853689c4fff4205695d6067b6eb170152f2f96e3e42d2583e4656141db6c472c0df9c57fd61279ccbf93de6a74a34111848a73ba7457da4bf499f0dd94e1
+  languageName: node
+  linkType: hard
+
+"apollo-link-error@npm:^1.1.13":
+  version: 1.1.13
+  resolution: "apollo-link-error@npm:1.1.13"
+  dependencies:
+    apollo-link: ^1.2.14
+    apollo-link-http-common: ^0.2.16
+    tslib: ^1.9.3
+  checksum: 351c1eb4c70b2356f549bc65dd0c3d63a173b881197f107bb4ecac3a414d3e0b4918a07f68f246d02d0319618e0ccc896ee17fa050bff9aa636bd8ed4a9381f4
   languageName: node
   linkType: hard
 
