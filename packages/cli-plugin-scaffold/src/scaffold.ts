@@ -33,29 +33,39 @@ export const scaffold = async (args: ScaffoldArgs) => {
     const { selectedPluginName } = await inquirer.prompt({
         type: "list",
         name: "selectedPluginName",
-        message: "Pick a template to scaffold",
+        message: "Choose a scaffold:",
         choices
     });
 
     const { scaffold } = context.plugins.byName<CliCommandScaffoldTemplate>(selectedPluginName);
-    const questions = scaffold.questions;
 
-    const inqQuestions = typeof questions === "function" ? questions({ context }) : questions;
+    const questions =
+        typeof scaffold.questions === "function"
+            ? scaffold.questions({ context })
+            : scaffold.questions;
 
-    const input = await inquirer.prompt(inqQuestions);
-    const oraSpinner = ora().start(`Generating template...\n`);
+    const input = await inquirer.prompt(questions);
+    const oraInstance = ora();
+
+    const callbackArgs = { input, context, wait, ora: oraInstance, inquirer };
 
     try {
-        await scaffold.generate({ input, context, wait, oraSpinner });
-        oraSpinner.succeed("Done!");
+        if (typeof scaffold.onGenerate === "function") {
+            await scaffold.onGenerate(callbackArgs);
+        }
+
+        console.log("Scaffolding...");
+        await scaffold.generate(callbackArgs);
 
         if (typeof scaffold.onSuccess === "function") {
-            await scaffold.onSuccess({ input, context, wait, oraSpinner });
+            await scaffold.onSuccess(callbackArgs);
         }
+
+        oraInstance.succeed("Done!");
     } catch (e) {
-        oraSpinner.stop();
+        oraInstance.stop();
         if (typeof scaffold.onError === "function") {
-            await scaffold.onError({ input, context, wait, oraSpinner, error: e });
+            await scaffold.onError({ ...callbackArgs, error: e });
         } else {
             console.log(e);
         }
