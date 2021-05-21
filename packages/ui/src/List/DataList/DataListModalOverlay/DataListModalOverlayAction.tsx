@@ -4,10 +4,17 @@ import { DataListModalOverlayContext } from "./DataListModalOverlayContext";
 
 export type DataListModalOverlayActionProps = {
     icon: React.ReactNode;
+    "data-testid"?: string;
 };
 
-export const DataListModalOverlayAction = ({ icon }: DataListModalOverlayActionProps) => {
+export const DataListModalOverlayAction = ({ icon, ...rest }: DataListModalOverlayActionProps) => {
     const { isOpen, setIsOpen } = useContext(DataListModalOverlayContext);
 
-    return <IconButton icon={icon} onClick={() => setIsOpen(!isOpen)} />;
+    return (
+        <IconButton
+            data-testid={rest["data-testid"]}
+            icon={icon}
+            onClick={() => setIsOpen(!isOpen)}
+        />
+    );
 };

@@ -45,7 +45,7 @@ export type SearchProps = {
 };
 const Search = ({ value, onChange, inputPlaceholder = "Search..." }: SearchProps) => {
     return (
-        <SearchWrapper>
+        <SearchWrapper data-testid={"default-data-list.search"}>
             <div className="search__icon">
                 <SearchIcon />
             </div>

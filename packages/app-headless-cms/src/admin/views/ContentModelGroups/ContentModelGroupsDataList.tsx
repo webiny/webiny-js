@@ -185,7 +185,12 @@ const ContentModelGroupsDataList = ({ canCreate }: ContentModelGroupsDataListPro
                 />
             }
             modalOverlay={contentModelGroupsDataListModalOverlay}
-            modalOverlayAction={<DataListModalOverlayAction icon={<FilterIcon />} />}
+            modalOverlayAction={
+                <DataListModalOverlayAction
+                    icon={<FilterIcon />}
+                    data-testid={"default-data-list.filter"}
+                />
+            }
         >
             {({ data }) => (
                 <List data-testid="default-data-list">
