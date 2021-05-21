@@ -22,6 +22,17 @@ export const createApolloClient = ({ uri }) => {
              */
             createOmitTypenameLink(),
             /**
+             * Intercept operations
+             */
+            new ApolloLink((operation, forward) => {
+                plugins.byType("apollo-link-operation").forEach(pl => {
+                    if (pl.operationName === operation.operationName) {
+                        pl.operation(operation);
+                    }
+                });
+                return forward(operation);
+            }),
+            /**
              * This allows you to register links using plugins.
              */
             ...plugins.byType("apollo-link").map(pl => pl.createLink()),

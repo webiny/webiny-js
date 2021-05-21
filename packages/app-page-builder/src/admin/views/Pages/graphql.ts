@@ -1,6 +1,4 @@
 import gql from "graphql-tag";
-import { plugins } from "@webiny/plugins";
-import { PbEditorPageQueryFieldsPlugin } from "~/types";
 
 const ERROR_FIELD = /* GraphQL */ `
     {
@@ -10,8 +8,7 @@ const ERROR_FIELD = /* GraphQL */ `
     }
 `;
 
-const DATA_FIELD = () => {
-    return /* GraphQL */ `
+const DATA_FIELD = `
     {
         id
         pid
@@ -38,30 +35,25 @@ const DATA_FIELD = () => {
         }
         content
         savedOn
-        ${plugins
-            .byType<PbEditorPageQueryFieldsPlugin>("pb-editor-page-query-fields")
-            .map(pl => pl.fields)
-            .join("\n")}
     }
 `;
-};
 
-export const CREATE_PAGE_FROM = () => gql`
+export const CREATE_PAGE_FROM = gql`
     mutation CreatePageFrom($from: ID) {
         pageBuilder {
             createPage(from: $from) {
-                data ${DATA_FIELD()}
+                data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }
         }
     }
 `;
 
-export const GET_PAGE = () => gql`
+export const GET_PAGE = gql`
     query GetPage($id: ID!) {
         pageBuilder {
             getPage(id: $id) {
-                data ${DATA_FIELD()}
+                data ${DATA_FIELD}
                 error ${ERROR_FIELD}
             }
         }
