@@ -2,49 +2,17 @@ import ApolloClient from "apollo-client";
 import { ApolloLink } from "apollo-link";
 import { BatchHttpLink } from "apollo-link-batch-http";
 import { InMemoryCache } from "apollo-cache-inmemory";
-import {
-    createOmitTypenameLink,
-    createSetContextLink,
-    createConsoleLink,
-    createNetworkErrorLink
-} from "@webiny/app/graphql";
 import { plugins } from "@webiny/plugins";
+import { ApolloDynamicLink } from "@webiny/app/plugins/ApolloDynamicLink";
 import { CacheGetObjectIdPlugin } from "@webiny/app/types";
 
 export const createApolloClient = ({ uri }) => {
     return new ApolloClient({
         link: ApolloLink.from([
             /**
-             * This link checks for `NetworkError`, and show a ErrorOverlay in the browser.
+             * This will process links from plugins on every request
              */
-            createNetworkErrorLink(),
-            /**
-             * This link checks for `extensions.console` in the response, and logs it to browser console.
-             */
-            createConsoleLink(),
-            /**
-             * This link removes `__typename` from the variables being sent to the API.
-             */
-            createOmitTypenameLink(),
-            /**
-             * Intercept operations
-             */
-            new ApolloLink((operation, forward) => {
-                plugins.byType("apollo-link-operation").forEach(pl => {
-                    if (pl.operationName === operation.operationName) {
-                        pl.operation(operation);
-                    }
-                });
-                return forward(operation);
-            }),
-            /**
-             * This allows you to register links using plugins.
-             */
-            ...plugins.byType("apollo-link").map(pl => pl.createLink()),
-            /**
-             * This allows you to modify request context using "apollo-link-context" plugin.
-             */
-            createSetContextLink(),
+            new ApolloDynamicLink(),
             /**
              * This batches requests made to the API to pack multiple requests into a single HTTP request.
              */
