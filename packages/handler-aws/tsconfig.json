@@ -12,6 +12,9 @@
     },
     {
       "path": "../handler-http"
+    },
+    {
+      "path": "../plugins"
     }
   ],
   "compilerOptions": {
@@ -23,7 +26,8 @@
       "@webiny/handler-client/*": ["../handler-client/src/*"],
       "@webiny/handler-client": ["../handler-client/src"],
       "@webiny/handler-http/*": ["../handler-http/src/*"],
-      "@webiny/handler-http": ["../handler-http/src"]
+      "@webiny/handler-http": ["../handler-http/src"],
+      "@webiny/plugins": ["../plugins/src"]
     },
     "baseUrl": "."
   }

@@ -6,7 +6,8 @@
     "../handler",
     "../handler-client",
     "../handler-http",
-    "../handler-args"
+    "../handler-args",
+    "../plugins"
   ],
   "compilerOptions": {
     "rootDir": "./src",
