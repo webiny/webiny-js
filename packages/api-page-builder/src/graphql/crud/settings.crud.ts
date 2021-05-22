@@ -1,13 +1,7 @@
 import { ContextPlugin } from "@webiny/handler/types";
 import defaults from "./utils/defaults";
 import getPKPrefix from "./utils/getPKPrefix";
-import {
-    PbContext,
-    DefaultSettings,
-    PbSettingsPlugin,
-    PbSettingsBeforeUpdateParams,
-    PbSettingsAfterUpdateParams
-} from "../../types";
+import { PbContext, DefaultSettings, PbSettingsPlugin } from "../../types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import DataLoader from "dataloader";
 import executeHookCallbacks from "./utils/executeHookCallbacks";
