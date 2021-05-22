@@ -52,6 +52,6 @@ export const handler = createHandler({
         headlessCmsPlugins()
     ],
     http: {
-        debug: process.env.DEBUG
+        debug: process.env.DEBUG === "true"
     }
 });

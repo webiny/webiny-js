@@ -53,5 +53,12 @@
     {
       "path": "../../../packages/handler-logs"
     }
-  ]
+  ],
+  "compilerOptions": {
+    "paths": {
+      "@webiny/handler-aws/*": ["../../../packages/handler-aws/src/*"],
+      "@webiny/handler-aws": ["../../../packages/handler-aws/src"],
+    },
+    "baseUrl": "."
+  }
 }
