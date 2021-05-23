@@ -10,7 +10,7 @@ const DEFAULT_HEADERS = {
     "Access-Control-Allow-Methods": "OPTIONS,POST"
 };
 
-export default (options: HandlerHttpOptions) => [
+export default (options: HandlerHttpOptions = {}) => [
     {
         type: "context",
         apply(context) {
@@ -51,7 +51,7 @@ export default (options: HandlerHttpOptions) => [
             if (!context.http || typeof context.http.response !== "function") {
                 return error;
             }
-            const debug = boolean(options && options.debug);
+            const debug = boolean(options.debug);
 
             if (debug) {
                 return context.http.response({

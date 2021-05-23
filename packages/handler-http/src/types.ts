@@ -26,5 +26,5 @@ export type HttpContext = {
 };
 
 export type HandlerHttpOptions = {
-    debug: boolean;
+    debug?: boolean;
 };

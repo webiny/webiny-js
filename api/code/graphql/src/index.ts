@@ -17,10 +17,12 @@ import formBuilderPlugins from "@webiny/api-form-builder/plugins";
 import securityPlugins from "./security";
 import headlessCmsPlugins from "@webiny/api-headless-cms/plugins";
 
+const debug = process.env.DEBUG === "true";
+
 export const handler = createHandler({
     plugins: [
         logsPlugins(),
-        graphqlPlugins({ debug: process.env.DEBUG }),
+        graphqlPlugins({ debug }),
         elasticSearch({ endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}` }),
         dbPlugins({
             table: process.env.DB_TABLE,
@@ -51,7 +53,5 @@ export const handler = createHandler({
         formBuilderPlugins(),
         headlessCmsPlugins()
     ],
-    http: {
-        debug: process.env.DEBUG === "true"
-    }
+    http: { debug }
 });

@@ -9,20 +9,25 @@ import headlessCmsPlugins from "@webiny/api-headless-cms/content";
 import securityPlugins from "./security";
 import logsPlugins from "@webiny/handler-logs";
 
-export const handler = createHandler(
-    logsPlugins(),
-    elasticSearch({ endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}` }),
-    dbPlugins({
-        table: process.env.DB_TABLE,
-        driver: new DynamoDbDriver({
-            documentClient: new DocumentClient({
-                convertEmptyValues: true,
-                region: process.env.AWS_REGION
+const debug = process.env.DEBUG === "true";
+
+export const handler = createHandler({
+    plugins: [
+        logsPlugins(),
+        elasticSearch({ endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}` }),
+        dbPlugins({
+            table: process.env.DB_TABLE,
+            driver: new DynamoDbDriver({
+                documentClient: new DocumentClient({
+                    convertEmptyValues: true,
+                    region: process.env.AWS_REGION
+                })
             })
-        })
-    }),
-    securityPlugins(),
-    i18nPlugins(),
-    i18nContentPlugins(),
-    headlessCmsPlugins({ debug: Boolean(process.env.DEBUG) })
-);
+        }),
+        securityPlugins(),
+        i18nPlugins(),
+        i18nContentPlugins(),
+        headlessCmsPlugins({ debug })
+    ],
+    http: { debug }
+});
