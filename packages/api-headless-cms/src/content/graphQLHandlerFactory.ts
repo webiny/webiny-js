@@ -4,7 +4,6 @@ import { makeExecutableSchema } from "@graphql-tools/schema";
 import { CmsContext } from "../types";
 import { I18NLocale } from "@webiny/api-i18n/types";
 import { NotAuthorizedError, NotAuthorizedResponse } from "@webiny/api-security";
-import { ErrorResponse } from "@webiny/handler-graphql";
 import { PluginCollection } from "@webiny/plugins/types";
 import debugPlugins from "@webiny/handler-graphql/debugPlugins";
 import processRequestBody from "@webiny/handler-graphql/processRequestBody";
@@ -143,49 +142,16 @@ export const graphQLHandlerFactory = (
                     return respond(http, new NotAuthorizedResponse(ex));
                 }
 
-                try {
-                    const schema = await getSchema({
-                        context,
-                        locale: context.cms.getLocale(),
-                        type: context.cms.type
-                    });
+                const schema = await getSchema({
+                    context,
+                    locale: context.cms.getLocale(),
+                    type: context.cms.type
+                });
 
-                    const body: ParsedBody | ParsedBody[] = JSON.parse(http.request.body);
+                const body: ParsedBody | ParsedBody[] = JSON.parse(http.request.body);
 
-                    const result = await processRequestBody(body, schema, context);
-                    return respond(http, result);
-                } catch (ex) {
-                    const report = {
-                        error: {
-                            name: ex.constructor.name,
-                            message: ex.message,
-                            data: ex.data || {},
-                            stack: ex.stack
-                        }
-                    };
-                    const body = JSON.stringify(report);
-                    console.log("[@webiny/api-headless-cms] An error occurred: ", body);
-
-                    if (boolean(options.debug)) {
-                        return context.http.response({
-                            statusCode: 500,
-                            body,
-                            headers: {
-                                ...DEFAULT_HEADERS,
-                                "Cache-Control": "no-store"
-                            }
-                        });
-                    }
-
-                    return respond(
-                        http,
-                        new ErrorResponse({
-                            message: ex.message,
-                            code: ex.code || "GENERAL_ERROR",
-                            data: ex.data || {}
-                        })
-                    );
-                }
+                const result = await processRequestBody(body, schema, context);
+                return respond(http, result);
             }
         }
     ];
