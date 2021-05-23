@@ -13,15 +13,9 @@ import merge from "lodash/merge";
 import getPKPrefix from "./utils/getPKPrefix";
 import DataLoader from "dataloader";
 
-import {
-    PbElasticsearchSearchLatestPagesPlugin,
-    PbElasticsearchSearchPublishedPagesPlugin,
-    Page,
-    PbPagePlugin,
-    PageSecurityPermission,
-    PbContext,
-    TYPE
-} from "../../types";
+import { Page, PbPagePlugin, PageSecurityPermission, PbContext, TYPE } from "../../types";
+import { SearchPublishedPagesPlugin } from "~/plugins/SearchPublishedPagesPlugin";
+import { SearchLatestPagesPlugin } from "~/plugins/SearchLatestPagesPlugin";
 import createListMeta from "./utils/createListMeta";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
@@ -245,20 +239,16 @@ const plugin: ContextPlugin<PbContext> = {
                         });
                     }
 
-                    const listLatestPlugins = context.plugins.byType<
-                        PbElasticsearchSearchLatestPagesPlugin
-                    >("pb.elasticsearch.search-latest-pages");
+                    const listLatestPlugins = context.plugins.byType<SearchLatestPagesPlugin>(
+                        SearchLatestPagesPlugin.type
+                    );
 
                     for (const plugin of listLatestPlugins) {
                         // Apply query modifications
-                        if (typeof plugin.modifyQuery === "function") {
-                            plugin.modifyQuery({ query, args, context });
-                        }
+                        plugin.modifyQuery({ query, args, context });
 
                         // Apply sort modifications
-                        if (typeof plugin.modifySort === "function") {
-                            plugin.modifySort({ sort, args, context });
-                        }
+                        plugin.modifySort({ sort, args, context });
                     }
 
                     const response = await elasticSearch.search({
@@ -298,20 +288,16 @@ const plugin: ContextPlugin<PbContext> = {
                         { term: { published: true } }
                     );
 
-                    const listPublishedPlugins = context.plugins.byType<
-                        PbElasticsearchSearchPublishedPagesPlugin
-                    >("pb.elasticsearch.search-published-pages");
+                    const listPublishedPlugins = context.plugins.byType<SearchPublishedPagesPlugin>(
+                        SearchPublishedPagesPlugin.type
+                    );
 
                     for (const plugin of listPublishedPlugins) {
                         // Apply query modifications
-                        if (typeof plugin.modifyQuery === "function") {
-                            plugin.modifyQuery({ query, args, context });
-                        }
+                        plugin.modifyQuery({ query, args, context });
 
                         // Apply sort modifications
-                        if (typeof plugin.modifySort === "function") {
-                            plugin.modifySort({ sort, args, context });
-                        }
+                        plugin.modifySort({ sort, args, context });
                     }
 
                     const response = await elasticSearch.search({

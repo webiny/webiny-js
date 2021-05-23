@@ -1,5 +1,5 @@
-import { PbContext, PbElasticsearchPageDataPlugin } from "../../types";
-import { Page } from "../../../types";
+import { Page, PbContext } from "~/types";
+import { IndexPageDataPlugin } from "~/plugins/IndexPageDataPlugin";
 
 export const getESPageData = (context: PbContext, page) => {
     return {
@@ -45,9 +45,8 @@ export const getESPublishedPageData = (context: PbContext, page: Page) => {
 };
 
 const modifyData = (data: Record<string, any>, page: Page, context: PbContext) => {
-    const pagePlugins = context.plugins.byType<PbElasticsearchPageDataPlugin>(
-        "pb.elasticsearch.page-data"
-    );
+    const pagePlugins = context.plugins.byType<IndexPageDataPlugin>(IndexPageDataPlugin.type);
+
     for (const plugin of pagePlugins) {
         plugin.apply({ context, page, data });
     }
