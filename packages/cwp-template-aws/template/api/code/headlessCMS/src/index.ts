@@ -9,6 +9,8 @@ import headlessCmsPlugins from "@webiny/api-headless-cms/content";
 import securityPlugins from "./security";
 import logsPlugins from "@webiny/handler-logs";
 
+const debug = process.env.DEBUG === "true";
+
 export const handler = createHandler({
     plugins: [
         logsPlugins(),
@@ -25,9 +27,7 @@ export const handler = createHandler({
         securityPlugins(),
         i18nPlugins(),
         i18nContentPlugins(),
-        headlessCmsPlugins({ debug: Boolean(process.env.DEBUG) })
+        headlessCmsPlugins({ debug })
     ],
-    http: {
-        debug: process.env.DEBUG
-    }
+    http: { debug }
 });
