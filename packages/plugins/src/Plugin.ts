@@ -1,6 +1,12 @@
 export abstract class Plugin {
+    public static readonly type: string;
     private _name: string;
-    private _type: string;
+
+    constructor() {
+        if (!this.type) {
+            throw Error(`Missing "type" definition in "${this.constructor.name}"!`);
+        }
+    }
 
     get name() {
         return this._name;
@@ -11,12 +17,6 @@ export abstract class Plugin {
     }
 
     get type() {
-        return this._type;
-    }
-
-    set type(value) {
-        if (!this._type) {
-            this._type = value;
-        }
+        return (this.constructor as typeof Plugin).type;
     }
 }
