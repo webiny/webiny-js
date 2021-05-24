@@ -148,18 +148,19 @@ type FileDetailsProps = {
     };
     [key: string]: any;
 };
+
+const isImage = file => {
+    const fileType = mime.getType(file && file.name);
+
+    if (fileType && typeof fileType === "string") {
+        return fileType.includes("image");
+    }
+
+    return false;
+};
+
 export default function FileDetails(props: FileDetailsProps) {
     const { file, uploadFile, validateFiles } = props;
-
-    const isImage = file => {
-        const fileType = mime.getType(file && file.name);
-
-        if (fileType && typeof fileType === "string") {
-            return fileType.includes("image");
-        }
-
-        return false;
-    };
 
     const filePlugin = getFileTypePlugin(file);
     const actions = get(filePlugin, "fileDetails.actions") || [];
