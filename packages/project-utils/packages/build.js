@@ -54,8 +54,11 @@ const defaults = {
         );
     },
     postbuild: () => {
+        // Check if `ttypescript` is defined as a devDependency and use that instead of `typescript`.
+        const pkg = require(join(process.cwd(), "package.json"));
         log.info("Generating TypeScript types...");
-        execa.sync("yarn", ["tsc", "-p", "tsconfig.build.json"], { stdio: "inherit" });
+        const binary = "ttypescript" in (pkg.devDependencies || {}) ? "ttsc" : "tsc";
+        execa.sync("yarn", [binary, "-p", "tsconfig.build.json"], { stdio: "inherit" });
 
         log.info("Copying meta files...");
         copyToDist("package.json");

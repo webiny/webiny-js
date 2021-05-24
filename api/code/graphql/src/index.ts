@@ -18,10 +18,12 @@ import securityPlugins from "./security";
 import headlessCmsPlugins from "@webiny/api-headless-cms/plugins";
 import cmsDynamoDbElasticsearch from "@webiny/api-headless-cms-ddb-es";
 
+const debug = process.env.DEBUG === "true";
+
 export const handler = createHandler({
     plugins: [
         logsPlugins(),
-        graphqlPlugins({ debug: process.env.DEBUG }),
+        graphqlPlugins({ debug }),
         elasticSearch({ endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}` }),
         dbPlugins({
             table: process.env.DB_TABLE,
@@ -53,7 +55,5 @@ export const handler = createHandler({
         headlessCmsPlugins(),
         cmsDynamoDbElasticsearch()
     ],
-    http: {
-        debug: process.env.DEBUG
-    }
+    http: { debug }
 });

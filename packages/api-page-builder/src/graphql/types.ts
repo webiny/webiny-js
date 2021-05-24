@@ -191,81 +191,129 @@ export interface PageSecurityPermission extends PbSecurityPermission {
     pw: string;
 }
 
-// Hook plugins.
-export type HookCallbackFunction<A1 = any, A2 = any, A3 = any> = (
-    context: PbContext,
-    arg1: A1,
-    arg2: A2,
-    arg3: A3
-) => void | Promise<void>;
+// Plugin types
+export type CallbackFunction<T> = (args: T) => void | Promise<void>;
 
-export type PageHookPlugin = Plugin<{
-    type: "pb-page-hook";
-    beforeCreate?: HookCallbackFunction<Page>;
-    afterCreate?: HookCallbackFunction<Page>;
-    beforeUpdate?: HookCallbackFunction<Page>;
-    afterUpdate?: HookCallbackFunction<Page>;
-    beforeDelete?: HookCallbackFunction<{
-        page: Page;
-        latestPage: Page;
-        publishedPage?: Page;
-    }>;
-    afterDelete?: HookCallbackFunction<{
-        page: Page;
-        latestPage: Page;
-        publishedPage?: Page;
-    }>;
-    beforePublish?: HookCallbackFunction<{
-        page: Page;
-        latestPage: Page;
-        publishedPage?: Page;
-    }>;
-    afterPublish?: HookCallbackFunction<{
-        page: Page;
-        latestPage: Page;
-        publishedPage?: Page;
-    }>;
-    beforeUnpublish?: HookCallbackFunction<Page>;
-    afterUnpublish?: HookCallbackFunction<Page>;
-}>;
+export interface PageUpdateInput {
+    // TODO: add fields from GraphQL
+    [key: string]: any;
+}
 
-export type MenuHookPlugin = Plugin<{
-    type: "pb-menu-hook";
-    beforeCreate?: HookCallbackFunction<Menu>;
-    afterCreate?: HookCallbackFunction<Menu>;
-    beforeUpdate?: HookCallbackFunction<Menu>;
-    afterUpdate?: HookCallbackFunction<Menu>;
-    beforeDelete?: HookCallbackFunction<Menu>;
-    afterDelete?: HookCallbackFunction<Menu>;
+export interface PageCreateParams {
+    context: PbContext;
+    page: Page;
+}
+
+export interface PageBeforeUpdateParams {
+    context: PbContext;
+    existingPage: Page;
+    inputData: PageUpdateInput;
+    updateData: Partial<Page>;
+}
+
+export interface PageAfterUpdateParams {
+    context: PbContext;
+    page: Page;
+    inputData: PageUpdateInput;
+}
+
+export interface PageDeleteParams {
+    context: PbContext;
+    page: Page;
+    // TODO: @doitadrian - we need to get rid of these two parameters below as they're very DDB specific
+    latestPage: Page;
+    publishedPage?: Page;
+}
+
+export interface PagePublishParams {
+    context: PbContext;
+    page: Page;
+    // TODO: @doitadrian - we need to get rid of these two parameters below as they're very DDB specific
+    latestPage: Page;
+    publishedPage?: Page;
+}
+
+export interface PageUnpublishParams {
+    context: PbContext;
+    page: Page;
+}
+
+export interface PageNotFoundParams {
+    context: PbContext;
+    args: Record<string, any>;
+}
+
+export interface PbPagePlugin extends Plugin {
+    type: "pb-page";
+    beforeCreate?: CallbackFunction<PageCreateParams>;
+    afterCreate?: CallbackFunction<PageCreateParams>;
+    beforeUpdate?: CallbackFunction<PageBeforeUpdateParams>;
+    afterUpdate?: CallbackFunction<PageAfterUpdateParams>;
+    beforeDelete?: CallbackFunction<PageDeleteParams>;
+    afterDelete?: CallbackFunction<PageDeleteParams>;
+    beforePublish?: CallbackFunction<PagePublishParams>;
+    afterPublish?: CallbackFunction<PagePublishParams>;
+    beforeUnpublish?: CallbackFunction<PageUnpublishParams>;
+    afterUnpublish?: CallbackFunction<PageUnpublishParams>;
+    notFound?: (args: PageNotFoundParams) => Promise<Page | undefined>;
+}
+
+export interface MenuHookParams {
+    context: PbContext;
+    menu: Menu;
+}
+
+export type PbMenuPlugin = Plugin<{
+    type: "pb-menu";
+    beforeCreate?: CallbackFunction<MenuHookParams>;
+    afterCreate?: CallbackFunction<MenuHookParams>;
+    beforeUpdate?: CallbackFunction<MenuHookParams>;
+    afterUpdate?: CallbackFunction<MenuHookParams>;
+    beforeDelete?: CallbackFunction<MenuHookParams>;
+    afterDelete?: CallbackFunction<MenuHookParams>;
 }>;
 
 type SettingsHookPluginPreviousSettings = DefaultSettings;
 type SettingsHookPluginNextSettings = DefaultSettings;
 
-export type SettingsHookPlugin = Plugin<{
-    type: "pb-settings-hook";
-    beforeUpdate?: HookCallbackFunction<
-        SettingsHookPluginPreviousSettings,
-        SettingsHookPluginNextSettings,
-        {
-            diff: {
-                pages: Array<[PageSpecialType, string, string, Page]>;
-            };
-        }
-    >;
-    afterUpdate?: HookCallbackFunction<
-        SettingsHookPluginPreviousSettings,
-        SettingsHookPluginNextSettings,
-        {
-            diff: {
-                pages: Array<[PageSpecialType, string, string, Page]>;
-            };
-        }
-    >;
+export interface PbSettingsBeforeUpdateParams {
+    context: PbContext;
+    previousSettings: SettingsHookPluginPreviousSettings;
+    nextSettings: SettingsHookPluginNextSettings;
+    meta: {
+        diff: {
+            pages: Array<[PageSpecialType, string, string, Page]>;
+        };
+    };
+}
+
+export interface PbSettingsAfterUpdateParams {
+    context: PbContext;
+    previousSettings: SettingsHookPluginPreviousSettings;
+    nextSettings: SettingsHookPluginNextSettings;
+    meta: {
+        diff: {
+            pages: Array<[PageSpecialType, string, string, Page]>;
+        };
+    };
+}
+
+export type PbSettingsPlugin = Plugin<{
+    type: "pb-settings";
+    beforeUpdate?: CallbackFunction<PbSettingsBeforeUpdateParams>;
+    afterUpdate?: CallbackFunction<PbSettingsAfterUpdateParams>;
 }>;
 
-export type InstallHookPlugin = Plugin<{
-    name: "pb-install-hook";
-    beforeInstall: (context: PbContext) => void;
-    afterInstall: (context: PbContext) => void;
+export interface PbInstallBeforeInstallParams {
+    context: PbContext;
+}
+
+export interface PbInstallAfterInstallParams {
+    context: PbContext;
+}
+
+export type PbInstallPlugin = Plugin<{
+    type: "pb-install";
+    beforeInstall: CallbackFunction<PbInstallBeforeInstallParams>;
+    afterInstall: CallbackFunction<PbInstallAfterInstallParams>;
 }>;

@@ -1,12 +1,12 @@
-import { MenuHookPlugin, PageHookPlugin, SettingsHookPlugin } from "../types";
+import { PbMenuPlugin, PbPagePlugin, PbSettingsPlugin } from "../types";
 
 const NOT_FOUND_FOLDER = "_NOT_FOUND_PAGE_";
 
 export default [
     {
         // After a page was unpublished, we need to flush the page.
-        type: "pb-page-hook",
-        async afterUnpublish(context, page) {
+        type: "pb-page",
+        async afterUnpublish({ context, page }) {
             const promises = [];
             promises.push(
                 context.pageBuilder.pages.prerendering.flush({ paths: [{ path: page.path }] })
@@ -22,12 +22,9 @@ export default [
             // Note: special pages (404 / home) cannot be unpublished, that's why
             // there is no special handling in regards to that here.
             await Promise.all(promises);
-        }
-    } as PageHookPlugin,
-    {
+        },
         // After we deleted a page, we need to clear prerender files / cache as well, if the page was published.
-        type: "pb-page-hook",
-        async afterDelete(context, { page, publishedPage }) {
+        async afterDelete({ context, page, publishedPage }) {
             // Published pages have this record.
             if (!publishedPage) {
                 return;
@@ -49,12 +46,9 @@ export default [
 
             // Note: special pages (404 / home) cannot be deleted, that's why
             // there is no special handling in regards to that here.
-        }
-    } as PageHookPlugin,
-    {
+        },
         // After a page was published, we need to render the page.
-        type: "pb-page-hook",
-        async afterPublish(context, { page, publishedPage }) {
+        async afterPublish({ context, page, publishedPage }) {
             const promises = [];
             promises.push(
                 context.pageBuilder.pages.prerendering.render({ paths: [{ path: page.path }] })
@@ -108,12 +102,12 @@ export default [
 
             await Promise.all(promises);
         }
-    } as PageHookPlugin,
+    } as PbPagePlugin,
     {
         // After settings were changed, invalidate all pages that contain pb-page tag.
-        type: "pb-settings-hook",
-        async afterUpdate(context, previous, next, meta) {
-            if (!next) {
+        type: "pb-settings",
+        async afterUpdate({ context, nextSettings, meta }) {
+            if (!nextSettings) {
                 return;
             }
 
@@ -147,14 +141,14 @@ export default [
                 }
             }
         }
-    } as SettingsHookPlugin,
+    } as PbSettingsPlugin,
     {
         // After a menu has changed, invalidate all pages that contains the updated menu.
-        type: "pb-menu-hook",
-        async afterUpdate(context, menu) {
+        type: "pb-menu",
+        async afterUpdate({ context, menu }) {
             await context.pageBuilder.pages.prerendering.render({
                 tags: [{ tag: { key: "pb-menu", value: menu.slug } }]
             });
         }
-    } as MenuHookPlugin
+    } as PbMenuPlugin
 ];
