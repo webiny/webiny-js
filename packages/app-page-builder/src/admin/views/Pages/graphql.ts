@@ -8,7 +8,7 @@ const ERROR_FIELD = /* GraphQL */ `
     }
 `;
 
-const DATA_FIELD = /* GraphQL */ `
+const DATA_FIELD = `
     {
         id
         pid
@@ -29,37 +29,6 @@ const DATA_FIELD = /* GraphQL */ `
             locked
             version
             savedOn
-        }
-        settings {
-            general {
-                snippet
-                tags
-                layout
-                image {
-                    id
-                    src
-                }
-            }
-            social {
-                meta {
-                    property
-                    content
-                }
-                title
-                description
-                image {
-                    id
-                    src
-                }
-            }
-            seo {
-                title
-                description
-                meta {
-                    name
-                    content
-                }
-            }
         }
         createdBy {
             id

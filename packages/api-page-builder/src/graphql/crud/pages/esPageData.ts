@@ -1,4 +1,5 @@
-import { PbContext } from "../../types";
+import { Page, PbContext } from "~/types";
+import { IndexPageDataPlugin } from "~/plugins/IndexPageDataPlugin";
 
 export const getESPageData = (context: PbContext, page) => {
     return {
@@ -33,10 +34,22 @@ export const getESPageData = (context: PbContext, page) => {
     };
 };
 
-export const getESLatestPageData = (context: PbContext, page) => {
-    return { ...getESPageData(context, page), latest: true };
+export const getESLatestPageData = (context: PbContext, page: Page) => {
+    const data = { ...getESPageData(context, page), latest: true };
+    return modifyData(data, page, context);
 };
 
-export const getESPublishedPageData = (context: PbContext, page) => {
-    return { ...getESPageData(context, page), published: true };
+export const getESPublishedPageData = (context: PbContext, page: Page) => {
+    const data = { ...getESPageData(context, page), published: true };
+    return modifyData(data, page, context);
+};
+
+const modifyData = (data: Record<string, any>, page: Page, context: PbContext) => {
+    const pagePlugins = context.plugins.byType<IndexPageDataPlugin>(IndexPageDataPlugin.type);
+
+    for (const plugin of pagePlugins) {
+        plugin.apply({ context, page, data });
+    }
+
+    return data;
 };

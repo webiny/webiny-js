@@ -28,6 +28,10 @@ module.exports = [
         next: ".prettierrc.js"
     },
     {
+        prev: "example.prettierignore",
+        next: ".prettierignore"
+    },
+    {
         prev: "example.eslintignore",
         next: ".eslintignore"
     },

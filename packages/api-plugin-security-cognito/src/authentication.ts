@@ -6,7 +6,7 @@ import { SecurityIdentity } from "@webiny/api-security";
 import { SecurityAuthenticationPlugin } from "@webiny/api-security/types";
 import { HttpContext } from "@webiny/handler-http/types";
 import { Context as HandlerContext } from "@webiny/handler/types";
-const verify = util.promisify(jwt.verify);
+const verify = util.promisify<string, string, Record<string, any>>(jwt.verify);
 
 // All JWTs are split into 3 parts by two periods
 const isJwt = token => token.split(".").length === 3;

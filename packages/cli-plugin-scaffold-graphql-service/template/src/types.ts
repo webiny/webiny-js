@@ -1,7 +1,7 @@
 import { ContextInterface } from "@webiny/handler/types";
 import { DbContext } from "@webiny/handler-db/types";
 import { HttpContext } from "@webiny/handler-http/types";
-import { I18NContext } from "@webiny/api-i18n/graphql/types";
+import { I18NContext } from "@webiny/api-i18n/types";
 import { BaseI18NContentContext } from "@webiny/api-i18n-content/types";
 import { ElasticSearchClientContext } from "@webiny/api-plugin-elastic-search-client/types";
 import { TenancyContext } from "@webiny/api-security-tenancy/types";

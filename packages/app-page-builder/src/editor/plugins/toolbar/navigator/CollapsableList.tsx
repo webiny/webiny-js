@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect, ReactElement } from "react";
 import classNames from "classnames";
-import { EmptyBlock, Collapsable, ArrowRight } from "./StyledComponents";
-import { NavigatorContext } from "~/editor/plugins/toolbar/navigator/Navigator";
+import { EmptyBlock, Collapsable, ArrowRight, HighlightItem } from "./StyledComponents";
+import { NavigatorContext } from "./Navigator";
 
 type CollapsableListProps = {
     children: ReactElement | ReactElement[];
@@ -12,6 +12,7 @@ type CollapsableListProps = {
     style?: React.CSSProperties;
     headerStyle?: React.CSSProperties;
     inActivePath: boolean;
+    highlightItem: HighlightItem;
 };
 
 const CollapsableList = ({
@@ -22,7 +23,8 @@ const CollapsableList = ({
     active,
     style,
     headerStyle,
-    inActivePath
+    inActivePath,
+    highlightItem
 }: CollapsableListProps) => {
     const [isOpen, setOpen] = useState(true);
     const { expandAll } = useContext(NavigatorContext);
@@ -39,7 +41,7 @@ const CollapsableList = ({
     }, [inActivePath]);
 
     return (
-        <Collapsable className="collapsable" style={style}>
+        <Collapsable className="collapsable" style={style} highlightItem={highlightItem}>
             <div
                 className={classNames("collapsable__header", {
                     active: active,

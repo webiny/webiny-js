@@ -3,6 +3,7 @@ import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { plugins } from "@webiny/plugins";
 import { useSecurity } from "@webiny/app-security";
 import { Tenant } from "../types";
+import { TenantHeaderLinkPlugin } from "@webiny/app/plugins/TenantHeaderLinkPlugin";
 export const TenancyContext = React.createContext(null);
 
 export type TenancyContextValue = {
@@ -15,26 +16,11 @@ export const TenancyProvider = props => {
     const [currentTenant, setCurrentTenant] = useState<Tenant>(null);
     const { identity } = useSecurity();
 
-    const changeTenant = useCallback(tenant => {
+    const changeTenant = useCallback((tenant: Tenant) => {
         identity.setPermissions(tenant ? tenant.permissions : []);
         setCurrentTenant(tenant);
 
-        plugins.register({
-            name: "apollo-link-context-tenant",
-            type: "apollo-link-context",
-            setContext(request, context) {
-                if (!tenant) {
-                    return context;
-                }
-
-                return {
-                    headers: {
-                        ...context.headers,
-                        "x-tenant": tenant.id
-                    }
-                };
-            }
-        });
+        plugins.register(new TenantHeaderLinkPlugin(tenant.id));
     }, []);
 
     useEffect(() => {

@@ -69,7 +69,7 @@ The setup of our Github repo is identical to the one created by `create-webiny-p
 2. `yarn 1.22.*` or higher (because our project setup uses workspaces). We prefer using `yarn 2` as it's a lot faster and some issues from `yarn 1` are finally fixed. 
    If you don't already have `yarn`, visit https://yarnpkg.com/ to install it.
 
-3. A verified AWS account with an [IAM user for programmatic usage](https://docs.webiny.com/docs/how-to-guides/deployment/configure-aws-credentials)
+3. A verified AWS account with an [IAM user for programmatic usage](https://www.webiny.com/docs/how-to-guides/deployment/aws/configure-aws-credentials)
 
 ## Local setup
 
@@ -85,7 +85,7 @@ The setup of our Github repo is identical to the one created by `create-webiny-p
 
 3. Prepare the repository:
    ```
-   yarn setup-repo
+   yarn setup-project
    ```
 
 4. Deploy your API to use with local React apps: 

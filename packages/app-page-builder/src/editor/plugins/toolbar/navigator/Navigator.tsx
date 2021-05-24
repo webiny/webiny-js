@@ -23,9 +23,7 @@ const Navigator = () => {
         try {
             const elementTree = await eventHandler.getElementTree();
             setElementTree(elementTree);
-        } catch (e) {
-            console.log("Failed!");
-        }
+        } catch (e) {}
     };
     // Update element tree
     useEffect(() => {
