@@ -16,6 +16,9 @@ export default (table: Table): Entity<any> => {
             TYPE: {
                 type: "string"
             },
+            __type: {
+                type: "string"
+            },
             webinyVersion: {
                 type: "string"
             },

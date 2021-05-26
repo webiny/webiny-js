@@ -523,6 +523,23 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         });
 
         if (latestEntry.id === originalEntry.id) {
+            /**
+             * First we update the regular DynamoDB table
+             */
+            batch.update({
+                ...configurations.db(),
+                query: {
+                    PK: primaryKey,
+                    SK: this.getSecondaryKeyLatest()
+                },
+                data: {
+                    ...data,
+                    TYPE: TYPE_ENTRY_LATEST
+                }
+            });
+            /**
+             * And then update the Elasticsearch table to propagate changes to the Elasticsearch
+             */
             const esEntry = prepareEntryToIndex({
                 context: this.context,
                 model,

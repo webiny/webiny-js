@@ -1,14 +1,6 @@
 import { CmsContext, CmsSystem, CmsSystemStorageOperations } from "@webiny/api-headless-cms/types";
 import configurations from "../../configurations";
 import WebinyError from "@webiny/error";
-export const createBasePartitionKey = ({ security }: CmsContext): string => {
-    const tenant = security.getTenant();
-    if (!tenant) {
-        throw new WebinyError("Tenant missing.", "TENANT_NOT_FOUND");
-    }
-
-    return `T#${tenant.id}`;
-};
 
 interface ConstructorArgs {
     context: CmsContext;
