@@ -467,10 +467,7 @@ export interface CmsModelFieldToGraphQLPlugin extends Plugin {
          * }
          * ```
          */
-        createSchema?(params: {
-            models: CmsContentModel[];
-            model: CmsContentModel;
-        }): GraphQLSchemaDefinition<CmsContext>;
+        createSchema?(params: { models: CmsContentModel[] }): GraphQLSchemaDefinition<CmsContext>;
     };
     manage: {
         /**
@@ -1589,6 +1586,10 @@ export interface ElasticsearchQueryBuilderValueSearchPlugin extends Plugin {
      * Transform value that is going to be searched for in the Elasticsearch.
      */
     transform: (args: ElasticsearchQueryBuilderValueSearchPluginArgs) => any;
+    /**
+     * Create a path to search in the Elasticsearch. Default one is values.fieldId.
+     */
+    createPath?: (args: Omit<ElasticsearchQueryBuilderValueSearchPluginArgs, "value">) => string;
 }
 
 /**
@@ -1596,14 +1597,14 @@ export interface ElasticsearchQueryBuilderValueSearchPlugin extends Plugin {
  *
  * @category SecurityPermission
  */
-export type CmsSettingsPermission = SecurityPermission;
+export interface CmsSettingsPermission extends SecurityPermission {} // eslint-disable-line
 /**
  * A security permission for content model.
  *
  * @category SecurityPermission
  * @category ContentModel
  */
-export type CmsContentModelPermission = SecurityPermission<{
+export interface CmsContentModelPermission extends SecurityPermission {
     own: boolean;
     rwd: string;
     /**
@@ -1618,24 +1619,32 @@ export type CmsContentModelPermission = SecurityPermission<{
     groups?: {
         [key: string]: string[];
     };
-}>;
+}
+
 /**
  * The security permission for content model groups.
  *
  * @category SecurityPermission
  * @category ContentModelGroup
  */
-export type CmsContentModelGroupPermission = SecurityPermission<{
+export interface CmsContentModelGroupPermission extends SecurityPermission {
     own: boolean;
     rwd: string;
-}>;
+    /**
+     * A object representing `key: group.id` values where key is locale code.
+     */
+    groups?: {
+        [key: string]: string[];
+    };
+}
+
 /**
  * The security permission for content entry.
  *
  * @category SecurityPermission
  * @category ContentEntry
  */
-export type CmsContentEntryPermission = SecurityPermission<{
+export interface CmsContentEntryPermission extends SecurityPermission {
     own: boolean;
     rwd: string;
     pw: string;
@@ -1651,7 +1660,7 @@ export type CmsContentEntryPermission = SecurityPermission<{
     groups?: {
         [key: string]: string[];
     };
-}>;
+}
 
 /**
  * A definition of the entry that is being prepared for the Elasticsearch.

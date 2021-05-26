@@ -3,6 +3,165 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.7.0](https://github.com/webiny/webiny-js/compare/v5.7.0-beta.0...v5.7.0) (2021-05-24)
+
+**Note:** Version bump only for package @webiny/app-security
+
+
+
+
+
+# [5.7.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.6.0...v5.7.0-beta.0) (2021-05-23)
+
+**Note:** Version bump only for package @webiny/app-security
+
+
+
+
+
+# [5.6.0](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.2...v5.6.0) (2021-05-10)
+
+**Note:** Version bump only for package @webiny/app-security
+
+
+
+
+
+# [5.6.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.1...v5.6.0-beta.2) (2021-05-07)
+
+**Note:** Version bump only for package @webiny/app-security
+
+
+
+
+
+# [5.6.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.0...v5.6.0-beta.1) (2021-05-07)
+
+**Note:** Version bump only for package @webiny/app-security
+
+
+
+
+
+# [5.6.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.5.1-beta.0...v5.6.0-beta.0) (2021-05-06)
+
+
+### Bug Fixes
+
+* add generic type definition for `getPermission` function ([e4cb805](https://github.com/webiny/webiny-js/commit/e4cb8058f28282fa25d5b04be1ffa21a6873a60f))
+* export "SecurityPermission" type from types.ts ([6af3a03](https://github.com/webiny/webiny-js/commit/6af3a039103d5bea7600512340c6ee1ad0ad021e))
+* remove "scopes" and deprecation warning ([398b397](https://github.com/webiny/webiny-js/commit/398b39790ef676d9edc7243c3b39ffb13e7d0099))
+* remove "security-scopes-list" plugin type ([14a0586](https://github.com/webiny/webiny-js/commit/14a0586ea12ea15a396f86a2d354a526399c55f3))
+* use interface instead of type ([25b023a](https://github.com/webiny/webiny-js/commit/25b023aa0358ca221f6403cfe31587f6896045bc))
+
+
+### Features
+
+* export "FullAccessPermission" ([3454d99](https://github.com/webiny/webiny-js/commit/3454d99ce5b72a61de3032f0f713f2f960a8cfb8))
+* improve "children" prop type ([4f7e159](https://github.com/webiny/webiny-js/commit/4f7e15994bc38b6bd78996b533b6a0153d83153f))
+* instead of required permission, return matched permission ([98b0a06](https://github.com/webiny/webiny-js/commit/98b0a06dc4c37bdefbb3158ee5d73b24c5f1e166))
+
+
+
+
+
+## [5.5.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.5.0...v5.5.1-beta.0) (2021-04-27)
+
+**Note:** Version bump only for package @webiny/app-security
+
+
+
+
+
+# [5.5.0](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.3...v5.5.0) (2021-04-26)
+
+**Note:** Version bump only for package @webiny/app-security
+
+
+
+
+
+# [5.5.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.2...v5.5.0-beta.3) (2021-04-23)
+
+**Note:** Version bump only for package @webiny/app-security
+
+
+
+
+
+# [5.5.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.1...v5.5.0-beta.2) (2021-04-23)
+
+**Note:** Version bump only for package @webiny/app-security
+
+
+
+
+
+# [5.5.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.0...v5.5.0-beta.1) (2021-04-22)
+
+**Note:** Version bump only for package @webiny/app-security
+
+
+
+
+
+# [5.5.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.4.0...v5.5.0-beta.0) (2021-04-22)
+
+
+### Bug Fixes
+
+* add missing "@webiny/cli" dependency ([f99bf3e](https://github.com/webiny/webiny-js/commit/f99bf3ea31ad4b9d560011181431cd9732a1a8c4))
+* update dependencies ([7067da6](https://github.com/webiny/webiny-js/commit/7067da66ff2a70c340b93d8cde0ad36caa4e4640))
+
+
+### Features
+
+* use new build and watch commands ([4a534a1](https://github.com/webiny/webiny-js/commit/4a534a11d2afe4ca4cddd49f2f80fe2a7e90058a))
+
+
+
+
+
+# [5.4.0](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.3...v5.4.0) (2021-04-13)
+
+**Note:** Version bump only for package @webiny/app-security
+
+
+
+
+
+# [5.4.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.2...v5.4.0-beta.3) (2021-04-13)
+
+**Note:** Version bump only for package @webiny/app-security
+
+
+
+
+
+# [5.4.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.1...v5.4.0-beta.2) (2021-04-12)
+
+**Note:** Version bump only for package @webiny/app-security
+
+
+
+
+
+# [5.4.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.0...v5.4.0-beta.1) (2021-04-12)
+
+**Note:** Version bump only for package @webiny/app-security
+
+
+
+
+
+# [5.4.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.3.0...v5.4.0-beta.0) (2021-04-09)
+
+**Note:** Version bump only for package @webiny/app-security
+
+
+
+
+
 # [5.3.0](https://github.com/webiny/webiny-js/compare/v5.3.0-beta.0...v5.3.0) (2021-03-26)
 
 **Note:** Version bump only for package @webiny/app-security

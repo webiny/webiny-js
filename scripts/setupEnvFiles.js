@@ -24,6 +24,7 @@ const PROJECT_FOLDER = ".";
         let content = fs.readFileSync(rootEnvFilePath).toString();
         content = content.replace("{REGION}", "us-east-1");
         content = content.replace("{PULUMI_CONFIG_PASSPHRASE}", random());
+        content = content.replace("{PULUMI_SECRETS_PROVIDER}", "passphrase");
         fs.writeFileSync(rootEnvFilePath, content);
         console.log(`✅️ ${green(".env")} was created successfully!`);
     }

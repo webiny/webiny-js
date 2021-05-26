@@ -1,6 +1,6 @@
 import { DbContext } from "@webiny/handler-db/types";
 import dbArgs from "./utils/dbArgs";
-import { I18NContext, SystemCRUD } from "../types";
+import { I18NContext, SystemCRUD } from "~/types";
 
 export default (context: DbContext & I18NContext): SystemCRUD => {
     const { db, i18n, security } = context;
@@ -47,6 +47,12 @@ export default (context: DbContext & I18NContext): SystemCRUD => {
                     }
                 });
             }
+        },
+        async install(args) {
+            const { i18n } = context;
+            await i18n.locales.create({ code: args.code, default: true });
+            await i18n.locales.updateDefault(args.code);
+            await i18n.system.setVersion(context.WEBINY_VERSION);
         }
     };
 };

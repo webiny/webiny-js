@@ -3,6 +3,171 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.7.0](https://github.com/webiny/webiny-js/compare/v5.7.0-beta.0...v5.7.0) (2021-05-24)
+
+**Note:** Version bump only for package @webiny/api-security-tenancy
+
+
+
+
+
+# [5.7.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.6.0...v5.7.0-beta.0) (2021-05-23)
+
+**Note:** Version bump only for package @webiny/api-security-tenancy
+
+
+
+
+
+# [5.6.0](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.2...v5.6.0) (2021-05-10)
+
+**Note:** Version bump only for package @webiny/api-security-tenancy
+
+
+
+
+
+# [5.6.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.1...v5.6.0-beta.2) (2021-05-07)
+
+**Note:** Version bump only for package @webiny/api-security-tenancy
+
+
+
+
+
+# [5.6.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.0...v5.6.0-beta.1) (2021-05-07)
+
+**Note:** Version bump only for package @webiny/api-security-tenancy
+
+
+
+
+
+# [5.6.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.5.1-beta.0...v5.6.0-beta.0) (2021-05-06)
+
+
+### Bug Fixes
+
+* use interface instead of type ([be076cf](https://github.com/webiny/webiny-js/commit/be076cf8856bfa8789e8ea9a4a55149e70f9074c))
+
+
+### Features
+
+* ES index sharing for multi-tenancy ([#1575](https://github.com/webiny/webiny-js/issues/1575)) ([54ab395](https://github.com/webiny/webiny-js/commit/54ab395e45773ed98814bf2339c4a9166bd234d1))
+
+
+
+
+
+## [5.5.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.5.0...v5.5.1-beta.0) (2021-04-27)
+
+**Note:** Version bump only for package @webiny/api-security-tenancy
+
+
+
+
+
+# [5.5.0](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.3...v5.5.0) (2021-04-26)
+
+**Note:** Version bump only for package @webiny/api-security-tenancy
+
+
+
+
+
+# [5.5.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.2...v5.5.0-beta.3) (2021-04-23)
+
+**Note:** Version bump only for package @webiny/api-security-tenancy
+
+
+
+
+
+# [5.5.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.1...v5.5.0-beta.2) (2021-04-23)
+
+**Note:** Version bump only for package @webiny/api-security-tenancy
+
+
+
+
+
+# [5.5.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.0...v5.5.0-beta.1) (2021-04-22)
+
+**Note:** Version bump only for package @webiny/api-security-tenancy
+
+
+
+
+
+# [5.5.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.4.0...v5.5.0-beta.0) (2021-04-22)
+
+
+### Bug Fixes
+
+* add missing "@webiny/cli" dependency ([f99bf3e](https://github.com/webiny/webiny-js/commit/f99bf3ea31ad4b9d560011181431cd9732a1a8c4))
+* update dependencies ([7067da6](https://github.com/webiny/webiny-js/commit/7067da66ff2a70c340b93d8cde0ad36caa4e4640))
+
+
+### Features
+
+* add before-handler plugin ([cf1e7d6](https://github.com/webiny/webiny-js/commit/cf1e7d6c57223bf921000b640e07a72e250083d9))
+* use new build and watch commands ([4a534a1](https://github.com/webiny/webiny-js/commit/4a534a11d2afe4ca4cddd49f2f80fe2a7e90058a))
+
+
+
+
+
+# [5.4.0](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.3...v5.4.0) (2021-04-13)
+
+**Note:** Version bump only for package @webiny/api-security-tenancy
+
+
+
+
+
+# [5.4.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.2...v5.4.0-beta.3) (2021-04-13)
+
+**Note:** Version bump only for package @webiny/api-security-tenancy
+
+
+
+
+
+# [5.4.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.1...v5.4.0-beta.2) (2021-04-12)
+
+
+### Bug Fixes
+
+* **api-security-tenancy:** check both upper case and lower case header ([#1559](https://github.com/webiny/webiny-js/issues/1559)) ([4e593bf](https://github.com/webiny/webiny-js/commit/4e593bf0f711a2f78369c4ef5b2614590ce475ed))
+
+
+### Features
+
+* **api-security-tenancy:** cache keys are based on tenant + identity ([#1558](https://github.com/webiny/webiny-js/issues/1558)) ([6f90361](https://github.com/webiny/webiny-js/commit/6f9036182967b33f0525ea3328afa9eb94c7fcba))
+
+
+
+
+
+# [5.4.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.0...v5.4.0-beta.1) (2021-04-12)
+
+**Note:** Version bump only for package @webiny/api-security-tenancy
+
+
+
+
+
+# [5.4.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.3.0...v5.4.0-beta.0) (2021-04-09)
+
+
+### Features
+
+* **api-security-tenancy:** cache permissions and get user ([7392d27](https://github.com/webiny/webiny-js/commit/7392d274b8a4b11eb313ff9fa6142ad633d7a2c6))
+
+
+
+
+
 # [5.3.0](https://github.com/webiny/webiny-js/compare/v5.3.0-beta.0...v5.3.0) (2021-03-26)
 
 **Note:** Version bump only for package @webiny/api-security-tenancy

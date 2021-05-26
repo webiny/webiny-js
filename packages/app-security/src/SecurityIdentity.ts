@@ -1,6 +1,5 @@
 import minimatch from "minimatch";
-
-export type SecurityPermission = { name: string; [key: string]: any };
+import { SecurityPermission } from "./types";
 
 export type SecurityIdentityData = {
     login: string;
@@ -35,19 +34,15 @@ export class SecurityIdentity {
         this.permissions = permissions;
     }
 
-    getPermission(permission): SecurityPermission {
+    getPermission<T extends SecurityPermission = SecurityPermission>(name: string): T {
         const perms = this.permissions || [];
-        const exactMatch = perms.find(p => p.name === permission);
+        const exactMatch = perms.find(p => p.name === name) as T;
         if (exactMatch) {
             return exactMatch;
         }
 
         // Try matching using patterns
-        if (perms.find(p => minimatch(permission, p.name))) {
-            return { name: permission };
-        }
-
-        return null;
+        return perms.find(p => minimatch(name, p.name)) as T;
     }
 
     logout() {

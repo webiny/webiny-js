@@ -3,6 +3,158 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.7.0](https://github.com/webiny/webiny-js/compare/v5.7.0-beta.0...v5.7.0) (2021-05-24)
+
+**Note:** Version bump only for package @webiny/app-security-tenancy
+
+
+
+
+
+# [5.7.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.6.0...v5.7.0-beta.0) (2021-05-23)
+
+
+### Bug Fixes
+
+* **app-security-tenancy:** use TenantHeaderLinkPlugin ([324d22f](https://github.com/webiny/webiny-js/commit/324d22f4a7c0c8ef29c9579306125d86b63e676d))
+* forward "--debug" argument to internal Pulumi CLI commands ([1499fd8](https://github.com/webiny/webiny-js/commit/1499fd898b11866e77fa22cb1bd902e540aac41f)), closes [PR#1623](https://github.com/PR/issues/1623)
+
+
+
+
+
+# [5.6.0](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.2...v5.6.0) (2021-05-10)
+
+**Note:** Version bump only for package @webiny/app-security-tenancy
+
+
+
+
+
+# [5.6.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.1...v5.6.0-beta.2) (2021-05-07)
+
+**Note:** Version bump only for package @webiny/app-security-tenancy
+
+
+
+
+
+# [5.6.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.0...v5.6.0-beta.1) (2021-05-07)
+
+**Note:** Version bump only for package @webiny/app-security-tenancy
+
+
+
+
+
+# [5.6.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.5.1-beta.0...v5.6.0-beta.0) (2021-05-06)
+
+
+### Bug Fixes
+
+* correct import statement ([8013b7b](https://github.com/webiny/webiny-js/commit/8013b7b392c082aaff1b13d5c458eabb98023723))
+
+
+
+
+
+## [5.5.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.5.0...v5.5.1-beta.0) (2021-04-27)
+
+**Note:** Version bump only for package @webiny/app-security-tenancy
+
+
+
+
+
+# [5.5.0](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.3...v5.5.0) (2021-04-26)
+
+**Note:** Version bump only for package @webiny/app-security-tenancy
+
+
+
+
+
+# [5.5.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.2...v5.5.0-beta.3) (2021-04-23)
+
+**Note:** Version bump only for package @webiny/app-security-tenancy
+
+
+
+
+
+# [5.5.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.1...v5.5.0-beta.2) (2021-04-23)
+
+**Note:** Version bump only for package @webiny/app-security-tenancy
+
+
+
+
+
+# [5.5.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.0...v5.5.0-beta.1) (2021-04-22)
+
+**Note:** Version bump only for package @webiny/app-security-tenancy
+
+
+
+
+
+# [5.5.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.4.0...v5.5.0-beta.0) (2021-04-22)
+
+
+### Bug Fixes
+
+* add missing "@webiny/cli" dependency ([f99bf3e](https://github.com/webiny/webiny-js/commit/f99bf3ea31ad4b9d560011181431cd9732a1a8c4))
+* update dependencies ([7067da6](https://github.com/webiny/webiny-js/commit/7067da66ff2a70c340b93d8cde0ad36caa4e4640))
+
+
+### Features
+
+* use new build and watch commands ([4a534a1](https://github.com/webiny/webiny-js/commit/4a534a11d2afe4ca4cddd49f2f80fe2a7e90058a))
+
+
+
+
+
+# [5.4.0](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.3...v5.4.0) (2021-04-13)
+
+**Note:** Version bump only for package @webiny/app-security-tenancy
+
+
+
+
+
+# [5.4.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.2...v5.4.0-beta.3) (2021-04-13)
+
+**Note:** Version bump only for package @webiny/app-security-tenancy
+
+
+
+
+
+# [5.4.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.1...v5.4.0-beta.2) (2021-04-12)
+
+**Note:** Version bump only for package @webiny/app-security-tenancy
+
+
+
+
+
+# [5.4.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.0...v5.4.0-beta.1) (2021-04-12)
+
+**Note:** Version bump only for package @webiny/app-security-tenancy
+
+
+
+
+
+# [5.4.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.3.0...v5.4.0-beta.0) (2021-04-09)
+
+**Note:** Version bump only for package @webiny/app-security-tenancy
+
+
+
+
+
 # [5.3.0](https://github.com/webiny/webiny-js/compare/v5.3.0-beta.0...v5.3.0) (2021-03-26)
 
 **Note:** Version bump only for package @webiny/app-security-tenancy

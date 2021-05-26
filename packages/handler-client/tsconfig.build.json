@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["./src"],
-  "exclude": ["node_modules", "../handler", "../plugins"],
+  "exclude": ["node_modules", "../handler", "../plugins", "../error"],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",

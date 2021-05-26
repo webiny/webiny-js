@@ -45,42 +45,14 @@ export default (options: HandlerGraphQLOptions = {}): PluginCollection => {
                     schema = createGraphQLSchema(context);
                 }
 
-                try {
-                    const body = JSON.parse(http.request.body);
-                    const result = await processRequestBody(body, schema, context);
+                const body = JSON.parse(http.request.body);
+                const result = await processRequestBody(body, schema, context);
 
-                    return http.response({
-                        body: JSON.stringify(result),
-                        statusCode: 200,
-                        headers: DEFAULT_HEADERS
-                    });
-                } catch (e) {
-                    const report = {
-                        error: {
-                            name: e.constructor.name,
-                            message: e.message,
-                            stack: e.stack
-                        }
-                    };
-
-                    console.log(
-                        "[@webiny/handler-graphql] An error occurred:",
-                        JSON.stringify(report, null, 2)
-                    );
-
-                    if (debug) {
-                        return context.http.response({
-                            statusCode: 500,
-                            body: JSON.stringify(report, null, 2),
-                            headers: {
-                                ...DEFAULT_HEADERS,
-                                "Cache-Control": "no-store"
-                            }
-                        });
-                    }
-
-                    throw e;
-                }
+                return http.response({
+                    body: JSON.stringify(result),
+                    statusCode: 200,
+                    headers: DEFAULT_HEADERS
+                });
             }
         } as HandlerPlugin
     ];

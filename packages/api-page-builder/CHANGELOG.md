@@ -3,6 +3,191 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.7.0](https://github.com/webiny/webiny-js/compare/v5.7.0-beta.0...v5.7.0) (2021-05-24)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.7.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.6.0...v5.7.0-beta.0) (2021-05-23)
+
+
+### Bug Fixes
+
+* **api-page-builder:** assign into a new target object ([7e326ca](https://github.com/webiny/webiny-js/commit/7e326cafe0014aa2adc2c51504a70e1254658a2a))
+* **api-page-builder:** refactor ES plugins ([037d0e5](https://github.com/webiny/webiny-js/commit/037d0e568db63e1a257f3cdd3f337dbebc5ecfd3))
+* **api-page-builder:** remove unused type imports ([072f2e3](https://github.com/webiny/webiny-js/commit/072f2e3e024a25acfc34ac432ce6e7ef6bd6d07d))
+
+
+### Features
+
+* **api-page-builder:** add a plugin to modify page data for ES ([373a639](https://github.com/webiny/webiny-js/commit/373a639c3c93f89c7dea25144c6a3878e24d70ef))
+* **api-page-builder:** add ES hooks to listLatest and listPublished methods ([4b8b292](https://github.com/webiny/webiny-js/commit/4b8b292526f9aa3ed32053e898e9c92182b9383a))
+* **api-page-builder:** add notFound callback to PbPage plugin ([356cb46](https://github.com/webiny/webiny-js/commit/356cb469905c2f206aec4cb326e40c53896cd745))
+
+
+
+
+
+# [5.6.0](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.2...v5.6.0) (2021-05-10)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.6.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.1...v5.6.0-beta.2) (2021-05-07)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.6.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.0...v5.6.0-beta.1) (2021-05-07)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.6.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.5.1-beta.0...v5.6.0-beta.0) (2021-05-06)
+
+
+### Bug Fixes
+
+* use interface instead of type ([be076cf](https://github.com/webiny/webiny-js/commit/be076cf8856bfa8789e8ea9a4a55149e70f9074c))
+
+
+### Features
+
+* **api-page-builder:** add missing Not Found page data ([#1587](https://github.com/webiny/webiny-js/issues/1587)) ([6767c1a](https://github.com/webiny/webiny-js/commit/6767c1a16dca508d62b1dce7b6895f927bddad52))
+* ES index sharing for multi-tenancy ([#1575](https://github.com/webiny/webiny-js/issues/1575)) ([54ab395](https://github.com/webiny/webiny-js/commit/54ab395e45773ed98814bf2339c4a9166bd234d1))
+
+
+
+
+
+## [5.5.1-beta.0](https://github.com/webiny/webiny-js/compare/v5.5.0...v5.5.1-beta.0) (2021-04-27)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.5.0](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.3...v5.5.0) (2021-04-26)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.5.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.2...v5.5.0-beta.3) (2021-04-23)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.5.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.1...v5.5.0-beta.2) (2021-04-23)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.5.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.5.0-beta.0...v5.5.0-beta.1) (2021-04-22)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.5.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.4.0...v5.5.0-beta.0) (2021-04-22)
+
+
+### Bug Fixes
+
+* add missing "@webiny/cli" dependency ([f99bf3e](https://github.com/webiny/webiny-js/commit/f99bf3ea31ad4b9d560011181431cd9732a1a8c4))
+* add tenant and locale to meta ([05f19d5](https://github.com/webiny/webiny-js/commit/05f19d51389aa754d2bfb832b0ba93746cac6ce1))
+* correct argument name ([b5276a6](https://github.com/webiny/webiny-js/commit/b5276a61335d2ddbe327d15634de7a83639e20a9))
+* remove "beta" tag ([712a8ef](https://github.com/webiny/webiny-js/commit/712a8ef36b3b3764091db834ac89dde1fbc18ba9))
+* update to latest code changes ([36cc3a2](https://github.com/webiny/webiny-js/commit/36cc3a264fe10b4082594545baaad8c1ed8b9fe6))
+* when rendering not-found page, add "notFoundPage" flag to "meta" ([078b850](https://github.com/webiny/webiny-js/commit/078b850122e95846c815e1d366cff543cab4f8e0))
+
+
+### Features
+
+* allow sending meta data ([7bcd9f6](https://github.com/webiny/webiny-js/commit/7bcd9f69bfe95cae7ee84cccad3cd253cbeeca1c))
+* use new build and watch commands ([4a534a1](https://github.com/webiny/webiny-js/commit/4a534a11d2afe4ca4cddd49f2f80fe2a7e90058a))
+
+
+
+
+
+# [5.4.0](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.3...v5.4.0) (2021-04-13)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.4.0-beta.3](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.2...v5.4.0-beta.3) (2021-04-13)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.4.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.1...v5.4.0-beta.2) (2021-04-12)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.4.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.4.0-beta.0...v5.4.0-beta.1) (2021-04-12)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.4.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.3.0...v5.4.0-beta.0) (2021-04-09)
+
+
+### Bug Fixes
+
+* adjust messaging ([1495343](https://github.com/webiny/webiny-js/commit/149534375dad69596fff60fe58223ad3446afc5a))
+* adjust sentence ([6d48cb0](https://github.com/webiny/webiny-js/commit/6d48cb0daa787f25aa6c9d021c38190b3d777b83))
+* handle --no-build flag - skip file upload and prerendering ([5fb2a90](https://github.com/webiny/webiny-js/commit/5fb2a9024c354ad8c9f46f0d75c184ab4007d155))
+* update dependencies ([ed9c799](https://github.com/webiny/webiny-js/commit/ed9c799879ae62ae406bfa33a66b9cc83c4c7947))
+* update dependencies ([8a301e3](https://github.com/webiny/webiny-js/commit/8a301e347fe3f8d5b9428e47a8f79106aa9f9ae8))
+* update messages ([8458c6c](https://github.com/webiny/webiny-js/commit/8458c6cdc574a37a09009af993dd7a1099550280))
+
+
+### Features
+
+* add upload of files and complete rerender steps ([cc49996](https://github.com/webiny/webiny-js/commit/cc49996e660740aa7039b6c3466c5017f2d3f11b))
+* on successful upload, re-render whole website ([1bb9f1b](https://github.com/webiny/webiny-js/commit/1bb9f1b375b4f18270ee68ec93a65d6f79690753))
+
+
+
+
+
 # [5.3.0](https://github.com/webiny/webiny-js/compare/v5.3.0-beta.0...v5.3.0) (2021-03-26)
 
 **Note:** Version bump only for package @webiny/api-page-builder

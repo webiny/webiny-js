@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Plugin } from "@webiny/plugins/types";
-import { SecurityPermission } from "@webiny/app-security/SecurityIdentity";
+import { SecurityPermission } from "@webiny/app-security/types";
 
 export type PermissionRendererPluginRenderFunctionType = (props: {
     value: SecurityPermission;

@@ -127,7 +127,7 @@ const createElasticsearchSortParams = (
 };
 
 const createInitialQueryValue = (args: CreateElasticsearchQueryArgs): ElasticsearchQuery => {
-    const { ownedBy, options } = args;
+    const { ownedBy, options, context } = args;
 
     const query: ElasticsearchQuery = {
         match: [],
@@ -135,6 +135,13 @@ const createInitialQueryValue = (args: CreateElasticsearchQueryArgs): Elasticsea
         mustNot: [],
         should: []
     };
+
+    // When ES index is shared between tenants, we need to filter records by tenant ID
+    const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
+    if (sharedIndex) {
+        const tenant = context.security.getTenant();
+        query.must.push({ term: { "tenant.keyword": tenant.id } });
+    }
 
     // When permission has "only own records" set, we'll have "ownedBy" passed into this function.
     if (ownedBy) {
@@ -197,13 +204,22 @@ const execElasticsearchBuildQueryPlugins = (
                 operator: op
             });
         }
+        const fieldSearchPlugin = searchPlugins[modelFieldOptions.type];
         const value = transformValueForSearch({
             plugins: searchPlugins,
             field: cmsField,
             value: where[key],
             context
         });
-        const fieldWithParent = isSystemField ? null : withParentObject(field);
+        // A possibility to build field custom path in the elasticsearch
+        const customFieldPath =
+            fieldSearchPlugin && typeof fieldSearchPlugin.createPath === "function"
+                ? fieldSearchPlugin.createPath({
+                      field: modelFieldOptions.field,
+                      context
+                  })
+                : null;
+        const fieldWithParent = isSystemField ? null : customFieldPath || withParentObject(field);
         plugin.apply(query, {
             field: fieldWithParent || field,
             value,

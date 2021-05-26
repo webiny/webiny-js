@@ -15,11 +15,19 @@ export type PermissionSelectorCheckList = {
 type Model = {
     id: string;
     label: string;
+    [key: string]: any;
 };
 
 type Group = {
     id: string;
     label: string;
+    [key: string]: any;
+};
+
+type RenderItemsProps = {
+    onChange: Function;
+    getValue: Function;
+    items: Model[] | Group[];
 };
 
 export type PermissionSelectorProps = {
@@ -27,12 +35,20 @@ export type PermissionSelectorProps = {
     selectorKey: string;
     locales: string[];
     entity: string;
-    cmsData: {
-        [locale: string]: {
-            models: Model[];
-            groups: Group[];
-        };
-    };
+    getItems: (code: string) => Model[] | Group[];
+    RenderItems?: React.FunctionComponent<RenderItemsProps>;
+};
+
+const DefaultRenderItems = ({ items, getValue, onChange }: RenderItemsProps) => {
+    return (
+        <React.Fragment>
+            {items.map(({ id, label }) => (
+                <div key={id}>
+                    <Checkbox key={id} label={label} value={getValue(id)} onChange={onChange(id)} />
+                </div>
+            ))}
+        </React.Fragment>
+    );
 };
 
 export const PermissionSelector = ({
@@ -40,7 +56,8 @@ export const PermissionSelector = ({
     entity,
     locales,
     selectorKey,
-    cmsData
+    getItems,
+    RenderItems = DefaultRenderItems
 }: PermissionSelectorProps) => {
     const description = t`Select the {selectorKey} user will be allowed to access.`({
         selectorKey
@@ -48,26 +65,25 @@ export const PermissionSelector = ({
 
     return (
         <Fragment>
-            {locales.map(code => (
-                <Bind key={code} name={`${entity}Props.${selectorKey}.${code}`}>
-                    {cmsData[code][selectorKey].length && (
-                        <CheckboxGroup label={code}>
-                            {({ onChange, getValue }) => (
-                                <React.Fragment>
-                                    {cmsData[code][selectorKey].map(({ id, label }) => (
-                                        <Checkbox
-                                            key={id}
-                                            label={label}
-                                            value={getValue(id)}
-                                            onChange={onChange(id)}
-                                        />
-                                    ))}
-                                </React.Fragment>
-                            )}
-                        </CheckboxGroup>
-                    )}
-                </Bind>
-            ))}
+            {locales.map(code => {
+                const items = getItems(code);
+
+                return (
+                    <Bind key={code} name={`${entity}Props.${selectorKey}.${code}`}>
+                        {items.length && (
+                            <CheckboxGroup label={code}>
+                                {({ onChange, getValue }) => (
+                                    <RenderItems
+                                        items={items}
+                                        onChange={onChange}
+                                        getValue={getValue}
+                                    />
+                                )}
+                            </CheckboxGroup>
+                        )}
+                    </Bind>
+                );
+            })}
             <FormElementMessage>{description}</FormElementMessage>
         </Fragment>
     );

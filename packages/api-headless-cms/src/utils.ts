@@ -1,5 +1,12 @@
 import slugify from "slugify";
-import { CmsContentModelPermission, CmsContentModel, CmsContext, CreatedBy } from "./types";
+import {
+    CmsContentModelPermission,
+    CmsContentModel,
+    CmsContext,
+    CreatedBy,
+    CmsContentModelGroupPermission,
+    CmsContentModelGroup
+} from "./types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { SecurityPermission } from "@webiny/api-security/types";
 
@@ -53,8 +60,12 @@ export const defaults = {
             throw new Error(`There is no tenant on "context.security".`);
         }
 
+        const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
         const locale = context.cms.getLocale().code;
-        const index = `${tenant.id}-headless-cms-${locale}-${model.modelId}`.toLowerCase();
+        const index = [sharedIndex ? "root" : tenant.id, "headless-cms", locale, model.modelId]
+            .join("-")
+            .toLowerCase();
+
         const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX;
         if (prefix) {
             return { index: prefix + index };
@@ -203,12 +214,11 @@ export const validateOwnership = (
  * model access is checking for both specific model or group access
  * if permission has specific models set as access pattern then groups will not matter (although both can be set)
  */
-export const checkModelAccess = (
+export const checkModelAccess = async (
     context: CmsContext,
-    permission: SecurityPermission<CmsContentModelPermission>,
     model: CmsContentModel
-): void => {
-    if (validateModelAccess(context, permission, model)) {
+): Promise<void> => {
+    if (await validateModelAccess(context, model)) {
         return;
     }
     throw new NotAuthorizedError({
@@ -217,20 +227,39 @@ export const checkModelAccess = (
         }
     });
 };
-export const validateModelAccess = (
+export const validateModelAccess = async (
     context: CmsContext,
-    permission: SecurityPermission<CmsContentModelPermission>,
     model: CmsContentModel
-): boolean => {
-    const { models, groups } = permission;
+): Promise<boolean> => {
+    const modelGroupPermission: CmsContentModelGroupPermission = await checkPermissions(
+        context,
+        "cms.contentModelGroup",
+        { rwd: "r" }
+    );
+    const { groups } = modelGroupPermission;
+
+    const modelPermission: CmsContentModelPermission = await checkPermissions(
+        context,
+        "cms.contentModel",
+        { rwd: "r" }
+    );
+    const { models } = modelPermission;
     // when no models or groups defined on permission
     // it means user has access to everything
     if (!models && !groups) {
         return true;
     }
     const locale = context.cms.getLocale().code;
-    // when there is no locale in models or groups, it means that no access was given
-    // this happens when access control was set but no models or groups were added
+    // Check whether the model is question belongs to "content model groups" for which user has permission.
+    if (groups) {
+        if (
+            Array.isArray(groups[locale]) === false ||
+            groups[locale].includes(model.group.id) === false
+        ) {
+            return false;
+        }
+    }
+    // Check whether the model is question belongs to "content models" for which user has permission.
     if (models) {
         if (
             Array.isArray(models[locale]) === false ||
@@ -238,12 +267,25 @@ export const validateModelAccess = (
         ) {
             return false;
         }
+    }
+
+    return true;
+};
+export const validateGroupAccess = (
+    context: CmsContext,
+    permission: CmsContentModelGroupPermission,
+    group: CmsContentModelGroup
+): boolean => {
+    const { groups } = permission;
+    // when no groups defined on permission
+    // it means user has access to everything
+    if (!groups) {
         return true;
     }
-    if (
-        Array.isArray(groups[locale]) === false ||
-        groups[locale].includes(model.group.id) === false
-    ) {
+    const locale = context.cms.getLocale().code;
+    // when there is no locale in groups, it means that no access was given
+    // this happens when access control was set but no models or groups were added
+    if (Array.isArray(groups[locale]) === false || groups[locale].includes(group.id) === false) {
         return false;
     }
     return true;
@@ -300,4 +342,21 @@ export const paginateBatch = async <T = Record<string, any>>(
     for (let i = 0; i < pages; i++) {
         await execute(items.slice(i * perPage, i * perPage + perPage));
     }
+};
+
+export const filterAsync = async <T = Record<string, any>>(
+    items: T[],
+    predicate: (T) => Promise<boolean>
+): Promise<T[]> => {
+    const filteredItems = [];
+
+    for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        const valid = await predicate(item);
+        if (valid) {
+            filteredItems.push(item);
+        }
+    }
+
+    return filteredItems;
 };

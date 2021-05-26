@@ -2,6 +2,7 @@
   "private": true,
   "workspaces": {
     "packages": [
+      "plugins/cli-plugin-generate-ts-configs",
       "packages/*",
       "apps/admin/code",
       "apps/website/code",
@@ -132,7 +133,7 @@
     "prettier": "prettier \"**/**/*.{js,jsx,ts,tsx,json}\" --config .prettierrc.js",
     "prettier:check": "yarn prettier --check",
     "prettier:fix": "yarn prettier --write",
-    "setup-repo": "node scripts/setupRepo",
+    "setup-project": "node scripts/setupProject",
     "setup-env-files": "node scripts/setupEnvFiles",
     "setup-ci-cypress": "node scripts/setupCiCypress",
     "setup-cypress": "node scripts/setupCypress",
@@ -142,8 +143,8 @@
     "lerna:publish:latest": "yarn lerna publish from-package --yes",
     "lerna:version:beta": "yarn lerna version --conventional-prerelease --force-publish --preid beta --yes",
     "lerna:publish:beta": "yarn lerna publish from-package --dist-tag beta --yes",
-    "lerna:version:verdaccio": "yarn lerna:version:beta --no-push --no-changelog",
-    "lerna:publish:verdaccio": "yarn lerna:publish:beta --registry=\"http://localhost:4873\" --no-verify-access --no-verify-registry",
+    "lerna:version:verdaccio": "yarn lerna version --conventional-prerelease --force-publish --preid next --no-push --no-changelog --yes",
+    "lerna:publish:verdaccio": "yarn lerna publish from-package --dist-tag next --registry=\"http://localhost:4873\" --no-verify-access --no-verify-registry --yes",
     "verdaccio:start": "yarn verdaccio -c ./.verdaccio.yaml",
     "verdaccio:start:detached": "yarn pm2 start \"yarn verdaccio:start\"",
     "webiny": "./node_modules/.bin/webiny",

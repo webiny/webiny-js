@@ -4,6 +4,7 @@ import { MultiAutoComplete } from "@webiny/ui/AutoComplete";
 import { Link } from "@webiny/react-router";
 import { i18n } from "@webiny/app/i18n";
 import { useReferences } from "./useReferences";
+import { renderItem } from "./renderItem";
 
 const t = i18n.ns("app-headless-cms/admin/fields/ref");
 
@@ -12,10 +13,7 @@ const warn = t`Before publishing the main content entry, make sure you publish t
 function ContentEntriesMultiAutocomplete({ bind, field }) {
     const { options, setSearch, entries, loading, onChange } = useReferences({ bind, field });
 
-    // Currently we only support 1 model in the `ref` field, so we use index 0 (this will be upgraded in the future).
-    const { modelId } = field.settings.models[0];
-
-    const entryWarning = ({ id, name, published }, index) =>
+    const entryWarning = ({ id, modelId, name, published }, index) =>
         !published && (
             <React.Fragment key={id}>
                 {index > 0 && ", "}
@@ -35,6 +33,8 @@ function ContentEntriesMultiAutocomplete({ bind, field }) {
     return (
         <MultiAutoComplete
             {...bind}
+            renderItem={renderItem}
+            renderListItemLabel={renderItem}
             useMultipleSelectionList
             onChange={onChange}
             loading={loading}

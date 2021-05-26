@@ -1,12 +1,13 @@
-import { ListPagesArgs } from "../../../types";
+import { ListPagesArgs, PbContext } from "../../types";
+import { ElasticsearchBoolQuery } from "@webiny/api-plugin-elastic-search-client/types";
 
 /**
  * Returns arguments suited to be sent to ElasticSearch's `search` method.
  * @param args
  */
-export default (args: ListPagesArgs) => {
+export default (args: ListPagesArgs, context: PbContext) => {
     const normalized = {
-        query: getQuery(args),
+        query: getQuery(args, context),
         sort: getSort(args.sort),
         size: args.limit ?? 10,
         from: 0,
@@ -17,31 +18,38 @@ export default (args: ListPagesArgs) => {
     return normalized;
 };
 
-const getQuery = (args: ListPagesArgs) => {
+const getQuery = (args: ListPagesArgs, context: PbContext): ElasticsearchBoolQuery => {
     const { where, search, exclude } = args;
-    const query: Record<string, any> = {
-        bool: {
-            filter: []
-        }
+    const query: ElasticsearchBoolQuery = {
+        filter: [],
+        must: [],
+        mustNot: []
     };
+
+    // When ES index is shared between tenants, we need to filter records by tenant ID
+    const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
+    if (sharedIndex) {
+        const tenant = context.security.getTenant();
+        query.filter.push({ term: { "tenant.keyword": tenant.id } });
+    }
 
     if (where) {
         if (where.category) {
-            query.bool.filter.push({ term: { "category.keyword": where.category } });
+            query.filter.push({ term: { "category.keyword": where.category } });
         }
 
         if (where.status) {
-            query.bool.filter.push({ term: { "status.keyword": where.status } });
+            query.filter.push({ term: { "status.keyword": where.status } });
         }
 
         const tags = where.tags;
         if (tags && Array.isArray(tags.query) && tags.query.length > 0) {
             if (tags.rule === "any") {
-                query.bool.filter.push({
+                query.filter.push({
                     terms: { "tags.keyword": tags.query }
                 });
             } else {
-                query.bool.filter.push({
+                query.filter.push({
                     bool: {
                         must: where.tags.query.map(tag => ({
                             term: { "tags.keyword": tag }
@@ -53,19 +61,16 @@ const getQuery = (args: ListPagesArgs) => {
     }
 
     if (search && search.query) {
-        query.bool.must = {
+        query.must.push({
             query_string: {
                 query: `*${search.query}*`,
-
                 allow_leading_wildcard: true,
                 fields: ["title", "snippet"]
             }
-        };
+        });
     }
     // Prepare query to exclude page which match provided id and/or path.
     if (Array.isArray(exclude) && exclude.length !== 0) {
-        query.bool.must_not = [];
-
         const paths = [];
         const pageIds = [];
 
@@ -79,7 +84,7 @@ const getQuery = (args: ListPagesArgs) => {
         });
 
         if (paths.length) {
-            query.bool.must_not.push({
+            query.mustNot.push({
                 terms: {
                     "path.keyword": paths
                 }
@@ -87,7 +92,7 @@ const getQuery = (args: ListPagesArgs) => {
         }
 
         if (pageIds.length) {
-            query.bool.must_not.push({
+            query.mustNot.push({
                 terms: {
                     pid: pageIds
                 }

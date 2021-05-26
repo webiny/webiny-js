@@ -8,5 +8,6 @@
     "baseUrl": "."
   },
   "exclude": ["node_modules", "dist", "../handler"],
+  "include": ["./src"],
   "references": []
 }

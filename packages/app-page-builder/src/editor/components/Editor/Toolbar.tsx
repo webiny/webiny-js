@@ -1,14 +1,15 @@
 import React, { useEffect, useRef } from "react";
+import { useRecoilValue } from "recoil";
+import classNames from "classnames";
 import styled from "@emotion/styled";
-import { useEventActionHandler } from "../../hooks/useEventActionHandler";
-import { DeactivatePluginActionEvent } from "../../recoil/actions";
-import { activePluginsByTypeNamesSelector } from "../../recoil/modules";
 import { css } from "emotion";
 import { Drawer, DrawerContent } from "@webiny/ui/Drawer";
 import { plugins } from "@webiny/plugins";
-import { useKeyHandler } from "../../hooks/useKeyHandler";
-import { PbEditorToolbarBottomPlugin, PbEditorToolbarTopPlugin } from "../../../types";
-import { useRecoilValue } from "recoil";
+import { PbEditorToolbarBottomPlugin, PbEditorToolbarTopPlugin } from "~/types";
+import { useKeyHandler } from "~/editor/hooks/useKeyHandler";
+import { useEventActionHandler } from "~/editor/hooks/useEventActionHandler";
+import { DeactivatePluginActionEvent } from "~/editor/recoil/actions";
+import { activePluginsByTypeNamesSelector } from "~/editor/recoil/modules";
 
 const ToolbarDrawerContainer = styled("div")({
     top: 64,
@@ -60,8 +61,14 @@ type ToolbarDrawerProps = {
     name: string;
     active: boolean;
     children: React.ReactNode;
+    drawerClassName?: string;
 };
-const ToolbarDrawer: React.FC<ToolbarDrawerProps> = ({ name, active, children }) => {
+const ToolbarDrawer: React.FC<ToolbarDrawerProps> = ({
+    name,
+    active,
+    children,
+    drawerClassName
+}) => {
     const eventActionHandler = useEventActionHandler();
     const { removeKeyHandler, addKeyHandler } = useKeyHandler();
     const last = useRef({ active: null });
@@ -85,7 +92,7 @@ const ToolbarDrawer: React.FC<ToolbarDrawerProps> = ({ name, active, children })
     });
     return (
         <DrawerContainer open={active}>
-            <Drawer dismissible open={active} className={drawerStyle}>
+            <Drawer dismissible open={active} className={classNames(drawerStyle, drawerClassName)}>
                 <DrawerContent>{children}</DrawerContent>
             </Drawer>
         </DrawerContainer>
@@ -111,6 +118,7 @@ const Toolbar = () => {
                             key={plugin.name}
                             name={plugin.name}
                             active={Boolean(activePluginsTop.includes(plugin.name))}
+                            drawerClassName={plugin.toolbar && plugin.toolbar.drawerClassName}
                         >
                             {plugin.renderDrawer()}
                         </ToolbarDrawer>

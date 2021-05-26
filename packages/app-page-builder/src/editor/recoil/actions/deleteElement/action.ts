@@ -1,6 +1,6 @@
-import { EventActionCallable, PbEditorElement } from "../../../../types";
+import { EventActionCallable, PbEditorElement } from "~/types";
 import { DeleteElementActionArgsType } from "./types";
-import { SaveRevisionActionEvent } from "..";
+import { UpdateElementTreeActionEvent, SaveRevisionActionEvent } from "..";
 
 const removeElementFromParent = (parent: PbEditorElement, id: string): PbEditorElement => {
     return {
@@ -33,6 +33,6 @@ export const deleteElementAction: EventActionCallable<DeleteElementActionArgsTyp
             activeElement: null,
             highlightElement: null
         },
-        actions: [new SaveRevisionActionEvent()]
+        actions: [new SaveRevisionActionEvent(), new UpdateElementTreeActionEvent()]
     };
 };

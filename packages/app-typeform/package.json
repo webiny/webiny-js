@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-typeform",
-  "version": "5.3.0",
+  "version": "5.7.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -13,9 +13,9 @@
     "@babel/runtime": "^7.5.5",
     "@emotion/core": "^10.0.27",
     "@emotion/styled": "^10.0.17",
-    "@webiny/app": "^5.3.0",
-    "@webiny/app-page-builder": "^5.3.0",
-    "@webiny/validation": "^5.3.0",
+    "@webiny/app": "^5.7.0",
+    "@webiny/app-page-builder": "^5.7.0",
+    "@webiny/validation": "^5.7.0",
     "lodash": "^4.17.4",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
@@ -28,6 +28,8 @@
     "@babel/preset-react": "^7.0.0",
     "@babel/preset-typescript": "^7.8.3",
     "@svgr/webpack": "^4.3.2",
+    "@webiny/cli": "^5.7.0",
+    "@webiny/project-utils": "^5.7.0",
     "babel-plugin-emotion": "^9.2.8",
     "babel-plugin-named-asset-import": "^1.0.0-next.3e165448",
     "rimraf": "^3.0.2",
@@ -38,9 +40,8 @@
     "directory": "dist"
   },
   "scripts": {
-    "build": "rimraf ./dist '*.tsbuildinfo' && babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" && yarn postbuild",
-    "watch": "babel src -d dist --source-maps --copy-files --extensions \".ts,.tsx\" --watch",
-    "postbuild": "cp package.json LICENSE README.md dist/ && tsc -p tsconfig.build.json"
+    "build": "yarn webiny run build",
+    "watch": "yarn webiny run watch"
   },
   "gitHead": "8476da73b653c89cc1474d968baf55c1b0ae0e5f"
 }

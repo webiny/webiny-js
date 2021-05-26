@@ -17,6 +17,16 @@ const menuStyles = css({
     bottom: 75
 });
 
+const listStyles = css({
+    "&.autocomplete__options-list": {
+        listStyle: "none",
+        paddingLeft: 0,
+        "& li": {
+            margin: 0
+        }
+    }
+});
+
 export enum Placement {
     top = "top",
     bottom = "bottom"
@@ -121,9 +131,14 @@ class AutoComplete extends React.Component<Props, State> {
             return (
                 <Elevation
                     z={1}
-                    className={classNames({ [menuStyles]: placement === Placement.top })}
+                    className={classNames({
+                        [menuStyles]: placement === Placement.top
+                    })}
                 >
-                    <ul {...getMenuProps()}>
+                    <ul
+                        className={classNames("autocomplete__options-list", listStyles)}
+                        {...getMenuProps()}
+                    >
                         <li>
                             <Typography use={"body2"}>No results.</Typography>
                         </li>
@@ -134,7 +149,10 @@ class AutoComplete extends React.Component<Props, State> {
 
         return (
             <Elevation z={1} className={classNames({ [menuStyles]: placement === Placement.top })}>
-                <ul {...getMenuProps()}>
+                <ul
+                    className={classNames("autocomplete__options-list", listStyles)}
+                    {...getMenuProps()}
+                >
                     {filtered.map((item, index) => {
                         const itemValue = getOptionValue(item, this.props);
 
@@ -232,11 +250,16 @@ class AutoComplete extends React.Component<Props, State> {
                                     },
                                     onKeyUp: (ev: React.KeyboardEvent<HTMLInputElement>) => {
                                         const keyCode: string = keycode((ev as unknown) as Event);
+
                                         const target = ev.currentTarget;
                                         const inputValue = target.value || "";
 
                                         // If user pressed 'esc', 'enter' or similar...
-                                        if (keyCode.length > 1 && keyCode !== "backspace") {
+                                        if (
+                                            keyCode &&
+                                            keyCode.length > 1 &&
+                                            keyCode !== "backspace"
+                                        ) {
                                             return;
                                         }
 

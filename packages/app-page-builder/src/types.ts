@@ -391,8 +391,6 @@ export type PbEditorPageSettingsPlugin = Plugin & {
     description: string;
     /* Settings group icon */
     icon: ReactNode;
-    /* GraphQL query fields to include in the `settings` subselect */
-    fields: string;
     /* Render function that handles the specified `fields` */
     render: (params: {
         data: Record<string, any>;
@@ -401,6 +399,11 @@ export type PbEditorPageSettingsPlugin = Plugin & {
         Bind: BindComponent;
     }) => ReactNode;
 };
+
+export interface PbEditorPageQueryFieldsPlugin extends Plugin {
+    type: "pb-editor-page-query-fields";
+    fields: string;
+}
 
 export type PbIcon = {
     /**
@@ -463,6 +466,9 @@ export type PbEditorToolbarTopPlugin = Plugin & {
     renderAction(): ReactElement;
     renderDialog?: () => ReactElement;
     renderDrawer?: () => ReactElement;
+    toolbar?: {
+        drawerClassName?: string;
+    };
 };
 
 export type PbEditorToolbarBottomPlugin = Plugin & {

@@ -3,6 +3,7 @@ import { WebinyInitPlugin } from "@webiny/app/types";
 import welcomeScreenPlugins from "@webiny/app-plugin-admin-welcome-screen";
 import routeNotFound from "./routeNotFound";
 import basePlugins from "./base";
+import apolloLinkPlugins from "./apolloLinks";
 import adminPlugins from "./admin";
 import i18nPlugins from "./i18n";
 import i18nContentPlugins from "./i18nContent";
@@ -17,6 +18,10 @@ plugins.register([
      * Base app plugins (files, images).
      */
     basePlugins,
+    /**
+     * ApolloClient link plugins.
+     */
+    apolloLinkPlugins,
     /**
      * Complete admin app UI.
      */

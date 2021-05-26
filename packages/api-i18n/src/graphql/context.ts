@@ -1,11 +1,11 @@
-import { ContextPluginInterface } from "@webiny/handler/types";
+import { ContextPlugin } from "@webiny/handler/types";
 import acceptLanguageParser from "accept-language-parser";
 import {
     ContextI18NGetLocales,
     I18NContext,
     I18NContextObject,
     I18NLocaleContextPlugin
-} from "./types";
+} from "~/types";
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
 import localesCRUD from "./crud/locales.crud";
 import systemCRUD from "./crud/system.crud";
@@ -56,7 +56,7 @@ const getLocaleFromHeaders = (http, localeContext = "default") => {
     return { acceptLanguageHeader, contextLocaleHeader };
 };
 
-export default (): ContextPluginInterface<I18NContext & TenancyContext> => ({
+export default (): ContextPlugin<I18NContext, TenancyContext> => ({
     type: "context",
     apply: async context => {
         context.i18n = {

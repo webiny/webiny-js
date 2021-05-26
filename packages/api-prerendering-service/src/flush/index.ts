@@ -11,8 +11,6 @@ import getTagUrlLinkPKSK from "./../utils/getTagUrlLinkPKSK";
 
 const s3 = new S3({ region: process.env.AWS_REGION });
 
-const log = console.log;
-
 const deleteFile = ({ key, storageName }) => {
     return s3
         .deleteObject({
@@ -25,6 +23,7 @@ const deleteFile = ({ key, storageName }) => {
 export default (configuration?: Configuration): HandlerPlugin => ({
     type: "handler",
     async handle(context): Promise<HandlerResponse> {
+        const log = console.log;
         const { invocationArgs } = context;
         const handlerArgs = Array.isArray(invocationArgs) ? invocationArgs : [invocationArgs];
         const handlerHookPlugins = context.plugins.byType<FlushHookPlugin>("ps-flush-hook");

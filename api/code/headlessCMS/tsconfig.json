@@ -44,6 +44,9 @@
       "path": "../../../packages/handler-aws"
     },
     {
+      "path": "../../../packages/handler-logs"
+    },
+    {
       "path": "../../../packages/handler-db"
     },
     {

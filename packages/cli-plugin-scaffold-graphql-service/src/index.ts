@@ -18,6 +18,7 @@ import {
     TsConfigJson
 } from "@webiny/cli-plugin-scaffold/types";
 import validateNpmPackageName from "validate-npm-package-name";
+import { getProject } from "@webiny/cli/utils";
 
 const ncp = util.promisify(ncpBase.ncp);
 
@@ -96,16 +97,15 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 }
             ];
         },
-        generate: async ({ input, oraSpinner }) => {
+        generate: async ({ input, ora }) => {
             const { location, entityName, packageName: initialPackageName } = input;
             const fullLocation = path.resolve(location);
 
-            const projectRootPath = path.dirname(
-                findUp.sync("webiny.root.js", {
-                    cwd: fullLocation
-                })
-            );
-            const locationRelative = path.relative(projectRootPath, fullLocation);
+            const project = getProject({
+                cwd: fullLocation
+            });
+
+            const locationRelative = path.relative(project.root, fullLocation);
 
             const packageName = createPackageName({
                 initial: initialPackageName,
@@ -132,9 +132,9 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             );
             const baseTsConfigBuildJson = await readJson<TsConfigJson>(baseTsConfigBuildJsonPath);
 
-            oraSpinner.start(`Creating service files in ${chalk.green(fullLocation)}...`);
+            ora.start(`Creating service files in ${chalk.green(fullLocation)}...`);
 
-            const relativeRootPath = path.relative(fullLocation, projectRootPath);
+            const relativeRootPath = path.relative(fullLocation, project.root);
 
             await fs.mkdirSync(location, { recursive: true });
 
@@ -206,36 +206,36 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 );
             }
 
-            oraSpinner.stopAndPersist({
+            ora.stopAndPersist({
                 symbol: chalk.green("✔"),
                 text: `Service files created in ${chalk.green(fullLocation)}.`
             });
 
             // Update root package.json - update "workspaces.packages" section.
-            oraSpinner.start(
+            ora.start(
                 `Adding ${chalk.green(location)} workspace in root ${chalk.green(
                     `package.json`
                 )}...`
             );
-            const rootPackageJsonPath = path.join(projectRootPath, "package.json");
+            const rootPackageJsonPath = path.join(project.root, "package.json");
             const rootPackageJson = await readJson<PackageJson>(rootPackageJsonPath);
             if (!rootPackageJson.workspaces.packages.includes(location)) {
                 rootPackageJson.workspaces.packages.push(location);
                 await writeJson(rootPackageJsonPath, rootPackageJson);
             }
 
-            oraSpinner.start(`Adding ${chalk.green(packageName)} to api package.json.`);
+            ora.start(`Adding ${chalk.green(packageName)} to api package.json.`);
             const graphqlPackageJsonPath = path.resolve(graphqlPath, "package.json");
             const graphqlPackageJson = await readJson<PackageJson>(graphqlPackageJsonPath);
             graphqlPackageJson.dependencies[packageName] = "^1.0.0";
             await writeJson(graphqlPackageJsonPath, graphqlPackageJson);
 
-            oraSpinner.stopAndPersist({
+            ora.stopAndPersist({
                 symbol: chalk.green("✔"),
                 text: `Added ${chalk.green(packageName)} to api package.json.`
             });
 
-            oraSpinner.start(`Updating api tsconfig.json.`);
+            ora.start(`Updating api tsconfig.json.`);
             // Update graphql tsconfig file
             const graphqlTsconfigPath = path.resolve(graphqlPath, "tsconfig.json");
             const packagePathRelativeToGraphql = path.relative(graphqlPath, fullLocation);
@@ -246,14 +246,14 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 }
             ]);
             await writeJson(graphqlTsconfigPath, graphqlTsconfig);
-            oraSpinner.stopAndPersist({
+            ora.stopAndPersist({
                 symbol: chalk.green("✔"),
                 text: `Workspace ${chalk.green(location)} added in root ${chalk.green(
                     `package.json`
                 )}.`
             });
 
-            oraSpinner.start(`Updating package name...`);
+            ora.start(`Updating package name...`);
 
             // Update the package's name
             const packageJsonPath = path.resolve(location, "package.json");
@@ -276,26 +276,24 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             });
 
             await writeJson(packageJsonPath, packageJson);
-            oraSpinner.stopAndPersist({
+            ora.stopAndPersist({
                 symbol: chalk.green("✔"),
                 text: `Package name set into ${chalk.green(`package.json`)}.`
             });
 
             // Update package tsconfig "extends" path
-            oraSpinner.start(`Updating package tsconfig extends path to root tsconfig...`);
+            ora.start(`Updating package tsconfig extends path to root tsconfig...`);
             const tsConfigPath = path.join(fullLocation, "tsconfig.json");
             const tsConfig = await readJson<TsConfigJson>(tsConfigPath);
             tsConfig.extends = baseTsConfigRelativePath;
             await writeJson(tsConfigPath, tsConfig);
-            oraSpinner.stopAndPersist({
+            ora.stopAndPersist({
                 symbol: chalk.green("✔"),
                 text: `Update package tsconfig extends path.`
             });
 
             // Update package tsconfig.build "extends" path
-            oraSpinner.start(
-                `Updating package tsconfig.build extends path to root tsconfig.build...`
-            );
+            ora.start(`Updating package tsconfig.build extends path to root tsconfig.build...`);
             const tsConfigBuildPath = tsConfigPath.replace("tsconfig.json", "tsconfig.build.json");
             const tsConfigBuild = await readJson<TsConfigJson>(tsConfigBuildPath);
             tsConfigBuild.extends = baseTsConfigRelativePath.replace(
@@ -303,15 +301,13 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 "tsconfig.build.json"
             );
             await writeJson(tsConfigBuildPath, tsConfigBuild);
-            oraSpinner.stopAndPersist({
+            ora.stopAndPersist({
                 symbol: chalk.green("✔"),
                 text: `Update package tsconfig.build extends path.`
             });
 
             // Update root tsconfig.build.json file paths
-            oraSpinner.start(
-                `Updating base tsconfig compilerOptions.paths to contain the package...`
-            );
+            ora.start(`Updating base tsconfig compilerOptions.paths to contain the package...`);
             if (!baseTsConfigBuildJson.compilerOptions) {
                 baseTsConfigBuildJson.compilerOptions = {};
             }
@@ -322,31 +318,31 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 `./${locationRelative}/src/*`
             ];
             await writeJson(baseTsConfigBuildJsonPath, baseTsConfigBuildJson);
-            oraSpinner.stopAndPersist({
+            ora.stopAndPersist({
                 symbol: chalk.green("✔"),
                 text: `Updated base tsconfig compilerOptions.paths.`
             });
 
             // Once everything is done, run `yarn` so the new packages are automatically installed.
             try {
-                oraSpinner.start(`Installing dependencies...`);
+                ora.start(`Installing dependencies...`);
                 await execa("yarn");
-                oraSpinner.stopAndPersist({
+                ora.stopAndPersist({
                     symbol: chalk.green("✔"),
                     text: "Dependencies installed."
                 });
-                oraSpinner.start(`Building generated package...`);
+                ora.start(`Building generated package...`);
                 const cwd = process.cwd();
                 process.chdir(location);
                 await execa("yarn", ["build"]);
                 process.chdir(cwd);
-                oraSpinner.stopAndPersist({
+                ora.stopAndPersist({
                     symbol: chalk.green("✔"),
                     text: "Package built."
                 });
-                oraSpinner.start(`Linking package...`);
+                ora.start(`Linking package...`);
                 await execa("yarn", ["postinstall"]);
-                oraSpinner.stopAndPersist({
+                ora.stopAndPersist({
                     symbol: chalk.green("✔"),
                     text: "Package linked."
                 });

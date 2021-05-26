@@ -15,7 +15,7 @@ import { Tooltip } from "@webiny/ui/Tooltip";
 import { Icon } from "@webiny/ui/Icon";
 import { Typography } from "@webiny/ui/Typography";
 import { useHotkeys } from "react-hotkeyz";
-import { ReactComponent as DownloadIcon } from "./icons/round-cloud_download-24px.svg";
+import { ReactComponent as CopyContentIcon } from "./icons/content_copy-black-24px.svg";
 import { ReactComponent as DeleteIcon } from "./icons/delete.svg";
 import { ReactComponent as ImageIcon } from "../../assets/icons/insert_photo-24px.svg";
 import { ReactComponent as FileIcon } from "../../assets/icons/insert_drive_file-24px.svg";
@@ -28,6 +28,7 @@ import { useSecurity } from "@webiny/app-security";
 import { ConfirmationDialog } from "@webiny/ui/ConfirmationDialog";
 import { DELETE_FILE, LIST_FILES, LIST_TAGS } from "./graphql";
 import { i18n } from "@webiny/app/i18n";
+import mime from "mime";
 
 const t = i18n.ns("app-admin/file-manager/file-details");
 
@@ -147,8 +148,20 @@ type FileDetailsProps = {
     };
     [key: string]: any;
 };
+
+const isImage = file => {
+    const fileType = mime.getType(file && file.name);
+
+    if (fileType && typeof fileType === "string") {
+        return fileType.includes("image");
+    }
+
+    return false;
+};
+
 export default function FileDetails(props: FileDetailsProps) {
     const { file, uploadFile, validateFiles } = props;
+
     const filePlugin = getFileTypePlugin(file);
     const actions = get(filePlugin, "fileDetails.actions") || [];
 
@@ -264,7 +277,16 @@ export default function FileDetails(props: FileDetailsProps) {
             >
                 {({ showConfirmation }) => {
                     return (
-                        <Tooltip content={<span>{t`Delete image`}</span>} placement={"bottom"}>
+                        <Tooltip
+                            content={
+                                isImage ? (
+                                    <span>{t`Delete image`}</span>
+                                ) : (
+                                    <span>{t`Delete file`}</span>
+                                )
+                            }
+                            placement={"bottom"}
+                        >
                             <IconButton
                                 data-testid={"fm-delete-file-button"}
                                 icon={<DeleteIcon style={{ margin: "0 8px 0 0" }} />}
@@ -315,10 +337,13 @@ export default function FileDetails(props: FileDetailsProps) {
                     </div>
                     <div className={style.download}>
                         <>
-                            <Tooltip content={<span>{t`Download file`}</span>} placement={"bottom"}>
+                            <Tooltip content={<span>{t`Copy URL`}</span>} placement={"bottom"}>
                                 <IconButton
-                                    onClick={() => window.open(file.src, "_blank")}
-                                    icon={<DownloadIcon style={{ margin: "0 8px 0 0" }} />}
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(file.src);
+                                        showSnackbar(t`URL copied successfully.`);
+                                    }}
+                                    icon={<CopyContentIcon style={{ margin: "0 8px 0 0" }} />}
                                 />
                             </Tooltip>
 

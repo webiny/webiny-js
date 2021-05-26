@@ -64,10 +64,10 @@ const setup = async args => {
     content = content.replace("{PULUMI_SECRETS_PROVIDER}", "passphrase");
     fs.writeFileSync(rootEnvFilePath, content);
 
-    let webinyRoot = fs.readFileSync(path.join(projectRoot, "webiny.root.js"), "utf-8");
-    webinyRoot = webinyRoot.replace("[PROJECT_NAME]", projectName);
-    webinyRoot = webinyRoot.replace("[TEMPLATE_VERSION]", `${name}@${version}`);
-    fs.writeFileSync(path.join(projectRoot, "webiny.root.js"), webinyRoot);
+    let projectFile = fs.readFileSync(path.join(projectRoot, "webiny.project.ts"), "utf-8");
+    projectFile = projectFile.replace("[PROJECT_NAME]", projectName);
+    projectFile = projectFile.replace("[TEMPLATE_VERSION]", `${name}@${version}`);
+    fs.writeFileSync(path.join(projectRoot, "webiny.project.ts"), projectFile);
 
     // Adjust versions - change them from `latest` to current one.
     const latestVersion = version;
@@ -121,7 +121,7 @@ const setup = async args => {
                     "yarn webiny --help"
                 )} in your ${green(projectName)} directory.`,
                 "",
-                "Want to delve deeper into Webiny? Check out https://docs.webiny.com!",
+                "Want to dive deeper into Webiny? Check out https://webiny.com/docs/!",
                 "Like the project? Star us on https://github.com/webiny/webiny-js!",
                 "",
                 "Need help? Join our Slack community! https://www.webiny.com/slack",

@@ -1,6 +1,6 @@
 import { get } from "lodash";
 import kebabCase from "lodash/kebabCase";
-import { PbRenderElementStylePlugin } from "../../../../types";
+import { PbRenderElementStylePlugin } from "~/types";
 import { applyPerDeviceStyleWithFallback } from "../../../utils";
 
 export default {
@@ -12,16 +12,18 @@ export default {
         // Set per-device property value
         applyPerDeviceStyleWithFallback(({ displayMode, fallbackMode }) => {
             const hidden = get(visibility, `${displayMode}.hidden`);
+            const defaultValue = "visible";
+
             if (hidden === undefined) {
                 // Set visibility
                 style[`--${kebabCase(displayMode)}-visibility`] = get(
                     style,
                     `--${kebabCase(fallbackMode)}-visibility`,
-                    "flex"
+                    defaultValue
                 );
             } else {
                 // Set visibility
-                style[`--${kebabCase(displayMode)}-visibility`] = hidden ? "none" : "flex";
+                style[`--${kebabCase(displayMode)}-visibility`] = hidden ? "hidden" : defaultValue;
             }
         });
 

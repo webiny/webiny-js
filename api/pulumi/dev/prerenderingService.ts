@@ -26,7 +26,8 @@ class PageBuilder {
             ],
             environment: {
                 variables: {
-                    ...env
+                    ...env,
+                    WEBINY_LOGS_FORWARD_URL: String(process.env.WEBINY_LOGS_FORWARD_URL)
                 }
             },
             description: "Renders pages and stores output in an S3 bucket of choice.",

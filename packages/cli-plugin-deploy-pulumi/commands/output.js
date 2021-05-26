@@ -1,20 +1,24 @@
 const { red } = require("chalk");
+const { login, getPulumi, loadEnvVariables } = require("../utils");
+const { getProjectApplication } = require("@webiny/cli/utils");
 const path = require("path");
-const loadEnvVariables = require("../utils/loadEnvVariables");
-const getPulumi = require("../utils/getPulumi");
-const login = require("../utils/login");
 
 module.exports = async (inputs, context) => {
     const { env, folder, json } = inputs;
-    const projectApplicationDir = path.join(".", folder).replace(/\\/g, "/");
-
     await loadEnvVariables(inputs, context);
 
-    await login(folder, context.paths.projectRoot);
+    // Get project application metadata.
 
-    const pulumi = getPulumi({
+    const projectApplication = getProjectApplication({
+        cwd: path.join(process.cwd(), inputs.folder)
+    });
+
+    // Will also install Pulumi, if not already installed.
+    await login(projectApplication);
+
+    const pulumi = await getPulumi({
         execa: {
-            cwd: projectApplicationDir
+            cwd: projectApplication.root
         }
     });
 
