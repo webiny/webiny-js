@@ -26,7 +26,11 @@ const plugins = [
         type: "cms-content-details-revision-content",
         render(props) {
             return (
-                <Tab label={"Content"} disabled={props.getLoading()}>
+                <Tab
+                    label={"Content"}
+                    disabled={props.getLoading()}
+                    data-testid={"cms.content-form.tabs.content"}
+                >
                     <RenderBlock>
                         <Elevation z={2} className={elevationStyles}>
                             {props.getLoading() && <CircularProgress />}

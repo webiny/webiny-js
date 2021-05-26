@@ -51,7 +51,7 @@ const RevisionsList = (props: Props) => {
         <Elevation className={style.list} z={2}>
             {props.getLoading() && <CircularProgress />}
             {entry.id && revisions.length ? (
-                <List nonInteractive twoLine>
+                <List nonInteractive twoLine data-testid={"cms.content-form.revisions"}>
                     {revisions.map(revision => (
                         <Revision {...props} revision={revision} key={revision.id} />
                     ))}

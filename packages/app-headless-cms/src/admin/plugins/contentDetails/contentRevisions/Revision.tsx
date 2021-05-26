@@ -42,17 +42,23 @@ const getIcon = (rev: CmsEditorContentEntry) => {
     switch (true) {
         case rev.meta.locked && rev.meta.status !== "published":
             return {
-                icon: <Icon icon={<LockIcon />} />,
+                icon: <Icon icon={<LockIcon />} data-testid={"cms.revision.status.locked"} />,
                 text: "This revision is locked (it has already been published)"
             };
         case rev.meta.status === "published":
             return {
-                icon: <Icon icon={<BeenHereIcon />} className={primaryColor} />,
+                icon: (
+                    <Icon
+                        icon={<BeenHereIcon />}
+                        className={primaryColor}
+                        data-testid={"cms.revision.status.published"}
+                    />
+                ),
                 text: "This revision is currently published!"
             };
         default:
             return {
-                icon: <Icon icon={<GestureIcon />} />,
+                icon: <Icon icon={<GestureIcon />} data-testid={"cms.revision.status.draft"} />,
                 text: "This is a draft"
             };
     }
@@ -120,9 +126,13 @@ const Revision = (props: Props) => {
                         <Menu
                             handle={<IconButton icon={<MoreVerticalIcon />} />}
                             className={revisionsMenu}
+                            data-testid={"cms.content-form.revisions.more-options"}
                         >
                             {canEdit(entry, "cms.contentEntry") && (
-                                <MenuItem onClick={createRevision}>
+                                <MenuItem
+                                    onClick={createRevision}
+                                    data-testid={"cms.revision.create-revision"}
+                                >
                                     <ListItemGraphic>
                                         <Icon icon={<AddIcon />} />
                                     </ListItemGraphic>
@@ -156,7 +166,10 @@ const Revision = (props: Props) => {
 
                             {revision.meta.status === "published" &&
                                 canUnpublish("cms.contentEntry") && (
-                                    <MenuItem onClick={unpublishRevision}>
+                                    <MenuItem
+                                        onClick={unpublishRevision}
+                                        data-testid={"cms.revision.unpublish"}
+                                    >
                                         <ListItemGraphic>
                                             <Icon icon={<UnpublishIcon />} />
                                         </ListItemGraphic>
