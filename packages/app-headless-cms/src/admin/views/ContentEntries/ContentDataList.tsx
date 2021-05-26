@@ -241,7 +241,12 @@ const ContentDataList = ({
                 />
             }
             modalOverlay={entriesDataListModalOverlay}
-            modalOverlayAction={<UIList.DataListModalOverlayAction icon={<FilterIcon />} />}
+            modalOverlayAction={
+                <UIList.DataListModalOverlayAction
+                    icon={<FilterIcon />}
+                    data-testid={"default-data-list.filter"}
+                />
+            }
         >
             {({ data }) => (
                 <>
