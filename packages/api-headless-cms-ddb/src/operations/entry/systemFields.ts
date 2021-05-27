@@ -30,7 +30,7 @@ export const systemFields: Record<string, CmsContentModelField> = {
         type: "plainObject",
         fieldId: "createdBy",
         settings: {
-            path: "ownedBy.id"
+            path: "createdBy.id"
         }
     }),
     ownedBy: createSystemField({
