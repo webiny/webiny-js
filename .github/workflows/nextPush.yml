@@ -244,9 +244,10 @@ jobs:
         with:
           node-version: 12
 
-      - uses: doitadrian/action-post-run@1.0.0
+      - uses: webiny/action-post-run@2.0.0
         with:
-          command: cd test-project && yarn webiny destroy api --env dev &&\
+          working-directory: test-project
+          run: yarn webiny destroy api --env dev &&\
                     yarn webiny destroy apps/admin --env dev &&\
                     yarn webiny destroy apps/website --env dev
 
