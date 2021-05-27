@@ -225,7 +225,7 @@ jobs:
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"eu-central-1"}'
 
-  e2e-tests:
+  deploy-preview:
     needs: verdaccio-publish
     name: Deploy preview
     runs-on: ubuntu-latest
@@ -234,6 +234,8 @@ jobs:
       NODE_OPTIONS: --max_old_space_size=4096
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_ELASTIC_SEARCH_DOMAIN_NAME: ${{ secrets.AWS_ELASTIC_SEARCH_DOMAIN_NAME }}
+      ELASTIC_SEARCH_INDEX_PREFIX: ${{ github.sha }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}${{ github.sha }}
@@ -286,7 +288,7 @@ jobs:
 
       - name: Deploy preview
         working-directory: test-project
-        run: yarn webiny deploy api --env dev
+        run: yarn webiny deploy --env dev
 
       - name: Print project information
         working-directory: test-project
