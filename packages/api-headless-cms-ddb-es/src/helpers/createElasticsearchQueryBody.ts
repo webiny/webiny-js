@@ -348,6 +348,17 @@ const createModelFieldOptions = (context: CmsContext, model: CmsContentModel): M
                 }
             })
         },
+        createdBy: {
+            type: "text",
+            unmappedType: undefined,
+            isSystemField: true,
+            isSearchable: true,
+            isSortable: false,
+            path: "createdBy.id",
+            field: createSystemField({
+                type: "text"
+            })
+        },
         ownedBy: {
             type: "text",
             unmappedType: undefined,
