@@ -254,9 +254,9 @@ jobs:
       - uses: webiny/action-post-run@2.0.1
         with:
           working-directory: test-project
-          run: yarn webiny destroy api --env dev &&\
-                    yarn webiny destroy apps/admin --env dev &&\
-                    yarn webiny destroy apps/website --env dev
+          run: yarn webiny destroy api --env dev
+#                    yarn webiny destroy apps/admin --env dev &&\
+#                    yarn webiny destroy apps/website --env dev
 
       - uses: actions/download-artifact@v2
         with:
@@ -294,24 +294,24 @@ jobs:
         working-directory: test-project
         run: sed -i 's/5 minutes/1 minute/g' api/pulumi/dev/prerenderingService.ts
 
-#      - name: Deploy preview
-#        working-directory: test-project
-#        run: yarn webiny deploy api --env dev
-#
-#      - name: Print project information
-#        working-directory: test-project
-#        run: yarn webiny info
-#
-#      - name: Upload preview files
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: preview-files
-#          retention-days: 1
-#          path: |
-#            test-project/
-#            !test-project/node_modules/**/*
-#            !test-project/**/node_modules/**/*
-#            !test-project/.yarn/cache/**/*
+      - name: Deploy preview
+        working-directory: test-project
+        run: yarn webiny deploy api --env dev
+
+      - name: Print project information
+        working-directory: test-project
+        run: yarn webiny info
+
+      - name: Upload preview files
+        uses: actions/upload-artifact@v2
+        with:
+          name: preview-files
+          retention-days: 1
+          path: |
+            test-project/
+            !test-project/node_modules/**/*
+            !test-project/**/node_modules/**/*
+            !test-project/.yarn/cache/**/*
 
       - uses: actions/setup-node@v2
         with:
