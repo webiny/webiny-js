@@ -229,12 +229,14 @@ jobs:
     needs: verdaccio-publish
     name: Deploy preview
     runs-on: ubuntu-latest
+    environment: next
     env:
+      NODE_OPTIONS: --max_old_space_size=4096
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
-      WEBINY_PULUMI_BACKEND_URL: ${{ secrets.AWS_PULUMI_S3_BUCKET_NEXT_BRANCH_PREVIEW }}
+      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}${{ github.sha }}
     steps:
       - uses: actions/setup-node@v2
         with:
