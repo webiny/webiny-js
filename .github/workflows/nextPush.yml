@@ -225,7 +225,7 @@ jobs:
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"eu-central-1"}'
 
-  deploy-preview:
+  e2e-tests:
     needs: verdaccio-publish
     name: Deploy preview
     runs-on: ubuntu-latest
@@ -286,7 +286,7 @@ jobs:
 
       - name: Deploy preview
         working-directory: test-project
-        run: yarn webiny deploy --env dev
+        run: yarn webiny deploy api --env dev
 
       - name: Print project information
         working-directory: test-project
