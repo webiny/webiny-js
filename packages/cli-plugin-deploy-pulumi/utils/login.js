@@ -17,6 +17,7 @@ const { log } = require("@webiny/cli/utils");
 const SELF_MANAGED_BACKEND = ["s3://", "azblob://", "gs://"];
 
 module.exports = async projectApplication => {
+    // Backwards compatibility, for < 5.5.0 projects.
     await copyStateFilesToProjectRoot(projectApplication);
 
     // Do the login with Pulumi CLI.
@@ -38,20 +39,24 @@ module.exports = async projectApplication => {
         process.env.PULUMI_LOGIN;
 
     if (login) {
-        // Determine if we use as single storage for all Pulumi projects. If so, append project application path.
+        // If the user passed `s3://my-bucket`, we want to store files in `s3://my-bucket/{project-application-path}`
         const selfManagedBackend = SELF_MANAGED_BACKEND.find(item => login.startsWith(item));
         if (selfManagedBackend) {
             login = trimEnd(login, "/") + "/" + relativeProjectApplicationPath;
         }
     } else {
+        // By default, we use local file system as backend. All files are stored in project root's
+        // `.pulumi` folder, e.g. `.pulumi/apps/admin`.
         const stateFilesFolder = join(
             projectApplication.project.root,
             ".pulumi",
             relativeProjectApplicationPath
         );
+
         if (!fs.existsSync(stateFilesFolder)) {
             fs.mkdirSync(stateFilesFolder, { recursive: true });
         }
+
         login = `file://${stateFilesFolder}`;
     }
 
