@@ -234,7 +234,7 @@ jobs:
 
   e2e-tests:
     needs: [cache-key, verdaccio-publish]
-    name: Deploy preview
+    name: End-to-end test
     runs-on: ubuntu-latest
     environment: next
     env:
