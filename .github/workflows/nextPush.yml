@@ -242,6 +242,12 @@ jobs:
         with:
           node-version: 12
 
+      - uses: doitadrian/action-post-run@1.0.0
+        with:
+          command: yarn webiny destroy api --env dev &&\
+                    yarn webiny destroy apps/admin --env dev &&\
+                    yarn webiny destroy apps/website --env dev
+
       - uses: actions/download-artifact@v2
         with:
           name: verdaccio-files
@@ -280,7 +286,7 @@ jobs:
 
       - name: Deploy preview
         working-directory: test-project
-        run: yarn webiny deploy
+        run: yarn webiny deploy --env dev
 
       - name: Print project information
         working-directory: test-project
