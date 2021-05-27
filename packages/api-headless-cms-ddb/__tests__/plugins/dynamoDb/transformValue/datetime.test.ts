@@ -1,0 +1,63 @@
+import datetimeTransform from "../../../../src/dynamoDb/transformValue/datetime";
+import { CmsContentModelField } from "@webiny/api-headless-cms/types";
+
+const createField = (fieldType: string): CmsContentModelField => {
+    return ({
+        id: "fieldId",
+        fieldId: "fieldId",
+        type: "datetime",
+        settings: {
+            type: fieldType
+        }
+    } as unknown) as CmsContentModelField;
+};
+
+describe("dynamodb transform datetime", () => {
+    const correctValues = [
+        [new Date("Thu, 13 May 2021 12:32:33.892 GMT"), "date", 1620909153892],
+        [new Date("2021-05-13T12:32:33.892Z"), "date", 1620909153892],
+        ["2021-05-13T12:32:33.892Z", "date", 1620909153892],
+        ["13:57:22", "time", 50242000],
+        ["13:57", "time", 50220000],
+        ["13:57.481", "time", 50220481],
+        ["13:57:22.581", "time", 50242581]
+    ];
+    test.each(correctValues)(
+        "should transform date or time into the milliseconds - %s",
+        (value: Date | string, fieldType: string, expected: number) => {
+            const plugin = datetimeTransform();
+
+            const result = plugin.transform({
+                field: createField(fieldType),
+                value
+            });
+
+            expect(result).toEqual(expected);
+        }
+    );
+
+    const incorrectTimeValues = [
+        [{}],
+        [[]],
+        [
+            function() {
+                return 1;
+            }
+        ],
+        [true]
+    ];
+
+    test.each(incorrectTimeValues)(
+        "should throw an error when trying to transform time field but value is not a string or a number",
+        (value: any) => {
+            const plugin = datetimeTransform();
+
+            expect(() => {
+                plugin.transform({
+                    field: createField("time"),
+                    value
+                });
+            }).toThrow("Field value must be a string because field is defined as time.");
+        }
+    );
+});

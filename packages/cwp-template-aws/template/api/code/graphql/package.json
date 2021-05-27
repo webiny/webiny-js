@@ -12,6 +12,7 @@
     "@webiny/api-i18n": "latest",
     "@webiny/api-i18n-content": "latest",
     "@webiny/api-headless-cms": "latest",
+    "@webiny/api-headless-cms-ddb-es": "latest",
     "@webiny/api-page-builder": "latest",
     "@webiny/api-plugin-elastic-search-client": "latest",
     "@webiny/api-plugin-security-cognito": "latest",

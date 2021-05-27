@@ -64,16 +64,16 @@ const categoryManagerHelper = async manageOpts => {
     const animals = animalsResponse.data.createCategory.data;
 
     // Publish categories so then become available in the "read" API
-    await publishCategory({ revision: fruits.id });
-    await publishCategory({ revision: vegetables.id });
-    await publishCategory({ revision: animals.id });
+    const [publishedFruitsResponse] = await publishCategory({ revision: fruits.id });
+    const [publishedVegetablesResponse] = await publishCategory({ revision: vegetables.id });
+    const [publishedAnimalsResponse] = await publishCategory({ revision: animals.id });
 
     return {
         sleep,
         until,
-        fruits,
-        vegetables,
-        animals,
+        fruits: publishedFruitsResponse.data.publishCategory.data,
+        vegetables: publishedVegetablesResponse.data.publishCategory.data,
+        animals: publishedAnimalsResponse.data.publishCategory.data,
         createCategory,
         publishCategory
     };
@@ -86,7 +86,6 @@ describe("READ - Resolvers", () => {
     const readOpts = { path: "read/en-US" };
 
     const {
-        clearAllIndex,
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
@@ -125,12 +124,6 @@ describe("READ - Resolvers", () => {
     };
 
     beforeEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {
-            // Ignore errors
-        }
-
         const [createCMG] = await createContentModelGroupMutation({
             data: {
                 name: "Group",
@@ -144,12 +137,6 @@ describe("READ - Resolvers", () => {
         await setupModel("category", contentModelGroup);
     });
 
-    afterEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch (e) {}
-    });
-
     test("should return a record by id", async () => {
         // Use "manage" API to create and publish entries
         const { until, createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
@@ -160,7 +147,9 @@ describe("READ - Resolvers", () => {
         const { id: categoryId } = category;
 
         // Publish it so it becomes available in the "read" API
-        await publishCategory({ revision: categoryId });
+        const [publishResponse] = await publishCategory({ revision: categoryId });
+
+        const publishedCategory = publishResponse.data.publishCategory.data;
 
         // See if entries are available via "read" API
         const { getCategory } = useCategoryReadHandler(readOpts);
@@ -182,7 +171,7 @@ describe("READ - Resolvers", () => {
                     data: {
                         id: category.id,
                         createdOn: category.createdOn,
-                        savedOn: category.savedOn,
+                        savedOn: publishedCategory.savedOn,
                         title: category.title,
                         slug: category.slug
                     },
@@ -225,7 +214,9 @@ describe("READ - Resolvers", () => {
         const { id } = category;
 
         // Publish it so it becomes available in the "read" API
-        await publishCategory({ revision: id });
+        const [publishResponse] = await publishCategory({ revision: id });
+
+        const publishedCategory = publishResponse.data.publishCategory.data;
 
         // See if entries are available via "read" API
         const { listCategories } = useCategoryReadHandler(readOpts);
@@ -247,14 +238,14 @@ describe("READ - Resolvers", () => {
                             title: category.title,
                             slug: category.slug,
                             createdOn: category.createdOn,
-                            savedOn: category.savedOn
+                            savedOn: publishedCategory.savedOn
                         }
                     ],
                     error: null,
                     meta: {
+                        cursor: null,
                         hasMoreItems: false,
-                        totalCount: 1,
-                        cursor: expect.any(String)
+                        totalCount: 1
                     }
                 }
             }
@@ -271,17 +262,18 @@ describe("READ - Resolvers", () => {
         const { id } = category;
 
         // Publish it so it becomes available in the "read" API
-        await publishCategory({ revision: id });
+        const [publishedCategoryResponse] = await publishCategory({ revision: id });
+
+        const publishedCategory = publishedCategoryResponse.data.publishCategory.data;
 
         // See if entries are available via "read" API
-        const { listCategories } = useCategoryReadHandler(
-            Object.assign({}, readOpts, {
-                permissions: createPermissions({
-                    groups: [contentModelGroup.id],
-                    models: ["category"]
-                })
+        const { listCategories } = useCategoryReadHandler({
+            ...readOpts,
+            permissions: createPermissions({
+                groups: [contentModelGroup.id],
+                models: ["category"]
             })
-        );
+        });
 
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         await until(
@@ -300,14 +292,14 @@ describe("READ - Resolvers", () => {
                             title: category.title,
                             slug: category.slug,
                             createdOn: category.createdOn,
-                            savedOn: category.savedOn
+                            savedOn: publishedCategory.savedOn
                         }
                     ],
                     error: null,
                     meta: {
                         hasMoreItems: false,
                         totalCount: 1,
-                        cursor: expect.any(String)
+                        cursor: null
                     }
                 }
             }
@@ -327,13 +319,12 @@ describe("READ - Resolvers", () => {
         await publishCategory({ revision: id });
 
         // See if entries are available via "read" API
-        const { getCategory } = useCategoryReadHandler(
-            Object.assign({}, readOpts, {
-                permissions: createPermissions({
-                    groups: ["someOtherGroupId"]
-                })
+        const { getCategory } = useCategoryReadHandler({
+            ...readOpts,
+            permissions: createPermissions({
+                groups: ["someOtherGroupId"]
             })
-        );
+        });
 
         const [response] = await getCategory({
             where: {
@@ -370,13 +361,12 @@ describe("READ - Resolvers", () => {
         await publishCategory({ revision: id });
 
         // See if entries are available via "read" API
-        const { getCategory } = useCategoryReadHandler(
-            Object.assign({}, readOpts, {
-                permissions: createPermissions({
-                    models: ["someOtherModelId"]
-                })
+        const { getCategory } = useCategoryReadHandler({
+            ...readOpts,
+            permissions: createPermissions({
+                models: ["someOtherModelId"]
             })
-        );
+        });
 
         const [response] = await getCategory({ where: { id } });
 
@@ -542,7 +532,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 3
                     },
@@ -583,7 +573,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 3
                     },
@@ -635,7 +625,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 3
                     },
@@ -688,7 +678,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 3
                     },
@@ -712,7 +702,8 @@ describe("READ - Resolvers", () => {
                         title_contains: "NIMal"
                     }
                 }).then(([data]) => data),
-            ({ data }) => data.listCategories.data[0].id === animals.id
+            ({ data }) => data.listCategories.data[0].id === animals.id,
+            { name: "list categories with NIMal" }
         );
 
         expect(result).toEqual({
@@ -728,7 +719,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 1
                     },
@@ -775,7 +766,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 2
                     },
@@ -822,7 +813,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 2
                     },
@@ -862,7 +853,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 1
                     },
@@ -889,7 +880,8 @@ describe("READ - Resolvers", () => {
                     },
                     sort: ["createdOn_ASC"]
                 }).then(([data]) => data),
-            ({ data }) => data.listCategories.data.length === 3
+            ({ data }) => data.listCategories.data.length === 3,
+            { name: "list entries with createdOn greater than given date" }
         );
 
         expect(result).toEqual({
@@ -919,7 +911,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 3
                     },
@@ -959,7 +951,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 1
                     },
@@ -1042,7 +1034,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 2
                     },
@@ -1094,7 +1086,7 @@ describe("READ - Resolvers", () => {
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 2
                     },
@@ -1114,7 +1106,7 @@ describe("READ - Resolvers", () => {
             ...manageOpts
         });
 
-        await createProduct({
+        const [potatoResponse] = await createProduct({
             data: {
                 title: "Potato",
                 price: 100.05,
@@ -1128,6 +1120,7 @@ describe("READ - Resolvers", () => {
                 }
             }
         });
+        const potato = potatoResponse.data.createProduct.data;
 
         await createProduct({
             data: {
@@ -1144,7 +1137,7 @@ describe("READ - Resolvers", () => {
             }
         });
 
-        await createProduct({
+        const [kornResponse] = await createProduct({
             data: {
                 title: "Korn",
                 price: 99.1,
@@ -1158,15 +1151,16 @@ describe("READ - Resolvers", () => {
                 }
             }
         });
+        const korn = kornResponse.data.createProduct.data;
 
-        // wait until we have all products in the elastic
+        // wait until we have all products available
         await until(
             () =>
                 listProducts({
                     where: {}
                 }).then(([data]) => data),
             ({ data }) => data.listProducts.data.length === 3,
-            { name: "list all products in vegetables categories", tries: 10 }
+            { name: "list all products in vegetables categories - range", tries: 10, wait: 1000 }
         );
 
         const [response] = await listProducts({
@@ -1179,9 +1173,9 @@ describe("READ - Resolvers", () => {
         expect(response).toEqual({
             data: {
                 listProducts: {
-                    data: expect.any(Array),
+                    data: [korn, potato],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 2
                     },
@@ -1250,11 +1244,15 @@ describe("READ - Resolvers", () => {
         const carrot = carrotResponse.data.createProduct.data;
         const korn = kornResponse.data.createProduct.data;
 
-        // wait until we have all products in the elastic
+        // wait until we have all products available
         await until(
             () => listProducts({}).then(([data]) => data),
             ({ data }) => data.listProducts.data.length === 3,
-            { name: "list all products in vegetables categories", tries: 10, wait: 1000 }
+            {
+                name: "list all products in vegetables categories - sort title",
+                tries: 10,
+                wait: 1000
+            }
         );
 
         const [responseAsc] = await listProducts({
@@ -1266,7 +1264,7 @@ describe("READ - Resolvers", () => {
                 listProducts: {
                     data: [carrot, korn, potato],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 3
                     },
@@ -1284,7 +1282,7 @@ describe("READ - Resolvers", () => {
                 listProducts: {
                     data: [potato, korn, carrot],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 3
                     },
@@ -1353,11 +1351,15 @@ describe("READ - Resolvers", () => {
         const carrot = carrotResponse.data.createProduct.data;
         const korn = kornResponse.data.createProduct.data;
 
-        // wait until we have all products in the elastic
+        // wait until we have all products available
         await until(
             () => listProducts({}).then(([data]) => data),
             ({ data }) => data.listProducts.data.length === 3,
-            { name: "list all products in vegetables categories", tries: 10, wait: 1000 }
+            {
+                name: "list all products in vegetables categories - sort price",
+                tries: 10,
+                wait: 1000
+            }
         );
 
         const [responseAsc] = await listProducts({
@@ -1369,7 +1371,7 @@ describe("READ - Resolvers", () => {
                 listProducts: {
                     data: [potato, korn, carrot],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 3
                     },
@@ -1387,7 +1389,7 @@ describe("READ - Resolvers", () => {
                 listProducts: {
                     data: [carrot, korn, potato],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 3
                     },

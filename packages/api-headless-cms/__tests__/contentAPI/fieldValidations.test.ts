@@ -7,7 +7,6 @@ describe("fieldValidations", () => {
     const manageOpts = { path: "manage/en-US" };
 
     const {
-        clearAllIndex,
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
@@ -78,17 +77,6 @@ describe("fieldValidations", () => {
         return models;
     };
 
-    beforeEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {}
-    });
-
-    afterEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {}
-    });
     /**
      * testing required, minLength and maxLength of the string
      */

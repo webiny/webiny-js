@@ -15,6 +15,20 @@ const richTextMock = [
     {
         tag: "p",
         content: "Some small piece of text to test P tags"
+    },
+    {
+        tag: "div",
+        content: [
+            {
+                tag: "p",
+                text: "Text inside the div > p"
+            },
+            {
+                tag: "a",
+                href: "https://www.webiny.com",
+                text: "Webiny"
+            }
+        ]
     }
 ];
 
@@ -25,8 +39,7 @@ describe("refField", () => {
     const {
         createContentModelMutation,
         updateContentModelMutation,
-        createContentModelGroupMutation,
-        clearAllIndex
+        createContentModelGroupMutation
     } = useContentGqlHandler(manageOpts);
 
     // This function is not directly within `beforeEach` as we don't always setup the same content model.
@@ -99,18 +112,6 @@ describe("refField", () => {
 
         return category;
     };
-
-    beforeEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {}
-    });
-
-    afterEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {}
-    });
 
     test("should create a product with richText field populated", async () => {
         const contentModelGroup = await setupContentModelGroup();

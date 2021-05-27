@@ -16,8 +16,7 @@ describe("refField", () => {
     const {
         createContentModelMutation,
         updateContentModelMutation,
-        createContentModelGroupMutation,
-        clearAllIndex
+        createContentModelGroupMutation
     } = useContentGqlHandler(manageOpts);
 
     // This function is not directly within `beforeEach` as we don't always setup the same content model.
@@ -108,13 +107,11 @@ describe("refField", () => {
             }
         });
 
-        const product = createProductResponse.data.createProduct.data as CmsContentEntry;
-
-        await publishProduct({
-            revision: product.id
+        const [publishProductResponse] = await publishProduct({
+            revision: createProductResponse.data.createProduct.data.id
         });
 
-        return product;
+        return publishProductResponse.data.publishProduct.data;
     };
 
     const createAuthor = async () => {
@@ -127,26 +124,12 @@ describe("refField", () => {
             }
         });
 
-        const author = createResponse.data.createAuthor.data;
-
-        await publishAuthor({
-            revision: author.id
+        const [publishAuthorResponse] = await publishAuthor({
+            revision: createResponse.data.createAuthor.data.id
         });
 
-        return author;
+        return publishAuthorResponse.data.publishAuthor.data;
     };
-
-    beforeEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {}
-    });
-
-    afterEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {}
-    });
 
     test("should create review connected to a product", async () => {
         const contentModelGroup = await setupContentModelGroup();
@@ -187,7 +170,8 @@ describe("refField", () => {
             revision: review.id
         });
 
-        const { publishedOn } = publishResponse.data.publishReview.data.meta;
+        const publishedReview = publishResponse.data.publishReview.data;
+        const { publishedOn } = publishedReview.meta;
 
         const [manageGetResponse] = await manageGetReview({
             revision: review.id
@@ -204,7 +188,7 @@ describe("refField", () => {
                             displayName: "User 123",
                             type: "admin"
                         },
-                        savedOn: review.savedOn,
+                        savedOn: publishedReview.savedOn,
                         text: "review text",
                         rating: 5,
                         meta: {
@@ -279,13 +263,13 @@ describe("refField", () => {
                                 modelId: "product"
                             },
                             rating: 5,
-                            savedOn: review.savedOn,
+                            savedOn: publishedReview.savedOn,
                             text: review.text
                         }
                     ],
                     error: null,
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 1
                     }
@@ -321,7 +305,7 @@ describe("refField", () => {
                     data: {
                         id: review.id,
                         createdOn: review.createdOn,
-                        savedOn: review.savedOn,
+                        savedOn: publishedReview.savedOn,
                         text: "review text",
                         rating: 5,
                         product: {

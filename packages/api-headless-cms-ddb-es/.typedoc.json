@@ -1,0 +1,4 @@
+{
+  "name": "API Headless CMS DynamoDB / Elasticsearch",
+  "entryPoints": ["types.ts"]
+}

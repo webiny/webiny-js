@@ -102,6 +102,12 @@ const plugin: AdminInstallationPlugin = {
             getComponent() {
                 return lazy(() => import("./upgrades/v5.5.0"));
             }
+        },
+        {
+            version: "5.8.0",
+            getComponent() {
+                return lazy(() => import("./upgrades/v5.8.0"));
+            }
         }
     ]
 };

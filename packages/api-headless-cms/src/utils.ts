@@ -10,70 +10,6 @@ import {
 import { NotAuthorizedError } from "@webiny/api-security";
 import { SecurityPermission } from "@webiny/api-security/types";
 
-interface DatabaseConfigKeyFields {
-    name: string;
-}
-
-interface DatabaseConfigKeys {
-    primary: boolean;
-    unique: boolean;
-    name: string;
-    fields: DatabaseConfigKeyFields[];
-}
-
-interface DatabaseConfig {
-    table: string;
-    keys: DatabaseConfigKeys[];
-}
-
-export interface ElasticsearchConfig {
-    index: string;
-}
-
-export const defaults = {
-    db: (): DatabaseConfig => ({
-        table: process.env.DB_TABLE_HEADLESS_CMS,
-        keys: [
-            {
-                primary: true,
-                unique: true,
-                name: "primary",
-                fields: [{ name: "PK" }, { name: "SK" }]
-            }
-        ]
-    }),
-    esDb: (): DatabaseConfig => ({
-        table:
-            process.env.DB_TABLE_HEADLESS_CMS_ELASTICSEARCH || process.env.DB_TABLE_ELASTICSEARCH,
-        keys: [
-            {
-                primary: true,
-                unique: true,
-                name: "primary",
-                fields: [{ name: "PK" }, { name: "SK" }]
-            }
-        ]
-    }),
-    es(context: CmsContext, model: CmsContentModel): ElasticsearchConfig {
-        const tenant = context.security.getTenant();
-        if (!tenant) {
-            throw new Error(`There is no tenant on "context.security".`);
-        }
-
-        const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
-        const locale = context.cms.getLocale().code;
-        const index = [sharedIndex ? "root" : tenant.id, "headless-cms", locale, model.modelId]
-            .join("-")
-            .toLowerCase();
-
-        const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX;
-        if (prefix) {
-            return { index: prefix + index };
-        }
-        return { index };
-    }
-};
-
 export const hasRwd = (permission, rwd) => {
     if (typeof permission.rwd !== "string") {
         return true;
@@ -188,7 +124,7 @@ export const checkOwnership = (
 
     const identity = context.security.getIdentity();
 
-    if (!identity || record[field].id !== identity.id) {
+    if (!identity || !record[field] || record[field].id !== identity.id) {
         throw new NotAuthorizedError({
             data: {
                 reason: `You are not the owner of the record.`
@@ -297,22 +233,6 @@ export const toSlug = text => {
         lower: true,
         remove: /[*#\?<>_\{\}\[\]+~.()'"!:;@]/g
     });
-};
-
-export const encodeElasticsearchCursor = (cursor?: any) => {
-    if (!cursor) {
-        return null;
-    }
-
-    return Buffer.from(JSON.stringify(cursor)).toString("base64");
-};
-
-export const decodeElasticsearchCursor = (cursor?: string) => {
-    if (!cursor) {
-        return null;
-    }
-
-    return JSON.parse(Buffer.from(cursor, "base64").toString("ascii"));
 };
 
 export const zeroPad = version => `${version}`.padStart(4, "0");
