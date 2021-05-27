@@ -285,22 +285,22 @@ jobs:
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"eu-central-1"}'
 
-#      - name: Print CLI version
-#        working-directory: test-project
-#        run: yarn webiny --version
-#
-#      - name: Reduce prerendering service's process-queue schedule
-#        working-directory: test-project
-#        run: sed -i 's/5 minutes/1 minute/g' api/pulumi/dev/prerenderingService.ts
-#
-#      - name: Deploy preview
-#        working-directory: test-project
-#        run: yarn webiny deploy api --env dev
-#
-#      - name: Print project information
-#        working-directory: test-project
-#        run: yarn webiny info
-#
+      - name: Print CLI version
+        working-directory: test-project
+        run: yarn webiny --version
+
+      - name: Reduce prerendering service's process-queue schedule
+        working-directory: test-project
+        run: sed -i 's/5 minutes/1 minute/g' api/pulumi/dev/prerenderingService.ts
+
+      - name: Deploy preview
+        working-directory: test-project
+        run: yarn webiny deploy api --env dev
+
+      - name: Print project information
+        working-directory: test-project
+        run: yarn webiny info
+
 #      - name: Upload preview files
 #        uses: actions/upload-artifact@v2
 #        with:
