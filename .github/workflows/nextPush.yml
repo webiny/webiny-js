@@ -246,7 +246,7 @@ jobs:
 
       - uses: doitadrian/action-post-run@1.0.0
         with:
-          command: yarn webiny destroy api --env dev &&\
+          command: cd test-project && yarn webiny destroy api --env dev &&\
                     yarn webiny destroy apps/admin --env dev &&\
                     yarn webiny destroy apps/website --env dev
 
@@ -288,7 +288,7 @@ jobs:
 
       - name: Deploy preview
         working-directory: test-project
-        run: yarn webiny deploy --env dev
+        run: yarn webiny deploy api --env dev
 
       - name: Print project information
         working-directory: test-project
