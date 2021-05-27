@@ -132,16 +132,16 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
         schema: {
             typeDefs: /* GraphQL */ `
                 type CmsContentModelGroup {
-                    id: ID
-                    createdOn: DateTime
-                    savedOn: DateTime
-                    name: String
-                    contentModels: [CmsContentModel]
-                    totalContentModels: Int
-                    slug: String
+                    id: ID!
+                    createdOn: DateTime!
+                    savedOn: DateTime!
+                    name: String!
+                    contentModels: [CmsContentModel!]
+                    totalContentModels: Int!
+                    slug: String!
                     description: String
                     icon: String
-                    createdBy: JSON
+                    createdBy: CmsCreatedBy!
                 }
                 ${manageSchema}
             `,

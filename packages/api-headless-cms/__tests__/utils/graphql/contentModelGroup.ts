@@ -7,7 +7,11 @@ const DATA_FIELD = /* GraphQL*/ `
         icon
         createdOn
         savedOn
-        createdBy
+        createdBy {
+            id
+            displayName
+            type
+        }
     }
 `;
 const ERROR_FIELD = /* GraphQL */ `

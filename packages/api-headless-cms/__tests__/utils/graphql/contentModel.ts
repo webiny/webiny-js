@@ -41,7 +41,11 @@ const DATA_FIELD = /* GraphQL*/ `
         }
         createdOn
         savedOn
-        createdBy
+        createdBy {
+            id
+            displayName
+            type
+        }
     }
 `;
 const ERROR_FIELD = /* GraphQL */ `

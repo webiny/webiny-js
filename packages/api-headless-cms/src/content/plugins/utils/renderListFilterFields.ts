@@ -33,7 +33,15 @@ export const renderListFilterFields: RenderListFilterFields = ({
             "savedOn_lt: DateTime",
             "savedOn_lte: DateTime",
             "savedOn_between: [DateTime]",
-            "savedOn_not_between: [DateTime]"
+            "savedOn_not_between: [DateTime]",
+            "createdBy: String",
+            "createdBy_not: String",
+            "createdBy_in: [String!]",
+            "createdBy_not_in: [String!]",
+            "ownedBy: String",
+            "ownedBy_not: String",
+            "ownedBy_in: [String!]",
+            "ownedBy_not_in: [String!]"
         ].join("\n")
     ];
 

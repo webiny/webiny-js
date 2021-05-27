@@ -5,10 +5,11 @@ export default /* GraphQL */ `
     Product review
     """
     type Review {
-        id: ID
-        createdOn: DateTime
-        createdBy: CmsCreatedBy
-        savedOn: DateTime
+        id: ID!
+        createdOn: DateTime!
+        savedOn: DateTime!
+        createdBy: CmsCreatedBy!
+        ownedBy: CmsOwnedBy!
         meta: ReviewMeta
         text: String
         product: RefField
@@ -59,6 +60,14 @@ export default /* GraphQL */ `
         savedOn_lte: DateTime
         savedOn_between: [DateTime]
         savedOn_not_between: [DateTime]
+        createdBy: String
+        createdBy_not: String
+        createdBy_in: [String!]
+        createdBy_not_in: [String!]
+        ownedBy: String
+        ownedBy_not: String
+        ownedBy_in: [String!]
+        ownedBy_not_in: [String!]
 
         text: String
         text_not: String

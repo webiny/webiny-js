@@ -181,7 +181,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                     group: CmsContentModelGroup!
                     createdOn: DateTime!
                     savedOn: DateTime
-                    createdBy: JSON!
+                    createdBy: CmsCreatedBy!
                     fields: [CmsContentModelField!]!
                     lockedFields: [JSON]
                     layout: [[String!]!]!
