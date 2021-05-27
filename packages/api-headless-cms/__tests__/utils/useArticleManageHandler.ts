@@ -3,13 +3,19 @@ import { GQLHandlerCallableArgs } from "./useGqlHandler";
 
 const fields = `
     id
+    entryId
     createdOn
+    savedOn
     createdBy {
         id
         displayName
         type
     }
-    savedOn
+    ownedBy {
+        id
+        displayName
+        type
+    }
     meta {
         title
         modelId
