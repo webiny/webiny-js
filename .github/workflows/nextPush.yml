@@ -255,7 +255,10 @@ jobs:
       - uses: webiny/action-post-run@2.0.1
         with:
           working-directory: test-project
-          run: yarn webiny destroy api --env dev && yarn webiny destroy apps/admin --env dev && yarn webiny destroy apps/website --env dev
+          run: npx concurrently \
+                "yarn webiny destroy api --env dev" \
+                "yarn webiny destroy apps/admin --env dev" \
+                "yarn webiny destroy apps/website --env dev"
 
       - uses: actions/download-artifact@v2
         with:
@@ -293,9 +296,13 @@ jobs:
         working-directory: test-project
         run: sed -i 's/5 minutes/1 minute/g' api/pulumi/dev/prerenderingService.ts
 
-      - name: Deploy preview
+      - name: Deploy API
         working-directory: test-project
         run: yarn webiny deploy api --env dev
+
+      - name: Concurrently deploy Admin Area / Website
+        working-directory: test-project
+        run: npx concurrently "yarn webiny deploy apps/admin --env dev" "yarn webiny deploy apps/website --env dev"
 
       - name: Print project information
         working-directory: test-project
@@ -311,10 +318,6 @@ jobs:
 #            !test-project/node_modules/**/*
 #            !test-project/**/node_modules/**/*
 #            !test-project/.yarn/cache/**/*
-#
-#      - uses: actions/setup-node@v2
-#        with:
-#          node-version: 12
 #
 #      - uses: actions/checkout@v2
 #
