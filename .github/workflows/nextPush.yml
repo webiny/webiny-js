@@ -251,12 +251,11 @@ jobs:
         with:
           node-version: 12
 
+      # After the run is over, destroy deployed cloud infrastructure.
       - uses: webiny/action-post-run@2.0.1
         with:
           working-directory: test-project
           run: yarn webiny destroy api --env dev
-#                    yarn webiny destroy apps/admin --env dev &&\
-#                    yarn webiny destroy apps/website --env dev
 
       - uses: actions/download-artifact@v2
         with:
@@ -286,54 +285,54 @@ jobs:
           --assign-to-yarnrc '{"npmRegistryServer":"http://localhost:4873","unsafeHttpWhitelist":["localhost"]}'
           --template-options '{"region":"eu-central-1"}'
 
-      - name: Print CLI version
-        working-directory: test-project
-        run: yarn webiny --version
-
-      - name: Reduce prerendering service's process-queue schedule
-        working-directory: test-project
-        run: sed -i 's/5 minutes/1 minute/g' api/pulumi/dev/prerenderingService.ts
-
-      - name: Deploy preview
-        working-directory: test-project
-        run: yarn webiny deploy api --env dev
-
-      - name: Print project information
-        working-directory: test-project
-        run: yarn webiny info
-
-      - name: Upload preview files
-        uses: actions/upload-artifact@v2
-        with:
-          name: preview-files
-          retention-days: 1
-          path: |
-            test-project/
-            !test-project/node_modules/**/*
-            !test-project/**/node_modules/**/*
-            !test-project/.yarn/cache/**/*
-
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 12
-
-      - uses: actions/checkout@v2
-
-      - uses: actions/cache@v2
-        with:
-          path: .yarn/cache
-          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-
-      - uses: actions/cache@v2
-        with:
-          path: .webiny/cached-packages
-          key: cached-packages-${{ runner.os }}-next-1-${{ needs.cache-key.outputs.key }}
-
-      - name: Install dependencies
-        run: yarn --immutable
-
-      - name: Build packages
-        run: node scripts/buildWithCache.js
+#      - name: Print CLI version
+#        working-directory: test-project
+#        run: yarn webiny --version
+#
+#      - name: Reduce prerendering service's process-queue schedule
+#        working-directory: test-project
+#        run: sed -i 's/5 minutes/1 minute/g' api/pulumi/dev/prerenderingService.ts
+#
+#      - name: Deploy preview
+#        working-directory: test-project
+#        run: yarn webiny deploy api --env dev
+#
+#      - name: Print project information
+#        working-directory: test-project
+#        run: yarn webiny info
+#
+#      - name: Upload preview files
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: preview-files
+#          retention-days: 1
+#          path: |
+#            test-project/
+#            !test-project/node_modules/**/*
+#            !test-project/**/node_modules/**/*
+#            !test-project/.yarn/cache/**/*
+#
+#      - uses: actions/setup-node@v2
+#        with:
+#          node-version: 12
+#
+#      - uses: actions/checkout@v2
+#
+#      - uses: actions/cache@v2
+#        with:
+#          path: .yarn/cache
+#          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+#
+#      - uses: actions/cache@v2
+#        with:
+#          path: .webiny/cached-packages
+#          key: cached-packages-${{ runner.os }}-next-1-${{ needs.cache-key.outputs.key }}
+#
+#      - name: Install dependencies
+#        run: yarn --immutable
+#
+#      - name: Build packages
+#        run: node scripts/buildWithCache.js
 
 #  e2e-tests:
 #    needs: [cache-key, deploy-preview]
