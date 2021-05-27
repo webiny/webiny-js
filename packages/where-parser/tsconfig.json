@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig",
+  "include": ["src", "__tests__/**/*.ts"],
+  "references": [
+    {
+      "path": "../error"
+    }
+  ],
+  "compilerOptions": {
+    "paths": {
+      "@webiny/error/*": ["../error/src/*"],
+      "@webiny/error": ["../error/src"]
+    },
+    "baseUrl": "."
+  }
+}

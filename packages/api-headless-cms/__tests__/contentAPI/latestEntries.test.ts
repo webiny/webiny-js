@@ -221,12 +221,16 @@ describe("latest entries", function() {
         await until(
             () => previewListArticles().then(([data]) => data),
             ({ data }) => {
-                const categories = data?.listArticles?.data[0]?.categories || [];
+                const targetArticle = data?.listArticles?.data[0];
+                if (targetArticle.savedOn !== article.savedOn) {
+                    return false;
+                }
+                const categories = targetArticle.categories || [];
                 return categories.some(category => {
                     return category.id === updatedFruitCategory.id;
                 });
             },
-            { name: "list all articles", tries: 5 }
+            { name: "list all articles", tries: 10 }
         );
 
         const [listResponse] = await previewListArticles();
