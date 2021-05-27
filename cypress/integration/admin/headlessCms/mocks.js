@@ -43,3 +43,90 @@ export const CONTENT_MODEL_DATA = {
         }
     ]
 };
+
+export const getAuthorContentModelData = modelId => ({
+    layout: [["jxoS0C7r6"], ["Q3E6CJkaQ"]],
+    fields: [
+        {
+            type: "text",
+            label: "Name",
+            id: "jxoS0C7r6",
+            fieldId: "name",
+            validation: [],
+            multipleValues: false,
+            renderer: {
+                name: "text-input"
+            }
+        },
+        {
+            type: "ref",
+            label: "Books",
+            id: "Q3E6CJkaQ",
+            fieldId: "books",
+            validation: [],
+            multipleValues: true,
+            renderer: {
+                name: "ref-inputs"
+            },
+            settings: {
+                models: [
+                    {
+                        modelId
+                    }
+                ]
+            }
+        }
+    ]
+});
+
+export const BOOK_CONTENT_MODEL_DATA = {
+    layout: [["PUp1vtslZ"]],
+    fields: [
+        {
+            type: "text",
+            label: "Title",
+            id: "PUp1vtslZ",
+            fieldId: "title",
+            validation: [],
+            multipleValues: false,
+            renderer: {
+                name: "text-input"
+            }
+        }
+    ]
+};
+
+export const getBookContentModelData = modelId => ({
+    layout: [["PUp1vtslZ"], ["YDWl_3GPC"]],
+    fields: [
+        {
+            type: "text",
+            label: "Title",
+            id: "PUp1vtslZ",
+            fieldId: "title",
+            validation: [],
+            multipleValues: false,
+            renderer: {
+                name: "text-input"
+            }
+        },
+        {
+            type: "ref",
+            label: "Author",
+            id: "YDWl_3GPC",
+            fieldId: "author",
+            validation: [],
+            multipleValues: false,
+            renderer: {
+                name: "ref-input"
+            },
+            settings: {
+                models: [
+                    {
+                        modelId
+                    }
+                ]
+            }
+        }
+    ]
+});
