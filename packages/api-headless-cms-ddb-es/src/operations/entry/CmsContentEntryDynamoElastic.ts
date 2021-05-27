@@ -42,6 +42,7 @@ export const TYPE_ENTRY_PUBLISHED = TYPE_ENTRY + ".p";
 const getEntryData = (context: CmsContext, entry: CmsContentEntry) => {
     return {
         ...lodashOmit(entry, ["PK", "SK", "published", "latest"]),
+        TYPE: TYPE_ENTRY,
         __type: TYPE_ENTRY
     };
 };
@@ -50,6 +51,7 @@ const getESLatestEntryData = (context: CmsContext, entry: CmsContentEntry) => {
     return {
         ...getEntryData(context, entry),
         latest: true,
+        TYPE: TYPE_ENTRY_LATEST,
         __type: TYPE_ENTRY_LATEST
     };
 };
@@ -58,6 +60,7 @@ const getESPublishedEntryData = (context: CmsContext, entry: CmsContentEntry) =>
     return {
         ...getEntryData(context, entry),
         published: true,
+        TYPE: TYPE_ENTRY_PUBLISHED,
         __type: TYPE_ENTRY_PUBLISHED
     };
 };
@@ -519,10 +522,32 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                 PK: primaryKey,
                 SK: this.getSecondaryKeyRevision(originalEntry.version)
             },
-            data
+            data: {
+                ...data,
+                SK: this.getSecondaryKeyRevision(originalEntry.version)
+            }
         });
 
         if (latestEntry.id === originalEntry.id) {
+            /**
+             * First we update the regular DynamoDB table
+             */
+            batch.update({
+                ...configurations.db(),
+                query: {
+                    PK: primaryKey,
+                    SK: this.getSecondaryKeyLatest()
+                },
+                data: {
+                    ...data,
+                    TYPE: TYPE_ENTRY_LATEST,
+                    PK: primaryKey,
+                    SK: this.getSecondaryKeyLatest()
+                }
+            });
+            /**
+             * And then update the Elasticsearch table to propagate changes to the Elasticsearch
+             */
             const esEntry = prepareEntryToIndex({
                 context: this.context,
                 model,
@@ -552,6 +577,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         }
         try {
             await batch.execute();
+            this._dataLoaders.clearAllEntryRevisions(model);
             return data;
         } catch (ex) {
             throw new WebinyError(
