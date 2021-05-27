@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.7.0](https://github.com/webiny/webiny-js/compare/v5.7.0-beta.0...v5.7.0) (2021-05-24)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold-react-component
+
+
+
+
+
+# [5.7.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.6.0...v5.7.0-beta.0) (2021-05-23)
+
+
+### Bug Fixes
+
+* rename oraSpinner to just ora ([a19eafd](https://github.com/webiny/webiny-js/commit/a19eafd1b21e63af46857a68e3a6ea253ff9b58d))
+
+
+
+
+
 # [5.6.0](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.2...v5.6.0) (2021-05-10)
 
 **Note:** Version bump only for package @webiny/cli-plugin-scaffold-react-component

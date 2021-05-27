@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.7.0](https://github.com/webiny/webiny-js/compare/v5.7.0-beta.0...v5.7.0) (2021-05-24)
+
+**Note:** Version bump only for package @webiny/handler-graphql
+
+
+
+
+
+# [5.7.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.6.0...v5.7.0-beta.0) (2021-05-23)
+
+
+### Features
+
+* **handler-graphql:** introduce a GraphQLSchemaPlugin ([04d43eb](https://github.com/webiny/webiny-js/commit/04d43ebd72636ea7461cd69dea6429b5dd5afc87))
+
+
+
+
+
 # [5.6.0](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.2...v5.6.0) (2021-05-10)
 
 **Note:** Version bump only for package @webiny/handler-graphql

@@ -34,6 +34,8 @@ module.exports = async (inputs, context) => {
     // Get project application metadata.
     const projectApplication = getProjectApplication({ cwd: path.join(process.cwd(), folder) });
 
+    await loadEnvVariables(inputs, context);
+
     if (build) {
         await execa(
             "yarn",
@@ -54,8 +56,6 @@ module.exports = async (inputs, context) => {
             }
         );
     }
-
-    await loadEnvVariables(inputs, context);
 
     await login(projectApplication);
     const pulumi = await getPulumi({

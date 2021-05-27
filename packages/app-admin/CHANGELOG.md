@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.7.0](https://github.com/webiny/webiny-js/compare/v5.7.0-beta.0...v5.7.0) (2021-05-24)
+
+**Note:** Version bump only for package @webiny/app-admin
+
+
+
+
+
+# [5.7.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.6.0...v5.7.0-beta.0) (2021-05-23)
+
+
+### Bug Fixes
+
+* prevent opening the search bar while typing inside of a textarea ([17748a5](https://github.com/webiny/webiny-js/commit/17748a5e89b5a18424aeaa4fef98b470d13e20b4))
+
+
+
+
+
 # [5.6.0](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.2...v5.6.0) (2021-05-10)
 
 **Note:** Version bump only for package @webiny/app-admin

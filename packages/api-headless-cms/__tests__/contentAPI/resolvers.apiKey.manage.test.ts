@@ -44,19 +44,12 @@ describe("MANAGE - resolvers - api key", () => {
     const manageOpts = { path: "manage/en-US" };
 
     const {
-        clearAllIndex,
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
     } = useContentGqlHandler(manageOpts);
 
     beforeEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {
-            // Ignore errors
-        }
-
         const [createCMG] = await createContentModelGroupMutation({
             data: {
                 name: "Group",
@@ -95,12 +88,6 @@ describe("MANAGE - resolvers - api key", () => {
             console.error(`[beforeEach] ${update.errors[0].message}`);
             process.exit(1);
         }
-    });
-
-    afterEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch (e) {}
     });
 
     test("create, get, list, update and delete entry", async () => {
@@ -269,7 +256,7 @@ describe("MANAGE - resolvers - api key", () => {
         const listResponse = await until(
             () => listCategories({}, headers).then(([data]) => data),
             ({ data }) => data.listCategories.data[0].slug === updatedCategory.slug,
-            { name: `waiting for ${updatedCategory.slug}` }
+            { name: `waiting for green-vegetables slug on list categories` }
         );
 
         expect(listResponse).toEqual({
@@ -305,9 +292,9 @@ describe("MANAGE - resolvers - api key", () => {
                         }
                     ],
                     meta: {
+                        cursor: null,
                         hasMoreItems: false,
-                        totalCount: 1,
-                        cursor: expect.any(String)
+                        totalCount: 1
                     },
                     error: null
                 }

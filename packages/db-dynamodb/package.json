@@ -1,6 +1,6 @@
 {
   "name": "@webiny/db-dynamodb",
-  "version": "5.6.0",
+  "version": "5.7.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -10,13 +10,13 @@
   "author": "Webiny Ltd",
   "license": "MIT",
   "dependencies": {
-    "@webiny/db": "^5.6.0"
+    "@webiny/db": "^5.7.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
-    "@webiny/cli": "^5.6.0",
-    "@webiny/project-utils": "^5.6.0",
+    "@webiny/cli": "^5.7.0",
+    "@webiny/project-utils": "^5.7.0",
     "jest": "^26.6.3",
     "jest-dynalite": "^3.2.0",
     "rimraf": "^3.0.2",

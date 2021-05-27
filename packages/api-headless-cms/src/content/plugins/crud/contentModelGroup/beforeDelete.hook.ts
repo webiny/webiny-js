@@ -1,12 +1,37 @@
-import { CmsContext } from "../../../../types";
+import WebinyError from "@webiny/error";
+import {
+    CmsContentModelGroupStorageOperations,
+    CmsContentModelGroupStorageOperationsBeforeDeleteArgs,
+    CmsContext
+} from "../../../../types";
 
-export const beforeDeleteHook = async (context: CmsContext, id: string): Promise<void> => {
-    const items = (await context.cms.models.list()).filter(model => {
-        return model.group.id === id;
+interface Args extends CmsContentModelGroupStorageOperationsBeforeDeleteArgs {
+    context: CmsContext;
+    storageOperations: CmsContentModelGroupStorageOperations;
+}
+export const beforeDeleteHook = async ({
+    group,
+    context,
+    storageOperations
+}: Args): Promise<void> => {
+    const models = await context.cms.models.noAuth().list();
+    const items = models.filter(model => {
+        return model.group.id === group.id;
     });
 
-    if (items.length === 0) {
+    if (items.length > 0) {
+        throw new WebinyError(
+            "Cannot delete this group because there are models that belong to it.",
+            "BEFORE_DELETE_ERROR",
+            {
+                id: group.id
+            }
+        );
+    }
+    if (!storageOperations.beforeDelete) {
         return;
     }
-    throw new Error("Cannot delete this group because there are models that belong to it.");
+    await storageOperations.beforeDelete({
+        group
+    });
 };

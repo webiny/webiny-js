@@ -1,6 +1,6 @@
 {
   "name": "@webiny/react-router",
-  "version": "5.6.0",
+  "version": "5.7.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -17,7 +17,7 @@
     "@apollo/react-hooks": "^3.1.5",
     "@babel/runtime": "^7.5.5",
     "@types/react-router-dom": "^5.1.5",
-    "@webiny/plugins": "^5.6.0",
+    "@webiny/plugins": "^5.7.0",
     "apollo-client": "^2.6.8",
     "graphql": "^14.7.0",
     "react": "^16.14.0",
@@ -29,8 +29,8 @@
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
-    "@webiny/cli": "^5.6.0",
-    "@webiny/project-utils": "^5.6.0",
+    "@webiny/cli": "^5.7.0",
+    "@webiny/project-utils": "^5.7.0",
     "rimraf": "^3.0.2",
     "typescript": "^4.1.3"
   },

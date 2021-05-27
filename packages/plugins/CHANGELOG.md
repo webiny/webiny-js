@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.7.0](https://github.com/webiny/webiny-js/compare/v5.7.0-beta.0...v5.7.0) (2021-05-24)
+
+**Note:** Version bump only for package @webiny/plugins
+
+
+
+
+
+# [5.7.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.6.0...v5.7.0-beta.0) (2021-05-23)
+
+
+### Bug Fixes
+
+* **plugins:** make plugin type a static property ([a18a463](https://github.com/webiny/webiny-js/commit/a18a4634fcf114f614416e0fde9421dfeded84d7))
+
+
+### Features
+
+* **plugins:** introduce a Plugin class ([a1c3099](https://github.com/webiny/webiny-js/commit/a1c3099f89ca79aec4d8c75762bcd0a438286b39))
+
+
+
+
+
 # [5.6.0](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.2...v5.6.0) (2021-05-10)
 
 **Note:** Version bump only for package @webiny/plugins

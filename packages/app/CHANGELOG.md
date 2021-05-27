@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.7.0](https://github.com/webiny/webiny-js/compare/v5.7.0-beta.0...v5.7.0) (2021-05-24)
+
+**Note:** Version bump only for package @webiny/app
+
+
+
+
+
+# [5.7.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.6.0...v5.7.0-beta.0) (2021-05-23)
+
+
+### Bug Fixes
+
+* **app:** update ApolloLinkPlugin to use static type property ([3acb7fa](https://github.com/webiny/webiny-js/commit/3acb7fac224ef8408830afbde888d972bc26bb50))
+
+
+### Features
+
+* **app:** add sizes attribute to the Image component ([#1617](https://github.com/webiny/webiny-js/issues/1617)) ([5460ded](https://github.com/webiny/webiny-js/commit/5460ded69d251cf5ac8e2e00f5cf26f6666d7581))
+* **app:** convert apollo links into plugins ([4acde76](https://github.com/webiny/webiny-js/commit/4acde76ea4580b7c4dcb3c24d9447f6e144b18b0))
+
+
+
+
+
 # [5.6.0](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.2...v5.6.0) (2021-05-10)
 
 **Note:** Version bump only for package @webiny/app
