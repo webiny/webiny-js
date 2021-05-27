@@ -41,7 +41,11 @@ const ids = {
     field601: shortId.generate(),
     field602: shortId.generate(),
     field603: shortId.generate(),
-    field604: shortId.generate()
+    field604: shortId.generate(),
+    // article
+    field701: shortId.generate(),
+    field702: shortId.generate(),
+    field703: shortId.generate()
 };
 
 const models: CmsContentModel[] = [
@@ -1125,6 +1129,80 @@ const models: CmsContentModel[] = [
                 },
                 renderer: {
                     name: "renderer"
+                }
+            }
+        ]
+    },
+    {
+        createdOn: new Date(),
+        savedOn: new Date(),
+        locale: "en-US",
+        titleFieldId: "title",
+        lockedFields: [],
+        name: "Article",
+        description: "Article with multiple categories",
+        modelId: "article",
+        group: {
+            id: contentModelGroup.id,
+            name: contentModelGroup.name
+        },
+        layout: [[ids.field701, ids.field702, ids.field703]],
+        fields: [
+            {
+                id: ids.field701,
+                multipleValues: false,
+                helpText: "",
+                label: "Title",
+                type: "text",
+                fieldId: "title",
+                validation: [],
+                listValidation: [],
+                placeholderText: "Title",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            },
+            {
+                id: ids.field702,
+                multipleValues: false,
+                helpText: "",
+                label: "Body",
+                type: "rich-text",
+                fieldId: "body",
+                validation: [],
+                listValidation: [],
+                placeholderText: "Body",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            },
+            {
+                id: ids.field703,
+                multipleValues: true,
+                helpText: "",
+                label: "Categories",
+                type: "ref",
+                fieldId: "categories",
+                validation: [],
+                listValidation: [],
+                placeholderText: "Categories",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                },
+                settings: {
+                    models: [{ modelId: "category" }]
                 }
             }
         ]
