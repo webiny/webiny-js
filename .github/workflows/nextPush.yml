@@ -255,7 +255,7 @@ jobs:
       - uses: webiny/action-post-run@2.0.1
         with:
           working-directory: test-project
-          run: yarn webiny destroy api --env dev
+          run: yarn webiny destroy api --env dev && yarn webiny destroy apps/admin --env dev && yarn webiny destroy apps/website --env dev
 
       - uses: actions/download-artifact@v2
         with:
