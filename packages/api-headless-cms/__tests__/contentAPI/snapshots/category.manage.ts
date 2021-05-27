@@ -6,6 +6,7 @@ export default /* GraphQL */ `
     """
     type Category {
         id: ID!
+        entryId: String!
         createdOn: DateTime!
         savedOn: DateTime!
         createdBy: CmsCreatedBy!
@@ -33,6 +34,7 @@ export default /* GraphQL */ `
 
     input CategoryGetWhereInput {
         id: ID
+        entryId: String
         title: String
         slug: String
     }
@@ -40,22 +42,26 @@ export default /* GraphQL */ `
     input CategoryListWhereInput {
         id: ID
         id_not: ID
-        id_in: [ID]
-        id_not_in: [ID]
+        id_in: [ID!]
+        id_not_in: [ID!]
+        entryId: String
+        entryId_not: String
+        entryId_in: [String!]
+        entryId_not_in: [String!]
         createdOn: DateTime
         createdOn_gt: DateTime
         createdOn_gte: DateTime
         createdOn_lt: DateTime
         createdOn_lte: DateTime
-        createdOn_between: [DateTime]
-        createdOn_not_between: [DateTime]
+        createdOn_between: [DateTime!]
+        createdOn_not_between: [DateTime!]
         savedOn: DateTime
         savedOn_gt: DateTime
         savedOn_gte: DateTime
         savedOn_lt: DateTime
         savedOn_lte: DateTime
-        savedOn_between: [DateTime]
-        savedOn_not_between: [DateTime]
+        savedOn_between: [DateTime!]
+        savedOn_not_between: [DateTime!]
         createdBy: String
         createdBy_not: String
         createdBy_in: [String!]

@@ -29,6 +29,7 @@ export const createReadSDL: CreateManageSDL = ({ model, fieldTypePlugins }): str
         """${model.description || ""}"""
         type ${rTypeName} {
             id: ID!
+            entryId: String!
             createdOn: DateTime!
             savedOn: DateTime!
             createdBy: CmsCreatedBy!

@@ -34,6 +34,7 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
             .join("\n")}
         type ${mTypeName} {
             id: ID!
+            entryId: String!
             createdOn: DateTime!
             savedOn: DateTime!
             createdBy: CmsCreatedBy!
