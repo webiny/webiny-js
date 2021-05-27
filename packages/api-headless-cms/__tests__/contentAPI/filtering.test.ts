@@ -1093,7 +1093,11 @@ describe("filtering", () => {
         await until(
             () => articleManager.listArticles().then(([data]) => data),
             ({ data }) => {
-                return data.listArticles.data.every(entry => {
+                const entries = data?.listArticles?.data || [];
+                if (entries.length !== 2) {
+                    return false;
+                }
+                return entries.every(entry => {
                     return !!entry.meta.publishedOn;
                 });
             },
