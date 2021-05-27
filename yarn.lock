@@ -8965,7 +8965,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/cli@^5.5.0, @webiny/cli@^5.5.0-beta.0, @webiny/cli@^5.6.0, @webiny/cli@^5.7.0, @webiny/cli@workspace:packages/cli":
+"@webiny/cli@^5.5.0-beta.0, @webiny/cli@^5.6.0, @webiny/cli@^5.7.0, @webiny/cli@workspace:packages/cli":
   version: 0.0.0-use.local
   resolution: "@webiny/cli@workspace:packages/cli"
   dependencies:
@@ -9063,7 +9063,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/error@^5.3.0, @webiny/error@^5.5.0, @webiny/error@^5.7.0, @webiny/error@workspace:packages/error":
+"@webiny/error@^5.3.0, @webiny/error@^5.7.0, @webiny/error@workspace:packages/error":
   version: 0.0.0-use.local
   resolution: "@webiny/error@workspace:packages/error"
   dependencies:
@@ -9316,7 +9316,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/project-utils@^5.3.0, @webiny/project-utils@^5.5.0, @webiny/project-utils@^5.5.0-beta.0, @webiny/project-utils@^5.7.0, @webiny/project-utils@workspace:packages/project-utils":
+"@webiny/project-utils@^5.3.0, @webiny/project-utils@^5.5.0-beta.0, @webiny/project-utils@^5.7.0, @webiny/project-utils@workspace:packages/project-utils":
   version: 0.0.0-use.local
   resolution: "@webiny/project-utils@workspace:packages/project-utils"
   dependencies:
@@ -9615,9 +9615,9 @@ __metadata:
     "@babel/preset-env": ^7.5.5
     "@babel/preset-flow": ^7.0.0
     "@babel/runtime": ^7.5.5
-    "@webiny/cli": ^5.5.0
-    "@webiny/error": ^5.5.0
-    "@webiny/project-utils": ^5.5.0
+    "@webiny/cli": ^5.7.0
+    "@webiny/error": ^5.7.0
+    "@webiny/project-utils": ^5.7.0
     jest: ^26.6.3
     prettier: ^1.19.1
     rimraf: ^3.0.2
