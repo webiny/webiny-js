@@ -1,8 +1,9 @@
 name: Next Branch - Push
 
+# TODO: switch back to 'next'
 on:
   push:
-    branches: [next]
+    branches: [ci-improvements]
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
@@ -42,84 +43,84 @@ jobs:
         if: steps.cached-packages.outputs.cache-hit != 'true'
         run: node scripts/buildWithCache.js
 
-  code-analysis:
-    needs: cache-dependencies-packages
-    name: Static code analysis
-    runs-on: ubuntu-latest
-    steps:
-      - name: Get day of month (for caching purposes)
-        id: day-of-month
-        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
+#  code-analysis:
+#    needs: cache-dependencies-packages
+#    name: Static code analysis
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Get day of month (for caching purposes)
+#        id: day-of-month
+#        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
+#
+#      - uses: actions/setup-node@v2
+#        with:
+#          node-version: 12
+#
+#      - uses: actions/checkout@v2
+#
+#      - uses: actions/cache@v2
+#        with:
+#          path: .yarn/cache
+#          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+#
+#      - uses: actions/cache@v2
+#        with:
+#          path: .webiny/cached-packages
+#          key: cached-packages-${{ runner.os }}-next-1-${{ steps.day-of-month.outputs.day }}
+#
+#      - name: Install dependencies
+#        run: yarn --immutable
+#
+#      - name: Check code formatting
+#        run: yarn prettier:check
+#
+#      - name: Check dependencies
+#        run: yarn adio
+#
+#      - name: Check TS configs
+#        run: yarn check-ts-configs
+#
+#      - name: ESLint
+#        run: yarn eslint
 
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 12
-
-      - uses: actions/checkout@v2
-
-      - uses: actions/cache@v2
-        with:
-          path: .yarn/cache
-          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-
-      - uses: actions/cache@v2
-        with:
-          path: .webiny/cached-packages
-          key: cached-packages-${{ runner.os }}-next-1-${{ steps.day-of-month.outputs.day }}
-
-      - name: Install dependencies
-        run: yarn --immutable
-
-      - name: Check code formatting
-        run: yarn prettier:check
-
-      - name: Check dependencies
-        run: yarn adio
-
-      - name: Check TS configs
-        run: yarn check-ts-configs
-
-      - name: ESLint
-        run: yarn eslint
-
-  jest-tests:
-    needs: cache-dependencies-packages
-    name: Jest tests
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest]
-        node: [12, 14]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - name: Get day of month (for caching purposes)
-        id: day-of-month
-        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
-
-      - uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node }}
-
-      - uses: actions/checkout@v2
-
-      - uses: actions/cache@v2
-        with:
-          path: .yarn/cache
-          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-
-      - name: Install dependencies
-        run: yarn --immutable
-
-      - uses: actions/cache@v2
-        with:
-          path: .webiny/cached-packages
-          key: cached-packages-${{ runner.os }}-next-1-${{ steps.day-of-month.outputs.day }}
-
-      - name: Build packages
-        run: node scripts/buildWithCache.js
-
-      - name: Run tests
-        run: yarn test
+#  jest-tests:
+#    needs: cache-dependencies-packages
+#    name: Jest tests
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        os: [ubuntu-latest]
+#        node: [12, 14]
+#    runs-on: ${{ matrix.os }}
+#    steps:
+#      - name: Get day of month (for caching purposes)
+#        id: day-of-month
+#        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
+#
+#      - uses: actions/setup-node@v2
+#        with:
+#          node-version: ${{ matrix.node }}
+#
+#      - uses: actions/checkout@v2
+#
+#      - uses: actions/cache@v2
+#        with:
+#          path: .yarn/cache
+#          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+#
+#      - name: Install dependencies
+#        run: yarn --immutable
+#
+#      - uses: actions/cache@v2
+#        with:
+#          path: .webiny/cached-packages
+#          key: cached-packages-${{ runner.os }}-next-1-${{ steps.day-of-month.outputs.day }}
+#
+#      - name: Build packages
+#        run: node scripts/buildWithCache.js
+#
+#      - name: Run tests
+#        run: yarn test
 
   verdaccio-publish:
     needs: cache-dependencies-packages
