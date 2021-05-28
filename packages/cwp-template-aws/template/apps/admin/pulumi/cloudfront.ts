@@ -5,7 +5,7 @@ class Cloudfront {
     constructor({ appS3Bucket }: { appS3Bucket: aws.s3.Bucket }) {
         this.distribution = new aws.cloudfront.Distribution("admin-app-cdn", {
             enabled: true,
-            waitForDeployment: true,
+            waitForDeployment: false,
             origins: [
                 {
                     originId: appS3Bucket.arn,
