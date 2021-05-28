@@ -137,7 +137,7 @@ type ElasticsearchQueryShould = {
 };
 
 /**
- * Definition for Elasticsearch query.
+ * Definition for Elasticsearch bool query with no required properties.
  *
  * @category Elasticsearch
  */
@@ -160,6 +160,24 @@ export interface ElasticsearchBoolQuery {
     should?: ElasticsearchQueryShould[];
 }
 
+/**
+ *
+ */
 export interface ElasticsearchQuery {
-    [key: string]: any;
+    /**
+     * A must part of the query.
+     */
+    must: ElasticsearchQueryMust[];
+    /**
+     * A mustNot part of the query.
+     */
+    mustNot: ElasticsearchQueryMustNot[];
+    /**
+     * A match part of the query.
+     */
+    filter: ElasticsearchQueryFilter[];
+    /**
+     * A should part of the query.
+     */
+    should: ElasticsearchQueryShould[];
 }
