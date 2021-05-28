@@ -31,7 +31,7 @@ class RequireNewPassword extends React.Component<RequireNewPasswordProps> {
         });
     };
 
-    confirm = async ({ password, ...requiredAttributes }) => {
+    confirm = async ({ password, requiredAttributes }) => {
         const { changeState, authData } = this.props;
 
         try {

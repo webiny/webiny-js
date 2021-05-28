@@ -23,7 +23,7 @@ const RequireNewPassword: React.FC<RequireNewPasswordChildrenProps> = ({
     return (
         <StateContainer>
             <Form
-                onSubmit={({ password, requiredAttributes }) =>
+                onSubmit={({ password, ...requiredAttributes }) =>
                     confirm({ password, requiredAttributes })
                 }
                 submitOnEnter
