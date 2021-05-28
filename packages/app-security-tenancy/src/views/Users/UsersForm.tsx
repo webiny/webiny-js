@@ -175,7 +175,7 @@ const UsersForm = () => {
                                                     name="lastName"
                                                     validators={validation.create("required")}
                                                 >
-                                                    <Input label={t`Last name`} />
+                                                    <Input label={t`Last Name`} />
                                                 </Bind>
                                             </Cell>
                                             <Cell span={12}>
