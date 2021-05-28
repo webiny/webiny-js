@@ -313,17 +313,6 @@ jobs:
         working-directory: test-project
         run: yarn webiny deploy
 
-      - name: Upload preview files
-        uses: actions/upload-artifact@v2
-        with:
-          name: preview-files
-          retention-days: 1
-          path: |
-            test-project/
-            !test-project/node_modules/**/*
-            !test-project/**/node_modules/**/*
-            !test-project/.yarn/cache/**/*
-
       - uses: actions/checkout@v2
         with:
           path: webiny-js
