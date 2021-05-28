@@ -313,10 +313,6 @@ jobs:
         working-directory: test-project
         run: yarn webiny deploy
 
-      - name: Print project information
-        working-directory: test-project
-        run: yarn webiny info
-
       - name: Upload preview files
         uses: actions/upload-artifact@v2
         with:
