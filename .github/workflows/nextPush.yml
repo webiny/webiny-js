@@ -314,18 +314,11 @@ jobs:
         run: yarn webiny deploy
 
       - uses: actions/checkout@v2
-        with:
-          path: webiny-js
 
       - uses: actions/cache@v2
         with:
-          path: webiny-js/.yarn/cache
-          key: yarn-${{ runner.os }}-${{ hashFiles('**/webiny-js/yarn.lock') }}
-
-      - uses: actions/cache@v2
-        with:
-          path: webiny-js/.webiny/cached-packages
-          key: cached-packages-${{ runner.os }}-next-${{ needs.cache-keys.outputs.day }}
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
       - uses: actions/cache@v2
         with:
@@ -333,19 +326,15 @@ jobs:
           key: cached-packages-${{ runner.os }}-next-${{ needs.cache-keys.outputs.day }}
 
       - name: Install dependencies
-        working-directory: webiny-js
         run: yarn --immutable
 
       - name: Build packages
-        working-directory: webiny-js
         run: node scripts/buildWithCache.js
 
       - name: Set up Cypress config
-        working-directory: webiny-js
         run: yarn setup-cypress --project-folder ../test-project
 
       - name: Cypress - run installation wizard test
-        working-directory: webiny-js
         run: yarn cypress run --spec "cypress/integration/adminInstallation/**/*.spec.js"
 
 #      - name: Cypress - run the rest of Admin Area tests
