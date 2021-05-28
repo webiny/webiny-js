@@ -161,16 +161,5 @@ export interface ElasticsearchBoolQuery {
 }
 
 export interface ElasticsearchQuery {
-    /**
-     * A must part of the query.
-     */
-    must: ElasticsearchQueryMust[];
-    /**
-     * A mustNot part of the query.
-     */
-    mustNot: ElasticsearchQueryMustNot[];
-    /**
-     * A should part of the query.
-     */
-    should: ElasticsearchQueryShould[];
+    [key: string]: any;
 }
