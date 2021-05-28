@@ -1,6 +1,6 @@
 import { elasticsearchOperatorGtePlugin } from "../../../../src/elasticsearch/operators/gte";
 import { createBlankQuery } from "../helpers";
-import { ElasticsearchQuery } from "../../../../src/types";
+import { ElasticsearchQuery } from "@webiny/api-plugin-elastic-search-client/types";
 
 describe("elasticsearchOperatorGtePlugin", () => {
     const plugin = elasticsearchOperatorGtePlugin();
@@ -25,7 +25,7 @@ describe("elasticsearchOperatorGtePlugin", () => {
                     }
                 }
             ],
-            match: [],
+
             should: []
         };
 
@@ -65,7 +65,7 @@ describe("elasticsearchOperatorGtePlugin", () => {
                     }
                 }
             ],
-            match: [],
+
             should: []
         };
         expect(query).toEqual(expected);

@@ -44,6 +44,10 @@ type ElasticsearchQueryQuery = {
     allow_leading_wildcard?: boolean;
     fields: string[];
     query: string;
+    /**
+     * Keep it loose.
+     */
+    // [key: string]: any;
 };
 /**
  * definition for Elasticsearch simple query string.
@@ -53,6 +57,10 @@ type ElasticsearchQueryQuery = {
 type ElasticsearchQuerySimpleQuery = {
     fields: string[];
     query: string;
+    /**
+     * Keep it loose.
+     */
+    // [key: string]: any;
 };
 /**
  * definition for Elasticsearch must keyword.
@@ -153,5 +161,20 @@ export interface ElasticsearchBoolQuery {
 }
 
 export interface ElasticsearchQuery {
+    /**
+     * A must part of the query.
+     */
+    must: ElasticsearchQueryMust[];
+    /**
+     * A mustNot part of the query.
+     */
+    mustNot: ElasticsearchQueryMustNot[];
+    /**
+     * A should part of the query.
+     */
+    should: ElasticsearchQueryShould[];
+    /**
+     * Just to keep it loose.
+     */
     [key: string]: any;
 }

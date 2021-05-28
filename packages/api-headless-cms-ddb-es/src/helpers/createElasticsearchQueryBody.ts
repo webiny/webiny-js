@@ -11,16 +11,13 @@ import {
     CmsContext,
     CmsModelFieldToGraphQLPlugin
 } from "@webiny/api-headless-cms/types";
-import {
-    CmsModelFieldToElasticsearchPlugin,
-    ElasticsearchQuery,
-    ElasticsearchQueryPlugin
-} from "../types";
+import { CmsModelFieldToElasticsearchPlugin, ElasticsearchQueryPlugin } from "../types";
 import { decodeElasticsearchCursor } from "../utils";
 import {
     TYPE_ENTRY_LATEST,
     TYPE_ENTRY_PUBLISHED
 } from "../operations/entry/CmsContentEntryDynamoElastic";
+import { ElasticsearchQuery } from "@webiny/api-plugin-elastic-search-client/types";
 
 type ModelFieldPath = string | ((value: string) => string);
 interface ModelField {
@@ -149,7 +146,6 @@ const createInitialQueryValue = (args: CreateElasticsearchQueryArgs): Elasticsea
     const { where, context } = args;
 
     const query: ElasticsearchQuery = {
-        match: [],
         must: [],
         mustNot: [],
         should: []
@@ -461,7 +457,6 @@ export const createElasticsearchQueryBody = (params: CreateElasticsearchParams) 
             bool: {
                 must: query.must.length > 0 ? query.must : undefined,
                 must_not: query.mustNot.length > 0 ? query.mustNot : undefined,
-                match: query.match.length > 0 ? query.match : undefined,
                 should: query.should.length > 0 ? query.should : undefined
             }
         },
