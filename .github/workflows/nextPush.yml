@@ -332,7 +332,7 @@ jobs:
         run: node scripts/buildWithCache.js
 
       - name: Set up Cypress config
-        run: yarn setup-cypress --project-folder ../test-project
+        run: yarn setup-cypress --project-folder ./test-project
 
       - name: Cypress - run installation wizard test
         run: yarn cypress run --spec "cypress/integration/adminInstallation/**/*.spec.js"
