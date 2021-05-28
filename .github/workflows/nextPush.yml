@@ -60,10 +60,6 @@ jobs:
 #    name: Static code analysis
 #    runs-on: ubuntu-latest
 #    steps:
-#      - name: Get day of month (for caching purposes)
-#        id: day-of-month
-#        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
-#
 #      - uses: actions/setup-node@v2
 #        with:
 #          node-version: 12
@@ -105,10 +101,6 @@ jobs:
 #        node: [12, 14]
 #    runs-on: ${{ matrix.os }}
 #    steps:
-#      - name: Get day of month (for caching purposes)
-#        id: day-of-month
-#        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
-#
 #      - uses: actions/setup-node@v2
 #        with:
 #          node-version: ${{ matrix.node }}
@@ -139,10 +131,6 @@ jobs:
     name: Publish to Verdaccio
     runs-on: ubuntu-latest
     steps:
-      - name: Get day of month (for caching purposes)
-        id: day-of-month
-        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
-
       - uses: actions/setup-node@v2
         with:
           node-version: 12
