@@ -303,20 +303,15 @@ jobs:
         working-directory: test-project
         run: sed -i 's/5 minutes/1 minute/g' api/pulumi/dev/prerenderingService.ts
 
-      - name: Deploy API
+      - name: Deploy project
         working-directory: test-project
-        run: yarn webiny deploy api --env dev
-
-      - name: Concurrently deploy Admin Area / Website
-        working-directory: test-project
-        run: npx concurrently "yarn webiny deploy apps/admin --env dev" "yarn webiny deploy apps/website --env dev"
+        run: yarn webiny deploy
 
       - name: Print project information
         working-directory: test-project
         run: yarn webiny info
 
-      - name: Wait
-        run: sleep 10;
+
 
 #      - name: Upload preview files
 #        uses: actions/upload-artifact@v2
