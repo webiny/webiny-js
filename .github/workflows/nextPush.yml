@@ -252,11 +252,8 @@ jobs:
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}_${{ needs.cache-keys.outputs.ts }}
     steps:
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 12
-
       # After the run is over, destroy deployed cloud infrastructure.
+      # Must be immediately defined here.
       - uses: webiny/action-post-run@2.0.1
         with:
           working-directory: test-project
@@ -271,6 +268,10 @@ jobs:
         with:
           working-directory: test-project
           run: yarn webiny destroy apps/website --env dev
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
 
       - uses: actions/download-artifact@v2
         with:
