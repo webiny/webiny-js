@@ -3,6 +3,6 @@ import { ElasticsearchQuery } from "@webiny/api-plugin-elastic-search-client/typ
 export const createBlankQuery = (): ElasticsearchQuery => ({
     mustNot: [],
     must: [],
-
+    filter: [],
     should: []
 });

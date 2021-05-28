@@ -24,7 +24,7 @@ describe("elasticsearchOperatorNotPlugin", () => {
                 }
             ],
             must: [],
-
+            filter: [],
             should: []
         };
         expect(query).toEqual(expected);

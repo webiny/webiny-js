@@ -148,7 +148,8 @@ const createInitialQueryValue = (args: CreateElasticsearchQueryArgs): Elasticsea
     const query: ElasticsearchQuery = {
         must: [],
         mustNot: [],
-        should: []
+        should: [],
+        filter: []
     };
 
     // When ES index is shared between tenants, we need to filter records by tenant ID
@@ -457,7 +458,8 @@ export const createElasticsearchQueryBody = (params: CreateElasticsearchParams) 
             bool: {
                 must: query.must.length > 0 ? query.must : undefined,
                 must_not: query.mustNot.length > 0 ? query.mustNot : undefined,
-                should: query.should.length > 0 ? query.should : undefined
+                should: query.should.length > 0 ? query.should : undefined,
+                filter: query.filter.length > 0 ? query.filter : undefined
             }
         },
         sort: createElasticsearchSortParams({ sort, modelFields, parentObject, model }),
