@@ -2,12 +2,11 @@ const path = require("path");
 const loadJson = require("load-json-file");
 const writeJson = require("write-json-file");
 const fs = require("fs");
-const { green } = require("chalk");
+const { green, red } = require("chalk");
 const { argv } = require("yargs");
 const { getStackOutput } = require("@webiny/cli-plugin-deploy-pulumi/utils");
 
-
-const params = {
+const args = {
     env: argv.env || "dev",
     force: argv.force || false,
     localhost: argv.localhost || false,
@@ -21,10 +20,17 @@ const params = {
  * Pass "--project-folder" to specify from which project you'd like to set up configuration against
  */
 (async () => {
+    if (args.projectFolder) {
+        if (!fs.existsSync(args.projectFolder)) {
+            console.log(`Could not find specified project (received ${red(args.projectFolder)}).`);
+            process.exit(0);
+        }
+    }
+
     const cypressExampleConfigPath = path.resolve("example.cypress.json");
     const cypressConfigPath = path.resolve("cypress.json");
     if (fs.existsSync(cypressConfigPath)) {
-        if (params.force) {
+        if (args.force) {
             fs.unlinkSync(cypressConfigPath);
             fs.copyFileSync(cypressExampleConfigPath, cypressConfigPath);
         } else {
@@ -39,8 +45,8 @@ const params = {
 
     const apiOutput = await getStackOutput({
         folder: "api",
-        env: params.env,
-        cwd: params.projectFolder
+        env: args.env,
+        cwd: args.projectFolder
     });
 
     cypressConfig.env.API_URL = apiOutput.apiUrl;
@@ -51,7 +57,7 @@ const params = {
 
     // If testing with "local" stack, use "localhost" for the app URLs, otherwise fetch from state files.
 
-    if (params.localhost) {
+    if (args.localhost) {
         const adminUrl = "http://localhost:3001";
         const websiteUrl = "http://localhost:3000";
         cypressConfig.baseUrl = adminUrl;
@@ -61,13 +67,13 @@ const params = {
     } else {
         const adminOutput = await getStackOutput({
             folder: "apps/admin",
-            env: params.env,
-            cwd: params.projectFolder
+            env: args.env,
+            cwd: args.projectFolder
         });
         const websiteOutput = await getStackOutput({
             folder: "apps/website",
-            env: params.env,
-            cwd: params.projectFolder
+            env: args.env,
+            cwd: args.projectFolder
         });
         cypressConfig.baseUrl = adminOutput.appUrl;
         cypressConfig.env.ADMIN_URL = adminOutput.appUrl;
