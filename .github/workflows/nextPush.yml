@@ -342,6 +342,11 @@ jobs:
           path: webiny-js/.webiny/cached-packages
           key: cached-packages-${{ runner.os }}-next-${{ needs.cache-keys.outputs.day }}
 
+      - uses: actions/cache@v2
+        with:
+          path: .webiny/cached-packages
+          key: cached-packages-${{ runner.os }}-next-${{ needs.cache-keys.outputs.day }}
+
       - name: Install dependencies
         working-directory: webiny-js
         run: yarn --immutable
