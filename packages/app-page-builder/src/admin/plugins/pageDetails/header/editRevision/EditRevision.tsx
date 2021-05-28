@@ -54,7 +54,6 @@ const EditRevision = props => {
                 disabled={inProgress}
                 icon={<EditIcon />}
                 onClick={() => {
-                    console.log("EDIT_REVISIONS");
                     history.push(`/page-builder/editor/${encodeURIComponent(page.id)}`);
                 }}
                 data-testid={"pb-page-details-header-edit-revision"}

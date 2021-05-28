@@ -25,8 +25,8 @@ export class DefaultContentModelManager implements CmsContentModelManager {
         return this._context.cms.entries.get(this._model, args);
     }
 
-    public async list(args, options) {
-        return this._context.cms.entries.list(this._model, args, options);
+    public async list(args) {
+        return this._context.cms.entries.list(this._model, args);
     }
 
     public async listPublished(args) {

@@ -2,8 +2,7 @@ import ApolloClient from "apollo-client";
 import { ApolloLink } from "apollo-link";
 import { BatchHttpLink } from "apollo-link-batch-http";
 import { InMemoryCache } from "apollo-cache-inmemory";
-import { createOmitTypenameLink } from "@webiny/app/graphql";
-import { plugins } from "@webiny/plugins";
+import { ApolloDynamicLink } from "@webiny/app/plugins/ApolloDynamicLink";
 
 export const createApolloClient = () => {
     const isProduction = process.env.NODE_ENV === "production";
@@ -23,11 +22,7 @@ export const createApolloClient = () => {
     cache.restore("__APOLLO_STATE__" in window ? window.__APOLLO_STATE__ : {});
 
     const uri = process.env.REACT_APP_GRAPHQL_API_URL;
-    const link = ApolloLink.from([
-        createOmitTypenameLink(),
-        ...plugins.byType("apollo-link").map(pl => pl.createLink()),
-        new BatchHttpLink({ uri })
-    ]);
+    const link = ApolloLink.from([new ApolloDynamicLink(), new BatchHttpLink({ uri })]);
 
     // @ts-ignore
     window.getApolloState = () => {

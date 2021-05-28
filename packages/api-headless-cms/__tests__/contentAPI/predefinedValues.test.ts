@@ -7,7 +7,6 @@ describe("predefined values", () => {
     const manageOpts = { path: "manage/en-US" };
 
     const {
-        clearAllIndex,
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
@@ -54,18 +53,6 @@ describe("predefined values", () => {
         });
         return update.data.updateContentModel.data;
     };
-
-    beforeEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {}
-    });
-
-    afterEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {}
-    });
 
     test("should create an entry with predefined values selected", async () => {
         const contentModelGroup = await setupContentModelGroup();

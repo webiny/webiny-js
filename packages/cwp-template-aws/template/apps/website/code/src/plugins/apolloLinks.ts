@@ -1,51 +1,18 @@
-declare global {
-    interface Window {
-        __PS_RENDER_TENANT__: string;
-        __PS_RENDER_LOCALE__: string;
-    }
-}
+import { OmitTypenameLinkPlugin } from "@webiny/app/plugins/OmitTypenameLinkPlugin";
+import { LocaleHeaderLinkPlugin } from "@webiny/app/plugins/LocaleHeaderLinkPlugin";
+import { TenantHeaderLinkPlugin } from "@webiny/app/plugins/TenantHeaderLinkPlugin";
 
-export default () => {
-    const query = new URLSearchParams(location.search);
-    const tenant = query.get("__tenant") || window.__PS_RENDER_TENANT__;
-    const locale = query.get("__locale") || window.__PS_RENDER_LOCALE__;
-
-    return [
-        {
-            type: "apollo-link",
-            name: "apollo-link-tenant",
-            createLink() {
-                return (operation, forward) => {
-                    if (tenant) {
-                        operation.setContext({
-                            headers: {
-                                "x-tenant": tenant
-                            }
-                        });
-                    }
-
-                    // Call the next link in the middleware chain.
-                    return forward(operation);
-                };
-            }
-        },
-        {
-            type: "apollo-link",
-            name: "apollo-link-locale",
-            createLink() {
-                return (operation, forward) => {
-                    if (locale) {
-                        operation.setContext({
-                            headers: {
-                                "x-i18n-locale": `content:${locale};`
-                            }
-                        });
-                    }
-
-                    // Call the next link in the middleware chain.
-                    return forward(operation);
-                };
-            }
-        }
-    ];
-};
+export default () => [
+    /**
+     * This link removes `__typename` from the variables being sent to the API.
+     */
+    new OmitTypenameLinkPlugin(),
+    /**
+     * Append `x-tenant` header from URL query (necessary for prerendering service).
+     */
+    new TenantHeaderLinkPlugin(),
+    /**
+     * Append `x-i18n-locale` header from URL query (necessary for prerendering service).
+     */
+    new LocaleHeaderLinkPlugin()
+];

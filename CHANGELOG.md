@@ -3,6 +3,73 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.7.0](https://github.com/webiny/webiny-js/compare/v5.7.0-beta.0...v5.7.0) (2021-05-24)
+
+**Note:** Version bump only for package webiny-js
+
+
+
+
+
+# [5.7.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.6.0...v5.7.0-beta.0) (2021-05-23)
+
+
+### Bug Fixes
+
+* **admin:** use ApolloDynamicLink for all link plugins ([e366688](https://github.com/webiny/webiny-js/commit/e366688d5b20fdf5eebc407057d698e68024d899))
+* **api-page-builder:** refactor ES plugins ([037d0e5](https://github.com/webiny/webiny-js/commit/037d0e568db63e1a257f3cdd3f337dbebc5ecfd3))
+* **api-page-builder:** remove unused type imports ([072f2e3](https://github.com/webiny/webiny-js/commit/072f2e3e024a25acfc34ac432ce6e7ef6bd6d07d))
+* **app:** update ApolloLinkPlugin to use static type property ([3acb7fa](https://github.com/webiny/webiny-js/commit/3acb7fac224ef8408830afbde888d972bc26bb50))
+* **app-security-tenancy:** use TenantHeaderLinkPlugin ([324d22f](https://github.com/webiny/webiny-js/commit/324d22f4a7c0c8ef29c9579306125d86b63e676d))
+* **handler-aws:** improve TS types ([34fe118](https://github.com/webiny/webiny-js/commit/34fe118ea0b9910d121e21ebbd36a4ee63cfb801))
+* **plugins:** make plugin type a static property ([a18a463](https://github.com/webiny/webiny-js/commit/a18a4634fcf114f614416e0fde9421dfeded84d7))
+* add .prettierignore file ([432b705](https://github.com/webiny/webiny-js/commit/432b70515b092865f94468f4059be359c6282297))
+* add development scripts ([325d6df](https://github.com/webiny/webiny-js/commit/325d6dfdbdcc99f7d41fdcc5848c2f32e32e5bfd))
+* add error handling for each step ([0013815](https://github.com/webiny/webiny-js/commit/00138158dbe41f8983373b26bde6f1c2c06df61a))
+* change verb ([3d72eef](https://github.com/webiny/webiny-js/commit/3d72eef74d0d20404057941cb3ca7a4a781eb76c))
+* create GH environments ([ebc75f3](https://github.com/webiny/webiny-js/commit/ebc75f33721a484ea04dc2ce0f9efc27c77e9598))
+* generate new yarn.lock ([14ab727](https://github.com/webiny/webiny-js/commit/14ab7273b363138f88f258cb342413e6e3f2b2f4))
+* **cwp-template-aws:** use new plugins ([8c90477](https://github.com/webiny/webiny-js/commit/8c904778820a232048743c4cf32dfc16b0fb3c40))
+* **website:** use ApolloDynamicLink for all link plugins ([bdb5e06](https://github.com/webiny/webiny-js/commit/bdb5e068864b7d95fac06c32d27157c68b22ceec))
+* add 'inquirer' to types ([a21c5a6](https://github.com/webiny/webiny-js/commit/a21c5a6803cfb42f07c170d2afc1f9e6ee6fdb51))
+* add new CI/CD scaffold to template ([c82072b](https://github.com/webiny/webiny-js/commit/c82072bdfdb197bb6e8469328d95db4c4c23fb6c))
+* add types to promisified "verify" function ([c7c9dbb](https://github.com/webiny/webiny-js/commit/c7c9dbb635a0f09da5e4c5663aaea25a413ef402))
+* build only the packages folder during setup-project ([934723f](https://github.com/webiny/webiny-js/commit/934723f9fe0f0a44ad161a2f394307d51d5b0aa2))
+* export types ([b82d56b](https://github.com/webiny/webiny-js/commit/b82d56b1ce845804fd2e92223e2e15bbc30119d4))
+* forward "--debug" argument to internal Pulumi CLI commands ([1499fd8](https://github.com/webiny/webiny-js/commit/1499fd898b11866e77fa22cb1bd902e540aac41f)), closes [PR#1623](https://github.com/PR/issues/1623)
+* handle partial import failure in webiny.project.ts ([b82bb7d](https://github.com/webiny/webiny-js/commit/b82bb7d42cf053c7f2263008dd72afd28794ddf8))
+* improve messaging ([40a56f1](https://github.com/webiny/webiny-js/commit/40a56f17a102ef1c177a374ec7209e610ef07aa0))
+* prevent opening the search bar while typing inside of a textarea ([17748a5](https://github.com/webiny/webiny-js/commit/17748a5e89b5a18424aeaa4fef98b470d13e20b4))
+* remove old file ([0b763bc](https://github.com/webiny/webiny-js/commit/0b763bc7033fb00117501a49b2808b287da8ae31))
+* remove token ([16645ae](https://github.com/webiny/webiny-js/commit/16645aed882f5e119de1c4ac30f67c2d1882306f))
+* rename oraSpinner to just ora ([a19eafd](https://github.com/webiny/webiny-js/commit/a19eafd1b21e63af46857a68e3a6ea253ff9b58d))
+* run prettier ([f9803a9](https://github.com/webiny/webiny-js/commit/f9803a9156cbef303332ad965f9b7d6f90b56f96))
+* send 'inquirer' and add onGenerate hook ([082095e](https://github.com/webiny/webiny-js/commit/082095e90a76591ffc15945eb29e306f2cb92ed8))
+* update configs ([010a3f4](https://github.com/webiny/webiny-js/commit/010a3f41791e1016101b20e80e8d7cf7d4de1777))
+* update dependencies ([39e9df8](https://github.com/webiny/webiny-js/commit/39e9df8cbb2b1bd566e13bedad14c6212cd55d82))
+* update template ([54dd8ec](https://github.com/webiny/webiny-js/commit/54dd8ecf538c728b8de34f0cad23428072978e40))
+* **api-page-builder:** assign into a new target object ([7e326ca](https://github.com/webiny/webiny-js/commit/7e326cafe0014aa2adc2c51504a70e1254658a2a))
+* **react-rich-text-renderer:** add missing config ([7092fc3](https://github.com/webiny/webiny-js/commit/7092fc38499f559958a2150016b549c532e32005))
+
+
+### Features
+
+* **api-page-builder:** add a plugin to modify page data for ES ([373a639](https://github.com/webiny/webiny-js/commit/373a639c3c93f89c7dea25144c6a3878e24d70ef))
+* **api-page-builder:** add ES hooks to listLatest and listPublished methods ([4b8b292](https://github.com/webiny/webiny-js/commit/4b8b292526f9aa3ed32053e898e9c92182b9383a))
+* **api-page-builder:** add notFound callback to PbPage plugin ([356cb46](https://github.com/webiny/webiny-js/commit/356cb469905c2f206aec4cb326e40c53896cd745))
+* **api-plugin-elastic-search-client:** add common query and sort types ([0ede0e2](https://github.com/webiny/webiny-js/commit/0ede0e29139b91a1a461d9cb2b91bdc2a1444ff1))
+* **app:** add sizes attribute to the Image component ([#1617](https://github.com/webiny/webiny-js/issues/1617)) ([5460ded](https://github.com/webiny/webiny-js/commit/5460ded69d251cf5ac8e2e00f5cf26f6666d7581))
+* **app:** convert apollo links into plugins ([4acde76](https://github.com/webiny/webiny-js/commit/4acde76ea4580b7c4dcb3c24d9447f6e144b18b0))
+* **app-page-builder:** introduce PbEditorPageQueryFieldsPlugin ([3f3584f](https://github.com/webiny/webiny-js/commit/3f3584f4bd2eeddd9de95797fd84f6240809f54b))
+* **handler-graphql:** introduce a GraphQLSchemaPlugin ([04d43eb](https://github.com/webiny/webiny-js/commit/04d43ebd72636ea7461cd69dea6429b5dd5afc87))
+* **plugins:** introduce a Plugin class ([a1c3099](https://github.com/webiny/webiny-js/commit/a1c3099f89ca79aec4d8c75762bcd0a438286b39))
+* **project-utils:** auto-detect the correct TS build binary ([9f31b19](https://github.com/webiny/webiny-js/commit/9f31b19e8a5d88cbe6b8a147bd6a2d9e4d9f8dc3))
+* improve drag & drop UX in the Page Builder navigator ([#1599](https://github.com/webiny/webiny-js/issues/1599)) ([e08fa06](https://github.com/webiny/webiny-js/commit/e08fa06ec0cd4154e97c89068b51c84e407a5b92))
+
+
+
+
+
 # [5.6.0](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.2...v5.6.0) (2021-05-10)
 
 

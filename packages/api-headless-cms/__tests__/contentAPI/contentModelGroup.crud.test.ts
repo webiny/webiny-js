@@ -320,7 +320,7 @@ describe("Content model group crud test", () => {
                     error: {
                         message: `Content model group with the slug "content-model-group" already exists.`,
                         code: "SLUG_ALREADY_EXISTS",
-                        data: null
+                        data: expect.any(Object)
                     }
                 }
             }

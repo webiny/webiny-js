@@ -2,6 +2,7 @@ import { QuestionCollection } from "inquirer";
 import { ContextInterface } from "@webiny/handler/types";
 import { Plugin } from "@webiny/plugins/types";
 import { Ora } from "ora";
+import inquirer from "inquirer";
 
 /**
  * Arguments for CliPlugin.create
@@ -32,7 +33,7 @@ export interface CliCommandPlugin extends Plugin {
  * @category ScaffoldQuestions
  * @category Template
  */
-interface CliCommandScaffoldQuestionsCallableArgs {
+export interface CliCommandScaffoldQuestionsCallableArgs {
     context: ContextInterface;
 }
 
@@ -43,7 +44,7 @@ interface CliCommandScaffoldQuestionsCallableArgs {
  * @category ScaffoldQuestions
  * @category Template
  */
-type CliCommandScaffoldQuestionsCallable = (
+export type CliCommandScaffoldQuestionsCallable = (
     args: CliCommandScaffoldQuestionsCallableArgs
 ) => QuestionCollection;
 
@@ -53,11 +54,12 @@ type CliCommandScaffoldQuestionsCallable = (
  * @category Scaffold
  * @category Template
  */
-interface CliCommandScaffoldCallableArgs<T extends Record<string, any>> {
+export interface CliCommandScaffoldCallableArgs<T extends Record<string, any>> {
     input: T;
     context: ContextInterface;
     wait: (ms?: number) => Promise<void>;
-    oraSpinner: Ora;
+    inquirer: typeof inquirer;
+    ora: Ora;
 }
 
 /**
@@ -66,7 +68,7 @@ interface CliCommandScaffoldCallableArgs<T extends Record<string, any>> {
  * @category Scaffold
  * @category Template
  */
-interface CliCommandScaffoldCallableWithErrorArgs<T extends Record<string, any>>
+export interface CliCommandScaffoldCallableWithErrorArgs<T extends Record<string, any>>
     extends CliCommandScaffoldCallableArgs<T> {
     error: Error;
 }
@@ -91,9 +93,13 @@ interface CliCommandScaffold<T extends Record<string, any>> {
      */
     generate: (args: CliCommandScaffoldCallableArgs<T>) => Promise<any>;
     /**
+     * Trigger when generator is about to be executed (before its execution).
+     */
+    onGenerate?: (args: CliCommandScaffoldCallableArgs<T>) => Promise<void>;
+    /**
      * Trigger when generator completes.
      */
-    onSuccess: (args: CliCommandScaffoldCallableArgs<T>) => Promise<void>;
+    onSuccess?: (args: CliCommandScaffoldCallableArgs<T>) => Promise<void>;
     /**
      * Trigger when there is a generator error.
      */

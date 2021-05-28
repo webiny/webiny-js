@@ -54,14 +54,17 @@ export const createManageResolvers: CreateManageResolvers = ({
         },
         [mTypeName]: model.fields.reduce(
             (resolvers, field) => {
-                // Every time a client updates content model's fields, we check the type of each field. If a field plugin
-                // for a particular "field.type" doesn't exist on the backend yet, we throw an error. But still, we also
-                // want to be careful when accessing the field plugin here too. It is still possible to have a content model
-                // that contains a field, for which we don't have a plugin registered on the backend. For example, user
-                // could've just removed the plugin from the backend.
+                /**
+                 * Every time a client updates content model's fields, we check the type of each field. If a field plugin
+                 * for a particular "field.type" doesn't exist on the backend yet, we just skip creating the resolver.
+                 * It is still possible to have a content model that contains a field, for which we don't have a plugin
+                 * registered on the backend. For example, user could've just removed the plugin from the backend.
+                 */
+                if (!fieldTypePlugins[field.type]) {
+                    return resolvers;
+                }
                 const createResolver = get(fieldTypePlugins, `${field.type}.manage.createResolver`);
                 const resolver = createResolver ? createResolver({ models, model, field }) : null;
-
                 resolvers[field.fieldId] = async (entry, args, context: CmsContext, info) => {
                     // Get transformed value (eg. data decompression)
                     entry.values[field.fieldId] = await entryFieldFromStorageTransform({
@@ -95,7 +98,7 @@ export const createManageResolvers: CreateManageResolvers = ({
             },
             async revisions(entry, args, context: CmsContext) {
                 const entryId = entry.id.split("#")[0];
-                const revisions = await context.cms.entries.getEntryRevisions(entryId);
+                const revisions = await context.cms.entries.getEntryRevisions(model, entryId);
                 return revisions.sort((a, b) => b.version - a.version);
             }
         }

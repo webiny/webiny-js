@@ -53,5 +53,16 @@
     {
       "path": "../../../packages/handler-logs"
     }
-  ]
+  ],
+  "compilerOptions": {
+    "paths": {
+      "@webiny/handler-aws/*": ["../../../packages/handler-aws/src/*"],
+      "@webiny/handler-aws": ["../../../packages/handler-aws/src"],
+      "@webiny/handler-graphql/*": ["../../../packages/handler-graphql/src/*"],
+      "@webiny/handler-graphql": ["../../../packages/handler-graphql/src"],
+      "@webiny/api-page-builder/*": ["../../../packages/api-page-builder/src/*"],
+      "@webiny/api-page-builder": ["../../../packages/api-page-builder/src"]
+    },
+    "baseUrl": "."
+  }
 }

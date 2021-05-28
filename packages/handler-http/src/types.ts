@@ -24,3 +24,7 @@ export type HttpObject = {
 export type HttpContext = {
     http: HttpObject;
 };
+
+export type HandlerHttpOptions = {
+    debug?: boolean;
+};

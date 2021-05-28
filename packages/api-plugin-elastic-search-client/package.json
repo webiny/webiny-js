@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-plugin-elastic-search-client",
-  "version": "5.6.0",
+  "version": "5.7.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git",
@@ -13,15 +13,15 @@
   "license": "MIT",
   "dependencies": {
     "@elastic/elasticsearch": "^7.9.1",
-    "@webiny/handler": "^5.6.0",
+    "@webiny/handler": "^5.7.0",
     "aws-elasticsearch-connector": "^9.0.0",
     "aws-sdk": "^2.539.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
-    "@webiny/cli": "^5.6.0",
-    "@webiny/project-utils": "^5.6.0",
+    "@webiny/cli": "^5.7.0",
+    "@webiny/project-utils": "^5.7.0",
     "rimraf": "^3.0.2",
     "typescript": "^4.1.3"
   },

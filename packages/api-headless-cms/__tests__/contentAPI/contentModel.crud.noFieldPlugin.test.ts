@@ -1,13 +1,35 @@
-import { CmsContentModelGroup } from "../../src/types";
+import { CmsContentModelGroup, CmsModelFieldToGraphQLPlugin } from "../../src/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 
-describe("content model test", () => {
+const customFieldPlugin = (): CmsModelFieldToGraphQLPlugin => ({
+    name: "cms-model-field-to-graphql-custom-test-field",
+    type: "cms-model-field-to-graphql",
+    fieldType: "custom-test-field",
+    isSortable: false,
+    isSearchable: false,
+    read: {
+        createTypeField({ field }) {
+            return `${field.fieldId}: String`;
+        },
+        createGetFilters({ field }) {
+            return `${field.fieldId}: String`;
+        }
+    },
+    manage: {
+        createTypeField({ field }) {
+            return `${field.fieldId}: String`;
+        },
+        createInputField({ field }) {
+            return `${field.fieldId}: String`;
+        }
+    }
+});
+
+describe("content model test no field plugin", () => {
     const readHandlerOpts = { path: "read/en-US" };
     const manageHandlerOpts = { path: "manage/en-US" };
 
-    const { clearAllIndex, createContentModelGroupMutation } = useContentGqlHandler(
-        manageHandlerOpts
-    );
+    const { createContentModelGroupMutation } = useContentGqlHandler(manageHandlerOpts);
 
     let contentModelGroup: CmsContentModelGroup;
 
@@ -21,17 +43,6 @@ describe("content model test", () => {
             }
         });
         contentModelGroup = createCMG.data.createContentModelGroup.data;
-        try {
-            await clearAllIndex();
-        } catch {
-            // Ignore errors
-        }
-    });
-
-    afterEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {}
     });
 
     test("prevent content model update if a backend plugin for a field does not exist", async () => {
@@ -113,69 +124,86 @@ describe("content model test", () => {
     });
 
     test("schema generation should not break if an old field type still exists", async () => {
+        const customField = customFieldPlugin();
+        const manageModelAPI = useContentGqlHandler(manageHandlerOpts, [customField]);
         const manageAPI = useContentGqlHandler(manageHandlerOpts);
         const readAPI = useContentGqlHandler(readHandlerOpts);
         const previewAPI = useContentGqlHandler(manageHandlerOpts);
 
-        // We insert data with DocumentClient because API won't let us do it (will throw an error immediately).
-        await manageAPI.documentClient
-            .put({
-                TableName: "HeadlessCms",
-                Item: {
-                    PK: "T#root#L#en-US#CMS#CM",
-                    SK: "event",
-                    modelId: "event",
-                    savedOn: "2021-03-05T06:23:15.152Z",
-                    layout: [["u3860Lhy-"]],
-                    group: {
-                        name: "Ungrouped",
-                        id: "603d11a279571c0008e8a208"
-                    },
-                    lockedFields: [],
-                    name: "Event",
-                    TYPE: "cms.model",
-                    titleFieldId: "test",
-                    fields: [
-                        {
-                            type: "SOMETHING-INVALID-HERE",
-                            validation: [],
-                            renderer: {
-                                name: "text-input"
-                            },
-                            label: "test",
-                            fieldId: "test",
-                            id: "aaa",
-                            predefinedValues: {
-                                enabled: false,
-                                values: []
-                            }
-                        },
-                        {
-                            type: "text",
-                            validation: [],
-                            renderer: {
-                                name: "text-input"
-                            },
-                            label: "test",
-                            fieldId: "test",
-                            id: "bbb",
-                            predefinedValues: {
-                                enabled: false,
-                                values: []
-                            }
+        await manageModelAPI.createContentModelMutation({
+            data: {
+                name: "Event",
+                modelId: "event",
+                group: contentModelGroup.id
+            }
+        });
+
+        await manageModelAPI.updateContentModelMutation({
+            modelId: "event",
+            data: {
+                layout: [["1234"], ["2345"], ["9999"]],
+                fields: [
+                    {
+                        id: "1234",
+                        multipleValues: false,
+                        helpText: "",
+                        label: "Title",
+                        type: "text",
+                        fieldId: "title",
+                        validation: [],
+                        listValidation: [],
+                        placeholderText: "placeholder text",
+                        renderer: {
+                            name: "renderer"
                         }
-                    ]
-                }
-            })
-            .promise();
+                    },
+                    {
+                        id: "2345",
+                        multipleValues: false,
+                        helpText: "",
+                        label: "Slug",
+                        type: "text",
+                        fieldId: "slug",
+                        validation: [],
+                        listValidation: [],
+                        placeholderText: "placeholder text",
+                        renderer: {
+                            name: "renderer"
+                        }
+                    },
+                    {
+                        id: "9999",
+                        multipleValues: false,
+                        helpText: "",
+                        label: "Test",
+                        type: "custom-test-field",
+                        fieldId: "test",
+                        validation: [],
+                        listValidation: [],
+                        renderer: {
+                            name: "renderer"
+                        }
+                    }
+                ]
+            }
+        });
+
+        await manageAPI.createContentModelMutation({
+            data: {
+                name: "Bug",
+                modelId: "bug",
+                group: contentModelGroup.id
+            }
+        });
 
         const [manage] = await manageAPI.introspect();
+        const [read] = await readAPI.introspect();
+        const [preview] = await previewAPI.introspect();
+
         expect(Array.isArray(manage.data.__schema.types)).toBe(true);
 
-        const [read] = await readAPI.introspect();
         expect(Array.isArray(read.data.__schema.types)).toBe(true);
 
-        const [preview] = await previewAPI.introspect();
         expect(Array.isArray(preview.data.__schema.types)).toBe(true);
     });
 });

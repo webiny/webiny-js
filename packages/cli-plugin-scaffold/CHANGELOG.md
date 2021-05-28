@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.7.0](https://github.com/webiny/webiny-js/compare/v5.7.0-beta.0...v5.7.0) (2021-05-24)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold
+
+
+
+
+
+# [5.7.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.6.0...v5.7.0-beta.0) (2021-05-23)
+
+
+### Bug Fixes
+
+* add 'inquirer' to types ([a21c5a6](https://github.com/webiny/webiny-js/commit/a21c5a6803cfb42f07c170d2afc1f9e6ee6fdb51))
+* change verb ([3d72eef](https://github.com/webiny/webiny-js/commit/3d72eef74d0d20404057941cb3ca7a4a781eb76c))
+* export types ([b82d56b](https://github.com/webiny/webiny-js/commit/b82d56b1ce845804fd2e92223e2e15bbc30119d4))
+* send 'inquirer' and add onGenerate hook ([082095e](https://github.com/webiny/webiny-js/commit/082095e90a76591ffc15945eb29e306f2cb92ed8))
+
+
+
+
+
 # [5.6.0](https://github.com/webiny/webiny-js/compare/v5.6.0-beta.2...v5.6.0) (2021-05-10)
 
 **Note:** Version bump only for package @webiny/cli-plugin-scaffold

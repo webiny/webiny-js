@@ -21,9 +21,6 @@
       "path": "../api-upgrade"
     },
     {
-      "path": "../db-dynamodb"
-    },
-    {
       "path": "../error"
     },
     {
@@ -33,10 +30,10 @@
       "path": "../handler-aws"
     },
     {
-      "path": "../handler-db"
+      "path": "../handler-graphql"
     },
     {
-      "path": "../handler-graphql"
+      "path": "../handler-db"
     },
     {
       "path": "../handler-http"
@@ -68,8 +65,6 @@
       "@webiny/api-file-manager": ["../api-file-manager/src"],
       "@webiny/api-upgrade/*": ["../api-upgrade/src/*"],
       "@webiny/api-upgrade": ["../api-upgrade/src"],
-      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
-      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
       "@webiny/handler/*": ["../handler/src/*"],
@@ -86,10 +81,10 @@
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/validation/*": ["../validation/src/*"],
       "@webiny/validation": ["../validation/src"],
-      "@webiny/api-dynamodb-to-elasticsearch/*": ["../api-dynamodb-to-elasticsearch/src/*"],
-      "@webiny/api-dynamodb-to-elasticsearch": ["../api-dynamodb-to-elasticsearch/src"],
       "@webiny/api-plugin-elastic-search-client/*": ["../api-plugin-elastic-search-client/src/*"],
-      "@webiny/api-plugin-elastic-search-client": ["../api-plugin-elastic-search-client/src"]
+      "@webiny/api-plugin-elastic-search-client": ["../api-plugin-elastic-search-client/src"],
+      "@webiny/api-dynamodb-to-elasticsearch/*": ["../api-dynamodb-to-elasticsearch/src/*"],
+      "@webiny/api-dynamodb-to-elasticsearch": ["../api-dynamodb-to-elasticsearch/src"]
     },
     "baseUrl": "."
   }

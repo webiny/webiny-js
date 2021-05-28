@@ -1,74 +1,69 @@
 import { ContextPlugin } from "@webiny/handler/types";
 import * as utils from "../../utils";
-import { CmsContext, CmsSettingsContext, CmsSettingsPermission, CmsSettings } from "../../types";
-
-const SETTINGS_SECONDARY_KEY = "settings";
+import {
+    CmsContext,
+    CmsSettingsContext,
+    CmsSettingsPermission,
+    CmsSettings,
+    CmsSettingsStorageOperationsProviderPlugin
+} from "../../types";
+import WebinyError from "@webiny/error";
 
 export default {
     type: "context",
     name: "context-settings-crud",
-    apply(context) {
-        const { db } = context;
+    apply: async context => {
+        const pluginType = "cms-settings-storage-operations-provider";
+        const providerPlugins = context.plugins.byType<CmsSettingsStorageOperationsProviderPlugin>(
+            pluginType
+        );
+        const providerPlugin = providerPlugins[providerPlugins.length - 1];
+        if (!providerPlugin) {
+            throw new WebinyError(`Missing "${pluginType}" plugin.`, "PLUGIN_NOT_FOUND", {
+                type: pluginType
+            });
+        }
 
-        const PK_SETTINGS = () => `${utils.createCmsPK(context)}#SETTINGS`;
+        const storageOperations = await providerPlugin.provide({
+            context
+        });
 
         const checkPermissions = (): Promise<CmsSettingsPermission> => {
             return utils.checkPermissions(context, "cms.settings");
         };
 
-        const settingsGet = async (): Promise<CmsSettings> => {
-            const [[settings]] = await db.read<CmsSettings>({
-                ...utils.defaults.db(),
-                query: { PK: PK_SETTINGS(), SK: SETTINGS_SECONDARY_KEY }
-            });
-
-            return settings;
-        };
-
         const settings: CmsSettingsContext = {
             noAuth: () => {
                 return {
-                    get: settingsGet
+                    get: async () => {
+                        return await storageOperations.get();
+                    }
                 };
             },
             get: async (): Promise<CmsSettings | null> => {
                 await checkPermissions();
-                return settingsGet();
+                return await storageOperations.get();
             },
             updateContentModelLastChange: async (): Promise<void> => {
                 const data: CmsSettings = {
-                    contentModelLastChange: new Date().toISOString()
+                    contentModelLastChange: new Date()
                 };
 
-                const settings = await settingsGet();
+                const settings = await storageOperations.get();
                 if (!settings) {
-                    await db.create({
-                        ...utils.defaults.db(),
-                        data: {
-                            PK: PK_SETTINGS(),
-                            SK: SETTINGS_SECONDARY_KEY,
-                            ...data
-                        }
-                    });
+                    await storageOperations.create(data);
                     return;
                 }
 
-                await db.update({
-                    ...utils.defaults.db(),
-                    query: {
-                        PK: PK_SETTINGS(),
-                        SK: SETTINGS_SECONDARY_KEY
-                    },
-                    data
-                });
+                await storageOperations.update(data);
             },
             getContentModelLastChange: async (): Promise<Date> => {
                 try {
-                    const settings = await settingsGet();
+                    const settings = await storageOperations.get();
                     if (!settings || !settings.contentModelLastChange) {
                         return new Date();
                     }
-                    return new Date(settings.contentModelLastChange);
+                    return settings.contentModelLastChange;
                 } catch (ex) {
                     console.log({
                         error: {

@@ -30,7 +30,7 @@ type PageSettingsPropsType = {
 };
 const PageSettings: React.FunctionComponent<PageSettingsPropsType> = (props = {}) => {
     const pluginsByType = plugins.byType<PbEditorPageSettingsPlugin>("pb-editor-page-settings");
-    const [active, setActive] = useState("pb-editor-page-settings-general");
+    const [active, setActive] = useState(pluginsByType[0].name);
     const activePlugin = pluginsByType.find(pl => pl.name === active);
     if (!activePlugin) {
         return null;

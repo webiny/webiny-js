@@ -1,7 +1,16 @@
-import { HttpContext } from "./types";
+import { HttpContext, HandlerHttpOptions } from "./types";
 import { ContextPlugin, HandlerErrorPlugin } from "@webiny/handler/types";
+import { boolean } from "boolean";
 
-export default () => [
+const DEFAULT_HEADERS = {
+    "Cache-Control": "no-store",
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "*",
+    "Access-Control-Allow-Methods": "OPTIONS,POST"
+};
+
+export default (options: HandlerHttpOptions = {}) => [
     {
         type: "context",
         apply(context) {
@@ -42,17 +51,31 @@ export default () => [
             if (!context.http || typeof context.http.response !== "function") {
                 return error;
             }
+            const debug = boolean(options.debug);
+
+            if (debug) {
+                return context.http.response({
+                    statusCode: 500,
+                    body: JSON.stringify({
+                        error: {
+                            name: error.constructor.name,
+                            message: error.message,
+                            stack: error.stack
+                        }
+                    }),
+                    headers: DEFAULT_HEADERS
+                });
+            }
 
             return context.http.response({
                 statusCode: 500,
                 body: JSON.stringify({
                     error: {
-                        name: error.constructor.name,
-                        message: error.message,
-                        stack: error.stack
+                        name: "Error",
+                        message: "Internal Server Error"
                     }
                 }),
-                headers: { "Cache-Control": "no-store", "Content-Type": "application/json" }
+                headers: DEFAULT_HEADERS
             });
         }
     } as HandlerErrorPlugin<HttpContext>

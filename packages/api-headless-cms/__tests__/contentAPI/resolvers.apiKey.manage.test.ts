@@ -44,19 +44,12 @@ describe("MANAGE - resolvers - api key", () => {
     const manageOpts = { path: "manage/en-US" };
 
     const {
-        clearAllIndex,
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
     } = useContentGqlHandler(manageOpts);
 
     beforeEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {
-            // Ignore errors
-        }
-
         const [createCMG] = await createContentModelGroupMutation({
             data: {
                 name: "Group",
@@ -97,12 +90,6 @@ describe("MANAGE - resolvers - api key", () => {
         }
     });
 
-    afterEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch (e) {}
-    });
-
     test("create, get, list, update and delete entry", async () => {
         const {
             until,
@@ -136,6 +123,7 @@ describe("MANAGE - resolvers - api key", () => {
                 createCategory: {
                     data: {
                         id: expect.any(String),
+                        entryId: expect.any(String),
                         title: "Vegetables",
                         slug: "vegetables",
                         createdOn: expect.stringMatching(/^20/),
@@ -187,6 +175,7 @@ describe("MANAGE - resolvers - api key", () => {
                 getCategory: {
                     data: {
                         id: category.id,
+                        entryId: category.entryId,
                         title: category.title,
                         slug: category.slug,
                         createdOn: category.createdOn,
@@ -233,6 +222,7 @@ describe("MANAGE - resolvers - api key", () => {
                 updateCategory: {
                     data: {
                         id: expect.any(String),
+                        entryId: expect.any(String),
                         title: "Green vegetables",
                         slug: "green-vegetables",
                         createdOn: expect.stringMatching(/^20/),
@@ -269,7 +259,7 @@ describe("MANAGE - resolvers - api key", () => {
         const listResponse = await until(
             () => listCategories({}, headers).then(([data]) => data),
             ({ data }) => data.listCategories.data[0].slug === updatedCategory.slug,
-            { name: `waiting for ${updatedCategory.slug}` }
+            { name: `waiting for green-vegetables slug on list categories` }
         );
 
         expect(listResponse).toEqual({
@@ -278,6 +268,7 @@ describe("MANAGE - resolvers - api key", () => {
                     data: [
                         {
                             id: expect.any(String),
+                            entryId: expect.any(String),
                             title: updatedCategory.title,
                             slug: updatedCategory.slug,
                             createdOn: updatedCategory.createdOn,
@@ -305,9 +296,9 @@ describe("MANAGE - resolvers - api key", () => {
                         }
                     ],
                     meta: {
+                        cursor: null,
                         hasMoreItems: false,
-                        totalCount: 1,
-                        cursor: expect.any(String)
+                        totalCount: 1
                     },
                     error: null
                 }

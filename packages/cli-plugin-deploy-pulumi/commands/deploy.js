@@ -34,6 +34,8 @@ module.exports = async (inputs, context) => {
     // Get project application metadata.
     const projectApplication = getProjectApplication({ cwd: path.join(process.cwd(), folder) });
 
+    await loadEnvVariables(inputs, context);
+
     if (build) {
         await execa(
             "yarn",
@@ -54,8 +56,6 @@ module.exports = async (inputs, context) => {
             }
         );
     }
-
-    await loadEnvVariables(inputs, context);
 
     await login(projectApplication);
     const pulumi = await getPulumi({
@@ -108,6 +108,9 @@ module.exports = async (inputs, context) => {
     if (inputs.preview) {
         await pulumi.run({
             command: "preview",
+            args: {
+                debug: inputs.debug
+            },
             execa: {
                 stdio: "inherit",
                 env: {
@@ -122,7 +125,8 @@ module.exports = async (inputs, context) => {
             args: {
                 yes: true,
                 skipPreview: true,
-                secretsProvider: SECRETS_PROVIDER
+                secretsProvider: SECRETS_PROVIDER,
+                debug: inputs.debug
             },
             execa: {
                 // We pipe "stderr" so that we can intercept potential received error messages,

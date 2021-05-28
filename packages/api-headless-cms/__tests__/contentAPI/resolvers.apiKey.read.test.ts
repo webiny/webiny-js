@@ -41,19 +41,12 @@ describe("READ - resolvers - api key", () => {
     const readOpts = { path: "read/en-US", permissions: [] };
 
     const {
-        clearAllIndex,
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
     } = useContentGqlHandler(manageOpts);
 
     beforeEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {
-            // Ignore errors
-        }
-
         const [createCMG] = await createContentModelGroupMutation({
             data: {
                 name: "Group",
@@ -94,12 +87,6 @@ describe("READ - resolvers - api key", () => {
         }
     });
 
-    afterEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch (e) {}
-    });
-
     test("get entry", async () => {
         // Use "manage" API to create and publish entries
         const { until, createCategory, publishCategory } = useCategoryManageHandler(manageOpts);
@@ -110,7 +97,9 @@ describe("READ - resolvers - api key", () => {
         const { id: categoryId } = category;
 
         // Publish it so it becomes available in the "read" API
-        await publishCategory({ revision: categoryId });
+        const [publishedCategoryResponse] = await publishCategory({ revision: categoryId });
+
+        const publishedCategory = publishedCategoryResponse.data.publishCategory.data;
 
         // See if entries are available via "read" API
         const { getCategory } = useCategoryReadHandler({
@@ -144,8 +133,9 @@ describe("READ - resolvers - api key", () => {
                 getCategory: {
                     data: {
                         id: category.id,
+                        entryId: category.entryId,
                         createdOn: category.createdOn,
-                        savedOn: category.savedOn,
+                        savedOn: publishedCategory.savedOn,
                         title: category.title,
                         slug: category.slug
                     },
@@ -165,7 +155,9 @@ describe("READ - resolvers - api key", () => {
         const { id: categoryId } = category;
 
         // Publish it so it becomes available in the "read" API
-        await publishCategory({ revision: categoryId });
+        const [publishCategoryResponse] = await publishCategory({ revision: categoryId });
+
+        const publishedCatgory = publishCategoryResponse.data.publishCategory.data;
 
         // See if entries are available via "read" API
         const { listCategories } = useCategoryReadHandler({
@@ -201,13 +193,13 @@ describe("READ - resolvers - api key", () => {
                         {
                             id: category.id,
                             createdOn: category.createdOn,
-                            savedOn: category.savedOn,
+                            savedOn: publishedCatgory.savedOn,
                             title: category.title,
                             slug: category.slug
                         }
                     ],
                     meta: {
-                        cursor: expect.any(String),
+                        cursor: null,
                         hasMoreItems: false,
                         totalCount: 1
                     },

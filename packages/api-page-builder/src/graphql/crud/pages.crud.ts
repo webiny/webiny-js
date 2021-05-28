@@ -13,7 +13,9 @@ import merge from "lodash/merge";
 import getPKPrefix from "./utils/getPKPrefix";
 import DataLoader from "dataloader";
 
-import { Page, PageHookPlugin, PageSecurityPermission, PbContext, TYPE } from "../../types";
+import { Page, PbPagePlugin, PageSecurityPermission, PbContext, TYPE } from "../../types";
+import { SearchPublishedPagesPlugin } from "~/plugins/SearchPublishedPagesPlugin";
+import { SearchLatestPagesPlugin } from "~/plugins/SearchLatestPagesPlugin";
 import createListMeta from "./utils/createListMeta";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
@@ -21,7 +23,7 @@ import executeHookCallbacks from "./utils/executeHookCallbacks";
 import path from "path";
 import normalizePath from "./pages/normalizePath";
 import { compressContent, extractContent } from "./pages/contentCompression";
-import { CreateDataModel, UpdateDataModel, UpdateSettingsModel } from "./pages/models";
+import { CreateDataModel, UpdateSettingsModel } from "./pages/models";
 import { getESLatestPageData, getESPublishedPageData } from "./pages/esPageData";
 
 import { Args as FlushArgs } from "@webiny/api-prerendering-service/flush/types";
@@ -47,7 +49,7 @@ const plugin: ContextPlugin<PbContext> = {
         const ES_DEFAULTS = () => defaults.es(context);
 
         // Used in a couple of key events - (un)publishing and pages deletion.
-        const hookPlugins = context.plugins.byType<PageHookPlugin>("pb-page-hook");
+        const pagePlugins = context.plugins.byType<PbPagePlugin>("pb-page");
 
         context.pageBuilder = {
             ...context.pageBuilder,
@@ -187,13 +189,21 @@ const plugin: ContextPlugin<PbContext> = {
                         });
                     }
 
-                    const [[page]] = await db.read<Page>({
+                    let [[page]] = await db.read<Page>({
                         ...defaults.db,
                         query: { PK: PK_PAGE_PUBLISHED_PATH(), SK: normalizedPath }
                     });
 
                     if (!page) {
-                        throw notFoundError;
+                        // Try loading dynamic pages
+                        for (const plugin of pagePlugins) {
+                            if (typeof plugin.notFound === "function") {
+                                page = await plugin.notFound({ args, context });
+                                if (page) {
+                                    break;
+                                }
+                            }
+                        }
                     }
 
                     if (page) {
@@ -214,7 +224,7 @@ const plugin: ContextPlugin<PbContext> = {
                         context
                     );
 
-                    query.bool.filter.push(
+                    query.filter.push(
                         {
                             term: { "locale.keyword": i18nContent.getLocale().code }
                         },
@@ -224,15 +234,33 @@ const plugin: ContextPlugin<PbContext> = {
                     // If users can only manage own records, let's add the special filter.
                     if (permission.own === true) {
                         const identity = context.security.getIdentity();
-                        query.bool.filter.push({
+                        query.filter.push({
                             term: { "createdBy.id.keyword": identity.id }
                         });
+                    }
+
+                    const listLatestPlugins = context.plugins.byType<SearchLatestPagesPlugin>(
+                        SearchLatestPagesPlugin.type
+                    );
+
+                    for (const plugin of listLatestPlugins) {
+                        // Apply query modifications
+                        plugin.modifyQuery({ query, args, context });
+
+                        // Apply sort modifications
+                        plugin.modifySort({ sort, args, context });
                     }
 
                     const response = await elasticSearch.search({
                         ...ES_DEFAULTS(),
                         body: {
-                            query,
+                            query: {
+                                bool: {
+                                    must: query.must.length > 0 ? query.must : undefined,
+                                    must_not: query.mustNot.length > 0 ? query.mustNot : undefined,
+                                    filter: query.filter.length > 0 ? query.filter : undefined
+                                }
+                            },
                             from,
                             size,
                             sort
@@ -253,17 +281,35 @@ const plugin: ContextPlugin<PbContext> = {
                         context
                     );
 
-                    query.bool.filter.push(
+                    query.filter.push(
                         {
                             term: { "locale.keyword": i18nContent.getLocale().code }
                         },
                         { term: { published: true } }
                     );
 
+                    const listPublishedPlugins = context.plugins.byType<SearchPublishedPagesPlugin>(
+                        SearchPublishedPagesPlugin.type
+                    );
+
+                    for (const plugin of listPublishedPlugins) {
+                        // Apply query modifications
+                        plugin.modifyQuery({ query, args, context });
+
+                        // Apply sort modifications
+                        plugin.modifySort({ sort, args, context });
+                    }
+
                     const response = await elasticSearch.search({
                         ...ES_DEFAULTS(),
                         body: {
-                            query,
+                            query: {
+                                bool: {
+                                    must: query.must.length > 0 ? query.must : undefined,
+                                    must_not: query.mustNot.length > 0 ? query.mustNot : undefined,
+                                    filter: query.filter.length > 0 ? query.filter : undefined
+                                }
+                            },
                             from,
                             size,
                             sort
@@ -372,10 +418,7 @@ const plugin: ContextPlugin<PbContext> = {
                         type: identity.type
                     };
 
-                    const data = {
-                        PK: PK_PAGE(pid),
-                        SK: `REV#${zeroPaddedVersion}`,
-                        TYPE: TYPE.PAGE,
+                    const page: Page = {
                         id,
                         pid,
                         locale: context.i18nContent.getLocale().code,
@@ -390,6 +433,8 @@ const plugin: ContextPlugin<PbContext> = {
                             list: { latest: true, published: true },
                             get: { latest: true, published: true }
                         },
+                        home: false,
+                        notFound: false,
                         locked: false,
                         publishedOn: null,
                         createdFrom: null,
@@ -401,30 +446,51 @@ const plugin: ContextPlugin<PbContext> = {
                         content: compressContent() // Just create the initial { compression, content } object.
                     };
 
-                    await executeHookCallbacks(hookPlugins, "beforeCreate", context, data);
+                    await executeHookCallbacks<PbPagePlugin["beforeCreate"]>(
+                        pagePlugins,
+                        "beforeCreate",
+                        { context, page }
+                    );
+
+                    const ddbData = {
+                        PK: PK_PAGE(pid),
+                        SK: `REV#${zeroPaddedVersion}`,
+                        TYPE: TYPE.PAGE,
+                        ...page
+                    };
 
                     const latestPageKeys = { PK: PK_PAGE(pid), SK: "L" };
 
                     await db
                         .batch()
-                        .create({ ...defaults.db, data })
+                        .create({ ...defaults.db, data: ddbData })
                         .create({
                             ...defaults.db,
-                            data: { ...data, ...latestPageKeys }
+                            data: { ...ddbData, ...latestPageKeys }
                         })
                         .create({
                             ...defaults.esDb,
                             data: {
                                 ...latestPageKeys,
                                 index: ES_DEFAULTS().index,
-                                data: getESLatestPageData(context, { ...data, ...latestPageKeys })
+                                data: getESLatestPageData(context, {
+                                    ...ddbData,
+                                    ...latestPageKeys
+                                })
                             }
                         })
                         .execute();
 
-                    await executeHookCallbacks(hookPlugins, "afterCreate", context, data);
+                    await executeHookCallbacks<PbPagePlugin["afterCreate"]>(
+                        pagePlugins,
+                        "afterCreate",
+                        {
+                            context,
+                            page
+                        }
+                    );
 
-                    return omit(data, ["PK", "SK", "content"]) as any;
+                    return omit(ddbData, ["PK", "SK", "content"]) as any;
                 },
 
                 async createFrom(from) {
@@ -487,7 +553,14 @@ const plugin: ContextPlugin<PbContext> = {
                         }
                     };
 
-                    await executeHookCallbacks(hookPlugins, "beforeCreate", context, data);
+                    await executeHookCallbacks<PbPagePlugin["beforeCreate"]>(
+                        pagePlugins,
+                        "beforeCreate",
+                        {
+                            context,
+                            page: data as Page
+                        }
+                    );
 
                     const latestPageKeys = {
                         PK: PK_PAGE(fromPid),
@@ -514,14 +587,21 @@ const plugin: ContextPlugin<PbContext> = {
                             data: {
                                 ...latestPageKeys,
                                 index: ES_DEFAULTS().index,
-                                data: getESLatestPageData(context, data)
+                                data: getESLatestPageData(context, data as Page)
                             }
                         });
                     }
 
                     await batch.execute();
 
-                    await executeHookCallbacks(hookPlugins, "afterCreate", context, data);
+                    await executeHookCallbacks<PbPagePlugin["afterCreate"]>(
+                        pagePlugins,
+                        "afterCreate",
+                        {
+                            page: data as Page,
+                            context
+                        }
+                    );
 
                     // Extract compressed page content.
                     data.content = await extractContent(data.content);
@@ -561,29 +641,29 @@ const plugin: ContextPlugin<PbContext> = {
                     const identity = context.security.getIdentity();
                     checkOwnPermissions(identity, permission, existingPage, "ownedBy");
 
-                    const updateDataModel = new UpdateDataModel().populate(data);
-                    await updateDataModel.validate();
+                    const updateData: Partial<Page> = {
+                        ...data,
+                        savedOn: new Date().toISOString()
+                    };
 
-                    const updateData = await updateDataModel.toJSON({ onlyDirty: true });
-
-                    const updateSettingsModel = new UpdateSettingsModel()
-                        .populate(existingPage.settings)
-                        .populate(data.settings);
-
-                    await updateSettingsModel.validate();
-
-                    updateData.settings = await updateSettingsModel.toJSON();
-                    updateData.savedOn = new Date().toISOString();
+                    await executeHookCallbacks<PbPagePlugin["beforeUpdate"]>(
+                        pagePlugins,
+                        "beforeUpdate",
+                        {
+                            context,
+                            existingPage,
+                            inputData: data,
+                            updateData
+                        }
+                    );
 
                     const newContent = updateData.content;
                     if (newContent) {
                         updateData.content = compressContent(newContent);
                     }
 
-                    await executeHookCallbacks(hookPlugins, "beforeUpdate", context, existingPage);
-
                     const newPageData = { ...existingPage, ...updateData };
-                    const newLatestPageData = { ...existingLatestPage, ...updateData };
+                    const newLatestPage = { ...existingLatestPage, ...updateData };
 
                     const batch = db.batch().update({
                         ...defaults.db,
@@ -592,13 +672,13 @@ const plugin: ContextPlugin<PbContext> = {
                     });
 
                     // If we updated the latest rev, make sure the changes are propagated to "L" record and ES.
-                    if (newLatestPageData.id === id) {
+                    if (newLatestPage.id === id) {
                         const latestPageKeys = { PK: PK_PAGE(pid), SK: "L" };
 
                         batch.update({
                             ...defaults.db,
                             query: latestPageKeys,
-                            data: newLatestPageData
+                            data: newLatestPage
                         });
 
                         // Update the ES index according to the value of the "latest pages lists" visibility setting.
@@ -622,7 +702,15 @@ const plugin: ContextPlugin<PbContext> = {
 
                     await batch.execute();
 
-                    await executeHookCallbacks(hookPlugins, "afterUpdate", context, newPageData);
+                    await executeHookCallbacks<PbPagePlugin["afterUpdate"]>(
+                        pagePlugins,
+                        "afterUpdate",
+                        {
+                            context,
+                            page: newPageData as Page,
+                            inputData: data
+                        }
+                    );
 
                     return {
                         ...newPageData,
@@ -672,11 +760,16 @@ const plugin: ContextPlugin<PbContext> = {
                     }
 
                     // 3. Let's start updating. But first, let's trigger before-delete hook callbacks.
-                    await executeHookCallbacks(hookPlugins, "beforeDelete", context, {
-                        page,
-                        latestPage,
-                        publishedPage
-                    });
+                    await executeHookCallbacks<PbPagePlugin["beforeDelete"]>(
+                        pagePlugins,
+                        "beforeDelete",
+                        {
+                            context,
+                            page,
+                            latestPage,
+                            publishedPage
+                        }
+                    );
 
                     // Before we continue, note that if `publishedPageData` exists, then `publishedPagePathData`
                     // also exists. And to delete it, we can read `publishedPageData.path` to get its SK.
@@ -736,11 +829,16 @@ const plugin: ContextPlugin<PbContext> = {
                             })
                             .execute();
 
-                        await executeHookCallbacks(hookPlugins, "afterDelete", context, {
-                            page,
-                            latestPage,
-                            publishedPage
-                        });
+                        await executeHookCallbacks<PbPagePlugin["afterDelete"]>(
+                            pagePlugins,
+                            "afterDelete",
+                            {
+                                context,
+                                page,
+                                latestPage,
+                                publishedPage
+                            }
+                        );
 
                         return [page, null];
                     }
@@ -821,11 +919,16 @@ const plugin: ContextPlugin<PbContext> = {
 
                     await batch.execute();
 
-                    await executeHookCallbacks(hookPlugins, "afterDelete", context, {
-                        page,
-                        latestPage,
-                        publishedPage
-                    });
+                    await executeHookCallbacks<PbPagePlugin["afterDelete"]>(
+                        pagePlugins,
+                        "afterDelete",
+                        {
+                            context,
+                            page,
+                            latestPage,
+                            publishedPage
+                        }
+                    );
 
                     // 7. Done. We return both the deleted page, and the new latest one (if there is one).
                     return [page, newLatestPage];
@@ -886,11 +989,16 @@ const plugin: ContextPlugin<PbContext> = {
                         }
                     });
 
-                    await executeHookCallbacks(hookPlugins, "beforePublish", context, {
-                        page,
-                        latestPage,
-                        publishedPage
-                    });
+                    await executeHookCallbacks<PbPagePlugin["beforePublish"]>(
+                        pagePlugins,
+                        "beforePublish",
+                        {
+                            context,
+                            page,
+                            latestPage,
+                            publishedPage
+                        }
+                    );
 
                     const pathTakenByAnotherPage =
                         publishedPageOnPath && publishedPageOnPath.pid !== page.pid;
@@ -1068,11 +1176,16 @@ const plugin: ContextPlugin<PbContext> = {
 
                     await batch.execute();
 
-                    await executeHookCallbacks(hookPlugins, "afterPublish", context, {
-                        page,
-                        latestPage,
-                        publishedPage
-                    });
+                    await executeHookCallbacks<PbPagePlugin["afterPublish"]>(
+                        pagePlugins,
+                        "afterPublish",
+                        {
+                            context,
+                            page,
+                            latestPage,
+                            publishedPage
+                        }
+                    );
 
                     return page;
                 },
@@ -1133,7 +1246,11 @@ const plugin: ContextPlugin<PbContext> = {
                         }
                     }
 
-                    await executeHookCallbacks(hookPlugins, "beforeUnpublish", context, page);
+                    await executeHookCallbacks<PbPagePlugin["beforeUnpublish"]>(
+                        pagePlugins,
+                        "beforeUnpublish",
+                        { context, page }
+                    );
 
                     page.status = STATUS_UNPUBLISHED;
 
@@ -1194,7 +1311,11 @@ const plugin: ContextPlugin<PbContext> = {
 
                     await batch.execute();
 
-                    await executeHookCallbacks(hookPlugins, "afterUnpublish", context, page);
+                    await executeHookCallbacks<PbPagePlugin["afterUnpublish"]>(
+                        pagePlugins,
+                        "afterUnpublish",
+                        { context, page }
+                    );
 
                     return page;
                 },

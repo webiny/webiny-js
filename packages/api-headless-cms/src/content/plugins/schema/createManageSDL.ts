@@ -33,10 +33,12 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
             .filter(Boolean)
             .join("\n")}
         type ${mTypeName} {
-            id: ID
-            createdOn: DateTime
-            createdBy: CmsCreatedBy
-            savedOn: DateTime
+            id: ID!
+            entryId: String!
+            createdOn: DateTime!
+            savedOn: DateTime!
+            createdBy: CmsCreatedBy!
+            ownedBy: CmsOwnedBy!
             meta: ${mTypeName}Meta
             ${fields.map(f => f.fields).join("\n")}
         }
