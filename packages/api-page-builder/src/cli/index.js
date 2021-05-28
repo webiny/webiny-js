@@ -73,12 +73,12 @@ module.exports = () => [
                 return;
             }
 
-            /*if (args.inputs.build === false) {
+            if (args.inputs.build === false) {
                 context.info(
                     `"--no-build" argument detected - skipping React application upload and prerendering.`
                 );
                 return;
-            }*/
+            }
 
             context.info("Uploading React application...");
             // 1. Get exports from `site` stack, for `args.env` environment.
