@@ -140,7 +140,7 @@ describe("MANAGE - Resolvers", () => {
 
         const [create] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
 
-        const { id } = create.data.createCategory.data;
+        const { id, entryId } = create.data.createCategory.data;
 
         // Need to wait until the new entry is propagated
         await until(
@@ -152,6 +152,7 @@ describe("MANAGE - Resolvers", () => {
 
         expect(response.data.getCategory.data).toEqual({
             id,
+            entryId,
             createdOn: expect.stringMatching(/^20/),
             createdBy: {
                 id: "123",
@@ -193,14 +194,13 @@ describe("MANAGE - Resolvers", () => {
             ({ data }) => data.listCategories.data[0].id === id
         );
 
-        const { getCategory } = useCategoryManageHandler(
-            Object.assign({}, manageOpts, {
-                permissions: createPermissions({
-                    groups: [contentModelGroup.id],
-                    models: ["someOtherModelId"]
-                })
+        const { getCategory } = useCategoryManageHandler({
+            ...manageOpts,
+            permissions: createPermissions({
+                groups: [contentModelGroup.id],
+                models: ["someOtherModelId"]
             })
-        );
+        });
 
         const [response] = await getCategory({ revision: id });
 
@@ -220,7 +220,7 @@ describe("MANAGE - Resolvers", () => {
 
         const [create] = await createCategory({ data: { title: "Hardware", slug: "hardware" } });
 
-        const { id } = create.data.createCategory.data;
+        const { id, entryId } = create.data.createCategory.data;
 
         // Need to wait until the new entry is propagated to Elastic Search index
         await until(
@@ -228,19 +228,19 @@ describe("MANAGE - Resolvers", () => {
             ({ data }) => data.listCategories.data[0].id === id
         );
 
-        const { getCategory } = useCategoryManageHandler(
-            Object.assign({}, manageOpts, {
-                permissions: createPermissions({
-                    groups: [contentModelGroup.id],
-                    models: ["category"]
-                })
+        const { getCategory } = useCategoryManageHandler({
+            ...manageOpts,
+            permissions: createPermissions({
+                groups: [contentModelGroup.id],
+                models: ["category"]
             })
-        );
+        });
 
         const [response] = await getCategory({ revision: id });
 
         expect(response.data.getCategory.data).toEqual({
             id,
+            entryId,
             createdOn: expect.stringMatching(/^20/),
             createdBy: {
                 id: "123",
@@ -304,6 +304,7 @@ describe("MANAGE - Resolvers", () => {
                     data: [
                         {
                             id: category.id,
+                            entryId: category.entryId,
                             title: category.title,
                             slug: category.slug,
                             createdOn: category.createdOn,
@@ -438,6 +439,7 @@ describe("MANAGE - Resolvers", () => {
 
         expect(category1).toEqual({
             id: expect.any(String),
+            entryId: expect.any(String),
             createdOn: expect.stringMatching(/^20/),
             createdBy: {
                 id: "123",
@@ -506,6 +508,7 @@ describe("MANAGE - Resolvers", () => {
 
         expect(category).toEqual({
             id: expect.any(String),
+            entryId: expect.any(String),
             createdOn: expect.stringMatching(/^20/),
             createdBy: {
                 id: "123",
@@ -565,6 +568,7 @@ describe("MANAGE - Resolvers", () => {
                 createCategoryFrom: {
                     data: {
                         id: expect.any(String),
+                        entryId: expect.any(String),
                         savedOn: expect.stringMatching(/^20/),
                         createdOn: expect.stringMatching(/^20/),
                         createdBy: {
@@ -647,6 +651,7 @@ describe("MANAGE - Resolvers", () => {
                 updateCategory: {
                     data: {
                         id: expect.any(String),
+                        entryId: expect.any(String),
                         createdOn: expect.stringMatching(/^20/),
                         createdBy: {
                             id: "123",

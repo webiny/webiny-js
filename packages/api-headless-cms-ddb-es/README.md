@@ -16,3 +16,20 @@ Or if you prefer yarn:
 ```
 yarn add @webiny/api-headless-cms-ddb-es
 ```
+
+
+## Testing
+To run the tests only for this package you must filter it with keywords.
+
+### Env variables
+
+###### LOCAL_ELASTICSEARCH
+If set, does not run Elasticsearch when starting the tests, use local one. You must install it and run if, of course.
+
+###### ELASTICSEARCH_PORT
+Custom port for local elasticsearch.
+
+### Command
+````
+ELASTICSEARCH_PORT=9200 LOCAL_ELASTICSEARCH=true yarn test packages/api-headless-cms --keyword=cms:ddb-es --keyword=cms:base
+````

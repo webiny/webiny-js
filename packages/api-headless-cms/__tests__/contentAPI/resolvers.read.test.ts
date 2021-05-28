@@ -170,6 +170,7 @@ describe("READ - Resolvers", () => {
                 getCategory: {
                     data: {
                         id: category.id,
+                        entryId: category.entryId,
                         createdOn: category.createdOn,
                         savedOn: publishedCategory.savedOn,
                         title: category.title,

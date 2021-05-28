@@ -178,8 +178,10 @@ describe("latest entries", function() {
                 createArticle: {
                     data: {
                         id: expect.any(String),
+                        entryId: expect.any(String),
                         createdOn: expect.any(String),
                         createdBy: expect.any(Object),
+                        ownedBy: expect.any(Object),
                         savedOn: expect.any(String),
                         meta: {
                             title,
@@ -241,8 +243,10 @@ describe("latest entries", function() {
                     data: [
                         {
                             id: article.id,
+                            entryId: article.entryId,
                             createdOn: article.createdOn,
                             createdBy: article.createdBy,
+                            ownedBy: article.ownedBy,
                             savedOn: article.savedOn,
                             title,
                             body,
@@ -283,6 +287,7 @@ describe("latest entries", function() {
                 publishCategory: {
                     data: {
                         id: `${updatedFruitCategory.id.replace("#0001", "#0002")}`,
+                        entryId: updatedFruitCategory.entryId,
                         createdOn: expect.any(String),
                         createdBy: expect.any(Object),
                         savedOn: expect.any(String),
@@ -336,8 +341,10 @@ describe("latest entries", function() {
                     data: [
                         {
                             id: article.id,
+                            entryId: article.entryId,
                             createdOn: article.createdOn,
                             createdBy: article.createdBy,
+                            ownedBy: article.ownedBy,
                             savedOn: article.savedOn,
                             title,
                             body,

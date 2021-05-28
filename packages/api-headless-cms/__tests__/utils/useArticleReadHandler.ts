@@ -3,9 +3,15 @@ import { GQLHandlerCallableArgs } from "./useGqlHandler";
 
 const fields = `
     id
+    entryId
     createdOn
     savedOn
     createdBy {
+        id
+        displayName
+        type
+    }
+    ownedBy {
         id
         displayName
         type

@@ -123,6 +123,7 @@ describe("MANAGE - resolvers - api key", () => {
                 createCategory: {
                     data: {
                         id: expect.any(String),
+                        entryId: expect.any(String),
                         title: "Vegetables",
                         slug: "vegetables",
                         createdOn: expect.stringMatching(/^20/),
@@ -174,6 +175,7 @@ describe("MANAGE - resolvers - api key", () => {
                 getCategory: {
                     data: {
                         id: category.id,
+                        entryId: category.entryId,
                         title: category.title,
                         slug: category.slug,
                         createdOn: category.createdOn,
@@ -220,6 +222,7 @@ describe("MANAGE - resolvers - api key", () => {
                 updateCategory: {
                     data: {
                         id: expect.any(String),
+                        entryId: expect.any(String),
                         title: "Green vegetables",
                         slug: "green-vegetables",
                         createdOn: expect.stringMatching(/^20/),
@@ -265,6 +268,7 @@ describe("MANAGE - resolvers - api key", () => {
                     data: [
                         {
                             id: expect.any(String),
+                            entryId: expect.any(String),
                             title: updatedCategory.title,
                             slug: updatedCategory.slug,
                             createdOn: updatedCategory.createdOn,

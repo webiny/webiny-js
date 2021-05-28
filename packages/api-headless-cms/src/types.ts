@@ -1198,13 +1198,25 @@ export interface CmsContentEntryListWhere {
      * Generated ID without the version.
      */
     entryId?: string;
+    entryId_not?: string;
     entryId_in?: string[];
+    entryId_not_in?: string[];
     /**
      * Entry is owned by whom?
      *
      * Can be sent via the API or set internal if user can see only their own entries.
      */
     ownedBy?: string;
+    ownedBy_not?: string;
+    ownedBy_in?: string[];
+    ownedBy_not_in?: string[];
+    /**
+     * Who created the entry?
+     */
+    createdBy?: string;
+    createdBy_not?: string;
+    createdBy_in?: string[];
+    createdBy_not_in?: string[];
     /**
      * Version of the entry.
      *

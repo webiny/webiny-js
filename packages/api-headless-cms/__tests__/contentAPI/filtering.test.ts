@@ -6,6 +6,9 @@ import { useFruitReadHandler } from "../utils/useFruitReadHandler";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useProductManageHandler } from "../utils/useProductManageHandler";
 import { useProductReadHandler } from "../utils/useProductReadHandler";
+import { useArticleManageHandler } from "../utils/useArticleManageHandler";
+import { useArticleReadHandler } from "../utils/useArticleReadHandler";
+import { SecurityIdentity } from "@webiny/api-security";
 
 jest.setTimeout(25000);
 
@@ -1046,6 +1049,698 @@ describe("filtering", () => {
                         cursor: null,
                         hasMoreItems: false,
                         totalCount: 0
+                    },
+                    error: null
+                }
+            }
+        });
+    });
+
+    test("should filter entries by entryId", async () => {
+        const articleManager = useArticleManageHandler(manageOpts);
+        const articleReader = useArticleReadHandler(readOpts);
+
+        const group = await setupContentModelGroup();
+        await setupContentModel(group, "category");
+        await setupContentModel(group, "article");
+
+        const [createFruitResponse] = await articleManager.createArticle({
+            data: {
+                title: "Fruit 123",
+                body: null,
+                categories: []
+            }
+        });
+
+        const [createAnimalResponse] = await articleManager.createArticle({
+            data: {
+                title: "Animal 123",
+                body: null,
+                categories: []
+            }
+        });
+
+        const [publishFruitResponse] = await articleManager.publishArticle({
+            revision: createFruitResponse.data.createArticle.data.id
+        });
+        const fruit = publishFruitResponse.data.publishArticle.data;
+        const [publishAnimalResponse] = await articleManager.publishArticle({
+            revision: createAnimalResponse.data.createArticle.data.id
+        });
+        const animal = publishAnimalResponse.data.publishArticle.data;
+        /**
+         * Make sure we have both categories published.
+         */
+        await until(
+            () => articleManager.listArticles().then(([data]) => data),
+            ({ data }) => {
+                const entries = data?.listArticles?.data || [];
+                if (entries.length !== 2) {
+                    return false;
+                }
+                return entries.every(entry => {
+                    return !!entry.meta.publishedOn;
+                });
+            },
+            { name: "list all published entries", tries: 10 }
+        );
+        /**
+         * Make sure to get only the fruit entry via manage API.
+         */
+        const [listManageFruitResponse] = await articleManager.listArticles({
+            where: {
+                entryId: fruit.entryId
+            }
+        });
+
+        expect(listManageFruitResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [fruit],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+        /**
+         * Make sure to get only the animal entry via manage API.
+         */
+        const [listManageAnimalResponse] = await articleManager.listArticles({
+            where: {
+                entryId: animal.entryId
+            }
+        });
+
+        expect(listManageAnimalResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [animal],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const readFruit = {
+            ...fruit
+        };
+        delete readFruit["meta"];
+        const readAnimal = {
+            ...animal
+        };
+        delete readAnimal["meta"];
+
+        /**
+         * Make sure to get only the fruit entry via read API.
+         * equal check
+         */
+        const [listReadFruitEqualResponse] = await articleReader.listArticles({
+            where: {
+                entryId: fruit.entryId
+            }
+        });
+
+        expect(listReadFruitEqualResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [readFruit],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+        /**
+         * Make sure to get only the animal entry via read API.
+         * equal check
+         */
+        const [listReadAnimalEqualResponse] = await articleReader.listArticles({
+            where: {
+                entryId: animal.entryId
+            }
+        });
+
+        expect(listReadAnimalEqualResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [readAnimal],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+        /**
+         * Make sure to get only the fruit entry via read API.
+         * not equal check
+         */
+        const [listReadFruitNotEqualResponse] = await articleReader.listArticles({
+            where: {
+                entryId_not: animal.entryId
+            }
+        });
+
+        expect(listReadFruitNotEqualResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [readFruit],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+        /**
+         * Make sure to get only the animal entry via read API.
+         * not equal check
+         */
+        const [listReadAnimalNotEqualResponse] = await articleReader.listArticles({
+            where: {
+                entryId_not: fruit.entryId
+            }
+        });
+
+        expect(listReadAnimalNotEqualResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [readAnimal],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+        /**
+         * Make sure to get only the fruit entry via read API.
+         * in check
+         */
+        const [listReadFruitInResponse] = await articleReader.listArticles({
+            where: {
+                entryId_in: [fruit.entryId]
+            }
+        });
+
+        expect(listReadFruitInResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [readFruit],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+        /**
+         * Make sure to get only the animal entry via read API.
+         * in check
+         */
+        const [listReadAnimalInResponse] = await articleReader.listArticles({
+            where: {
+                entryId_in: [animal.entryId]
+            }
+        });
+
+        expect(listReadAnimalInResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [readAnimal],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        /**
+         * Make sure to get only the fruit entry via read API.
+         * not in check
+         */
+        const [listReadFruitNotInResponse] = await articleReader.listArticles({
+            where: {
+                entryId_not_in: [animal.entryId]
+            }
+        });
+
+        expect(listReadFruitNotInResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [readFruit],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+        /**
+         * Make sure to get only the animal entry via read API.
+         * not in check
+         */
+        const [listReadAnimalNotInResponse] = await articleReader.listArticles({
+            where: {
+                entryId_not_in: [fruit.entryId]
+            }
+        });
+
+        expect(listReadAnimalNotInResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [readAnimal],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        /**
+         * Make sure not to get both of the entries.
+         * in check - all
+         */
+        const [listReadAnimalInAllResponse] = await articleReader.listArticles({
+            where: {
+                entryId_in: [fruit.entryId, animal.entryId]
+            },
+            sort: ["createdOn_ASC"]
+        });
+
+        expect(listReadAnimalInAllResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [readFruit, readAnimal],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 2,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        /**
+         * Make sure not to get any of the entries.
+         * not in check - empty
+         */
+        const [listReadAnimalNotInAllResponse] = await articleReader.listArticles({
+            where: {
+                entryId_not_in: [fruit.entryId, animal.entryId]
+            }
+        });
+
+        expect(listReadAnimalNotInAllResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 0,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+    });
+
+    test("should filter entries by createdBy", async () => {
+        const articleManager = useArticleManageHandler(manageOpts);
+        const articleAnotherManager = useArticleManageHandler({
+            ...manageOpts,
+            identity: new SecurityIdentity({
+                id: "4321",
+                displayName: "User 4321",
+                type: "admin"
+            })
+        });
+
+        const group = await setupContentModelGroup();
+        await setupContentModel(group, "category");
+        await setupContentModel(group, "article");
+
+        const [createFruitResponse] = await articleManager.createArticle({
+            data: {
+                title: "Fruit 123",
+                body: null,
+                categories: []
+            }
+        });
+
+        const [createAnimalResponse] = await articleAnotherManager.createArticle({
+            data: {
+                title: "Animal 123",
+                body: null,
+                categories: []
+            }
+        });
+
+        const [publishFruitResponse] = await articleManager.publishArticle({
+            revision: createFruitResponse.data.createArticle.data.id
+        });
+        const fruit = publishFruitResponse.data.publishArticle.data;
+        const [publishAnimalResponse] = await articleManager.publishArticle({
+            revision: createAnimalResponse.data.createArticle.data.id
+        });
+        const animal = publishAnimalResponse.data.publishArticle.data;
+        /**
+         * Make sure we have both categories published.
+         */
+        await until(
+            () => articleManager.listArticles().then(([data]) => data),
+            ({ data }) => {
+                const entries = data?.listArticles?.data || [];
+                if (entries.length !== 2) {
+                    return false;
+                }
+                return entries.every(entry => {
+                    return !!entry.meta.publishedOn;
+                });
+            },
+            { name: "list all published entries", tries: 10 }
+        );
+
+        const [listEq123Response] = await articleManager.listArticles({
+            where: {
+                createdBy: "123"
+            }
+        });
+
+        expect(listEq123Response).toEqual({
+            data: {
+                listArticles: {
+                    data: [fruit],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listEq4321Response] = await articleManager.listArticles({
+            where: {
+                createdBy: "4321"
+            }
+        });
+
+        expect(listEq4321Response).toEqual({
+            data: {
+                listArticles: {
+                    data: [animal],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listNotEqResponse] = await articleManager.listArticles({
+            where: {
+                createdBy_not: "123"
+            }
+        });
+
+        expect(listNotEqResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [animal],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listInResponse] = await articleManager.listArticles({
+            where: {
+                createdBy_in: ["123"]
+            }
+        });
+
+        expect(listInResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [fruit],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listNotInResponse] = await articleManager.listArticles({
+            where: {
+                createdBy_not_in: ["4321"]
+            }
+        });
+
+        expect(listNotInResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [fruit],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listNotInAllResponse] = await articleManager.listArticles({
+            where: {
+                createdBy_not_in: ["4321", "123"]
+            }
+        });
+
+        expect(listNotInAllResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 0,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+    });
+
+    test("should filter entries by ownedBy", async () => {
+        const articleManager = useArticleManageHandler(manageOpts);
+        const articleAnotherManager = useArticleManageHandler({
+            ...manageOpts,
+            identity: new SecurityIdentity({
+                id: "4321",
+                displayName: "User 4321",
+                type: "admin"
+            })
+        });
+
+        const group = await setupContentModelGroup();
+        await setupContentModel(group, "category");
+        await setupContentModel(group, "article");
+
+        const [createFruitResponse] = await articleManager.createArticle({
+            data: {
+                title: "Fruit 123",
+                body: null,
+                categories: []
+            }
+        });
+
+        const [createAnimalResponse] = await articleAnotherManager.createArticle({
+            data: {
+                title: "Animal 123",
+                body: null,
+                categories: []
+            }
+        });
+
+        const [publishFruitResponse] = await articleManager.publishArticle({
+            revision: createFruitResponse.data.createArticle.data.id
+        });
+        const fruit = publishFruitResponse.data.publishArticle.data;
+        const [publishAnimalResponse] = await articleManager.publishArticle({
+            revision: createAnimalResponse.data.createArticle.data.id
+        });
+        const animal = publishAnimalResponse.data.publishArticle.data;
+        /**
+         * Make sure we have both categories published.
+         */
+        await until(
+            () => articleManager.listArticles().then(([data]) => data),
+            ({ data }) => {
+                const entries = data?.listArticles?.data || [];
+                if (entries.length !== 2) {
+                    return false;
+                }
+                return entries.every(entry => {
+                    return !!entry.meta.publishedOn;
+                });
+            },
+            { name: "list all published entries", tries: 10 }
+        );
+
+        const [listEq123Response] = await articleManager.listArticles({
+            where: {
+                ownedBy: "123"
+            }
+        });
+
+        expect(listEq123Response).toEqual({
+            data: {
+                listArticles: {
+                    data: [fruit],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listEq4321Response] = await articleManager.listArticles({
+            where: {
+                ownedBy: "4321"
+            }
+        });
+
+        expect(listEq4321Response).toEqual({
+            data: {
+                listArticles: {
+                    data: [animal],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listNotEqResponse] = await articleManager.listArticles({
+            where: {
+                ownedBy_not: "123"
+            }
+        });
+
+        expect(listNotEqResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [animal],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listInResponse] = await articleManager.listArticles({
+            where: {
+                ownedBy_in: ["123"]
+            }
+        });
+
+        expect(listInResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [fruit],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listNotInResponse] = await articleManager.listArticles({
+            where: {
+                ownedBy_not_in: ["4321"]
+            }
+        });
+
+        expect(listNotInResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [fruit],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 1,
+                        cursor: null
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [listNotInAllResponse] = await articleManager.listArticles({
+            where: {
+                ownedBy_not_in: ["4321", "123"]
+            }
+        });
+
+        expect(listNotInAllResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [],
+                    meta: {
+                        hasMoreItems: false,
+                        totalCount: 0,
+                        cursor: null
                     },
                     error: null
                 }
