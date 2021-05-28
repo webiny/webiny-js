@@ -318,19 +318,19 @@ jobs:
 
       - uses: actions/cache@v2
         with:
-          path: .yarn/cache
-          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-
-      - name: Move .yarn/cache to webiny-js/.yarn/cache
-        run: mv .yarn/cache webiny-js/.yarn/cache
-
-      - uses: actions/cache@v2
-        with:
           path: .webiny/cached-packages
           key: cached-packages-${{ runner.os }}-next-${{ needs.cache-keys.outputs.day }}
 
       - name: Move .webiny/cached-packages to webiny-js/.webiny/cached-packages
         run: mv .webiny/cached-packages webiny-js/.webiny/cached-packages
+
+      - uses: actions/cache@v2
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('webiny-js/**/yarn.lock') }}
+
+      - name: Move .yarn/cache to webiny-js/.yarn/cache
+        run: mv .yarn/cache webiny-js/.yarn/cache
 
       - name: Install dependencies
         run: yarn --immutable
