@@ -40,27 +40,27 @@ type ElasticsearchQueryRange = {
  *
  * @category Elasticsearch
  */
-type ElasticsearchQueryQuery = {
+type ElasticsearchQueryString = {
     allow_leading_wildcard?: boolean;
     fields: string[];
     query: string;
     /**
      * Keep it loose.
      */
-    // [key: string]: any;
+    [key: string]: any;
 };
 /**
  * definition for Elasticsearch simple query string.
  *
  * @category Elasticsearch
  */
-type ElasticsearchQuerySimpleQuery = {
+type ElasticsearchSimpleQueryString = {
     fields: string[];
     query: string;
     /**
      * Keep it loose.
      */
-    // [key: string]: any;
+    [key: string]: any;
 };
 /**
  * definition for Elasticsearch must keyword.
@@ -75,8 +75,8 @@ type ElasticsearchQueryMust = {
         [key: string]: any[];
     };
     range?: ElasticsearchQueryRange;
-    query_string?: ElasticsearchQueryQuery;
-    simple_query_string?: ElasticsearchQuerySimpleQuery;
+    query_string?: ElasticsearchQueryString;
+    simple_query_string?: ElasticsearchSimpleQueryString;
 };
 /**
  * definition for Elasticsearch must_not keyword.
@@ -91,8 +91,8 @@ type ElasticsearchQueryMustNot = {
         [key: string]: any[];
     };
     range?: ElasticsearchQueryRange;
-    query_string?: ElasticsearchQueryQuery;
-    simple_query_string?: ElasticsearchQuerySimpleQuery;
+    query_string?: ElasticsearchQueryString;
+    simple_query_string?: ElasticsearchSimpleQueryString;
 };
 
 /**
@@ -173,8 +173,4 @@ export interface ElasticsearchQuery {
      * A should part of the query.
      */
     should: ElasticsearchQueryShould[];
-    /**
-     * Just to keep it loose.
-     */
-    [key: string]: any;
 }
