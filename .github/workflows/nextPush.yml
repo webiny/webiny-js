@@ -197,7 +197,7 @@ jobs:
 
   test-create-webiny-project:
     needs: [cache-keys, verdaccio-publish]
-    name: Test "create-webiny-project"
+    name: Test "create-webiny-project" (different operating systems)
     strategy:
       fail-fast: false
       matrix:
@@ -250,7 +250,7 @@ jobs:
       ELASTIC_SEARCH_INDEX_PREFIX: ${{ needs.cache-keys.outputs.ts }}
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
-      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}${{ needs.cache-keys.outputs.ts }}
+      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}_${{ needs.cache-keys.outputs.ts }}
     steps:
       - uses: actions/setup-node@v2
         with:
@@ -353,49 +353,10 @@ jobs:
         working-directory: webiny-js
         run: yarn setup-cypress --project-folder ../test-project
 
-      - name: Cypress - run the rest of Admin app tests
-        run: yarn cypress run --spec "cypress/integration/admin/**/*.spec.js"
+      - name: Cypress - run installation wizard test
+        working-directory: webiny-js
+        run: yarn cypress run --spec "cypress/integration/adminInstallation/**/*.spec.js"
 
-#  e2e-tests:
-#    needs: [cache-keys, deploy-preview]
-#    name: Run E2E (Cypress) tests
-#    runs-on: ubuntu-latest
-#    env:
-#      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#      AWS_REGION: eu-central-1
-#      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
-#      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
-#      WEBINY_PULUMI_BACKEND_URL: ${{ secrets.AWS_PULUMI_S3_BUCKET_NEXT_BRANCH_PREVIEW }}
-#    steps:
-#      - name: Get day of month (for caching purposes)
-#        id: day-of-month
-#        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
-#
-#      - uses: actions/setup-node@v2
-#        with:
-#          node-version: 12
-#
-#      - uses: actions/checkout@v2
-#
-#      - uses: actions/cache@v2
-#        with:
-#          path: .yarn/cache
-#          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-#
-#      - uses: actions/cache@v2
-#        with:
-#          path: .webiny/cached-packages
-#          key: cached-packages-${{ runner.os }}-next-${{ needs.cache-keys.outputs.day }}
-#
-#      - name: Install dependencies
-#        run: yarn --immutable
-#
-#      - name: Build packages
-#        run: yarn build
-#
-#      - name: Setup - setup cypress.json config file
-#        run: node scripts/setupCypress.js --force
-#
-#      - name: Cypress - run the rest of Admin app tests
-#        run: yarn cypress run --spec "cypress/integration/admin/**/*.spec.js"
+      - name: Cypress - run the rest of Admin Area tests
+        working-directory: webiny-js
+        run: yarn cypress run --spec "cypress/integration/admin/**/*.spec.js"
