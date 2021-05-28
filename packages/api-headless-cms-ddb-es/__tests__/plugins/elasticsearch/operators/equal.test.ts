@@ -35,7 +35,7 @@ describe("elasticsearchOperatorEqualPlugin", () => {
                     }
                 }
             ],
-
+            filter: [],
             should: []
         };
 

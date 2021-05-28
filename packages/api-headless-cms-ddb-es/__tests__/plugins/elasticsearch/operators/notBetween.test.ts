@@ -27,7 +27,7 @@ describe("elasticsearchOperatorNotBetweenPlugin", () => {
                 }
             ],
             must: [],
-
+            filter: [],
             should: []
         };
         expect(query).toEqual(expected);

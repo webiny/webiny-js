@@ -25,7 +25,7 @@ describe("elasticsearchOperatorGtPlugin", () => {
                     }
                 }
             ],
-
+            filter: [],
             should: []
         };
 
@@ -65,7 +65,7 @@ describe("elasticsearchOperatorGtPlugin", () => {
                     }
                 }
             ],
-
+            filter: [],
             should: []
         };
         expect(query).toEqual(expected);

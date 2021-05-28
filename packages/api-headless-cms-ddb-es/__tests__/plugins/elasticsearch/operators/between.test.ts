@@ -26,7 +26,7 @@ describe("elasticsearchOperatorBetweenPlugin", () => {
                     }
                 }
             ],
-
+            filter: [],
             should: []
         };
 
@@ -70,7 +70,7 @@ describe("elasticsearchOperatorBetweenPlugin", () => {
                     }
                 }
             ],
-
+            filter: [],
             should: []
         };
         expect(query).toEqual(expected);

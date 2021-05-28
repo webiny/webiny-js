@@ -43,7 +43,7 @@ describe("elasticsearchOperatorContainsPlugin", () => {
                     }
                 }
             ],
-
+            filter: [],
             should: []
         };
         expect(query).toEqual(expected);
