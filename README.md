@@ -5,7 +5,7 @@
 </p>
 <p align="center">
   <a href="https://www.webiny.com">Official Website</a> |
-  <a href="https://docs.webiny.com">Docs</a>
+  <a href="https://www.webiny.com/docs/webiny/introduction/">Docs</a>
 </p>
 
 #
@@ -24,7 +24,7 @@
 
 ## Getting started
 
-To get started with Webiny, simply [follow this link](https://docs.webiny.com) 🚀
+To get started with Webiny, simply [follow this link](https://www.webiny.com/docs/webiny/introduction/) 🚀
 
 ## Webiny is the easiest way to adopt serverless!
 
