@@ -26,7 +26,11 @@ const Hamburger = () => {
 
     return (
         <React.Fragment>
-            <IconButton icon={<MenuIcon style={{ color: "white" }} />} onClick={toggleMenu} />
+            <IconButton
+                icon={<MenuIcon style={{ color: "white" }} />}
+                onClick={toggleMenu}
+                data-testid={"apps-menu"}
+            />
             {ReactDOM.createPortal(<Navigation />, getElement())}
         </React.Fragment>
     );

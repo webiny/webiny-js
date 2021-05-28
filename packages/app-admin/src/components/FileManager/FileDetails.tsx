@@ -300,6 +300,7 @@ export default function FileDetails(props: FileDetailsProps) {
             modal
             open={Boolean(file)}
             onClose={hideFileDetails}
+            data-testid={"fm.file-details.drawer"}
         >
             {file && (
                 <div className={style.wrapper} dir="ltr">
