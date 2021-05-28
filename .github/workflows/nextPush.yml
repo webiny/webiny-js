@@ -316,7 +316,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: List all files and folders
-        run: ll -alh
+        run: ls -alh
 
       - uses: actions/cache@v2
         with:
