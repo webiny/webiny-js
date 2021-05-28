@@ -309,11 +309,14 @@ jobs:
         working-directory: test-project
         run: sed -i 's/5 minutes/1 minute/g' api/pulumi/dev/prerenderingService.ts
 
-      - name: Deploy API
-        working-directory: test-project
-        run: yarn webiny deploy
+#      - name: Deploy API
+#        working-directory: test-project
+#        run: yarn webiny deploy
 
       - uses: actions/checkout@v2
+
+      - name: List all files and folders
+        run: ll -alh
 
       - uses: actions/cache@v2
         with:
