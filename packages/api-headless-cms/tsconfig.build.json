@@ -8,8 +8,6 @@
     "../api-i18n-content",
     "../api-security",
     "../api-security-tenancy",
-    "../api-plugin-elastic-search-client",
-    "../api-dynamodb-to-elasticsearch",
     "../api-file-manager",
     "../api-upgrade",
     "../error",

@@ -1,8 +1,8 @@
-import { ElasticsearchQuery } from "../../../src/types";
+import { ElasticsearchQuery } from "@webiny/api-plugin-elastic-search-client/types";
 
 export const createBlankQuery = (): ElasticsearchQuery => ({
     mustNot: [],
     must: [],
-    match: [],
+
     should: []
 });

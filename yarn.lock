@@ -2258,16 +2258,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@commodo/fields-storage-nedb@npm:^2.0.0-next.15":
-  version: 2.1.1
-  resolution: "@commodo/fields-storage-nedb@npm:2.1.1"
-  dependencies:
-    "@commodo/fields": ^1.2.1
-    nedb-promises: ^4.0.3
-  checksum: f82a3f9343b86240f3d6df0574253e4ecc1f2de569cc327660a93626d0668b1d33086bd9c9de7a5dc3963bf5c07c5d4b02acb2ac41fad5073d8fa290fef04d3a
-  languageName: node
-  linkType: hard
-
 "@commodo/fields@npm:1.1.2-beta.20, @commodo/fields@npm:beta":
   version: 1.1.2-beta.20
   resolution: "@commodo/fields@npm:1.1.2-beta.20"
@@ -7725,7 +7715,6 @@ __metadata:
     "@babel/preset-env": ^7.5.5
     "@babel/preset-flow": ^7.0.0
     "@babel/runtime": ^7.5.5
-    "@commodo/fields-storage-nedb": ^2.0.0-next.15
     "@elastic/elasticsearch": ^7.9.1
     "@shelf/jest-elasticsearch": ^1.0.0
     "@types/jsonpack": ^1.1.0
@@ -7766,7 +7755,6 @@ __metadata:
     "@babel/preset-env": ^7.5.5
     "@babel/preset-flow": ^7.0.0
     "@babel/runtime": ^7.5.5
-    "@commodo/fields-storage-nedb": ^2.0.0-next.15
     "@types/jsonpack": ^1.1.0
     "@webiny/api-headless-cms": ^5.3.0
     "@webiny/cli": ^5.6.0
@@ -7805,16 +7793,10 @@ __metadata:
     "@babel/preset-flow": ^7.0.0
     "@babel/runtime": ^7.5.5
     "@commodo/fields": beta
-    "@commodo/fields-storage-nedb": ^2.0.0-next.15
-    "@elastic/elasticsearch": ^7.9.1
     "@graphql-tools/schema": ^7.1.2
-    "@shelf/jest-elasticsearch": ^1.0.0
-    "@types/jsonpack": ^1.1.0
-    "@webiny/api-dynamodb-to-elasticsearch": ^5.7.0
     "@webiny/api-file-manager": ^5.7.0
     "@webiny/api-i18n": ^5.7.0
     "@webiny/api-i18n-content": ^5.7.0
-    "@webiny/api-plugin-elastic-search-client": ^5.7.0
     "@webiny/api-security": ^5.7.0
     "@webiny/api-security-tenancy": ^5.7.0
     "@webiny/api-upgrade": ^5.7.0
@@ -7836,7 +7818,6 @@ __metadata:
     get-yarn-workspaces: ^1.0.2
     graphql: ^14.6.0
     jest: ^26.6.3
-    jest-dynalite: ^3.2.0
     lodash: ^4.5.0
     mdbid: ^1.0.0
     pluralize: ^8.0.0
@@ -11045,13 +11026,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"async@npm:0.2.10":
-  version: 0.2.10
-  resolution: "async@npm:0.2.10"
-  checksum: 8fd2b938bbdbcd48188e7025f2202cb5fc5fce704347337e664971b439da9e2ee7c441b344568647d0c426e5bdc9100c8d4ec3c497a888e2b9878c367aa68979
-  languageName: node
-  linkType: hard
-
 "async@npm:3.2.0, async@npm:^3.2.0, async@npm:~3.2.0":
   version: 3.2.0
   resolution: "async@npm:3.2.0"
@@ -11944,15 +11918,6 @@ __metadata:
   version: 2.2.0
   resolution: "binary-extensions@npm:2.2.0"
   checksum: 0f5f5685f344b035c4f98d06fa288962d262294a1441c1481ac99e895037bde971ebe6e09a4bd8aa18ab2525bfc00b1ad4af71dbf9e933a72e0df6919706a728
-  languageName: node
-  linkType: hard
-
-"binary-search-tree@npm:0.2.5":
-  version: 0.2.5
-  resolution: "binary-search-tree@npm:0.2.5"
-  dependencies:
-    underscore: ~1.4.4
-  checksum: a9077575169c99b46b73720f23c8e9d68d806dd676494797a497f7c6d2211ff6eb7ac8030d03779b67d15598be5efa8ff4f7fcdbe861d928e7a9f0dad5fd1737
   languageName: node
   linkType: hard
 
@@ -20340,13 +20305,6 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"immediate@npm:~3.0.5":
-  version: 3.0.6
-  resolution: "immediate@npm:3.0.6"
-  checksum: e86d4d20e2da86f9a4629d9aee9d56dfae7d3a7ace7f569b0538f2ec2570d86b3cbdc52c546d23be2cfd28306670f44676fc833cd96d9506659b8c5ab8202ca4
-  languageName: node
-  linkType: hard
-
 "immediate@npm:~3.2.3":
   version: 3.2.3
   resolution: "immediate@npm:3.2.3"
@@ -23233,15 +23191,6 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"lie@npm:3.1.1":
-  version: 3.1.1
-  resolution: "lie@npm:3.1.1"
-  dependencies:
-    immediate: ~3.0.5
-  checksum: 33a07ffeb7eb5aaec59a5f7a72ba7e6a2ce9d011bd7894f36ed11e2da43f076467019e5f9826c5864500c6a792450aa54b263f31cef0a1774553851dce8a501c
-  languageName: node
-  linkType: hard
-
 "lines-and-columns@npm:^1.1.6":
   version: 1.1.6
   resolution: "lines-and-columns@npm:1.1.6"
@@ -23439,15 +23388,6 @@ fsevents@^1.2.7:
     emojis-list: ^3.0.0
     json5: ^2.1.2
   checksum: a1c2e48781e1501e126a32c39bc1fb1a7e2f02bd99e5aeb8853ddaf3c121fffefcc4579367f97ca6890b58369e571af1c9ec82e4e20db238d560ab359ff25c33
-  languageName: node
-  linkType: hard
-
-"localforage@npm:^1.3.0":
-  version: 1.9.0
-  resolution: "localforage@npm:1.9.0"
-  dependencies:
-    lie: 3.1.1
-  checksum: 0645f5ec6fe28799081a9a21dc23796fbb665dcc20e09061228302750a05671bd13a42688e41b523f1598fff5d8e219f468d826595b75db07b555d4ff223943e
   languageName: node
   linkType: hard
 
@@ -25162,28 +25102,6 @@ fsevents@^1.2.7:
   bin:
     ncp: ./bin/ncp
   checksum: a751e4c94bc810b34b81c8cad288b90ac59fa83890e701483fd70f800d3c2228bea9eff84d1c034074cd1b393cec40696c04558a70b17476eba7acb06e20e71c
-  languageName: node
-  linkType: hard
-
-"nedb-promises@npm:^4.0.3":
-  version: 4.1.5
-  resolution: "nedb-promises@npm:4.1.5"
-  dependencies:
-    nedb: ^1.8.0
-  checksum: 6676d7141fee80ce86cc5e1bd982ce785110c6e94fc8be8c95cbaf7c3cc08da15ef8328ea7edefd31152adec0e9ea938a13224f27ab55ccaf6c91edcccaf3655
-  languageName: node
-  linkType: hard
-
-"nedb@npm:^1.8.0":
-  version: 1.8.0
-  resolution: "nedb@npm:1.8.0"
-  dependencies:
-    async: 0.2.10
-    binary-search-tree: 0.2.5
-    localforage: ^1.3.0
-    mkdirp: ~0.5.1
-    underscore: ~1.4.4
-  checksum: 1c1b60d49622019ce210d56a2c7f0d81335ae5b94eda1813a7ef9ff11f7969e72db6b9f9704095fd1740da56f1a86c548e4b1debad384b9cedc70e312ffde27e
   languageName: node
   linkType: hard
 
@@ -33937,13 +33855,6 @@ resolve@^2.0.0-next.3:
     buffer: ^5.2.1
     through: ^2.3.8
   checksum: 779446eed1d66898a9cb5c674826a68ecef4d49861dec438e0720767a4151b463659af570deb70f416a41185be81ce99360ddc002c03ea44baaa42191194ef5a
-  languageName: node
-  linkType: hard
-
-"underscore@npm:~1.4.4":
-  version: 1.4.4
-  resolution: "underscore@npm:1.4.4"
-  checksum: da0a0941c241773555ee7e8854f3286e0a57ca53bbbd1cf86c3f0d358eade89d3b3a82ced30427f8d0b08f8e91788ca5704d2136045a3e5153db9b834f673447
   languageName: node
   linkType: hard
 

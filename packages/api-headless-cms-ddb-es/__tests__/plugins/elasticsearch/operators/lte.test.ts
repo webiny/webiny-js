@@ -1,6 +1,6 @@
 import { elasticsearchOperatorLtePlugin } from "../../../../src/elasticsearch/operators/lte";
 import { createBlankQuery } from "../helpers";
-import { ElasticsearchQuery } from "../../../../src/types";
+import { ElasticsearchQuery } from "@webiny/api-plugin-elastic-search-client/types";
 
 describe("elasticsearchOperatorLtePlugin", () => {
     const plugin = elasticsearchOperatorLtePlugin();
@@ -25,7 +25,7 @@ describe("elasticsearchOperatorLtePlugin", () => {
                     }
                 }
             ],
-            match: [],
+
             should: []
         };
 
@@ -65,7 +65,7 @@ describe("elasticsearchOperatorLtePlugin", () => {
                     }
                 }
             ],
-            match: [],
+
             should: []
         };
         expect(query).toEqual(expected);

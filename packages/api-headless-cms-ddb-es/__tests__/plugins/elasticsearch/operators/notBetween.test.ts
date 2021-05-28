@@ -1,6 +1,6 @@
 import { elasticsearchOperatorNotBetweenPlugin } from "../../../../src/elasticsearch/operators/notBetween";
 import { createBlankQuery } from "../helpers";
-import { ElasticsearchQuery } from "../../../../src/types";
+import { ElasticsearchQuery } from "@webiny/api-plugin-elastic-search-client/types";
 
 describe("elasticsearchOperatorNotBetweenPlugin", () => {
     const plugin = elasticsearchOperatorNotBetweenPlugin();
@@ -27,7 +27,7 @@ describe("elasticsearchOperatorNotBetweenPlugin", () => {
                 }
             ],
             must: [],
-            match: [],
+
             should: []
         };
         expect(query).toEqual(expected);

@@ -1,6 +1,6 @@
 import { elasticsearchOperatorContainsPlugin } from "../../../../src/elasticsearch/operators/contains";
 import { createBlankQuery } from "../helpers";
-import { ElasticsearchQuery } from "../../../../src/types";
+import { ElasticsearchQuery } from "@webiny/api-plugin-elastic-search-client/types";
 
 describe("elasticsearchOperatorContainsPlugin", () => {
     const plugin = elasticsearchOperatorContainsPlugin();
@@ -43,7 +43,7 @@ describe("elasticsearchOperatorContainsPlugin", () => {
                     }
                 }
             ],
-            match: [],
+
             should: []
         };
         expect(query).toEqual(expected);
