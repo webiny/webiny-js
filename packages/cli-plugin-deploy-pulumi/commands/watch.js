@@ -20,14 +20,6 @@ module.exports = async (inputs, context) => {
         );
     }
 
-    if (inputs.deploy && !inputs.env) {
-        throw new Error(`Please specify environment, for example "dev".`);
-    }
-
-    if (!inputs.build && !inputs.deploy) {
-        throw new Error(`Both re-build and re-deploy actions were disabled, can't continue.`);
-    }
-
     let projectApplication;
     if (inputs.folder) {
         // Get project application metadata. Will throw an error if invalid folder specified.
@@ -43,6 +35,14 @@ module.exports = async (inputs, context) => {
 
     inputs.build = inputs.build !== false;
     inputs.deploy = Boolean(projectApplication && inputs.deploy !== false);
+
+    if (inputs.deploy && !inputs.env) {
+        throw new Error(`Please specify environment, for example "dev".`);
+    }
+
+    if (!inputs.build && !inputs.deploy) {
+        throw new Error(`Both re-build and re-deploy actions were disabled, can't continue.`);
+    }
 
     if (inputs.deploy) {
         if (typeof inputs.logs === "string" && inputs.logs === "") {
