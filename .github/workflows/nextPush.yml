@@ -302,18 +302,28 @@ jobs:
 #        run: yarn webiny deploy
 
       - uses: actions/checkout@v2
+        with:
+          path: webiny-js
 
       - name: List all files and folders
         run: ls -alh
 
+      - name: List all files and folders (webiny-js)
+        working-directory: webiny-js
+        run: ls -alh
+
+      - name: List all files and folders (test-project)
+        working-directory: test-project
+        run: ls -alh
+
       - uses: actions/cache@v2
         with:
-          path: .yarn/cache
+          path: webiny-js/.yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
 
       - uses: actions/cache@v2
         with:
-          path: .webiny/cached-packages
+          path: webiny-js/.webiny/cached-packages
           key: cached-packages-${{ runner.os }}-next-${{ needs.cache-keys.outputs.day }}
 
       - name: Install dependencies
@@ -325,8 +335,8 @@ jobs:
       - name: Set up Cypress config
         run: yarn setup-cypress --project-folder ./test-project
 
-      - name: Cypress - run installation wizard test
-        run: yarn cypress run --spec "cypress/integration/adminInstallation/**/*.spec.js"
+#      - name: Cypress - run installation wizard test
+#        run: yarn cypress run --spec "cypress/integration/adminInstallation/**/*.spec.js"
 
 #      - name: Cypress - run the rest of Admin Area tests
 #        working-directory: webiny-js
