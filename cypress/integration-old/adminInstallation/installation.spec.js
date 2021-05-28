@@ -11,37 +11,25 @@
 context("Admin Installation", () => {
     it("should be able to complete the initial installation wizard", () => {
         // 1. Security installation.
-        cy.visit(Cypress.env("WEBSITE_URL"))
-            .wait(2000)
-            .findByText("Admin UI")
-            .click()
-            .wait(2000)
-            .findByLabelText("First Name")
-            .type(Cypress.env("DEFAULT_ADMIN_USER_FIRST_NAME"))
-            .findByLabelText("Last Name")
-            .type(Cypress.env("DEFAULT_ADMIN_USER_LAST_NAME"))
-            .findByLabelText("E-mail")
-            .type(Cypress.env("DEFAULT_ADMIN_USER_LAST_NAME"))
-            .findByTestId("install-security-button")
-            .click();
+        cy.visit(Cypress.env("ADMIN_URL"));
+        cy.findByText("Install Security").click();
+        cy.findByLabelText("First Name").type(Cypress.env("DEFAULT_ADMIN_USER_FIRST_NAME"));
+        cy.findByLabelText("Last Name").type(Cypress.env("DEFAULT_ADMIN_USER_LAST_NAME"));
+        cy.findByLabelText("E-mail").type(Cypress.env("DEFAULT_ADMIN_USER_LAST_NAME"));
+        cy.findByTestId("install-security-button").click();
 
         cy.findByText("Value must be a valid e-mail address.").should("exist");
 
         cy.findByLabelText("E-mail")
             .clear()
-            .type(Cypress.env("DEFAULT_ADMIN_USER_USERNAME"))
-            .findByLabelText("Password")
-            .type(Cypress.env("DEFAULT_ADMIN_USER_PASSWORD"))
-            .findByTestId("install-security-button")
-            .click();
+            .type(Cypress.env("DEFAULT_ADMIN_USER_USERNAME"));
+        cy.findByLabelText("Password").type(Cypress.env("DEFAULT_ADMIN_USER_PASSWORD"));
+        cy.findByTestId("install-security-button").click();
 
         // 1.1. Log in with the newly created user.
-        cy.findByLabelText("Your e-mail")
-            .type(Cypress.env("DEFAULT_ADMIN_USER_USERNAME"))
-            .findByLabelText("Your password")
-            .type(Cypress.env("DEFAULT_ADMIN_USER_PASSWORD"))
-            .findByTestId("submit-sign-in-form-button")
-            .click();
+        cy.findByLabelText("Your e-mail").type(Cypress.env("DEFAULT_ADMIN_USER_USERNAME"));
+        cy.findByLabelText("Your password").type(Cypress.env("DEFAULT_ADMIN_USER_PASSWORD"));
+        cy.findByTestId("submit-sign-in-form-button").click();
 
         // 2. File manager installation (happens automatically, nothing to type / select here).
         cy.wait(5000);
@@ -49,33 +37,27 @@ context("Admin Installation", () => {
         // 3. I18N installation.
         cy.findByLabelText("Select default locale")
             .clear()
-            .type("en-g")
-            .findByText("en-GB")
-            .click()
-            .findByTestId("install-i18n-button")
-            .click();
+            .type("en-g");
+        cy.findByText("en-GB").click();
+        cy.findByTestId("install-i18n-button").click();
+
+        cy.wait(5000);
 
         // 4.Page Builder and Form Builder Installation.
-        cy.findByLabelText("Site Name")
-            .findByTestId("install-pb-button")
-            .click();
+        cy.findByTestId("install-pb-button").click();
 
         cy.findByText("Value is required.").should("exist");
 
-        cy.findByLabelText("Site Name")
-            .type(Cypress.env("WEBSITE_NAME"))
-            .findByTestId("install-pb-button")
+        cy.findByLabelText("Site Name").type(Cypress.env("WEBSITE_NAME"));
+        cy.findByTestId("install-pb-button")
             .click()
-            .wait(25000); // Wait for the Page Builder installation to finish.
+            .wait(18000); // Wait for the Page Builder installation to finish.
 
         // 5. Form Builder installation (happens automatically, nothing to type / select here).
-        cy.wait(5000);
 
         // 6. Installation complete, click the button and check if the pages list was shown to the user.
         cy.findByTestId("open-webiny-cms-admin-button")
             .click()
-            .wait(4000)
-            .findByText(/Learn more about Webiny/i)
-            .should("exist");
+        cy.findByText(/Learn more about Webiny/i).should("exist");
     });
 });
