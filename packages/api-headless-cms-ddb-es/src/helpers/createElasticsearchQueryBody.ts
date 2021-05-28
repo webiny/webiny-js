@@ -50,7 +50,6 @@ interface CreateElasticsearchParams {
     context: CmsContext;
     model: CmsContentModel;
     args: CmsContentEntryListArgs;
-    ownedBy?: string;
     parentObject?: string;
 }
 
@@ -66,7 +65,6 @@ interface CreateElasticsearchQueryArgs {
     context: CmsContext;
     where: CmsContentEntryListWhere;
     modelFields: ModelFields;
-    ownedBy?: string;
     parentObject?: string;
 }
 
@@ -148,7 +146,7 @@ const createElasticsearchSortParams = (
  * Latest is used in the manage API and published in the read API.
  */
 const createInitialQueryValue = (args: CreateElasticsearchQueryArgs): ElasticsearchQuery => {
-    const { ownedBy, where, context } = args;
+    const { where, context } = args;
 
     const query: ElasticsearchQuery = {
         match: [],
@@ -163,16 +161,9 @@ const createInitialQueryValue = (args: CreateElasticsearchQueryArgs): Elasticsea
         const tenant = context.security.getTenant();
         query.must.push({ term: { "tenant.keyword": tenant.id } });
     }
-
-    // When permission has "only own records" set, we'll have "ownedBy" passed into this function.
-    if (ownedBy) {
-        query.must.push({
-            term: {
-                "ownedBy.id.keyword": ownedBy
-            }
-        });
-    }
-
+    /**
+     * We must transform published and latest where args into something that is understandable by our Elasticsearch
+     */
     if (where.published === true) {
         query.must.push({
             term: {
@@ -239,8 +230,10 @@ const execElasticsearchBuildQueryPlugins = (
     const searchPlugins = searchPluginsList(context);
 
     for (const key in where) {
-        // we do not need to go further if value is undefined
-        // it is a possibility on ownedBy field since it is automatically added to the where args
+        /**
+         * We do not need to go further if value is undefined.
+         * There are few hardcoded possibilities when value is undefined, for example, ownedBy.
+         */
         if (where[key] === undefined) {
             continue;
         }
@@ -266,15 +259,19 @@ const execElasticsearchBuildQueryPlugins = (
             value: where[key],
             context
         });
-        // A possibility to build field custom path in the elasticsearch
+        /**
+         * A possibility to build field custom path for the Elasticsearch record.
+         */
         const customFieldPath =
             fieldSearchPlugin && typeof fieldSearchPlugin.createPath === "function"
                 ? fieldSearchPlugin.createPath({
                       field: modelField.field,
                       context
                   })
-                : null;
-        const fieldWithParent = isSystemField ? null : customFieldPath || withParentObject(field);
+                : modelField.path || null;
+        const fieldWithParent = isSystemField
+            ? customFieldPath
+            : customFieldPath || withParentObject(field);
         plugin.apply(query, {
             field: fieldWithParent || field,
             value,
@@ -288,9 +285,17 @@ const execElasticsearchBuildQueryPlugins = (
 };
 
 const createSystemField = (field: Partial<CmsContentModelField>): CmsContentModelField => {
-    if (!field.type) {
+    if (!field.fieldId) {
         throw new WebinyError(
-            "When creating system field it must have a type, at least.",
+            `When creating system field it must have a "entryId".`,
+            "SYSTEM_FIELD_ERROR",
+            {
+                field
+            }
+        );
+    } else if (!field.type) {
+        throw new WebinyError(
+            `When creating system field it must have a "type".`,
             "SYSTEM_FIELD_ERROR",
             {
                 field
@@ -310,6 +315,7 @@ const createModelFieldOptions = (context: CmsContext, model: CmsContentModel): M
             isSearchable: true,
             isSortable: true,
             field: createSystemField({
+                fieldId: "id",
                 type: "text"
             })
         },
@@ -319,6 +325,7 @@ const createModelFieldOptions = (context: CmsContext, model: CmsContentModel): M
             isSearchable: true,
             isSortable: true,
             field: createSystemField({
+                fieldId: "entryId",
                 type: "text"
             })
         },
@@ -329,6 +336,7 @@ const createModelFieldOptions = (context: CmsContext, model: CmsContentModel): M
             isSearchable: true,
             isSortable: true,
             field: createSystemField({
+                fieldId: "savedOn",
                 type: "date",
                 settings: {
                     type: "dateTimeWithoutTimezone"
@@ -342,6 +350,7 @@ const createModelFieldOptions = (context: CmsContext, model: CmsContentModel): M
             isSearchable: true,
             isSortable: true,
             field: createSystemField({
+                fieldId: "createdOn",
                 type: "text",
                 settings: {
                     type: "dateTimeWithoutTimezone"
@@ -356,6 +365,7 @@ const createModelFieldOptions = (context: CmsContext, model: CmsContentModel): M
             isSortable: false,
             path: "createdBy.id",
             field: createSystemField({
+                fieldId: "createdBy",
                 type: "text"
             })
         },
@@ -367,6 +377,7 @@ const createModelFieldOptions = (context: CmsContext, model: CmsContentModel): M
             isSortable: false,
             path: "ownedBy.id",
             field: createSystemField({
+                fieldId: "ownedBy",
                 type: "text"
             })
         },
@@ -377,6 +388,7 @@ const createModelFieldOptions = (context: CmsContext, model: CmsContentModel): M
             isSearchable: true,
             isSortable: true,
             field: createSystemField({
+                fieldId: "version",
                 type: "number"
             })
         }
@@ -424,7 +436,7 @@ const createModelFieldOptions = (context: CmsContext, model: CmsContentModel): M
 };
 
 export const createElasticsearchQueryBody = (params: CreateElasticsearchParams) => {
-    const { context, model, args, ownedBy, parentObject = null } = params;
+    const { context, model, args, parentObject = null } = params;
     const { where, after, limit, sort } = args;
 
     const modelFields = createModelFieldOptions(context, model);
@@ -434,7 +446,6 @@ export const createElasticsearchQueryBody = (params: CreateElasticsearchParams) 
         context,
         where,
         modelFields,
-        ownedBy,
         parentObject
     });
 
