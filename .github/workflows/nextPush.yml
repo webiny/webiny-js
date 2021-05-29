@@ -324,25 +324,16 @@ jobs:
       - name: List all files and folders
         run: ls -alh
 
-
-      - uses: actions/cache@v2
-        with:
-          path: webiny-js/.webiny/cached-packages
-          key: cached-packages-${{ runner.os }}-next-${{ needs.cache-keys.outputs.day }}
-
-      - name: List all files and folders
-        run: ls -alh
-
-      - name: Move .webiny/cached-packages to webiny-js/.webiny/cached-packages
-        run: mv .webiny/cached-packages webiny-js/.webiny/cached-packages
+      - name: Move .webiny to webiny-js/.webiny
+        run: mv .webiny webiny-js/.webiny
 
       - uses: actions/cache@v2
         with:
           path: .yarn/cache
           key: yarn-${{ runner.os }}-${{ hashFiles('webiny-js/**/yarn.lock') }}
 
-      - name: Move .yarn/cache to webiny-js/.yarn/cache
-        run: mv .yarn/cache webiny-js/.yarn/cache
+      - name: Move .yarn to webiny-js/.yarn
+        run: mv .yarn webiny-js/.yarn
 
       - name: Install dependencies
         run: yarn --immutable
