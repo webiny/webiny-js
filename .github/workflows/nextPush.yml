@@ -299,7 +299,11 @@ jobs:
 
       - name: Deploy API
         working-directory: test-project
-        run: yarn webiny deploy
+        run: yarn webiny deploy api --env dev --debug
+
+      - name: Concurrently deploy Admin Area and Website
+        working-directory: test-project
+        run: npx concurrently "yarn webiny deploy apps/admin --env dev --debug" "yarn webiny deploy apps/website --env dev --debug"
 
       - uses: actions/checkout@v2
         with:
