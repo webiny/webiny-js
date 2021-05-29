@@ -297,9 +297,9 @@ jobs:
         working-directory: test-project
         run: sed -i 's/5 minutes/1 minute/g' api/pulumi/dev/prerenderingService.ts
 
-#      - name: Deploy API
-#        working-directory: test-project
-#        run: yarn webiny deploy
+      - name: Deploy API
+        working-directory: test-project
+        run: yarn webiny deploy
 
       - uses: actions/checkout@v2
         with:
@@ -333,8 +333,8 @@ jobs:
         working-directory: webiny-js
         run: yarn setup-cypress --project-folder ./test-project
 
-#      - name: Cypress - run installation wizard test
-#        run: yarn cypress run --spec "cypress/integration/adminInstallation/**/*.spec.js"
+      - name: Cypress - run installation wizard test
+        run: yarn cypress run --spec "cypress/integration/adminInstallation/**/*.spec.js"
 
 #      - name: Cypress - run the rest of Admin Area tests
 #        working-directory: webiny-js
