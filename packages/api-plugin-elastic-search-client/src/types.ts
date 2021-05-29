@@ -160,24 +160,4 @@ export interface ElasticsearchBoolQuery {
     should?: ElasticsearchQueryShould[];
 }
 
-/**
- *
- */
-export interface ElasticsearchQuery {
-    /**
-     * A must part of the query.
-     */
-    must: ElasticsearchQueryMust[];
-    /**
-     * A mustNot part of the query.
-     */
-    mustNot: ElasticsearchQueryMustNot[];
-    /**
-     * A match part of the query.
-     */
-    filter: ElasticsearchQueryFilter[];
-    /**
-     * A should part of the query.
-     */
-    should: ElasticsearchQueryShould[];
-}
+export type ElasticsearchQuery = ElasticsearchBoolQuery;
