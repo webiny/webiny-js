@@ -163,7 +163,7 @@ export default function FileDetails(props: FileDetailsProps) {
     const { file, uploadFile, validateFiles } = props;
 
     const filePlugin = getFileTypePlugin(file);
-    const actions = get(filePlugin, "fileDetails.actions") || [];
+    const actions = get(filePlugin, "fileDetails.actions") || get(filePlugin, "actions") || [];
 
     const { hideFileDetails, queryParams } = useFileManager();
     const [darkImageBackground, setDarkImageBackground] = useState(false);

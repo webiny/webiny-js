@@ -1,9 +1,9 @@
 import * as React from "react";
 import { css } from "emotion";
 import { Image } from "@webiny/app/components";
-import { AdminFileManagerFileTypePlugin } from "../../../types";
 
 import EditAction from "./EditAction";
+import { FileManagerFileTypePlugin } from "../../FileManagerFileTypePlugin";
 
 const styles = css({
     maxHeight: 200,
@@ -15,26 +15,12 @@ const styles = css({
     transform: "translateX(-50%) translateY(-50%)"
 });
 
-const imageFilePlugin: AdminFileManagerFileTypePlugin = {
-    name: "file-manager-file-type-image",
-    type: "admin-file-manager-file-type",
-    types: [
-        "image/jpeg",
-        "image/jpg",
-        "image/gif",
-        "image/png",
-        "image/svg+xml",
-        "image/x-icon",
-        "image/vnd.microsoft.icon"
-    ],
+export default new FileManagerFileTypePlugin({
+    types: ["image/*"],
     render({ file }) {
         return (
             <Image className={styles} src={file.src} alt={file.name} transform={{ width: 300 }} />
         );
     },
-    fileDetails: {
-        actions: [EditAction]
-    }
-};
-
-export default imageFilePlugin;
+    actions: [EditAction]
+});
