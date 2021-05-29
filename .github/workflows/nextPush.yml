@@ -321,6 +321,9 @@ jobs:
           path: .webiny/cached-packages
           key: cached-packages-${{ runner.os }}-next-${{ needs.cache-keys.outputs.day }}
 
+      - name: List all files and folders
+        run: ls -alh
+
       - name: Move .webiny/cached-packages to webiny-js/.webiny/cached-packages
         run: mv .webiny/cached-packages webiny-js/.webiny/cached-packages
 
