@@ -55,76 +55,76 @@ jobs:
         if: steps.cached-packages.outputs.cache-hit != 'true'
         run: node scripts/buildWithCache.js
 
-#  code-analysis:
-#    needs: [cache-keys, cache-dependencies-packages]
-#    name: Static code analysis
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/setup-node@v2
-#        with:
-#          node-version: 12
-#
-#      - uses: actions/checkout@v2
-#
-#      - uses: actions/cache@v2
-#        with:
-#          path: .yarn/cache
-#          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-#
-#      - uses: actions/cache@v2
-#        with:
-#          path: .webiny/cached-packages
-#          key: cached-packages-${{ runner.os }}-next-${{ needs.cache-keys.outputs.day }}
-#
-#      - name: Install dependencies
-#        run: yarn --immutable
-#
-#      - name: Check code formatting
-#        run: yarn prettier:check
-#
-#      - name: Check dependencies
-#        run: yarn adio
-#
-#      - name: Check TS configs
-#        run: yarn check-ts-configs
-#
-#      - name: ESLint
-#        run: yarn eslint
+  code-analysis:
+    needs: [cache-keys, cache-dependencies-packages]
+    name: Static code analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
 
-#  jest-tests:
-#    needs: [cache-keys, cache-dependencies-packages]
-#    name: Jest tests
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        os: [ubuntu-latest]
-#        node: [12, 14]
-#    runs-on: ${{ matrix.os }}
-#    steps:
-#      - uses: actions/setup-node@v2
-#        with:
-#          node-version: ${{ matrix.node }}
-#
-#      - uses: actions/checkout@v2
-#
-#      - uses: actions/cache@v2
-#        with:
-#          path: .yarn/cache
-#          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-#
-#      - name: Install dependencies
-#        run: yarn --immutable
-#
-#      - uses: actions/cache@v2
-#        with:
-#          path: .webiny/cached-packages
-#          key: cached-packages-${{ runner.os }}-next-${{ needs.cache-keys.outputs.day }}
-#
-#      - name: Build packages
-#        run: node scripts/buildWithCache.js
-#
-#      - name: Run tests
-#        run: yarn test
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - uses: actions/cache@v2
+        with:
+          path: .webiny/cached-packages
+          key: cached-packages-${{ runner.os }}-next-${{ needs.cache-keys.outputs.day }}
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - name: Check code formatting
+        run: yarn prettier:check
+
+      - name: Check dependencies
+        run: yarn adio
+
+      - name: Check TS configs
+        run: yarn check-ts-configs
+
+      - name: ESLint
+        run: yarn eslint
+
+  jest-tests:
+    needs: [cache-keys, cache-dependencies-packages]
+    name: Jest tests
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        node: [12, 14]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      - uses: actions/cache@v2
+        with:
+          path: .webiny/cached-packages
+          key: cached-packages-${{ runner.os }}-next-${{ needs.cache-keys.outputs.day }}
+
+      - name: Build packages
+        run: node scripts/buildWithCache.js
+
+      - name: Run tests
+        run: yarn test
 
   verdaccio-publish:
     needs: [cache-keys, cache-dependencies-packages]
