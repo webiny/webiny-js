@@ -56,8 +56,7 @@ context("Admin Installation", () => {
         // 5. Form Builder installation (happens automatically, nothing to type / select here).
 
         // 6. Installation complete, click the button and check if the pages list was shown to the user.
-        cy.findByTestId("open-webiny-cms-admin-button")
-            .click()
+        cy.findByTestId("open-webiny-cms-admin-button").click();
         cy.findByText(/Learn more about Webiny/i).should("exist");
     });
 });

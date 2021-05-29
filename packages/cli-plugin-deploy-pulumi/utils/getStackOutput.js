@@ -27,13 +27,13 @@ module.exports = async (folderOrArgs, env, map) => {
     }
 
     // Normalize arguments.
-    let args = {}
+    let args = {};
     if (typeof folderOrArgs === "string") {
         args = {
             folder: folderOrArgs,
             env: env,
             map: map
-        }
+        };
     } else {
         args = folderOrArgs;
     }
