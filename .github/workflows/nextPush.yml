@@ -336,12 +336,15 @@ jobs:
         run: mv .yarn webiny-js/.yarn
 
       - name: Install dependencies
+        working-directory: webiny-js
         run: yarn --immutable
 
       - name: Build packages
+        working-directory: webiny-js
         run: node scripts/buildWithCache.js
 
       - name: Set up Cypress config
+        working-directory: webiny-js
         run: yarn setup-cypress --project-folder ./test-project
 
 #      - name: Cypress - run installation wizard test
