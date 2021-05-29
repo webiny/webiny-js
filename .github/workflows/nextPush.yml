@@ -338,6 +338,7 @@ jobs:
         run: yarn setup-cypress --project-folder ../test-project
 
       - name: Cypress - run installation wizard test
+        working-directory: webiny-js
         run: yarn cypress run --spec "cypress/integration/adminInstallation/**/*.spec.js"
 
 #      - name: Cypress - run the rest of Admin Area tests
