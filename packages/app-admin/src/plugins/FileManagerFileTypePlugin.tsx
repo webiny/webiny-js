@@ -26,10 +26,6 @@ interface Config {
     render(params: RenderParams): React.ReactNode;
 }
 
-interface FileDetails {
-    actions: React.ComponentType<any>[];
-}
-
 export class FileManagerFileTypePlugin extends Plugin {
     public static readonly type = "admin-file-manager-file-type";
     private config: Partial<Config>;
@@ -43,10 +39,8 @@ export class FileManagerFileTypePlugin extends Plugin {
         return this.config.types || [];
     }
 
-    get fileDetails(): FileDetails {
-        return {
-            actions: this.config.actions || []
-        };
+    get actions() {
+        return this.config.actions || [];
     }
 
     render(params: RenderParams): React.ReactNode {
