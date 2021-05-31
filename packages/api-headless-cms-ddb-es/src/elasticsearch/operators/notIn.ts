@@ -15,7 +15,7 @@ export const elasticsearchOperatorNotInPlugin = (): ElasticsearchQueryBuilderPlu
         for (let i = 0; i < values.length; i++) {
             const value = values[i];
             if (typeof value !== "string") {
-                query.mustNot.push({
+                query.must_not.push({
                     terms: {
                         [field]: values
                     }
@@ -24,7 +24,7 @@ export const elasticsearchOperatorNotInPlugin = (): ElasticsearchQueryBuilderPlu
             }
         }
 
-        query.mustNot.push({
+        query.must_not.push({
             terms: {
                 [`${field}.keyword`]: values
             }

@@ -7,7 +7,7 @@ import {
     CmsContext
 } from "@webiny/api-headless-cms/types";
 import {
-    ElasticsearchQuery,
+    ElasticsearchBoolQueryConfig,
     ElasticsearchQueryOperator
 } from "@webiny/api-plugin-elastic-search-client/types";
 
@@ -33,7 +33,7 @@ export interface ElasticsearchQueryBuilderArgsPlugin {
  * @see ElasticsearchQueryPlugin.modify
  */
 interface ElasticsearchQueryPluginArgs {
-    query: ElasticsearchQuery;
+    query: ElasticsearchBoolQueryConfig;
     model: CmsContentModel;
     context: CmsContext;
 }
@@ -72,7 +72,7 @@ export interface ElasticsearchQueryBuilderPlugin extends Plugin {
      * Method used to modify received query object.
      * Has access to whole query object so it can remove something added by other plugins.
      */
-    apply: (query: ElasticsearchQuery, args: ElasticsearchQueryBuilderArgsPlugin) => void;
+    apply: (query: ElasticsearchBoolQueryConfig, args: ElasticsearchQueryBuilderArgsPlugin) => void;
 }
 
 /**

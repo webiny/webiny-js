@@ -1,7 +1,7 @@
-import { ElasticsearchQuery } from "@webiny/api-plugin-elastic-search-client/types";
+import { ElasticsearchBoolQueryConfig } from "@webiny/api-plugin-elastic-search-client/types";
 
-export const createBlankQuery = (): ElasticsearchQuery => ({
-    mustNot: [],
+export const createBlankQuery = (): ElasticsearchBoolQueryConfig => ({
+    must_not: [],
     must: [],
     filter: [],
     should: []

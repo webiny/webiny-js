@@ -17,7 +17,12 @@ import {
     TYPE_ENTRY_LATEST,
     TYPE_ENTRY_PUBLISHED
 } from "../operations/entry/CmsContentEntryDynamoElastic";
-import { ElasticsearchQuery } from "@webiny/api-plugin-elastic-search-client/types";
+import {
+    SearchBody as esSearchBody,
+    Sort as esSort,
+    FieldSortOptions as esFieldSortOptions,
+    ElasticsearchBoolQueryConfig
+} from "@webiny/api-plugin-elastic-search-client/types";
 
 type ModelFieldPath = string | ((value: string) => string);
 interface ModelField {
@@ -65,12 +70,6 @@ interface CreateElasticsearchQueryArgs {
     parentObject?: string;
 }
 
-interface ElasticsearchSortParam {
-    order: string;
-}
-
-type ElasticsearchSortFields = Record<string, ElasticsearchSortParam>;
-
 const parseWhereKeyRegExp = new RegExp(/^([a-zA-Z0-9]+)(_[a-zA-Z0-9_]+)?$/);
 
 const parseWhereKey = (key: string) => {
@@ -92,9 +91,7 @@ const parseWhereKey = (key: string) => {
 
 const sortRegExp = new RegExp(/^([a-zA-Z-0-9_]+)_(ASC|DESC)$/);
 
-const createElasticsearchSortParams = (
-    args: CreateElasticsearchSortParams
-): ElasticsearchSortFields[] => {
+const createElasticsearchSortParams = (args: CreateElasticsearchSortParams): esSort => {
     const { sort, modelFields, parentObject } = args;
 
     if (!sort) {
@@ -108,7 +105,9 @@ const createElasticsearchSortParams = (
         return `${parentObject}.${field}`;
     };
 
-    return sort.map(value => {
+    const sorts: Record<string, esFieldSortOptions> = {};
+
+    return sort.reduce((acc, value) => {
         const match = value.match(sortRegExp);
 
         if (!match) {
@@ -128,26 +127,29 @@ const createElasticsearchSortParams = (
         const name = isSystemField ? field : withParentObject(field);
 
         const fieldName = unmappedType ? name : `${name}.keyword`;
-        return {
-            [fieldName]: {
-                order: order.toLowerCase() === "asc" ? "asc" : "desc",
-                // eslint-disable-next-line
-                unmapped_type: unmappedType
-            }
+
+        acc[fieldName] = {
+            order: order.toLowerCase() === "asc" ? "asc" : "desc",
+            // eslint-disable-next-line
+            unmapped_type: unmappedType
         };
-    });
+
+        return acc;
+    }, sorts);
 };
 /**
  * Latest and published are specific in Elasticsearch to that extend that they are tagged in the __type property.
  * We allow either published or either latest.
  * Latest is used in the manage API and published in the read API.
  */
-const createInitialQueryValue = (args: CreateElasticsearchQueryArgs): ElasticsearchQuery => {
+const createInitialQueryValue = (
+    args: CreateElasticsearchQueryArgs
+): ElasticsearchBoolQueryConfig => {
     const { where, context } = args;
 
-    const query: ElasticsearchQuery = {
+    const query: ElasticsearchBoolQueryConfig = {
         must: [],
-        mustNot: [],
+        must_not: [],
         should: [],
         filter: []
     };
@@ -202,7 +204,7 @@ const specialFields = ["published", "latest"];
  */
 const execElasticsearchBuildQueryPlugins = (
     args: CreateElasticsearchQueryArgs
-): ElasticsearchQuery => {
+): ElasticsearchBoolQueryConfig => {
     const { where, modelFields, parentObject, context } = args;
     const query = createInitialQueryValue(args);
 
@@ -227,6 +229,9 @@ const execElasticsearchBuildQueryPlugins = (
     const searchPlugins = searchPluginsList(context);
 
     for (const key in where) {
+        if (where.hasOwnProperty(key) === false) {
+            continue;
+        }
         /**
          * We do not need to go further if value is undefined.
          * There are few hardcoded possibilities when value is undefined, for example, ownedBy.
@@ -432,7 +437,7 @@ const createModelFieldOptions = (context: CmsContext, model: CmsContentModel): M
     }, systemFields);
 };
 
-export const createElasticsearchQueryBody = (params: CreateElasticsearchParams) => {
+export const createElasticsearchQueryBody = (params: CreateElasticsearchParams): esSearchBody => {
     const { context, model, args, parentObject = null } = params;
     const { where, after, limit, sort } = args;
 
@@ -457,7 +462,7 @@ export const createElasticsearchQueryBody = (params: CreateElasticsearchParams) 
         query: {
             bool: {
                 must: query.must.length > 0 ? query.must : undefined,
-                must_not: query.mustNot.length > 0 ? query.mustNot : undefined,
+                must_not: query.must_not.length > 0 ? query.must_not : undefined,
                 should: query.should.length > 0 ? query.should : undefined,
                 filter: query.filter.length > 0 ? query.filter : undefined
             }
