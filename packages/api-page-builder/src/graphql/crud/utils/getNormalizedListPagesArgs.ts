@@ -1,5 +1,5 @@
 import { ListPagesArgs, PbContext } from "../../types";
-import { ElasticsearchQuery } from "@webiny/api-plugin-elastic-search-client/types";
+import { ElasticsearchBoolQueryConfig } from "@webiny/api-plugin-elastic-search-client/types";
 
 /**
  * Returns arguments suited to be sent to ElasticSearch's `search` method.
@@ -17,12 +17,12 @@ export default (args: ListPagesArgs, context: PbContext) => {
     return normalized;
 };
 
-const getQuery = (args: ListPagesArgs, context: PbContext): ElasticsearchQuery => {
+const getQuery = (args: ListPagesArgs, context: PbContext): ElasticsearchBoolQueryConfig => {
     const { where, search, exclude } = args;
-    const query: ElasticsearchQuery = {
+    const query: ElasticsearchBoolQueryConfig = {
         filter: [],
         must: [],
-        mustNot: [],
+        must_not: [],
         should: []
     };
 
@@ -84,7 +84,7 @@ const getQuery = (args: ListPagesArgs, context: PbContext): ElasticsearchQuery =
         });
 
         if (paths.length) {
-            query.mustNot.push({
+            query.must_not.push({
                 terms: {
                     "path.keyword": paths
                 }
@@ -92,7 +92,7 @@ const getQuery = (args: ListPagesArgs, context: PbContext): ElasticsearchQuery =
         }
 
         if (pageIds.length) {
-            query.mustNot.push({
+            query.must_not.push({
                 terms: {
                     pid: pageIds
                 }
