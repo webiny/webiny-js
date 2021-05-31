@@ -164,18 +164,3 @@ module.exports = () => [
         }
     }
 ];
-
-const crawlDirectory = async (dir, upload) => {
-    const files = fs.readdirSync(dir);
-    for (const file of files) {
-        const filePath = `${dir}/${file}`;
-        const stat = fs.statSync(filePath);
-        if (stat.isDirectory()) {
-            await crawlDirectory(filePath, upload);
-        }
-
-        if (stat.isFile()) {
-            await upload(filePath);
-        }
-    }
-};
