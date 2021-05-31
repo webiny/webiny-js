@@ -15,7 +15,7 @@ export const elasticsearchOperatorNotBetweenPlugin = (): ElasticsearchQueryBuild
         // we take gte first because it should be a lesser value than lte, eg [5, 10]
         // 6 >= gte && 6 <= lte === true which in this case it means that record will not match
         const [gte, lte] = value;
-        query.mustNot.push({
+        query.must_not.push({
             range: {
                 [field]: {
                     lte,

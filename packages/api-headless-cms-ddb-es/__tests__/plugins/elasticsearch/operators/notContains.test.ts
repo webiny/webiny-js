@@ -1,6 +1,6 @@
 import { elasticsearchOperatorNotContainsPlugin } from "../../../../src/elasticsearch/operators/notContains";
 import { createBlankQuery } from "../helpers";
-import { ElasticsearchQuery } from "@webiny/api-plugin-elastic-search-client/types";
+import { ElasticsearchBoolQueryConfig } from "@webiny/api-plugin-elastic-search-client/types";
 
 describe("elasticsearchOperatorNotContainsPlugin", () => {
     const plugin = elasticsearchOperatorNotContainsPlugin();
@@ -14,8 +14,8 @@ describe("elasticsearchOperatorNotContainsPlugin", () => {
             value: "John",
             context
         });
-        const expected: ElasticsearchQuery = {
-            mustNot: [
+        const expected: ElasticsearchBoolQueryConfig = {
+            must_not: [
                 {
                     query_string: {
                         allow_leading_wildcard: true,

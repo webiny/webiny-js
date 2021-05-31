@@ -5,7 +5,7 @@ export const elasticsearchOperatorNotContainsPlugin = (): ElasticsearchQueryBuil
     name: "elastic-search-query-builder-not-contains",
     operator: "not_contains",
     apply(query, { field, value }) {
-        query.mustNot.push({
+        query.must_not.push({
             query_string: {
                 allow_leading_wildcard: true,
                 fields: [field],

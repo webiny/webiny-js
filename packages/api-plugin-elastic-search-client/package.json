@@ -15,7 +15,8 @@
     "@elastic/elasticsearch": "^7.9.1",
     "@webiny/handler": "^5.7.0",
     "aws-elasticsearch-connector": "^9.0.0",
-    "aws-sdk": "^2.539.0"
+    "aws-sdk": "^2.539.0",
+    "elastic-ts": "^0.6.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

@@ -7949,6 +7949,7 @@ __metadata:
     "@webiny/project-utils": ^5.7.0
     aws-elasticsearch-connector: ^9.0.0
     aws-sdk: ^2.539.0
+    elastic-ts: ^0.6.0
     rimraf: ^3.0.2
     typescript: ^4.1.3
   languageName: unknown
@@ -8154,6 +8155,7 @@ __metadata:
     invariant: ^2.2.4
     lodash: ^4.17.11
     mime: ^2.4.2
+    minimatch: ^3.0.4
     prop-types: ^15.7.2
     react: ^16.14.0
     react-butterfiles: ^1.3.1
@@ -16253,6 +16255,15 @@ __metadata:
   version: 2.7.4
   resolution: "ejs@npm:2.7.4"
   checksum: f066d9a932fb921bdb6e87133d747d5e3408a1c1303f9a15e5a7a3973afdf444a672c98c2f6d97b9a1a76363bd8ae6d05286f26c6b6b7b9674dfc5802fc8546d
+  languageName: node
+  linkType: hard
+
+"elastic-ts@npm:^0.6.0":
+  version: 0.6.0
+  resolution: "elastic-ts@npm:0.6.0"
+  dependencies:
+    "@sindresorhus/is": ^4.0.0
+  checksum: 3d7e2940da3999be328b5ae621db2435fd8f4880a7bd483ee0a28721a9925caa778847b0cf508937c8a2906fe9958a0a8a92682622c37c130cd258211ec67dcb
   languageName: node
   linkType: hard
 

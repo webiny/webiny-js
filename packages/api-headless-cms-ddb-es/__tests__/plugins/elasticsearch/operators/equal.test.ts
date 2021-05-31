@@ -1,6 +1,6 @@
 import { elasticsearchOperatorEqualPlugin } from "../../../../src/elasticsearch/operators/equal";
 import { createBlankQuery } from "../helpers";
-import { ElasticsearchQuery } from "@webiny/api-plugin-elastic-search-client/types";
+import { ElasticsearchBoolQueryConfig } from "@webiny/api-plugin-elastic-search-client/types";
 
 describe("elasticsearchOperatorEqualPlugin", () => {
     const plugin = elasticsearchOperatorEqualPlugin();
@@ -21,8 +21,8 @@ describe("elasticsearchOperatorEqualPlugin", () => {
             context
         });
 
-        const expected: ElasticsearchQuery = {
-            mustNot: [],
+        const expected: ElasticsearchBoolQueryConfig = {
+            must_not: [],
             must: [
                 {
                     term: {

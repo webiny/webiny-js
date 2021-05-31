@@ -1,6 +1,6 @@
 import { elasticsearchOperatorNotInPlugin } from "../../../../src/elasticsearch/operators/notIn";
 import { createBlankQuery } from "../helpers";
-import { ElasticsearchQuery } from "@webiny/api-plugin-elastic-search-client/types";
+import { ElasticsearchBoolQueryConfig } from "@webiny/api-plugin-elastic-search-client/types";
 
 describe("elasticsearchOperatorNotInPlugin", () => {
     const plugin = elasticsearchOperatorNotInPlugin();
@@ -14,8 +14,8 @@ describe("elasticsearchOperatorNotInPlugin", () => {
             value: ["John", "Doe", "P."],
             context
         });
-        const expected: ElasticsearchQuery = {
-            mustNot: [
+        const expected: ElasticsearchBoolQueryConfig = {
+            must_not: [
                 {
                     terms: {
                         "name.keyword": ["John", "Doe", "P."]

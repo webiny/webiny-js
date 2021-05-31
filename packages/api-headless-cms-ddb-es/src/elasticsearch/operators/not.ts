@@ -6,13 +6,13 @@ export const elasticsearchOperatorNotPlugin = (): ElasticsearchQueryBuilderPlugi
     operator: "not",
     apply(query, { field, value }) {
         if (typeof value === "string") {
-            query.mustNot.push({
+            query.must_not.push({
                 term: {
                     [`${field}.keyword`]: value
                 }
             });
         } else {
-            query.mustNot.push({
+            query.must_not.push({
                 term: {
                     [`${field}`]: value
                 }
