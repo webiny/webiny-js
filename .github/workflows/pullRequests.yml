@@ -1,4 +1,4 @@
-name: Next Branch - Pull Request
+name: Pull Requests
 
 on:
   pull_request:
