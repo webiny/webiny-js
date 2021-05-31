@@ -71,7 +71,7 @@ const GroupsDataList = () => {
             return (
                 name.toLowerCase().includes(filter) ||
                 slug.toLowerCase().includes(filter) ||
-                description.toLowerCase().includes(filter)
+                (description && description.toLowerCase().includes(filter))
             );
         },
         [filter]
