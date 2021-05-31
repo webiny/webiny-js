@@ -1,8 +1,10 @@
+# This ensures build/yarn caches are rebuilt and that we don't experience cache miss
+# when pushing our own code (which makes the whole job last significantly longer).
 name: Rebuild Cache (Next)
 
 on:
   schedule:
-    - cron: "0 1 * * *" # 2AM
+    - cron: "0 1 * * *" # Every day at 1AM.
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
