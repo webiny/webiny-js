@@ -98,3 +98,55 @@ export const DELETE_GROUP = gql`
         }
     }
 `;
+
+const API_KEY_BASE_FIELDS = `
+    id
+    name
+    description
+    token
+    permissions
+    createdOn
+`;
+
+export const READ_API_KEY = gql`
+    query GetApiKey($id: ID!) {
+        security {
+            apiKey: getApiKey(id: $id){
+                data {
+                    ${API_KEY_BASE_FIELDS}
+                }
+                error {
+                    ${ERROR_FIELDS}
+                }
+            }
+        }
+    }
+`;
+
+export const CREATE_API_KEY = gql`
+    mutation CreateApiKey($data: SecurityApiKeyInput!){
+        security {
+            apiKey: createApiKey(data: $data) {
+                data {
+                    ${API_KEY_BASE_FIELDS}
+                }
+                error {
+                     ${ERROR_FIELDS}
+                }
+            }
+        }
+    }
+`;
+
+export const DELETE_API_KEY = gql`
+    mutation DeleteApiKey($id: ID!) {
+        security {
+            apiKey: deleteApiKey(id: $id) {
+                data
+                error {
+                    ${ERROR_FIELDS}
+                }
+            }
+        }
+    }
+`;

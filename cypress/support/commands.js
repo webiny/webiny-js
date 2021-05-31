@@ -15,6 +15,9 @@ import "./security/securityDeleteUser";
 import "./security/securityReadGroup";
 import "./security/securityCreateGroup";
 import "./security/securityDeleteGroup";
+import "./security/securityReadApiKey";
+import "./security/securityCreateApiKey";
+import "./security/securityDeleteApiKey";
 
 Cypress.Commands.overwrite("visit", (orig, url, options) => {
     return orig(url, { ...options, failOnStatusCode: false });
