@@ -70,3 +70,31 @@ export const READ_GROUP = gql`
         }
     }
 `;
+
+export const CREATE_GROUP = gql`
+    mutation createGroup($data: SecurityGroupCreateInput!){
+        security {
+            group: createGroup(data: $data) {
+                data {
+                    ${GROUP_BASE_FIELDS}
+                }
+                error {
+                   ${ERROR_FIELDS}
+                }
+            }
+        }
+    }
+`;
+
+export const DELETE_GROUP = gql`
+    mutation deleteGroup($slug: String!) {
+        security {
+            group: deleteGroup(slug: $slug) {
+                data
+                error {
+                    ${ERROR_FIELDS}
+                }
+            }
+        }
+    }
+`;
