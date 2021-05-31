@@ -17,6 +17,7 @@ export default (): AdminAppPermissionRendererPlugin => {
                     icon={<SecurityIcon />}
                     title={t`Security`}
                     description={t`Manage Security app access permissions.`}
+                    data-testid={"permission.security"}
                 >
                     <SecurityPermissions {...props} />
                 </AccordionItem>

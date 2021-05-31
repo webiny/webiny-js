@@ -16,6 +16,7 @@ export default (): AdminAppPermissionRendererPlugin => ({
                 icon={<FormBuilderIcon />}
                 title={t`Form Builder`}
                 description={t`Manage Form Builder app access permissions.`}
+                data-testid={"permission.fb"}
             >
                 <FormBuilderPermissions {...props} />
             </AccordionItem>

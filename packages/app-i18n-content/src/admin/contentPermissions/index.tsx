@@ -18,6 +18,7 @@ export default {
                 icon={<Icon />}
                 title={t`Content`}
                 description={t`Per-locale content access permissions management.`}
+                data-testid={"permission.content"}
             >
                 <ContentPermissions {...props} />
             </AccordionItem>
