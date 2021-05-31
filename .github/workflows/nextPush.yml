@@ -242,20 +242,20 @@ jobs:
     steps:
       # After the run is over, destroy deployed cloud infrastructure.
       # Must be immediately defined here.
-#      - uses: webiny/action-post-run@2.0.1
-#        with:
-#          working-directory: test-project
-#          run: yarn webiny destroy api --env dev
-#
-#      - uses: webiny/action-post-run@2.0.1
-#        with:
-#          working-directory: test-project
-#          run: yarn webiny destroy apps/admin --env dev
-#
-#      - uses: webiny/action-post-run@2.0.1
-#        with:
-#          working-directory: test-project
-#          run: yarn webiny destroy apps/website --env dev
+      - uses: webiny/action-post-run@2.0.1
+        with:
+          working-directory: test-project
+          run: yarn webiny destroy api --env dev
+
+      - uses: webiny/action-post-run@2.0.1
+        with:
+          working-directory: test-project
+          run: yarn webiny destroy apps/admin --env dev
+
+      - uses: webiny/action-post-run@2.0.1
+        with:
+          working-directory: test-project
+          run: yarn webiny destroy apps/website --env dev
 
       - uses: actions/setup-node@v2
         with:
@@ -337,9 +337,9 @@ jobs:
         working-directory: webiny-js
         run: yarn setup-cypress --project-folder ../test-project
 
-#      - name: Cypress - run installation wizard test
-#        working-directory: webiny-js
-#        run: yarn cypress run --spec "cypress/integration/adminInstallation/**/*.spec.js"
+      - name: Cypress - run installation wizard test
+        working-directory: webiny-js
+        run: yarn cypress run --spec "cypress/integration/adminInstallation/**/*.spec.js"
 
 #      - name: Cypress - run the rest of Admin Area tests
 #        working-directory: webiny-js
