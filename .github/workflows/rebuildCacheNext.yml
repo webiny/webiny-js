@@ -1,0 +1,50 @@
+name: Rebuild Cache (Next)
+
+on:
+  schedule:
+    - cron: "0 1 * * *" # 2AM
+
+env:
+  NODE_OPTIONS: --max_old_space_size=4096
+
+jobs:
+  cache-keys:
+    name: Create cache keys
+    runs-on: ubuntu-latest
+    outputs:
+      day: ${{ steps.create-cache-keys.outputs.day }}
+    steps:
+      - name: Create cache key (day)
+        id: create-cache-keys
+        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
+
+  cache-dependencies-packages:
+    name: Cache dependencies and packages
+    runs-on: ubuntu-latest
+    needs: cache-keys
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        id: yarn-cache
+        with:
+          path: .yarn/cache
+          key: yarn-${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+
+      - uses: actions/cache@v2
+        id: cached-packages
+        with:
+          path: .webiny/cached-packages
+          key: cached-packages-${{ runner.os }}-next-${{ needs.cache-keys.outputs.day }}
+
+      - name: Install dependencies
+        if: steps.yarn-cache.outputs.cache-hit != 'true' || steps.cached-packages.outputs.cache-hit != 'true'
+        run: yarn --immutable
+
+      - name: Build packages
+        if: steps.cached-packages.outputs.cache-hit != 'true'
+        run: node scripts/buildWithCache.js
