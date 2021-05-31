@@ -47,3 +47,26 @@ export const DELETE_USER = gql`
         }
     }
 `;
+
+const GROUP_BASE_FIELDS = `
+    name
+    slug
+    description
+    permissions
+    createdOn
+`;
+
+export const READ_GROUP = gql`
+    query getGroup($slug: String!) {
+        security {
+            group: getGroup(slug: $slug){
+                data {
+                    ${GROUP_BASE_FIELDS}
+                }
+                error {
+                    ${ERROR_FIELDS}
+                }
+            }
+        }
+    }
+`;

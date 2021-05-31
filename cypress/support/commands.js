@@ -12,6 +12,7 @@ import "./headlessCms/cmsCreateContentModelGroup";
 import "./headlessCms/cmsDeleteContentModelGroup";
 import "./security/securityCreateUser";
 import "./security/securityDeleteUser";
+import "./security/securityReadGroup";
 
 Cypress.Commands.overwrite("visit", (orig, url, options) => {
     return orig(url, { ...options, failOnStatusCode: false });
