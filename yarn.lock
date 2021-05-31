@@ -7868,7 +7868,6 @@ __metadata:
     load-json-file: ^6.2.0
     lodash: ^4.17.11
     mdbid: ^1.0.0
-    mime: ^2.5.2
     node-fetch: ^2.6.1
     rimraf: ^3.0.2
     stream: ^0.0.2
@@ -8723,6 +8722,7 @@ __metadata:
     handlebars: ^4.7.7
     localtunnel: ^2.0.1
     lodash: 4.17.20
+    mime: ^2.5.2
     minimatch: ^3.0.4
     ncp: ^2.0.0
     node-notifier: 7.0.2
