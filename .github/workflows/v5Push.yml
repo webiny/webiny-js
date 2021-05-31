@@ -372,7 +372,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: cached-packages-${{ runner.os }}-next-1-${{ steps.day-of-month.outputs.day }}
+          key: cached-packages-${{ runner.os }}-${{ steps.day-of-month.outputs.day }}
 
       - name: Install dependencies
         run: yarn --immutable
