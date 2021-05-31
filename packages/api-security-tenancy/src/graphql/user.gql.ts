@@ -395,9 +395,16 @@ const plugin: GraphQLSchemaPlugin<HandlerContext<TenancyContext, SecurityContext
 
                     try {
                         const user = await security.users.getUser(login);
+                        const identity = security.getIdentity();
 
                         if (!user) {
                             return new NotFoundResponse(`User "${login}" was not found!`);
+                        }
+
+                        if (user.login === identity.id) {
+                            return new ErrorResponse({
+                                message: `You can't delete your own user account.`
+                            });
                         }
 
                         await security.users.deleteUser(login);
