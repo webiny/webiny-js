@@ -43,7 +43,7 @@ context("Admin Installation", () => {
 
         cy.wait(5000);
 
-        // 4.Page Builder and Form Builder Installation.
+        // 4. Page Builder and Form Builder Installation.
         cy.findByTestId("install-pb-button").click();
 
         cy.findByText("Value is required.").should("exist");
