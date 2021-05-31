@@ -40,19 +40,27 @@ type ElasticsearchQueryRange = {
  *
  * @category Elasticsearch
  */
-type ElasticsearchQueryQuery = {
+type ElasticsearchQueryString = {
     allow_leading_wildcard?: boolean;
     fields: string[];
     query: string;
+    /**
+     * Keep it loose.
+     */
+    [key: string]: any;
 };
 /**
  * definition for Elasticsearch simple query string.
  *
  * @category Elasticsearch
  */
-type ElasticsearchQuerySimpleQuery = {
+type ElasticsearchSimpleQueryString = {
     fields: string[];
     query: string;
+    /**
+     * Keep it loose.
+     */
+    [key: string]: any;
 };
 /**
  * definition for Elasticsearch must keyword.
@@ -67,8 +75,8 @@ type ElasticsearchQueryMust = {
         [key: string]: any[];
     };
     range?: ElasticsearchQueryRange;
-    query_string?: ElasticsearchQueryQuery;
-    simple_query_string?: ElasticsearchQuerySimpleQuery;
+    query_string?: ElasticsearchQueryString;
+    simple_query_string?: ElasticsearchSimpleQueryString;
 };
 /**
  * definition for Elasticsearch must_not keyword.
@@ -83,8 +91,8 @@ type ElasticsearchQueryMustNot = {
         [key: string]: any[];
     };
     range?: ElasticsearchQueryRange;
-    query_string?: ElasticsearchQueryQuery;
-    simple_query_string?: ElasticsearchQuerySimpleQuery;
+    query_string?: ElasticsearchQueryString;
+    simple_query_string?: ElasticsearchSimpleQueryString;
 };
 
 /**
@@ -129,7 +137,7 @@ type ElasticsearchQueryShould = {
 };
 
 /**
- * Definition for Elasticsearch query.
+ * Definition for Elasticsearch bool query with no required properties.
  *
  * @category Elasticsearch
  */
@@ -152,6 +160,4 @@ export interface ElasticsearchBoolQuery {
     should?: ElasticsearchQueryShould[];
 }
 
-export interface ElasticsearchQuery {
-    [key: string]: any;
-}
+export type ElasticsearchQuery = ElasticsearchBoolQuery;

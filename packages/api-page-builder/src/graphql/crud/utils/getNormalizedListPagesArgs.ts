@@ -1,9 +1,8 @@
 import { ListPagesArgs, PbContext } from "../../types";
-import { ElasticsearchBoolQuery } from "@webiny/api-plugin-elastic-search-client/types";
+import { ElasticsearchQuery } from "@webiny/api-plugin-elastic-search-client/types";
 
 /**
  * Returns arguments suited to be sent to ElasticSearch's `search` method.
- * @param args
  */
 export default (args: ListPagesArgs, context: PbContext) => {
     const normalized = {
@@ -18,12 +17,13 @@ export default (args: ListPagesArgs, context: PbContext) => {
     return normalized;
 };
 
-const getQuery = (args: ListPagesArgs, context: PbContext): ElasticsearchBoolQuery => {
+const getQuery = (args: ListPagesArgs, context: PbContext): ElasticsearchQuery => {
     const { where, search, exclude } = args;
-    const query: ElasticsearchBoolQuery = {
+    const query: ElasticsearchQuery = {
         filter: [],
         must: [],
-        mustNot: []
+        mustNot: [],
+        should: []
     };
 
     // When ES index is shared between tenants, we need to filter records by tenant ID

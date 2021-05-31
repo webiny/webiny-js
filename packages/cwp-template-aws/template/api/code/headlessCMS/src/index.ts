@@ -7,6 +7,7 @@ import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import elasticSearch from "@webiny/api-plugin-elastic-search-client";
 import headlessCmsPlugins from "@webiny/api-headless-cms/content";
 import securityPlugins from "./security";
+import cmsDynamoDbElasticsearch from "@webiny/api-headless-cms-ddb-es";
 import logsPlugins from "@webiny/handler-logs";
 
 const debug = process.env.DEBUG === "true";
@@ -27,7 +28,8 @@ export const handler = createHandler({
         securityPlugins(),
         i18nPlugins(),
         i18nContentPlugins(),
-        headlessCmsPlugins({ debug })
+        headlessCmsPlugins({ debug }),
+        cmsDynamoDbElasticsearch()
     ],
     http: { debug }
 });

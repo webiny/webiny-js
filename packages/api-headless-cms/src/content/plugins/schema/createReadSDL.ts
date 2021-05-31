@@ -28,10 +28,12 @@ export const createReadSDL: CreateManageSDL = ({ model, fieldTypePlugins }): str
     return `
         """${model.description || ""}"""
         type ${rTypeName} {
-            id: ID
-            createdOn: DateTime
-            createdBy: CmsCreatedBy
-            savedOn: DateTime
+            id: ID!
+            entryId: String!
+            createdOn: DateTime!
+            savedOn: DateTime!
+            createdBy: CmsCreatedBy!
+            ownedBy: CmsOwnedBy!
             ${fieldsRender.map(f => f.fields).join("\n")}
         }
         

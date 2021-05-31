@@ -3,6 +3,7 @@ import { GQLHandlerCallableArgs } from "./useGqlHandler";
 
 const categoryFields = `
     id
+    entryId
     createdOn
     savedOn
     title

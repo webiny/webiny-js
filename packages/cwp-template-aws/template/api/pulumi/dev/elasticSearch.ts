@@ -75,7 +75,7 @@ class ElasticSearch {
                             //     Effect: "Allow",
                             //     Principal: "*",
                             //     Action: "es:*",
-                            //     Resource: this.domain.arn.apply(v => `${v}/!*`),
+                            //     Resource: this.domain.arn.apply(v => `${v}/*`),
                             //     Condition: {
                             //         IpAddress: {
                             //             "aws:SourceIp": "213.149.51.28/32"

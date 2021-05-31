@@ -1,17 +1,11 @@
-import dbPlugins from "@webiny/handler-db";
-import elasticSearch from "@webiny/api-plugin-elastic-search-client";
-import dynamoToElastic from "@webiny/api-dynamodb-to-elasticsearch/handler";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import securityPlugins from "@webiny/api-security/authenticator";
 import apiKeyAuthentication from "@webiny/api-security-tenancy/authentication/apiKey";
 import apiKeyAuthorization from "@webiny/api-security-tenancy/authorization/apiKey";
 import { createHandler } from "@webiny/handler-aws";
-import { DynamoDbDriver } from "@webiny/db-dynamodb";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { SecurityIdentity } from "@webiny/api-security/types";
-import { Client } from "@elastic/elasticsearch";
 import { createIdentity, createPermissions, until, PermissionsArg } from "./helpers";
 import { INSTALL_MUTATION, IS_INSTALLED_QUERY } from "./graphql/settings";
 import {
@@ -29,13 +23,8 @@ import {
     UPDATE_CONTENT_MODEL_MUTATION
 } from "./graphql/contentModel";
 
-import { simulateStream } from "@webiny/project-utils/testing/dynamodb";
-
 import { INTROSPECTION } from "./graphql/schema";
 import { ApiKey } from "@webiny/api-security-tenancy/types";
-
-import elasticSearchPlugins from "../../src/content/plugins/es";
-import fieldsStoragePlugins from "../../src/content/plugins/fieldsStorage";
 
 export interface GQLHandlerCallableArgs {
     permissions?: PermissionsArg[];
@@ -44,74 +33,17 @@ export interface GQLHandlerCallableArgs {
     path: string;
 }
 
-const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
-
 export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
+    // @ts-ignore
+    const storageOperationsPlugins = __getStorageOperationsPlugins();
+    if (typeof storageOperationsPlugins !== "function") {
+        throw new Error(`There is no global "storageOperationsPlugins" function.`);
+    }
     const tenant = { id: "root", name: "Root", parent: null };
     const { permissions, identity, plugins = [], path } = args || {};
 
-    const documentClient = new DocumentClient({
-        convertEmptyValues: true,
-        endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
-        sslEnabled: false,
-        region: "local"
-    });
-
-    const elasticSearchContext = elasticSearch({
-        endpoint: `http://localhost:${ELASTICSEARCH_PORT}`
-    });
-
-    // Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
-    simulateStream(documentClient, createHandler(elasticSearchContext, dynamoToElastic()));
-
     const handler = createHandler(
-        dbPlugins({
-            table: "HeadlessCms",
-            driver: new DynamoDbDriver({
-                documentClient
-            })
-        }),
-        elasticSearchContext,
-        {
-            type: "context",
-            async apply(context) {
-                await context.elasticSearch.indices.putTemplate({
-                    name: "headless-cms-entries-index",
-                    body: {
-                        index_patterns: ["*headless-cms*"],
-                        settings: {
-                            analysis: {
-                                analyzer: {
-                                    lowercase_analyzer: {
-                                        type: "custom",
-                                        filter: ["lowercase", "trim"],
-                                        tokenizer: "keyword"
-                                    }
-                                }
-                            }
-                        },
-                        mappings: {
-                            properties: {
-                                property: {
-                                    type: "text",
-                                    fields: {
-                                        keyword: {
-                                            type: "keyword",
-                                            ignore_above: 256
-                                        }
-                                    },
-                                    analyzer: "lowercase_analyzer"
-                                },
-                                rawValues: {
-                                    type: "object",
-                                    enabled: false
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-        },
+        storageOperationsPlugins(),
         {
             type: "context",
             name: "context-security-tenant",
@@ -171,8 +103,6 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
         i18nContext(),
         i18nContentPlugins(),
         mockLocalesPlugins(),
-        elasticSearchPlugins(),
-        fieldsStoragePlugins(),
         {
             type: "security-authorization",
             name: "security-authorization",
@@ -214,6 +144,7 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
                 };
             }
         },
+        //
         plugins
     );
 
@@ -228,19 +159,8 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
         return [JSON.parse(response.body), response];
     };
 
-    const elasticSearchClient = new Client({
-        node: `http://localhost:${ELASTICSEARCH_PORT}`
-    });
-
     return {
         until,
-        elasticSearch: elasticSearchClient,
-        clearAllIndex: async () => {
-            await elasticSearchClient.indices.delete({
-                index: "_all"
-            });
-        },
-        documentClient,
         sleep: (ms = 333) => {
             return new Promise(resolve => {
                 setTimeout(resolve, ms);
