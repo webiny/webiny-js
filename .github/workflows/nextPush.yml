@@ -1,9 +1,8 @@
 name: Next Branch - Push
 
-# TODO: switch back to 'next'
 on:
   push:
-    branches: [ci-improvements]
+    branches: [next]
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
