@@ -53,7 +53,9 @@ const GroupsDataList = () => {
     const [sort, setSort] = useState(serializeSorters(SORTERS[0].sorters));
     const { history, location } = useRouter();
     const { showSnackbar } = useSnackbar();
-    const { showConfirmation } = useConfirmationDialog();
+    const { showConfirmation } = useConfirmationDialog({
+        dataTestId: "default-data-list.delete-dialog"
+    });
 
     const { data: listResponse, loading: listLoading } = useQuery(LIST_GROUPS);
 
@@ -149,7 +151,12 @@ const GroupsDataList = () => {
                 <SearchUI value={filter} onChange={setFilter} inputPlaceholder={t`Search Groups`} />
             }
             modalOverlay={groupsDataListModalOverlay}
-            modalOverlayAction={<DataListModalOverlayAction icon={<FilterIcon />} />}
+            modalOverlayAction={
+                <DataListModalOverlayAction
+                    icon={<FilterIcon />}
+                    data-testid={"default-data-list.filter"}
+                />
+            }
         >
             {({ data }) => (
                 <ScrollList data-testid="default-data-list">
@@ -165,7 +172,10 @@ const GroupsDataList = () => {
                             <ListItemMeta>
                                 <ListActions>
                                     {item.slug !== "full-access" ? (
-                                        <DeleteIcon onClick={() => deleteItem(item)} />
+                                        <DeleteIcon
+                                            onClick={() => deleteItem(item)}
+                                            data-testid={"default-data-list.delete"}
+                                        />
                                     ) : (
                                         <Tooltip
                                             placement={"bottom"}
