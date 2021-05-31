@@ -4,6 +4,10 @@
   "baseUrl": "https://WEBSITE_CDN_ID.cloudfront.net",
   "defaultCommandTimeout": 30000,
   "video": false,
+  "retries": {
+    "runMode": 5,
+    "openMode": 0
+  },
   "env": {
     "WEBSITE_NAME": "Cypress Test Website",
     "WEBSITE_URL": "https://WEBSITE_CDN_ID.cloudfront.net",
