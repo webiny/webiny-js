@@ -89,13 +89,3 @@ export const DELETE_LOCALE = gql`
         }
     }
 `;
-
-export const SEARCH_LOCALE_CODES = gql`
-    query searchLocaleCodes($search: String) {
-        i18n {
-            codes: searchLocaleCodes(search: $search) {
-                data
-            }
-        }
-    }
-`;
