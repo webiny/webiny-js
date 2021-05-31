@@ -31,19 +31,21 @@ context("Admin Installation", () => {
         cy.findByLabelText("Your password").type(Cypress.env("DEFAULT_ADMIN_USER_PASSWORD"));
         cy.findByTestId("submit-sign-in-form-button").click();
 
-        // 2. File manager installation (happens automatically, nothing to type / select here).
-        cy.wait(5000);
-
-        // 3. I18N installation.
+        // 2. I18N installation.
         cy.findByLabelText("Select default locale")
             .clear()
             .type("en-g");
         cy.findByText("en-GB").click();
         cy.findByTestId("install-i18n-button").click();
 
+        // 3. File Manager installation (happens automatically, nothing to type / select here).
         cy.wait(5000);
 
         // 4. Page Builder and Form Builder Installation.
+
+        // Let's ensure we've reached this step (useful when in CI/CD, to see if we even reached this screen).
+        cy.findByText(/Name of your website/i).should("exist");
+
         cy.findByTestId("install-pb-button").click();
 
         cy.findByText("Value is required.").should("exist");
