@@ -53,11 +53,14 @@ const deleteContentEntry = () => {
 describe("Headless CMS - Content Entries", () => {
     context("CRUD", () => {
         const newModel = uniqid("Book-");
+        let model;
+        let group;
         // Runs once before all tests in the block
         before(() => {
             cy.cmsCreateContentModelGroup({
                 data: { name: uniqid("Group-"), icon: "fas/star" }
-            }).then(group => {
+            }).then(data => {
+                group = data;
                 cy.cmsCreateContentModel({
                     data: {
                         name: newModel,
@@ -66,6 +69,7 @@ describe("Headless CMS - Content Entries", () => {
                         description: "Testing 123"
                     }
                 }).then(data => {
+                    model = data;
                     cy.cmsUpdateContentModel({
                         modelId: data.modelId,
                         data: CONTENT_MODEL_DATA
@@ -75,6 +79,25 @@ describe("Headless CMS - Content Entries", () => {
         });
 
         beforeEach(() => cy.login());
+
+        after(() => {
+            cy.waitUntil(
+                () =>
+                    cy
+                        .cmsDeleteContentModel({ modelId: model.modelId })
+                        .then(data => data === true),
+                {
+                    description: `Wait until "ContentModel" is deleted`
+                }
+            );
+
+            cy.waitUntil(
+                () => cy.cmsDeleteContentModelGroup({ id: group.id }).then(data => data === true),
+                {
+                    description: `Wait until "ContentModelGroup" is deleted`
+                }
+            );
+        });
 
         it("should create, edit, publish, unpublish, and delete content entry", () => {
             cy.visit("/cms/content-models");
@@ -262,8 +285,24 @@ describe("Headless CMS - Content Entries", () => {
                 deleteContentEntry({});
             }
 
-            cy.cmsDeleteContentModel({ modelId: createdModel.modelId }).then(() =>
-                cy.cmsDeleteContentModelGroup({ id: createdGroup.id })
+            cy.waitUntil(
+                () =>
+                    cy
+                        .cmsDeleteContentModel({ modelId: createdModel.modelId })
+                        .then(data => data === true),
+                {
+                    description: `Wait until "ContentModel" is deleted`
+                }
+            );
+
+            cy.waitUntil(
+                () =>
+                    cy
+                        .cmsDeleteContentModelGroup({ id: createdGroup.id })
+                        .then(data => data === true),
+                {
+                    description: `Wait until "ContentModelGroup" is deleted`
+                }
             );
         });
 
