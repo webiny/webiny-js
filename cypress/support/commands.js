@@ -9,6 +9,7 @@ import "./pageBuilder/pbDeletePage";
 import "./headlessCms/cmsCreateContentModel";
 import "./headlessCms/cmsUpdateContentModel";
 import "./headlessCms/cmsDeleteContentModel";
+import "./headlessCms/cmsListContentModelGroup";
 import "./headlessCms/cmsCreateContentModelGroup";
 import "./headlessCms/cmsDeleteContentModelGroup";
 import "./security/securityCreateUser";

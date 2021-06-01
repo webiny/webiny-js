@@ -20,6 +20,19 @@ const BASE_CONTENT_MODEL_FIELDS = `
     }
 `;
 
+const BASE_CONTENT_MODEL_GROUP_FIELDS = `
+    id
+    name
+    slug
+    description
+    icon
+    createdOn
+    createdBy {
+        id
+        displayName
+    }
+`;
+
 export const CREATE_CONTENT_MODEL = gql`
     mutation CmsCreateContentModel($data: CmsContentModelCreateInput!) {
         createContentModel(data: $data) {
@@ -78,6 +91,23 @@ export const DELETE_CONTENT_MODEL_GROUP = gql`
             error {
                 code
                 message
+            }
+        }
+    }
+`;
+
+export const LIST_CONTENT_MODEL_GROUPS = gql`
+    query CmsListContentModelGroups {
+        listContentModelGroups {
+            data {
+                ${BASE_CONTENT_MODEL_GROUP_FIELDS}
+                contentModels {
+                    modelId
+                    name
+                }
+            }
+            error {
+                ${ERROR_FIELDS}
             }
         }
     }
