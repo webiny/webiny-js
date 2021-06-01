@@ -1,5 +1,5 @@
 import uniqid from "uniqid";
-import { getAuthorContentModelData, getBookContentModelData } from "./mocks";
+import { getAuthorContentModelData, getBookContentModelData } from "../mocks";
 
 const deleteEntry = () => {
     // Select first entry

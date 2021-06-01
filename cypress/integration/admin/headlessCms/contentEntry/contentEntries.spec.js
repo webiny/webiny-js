@@ -1,6 +1,6 @@
 import uniqid from "uniqid";
 import kebabCase from "lodash/kebabCase";
-import { CONTENT_MODEL_DATA } from "./mocks";
+import { CONTENT_MODEL_DATA } from "../mocks";
 
 const NEWEST_TO_OLDEST = "savedOn_DESC";
 const OLDEST_TO_NEWEST = "savedOn_ASC";
