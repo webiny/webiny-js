@@ -1,13 +1,14 @@
 import { ContextPlugin } from "@webiny/handler/types";
 import defaults from "./utils/defaults";
 import getPKPrefix from "./utils/getPKPrefix";
-import { PbContext, DefaultSettings, PbSettingsPlugin } from "../../types";
+import { PbContext, DefaultSettings } from "../../types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import DataLoader from "dataloader";
 import executeHookCallbacks from "./utils/executeHookCallbacks";
 import { DefaultSettingsModel } from "../../utils/models";
 import merge from "lodash/merge";
 import Error from "@webiny/error";
+import { SettingsPlugin } from "~/plugins/SettingsPlugin";
 
 const TYPE = "pb.settings";
 
@@ -24,7 +25,7 @@ const plugin: ContextPlugin<PbContext> = {
     async apply(context) {
         const { db, security, i18nContent } = context;
 
-        const settingsPlugins = context.plugins.byType<PbSettingsPlugin>("pb-settings");
+        const settingsPlugins = context.plugins.byType<SettingsPlugin>(SettingsPlugin.type);
 
         context.pageBuilder = {
             ...context.pageBuilder,
@@ -148,7 +149,7 @@ const plugin: ContextPlugin<PbContext> = {
                             }
                         }
 
-                        await executeHookCallbacks<PbSettingsPlugin["beforeUpdate"]>(
+                        await executeHookCallbacks<SettingsPlugin["beforeUpdate"]>(
                             settingsPlugins,
                             "beforeUpdate",
                             {
@@ -169,7 +170,7 @@ const plugin: ContextPlugin<PbContext> = {
                             data: next
                         });
 
-                        await executeHookCallbacks<PbSettingsPlugin["afterUpdate"]>(
+                        await executeHookCallbacks<SettingsPlugin["afterUpdate"]>(
                             settingsPlugins,
                             "afterUpdate",
                             {
