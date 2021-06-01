@@ -73,16 +73,34 @@ context("Headless CMS - Content Entry with Ref field", () => {
     beforeEach(() => cy.login());
 
     after(() => {
-        // Clean up the mess
-        cy.wait(1000);
-        // Delete first model
-        cy.cmsDeleteContentModel({ modelId: authorModel.modelId }).then(() => {
-            // Delete second model
-            cy.cmsDeleteContentModel({ modelId: bookModel.modelId }).then(() => {
-                // Delete ContentModelGroup
-                cy.cmsDeleteContentModelGroup({ id: createdContentModelGroup.id });
-            });
-        });
+        // Clean up everything
+        cy.waitUntil(
+            () =>
+                cy
+                    .cmsDeleteContentModel({ modelId: authorModel.modelId })
+                    .then(data => data === true),
+            {
+                description: `Wait until "Author ContentModel" is deleted`
+            }
+        );
+        cy.waitUntil(
+            () =>
+                cy
+                    .cmsDeleteContentModel({ modelId: bookModel.modelId })
+                    .then(data => data === true),
+            {
+                description: `Wait until "Book ContentModel" is deleted`
+            }
+        );
+        cy.waitUntil(
+            () =>
+                cy
+                    .cmsDeleteContentModelGroup({ id: createdContentModelGroup.id })
+                    .then(data => data === true),
+            {
+                description: `Wait until "ContentModelGroup" is deleted`
+            }
+        );
     });
 
     it("should create and publish content entry", () => {
