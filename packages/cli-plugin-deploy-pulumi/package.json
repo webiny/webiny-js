@@ -23,6 +23,7 @@
     "handlebars": "^4.7.7",
     "localtunnel": "^2.0.1",
     "lodash": "4.17.20",
+    "mime": "^2.5.2",
     "minimatch": "^3.0.4",
     "ncp": "^2.0.0",
     "node-notifier": "7.0.2",
