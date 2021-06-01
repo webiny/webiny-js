@@ -28,10 +28,10 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
     if (context.cms.MANAGE) {
         manageSchema = /* GraphQL */ `
             input CmsContentModelGroupInput {
-                name: String
+                name: String!
                 slug: String
                 description: String
-                icon: String
+                icon: String!
             }
 
             type CmsContentModelGroupResponse {
