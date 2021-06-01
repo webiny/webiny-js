@@ -1,4 +1,3 @@
-import { Plugin } from "@webiny/plugins/types";
 import { Context } from "@webiny/handler/types";
 import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { DbContext } from "@webiny/handler-db/types";
@@ -8,12 +7,12 @@ import { I18NContext } from "@webiny/api-i18n/types";
 import { ElasticSearchClientContext } from "@webiny/api-plugin-elastic-search-client/types";
 import DataLoader from "dataloader";
 import { ClientContext } from "@webiny/handler-client/types";
-import { Category, DefaultSettings, Menu, Page, PageElement, PageSpecialType } from "../types";
+import { Category, DefaultSettings, Menu, Page, PageElement } from "../types";
 import { PrerenderingServiceClientContext } from "@webiny/api-prerendering-service/client/types";
 
 // CRUD types.
 export type SortOrder = "asc" | "desc";
-export type ListPagesArgs = {
+export type ListPagesParams = {
     limit?: number;
     page?: number;
     where?: {
@@ -50,11 +49,11 @@ export type PathItem = {
     configuration?: { meta?: Record<string, any>; storage?: { folder?: string; name?: string } };
 };
 
-export type RenderArgs = {
+export type RenderParams = {
     tags?: TagItem[];
     paths?: PathItem[];
 };
-export type FlushArgs = {
+export type FlushParams = {
     tags?: TagItem[];
     paths?: PathItem[];
 };
@@ -64,8 +63,8 @@ export type PagesCrud = {
         getPublishedById: DataLoader<{ id: string; preview?: boolean }, Page>;
     };
     get(id: string): Promise<Page>;
-    listLatest(args: ListPagesArgs): Promise<[Page[], ListMeta]>;
-    listPublished(args: ListPagesArgs): Promise<[Page[], ListMeta]>;
+    listLatest(args: ListPagesParams): Promise<[Page[], ListMeta]>;
+    listPublished(args: ListPagesParams): Promise<[Page[], ListMeta]>;
     listTags(args: { search: { query: string } }): Promise<string[]>;
     getPublishedById(args: { id: string; preview?: boolean }): Promise<Page>;
     getPublishedByPath(args: { path: string }): Promise<Page>;
@@ -79,8 +78,8 @@ export type PagesCrud = {
     requestReview(id: string): Promise<Page>;
     requestChanges(id: string): Promise<Page>;
     prerendering: {
-        render(args: RenderArgs): Promise<void>;
-        flush(args: FlushArgs): Promise<void>;
+        render(args: RenderParams): Promise<void>;
+        flush(args: FlushParams): Promise<void>;
     };
 };
 
@@ -190,130 +189,3 @@ export interface PageSecurityPermission extends PbSecurityPermission {
     // "u" - unpublish
     pw: string;
 }
-
-// Plugin types
-export type CallbackFunction<T> = (args: T) => void | Promise<void>;
-
-export interface PageUpdateInput {
-    // TODO: add fields from GraphQL
-    [key: string]: any;
-}
-
-export interface PageCreateParams {
-    context: PbContext;
-    page: Page;
-}
-
-export interface PageBeforeUpdateParams {
-    context: PbContext;
-    existingPage: Page;
-    inputData: PageUpdateInput;
-    updateData: Partial<Page>;
-}
-
-export interface PageAfterUpdateParams {
-    context: PbContext;
-    page: Page;
-    inputData: PageUpdateInput;
-}
-
-export interface PageDeleteParams {
-    context: PbContext;
-    page: Page;
-    // TODO: @doitadrian - we need to get rid of these two parameters below as they're very DDB specific
-    latestPage: Page;
-    publishedPage?: Page;
-}
-
-export interface PagePublishParams {
-    context: PbContext;
-    page: Page;
-    // TODO: @doitadrian - we need to get rid of these two parameters below as they're very DDB specific
-    latestPage: Page;
-    publishedPage?: Page;
-}
-
-export interface PageUnpublishParams {
-    context: PbContext;
-    page: Page;
-}
-
-export interface PageNotFoundParams {
-    context: PbContext;
-    args: Record<string, any>;
-}
-
-export interface PbPagePlugin extends Plugin {
-    type: "pb-page";
-    beforeCreate?: CallbackFunction<PageCreateParams>;
-    afterCreate?: CallbackFunction<PageCreateParams>;
-    beforeUpdate?: CallbackFunction<PageBeforeUpdateParams>;
-    afterUpdate?: CallbackFunction<PageAfterUpdateParams>;
-    beforeDelete?: CallbackFunction<PageDeleteParams>;
-    afterDelete?: CallbackFunction<PageDeleteParams>;
-    beforePublish?: CallbackFunction<PagePublishParams>;
-    afterPublish?: CallbackFunction<PagePublishParams>;
-    beforeUnpublish?: CallbackFunction<PageUnpublishParams>;
-    afterUnpublish?: CallbackFunction<PageUnpublishParams>;
-    notFound?: (args: PageNotFoundParams) => Promise<Page | undefined>;
-}
-
-export interface MenuHookParams {
-    context: PbContext;
-    menu: Menu;
-}
-
-export type PbMenuPlugin = Plugin<{
-    type: "pb-menu";
-    beforeCreate?: CallbackFunction<MenuHookParams>;
-    afterCreate?: CallbackFunction<MenuHookParams>;
-    beforeUpdate?: CallbackFunction<MenuHookParams>;
-    afterUpdate?: CallbackFunction<MenuHookParams>;
-    beforeDelete?: CallbackFunction<MenuHookParams>;
-    afterDelete?: CallbackFunction<MenuHookParams>;
-}>;
-
-type SettingsHookPluginPreviousSettings = DefaultSettings;
-type SettingsHookPluginNextSettings = DefaultSettings;
-
-export interface PbSettingsBeforeUpdateParams {
-    context: PbContext;
-    previousSettings: SettingsHookPluginPreviousSettings;
-    nextSettings: SettingsHookPluginNextSettings;
-    meta: {
-        diff: {
-            pages: Array<[PageSpecialType, string, string, Page]>;
-        };
-    };
-}
-
-export interface PbSettingsAfterUpdateParams {
-    context: PbContext;
-    previousSettings: SettingsHookPluginPreviousSettings;
-    nextSettings: SettingsHookPluginNextSettings;
-    meta: {
-        diff: {
-            pages: Array<[PageSpecialType, string, string, Page]>;
-        };
-    };
-}
-
-export type PbSettingsPlugin = Plugin<{
-    type: "pb-settings";
-    beforeUpdate?: CallbackFunction<PbSettingsBeforeUpdateParams>;
-    afterUpdate?: CallbackFunction<PbSettingsAfterUpdateParams>;
-}>;
-
-export interface PbInstallBeforeInstallParams {
-    context: PbContext;
-}
-
-export interface PbInstallAfterInstallParams {
-    context: PbContext;
-}
-
-export type PbInstallPlugin = Plugin<{
-    type: "pb-install";
-    beforeInstall: CallbackFunction<PbInstallBeforeInstallParams>;
-    afterInstall: CallbackFunction<PbInstallAfterInstallParams>;
-}>;

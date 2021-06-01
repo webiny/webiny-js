@@ -7,7 +7,8 @@ import { preparePageData } from "./install/welcome-to-webiny-page-data";
 import { notFoundPageData } from "./install/notFoundPageData";
 import savePageAssets from "./install/utils/savePageAssets";
 import defaults from "./utils/defaults";
-import { PbInstallPlugin, PbContext } from "../../types";
+import { PbContext } from "~/types";
+import { InstallationPlugin } from "~/plugins/InstallationPlugin";
 
 export default {
     type: "context",
@@ -68,8 +69,10 @@ export default {
                 async install({ name, insertDemoData }) {
                     const { pageBuilder, fileManager, elasticSearch } = context;
 
-                    const hookPlugins = context.plugins.byType<PbInstallPlugin>("pb-install");
-                    await executeHookCallbacks<PbInstallPlugin["beforeInstall"]>(
+                    const hookPlugins = context.plugins.byType<InstallationPlugin>(
+                        InstallationPlugin.type
+                    );
+                    await executeHookCallbacks<InstallationPlugin["beforeInstall"]>(
                         hookPlugins,
                         "beforeInstall",
                         { context }
@@ -195,7 +198,7 @@ export default {
                     // 6. Mark the Page Builder app as installed.
                     await this.setVersion(context.WEBINY_VERSION);
 
-                    await executeHookCallbacks<PbInstallPlugin["afterInstall"]>(
+                    await executeHookCallbacks<InstallationPlugin["afterInstall"]>(
                         hookPlugins,
                         "afterInstall",
                         { context }
