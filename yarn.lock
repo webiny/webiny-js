@@ -14908,6 +14908,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cypress-wait-until@npm:^1.7.1":
+  version: 1.7.1
+  resolution: "cypress-wait-until@npm:1.7.1"
+  checksum: 9ab2d05c33df19ba810516fe03b82e007ac7cee7f7452a31172108335f1c48d5e6573a5de0565a69170db9acc69df02f9fa993d026891037527b2cae81d596fe
+  languageName: node
+  linkType: hard
+
 "cypress@npm:^6.0.1":
   version: 6.9.1
   resolution: "cypress@npm:6.9.1"
@@ -30873,6 +30880,7 @@ resolve@^2.0.0-next.3:
     contreebutors: ^1.1.3
     cross-env: ^5.2.0
     cypress: ^6.0.1
+    cypress-wait-until: ^1.7.1
     cz-customizable: ^5.2.0
     empty: ^0.10.1
     env-ci: 2.0.1
