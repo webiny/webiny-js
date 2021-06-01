@@ -28,8 +28,6 @@
     "./packages/create-webiny-project",
     "./packages/cwp-template-aws/**",
     "./packages/project-utils",
-    "./packages/tracking",
-    "./webiny.project.js",
-    "./webiny.root.js"
+    "./packages/tracking"
   ]
 }
