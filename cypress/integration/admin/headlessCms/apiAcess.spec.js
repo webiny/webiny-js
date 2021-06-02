@@ -2,6 +2,7 @@ import uniqid from "uniqid";
 import { getAuthorContentModelData, getBookContentModelData } from "./mocks";
 import { GraphQLClient, gql } from "graphql-request";
 import upperFirst from "lodash/upperFirst";
+import pluralize from "pluralize";
 
 const makeRequest = ({ token, query, variables, apiType }) => {
     let URL = Cypress.env("CMS_MANAGE_GRAPHQL_API_URL");
@@ -20,29 +21,47 @@ const makeRequest = ({ token, query, variables, apiType }) => {
     return client.request(query, variables);
 };
 
-const createBookFieldsList = () => {
+const createBookFieldsList = addRefField => {
     return `
         id
         entryId
         title
+        ${
+            addRefField
+                ? `author {
+            name
+            id
+            entryId
+        }`
+                : ""
+        }
     `;
 };
 
-const createAuthorFieldsList = () => {
+const createAuthorFieldsList = addRefField => {
     return `
         id
         entryId
         name
+        ${
+            addRefField
+                ? `books {
+            id
+            entryId
+            title
+        }`
+                : ""
+        }
     `;
 };
 
-const createFieldsList = (model, { bookModel, authorModel }) => {
+const createFieldsList = (model, { addRefField }) => {
     const isBook = model.modelId.toLowerCase().includes("book");
 
     if (isBook) {
-        return createBookFieldsList(authorModel);
+        return createBookFieldsList(addRefField);
     }
-    return createAuthorFieldsList(bookModel);
+    return createAuthorFieldsList(addRefField);
 };
 
 const ERROR_FIELD = `
@@ -110,6 +129,54 @@ const createUpdateMutation = (model, ctx) => {
             }
             error ${ERROR_FIELD}
         }
+        }
+    `;
+};
+
+const createReadQuery = (model, ctx) => {
+    const ucFirstModelId = upperFirst(model.modelId);
+
+    return gql`
+        query CmsEntriesGet${ucFirstModelId}($where: ${ucFirstModelId}GetWhereInput!) {
+            content: get${ucFirstModelId}(where: $where) {
+                data {
+                    id
+                    createdBy {
+                        id
+                    }
+                    ${createFieldsList(model, ctx)}
+                    savedOn
+                }
+                error ${ERROR_FIELD}
+            }
+        }
+    `;
+};
+
+const createListQuery = (model, ctx) => {
+    const ucFirstPluralizedModelId = upperFirst(pluralize(model.modelId));
+    const ucFirstModelId = upperFirst(model.modelId);
+
+    return gql`
+        query CmsEntriesList${ucFirstPluralizedModelId}($where: ${ucFirstModelId}ListWhereInput, $sort: [${ucFirstModelId}ListSorter], $limit: Int, $after: String) {
+            content: list${ucFirstPluralizedModelId}(
+                where: $where
+                sort: $sort
+                limit: $limit
+                after: $after
+            ) {
+                data {
+                    id
+                    savedOn
+                    ${createFieldsList(model, ctx)}
+                }
+                meta {
+                    cursor
+                    hasMoreItems
+                    totalCount
+                }            
+                error ${ERROR_FIELD}
+            }
         }
     `;
 };
@@ -282,7 +349,7 @@ context("Headless CMS - READ and Preview API access using API key", () => {
                     token: apiKey.token,
                     query: createDeleteMutation(bookModel),
                     variables: {
-                        revision: bookEntry.id
+                        revision: bookEntry.entryId
                     },
                     apiType: "MANAGE"
                 }).then(response => response.content.data === true),
@@ -297,7 +364,7 @@ context("Headless CMS - READ and Preview API access using API key", () => {
                     token: apiKey.token,
                     query: createDeleteMutation(authorModel),
                     variables: {
-                        revision: authorEntry.id
+                        revision: authorEntry.entryId
                     },
                     apiType: "MANAGE"
                 }).then(response => response.content.data === true),
@@ -312,9 +379,7 @@ context("Headless CMS - READ and Preview API access using API key", () => {
                     .cmsDeleteContentModel({ modelId: bookModel.modelId })
                     .then(data => data === true),
             {
-                description: `Wait until "Book ContentModel" is deleted`,
-                timeout: 1000 * 30,
-                interval: 1000
+                description: `Wait until "Book ContentModel" is deleted`
             }
         );
         cy.waitUntil(
@@ -323,9 +388,7 @@ context("Headless CMS - READ and Preview API access using API key", () => {
                     .cmsDeleteContentModel({ modelId: authorModel.modelId })
                     .then(data => data === true),
             {
-                description: `Wait until "Author ContentModel" is deleted`,
-                timeout: 1000 * 30,
-                interval: 1000
+                description: `Wait until "Author ContentModel" is deleted`
             }
         );
         cy.waitUntil(
@@ -340,10 +403,72 @@ context("Headless CMS - READ and Preview API access using API key", () => {
     });
 
     it("should able to list only published entry in READ API", function() {
-        assert.isTrue(true);
+        // Getting a "draft" entry should return "NOT_FOUND" error
+        return Promise.all([
+            makeRequest({
+                token: apiKey.token,
+                query: createReadQuery(bookModel, { addRefField: true }),
+                variables: {
+                    where: {
+                        entryId: bookEntry.entryId
+                    }
+                },
+                apiType: "READ"
+            }).then(response => {
+                assert.equal(response.content.error.code, "NOT_FOUND");
+            }),
+            makeRequest({
+                token: apiKey.token,
+                query: createListQuery(bookModel, { addRefField: true }),
+                variables: {
+                    where: {
+                        entryId: bookEntry.entryId
+                    }
+                },
+                apiType: "READ"
+            }).then(response => {
+                assert.equal(response.content.data.length, 0, "Should have 0 entries.");
+                assert.deepEqual(response.content.meta, {
+                    cursor: null,
+                    hasMoreItems: false,
+                    totalCount: 0
+                });
+            })
+        ]);
     });
 
     it("should able to list the latest entry in PREVIEW API", function() {
-        assert.isTrue(true);
+        // List books and authors should not be empty
+        return Promise.all([
+            makeRequest({
+                token: apiKey.token,
+                query: createReadQuery(bookModel, { addRefField: true }),
+                variables: {
+                    where: {
+                        entryId: bookEntry.entryId
+                    }
+                },
+                apiType: "PREVIEW"
+            }).then(response => {
+                assert.equal(response.content.data.entryId, bookEntry.entryId);
+            }),
+            makeRequest({
+                token: apiKey.token,
+                query: createListQuery(bookModel, { addRefField: true }),
+                variables: {
+                    where: {
+                        entryId: bookEntry.entryId
+                    }
+                },
+                apiType: "PREVIEW"
+            }).then(response => {
+                assert.equal(response.content.data.length, 1, "Should have 1 entry.");
+                assert.deepEqual(response.content.meta, {
+                    cursor: null,
+                    hasMoreItems: false,
+                    totalCount: 1
+                });
+            })
+        ]);
     });
 });
