@@ -1,7 +1,4 @@
-import getTarget from "./getTarget";
-import listTargets from "./listTargets";
-import createTarget from "./createTarget";
-import updateTarget from "./updateTarget";
-import deleteTarget from "./deleteTarget";
+import TargetMutation from "./TargetMutation";
+import TargetQuery from "./TargetQuery";
 
-export { getTarget, listTargets, createTarget, updateTarget, deleteTarget };
+export { TargetMutation, TargetQuery };
