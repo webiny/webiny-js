@@ -58,11 +58,7 @@ const updateTarget = async (
         acc[key] = modelData[key];
         return acc;
     }, ({} as unknown) as Target);
-    /**
-     * Create the index name that is going to be used when streaming from DDB to Elasticsearch.
-     * Can be removed if Elasticsearch is not used.
-     */
-    const { index: esIndex } = utils.es(context);
+
     /**
      * We do operations in batch, when possible, so there are no multiple calls towards the DynamoDB.
      */
@@ -87,29 +83,7 @@ const updateTarget = async (
                 webinyVersion: context.WEBINY_VERSION
             }
         })
-        /**
-         * Update the DynamoDB target record in stream table.
-         * Can be removed if Elasticsearch is not used.
-         */
-        .update({
-            ...utils.esDb(context),
-            query: {
-                PK: primaryKey,
-                SK: id
-            },
-            data: {
-                PK: primaryKey,
-                SK: id,
-                /**
-                 * Elasticsearch index that is this table streaming to.
-                 */
-                index: esIndex,
-                data: {
-                    ...model,
-                    webinyVersion: context.WEBINY_VERSION
-                }
-            }
-        });
+
     /**
      * Try to update the data in the DynamoDB. Fail with response if error happens.
      */

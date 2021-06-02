@@ -8,7 +8,7 @@ const createTarget = async (
     args: CreateTargetArgs,
     context: ApplicationContext
 ): Promise<ResolverResponse<Target>> => {
-    const { db, security, elasticSearch } = context;
+    const { db, security } = context;
     const { data } = args;
 
     /**
@@ -30,28 +30,6 @@ const createTarget = async (
         description: data.description,
         isNice: data.isNice === undefined ? false : data.isNice
     };
-    /**
-     * Create, and check for existence, index name that is going to be used when streaming from DDB to Elasticsearch.
-     * Can be removed if Elasticsearch is not used.
-     */
-    const esConfig = utils.es(context);
-    try {
-        const { body: hasIndice } = await elasticSearch.indices.exists(esConfig);
-        if (!hasIndice) {
-            return new ErrorResponse({
-                message: "You must run the install mutation to create the Elasticsearch index.",
-                code: "ELASTICSEARCH_ERROR",
-                data: esConfig
-            });
-        }
-    } catch (ex) {
-        return new ErrorResponse({
-            message: ex.message || "Error while checking for Elasticsearch index existence.",
-            code: ex.code || "ELASTICSEARCH_ERROR",
-            data: ex.data
-        });
-    }
-    const { index: esIndex } = esConfig;
 
     /**
      * Primary key is always constructed out of the target.id and a fixed Target configuration.
@@ -71,7 +49,6 @@ const createTarget = async (
                 PK: primaryKey,
                 /**
                  * Need something as SecondaryKey so we put the id of the Target.
-                 * Can be createdOn so you can sort and search by it (if there is no Elasticsearch).
                  */
                 SK: model.id,
                 ...model,
@@ -81,25 +58,7 @@ const createTarget = async (
                 webinyVersion: context.WEBINY_VERSION
             }
         })
-        /**
-         * Create the DynamoDB target record in stream table.
-         * Can be removed if Elasticsearch is not used.
-         */
-        .create({
-            ...utils.esDb(context),
-            data: {
-                PK: primaryKey,
-                SK: model.id,
-                /**
-                 * Elasticsearch index that is this table streaming to.
-                 */
-                index: esIndex,
-                data: {
-                    ...model,
-                    webinyVersion: context.WEBINY_VERSION
-                }
-            }
-        });
+
     /**
      * Try to insert the data into the DynamoDB. Fail with response if error happens.
      */

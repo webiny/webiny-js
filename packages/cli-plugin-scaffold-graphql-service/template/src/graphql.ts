@@ -84,16 +84,6 @@ const graphql = /* GraphQL */ `
         meta: TargetListMeta
         error: TargetError
     }
-    # A type definition to add the Elasticsearch index
-    type TargetInstallResponse {
-        data: Boolean
-        error: TargetError
-    }
-    # A type definition to remove the Elasticsearch index
-    type TargetUninstallResponse {
-        data: Boolean
-        error: TargetError
-    }
 
     type TargetQuery {
         getTarget(id: ID!): TargetResponse!

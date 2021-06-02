@@ -8,10 +8,8 @@
     "watch": "yarn webiny run watch"
   },
   "dependencies": {
-    "@elastic/elasticsearch": "^7.9.1",
     "@webiny/api-i18n": "5.2.1",
     "@webiny/api-i18n-content": "5.2.1",
-    "@webiny/api-plugin-elastic-search-client": "5.2.1",
     "@webiny/api-security": "5.2.1",
     "@webiny/api-security-tenancy": "5.2.1",
     "@webiny/db-dynamodb": "5.2.1",
@@ -26,9 +24,7 @@
   "devDependencies": {
     "@babel/cli": "^7.5.5",
     "@babel/core": "^7.5.5",
-    "@shelf/jest-elasticsearch": "^1.0.0",
     "@webiny/api-headless-cms": "^5.3.0",
-    "@webiny/api-dynamodb-to-elasticsearch": "^5.3.0",
     "@webiny/cli": "^5.0.0",
     "@webiny/handler-aws": "^5.3.0",
     "@webiny/project-utils": "^5.3.0",

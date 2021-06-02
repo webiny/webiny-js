@@ -381,105 +381,11 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             console.log(
                 indentString(
-                    chalk.green(`
-// at the top of the file
-import ${entity.singular}Plugin from "${packageName}";
-
-// somewhere after headlessCmsPlugins() in the end of the createHandler() function
-${entity.singular}Plugin()
-`),
-                    2
-                )
-            );
-
-            console.log(
-                indentString(
-                    `2. From the project root, run ${chalk.green(
-                        `LOCAL_ELASTICSEARCH=true yarn test ${location}`
-                    )} to ensure that the service works.`,
-                    2
-                )
-            );
-            console.log(
-                indentString(
-                    `Remember, you must have local Elasticsearch installed for this to work.`,
-                    2
-                )
-            );
-            console.log(
-                indentString(
-                    `Also, you can change the Elasticsearch port by setting LOCAL_ELASTICSEARCH variable, like this:`,
-                    2
-                )
-            );
-            console.log(
-                indentString(
-                    chalk.green(
-                        `ELASTICSEARCH_PORT=9200 LOCAL_ELASTICSEARCH=true yarn test ${location}`
-                    ),
-                    2
-                )
-            );
-
-            console.log(
-                indentString(
                     `3. Deploy the ${chalk.green(packageName)} by running ${chalk.green(
                         `yarn webiny deploy api --env=dev`
                     )}.`,
                     2
                 )
-            );
-
-            console.log(
-                indentString(
-                    `4. To create the Elasticsearch index, run the ${chalk.green(
-                        "install"
-                    )} mutation by running
-${chalk.green(`
-mutation ${Case.pascal(entity.plural)}InstallMutation {
-    ${entity.plural} {
-        install {
-            data
-            error {
-                message
-                code
-                data
-            }
-        }
-    }
-}
-`)}
-in the API playground.`,
-                    2
-                )
-            );
-
-            console.log(
-                indentString(
-                    `5. If you want to delete the Elasticsearch index, run the ${chalk.green(
-                        "uninstall"
-                    )} mutation by running
-${chalk.green(`
-mutation ${Case.pascal(entity.plural)}UninstallMutation {
-    ${entity.plural} {
-        uninstall {
-            data
-            error {
-                message
-                code
-                data
-            }
-        }
-    }
-}
-`)}
-in the API playground.`,
-                    2
-                )
-            );
-
-            console.log(
-                "Learn more about API development at https://www.webiny.com/docs/tutorials/create-an-application/api-package."
             );
         }
     }

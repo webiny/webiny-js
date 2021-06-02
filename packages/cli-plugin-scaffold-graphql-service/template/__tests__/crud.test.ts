@@ -32,18 +32,7 @@ describe("CRUD Test", () => {
     const {
         until,
         invoke,
-        clearElasticsearchIndices,
-        createElasticsearchIndices
     } = useGqlHandler();
-
-    beforeEach(async () => {
-        await clearElasticsearchIndices();
-        await createElasticsearchIndices();
-    });
-
-    afterEach(async () => {
-        await clearElasticsearchIndices();
-    });
 
     const createTarget = async (data: Record<string, any>) => {
         return await invoke({
@@ -62,7 +51,7 @@ describe("CRUD Test", () => {
         const [target2] = await createTarget(targetsData.target2);
         const [target3] = await createTarget(targetsData.target3);
 
-        // if this `until` resolves successfully, we know targets are propagated into elasticsearch
+        // TODO: remove until
         await until(
             () =>
                 invoke({
@@ -128,7 +117,7 @@ describe("CRUD Test", () => {
             }
         });
 
-        // if this `until` resolves successfully, we know the deleted target was deleted from elasticsearch
+        // TODO: remove until
         await until(
             () =>
                 invoke({
@@ -231,7 +220,7 @@ describe("CRUD Test", () => {
         const [target2] = await createTarget(targetsData.target2);
         const [target3] = await createTarget(targetsData.target3);
 
-        // if this `until` resolves successfully, we know the deleted target was deleted from elasticsearch
+        // TODO: remove until
         await until(
             () =>
                 invoke({
@@ -285,7 +274,7 @@ describe("CRUD Test", () => {
         const [target2] = await createTarget(targetsData.target2);
         const [target3] = await createTarget(targetsData.target3);
 
-        // if this `until` resolves successfully, we know the deleted target was deleted from elasticsearch
+        // TODO: remove until
         await until(
             () =>
                 invoke({
@@ -339,7 +328,7 @@ describe("CRUD Test", () => {
         const [target2] = await createTarget(targetsData.target2);
         const [target3] = await createTarget(targetsData.target3);
 
-        // if this `until` resolves successfully, we know the deleted target was deleted from elasticsearch
+        // TODO: remove until
         await until(
             () =>
                 invoke({

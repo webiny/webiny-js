@@ -6,7 +6,6 @@ Contains basic data model with GraphQL queries and mutations to fetch and manipu
 
 ##### Files
 All the code is located under the `src` directory.
-- es.ts - Elasticsearch query helpers
 - graphql.ts - Schema definitions for your Target data model
 - index.ts - A `GraphQLSchemaPlugin` which connects the GraphQL schema and the resolvers.
 - types.ts - Type definitions used throughout the application
@@ -29,57 +28,11 @@ import targetPlugin from "packageName";
 targetPlugin()
 ```
 
-### Tests
-From the project root, run:
-```
-LOCAL_ELASTICSEARCH=true yarn test location
-```
-
-Also, you can change the Elasticsearch port by setting `LOCAL_ELASTICSEARCH` variable, like this:
-```
-ELASTICSEARCH_PORT=9200 LOCAL_ELASTICSEARCH=true yarn test location
-```
-
 ### Deploy the API
 To deploy the API, run the deploy command:
 ```
 yarn webiny deploy api --env=dev
 ```
-
-### Elasticsearch
-To create the Elasticsearch index, run the `install` mutation
-```
-mutation TargetsInstallMutation {
-    targets {
-        install {
-            data
-            error {
-                message
-                code
-                data
-            }
-        }
-    }
-}
-```
-in the API playground.
-
-To delete the Elasticsearch index, run the `uninstall` mutation
-```
-mutation TargetsUninstallMutation {
-    targets {
-        uninstall {
-            data
-            error {
-                message
-                code
-                data
-            }
-        }
-    }
-}
-```
-in the API playground.
 
 ### Learn more
 Learn more about scaffolding at https://docs.webiny.com/docs/tutorials/create-an-application/introduction

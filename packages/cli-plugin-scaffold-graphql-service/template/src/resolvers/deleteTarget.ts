@@ -42,17 +42,7 @@ const deleteTarget = async (
                 SK: id
             }
         },
-        /**
-         * Delete the DynamoDB target record in stream table.
-         * Can be removed if Elasticsearch is not used.
-         */
-        {
-            ...utils.esDb(context),
-            query: {
-                PK: primaryKey,
-                SK: id
-            }
-        }
+
     );
     /**
      * Try to delete the data from the DynamoDB. Fail with response if error happens.

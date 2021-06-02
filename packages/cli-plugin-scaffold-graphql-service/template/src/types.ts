@@ -3,7 +3,6 @@ import { DbContext } from "@webiny/handler-db/types";
 import { HttpContext } from "@webiny/handler-http/types";
 import { I18NContext } from "@webiny/api-i18n/types";
 import { BaseI18NContentContext } from "@webiny/api-i18n-content/types";
-import { ElasticSearchClientContext } from "@webiny/api-plugin-elastic-search-client/types";
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
 
 /**
@@ -15,7 +14,6 @@ export interface ApplicationContext
         HttpContext,
         I18NContext,
         BaseI18NContentContext,
-        ElasticSearchClientContext,
         TenancyContext {}
 
 interface ApplicationUtilsDbKeyField {
@@ -46,16 +44,6 @@ export interface ApplicationUtils {
      * Method to create the DynamoDB table configuration.
      */
     db: (context: ApplicationContext) => ApplicationUtilsDb;
-    /**
-     * Method to create the DynamoDB to Elasticsearch stream table configuration.
-     * Can be removed if Elasticsearch is not used.
-     */
-    esDb: (context: ApplicationContext) => ApplicationUtilsDb;
-    /**
-     * Method to create the Elasticsearch configuration.
-     * Can be removed if Elasticsearch is not used.
-     */
-    es: (context: ApplicationContext) => ApplicationUtilsEs;
     /**
      * Method to create the PrimaryKey for the Target in DynamoDB tables.
      */

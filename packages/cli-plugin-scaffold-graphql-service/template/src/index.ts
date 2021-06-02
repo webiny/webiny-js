@@ -5,8 +5,6 @@ import {
     getTarget,
     isInstalled,
     listTargets,
-    install,
-    uninstall,
     createTarget,
     updateTarget,
     deleteTarget
@@ -40,36 +38,18 @@ export default (): GraphQLSchemaPlugin<ApplicationContext> => ({
                  * Can be sorted with sort argument.
                  */
                 listTargets,
-                /**
-                 * Check if Elasticsearch index is created.
-                 * Can be removed if Elasticsearch will not be used.
-                 */
-                isInstalled
             },
             TargetMutation: {
                 /**
-                 * Create the Elasticsearch index.
-                 * Can be removed if Elasticsearch will not be used.
-                 */
-                install,
-                /**
-                 * Delete the Elasticsearch index.
-                 * Can be removed if Elasticsearch will not be used.
-                 */
-                uninstall,
-                /**
                  * Store a single target into the database.
-                 * It also stores into the Elasticsearch - if not removed.
                  */
                 createTarget,
                 /**
                  * Store a single existing target into the database.
-                 * It also stores into the Elasticsearch - if not removed.
                  */
                 updateTarget,
                 /**
                  * Delete a single existing target from the database.
-                 * It also deletes from the Elasticsearch - if not removed.
                  */
                 deleteTarget
             }
