@@ -272,7 +272,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         /**
          * Load ES entries to delete
          */
-        const [esDbItems] = await db.read({
+        const [esDbItems] = await db.read<CmsContentEntry>({
             ...configurations.esDb(),
             query: {
                 PK: primaryKey,
@@ -1105,7 +1105,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         entryId: string,
         version: number
     ): Promise<CmsContentEntry | null> {
-        return this.getSingleDynamoDbItem(
+        const entry = await this.getSingleDynamoDbItem(
             {
                 PK: this.getPrimaryKey(entryId),
                 SK: {
@@ -1116,6 +1116,13 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                 SK: -1
             }
         );
+        /**
+         * We need this due to possibly getting latest or published if given revision does not exist
+         */
+        if ((entry as any).TYPE !== TYPE_ENTRY) {
+            return null;
+        }
+        return entry;
     }
 
     private async getSingleDynamoDbItem(
