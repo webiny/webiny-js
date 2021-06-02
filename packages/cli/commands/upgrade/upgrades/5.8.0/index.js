@@ -1,41 +1,6 @@
 const tsMorph = require("ts-morph");
 const path = require("path");
-const loadJson = require("load-json-file");
-const writeJson = require("write-json-file");
-
-const addPackageToJson = targetPath => {
-    const file = `${targetPath}/package.json`;
-    const json = loadJson.sync(file);
-    if (!json) {
-        throw new Error(`There is no package.json file "${file}"`);
-    } else if (!json.dependencies) {
-        throw new Error(`There is no dependencies property in package.json "${file}"`);
-    }
-    json.dependencies["@webiny/api-headless-cms-ddb-es"] = "^5.8.0";
-
-    writeJson.sync(file, json);
-};
-
-const insertImport = (source, name, pkg) => {
-    const statements = source.getStatements();
-    /**
-     * In the code first we need to find the last import statement and insert new import after that
-     */
-    const lastImportStatement = statements.reduce((indexAt, statement, index) => {
-        if (statement.getKind() !== tsMorph.SyntaxKind.ImportDeclaration) {
-            return indexAt;
-        }
-        return index > indexAt ? index : indexAt;
-    }, -1);
-    if (lastImportStatement === -1) {
-        throw new Error(
-            `Could not find last import statement so we can insert new import "${name}"`
-        );
-    }
-
-    console.log(`Inserting import to position ${lastImportStatement + 1}`);
-    source.insertStatements(lastImportStatement + 1, `import ${name} from "${pkg}";`);
-};
+const { createMorphProject, insertImport, addPackageToDependencies } = require("../utils");
 
 const headlessCMS = "api/code/headlessCMS";
 const graphQL = "api/code/graphql";
@@ -71,12 +36,15 @@ module.exports = () => {
         async upgrade(options, context) {
             const { info, project } = context;
             /**
-             * Configurations or reusable variables
+             * Configurations
              */
             const headlessCmsPath = path.resolve(project.root, headlessCMS);
             const graphQLPath = path.resolve(project.root, graphQL);
             const headlessCmsIndexFilePath = `${headlessCmsPath}/src/index.ts`;
             const graphQlIndexFilePath = `${graphQLPath}/src/index.ts`;
+            const packages = {
+                "@webiny/api-headless-cms-ddb-es": "^5.8.0"
+            };
             /**
              * Headless CMS API upgrade
              */
@@ -85,12 +53,11 @@ module.exports = () => {
              * Add new package to the headless cms package.json file
              */
             console.log("Adding new package to the package.json file.");
-            addPackageToJson(headlessCmsPath);
+            addPackageToDependencies(headlessCmsPath, packages);
             /**
              * Update the index.ts file in the headless cms directory.
              */
-            const headlessCmsProject = new tsMorph.Project();
-            headlessCmsProject.addSourceFileAtPath(headlessCmsIndexFilePath);
+            const headlessCmsProject = createMorphProject([headlessCmsIndexFilePath]);
             const headlessCmsIndexSourceFile = headlessCmsProject.getSourceFileOrThrow(
                 headlessCmsIndexFilePath
             );
@@ -112,12 +79,11 @@ module.exports = () => {
              * Add new package to the graphql package.json file
              */
             console.log("Adding new package to the package.json file.");
-            addPackageToJson(graphQLPath);
+            addPackageToDependencies(graphQLPath, packages);
             /**
              * Update the index.ts file in the headless cms directory.
              */
-            const graphQlProject = new tsMorph.Project();
-            graphQlProject.addSourceFileAtPath(graphQlIndexFilePath);
+            const graphQlProject = createMorphProject([graphQlIndexFilePath]);
             const graphQlIndexSourceFile = graphQlProject.getSourceFileOrThrow(
                 graphQlIndexFilePath
             );
