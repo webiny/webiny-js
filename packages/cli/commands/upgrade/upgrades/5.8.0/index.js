@@ -44,7 +44,7 @@ module.exports = () => {
             const headlessCmsIndexFilePath = `${headlessCmsPath}/src/index.ts`;
             const graphQlIndexFilePath = `${graphQLPath}/src/index.ts`;
             const packages = {
-                "@webiny/api-headless-cms-ddb-es": "^dssa"
+                "@webiny/api-headless-cms-ddb-es": "^5.8.0"
             };
             /**
              * Headless CMS API upgrade
