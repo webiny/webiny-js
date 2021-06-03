@@ -28,10 +28,10 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
     if (context.cms.MANAGE) {
         manageSchema = /* GraphQL */ `
             input CmsContentModelGroupInput {
-                name: String
+                name: String!
                 slug: String
                 description: String
-                icon: String
+                icon: String!
             }
 
             type CmsContentModelGroupResponse {
@@ -132,16 +132,16 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
         schema: {
             typeDefs: /* GraphQL */ `
                 type CmsContentModelGroup {
-                    id: ID
-                    createdOn: DateTime
-                    savedOn: DateTime
-                    name: String
-                    contentModels: [CmsContentModel]
-                    totalContentModels: Int
-                    slug: String
+                    id: ID!
+                    createdOn: DateTime!
+                    savedOn: DateTime!
+                    name: String!
+                    contentModels: [CmsContentModel!]
+                    totalContentModels: Int!
+                    slug: String!
                     description: String
                     icon: String
-                    createdBy: JSON
+                    createdBy: CmsCreatedBy!
                 }
                 ${manageSchema}
             `,

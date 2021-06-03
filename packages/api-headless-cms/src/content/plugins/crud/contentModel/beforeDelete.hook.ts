@@ -1,10 +1,15 @@
-import { CmsContentModel, CmsContext } from "../../../../types";
+import {
+    CmsContentModelHookPluginArgs,
+    CmsContentModelStorageOperations,
+    CmsContentModelStorageOperationsBeforeDeleteArgs,
+    CmsContext
+} from "../../../../types";
 import WebinyError from "@webiny/error";
 import { runContentModelLifecycleHooks } from "./runContentModelLifecycleHooks";
 
-interface Args {
+interface Args extends CmsContentModelStorageOperationsBeforeDeleteArgs {
     context: CmsContext;
-    model: CmsContentModel;
+    storageOperations: CmsContentModelStorageOperations;
 }
 
 export const beforeDeleteHook = async (args: Args) => {
@@ -32,5 +37,8 @@ export const beforeDeleteHook = async (args: Args) => {
             "CONTENT_MODEL_BEFORE_DELETE_HOOK_FAILED"
         );
     }
-    await runContentModelLifecycleHooks("beforeDelete", args);
+    if (args.storageOperations.beforeDelete) {
+        await args.storageOperations.beforeDelete(args);
+    }
+    await runContentModelLifecycleHooks<CmsContentModelHookPluginArgs>("beforeDelete", args);
 };

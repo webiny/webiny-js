@@ -50,9 +50,7 @@ describe("content model test", () => {
     const readHandlerOpts = { path: "read/en-US" };
     const manageHandlerOpts = { path: "manage/en-US" };
 
-    const { clearAllIndex, createContentModelGroupMutation } = useContentGqlHandler(
-        manageHandlerOpts
-    );
+    const { createContentModelGroupMutation } = useContentGqlHandler(manageHandlerOpts);
 
     let contentModelGroup: CmsContentModelGroup;
 
@@ -66,19 +64,8 @@ describe("content model test", () => {
             }
         });
         contentModelGroup = createCMG.data.createContentModelGroup.data;
-        try {
-            await clearAllIndex();
-        } catch {
-            // Ignore errors
-        }
         // we need to reset this since we are using a singleton
         hooksTracker.reset();
-    });
-
-    afterEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {}
     });
 
     test("base schema should only contain relevant queries and mutations", async () => {
@@ -314,8 +301,8 @@ describe("content model test", () => {
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         await until(
             () => listCategories().then(([data]) => data),
-            ({ data }) => data.listCategories.data.length === 1,
-            { name: "list categories to check ES has indexed newly created" }
+            ({ data }) => data.listCategories.data.length > 0,
+            { name: "list categories to check that categories are available" }
         );
 
         const [response] = await deleteContentModelMutation({

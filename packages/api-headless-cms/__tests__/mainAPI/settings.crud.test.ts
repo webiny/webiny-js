@@ -15,21 +15,9 @@ describe("Settings crud test", () => {
         ...manageOpts
     });
 
-    const {
-        clearAllIndex,
-        isInstalledQuery,
-        installMutation: installMutationNoPermission
-    } = useAdminGqlHandler({
+    const { isInstalledQuery, installMutation: installMutationNoPermission } = useAdminGqlHandler({
         ...manageOpts,
         permissions: []
-    });
-
-    beforeEach(async () => {
-        await clearAllIndex();
-    });
-
-    afterEach(async () => {
-        await clearAllIndex();
     });
 
     test("cms is not installed yet", async () => {
@@ -132,7 +120,14 @@ describe("Settings crud test", () => {
                         error: {
                             code: "CMS_INSTALLATION_CONTENT_MODEL_GROUP_ERROR",
                             message: "Not authorized!",
-                            data: null
+                            data: {
+                                group: {
+                                    description: "A generic content model group",
+                                    icon: "fas/star",
+                                    name: "Ungrouped",
+                                    slug: "ungrouped"
+                                }
+                            }
                         }
                     }
                 }

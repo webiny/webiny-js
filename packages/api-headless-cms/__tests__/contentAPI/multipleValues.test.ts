@@ -8,7 +8,6 @@ describe("multiple values in field", () => {
     const manageOpts = { path: "manage/en-US" };
 
     const {
-        clearAllIndex,
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
@@ -53,18 +52,6 @@ describe("multiple values in field", () => {
         });
         return update.data.updateContentModel.data;
     };
-
-    beforeEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {}
-    });
-
-    afterEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {}
-    });
 
     test("multiple value field is correctly created", async () => {
         const contentModelGroup = await setupContentModelGroup();

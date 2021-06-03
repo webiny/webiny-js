@@ -1,6 +1,10 @@
-import { CmsContentEntryHookPluginArgs } from "../../../../types";
 import { runContentEntryLifecycleHooks } from "./runContentEntryLifecycleHooks";
-
-export const beforePublishHook = async (args: CmsContentEntryHookPluginArgs): Promise<void> => {
+import { CmsContentEntryBeforePublishHookArgs } from "../../../../types";
+export const beforePublishHook = async (
+    args: CmsContentEntryBeforePublishHookArgs
+): Promise<void> => {
+    // if (args.storageOperations.beforePublish) {
+    //     await args.storageOperations.beforePublish(args.model, args);
+    // }
     await runContentEntryLifecycleHooks("beforePublish", args);
 };

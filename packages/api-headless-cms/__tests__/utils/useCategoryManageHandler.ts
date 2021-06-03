@@ -4,6 +4,7 @@ import { Plugin } from "@webiny/plugins/types";
 
 const categoryFields = `
     id
+    entryId
     createdOn
     createdBy {
         id

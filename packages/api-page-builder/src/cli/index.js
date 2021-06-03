@@ -1,9 +1,8 @@
 const LambdaClient = require("aws-sdk/clients/lambda");
 const getStackOutput = require("@webiny/cli-plugin-deploy-pulumi/utils/getStackOutput");
-const S3Client = require("aws-sdk/clients/s3");
+const uploadFolderToS3 = require("@webiny/cli-plugin-deploy-pulumi/utils/aws/uploadFolderToS3");
 const path = require("path");
 const fs = require("fs");
-const mime = require("mime");
 
 module.exports = () => [
     {
@@ -74,19 +73,16 @@ module.exports = () => [
                 return;
             }
 
-            /*if (args.inputs.build === false) {
+            if (args.inputs.build === false) {
                 context.info(
                     `"--no-build" argument detected - skipping React application upload and prerendering.`
                 );
                 return;
-            }*/
+            }
 
             context.info("Uploading React application...");
             // 1. Get exports from `site` stack, for `args.env` environment.
             const websiteOutput = await getStackOutput("apps/website", args.env);
-
-            // Create an Amazon S3 service client object.
-            const s3 = new S3Client({ region: process.env.AWS_REGION });
 
             let webContentsRootPath = path.join(process.cwd(), "apps", "website", "code", "build");
 
@@ -98,22 +94,26 @@ module.exports = () => [
                 throw new Error("Cannot continue, build folder not found.");
             }
 
-            await crawlDirectory(webContentsRootPath, async filePath => {
-                const relativeFilePath = filePath.replace(webContentsRootPath + "/", "");
+            const start = new Date();
+            const getDuration = () => {
+                return (new Date() - start) / 1000;
+            };
 
-                await s3
-                    .putObject({
-                        Bucket: websiteOutput.appStorage,
-                        Key: relativeFilePath,
-                        ACL: "public-read",
-                        ContentType: mime.getType(filePath) || undefined,
-                        Body: fs.readFileSync(filePath)
-                    })
-                    .promise();
-                context.success(relativeFilePath);
+            await uploadFolderToS3({
+                path: webContentsRootPath,
+                bucket: websiteOutput.appStorage,
+                onFileUploadSuccess: ({ paths }) => {
+                    context.success(paths.relative);
+                },
+                onFileUploadError: ({ paths, error }) => {
+                    context.error("Failed to upload " + context.error.hl(paths.relative));
+                    console.log(error);
+                }
             });
 
-            context.success("React application uploaded.");
+            context.success(
+                `React application successfully uploaded in ${context.success.hl(getDuration())}s.`
+            );
 
             // 2. Get exports from `site` stack, for `args.env` environment.
             const apiOutput = await getStackOutput("api", args.env);
@@ -164,18 +164,3 @@ module.exports = () => [
         }
     }
 ];
-
-const crawlDirectory = async (dir, upload) => {
-    const files = fs.readdirSync(dir);
-    for (const file of files) {
-        const filePath = `${dir}/${file}`;
-        const stat = fs.statSync(filePath);
-        if (stat.isDirectory()) {
-            await crawlDirectory(filePath, upload);
-        }
-
-        if (stat.isFile()) {
-            await upload(filePath);
-        }
-    }
-};

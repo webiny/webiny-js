@@ -65,6 +65,12 @@ const baseSchema = (context: CmsContext): GraphQLSchemaPlugin => {
                     displayName: String
                     type: String
                 }
+
+                type CmsOwnedBy {
+                    id: String
+                    displayName: String
+                    type: String
+                }
             `,
             resolvers: {
                 ...scalars.reduce((acc, s) => {

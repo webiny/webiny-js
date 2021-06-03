@@ -1,0 +1,21 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "exclude": [
+    "node_modules",
+    "../api-headless-cms",
+    "../handler-db",
+    "../db-dynamodb",
+    "../error",
+    "../plugins",
+    "./jest.config.js"
+  ],
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "declarationDir": "dist",
+    "paths": {},
+    "baseUrl": "."
+  },
+  "references": []
+}

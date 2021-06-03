@@ -1,9 +1,8 @@
 import { ListPagesArgs, PbContext } from "../../types";
-import { ElasticsearchBoolQuery } from "@webiny/api-plugin-elastic-search-client/types";
+import { ElasticsearchBoolQueryConfig } from "@webiny/api-plugin-elastic-search-client/types";
 
 /**
  * Returns arguments suited to be sent to ElasticSearch's `search` method.
- * @param args
  */
 export default (args: ListPagesArgs, context: PbContext) => {
     const normalized = {
@@ -18,12 +17,13 @@ export default (args: ListPagesArgs, context: PbContext) => {
     return normalized;
 };
 
-const getQuery = (args: ListPagesArgs, context: PbContext): ElasticsearchBoolQuery => {
+const getQuery = (args: ListPagesArgs, context: PbContext): ElasticsearchBoolQueryConfig => {
     const { where, search, exclude } = args;
-    const query: ElasticsearchBoolQuery = {
+    const query: ElasticsearchBoolQueryConfig = {
         filter: [],
         must: [],
-        mustNot: []
+        must_not: [],
+        should: []
     };
 
     // When ES index is shared between tenants, we need to filter records by tenant ID
@@ -84,7 +84,7 @@ const getQuery = (args: ListPagesArgs, context: PbContext): ElasticsearchBoolQue
         });
 
         if (paths.length) {
-            query.mustNot.push({
+            query.must_not.push({
                 terms: {
                     "path.keyword": paths
                 }
@@ -92,7 +92,7 @@ const getQuery = (args: ListPagesArgs, context: PbContext): ElasticsearchBoolQue
         }
 
         if (pageIds.length) {
-            query.mustNot.push({
+            query.must_not.push({
                 terms: {
                     pid: pageIds
                 }

@@ -15,7 +15,7 @@ class Delivery {
 
         this.cloudfront = new aws.cloudfront.Distribution("delivery", {
             enabled: true,
-            waitForDeployment: true,
+            waitForDeployment: false,
             origins: [
                 {
                     originId: this.bucket.arn,

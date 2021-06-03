@@ -4,8 +4,6 @@ const execa = require("execa");
 const { loadEnvVariables, getPulumi, processHooks, login, notify } = require("../utils");
 const { getProjectApplication } = require("@webiny/cli/utils");
 
-const SECRETS_PROVIDER = process.env.PULUMI_SECRETS_PROVIDER;
-
 module.exports = async (inputs, context) => {
     const { env, folder, build } = inputs;
 
@@ -31,8 +29,10 @@ module.exports = async (inputs, context) => {
         return (new Date() - start) / 1000;
     };
 
-    // Get project application metadata.
+    // Get project application metadata. Will throw an error if invalid folder specified.
     const projectApplication = getProjectApplication({ cwd: path.join(process.cwd(), folder) });
+
+    await loadEnvVariables(inputs, context);
 
     if (build) {
         await execa(
@@ -55,9 +55,11 @@ module.exports = async (inputs, context) => {
         );
     }
 
-    await loadEnvVariables(inputs, context);
+    const PULUMI_SECRETS_PROVIDER = process.env.PULUMI_SECRETS_PROVIDER;
+    const PULUMI_CONFIG_PASSPHRASE = process.env.PULUMI_CONFIG_PASSPHRASE;
 
     await login(projectApplication);
+
     const pulumi = await getPulumi({
         execa: {
             cwd: projectApplication.root
@@ -66,27 +68,31 @@ module.exports = async (inputs, context) => {
 
     let stackExists = true;
     try {
-        await pulumi.run(
-            { command: ["stack", "select", env] },
-            {
-                args: {
-                    secretsProvider: SECRETS_PROVIDER
+        await pulumi.run({
+            command: ["stack", "select", env],
+            args: {
+                secretsProvider: PULUMI_SECRETS_PROVIDER
+            },
+            execa: {
+                env: {
+                    PULUMI_CONFIG_PASSPHRASE
                 }
             }
-        );
+        });
     } catch (e) {
         stackExists = false;
     }
 
     if (!stackExists) {
-        await pulumi.run(
-            { command: ["stack", "init", env] },
-            {
-                args: {
-                    secretsProvider: SECRETS_PROVIDER
-                }
+        await pulumi.run({
+            command: ["stack", "init", env],
+            args: {
+                secretsProvider: PULUMI_SECRETS_PROVIDER
+            },
+            execa: {
+                env: { PULUMI_CONFIG_PASSPHRASE }
             }
-        );
+        });
     }
 
     const isFirstDeploy = !stackExists;
@@ -110,12 +116,15 @@ module.exports = async (inputs, context) => {
             command: "preview",
             args: {
                 debug: inputs.debug
+                // Preview command does not accept "--secrets-provider" argument.
+                // secretsProvider: PULUMI_SECRETS_PROVIDER
             },
             execa: {
                 stdio: "inherit",
                 env: {
                     WEBINY_ENV: env,
-                    WEBINY_PROJECT_NAME: context.project.name
+                    WEBINY_PROJECT_NAME: context.project.name,
+                    PULUMI_CONFIG_PASSPHRASE
                 }
             }
         });
@@ -125,7 +134,7 @@ module.exports = async (inputs, context) => {
             args: {
                 yes: true,
                 skipPreview: true,
-                secretsProvider: SECRETS_PROVIDER,
+                secretsProvider: PULUMI_SECRETS_PROVIDER,
                 debug: inputs.debug
             },
             execa: {
@@ -134,7 +143,8 @@ module.exports = async (inputs, context) => {
                 stdio: ["inherit", "inherit", "pipe"],
                 env: {
                     WEBINY_ENV: env,
-                    WEBINY_PROJECT_NAME: context.project.name
+                    WEBINY_PROJECT_NAME: context.project.name,
+                    PULUMI_CONFIG_PASSPHRASE
                 }
             }
         });

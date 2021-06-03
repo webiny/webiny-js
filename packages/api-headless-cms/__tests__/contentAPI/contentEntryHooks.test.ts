@@ -10,7 +10,6 @@ describe("contentEntryHooks", () => {
     const manageOpts = { path: "manage/en-US" };
 
     const {
-        clearAllIndex,
         createContentModelMutation,
         updateContentModelMutation,
         createContentModelGroupMutation
@@ -60,16 +59,7 @@ describe("contentEntryHooks", () => {
 
     beforeEach(async () => {
         await setupContentModel();
-        try {
-            await clearAllIndex();
-        } catch {}
         hooksTracker.reset();
-    });
-
-    afterEach(async () => {
-        try {
-            await clearAllIndex();
-        } catch {}
     });
 
     test("should execute hooks on create", async () => {
@@ -208,9 +198,12 @@ describe("contentEntryHooks", () => {
     });
 
     test("should execute hooks on delete revision", async () => {
-        const { createCategory, deleteCategory } = useCategoryManageHandler(manageOpts, [
-            contentEntryHooks()
-        ]);
+        const {
+            createCategory,
+            createCategoryFrom,
+            deleteCategory,
+            sleep
+        } = useCategoryManageHandler(manageOpts, [contentEntryHooks()]);
 
         const [createResponse] = await createCategory({
             data: {
@@ -220,6 +213,14 @@ describe("contentEntryHooks", () => {
         });
 
         const { id } = createResponse.data.createCategory.data;
+
+        // create another category
+        await createCategoryFrom({
+            revision: id
+        });
+
+        // wait for data to be come available
+        await sleep(1000);
 
         hooksTracker.reset();
 
@@ -257,7 +258,7 @@ describe("contentEntryHooks", () => {
     });
 
     test("should execute hooks on delete whole entry and its versions", async () => {
-        const { createCategory, deleteCategory } = useCategoryManageHandler(manageOpts, [
+        const { createCategory, deleteCategory, sleep } = useCategoryManageHandler(manageOpts, [
             contentEntryHooks()
         ]);
 
@@ -267,6 +268,8 @@ describe("contentEntryHooks", () => {
                 slug: "category"
             }
         });
+
+        await sleep(2000);
 
         const { id: revisionId } = createResponse.data.createCategory.data;
 

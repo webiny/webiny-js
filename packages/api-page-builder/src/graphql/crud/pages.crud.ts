@@ -257,7 +257,8 @@ const plugin: ContextPlugin<PbContext> = {
                             query: {
                                 bool: {
                                     must: query.must.length > 0 ? query.must : undefined,
-                                    must_not: query.mustNot.length > 0 ? query.mustNot : undefined,
+                                    must_not:
+                                        query.must_not.length > 0 ? query.must_not : undefined,
                                     filter: query.filter.length > 0 ? query.filter : undefined
                                 }
                             },
@@ -306,7 +307,8 @@ const plugin: ContextPlugin<PbContext> = {
                             query: {
                                 bool: {
                                     must: query.must.length > 0 ? query.must : undefined,
-                                    must_not: query.mustNot.length > 0 ? query.mustNot : undefined,
+                                    must_not:
+                                        query.must_not.length > 0 ? query.must_not : undefined,
                                     filter: query.filter.length > 0 ? query.filter : undefined
                                 }
                             },
