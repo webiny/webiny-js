@@ -32,6 +32,10 @@
     "write-json-file": "4.3.0",
     "yargs": "14.2.3"
   },
+  "devDependencies": {
+    "@webiny/handler": "^5.7.0",
+    "@webiny/plugins": "^5.7.0"
+  },
   "license": "MIT",
   "publishConfig": {
     "access": "public",
