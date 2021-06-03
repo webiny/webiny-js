@@ -2,16 +2,24 @@ const tsMorph = require("ts-morph");
 const fs = require("fs");
 const loadJson = require("load-json-file");
 const writeJson = require("write-json-file");
+const semverCoerce = require("semver/functions/coerce");
 
 const insertImport = (source, name, pkg) => {
     const statements = source.getStatements();
+    let importAlreadyExists = false;
     const lastImportStatement = statements.reduce((indexAt, statement, index) => {
         if (statement.getKind() !== tsMorph.SyntaxKind.ImportDeclaration) {
             return indexAt;
         }
+        const importedPackageName = statement.compilerNode.moduleSpecifier.text;
+        if (importedPackageName === pkg) {
+            importAlreadyExists = true;
+        }
         return index > indexAt ? index : indexAt;
     }, -1);
-    if (lastImportStatement === -1) {
+    if (importAlreadyExists) {
+        throw new Error(`Package "${pkg}" is already imported.`);
+    } else if (lastImportStatement === -1) {
         throw new Error(
             `Could not find last import statement so we can insert new import "${name}"`
         );
@@ -25,24 +33,24 @@ const insertImport = (source, name, pkg) => {
  * @param targetPath {string}
  * @param packages {object}
  */
-const addPackageToDependencies = (targetPath, packages) => {
-    addPackageToDeps("dependencies", targetPath, packages);
+const addPackagesToDependencies = (targetPath, packages) => {
+    addPackagesToDeps("dependencies", targetPath, packages);
 };
 /**
  *
  * @param targetPath {string}
  * @param packages {object}
  */
-const addPackageToDevDependencies = (targetPath, packages) => {
-    addPackageToDeps("devDependencies", targetPath, packages);
+const addPackagesToDevDependencies = (targetPath, packages) => {
+    addPackagesToDeps("devDependencies", targetPath, packages);
 };
 /**
  *
  * @param targetPath {string}
  * @param packages {object}
  */
-const addPackageToPeerDependencies = (targetPath, packages) => {
-    addPackageToDeps("peerDependencies", targetPath, packages);
+const addPackagesToPeerDependencies = (targetPath, packages) => {
+    addPackagesToDeps("peerDependencies", targetPath, packages);
 };
 /**
  *
@@ -51,7 +59,7 @@ const addPackageToPeerDependencies = (targetPath, packages) => {
  * @param packages {object}
  */
 const allowedPackageDependencyTypes = ["dependencies", "devDependencies", "peerDependencies"];
-const addPackageToDeps = (type, targetPath, packages) => {
+const addPackagesToDeps = (type, targetPath, packages) => {
     if (!allowedPackageDependencyTypes.includes(type)) {
         throw new Error(`Package dependency type "${type}" is not valid.`);
     }
@@ -68,7 +76,14 @@ const addPackageToDeps = (type, targetPath, packages) => {
         if (!packages.hasOwnProperty(pkg)) {
             continue;
         }
-        dependencies[pkg] = packages[pkg];
+        const version = packages[pkg];
+        const coerced = semverCoerce(version);
+        if (!coerced) {
+            throw new Error(
+                `Package "${pkg}" version is not a valid semver version: "${version}".`
+            );
+        }
+        dependencies[pkg] = version;
     }
     json[type] = dependencies;
 
@@ -85,8 +100,8 @@ const createMorphProject = files => {
 
 module.exports = {
     insertImport,
-    addPackageToDependencies,
-    addPackageToDevDependencies,
-    addPackageToPeerDependencies,
+    addPackagesToDependencies,
+    addPackagesToDevDependencies,
+    addPackagesToPeerDependencies,
     createMorphProject
 };

@@ -1,6 +1,7 @@
 const tsMorph = require("ts-morph");
 const path = require("path");
-const { createMorphProject, insertImport, addPackageToDependencies } = require("../utils");
+const execa = require("execa");
+const { createMorphProject, insertImport, addPackagesToDependencies } = require("../utils");
 
 const headlessCMS = "api/code/headlessCMS";
 const graphQL = "api/code/graphql";
@@ -34,7 +35,7 @@ module.exports = () => {
             return true;
         },
         async upgrade(options, context) {
-            const { info, project } = context;
+            const { info, warning, project } = context;
             /**
              * Configurations
              */
@@ -43,17 +44,17 @@ module.exports = () => {
             const headlessCmsIndexFilePath = `${headlessCmsPath}/src/index.ts`;
             const graphQlIndexFilePath = `${graphQLPath}/src/index.ts`;
             const packages = {
-                "@webiny/api-headless-cms-ddb-es": "^5.8.0"
+                "@webiny/api-headless-cms-ddb-es": "^dssa"
             };
             /**
              * Headless CMS API upgrade
              */
-            console.log(info.hl("Step 1: Headless CMS API upgrade"));
+            console.log(info.hl("Step 1 of 3: Headless CMS API upgrade"));
             /**
              * Add new package to the headless cms package.json file
              */
             console.log("Adding new package to the package.json file.");
-            addPackageToDependencies(headlessCmsPath, packages);
+            addPackagesToDependencies(headlessCmsPath, packages);
             /**
              * Update the index.ts file in the headless cms directory.
              */
@@ -74,12 +75,12 @@ module.exports = () => {
             /**
              * GraphQL API upgrade
              */
-            console.log(info.hl("Step 2: GraphQL API upgrade"));
+            console.log(info.hl("Step 2 of 3: GraphQL API upgrade"));
             /**
              * Add new package to the graphql package.json file
              */
             console.log("Adding new package to the package.json file.");
-            addPackageToDependencies(graphQLPath, packages);
+            addPackagesToDependencies(graphQLPath, packages);
             /**
              * Update the index.ts file in the headless cms directory.
              */
@@ -97,6 +98,17 @@ module.exports = () => {
             graphQlIndexSourceFile.forEachDescendant(traverseAndAddNewPlugin);
             console.log("Saving GraphQL index.ts file.");
             await graphQlIndexSourceFile.save();
+
+            /**
+             * Run yarn to install new package
+             */
+            try {
+                console.log(info.hl("Step 3 of 3: Installing new packages."));
+                await execa("yarn");
+            } catch (ex) {
+                console.log(warning.hl("Install of new packages failed."));
+                console.log(warning(ex.message));
+            }
         }
     };
 };
