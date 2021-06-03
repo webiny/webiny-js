@@ -34,6 +34,7 @@ export const LIST_MENU_CONTENT_GROUPS_MODELS = gql`
                     createdBy {
                         id
                         displayName
+                        type
                     }
                 }
             }
@@ -46,10 +47,11 @@ export const LIST_CONTENT_MODELS = gql`
         listContentModels {
             data {
                 ${BASE_CONTENT_MODEL_FIELDS}
-                    createdBy {
-                        id
-                        displayName
-                    }
+                createdBy {
+                    id
+                    displayName
+                    type
+                }
             }
         }
     }

@@ -1,6 +1,6 @@
 import { elasticsearchOperatorBetweenPlugin } from "../../../../src/elasticsearch/operators/between";
 import { createBlankQuery } from "../helpers";
-import { ElasticsearchQuery } from "../../../../src/types";
+import { ElasticsearchBoolQueryConfig } from "@webiny/api-plugin-elastic-search-client/types";
 
 describe("elasticsearchOperatorBetweenPlugin", () => {
     const plugin = elasticsearchOperatorBetweenPlugin();
@@ -14,8 +14,8 @@ describe("elasticsearchOperatorBetweenPlugin", () => {
             context
         });
 
-        const expected: ElasticsearchQuery = {
-            mustNot: [],
+        const expected: ElasticsearchBoolQueryConfig = {
+            must_not: [],
             must: [
                 {
                     range: {
@@ -26,7 +26,7 @@ describe("elasticsearchOperatorBetweenPlugin", () => {
                     }
                 }
             ],
-            match: [],
+            filter: [],
             should: []
         };
 
@@ -50,8 +50,8 @@ describe("elasticsearchOperatorBetweenPlugin", () => {
             context
         });
 
-        const expected: ElasticsearchQuery = {
-            mustNot: [],
+        const expected: ElasticsearchBoolQueryConfig = {
+            must_not: [],
             must: [
                 {
                     range: {
@@ -64,13 +64,13 @@ describe("elasticsearchOperatorBetweenPlugin", () => {
                 {
                     range: {
                         date: {
-                            lte: to,
-                            gte: from
+                            lte: to as any,
+                            gte: from as any
                         }
                     }
                 }
             ],
-            match: [],
+            filter: [],
             should: []
         };
         expect(query).toEqual(expected);

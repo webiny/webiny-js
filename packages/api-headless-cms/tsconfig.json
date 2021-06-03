@@ -43,12 +43,6 @@
     },
     {
       "path": "../validation"
-    },
-    {
-      "path": "../api-dynamodb-to-elasticsearch"
-    },
-    {
-      "path": "../api-plugin-elastic-search-client"
     }
   ],
   "compilerOptions": {
@@ -80,11 +74,7 @@
       "@webiny/plugins/*": ["../plugins/src/*"],
       "@webiny/plugins": ["../plugins/src"],
       "@webiny/validation/*": ["../validation/src/*"],
-      "@webiny/validation": ["../validation/src"],
-      "@webiny/api-plugin-elastic-search-client/*": ["../api-plugin-elastic-search-client/src/*"],
-      "@webiny/api-plugin-elastic-search-client": ["../api-plugin-elastic-search-client/src"],
-      "@webiny/api-dynamodb-to-elasticsearch/*": ["../api-dynamodb-to-elasticsearch/src/*"],
-      "@webiny/api-dynamodb-to-elasticsearch": ["../api-dynamodb-to-elasticsearch/src"]
+      "@webiny/validation": ["../validation/src"]
     },
     "baseUrl": "."
   }

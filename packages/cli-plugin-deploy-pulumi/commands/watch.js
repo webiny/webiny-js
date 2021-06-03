@@ -12,18 +12,25 @@ const browserOutput = require("./watch/output/browserOutput");
 const terminalOutput = require("./watch/output/terminalOutput");
 const minimatch = require("minimatch");
 
-const SECRETS_PROVIDER = process.env.PULUMI_SECRETS_PROVIDER;
-
 module.exports = async (inputs, context) => {
+    // 1. Initial checks for deploy and build commands.
+    if (!inputs.folder && !inputs.package) {
+        throw new Error(
+            `Either "folder" or "package" arguments must be passed. Cannot have both undefined.`
+        );
+    }
+
     let projectApplication;
     if (inputs.folder) {
-        // Get project application metadata.
+        // Get project application metadata. Will throw an error if invalid folder specified.
         projectApplication = getProjectApplication({
             cwd: path.join(process.cwd(), inputs.folder)
         });
 
         // If exists - read default inputs from "webiny.application.js" file.
         inputs = merge({}, get(projectApplication, "config.cli.watch"), inputs);
+
+        await loadEnvVariables(inputs, context);
     }
 
     inputs.build = inputs.build !== false;
@@ -33,27 +40,21 @@ module.exports = async (inputs, context) => {
         throw new Error(`Please specify environment, for example "dev".`);
     }
 
+    if (!inputs.build && !inputs.deploy) {
+        throw new Error(`Both re-build and re-deploy actions were disabled, can't continue.`);
+    }
+
     if (inputs.deploy) {
         if (typeof inputs.logs === "string" && inputs.logs === "") {
             inputs.logs = "*";
         }
     }
 
-    // 1. Initial checks for deploy and build commands.
-    if (!inputs.build && !inputs.deploy) {
-        throw new Error(`Both re-build and re-deploy actions were disabled, can't continue.`);
-    }
-
-    if (!inputs.folder && !inputs.package) {
-        throw new Error(
-            `Either "folder" or "package" arguments must be passed. Cannot have both undefined.`
-        );
-    }
-
     // 1.1. Check if the project application and Pulumi stack exist.
-    if (inputs.deploy) {
-        await loadEnvVariables(inputs, context);
+    let PULUMI_SECRETS_PROVIDER = process.env.PULUMI_SECRETS_PROVIDER;
+    let PULUMI_CONFIG_PASSPHRASE = process.env.PULUMI_CONFIG_PASSPHRASE;
 
+    if (inputs.deploy && projectApplication) {
         const { env } = inputs;
 
         await login(projectApplication);
@@ -66,14 +67,17 @@ module.exports = async (inputs, context) => {
 
         let stackExists = true;
         try {
-            await pulumi.run(
-                { command: ["stack", "select", env] },
-                {
-                    args: {
-                        secretsProvider: SECRETS_PROVIDER
+            await pulumi.run({
+                command: ["stack", "select", env],
+                args: {
+                    secretsProvider: PULUMI_SECRETS_PROVIDER
+                },
+                execa: {
+                    env: {
+                        PULUMI_CONFIG_PASSPHRASE
                     }
                 }
-            );
+            });
         } catch (e) {
             stackExists = false;
         }
@@ -137,7 +141,7 @@ module.exports = async (inputs, context) => {
         }
 
         // Add deploy logs.
-        if (inputs.deploy) {
+        if (inputs.deploy && projectApplication) {
             output.log({
                 type: "deploy",
                 message: chalk.green("Watching cloud infrastructure resources...")
@@ -152,7 +156,7 @@ module.exports = async (inputs, context) => {
             const watchCloudInfrastructure = pulumi.run({
                 command: "watch",
                 args: {
-                    secretsProvider: SECRETS_PROVIDER,
+                    secretsProvider: PULUMI_SECRETS_PROVIDER,
                     color: "always"
                 },
                 execa: {

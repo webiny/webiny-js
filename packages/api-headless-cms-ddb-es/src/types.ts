@@ -6,135 +6,10 @@ import {
     CmsContentModelField,
     CmsContext
 } from "@webiny/api-headless-cms/types";
-
-/**
- * Definitions of possible Elasticsearch operators.
- *
- * @category Elasticsearch
- */
-export type ElasticsearchQueryOperator =
-    | "eq"
-    | "not"
-    | "in"
-    | "not_in"
-    | "contains"
-    | "not_contains"
-    | "between"
-    | "not_between"
-    | "gt"
-    | "gte"
-    | "lt"
-    | "lte";
-/**
- * A definition for Elasticsearch range keyword.
- *
- * @category Elasticsearch
- */
-type ElasticsearchQueryRangeParam = {
-    [key: string]: {
-        gt?: string | number | Date;
-        gte?: string | number | Date;
-        lt?: string | number | Date;
-        lte?: string | number | Date;
-    };
-};
-/**
- * A definition for Elasticsearch query string.
- *
- * @category Elasticsearch
- */
-type ElasticsearchQueryQueryParam = {
-    allow_leading_wildcard?: boolean;
-    fields: string[];
-    query: string;
-};
-/**
- * A definition for Elasticsearch simple query string.
- *
- * @category Elasticsearch
- */
-type ElasticsearchQuerySimpleQueryParam = {
-    fields: string[];
-    query: string;
-};
-/**
- * A definition for Elasticsearch must keyword.
- *
- * @category Elasticsearch
- */
-type ElasticsearchQueryMustParam = {
-    term?: {
-        [key: string]: any;
-    };
-    terms?: {
-        [key: string]: any[];
-    };
-    range?: ElasticsearchQueryRangeParam;
-    query_string?: ElasticsearchQueryQueryParam;
-    simple_query_string?: ElasticsearchQuerySimpleQueryParam;
-};
-/**
- * A definition for Elasticsearch must_not keyword.
- *
- * @category Elasticsearch
- */
-type ElasticsearchQueryMustNotParam = {
-    term?: {
-        [key: string]: any;
-    };
-    terms?: {
-        [key: string]: any[];
-    };
-    range?: ElasticsearchQueryRangeParam;
-    query_string?: ElasticsearchQueryQueryParam;
-    simple_query_string?: ElasticsearchQuerySimpleQueryParam;
-};
-/**
- * A definition for Elasticsearch match keyword.
- *
- * @category Elasticsearch
- */
-type ElasticsearchQueryMatchParam = {
-    [key: string]: {
-        query: string;
-        // OR is default one in ES
-        operator?: "AND" | "OR";
-    };
-};
-/**
- * A definition for Elasticsearch should keyword.
- *
- * @category Elasticsearch
- */
-type ElasticsearchQueryShouldParam = {
-    term: {
-        [key: string]: any;
-    };
-};
-
-/**
- * Definition for Elasticsearch query.
- *
- * @category Elasticsearch
- */
-export interface ElasticsearchQuery {
-    /**
-     * A must part of the query.
-     */
-    must: ElasticsearchQueryMustParam[];
-    /**
-     * A mustNot part of the query.
-     */
-    mustNot: ElasticsearchQueryMustNotParam[];
-    /**
-     * A match part of the query.
-     */
-    match: ElasticsearchQueryMatchParam[];
-    /**
-     * A should part of the query.
-     */
-    should: ElasticsearchQueryShouldParam[];
-}
+import {
+    ElasticsearchBoolQueryConfig,
+    ElasticsearchQueryOperator
+} from "@webiny/api-plugin-elastic-search-client/types";
 
 /**
  * Definition for arguments of the ElasticsearchQueryBuilderPlugin.apply method.
@@ -158,7 +33,7 @@ export interface ElasticsearchQueryBuilderArgsPlugin {
  * @see ElasticsearchQueryPlugin.modify
  */
 interface ElasticsearchQueryPluginArgs {
-    query: ElasticsearchQuery;
+    query: ElasticsearchBoolQueryConfig;
     model: CmsContentModel;
     context: CmsContext;
 }
@@ -197,7 +72,7 @@ export interface ElasticsearchQueryBuilderPlugin extends Plugin {
      * Method used to modify received query object.
      * Has access to whole query object so it can remove something added by other plugins.
      */
-    apply: (query: ElasticsearchQuery, args: ElasticsearchQueryBuilderArgsPlugin) => void;
+    apply: (query: ElasticsearchBoolQueryConfig, args: ElasticsearchQueryBuilderArgsPlugin) => void;
 }
 
 /**

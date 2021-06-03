@@ -1,15 +1,13 @@
 import React from "react";
 import { AccordionItem } from "@webiny/ui/Accordion";
-import { AdminAppPermissionRendererPlugin } from "@webiny/app-admin/types";
+import { PermissionRendererPlugin } from "@webiny/app-admin/plugins/PermissionRendererPlugin";
+import { i18n } from "@webiny/app/i18n";
 import { ReactComponent as TranslateIcon } from "../../assets/icons/round-translate-24px.svg";
 import { I18NPermissions } from "./I18NPermissions";
-import { i18n } from "@webiny/app/i18n";
 
 const t = i18n.ns("app-i18n/admin/plugins/permissionRenderer");
 
-export default {
-    type: "admin-app-permissions-renderer",
-    name: "admin-app-permissions-renderer-i18n",
+export default new PermissionRendererPlugin({
     render(props) {
         return (
             <AccordionItem
@@ -22,4 +20,4 @@ export default {
             </AccordionItem>
         );
     }
-} as AdminAppPermissionRendererPlugin;
+});

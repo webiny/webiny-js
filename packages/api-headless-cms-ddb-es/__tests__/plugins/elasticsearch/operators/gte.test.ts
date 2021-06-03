@@ -1,6 +1,6 @@
 import { elasticsearchOperatorGtePlugin } from "../../../../src/elasticsearch/operators/gte";
 import { createBlankQuery } from "../helpers";
-import { ElasticsearchQuery } from "../../../../src/types";
+import { ElasticsearchBoolQueryConfig } from "@webiny/api-plugin-elastic-search-client/types";
 
 describe("elasticsearchOperatorGtePlugin", () => {
     const plugin = elasticsearchOperatorGtePlugin();
@@ -14,8 +14,8 @@ describe("elasticsearchOperatorGtePlugin", () => {
             context
         });
 
-        const expected: ElasticsearchQuery = {
-            mustNot: [],
+        const expected: ElasticsearchBoolQueryConfig = {
+            must_not: [],
             must: [
                 {
                     range: {
@@ -25,7 +25,7 @@ describe("elasticsearchOperatorGtePlugin", () => {
                     }
                 }
             ],
-            match: [],
+            filter: [],
             should: []
         };
 
@@ -47,8 +47,8 @@ describe("elasticsearchOperatorGtePlugin", () => {
             context
         });
 
-        const expected: ElasticsearchQuery = {
-            mustNot: [],
+        const expected: ElasticsearchBoolQueryConfig = {
+            must_not: [],
             must: [
                 {
                     range: {
@@ -60,12 +60,12 @@ describe("elasticsearchOperatorGtePlugin", () => {
                 {
                     range: {
                         date: {
-                            gte: from
+                            gte: from as any
                         }
                     }
                 }
             ],
-            match: [],
+            filter: [],
             should: []
         };
         expect(query).toEqual(expected);

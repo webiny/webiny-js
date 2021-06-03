@@ -966,12 +966,16 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
         entryId: string,
         version: number
     ): Promise<CmsContentEntry | null> {
-        return this.getSingleDynamoDbItem({
+        const entry = await this.getSingleDynamoDbItem({
             partitionKey: this.getPartitionKey(entryId),
             op: "lt",
             value: this.getSortKeyRevision(version),
             order: "DESC"
         });
+        if ((entry as any).TYPE !== TYPE_ENTRY) {
+            return null;
+        }
+        return entry;
     }
 
     private async getSingleDynamoDbItem(

@@ -1,6 +1,6 @@
 import { elasticsearchOperatorNotPlugin } from "../../../../src/elasticsearch/operators/not";
 import { createBlankQuery } from "../helpers";
-import { ElasticsearchQuery } from "../../../../src/types";
+import { ElasticsearchBoolQueryConfig } from "@webiny/api-plugin-elastic-search-client/types";
 
 describe("elasticsearchOperatorNotPlugin", () => {
     const plugin = elasticsearchOperatorNotPlugin();
@@ -15,8 +15,8 @@ describe("elasticsearchOperatorNotPlugin", () => {
             value: "John",
             context
         });
-        const expected: ElasticsearchQuery = {
-            mustNot: [
+        const expected: ElasticsearchBoolQueryConfig = {
+            must_not: [
                 {
                     term: {
                         "name.keyword": "John"
@@ -24,7 +24,7 @@ describe("elasticsearchOperatorNotPlugin", () => {
                 }
             ],
             must: [],
-            match: [],
+            filter: [],
             should: []
         };
         expect(query).toEqual(expected);

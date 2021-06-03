@@ -2,28 +2,35 @@ const path = require("path");
 const loadJson = require("load-json-file");
 const writeJson = require("write-json-file");
 const fs = require("fs");
-const { green } = require("chalk");
+const { green, red } = require("chalk");
 const { argv } = require("yargs");
 const { getStackOutput } = require("@webiny/cli-plugin-deploy-pulumi/utils");
 
-const PROJECT_FOLDER = ".";
-
-const params = {
+const args = {
     env: argv.env || "dev",
     force: argv.force || false,
-    localhost: argv.localhost || false
+    localhost: argv.localhost || false,
+    projectFolder: argv.projectFolder || null
 };
 
 /**
  * Prepares cypress.json config by reading values from state files and populating necessary variables.
  * Pass "--env" to specify from which environment in the ".webiny" folder you want to read.
  * Pass "--force" if you want to allow overwriting existing cypress.json config file.
+ * Pass "--project-folder" to specify from which project you'd like to set up configuration against
  */
 (async () => {
-    const cypressExampleConfigPath = path.resolve(PROJECT_FOLDER, "example.cypress.json");
-    const cypressConfigPath = path.resolve(PROJECT_FOLDER, "cypress.json");
+    if (args.projectFolder) {
+        if (!fs.existsSync(args.projectFolder)) {
+            console.log(`Could not find specified project (received ${red(args.projectFolder)}).`);
+            process.exit(0);
+        }
+    }
+
+    const cypressExampleConfigPath = path.resolve("example.cypress.json");
+    const cypressConfigPath = path.resolve("cypress.json");
     if (fs.existsSync(cypressConfigPath)) {
-        if (params.force) {
+        if (args.force) {
             fs.unlinkSync(cypressConfigPath);
             fs.copyFileSync(cypressExampleConfigPath, cypressConfigPath);
         } else {
@@ -36,7 +43,11 @@ const params = {
 
     const cypressConfig = await loadJson.sync(cypressConfigPath);
 
-    const apiOutput = await getStackOutput("api", params.env);
+    const apiOutput = await getStackOutput({
+        folder: "api",
+        env: args.env,
+        cwd: args.projectFolder
+    });
 
     cypressConfig.env.API_URL = apiOutput.apiUrl;
     cypressConfig.env.GRAPHQL_API_URL = apiOutput.apiUrl + "/graphql";
@@ -47,7 +58,7 @@ const params = {
 
     // If testing with "local" stack, use "localhost" for the app URLs, otherwise fetch from state files.
 
-    if (params.localhost) {
+    if (args.localhost) {
         const adminUrl = "http://localhost:3001";
         const websiteUrl = "http://localhost:3000";
         cypressConfig.baseUrl = adminUrl;
@@ -55,8 +66,16 @@ const params = {
         cypressConfig.env.WEBSITE_URL = websiteUrl;
         cypressConfig.env.WEBSITE_PREVIEW_URL = websiteUrl;
     } else {
-        const adminOutput = await getStackOutput("apps/admin", params.env);
-        const websiteOutput = await getStackOutput("apps/website", params.env);
+        const adminOutput = await getStackOutput({
+            folder: "apps/admin",
+            env: args.env,
+            cwd: args.projectFolder
+        });
+        const websiteOutput = await getStackOutput({
+            folder: "apps/website",
+            env: args.env,
+            cwd: args.projectFolder
+        });
         cypressConfig.baseUrl = adminOutput.appUrl;
         cypressConfig.env.ADMIN_URL = adminOutput.appUrl;
         cypressConfig.env.WEBSITE_URL = websiteOutput.deliveryUrl;

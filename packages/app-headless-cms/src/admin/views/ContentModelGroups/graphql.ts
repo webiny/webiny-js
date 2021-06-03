@@ -10,6 +10,7 @@ const fields = `
     createdBy {
         id
         displayName
+        type
     }
 `;
 

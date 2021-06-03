@@ -1,6 +1,6 @@
 import { elasticsearchOperatorLtPlugin } from "../../../../src/elasticsearch/operators/lt";
 import { createBlankQuery } from "../helpers";
-import { ElasticsearchQuery } from "../../../../src/types";
+import { ElasticsearchBoolQueryConfig } from "@webiny/api-plugin-elastic-search-client/types";
 
 describe("elasticsearchOperatorLtPlugin", () => {
     const plugin = elasticsearchOperatorLtPlugin();
@@ -14,8 +14,8 @@ describe("elasticsearchOperatorLtPlugin", () => {
             context
         });
 
-        const expected: ElasticsearchQuery = {
-            mustNot: [],
+        const expected: ElasticsearchBoolQueryConfig = {
+            must_not: [],
             must: [
                 {
                     range: {
@@ -25,7 +25,7 @@ describe("elasticsearchOperatorLtPlugin", () => {
                     }
                 }
             ],
-            match: [],
+            filter: [],
             should: []
         };
 
@@ -47,8 +47,8 @@ describe("elasticsearchOperatorLtPlugin", () => {
             context
         });
 
-        const expected: ElasticsearchQuery = {
-            mustNot: [],
+        const expected: ElasticsearchBoolQueryConfig = {
+            must_not: [],
             must: [
                 {
                     range: {
@@ -60,12 +60,12 @@ describe("elasticsearchOperatorLtPlugin", () => {
                 {
                     range: {
                         date: {
-                            lt: to
+                            lt: to as any
                         }
                     }
                 }
             ],
-            match: [],
+            filter: [],
             should: []
         };
         expect(query).toEqual(expected);
