@@ -31,7 +31,17 @@ module.exports = [
                     }
 
                     if (typeof plugin.canUpgrade === "function") {
-                        await plugin.canUpgrade(argv, context);
+                        try {
+                            const canUpgrade = await plugin.canUpgrade(argv, context);
+                            if (canUpgrade === false) {
+                                throw new Error();
+                            }
+                        } catch (ex) {
+                            const msg = ex.message || "unknown";
+                            throw new Error(
+                                `Cannot upgrade to ${argv.targetVersion}. Reason: ${msg}`
+                            );
+                        }
                     }
 
                     await plugin.upgrade(argv, context);
