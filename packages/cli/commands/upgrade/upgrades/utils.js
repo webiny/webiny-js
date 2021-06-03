@@ -11,7 +11,9 @@ const insertImport = (source, name, pkg) => {
         if (statement.getKind() !== tsMorph.SyntaxKind.ImportDeclaration) {
             return indexAt;
         }
-        const importedPackageName = statement.compilerNode.moduleSpecifier.text;
+        const compilerNode = statement.compilerNode || {};
+        const moduleSpecifier = compilerNode.moduleSpecifier || {};
+        const importedPackageName = moduleSpecifier.text;
         if (importedPackageName === pkg) {
             importAlreadyExists = true;
         }
