@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.8.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.7.0...v5.8.0-beta.0) (2021-06-03)
+
+
+### Features
+
+* **api-headless-cms:** pluginable crud operations ([#1544](https://github.com/webiny/webiny-js/issues/1544)) ([#1570](https://github.com/webiny/webiny-js/issues/1570)) ([c9cd4b7](https://github.com/webiny/webiny-js/commit/c9cd4b76665f4e96ccb8997ff9ba4288e344b905))
+
+
+
+
+
 # [5.7.0](https://github.com/webiny/webiny-js/compare/v5.7.0-beta.0...v5.7.0) (2021-05-24)
 
 **Note:** Version bump only for package @webiny/project-utils

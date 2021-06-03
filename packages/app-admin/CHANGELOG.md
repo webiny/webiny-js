@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.8.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.7.0...v5.8.0-beta.0) (2021-06-03)
+
+
+### Bug Fixes
+
+* **app-admin:** add missing dependency ([7845e15](https://github.com/webiny/webiny-js/commit/7845e15c14687f737ab2d15e0e9091f9499d0092))
+* **app-admin:** improve type handling with minimatch ([a9a3aab](https://github.com/webiny/webiny-js/commit/a9a3aab566cabe96c7e7f98a51e090794914c576))
+* **app-admin:** tooltip hover type of file ([#1634](https://github.com/webiny/webiny-js/issues/1634)) ([ee5733e](https://github.com/webiny/webiny-js/commit/ee5733e3bb9dca066600141516a3607a07eb38b5))
+
+
+### Features
+
+* **app-admin:** introduce FileManagerFileTypePlugin ([9ba618b](https://github.com/webiny/webiny-js/commit/9ba618b8dd2d4ee9b145629b4bfdd033ba042ba7))
+* **app-admin:** introduce MenuPlugin and PermissionRendererPlugin class ([567df61](https://github.com/webiny/webiny-js/commit/567df61cd0d8070458295f47fcee55b88a15cc3d))
+* **app-admin:** use FileManagerFileTypePlugin in file type detection ([67a86cf](https://github.com/webiny/webiny-js/commit/67a86cf2e8f7346f15197eee2d8e859bac6fd415))
+
+
+
+
+
 # [5.7.0](https://github.com/webiny/webiny-js/compare/v5.7.0-beta.0...v5.7.0) (2021-05-24)
 
 **Note:** Version bump only for package @webiny/app-admin

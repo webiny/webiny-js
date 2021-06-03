@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.8.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.7.0...v5.8.0-beta.0) (2021-06-03)
+
+
+### Features
+
+* **app:** introduce RoutePlugin class ([6ae73ff](https://github.com/webiny/webiny-js/commit/6ae73ffc6672ab56dfb3e2d03e23b9706751601e))
+
+
+
+
+
 # [5.7.0](https://github.com/webiny/webiny-js/compare/v5.7.0-beta.0...v5.7.0) (2021-05-24)
 
 **Note:** Version bump only for package @webiny/app

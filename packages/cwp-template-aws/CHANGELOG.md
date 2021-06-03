@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.8.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.7.0...v5.8.0-beta.0) (2021-06-03)
+
+
+### Bug Fixes
+
+* add "typescript" to resolutions ([5f8dea8](https://github.com/webiny/webiny-js/commit/5f8dea882b2bbc00efed5b20e4029f74d12deb62))
+* add comment about the "staging" environment ([2d9e11a](https://github.com/webiny/webiny-js/commit/2d9e11a661952b59d0b72c3b308b184e744a74ef))
+* add comment about the "staging" environment ([68f9a2b](https://github.com/webiny/webiny-js/commit/68f9a2b07fbebb9300a3c7bdfa9e3880503ca120))
+* **cwp-template-aws:** remove "eu-south-1" AWS region ([49d1ab2](https://github.com/webiny/webiny-js/commit/49d1ab2d22f5331519172fa626536092e2ed9ac7))
+* **pulumi:** update ES policy pattern ([ad3b13c](https://github.com/webiny/webiny-js/commit/ad3b13ce5ec29b45d931bb9e8baf58b95d877ff7))
+* set waitForDeployment: true, ([1e07580](https://github.com/webiny/webiny-js/commit/1e07580bf2cc6375aa2f12f4f4aa935bac5f4e3f))
+* set waitForDeployments: false ([b981fd8](https://github.com/webiny/webiny-js/commit/b981fd87c16467301483aba755aaeb2ba246991c))
+
+
+### Features
+
+* **api-headless-cms:** pluginable crud operations ([#1544](https://github.com/webiny/webiny-js/issues/1544)) ([#1570](https://github.com/webiny/webiny-js/issues/1570)) ([c9cd4b7](https://github.com/webiny/webiny-js/commit/c9cd4b76665f4e96ccb8997ff9ba4288e344b905))
+* **cli:** upgrade to 5.8.0 ([#1680](https://github.com/webiny/webiny-js/issues/1680)) ([06cbf4a](https://github.com/webiny/webiny-js/commit/06cbf4a8dfa9f44a6f19102b3152d4aaf7bb889b))
+* introduce AWS_ELASTIC_SEARCH_DOMAIN_NAME env variable ([923af4c](https://github.com/webiny/webiny-js/commit/923af4c8594a4b04432cd3f129bb39d3178c9c04))
+
+
+
+
+
 # [5.7.0](https://github.com/webiny/webiny-js/compare/v5.7.0-beta.0...v5.7.0) (2021-05-24)
 
 **Note:** Version bump only for package @webiny/cwp-template-aws
