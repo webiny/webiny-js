@@ -16,8 +16,10 @@ const traverseAndAddNewPlugin = (node, traversal) => {
             traversal.skip();
             return;
         }
-        const name = parent.compilerNode.name.escapedText;
-        if (name !== "plugins") {
+        const compilerNode = parent.compilerNode || {};
+        const name = compilerNode.name || {};
+        const escapedText = name.escapedText;
+        if (escapedText !== "plugins") {
             traversal.skip();
             return;
         }
@@ -35,7 +37,7 @@ module.exports = () => {
             return true;
         },
         async upgrade(options, context) {
-            const { info, warning, project } = context;
+            const { info, error, project } = context;
             /**
              * Configurations
              */
@@ -105,9 +107,13 @@ module.exports = () => {
             try {
                 console.log(info.hl("Step 3 of 3: Installing new packages."));
                 await execa("yarn");
+                console.log("Installed new packages.");
             } catch (ex) {
-                console.log(warning.hl("Install of new packages failed."));
-                console.log(warning(ex.message));
+                console.log(error.hl("Install of new packages failed."));
+                console.log(error(ex.message));
+                if (ex.stdout) {
+                    console.log(ex.stdout);
+                }
             }
         }
     };
