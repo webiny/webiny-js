@@ -77,6 +77,8 @@ describe("Headless CMS - Content Entries", () => {
             cy.findByLabelText("Edition").type(newEntryEdition);
             // c) Save entry
             cy.findByTestId("cms-content-save-content-button").click();
+            // Loading should not be visible
+            cy.get(".react-spinner-material").should("not.exist");
             // d) Verify success message
             cy.findByText(`${newModel} entry created successfully!`).should("exist");
 
