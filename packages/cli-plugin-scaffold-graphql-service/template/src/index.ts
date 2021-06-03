@@ -1,6 +1,6 @@
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { ApplicationContext } from "./types";
 import typeDefs from "./typeDefs";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { TargetMutation, TargetQuery } from "./resolvers";
 
 export default new GraphQLSchemaPlugin<ApplicationContext>({

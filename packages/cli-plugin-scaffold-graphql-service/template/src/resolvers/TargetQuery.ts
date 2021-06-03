@@ -1,4 +1,4 @@
-import { NotFoundResponse, Response, ListResponse } from "@webiny/handler-graphql";
+import { NotFoundResponse, NotFoundError, Response, ListResponse } from "@webiny/handler-graphql";
 import { ApplicationContext, Target } from "~/types";
 import defaults from "./defaults";
 
@@ -18,7 +18,7 @@ interface ListTargetsMeta {
 }
 
 interface TargetQuery {
-    getTarget(params: GetTargetParams): Promise<NotFoundResponse | Response<Target>>;
+    getTarget(params: GetTargetParams): Promise<Response<Target>>;
     listTargets(params: ListTargetsParams): Promise<ListResponse<Target, ListTargetsMeta>>;
 }
 
@@ -40,7 +40,7 @@ export default class TargetQueryResolver implements TargetQuery {
         });
 
         if (!target) {
-            return new NotFoundResponse(`Target "${id}" not found.`);
+            throw new NotFoundError(`Target "${id}" not found.`);
         }
 
         return new Response(target);

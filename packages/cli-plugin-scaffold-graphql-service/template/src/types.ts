@@ -1,6 +1,4 @@
 import { ContextInterface as Context } from "@webiny/handler/types";
-import { DbContext } from "@webiny/handler-db/types";
-import { HttpContext } from "@webiny/handler-http/types";
 import { I18NContext } from "@webiny/api-i18n/types";
 import { BaseI18NContentContext } from "@webiny/api-i18n-content/types";
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
@@ -16,8 +14,7 @@ export interface Target {
 
 export interface ApplicationContext
     extends Context,
-        DbContext,
-        HttpContext,
         I18NContext,
         BaseI18NContentContext,
+        // TODO: revisit this / use SecurityContext
         TenancyContext {}

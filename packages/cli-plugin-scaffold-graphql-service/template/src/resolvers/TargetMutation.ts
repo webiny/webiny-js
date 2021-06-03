@@ -2,14 +2,14 @@ import { NotFoundResponse, ErrorResponse, Response } from "@webiny/handler-graph
 import { ApplicationContext, Target } from "~/types";
 import defaults from "./defaults";
 
-export interface CreateTargetArgs {
+interface CreateTargetArgs {
     data: {
         title: string;
         description?: string;
     };
 }
 
-export interface UpdateTargetArgs {
+interface UpdateTargetArgs {
     id: string;
     data: {
         title: string;
@@ -17,7 +17,7 @@ export interface UpdateTargetArgs {
     };
 }
 
-export interface DeleteTargetArgs {
+interface DeleteTargetArgs {
     id: string;
 }
 

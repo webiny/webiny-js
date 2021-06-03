@@ -59,7 +59,7 @@ export const CREATE_TARGET = gql`
     }
 `;
 
-export const READ_TARGET = gql`
+export const GET_TARGET = gql`
     query GetTarget($id: ID!) {
         targets {
             getTarget(id: $id) {
