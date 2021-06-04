@@ -9,7 +9,6 @@ export class CmsSystemInstallationPlugin extends InstallationPlugin {
     public name = "cms.system.ddb-es-installation";
 
     async beforeInstall({ context }) {
-        console.log("Run beforeInstall in CmsSystemInstallationPlugin");
         const { elasticSearch } = context;
         try {
             await elasticSearch.indices.putTemplate({
