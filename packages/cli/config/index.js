@@ -2,7 +2,7 @@ const os = require("os");
 const path = require("path");
 const readJson = require("load-json-file");
 const writeJson = require("write-json-file");
-const publicIp = require("public-ip");
+const { v4: uuidv4 } = require("uuid");
 
 const configPath = path.join(os.homedir(), ".webiny", "config");
 
@@ -17,7 +17,7 @@ const verifyConfig = async () => {
         }
     } catch (e) {
         // A new config file is written if it doesn't exist or is invalid.
-        config = { id: await publicIp.v4() };
+        config = { id: uuidv4() };
         await writeJson(configPath, config);
     }
 
@@ -32,13 +32,13 @@ const setTracking = async enabled => {
     try {
         const config = readJson.sync(configPath);
         if (!config.id) {
-            config.id = await publicIp.v4();
+            config.id = uuidv4();
         }
         config.tracking = enabled;
         writeJson.sync(configPath, config);
     } catch (e) {
         // A new config file is written if it doesn't exist.
-        writeJson.sync(configPath, { id: await publicIp.v4(), tracking: enabled });
+        writeJson.sync(configPath, { id: uuidv4(), tracking: enabled });
     }
 };
 
