@@ -1,17 +1,17 @@
 {
-	"name": "api-prerendering-service-queue-process",
-	"version": "0.1.0",
-	"scripts": {
-		"build": "yarn webiny run build",
-		"watch": "yarn webiny run watch"
-	},
-	"dependencies": {
-		"@webiny/api-prerendering-service": "^5.8.0-beta.0",
-		"@webiny/cli": "^5.8.0-beta.0",
-		"@webiny/db-dynamodb": "^5.8.0-beta.0",
-		"@webiny/handler-aws": "^5.8.0-beta.0",
-		"@webiny/handler-db": "^5.8.0-beta.0",
-		"@webiny/handler-logs": "^5.8.0-beta.0",
-		"@webiny/project-utils": "^5.8.0-beta.0"
-	}
+  "name": "api-prerendering-service-queue-process",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "yarn webiny run build",
+    "watch": "yarn webiny run watch"
+  },
+  "dependencies": {
+    "@webiny/api-prerendering-service": "^5.8.0-beta.0",
+    "@webiny/cli": "^5.8.0-beta.0",
+    "@webiny/db-dynamodb": "^5.8.0-beta.0",
+    "@webiny/handler-aws": "^5.8.0-beta.0",
+    "@webiny/handler-db": "^5.8.0-beta.0",
+    "@webiny/handler-logs": "^5.8.0-beta.0",
+    "@webiny/project-utils": "^5.8.0-beta.0"
+  }
 }
