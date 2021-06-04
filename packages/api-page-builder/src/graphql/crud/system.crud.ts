@@ -2,7 +2,7 @@ import Error from "@webiny/error";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { getApplicablePlugin } from "@webiny/api-upgrade";
-import executeHookCallbacks from "./utils/executeHookCallbacks";
+import executeCallbacks from "./utils/executeCallbacks";
 import { preparePageData } from "./install/welcome-to-webiny-page-data";
 import { notFoundPageData } from "./install/notFoundPageData";
 import savePageAssets from "./install/utils/savePageAssets";
@@ -72,7 +72,7 @@ export default {
                     const hookPlugins = context.plugins.byType<InstallationPlugin>(
                         InstallationPlugin.type
                     );
-                    await executeHookCallbacks<InstallationPlugin["beforeInstall"]>(
+                    await executeCallbacks<InstallationPlugin["beforeInstall"]>(
                         hookPlugins,
                         "beforeInstall",
                         { context }
@@ -198,7 +198,7 @@ export default {
                     // 6. Mark the Page Builder app as installed.
                     await this.setVersion(context.WEBINY_VERSION);
 
-                    await executeHookCallbacks<InstallationPlugin["afterInstall"]>(
+                    await executeCallbacks<InstallationPlugin["afterInstall"]>(
                         hookPlugins,
                         "afterInstall",
                         { context }

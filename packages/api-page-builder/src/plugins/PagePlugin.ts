@@ -13,38 +13,38 @@ export interface CreateParams {
     page: Page;
 }
 
-export interface BeforeUpdateParams {
+export interface BeforeUpdateParams<TPage> {
     context: PbContext;
-    existingPage: Page;
+    existingPage: TPage;
     inputData: UpdateInput;
-    updateData: Partial<Page>;
+    updateData: Partial<TPage>;
 }
 
-export interface AfterUpdateParams {
+export interface AfterUpdateParams<TPage> {
     context: PbContext;
-    page: Page;
+    page: TPage;
     inputData: UpdateInput;
 }
 
-export interface DeleteParams {
+export interface DeleteParams<TPage> {
     context: PbContext;
-    page: Page;
+    page: TPage;
     // TODO: @doitadrian - we need to get rid of these two parameters below as they're very DDB specific
-    latestPage: Page;
-    publishedPage?: Page;
+    latestPage: TPage;
+    publishedPage?: TPage;
 }
 
-export interface PublishParams {
+export interface PublishParams<TPage> {
     context: PbContext;
-    page: Page;
+    page: TPage;
     // TODO: @doitadrian - we need to get rid of these two parameters below as they're very DDB specific
-    latestPage: Page;
-    publishedPage?: Page;
+    latestPage: TPage;
+    publishedPage?: TPage;
 }
 
-export interface UnpublishParams {
+export interface UnpublishParams<TPage> {
     context: PbContext;
-    page: Page;
+    page: TPage;
 }
 
 export interface NotFoundParams {
@@ -52,25 +52,25 @@ export interface NotFoundParams {
     args: Record<string, any>;
 }
 
-interface Config {
+interface Config<TPage extends Page = Page> {
     beforeCreate?: CallbackFunction<CreateParams>;
     afterCreate?: CallbackFunction<CreateParams>;
-    beforeUpdate?: CallbackFunction<BeforeUpdateParams>;
-    afterUpdate?: CallbackFunction<AfterUpdateParams>;
-    beforeDelete?: CallbackFunction<DeleteParams>;
-    afterDelete?: CallbackFunction<DeleteParams>;
-    beforePublish?: CallbackFunction<PublishParams>;
-    afterPublish?: CallbackFunction<PublishParams>;
-    beforeUnpublish?: CallbackFunction<UnpublishParams>;
-    afterUnpublish?: CallbackFunction<UnpublishParams>;
-    notFound?: (params: NotFoundParams) => Promise<Page | undefined>;
+    beforeUpdate?: CallbackFunction<BeforeUpdateParams<TPage>>;
+    afterUpdate?: CallbackFunction<AfterUpdateParams<TPage>>;
+    beforeDelete?: CallbackFunction<DeleteParams<TPage>>;
+    afterDelete?: CallbackFunction<DeleteParams<TPage>>;
+    beforePublish?: CallbackFunction<PublishParams<TPage>>;
+    afterPublish?: CallbackFunction<PublishParams<TPage>>;
+    beforeUnpublish?: CallbackFunction<UnpublishParams<TPage>>;
+    afterUnpublish?: CallbackFunction<UnpublishParams<TPage>>;
+    notFound?: (params: NotFoundParams) => Promise<TPage | undefined>;
 }
 
-export class PagePlugin extends Plugin {
+export class PagePlugin<TPage extends Page = Page> extends Plugin {
     public static readonly type = "pb.page";
-    private _config: Partial<Config>;
+    private _config: Partial<Config<TPage>>;
 
-    constructor(config?: Config) {
+    constructor(config?: Config<TPage>) {
         super();
         this._config = config || {};
     }
@@ -83,35 +83,35 @@ export class PagePlugin extends Plugin {
         return this._execute("afterCreate", params);
     }
 
-    beforeUpdate(params: BeforeUpdateParams): void | Promise<void> {
+    beforeUpdate<TPage>(params: BeforeUpdateParams<TPage>): void | Promise<void> {
         return this._execute("beforeUpdate", params);
     }
 
-    afterUpdate(params: AfterUpdateParams): void | Promise<void> {
+    afterUpdate(params: AfterUpdateParams<TPage>): void | Promise<void> {
         return this._execute("afterUpdate", params);
     }
 
-    afterDelete(params: DeleteParams): void | Promise<void> {
+    afterDelete(params: DeleteParams<TPage>): void | Promise<void> {
         return this._execute("afterDelete", params);
     }
 
-    beforeDelete(params: DeleteParams): void | Promise<void> {
+    beforeDelete(params: DeleteParams<TPage>): void | Promise<void> {
         return this._execute("beforeDelete", params);
     }
 
-    beforePublish(params: PublishParams): void | Promise<void> {
+    beforePublish(params: PublishParams<TPage>): void | Promise<void> {
         return this._execute("beforePublish", params);
     }
 
-    afterPublish(params: PublishParams): void | Promise<void> {
+    afterPublish(params: PublishParams<TPage>): void | Promise<void> {
         return this._execute("afterPublish", params);
     }
 
-    beforeUnpublish(params: UnpublishParams): void | Promise<void> {
+    beforeUnpublish(params: UnpublishParams<TPage>): void | Promise<void> {
         return this._execute("beforeUnpublish", params);
     }
 
-    afterUnpublish(params: UnpublishParams): void | Promise<void> {
+    afterUnpublish(params: UnpublishParams<TPage>): void | Promise<void> {
         return this._execute("afterUnpublish", params);
     }
 

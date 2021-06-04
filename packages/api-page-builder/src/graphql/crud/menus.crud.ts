@@ -10,7 +10,7 @@ import Error from "@webiny/error";
 import { validation } from "@webiny/validation";
 import { withFields, string } from "@commodo/fields";
 import { object } from "commodo-fields-object";
-import executeHookCallbacks from "./utils/executeHookCallbacks";
+import executeCallbacks from "./utils/executeCallbacks";
 import prepareMenuItems from "./menus/prepareMenuItems";
 import { MenuPlugin } from "~/plugins/MenuPlugin";
 
@@ -125,7 +125,7 @@ const plugin: ContextPlugin<PbContext> = {
                         throw new Error(`Menu "${menu.slug}" already exists.`);
                     }
 
-                    await executeHookCallbacks<MenuPlugin["beforeCreate"]>(
+                    await executeCallbacks<MenuPlugin["beforeCreate"]>(
                         hookPlugins,
                         "beforeCreate",
                         {
@@ -146,7 +146,7 @@ const plugin: ContextPlugin<PbContext> = {
                         }
                     });
 
-                    await executeHookCallbacks<MenuPlugin["afterCreate"]>(
+                    await executeCallbacks<MenuPlugin["afterCreate"]>(
                         hookPlugins,
                         "afterCreate",
                         {
@@ -176,7 +176,7 @@ const plugin: ContextPlugin<PbContext> = {
 
                     const updateData = await updateDataModel.toJSON({ onlyDirty: true });
 
-                    await executeHookCallbacks<MenuPlugin["beforeUpdate"]>(
+                    await executeCallbacks<MenuPlugin["beforeUpdate"]>(
                         hookPlugins,
                         "beforeUpdate",
                         {
@@ -191,7 +191,7 @@ const plugin: ContextPlugin<PbContext> = {
                         data: updateData
                     });
 
-                    await executeHookCallbacks<MenuPlugin["afterUpdate"]>(
+                    await executeCallbacks<MenuPlugin["afterUpdate"]>(
                         hookPlugins,
                         "afterUpdate",
                         { context, menu }
@@ -212,7 +212,7 @@ const plugin: ContextPlugin<PbContext> = {
                     const identity = context.security.getIdentity();
                     checkOwnPermissions(identity, permission, menu);
 
-                    await executeHookCallbacks<MenuPlugin["beforeDelete"]>(
+                    await executeCallbacks<MenuPlugin["beforeDelete"]>(
                         hookPlugins,
                         "beforeDelete",
                         {
@@ -226,7 +226,7 @@ const plugin: ContextPlugin<PbContext> = {
                         query: { PK: PK(), SK: slug }
                     });
 
-                    await executeHookCallbacks<MenuPlugin["afterDelete"]>(
+                    await executeCallbacks<MenuPlugin["afterDelete"]>(
                         hookPlugins,
                         "afterDelete",
                         {
