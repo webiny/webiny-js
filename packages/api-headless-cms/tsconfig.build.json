@@ -24,7 +24,9 @@
     "outDir": "dist",
     "rootDir": "src",
     "declarationDir": "dist",
-    "paths": {},
+    "paths": {
+      "~/*": ["./src/*"]
+    },
     "baseUrl": "."
   },
   "references": []
