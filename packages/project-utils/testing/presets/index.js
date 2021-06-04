@@ -9,7 +9,7 @@ const getYarnWorkspaces = require("get-yarn-workspaces");
 
 const getAllPackages = targetKeywords => {
     const packages = getYarnWorkspaces(process.cwd())
-        .map(pkg => pkg.replace(/\//g, path.sep))
+        .map(pkg => pkg.replace(/\//g, "/"))
         .filter(pkg => {
             return pkg.match(/\/packages\//) !== null;
         });
@@ -60,9 +60,7 @@ const getPackagesPresets = (targetKeywords, nameSuffix) => {
     }
     const packages = getAllPackages(targetKeywords);
     if (packages.length === 0) {
-        throw new Error(
-            `There are no storage operations packages with keywords ${targetKeywords.join(", ")}.`
-        );
+        return [];
     }
     const items = [];
 
