@@ -19,6 +19,7 @@ export type ListPagesParams = {
         category?: string;
         status?: string;
         tags?: { query: string[]; rule?: "any" | "all" };
+        [key: string]: any;
     };
     exclude?: string[];
     search?: { query?: string };
@@ -62,21 +63,24 @@ export type PagesCrud = {
     dataLoaders: {
         getPublishedById: DataLoader<{ id: string; preview?: boolean }, Page>;
     };
-    get(id: string): Promise<Page>;
-    listLatest(args: ListPagesParams): Promise<[Page[], ListMeta]>;
-    listPublished(args: ListPagesParams): Promise<[Page[], ListMeta]>;
+    get<TPage extends Page = Page>(id: string): Promise<TPage>;
+    listLatest<TPage extends Page = Page>(args: ListPagesParams): Promise<[TPage[], ListMeta]>;
+    listPublished<TPage extends Page = Page>(args: ListPagesParams): Promise<[TPage[], ListMeta]>;
     listTags(args: { search: { query: string } }): Promise<string[]>;
-    getPublishedById(args: { id: string; preview?: boolean }): Promise<Page>;
-    getPublishedByPath(args: { path: string }): Promise<Page>;
-    listPageRevisions(id: string): Promise<Page[]>;
-    create(category: string): Promise<Page>;
-    createFrom(page: string): Promise<Page>;
-    update(id: string, data: Record<string, any>): Promise<Page>;
-    delete(id: string): Promise<[Page, Page]>;
-    publish(id: string): Promise<Page>;
-    unpublish(id: string): Promise<Page>;
-    requestReview(id: string): Promise<Page>;
-    requestChanges(id: string): Promise<Page>;
+    getPublishedById<TPage extends Page = Page>(args: {
+        id: string;
+        preview?: boolean;
+    }): Promise<TPage>;
+    getPublishedByPath<TPage extends Page = Page>(args: { path: string }): Promise<TPage>;
+    listPageRevisions<TPage extends Page = Page>(id: string): Promise<TPage[]>;
+    create<TPage extends Page = Page>(category: string): Promise<TPage>;
+    createFrom<TPage extends Page = Page>(page: string): Promise<TPage>;
+    update<TPage extends Page = Page>(id: string, data: Record<string, any>): Promise<TPage>;
+    delete<TPage extends Page = Page>(id: string): Promise<[TPage, TPage]>;
+    publish<TPage extends Page = Page>(id: string): Promise<TPage>;
+    unpublish<TPage extends Page = Page>(id: string): Promise<TPage>;
+    requestReview<TPage extends Page = Page>(id: string): Promise<TPage>;
+    requestChanges<TPage extends Page = Page>(id: string): Promise<TPage>;
     prerendering: {
         render(args: RenderParams): Promise<void>;
         flush(args: FlushParams): Promise<void>;

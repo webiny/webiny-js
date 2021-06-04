@@ -4,7 +4,7 @@ import getPKPrefix from "./utils/getPKPrefix";
 import { PbContext, DefaultSettings } from "../../types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import DataLoader from "dataloader";
-import executeHookCallbacks from "./utils/executeHookCallbacks";
+import executeCallbacks from "./utils/executeCallbacks";
 import { DefaultSettingsModel } from "../../utils/models";
 import merge from "lodash/merge";
 import Error from "@webiny/error";
@@ -149,7 +149,7 @@ const plugin: ContextPlugin<PbContext> = {
                             }
                         }
 
-                        await executeHookCallbacks<SettingsPlugin["beforeUpdate"]>(
+                        await executeCallbacks<SettingsPlugin["beforeUpdate"]>(
                             settingsPlugins,
                             "beforeUpdate",
                             {
@@ -170,7 +170,7 @@ const plugin: ContextPlugin<PbContext> = {
                             data: next
                         });
 
-                        await executeHookCallbacks<SettingsPlugin["afterUpdate"]>(
+                        await executeCallbacks<SettingsPlugin["afterUpdate"]>(
                             settingsPlugins,
                             "afterUpdate",
                             {
