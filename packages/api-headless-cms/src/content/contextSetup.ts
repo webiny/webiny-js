@@ -1,5 +1,5 @@
-import { Context, ContextPlugin } from "@webiny/handler/types";
-import { CmsContext } from "../types";
+import { CmsContext } from "~/types";
+import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 
 interface CmsHttpParameters {
     type: string;
@@ -10,7 +10,7 @@ const throwPlainError = (type: string): void => {
     throw new Error(`Missing context.http.request.path parameter "${type}".`);
 };
 
-export const extractHandlerHttpParameters = (context: Context): CmsHttpParameters => {
+const extractHandlerHttpParameters = (context: CmsContext): CmsHttpParameters => {
     const { key = "" } = context.http.request.path.parameters || {};
     const [type, locale] = key.split("/");
     if (!type) {
@@ -32,10 +32,9 @@ const setContextCmsVariables = async (context: CmsContext): Promise<void> => {
     }
     context.cms.getLocale = () => locale;
 };
-// eslint-disable-next-line
-export default (options: any = {}): ContextPlugin<CmsContext> => ({
-    type: "context",
-    apply: async context => {
+
+export default () => {
+    return new ContextPlugin<CmsContext>(async context => {
         if (context.http.request.method === "OPTIONS") {
             return;
         }
@@ -52,5 +51,5 @@ export default (options: any = {}): ContextPlugin<CmsContext> => ({
         };
 
         await setContextCmsVariables(context);
-    }
-});
+    });
+};

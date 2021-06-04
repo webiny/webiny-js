@@ -673,6 +673,8 @@ export interface CmsSettingsContext {
 export type CmsSystemContext = {
     getVersion: () => Promise<string>;
     setVersion: (version: string) => Promise<void>;
+    getReadAPIKey(): Promise<string>;
+    setReadAPIKey(apiKey: string): Promise<void>;
     install: () => Promise<void>;
     upgrade: (version: string) => Promise<boolean>;
 };
@@ -2979,17 +2981,10 @@ export interface CmsSystemStorageOperationsProviderPlugin
 
 export interface CmsSystem {
     version?: string;
+    readAPIKey?: string;
 }
 
 export interface CmsSystemStorageOperations {
-    /**
-     * A hook to trigger before the install process.
-     */
-    beforeInstall?: () => Promise<void>;
-    /**
-     * A hook to trigger after the install process.
-     */
-    afterInstall?: () => Promise<void>;
     /**
      * Get the system data.
      */

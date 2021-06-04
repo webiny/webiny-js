@@ -7,6 +7,8 @@ import contextSetup from "./contextSetup";
 import modelManager from "./plugins/modelManager";
 import fieldTypePlugins from "./plugins/graphqlFields";
 import validatorsPlugins from "./plugins/validators";
+import { InternalAuthenticationPlugin } from "./plugins/internalSecurity/InternalAuthenticationPlugin";
+import { InternalAuthorizationPlugin } from "./plugins/internalSecurity/InternalAuthorizationPlugin";
 
 interface CmsContentPluginsIndexArgs {
     debug?: boolean;
@@ -15,11 +17,13 @@ interface CmsContentPluginsIndexArgs {
 export default (options: CmsContentPluginsIndexArgs = {}) => [
     modelManager(),
     pluginsCrudSetup(),
-    contextSetup(options),
+    contextSetup(),
     contentModelGroupCrud(),
     contentModelCrud(),
     contentEntry(),
     graphQLHandlerFactory(options),
     fieldTypePlugins(),
-    validatorsPlugins()
+    validatorsPlugins(),
+    new InternalAuthenticationPlugin("read-api-key"),
+    new InternalAuthorizationPlugin("read-api-key")
 ];
