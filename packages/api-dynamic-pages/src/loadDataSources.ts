@@ -22,7 +22,7 @@ export const loadDataSources = async (
         if (!dataSource) {
             continue;
         }
-        
+
         const data = await dataSource.loadData(variables, config, context);
 
         dataSources.push({ id, type, data });

@@ -7,7 +7,7 @@ import { FileManagerContext } from "../types";
 
 export default new ContextPlugin<FileManagerContext>(context => {
     const { i18nContent, security } = context;
-    
+
     if (!security.getTenant() || !i18nContent.getLocale()) {
         return;
     }
