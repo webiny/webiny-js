@@ -39,7 +39,7 @@ export default class CmsSystemDynamo implements CmsSystemStorageOperations {
             sortKey: "SK",
             DocumentClient: getDocumentClient(context)
         });
-        
+
         this._entity = new Entity({
             name: "System",
             table: this._table,
