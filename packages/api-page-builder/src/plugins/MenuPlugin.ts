@@ -29,23 +29,23 @@ export class MenuPlugin extends Plugin {
     beforeCreate(params: MenuParams): void | Promise<void> {
         return this._execute("beforeCreate", params);
     }
-    
+
     afterCreate(params: MenuParams): void | Promise<void> {
         return this._execute("afterCreate", params);
     }
-    
+
     beforeUpdate(params: MenuParams): void | Promise<void> {
         return this._execute("beforeUpdate", params);
     }
-    
+
     afterUpdate(params: MenuParams): void | Promise<void> {
         return this._execute("afterUpdate", params);
     }
-    
+
     beforeDelete(params: MenuParams): void | Promise<void> {
         return this._execute("beforeDelete", params);
     }
-    
+
     afterDelete(params: MenuParams): void | Promise<void> {
         return this._execute("afterDelete", params);
     }

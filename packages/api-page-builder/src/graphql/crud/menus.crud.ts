@@ -146,14 +146,10 @@ const plugin: ContextPlugin<PbContext> = {
                         }
                     });
 
-                    await executeCallbacks<MenuPlugin["afterCreate"]>(
-                        hookPlugins,
-                        "afterCreate",
-                        {
-                            context,
-                            menu
-                        }
-                    );
+                    await executeCallbacks<MenuPlugin["afterCreate"]>(hookPlugins, "afterCreate", {
+                        context,
+                        menu
+                    });
 
                     return menu;
                 },
@@ -191,11 +187,10 @@ const plugin: ContextPlugin<PbContext> = {
                         data: updateData
                     });
 
-                    await executeCallbacks<MenuPlugin["afterUpdate"]>(
-                        hookPlugins,
-                        "afterUpdate",
-                        { context, menu }
-                    );
+                    await executeCallbacks<MenuPlugin["afterUpdate"]>(hookPlugins, "afterUpdate", {
+                        context,
+                        menu
+                    });
 
                     return { ...menu, ...updateData };
                 },
@@ -226,14 +221,10 @@ const plugin: ContextPlugin<PbContext> = {
                         query: { PK: PK(), SK: slug }
                     });
 
-                    await executeCallbacks<MenuPlugin["afterDelete"]>(
-                        hookPlugins,
-                        "afterDelete",
-                        {
-                            context,
-                            menu
-                        }
-                    );
+                    await executeCallbacks<MenuPlugin["afterDelete"]>(hookPlugins, "afterDelete", {
+                        context,
+                        menu
+                    });
 
                     return menu;
                 }
