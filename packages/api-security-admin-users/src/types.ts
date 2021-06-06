@@ -1,9 +1,9 @@
 import { Plugin } from "@webiny/plugins/types";
 import { Context, ContextInterface } from "@webiny/handler/types";
-import { SecurityPermission } from "@webiny/api-security/types";
-import { DbContext } from "@webiny/handler-db/types";
-import { SecurityContextBase } from "@webiny/api-security/types";
+import { SecurityContextBase, SecurityPermission } from "@webiny/api-security/types";
+import { TenancyContext, Tenant } from "@webiny/api-tenancy/types";
 import { HttpContext } from "@webiny/handler-http/types";
+import { DbContext } from "@webiny/handler-db/types";
 
 export type SecurityIdentityProviderPlugin<TData = Record<string, any>> = Plugin & {
     name: "security-identity-provider";
@@ -22,12 +22,6 @@ export type SecurityIdentityProviderPlugin<TData = Record<string, any>> = Plugin
     ) => Promise<void>;
     // Delete user from a 3rd party identity provider
     deleteUser: (params: { user: User }, context: Context) => Promise<void>;
-};
-
-export type Tenant = {
-    id: string;
-    name: string;
-    parent: string | null;
 };
 
 export type CreatedBy = {
@@ -74,16 +68,6 @@ export type TenantAccess = {
         name: string;
         permissions: SecurityPermission[];
     };
-};
-
-type CreateTenantInput = {
-    id?: string;
-    name: string;
-    parent: string | null;
-};
-
-type UpdateTenantInput = {
-    name: string;
 };
 
 export type CreateUserInput = {
@@ -133,15 +117,6 @@ export type SystemCRUD = {
     setVersion(version: string): Promise<void>;
 };
 
-export type TenantsCRUD = {
-    getRootTenant(): Promise<Tenant>;
-    getTenant(id: string): Promise<Tenant>;
-    listTenants(params: { parent?: string }): Promise<Tenant[]>;
-    createTenant(data: CreateTenantInput): Promise<Tenant>;
-    updateTenant(id: string, data: UpdateTenantInput): Promise<boolean>;
-    deleteTenant(id: string): Promise<boolean>;
-};
-
 export type GroupsCRUD = {
     getGroup(tenant: Tenant, slug: string): Promise<Group>;
     listGroups(tenant: Tenant): Promise<Group[]>;
@@ -184,22 +159,6 @@ export type ApiKeysCRUD = {
     deleteApiKey(id: string): Promise<boolean>;
 };
 
-export type TenancyContextObject = {
-    // Get current tenant (loaded using X-Tenant header)
-    getTenant(): Tenant;
-    // Set current tenant (only if tenant is not already set)
-    setTenant(tenant: Tenant): void;
-    tenants?: TenantsCRUD;
-    users?: UsersCRUD;
-    groups?: GroupsCRUD;
-    apiKeys?: ApiKeysCRUD;
-    system?: SystemCRUD;
-};
-
-export interface TenancyContext extends ContextInterface, HttpContext, DbContext {
-    security: TenancyContextObject & SecurityContextBase;
-}
-
 // Helper types when working with database
 export type DbItemSecurityUser2Tenant = {
     PK: string;
@@ -218,4 +177,19 @@ export type DbItemSecurityUser2Tenant = {
 
 export interface ApiKeyPermission extends SecurityPermission {
     name: "security.apiKey";
+}
+
+export type AdminUsers = {
+    users?: UsersCRUD;
+    groups?: GroupsCRUD;
+    apiKeys?: ApiKeysCRUD;
+    system?: SystemCRUD;
+};
+
+export interface AdminUsersContext
+    extends TenancyContext,
+        ContextInterface,
+        HttpContext,
+        DbContext {
+    security: AdminUsers & SecurityContextBase;
 }

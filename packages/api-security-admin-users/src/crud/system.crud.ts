@@ -1,15 +1,14 @@
-import { DbContext } from "@webiny/handler-db/types";
-import { TenancyContext, SystemCRUD } from "../types";
+import { SystemCRUD, AdminUsersContext } from "../types";
 import dbArgs from "./dbArgs";
 
-export default (context: DbContext & TenancyContext): SystemCRUD => {
-    const { db, security } = context;
+export default (context: AdminUsersContext): SystemCRUD => {
+    const { db, tenancy } = context;
 
-    const keys = () => ({ PK: `T#${security.getTenant().id}#SYSTEM`, SK: "SECURITY" });
+    const keys = () => ({ PK: `T#${tenancy.getCurrentTenant().id}#SYSTEM`, SK: "SECURITY" });
 
     return {
         async getVersion() {
-            const rootTenant = await security.tenants.getRootTenant();
+            const rootTenant = await tenancy.getRootTenant();
             if (!rootTenant) {
                 return null;
             }

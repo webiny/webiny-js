@@ -4,7 +4,7 @@ import { object } from "commodo-fields-object";
 import { validation } from "@webiny/validation";
 import dbArgs from "./dbArgs";
 import mdbid from "mdbid";
-import { ApiKey, ApiKeyPermission, ApiKeysCRUD, TenancyContext } from "../types";
+import { AdminUsersContext, ApiKey, ApiKeyPermission, ApiKeysCRUD } from "../types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { NotFoundError } from "@webiny/handler-graphql";
 
@@ -34,11 +34,11 @@ const generateToken = (tokenLength = 48) => {
     return `a${token.slice(0, tokenLength - 1)}`;
 };
 
-export default (context: TenancyContext): ApiKeysCRUD => {
-    const { db, security } = context;
+export default (context: AdminUsersContext): ApiKeysCRUD => {
+    const { db, security, tenancy } = context;
     return {
         async getApiKeyByToken(token) {
-            const tenant = security.getTenant();
+            const tenant = tenancy.getCurrentTenant();
             const [[apiKey]] = await db.read<DbItem<ApiKey>>({
                 ...dbArgs,
                 query: {
@@ -51,7 +51,7 @@ export default (context: TenancyContext): ApiKeysCRUD => {
         },
         async getApiKey(id) {
             // Check if it's an ID or an actual API key (API keys start with a letter "a")
-            const tenant = security.getTenant();
+            const tenant = tenancy.getCurrentTenant();
             const permission = await security.getPermission<ApiKeyPermission>("security.apiKey");
 
             if (!permission) {
@@ -69,7 +69,7 @@ export default (context: TenancyContext): ApiKeysCRUD => {
             return apiKey;
         },
         async listApiKeys() {
-            const tenant = security.getTenant();
+            const tenant = tenancy.getCurrentTenant();
             const permission = await security.getPermission<ApiKeyPermission>("security.apiKey");
 
             if (!permission) {
@@ -88,7 +88,7 @@ export default (context: TenancyContext): ApiKeysCRUD => {
         },
         async createApiKey(data) {
             const identity = security.getIdentity();
-            const tenant = security.getTenant();
+            const tenant = tenancy.getCurrentTenant();
             const permission = await security.getPermission<ApiKeyPermission>("security.apiKey");
 
             if (!permission) {
@@ -124,7 +124,7 @@ export default (context: TenancyContext): ApiKeysCRUD => {
             return apiKey;
         },
         async updateApiKey(id, data) {
-            const tenant = security.getTenant();
+            const tenant = tenancy.getCurrentTenant();
             const permission = await security.getPermission<ApiKeyPermission>("security.apiKey");
 
             if (!permission) {
@@ -152,7 +152,7 @@ export default (context: TenancyContext): ApiKeysCRUD => {
             return Object.assign({}, apiKey, changedData);
         },
         async deleteApiKey(id) {
-            const tenant = security.getTenant();
+            const tenant = tenancy.getCurrentTenant();
             const permission = await security.getPermission<ApiKeyPermission>("security.apiKey");
 
             if (!permission) {

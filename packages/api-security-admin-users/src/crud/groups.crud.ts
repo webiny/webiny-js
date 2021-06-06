@@ -1,10 +1,8 @@
 import { object } from "commodo-fields-object";
 import { withFields, string } from "@commodo/fields";
-import { DbContext } from "@webiny/handler-db/types";
 import { validation } from "@webiny/validation";
-import { SecurityContext } from "@webiny/api-security/types";
 import dbArgs from "./dbArgs";
-import { DbItemSecurityUser2Tenant, Group, GroupsCRUD, TenancyContext } from "../types";
+import { AdminUsersContext, DbItemSecurityUser2Tenant, Group, GroupsCRUD } from "../types";
 import { paginateBatch } from "./paginateBatch";
 
 const CreateDataModel = withFields({
@@ -24,7 +22,7 @@ const UpdateDataModel = withFields({
     permissions: object({ list: true })
 })();
 
-export default (context: DbContext & SecurityContext & TenancyContext): GroupsCRUD => {
+export default (context: AdminUsersContext): GroupsCRUD => {
     const { db } = context;
     return {
         async getGroup(tenant, slug) {

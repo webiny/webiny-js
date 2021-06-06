@@ -1,12 +1,13 @@
 import { createHandler } from "@webiny/handler-aws";
 import apolloServerPlugins from "@webiny/handler-graphql";
+import tenancyPlugins from "@webiny/api-tenancy";
 import securityPlugins from "@webiny/api-security/authenticator";
 import { SecurityIdentity } from "@webiny/api-security";
 import dbPlugins from "@webiny/handler-db";
 import { PluginCollection } from "@webiny/plugins/types";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import tenancyPlugins from "../src/index";
+import adminUsersPlugins from "../src/index";
 // Graphql
 import {
     UPDATE_SECURITY_GROUP,
@@ -69,6 +70,7 @@ export default (opts: UseGqlHandlerParams = {}) => {
         }),
         tenancyPlugins(),
         securityPlugins(),
+        adminUsersPlugins(),
         apolloServerPlugins(),
         {
             type: "security-authentication",
@@ -93,7 +95,7 @@ export default (opts: UseGqlHandlerParams = {}) => {
                     return [{ name: "*" }];
                 }
 
-                const tenant = context.security.getTenant();
+                const tenant = context.tenancy.getCurrentTenant();
                 const identity = context.security.getIdentity();
                 if (!identity) {
                     return null;

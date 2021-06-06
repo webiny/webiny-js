@@ -1,13 +1,10 @@
 import { withFields, string } from "@commodo/fields";
 import { object } from "commodo-fields-object";
-import { DbContext } from "@webiny/handler-db/types";
 import { validation } from "@webiny/validation";
 import WebinyError from "@webiny/error";
-import { SecurityContext } from "@webiny/api-security/types";
 import {
+    AdminUsersContext,
     DbItemSecurityUser2Tenant,
-    TenancyContext,
-    Tenant,
     TenantAccess,
     User,
     UserPersonalAccessToken,
@@ -16,6 +13,7 @@ import {
 import dbArgs from "./dbArgs";
 import mdbid from "mdbid";
 import DataLoader from "dataloader";
+import { Tenant } from "@webiny/api-tenancy/types";
 
 const CreateUserDataModel = withFields({
     login: string({ validation: validation.create("required,minLength:2") }),
@@ -50,7 +48,7 @@ type DbItem<T> = T & {
 type DbUser = DbItem<User>;
 type DbUserAccessToken = DbItem<UserPersonalAccessToken>;
 
-export default (context: DbContext & SecurityContext & TenancyContext): UsersCRUD => {
+export default (context: AdminUsersContext): UsersCRUD => {
     const { db } = context;
 
     const loaders = {
