@@ -25,8 +25,9 @@ interface UpdateTenantInput {
 interface ITenancy {
     init(): Promise<void>;
     getRootTenant(): Promise<Tenant>;
-    getTenant(id?: string): Promise<Tenant>;
-    setTenant(tenant: Tenant): void;
+    getCurrentTenant(): Tenant;
+    getTenantById(id: string): Promise<Tenant>;
+    setCurrentTenant(tenant: Tenant): void;
     listTenants(params: { parent?: string }): Promise<Tenant[]>;
     createTenant(data: CreateTenantInput): Promise<Tenant>;
     updateTenant(id: string, data: UpdateTenantInput): Promise<boolean>;
@@ -46,7 +47,7 @@ export class Tenancy implements ITenancy {
     }
 
     async init() {
-        await this._determineCurrentTenant();
+        await this.determineCurrentTenant();
     }
 
     async getRootTenant() {
@@ -67,15 +68,15 @@ export class Tenancy implements ITenancy {
         return null;
     }
 
+    getCurrentTenant() {
+        return this._currentTenant;
+    }
+
     /**
-     * Get current tenant or tenant by ID
+     * Get tenant by ID
      * @param id
      */
-    async getTenant(id: string = null) {
-        if (!id) {
-            return this._currentTenant;
-        }
-
+    async getTenantById(id: string) {
         const [[tenant]] = await this._context.db.read<Tenant>({
             ...dbArgs,
             query: { PK: `T#${id}`, SK: "A" }
@@ -91,7 +92,7 @@ export class Tenancy implements ITenancy {
 
         return null;
     }
-    setTenant(tenant: Tenant) {
+    setCurrentTenant(tenant: Tenant) {
         if (!this._currentTenant) {
             this._currentTenant = tenant;
         }
@@ -186,16 +187,22 @@ export class Tenancy implements ITenancy {
         return true;
     }
 
-    private async _determineCurrentTenant() {
+    private async determineCurrentTenant() {
         const { headers = {} } = this._context.http.request;
 
-        const tenantId = headers["X-Tenant"] || headers["x-tenant"] || "root";
-
-        if (!tenantCache[tenantId]) {
-            tenantCache[tenantId] = await this.getTenant(tenantId);
+        let tenantId = headers["X-Tenant"] || headers["x-tenant"];
+        if (!tenantId) {
+            tenantId = "root";
         }
 
-        return tenantCache[tenantId];
+        if (!tenantCache[tenantId]) {
+            const tenant = await this.getTenantById(tenantId);
+            if (tenant) {
+                tenantCache[tenantId] = tenant;
+            }
+        }
+
+        this.setCurrentTenant(tenantCache[tenantId]);
     }
 
     private async executeCallback<TCallbackFunction extends (params: any) => void | Promise<void>>(
