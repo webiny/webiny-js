@@ -1,10 +1,10 @@
 import cognitoSecurity from "@webiny/app-plugin-security-cognito";
 import cognitoIdentityProvider from "@webiny/app-plugin-security-cognito/identityProvider";
-import securityTenancy from "@webiny/app-security-tenancy/plugins";
-import accountDetails from "@webiny/app-security-tenancy/plugins/userMenu/accountDetails";
-import signOut from "@webiny/app-security-tenancy/plugins/userMenu/signOut";
-import userImage from "@webiny/app-security-tenancy/plugins/userMenu/userImage";
-import userInfo from "@webiny/app-security-tenancy/plugins/userMenu/userInfo";
+import adminUsers from "@webiny/app-security-admin-users/plugins";
+import accountDetails from "@webiny/app-security-admin-users/plugins/userMenu/accountDetails";
+import signOut from "@webiny/app-security-admin-users/plugins/userMenu/signOut";
+import userImage from "@webiny/app-security-admin-users/plugins/userMenu/userImage";
+import userInfo from "@webiny/app-security-admin-users/plugins/userMenu/userInfo";
 import { getIdentityData } from "../components/getIdentityData";
 
 export default [
@@ -20,7 +20,7 @@ export default [
     /**
      * Add user management module to admin app.
      */
-    securityTenancy(),
+    adminUsers(),
     /**
      * Add Cognito password field to user views.
      */

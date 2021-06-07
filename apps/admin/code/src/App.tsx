@@ -4,7 +4,7 @@ import { UiProvider } from "@webiny/app/contexts/Ui";
 import { Routes } from "@webiny/app/components/Routes";
 import { I18NProvider } from "@webiny/app-i18n/contexts/I18N";
 import { SecurityProvider } from "@webiny/app-security";
-import { TenancyProvider } from "@webiny/app-security-tenancy/contexts/Tenancy";
+import { TenancyProvider } from "@webiny/app-tenancy/contexts/Tenancy";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { AppInstaller } from "@webiny/app-admin/components/AppInstaller";
 import { CmsProvider } from "@webiny/app-headless-cms/admin/contexts/Cms";
