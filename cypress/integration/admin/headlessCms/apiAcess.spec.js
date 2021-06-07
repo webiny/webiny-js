@@ -400,6 +400,9 @@ context("Headless CMS - READ and Preview API access using API key", () => {
                 description: `Wait until "ContentModelGroup" is deleted`
             }
         );
+        cy.waitUntil(() => cy.securityDeleteApiKey({ id: apiKey.id }).then(data => data === true), {
+            description: `Wait until "API Key" is deleted`
+        });
     });
 
     it("should able to list only published entry in READ API", function() {
