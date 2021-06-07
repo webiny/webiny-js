@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.8.0](https://github.com/webiny/webiny-js/compare/v5.8.0-beta.1...v5.8.0) (2021-06-07)
+
+**Note:** Version bump only for package @webiny/cli
+
+
+
+
+
+# [5.8.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.8.0-beta.0...v5.8.0-beta.1) (2021-06-05)
+
+
+### Bug Fixes
+
+* **cli:** use uuid instead of public-ip ([36e1bbe](https://github.com/webiny/webiny-js/commit/36e1bbe39a752e4981345cd0c00b4e91b34959ed))
+
+
+
+
+
+# [5.8.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.7.0...v5.8.0-beta.0) (2021-06-03)
+
+
+### Features
+
+* **cli:** upgrade to 5.8.0 ([#1680](https://github.com/webiny/webiny-js/issues/1680)) ([06cbf4a](https://github.com/webiny/webiny-js/commit/06cbf4a8dfa9f44a6f19102b3152d4aaf7bb889b))
+
+
+
+
+
 # [5.7.0](https://github.com/webiny/webiny-js/compare/v5.7.0-beta.0...v5.7.0) (2021-05-24)
 
 **Note:** Version bump only for package @webiny/cli

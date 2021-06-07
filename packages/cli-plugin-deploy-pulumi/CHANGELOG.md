@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.8.0](https://github.com/webiny/webiny-js/compare/v5.8.0-beta.1...v5.8.0) (2021-06-07)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.8.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.8.0-beta.0...v5.8.0-beta.1) (2021-06-05)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.8.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.7.0...v5.8.0-beta.0) (2021-06-03)
+
+
+### Bug Fixes
+
+* correct loading of env variables ([9011368](https://github.com/webiny/webiny-js/commit/9011368b33082305a345e10c0db44f8681845550))
+* reorder checks ([bff84bc](https://github.com/webiny/webiny-js/commit/bff84bc0b07a48ef0f2525b01908d70fe0a2f45b))
+* update dependencies ([3a9813c](https://github.com/webiny/webiny-js/commit/3a9813cb7899f2e09a8f5282e5c701c9bcc8e349))
+
+
+### Features
+
+* create uploadFolderToS3 utility function ([d1e17ff](https://github.com/webiny/webiny-js/commit/d1e17ffd03c152371228eae233320b3a915145b7))
+* enable passing args as object ([e641daf](https://github.com/webiny/webiny-js/commit/e641daf4e9ada58598d654eeb66ae66df3057f17))
+
+
+
+
+
 # [5.7.0](https://github.com/webiny/webiny-js/compare/v5.7.0-beta.0...v5.7.0) (2021-05-24)
 
 **Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
