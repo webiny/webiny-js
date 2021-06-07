@@ -6,6 +6,7 @@ import secureRouteError from "./secureRouteError";
 import installation from "./installation";
 import permissionRenderer from "./permissionRenderer";
 import getObjectId from "./getObjectId";
+import tenancy from "./tenancy";
 
 export default (): PluginCollection => [
     globalSearchUsers,
@@ -14,5 +15,6 @@ export default (): PluginCollection => [
     secureRouteError,
     installation,
     permissionRenderer(),
-    getObjectId
+    getObjectId,
+    tenancy
 ];

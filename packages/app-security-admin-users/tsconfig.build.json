@@ -7,9 +7,9 @@
     "./dist",
     "../app",
     "../app-admin",
+    "../app-tenancy",
     "../app-security",
     "../form",
-    "../plugins",
     "../react-router",
     "../ui",
     "../validation",
@@ -19,7 +19,9 @@
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": {},
+    "paths": {
+      "~/*": ["./src/*"]
+    },
     "baseUrl": "."
   },
   "references": []

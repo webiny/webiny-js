@@ -29,7 +29,7 @@ import { useMutation, useQuery } from "@apollo/react-hooks";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 
-const t = i18n.ns("app-security-tenancy/admin/users-form");
+const t = i18n.ns("app-security-admin-users/admin/users-form");
 
 const AvatarWrapper = styled("div")({
     margin: "24px 100px 32px"

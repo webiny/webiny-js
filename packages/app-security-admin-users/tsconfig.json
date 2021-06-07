@@ -11,6 +11,9 @@
       "path": "../app-security"
     },
     {
+      "path": "../app-tenancy"
+    },
+    {
       "path": "../form"
     },
     {
@@ -28,12 +31,15 @@
   ],
   "compilerOptions": {
     "paths": {
+      "~/*": ["./src/*"],
       "@webiny/app/*": ["../app/src/*"],
       "@webiny/app": ["../app/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
       "@webiny/app-security/*": ["../app-security/src/*"],
       "@webiny/app-security": ["../app-security/src"],
+      "@webiny/app-tenancy/*": ["../app-tenancy/src/*"],
+      "@webiny/app-tenancy": ["../app-tenancy/src"],
       "@webiny/form/*": ["../form/src/*"],
       "@webiny/form": ["../form/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],

@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/app-security-tenancy",
+  "name": "@webiny/app-security-admin-users",
   "version": "5.7.0",
   "main": "index.js",
   "repository": {
@@ -21,6 +21,7 @@
     "@webiny/app": "^5.7.0",
     "@webiny/app-admin": "^5.7.0",
     "@webiny/app-security": "^5.7.0",
+    "@webiny/app-tenancy": "^5.7.0",
     "@webiny/form": "^5.7.0",
     "@webiny/plugins": "^5.7.0",
     "@webiny/react-router": "^5.7.0",

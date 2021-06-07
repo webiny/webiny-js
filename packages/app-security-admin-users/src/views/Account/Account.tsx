@@ -28,7 +28,7 @@ import { SecurityUserAccountFormPlugin } from "../../types";
 import { useSecurity } from "@webiny/app-security";
 import { SecurityIdentity } from "@webiny/app-security/SecurityIdentity";
 
-const t = i18n.ns("app-security-tenancy/account-form");
+const t = i18n.ns("app-security-admin-users/account-form");
 
 const UserAccountForm = () => {
     const uiPlugins = plugins.byType<SecurityUserAccountFormPlugin>("security-user-account-form");

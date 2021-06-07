@@ -27,7 +27,7 @@ import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import styled from "@emotion/styled";
 
-const t = i18n.ns("app-security-tenancy/admin/api-keys/form");
+const t = i18n.ns("app-security-admin-users/admin/api-keys/form");
 
 const ButtonWrapper = styled("div")({
     display: "flex",

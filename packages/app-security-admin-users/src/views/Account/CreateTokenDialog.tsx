@@ -21,7 +21,7 @@ import { Typography } from "@webiny/ui/Typography";
 import { CopyButton } from "@webiny/ui/Button";
 import { CREATE_PAT, GET_CURRENT_USER } from "./graphql";
 
-const t = i18n.ns("app-security-tenancy/pats/create-token-dialog");
+const t = i18n.ns("app-security-admin-users/pats/create-token-dialog");
 
 const PatContainer = styled("div")({
     paddingLeft: "12px",

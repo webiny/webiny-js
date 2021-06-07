@@ -7,7 +7,7 @@ import { Form } from "@webiny/form";
 import { Elevation } from "@webiny/ui/Elevation";
 import { Typography } from "@webiny/ui/Typography";
 
-const t = i18n.ns("app-security-tenancy/plugins/permissionRenderer");
+const t = i18n.ns("app-security-admin-users/plugins/permissionRenderer");
 
 const SECURITY = "security";
 const SECURITY_FULL_ACCESS = `${SECURITY}.*`;
