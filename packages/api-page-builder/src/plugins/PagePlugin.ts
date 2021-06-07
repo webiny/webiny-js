@@ -68,7 +68,7 @@ interface Config<TPage extends Page = Page> {
 
 export class PagePlugin<TPage extends Page = Page> extends Plugin {
     public static readonly type = "pb.page";
-    private _config: Partial<Config<TPage>>;
+    private _config: Config<TPage>;
 
     constructor(config?: Config<TPage>) {
         super();
@@ -83,7 +83,7 @@ export class PagePlugin<TPage extends Page = Page> extends Plugin {
         return this._execute("afterCreate", params);
     }
 
-    beforeUpdate<TPage>(params: BeforeUpdateParams<TPage>): void | Promise<void> {
+    beforeUpdate(params: BeforeUpdateParams<TPage>): void | Promise<void> {
         return this._execute("beforeUpdate", params);
     }
 
