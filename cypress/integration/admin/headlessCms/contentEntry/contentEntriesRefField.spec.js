@@ -145,14 +145,14 @@ context("Headless CMS - Content Entry with Ref field", () => {
         // Create an author.
         cy.findByTestId("cms-content-details").within(() => {
             cy.findByLabelText("Name").type(`${newAuthor}-1`);
-            cy.findByLabelText("Books").type(`${newBook.substr(0, 10)}`);
+            cy.findByLabelText("Books").type(`${newBook.substr(0, 13)}`);
             cy.wait(1000);
             cy.findByText(`${newBook}-1`).click();
 
             // Add one more book
             cy.findByLabelText("Books")
                 .clear()
-                .type(`${newBook.substr(0, 10)}`);
+                .type(`${newBook.substr(0, 13)}`);
             cy.wait(1000);
             cy.findByText(`${newBook}-2`).click();
             // Publish the entry
