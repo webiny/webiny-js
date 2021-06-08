@@ -1,5 +1,32 @@
 import { gql } from "graphql-request";
 
+const ERROR_FIELDS = `
+    code
+    data
+    message
+`;
+
+export const LIST_PAGES = gql`
+    query PbListPages(
+        $where: PbListPagesWhereInput
+        $sort: PbListPagesSortInput
+        $search: PbListPagesSearchInput
+        $limit: Int
+        $page: Int
+    ) {
+        pageBuilder {
+            listPages(where: $where, sort: $sort, limit: $limit, page: $page, search: $search) {
+                data {
+                    id
+                }
+                error {
+                    ${ERROR_FIELDS}
+                }
+            }
+        }
+    }
+`;
+
 export const CREATE_PAGE = gql`
     mutation CreatePage($category: String!) {
         pageBuilder {
@@ -60,12 +87,6 @@ const MENU_BASE_FIELDS = `
         id
         displayName
     }
-`;
-
-const ERROR_FIELDS = `
-    code
-    data
-    message
 `;
 
 export const CREATE_MENU = gql`

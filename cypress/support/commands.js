@@ -2,6 +2,7 @@ import "cypress-wait-until";
 import "./login";
 import "./dropFile";
 import "./reloadUntil";
+import "./pageBuilder/pbListPages";
 import "./pageBuilder/pbCreatePage";
 import "./pageBuilder/pbUpdatePage";
 import "./pageBuilder/pbPublishPage";
