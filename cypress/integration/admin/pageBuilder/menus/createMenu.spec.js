@@ -69,5 +69,26 @@ context("Menus Module", () => {
 
         cy.wait(500);
         cy.findByText(`Menu "cool-menu-${id}" already exists.`).should("exist");
+        // Delete Menu
+        cy.findByTestId("default-data-list").within(() => {
+            cy.get("div")
+                .first()
+                .within(() => {
+                    cy.findByText(`Cool Menu ${id}`).should("exist");
+                    cy.get("button").click({ force: true });
+                });
+        });
+
+        cy.get('[role="alertdialog"] :visible').within(() => {
+            cy.contains("Are you sure you want to continue?")
+                .next()
+                .within(() => cy.findByText("Confirm").click());
+        });
+
+        cy.findByText(/Menu ".*" deleted\./).should("exist");
+        cy.wait(500);
+        cy.findByTestId("default-data-list").within(() => {
+            cy.findByText(`Cool Menu ${id}`).should("not.exist");
+        });
     });
 });
