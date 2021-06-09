@@ -67,12 +67,20 @@ export default (): CmsModelFieldToStoragePlugin<OriginalValue, StorageValue> => 
             const { compression, value } = storageValue;
             if (!compression) {
                 throw new WebinyError(
-                    `Missing compression in "fromStorage" function in field "${field.fieldId}".`
+                    `Missing compression in "fromStorage" function in field "${field.fieldId}".`,
+                    "MISSING_COMPRESSION",
+                    {
+                        value: storageValue
+                    }
                 );
             }
             if (compression !== "jsonpack") {
                 throw new WebinyError(
-                    `This plugin cannot transform something not packed with "jsonpack".`
+                    `This plugin cannot transform something not packed with "jsonpack".`,
+                    "WRONG_COMPRESSION",
+                    {
+                        compression
+                    }
                 );
             }
 
@@ -83,6 +91,13 @@ export default (): CmsModelFieldToStoragePlugin<OriginalValue, StorageValue> => 
             return unpacked;
         },
         async toStorage({ model, field, entry, value }) {
+            /**
+             * There is a possibility that we are trying to compress already compressed value.
+             * So just return it.
+             */
+            if (value && (value as any).compression) {
+                return value as any;
+            }
             const cacheKey = createCacheKey({
                 model,
                 field,
