@@ -53,7 +53,10 @@ export default class TargetMutationResolver implements TargetsMutation {
     async createTarget({ data }: CreateTargetParams) {
         const { security } = this.context;
 
+        // We use `mdbid` (https://www.npmjs.com/package/mdbid) library to generate
+        // a random, unique, and sequential (sortable) ID for our new entry.
         const id = mdbid();
+
         const target = {
             PK,
             SK: id,
