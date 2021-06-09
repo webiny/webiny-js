@@ -1,7 +1,7 @@
 import { withFields, string, number, onSet } from "@commodo/fields";
 import { validation } from "@webiny/validation";
 import defaults from "./utils/defaults";
-import { FileManagerContext, Settings, SettingsCRUD } from "~/types";
+import { FileManagerContext, FileManagerSettings, SettingsCRUD } from "~/types";
 
 export const SETTINGS_KEY = "file-manager";
 
@@ -38,7 +38,7 @@ export default (context: FileManagerContext): SettingsCRUD => {
 
     return {
         async getSettings() {
-            const [[settings]] = await db.read<Settings>({
+            const [[settings]] = await db.read<FileManagerSettings>({
                 ...defaults.db,
                 query: { PK: PK_SETTINGS(), SK: SK_SETTINGS() },
                 limit: 1
@@ -50,7 +50,7 @@ export default (context: FileManagerContext): SettingsCRUD => {
             const settings = new CreateDataModel().populate(data);
             await settings.validate();
 
-            const settingsData: Settings = await settings.toJSON();
+            const settingsData: FileManagerSettings = await settings.toJSON();
 
             await db.create({
                 data: {
@@ -67,9 +67,9 @@ export default (context: FileManagerContext): SettingsCRUD => {
             const updatedValue = new UpdateDataModel().populate(data);
             await updatedValue.validate();
 
-            const existingSettings: Settings = await this.getSettings();
+            const existingSettings: FileManagerSettings = await this.getSettings();
 
-            const updatedSettings: Partial<Settings> = await updatedValue.toJSON({
+            const updatedSettings: Partial<FileManagerSettings> = await updatedValue.toJSON({
                 onlyDirty: true
             });
 

@@ -1,5 +1,5 @@
 import { Response, ErrorResponse, ListResponse } from "@webiny/handler-graphql";
-import { FileInput, FileManagerContext, FilesListOpts, Settings } from "../types";
+import { FileInput, FileManagerContext, FilesListOpts, FileManagerSettings } from "../types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 
 const emptyResolver = () => ({});
@@ -219,7 +219,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                 async upgrade(_, args, context) {
                     return resolve(() => context.fileManager.system.upgrade(args.version));
                 },
-                async updateSettings(_, args: { data: Partial<Settings> }, context) {
+                async updateSettings(_, args: { data: Partial<FileManagerSettings> }, context) {
                     return resolve(() => context.fileManager.settings.updateSettings(args.data));
                 }
             }
