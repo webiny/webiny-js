@@ -27,7 +27,7 @@
     "@webiny/app-i18n": "^5.7.0",
     "@webiny/app-plugin-admin-welcome-screen": "^5.7.0",
     "@webiny/app-security": "^5.7.0",
-    "@webiny/app-security-tenancy": "^5.7.0",
+    "@webiny/app-tenancy": "^5.7.0",
     "@webiny/form": "^5.7.0",
     "@webiny/plugins": "^5.7.0",
     "@webiny/react-router": "^5.7.0",
