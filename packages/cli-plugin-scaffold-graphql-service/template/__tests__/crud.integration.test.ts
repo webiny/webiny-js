@@ -1,4 +1,4 @@
-import { handler } from "~";
+import { handler } from "~/index";
 import { GET_TARGET, CREATE_TARGET, DELETE_TARGET, LIST_TARGETS, UPDATE_TARGET } from "./graphql/targets";
 
 /**
