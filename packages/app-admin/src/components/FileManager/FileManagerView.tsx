@@ -181,9 +181,10 @@ function FileManagerView(props: FileManagerViewProps) {
             if (!fmFilePermission) {
                 return false;
             }
+            const creatorId = get(item, "createdBy.id");
 
-            if (fmFilePermission.own) {
-                return get(item, "createdBy.id") === identity.login;
+            if (fmFilePermission.own && creatorId) {
+                return creatorId === identity.login;
             }
 
             if (typeof fmFilePermission.rwd === "string") {
