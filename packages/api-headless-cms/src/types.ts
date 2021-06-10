@@ -1,7 +1,7 @@
 import { Plugin } from "@webiny/plugins/types";
 import { I18NContext, I18NLocale } from "@webiny/api-i18n/types";
 import { ContextInterface } from "@webiny/handler/types";
-import { TenancyContext } from "@webiny/api-security-tenancy/types";
+import { TenancyContext } from "@webiny/api-tenancy/types";
 import { GraphQLFieldResolver, GraphQLSchemaDefinition } from "@webiny/handler-graphql/types";
 import { BaseI18NContentContext } from "@webiny/api-i18n-content/types";
 import { SecurityPermission } from "@webiny/api-security/types";

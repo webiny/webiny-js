@@ -21,7 +21,7 @@
     "@webiny/api-i18n-content": "^5.7.0",
     "@webiny/api-plugin-elastic-search-client": "^5.7.0",
     "@webiny/api-security": "^5.7.0",
-    "@webiny/api-security-tenancy": "^5.7.0",
+    "@webiny/api-tenancy": "^5.7.0",
     "@webiny/api-upgrade": "^5.7.0",
     "@webiny/db-dynamodb": "^5.7.0",
     "@webiny/error": "^5.7.0",

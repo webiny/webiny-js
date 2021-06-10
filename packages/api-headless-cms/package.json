@@ -25,7 +25,7 @@
     "@webiny/api-i18n": "^5.7.0",
     "@webiny/api-i18n-content": "^5.7.0",
     "@webiny/api-security": "^5.7.0",
-    "@webiny/api-security-tenancy": "^5.7.0",
+    "@webiny/api-tenancy": "^5.7.0",
     "@webiny/api-upgrade": "^5.7.0",
     "@webiny/error": "^5.7.0",
     "@webiny/handler": "^5.7.0",

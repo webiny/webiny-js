@@ -43,6 +43,18 @@ const defaultHandler = useGqlHandler({
 });
 
 describe("Categories Security Test", () => {
+    beforeAll(async () => {
+        await defaultHandler.deleteElasticSearchIndex();
+    });
+
+    beforeEach(async () => {
+        await defaultHandler.createElasticSearchIndex();
+    });
+
+    afterEach(async () => {
+        await defaultHandler.deleteElasticSearchIndex();
+    });
+    
     test(`"listCategories" only returns entries to which the identity has access to`, async () => {
         const { createCategory } = defaultHandler;
         await createCategory({ data: new Mock("list-categories-1-") });

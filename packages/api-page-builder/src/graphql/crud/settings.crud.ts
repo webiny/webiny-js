@@ -23,7 +23,7 @@ const checkBasePermissions = async (context: PbContext) => {
 const plugin: ContextPlugin<PbContext> = {
     type: "context",
     async apply(context) {
-        const { db, security, i18nContent } = context;
+        const { db, tenancy, i18nContent } = context;
 
         const settingsPlugins = context.plugins.byType<SettingsPlugin>(SettingsPlugin.type);
 
@@ -94,7 +94,7 @@ const plugin: ContextPlugin<PbContext> = {
                             let tenant = undefined,
                                 locale = undefined;
                             if (options?.tenant !== false) {
-                                tenant = options?.tenant || security.getTenant().id;
+                                tenant = options?.tenant || tenancy.getCurrentTenant().id;
                             }
                             if (options?.locale !== false) {
                                 locale = options?.locale || i18nContent.getLocale().code;

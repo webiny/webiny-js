@@ -301,7 +301,7 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 const data: CmsContentEntry = {
                     webinyVersion: context.WEBINY_VERSION,
-                    tenant: context.security.getTenant().id,
+                    tenant: context.tenancy.getCurrentTenant().id,
                     entryId,
                     id,
                     modelId: model.modelId,

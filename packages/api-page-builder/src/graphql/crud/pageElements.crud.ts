@@ -92,7 +92,7 @@ const plugin: ContextPlugin<PbContext> = {
                         PK: PK(),
                         SK: id,
                         TYPE,
-                        tenant: context.security.getTenant().id,
+                        tenant: context.tenancy.getCurrentTenant().id,
                         locale: context.i18nContent.getLocale().code,
                         id,
                         createdOn: new Date().toISOString(),

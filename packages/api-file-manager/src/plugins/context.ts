@@ -6,9 +6,9 @@ import { FileStorage } from "./FileStorage";
 import { FileManagerContext } from "../types";
 
 export default new ContextPlugin<FileManagerContext>(context => {
-    const { i18nContent, security } = context;
+    const { i18nContent, tenancy } = context;
 
-    if (!security.getTenant() || !i18nContent.getLocale()) {
+    if (!tenancy.getCurrentTenant() || !i18nContent.getLocale()) {
         return;
     }
 

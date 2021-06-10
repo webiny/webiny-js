@@ -141,7 +141,7 @@ const plugin: ContextPlugin<PbContext> = {
                             PK: PK(),
                             SK: createDataModel.slug,
                             TYPE,
-                            tenant: context.security.getTenant().id,
+                            tenant: context.tenancy.getCurrentTenant().id,
                             locale: context.i18nContent.getLocale().code
                         }
                     });

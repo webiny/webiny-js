@@ -1,5 +1,5 @@
 import { DbContext } from "@webiny/handler-db/types";
-import { TenancyContext } from "@webiny/api-security-tenancy/types";
+import { TenancyContext } from "@webiny/api-tenancy/types";
 import { Context } from "@webiny/handler/types";
 import getPKPrefix from "./utils/getPKPrefix";
 import dbArgs from "./utils/dbArgs";

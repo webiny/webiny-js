@@ -18,7 +18,7 @@ export default class CmsSystemDynamoElastic implements CmsSystemStorageOperation
 
     private get partitionKey(): string {
         if (!this._partitionKey) {
-            const tenant = this._context.security.getTenant();
+            const tenant = this._context.tenancy.getCurrentTenant();
             if (!tenant) {
                 throw new WebinyError("Tenant missing.", "TENANT_NOT_FOUND");
             }

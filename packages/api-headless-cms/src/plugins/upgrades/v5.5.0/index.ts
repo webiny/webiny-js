@@ -13,9 +13,10 @@ const plugin: UpgradePlugin<CmsContext> = {
         console.log("Started CMS permissions migration.");
         // Migrate "Groups"
         try {
-            const { security, cms } = context;
-            const tenant = security.getTenant();
+            const { security, tenancy, cms } = context;
+            const tenant = tenancy.getCurrentTenant();
             // Check if there is any "SecurityGroup" that contains "cms" permissions.
+            // @ts-ignore Because we don't need a package dependency; this is a one-off operation.
             const securityGroups = await security.groups.listGroups(tenant);
             const securityGroupsWithCmsPermission = securityGroups.filter(group =>
                 group.permissions.some(isCmsContentPermission)
@@ -52,6 +53,7 @@ const plugin: UpgradePlugin<CmsContext> = {
                 console.log(`Saving new permissions for group: ${securityGroup.slug}`);
                 console.log("newPermissions: ", JSON.stringify(newPermissions, null, 2));
                 // Save group
+                // @ts-ignore
                 await security.groups.updateGroup(tenant, securityGroup.slug, {
                     permissions: newPermissions
                 });
@@ -68,6 +70,7 @@ const plugin: UpgradePlugin<CmsContext> = {
         try {
             const { security, cms } = context;
             // Check if there is any "APIKey" that contains "cms" permissions.
+            // @ts-ignore
             const ApiKeys = await security.apiKeys.listApiKeys();
             const ApiKeysWithCmsPermission = ApiKeys.filter(key =>
                 key.permissions.some(isCmsContentPermission)
@@ -102,6 +105,7 @@ const plugin: UpgradePlugin<CmsContext> = {
                 console.log(`Saving new permissions for API key: ${apiKey.name}`);
                 console.log("newPermissions: ", JSON.stringify(newPermissions, null, 2));
                 // Save API key
+                // @ts-ignore
                 await security.apiKeys.updateApiKey(apiKey.id, {
                     name: apiKey.name,
                     description: apiKey.description,
