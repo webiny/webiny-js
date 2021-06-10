@@ -64,6 +64,7 @@ interface EntryIdResult {
      */
     id: string;
 }
+
 const createEntryId = (version: number): EntryIdResult => {
     const entryId = mdbid();
     return {
@@ -376,7 +377,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     ? await entryFromStorageTransform(context, model, latestStorageEntry)
                     : null;
 
-                utils.checkOwnership(context, permission, originalEntryRevision, "ownedBy");
+                utils.checkOwnership(context, permission, originalEntryRevision);
 
                 const identity = security.getIdentity();
                 // const nextVersion = parseInt(latestEntry.version as any) + 1;
@@ -483,7 +484,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     );
                 }
 
-                utils.checkOwnership(context, permission, originalEntryRevision, "ownedBy");
+                utils.checkOwnership(context, permission, originalEntryRevision);
 
                 // we always send the full entry to the hooks and updater
                 const updatedEntry: CmsContentEntry = {
@@ -567,7 +568,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     throw new NotFoundError(`Entry "${revisionId}" was not found!`);
                 }
 
-                utils.checkOwnership(context, permission, entryRevisionToDelete, "ownedBy");
+                utils.checkOwnership(context, permission, entryRevisionToDelete);
 
                 const latestEntryRevisionId = latestEntryRevision ? latestEntryRevision.id : null;
                 /**
@@ -626,7 +627,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     throw new NotFoundError(`Entry "${entryId}" was not found!`);
                 }
 
-                utils.checkOwnership(context, permission, entry, "ownedBy");
+                utils.checkOwnership(context, permission, entry);
 
                 return await deleteEntry(model, entry);
             },
@@ -652,7 +653,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     );
                 }
 
-                utils.checkOwnership(context, permission, originalEntryRevision, "ownedBy");
+                utils.checkOwnership(context, permission, originalEntryRevision);
 
                 const currentDate = new Date().toISOString();
                 const entry: CmsContentEntry = {
@@ -732,7 +733,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     );
                 }
 
-                utils.checkOwnership(context, permission, originalEntryRevision, "ownedBy");
+                utils.checkOwnership(context, permission, originalEntryRevision);
 
                 const entry: CmsContentEntry = {
                     ...originalEntryRevision,
@@ -806,7 +807,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     );
                 }
 
-                utils.checkOwnership(context, permission, originalEntryRevision, "ownedBy");
+                utils.checkOwnership(context, permission, originalEntryRevision);
 
                 // Change entry's status.
                 const entry: CmsContentEntry = {
@@ -871,7 +872,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     );
                 }
 
-                utils.checkOwnership(context, permission, originalEntryRevision, "ownedBy");
+                utils.checkOwnership(context, permission, originalEntryRevision);
 
                 if (!publishedEntryRevision || publishedEntryRevision.id !== id) {
                     throw new WebinyError(`Entry is not published.`, "UNPUBLISH_ERROR", {

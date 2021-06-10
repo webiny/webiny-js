@@ -139,11 +139,10 @@ export const checkOwnership = (
 export const validateOwnership = (
     context: CmsContext,
     permission: SecurityPermission,
-    record: { createdBy?: CreatedBy; ownedBy?: CreatedBy },
-    field = "createdBy"
+    record: { createdBy?: CreatedBy; ownedBy?: CreatedBy }
 ): boolean => {
     try {
-        checkOwnership(context, permission, record, field);
+        checkOwnership(context, permission, record);
         return true;
     } catch {
         return false;
