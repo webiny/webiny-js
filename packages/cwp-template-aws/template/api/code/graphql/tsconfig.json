@@ -2,8 +2,7 @@
   "extends": "../../../tsconfig",
   "compilerOptions": {
     "paths": {
-      "~/*": ["./src/*"],
-      "~": ["./src"]
+      "~/*": ["./src/*"]
     }
   }
 }
