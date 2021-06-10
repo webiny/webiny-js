@@ -656,7 +656,10 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                 PK: primaryKey,
                 SK: this.getSecondaryKeyRevision(entry.version)
             },
-            data: entry
+            data: {
+                ...storageEntry,
+                SK: this.getSecondaryKeyRevision(entry.version)
+            }
         });
 
         const es = configurations.es(this.context, model);
@@ -691,6 +694,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                     },
                     data: {
                         ...previouslyPublishedStorageEntry,
+                        SK: this.getSecondaryKeyRevision(publishedStorageEntry.version),
                         savedOn: entry.savedOn
                     }
                 })
@@ -704,20 +708,19 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                         SK: this.getSecondaryKeyPublished()
                     },
                     data: {
+                        ...getEntryData(this.context, storageEntry),
                         PK: primaryKey,
-                        SK: this.getSecondaryKeyPublished(),
-                        ...getEntryData(this.context, publishedStorageEntry),
-                        ...getEntryData(this.context, entry)
+                        SK: this.getSecondaryKeyPublished()
                     }
                 });
         } else {
             batch.create({
                 ...configurations.db(),
                 data: {
+                    ...getEntryData(this.context, storageEntry),
                     PK: primaryKey,
                     SK: this.getSecondaryKeyPublished(),
-                    TYPE: TYPE_ENTRY_PUBLISHED,
-                    ...getEntryData(this.context, entry)
+                    TYPE: TYPE_ENTRY_PUBLISHED
                 }
             });
         }
@@ -739,6 +742,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                 },
                 data: {
                     ...latestESEntryData,
+                    SK: this.getSecondaryKeyLatest(),
                     data: {
                         ...((latestESEntryData as any).data || {}),
                         status: CONTENT_ENTRY_STATUS.PUBLISHED,
@@ -808,7 +812,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         args: CmsContentEntryStorageOperationsUnpublishArgs
     ): Promise<CmsContentEntry> {
         const { db } = this.context;
-        const { entry } = args;
+        const { entry, storageEntry } = args;
 
         /**
          * We need the latest entry to check if it needs to be updated.
@@ -839,7 +843,10 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                     PK: primaryKey,
                     SK: this.getSecondaryKeyRevision(entry.version)
                 },
-                data: entry
+                data: {
+                    ...storageEntry,
+                    SK: this.getSecondaryKeyRevision(entry.version)
+                }
             });
         /**
          * If we are unpublishing the latest revision, let's also update the latest revision entry's status in ES.
@@ -874,7 +881,10 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                     PK: primaryKey,
                     SK: this.getSecondaryKeyLatest(),
                     index: es.index,
-                    data: getESLatestEntryData(this.context, preparedEntryData)
+                    data: {
+                        ...getESLatestEntryData(this.context, preparedEntryData),
+                        SK: this.getSecondaryKeyLatest()
+                    }
                 }
             });
         }
@@ -899,7 +909,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         args: CmsContentEntryStorageOperationsRequestChangesArgs
     ): Promise<CmsContentEntry> {
         const { db } = this.context;
-        const { entry, originalEntry } = args;
+        const { entry, storageEntry, originalEntry } = args;
 
         /**
          * We need the latest entry to check if it needs to be updated.
@@ -914,7 +924,10 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                 PK: primaryKey,
                 SK: this.getSecondaryKeyRevision(entry.version)
             },
-            data: entry
+            data: {
+                ...storageEntry,
+                SK: this.getSecondaryKeyRevision(entry.version)
+            }
         });
 
         /**
@@ -976,7 +989,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         args: CmsContentEntryStorageOperationsRequestReviewArgs
     ): Promise<CmsContentEntry> {
         const { db } = this.context;
-        const { entry, originalEntry } = args;
+        const { entry, storageEntry, originalEntry } = args;
 
         /**
          * We need the latest entry to check if it needs to be updated.
@@ -991,7 +1004,10 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                 PK: primaryKey,
                 SK: this.getSecondaryKeyRevision(entry.version)
             },
-            data: entry
+            data: {
+                ...storageEntry,
+                SK: this.getSecondaryKeyRevision(entry.version)
+            }
         });
 
         /**
