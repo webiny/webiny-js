@@ -2,6 +2,7 @@ import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createHandler } from "@webiny/handler-aws";
 import graphqlPlugins from "@webiny/handler-graphql";
 import i18nPlugins from "@webiny/api-i18n/graphql";
+import adminUsersPlugins from "@webiny/api-security-admin-users";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
 import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
@@ -48,6 +49,7 @@ export const handler = createHandler({
                 }
             }
         }),
+        adminUsersPlugins(),
         pageBuilderPlugins(),
         formBuilderPlugins(),
         headlessCmsPlugins(),

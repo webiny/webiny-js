@@ -1,5 +1,5 @@
-import cognitoSecurity from "@webiny/app-plugin-security-cognito";
-import cognitoIdentityProvider from "@webiny/app-plugin-security-cognito/identityProvider";
+import cognitoSecurity from "@webiny/app-security-cognito-authentication";
+import cognitoIdentityProvider from "@webiny/app-security-admin-users-cognito";
 import adminUsers from "@webiny/app-security-admin-users/plugins";
 import accountDetails from "@webiny/app-security-admin-users/plugins/userMenu/accountDetails";
 import signOut from "@webiny/app-security-admin-users/plugins/userMenu/signOut";
