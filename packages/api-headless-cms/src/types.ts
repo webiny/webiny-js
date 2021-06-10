@@ -1807,14 +1807,6 @@ export interface CmsContentEntryBeforeUpdateHookArgs extends CmsContentEntryHook
      * Original entry being updated, directly from storage, with transformations on it.
      */
     originalStorageEntry: CmsStorageContentEntry;
-    /**
-     * Latest entry from the given entry set.
-     */
-    // latestEntry: CmsContentEntry;
-    /**
-     * Latest entry from the given entry set, directly from storage, with the transformations.
-     */
-    // latestStorageEntry: CmsContentEntry;
 }
 
 /**
@@ -1834,14 +1826,6 @@ export interface CmsContentEntryAfterUpdateHookArgs extends CmsContentEntryHookP
      * Original entry being updated, directly from storage, with transformations on it.
      */
     originalStorageEntry: CmsContentEntry;
-    /**
-     * Latest entry from the given entry set.
-     */
-    // latestEntry: CmsContentEntry;
-    /**
-     * Latest entry from the given entry set, directly from storage, with transformations on it.
-     */
-    // latestStorageEntry: CmsContentEntry;
     /**
      * Entry that was stored, in its plain form without the transformations.
      */
@@ -2486,13 +2470,6 @@ export interface CmsContentEntryStorageOperationsListArgs<
     after?: string;
 }
 
-// export interface CmsContentEntryStorageOperationsListResponse {
-//     hasMoreItems: boolean;
-//     items: CmsContentEntry[];
-//     totalCount: number;
-//     cursor: string | null;
-// }
-
 export interface CmsContentEntryStorageOperationsCreateArgs<
     T extends CmsStorageContentEntry = CmsStorageContentEntry
 > {
@@ -2554,14 +2531,6 @@ export interface CmsContentEntryStorageOperationsUpdateArgs<
      * Directly from storage, with transformations on it.
      */
     originalStorageEntry: T;
-    /**
-     * Latest entry revision. Needed in the CRUD for checks and passed into storage operations to be used if required.
-     */
-    // latestEntry: CmsContentEntry;
-    /**
-     * Directly from storage, with transformations on it.
-     */
-    // latestStorageEntry: T;
     /**
      * Real entry, with no transformations on it.
      */

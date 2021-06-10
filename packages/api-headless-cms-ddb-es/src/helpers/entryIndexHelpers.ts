@@ -78,7 +78,9 @@ export const prepareEntryToIndex = (args: PrepareElasticsearchDataArgs): CmsCont
 
         const targetFieldPlugin =
             mappedFieldToElasticsearchPlugins[field.type] || defaultIndexFieldPlugin;
-        // we decided to take only last registered plugin for given field type
+        /**
+         * We decided to take only last registered plugin for given field type
+         */
         if (targetFieldPlugin && targetFieldPlugin.toIndex) {
             const newEntryValues = targetFieldPlugin.toIndex({
                 context,
