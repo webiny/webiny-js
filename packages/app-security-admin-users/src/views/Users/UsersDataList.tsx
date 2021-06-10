@@ -172,7 +172,11 @@ const UsersDataList = () => {
                                 />
                             </ListItemGraphic>
                             <ListItemText
-                                onClick={() => history.push(`/security/users?login=${encodeURIComponent(item.login)}`)}
+                                onClick={() =>
+                                    history.push(
+                                        `/security/users?login=${encodeURIComponent(item.login)}`
+                                    )
+                                }
                             >
                                 {item.firstName} {item.lastName}
                                 <ListItemTextSecondary>{item.login}</ListItemTextSecondary>

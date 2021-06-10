@@ -47,7 +47,7 @@ type DbItem<T = unknown> = T & {
 export default {
     type: "context",
     apply(context) {
-        const { db, i18nContent, elasticSearch, security, tenancy } = context;
+        const { db, i18nContent, elasticSearch, tenancy } = context;
 
         const PK_FORM = formId => `${utils.getPKPrefix(context)}F#${formId}`;
         const SK_FORM_REVISION = version => {

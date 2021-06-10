@@ -17,7 +17,7 @@
       "path": "../api-security"
     },
     {
-      "path": "../api-security-tenancy"
+      "path": "../api-tenancy"
     },
     {
       "path": "../api-upgrade"

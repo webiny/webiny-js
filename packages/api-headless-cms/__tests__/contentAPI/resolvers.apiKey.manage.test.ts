@@ -57,7 +57,7 @@ describe("MANAGE - resolvers - api key", () => {
 
     beforeEach(async () => {
         await installMutation();
-        
+
         const [createCMG] = await createContentModelGroupMutation({
             data: {
                 name: "Group",
@@ -116,7 +116,7 @@ describe("MANAGE - resolvers - api key", () => {
             ...manageOpts,
             identity
         });
-        
+
         const { listCategories: listCategoriesRead } = useCategoryReadHandler({
             ...readOpts,
             identity

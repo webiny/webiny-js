@@ -15,6 +15,7 @@
     "@webiny/app-security-admin-users": "^5.7.0",
     "@webiny/ui": "^5.7.0",
     "@webiny/validation": "^5.7.0",
+    "@webiny/plugins": "^5.7.0",
     "react": "^16.14.0",
     "react-dom": "^16.14.0"
   },

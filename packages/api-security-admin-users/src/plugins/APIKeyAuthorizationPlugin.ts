@@ -19,7 +19,7 @@ export class APIKeyAuthorizationPlugin extends AuthorizationPlugin<AdminUsersCon
         this._config = config || {};
     }
 
-    async getPermissions({ security, tenancy }: AdminUsersContext) {
+    async getPermissions({ security }: AdminUsersContext) {
         const identityType = this._config.identityType || "api-key";
 
         const identity = security.getIdentity();

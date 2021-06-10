@@ -72,8 +72,8 @@ export default new ContextPlugin<CmsContext>(async context => {
             },
             getReadAPIKey: async () => {
                 const system = await storageOperations.get();
-                
-                if(!system) {
+
+                if (!system) {
                     return null;
                 }
 

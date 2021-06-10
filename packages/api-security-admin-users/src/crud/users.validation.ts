@@ -1,7 +1,7 @@
 import { withFields, string } from "@commodo/fields";
 import { object } from "commodo-fields-object";
-import {validation} from "@webiny/validation";
-import {UserPlugin} from "../plugins/UserPlugin";
+import { validation } from "@webiny/validation";
+import { UserPlugin } from "../plugins/UserPlugin";
 
 const CreateUserDataModel = withFields({
     login: string({ validation: validation.create("required,minLength:2") }),
@@ -16,7 +16,6 @@ const UpdateUserDataModel = withFields({
     lastName: string({ validation: validation.create("minLength:2") }),
     group: string()
 })();
-
 
 export default new UserPlugin({
     async beforeCreate({ inputData }) {

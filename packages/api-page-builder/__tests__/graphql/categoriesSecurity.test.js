@@ -54,7 +54,7 @@ describe("Categories Security Test", () => {
     afterEach(async () => {
         await defaultHandler.deleteElasticSearchIndex();
     });
-    
+
     test(`"listCategories" only returns entries to which the identity has access to`, async () => {
         const { createCategory } = defaultHandler;
         await createCategory({ data: new Mock("list-categories-1-") });

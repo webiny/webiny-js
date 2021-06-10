@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useCallback, Fragment, useRef } from "react";
+import React, { useState, useMemo, useCallback, Fragment, useRef } from "react";
 import { plugins } from "@webiny/plugins";
 import { useSecurity } from "@webiny/app-security";
 import { TenantHeaderLinkPlugin } from "@webiny/app/plugins/TenantHeaderLinkPlugin";

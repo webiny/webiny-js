@@ -12,7 +12,6 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@webiny/api-security": "^5.7.0",
     "@webiny/api-security-admin-users": "^5.7.0",
     "@webiny/handler-graphql": "^5.7.0"
   },

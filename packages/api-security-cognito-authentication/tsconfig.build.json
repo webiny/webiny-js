@@ -5,9 +5,7 @@
     "node_modules",
     "dist",
     "../api-security",
-    "../api-security-tenancy",
     "../handler",
-    "../handler-graphql",
     "../handler-http"
   ],
   "compilerOptions": {

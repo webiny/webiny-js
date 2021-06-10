@@ -13,7 +13,7 @@
     "@webiny/api-plugin-elastic-search-client": "latest",
     "@webiny/api-plugin-security-cognito": "latest",
     "@webiny/api-security": "latest",
-    "@webiny/api-security-tenancy": "latest",
+    "@webiny/api-tenancy": "latest",
     "@webiny/cli": "latest",
     "@webiny/db-dynamodb": "latest",
     "@webiny/handler-aws": "latest",

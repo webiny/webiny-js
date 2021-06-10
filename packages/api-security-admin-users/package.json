@@ -26,6 +26,7 @@
     "dataloader": "^2.0.0",
     "deep-equal": "^2.0.4",
     "lodash.omit": "^4.5.0",
+    "lodash.clonedeep": "^4.5.0",
     "md5": "^2.3.0",
     "mdbid": "^1.0.0"
   },

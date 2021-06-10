@@ -12,7 +12,10 @@
       "path": "../api-security"
     },
     {
-      "path": "../api-security-tenancy"
+      "path": "../api-tenancy"
+    },
+    {
+      "path": "../api-security-admin-users"
     },
     {
       "path": "../api-file-manager"
@@ -54,6 +57,8 @@
       "@webiny/api-i18n-content": ["../api-i18n-content/src"],
       "@webiny/api-security/*": ["../api-security/src/*"],
       "@webiny/api-security": ["../api-security/src"],
+      "@webiny/api-security-admin-users/*": ["../api-security-admin-users/src/*"],
+      "@webiny/api-security-admin-users": ["../api-security-admin-users/src"],
       "@webiny/api-tenancy/*": ["../api-tenancy/src/*"],
       "@webiny/api-tenancy": ["../api-tenancy/src"],
       "@webiny/api-file-manager/*": ["../api-file-manager/src/*"],

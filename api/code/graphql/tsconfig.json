@@ -74,9 +74,15 @@
       "@webiny/api-tenancy": ["../../../packages/api-tenancy/src"],
       "@webiny/api-security-admin-users/*": ["../../../packages/api-security-admin-users/src/*"],
       "@webiny/api-security-admin-users": ["../../../packages/api-security-admin-users/src"],
-      "@webiny/api-security-admin-users-cognito/*": ["../../../packages/api-security-admin-users-cognito/src/*"],
-      "@webiny/api-security-admin-users-cognito": ["../../../packages/api-security-admin-users-cognito/src"],
-      "@webiny/api-security-cognito-authentication": ["../../../packages/api-security-cognito-authentication/src"]
+      "@webiny/api-security-admin-users-cognito/*": [
+        "../../../packages/api-security-admin-users-cognito/src/*"
+      ],
+      "@webiny/api-security-admin-users-cognito": [
+        "../../../packages/api-security-admin-users-cognito/src"
+      ],
+      "@webiny/api-security-cognito-authentication": [
+        "../../../packages/api-security-cognito-authentication/src"
+      ]
     },
     "baseUrl": "."
   }
