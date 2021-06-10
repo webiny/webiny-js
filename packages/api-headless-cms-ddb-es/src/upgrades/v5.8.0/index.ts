@@ -157,9 +157,12 @@ export default (): UpgradePlugin<CmsContext> => ({
          */
         const table = definitions.defineTable(context);
         const elasticTable = definitions.defineElasticsearchTable(context);
-        const modelEntity = definitions.defineModel(table);
-        const entryEntity = definitions.defineEntry(table);
-        const entryElasticsearchEntity = definitions.defineElasticsearchEntry(elasticTable);
+        const modelEntity = definitions.defineModel({ context, table });
+        const entryEntity = definitions.defineEntry({ context, table });
+        const entryElasticsearchEntity = definitions.defineElasticsearchEntry({
+            context,
+            table: elasticTable
+        });
 
         const entryRecords: Record<string, EntryRecordData> = {};
         const esIndices: { esIndex: string; localeCode: string }[] = [];

@@ -1,6 +1,12 @@
 import { Table, Entity } from "dynamodb-toolbox";
+import { CmsContext } from "@webiny/api-headless-cms/types";
+interface Params {
+    table: Table;
+    context: CmsContext;
+}
 
-export default (table: Table): Entity<any> => {
+export default (params: Params): Entity<any> => {
+    const { table } = params;
     return new Entity({
         name: "ContentModel",
         table,
