@@ -1,6 +1,6 @@
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { Tenant } from "@webiny/api-tenancy/types";
-import userCrud from "./crud/users.crud";
+import { Users } from "./crud/users.crud";
 import groupCrud from "./crud/groups.crud";
 import apiKeyCrud from "./crud/apiKey.crud";
 import systemCrud from "./crud/system.crud";
@@ -29,7 +29,7 @@ export default () => {
             context.tenancy.setCurrentTenant(tenant);
         };
 
-        context.security.users = userCrud(context);
+        context.security.users = new Users(context);
         context.security.groups = groupCrud(context);
         context.security.apiKeys = apiKeyCrud(context);
         context.security.system = systemCrud(context);

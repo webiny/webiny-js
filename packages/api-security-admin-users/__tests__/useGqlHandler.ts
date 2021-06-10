@@ -1,7 +1,7 @@
 import { createHandler } from "@webiny/handler-aws";
 import apolloServerPlugins from "@webiny/handler-graphql";
 import tenancyPlugins from "@webiny/api-tenancy";
-import securityPlugins from "@webiny/api-security/authenticator";
+import securityPlugins from "@webiny/api-security";
 import { SecurityIdentity } from "@webiny/api-security";
 import dbPlugins from "@webiny/handler-db";
 import { PluginCollection } from "@webiny/plugins/types";
@@ -104,20 +104,6 @@ export default (opts: UseGqlHandlerParams = {}) => {
                 const allPermissions = await context.security.users.getUserAccess(identity.id);
                 const tenantAccess = allPermissions.find(p => p.tenant.id === tenant.id);
                 return tenantAccess ? tenantAccess.group.permissions : null;
-            }
-        },
-        // Add Cognito plugins for user management
-        {
-            name: "security-identity-provider",
-            type: "security-identity-provider",
-            async createUser() {
-                return Promise.resolve();
-            },
-            async updateUser() {
-                return Promise.resolve();
-            },
-            async deleteUser() {
-                return Promise.resolve();
             }
         },
         ...opts.plugins

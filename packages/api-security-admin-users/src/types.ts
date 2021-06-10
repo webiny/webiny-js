@@ -1,28 +1,8 @@
-import { Plugin } from "@webiny/plugins/types";
-import { Context, ContextInterface } from "@webiny/handler/types";
+import { ContextInterface } from "@webiny/handler/types";
 import { SecurityContextBase, SecurityPermission } from "@webiny/api-security/types";
 import { TenancyContext, Tenant } from "@webiny/api-tenancy/types";
 import { HttpContext } from "@webiny/handler-http/types";
 import { DbContext } from "@webiny/handler-db/types";
-
-export type SecurityIdentityProviderPlugin<TData = Record<string, any>> = Plugin & {
-    name: "security-identity-provider";
-    type: "security-identity-provider";
-    // Executed each time a user logs in
-    onLogin?: (params: { user: User; firstLogin: boolean }, context: Context) => Promise<void>;
-    // Create user in a 3rd party identity provider
-    createUser: (
-        params: { data: CreateUserInput & TData; permanent?: boolean },
-        context: Context
-    ) => Promise<void>;
-    // Update user in a 3rd party identity provider
-    updateUser: (
-        params: { data: UpdateUserInput & TData; user: User },
-        context: Context
-    ) => Promise<void>;
-    // Delete user from a 3rd party identity provider
-    deleteUser: (params: { user: User }, context: Context) => Promise<void>;
-};
 
 export type CreatedBy = {
     id: string;
@@ -126,11 +106,12 @@ export type GroupsCRUD = {
     updateUserLinks(tenant: Tenant, group: Group): Promise<void>;
 };
 
-export type UsersCRUD = {
-    getUser(login: string): Promise<User>;
-    listUsers(params?: { tenant: string }): Promise<User[]>;
-    createUser(data: CreateUserInput): Promise<User>;
-    updateUser(login: string, data: UpdateUserInput): Promise<UpdateUserInput>;
+export interface UsersCRUD {
+    login(): Promise<User>;
+    getUser(login: string, options?: { auth?: boolean }): Promise<User>;
+    listUsers(options?: { tenant?: string; auth?: boolean }): Promise<User[]>;
+    createUser(data: CreateUserInput, options?: { auth?: boolean }): Promise<User>;
+    updateUser(login: string, data: UpdateUserInput): Promise<User>;
     deleteUser(login: string): Promise<boolean>;
     linkUserToTenant(login: string, tenant: Tenant, group: Group): Promise<void>;
     unlinkUserFromTenant(login: string, tenant: Tenant): Promise<void>;
@@ -148,7 +129,7 @@ export type UsersCRUD = {
         data: UpdatePersonalAccessTokenInput
     ): Promise<UpdatePersonalAccessTokenInput>;
     deleteToken(login: string, tokenId: string): Promise<boolean>;
-};
+}
 
 export type ApiKeysCRUD = {
     getApiKey(id: string): Promise<ApiKey>;

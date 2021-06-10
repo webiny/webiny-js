@@ -1,5 +1,5 @@
 import { ErrorResponse, Response } from "@webiny/handler-graphql/responses";
-import { Group, SecurityIdentityProviderPlugin, AdminUsersContext } from "../types";
+import { Group, AdminUsersContext } from "../types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 
 const createDefaultGroups = async (
@@ -92,32 +92,26 @@ export default new GraphQLSchemaPlugin<AdminUsersContext>({
 
                     context.tenancy.setCurrentTenant(tenant);
 
-                    const authPlugin = context.plugins.byName<SecurityIdentityProviderPlugin>(
-                        "security-identity-provider"
-                    );
+                    // Create default groups
+                    const { fullAccessGroup } = await createDefaultGroups(context);
 
                     try {
-                        await authPlugin.createUser({ data, permanent: true }, context);
+                        // Create new user
+                        await context.security.users.createUser(
+                            {
+                                ...data,
+                                group: fullAccessGroup.slug
+                            },
+                            { auth: false }
+                        );
                     } catch (e) {
                         await context.tenancy.deleteTenant("root");
+
                         return new ErrorResponse({
                             code: "SECURITY_INSTALL_ABORTED",
                             message: e.message
                         });
                     }
-
-                    // Create default groups
-                    const { fullAccessGroup } = await createDefaultGroups(context);
-
-                    // Create new user
-                    const user = await context.security.users.createUser(data);
-
-                    // Link user with group for this tenant
-                    await context.security.users.linkUserToTenant(
-                        user.login,
-                        tenant,
-                        fullAccessGroup
-                    );
 
                     // Store app version
                     await context.security.system.setVersion(context.WEBINY_VERSION);

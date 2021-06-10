@@ -46,7 +46,7 @@ export class UserAuthorizationPlugin extends AuthorizationPlugin<AdminUsersConte
             return this._permissionCache.get(cacheKey);
         }
 
-        const user = await security.users.getUser(identity.id);
+        const user = await security.users.getUser(identity.id, { auth: false });
 
         if (!user) {
             throw new WebinyError(`User "${identity.id}" was not found!`, "USER_NOT_FOUND", {

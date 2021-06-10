@@ -6,136 +6,130 @@ import {
     ListResponse,
     ListErrorResponse
 } from "@webiny/handler-graphql/responses";
-import {
-    AdminUsersContext,
-    CreateUserInput,
-    SecurityIdentityProviderPlugin,
-    UpdateUserInput,
-    User
-} from "../types";
-import NotAuthorizedResponse from "@webiny/api-security/NotAuthorizedResponse";
+import { AdminUsersContext, CreateUserInput, UpdateUserInput, User } from "../types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
+import { NotAuthorizedError } from "@webiny/api-security";
 
 const gravatar = (user: User) => {
     return "https://www.gravatar.com/avatar/" + md5(user.login);
 };
 
 export default new GraphQLSchemaPlugin<AdminUsersContext>({
-    typeDefs: `
-            type TenantAccess {
-                """
-                Tenant ID
-                """
-                id: ID
-
-                """
-                Tenant name
-                """
-                name: String
-
-                """
-                Tenant permissions
-                """
-                permissions: [JSON]
-            }
-
-            type SecurityIdentity {
-                login: String
-                access: [TenantAccess]
-                firstName: String
-                lastName: String
-                avatar: JSON
-                gravatar: String
-            }
-
-            type SecurityUserGroup {
-                name: String
-                slug: String
-            }
-
-            type SecurityUser {
-                login: String
-                firstName: String
-                lastName: String
-                avatar: JSON
-                gravatar: String
-                createdOn: DateTime
-                """
-                The group this user belongs to within current tenant.
-                """
-                group: SecurityUserGroup
-            }
+    typeDefs: /* GraphQL */ `
+        type TenantAccess {
+            """
+            Tenant ID
+            """
+            id: ID
 
             """
-            This input type is used by administrators to create other user's accounts within the same tenant.
+            Tenant name
             """
-            input SecurityUserCreateInput {
-                login: String!
-                firstName: String!
-                lastName: String!
-                avatar: JSON
-                group: String!
-            }
-            
-            """
-            This input type is used by administrators to update other user's accounts within the same tenant.
-            """
-            input SecurityUserUpdateInput {
-                firstName: String
-                lastName: String
-                avatar: JSON
-                group: String
-            }
+            name: String
 
             """
-            This input type is used by the user who is updating his own account
+            Tenant permissions
             """
-            input SecurityCurrentUserInput {
-                firstName: String
-                lastName: String
-                avatar: JSON
-            }
+            permissions: [JSON]
+        }
 
-            type SecurityUserResponse {
-                data: SecurityUser
-                error: SecurityError
-            }
-            
-            type SecurityUserListResponse {
-                data: [SecurityUser]
-                error: SecurityError
-            }
+        type SecurityIdentity {
+            login: String
+            access: [TenantAccess]
+            firstName: String
+            lastName: String
+            avatar: JSON
+            gravatar: String
+        }
 
-            type SecurityIdentityLoginResponse {
-                data: SecurityIdentity
-                error: SecurityError
-            }
+        type SecurityUserGroup {
+            name: String
+            slug: String
+        }
 
-            extend type SecurityQuery {
-                "Get a single user by id or specific search criteria"
-                getUser(login: String): SecurityUserResponse
-                
-                "Get current user"
-                getCurrentUser: SecurityUserResponse
+        type SecurityUser {
+            login: String
+            firstName: String
+            lastName: String
+            avatar: JSON
+            gravatar: String
+            createdOn: DateTime
+            """
+            The group this user belongs to within current tenant.
+            """
+            group: SecurityUserGroup
+        }
 
-                "Get a list of users"
-                listUsers: SecurityUserListResponse
-            }
+        """
+        This input type is used by administrators to create other user's accounts within the same tenant.
+        """
+        input SecurityUserCreateInput {
+            login: String!
+            firstName: String!
+            lastName: String!
+            avatar: JSON
+            group: String!
+        }
 
-            extend type SecurityMutation {
-                "Login using idToken obtained from a 3rd party identity provider"
-                login: SecurityIdentityLoginResponse
+        """
+        This input type is used by administrators to update other user's accounts within the same tenant.
+        """
+        input SecurityUserUpdateInput {
+            firstName: String
+            lastName: String
+            avatar: JSON
+            group: String
+        }
 
-                "Update current user"
-                updateCurrentUser(data: SecurityCurrentUserInput!): SecurityUserResponse
+        """
+        This input type is used by the user who is updating his own account
+        """
+        input SecurityCurrentUserInput {
+            firstName: String
+            lastName: String
+            avatar: JSON
+        }
 
-                createUser(data: SecurityUserCreateInput!): SecurityUserResponse
+        type SecurityUserResponse {
+            data: SecurityUser
+            error: SecurityError
+        }
 
-                updateUser(login: String!, data: SecurityUserUpdateInput!): SecurityUserResponse
+        type SecurityUserListResponse {
+            data: [SecurityUser]
+            error: SecurityError
+        }
 
-                deleteUser(login: String!): SecurityBooleanResponse
-            }
-        `,
+        type SecurityIdentityLoginResponse {
+            data: SecurityIdentity
+            error: SecurityError
+        }
+
+        extend type SecurityQuery {
+            "Get a single user by id or specific search criteria"
+            getUser(login: String): SecurityUserResponse
+
+            "Get current user"
+            getCurrentUser: SecurityUserResponse
+
+            "Get a list of users"
+            listUsers: SecurityUserListResponse
+        }
+
+        extend type SecurityMutation {
+            "Login using idToken obtained from a 3rd party identity provider"
+            login: SecurityIdentityLoginResponse
+
+            "Update current user"
+            updateCurrentUser(data: SecurityCurrentUserInput!): SecurityUserResponse
+
+            createUser(data: SecurityUserCreateInput!): SecurityUserResponse
+
+            updateUser(login: String!, data: SecurityUserUpdateInput!): SecurityUserResponse
+
+            deleteUser(login: String!): SecurityBooleanResponse
+        }
+    `,
     resolvers: {
         SecurityUser: {
             gravatar,
@@ -172,17 +166,10 @@ export default new GraphQLSchemaPlugin<AdminUsersContext>({
         },
         SecurityQuery: {
             getUser: async (_, args: { login: string }, context) => {
-                const { security } = context;
-                const permission = await security.getPermission("security.user");
-
-                if (!permission) {
-                    return new NotAuthorizedResponse();
-                }
-
                 const { login } = args;
 
                 try {
-                    const user = await security.users.getUser(login);
+                    const user = await context.security.users.getUser(login);
                     if (!user) {
                         return new NotFoundResponse(`User "${login}" was not found!`);
                     }
@@ -195,10 +182,10 @@ export default new GraphQLSchemaPlugin<AdminUsersContext>({
                 const identity = context.security.getIdentity();
 
                 if (!identity) {
-                    throw new Error("Not authorized!");
+                    throw new NotAuthorizedError();
                 }
 
-                const user = await context.security.users.getUser(identity.id);
+                const user = await context.security.users.getUser(identity.id, { auth: false });
                 if (!user) {
                     return new NotFoundResponse(`User with ID ${identity.id} was not found!`);
                 }
@@ -206,18 +193,8 @@ export default new GraphQLSchemaPlugin<AdminUsersContext>({
                 return new Response(user);
             },
             listUsers: async (_, args, context) => {
-                const { security, tenancy } = context;
-                const permission = await security.getPermission("security.user");
-
-                if (!permission) {
-                    return new NotAuthorizedResponse();
-                }
-
                 try {
-                    const tenant = tenancy.getCurrentTenant();
-                    const userList = await security.users.listUsers({
-                        tenant: tenant.id
-                    });
+                    const userList = await context.security.users.listUsers();
 
                     return new ListResponse(userList);
                 } catch (e) {
@@ -227,36 +204,8 @@ export default new GraphQLSchemaPlugin<AdminUsersContext>({
         },
         SecurityMutation: {
             login: async (root, args, context) => {
-                const { security, plugins } = context;
                 try {
-                    const identity = security.getIdentity();
-
-                    if (!identity) {
-                        throw new Error("Not authorized!");
-                    }
-
-                    let user = await security.users.getUser(identity.id);
-
-                    let firstLogin = false;
-
-                    if (!user) {
-                        firstLogin = true;
-                        // Create a "Security User"
-                        user = await security.users.createUser({
-                            login: identity.id,
-                            firstName: identity.firstName || "",
-                            lastName: identity.lastName || "",
-                            avatar: identity.avatar
-                        });
-                    }
-
-                    const authPlugin = plugins.byName<SecurityIdentityProviderPlugin>(
-                        "security-identity-provider"
-                    );
-
-                    if (typeof authPlugin.onLogin === "function") {
-                        await authPlugin.onLogin({ user, firstLogin }, context);
-                    }
+                    const user = await context.security.users.login();
 
                     return new Response(user);
                 } catch (e) {
@@ -264,38 +213,19 @@ export default new GraphQLSchemaPlugin<AdminUsersContext>({
                 }
             },
             updateCurrentUser: async (_, args: { data: UpdateUserInput }, context) => {
-                const { security, plugins } = context;
+                const { security } = context;
                 const identity = security.getIdentity();
                 if (!identity) {
                     throw new Error("Not authorized!");
                 }
 
-                const user = await security.users.getUser(identity.id);
+                let user = await security.users.getUser(identity.id);
                 if (!user) {
                     return new NotFoundResponse("User not found!");
                 }
 
                 try {
-                    // We need to explicitly pick attributes we want to handle, as plugins can add their own
-                    // fields to GraphQL Schema, and we don't want to have those in the mix.
-                    const { firstName, lastName, avatar } = args.data;
-
-                    const updatedAttributes = await security.users.updateUser(user.login, {
-                        firstName,
-                        lastName,
-                        avatar
-                    });
-
-                    // Assign updated attributes to the original user data object
-                    Object.assign(user, updatedAttributes);
-
-                    const authPlugin = plugins.byName<SecurityIdentityProviderPlugin>(
-                        "security-identity-provider"
-                    );
-
-                    if (authPlugin) {
-                        await authPlugin.updateUser({ data: args.data, user }, context);
-                    }
+                    user = await security.users.updateUser(user.login, args.data);
 
                     return new Response(user);
                 } catch (e) {
@@ -303,27 +233,8 @@ export default new GraphQLSchemaPlugin<AdminUsersContext>({
                 }
             },
             createUser: async (_, { data }: { data: CreateUserInput }, context) => {
-                const { security, plugins, tenancy } = context;
-                const permission = await security.getPermission("security.user");
-
-                if (!permission) {
-                    return new NotAuthorizedResponse();
-                }
-
                 try {
-                    const authPlugin = plugins.byName<SecurityIdentityProviderPlugin>(
-                        "security-identity-provider"
-                    );
-
-                    // First let's try creating a user with our IDP
-                    await authPlugin.createUser({ data }, context);
-
-                    // Now we can store the user in our DB
-                    const user = await security.users.createUser(data);
-
-                    const tenant = tenancy.getCurrentTenant();
-                    const group = await security.groups.getGroup(tenant, data.group);
-                    await security.users.linkUserToTenant(user.login, tenant, group);
+                    const user = await context.security.users.createUser(data);
 
                     return new Response(user);
                 } catch (e) {
@@ -333,47 +244,10 @@ export default new GraphQLSchemaPlugin<AdminUsersContext>({
             updateUser: async (
                 root,
                 { data, login }: { login: string; data: UpdateUserInput },
-                context
+                { security }
             ) => {
-                const { security, plugins, tenancy } = context;
-                const permission = await security.getPermission("security.user");
-
-                if (!permission) {
-                    return new NotAuthorizedResponse();
-                }
-
                 try {
-                    const user = await security.users.getUser(login);
-
-                    if (!user) {
-                        return new NotFoundResponse(`User "${login}" was not found!`);
-                    }
-
-                    const updatedAttributes = await security.users.updateUser(login, data);
-
-                    // Link user with a new group
-                    if (updatedAttributes.group) {
-                        const tenant = tenancy.getCurrentTenant();
-
-                        await security.users.unlinkUserFromTenant(user.login, tenant);
-
-                        const group = await security.groups.getGroup(
-                            tenant,
-                            updatedAttributes.group
-                        );
-
-                        await security.users.linkUserToTenant(user.login, tenant, group);
-                    }
-
-                    Object.assign(user, updatedAttributes);
-
-                    const authPlugin = plugins.byName<SecurityIdentityProviderPlugin>(
-                        "security-identity-provider"
-                    );
-
-                    if (authPlugin) {
-                        await authPlugin.updateUser({ data, user }, context);
-                    }
+                    const user = await security.users.updateUser(login, data);
 
                     return new Response(user);
                 } catch (e) {
@@ -381,27 +255,8 @@ export default new GraphQLSchemaPlugin<AdminUsersContext>({
                 }
             },
             deleteUser: async (root, { login }: { login: string }, context) => {
-                const { plugins, security } = context;
-                const permission = await security.getPermission("security.user");
-
-                if (!permission) {
-                    return new NotAuthorizedResponse();
-                }
-
                 try {
-                    const user = await security.users.getUser(login);
-
-                    if (!user) {
-                        return new NotFoundResponse(`User "${login}" was not found!`);
-                    }
-
-                    await security.users.deleteUser(login);
-
-                    const authPlugin = plugins.byName<SecurityIdentityProviderPlugin>(
-                        "security-identity-provider"
-                    );
-
-                    await authPlugin.deleteUser({ user }, context);
+                    await context.security.users.deleteUser(login);
 
                     return new Response(true);
                 } catch (e) {
