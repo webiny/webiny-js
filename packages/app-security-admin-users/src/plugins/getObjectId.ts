@@ -1,17 +1,17 @@
-import { CacheGetObjectIdPlugin } from "@webiny/app/types";
+import { ApolloCacheObjectIdPlugin, Object } from "@webiny/app/plugins/ApolloCacheObjectIdPlugin";
 
-const plugin: CacheGetObjectIdPlugin = {
-    type: "cache-get-object-id",
-    getObjectId(obj) {
-        switch (obj.__typename) {
-            case "SecurityGroup":
-                return obj.slug;
-            case "SecurityUser":
-                return obj.login;
-            default:
-                return undefined;
-        }
+interface SecurityObject extends Object {
+    slug: string;
+    login: string;
+}
+
+export default new ApolloCacheObjectIdPlugin<SecurityObject>(obj => {
+    switch (obj.__typename) {
+        case "SecurityGroup":
+            return obj.slug;
+        case "SecurityUser":
+            return obj.login;
+        default:
+            return undefined;
     }
-};
-
-export default plugin;
+});

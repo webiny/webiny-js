@@ -1,4 +1,5 @@
 import React from "react";
+import { MenuPlugin } from "@webiny/app-admin/plugins/MenuPlugin";
 import { i18n } from "@webiny/app/i18n";
 import { useSecurity } from "@webiny/app-security";
 import { ReactComponent as SecurityIcon } from "./../assets/icons/baseline-security-24px.svg";
@@ -28,12 +29,8 @@ const SecurityMenu = ({ Menu, Section, Item }) => {
     );
 };
 
-export default [
-    {
-        name: "menu-security",
-        type: "admin-menu",
-        render(props) {
-            return <SecurityMenu {...props} />;
-        }
+export default new MenuPlugin({
+    render(props) {
+        return <SecurityMenu {...props} />;
     }
-];
+});

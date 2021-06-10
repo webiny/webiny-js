@@ -14,7 +14,7 @@ export default (): PluginCollection => [
     menus,
     secureRouteError,
     installation,
-    permissionRenderer(),
+    permissionRenderer,
     getObjectId,
     tenancy
 ];

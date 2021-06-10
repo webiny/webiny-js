@@ -112,7 +112,7 @@ const UsersForm = () => {
                 return showSnackbar(error.message);
             }
 
-            !isUpdate && history.push(`/security/users?login=${user.login}`);
+            !isUpdate && history.push(`/security/users?login=${encodeURIComponent(user.login)}`);
             showSnackbar(t`User saved successfully.`);
         },
         [login]
