@@ -10,7 +10,7 @@ class ElasticSearch {
         // Either create a new Amazon Elasticsearch Domain, or use an existing one.
         if (process.env.AWS_ELASTIC_SEARCH_DOMAIN_NAME) {
             // This can be useful for testing purposes in ephemeral environments. More information here:
-            // https://www.webiny.com/docs/key-topics/ci-cd/testing#slow-ephemeral-environments
+            // https://www.webiny.com/docs/key-topics/ci-cd/testing/slow-ephemeral-environments
             this.domain = pulumi.output(
                 aws.elasticsearch.getDomain(
                     {
