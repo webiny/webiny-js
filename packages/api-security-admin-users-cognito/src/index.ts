@@ -1,6 +1,6 @@
 import CognitoIdentityServiceProvider from "aws-sdk/clients/cognitoidentityserviceprovider";
-import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { SecurityIdentityProviderPlugin } from "@webiny/api-security-tenancy/types";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
+import { UserPlugin } from "@webiny/api-security-admin-users/plugins/UserPlugin";
 
 const updateAttributes = { family_name: "lastName", given_name: "firstName" };
 
@@ -8,38 +8,32 @@ export default ({ region, userPoolId }) => {
     const cognito = new CognitoIdentityServiceProvider({ region });
 
     return [
-        {
-            type: "graphql-schema",
-            name: "graphql-schema-cognito",
-            schema: {
-                typeDefs: /* GraphQL */ `
-                    extend input SecurityInstallInput {
-                        password: String
-                    }
+        new GraphQLSchemaPlugin({
+            typeDefs: /* GraphQL */ `
+                extend input SecurityInstallInput {
+                    password: String
+                }
 
-                    extend input SecurityUserCreateInput {
-                        password: String
-                    }
+                extend input SecurityUserCreateInput {
+                    password: String
+                }
 
-                    extend input SecurityUserUpdateInput {
-                        password: String
-                    }
+                extend input SecurityUserUpdateInput {
+                    password: String
+                }
 
-                    # This input type is used by the user who is updating his own account
-                    extend input SecurityCurrentUserInput {
-                        password: String
-                    }
-                `
-            }
-        } as GraphQLSchemaPlugin,
-        {
-            name: "security-identity-provider",
-            type: "security-identity-provider",
-            async createUser({ data, permanent = false }) {
+                # This input type is used by the user who is updating his own account
+                extend input SecurityCurrentUserInput {
+                    password: String
+                }
+            `
+        }),
+        new UserPlugin({
+            async beforeCreate({ inputData, context }) {
                 try {
                     await cognito
                         .adminGetUser({
-                            Username: data.login.toLowerCase(),
+                            Username: inputData.login.toLowerCase(),
                             UserPoolId: userPoolId
                         })
                         .promise();
@@ -52,19 +46,19 @@ export default ({ region, userPoolId }) => {
 
                 const params = {
                     UserPoolId: userPoolId,
-                    Username: data.login.toLowerCase(),
+                    Username: inputData.login.toLowerCase(),
                     DesiredDeliveryMediums: [],
                     ForceAliasCreation: false,
                     MessageAction: "SUPPRESS",
-                    TemporaryPassword: data.password,
+                    TemporaryPassword: inputData.password,
                     UserAttributes: [
                         {
                             Name: "given_name",
-                            Value: data.firstName
+                            Value: inputData.firstName
                         },
                         {
                             Name: "family_name",
-                            Value: data.lastName
+                            Value: inputData.lastName
                         }
                     ]
                 };
@@ -74,7 +68,7 @@ export default ({ region, userPoolId }) => {
 
                 const verify = {
                     UserPoolId: userPoolId,
-                    Username: data.login.toLowerCase(),
+                    Username: inputData.login.toLowerCase(),
                     UserAttributes: [
                         {
                             Name: "email_verified",
@@ -85,18 +79,21 @@ export default ({ region, userPoolId }) => {
 
                 await cognito.adminUpdateUserAttributes(verify).promise();
 
-                if (permanent) {
+                // Check if this is the first user in the system, and if so, set permanent password.
+                const users = await context.security.users.listUsers({ auth: false });
+
+                if (!users.length) {
                     await cognito
                         .adminSetUserPassword({
                             Permanent: true,
-                            Password: data.password,
-                            Username: data.login.toLowerCase(),
+                            Password: inputData.password,
+                            Username: inputData.login.toLowerCase(),
                             UserPoolId: userPoolId
                         })
                         .promise();
                 }
             },
-            async updateUser({ data, user }) {
+            async afterUpdate({ inputData, user }) {
                 const params = {
                     UserAttributes: Object.keys(updateAttributes).map(attr => {
                         return { Name: attr, Value: user[updateAttributes[attr]] };
@@ -107,10 +104,10 @@ export default ({ region, userPoolId }) => {
 
                 await cognito.adminUpdateUserAttributes(params).promise();
 
-                if (data.password) {
+                if (inputData.password) {
                     const pass = {
                         Permanent: true,
-                        Password: data.password,
+                        Password: inputData.password,
                         Username: user.login.toLowerCase(),
                         UserPoolId: userPoolId
                     };
@@ -118,11 +115,11 @@ export default ({ region, userPoolId }) => {
                     await cognito.adminSetUserPassword(pass).promise();
                 }
             },
-            async deleteUser({ user }) {
+            async afterDelete({ user }) {
                 await cognito
                     .adminDeleteUser({ UserPoolId: userPoolId, Username: user.login.toLowerCase() })
                     .promise();
             }
-        } as SecurityIdentityProviderPlugin<{ password: string }>
+        })
     ];
 };
