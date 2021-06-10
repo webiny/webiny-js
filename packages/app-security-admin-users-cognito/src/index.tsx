@@ -2,19 +2,13 @@ import React from "react";
 import { Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { validation } from "@webiny/validation";
-import { i18n } from "@webiny/app/i18n";
 import {
     SecurityInstallationFormPlugin,
     SecurityUserAccountFormPlugin,
     SecurityUserFormPlugin
-} from "@webiny/app-security-tenancy/types";
+} from "@webiny/app-security-admin-users/types";
 import { PluginCollection } from "@webiny/plugins/types";
-import { CognitoIdentityProviderOptions } from "../types";
 import { createCognitoPasswordValidator } from "./cognitoPasswordValidator";
-
-const t1 = i18n.ns("cognito/user-management/installation-form");
-const t2 = i18n.ns("cognito/user-management/user-account-form");
-const t3 = i18n.ns("cognito/user-management/user-form");
 
 const defaultPasswordPolicy = {
     minimumLength: 8,
@@ -24,14 +18,26 @@ const defaultPasswordPolicy = {
     requireUppercase: false
 };
 
-export default (options: CognitoIdentityProviderOptions = {}): PluginCollection => [
+export interface PasswordPolicy {
+    minimumLength?: number;
+    requireLowercase?: boolean;
+    requireNumbers?: boolean;
+    requireSymbols?: boolean;
+    requireUppercase?: boolean;
+}
+
+export interface Options {
+    passwordPolicy?: PasswordPolicy;
+}
+
+export default (options: Options = {}): PluginCollection => [
     {
         type: "security-installation-form",
         render({ Bind }) {
             return (
                 <Cell span={12}>
                     <Bind name="password" validators={validation.create("required")}>
-                        <Input autoComplete="off" type="password" label={t1`Password`} />
+                        <Input autoComplete="off" type="password" label={"Password"} />
                     </Bind>
                 </Cell>
             );
@@ -45,9 +51,9 @@ export default (options: CognitoIdentityProviderOptions = {}): PluginCollection 
                     <Bind name="password">
                         <Input
                             autoComplete="off"
-                            description={data.id && t2`Type a new password to reset it.`}
+                            description={data.id && "Type a new password to reset it."}
                             type="password"
-                            label={t2`Password`}
+                            label={"Password"}
                         />
                     </Bind>
                 </Cell>
@@ -70,9 +76,9 @@ export default (options: CognitoIdentityProviderOptions = {}): PluginCollection 
                     <Bind name="password" validators={passwordValidators}>
                         <Input
                             autoComplete="off"
-                            description={data.id && t3`Type a new password to reset it.`}
+                            description={data.id && "Type a new password to reset it."}
                             type="password"
-                            label={t3`Password`}
+                            label={"Password"}
                         />
                     </Bind>
                 </Cell>

@@ -1,0 +1,25 @@
+{
+  "extends": "../../tsconfig.json",
+  "references": [
+    {
+      "path": "../app-security-admin-users"
+    },
+    {
+      "path": "../ui"
+    },
+    {
+      "path": "../validation"
+    }
+  ],
+  "compilerOptions": {
+    "paths": {
+      "@webiny/app-security-admin-users/*": ["../app-security-admin-users/src/*"],
+      "@webiny/app-security-admin-users": ["../app-security-admin-users/src"],
+      "@webiny/ui/*": ["../ui/src/*"],
+      "@webiny/ui": ["../ui/src"],
+      "@webiny/validation/*": ["../validation/src/*"],
+      "@webiny/validation": ["../validation/src"]
+    },
+    "baseUrl": "."
+  }
+}

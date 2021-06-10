@@ -1,5 +1,5 @@
 import { ValidationError } from "@webiny/validation";
-import { PasswordPolicy } from "../types";
+import { PasswordPolicy } from "./index";
 
 export const createCognitoPasswordValidator = (policy: PasswordPolicy) => (value: any): void => {
     if (!value) {
