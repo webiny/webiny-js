@@ -1,3 +1,5 @@
+const formatWebpackMessages = require("react-dev-utils/formatWebpackMessages");
+
 module.exports = (options, context) => {
     const { boolean } = require("boolean");
     const webpack = require("webpack");
@@ -28,18 +30,34 @@ module.exports = (options, context) => {
         context.log(`Start bundling`);
 
         return webpack(webpackConfig).run(async (err, stats) => {
+            let messages = {};
+
             if (err) {
-                return reject(err);
+                messages = formatWebpackMessages({
+                    errors: [err.message],
+                    warnings: []
+                });
+
+                return reject(new Error(messages.errors.join("\n\n")));
             }
 
             if (stats.hasErrors()) {
-                const info = stats.toJson();
+                messages = formatWebpackMessages(
+                    stats.toJson({
+                        all: false,
+                        warnings: true,
+                        errors: true
+                    })
+                );
+            }
 
-                if (stats.hasErrors()) {
-                    console.error(info.errors);
+            if (messages.errors.length) {
+                // Only keep the first error. Others are often indicative
+                // of the same problem, but confuse the reader with noise.
+                if (messages.errors.length > 1) {
+                    messages.errors.length = 1;
                 }
-
-                return reject("Build failed!");
+                return reject(new Error(messages.errors.join("\n\n")));
             }
 
             context.log(`Finished bundling`);
