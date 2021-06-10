@@ -61,7 +61,9 @@
       "@webiny/handler-graphql/*": ["../../../packages/handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../../../packages/handler-graphql/src"],
       "@webiny/api-page-builder/*": ["../../../packages/api-page-builder/src/*"],
-      "@webiny/api-page-builder": ["../../../packages/api-page-builder/src"]
+      "@webiny/api-page-builder": ["../../../packages/api-page-builder/src"],
+      "~/*": ["./src/*"],
+      "~": ["./src"]
     },
     "baseUrl": "."
   }
