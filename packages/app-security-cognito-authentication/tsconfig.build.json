@@ -5,7 +5,6 @@
     "node_modules",
     "../app",
     "../app-security",
-    "../app-security-tenancy",
     "../plugins",
     "../ui",
     "../validation",

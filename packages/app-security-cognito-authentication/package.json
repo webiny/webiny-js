@@ -1,12 +1,12 @@
 {
-  "name": "@webiny/app-plugin-security-cognito",
+  "name": "@webiny/app-security-cognito-authentication",
   "version": "5.7.0",
   "main": "index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git"
   },
-  "description": "Security provider plugin for AWS Cognito",
+  "description": "Amazon Cognito authentication UI",
   "contributors": [
     "Pavel Denisjuk <pavel@webiny.com>"
   ],
@@ -19,7 +19,6 @@
     "@types/react": "^16.9.56",
     "@webiny/app": "^5.7.0",
     "@webiny/app-security": "^5.7.0",
-    "@webiny/app-security-tenancy": "^5.7.0",
     "@webiny/form": "^5.7.0",
     "@webiny/plugins": "^5.7.0",
     "@webiny/ui": "^5.7.0",

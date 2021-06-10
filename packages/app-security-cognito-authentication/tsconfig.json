@@ -8,9 +8,6 @@
       "path": "../app-security"
     },
     {
-      "path": "../app-security-tenancy"
-    },
-    {
       "path": "../form"
     },
     {
@@ -29,8 +26,6 @@
       "@webiny/app": ["../app/src"],
       "@webiny/app-security/*": ["../app-security/src/*"],
       "@webiny/app-security": ["../app-security/src"],
-      "@webiny/app-security-tenancy/*": ["../app-security-tenancy/src/*"],
-      "@webiny/app-security-tenancy": ["../app-security-tenancy/src"],
       "@webiny/form/*": ["../form/src/*"],
       "@webiny/form": ["../form/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
