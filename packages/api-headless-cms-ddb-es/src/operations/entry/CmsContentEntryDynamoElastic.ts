@@ -30,10 +30,7 @@ import {
     prepareEntryToIndex
 } from "../../helpers";
 import { createBasePartitionKey, encodeElasticsearchCursor, paginateBatch } from "../../utils";
-import {
-    entryToStorageTransform,
-    entryFromStorageTransform
-} from "@webiny/api-headless-cms/transformers";
+import { entryFromStorageTransform } from "@webiny/api-headless-cms/transformers";
 
 export const TYPE_ENTRY = "cms.entry";
 export const TYPE_ENTRY_LATEST = TYPE_ENTRY + ".l";
@@ -96,16 +93,18 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
 
     public async create(
         model: CmsContentModel,
-        { data }: CmsContentEntryStorageOperationsCreateArgs
+        args: CmsContentEntryStorageOperationsCreateArgs
     ): Promise<CmsContentEntry> {
         const { db } = this.context;
 
-        const storageEntry = await entryToStorageTransform(this.context, model, data);
+        const { entry, storageEntry } = args;
+
+        // const storageEntry = await entryToStorageTransform(this.context, model, data);
 
         const esEntry = prepareEntryToIndex({
             context: this.context,
             model,
-            originalEntry: lodashCloneDeep(data),
+            originalEntry: lodashCloneDeep(entry),
             storageEntry: lodashCloneDeep(storageEntry)
         });
 
@@ -119,8 +118,8 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
             .create({
                 ...configurations.db(),
                 data: {
-                    PK: this.getPrimaryKey(data.id),
-                    SK: this.getSecondaryKeyRevision(data.version),
+                    PK: this.getPrimaryKey(entry.id),
+                    SK: this.getSecondaryKeyRevision(entry.version),
                     TYPE: TYPE_ENTRY,
                     ...storageEntry
                 }
@@ -131,7 +130,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
             .create({
                 ...configurations.db(),
                 data: {
-                    PK: this.getPrimaryKey(data.id),
+                    PK: this.getPrimaryKey(entry.id),
                     SK: this.getSecondaryKeyLatest(),
                     TYPE: TYPE_ENTRY_LATEST,
                     ...storageEntry
@@ -140,7 +139,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
             .create({
                 ...configurations.esDb(),
                 data: {
-                    PK: this.getPrimaryKey(data.id),
+                    PK: this.getPrimaryKey(entry.id),
                     SK: this.getSecondaryKeyLatest(),
                     index: esIndex,
                     data: getESLatestEntryData(this.context, esEntry)
@@ -155,7 +154,9 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                 ex.code || "CREATE_ENTRY_ERROR",
                 {
                     error: ex,
-                    entry: data
+                    entry,
+                    storageEntry,
+                    esEntry
                 }
             );
         }
@@ -169,23 +170,17 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
     ) {
         const { db } = this.context;
 
-        const {
-            originalEntryRevision: originalEntry,
-            data,
-            latestEntryRevision: latestEntry
-        } = args;
-
-        const storageData = await entryToStorageTransform(this.context, model, data);
+        const { originalEntry, entry, storageEntry } = args;
 
         const esEntry = prepareEntryToIndex({
             context: this.context,
             model,
-            originalEntry: lodashCloneDeep(data),
-            storageEntry: lodashCloneDeep(storageData)
+            originalEntry: lodashCloneDeep(entry),
+            storageEntry: lodashCloneDeep(storageEntry)
         });
         const { index: esIndex } = configurations.es(this.context, model);
 
-        const primaryKey = this.getPrimaryKey(storageData.id);
+        const primaryKey = this.getPrimaryKey(storageEntry.id);
         const batch = db.batch();
         batch
             /**
@@ -195,9 +190,9 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                 ...configurations.db(),
                 data: {
                     PK: primaryKey,
-                    SK: this.getSecondaryKeyRevision(storageData.version),
+                    SK: this.getSecondaryKeyRevision(storageEntry.version),
                     TYPE: TYPE_ENTRY,
-                    ...getEntryData(this.context, storageData)
+                    ...getEntryData(this.context, storageEntry)
                 }
             })
             /**
@@ -213,7 +208,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                     PK: primaryKey,
                     SK: this.getSecondaryKeyLatest(),
                     TYPE: TYPE_ENTRY_LATEST,
-                    ...getEntryData(this.context, storageData)
+                    ...getEntryData(this.context, storageEntry)
                 }
             })
             /**
@@ -241,8 +236,8 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                 {
                     error: ex,
                     originalEntry,
-                    latestEntry,
-                    data,
+                    entry,
+                    storageEntry,
                     esEntry
                 }
             );
@@ -250,7 +245,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         /**
          * There are no modifications on the entry created so just return the data.
          */
-        return data;
+        return storageEntry;
     }
 
     public async delete(
@@ -320,15 +315,17 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         args: CmsContentEntryStorageOperationsDeleteRevisionArgs
     ): Promise<void> {
         const { db } = this.context;
-        const {
-            entryRevisionToDelete,
-            entryRevisionToSetAsLatest,
-            publishedEntryRevision,
-            latestEntryRevision
-        } = args;
+        const { entryToDelete, entryToSetAsLatest, storageEntryToSetAsLatest } = args;
 
-        const primaryKey = this.getPrimaryKey(entryRevisionToDelete.id);
+        const primaryKey = this.getPrimaryKey(entryToDelete.id);
         const esConfig = configurations.es(this.context, model);
+        /**
+         * We need published entry to delete it if necessary.
+         */
+        const publishedStorageEntry = await this.getPublishedRevisionByEntryId(
+            model,
+            entryToDelete.id
+        );
         /**
          * We need to delete all existing records of the given entry revision.
          */
@@ -341,20 +338,20 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                 ...configurations.db(),
                 query: {
                     PK: primaryKey,
-                    SK: this.getSecondaryKeyRevision(entryRevisionToDelete.id)
+                    SK: this.getSecondaryKeyRevision(entryToDelete.id)
                 }
             })
             .delete({
                 ...configurations.esDb(),
                 query: {
                     PK: primaryKey,
-                    SK: this.getSecondaryKeyRevision(entryRevisionToDelete.id)
+                    SK: this.getSecondaryKeyRevision(entryToDelete.id)
                 }
             });
         /**
          * If revision we are deleting is the published one as well, we need to delete those records as well.
          */
-        if (publishedEntryRevision && entryRevisionToDelete.id === publishedEntryRevision.id) {
+        if (publishedStorageEntry && entryToDelete.id === publishedStorageEntry.id) {
             batch
                 .delete({
                     ...configurations.db(),
@@ -371,18 +368,12 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                     }
                 });
         }
-        if (entryRevisionToSetAsLatest) {
-            const originalEntry = await entryFromStorageTransform(
-                this.context,
-                model,
-                entryRevisionToSetAsLatest
-            );
-
+        if (entryToSetAsLatest) {
             const esEntry = prepareEntryToIndex({
                 context: this.context,
                 model,
-                originalEntry: lodashCloneDeep(originalEntry),
-                storageEntry: lodashCloneDeep(entryRevisionToSetAsLatest)
+                originalEntry: lodashCloneDeep(entryToSetAsLatest),
+                storageEntry: lodashCloneDeep(storageEntryToSetAsLatest)
             });
             /**
              * In the end we need to set the new latest entry
@@ -395,7 +386,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                         SK: this.getSecondaryKeyLatest()
                     },
                     data: {
-                        ...entryRevisionToSetAsLatest,
+                        ...storageEntryToSetAsLatest,
                         TYPE: TYPE_ENTRY_LATEST
                     }
                 })
@@ -418,10 +409,9 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         } catch (ex) {
             throw new WebinyError(ex.message, ex.code, {
                 error: ex,
-                entryRevisionToDelete,
-                entryRevisionToSetAsLatest,
-                publishedEntryRevision,
-                latestEntryRevision
+                entryToDelete,
+                entryToSetAsLatest,
+                storageEntryToSetAsLatest
             });
         }
     }
@@ -505,14 +495,20 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         args: CmsContentEntryStorageOperationsUpdateArgs
     ): Promise<CmsContentEntry> {
         const {
-            originalEntryRevision: originalEntry,
-            data,
-            latestEntryRevision: latestEntry
+            originalEntry,
+            entry,
+            storageEntry
+            // latestEntry
         } = args;
 
         const { db } = this.context;
 
         const primaryKey = this.getPrimaryKey(originalEntry.id);
+
+        /**
+         * We need the latest entry to check if it needs to be updated.
+         */
+        const latestStorageEntry = await this.getLatestRevisionByEntryId(model, originalEntry.id);
 
         const batch = db.batch();
 
@@ -523,12 +519,14 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                 SK: this.getSecondaryKeyRevision(originalEntry.version)
             },
             data: {
-                ...data,
+                ...storageEntry,
                 SK: this.getSecondaryKeyRevision(originalEntry.version)
             }
         });
-
-        if (latestEntry.id === originalEntry.id) {
+        /**
+         * If the latest entry is the one being updated, we need to create a new latest entry records.
+         */
+        if (latestStorageEntry.id === originalEntry.id) {
             /**
              * First we update the regular DynamoDB table
              */
@@ -539,7 +537,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                     SK: this.getSecondaryKeyLatest()
                 },
                 data: {
-                    ...data,
+                    ...storageEntry,
                     TYPE: TYPE_ENTRY_LATEST,
                     PK: primaryKey,
                     SK: this.getSecondaryKeyLatest()
@@ -551,12 +549,12 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
             const esEntry = prepareEntryToIndex({
                 context: this.context,
                 model,
-                originalEntry: lodashCloneDeep(originalEntry),
-                storageEntry: lodashCloneDeep(data)
+                originalEntry: lodashCloneDeep(entry),
+                storageEntry: lodashCloneDeep(storageEntry)
             });
             const esDoc = {
                 ...esEntry,
-                savedOn: data.savedOn
+                savedOn: storageEntry.savedOn
             };
 
             const { index: esIndex } = configurations.es(this.context, model);
@@ -578,7 +576,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         try {
             await batch.execute();
             this._dataLoaders.clearAllEntryRevisions(model);
-            return data;
+            return storageEntry;
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not update entry.",
@@ -586,8 +584,9 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                 {
                     error: ex,
                     originalEntry,
-                    data,
-                    latestEntry
+                    entry,
+                    storageEntry,
+                    latestStorageEntry
                 }
             );
         }
@@ -600,9 +599,15 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         const { db } = this.context;
         const {
             entry,
-            latestEntryRevision: latestEntry,
-            publishedEntryRevision: publishedEntry
+            storageEntry
+            // latestEntry,
+            // publishedEntry
         } = args;
+
+        /**
+         * We need currently published entry to check if need to remove it.
+         */
+        const publishedStorageEntry = await this.getPublishedRevisionByEntryId(model, entry.id);
 
         const primaryKey = this.getPrimaryKey(entry.id);
 
@@ -656,7 +661,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
 
         const es = configurations.es(this.context, model);
 
-        if (publishedEntry) {
+        if (publishedStorageEntry) {
             /**
              * If there is a `published` entry already, we need to set it to `unpublished`. We need to
              * execute two updates: update the previously published entry's status and the published entry record.
@@ -668,7 +673,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                 ...configurations.db(),
                 query: {
                     PK: primaryKey,
-                    SK: this.getSecondaryKeyRevision(publishedEntry.version)
+                    SK: this.getSecondaryKeyRevision(publishedStorageEntry.version)
                 }
             });
 
@@ -682,7 +687,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                     ...configurations.db(),
                     query: {
                         PK: primaryKey,
-                        SK: this.getSecondaryKeyRevision(publishedEntry.version)
+                        SK: this.getSecondaryKeyRevision(publishedStorageEntry.version)
                     },
                     data: {
                         ...previouslyPublishedStorageEntry,
@@ -701,7 +706,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                     data: {
                         PK: primaryKey,
                         SK: this.getSecondaryKeyPublished(),
-                        ...getEntryData(this.context, publishedEntry),
+                        ...getEntryData(this.context, publishedStorageEntry),
                         ...getEntryData(this.context, entry)
                     }
                 });
@@ -718,9 +723,14 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         }
 
         /**
+         * We need the latest entry to check if it neds to be updated as well in the Elasticsearch.
+         */
+        const latestStorageEntry = await this.getLatestRevisionByEntryId(model, entry.id);
+
+        /**
          * If we are publishing the latest revision, let's also update the latest revision's status in ES.
          */
-        if (latestEntry && latestEntry.id === entry.id) {
+        if (latestStorageEntry && latestStorageEntry.id === entry.id) {
             batch.update({
                 ...configurations.esDb(),
                 query: {
@@ -743,8 +753,8 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         const preparedEntryData = prepareEntryToIndex({
             context: this.context,
             model,
-            originalEntry: await entryFromStorageTransform(this.context, model, entry),
-            storageEntry: entry
+            originalEntry: lodashCloneDeep(entry),
+            storageEntry: lodashCloneDeep(storageEntry)
         });
         /**
          * Update the published revision entry in ES.
@@ -786,8 +796,8 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                 {
                     entry,
                     esData,
-                    latestEntry,
-                    publishedEntry
+                    latestStorageEntry,
+                    publishedStorageEntry
                 }
             );
         }
@@ -798,7 +808,12 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         args: CmsContentEntryStorageOperationsUnpublishArgs
     ): Promise<CmsContentEntry> {
         const { db } = this.context;
-        const { entry, latestEntryRevision: latestEntry } = args;
+        const { entry } = args;
+
+        /**
+         * We need the latest entry to check if it needs to be updated.
+         */
+        const latestStorageEntry = await this.getLatestRevisionByEntryId(model, entry.id);
 
         const primaryKey = this.getPrimaryKey(entry.id);
 
@@ -829,8 +844,25 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         /**
          * If we are unpublishing the latest revision, let's also update the latest revision entry's status in ES.
          */
-        if (latestEntry.id === entry.id) {
+        if (latestStorageEntry.id === entry.id) {
+            /**
+             * !! IMPORTANT !!
+             * Unfortunately we need to transform from the storage because prepare entry needs the non-transformed version of it.
+             * This should not be done in the storage operations unless it is really, really necessary.
+             */
+            const latestEntry = await entryFromStorageTransform(
+                this.context,
+                model,
+                latestStorageEntry
+            );
             const es = configurations.es(this.context, model);
+
+            const preparedEntryData = prepareEntryToIndex({
+                context: this.context,
+                model,
+                originalEntry: lodashCloneDeep(latestEntry),
+                storageEntry: lodashCloneDeep(latestStorageEntry)
+            });
 
             batch.update({
                 ...configurations.esDb(),
@@ -842,7 +874,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                     PK: primaryKey,
                     SK: this.getSecondaryKeyLatest(),
                     index: es.index,
-                    data: getESLatestEntryData(this.context, entry)
+                    data: getESLatestEntryData(this.context, preparedEntryData)
                 }
             });
         }
@@ -856,7 +888,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                 ex.code || "UNPUBLISH_ERROR",
                 {
                     entry,
-                    latestEntry
+                    latestStorageEntry
                 }
             );
         }
@@ -867,11 +899,12 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         args: CmsContentEntryStorageOperationsRequestChangesArgs
     ): Promise<CmsContentEntry> {
         const { db } = this.context;
-        const {
-            entry,
-            originalEntryRevision: originalEntry,
-            latestEntryRevision: latestEntry
-        } = args;
+        const { entry, originalEntry } = args;
+
+        /**
+         * We need the latest entry to check if it needs to be updated.
+         */
+        const latestStorageEntry = await this.getLatestRevisionByEntryId(model, entry.id);
 
         const primaryKey = this.getPrimaryKey(entry.id);
 
@@ -887,8 +920,27 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         /**
          * If we updated the latest version, then make sure the changes are propagated to ES too.
          */
-        if (latestEntry.id === entry.id) {
+        if (latestStorageEntry.id === entry.id) {
+            /**
+             * !! IMPORTANT !!
+             * Unfortunately we need to transform from the storage because prepare entry needs the non-transformed version of it.
+             * This should not be done in the storage operations unless it is really, really necessary.
+             */
+            const latestEntry = await entryFromStorageTransform(
+                this.context,
+                model,
+                latestStorageEntry
+            );
+
             const es = configurations.es(this.context, model);
+
+            const preparedEntryData = prepareEntryToIndex({
+                context: this.context,
+                model,
+                originalEntry: lodashCloneDeep(latestEntry),
+                storageEntry: lodashCloneDeep(latestStorageEntry)
+            });
+
             batch.update({
                 ...configurations.esDb(),
                 query: {
@@ -899,7 +951,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                     PK: primaryKey,
                     SK: this.getSecondaryKeyLatest(),
                     index: es.index,
-                    data: getESLatestEntryData(this.context, entry)
+                    data: getESLatestEntryData(this.context, preparedEntryData)
                 }
             });
         }
@@ -924,11 +976,12 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         args: CmsContentEntryStorageOperationsRequestReviewArgs
     ): Promise<CmsContentEntry> {
         const { db } = this.context;
-        const {
-            entry,
-            originalEntryRevision: originalEntry,
-            latestEntryRevision: latestEntry
-        } = args;
+        const { entry, originalEntry } = args;
+
+        /**
+         * We need the latest entry to check if it needs to be updated.
+         */
+        const latestStorageEntry = await this.getLatestRevisionByEntryId(model, entry.id);
 
         const primaryKey = this.getPrimaryKey(entry.id);
 
@@ -944,8 +997,25 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         /**
          * If we updated the latest version, then make sure the changes are propagated to ES too.
          */
-        if (latestEntry.id === entry.id) {
+        if (latestStorageEntry.id === entry.id) {
+            /**
+             * !! IMPORTANT !!
+             * Unfortunately we need to transform from the storage because prepare entry needs the non-transformed version of it.
+             * This should not be done in the storage operations unless it is really, really necessary.
+             */
+            const latestEntry = await entryFromStorageTransform(
+                this.context,
+                model,
+                latestStorageEntry
+            );
             const es = configurations.es(this.context, model);
+
+            const preparedEntryData = prepareEntryToIndex({
+                context: this.context,
+                model,
+                originalEntry: lodashCloneDeep(latestEntry),
+                storageEntry: lodashCloneDeep(latestStorageEntry)
+            });
             batch.update({
                 query: {
                     PK: primaryKey,
@@ -955,7 +1025,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                     PK: primaryKey,
                     SK: this.getSecondaryKeyLatest(),
                     index: es.index,
-                    data: getESLatestEntryData(this.context, entry)
+                    data: getESLatestEntryData(this.context, preparedEntryData)
                 }
             });
         }
@@ -969,7 +1039,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                 ex.code || "REQUEST_REVIEW_ERROR",
                 {
                     entry,
-                    latestEntry,
+                    latestStorageEntry,
                     originalEntry
                 }
             );

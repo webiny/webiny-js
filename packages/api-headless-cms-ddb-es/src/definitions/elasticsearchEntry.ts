@@ -1,5 +1,11 @@
 import { Entity, Table } from "dynamodb-toolbox";
 
+/**
+ * TODO when saving this entity remove fields:
+ * - ignore
+ * - version
+ * - savedOn
+ */
 export default (table: Table): Entity<any> => {
     return new Entity({
         name: "ContentElasticsearchEntry",
