@@ -64,6 +64,13 @@ export default (): CmsModelFieldToStoragePlugin<OriginalValue, StorageValue> => 
                     `Value received in "fromStorage" function is not an object in field "${field.fieldId}".`
                 );
             }
+            /**
+             * This is to circumvent a bug introduced with 5.8.0 storage operations.
+             * TODO: remove with 5.9.0 upgrade
+             */
+            if (storageValue.hasOwnProperty("compression") === false) {
+                return storageValue;
+            }
             const { compression, value } = storageValue;
             if (!compression) {
                 throw new WebinyError(
@@ -93,9 +100,10 @@ export default (): CmsModelFieldToStoragePlugin<OriginalValue, StorageValue> => 
         async toStorage({ model, field, entry, value }) {
             /**
              * There is a possibility that we are trying to compress already compressed value.
-             * So just return it.
+             * Introduced a bug with 5.8.0 storage operations, so just return the value to correct it.
+             * TODO: remove with 5.9.0 upgrade.
              */
-            if (value && (value as any).compression) {
+            if (value && value.hasOwnProperty("compression") === true) {
                 return value as any;
             }
             const cacheKey = createCacheKey({
