@@ -51,6 +51,19 @@ const cleanInputData = (
     }, {});
 };
 
+const cleanUpdatedInputData = (
+    model: CmsContentModel,
+    input: Record<string, any>
+): Record<string, any> => {
+    return model.fields.reduce((acc, field) => {
+        if (input[field.fieldId] === undefined) {
+            return acc;
+        }
+        acc[field.fieldId] = input[field.fieldId];
+        return acc;
+    }, {});
+};
+
 interface DeleteEntryParams {
     model: CmsContentModel;
     entry: CmsContentEntry;
@@ -362,9 +375,14 @@ export default (): ContextPlugin<CmsContext> => ({
                     );
                 }
             },
-            createRevisionFrom: async (model, sourceId, data = {}) => {
+            createRevisionFrom: async (model, sourceId, inputData = {}) => {
                 const permission = await checkEntryPermissions({ rwd: "w" });
                 await utils.checkModelAccess(context, model);
+
+                /**
+                 * Make sure we only work with fields that are defined in the model.
+                 */
+                const input = cleanUpdatedInputData(model, inputData);
 
                 /**
                  * Entries are identified by a common parent ID + Revision number.
@@ -395,6 +413,13 @@ export default (): ContextPlugin<CmsContext> => ({
                     originalStorageEntry
                 );
 
+                const values = {
+                    ...originalEntry.values,
+                    ...input
+                };
+
+                await validateModelEntryData(context, model, values);
+
                 utils.checkOwnership(context, permission, originalEntry, "ownedBy");
 
                 const latestEntry = await entryFromStorageTransform(
@@ -422,10 +447,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     locked: false,
                     publishedOn: null,
                     status: STATUS_DRAFT,
-                    values: {
-                        ...originalEntry.values,
-                        ...data
-                    }
+                    values
                 };
 
                 let storageEntry: CmsStorageContentEntry = undefined;
