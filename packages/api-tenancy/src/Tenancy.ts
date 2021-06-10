@@ -53,8 +53,7 @@ export class Tenancy implements ITenancy {
     async getRootTenant() {
         const [[tenant]] = await this._context.db.read<Tenant>({
             ...dbArgs,
-            query: { PK: `T#root`, SK: "A" },
-            limit: 1
+            query: { PK: `T#root`, SK: "A" }
         });
 
         if (tenant) {

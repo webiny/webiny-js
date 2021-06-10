@@ -1,20 +1,17 @@
 import minimatch from "minimatch";
 import { BeforeHandlerPlugin, ContextPlugin } from "@webiny/handler/types";
 import { SecurityIdentity } from "./SecurityIdentity";
-import {
-    SecurityAuthenticationPlugin,
-    SecurityAuthorizationPlugin,
-    SecurityContext,
-    SecurityPermission
-} from "../types";
+import { SecurityContext, SecurityPermission } from "./types";
 import { PluginCollection } from "@webiny/plugins/types";
+import { AuthorizationPlugin } from "./plugins/AuthorizationPlugin";
+import { AuthenticationPlugin } from "./plugins/AuthenticationPlugin";
 
 export default (): PluginCollection => [
     {
         type: "before-handler",
         async apply(context) {
-            const authenticationPlugins = context.plugins.byType<SecurityAuthenticationPlugin>(
-                "security-authentication"
+            const authenticationPlugins = context.plugins.byType<AuthenticationPlugin>(
+                AuthenticationPlugin.type
             );
 
             for (let i = 0; i < authenticationPlugins.length; i++) {
@@ -54,9 +51,9 @@ export default (): PluginCollection => [
                     return null;
                 },
                 async getPermissions(): Promise<SecurityPermission[]> {
-                    const authorizationPlugins = context.plugins.byType<
-                        SecurityAuthorizationPlugin
-                    >("security-authorization");
+                    const authorizationPlugins = context.plugins.byType<AuthorizationPlugin>(
+                        AuthorizationPlugin.type
+                    );
 
                     for (let i = 0; i < authorizationPlugins.length; i++) {
                         const result = await authorizationPlugins[i].getPermissions(context);
