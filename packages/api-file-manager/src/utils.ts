@@ -1,11 +1,10 @@
-import {Plugin} from "@webiny/plugins/types";
-
+import { Plugin } from "@webiny/plugins/types";
 
 type CallbackFallback = (args: any) => void | Promise<void>;
 
 export const executeCallbacks = async <
     TCallbackFunction extends CallbackFallback = CallbackFallback
-    >(
+>(
     plugins: Plugin[],
     hook: string,
     args: Parameters<TCallbackFunction>[0]

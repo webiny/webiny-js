@@ -1,16 +1,16 @@
-import {FileManagerSystemStorageOperationsProviderPlugin} from "@webiny/api-file-manager/types";
-import {FileManagerSystemStorageOperationsDdbEs} from "~/operations/system/FileManagerSystemStorageOperationsDdbEs";
-import {FileManagerInstallationPlugin} from "~/operations/system/FileManagerInstallationPlugin";
+import { FileManagerInstallationPlugin } from "./FileManagerInstallationPlugin";
+import { SystemStorageOperations } from "./SystemStorageOperations";
+import { SystemStorageOperationsProviderPlugin } from "@webiny/api-file-manager/plugins/definitions";
 
-export default (): FileManagerSystemStorageOperationsProviderPlugin => ({
-    type: "fm.storageOperationsProvider.system",
-    name: "fm.storageOperationsProvider.system.ddb.es",
-    async provide({context}) {
-        
+class SystemStorageOperationsProviderDdbEsPlugin extends SystemStorageOperationsProviderPlugin {
+    public name = "fm.storageOperationsProvider.system.ddb.es";
+    async provide({ context }) {
         context.plugins.register(new FileManagerInstallationPlugin());
-        
-        return new FileManagerSystemStorageOperationsDdbEs({
-            context,
-        })
-    },
-})
+
+        return new SystemStorageOperations({
+            context
+        });
+    }
+}
+
+export default new SystemStorageOperationsProviderDdbEsPlugin();

@@ -2,6 +2,12 @@ import { withFields, string, number, onSet } from "@commodo/fields";
 import { validation } from "@webiny/validation";
 import defaults from "./utils/defaults";
 import { FileManagerContext, FileManagerSettings, SettingsCRUD } from "~/types";
+import {
+    SettingsStorageOperationsProviderPlugin,
+    SystemStorageOperationsProviderPlugin
+} from "~/plugins/definitions";
+import WebinyError from "@webiny/error";
+import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 
 export const SETTINGS_KEY = "file-manager";
 
@@ -31,20 +37,26 @@ const UpdateDataModel = withFields({
     })(string())
 })();
 
-export default (context: FileManagerContext): SettingsCRUD => {
-    const { db, security } = context;
-    const PK_SETTINGS = () => `T#${security.getTenant().id}#FM#SETTINGS`;
-    const SK_SETTINGS = () => `default`;
+export default new ContextPlugin<FileManagerContext>(async context => {
+    const pluginType = SystemStorageOperationsProviderPlugin.type;
 
-    return {
+    const providerPlugin = context.plugins
+        .byType<SettingsStorageOperationsProviderPlugin>(pluginType)
+        .find(() => true);
+
+    if (!providerPlugin) {
+        throw new WebinyError(`Missing "${pluginType}" plugin.`, "PLUGIN_NOT_FOUND", {
+            type: pluginType
+        });
+    }
+
+    const storageOperations = await providerPlugin.provide({
+        context
+    });
+
+    context.fileManager.settings = {
         async getSettings() {
-            const [[settings]] = await db.read<FileManagerSettings>({
-                ...defaults.db,
-                query: { PK: PK_SETTINGS(), SK: SK_SETTINGS() },
-                limit: 1
-            });
-
-            return settings;
+            return storageOperations.get();
         },
         async createSettings(data) {
             const settings = new CreateDataModel().populate(data);
@@ -52,42 +64,32 @@ export default (context: FileManagerContext): SettingsCRUD => {
 
             const settingsData: FileManagerSettings = await settings.toJSON();
 
-            await db.create({
-                data: {
-                    PK: PK_SETTINGS(),
-                    SK: SK_SETTINGS(),
-                    TYPE: "fm.settings",
-                    ...settingsData
-                }
+            return storageOperations.create({
+                data: settingsData
             });
-
-            return settingsData;
         },
         async updateSettings(data) {
             const updatedValue = new UpdateDataModel().populate(data);
             await updatedValue.validate();
 
-            const existingSettings: FileManagerSettings = await this.getSettings();
+            const existingSettings = await storageOperations.get();
 
             const updatedSettings: Partial<FileManagerSettings> = await updatedValue.toJSON({
                 onlyDirty: true
             });
 
-            await db.update({
-                ...defaults,
-                query: { PK: PK_SETTINGS(), SK: SK_SETTINGS() },
-                data: updatedSettings
+            return storageOperations.update({
+                original: existingSettings,
+                data: {
+                    ...existingSettings,
+                    ...updatedSettings
+                }
             });
-
-            return { ...existingSettings, ...updatedSettings };
         },
         async deleteSettings() {
-            await db.delete({
-                ...defaults.db,
-                query: { PK: PK_SETTINGS(), SK: SK_SETTINGS() }
-            });
+            await storageOperations.delete();
 
             return true;
         }
     };
-};
+});

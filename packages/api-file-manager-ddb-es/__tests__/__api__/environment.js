@@ -18,10 +18,7 @@ if (typeof plugins !== "function") {
 
 const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
 
-const getStorageOperationsPlugins = ({
-    documentClient,
-    elasticSearchContext
-}) => {
+const getStorageOperationsPlugins = ({ documentClient, elasticSearchContext }) => {
     // Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
     simulateStream(documentClient, createHandler(elasticSearchContext, dynamoToElastic()));
 
@@ -34,7 +31,7 @@ const getStorageOperationsPlugins = ({
                     documentClient
                 })
             }),
-            elasticSearchContext,
+            elasticSearchContext
         ];
     };
 };

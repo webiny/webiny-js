@@ -2,6 +2,9 @@
   "name": "@webiny/api-file-manager",
   "version": "5.8.0",
   "main": "index.js",
+  "keywords": [
+    "fm:base"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git",

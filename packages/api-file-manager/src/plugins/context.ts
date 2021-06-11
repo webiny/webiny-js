@@ -4,6 +4,7 @@ import settingsCRUD from "./crud/settings.crud";
 import systemCRUD from "./crud/system.crud";
 import { FileStorage } from "./FileStorage";
 import { FileManagerContext } from "~/types";
+import { settings } from "cluster";
 
 /**
  * Need to add plugins this way due to changes in how context plugins are working.
@@ -19,15 +20,13 @@ export default new ContextPlugin<FileManagerContext>(context => {
         return;
     }
 
-    context.plugins.register([
-        systemCRUD,
-    ]);
+    context.plugins.register([systemCRUD, settingsCRUD]);
 
     context.fileManager = {
         ...context.fileManager,
         files: filesCRUD(context),
         // system: systemCRUD(context),
-        settings: settingsCRUD(context),
+        // settings: settingsCRUD(context),
         storage: new FileStorage({
             context
         })

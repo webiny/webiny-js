@@ -5,11 +5,10 @@ import {
     FileManagerSystemStorageOperationsCreateParams,
     FileManagerSystemStorageOperationsUpdateParams
 } from "@webiny/api-file-manager/types";
-import {Entity, Table} from "dynamodb-toolbox";
+import { Entity } from "dynamodb-toolbox";
 import WebinyError from "@webiny/error";
-import configurations from "~/operations/configurations";
-import {getDocumentClient, getTable} from "~/operations/helpers";
-
+import defineSystemEntity from "~/definitions/systemEntity";
+import defineTable from "~/definitions/table";
 
 interface ConstructorParams {
     context: FileManagerContext;
@@ -17,12 +16,11 @@ interface ConstructorParams {
 
 const SORT_KEY = "FM";
 
-export class FileManagerSystemStorageOperationsDdbEs implements FileManagerSystemStorageOperations {
+export class SystemStorageOperations implements FileManagerSystemStorageOperations {
     private readonly _context: FileManagerContext;
     private _partitionKey: string;
-    private readonly _table: Table;
     private readonly _entity: Entity<any>;
-    
+
     private get partitionKey(): string {
         if (!this._partitionKey) {
             const tenant = this._context.security.getTenant();
@@ -34,83 +32,72 @@ export class FileManagerSystemStorageOperationsDdbEs implements FileManagerSyste
         return this._partitionKey;
     }
 
-    public constructor({context}: ConstructorParams) {
+    public constructor({ context }: ConstructorParams) {
         this._context = context;
-        this._table = new Table({
-            name: configurations.db().table || getTable(context),
-            partitionKey: "PK",
-            sortKey: "SK",
-            DocumentClient: getDocumentClient(context)
+        const table = defineTable({
+            context
         });
-    
-        this._entity = new Entity({
-            name: "System",
-            table: this._table,
-            attributes: {
-                PK: {
-                    partitionKey: true
-                },
-                SK: {
-                    sortKey: true
-                },
-                version: {
-                    type: "string"
-                },
-            }
+
+        this._entity = defineSystemEntity({
+            context,
+            table
         });
     }
-    
+
     public async get(): Promise<FileManagerSystem | null> {
-    
         const system = await this._entity.get({
             PK: this.partitionKey,
-            SK: SORT_KEY,
+            SK: SORT_KEY
         });
-        
+
         return system || null;
     }
-    
-    public async create(params: FileManagerSystemStorageOperationsCreateParams): Promise<FileManagerSystem> {
-        const {data} = params;
+
+    public async create(
+        params: FileManagerSystemStorageOperationsCreateParams
+    ): Promise<FileManagerSystem> {
+        const { data } = params;
         try {
             await this._entity.put({
                 PK: this.partitionKey,
                 SK: SORT_KEY,
-                ...data,
+                ...data
             });
         } catch (ex) {
             throw new WebinyError(
                 "Could not insert new system data into DynamoDB",
                 "CREATE_SYSTEM_ERROR",
                 {
-                    data,
+                    data
                 }
-            )
+            );
         }
         return data;
     }
-    
-    public async update(params: FileManagerSystemStorageOperationsUpdateParams): Promise<FileManagerSystem> {
-        const {original, data} = params;
-        
+
+    public async update(
+        params: FileManagerSystemStorageOperationsUpdateParams
+    ): Promise<FileManagerSystem> {
+        const { original, data } = params;
+
         try {
             await this._entity.update({
                 PK: this.partitionKey,
                 SK: SORT_KEY,
-                ...data,
+                ...data
             });
         } catch (ex) {
             throw new WebinyError(
                 "Could not update system data in the DynamoDB.",
                 "UPDATE_SYSTEM_ERROR",
                 {
-                    data,
+                    data
                 }
-            )
+            );
         }
         return {
             ...original,
-            ...data,
+            ...data
         };
     }
 }

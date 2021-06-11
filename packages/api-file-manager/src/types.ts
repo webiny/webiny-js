@@ -4,7 +4,7 @@ import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { FileStorage } from "./plugins/FileStorage";
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
 import { SecurityPermission } from "@webiny/api-security/types";
-import {Plugin} from "@webiny/plugins/types";
+import { Plugin } from "@webiny/plugins/types";
 
 export type FileManagerContext = Context<
     TenancyContext,
@@ -153,7 +153,7 @@ export interface FileManagerSystemStorageOperations {
  */
 export interface FileManagerSettingsStorageOperationsUpdateParams {
     original: FileManagerSettings;
-    data: Partial<FileManagerSettings>;
+    data: FileManagerSettings;
 }
 /**
  * @category StorageOperations
@@ -161,7 +161,7 @@ export interface FileManagerSettingsStorageOperationsUpdateParams {
  * @category SettingsStorageOperationsParams
  */
 export interface FileManagerSettingsStorageOperationsCreateParams {
-    data: FileManagerSystem;
+    data: FileManagerSettings;
 }
 
 /**
@@ -174,11 +174,19 @@ export interface FileManagerSettingsStorageOperations {
      */
     get: () => Promise<FileManagerSettings | null>;
     /**
-     * Update the FileManager system data..
-     */
-    update: (params: FileManagerSettingsStorageOperationsUpdateParams) => Promise<FileManagerSettings>;
-    /**
      * Create the FileManagerSettingsData
      */
-    create: (params: FileManagerSettingsStorageOperationsCreateParams) => Promise<FileManagerSettings>;
+    create: (
+        params: FileManagerSettingsStorageOperationsCreateParams
+    ) => Promise<FileManagerSettings>;
+    /**
+     * Update the FileManager system data..
+     */
+    update: (
+        params: FileManagerSettingsStorageOperationsUpdateParams
+    ) => Promise<FileManagerSettings>;
+    /**
+     * Delete the existing settings.
+     */
+    delete: () => Promise<void>;
 }

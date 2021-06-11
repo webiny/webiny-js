@@ -1,5 +1,4 @@
-import {FileManagerContext} from "@webiny/api-file-manager/types";
-
+import { FileManagerContext } from "@webiny/api-file-manager/types";
 
 export default {
     db: () => ({
@@ -29,10 +28,10 @@ export default {
         if (!tenant) {
             throw new Error("Tenant missing.");
         }
-        
+
         const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
         const index = `${sharedIndex ? "root" : tenant.id}-file-manager`;
-        
+
         const prefix = process.env.ELASTIC_SEARCH_INDEX_PREFIX;
         if (prefix) {
             return { index: prefix + index };

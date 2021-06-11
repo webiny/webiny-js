@@ -2,13 +2,13 @@
   "name": "@webiny/api-file-manager-ddb-es",
   "version": "5.8.0",
   "main": "index.js",
-    "keywords": [
-        "@webiny/api-file-manager",
-        "storage-operations",
-        "dynamodb",
-        "elasticsearch",
-        "fm:ddb-es"
-    ],
+  "keywords": [
+    "@webiny/api-file-manager",
+    "storage-operations",
+    "dynamodb",
+    "elasticsearch",
+    "fm:ddb-es"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git",
@@ -24,8 +24,8 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@commodo/fields": "1.1.2-beta.20",
-    "@webiny/api-i18n-content": "^5.8.0",
     "@webiny/api-file-manager": "^5.8.0",
+    "@webiny/api-i18n-content": "^5.8.0",
     "@webiny/api-plugin-elastic-search-client": "^5.8.0",
     "@webiny/api-security": "^5.8.0",
     "@webiny/api-security-tenancy": "^5.8.0",
@@ -38,10 +38,10 @@
     "@webiny/validation": "^5.8.0",
     "aws-sdk": "^2.539.0",
     "commodo-fields-object": "^1.0.6",
+    "dynamodb-toolbox": "^0.3.4",
     "mdbid": "^1.0.0",
     "object-hash": "^1.3.1",
-    "sanitize-filename": "^1.6.3",
-      "dynamodb-toolbox": "^0.3.4"
+    "sanitize-filename": "^1.6.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
