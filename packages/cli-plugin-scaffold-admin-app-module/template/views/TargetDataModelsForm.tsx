@@ -13,26 +13,28 @@ import {
 import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { validation } from "@webiny/validation";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
-import { useTargetForm } from "./hooks/useTargetForm";
+import { useTargetDataModelsForm } from "./hooks/useTargetDataModelsForm";
 
-const TargetForm = () => {
+const TargetDataModelsForm = () => {
     const {
         loading,
         emptyViewIsShown,
-        createTarget,
+        currentTargetDataModel,
         cancelEditing,
-        target,
+        target_data_model,
         onSubmit
-    } = useTargetForm();
+    } = useTargetDataModelsForm();
 
     // Render "No content" selected view.
     if (emptyViewIsShown) {
         return (
             <EmptyView
-                title={"Click on the left side list to display target details or create a..."}
+                title={
+                    "Click on the left side list to display Target Data Models details or create a..."
+                }
                 action={
-                    <ButtonDefault onClick={createTarget}>
-                        <ButtonIcon icon={<AddIcon />} /> {"New Target"}
+                    <ButtonDefault onClick={currentTargetDataModel}>
+                        <ButtonIcon icon={<AddIcon />} /> {"New Target_data_model"}
                     </ButtonDefault>
                 }
             />
@@ -40,11 +42,11 @@ const TargetForm = () => {
     }
 
     return (
-        <Form data={target} onSubmit={onSubmit}>
+        <Form data={target_data_model} onSubmit={onSubmit}>
             {({ data, form, Bind }) => (
                 <SimpleForm>
                     {loading && <CircularProgress />}
-                    <SimpleFormHeader title={data.id || "New target" />
+                    <SimpleFormHeader title={data.id || "New Target Data Models"} />
                     <SimpleFormContent>
                         <Grid>
                             <Cell span={12}>
@@ -69,7 +71,9 @@ const TargetForm = () => {
                     <SimpleFormFooter>
                         <ButtonWrapper>
                             <ButtonDefault onClick={cancelEditing}>{"Cancel"}</ButtonDefault>
-                            <ButtonPrimary onClick={form.submit}>{"Save target"}</ButtonPrimary>
+                            <ButtonPrimary onClick={form.submit}>
+                                {"Save Target Data Models"}
+                            </ButtonPrimary>
                         </ButtonWrapper>
                     </SimpleFormFooter>
                 </SimpleForm>
@@ -78,4 +82,4 @@ const TargetForm = () => {
     );
 };
 
-export default TargetForm;
+export default TargetDataModelsForm;

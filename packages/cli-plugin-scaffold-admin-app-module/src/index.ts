@@ -16,14 +16,18 @@ import chalk from "chalk";
 import indentString from "indent-string";
 import WebinyError from "@webiny/error";
 import execa from "execa";
-import validateNpmPackageName from "validate-npm-package-name";
 import { getProject } from "@webiny/cli/utils";
+
+import {
+    createScaffoldsIndexFile,
+    updateScaffoldsIndexFile
+} from "@webiny/cli-plugin-scaffold/utils";
 
 const ncp = util.promisify(ncpBase.ncp);
 
 interface Input {
     location: string;
-    entityName: string;
+    dataModelName: string;
     packageName?: string;
 }
 
@@ -47,12 +51,12 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
     name: "cli-plugin-scaffold-template-graphql-app",
     type: "cli-plugin-scaffold-template",
     scaffold: {
-        name: "Admin Area package",
+        name: "Extend Admin Area",
         questions: () => {
             return [
                 {
-                    name: "entityName",
-                    message: "Enter the name of the initial data model",
+                    name: "dataModelName",
+                    message: "Enter initial data model name:",
                     default: "Book",
                     validate: name => {
                         if (!name.match(/^([a-zA-Z]+)$/)) {
@@ -63,45 +67,120 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     }
                 },
                 {
-                    name: "location",
-                    message: `Enter the package location`,
-                    default: answers => {
-                        const entityNamePlural = pluralize(Case.kebab(answers.entityName));
-                        return `packages/${entityNamePlural}/admin-app`;
-                    },
+                    name: "pluginsFolderPath",
+                    message: "Enter plugins folder path:",
+                    default: `apps/admin/code/src/plugins`,
                     validate: location => {
-                        if (!location) {
+                        if (location.length < 2) {
                             return "Please enter the package location.";
-                        }
-
-                        const locationPath = path.resolve(location);
-                        if (fs.existsSync(locationPath)) {
-                            return `The target location already exists "${location}".`;
                         }
 
                         return true;
                     }
-                },
-                {
-                    name: "packageName",
-                    message: "Enter the package name",
-                    default: answers => {
-                        const entityNamePlural = pluralize(Case.kebab(answers.entityName));
-                        return `@${entityNamePlural}/admin-app`;
-                    },
-                    validate: packageName => {
-                        if (!packageName) {
-                            return true;
-                        } else if (validateNpmPackageName(packageName)) {
-                            return true;
-                        }
-                        return `Package name must look something like "@package/my-generated-package".`;
-                    }
                 }
+                //
+                // {
+                //     name: "location",
+                //     message: `Enter the package location`,
+                //     default: answers => {
+                //         const dataModelNamePlural = pluralize(Case.kebab(answers.dataModelName));
+                //         return `packages/${dataModelNamePlural}/admin-app`;
+                //     },
+                //     validate: location => {
+                //         if (!location) {
+                //             return "Please enter the package location.";
+                //         }
+                //
+                //         const locationPath = path.resolve(location);
+                //         if (fs.existsSync(locationPath)) {
+                //             return `The target location already exists "${location}".`;
+                //         }
+                //
+                //         return true;
+                //     }
+                // },
+                // {
+                //     name: "packageName",
+                //     message: "Enter the package name",
+                //     default: answers => {
+                //         const dataModelNamePlural = pluralize(Case.kebab(answers.dataModelName));
+                //         return `@${dataModelNamePlural}/admin-app`;
+                //     },
+                //     validate: packageName => {
+                //         if (!packageName) {
+                //             return true;
+                //         } else if (validateNpmPackageName(packageName)) {
+                //             return true;
+                //         }
+                //         return `Package name must look something like "@package/my-generated-package".`;
+                //     }
+                // }
             ];
         },
         generate: async ({ input, ora }) => {
-            const { entityName, location, packageName: initialPackageName } = input;
+            const dataModelName = {
+                plural: pluralize(Case.camel(input.dataModelName)),
+                singular: pluralize.singular(Case.camel(input.dataModelName))
+            };
+
+            const scaffoldsFolder = path.join(input.pluginsFolderPath, "scaffolds");
+            const newCodeFolder = path.join(
+                scaffoldsFolder,
+                "admin",
+                Case.camel(dataModelName.plural)
+            );
+            const templateFolderPath = path.join(__dirname, "template");
+
+            fs.mkdirSync(newCodeFolder, { recursive: true });
+
+            await ncp(templateFolderPath, newCodeFolder);
+
+            // Replace generic "Target" with received "dataModelName" argument.
+            const codeReplacements = [
+                { find: "targetDataModel", replaceWith: Case.camel(dataModelName.singular) },
+                { find: "TargetDataModel", replaceWith: Case.pascal(dataModelName.singular) },
+                { find: "targetDataModels", replaceWith: Case.camel(dataModelName.plural) },
+                { find: "TargetDataModels", replaceWith: Case.pascal(dataModelName.plural) },
+                { find: "TARGET_DATA_MODELS", replaceWith: Case.constant(dataModelName.plural) },
+                { find: "TARGET_DATA_MODEL", replaceWith: Case.constant(dataModelName.singular) },
+                { find: "target-data-models", replaceWith: Case.kebab(dataModelName.plural) },
+                { find: "Target Data Model", replaceWith: Case.title(dataModelName.singular) },
+                { find: "Target Data Models", replaceWith: Case.title(dataModelName.plural) }
+            ];
+
+            replaceInPath(path.join(newCodeFolder, "/**/*.ts"), codeReplacements);
+            replaceInPath(path.join(newCodeFolder, "/**/*.tsx"), codeReplacements);
+
+            const fileNameReplacements = [
+                {
+                    find: "views/TargetDataModelsDataList.tsx",
+                    replaceWith: `views/${Case.pascal(dataModelName.plural)}DataList.tsx`
+                },
+                {
+                    find: "views/TargetDataModelsForm.tsx",
+                    replaceWith: `views/${Case.pascal(dataModelName.plural)}Form.tsx`
+                },
+
+                {
+                    find: "views/hooks/useTargetDataModelsForm.ts",
+                    replaceWith: `views/hooks/use${Case.pascal(dataModelName.plural)}Form.ts`
+                },
+                {
+                    find: "views/hooks/useTargetDataModelsDataList.ts",
+                    replaceWith: `views/hooks/use${Case.pascal(dataModelName.plural)}DataList.ts`
+                }
+            ];
+
+            for (const fileNameReplacement of fileNameReplacements) {
+                fs.renameSync(
+                    path.join(newCodeFolder, fileNameReplacement.find),
+                    path.join(newCodeFolder, fileNameReplacement.replaceWith)
+                );
+            }
+
+            createScaffoldsIndexFile(scaffoldsFolder);
+
+            /*const { dataModelName, location, packageName: initialPackageName } = input;
 
             const fullLocation = path.resolve(location);
             const packageName = createPackageName({
@@ -144,10 +223,10 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             // Copy template files
             await ncp(sourcePath, fullLocation);
 
-            // Replace generic "Entity" with received "input.entityName" or "input.newEntityName" argument.
+            // Replace generic "Entity" with received "input.dataModelName" or "input.newEntityName" argument.
             const entity = {
-                plural: pluralize(Case.camel(entityName)),
-                singular: pluralize.singular(Case.camel(entityName))
+                plural: pluralize(Case.camel(dataModelName)),
+                singular: pluralize.singular(Case.camel(dataModelName))
             };
 
             const codeReplacements = [
@@ -161,8 +240,8 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             ];
 
             replaceInPath(path.join(fullLocation, ".babelrc.js"), codeReplacements);
-            replaceInPath(path.join(fullLocation, "**/*.ts"), codeReplacements);
-            replaceInPath(path.join(fullLocation, "**/*.tsx"), codeReplacements);
+            replaceInPath(path.join(fullLocation, "**!/!*.ts"), codeReplacements);
+            replaceInPath(path.join(fullLocation, "**!/!*.tsx"), codeReplacements);
 
             // Make sure to also rename base file names.
             const fileNameReplacements = [
@@ -252,8 +331,8 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             baseTsConfigBuildJson.compilerOptions.paths[`${packageName}`] = [
                 `./${locationRelative}/src`
             ];
-            baseTsConfigBuildJson.compilerOptions.paths[`${packageName}/*`] = [
-                `./${locationRelative}/src/*`
+            baseTsConfigBuildJson.compilerOptions.paths[`${packageName}/!*`] = [
+                `./${locationRelative}/src/!*`
             ];
             await writeJson(baseTsConfigBuildJsonPath, baseTsConfigBuildJson);
             ora.stopAndPersist({
@@ -304,14 +383,14 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     `Unable to install dependencies. Try running "yarn" in project root manually.`,
                     err.message
                 );
-            }
+            }*/
         },
         onSuccess: async ({ input }) => {
-            const { entityName, location, packageName: initialPackageName } = input;
+            const { dataModelName, location, packageName: initialPackageName } = input;
 
             const entity = {
-                singular: Case.camel(entityName),
-                plural: pluralize(Case.camel(entityName))
+                singular: Case.camel(dataModelName),
+                plural: pluralize(Case.camel(dataModelName))
             };
             const packageName = createPackageName({
                 initial: initialPackageName,

@@ -9,20 +9,20 @@ const Loader = ({ children, ...props }) => (
     <Suspense fallback={<CircularProgress />}>{React.cloneElement(children, props)}</Suspense>
 );
 
-const Targets = lazy(() => import("./views"));
+const TargetDataModels = lazy(() => import("./views"));
 
 export default new RoutePlugin({
     route: (
         <Route
-            path={"/targets"}
+            path={"/target-data-models"}
             exact
             render={() => (
                 <AdminLayout>
                     <Helmet>
-                        <title>Targets</title>
+                        <title>Target Data Models</title>
                     </Helmet>
                     <Loader>
-                        <Targets />
+                        <TargetDataModels />
                     </Loader>
                 </AdminLayout>
             )}
