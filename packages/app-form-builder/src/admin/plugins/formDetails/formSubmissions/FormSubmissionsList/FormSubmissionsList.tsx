@@ -96,7 +96,7 @@ export const FormSubmissionsList = ({ form }: Props) => {
                             />
                         </Tooltip>
                     }
-                    sorters={sorters}
+                    // sorters={sorters}
                     showOptions={{
                         multiSelectAll: false,
                         sorters: true,
