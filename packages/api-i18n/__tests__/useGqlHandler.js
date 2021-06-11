@@ -5,6 +5,7 @@ import securityPlugins from "@webiny/api-security/authenticator";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { SecurityIdentity } from "@webiny/api-security";
 
 export default () => {
     // Creates the actual handler. Feel free to add additional plugins if needed.
@@ -23,6 +24,20 @@ export default () => {
         apolloServerPlugins(),
         securityPlugins(),
         { type: "security-authorization", getPermissions: () => [{ name: "*" }] },
+        {
+            type: "security-authentication",
+            async authenticate(context) {
+                if ("Authorization" in context.http.request.headers) {
+                    return;
+                }
+
+                return new SecurityIdentity({
+                    id: "admin@webiny.com",
+                    type: "admin",
+                    displayName: "John Doe"
+                });
+            }
+        },
         {
             type: "context",
             apply(context) {
@@ -92,18 +107,32 @@ const GET_I18N_INFORMATION = /* GraphQL */ `
     }
 `;
 
+const BASE_FIELDS = `
+    code
+    default
+    createdOn
+    createdBy {
+        id
+        displayName
+        type
+    }               
+`;
+
+const ERROR_FIELDS = `
+    code
+    data
+    message
+`;
+
 const CREATE_LOCALE = /* GraphQL */ `
     mutation CreateI18NLocale($data: I18NLocaleInput!) {
         i18n {
             createI18NLocale(data: $data) {
                 data {
-                    code
-                    default
+                    ${BASE_FIELDS}
                 }
                 error {
-                    code
-                    data
-                    message
+                    ${ERROR_FIELDS}
                 }
             }
         }
@@ -111,17 +140,14 @@ const CREATE_LOCALE = /* GraphQL */ `
 `;
 
 const UPDATE_LOCALE = /* GraphQL */ `
-    mutation UpdateI18NLocale($code: String!, $data: I18NLocaleInput!) {
+    mutation UpdateI18NLocale($code: String!, $data: I18NLocaleUpdateInput!) {
         i18n {
             updateI18NLocale(code: $code, data: $data) {
                 data {
-                    code
-                    default
+                    ${BASE_FIELDS}
                 }
                 error {
-                    code
-                    data
-                    message
+                    ${ERROR_FIELDS}
                 }
             }
         }
@@ -133,13 +159,10 @@ const LIST_LOCALES = /* GraphQL */ `
         i18n {
             listI18NLocales {
                 data {
-                    code
-                    default
+                    ${BASE_FIELDS}
                 }
                 error {
-                    code
-                    data
-                    message
+                    ${ERROR_FIELDS}
                 }
             }
         }
@@ -151,13 +174,10 @@ const GET_LOCALE = /* GraphQL */ `
         i18n {
             getI18NLocale(code: $code) {
                 data {
-                    code
-                    default
+                    ${BASE_FIELDS}
                 }
                 error {
-                    code
-                    data
-                    message
+                    ${ERROR_FIELDS}
                 }
             }
         }
@@ -169,13 +189,10 @@ const DELETE_LOCALE = /* GraphQL */ `
         i18n {
             deleteI18NLocale(code: $code) {
                 data {
-                    code
-                    default
+                    ${BASE_FIELDS}
                 }
                 error {
-                    code
-                    data
-                    message
+                    ${ERROR_FIELDS}
                 }
             }
         }

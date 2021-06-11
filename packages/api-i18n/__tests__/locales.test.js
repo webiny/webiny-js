@@ -1,7 +1,18 @@
 import useGqlHandler from "./useGqlHandler";
 
 describe("CRUD Test", () => {
-    const { createI18NLocale, deleteI18NLocale, listI18NLocales, getI18NLocale } = useGqlHandler();
+    const {
+        createI18NLocale,
+        updateI18NLocale,
+        deleteI18NLocale,
+        listI18NLocales,
+        getI18NLocale
+    } = useGqlHandler();
+    const identity = {
+        id: "admin@webiny.com",
+        type: "admin",
+        displayName: "John Doe"
+    };
 
     test("create, read, update and delete locales", async () => {
         let [response] = await createI18NLocale({ data: { code: "en-US", default: true } });
@@ -13,7 +24,9 @@ describe("CRUD Test", () => {
                     createI18NLocale: {
                         data: {
                             code: "en-US",
-                            default: true
+                            default: true,
+                            createdOn: expect.stringMatching(/^20/),
+                            createdBy: identity
                         },
                         error: null
                     }
@@ -28,7 +41,9 @@ describe("CRUD Test", () => {
                     createI18NLocale: {
                         data: {
                             code: "en-GB",
-                            default: true
+                            default: true,
+                            createdOn: expect.stringMatching(/^20/),
+                            createdBy: identity
                         },
                         error: null
                     }
@@ -44,7 +59,9 @@ describe("CRUD Test", () => {
                     createI18NLocale: {
                         data: {
                             code: "hr-HR",
-                            default: true
+                            default: true,
+                            createdOn: expect.stringMatching(/^20/),
+                            createdBy: identity
                         },
                         error: null
                     }
@@ -61,7 +78,9 @@ describe("CRUD Test", () => {
                     createI18NLocale: {
                         data: {
                             code: "hr",
-                            default: false
+                            default: false,
+                            createdOn: expect.stringMatching(/^20/),
+                            createdBy: identity
                         },
                         error: null
                     }
@@ -78,20 +97,28 @@ describe("CRUD Test", () => {
                         data: [
                             {
                                 code: "en-GB",
-                                default: false
+                                default: false,
+                                createdOn: expect.stringMatching(/^20/),
+                                createdBy: identity
                             },
                             {
                                 code: "en-US",
-                                default: false
+                                default: false,
+                                createdOn: expect.stringMatching(/^20/),
+                                createdBy: identity
                             },
                             {
                                 code: "hr",
-                                default: false
+                                default: false,
+                                createdOn: expect.stringMatching(/^20/),
+                                createdBy: identity
                             },
 
                             {
                                 code: "hr-HR",
-                                default: true
+                                default: true,
+                                createdOn: expect.stringMatching(/^20/),
+                                createdBy: identity
                             }
                         ],
                         error: null
@@ -108,7 +135,9 @@ describe("CRUD Test", () => {
                     getI18NLocale: {
                         data: {
                             code: "en-GB",
-                            default: false
+                            default: false,
+                            createdOn: expect.stringMatching(/^20/),
+                            createdBy: identity
                         },
                         error: null
                     }
@@ -123,7 +152,9 @@ describe("CRUD Test", () => {
                     getI18NLocale: {
                         data: {
                             code: "hr-HR",
-                            default: true
+                            default: true,
+                            createdOn: expect.stringMatching(/^20/),
+                            createdBy: identity
                         },
                         error: null
                     }
@@ -139,7 +170,9 @@ describe("CRUD Test", () => {
                     deleteI18NLocale: {
                         data: {
                             code: "en-US",
-                            default: false
+                            default: false,
+                            createdOn: expect.stringMatching(/^20/),
+                            createdBy: identity
                         },
                         error: null
                     }
@@ -154,7 +187,9 @@ describe("CRUD Test", () => {
                     deleteI18NLocale: {
                         data: {
                             code: "en-GB",
-                            default: false
+                            default: false,
+                            createdOn: expect.stringMatching(/^20/),
+                            createdBy: identity
                         },
                         error: null
                     }
@@ -189,11 +224,177 @@ describe("CRUD Test", () => {
                         data: [
                             {
                                 code: "hr",
-                                default: false
+                                default: false,
+                                createdOn: expect.stringMatching(/^20/),
+                                createdBy: identity
                             },
                             {
                                 code: "hr-HR",
-                                default: true
+                                default: true,
+                                createdOn: expect.stringMatching(/^20/),
+                                createdBy: identity
+                            }
+                        ],
+                        error: null
+                    }
+                }
+            }
+        });
+
+        // Update "non-default" locale as default
+        [response] = await updateI18NLocale({ code: "hr", data: { default: true } });
+        expect(response).toEqual({
+            data: {
+                i18n: {
+                    updateI18NLocale: {
+                        data: {
+                            code: "hr",
+                            default: true,
+                            createdOn: expect.stringMatching(/^20/),
+                            createdBy: identity
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        // Previously set "default" locale should not be "default now
+        [response] = await getI18NLocale({ code: "hr-HR" });
+        expect(response).toEqual({
+            data: {
+                i18n: {
+                    getI18NLocale: {
+                        data: {
+                            code: "hr-HR",
+                            default: false,
+                            createdOn: expect.stringMatching(/^20/),
+                            createdBy: identity
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        // Two locales should be returned here.
+        [response] = await listI18NLocales();
+        expect(response).toEqual({
+            data: {
+                i18n: {
+                    listI18NLocales: {
+                        data: [
+                            {
+                                code: "hr",
+                                default: true,
+                                createdOn: expect.stringMatching(/^20/),
+                                createdBy: identity
+                            },
+                            {
+                                code: "hr-HR",
+                                default: false,
+                                createdOn: expect.stringMatching(/^20/),
+                                createdBy: identity
+                            }
+                        ],
+                        error: null
+                    }
+                }
+            }
+        });
+    });
+
+    test(`set and unset "default" locale`, async () => {
+        // Create a "default" locale
+        let [response] = await createI18NLocale({ data: { code: "hr", default: true } });
+        expect(response).toEqual({
+            data: {
+                i18n: {
+                    createI18NLocale: {
+                        data: {
+                            code: "hr",
+                            default: true,
+                            createdOn: expect.stringMatching(/^20/),
+                            createdBy: identity
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        // Trying to unset "default" for an existing locale should return error
+        [response] = await updateI18NLocale({ code: "hr", data: { default: false } });
+        expect(response).toEqual({
+            data: {
+                i18n: {
+                    updateI18NLocale: {
+                        data: null,
+                        error: {
+                            code: "",
+                            data: null,
+                            message:
+                                "Cannot unset default locale, please set another locale as default first."
+                        }
+                    }
+                }
+            }
+        });
+
+        // Create a locale without default
+        [response] = await createI18NLocale({ data: { code: "de-De" } });
+        expect(response).toEqual({
+            data: {
+                i18n: {
+                    createI18NLocale: {
+                        data: {
+                            code: "de-De",
+                            default: null,
+                            createdOn: expect.stringMatching(/^20/),
+                            createdBy: identity
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        // Update newly created locale as "default"
+        [response] = await updateI18NLocale({ code: "de-De", data: { default: true } });
+        expect(response).toEqual({
+            data: {
+                i18n: {
+                    updateI18NLocale: {
+                        data: {
+                            code: "de-De",
+                            default: true,
+                            createdOn: expect.stringMatching(/^20/),
+                            createdBy: identity
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        // Three locales should be returned here.
+        [response] = await listI18NLocales();
+        expect(response).toEqual({
+            data: {
+                i18n: {
+                    listI18NLocales: {
+                        data: [
+                            {
+                                code: "de-De",
+                                default: true,
+                                createdOn: expect.stringMatching(/^20/),
+                                createdBy: identity
+                            },
+                            {
+                                code: "hr",
+                                default: false,
+                                createdOn: expect.stringMatching(/^20/),
+                                createdBy: identity
                             }
                         ],
                         error: null
