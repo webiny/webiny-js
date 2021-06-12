@@ -1,5 +1,4 @@
 import * as React from "react";
-import { lowerCase } from "lodash";
 import { Form } from "@webiny/form";
 import { validation } from "@webiny/validation";
 import { ButtonPrimary } from "@webiny/ui/Button";
@@ -7,19 +6,24 @@ import { Input } from "@webiny/ui/Input";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
 import { Elevation } from "@webiny/ui/Elevation";
+import { useAuthenticator } from "@webiny/app-security-cognito-authentication/hooks/useAuthenticator";
+import { useRequireNewPassword } from "@webiny/app-security-cognito-authentication/hooks/useRequireNewPassword";
 import StateContainer from "./StateContainer";
 import { alignRight, InnerContent, Title } from "./StyledComponents";
-import { RequireNewPasswordChildrenProps } from "../cognito/states/RequireNewPassword";
 
 const sentenceCase = str => {
-    const lower = lowerCase(str);
+    const lower = str.toLowerCase();
     return lower[0].toUpperCase() + lower.substring(1);
 };
 
-const RequireNewPassword: React.FC<RequireNewPasswordChildrenProps> = ({
-    confirm,
-    requiredAttributes
-}) => {
+const RequireNewPassword = () => {
+    const { checkingUser } = useAuthenticator();
+    const { shouldRender, requiredAttributes, confirm } = useRequireNewPassword();
+
+    if (!shouldRender || checkingUser) {
+        return null;
+    }
+
     return (
         <StateContainer>
             <Form
@@ -32,7 +36,7 @@ const RequireNewPassword: React.FC<RequireNewPasswordChildrenProps> = ({
                     <Elevation z={2}>
                         <InnerContent>
                             <Title>
-                                <Typography use="headline4">Set new password</Typography>
+                                <Typography use="headline4">Set New Password</Typography>
                             </Title>
 
                             <Grid>

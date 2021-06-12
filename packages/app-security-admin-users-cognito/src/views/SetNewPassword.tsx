@@ -9,14 +9,17 @@ import { Elevation } from "@webiny/ui/Elevation";
 import { CircularProgress } from "@webiny/ui/Progress";
 import StateContainer from "./StateContainer";
 import { alignRight, InnerContent, Title, errorMessage } from "./StyledComponents";
-import { SetNewPasswordChildrenProps } from "../cognito/states/SetNewPassword";
+import { useAuthenticator } from "@webiny/app-security-cognito-authentication/hooks/useAuthenticator";
+import { useSetNewPassword } from "@webiny/app-security-cognito-authentication/hooks/useSetNewPassword";
 
-const SetNewPassword: React.FC<SetNewPasswordChildrenProps> = ({
-    setPassword,
-    error,
-    loading,
-    authProps
-}) => {
+const SetNewPassword = () => {
+    const { checkingUser, changeState } = useAuthenticator();
+    const { shouldRender, setPassword, error, loading } = useSetNewPassword();
+
+    if (!shouldRender || checkingUser) {
+        return null;
+    }
+
     return (
         <StateContainer>
             <Form onSubmit={setPassword} submitOnEnter>
@@ -35,7 +38,7 @@ const SetNewPassword: React.FC<SetNewPasswordChildrenProps> = ({
                                     <Title>
                                         <h1>
                                             <Typography use="headline4">
-                                                Set new password
+                                                Set New Password
                                             </Typography>
                                         </h1>
                                     </Title>
@@ -107,7 +110,7 @@ const SetNewPassword: React.FC<SetNewPasswordChildrenProps> = ({
                             <Grid>
                                 <Cell span={12} style={{ textAlign: "center" }}>
                                     Want to sign in? {/* eslint-disable-next-line */}
-                                    <a href={"#"} onClick={() => authProps.changeState("signIn")}>
+                                    <a href={"#"} onClick={() => changeState("signIn")}>
                                         Sign in
                                     </a>
                                 </Cell>

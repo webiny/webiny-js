@@ -12,10 +12,14 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@webiny/app-security-admin-users": "^5.7.0",
+    "emotion": "^10.0.27",
+    "@webiny/app-security-cognito-authentication": "^5.7.0",
+    "@webiny/plugins": "^5.7.0",
     "@webiny/ui": "^5.7.0",
     "@webiny/validation": "^5.7.0",
-    "@webiny/plugins": "^5.7.0",
+    "@emotion/styled": "^10.0.27",
+    "@webiny/app": "^5.8.0",
+    "@webiny/form": "^5.8.0",
     "react": "^16.14.0",
     "react-dom": "^16.14.0"
   },

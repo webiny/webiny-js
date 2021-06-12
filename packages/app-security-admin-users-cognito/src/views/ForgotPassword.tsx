@@ -10,17 +10,26 @@ import { Elevation } from "@webiny/ui/Elevation";
 import StateContainer from "./StateContainer";
 import { alignRight, InnerContent, Title } from "./StyledComponents";
 import { CircularProgress } from "@webiny/ui/Progress";
-import { ForgotPasswordChildrenProps } from "../cognito/states/ForgotPassword";
+import { useAuthenticator } from "@webiny/app-security-cognito-authentication/hooks/useAuthenticator";
+import { useForgotPassword } from "@webiny/app-security-cognito-authentication/hooks/useForgotPassword";
 
-const ForgotPassword: React.FC<ForgotPasswordChildrenProps> = ({
-    requestCode,
-    setPassword,
-    codeSent,
-    error,
-    loading,
-    authProps
-}) => {
-    const { username = "" } = authProps.authData || {};
+const ForgotPassword = () => {
+    const { checkingUser, authData, changeState } = useAuthenticator();
+    const {
+        loading,
+        codeSent,
+        shouldRender,
+        setPassword,
+        requestCode,
+        error
+    } = useForgotPassword();
+
+    if (!shouldRender || checkingUser) {
+        return null;
+    }
+
+    const { username = "" } = authData || {};
+
     return (
         <StateContainer>
             <Form
@@ -37,7 +46,7 @@ const ForgotPassword: React.FC<ForgotPasswordChildrenProps> = ({
                                 {loading && <CircularProgress />}
                                 <Title>
                                     <h1>
-                                        <Typography use="headline4">Password recovery</Typography>
+                                        <Typography use="headline4">Password Recovery</Typography>
                                     </h1>
                                     <p>
                                         <Typography use="subtitle2">
@@ -120,7 +129,7 @@ const ForgotPassword: React.FC<ForgotPasswordChildrenProps> = ({
                         <Grid>
                             <Cell span={12} style={{ textAlign: "center" }}>
                                 Want to sign in? {/* eslint-disable-next-line */}
-                                <a href={"#"} onClick={() => authProps.changeState("signIn")}>
+                                <a href={"#"} onClick={() => changeState("signIn")}>
                                     Sign in
                                 </a>
                             </Cell>
