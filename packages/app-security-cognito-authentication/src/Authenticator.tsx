@@ -1,8 +1,7 @@
-import React, { useReducer, useEffect } from "react";
+import React, { useReducer, useEffect, useMemo } from "react";
 import Auth from "@aws-amplify/auth";
 import { ApolloClient } from "apollo-client";
 import { useApolloClient } from "@apollo/react-hooks";
-import { AlertType } from "@webiny/ui/Alert";
 import { useSecurity } from "@webiny/app-security";
 import { SecurityIdentity } from "@webiny/app-security/SecurityIdentity";
 
@@ -19,35 +18,39 @@ export type AuthState =
     | "confirmSignUp"
     | "forgotPassword";
 
-export type AuthData = { [key: string]: any };
+export interface AuthData {
+    [key: string]: any;
+}
 
-export type AuthMessage = { title: string; text: string; type: AlertType };
+export interface AuthMessage {
+    title: string;
+    text: string;
+    type: "success" | "info" | "warning" | "danger";
+}
 
-export type AuthChangeState = (
-    state: AuthState,
-    data?: AuthData,
-    message?: AuthMessage
-) => Promise<void>;
+export interface AuthChangeState {
+    (state: AuthState, data?: AuthData, message?: AuthMessage): Promise<void>;
+}
 
-export type AuthProps = {
+export interface AuthContextValue {
     authState: AuthState;
     authData: AuthData;
     changeState: AuthChangeState;
     checkingUser?: boolean;
     message: AuthMessage;
-};
+}
 
-export type AuthenticatorChildrenFunction = (params: AuthProps) => React.ReactElement;
-
-export type AuthenticatorProps = {
+export interface AuthenticatorProps {
     getIdentityData(params: {
         client: ApolloClient<any>;
         payload: { [key: string]: any };
     }): Promise<{ [key: string]: any }>;
-    children: AuthenticatorChildrenFunction;
-};
+    children: React.ReactNode;
+}
 
-export const Authenticator: React.FC<AuthenticatorProps> = props => {
+export const AuthenticatorContext = React.createContext<AuthContextValue>({} as any);
+
+export const Authenticator = (props: AuthenticatorProps) => {
     const { setIdentity } = useSecurity();
     const client = useApolloClient();
 
@@ -87,6 +90,7 @@ export const Authenticator: React.FC<AuthenticatorProps> = props => {
                 setState({ checkingUser: false });
             }
         } catch (e) {
+            console.log("error", e);
             setState({ checkingUser: false });
         }
     };
@@ -125,13 +129,13 @@ export const Authenticator: React.FC<AuthenticatorProps> = props => {
         setState({ authState: state, authData: data });
     };
 
-    const { authState, authData, checkingUser, message } = state;
+    const value = useMemo(() => {
+        return { ...state, changeState: onChangeState };
+    }, [state]);
 
-    return props.children({
-        authState,
-        authData,
-        changeState: onChangeState,
-        checkingUser,
-        message
-    });
+    return (
+        <AuthenticatorContext.Provider value={value}>
+            {props.children}
+        </AuthenticatorContext.Provider>
+    );
 };

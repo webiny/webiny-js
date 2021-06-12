@@ -1,27 +1,13 @@
-import React from "react";
-import Auth from "@aws-amplify/auth";
-import { ApolloClient } from "apollo-client";
+import { Auth } from "@aws-amplify/auth";
 import { setContext } from "apollo-link-context";
 import { PluginCollection } from "@webiny/plugins/types";
 import { ApolloLinkPlugin } from "@webiny/app/plugins/ApolloLinkPlugin";
-import { Authentication } from "./Authentication";
+import { AuthOptions } from "@aws-amplify/auth/lib-esm/types";
 
-export type CognitoOptions = {
-    region: string;
-    userPoolId: string;
-    userPoolWebClientId: string;
-    getIdentityData(params: {
-        client: ApolloClient<any>;
-        payload: { [key: string]: any };
-    }): Promise<{ [key: string]: any }>;
-};
+export type Options = AuthOptions;
 
-export default ({ getIdentityData, ...amplify }: CognitoOptions): PluginCollection => {
-    Auth.configure(amplify);
-
-    const authentication = children => {
-        return <Authentication getIdentityData={getIdentityData}>{children}</Authentication>;
-    };
+export default (options: Options): PluginCollection => {
+    Auth.configure(options);
 
     return [
         new ApolloLinkPlugin(() => {
@@ -50,10 +36,6 @@ export default ({ getIdentityData, ...amplify }: CognitoOptions): PluginCollecti
                     }
                 };
             });
-        }),
-        {
-            type: "app-installer-security",
-            render: authentication
-        }
+        })
     ];
 };

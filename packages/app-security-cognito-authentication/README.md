@@ -1,1 +1,3 @@
-# @webiny/security-provider-cognito
+# @webiny/api-security-cognito-authentication
+
+
