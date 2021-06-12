@@ -1,15 +1,11 @@
 export default /* GraphQL */ `
     type Target {
         id: ID!
-        savedOn: DateTime!
-        createdBy: TargetCreatedBy!
         title: String!
         description: String
-    }
-
-    type TargetsListMeta {
-        limit: Number
-        cursor: String
+        createdOn: DateTime!
+        savedOn: DateTime!
+        createdBy: TargetCreatedBy
     }
 
     type TargetCreatedBy {
@@ -28,23 +24,24 @@ export default /* GraphQL */ `
         description: String
     }
 
-    enum TargetsListSortOrder {
-        asc
-        desc
+    type TargetsListMeta {
+        limit: Number
+        cursor: String
     }
 
-    input TargetsListSort {
-        savedOn: String
+    enum TargetsListSort {
+        createdOn_ASC
+        createdOn_DESC
     }
 
-    type TargetsListResponse {
+    type TargetsList {
         data: [Target]
         meta: TargetsListMeta
     }
 
     type TargetQuery {
         getTarget(id: ID!): Target
-        listTargets(sort: TargetsListSort, limit: Int, after: String): TargetsListResponse!
+        listTargets(sort: TargetsListSort, limit: Int, after: String): TargetsList!
     }
 
     type TargetMutation {

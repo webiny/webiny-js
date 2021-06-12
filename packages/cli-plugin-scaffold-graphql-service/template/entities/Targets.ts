@@ -10,8 +10,7 @@ import { TargetEntity } from "../types";
 export default new Entity<TargetEntity>({
     table,
     name: "Targets",
-    created: "createdOn",
-    modified: "savedOn",
+    timestamps: false,
     attributes: {
         PK: { partitionKey: true },
         SK: { sortKey: true },

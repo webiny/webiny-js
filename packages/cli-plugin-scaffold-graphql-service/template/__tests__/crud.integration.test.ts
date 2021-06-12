@@ -1,5 +1,11 @@
 import { handler } from "~/index";
-import { GET_TARGET, CREATE_TARGET, DELETE_TARGET, LIST_TARGETS, UPDATE_TARGET } from "./graphql/targets";
+import {
+    GET_TARGET,
+    CREATE_TARGET,
+    DELETE_TARGET,
+    LIST_TARGETS,
+    UPDATE_TARGET
+} from "./graphql/targets";
 
 /**
  * An example of an integration test. You can use these to test your GraphQL resolvers, for example,
@@ -175,7 +181,7 @@ describe("Targets CRUD tests (integration)", () => {
         const targetsListDescResponse = await query({
             query: LIST_TARGETS,
             variables: {
-                sort: { savedOn: "desc" }
+                sort: "createdOn_DESC"
             }
         });
 
@@ -212,7 +218,7 @@ describe("Targets CRUD tests (integration)", () => {
         const targetsListAscResponse = await query({
             query: LIST_TARGETS,
             variables: {
-                sort: { savedOn: "asc" }
+                sort: "createdOn_ASC"
             }
         });
 
@@ -314,7 +320,7 @@ describe("Targets CRUD tests (integration)", () => {
             query: LIST_TARGETS,
             variables: {
                 limit: 2,
-                sort: { savedOn: "asc" }
+                sort: "createdOn_ASC"
             }
         });
 
@@ -347,7 +353,7 @@ describe("Targets CRUD tests (integration)", () => {
             query: LIST_TARGETS,
             variables: {
                 limit: 2,
-                sort: { savedOn: "asc" },
+                sort: "createdOn_ASC",
                 after: targetsListAscPage1Response.data.targets.listTargets.meta.cursor
             }
         });

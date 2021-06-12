@@ -14,7 +14,7 @@ interface GetTargetParams {
 }
 
 interface ListTargetsParams {
-    sort?: { savedOn?: "asc" | "desc" };
+    sort?: "createdOn_ASC" | "createdOn_DESC";
     limit?: number;
     after?: string;
 }
@@ -54,7 +54,6 @@ export default class TargetsQueryResolver implements TargetsQuery {
         return target;
     }
 
-
     /**
      * List multiple Target entries from the database.
      * Supports basic sorting and cursor-based pagination.
@@ -62,13 +61,13 @@ export default class TargetsQueryResolver implements TargetsQuery {
      * @param sort
      * @param after
      */
-    async listTargets({ limit, sort = {}, after }: ListTargetsParams) {
+    async listTargets({ limit, sort, after }: ListTargetsParams) {
         // Let's create the query object. By default, we apply a limit of 10 entries per page and return entries
         // sorted by their time of creation, in a descending order. For this, we rely on the "SK" database column,
         // which contains a sequential MongoDB ID. Check "./TargetsMutations.ts" to see how storing is performed.
         const query = {
             limit: limit || 10,
-            reverse: sort.savedOn !== "asc",
+            reverse: sort !== "createdOn_ASC",
             gt: undefined,
             lt: undefined
         };
