@@ -8,11 +8,18 @@ process.env.WEBINY_VERSION = version;
 
 module.exports = ({ path }, presets = []) => {
     const name = basename(path);
+
+    // Enables us to run tests of only a specific type (for example "integration" or "e2e").
+    let type = "";
+    if (process.env.TEST_TYPE) {
+        type = `.${process.env.TEST_TYPE}`
+    }
+
     return merge.recursive({}, tsPreset, ...presets, {
         name: name,
         displayName: name,
         modulePaths: [`${path}/src`],
-        testMatch: [`${path}/**/__tests__/**/*.test.[jt]s?(x)`],
+        testMatch: [`${path}/**/__tests__/**/*${type}.test.[jt]s?(x)`],
         transform: {
             "^.+\\.(ts|tsx)$": "ts-jest"
         },
