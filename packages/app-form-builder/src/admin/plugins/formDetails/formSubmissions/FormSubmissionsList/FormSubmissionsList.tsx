@@ -45,16 +45,16 @@ type Props = {
 
 const { DataList, ListItem, ListItemMeta, ListItemText, ListTextOverline } = ListComponents;
 
-const sorters = [
-    {
-        label: t`Newest to oldest`,
-        sorters: { createdOn: -1 }
-    },
-    {
-        label: t`Oldest to newest`,
-        sorters: { createdOn: 1 }
-    }
-];
+// const sorters = [
+//     {
+//         label: t`Newest to oldest`,
+//         sorters: { createdOn: -1 }
+//     },
+//     {
+//         label: t`Oldest to newest`,
+//         sorters: { createdOn: 1 }
+//     }
+// ];
 
 export const FormSubmissionsList = ({ form }: Props) => {
     const {
