@@ -249,7 +249,7 @@ const Sorters = (props: Props) => {
                         key={sorter.label}
                         onClick={() => {
                             if (sorters && props.setSorters) {
-                                props.setSorters(sorter.sorters);
+                                props.setSorters(sorter.value);
                             }
                         }}
                     >
