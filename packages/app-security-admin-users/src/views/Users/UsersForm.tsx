@@ -2,7 +2,6 @@ import React, { useCallback } from "react";
 import pick from "lodash/pick";
 import isEmpty from "lodash/isEmpty";
 import styled from "@emotion/styled";
-import { plugins } from "@webiny/plugins";
 import { i18n } from "@webiny/app/i18n";
 import { Form } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";
@@ -10,7 +9,6 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
 import { ButtonDefault, ButtonPrimary, ButtonIcon } from "@webiny/ui/Button";
-import { SecurityUserFormPlugin } from "../../types";
 import { validation } from "@webiny/validation";
 import {
     SimpleForm,
@@ -28,6 +26,7 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import EmptyView from "@webiny/app-admin/components/EmptyView";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
+import { View } from "@webiny/app/components/View";
 
 const t = i18n.ns("app-security-admin-users/admin/users-form");
 
@@ -120,7 +119,6 @@ const UsersForm = () => {
 
     const user = userLoading ? {} : data ? data.security.user.data : {};
 
-    const uiPlugins = plugins.byType<SecurityUserFormPlugin>("security-user-form");
     const fullName = `${user.firstName || ""} ${user.lastName || ""}`.trim();
 
     const showEmptyView = !newUser && !userLoading && isEmpty(user);
@@ -142,8 +140,8 @@ const UsersForm = () => {
 
     return (
         <Form data={user} onSubmit={onSubmit}>
-            {({ data, form, Bind }) => (
-                <>
+            {({ data, form, Bind, submit }) => (
+                <View name={"adminUsers.user.form"} props={{ data, form, Bind, submit }}>
                     <AvatarWrapper>
                         <Bind name="avatar">
                             <AvatarImage round />
@@ -187,16 +185,15 @@ const UsersForm = () => {
                                                     validators={validation.create("required,email")}
                                                 >
                                                     <Input
-                                                        label={t`E-mail`}
+                                                        label={t`Email`}
                                                         disabled={Boolean(login)}
                                                     />
                                                 </Bind>
                                             </Cell>
-                                            {uiPlugins.map(pl => (
-                                                <React.Fragment key={pl.name}>
-                                                    {pl.render({ Bind, data })}
-                                                </React.Fragment>
-                                            ))}
+                                            <View
+                                                name={"adminUsers.user.form.fields"}
+                                                props={{ Bind, data }}
+                                            />
                                         </Grid>
                                     </AccordionItem>
                                     <AccordionItem
@@ -228,7 +225,7 @@ const UsersForm = () => {
                             </SimpleFormFooter>
                         </SimpleForm>
                     </FormWrapper>
-                </>
+                </View>
             )}
         </Form>
     );

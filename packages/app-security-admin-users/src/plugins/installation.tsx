@@ -10,14 +10,13 @@ import { Checkbox } from "@webiny/ui/Checkbox";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { validation } from "@webiny/validation";
-import { plugins } from "@webiny/plugins";
 import {
     SimpleForm,
     SimpleFormHeader,
     SimpleFormFooter,
     SimpleFormContent
 } from "@webiny/app-admin/components/SimpleForm";
-import { SecurityInstallationFormPlugin } from "../types";
+import { View } from "@webiny/app/components/View";
 
 const t = i18n.ns("app-security/admin/installation");
 
@@ -44,8 +43,6 @@ const INSTALL = gql`
 `;
 
 const Install = ({ onInstalled }) => {
-    const uiPlugins = plugins.byType<SecurityInstallationFormPlugin>("security-installation-form");
-
     const client = useApolloClient();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -123,14 +120,10 @@ const Install = ({ onInstalled }) => {
                                     validators={validation.create("required,email")}
                                     beforeChange={(value: string, cb) => cb(value.toLowerCase())}
                                 >
-                                    <Input label={t`E-mail`} />
+                                    <Input label={t`Email`} />
                                 </Bind>
                             </Cell>
-                            {uiPlugins.map(pl => (
-                                <React.Fragment key={pl.name}>
-                                    {pl.render({ Bind, data })}
-                                </React.Fragment>
-                            ))}
+                            <View name={"security.installation.fields"} props={{ Bind, data }} />
                         </Grid>
 
                         <Grid>

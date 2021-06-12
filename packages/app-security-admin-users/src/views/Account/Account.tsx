@@ -4,7 +4,6 @@ import { useQuery, useMutation } from "@apollo/react-hooks";
 import { i18n } from "@webiny/app/i18n";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { Form } from "@webiny/form";
-import { plugins } from "@webiny/plugins";
 import { Input } from "@webiny/ui/Input";
 import { ButtonPrimary } from "@webiny/ui/Button";
 import { CircularProgress } from "@webiny/ui/Progress";
@@ -24,14 +23,13 @@ import {
     SimpleFormFooter,
     SimpleFormContent
 } from "@webiny/app-admin/components/SimpleForm";
-import { SecurityUserAccountFormPlugin } from "../../types";
 import { useSecurity } from "@webiny/app-security";
 import { SecurityIdentity } from "@webiny/app-security/SecurityIdentity";
+import { View } from "@webiny/app/components/View";
 
 const t = i18n.ns("app-security-admin-users/account-form");
 
 const UserAccountForm = () => {
-    const uiPlugins = plugins.byType<SecurityUserAccountFormPlugin>("security-user-account-form");
     const [loading, setLoading] = useState(false);
     const { showSnackbar } = useSnackbar();
     const { identity, setIdentity } = useSecurity();
@@ -115,11 +113,10 @@ const UserAccountForm = () => {
                                                         }
                                                     />
                                                 </Cell>
-                                                {uiPlugins.map(pl => (
-                                                    <React.Fragment key={pl.name}>
-                                                        {pl.render({ Bind, data })}
-                                                    </React.Fragment>
-                                                ))}
+                                                <View
+                                                    name={"adminUsers.account.form.fields"}
+                                                    props={{ Bind, data }}
+                                                />
                                             </Grid>
                                         </AccordionItem>
                                         <AccordionItem
