@@ -10,6 +10,12 @@
       "@webiny/app": ["../../../packages/app/src"],
       "@webiny/app-security-admin-users/*": ["../../../packages/app-security-admin-users/src/*"],
       "@webiny/app-security-admin-users": ["../../../packages/app-security-admin-users/src"],
+      "@webiny/app-security-admin-users-cognito/*": [
+        "../../../packages/app-security-admin-users-cognito/src/*"
+      ],
+      "@webiny/app-security-admin-users-cognito": [
+        "../../../packages/app-security-admin-users-cognito/src"
+      ],
       "@webiny/app-plugin-admin-welcome-screen": [
         "../../../packages/app-plugin-admin-welcome-screen"
       ],

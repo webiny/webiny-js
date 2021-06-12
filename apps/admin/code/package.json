@@ -23,7 +23,6 @@
     "@webiny/app-security": "^5.5.0-beta.0",
     "@webiny/app-security-admin-users": "^5.5.0-beta.0",
     "@webiny/app-security-admin-users-cognito": "^5.5.0-beta.0",
-    "@webiny/app-security-cognito-authentication": "^5.5.0-beta.0",
     "@webiny/app-tenancy": "^5.5.0-beta.0",
     "@webiny/cli": "^5.5.0-beta.0",
     "@webiny/cli-plugin-deploy-pulumi": "^5.5.0-beta.0",

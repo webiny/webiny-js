@@ -10,7 +10,7 @@ import { AppInstaller } from "@webiny/app-admin/components/AppInstaller";
 import { CmsProvider } from "@webiny/app-headless-cms/admin/contexts/Cms";
 import { PageBuilderProvider } from "@webiny/app-page-builder/contexts/PageBuilder";
 import { BrowserRouter } from "@webiny/react-router";
-import { Authentication } from "@webiny/app-security-cognito-authentication/Authentication";
+import { Authentication } from "@webiny/app-security-admin-users-cognito/Authentication";
 import { createApolloClient } from "./components/apolloClient";
 import { Telemetry } from "./components/Telemetry";
 import { getIdentityData } from "./components/getIdentityData";
