@@ -18,12 +18,9 @@ export const useTargetDataModelsForm = () => {
     const getQuery = useQuery(GET_TARGET_DATA_MODEL, {
         variables: { id: currentTargetDataModelId },
         skip: !currentTargetDataModelId,
-        onCompleted: data => {
-            const error = data?.targetDataModels?.getTarget_data_model?.error;
-            if (error) {
-                history.push("/target-data-models");
-                showSnackbar(error.message);
-            }
+        onError: error => {
+            history.push("/target-data-models");
+            showSnackbar(error.message);
         }
     });
 
@@ -31,37 +28,35 @@ export const useTargetDataModelsForm = () => {
         refetchQueries: [{ query: LIST_TARGET_DATA_MODELS }]
     });
 
-    const [update, updateMutation] = useMutation(UPDATE_TARGET_DATA_MODEL, {
-        refetchQueries: [{ query: LIST_TARGET_DATA_MODELS }]
-    });
+    const [update, updateMutation] = useMutation(UPDATE_TARGET_DATA_MODEL);
 
     const loading = [getQuery, createMutation, updateMutation].some(item => item.loading);
 
     const onSubmit = useCallback(
-        async data => {
-            const isUpdate = data.createdOn;
-            const [operation, args] = isUpdate
-                ? [update, { variables: { id: data.id, data } }]
-                : [create, { variables: { data } }];
+        async formData => {
+            const isCreate = !formData.createdOn;
+            const { id, title, description } = formData;
+            const [operation, options] = isCreate
+                ? [create, { variables: { data: { title, description } } }]
+                : [update, { variables: { id, data: { title, description } } }];
 
-            const response = await operation(args);
+            try {
+                const result = await operation(options);
+                if (isCreate) {
+                    const { id } = result.data.targetDataModels.createTargetDataModel;
+                    history.push(`/target-data-models?id=${id}`);
+                }
 
-            const error = response?.data?.targetDataModels?.target_data_model;
-            if (error) {
-                return showSnackbar(error.message);
+                showSnackbar("Target Data Model saved successfully.");
+            } catch (e) {
+                showSnackbar(e.message);
             }
-
-            !isUpdate && history.push(`/target-data-models?id=${data.id}`);
-            showSnackbar("Target_data_model saved successfully.");
         },
         [currentTargetDataModelId]
     );
 
-    // TODO: Use {} or null or just leave undefined?
-    const target_data_model = getQuery?.data?.targetDataModels?.getTarget_data_model.data;
-
-    // TODO: Check `showEmptyView`, can this be simplified?
-    const emptyViewIsShown = !searchParams.get("new") && !loading && !target_data_model;
+    const targetDataModel = getQuery?.data?.targetDataModels?.getTargetDataModel;
+    const emptyViewIsShown = !searchParams.has("new") && !loading && !targetDataModel;
     const currentTargetDataModel = useCallback(() => history.push("/target-data-models?new"), []);
     const cancelEditing = useCallback(() => history.push("/target-data-models"), []);
 
@@ -70,7 +65,7 @@ export const useTargetDataModelsForm = () => {
         emptyViewIsShown,
         currentTargetDataModel,
         cancelEditing,
-        target_data_model,
+        targetDataModel,
         onSubmit
     };
 };

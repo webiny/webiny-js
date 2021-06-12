@@ -22,9 +22,9 @@ export const LIST_TARGET_DATA_MODELS = gql`
 `;
 
 export const CREATE_TARGET_DATA_MODEL = gql`
-    mutation CreateTargetDataModel($data: TargetDataModelsCreateInput!) {
+    mutation CreateTargetDataModel($data: TargetDataModelCreateInput!) {
         targetDataModels {
-            createTargetDataModels(data: $data) {
+            createTargetDataModel(data: $data) {
                 id
                 title
                 description

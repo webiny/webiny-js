@@ -21,7 +21,7 @@ const TargetDataModelsForm = () => {
         emptyViewIsShown,
         currentTargetDataModel,
         cancelEditing,
-        target_data_model,
+        targetDataModel,
         onSubmit
     } = useTargetDataModelsForm();
 
@@ -34,7 +34,7 @@ const TargetDataModelsForm = () => {
                 }
                 action={
                     <ButtonDefault onClick={currentTargetDataModel}>
-                        <ButtonIcon icon={<AddIcon />} /> {"New Target_data_model"}
+                        <ButtonIcon icon={<AddIcon />} /> {"New Target Data Model"}
                     </ButtonDefault>
                 }
             />
@@ -42,11 +42,11 @@ const TargetDataModelsForm = () => {
     }
 
     return (
-        <Form data={target_data_model} onSubmit={onSubmit}>
+        <Form data={targetDataModel} onSubmit={onSubmit}>
             {({ data, form, Bind }) => (
                 <SimpleForm>
                     {loading && <CircularProgress />}
-                    <SimpleFormHeader title={data.id || "New Target Data Models"} />
+                    <SimpleFormHeader title={data.title || "New Target Data Model"} />
                     <SimpleFormContent>
                         <Grid>
                             <Cell span={12}>
@@ -69,12 +69,10 @@ const TargetDataModelsForm = () => {
                         </Grid>
                     </SimpleFormContent>
                     <SimpleFormFooter>
-                        <ButtonWrapper>
-                            <ButtonDefault onClick={cancelEditing}>{"Cancel"}</ButtonDefault>
-                            <ButtonPrimary onClick={form.submit}>
-                                {"Save Target Data Models"}
-                            </ButtonPrimary>
-                        </ButtonWrapper>
+                        <ButtonDefault onClick={cancelEditing}>{"Cancel"}</ButtonDefault>
+                        <ButtonPrimary onClick={form.submit}>
+                            {"Save Target Data Model"}
+                        </ButtonPrimary>
                     </SimpleFormFooter>
                 </SimpleForm>
             )}

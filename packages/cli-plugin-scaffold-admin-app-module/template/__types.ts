@@ -1,11 +1,9 @@
-// TODO
-export interface Target_data_modelItemUserFields {
+export interface TargetDataModelItemUserFields {
     title: string;
     description?: string | null;
-    isNice?: boolean;
 }
 
-export interface Target_data_modelItem extends Target_data_modelItemUserFields {
+export interface TargetDataModelItem extends TargetDataModelItemUserFields {
     id: string;
     createdOn: Date;
     savedOn: Date;
@@ -17,5 +15,5 @@ export interface Target_data_modelItem extends Target_data_modelItemUserFields {
 }
 
 export interface DataListChildProps {
-    data: null | Target_data_modelItem[];
+    data: null | TargetDataModelItem[];
 }

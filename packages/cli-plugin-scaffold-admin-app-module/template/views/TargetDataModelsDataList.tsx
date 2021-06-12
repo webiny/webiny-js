@@ -1,22 +1,16 @@
-import React, { useMemo } from "react";
+import React from "react";
 import {
     DataList,
     ScrollList,
     ListItem,
     ListItemText,
     ListItemMeta,
-    ListActions,
-    ListItemTextSecondary,
-    DataListModalOverlay,
-    DataListModalOverlayAction
+    ListActions
 } from "@webiny/ui/List";
 
 import { DeleteIcon } from "@webiny/ui/List/DataList/icons";
 import { ButtonIcon, ButtonSecondary } from "@webiny/ui/Button";
-import { Cell, Grid } from "@webiny/ui/Grid";
-import { Select } from "@webiny/ui/Select";
 import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
-import { ReactComponent as FilterIcon } from "@webiny/app-admin/assets/icons/filter-24px.svg";
 import { useTargetDataModelsDataList } from "./hooks/useTargetDataModelsDataList";
 
 const sorters = [
@@ -35,56 +29,32 @@ const TargetDataModelsDataList = () => {
         targetDataModels,
         loading,
         currentTargetDataModelId,
-        currentTargetDataModel,
-        sort,
-        setSort,
+        newTargetDataModel,
         editTargetDataModel,
-        deleteTargetDataModel
-    } = useTargetDataModelsDataList({ sorters });
-
-    const targetDataModelsDataListModalOverlay = useMemo(
-        () => (
-            <DataListModalOverlay>
-                <Grid>
-                    <Cell span={12}>
-                        <Select value={sort} onChange={setSort} label={"Sort by"}>
-                            {sorters.map(({ label, value }) => {
-                                return (
-                                    <option key={label} value={value}>
-                                        {label}
-                                    </option>
-                                );
-                            })}
-                        </Select>
-                    </Cell>
-                </Grid>
-            </DataListModalOverlay>
-        ),
-        [sort]
-    );
+        deleteTargetDataModel,
+        setSort
+    } = useTargetDataModelsDataList();
 
     return (
         <DataList
             loading={loading}
             actions={
-                <ButtonSecondary onClick={currentTargetDataModel}>
-                    <ButtonIcon icon={<AddIcon />} /> {"New Target Data Model"}
+                <ButtonSecondary onClick={newTargetDataModel}>
+                    <ButtonIcon icon={<AddIcon />} />
+                    New Target Data Model
                 </ButtonSecondary>
             }
+            sorters={sorters}
+            setSorters={setSort}
             data={targetDataModels}
-            title={"Target_data_models"}
-            modalOverlay={targetDataModelsDataListModalOverlay}
-            modalOverlayAction={<DataListModalOverlayAction icon={<FilterIcon />} />}
+            title={"Target Data Models"}
         >
             {({ data }) => (
                 <ScrollList>
                     {data.map(item => (
                         <ListItem key={item.id} selected={item.id === currentTargetDataModelId}>
                             <ListItemText onClick={() => editTargetDataModel(item.id)}>
-                                {item.id}
-                                <ListItemTextSecondary>
-                                    {item.default && "Default target_data_model"}
-                                </ListItemTextSecondary>
+                                {item.title}
                             </ListItemText>
 
                             <ListItemMeta>
