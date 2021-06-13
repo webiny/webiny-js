@@ -1,31 +1,26 @@
-import WebinyError from "@webiny/error";
 import fs from "fs";
 import path from "path";
 import util from "util";
 import ncpBase from "ncp";
-import findUp from "find-up";
-import readJson from "load-json-file";
-import writeJson from "write-json-file";
 import pluralize from "pluralize";
 import Case from "case";
 import { replaceInPath } from "replace-in-path";
-import execa from "execa";
 import chalk from "chalk";
 import indentString from "indent-string";
+import { CliCommandScaffoldTemplate } from "@webiny/cli-plugin-scaffold/types";
+import prettier from "prettier";
+import glob from "fast-glob";
 import {
-    CliCommandScaffoldTemplate,
-    PackageJson,
-    TsConfigJson
-} from "@webiny/cli-plugin-scaffold/types";
-import validateNpmPackageName from "validate-npm-package-name";
-import { getProject } from "@webiny/cli/utils";
+    createScaffoldsIndexFile,
+    updateScaffoldsIndexFile,
+    formatCode
+} from "@webiny/cli-plugin-scaffold/utils";
 
 const ncp = util.promisify(ncpBase.ncp);
 
 interface Input {
-    location: string;
-    entityName: string;
-    packageName?: string;
+    pluginsFolderPath: string;
+    dataModelName: string;
 }
 
 const createPackageName = ({
@@ -45,67 +40,110 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
     name: "cli-plugin-scaffold-template-graphql-service",
     type: "cli-plugin-scaffold-template",
     scaffold: {
-        name: "GraphQL API package",
+        name: "Extend GraphQL API",
         questions: () => {
             return [
                 {
-                    name: "entityName",
-                    message: "Enter the name of the initial data model",
+                    name: "dataModelName",
+                    message: "Enter initial data model name:",
                     default: "Book",
                     validate: name => {
                         if (!name.match(/^([a-zA-Z]+)$/)) {
-                            return "A valid target name must consist of letters only.";
+                            return "A valid targetDataModel name must consist of letters only.";
                         }
 
                         return true;
                     }
                 },
                 {
-                    name: "location",
-                    message: "Enter the package location",
-                    default: answers => {
-                        const entityNamePlural = pluralize(Case.kebab(answers.entityName));
-                        return `packages/${entityNamePlural}/api`;
-                    },
+                    name: "pluginsFolderPath",
+                    message: "Enter plugins folder path:",
+                    default: `api/code/graphql/src/plugins`,
                     validate: location => {
                         if (location.length < 2) {
                             return "Please enter the package location.";
                         }
 
-                        if (fs.existsSync(path.resolve(location))) {
-                            return "The target location already exists.";
-                        }
-
                         return true;
-                    }
-                },
-                {
-                    name: "packageName",
-                    message: "Enter the package name",
-                    default: answers => {
-                        const entityNamePlural = pluralize(Case.kebab(answers.entityName));
-                        return `@${entityNamePlural}/api`;
-                    },
-                    validate: packageName => {
-                        if (!packageName) {
-                            return true;
-                        } else if (validateNpmPackageName(packageName)) {
-                            return true;
-                        }
-                        return `Package name must look something like "@package/my-generated-package".`;
                     }
                 }
             ];
         },
         generate: async ({ input, ora }) => {
-            const { location, entityName, packageName: initialPackageName } = input;
-            const fullLocation = path.resolve(location);
+            const dataModelName = {
+                plural: pluralize(Case.camel(input.dataModelName)),
+                singular: pluralize.singular(Case.camel(input.dataModelName))
+            };
 
-            const project = getProject({
-                cwd: fullLocation
+            const scaffoldsFolder = path.join(input.pluginsFolderPath, "scaffolds");
+            const newCodeFolder = path.join(
+                scaffoldsFolder,
+                "graphql",
+                Case.camel(dataModelName.plural)
+            );
+            const templateFolderPath = path.join(__dirname, "template");
+
+            fs.mkdirSync(newCodeFolder, { recursive: true });
+
+            await ncp(templateFolderPath, newCodeFolder);
+
+            // Replace generic "Target" with received "dataModelName" argument.
+            const codeReplacements = [
+                { find: "targetDataModels", replaceWith: Case.camel(dataModelName.plural) },
+                { find: "TargetDataModel", replaceWith: Case.pascal(dataModelName.singular) },
+                { find: "targetDataModelDataModels", replaceWith: Case.camel(dataModelName.plural) },
+                { find: "TargetDataModels", replaceWith: Case.pascal(dataModelName.plural) },
+                { find: "TARGET_DATA_MODELS", replaceWith: Case.constant(dataModelName.plural) },
+                { find: "TARGET_DATA_MODEL", replaceWith: Case.constant(dataModelName.singular) }
+            ];
+
+            replaceInPath(path.join(newCodeFolder, "/**/*.ts"), codeReplacements);
+
+            const fileNameReplacements = [
+                {
+                    find: "__tests__/graphql/targetDataModels.ts",
+                    replaceWith: `__tests__/graphql/${dataModelName.plural}.ts`
+                },
+                {
+                    find: "/entities/TargetDataModels.ts",
+                    replaceWith: `/entities/${Case.pascal(dataModelName.plural)}.ts`
+                },
+                {
+                    find: "/resolvers/TargetDataModelsMutation.ts",
+                    replaceWith: `/resolvers/${Case.pascal(dataModelName.plural)}Mutation.ts`
+                },
+                {
+                    find: "/resolvers/TargetDataModelsQuery.ts",
+                    replaceWith: `/resolvers/${Case.pascal(dataModelName.plural)}Query.ts`
+                },
+                {
+                    find: "/resolvers/TargetDataModelsResolver.ts",
+                    replaceWith: `/resolvers/${Case.pascal(dataModelName.plural)}Resolver.ts`
+                }
+            ];
+
+            for (const fileNameReplacement of fileNameReplacements) {
+                fs.renameSync(
+                    path.join(newCodeFolder, fileNameReplacement.find),
+                    path.join(newCodeFolder, fileNameReplacement.replaceWith)
+                );
+            }
+
+            createScaffoldsIndexFile(scaffoldsFolder);
+
+            await formatCode(["**/*.ts"], { cwd: newCodeFolder });
+
+            return;
+            // Format all generated code.
+            await prettier.resolveConfig(process.cwd()).then(options => {
+                console.log("dibeiiii", options);
             });
 
-            const locationRelative = path.relative(project.root, fullLocation);
+            return;
+
+            /*      const project = getProject();
+
+            const locationRelative = path.relative(project.root, fullPluginsFolderPath);
 
             const packageName = createPackageName({
                 initial: initialPackageName,
@@ -120,10 +158,10 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             // Get base TS config path
             const baseTsConfigFullPath = findUp.sync("tsconfig.json", {
-                cwd: fullLocation
+                cwd: fullPluginsFolderPath
             });
             const baseTsConfigRelativePath = path
-                .relative(fullLocation, baseTsConfigFullPath)
+                .relative(fullPluginsFolderPath, baseTsConfigFullPath)
                 .replace(/\\/g, "/");
 
             const baseTsConfigBuildJsonPath = baseTsConfigFullPath.replace(
@@ -132,83 +170,86 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             );
             const baseTsConfigBuildJson = await readJson<TsConfigJson>(baseTsConfigBuildJsonPath);
 
-            ora.start(`Creating service files in ${chalk.green(fullLocation)}...`);
+            ora.start(`Creating service files in ${chalk.green(fullPluginsFolderPath)}...`);
 
-            const relativeRootPath = path.relative(fullLocation, project.root);
+            const relativeRootPath = path.relative(fullPluginsFolderPath, project.root);
 
             await fs.mkdirSync(location, { recursive: true });
 
             // Copy template files
-            await ncp(templateFolder, fullLocation);
+            await ncp(templateFolder, fullPluginsFolderPath);
 
             const graphqlPath = path.relative(process.cwd(), "api/code/graphql");
 
             // Replace generic "Target" with received "entityName" argument.
             const entity = {
-                plural: pluralize(Case.camel(entityName)),
-                singular: pluralize.singular(Case.camel(entityName))
+                plural: pluralize(Case.camel(dataModelName)),
+                singular: pluralize.singular(Case.camel(dataModelName))
             };
 
             const codeReplacements = [
-                { find: "targetKebabCase", replaceWith: Case.kebab(entity.singular) },
-                { find: "targets", replaceWith: Case.camel(entity.plural) },
+                { find: "targetDataModelKebabCase", replaceWith: Case.kebab(entity.singular) },
+                { find: "targetDataModels", replaceWith: Case.camel(entity.plural) },
                 { find: "Targets", replaceWith: Case.pascal(entity.plural) },
                 { find: "TARGETS", replaceWith: Case.constant(entity.plural) },
-                { find: "target", replaceWith: Case.camel(entity.singular) },
+                { find: "targetDataModel", replaceWith: Case.camel(entity.singular) },
                 { find: "Target", replaceWith: Case.pascal(entity.singular) },
                 { find: "TARGET", replaceWith: Case.constant(entity.singular) },
                 { find: "RELATIVE_ROOT_PATH", replaceWith: relativeRootPath.replace(/\\/g, "/") },
                 { find: "packageName", replaceWith: packageName },
                 { find: "packageLocation", replaceWith: location },
-                { find: "graphQlIndexFile", replaceWith: `${graphqlPath}/src/index.ts` },
+                { find: "graphQlIndexFile", replaceWith: `${graphqlPath}//index.ts` },
                 { find: "location", replaceWith: location }
             ];
 
-            replaceInPath(path.join(fullLocation, ".babelrc.js"), codeReplacements);
-            replaceInPath(path.join(fullLocation, "jest.config.js"), codeReplacements);
-            replaceInPath(path.join(fullLocation, "jest-dynalite-config.js"), codeReplacements);
-            replaceInPath(path.join(fullLocation, "src/**/*.ts"), codeReplacements);
-            replaceInPath(path.join(fullLocation, "__tests__/**/*.ts"), codeReplacements);
-            replaceInPath(path.join(fullLocation, "README.md"), codeReplacements);
+            replaceInPath(path.join(fullPluginsFolderPath, ".babelrc.js"), codeReplacements);
+            replaceInPath(path.join(fullPluginsFolderPath, "jest.config.js"), codeReplacements);
+            replaceInPath(
+                path.join(fullPluginsFolderPath, "jest-dynalite-config.js"),
+                codeReplacements
+            );
+            replaceInPath(path.join(fullPluginsFolderPath, "/!**!/!*.ts"), codeReplacements);
+            replaceInPath(path.join(fullPluginsFolderPath, "__tests__/!**!/!*.ts"), codeReplacements);
+            replaceInPath(path.join(fullPluginsFolderPath, "README.md"), codeReplacements);
 
             // Make sure to also rename base file names.
             const fileNameReplacements = [
                 {
-                    find: "__tests__/graphql/targets.ts",
+                    find: "__tests__/graphql/targetDataModels.ts",
                     replaceWith: `__tests__/graphql/${entity.plural}.ts`
                 },
                 {
-                    find: "src/resolvers/createTarget.ts",
-                    replaceWith: `src/resolvers/create${Case.pascal(entity.singular)}.ts`
+                    find: "/resolvers/createTarget.ts",
+                    replaceWith: `/resolvers/create${Case.pascal(entity.singular)}.ts`
                 },
                 {
-                    find: "src/resolvers/deleteTarget.ts",
-                    replaceWith: `src/resolvers/delete${Case.pascal(entity.singular)}.ts`
+                    find: "/resolvers/deleteTarget.ts",
+                    replaceWith: `/resolvers/delete${Case.pascal(entity.singular)}.ts`
                 },
                 {
-                    find: "src/resolvers/getTarget.ts",
-                    replaceWith: `src/resolvers/get${Case.pascal(entity.singular)}.ts`
+                    find: "/resolvers/getTarget.ts",
+                    replaceWith: `/resolvers/get${Case.pascal(entity.singular)}.ts`
                 },
                 {
-                    find: "src/resolvers/listTargets.ts",
-                    replaceWith: `src/resolvers/list${Case.pascal(entity.plural)}.ts`
+                    find: "/resolvers/listTargets.ts",
+                    replaceWith: `/resolvers/list${Case.pascal(entity.plural)}.ts`
                 },
                 {
-                    find: "src/resolvers/updateTarget.ts",
-                    replaceWith: `src/resolvers/update${Case.pascal(entity.singular)}.ts`
+                    find: "/resolvers/updateTarget.ts",
+                    replaceWith: `/resolvers/update${Case.pascal(entity.singular)}.ts`
                 }
             ];
 
             for (const fileNameReplacement of fileNameReplacements) {
                 fs.renameSync(
-                    path.join(fullLocation, fileNameReplacement.find),
-                    path.join(fullLocation, fileNameReplacement.replaceWith)
+                    path.join(fullPluginsFolderPath, fileNameReplacement.find),
+                    path.join(fullPluginsFolderPath, fileNameReplacement.replaceWith)
                 );
             }
 
             ora.stopAndPersist({
                 symbol: chalk.green("✔"),
-                text: `Service files created in ${chalk.green(fullLocation)}.`
+                text: `Service files created in ${chalk.green(fullPluginsFolderPath)}.`
             });
 
             // Update root package.json - update "workspaces.packages" section.
@@ -238,7 +279,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             ora.start(`Updating api tsconfig.json.`);
             // Update graphql tsconfig file
             const graphqlTsconfigPath = path.resolve(graphqlPath, "tsconfig.json");
-            const packagePathRelativeToGraphql = path.relative(graphqlPath, fullLocation);
+            const packagePathRelativeToGraphql = path.relative(graphqlPath, fullPluginsFolderPath);
             const graphqlTsconfig = readJson.sync<TsConfigJson>(graphqlTsconfigPath);
             graphqlTsconfig.references = (graphqlTsconfig.references || []).concat([
                 {
@@ -283,7 +324,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             // Update package tsconfig "extends" path
             ora.start(`Updating package tsconfig extends path to root tsconfig...`);
-            const tsConfigPath = path.join(fullLocation, "tsconfig.json");
+            const tsConfigPath = path.join(fullPluginsFolderPath, "tsconfig.json");
             const tsConfig = await readJson<TsConfigJson>(tsConfigPath);
             tsConfig.extends = baseTsConfigRelativePath;
             await writeJson(tsConfigPath, tsConfig);
@@ -314,8 +355,8 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             baseTsConfigBuildJson.compilerOptions.paths[`${packageName}`] = [
                 `./${locationRelative}/src`
             ];
-            baseTsConfigBuildJson.compilerOptions.paths[`${packageName}/*`] = [
-                `./${locationRelative}/src/*`
+            baseTsConfigBuildJson.compilerOptions.paths[`${packageName}/!*`] = [
+                `./${locationRelative}//!*`
             ];
             await writeJson(baseTsConfigBuildJsonPath, baseTsConfigBuildJson);
             ora.stopAndPersist({
@@ -351,14 +392,14 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     `Unable to install dependencies. Try running "yarn" in project root manually.`,
                     err.message
                 );
-            }
+            }*/
         },
         onSuccess: async ({ input }) => {
-            const { location, entityName, packageName: initialPackageName } = input;
+            const { location, dataModelName, packageName: initialPackageName } = input;
 
             const entity = {
-                singular: Case.camel(entityName),
-                plural: pluralize(Case.camel(entityName))
+                singular: Case.camel(dataModelName),
+                plural: pluralize(Case.camel(dataModelName))
             };
 
             const packageName = createPackageName({

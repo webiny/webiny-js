@@ -1,27 +1,15 @@
-import {
-    CliCommandScaffoldTemplate,
-    TsConfigJson,
-    PackageJson
-} from "@webiny/cli-plugin-scaffold/types";
+import { CliCommandScaffoldTemplate } from "@webiny/cli-plugin-scaffold/types";
 import fs from "fs";
 import path from "path";
 import util from "util";
 import ncpBase from "ncp";
-import readJson from "load-json-file";
-import writeJson from "write-json-file";
 import pluralize from "pluralize";
 import Case from "case";
 import { replaceInPath } from "replace-in-path";
 import chalk from "chalk";
 import indentString from "indent-string";
-import WebinyError from "@webiny/error";
-import execa from "execa";
-import { getProject } from "@webiny/cli/utils";
 
-import {
-    createScaffoldsIndexFile,
-    updateScaffoldsIndexFile
-} from "@webiny/cli-plugin-scaffold/utils";
+import { createScaffoldsIndexFile, formatCode } from "@webiny/cli-plugin-scaffold/utils";
 
 const ncp = util.promisify(ncpBase.ncp);
 
@@ -144,8 +132,8 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 { find: "TARGET_DATA_MODELS", replaceWith: Case.constant(dataModelName.plural) },
                 { find: "TARGET_DATA_MODEL", replaceWith: Case.constant(dataModelName.singular) },
                 { find: "target-data-models", replaceWith: Case.kebab(dataModelName.plural) },
-                { find: "Target Data Model", replaceWith: Case.title(dataModelName.singular) },
-                { find: "Target Data Models", replaceWith: Case.title(dataModelName.plural) }
+                { find: "Target Data Models", replaceWith: Case.title(dataModelName.plural) },
+                { find: "Target Data Model", replaceWith: Case.title(dataModelName.singular) }
             ];
 
             replaceInPath(path.join(newCodeFolder, "/**/*.ts"), codeReplacements);
@@ -179,6 +167,8 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             }
 
             createScaffoldsIndexFile(scaffoldsFolder);
+
+            await formatCode(["**/*.ts", "**/*.tsx"], { cwd: newCodeFolder });
 
             /*const { dataModelName, location, packageName: initialPackageName } = input;
 
