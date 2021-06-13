@@ -5,7 +5,7 @@
     "build": "yarn webiny run build",
     "watch": "yarn webiny run watch"
   },
-  "dependencies": {
+  "dependencies": { 
     "@webiny/api-file-manager": "latest",
     "@webiny/api-file-manager-s3": "latest",
     "@webiny/api-form-builder": "latest",
@@ -18,6 +18,9 @@
     "@webiny/api-plugin-security-cognito": "latest",
     "@webiny/api-prerendering-service": "latest",
     "@webiny/api-security": "latest",
+    "@webiny/api-security-admin-users": "latest",
+    "@webiny/api-security-admin-users-cognito": "latest",
+    "@webiny/api-security-cognito-authentication": "latest",
     "@webiny/api-tenancy": "latest",
     "@webiny/cli": "latest",
     "@webiny/db-dynamodb": "latest",
