@@ -1,64 +1,65 @@
-import { TargetEntity } from "../types";
-import { Targets } from "../entities";
-import TargetsResolver from "./TargetsResolver";
+import { TargetDataModelEntity } from "../types";
+import { TargetDataModels } from "../entities";
+import TargetDataModelsResolver from "./TargetDataModelsResolver";
 
 /**
- * Contains base `getTarget` and `listTargets` GraphQL resolver functions.
+ * Contains base `getTargetDataModel` and `listTargetDataModels` GraphQL resolver functions.
  * Feel free to adjust the code to your needs. Also, note that at some point in time, you will
  * most probably want to implement security-related checks.
  * https://www.webiny.com/docs/tutorials
  */
 
-interface GetTargetParams {
+interface GetTargetDataModelParams {
     id: string;
 }
 
-interface ListTargetsParams {
+interface ListTargetDataModelsParams {
     sort?: "createdOn_ASC" | "createdOn_DESC";
     limit?: number;
     after?: string;
 }
 
-interface ListTargetsResponse {
-    data: TargetEntity[];
+interface ListTargetDataModelsResponse {
+    data: TargetDataModelEntity[];
     meta: { limit: number; cursor: string };
 }
 
-interface TargetsQuery {
-    getTarget(params: GetTargetParams): Promise<TargetEntity>;
-    listTargets(params: ListTargetsParams): Promise<ListTargetsResponse>;
+interface TargetDataModelsQuery {
+    getTargetDataModel(params: GetTargetDataModelParams): Promise<TargetDataModelEntity>;
+    listTargetDataModels(params: ListTargetDataModelsParams): Promise<ListTargetDataModelsResponse>;
 }
 
 /**
  * To define our GraphQL resolvers, we are using the "class method resolvers" approach.
  * https://www.graphql-tools.com/docs/resolvers#class-method-resolvers
  */
-export default class TargetsQueryResolver extends TargetsResolver implements TargetsQuery {
+export default class TargetDataModelsQueryResolver extends TargetDataModelsResolver
+    implements TargetDataModelsQuery {
     /**
-     * Returns a single Target entry from the database.
+     * Returns a single TargetDataModel entry from the database.
      * @param id
      */
-    async getTarget({ id }: GetTargetParams) {
+    async getTargetDataModel({ id }: GetTargetDataModelParams) {
         // Query the database and return the entry. If entry was not found, an error is thrown.
-        const { Item: target } = await Targets.get({ PK: this.getPK(), SK: id });
-        if (!target) {
-            throw new Error(`Target "${id}" not found.`);
+        const { Item: targetDataModel } = await TargetDataModels.get({ PK: this.getPK(), SK: id });
+        if (!targetDataModel) {
+            throw new Error(`TargetDataModel "${id}" not found.`);
         }
 
-        return target;
+        return targetDataModel;
     }
 
     /**
-     * List multiple Target entries from the database.
+     * List multiple TargetDataModel entries from the database.
      * Supports basic sorting and cursor-based pagination.
      * @param limit
      * @param sort
      * @param after
      */
-    async listTargets({ limit, sort, after }: ListTargetsParams) {
+    async listTargetDataModels({ limit, sort, after }: ListTargetDataModelsParams) {
         // Let's create the query object. By default, we apply a limit of 10 entries per page and return entries
         // sorted by their time of creation, in a descending order. For this, we rely on the "SK" database column,
-        // which contains a sequential MongoDB ID. Check "./TargetsMutations.ts" to see how storing is performed.
+        // which contains a sequential MongoDB ID. Check "./TargetDataModelsMutations.ts" to see how storing is performed.
         const query = {
             limit: limit || 10,
             reverse: sort !== "createdOn_ASC",
@@ -76,7 +77,7 @@ export default class TargetsQueryResolver extends TargetsResolver implements Tar
         }
 
         // Finally, query the database and return the results, along with some meta-data.
-        const { Items: data } = await Targets.query(this.getPK(), query);
+        const { Items: data } = await TargetDataModels.query(this.getPK(), query);
 
         const cursor = data.length === query.limit ? data[data.length - 1].id : null;
         const meta = {

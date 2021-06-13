@@ -1,60 +1,64 @@
 export default /* GraphQL */ `
-    type Target {
+    type TargetDataModel {
         id: ID!
         title: String!
         description: String
         createdOn: DateTime!
         savedOn: DateTime!
-        createdBy: TargetCreatedBy
+        createdBy: TargetDataModelCreatedBy
     }
 
-    type TargetCreatedBy {
+    type TargetDataModelCreatedBy {
         id: String!
         displayName: String!
         type: String!
     }
 
-    input TargetCreateInput {
+    input TargetDataModelCreateInput {
         title: String!
         description: String
     }
 
-    input TargetUpdateInput {
+    input TargetDataModelUpdateInput {
         title: String
         description: String
     }
 
-    type TargetsListMeta {
+    type TargetDataModelsListMeta {
         limit: Number
         cursor: String
     }
 
-    enum TargetsListSort {
+    enum TargetDataModelsListSort {
         createdOn_ASC
         createdOn_DESC
     }
 
-    type TargetsList {
-        data: [Target]
-        meta: TargetsListMeta
+    type TargetDataModelsList {
+        data: [TargetDataModel]
+        meta: TargetDataModelsListMeta
     }
 
-    type TargetQuery {
-        getTarget(id: ID!): Target
-        listTargets(sort: TargetsListSort, limit: Int, after: String): TargetsList!
+    type TargetDataModelQuery {
+        getTargetDataModel(id: ID!): TargetDataModel
+        listTargetDataModels(
+            sort: TargetDataModelsListSort
+            limit: Int
+            after: String
+        ): TargetDataModelsList!
     }
 
-    type TargetMutation {
-        createTarget(data: TargetCreateInput!): Target!
-        updateTarget(id: ID!, data: TargetUpdateInput!): Target!
-        deleteTarget(id: ID!): Target!
+    type TargetDataModelMutation {
+        createTargetDataModel(data: TargetDataModelCreateInput!): TargetDataModel!
+        updateTargetDataModel(id: ID!, data: TargetDataModelUpdateInput!): TargetDataModel!
+        deleteTargetDataModel(id: ID!): TargetDataModel!
     }
 
     extend type Query {
-        targets: TargetQuery
+        targetDataModels: TargetDataModelQuery
     }
 
     extend type Mutation {
-        targets: TargetMutation
+        targetDataModels: TargetDataModelMutation
     }
 `;

@@ -1,11 +1,11 @@
 import { handler } from "~/index";
 import {
-    GET_TARGET,
-    CREATE_TARGET,
-    DELETE_TARGET,
-    LIST_TARGETS,
-    UPDATE_TARGET
-} from "./graphql/targets";
+    GET_TARGET_DATA_MODEL,
+    CREATE_TARGET_DATA_MODEL,
+    DELETE_TARGET_DATA_MODEL,
+    LIST_TARGET_DATA_MODELS,
+    UPDATE_TARGET_DATA_MODEL
+} from "./graphql/targetDataModels";
 
 /**
  * An example of an integration test. You can use these to test your GraphQL resolvers, for example,
@@ -26,18 +26,18 @@ const query = ({ query = "", variables = {} } = {}) => {
     }).then(response => JSON.parse(response.body));
 };
 
-let testTargets = [];
+let testTargetDataModels = [];
 
-describe("Targets CRUD tests (integration)", () => {
+describe("TargetDataModels CRUD tests (integration)", () => {
     beforeEach(async () => {
         for (let i = 0; i < 3; i++) {
-            testTargets.push(
+            testTargetDataModels.push(
                 await query({
-                    query: CREATE_TARGET,
+                    query: CREATE_TARGET_DATA_MODEL,
                     variables: {
                         data: {
-                            title: `Target ${i}`,
-                            description: `Target ${i}'s description.`
+                            title: `TargetDataModel ${i}`,
+                            description: `TargetDataModel ${i}'s description.`
                         }
                     }
                 })
@@ -48,40 +48,40 @@ describe("Targets CRUD tests (integration)", () => {
     afterEach(async () => {
         for (let i = 0; i < 3; i++) {
             await query({
-                query: DELETE_TARGET,
+                query: DELETE_TARGET_DATA_MODEL,
                 variables: {
-                    id: testTargets[i].data.targets.createTarget.id
+                    id: testTargetDataModels[i].data.targetDataModels.createTargetDataModel.id
                 }
             });
         }
-        testTargets = [];
+        testTargetDataModels = [];
     });
 
     it("should be able to perform basic CRUD operations", async () => {
-        // 1. Now that we have targets created, let's see if they come up in a basic listTargets query.
-        const [target0, target1, target2] = testTargets;
+        // 1. Now that we have targetDataModels created, let's see if they come up in a basic listTargetDataModels query.
+        const [targetDataModel0, targetDataModel1, targetDataModel2] = testTargetDataModels;
 
-        const targetsListResponse = await query({ query: LIST_TARGETS });
+        const targetDataModelsListResponse = await query({ query: LIST_TARGET_DATA_MODELS });
 
-        expect(targetsListResponse).toEqual({
+        expect(targetDataModelsListResponse).toEqual({
             data: {
-                targets: {
-                    listTargets: {
+                targetDataModels: {
+                    listTargetDataModels: {
                         data: [
                             {
-                                id: target2.data.targets.createTarget.id,
-                                title: `Target 2`,
-                                description: `Target 2's description.`
+                                id: targetDataModel2.data.targetDataModels.createTargetDataModel.id,
+                                title: `TargetDataModel 2`,
+                                description: `TargetDataModel 2's description.`
                             },
                             {
-                                id: target1.data.targets.createTarget.id,
-                                title: `Target 1`,
-                                description: `Target 1's description.`
+                                id: targetDataModel1.data.targetDataModels.createTargetDataModel.id,
+                                title: `TargetDataModel 1`,
+                                description: `TargetDataModel 1's description.`
                             },
                             {
-                                id: target0.data.targets.createTarget.id,
-                                title: `Target 0`,
-                                description: `Target 0's description.`
+                                id: targetDataModel0.data.targetDataModels.createTargetDataModel.id,
+                                title: `TargetDataModel 0`,
+                                description: `TargetDataModel 0's description.`
                             }
                         ],
                         meta: {
@@ -93,32 +93,32 @@ describe("Targets CRUD tests (integration)", () => {
             }
         });
 
-        // 2. Delete target 1.
+        // 2. Delete targetDataModel 1.
         await query({
-            query: DELETE_TARGET,
+            query: DELETE_TARGET_DATA_MODEL,
             variables: {
-                id: target1.data.targets.createTarget.id
+                id: targetDataModel1.data.targetDataModels.createTargetDataModel.id
             }
         });
 
-        const targetsListAfterDeleteResponse = await query({
-            query: LIST_TARGETS
+        const targetDataModelsListAfterDeleteResponse = await query({
+            query: LIST_TARGET_DATA_MODELS
         });
 
-        expect(targetsListAfterDeleteResponse).toEqual({
+        expect(targetDataModelsListAfterDeleteResponse).toEqual({
             data: {
-                targets: {
-                    listTargets: {
+                targetDataModels: {
+                    listTargetDataModels: {
                         data: [
                             {
-                                id: target2.data.targets.createTarget.id,
-                                title: `Target 2`,
-                                description: `Target 2's description.`
+                                id: targetDataModel2.data.targetDataModels.createTargetDataModel.id,
+                                title: `TargetDataModel 2`,
+                                description: `TargetDataModel 2's description.`
                             },
                             {
-                                id: target0.data.targets.createTarget.id,
-                                title: `Target 0`,
-                                description: `Target 0's description.`
+                                id: targetDataModel0.data.targetDataModels.createTargetDataModel.id,
+                                title: `TargetDataModel 0`,
+                                description: `TargetDataModel 0's description.`
                             }
                         ],
                         meta: {
@@ -130,80 +130,80 @@ describe("Targets CRUD tests (integration)", () => {
             }
         });
 
-        // 3. Update target 0.
+        // 3. Update targetDataModel 0.
         const updateResponse = await query({
-            query: UPDATE_TARGET,
+            query: UPDATE_TARGET_DATA_MODEL,
             variables: {
-                id: target0.data.targets.createTarget.id,
+                id: targetDataModel0.data.targetDataModels.createTargetDataModel.id,
                 data: {
-                    title: "Target 0 - UPDATED",
-                    description: `Target 0's description - UPDATED.`
+                    title: "TargetDataModel 0 - UPDATED",
+                    description: `TargetDataModel 0's description - UPDATED.`
                 }
             }
         });
 
         expect(updateResponse).toEqual({
             data: {
-                targets: {
-                    updateTarget: {
-                        id: target0.data.targets.createTarget.id,
-                        title: "Target 0 - UPDATED",
-                        description: `Target 0's description - UPDATED.`
+                targetDataModels: {
+                    updateTargetDataModel: {
+                        id: targetDataModel0.data.targetDataModels.createTargetDataModel.id,
+                        title: "TargetDataModel 0 - UPDATED",
+                        description: `TargetDataModel 0's description - UPDATED.`
                     }
                 }
             }
         });
 
-        // 5. Get target 0 after the update.
+        // 5. Get targetDataModel 0 after the update.
         const getResponse = await query({
-            query: GET_TARGET,
+            query: GET_TARGET_DATA_MODEL,
             variables: {
-                id: target0.data.targets.createTarget.id
+                id: targetDataModel0.data.targetDataModels.createTargetDataModel.id
             }
         });
 
         expect(getResponse).toEqual({
             data: {
-                targets: {
-                    getTarget: {
-                        id: target0.data.targets.createTarget.id,
-                        title: "Target 0 - UPDATED",
-                        description: `Target 0's description - UPDATED.`
+                targetDataModels: {
+                    getTargetDataModel: {
+                        id: targetDataModel0.data.targetDataModels.createTargetDataModel.id,
+                        title: "TargetDataModel 0 - UPDATED",
+                        description: `TargetDataModel 0's description - UPDATED.`
                     }
                 }
             }
         });
     });
 
-    test("should be able to sort targets", async () => {
-        const [target0, target1, target2] = testTargets;
+    test("should be able to sort targetDataModels", async () => {
+        const [targetDataModel0, targetDataModel1, targetDataModel2] = testTargetDataModels;
 
-        const targetsListDescResponse = await query({
-            query: LIST_TARGETS,
+        const targetDataModelsListDescResponse = await query({
+            query: LIST_TARGET_DATA_MODELS,
             variables: {
                 sort: "createdOn_DESC"
             }
         });
 
-        expect(targetsListDescResponse).toEqual({
+        expect(targetDataModelsListDescResponse).toEqual({
             data: {
-                targets: {
-                    listTargets: {
+                targetDataModels: {
+                    listTargetDataModels: {
                         data: [
                             {
-                                id: target2.data.targets.createTarget.id,
-                                title: `Target 2`,
-                                description: `Target 2's description.`
+                                id: targetDataModel2.data.targetDataModels.createTargetDataModel.id,
+                                title: `TargetDataModel 2`,
+                                description: `TargetDataModel 2's description.`
                             },
                             {
-                                id: target1.data.targets.createTarget.id,
-                                title: `Target 1`,
-                                description: `Target 1's description.`
+                                id: targetDataModel1.data.targetDataModels.createTargetDataModel.id,
+                                title: `TargetDataModel 1`,
+                                description: `TargetDataModel 1's description.`
                             },
                             {
-                                id: target0.data.targets.createTarget.id,
-                                title: `Target 0`,
-                                description: `Target 0's description.`
+                                id: targetDataModel0.data.targetDataModels.createTargetDataModel.id,
+                                title: `TargetDataModel 0`,
+                                description: `TargetDataModel 0's description.`
                             }
                         ],
                         meta: {
@@ -215,32 +215,32 @@ describe("Targets CRUD tests (integration)", () => {
             }
         });
 
-        const targetsListAscResponse = await query({
-            query: LIST_TARGETS,
+        const targetDataModelsListAscResponse = await query({
+            query: LIST_TARGET_DATA_MODELS,
             variables: {
                 sort: "createdOn_ASC"
             }
         });
 
-        expect(targetsListAscResponse).toEqual({
+        expect(targetDataModelsListAscResponse).toEqual({
             data: {
-                targets: {
-                    listTargets: {
+                targetDataModels: {
+                    listTargetDataModels: {
                         data: [
                             {
-                                id: target0.data.targets.createTarget.id,
-                                title: `Target 0`,
-                                description: `Target 0's description.`
+                                id: targetDataModel0.data.targetDataModels.createTargetDataModel.id,
+                                title: `TargetDataModel 0`,
+                                description: `TargetDataModel 0's description.`
                             },
                             {
-                                id: target1.data.targets.createTarget.id,
-                                title: `Target 1`,
-                                description: `Target 1's description.`
+                                id: targetDataModel1.data.targetDataModels.createTargetDataModel.id,
+                                title: `TargetDataModel 1`,
+                                description: `TargetDataModel 1's description.`
                             },
                             {
-                                id: target2.data.targets.createTarget.id,
-                                title: `Target 2`,
-                                description: `Target 2's description.`
+                                id: targetDataModel2.data.targetDataModels.createTargetDataModel.id,
+                                title: `TargetDataModel 2`,
+                                description: `TargetDataModel 2's description.`
                             }
                         ],
                         meta: {
@@ -254,33 +254,33 @@ describe("Targets CRUD tests (integration)", () => {
     });
 
     test("should be able to use cursor-based pagination", async () => {
-        const [target0, target1, target2] = testTargets;
+        const [targetDataModel0, targetDataModel1, targetDataModel2] = testTargetDataModels;
 
-        const targetsListDescPage1Response = await query({
-            query: LIST_TARGETS,
+        const targetDataModelsListDescPage1Response = await query({
+            query: LIST_TARGET_DATA_MODELS,
             variables: {
                 limit: 2
             }
         });
 
-        expect(targetsListDescPage1Response).toEqual({
+        expect(targetDataModelsListDescPage1Response).toEqual({
             data: {
-                targets: {
-                    listTargets: {
+                targetDataModels: {
+                    listTargetDataModels: {
                         data: [
                             {
-                                id: target2.data.targets.createTarget.id,
-                                title: `Target 2`,
-                                description: `Target 2's description.`
+                                id: targetDataModel2.data.targetDataModels.createTargetDataModel.id,
+                                title: `TargetDataModel 2`,
+                                description: `TargetDataModel 2's description.`
                             },
                             {
-                                id: target1.data.targets.createTarget.id,
-                                title: `Target 1`,
-                                description: `Target 1's description.`
+                                id: targetDataModel1.data.targetDataModels.createTargetDataModel.id,
+                                title: `TargetDataModel 1`,
+                                description: `TargetDataModel 1's description.`
                             }
                         ],
                         meta: {
-                            cursor: target1.data.targets.createTarget.id,
+                            cursor: targetDataModel1.data.targetDataModels.createTargetDataModel.id,
                             limit: 2
                         }
                     }
@@ -288,23 +288,25 @@ describe("Targets CRUD tests (integration)", () => {
             }
         });
 
-        const targetsListDescPage2Response = await query({
-            query: LIST_TARGETS,
+        const targetDataModelsListDescPage2Response = await query({
+            query: LIST_TARGET_DATA_MODELS,
             variables: {
                 limit: 2,
-                after: targetsListDescPage1Response.data.targets.listTargets.meta.cursor
+                after:
+                    targetDataModelsListDescPage1Response.data.targetDataModels.listTargetDataModels
+                        .meta.cursor
             }
         });
 
-        expect(targetsListDescPage2Response).toEqual({
+        expect(targetDataModelsListDescPage2Response).toEqual({
             data: {
-                targets: {
-                    listTargets: {
+                targetDataModels: {
+                    listTargetDataModels: {
                         data: [
                             {
-                                id: target0.data.targets.createTarget.id,
-                                title: `Target 0`,
-                                description: `Target 0's description.`
+                                id: targetDataModel0.data.targetDataModels.createTargetDataModel.id,
+                                title: `TargetDataModel 0`,
+                                description: `TargetDataModel 0's description.`
                             }
                         ],
                         meta: {
@@ -316,32 +318,32 @@ describe("Targets CRUD tests (integration)", () => {
             }
         });
 
-        const targetsListAscPage1Response = await query({
-            query: LIST_TARGETS,
+        const targetDataModelsListAscPage1Response = await query({
+            query: LIST_TARGET_DATA_MODELS,
             variables: {
                 limit: 2,
                 sort: "createdOn_ASC"
             }
         });
 
-        expect(targetsListAscPage1Response).toMatchObject({
+        expect(targetDataModelsListAscPage1Response).toMatchObject({
             data: {
-                targets: {
-                    listTargets: {
+                targetDataModels: {
+                    listTargetDataModels: {
                         data: [
                             {
-                                id: target0.data.targets.createTarget.id,
-                                title: `Target 0`,
-                                description: `Target 0's description.`
+                                id: targetDataModel0.data.targetDataModels.createTargetDataModel.id,
+                                title: `TargetDataModel 0`,
+                                description: `TargetDataModel 0's description.`
                             },
                             {
-                                id: target1.data.targets.createTarget.id,
-                                title: `Target 1`,
-                                description: `Target 1's description.`
+                                id: targetDataModel1.data.targetDataModels.createTargetDataModel.id,
+                                title: `TargetDataModel 1`,
+                                description: `TargetDataModel 1's description.`
                             }
                         ],
                         meta: {
-                            cursor: target1.data.targets.createTarget.id,
+                            cursor: targetDataModel1.data.targetDataModels.createTargetDataModel.id,
                             limit: 2
                         }
                     }
@@ -349,24 +351,26 @@ describe("Targets CRUD tests (integration)", () => {
             }
         });
 
-        const targetsListAscPage2Response = await query({
-            query: LIST_TARGETS,
+        const targetDataModelsListAscPage2Response = await query({
+            query: LIST_TARGET_DATA_MODELS,
             variables: {
                 limit: 2,
                 sort: "createdOn_ASC",
-                after: targetsListAscPage1Response.data.targets.listTargets.meta.cursor
+                after:
+                    targetDataModelsListAscPage1Response.data.targetDataModels.listTargetDataModels
+                        .meta.cursor
             }
         });
 
-        expect(targetsListAscPage2Response).toEqual({
+        expect(targetDataModelsListAscPage2Response).toEqual({
             data: {
-                targets: {
-                    listTargets: {
+                targetDataModels: {
+                    listTargetDataModels: {
                         data: [
                             {
-                                id: target2.data.targets.createTarget.id,
-                                title: `Target 2`,
-                                description: `Target 2's description.`
+                                id: targetDataModel2.data.targetDataModels.createTargetDataModel.id,
+                                title: `TargetDataModel 2`,
+                                description: `TargetDataModel 2's description.`
                             }
                         ],
                         meta: {

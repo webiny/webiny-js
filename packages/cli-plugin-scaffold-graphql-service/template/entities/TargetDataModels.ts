@@ -1,15 +1,15 @@
 // https://github.com/jeremydaly/dynamodb-toolbox
 import { Entity } from "dynamodb-toolbox";
 import table from "./table";
-import { TargetEntity } from "../types";
+import { TargetDataModelEntity } from "../types";
 
 /**
- * Once we have the table, we define the TargetEntity entity.
+ * Once we have the table, we define the TargetDataModelEntity entity.
  * If needed, additional entities can be defined using the same approach.
  */
-export default new Entity<TargetEntity>({
+export default new Entity<TargetDataModelEntity>({
     table,
-    name: "Targets",
+    name: "TargetDataModels",
     timestamps: false,
     attributes: {
         PK: { partitionKey: true },

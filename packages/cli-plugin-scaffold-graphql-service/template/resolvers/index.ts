@@ -1,5 +1,5 @@
-import TargetMutation from "./TargetsMutation";
-import TargetQuery from "./TargetsQuery";
+import TargetDataModelsMutation from "./TargetDataModelsMutation";
+import TargetDataModelsQuery from "./TargetDataModelsQuery";
 
 // Check the exported classes for more information.
-export default { TargetMutation, TargetQuery };
+export default { TargetDataModelsMutation, TargetDataModelsQuery };

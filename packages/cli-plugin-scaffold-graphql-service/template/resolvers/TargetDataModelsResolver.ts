@@ -1,9 +1,9 @@
-import { TargetsContext } from "../types";
+import { TargetDataModelsContext } from "../types";
 
-export default class TargetMutationResolver {
-    protected readonly context: TargetsContext;
+export default class TargetDataModelMutationResolver {
+    protected readonly context: TargetDataModelsContext;
 
-    constructor(context: TargetsContext) {
+    constructor(context: TargetDataModelsContext) {
         this.context = context;
     }
 
@@ -11,7 +11,7 @@ export default class TargetMutationResolver {
      * Generates primary key (PK), to be used upon mutating / querying DynamoDB data.
      * @param base
      */
-    getPK(base = "Targets") {
+    getPK(base = "TargetDataModels") {
         // By default, Webiny Admin Area supports content creation in multiple locales.
         // The prepended "L#${locale}" designates to which locale our data belongs to.
         const locale = this.context.i18nContent.getLocale();

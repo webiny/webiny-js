@@ -8,7 +8,7 @@ import typeDefs from "../typeDefs";
  */
 
 describe("GraphQL type definitions test", () => {
-    test("ensure type definitions include Target type", async () => {
-        expect(typeDefs.includes("type Target")).toBe(true);
+    test("ensure type definitions include TargetDataModel type", async () => {
+        expect(typeDefs.includes("type TargetDataModel")).toBe(true);
     });
 });

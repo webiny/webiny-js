@@ -4,7 +4,7 @@ import { BaseI18NContentContext } from "@webiny/api-i18n-content/types";
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
 import { SecurityIdentity } from "@webiny/api-security/types";
 
-export interface TargetEntity {
+export interface TargetDataModelEntity {
     PK: string;
     SK: string;
     id: string;
@@ -16,7 +16,7 @@ export interface TargetEntity {
     webinyVersion: string;
 }
 
-export interface TargetsContext
+export interface TargetDataModelsContext
     extends Context,
         I18NContext,
         BaseI18NContentContext,
