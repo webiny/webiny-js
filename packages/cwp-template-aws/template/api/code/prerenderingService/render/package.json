@@ -1,5 +1,5 @@
 {
-  "name": "api-page-builder-render",
+  "name": "api-prerendering-service-render",
   "version": "0.1.0",
   "scripts": {
     "build": "yarn webiny run build",
