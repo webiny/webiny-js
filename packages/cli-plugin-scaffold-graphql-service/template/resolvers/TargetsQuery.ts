@@ -1,6 +1,6 @@
-import { TargetsContext, TargetEntity } from "../types";
+import { TargetEntity } from "../types";
 import { Targets } from "../entities";
-import { PK } from "../utils";
+import TargetsResolver from "./TargetsResolver";
 
 /**
  * Contains base `getTarget` and `listTargets` GraphQL resolver functions.
@@ -33,20 +33,14 @@ interface TargetsQuery {
  * To define our GraphQL resolvers, we are using the "class method resolvers" approach.
  * https://www.graphql-tools.com/docs/resolvers#class-method-resolvers
  */
-export default class TargetsQueryResolver implements TargetsQuery {
-    private readonly context: TargetsContext;
-
-    constructor(context: TargetsContext) {
-        this.context = context;
-    }
-
+export default class TargetsQueryResolver extends TargetsResolver implements TargetsQuery {
     /**
      * Returns a single Target entry from the database.
      * @param id
      */
     async getTarget({ id }: GetTargetParams) {
         // Query the database and return the entry. If entry was not found, an error is thrown.
-        const { Item: target } = await Targets.get({ PK, SK: id });
+        const { Item: target } = await Targets.get({ PK: this.getPK(), SK: id });
         if (!target) {
             throw new Error(`Target "${id}" not found.`);
         }
@@ -82,7 +76,7 @@ export default class TargetsQueryResolver implements TargetsQuery {
         }
 
         // Finally, query the database and return the results, along with some meta-data.
-        const { Items: data } = await Targets.query(PK, query);
+        const { Items: data } = await Targets.query(this.getPK(), query);
 
         const cursor = data.length === query.limit ? data[data.length - 1].id : null;
         const meta = {

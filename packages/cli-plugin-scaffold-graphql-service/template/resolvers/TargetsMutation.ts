@@ -1,7 +1,7 @@
-import { TargetsContext, TargetEntity } from "../types";
+import { TargetEntity } from "../types";
 import mdbid from "mdbid";
 import { Targets } from "../entities";
-import { PK } from "../utils";
+import TargetsResolver from "./TargetsResolver";
 
 /**
  * Contains base `createTarget`, `updateTarget`, and `deleteTarget` GraphQL resolver functions.
@@ -39,13 +39,7 @@ interface TargetsMutation {
  * To define our GraphQL resolvers, we are using the "class method resolvers" approach.
  * https://www.graphql-tools.com/docs/resolvers#class-method-resolvers
  */
-export default class TargetMutationResolver implements TargetsMutation {
-    private readonly context: TargetsContext;
-
-    constructor(context: TargetsContext) {
-        this.context = context;
-    }
-
+export default class TargetMutationResolver extends TargetsResolver implements TargetsMutation {
     /**
      * Creates a new Target entry and responds with it.
      * @param data
@@ -58,7 +52,7 @@ export default class TargetMutationResolver implements TargetsMutation {
         const id = mdbid();
 
         const target = {
-            PK,
+            PK: this.getPK(),
             SK: id,
             id,
             title: data.title,
@@ -82,7 +76,7 @@ export default class TargetMutationResolver implements TargetsMutation {
      */
     async updateTarget({ id, data }: UpdateTargetParams) {
         // If entry is not found, we throw an error.
-        const { Item: target } = await Targets.get({ PK, SK: id });
+        const { Item: target } = await Targets.get({ PK: this.getPK(), SK: id });
         if (!target) {
             throw new Error(`Target "${id}" not found.`);
         }
@@ -101,7 +95,7 @@ export default class TargetMutationResolver implements TargetsMutation {
      */
     async deleteTarget({ id }: DeleteTargetParams) {
         // If entry is not found, we throw an error.
-        const { Item: target } = await Targets.get({ PK, SK: id });
+        const { Item: target } = await Targets.get({ PK: this.getPK(), SK: id });
         if (!target) {
             throw new Error(`Target "${id}" not found.`);
         }
