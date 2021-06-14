@@ -24,7 +24,7 @@ export default () => [
     /**
      * Cognito IDP plugin (hooks for User CRUD methods).
      * This plugin will perform CRUD operations on Amazon Cognito when you do something with the user
-     * via the UI or API. It's purpose is to push changes to Cognito when they happen in your app.
+     * via the UI or API. Its purpose is to push changes to Cognito when they happen in your app.
      */
     cognitoIdentityProvider({
         region: process.env.COGNITO_REGION,

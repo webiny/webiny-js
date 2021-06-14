@@ -8,7 +8,7 @@ import { getIdentityData } from "../components/getIdentityData";
 
 export default [
     /**
-     * Configures Amplify, adds Cognito related UI fields, and attaches Authorization header
+     * Configure Amplify, add Cognito related UI fields, and attach Authorization header
      * on every GraphQL request using the authenticated identity.
      */
     cognitoSecurity({
@@ -18,11 +18,11 @@ export default [
         getIdentityData
     }),
     /**
-     * Add user management module to admin app.
+     * User management module (Users, Groups, API Keys).
      */
     adminUsers(),
     /**
-     * User menu plugins
+     * User menu plugins.
      */
     accountDetails(),
     signOut(),
