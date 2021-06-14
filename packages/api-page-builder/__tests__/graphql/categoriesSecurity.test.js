@@ -37,26 +37,25 @@ const identityB = new SecurityIdentity({
     displayName: "Bb"
 });
 
-const defaultHandler = useGqlHandler({
+const { createCategory, createElasticSearchIndex, deleteElasticSearchIndex } = useGqlHandler({
     permissions: [{ name: "content.i18n" }, { name: "pb.*" }],
     identity: identityA
 });
 
 describe("Categories Security Test", () => {
     beforeAll(async () => {
-        await defaultHandler.deleteElasticSearchIndex();
+        await deleteElasticSearchIndex();
     });
 
     beforeEach(async () => {
-        await defaultHandler.createElasticSearchIndex();
+        await createElasticSearchIndex();
     });
 
     afterEach(async () => {
-        await defaultHandler.deleteElasticSearchIndex();
+        await deleteElasticSearchIndex();
     });
 
     test(`"listCategories" only returns entries to which the identity has access to`, async () => {
-        const { createCategory } = defaultHandler;
         await createCategory({ data: new Mock("list-categories-1-") });
         await createCategory({ data: new Mock("list-categories-2-") });
 
@@ -286,7 +285,6 @@ describe("Categories Security Test", () => {
     });
 
     test(`allow "updateCategory" if identity has sufficient permissions`, async () => {
-        const { createCategory } = defaultHandler;
         const mock = new Mock("update-category-");
 
         await createCategory({ data: mock });
@@ -338,7 +336,6 @@ describe("Categories Security Test", () => {
     });
 
     test(`allow "deleteCategory" if identity has sufficient permissions`, async () => {
-        const { createCategory } = defaultHandler;
         const mock = new Mock("delete-category-");
 
         await createCategory({ data: mock });
@@ -400,7 +397,6 @@ describe("Categories Security Test", () => {
     });
 
     test(`allow "getCategory" if identity has sufficient permissions`, async () => {
-        const { createCategory } = defaultHandler;
         const mock = new Mock("get-category-");
 
         await createCategory({ data: mock });

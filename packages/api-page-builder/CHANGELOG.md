@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.8.0](https://github.com/webiny/webiny-js/compare/v5.8.0-beta.1...v5.8.0) (2021-06-07)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.8.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.8.0-beta.0...v5.8.0-beta.1) (2021-06-05)
+
+**Note:** Version bump only for package @webiny/api-page-builder
+
+
+
+
+
+# [5.8.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.7.0...v5.8.0-beta.0) (2021-06-03)
+
+
+### Bug Fixes
+
+* bring back build check ([ef3d061](https://github.com/webiny/webiny-js/commit/ef3d061632010c281fc0e396722136f7ddd63807))
+* remove unnecessary code ([cb781d1](https://github.com/webiny/webiny-js/commit/cb781d16ac90b1eac542a24f9744687167f92fb7))
+* update dependencies ([3a9813c](https://github.com/webiny/webiny-js/commit/3a9813cb7899f2e09a8f5282e5c701c9bcc8e349))
+* use newly added uploadFolderToS3 utility function ([8efb4e5](https://github.com/webiny/webiny-js/commit/8efb4e5c554bf108f05063ee368be6c764bec894))
+
+
+
+
+
 # [5.7.0](https://github.com/webiny/webiny-js/compare/v5.7.0-beta.0...v5.7.0) (2021-05-24)
 
 **Note:** Version bump only for package @webiny/api-page-builder

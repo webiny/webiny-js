@@ -13,8 +13,8 @@ module.exports = async () => {
             throw Error("Invalid Webiny config!");
         }
     } catch (e) {
-        const publicIp = require("public-ip");
+        const { v4: uuidv4 } = require("uuid");
         // A new config file is written if it doesn't exist or is invalid.
-        writeJson.sync(configPath, { id: await publicIp.v4() });
+        writeJson.sync(configPath, { id: uuidv4() });
     }
 };
