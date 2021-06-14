@@ -9,6 +9,10 @@ import {
     LIST_TARGET_DATA_MODELS
 } from "./graphql";
 
+/**
+ * Contains essential form functionality - data querying and submission, and UI control.
+ */
+
 export const useTargetDataModelsForm = () => {
     const { location, history } = useRouter();
     const { showSnackbar } = useSnackbar();

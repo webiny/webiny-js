@@ -5,6 +5,10 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
 import { LIST_TARGET_DATA_MODELS, DELETE_TARGET_DATA_MODEL } from "./graphql";
 
+/**
+ * Contains essential data listing functionality - data querying and UI control.
+ */
+
 interface useTargetDataModelsDataListHook {
     (): {
         loading: boolean;

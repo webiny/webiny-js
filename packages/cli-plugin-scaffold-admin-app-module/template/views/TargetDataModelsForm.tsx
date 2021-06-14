@@ -4,17 +4,22 @@ import { Grid, Cell } from "@webiny/ui/Grid";
 import { Input } from "@webiny/ui/Input";
 import { ButtonDefault, ButtonIcon, ButtonPrimary } from "@webiny/ui/Button";
 import { CircularProgress } from "@webiny/ui/Progress";
+import EmptyView from "@webiny/app-admin/components/EmptyView";
+import { validation } from "@webiny/validation";
+import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import {
     SimpleForm,
     SimpleFormFooter,
     SimpleFormContent,
     SimpleFormHeader
 } from "@webiny/app-admin/components/SimpleForm";
-import EmptyView from "@webiny/app-admin/components/EmptyView";
-import { validation } from "@webiny/validation";
-import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 import { useTargetDataModelsForm } from "./hooks/useTargetDataModelsForm";
 
+/**
+ * Renders a form which enables creating new or editing existing Target Data Model entries.
+ * Includes two basic fields - title (required) and description.
+ * The form submission-related functionality is located in the `useTargetDataModelsForm` React hook.
+ */
 const TargetDataModelsForm = () => {
     const {
         loading,
@@ -69,10 +74,8 @@ const TargetDataModelsForm = () => {
                         </Grid>
                     </SimpleFormContent>
                     <SimpleFormFooter>
-                        <ButtonDefault onClick={cancelEditing}>{"Cancel"}</ButtonDefault>
-                        <ButtonPrimary onClick={form.submit}>
-                            {"Save Target Data Model"}
-                        </ButtonPrimary>
+                        <ButtonDefault onClick={cancelEditing}>Cancel</ButtonDefault>
+                        <ButtonPrimary onClick={form.submit}>Save Target Data Model</ButtonPrimary>
                     </SimpleFormFooter>
                 </SimpleForm>
             )}
