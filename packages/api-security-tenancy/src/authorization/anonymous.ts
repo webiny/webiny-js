@@ -12,6 +12,10 @@ export default () => {
                 return [];
             }
 
+            if (security.getIdentity()) {
+                return;
+            }
+
             if (permissionCache.has(tenant.id)) {
                 return permissionCache.get(tenant.id);
             }

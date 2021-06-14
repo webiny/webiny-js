@@ -1,28 +1,28 @@
 import { Plugin } from "@webiny/plugins";
 import { Page, PbContext } from "../types";
 
-interface ApplyPageDataArgs {
+interface ApplyPageDataParams<TPage> {
     data: Record<string, any>;
-    page: Page;
+    page: TPage;
     context: PbContext;
 }
 
-interface ApplyPageDataCallable {
-    (args: ApplyPageDataArgs): void;
+interface ApplyPageDataCallable<TPage> {
+    (params: ApplyPageDataParams<TPage>): void;
 }
 
-export class IndexPageDataPlugin extends Plugin {
+export class IndexPageDataPlugin<TPage extends Page = Page> extends Plugin {
     public static readonly type = "pb.elasticsearch.index-page-data";
-    private callable: ApplyPageDataCallable;
+    private callable: ApplyPageDataCallable<TPage>;
 
-    constructor(callable: ApplyPageDataCallable) {
+    constructor(callable: ApplyPageDataCallable<TPage>) {
         super();
         this.callable = callable;
     }
 
-    apply(args: ApplyPageDataArgs) {
+    apply(params: ApplyPageDataParams<TPage>) {
         if (typeof this.callable === "function") {
-            this.callable(args);
+            this.callable(params);
         }
     }
 }

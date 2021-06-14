@@ -47,6 +47,7 @@
   ],
   "compilerOptions": {
     "paths": {
+      "~/*": ["./src/*"],
       "@webiny/api-i18n/*": ["../api-i18n/src/*"],
       "@webiny/api-i18n": ["../api-i18n/src"],
       "@webiny/api-i18n-content/*": ["../api-i18n-content/src/*"],

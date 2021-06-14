@@ -1,4 +1,8 @@
 import slugify from "slugify";
+import { Plugin } from "@webiny/plugins/types";
+import { NotAuthorizedError } from "@webiny/api-security";
+import { SecurityPermission } from "@webiny/api-security/types";
+
 import {
     CmsContentModelPermission,
     CmsContentModel,
@@ -7,8 +11,6 @@ import {
     CmsContentModelGroupPermission,
     CmsContentModelGroup
 } from "./types";
-import { NotAuthorizedError } from "@webiny/api-security";
-import { SecurityPermission } from "@webiny/api-security/types";
 
 export const hasRwd = (permission, rwd) => {
     if (typeof permission.rwd !== "string") {
@@ -279,4 +281,20 @@ export const filterAsync = async <T = Record<string, any>>(
     }
 
     return filteredItems;
+};
+
+type CallbackFallback = (args: any) => void | Promise<void>;
+
+export const executeCallbacks = async <
+    TCallbackFunction extends CallbackFallback = CallbackFallback
+>(
+    plugins: Plugin[],
+    hook: string,
+    args: Parameters<TCallbackFunction>[0]
+) => {
+    for (const plugin of plugins) {
+        if (typeof plugin[hook] === "function") {
+            await plugin[hook](args);
+        }
+    }
 };

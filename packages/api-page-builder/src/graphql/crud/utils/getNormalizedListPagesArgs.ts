@@ -1,10 +1,10 @@
-import { ListPagesArgs, PbContext } from "../../types";
+import { ListPagesParams, PbContext } from "../../types";
 import { ElasticsearchBoolQueryConfig } from "@webiny/api-plugin-elastic-search-client/types";
 
 /**
  * Returns arguments suited to be sent to ElasticSearch's `search` method.
  */
-export default (args: ListPagesArgs, context: PbContext) => {
+export default (args: ListPagesParams, context: PbContext) => {
     const normalized = {
         query: getQuery(args, context),
         sort: getSort(args.sort),
@@ -17,7 +17,7 @@ export default (args: ListPagesArgs, context: PbContext) => {
     return normalized;
 };
 
-const getQuery = (args: ListPagesArgs, context: PbContext): ElasticsearchBoolQueryConfig => {
+const getQuery = (args: ListPagesParams, context: PbContext): ElasticsearchBoolQueryConfig => {
     const { where, search, exclude } = args;
     const query: ElasticsearchBoolQueryConfig = {
         filter: [],

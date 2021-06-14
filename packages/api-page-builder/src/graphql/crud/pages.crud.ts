@@ -1,32 +1,31 @@
-import { ContextPlugin } from "@webiny/handler/types";
 import mdbid from "mdbid";
-import defaults from "./utils/defaults";
+import path from "path";
 import uniqid from "uniqid";
-import { NotAuthorizedError } from "@webiny/api-security";
-import Error from "@webiny/error";
-import { NotFoundError } from "@webiny/handler-graphql";
-import getNormalizedListPagesArgs from "./utils/getNormalizedListPagesArgs";
 import trimStart from "lodash/trimStart";
 import omit from "lodash/omit";
 import get from "lodash/get";
 import merge from "lodash/merge";
-import getPKPrefix from "./utils/getPKPrefix";
 import DataLoader from "dataloader";
-
-import { Page, PbPagePlugin, PageSecurityPermission, PbContext, TYPE } from "../../types";
+import { NotAuthorizedError } from "@webiny/api-security";
+import Error from "@webiny/error";
+import { NotFoundError } from "@webiny/handler-graphql";
+import { Args as FlushArgs } from "@webiny/api-prerendering-service/flush/types";
+import { ContextPlugin } from "@webiny/handler/types";
+import getPKPrefix from "./utils/getPKPrefix";
+import defaults from "./utils/defaults";
+import { Page, PagesCrud, PageSecurityPermission, PbContext, TYPE } from "~/types";
 import { SearchPublishedPagesPlugin } from "~/plugins/SearchPublishedPagesPlugin";
 import { SearchLatestPagesPlugin } from "~/plugins/SearchLatestPagesPlugin";
 import createListMeta from "./utils/createListMeta";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import checkOwnPermissions from "./utils/checkOwnPermissions";
-import executeHookCallbacks from "./utils/executeHookCallbacks";
-import path from "path";
+import getNormalizedListPagesArgs from "./utils/getNormalizedListPagesArgs";
+import executeCallbacks from "./utils/executeCallbacks";
 import normalizePath from "./pages/normalizePath";
 import { compressContent, extractContent } from "./pages/contentCompression";
 import { CreateDataModel, UpdateSettingsModel } from "./pages/models";
 import { getESLatestPageData, getESPublishedPageData } from "./pages/esPageData";
-
-import { Args as FlushArgs } from "@webiny/api-prerendering-service/flush/types";
+import { PagePlugin } from "~/plugins/PagePlugin";
 
 const STATUS_CHANGES_REQUESTED = "changesRequested";
 const STATUS_REVIEW_REQUESTED = "reviewRequested";
@@ -49,7 +48,7 @@ const plugin: ContextPlugin<PbContext> = {
         const ES_DEFAULTS = () => defaults.es(context);
 
         // Used in a couple of key events - (un)publishing and pages deletion.
-        const pagePlugins = context.plugins.byType<PbPagePlugin>("pb-page");
+        const pagePlugins = context.plugins.byType<PagePlugin>(PagePlugin.type);
 
         context.pageBuilder = {
             ...context.pageBuilder,
@@ -448,7 +447,7 @@ const plugin: ContextPlugin<PbContext> = {
                         content: compressContent() // Just create the initial { compression, content } object.
                     };
 
-                    await executeHookCallbacks<PbPagePlugin["beforeCreate"]>(
+                    await executeCallbacks<PagePlugin["beforeCreate"]>(
                         pagePlugins,
                         "beforeCreate",
                         { context, page }
@@ -483,14 +482,10 @@ const plugin: ContextPlugin<PbContext> = {
                         })
                         .execute();
 
-                    await executeHookCallbacks<PbPagePlugin["afterCreate"]>(
-                        pagePlugins,
-                        "afterCreate",
-                        {
-                            context,
-                            page
-                        }
-                    );
+                    await executeCallbacks<PagePlugin["afterCreate"]>(pagePlugins, "afterCreate", {
+                        context,
+                        page
+                    });
 
                     return omit(ddbData, ["PK", "SK", "content"]) as any;
                 },
@@ -555,7 +550,7 @@ const plugin: ContextPlugin<PbContext> = {
                         }
                     };
 
-                    await executeHookCallbacks<PbPagePlugin["beforeCreate"]>(
+                    await executeCallbacks<PagePlugin["beforeCreate"]>(
                         pagePlugins,
                         "beforeCreate",
                         {
@@ -596,14 +591,10 @@ const plugin: ContextPlugin<PbContext> = {
 
                     await batch.execute();
 
-                    await executeHookCallbacks<PbPagePlugin["afterCreate"]>(
-                        pagePlugins,
-                        "afterCreate",
-                        {
-                            page: data as Page,
-                            context
-                        }
-                    );
+                    await executeCallbacks<PagePlugin["afterCreate"]>(pagePlugins, "afterCreate", {
+                        page: data as Page,
+                        context
+                    });
 
                     // Extract compressed page content.
                     data.content = await extractContent(data.content);
@@ -648,7 +639,7 @@ const plugin: ContextPlugin<PbContext> = {
                         savedOn: new Date().toISOString()
                     };
 
-                    await executeHookCallbacks<PbPagePlugin["beforeUpdate"]>(
+                    await executeCallbacks<PagePlugin["beforeUpdate"]>(
                         pagePlugins,
                         "beforeUpdate",
                         {
@@ -704,15 +695,11 @@ const plugin: ContextPlugin<PbContext> = {
 
                     await batch.execute();
 
-                    await executeHookCallbacks<PbPagePlugin["afterUpdate"]>(
-                        pagePlugins,
-                        "afterUpdate",
-                        {
-                            context,
-                            page: newPageData as Page,
-                            inputData: data
-                        }
-                    );
+                    await executeCallbacks<PagePlugin["afterUpdate"]>(pagePlugins, "afterUpdate", {
+                        context,
+                        page: newPageData as Page,
+                        inputData: data
+                    });
 
                     return {
                         ...newPageData,
@@ -762,7 +749,7 @@ const plugin: ContextPlugin<PbContext> = {
                     }
 
                     // 3. Let's start updating. But first, let's trigger before-delete hook callbacks.
-                    await executeHookCallbacks<PbPagePlugin["beforeDelete"]>(
+                    await executeCallbacks<PagePlugin["beforeDelete"]>(
                         pagePlugins,
                         "beforeDelete",
                         {
@@ -831,7 +818,7 @@ const plugin: ContextPlugin<PbContext> = {
                             })
                             .execute();
 
-                        await executeHookCallbacks<PbPagePlugin["afterDelete"]>(
+                        await executeCallbacks<PagePlugin["afterDelete"]>(
                             pagePlugins,
                             "afterDelete",
                             {
@@ -921,16 +908,12 @@ const plugin: ContextPlugin<PbContext> = {
 
                     await batch.execute();
 
-                    await executeHookCallbacks<PbPagePlugin["afterDelete"]>(
-                        pagePlugins,
-                        "afterDelete",
-                        {
-                            context,
-                            page,
-                            latestPage,
-                            publishedPage
-                        }
-                    );
+                    await executeCallbacks<PagePlugin["afterDelete"]>(pagePlugins, "afterDelete", {
+                        context,
+                        page,
+                        latestPage,
+                        publishedPage
+                    });
 
                     // 7. Done. We return both the deleted page, and the new latest one (if there is one).
                     return [page, newLatestPage];
@@ -991,7 +974,7 @@ const plugin: ContextPlugin<PbContext> = {
                         }
                     });
 
-                    await executeHookCallbacks<PbPagePlugin["beforePublish"]>(
+                    await executeCallbacks<PagePlugin["beforePublish"]>(
                         pagePlugins,
                         "beforePublish",
                         {
@@ -1178,7 +1161,7 @@ const plugin: ContextPlugin<PbContext> = {
 
                     await batch.execute();
 
-                    await executeHookCallbacks<PbPagePlugin["afterPublish"]>(
+                    await executeCallbacks<PagePlugin["afterPublish"]>(
                         pagePlugins,
                         "afterPublish",
                         {
@@ -1248,7 +1231,7 @@ const plugin: ContextPlugin<PbContext> = {
                         }
                     }
 
-                    await executeHookCallbacks<PbPagePlugin["beforeUnpublish"]>(
+                    await executeCallbacks<PagePlugin["beforeUnpublish"]>(
                         pagePlugins,
                         "beforeUnpublish",
                         { context, page }
@@ -1313,7 +1296,7 @@ const plugin: ContextPlugin<PbContext> = {
 
                     await batch.execute();
 
-                    await executeHookCallbacks<PbPagePlugin["afterUnpublish"]>(
+                    await executeCallbacks<PagePlugin["afterUnpublish"]>(
                         pagePlugins,
                         "afterUnpublish",
                         { context, page }
@@ -1603,7 +1586,7 @@ const plugin: ContextPlugin<PbContext> = {
                         }
                     }
                 }
-            }
+            } as PagesCrud
         };
     }
 };
