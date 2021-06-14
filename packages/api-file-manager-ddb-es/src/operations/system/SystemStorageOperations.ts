@@ -45,12 +45,18 @@ export class SystemStorageOperations implements FileManagerSystemStorageOperatio
     }
 
     public async get(): Promise<FileManagerSystem | null> {
-        const system = await this._entity.get({
-            PK: this.partitionKey,
-            SK: SORT_KEY
-        });
-
-        return system || null;
+        try {
+            const system = await this._entity.get({
+                PK: this.partitionKey,
+                SK: SORT_KEY
+            });
+            return system || null;
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not fetch the FileManager system.",
+                ex.code || "GET_SYSTEM_ERROR"
+            );
+        }
     }
 
     public async create(

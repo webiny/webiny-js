@@ -4,7 +4,6 @@ import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { FileStorage } from "./plugins/FileStorage";
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
 import { SecurityPermission } from "@webiny/api-security/types";
-import { Plugin } from "@webiny/plugins/types";
 
 export type FileManagerContext = Context<
     TenancyContext,
@@ -36,6 +35,12 @@ export type File = {
     tags: string[];
     createdOn: string;
     createdBy: CreatedBy;
+    /**
+     * Added with new storage operations refactoring.
+     */
+    tenant: string;
+    locale: string;
+    webinyVersion: string;
 };
 
 export type CreatedBy = {
@@ -189,4 +194,141 @@ export interface FileManagerSettingsStorageOperations {
      * Delete the existing settings.
      */
     delete: () => Promise<void>;
+}
+
+/**
+ * @category StorageOperations
+ * @category FilesStorageOperations
+ * @category FilesStorageOperationsParams
+ */
+export interface FileManagerFilesStorageOperationsCreateParams {
+    file: File;
+}
+/**
+ * @category StorageOperations
+ * @category FilesStorageOperations
+ * @category FilesStorageOperationsParams
+ */
+export interface FileManagerFilesStorageOperationsUpdateParams {
+    original: File;
+    file: File;
+}
+/**
+ * @category StorageOperations
+ * @category FilesStorageOperations
+ * @category FilesStorageOperationsParams
+ */
+export interface FileManagerFilesStorageOperationsCreateBatchParams {
+    files: File[];
+}
+/**
+ * @category StorageOperations
+ * @category FilesStorageOperations
+ * @category FilesStorageOperationsParams
+ */
+export interface FileManagerFilesStorageOperationsListParamsWhere {
+    // id?: string;
+    id_in?: string[];
+    // name?: string;
+    // name_contains?: string;
+    // tag?: string;
+    // tag_contains?: string;
+    tag_in?: string[];
+    search?: string;
+    createdBy?: {
+        id: string;
+        type: string;
+    };
+    locale?: string;
+    tenant?: string;
+    private?: boolean;
+    // type?: string;
+    type_in?: string[];
+}
+/**
+ * @category StorageOperations
+ * @category FilesStorageOperations
+ * @category FilesStorageOperationsParams
+ */
+export interface FileManagerFilesStorageOperationsListParams {
+    where: FileManagerFilesStorageOperationsListParamsWhere;
+    limit: number;
+    after: string | null;
+}
+/**
+ * @category StorageOperations
+ * @category FilesStorageOperations
+ * @category FilesStorageOperationsParams
+ */
+interface FileManagerFilesStorageOperationsListResponseListMeta {
+    hasMoreItems: boolean;
+    totalCount: number;
+    cursor?: string;
+}
+export type FileManagerFilesStorageOperationsListResponse = [
+    File[],
+    FileManagerFilesStorageOperationsListResponseListMeta
+];
+
+interface FileManagerFilesStorageOperationsListResponseTagsMeta {
+    hasMoreItems: boolean;
+    totalCount: number;
+    cursor?: string;
+}
+export type FileManagerFilesStorageOperationsTagsResponse = [
+    string[],
+    FileManagerFilesStorageOperationsListResponseTagsMeta
+];
+
+export interface FileManagerFilesStorageOperationsTagsParamsWhere {
+    locale: string;
+    tenant?: string;
+}
+/**
+ * @category StorageOperations
+ * @category FilesStorageOperations
+ * @category FilesStorageOperationsParams
+ */
+export interface FileManagerFilesStorageOperationsTagsParams {
+    where: FileManagerFilesStorageOperationsTagsParamsWhere;
+    limit?: number;
+    after?: string;
+}
+/**
+ * @category StorageOperations
+ * @category FilesStorageOperations
+ */
+export interface FileManagerFilesStorageOperations {
+    /**
+     * Get a single file with given ID from the storage.
+     */
+    get: (id: string) => Promise<File | null>;
+    /**
+     * Insert the file data into the database.
+     */
+    create: (params: FileManagerFilesStorageOperationsCreateParams) => Promise<File | null>;
+    /**
+     * Update the file data in the database.
+     */
+    update: (params: FileManagerFilesStorageOperationsUpdateParams) => Promise<File | null>;
+    /**
+     * Delete the file from the database.
+     */
+    delete: (id: string) => Promise<void>;
+    /**
+     * Store multiple files at once to the database.
+     */
+    createBatch: (params: FileManagerFilesStorageOperationsCreateBatchParams) => Promise<File[]>;
+    /**
+     * Get a list of files filtered by given parameters.
+     */
+    list: (
+        params: FileManagerFilesStorageOperationsListParams
+    ) => Promise<FileManagerFilesStorageOperationsListResponse>;
+    /**
+     * Get a list of all file tags filtered by given parameters.
+     */
+    tags: (
+        params: FileManagerFilesStorageOperationsTagsParams
+    ) => Promise<FileManagerFilesStorageOperationsTagsResponse>;
 }

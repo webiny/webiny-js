@@ -1,7 +1,7 @@
 import { SettingsStorageOperations } from "./SettingsStorageOperations";
 import { SettingsStorageOperationsProviderPlugin } from "@webiny/api-file-manager/plugins/definitions";
 
-class SettingsStorageOperationsProviderDdbEsPlugin extends SettingsStorageOperationsProviderPlugin {
+export class SettingsStorageOperationsProviderDdbEsPlugin extends SettingsStorageOperationsProviderPlugin {
     public name = "fm.storageOperationsProvider.settings.ddb.es";
     async provide({ context }) {
         return new SettingsStorageOperations({
@@ -9,5 +9,3 @@ class SettingsStorageOperationsProviderDdbEsPlugin extends SettingsStorageOperat
         });
     }
 }
-
-export default new SettingsStorageOperationsProviderDdbEsPlugin();

@@ -45,11 +45,18 @@ export class SettingsStorageOperations implements FileManagerSettingsStorageOper
     }
 
     public async get(): Promise<FileManagerSettings> {
-        const settings = await this._entity.get({
-            PK: this.partitionKey,
-            SK: SORT_KEY
-        });
-        return settings || null;
+        try {
+            const settings = await this._entity.get({
+                PK: this.partitionKey,
+                SK: SORT_KEY
+            });
+            return settings || null;
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not fetch the FileManager settings.",
+                ex.code || "GET_SETTINGS_ERROR"
+            );
+        }
     }
 
     public async create({

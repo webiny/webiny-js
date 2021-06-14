@@ -4,7 +4,6 @@ import settingsCRUD from "./crud/settings.crud";
 import systemCRUD from "./crud/system.crud";
 import { FileStorage } from "./FileStorage";
 import { FileManagerContext } from "~/types";
-import { settings } from "cluster";
 
 /**
  * Need to add plugins this way due to changes in how context plugins are working.

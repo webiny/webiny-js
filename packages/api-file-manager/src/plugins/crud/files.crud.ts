@@ -2,7 +2,15 @@ import mdbid from "mdbid";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { NotAuthorizedError } from "@webiny/api-security";
 import Error from "@webiny/error";
-import { File, FileManagerContext, FilePermission, FilesCRUD } from "~/types";
+import {
+    File,
+    FileManagerContext,
+    FileManagerFilesStorageOperations,
+    FileManagerFilesStorageOperationsListParamsWhere,
+    FileManagerFilesStorageOperationsTagsParamsWhere,
+    FilePermission,
+    FilesCRUD
+} from "~/types";
 import defaults from "./utils/defaults";
 import { paginateBatch } from "./utils/paginateBatch";
 import { decodeCursor, encodeCursor } from "./utils/cursors";
@@ -49,6 +57,8 @@ export default (context: FileManagerContext) => {
 
     const PK_FILE = id => `${getPKPrefix(context)}F#${id}`;
 
+    let storageOperations: FileManagerFilesStorageOperations = undefined;
+
     return {
         async getFile(id: string) {
             const permission = await checkBasePermissions(context, { rwd: "r" });
@@ -78,7 +88,7 @@ export default (context: FileManagerContext) => {
 
             const id = mdbid();
 
-            const file = {
+            const file: File = {
                 id,
                 tenant: tenant.id,
                 createdOn: new Date().toISOString(),
@@ -262,100 +272,50 @@ export default (context: FileManagerContext) => {
         async listFiles(opts = {}) {
             const permission = await checkBasePermissions(context, { rwd: "r" });
 
-            const { i18nContent, security, elasticSearch } = context;
-            const identity = security.getIdentity();
-            const esDefaults = defaults.es(context);
-
             const { limit = 40, search = "", types = [], tags = [], ids = [], after = null } = opts;
 
-            const must: any[] = [
-                // Skip files created by the system, eg. installation files.
-                { term: { "meta.private": false } },
-                // Filter files for current content locale
-                { term: { "locale.keyword": i18nContent.locale.code } }
-            ];
+            const { i18nContent, security } = context;
+            const identity = security.getIdentity();
 
-            // When ES index is shared between tenants, we need to filter records by tenant ID
-            const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
-            if (sharedIndex) {
-                const tenant = security.getTenant();
-                must.push({ term: { "tenant.keyword": tenant.id } });
-            }
-
+            const where: FileManagerFilesStorageOperationsListParamsWhere = {
+                private: false,
+                locale: i18nContent.locale.code
+            };
             if (permission.own === true) {
-                must.push({ term: { "createdBy.id.keyword": identity.id } });
-                must.push({ term: { "createdBy.type.keyword": identity.type } });
+                where.createdBy = {
+                    id: identity.id,
+                    type: identity.type
+                };
             }
-
             if (Array.isArray(types) && types.length) {
-                must.push({ terms: { "type.keyword": types } });
+                where.type_in = types;
             }
-
             if (search) {
-                must.push({
-                    bool: {
-                        should: [
-                            { wildcard: { name: `*${search}*` } },
-                            { terms: { tags: search.toLowerCase().split(" ") } }
-                        ]
-                    }
-                });
+                where.search = search;
             }
-
             if (Array.isArray(tags) && tags.length > 0) {
-                must.push({
-                    terms: { "tags.keyword": tags.map(tag => tag.toLowerCase()) }
-                });
+                where.tag_in = tags.map(tag => tag.toLowerCase());
             }
-
             if (Array.isArray(ids) && ids.length > 0) {
-                must.push({
-                    terms: { "id.keyword": ids }
-                });
+                where.id_in = ids;
             }
 
-            const body = {
-                query: {
-                    constant_score: {
-                        filter: {
-                            bool: {
-                                must: must
-                            }
-                        }
-                    }
-                },
-                size: limit,
-                sort: [{ "id.keyword": "desc" }]
-            };
-
-            if (after) {
-                body["search_after"] = decodeCursor(after);
-            }
-
-            const response = await elasticSearch.search({
-                ...esDefaults,
-                body
+            return storageOperations.list({
+                where,
+                after,
+                limit
             });
-
-            const { hits, total } = response.body.hits;
-            const files = hits.map(item => item._source);
-
-            // Cursor is the `sort` value of the last item in the array.
-            // https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html#search-after
-
-            const meta = {
-                totalCount: total.value,
-                cursor: files.length > 0 ? encodeCursor(hits[files.length - 1].sort) : null
-            };
-
-            return [files, meta];
         },
         async listTags() {
             await checkBasePermissions(context);
             const { i18nContent } = context;
             const esDefaults = defaults.es(context);
 
-            const must: any = [
+            const where: FileManagerFilesStorageOperationsTagsParamsWhere = {
+                locale: i18nContent.locale.code
+            };
+
+            const must: any[] = [
                 {
                     term: { "locale.keyword": i18nContent.locale.code }
                 }
