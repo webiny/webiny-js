@@ -1,10 +1,9 @@
 import fs from "fs";
 import path from "path";
 
-const content = `// Do not modify!
-// This file is automatically updated via various scaffolding utilities.
+const content = `// This file is automatically updated via various scaffolding utilities.
 
-export default [];`;
+export default () => [];`;
 
 export default folder => {
     fs.mkdirSync(folder, { recursive: true });

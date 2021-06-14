@@ -15,7 +15,8 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "inquirer": "^7.3.3",
-    "ora": "4.1.1"
+    "ora": "4.1.1",
+    "ts-morph": "^11.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
