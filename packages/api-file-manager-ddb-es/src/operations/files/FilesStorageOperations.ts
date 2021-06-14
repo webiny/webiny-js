@@ -18,8 +18,7 @@ import defineFilesEsEntity from "~/definitions/filesElasticsearchEntity";
 import configurations from "~/operations/configurations";
 import lodashOmit from "lodash.omit";
 import lodashChunk from "lodash.chunk";
-import { decodeCursor, encodeCursor } from "@webiny/api-file-manager/plugins/crud/utils/cursors";
-import defaults from "@webiny/api-file-manager/plugins/crud/utils/defaults";
+import { decodeCursor, encodeCursor } from "~/operations/utils";
 
 interface FileItem extends File {
     PK: string;
@@ -346,7 +345,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
         const { security, elasticSearch } = this.context;
         const { where, after, limit } = params;
 
-        const esDefaults = defaults.es(this.context);
+        const esDefaults = configurations.es(this.context);
 
         const must: any[] = [];
         if (where.locale) {
@@ -359,24 +358,39 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             const tenant = security.getTenant();
             must.push({ term: { "tenant.keyword": tenant.id } });
         }
+        
+        const body = {
+            query: {
+                bool: {
+                    must
+                }
+            },
+            size: limit + 1,
+            aggs: {
+                listTags: {
+                    terms: { field: "tags.keyword" }
+                }
+            },
+            search_after: decodeCursor(after),
+        };
+        
+        let response = undefined;
 
-        const response = await elasticSearch.search({
-            ...esDefaults,
-            body: {
-                query: {
-                    bool: {
-                        must
-                    }
-                },
-                size: limit + 1,
-                aggs: {
-                    listTags: {
-                        terms: { field: "tags.keyword" }
-                    }
-                },
-                search_after: after ? decodeCursor(after) : undefined
-            }
-        });
+        try {
+            response = await elasticSearch.search({
+                ...esDefaults,
+                body
+            });
+        } catch(ex) {
+            throw new WebinyError(
+                ex.message || "Error in the Elasticsearch query.",
+                ex.code || "ELASTICSEARCH_ERROR",
+                {
+                    body,
+                }
+            );
+        }
+        
 
         const tags = response.body.aggregations.listTags.buckets.map(item => item.key) || [];
 
