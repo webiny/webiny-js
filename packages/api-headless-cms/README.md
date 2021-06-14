@@ -39,3 +39,35 @@ The first implementation of the decoupled storage operations is DynamoDB/Elastic
 Files which you can check to help you define your own presets and test environment are:
 * [presets.js](../api-headless-cms-ddb-es/__tests__/__api__/presets.js) - an array of presets of which last one defines the environment to be loaded
 * [environment.js](../api-headless-cms-ddb-es/__tests__/__api__/environment.js) - a class which extends NodeEnvironment and exposes `__getStorageOperationsPlugins` to the tests
+
+### Debugging when testing
+For the WebStorm (PhpStorm,...) when starting a test you must have some values defined in the run/debug configurations screen:
+#### Node options
+`````
+--inspect=9229
+`````
+#### Working directory
+`````
+PATH_TO_YOUR_PROJECT_ROOT
+`````
+example:
+````
+~/webiny/webiny-js/
+````
+#### Jest options
+For DynamoDB + Elasticsearch storage operations tests:
+`````
+--keyword=cms:base --keyword=cms:ddb-es
+`````
+For the DynamoDB storage operations tests:
+`````
+--keyword=cms:base --keyword=cms:ddb
+`````
+Note that base keyword is the `cms:base`. It tells Jest setup to load the `api-headless-cms` tests with the api-headless-cms-ddb-es tests.
+
+#### Environment variables
+If you want to use local Elasticsearch:
+`````
+ELASTICSEARCH_PORT=9200;LOCAL_ELASTICSEARCH=true
+`````
+Nothing if you do not want to use the local Elasticsearch.
