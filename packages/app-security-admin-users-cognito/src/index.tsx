@@ -6,9 +6,9 @@ import cognitoAuthentication, {
     Options as CognitOptions
 } from "@webiny/app-security-cognito-authentication";
 import { PluginCollection } from "@webiny/plugins/types";
+import { ViewPlugin } from "@webiny/app/plugins/ViewPlugin";
 import { createCognitoPasswordValidator } from "./cognitoPasswordValidator";
 import { Authentication, Props } from "./Authentication";
-import { ViewPlugin } from "../../app/src/plugins/ViewPlugin";
 
 const defaultPasswordPolicy = {
     minimumLength: 8,

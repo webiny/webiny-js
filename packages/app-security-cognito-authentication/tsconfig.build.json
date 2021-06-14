@@ -5,10 +5,7 @@
     "node_modules",
     "../app",
     "../app-security",
-    "../plugins",
-    "../ui",
-    "../validation",
-    "../form"
+    "../plugins"
   ],
   "compilerOptions": {
     "rootDir": "./src",

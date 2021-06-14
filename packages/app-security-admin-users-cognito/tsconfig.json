@@ -22,7 +22,7 @@
   ],
   "compilerOptions": {
     "paths": {
-      "@webiny/app/*": ["../app-app/src/*"],
+      "@webiny/app/*": ["../app/src/*"],
       "@webiny/form": ["../form/src"],
       "@webiny/app-security-cognito-authentication/*": [
         "../app-security-cognito-authentication/src/*"
