@@ -5,7 +5,7 @@
     "build": "yarn webiny run build",
     "watch": "yarn webiny run watch"
   },
-  "dependencies": { 
+  "dependencies": {
     "@webiny/api-file-manager": "latest",
     "@webiny/api-file-manager-s3": "latest",
     "@webiny/api-form-builder": "latest",

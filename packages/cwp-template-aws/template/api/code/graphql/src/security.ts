@@ -20,7 +20,7 @@ export default () => [
      * Learn more: https://www.webiny.com/docs/key-topics/security-framework/introduction
      */
     security(),
-    
+
     /**
      * Cognito IDP plugin (hooks for User CRUD methods).
      * This plugin will perform CRUD operations on Amazon Cognito when you do something with the user
@@ -30,7 +30,7 @@ export default () => [
         region: process.env.COGNITO_REGION,
         userPoolId: process.env.COGNITO_USER_POOL_ID
     }),
-    
+
     /**
      * Authentication plugin for Personal Access Tokens.
      * PATs are directly linked to Users. We consider a token to be valid, if we manage to load

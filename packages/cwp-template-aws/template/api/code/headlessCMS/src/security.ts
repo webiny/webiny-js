@@ -25,7 +25,7 @@ export default () => [
      * Adds Admin Users context to support authentication and authorization plugins.
      */
     adminUsersContext(),
-    
+
     /**
      * Authentication plugin for Personal Access Tokens.
      * PATs are directly linked to Users. We consider a token to be valid, if we manage to load
