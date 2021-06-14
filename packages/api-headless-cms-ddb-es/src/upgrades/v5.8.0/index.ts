@@ -157,13 +157,20 @@ export default (): UpgradePlugin<CmsContext> => ({
          */
         const table = definitions.defineTable(context);
         const elasticTable = definitions.defineElasticsearchTable(context);
-        const modelEntity = definitions.defineModel(table);
-        const entryEntity = definitions.defineEntry(table);
-        const entryElasticsearchEntity = definitions.defineElasticsearchEntry(elasticTable);
+        const modelEntity = definitions.defineModel({ context, table });
+        const entryEntity = definitions.defineEntry({ context, table });
+        const entryElasticsearchEntity = definitions.defineElasticsearchEntry({
+            context,
+            table: elasticTable
+        });
 
         const entryRecords: Record<string, EntryRecordData> = {};
         const esIndices: { esIndex: string; localeCode: string }[] = [];
         const locales = i18n.getLocales();
+        /**
+         * max dynamodb limit
+         */
+        const recordsInABatch = 25;
 
         /**
          * We need to find all the entries in each of the possible elasticsearch indexes.
@@ -280,6 +287,7 @@ export default (): UpgradePlugin<CmsContext> => ({
             records: entryRecords,
             entity: entryEntity
         });
+
         /**
          * Then we create updates to the regular DynamoDB records.
          */
@@ -299,6 +307,10 @@ export default (): UpgradePlugin<CmsContext> => ({
                 continue;
             }
             const { tenant } = entryRecords[entryId];
+            /**
+             * Remove the leftovers from the beta 5 to v5.0.0 upgrade
+             */
+            delete entry["ignore"];
             updates.push(
                 entryEntity.putBatch({
                     ...entry,
@@ -308,7 +320,7 @@ export default (): UpgradePlugin<CmsContext> => ({
             );
         }
         try {
-            const chunks = lodashChunk(updates, 25);
+            const chunks = lodashChunk(updates, recordsInABatch);
             for (const key in chunks) {
                 if (!chunks.hasOwnProperty(key)) {
                     continue;
@@ -359,6 +371,12 @@ export default (): UpgradePlugin<CmsContext> => ({
                 continue;
             }
             const { tenant } = entryRecords[entryId];
+            /**
+             * Remove the leftovers from the beta 5 to v5.0.0 upgrade
+             */
+            delete entry["ignore"];
+            delete entry["savedOn"];
+            delete entry["version"];
             elasticUpdates.push(
                 entryElasticsearchEntity.putBatch({
                     ...entry,
@@ -372,8 +390,6 @@ export default (): UpgradePlugin<CmsContext> => ({
         }
 
         const breakMs = 200;
-        // max dynamodb limit
-        const recordsInABatch = 25;
         /**
          * Updating the Elasticsearch table is a bit tricky because it can break if overwhelmed.
          * We will take breakMs ms break between each recordsInABatch records

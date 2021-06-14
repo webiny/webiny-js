@@ -1,6 +1,13 @@
 import { Entity, Table } from "dynamodb-toolbox";
-
-export default (table: Table): Entity<any> => {
+import { CmsContext } from "@webiny/api-headless-cms/types";
+/**
+ * TODO when saving this entity remove fields:
+ * - ignore
+ * - version
+ * - savedOn
+ */
+export default (params: { table: Table; context: CmsContext }): Entity<any> => {
+    const { table } = params;
     return new Entity({
         name: "ContentEntry",
         table,

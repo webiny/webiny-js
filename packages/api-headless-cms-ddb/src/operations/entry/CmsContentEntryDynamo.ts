@@ -27,7 +27,6 @@ import {
     decodePaginationCursor,
     encodePaginationCursor
 } from "../../utils";
-import { entryToStorageTransform } from "@webiny/api-headless-cms/transformers";
 import { Entity, Table } from "dynamodb-toolbox";
 import { getDocumentClient, getTable } from "../helpers";
 import { filterItems, buildModelFields, sortEntryItems } from "./utils";
@@ -191,10 +190,9 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
         model: CmsContentModel,
         args: CmsContentEntryStorageOperationsCreateArgs
     ): Promise<CmsContentEntry> {
-        const { data } = args;
-        const storageEntry = await entryToStorageTransform(this.context, model, data);
+        const { entry, storageEntry } = args;
 
-        const partitionKey = this.getPartitionKey(data.id);
+        const partitionKey = this.getPartitionKey(entry.id);
         /**
          * We need to:
          *  - create new main entry item
@@ -204,7 +202,7 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
             this._entity.putBatch({
                 ...storageEntry,
                 PK: partitionKey,
-                SK: this.getSortKeyRevision(data.version),
+                SK: this.getSortKeyRevision(entry.version),
                 TYPE: TYPE_ENTRY,
                 GSI1_PK: this.getGSIEntryPartitionKey(model),
                 GSI1_SK: this.getGSISortKey(storageEntry)
@@ -227,7 +225,7 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
                 ex.code || "CREATE_ENTRY_ERROR",
                 {
                     error: ex,
-                    entry: data
+                    entry
                 }
             );
         }
@@ -239,13 +237,8 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
         model: CmsContentModel,
         args: CmsContentEntryStorageOperationsCreateRevisionFromArgs
     ) {
-        const {
-            originalEntryRevision: originalEntry,
-            data,
-            latestEntryRevision: latestEntry
-        } = args;
+        const { originalEntry, entry, storageEntry, latestEntry } = args;
 
-        const storageEntry = await entryToStorageTransform(this.context, model, data);
         const partitionKey = this.getPartitionKey(storageEntry.id);
         /**
          * We need to:
@@ -280,7 +273,7 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
                     error: ex,
                     originalEntry,
                     latestEntry,
-                    data,
+                    entry,
                     storageEntry
                 }
             );
@@ -288,7 +281,7 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
         /**
          * There are no modifications on the entry created so just return the data.
          */
-        return data;
+        return storageEntry;
     }
 
     public async delete(
@@ -325,24 +318,25 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
         model: CmsContentModel,
         args: CmsContentEntryStorageOperationsDeleteRevisionArgs
     ): Promise<void> {
-        const {
-            entryRevisionToDelete,
-            entryRevisionToSetAsLatest,
-            publishedEntryRevision,
-            latestEntryRevision
-        } = args;
-        const partitionKey = this.getPartitionKey(entryRevisionToDelete.id);
+        const { entryToDelete, entryToSetAsLatest, storageEntryToSetAsLatest } = args;
+        const partitionKey = this.getPartitionKey(entryToDelete.id);
 
         const items = [
             this._entity.deleteBatch({
                 PK: partitionKey,
-                SK: this.getSortKeyRevision(entryRevisionToDelete.id)
+                SK: this.getSortKeyRevision(entryToDelete.id)
             })
         ];
+
+        const publishedStorageEntry = await this.getPublishedRevisionByEntryId(
+            model,
+            entryToDelete.id
+        );
+
         /**
          * If revision we are deleting is the published one as well, we need to delete those records as well.
          */
-        if (publishedEntryRevision && entryRevisionToDelete.id === publishedEntryRevision.id) {
+        if (publishedStorageEntry && entryToDelete.id === publishedStorageEntry.id) {
             items.push(
                 this._entity.deleteBatch({
                     PK: partitionKey,
@@ -350,15 +344,15 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
                 })
             );
         }
-        if (entryRevisionToSetAsLatest) {
+        if (storageEntryToSetAsLatest) {
             items.push(
                 this._entity.putBatch({
-                    ...entryRevisionToSetAsLatest,
+                    ...storageEntryToSetAsLatest,
                     PK: partitionKey,
                     SK: this.getSortKeyLatest(),
                     TYPE: TYPE_ENTRY_LATEST,
                     GSI1_PK: this.getGSILatestPartitionKey(model),
-                    GSI1_SK: this.getGSISortKey(entryRevisionToSetAsLatest)
+                    GSI1_SK: this.getGSISortKey(storageEntryToSetAsLatest)
                 })
             );
         }
@@ -367,10 +361,8 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
         } catch (ex) {
             throw new WebinyError(ex.message, ex.code, {
                 error: ex,
-                entryRevisionToDelete,
-                entryRevisionToSetAsLatest,
-                publishedEntryRevision,
-                latestEntryRevision
+                entryToDelete,
+                entryToSetAsLatest
             });
         }
     }
@@ -413,57 +405,7 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
             where: originalWhere,
             model
         });
-        /**
-         * A method to query the database at the given partition key with the built query options.
-         * Method runs in the loop until it reads everything it needs to.
-         * We could impose the limit on the records read but there is no point since we MUST read everything to be able
-         * to filter and sort the data.
-         * /
-        const scanner = async (partitionKey: string, previousResults: any) => {
-            let result;
-            /**
-             * In case there is no previous result we must make a new query.
-             * This is the first query on the given partition key.
-             * /
-            if (!previousResults) {
-                result = await this._entity.query(partitionKey, {
-                    filters: queryOptions.filters,
-                    index: queryOptions.targetIndex
-                });
-            } else if (previousResults && typeof previousResults.next === "function") {
-                /**
-                 * In case we have a previous result and it has a next method, we run it.
-                 * In case result of the next method is false, it means it has nothing else to read
-                 * and we return a null to keep the query from repeating.
-                 * /
-                result = await previousResults.next();
-                if (result === false) {
-                    return null;
-                }
-            } else {
-                /**
-                 * This could probably never happen but keep it here just in case to break the query loop.
-                 * Basically, either previousResult does not exist or it exists and has a next method
-                 * and at that point a result returned will be null and loop should not start again.
-                 * /
-                return null;
-            }
-            /**
-             * We expect the result to contain an Items array and if not, something went wrong, very wrong.
-             * /
-            if (!result || !result.Items || !Array.isArray(result.Items)) {
-                throw new WebinyError(
-                    "Error when scanning for content entries - no result.",
-                    "QUERY_ERROR",
-                    {
-                        partitionKey,
-                        index: queryOptions.targetIndex
-                    }
-                );
-            }
-            return result;
-        };
-        */
+
         try {
             /**
              * We run the query method on all the partition keys that were built in the createQueryOptions() method.
@@ -534,11 +476,7 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
         model: CmsContentModel,
         args: CmsContentEntryStorageOperationsUpdateArgs
     ): Promise<CmsContentEntry> {
-        const {
-            originalEntryRevision: originalEntry,
-            data,
-            latestEntryRevision: latestEntry
-        } = args;
+        const { originalEntry, entry, storageEntry } = args;
         const partitionKey = this.getPartitionKey(originalEntry.id);
 
         const items = [];
@@ -549,36 +487,36 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
          */
         items.push(
             this._entity.putBatch({
-                ...originalEntry,
-                ...data,
+                ...storageEntry,
                 PK: partitionKey,
-                SK: this.getSortKeyRevision(data.version),
+                SK: this.getSortKeyRevision(storageEntry.version),
                 TYPE: TYPE_ENTRY,
                 GSI1_PK: this.getGSIEntryPartitionKey(model),
-                GSI1_SK: this.getGSISortKey(data)
+                GSI1_SK: this.getGSISortKey(storageEntry)
             })
         );
 
-        if (latestEntry && latestEntry.id === data.id) {
+        /**
+         * We need the latest entry to update it as well if neccessary.
+         */
+        const latestStorageEntry = await this.getLatestRevisionByEntryId(model, entry.id);
+
+        if (latestStorageEntry && latestStorageEntry.id === entry.id) {
             items.push(
                 this._entity.putBatch({
-                    ...originalEntry,
-                    ...data,
+                    ...storageEntry,
                     PK: partitionKey,
                     SK: this.getSortKeyLatest(),
                     TYPE: TYPE_ENTRY_LATEST,
                     GSI1_PK: this.getGSILatestPartitionKey(model),
-                    GSI1_SK: this.getGSISortKey(data)
+                    GSI1_SK: this.getGSISortKey(entry)
                 })
             );
         }
 
         try {
             await this._table.batchWrite(items);
-            return {
-                ...originalEntry,
-                ...data
-            };
+            return storageEntry;
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not update entry.",
@@ -586,8 +524,8 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
                 {
                     error: ex,
                     originalEntry,
-                    data,
-                    latestEntry
+                    entry,
+                    latestStorageEntry
                 }
             );
         }
@@ -597,13 +535,15 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
         model: CmsContentModel,
         args: CmsContentEntryStorageOperationsPublishArgs
     ): Promise<CmsContentEntry> {
-        const {
-            entry,
-            latestEntryRevision: latestEntry,
-            publishedEntryRevision: publishedEntry
-        } = args;
+        const { entry, storageEntry } = args;
 
         const partitionKey = this.getPartitionKey(entry.id);
+
+        /**
+         * We need the latest and published entries to see if something needs to be updated along side the publishing one.
+         */
+        const latestStorageEntry = await this.getLatestRevisionByEntryId(model, entry.id);
+        const publishedStorageEntry = await this.getPublishedRevisionByEntryId(model, entry.id);
         /**
          * We need to update:
          *  - current entry revision sort key
@@ -613,7 +553,7 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
          */
         const items = [
             this._entity.putBatch({
-                ...entry,
+                ...storageEntry,
                 PK: partitionKey,
                 SK: this.getSortKeyRevision(entry.version),
                 TYPE: TYPE_ENTRY,
@@ -621,7 +561,7 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
                 GSI1_SK: this.getGSISortKey(entry)
             }),
             this._entity.putBatch({
-                ...entry,
+                ...storageEntry,
                 PK: partitionKey,
                 SK: this.getSortKeyPublished(),
                 TYPE: TYPE_ENTRY_PUBLISHED,
@@ -629,10 +569,10 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
                 GSI1_SK: this.getGSISortKey(entry)
             })
         ];
-        if (entry.id === latestEntry.id) {
+        if (entry.id === latestStorageEntry.id) {
             items.push(
                 this._entity.putBatch({
-                    ...entry,
+                    ...storageEntry,
                     PK: partitionKey,
                     SK: this.getSortKeyLatest(),
                     TYPE: TYPE_ENTRY_LATEST,
@@ -641,16 +581,16 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
                 })
             );
         }
-        if (publishedEntry) {
+        if (publishedStorageEntry) {
             items.push(
                 this._entity.putBatch({
-                    ...publishedEntry,
+                    ...publishedStorageEntry,
                     PK: partitionKey,
-                    SK: this.getSortKeyRevision(publishedEntry.version),
+                    SK: this.getSortKeyRevision(publishedStorageEntry.version),
                     TYPE: TYPE_ENTRY,
                     status: CONTENT_ENTRY_STATUS.UNPUBLISHED,
                     GSI1_PK: this.getGSIEntryPartitionKey(model),
-                    GSI1_SK: this.getGSISortKey(publishedEntry)
+                    GSI1_SK: this.getGSISortKey(publishedStorageEntry)
                 })
             );
         }
@@ -665,8 +605,8 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
                 ex.code || "PUBLISH_ERROR",
                 {
                     entry,
-                    latestEntry,
-                    publishedEntry
+                    latestStorageEntry,
+                    publishedStorageEntry
                 }
             );
         }
@@ -676,7 +616,7 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
         model: CmsContentModel,
         args: CmsContentEntryStorageOperationsUnpublishArgs
     ): Promise<CmsContentEntry> {
-        const { entry, latestEntryRevision: latestEntry } = args;
+        const { entry, storageEntry } = args;
 
         const partitionKey = this.getPartitionKey(entry.id);
         /**
@@ -691,7 +631,7 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
                 SK: this.getSortKeyPublished()
             }),
             this._entity.putBatch({
-                ...entry,
+                ...storageEntry,
                 PK: partitionKey,
                 SK: this.getSortKeyRevision(entry.version),
                 TYPE: TYPE_ENTRY,
@@ -700,10 +640,15 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
             })
         ];
 
-        if (entry.id === latestEntry.id) {
+        /**
+         * We need the latest entry to see if something needs to be updated along side the unpublishing one.
+         */
+        const latestStorageEntry = await this.getLatestRevisionByEntryId(model, entry.id);
+
+        if (entry.id === latestStorageEntry.id) {
             items.push(
                 this._entity.putBatch({
-                    ...entry,
+                    ...storageEntry,
                     PK: partitionKey,
                     SK: this.getSortKeyLatest(),
                     TYPE: TYPE_ENTRY_LATEST,
@@ -715,14 +660,14 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
 
         try {
             await this._table.batchWrite(items);
-            return entry;
+            return storageEntry;
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not execute unpublish batch.",
                 ex.code || "UNPUBLISH_ERROR",
                 {
                     entry,
-                    latestEntry
+                    storageEntry
                 }
             );
         }
@@ -732,11 +677,7 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
         model: CmsContentModel,
         args: CmsContentEntryStorageOperationsRequestChangesArgs
     ): Promise<CmsContentEntry> {
-        const {
-            entry,
-            originalEntryRevision: originalEntry,
-            latestEntryRevision: latestEntry
-        } = args;
+        const { entry, storageEntry, originalEntry } = args;
 
         const partitionKey = this.getPartitionKey(entry.id);
 
@@ -747,17 +688,23 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
          */
         const items = [
             this._entity.putBatch({
-                ...entry,
+                ...storageEntry,
                 PK: partitionKey,
                 SK: this.getSortKeyRevision(entry.version),
                 GSI1_PK: this.getGSIEntryPartitionKey(model),
                 GSI1_SK: this.getGSISortKey(entry)
             })
         ];
-        if (latestEntry.id === entry.id) {
+
+        /**
+         * We need the latest entry to see if something needs to be updated along side the request changes one.
+         */
+        const latestStorageEntry = await this.getLatestRevisionByEntryId(model, entry.id);
+
+        if (latestStorageEntry.id === entry.id) {
             items.push(
                 this._entity.putBatch({
-                    ...entry,
+                    ...storageEntry,
                     PK: partitionKey,
                     SK: this.getSortKeyLatest(),
                     TYPE: TYPE_ENTRY_LATEST,
@@ -775,8 +722,7 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
                 ex.code || "REQUEST_CHANGES_ERROR",
                 {
                     entry,
-                    originalEntry,
-                    latestEntry
+                    originalEntry
                 }
             );
         }
@@ -787,11 +733,7 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
         model: CmsContentModel,
         args: CmsContentEntryStorageOperationsRequestReviewArgs
     ): Promise<CmsContentEntry> {
-        const {
-            entry,
-            originalEntryRevision: originalEntry,
-            latestEntryRevision: latestEntry
-        } = args;
+        const { entry, storageEntry, originalEntry } = args;
 
         const partitionKey = this.getPartitionKey(entry.id);
         /**
@@ -801,17 +743,23 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
          */
         const items = [
             this._entity.putBatch({
-                ...entry,
+                ...storageEntry,
                 PK: partitionKey,
                 SK: this.getSortKeyRevision(entry.version),
                 GSI1_PK: this.getGSIEntryPartitionKey(model),
                 GSI1_SK: this.getGSISortKey(entry)
             })
         ];
-        if (latestEntry.id === entry.id) {
+
+        /**
+         * We need the latest entry to see if something needs to be updated along side the request review one.
+         */
+        const latestStorageEntry = await this.getLatestRevisionByEntryId(model, entry.id);
+
+        if (latestStorageEntry.id === entry.id) {
             items.push(
                 this._entity.putBatch({
-                    ...entry,
+                    ...storageEntry,
                     PK: partitionKey,
                     SK: this.getSortKeyLatest(),
                     TYPE: TYPE_ENTRY_LATEST,
@@ -830,7 +778,7 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
                 ex.code || "REQUEST_REVIEW_ERROR",
                 {
                     entry,
-                    latestEntry,
+                    storageEntry,
                     originalEntry
                 }
             );
