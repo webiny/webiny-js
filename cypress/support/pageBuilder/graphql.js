@@ -18,6 +18,8 @@ export const LIST_PAGES = gql`
             listPages(where: $where, sort: $sort, limit: $limit, page: $page, search: $search) {
                 data {
                     id
+                    title
+                    path
                 }
                 error {
                     ${ERROR_FIELDS}
