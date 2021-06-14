@@ -27,7 +27,7 @@ export const encodeCursor = (cursor?: string): string | undefined => {
     if (!cursor) {
         return undefined;
     }
-    
+
     return Buffer.from(JSON.stringify(cursor)).toString("base64");
 };
 
@@ -35,6 +35,6 @@ export const decodeCursor = (cursor?: string): string | undefined => {
     if (!cursor) {
         return undefined;
     }
-    
+
     return JSON.parse(Buffer.from(cursor, "base64").toString("ascii"));
 };

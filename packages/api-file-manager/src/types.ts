@@ -1,23 +1,16 @@
-import { Context } from "@webiny/handler/types";
-import { ElasticSearchClientContext } from "@webiny/api-plugin-elastic-search-client/types";
-import { I18NContentContext } from "@webiny/api-i18n-content/types";
+import { BaseI18NContentContext } from "@webiny/api-i18n-content/types";
 import { FileStorage } from "./plugins/FileStorage";
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
 import { SecurityPermission } from "@webiny/api-security/types";
 
-export type FileManagerContext = Context<
-    TenancyContext,
-    I18NContentContext,
-    ElasticSearchClientContext,
-    {
-        fileManager: {
-            files: FilesCRUD;
-            settings: SettingsCRUD;
-            storage: FileStorage;
-            system: SystemCRUD;
-        };
-    }
->;
+export interface FileManagerContext extends TenancyContext, BaseI18NContentContext {
+    fileManager: {
+        files: FilesCRUD;
+        settings: SettingsCRUD;
+        storage: FileStorage;
+        system: SystemCRUD;
+    };
+}
 
 export interface FilePermission extends SecurityPermission {
     name: "fm.file";
@@ -25,7 +18,7 @@ export interface FilePermission extends SecurityPermission {
     own?: boolean;
 }
 
-export type File = {
+export interface File {
     id: string;
     key: string;
     size: number;
@@ -41,64 +34,71 @@ export type File = {
     tenant: string;
     locale: string;
     webinyVersion: string;
-};
+}
 
-export type CreatedBy = {
+export interface CreatedBy {
     id: string;
     displayName: string;
     type: string;
-};
+}
 
-export type Sort = {
-    SK: 1 | -1;
-};
-
-export type FileInput = {
+export interface FileInput {
     key: string;
     name: string;
     size: number;
     type: string;
     meta: Record<string, any>;
     tags: [string];
-};
+}
 
-export type FilesListOpts = {
+export interface FilesListOpts {
     search?: string;
     types?: string[];
     tags?: string[];
     ids?: string[];
     limit?: number;
     after?: string;
-};
+}
 
-export type FileListMeta = {
+export interface FileListMeta {
     cursor: string;
     totalCount: number;
-};
+}
 
-export type FilesCRUD = {
+interface FilesCrudListTagsWhere {
+    tag?: string;
+    tag_contains?: string;
+    tag_in?: string[];
+}
+interface FilesCrudListTagsParams {
+    where?: FilesCrudListTagsWhere;
+    limit?: number;
+    after?: string;
+}
+
+export interface FilesCRUD {
     getFile(id: string): Promise<File>;
     listFiles(opts?: FilesListOpts): Promise<[File[], FileListMeta]>;
-    listTags(): Promise<string[]>;
+    listTags(params?: FilesCrudListTagsParams): Promise<string[]>;
     createFile(data: FileInput): Promise<File>;
     updateFile(id: string, data: Partial<FileInput>): Promise<File>;
     deleteFile(id: string): Promise<boolean>;
     createFilesInBatch(data: FileInput[]): Promise<File[]>;
-};
+}
 
-export type SystemCRUD = {
+export interface SystemCRUD {
     getVersion(): Promise<string>;
     setVersion(version: string): Promise<void>;
     install(args: { srcPrefix: string }): Promise<boolean>;
     upgrade(version: string, data?: Record<string, any>): Promise<boolean>;
-};
+}
 
-export type FileManagerSettings = {
+export interface FileManagerSettings {
     key: string;
     uploadMinFileSize: number;
     uploadMaxFileSize: number;
     srcPrefix: string;
-};
+}
 
 export interface FileManagerSystem {
     version: string;
@@ -225,6 +225,8 @@ export interface FileManagerFilesStorageOperationsCreateBatchParams {
  * @category StorageOperations
  * @category FilesStorageOperations
  * @category FilesStorageOperationsParams
+ *
+ * TODO: determine if we are going to allow more detailed search.
  */
 export interface FileManagerFilesStorageOperationsListParamsWhere {
     // id?: string;
@@ -235,10 +237,7 @@ export interface FileManagerFilesStorageOperationsListParamsWhere {
     // tag_contains?: string;
     tag_in?: string[];
     search?: string;
-    createdBy?: {
-        id: string;
-        type: string;
-    };
+    createdBy?: string;
     locale?: string;
     tenant?: string;
     private?: boolean;
@@ -263,7 +262,7 @@ export interface FileManagerFilesStorageOperationsListParams {
 interface FileManagerFilesStorageOperationsListResponseListMeta {
     hasMoreItems: boolean;
     totalCount: number;
-    cursor?: string;
+    cursor: string;
 }
 export type FileManagerFilesStorageOperationsListResponse = [
     File[],
@@ -280,7 +279,7 @@ export type FileManagerFilesStorageOperationsTagsResponse = [
     FileManagerFilesStorageOperationsListResponseTagsMeta
 ];
 
-export interface FileManagerFilesStorageOperationsTagsParamsWhere {
+export interface FileManagerFilesStorageOperationsTagsParamsWhere extends FilesCrudListTagsWhere {
     locale: string;
     tenant?: string;
 }

@@ -19,6 +19,7 @@ import configurations from "~/operations/configurations";
 import lodashOmit from "lodash.omit";
 import lodashChunk from "lodash.chunk";
 import { decodeCursor, encodeCursor } from "~/operations/utils";
+import { ElasticSearchClientContext } from "@webiny/api-plugin-elastic-search-client/types";
 
 interface FileItem extends File {
     PK: string;
@@ -47,14 +48,14 @@ const cleanStorageFile = (file: File & Record<string, any>): File => {
 };
 
 export class FilesStorageOperations implements FileManagerFilesStorageOperations {
-    private readonly _context: FileManagerContext;
+    private readonly _context: any;
     private _partitionKeyPrefix: string;
     private readonly _table: Table;
     private readonly _entity: Entity<any>;
     private readonly _esEntity: Entity<any>;
     private _esIndex: string;
 
-    private get context(): FileManagerContext {
+    private get context(): FileManagerContext & ElasticSearchClientContext {
         return this._context;
     }
 
@@ -271,8 +272,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
         }
 
         if (where.createdBy) {
-            must.push({ term: { "createdBy.id.keyword": where.createdBy.id } });
-            must.push({ term: { "createdBy.type.keyword": where.createdBy.type } });
+            must.push({ term: { "createdBy.id.keyword": where.createdBy } });
         }
 
         if (where.type_in) {
@@ -358,7 +358,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             const tenant = security.getTenant();
             must.push({ term: { "tenant.keyword": tenant.id } });
         }
-        
+
         const body = {
             query: {
                 bool: {
@@ -371,9 +371,9 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
                     terms: { field: "tags.keyword" }
                 }
             },
-            search_after: decodeCursor(after),
+            search_after: decodeCursor(after)
         };
-        
+
         let response = undefined;
 
         try {
@@ -381,16 +381,15 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
                 ...esDefaults,
                 body
             });
-        } catch(ex) {
+        } catch (ex) {
             throw new WebinyError(
                 ex.message || "Error in the Elasticsearch query.",
                 ex.code || "ELASTICSEARCH_ERROR",
                 {
-                    body,
+                    body
                 }
             );
         }
-        
 
         const tags = response.body.aggregations.listTags.buckets.map(item => item.key) || [];
 

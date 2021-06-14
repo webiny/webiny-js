@@ -5,39 +5,17 @@ import Error from "@webiny/error";
 import {
     File,
     FileManagerContext,
-    FileManagerFilesStorageOperations,
     FileManagerFilesStorageOperationsListParamsWhere,
     FileManagerFilesStorageOperationsTagsParamsWhere,
-    FilePermission,
-    FilesCRUD
+    FilePermission
 } from "~/types";
-import defaults from "./utils/defaults";
-import { paginateBatch } from "./utils/paginateBatch";
-import { decodeCursor, encodeCursor } from "./utils/cursors";
-import getPKPrefix from "./utils/getPKPrefix";
 import createFileModel from "./utils/createFileModel";
 import checkBasePermissions from "./utils/checkBasePermissions";
+import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
+import { FilesStorageOperationsProviderPlugin } from "~/plugins/definitions";
+import WebinyError from "@webiny/error";
 
 const BATCH_CREATE_MAX_FILES = 20;
-
-const getFileDocForES = (
-    file: File & { [key: string]: any },
-    locale: string,
-    context: FileManagerContext
-) => ({
-    tenant: context.security.getTenant().id,
-    id: file.id,
-    createdOn: file.createdOn,
-    key: file.key,
-    size: file.size,
-    type: file.type,
-    name: file.name,
-    tags: file.tags,
-    createdBy: file.createdBy,
-    meta: file.meta,
-    locale,
-    webinyVersion: context.WEBINY_VERSION
-});
 
 /**
  * If permission is limited to "own" files only, check that current identity owns the file.
@@ -51,23 +29,31 @@ const checkOwnership = (file: File, permission: FilePermission, context: FileMan
     }
 };
 
-export default (context: FileManagerContext) => {
-    const { db, i18nContent, security } = context;
+export default new ContextPlugin<FileManagerContext>(async context => {
+    const { i18nContent, security } = context;
     const localeCode = i18nContent?.locale?.code;
 
-    const PK_FILE = id => `${getPKPrefix(context)}F#${id}`;
+    const pluginType = FilesStorageOperationsProviderPlugin.type;
 
-    let storageOperations: FileManagerFilesStorageOperations = undefined;
+    const providerPlugin = context.plugins
+        .byType<FilesStorageOperationsProviderPlugin>(pluginType)
+        .find(() => true);
 
-    return {
+    if (!providerPlugin) {
+        throw new WebinyError(`Missing "${pluginType}" plugin.`, "PLUGIN_NOT_FOUND", {
+            type: pluginType
+        });
+    }
+
+    const storageOperations = await providerPlugin.provide({
+        context
+    });
+
+    context.fileManager.files = {
         async getFile(id: string) {
             const permission = await checkBasePermissions(context, { rwd: "r" });
 
-            const [[file]] = await db.read<File>({
-                ...defaults.db,
-                query: { PK: PK_FILE(id), SK: "A" },
-                limit: 1
-            });
+            const file = await storageOperations.get(id);
 
             if (!file) {
                 throw new NotFoundError(`File with id "${id}" does not exists.`);
@@ -77,14 +63,16 @@ export default (context: FileManagerContext) => {
 
             return file;
         },
-        async createFile(data) {
+        async createFile(input) {
             await checkBasePermissions(context, { rwd: "w" });
             const identity = context.security.getIdentity();
             const tenant = security.getTenant();
 
             const FileModel = createFileModel();
-            const fileData = new FileModel().populate(data);
+            const fileData = new FileModel().populate(input);
             await fileData.validate();
+
+            const data = await fileData.toJSON();
 
             const id = mdbid();
 
@@ -97,119 +85,102 @@ export default (context: FileManagerContext) => {
                     displayName: identity.displayName,
                     type: identity.type
                 },
-                ...(await fileData.toJSON())
+                locale: localeCode,
+                webinyVersion: context.WEBINY_VERSION,
+                ...data
             };
 
-            // Save file to DB.
-            await db
-                .batch()
-                .create({
-                    ...defaults.db,
-                    data: {
-                        PK: PK_FILE(id),
-                        SK: "A",
-                        TYPE: "fm.file",
-                        ...file
+            try {
+                return await storageOperations.create({
+                    file
+                });
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not create a file.",
+                    ex.code || "CREATE_FILE_ERROR",
+                    {
+                        file
                     }
-                })
-                .create({
-                    ...defaults.esDb,
-                    data: {
-                        PK: PK_FILE(id),
-                        SK: "A",
-                        index: defaults.es(context).index,
-                        data: getFileDocForES(file, localeCode, context)
-                    }
-                })
-                .execute();
-
-            return file;
+                );
+            }
         },
-        async updateFile(id, data) {
+        async updateFile(id, input) {
             const permission = await checkBasePermissions(context, { rwd: "w" });
-            const FILE_PK = PK_FILE(id);
 
-            const [[file]] = await db.read<File>({
-                ...defaults.db,
-                query: { PK: FILE_PK, SK: "A" },
-                limit: 1
-            });
+            const original = await storageOperations.get(id);
 
-            if (!file) {
+            if (!original) {
                 throw new NotFoundError(`File with id "${id}" does not exists.`);
             }
 
-            checkOwnership(file, permission, context);
+            checkOwnership(original, permission, context);
 
             const FileModel = createFileModel(false);
-            const updatedFileData = new FileModel().populate(data);
+            const updatedFileData = new FileModel().populate(input);
             await updatedFileData.validate();
 
-            const updateFile = await updatedFileData.toJSON({ onlyDirty: true });
-            Object.assign(file, updateFile);
+            const data = await updatedFileData.toJSON({ onlyDirty: true });
 
-            await db
-                .batch()
-                .update({
-                    ...defaults.db,
-                    query: { PK: FILE_PK, SK: "A" },
-                    data: file
-                })
-                .update({
-                    ...defaults.esDb,
-                    query: {
-                        PK: FILE_PK,
-                        SK: "A"
-                    },
-                    data: {
-                        PK: FILE_PK,
-                        SK: "A",
-                        index: defaults.es(context).index,
-                        data: getFileDocForES(file, localeCode, context)
+            const file = {
+                ...original,
+                ...data,
+                webinyVersion: context.WEBINY_VERSION
+            };
+
+            try {
+                return await storageOperations.update({
+                    original,
+                    file
+                });
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not update a file.",
+                    ex.code || "UPDATE_FILE_ERROR",
+                    {
+                        original,
+                        file
                     }
-                })
-                .execute();
-
-            return file;
+                );
+            }
         },
         async deleteFile(id) {
             const permission = await checkBasePermissions(context, { rwd: "d" });
 
-            const file = await this.getFile(id);
+            const file = await storageOperations.get(id);
             if (!file) {
                 throw new NotFoundError(`File with id "${id}" does not exists.`);
             }
 
             checkOwnership(file, permission, context);
 
-            // Delete from DB.
-            await db
-                .batch()
-                .delete({
-                    ...defaults.db,
-                    query: { PK: PK_FILE(id), SK: "A" }
-                })
-                .delete({
-                    ...defaults.esDb,
-                    query: { PK: PK_FILE(id), SK: "A" }
-                })
-                .execute();
+            try {
+                await storageOperations.delete(id);
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not delete a file.",
+                    ex.code || "DELETE_FILE_ERROR",
+                    {
+                        id,
+                        file
+                    }
+                );
+            }
 
             return true;
         },
-        async createFilesInBatch(data) {
-            if (!Array.isArray(data)) {
+        async createFilesInBatch(inputs) {
+            if (!Array.isArray(inputs)) {
                 throw new Error(`"data" must be an array.`, "CREATE_FILES_NON_ARRAY");
             }
 
-            if (data.length === 0) {
+            if (inputs.length === 0) {
                 throw new Error(
                     `"data" argument must contain at least one file.`,
                     "CREATE_FILES_MIN_FILES"
                 );
             }
 
-            if (data.length > BATCH_CREATE_MAX_FILES) {
+            if (inputs.length > BATCH_CREATE_MAX_FILES) {
                 throw new Error(
                     `"data" argument must not contain more than ${BATCH_CREATE_MAX_FILES} files.`,
                     "CREATE_FILES_MAX_FILES"
@@ -227,75 +198,83 @@ export default (context: FileManagerContext) => {
             };
 
             const FileModel = createFileModel();
-            const { index } = defaults.es(context);
-            const files = [];
 
-            // Process files 12 by 12. This will create DynamoDB batches of 24 (1 file also has 1 ES record).
-            await paginateBatch(data, 10, async items => {
-                const batch = db.batch();
-                for (let i = 0; i < items.length; i++) {
-                    const fileInstance = new FileModel().populate(items[i]);
-                    await fileInstance.validate();
+            const files: File[] = [];
+            for (const input of inputs) {
+                const fileInstance = new FileModel().populate(input);
+                await fileInstance.validate();
+                const fileData: File = await fileInstance.toJSON();
+                files.push({
+                    ...fileData,
+                    id: mdbid(),
+                    tenant: tenant.id,
+                    createdBy,
+                    locale: localeCode,
+                    webinyVersion: context.WEBINY_VERSION
+                });
+            }
 
-                    const file = {
-                        ...(await fileInstance.toJSON()),
-                        id: mdbid(),
-                        tenant: tenant.id,
-                        createdBy
-                    };
-
-                    files.push(file);
-
-                    batch
-                        .create({
-                            data: {
-                                PK: PK_FILE(file.id),
-                                SK: "A",
-                                ...file
-                            }
-                        })
-                        .create({
-                            ...defaults.esDb,
-                            data: {
-                                PK: PK_FILE(file.id),
-                                SK: "A",
-                                index,
-                                data: getFileDocForES(file, localeCode, context)
-                            }
-                        });
-                }
-                await batch.execute();
-            });
-
-            return files;
+            try {
+                return await storageOperations.createBatch({
+                    files
+                });
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not create a batch of files.",
+                    ex.code || "CREATE_FILES_ERROR",
+                    {
+                        files
+                    }
+                );
+            }
         },
-        async listFiles(opts = {}) {
+        async listFiles(params = {}) {
             const permission = await checkBasePermissions(context, { rwd: "r" });
 
-            const { limit = 40, search = "", types = [], tags = [], ids = [], after = null } = opts;
+            const {
+                limit = 40,
+                search = "",
+                types = [],
+                tags = [],
+                ids = [],
+                after = null
+            } = params;
 
-            const { i18nContent, security } = context;
-            const identity = security.getIdentity();
+            const { i18nContent } = context;
 
             const where: FileManagerFilesStorageOperationsListParamsWhere = {
                 private: false,
                 locale: i18nContent.locale.code
             };
+            /**
+             * Always override the createdBy received from the user, if any.
+             */
             if (permission.own === true) {
-                where.createdBy = {
-                    id: identity.id,
-                    type: identity.type
-                };
+                const identity = context.security.getIdentity();
+                where.createdBy = identity.id;
             }
-            if (Array.isArray(types) && types.length) {
+            /**
+             * To have standardized where objects across the applications, we transform the types into type_in.
+             */
+            if (Array.isArray(types) && types.length > 0) {
                 where.type_in = types;
             }
+            /**
+             * TODO: determine the change of this part.
+             * Either assign search keyword to something meaningful or throw it out.
+             */
             if (search) {
                 where.search = search;
             }
+            /**
+             * Same as on types/type_in.
+             */
             if (Array.isArray(tags) && tags.length > 0) {
                 where.tag_in = tags.map(tag => tag.toLowerCase());
             }
+            /**
+             * Same as on types/type_in.
+             */
             if (Array.isArray(ids) && ids.length > 0) {
                 where.id_in = ids;
             }
@@ -306,46 +285,36 @@ export default (context: FileManagerContext) => {
                 limit
             });
         },
-        async listTags() {
+        async listTags({ after, limit }) {
             await checkBasePermissions(context);
             const { i18nContent } = context;
-            const esDefaults = defaults.es(context);
 
             const where: FileManagerFilesStorageOperationsTagsParamsWhere = {
                 locale: i18nContent.locale.code
             };
 
-            const must: any[] = [
-                {
-                    term: { "locale.keyword": i18nContent.locale.code }
-                }
-            ];
+            const params = {
+                where,
+                limit: limit || 10000,
+                after
+            };
 
-            // When ES index is shared between tenants, we need to filter records by tenant ID
-            const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
-            if (sharedIndex) {
-                const tenant = security.getTenant();
-                must.push({ term: { "tenant.keyword": tenant.id } });
-            }
-
-            const response = await context.elasticSearch.search({
-                ...esDefaults,
-                body: {
-                    query: {
-                        bool: {
-                            must: must
-                        }
-                    },
-                    size: 0,
-                    aggs: {
-                        listTags: {
-                            terms: { field: "tags.keyword" }
-                        }
+            try {
+                /**
+                 * There is a meta object on the second key.
+                 * TODO: use when changing GraphQL output of the tags.
+                 */
+                const [tags] = await storageOperations.tags(params);
+                return tags;
+            } catch (ex) {
+                throw new WebinyError(
+                    ex.message || "Could not search for tags.",
+                    ex.code || "FILE_TAG_SEARCH_ERROR",
+                    {
+                        params
                     }
-                }
-            });
-
-            return response.body.aggregations.listTags.buckets.map(item => item.key) || [];
+                );
+            }
         }
-    } as FilesCRUD;
-};
+    };
+});

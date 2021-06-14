@@ -1,11 +1,7 @@
 import { withFields, string, number, onSet } from "@commodo/fields";
 import { validation } from "@webiny/validation";
-import defaults from "./utils/defaults";
-import { FileManagerContext, FileManagerSettings, SettingsCRUD } from "~/types";
-import {
-    SettingsStorageOperationsProviderPlugin,
-    SystemStorageOperationsProviderPlugin
-} from "~/plugins/definitions";
+import { FileManagerContext, FileManagerSettings } from "~/types";
+import { SettingsStorageOperationsProviderPlugin } from "~/plugins/definitions";
 import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 
@@ -38,7 +34,7 @@ const UpdateDataModel = withFields({
 })();
 
 export default new ContextPlugin<FileManagerContext>(async context => {
-    const pluginType = SystemStorageOperationsProviderPlugin.type;
+    const pluginType = SettingsStorageOperationsProviderPlugin.type;
 
     const providerPlugin = context.plugins
         .byType<SettingsStorageOperationsProviderPlugin>(pluginType)
