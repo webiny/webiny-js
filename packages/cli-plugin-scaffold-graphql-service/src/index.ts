@@ -9,7 +9,6 @@ import chalk from "chalk";
 import indentString from "indent-string";
 import { CliCommandScaffoldTemplate } from "@webiny/cli-plugin-scaffold/types";
 import prettier from "prettier";
-import glob from "fast-glob";
 import {
     createScaffoldsIndexFile,
     updateScaffoldsIndexFile,
@@ -75,29 +74,32 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 singular: pluralize.singular(Case.camel(input.dataModelName))
             };
 
-            const scaffoldsFolder = path.join(input.pluginsFolderPath, "scaffolds");
-            const newCodeFolder = path.join(
-                scaffoldsFolder,
+            const scaffoldsPath = path.join(input.pluginsFolderPath, "scaffolds");
+            const scaffoldsIndexPath = path.join(scaffoldsPath, "index.ts");
+            const newCodePath = path.join(
+                scaffoldsPath,
                 "graphql",
                 Case.camel(dataModelName.plural)
             );
             const templateFolderPath = path.join(__dirname, "template");
 
-            fs.mkdirSync(newCodeFolder, { recursive: true });
-
-            await ncp(templateFolderPath, newCodeFolder);
+            fs.mkdirSync(newCodePath, { recursive: true });
+            await ncp(templateFolderPath, newCodePath);
 
             // Replace generic "Target" with received "dataModelName" argument.
             const codeReplacements = [
                 { find: "targetDataModels", replaceWith: Case.camel(dataModelName.plural) },
                 { find: "TargetDataModel", replaceWith: Case.pascal(dataModelName.singular) },
-                { find: "targetDataModelDataModels", replaceWith: Case.camel(dataModelName.plural) },
+                {
+                    find: "targetDataModelDataModels",
+                    replaceWith: Case.camel(dataModelName.plural)
+                },
                 { find: "TargetDataModels", replaceWith: Case.pascal(dataModelName.plural) },
                 { find: "TARGET_DATA_MODELS", replaceWith: Case.constant(dataModelName.plural) },
                 { find: "TARGET_DATA_MODEL", replaceWith: Case.constant(dataModelName.singular) }
             ];
 
-            replaceInPath(path.join(newCodeFolder, "/**/*.ts"), codeReplacements);
+            replaceInPath(path.join(newCodePath, "/**/*.ts"), codeReplacements);
 
             const fileNameReplacements = [
                 {
@@ -124,14 +126,19 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             for (const fileNameReplacement of fileNameReplacements) {
                 fs.renameSync(
-                    path.join(newCodeFolder, fileNameReplacement.find),
-                    path.join(newCodeFolder, fileNameReplacement.replaceWith)
+                    path.join(newCodePath, fileNameReplacement.find),
+                    path.join(newCodePath, fileNameReplacement.replaceWith)
                 );
             }
 
-            createScaffoldsIndexFile(scaffoldsFolder);
+            createScaffoldsIndexFile(scaffoldsPath);
+            await updateScaffoldsIndexFile({
+                scaffoldsIndexPath,
+                importName: dataModelName.plural,
+                importPath: `./graphql/${dataModelName.plural}`
+            });
 
-            await formatCode(["**/*.ts"], { cwd: newCodeFolder });
+            await formatCode(["**/*.ts"], { cwd: newCodePath });
 
             return;
             // Format all generated code.

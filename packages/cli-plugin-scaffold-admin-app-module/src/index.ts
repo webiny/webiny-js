@@ -9,7 +9,11 @@ import { replaceInPath } from "replace-in-path";
 import chalk from "chalk";
 import indentString from "indent-string";
 
-import { createScaffoldsIndexFile, formatCode } from "@webiny/cli-plugin-scaffold/utils";
+import {
+    createScaffoldsIndexFile,
+    updateScaffoldsIndexFile,
+    formatCode
+} from "@webiny/cli-plugin-scaffold/utils";
 
 const ncp = util.promisify(ncpBase.ncp);
 
@@ -111,17 +115,19 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 singular: pluralize.singular(Case.camel(input.dataModelName))
             };
 
-            const scaffoldsFolder = path.join(input.pluginsFolderPath, "scaffolds");
-            const newCodeFolder = path.join(
-                scaffoldsFolder,
+            const scaffoldsPath = path.join(input.pluginsFolderPath, "scaffolds");
+            const scaffoldsIndexPath = path.join(scaffoldsPath, "index.ts");
+            const newCodePath = path.join(
+                scaffoldsPath,
                 "admin",
                 Case.camel(dataModelName.plural)
             );
+
             const templateFolderPath = path.join(__dirname, "template");
 
-            fs.mkdirSync(newCodeFolder, { recursive: true });
+            fs.mkdirSync(newCodePath, { recursive: true });
 
-            await ncp(templateFolderPath, newCodeFolder);
+            await ncp(templateFolderPath, newCodePath);
 
             // Replace generic "Target" with received "dataModelName" argument.
             const codeReplacements = [
@@ -136,8 +142,8 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 { find: "Target Data Model", replaceWith: Case.title(dataModelName.singular) }
             ];
 
-            replaceInPath(path.join(newCodeFolder, "/**/*.ts"), codeReplacements);
-            replaceInPath(path.join(newCodeFolder, "/**/*.tsx"), codeReplacements);
+            replaceInPath(path.join(newCodePath, "/**/*.ts"), codeReplacements);
+            replaceInPath(path.join(newCodePath, "/**/*.tsx"), codeReplacements);
 
             const fileNameReplacements = [
                 {
@@ -161,14 +167,19 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             for (const fileNameReplacement of fileNameReplacements) {
                 fs.renameSync(
-                    path.join(newCodeFolder, fileNameReplacement.find),
-                    path.join(newCodeFolder, fileNameReplacement.replaceWith)
+                    path.join(newCodePath, fileNameReplacement.find),
+                    path.join(newCodePath, fileNameReplacement.replaceWith)
                 );
             }
 
-            createScaffoldsIndexFile(scaffoldsFolder);
+            createScaffoldsIndexFile(scaffoldsPath);
+            await updateScaffoldsIndexFile({
+                scaffoldsIndexPath,
+                importName: dataModelName.plural,
+                importPath: `./admin/${dataModelName.plural}`
+            });
 
-            await formatCode(["**/*.ts", "**/*.tsx"], { cwd: newCodeFolder });
+            await formatCode(["**/*.ts", "**/*.tsx"], { cwd: newCodePath });
 
             /*const { dataModelName, location, packageName: initialPackageName } = input;
 
