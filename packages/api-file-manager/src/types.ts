@@ -120,8 +120,14 @@ export type SettingsCRUD = {
  * @category SystemStorageOperationsParams
  */
 export interface FileManagerSystemStorageOperationsUpdateParams {
+    /**
+     * The system data to be updated.
+     */
     original: FileManagerSystem;
-    data: Partial<FileManagerSystem>;
+    /**
+     * The system data with the updated fields.
+     */
+    data: FileManagerSystem;
 }
 /**
  * @category StorageOperations
@@ -129,6 +135,9 @@ export interface FileManagerSystemStorageOperationsUpdateParams {
  * @category SystemStorageOperationsParams
  */
 export interface FileManagerSystemStorageOperationsCreateParams {
+    /**
+     * The system fields.
+     */
     data: FileManagerSystem;
 }
 
@@ -157,7 +166,13 @@ export interface FileManagerSystemStorageOperations {
  * @category SettingsStorageOperationsParams
  */
 export interface FileManagerSettingsStorageOperationsUpdateParams {
+    /**
+     * Original settings to be updated.
+     */
     original: FileManagerSettings;
+    /**
+     * The settings with the updated fields.
+     */
     data: FileManagerSettings;
 }
 /**
@@ -166,6 +181,9 @@ export interface FileManagerSettingsStorageOperationsUpdateParams {
  * @category SettingsStorageOperationsParams
  */
 export interface FileManagerSettingsStorageOperationsCreateParams {
+    /**
+     * The settings fields.
+     */
     data: FileManagerSettings;
 }
 
@@ -225,23 +243,24 @@ export interface FileManagerFilesStorageOperationsCreateBatchParams {
  * @category StorageOperations
  * @category FilesStorageOperations
  * @category FilesStorageOperationsParams
- *
- * TODO: determine if we are going to allow more detailed search.
  */
 export interface FileManagerFilesStorageOperationsListParamsWhere {
-    // id?: string;
+    id?: string;
     id_in?: string[];
-    // name?: string;
-    // name_contains?: string;
-    // tag?: string;
-    // tag_contains?: string;
+    name?: string;
+    name_contains?: string;
+    tag?: string;
+    tag_contains?: string;
     tag_in?: string[];
+    /**
+     * TODO: determine if to remove the search and use name or tag params.
+     */
     search?: string;
     createdBy?: string;
     locale?: string;
     tenant?: string;
     private?: boolean;
-    // type?: string;
+    type?: string;
     type_in?: string[];
 }
 /**
@@ -254,29 +273,25 @@ export interface FileManagerFilesStorageOperationsListParams {
     limit: number;
     after: string | null;
 }
+
 /**
  * @category StorageOperations
  * @category FilesStorageOperations
  * @category FilesStorageOperationsParams
  */
-interface FileManagerFilesStorageOperationsListResponseListMeta {
+interface FileManagerFilesStorageOperationsListResponseMeta {
     hasMoreItems: boolean;
     totalCount: number;
     cursor: string;
 }
 export type FileManagerFilesStorageOperationsListResponse = [
     File[],
-    FileManagerFilesStorageOperationsListResponseListMeta
+    FileManagerFilesStorageOperationsListResponseMeta
 ];
 
-interface FileManagerFilesStorageOperationsListResponseTagsMeta {
-    hasMoreItems: boolean;
-    totalCount: number;
-    cursor?: string;
-}
 export type FileManagerFilesStorageOperationsTagsResponse = [
     string[],
-    FileManagerFilesStorageOperationsListResponseTagsMeta
+    FileManagerFilesStorageOperationsListResponseMeta
 ];
 
 export interface FileManagerFilesStorageOperationsTagsParamsWhere extends FilesCrudListTagsWhere {
@@ -290,7 +305,7 @@ export interface FileManagerFilesStorageOperationsTagsParamsWhere extends FilesC
  */
 export interface FileManagerFilesStorageOperationsTagsParams {
     where: FileManagerFilesStorageOperationsTagsParamsWhere;
-    limit?: number;
+    limit: number;
     after?: string;
 }
 /**

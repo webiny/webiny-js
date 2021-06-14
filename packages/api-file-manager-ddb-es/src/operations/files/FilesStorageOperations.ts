@@ -9,6 +9,7 @@ import {
     FileManagerFilesStorageOperationsTagsResponse,
     FileManagerFilesStorageOperationsUpdateParams
 } from "@webiny/api-file-manager/types";
+import { Client } from "@elastic/elasticsearch";
 import { Entity, Table } from "dynamodb-toolbox";
 import WebinyError from "@webiny/error";
 import defineTable from "~/definitions/table";
@@ -19,7 +20,6 @@ import configurations from "~/operations/configurations";
 import lodashOmit from "lodash.omit";
 import lodashChunk from "lodash.chunk";
 import { decodeCursor, encodeCursor } from "~/operations/utils";
-import { ElasticSearchClientContext } from "@webiny/api-plugin-elastic-search-client/types";
 
 interface FileItem extends File {
     PK: string;
@@ -55,7 +55,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
     private readonly _esEntity: Entity<any>;
     private _esIndex: string;
 
-    private get context(): FileManagerContext & ElasticSearchClientContext {
+    private get context(): FileManagerContext {
         return this._context;
     }
 
@@ -65,6 +65,17 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             this._esIndex = esIndex;
         }
         return this._esIndex;
+    }
+
+    private get esClient() {
+        const ctx = this.context as any;
+        if (!ctx.elasticSearch) {
+            throw new WebinyError(
+                "Missing Elasticsearch client on the context.",
+                "ELASTICSEARCH_CLIENT_ERROR"
+            );
+        }
+        return ctx.elasticSearch as Client;
     }
 
     private get partitionKeyPrefix(): string {
@@ -251,7 +262,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
     public async list(
         params: FileManagerFilesStorageOperationsListParams
     ): Promise<FileManagerFilesStorageOperationsListResponse> {
-        const { elasticSearch, security } = this.context;
+        const { security } = this.context;
 
         const { where, limit, after } = params;
 
@@ -317,10 +328,22 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             sort: [{ "id.keyword": "desc" }]
         };
 
-        const response = await elasticSearch.search({
-            ...configurations.es(this.context),
-            body
-        });
+        let response;
+        try {
+            response = await this.esClient.search({
+                ...configurations.es(this.context),
+                body
+            });
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not search for the files.",
+                ex.code || "FILE_LIST_ERROR",
+                {
+                    where,
+                    esBody: body
+                }
+            );
+        }
 
         const { hits, total } = response.body.hits;
         const files = hits.map(item => item._source);
@@ -342,8 +365,8 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
     public async tags(
         params: FileManagerFilesStorageOperationsTagsParams
     ): Promise<FileManagerFilesStorageOperationsTagsResponse> {
-        const { security, elasticSearch } = this.context;
-        const { where, after, limit } = params;
+        const { security } = this.context;
+        const { where, limit } = params;
 
         const esDefaults = configurations.es(this.context);
 
@@ -370,14 +393,14 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
                 listTags: {
                     terms: { field: "tags.keyword" }
                 }
-            },
-            search_after: decodeCursor(after)
+            }
+            // search_after: decodeCursor(after)
         };
 
         let response = undefined;
 
         try {
-            response = await elasticSearch.search({
+            response = await this.esClient.search({
                 ...esDefaults,
                 body
             });
@@ -394,16 +417,16 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
         const tags = response.body.aggregations.listTags.buckets.map(item => item.key) || [];
 
         let hasMoreItems = false;
-        if (tags.length > limit + 1) {
+        const totalCount = tags.length;
+        if (totalCount > limit + 1) {
             tags.pop();
             hasMoreItems = true;
         }
 
         const meta = {
             hasMoreItems,
-            // totalCount: total.value,
-            totalCount: tags.length
-            // cursor: tags.length > 0 ? encodeCursor(hits[files.length - 1].sort) : null
+            totalCount,
+            cursor: null //tags.length > 0 ? encodeCursor(hits[files.length - 1].sort) : null
         };
 
         return [tags, meta];
