@@ -13,6 +13,7 @@ import { simulateStream } from "@webiny/project-utils/testing/dynamodb";
 import dynamoToElastic from "@webiny/api-dynamodb-to-elasticsearch/handler";
 import { Client } from "@elastic/elasticsearch";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
+import fileManagerDdbEsPlugins from "@webiny/api-file-manager-ddb-es";
 import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
 
 import { INSTALL, IS_INSTALLED } from "./graphql/install";
@@ -103,6 +104,8 @@ export default ({ permissions, identity, tenant } = {}) => {
             logTable: "PageBuilderLogs",
             driver: new DynamoDbDriver({ documentClient })
         }),
+        // TODO figure out a way to load these automatically
+        fileManagerDdbEsPlugins(),
         elasticSearchContext,
         apolloServerPlugins(),
         securityPlugins(),

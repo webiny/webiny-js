@@ -21,6 +21,7 @@
     "../db-dynamodb",
     "../error",
     "../api-file-manager",
+    "../api-file-manager-ddb-es",
     "../api-security-tenancy",
     "../api-prerendering-service"
   ],

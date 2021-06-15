@@ -7637,7 +7637,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-file-manager-ddb-es@workspace:packages/api-file-manager-ddb-es":
+"@webiny/api-file-manager-ddb-es@^5.8.0, @webiny/api-file-manager-ddb-es@workspace:packages/api-file-manager-ddb-es":
   version: 0.0.0-use.local
   resolution: "@webiny/api-file-manager-ddb-es@workspace:packages/api-file-manager-ddb-es"
   dependencies:
@@ -7989,6 +7989,7 @@ __metadata:
     "@types/puppeteer": ^5.4.2
     "@webiny/api-dynamodb-to-elasticsearch": ^5.8.0
     "@webiny/api-file-manager": ^5.8.0
+    "@webiny/api-file-manager-ddb-es": ^5.8.0
     "@webiny/api-i18n": ^5.8.0
     "@webiny/api-i18n-content": ^5.8.0
     "@webiny/api-plugin-elastic-search-client": ^5.8.0
@@ -10462,6 +10463,7 @@ __metadata:
   resolution: "api-graphql@workspace:api/code/graphql"
   dependencies:
     "@webiny/api-file-manager": ^5.8.0-beta.0
+    "@webiny/api-file-manager-ddb-es": ^5.8.0
     "@webiny/api-file-manager-s3": ^5.8.0-beta.0
     "@webiny/api-form-builder": ^5.8.0-beta.0
     "@webiny/api-headless-cms": ^5.8.0-beta.0

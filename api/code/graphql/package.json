@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "@webiny/api-file-manager": "^5.8.0-beta.0",
+    "@webiny/api-file-manager-ddb-es": "^5.8.0",
     "@webiny/api-file-manager-s3": "^5.8.0-beta.0",
     "@webiny/api-form-builder": "^5.8.0-beta.0",
     "@webiny/api-headless-cms": "^5.8.0-beta.0",

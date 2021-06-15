@@ -59,6 +59,9 @@
       "path": "../api-file-manager"
     },
     {
+      "path": "../api-file-manager-ddb-es"
+    },
+    {
       "path": "../api-plugin-elastic-search-client"
     },
     {
@@ -70,6 +73,8 @@
       "~/*": ["./src/*"],
       "@webiny/api-file-manager/*": ["../api-file-manager/src/*"],
       "@webiny/api-file-manager": ["../api-file-manager/src"],
+      "@webiny/api-file-manager-ddb-es/*": ["../api-file-manager-ddb-es/src/*"],
+      "@webiny/api-file-manager-ddb-es": ["../api-file-manager-ddb-es/src"],
       "@webiny/api-i18n/*": ["../api-i18n/src/*"],
       "@webiny/api-i18n": ["../api-i18n/src"],
       "@webiny/api-i18n-content/*": ["../api-i18n-content/src/*"],
