@@ -1,6 +1,5 @@
 const os = require("os");
 const path = require("path");
-const fs = require("fs");
 const readJson = require("load-json-file");
 const writeJson = require("write-json-file");
 
