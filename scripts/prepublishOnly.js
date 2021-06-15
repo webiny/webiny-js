@@ -3,6 +3,7 @@ const get = require("lodash.get");
 const fs = require("fs-extra");
 const loadJson = require("load-json-file");
 const writeJson = require("write-json-file");
+const resolvePackageVersion = require("./utils/resolvePackageVersion");
 
 (async () => {
     // Copy package.json files
@@ -60,11 +61,14 @@ const writeJson = require("write-json-file");
                     return;
                 }
 
-                const pkgJsonPath = require.resolve(`${key}/package.json`, {
-                    paths: [distDirectory]
+                lockPackageJson.dependencies[key] = resolvePackageVersion(key, {
+                    cwd: distDirectory
                 });
-                const { version } = require(pkgJsonPath);
-                lockPackageJson.dependencies[key] = version;
+
+                if (key === "graphql-scalars") {
+                    console.log(lockPackageJson.dependencies[key]);
+                    process.exit();
+                }
             });
 
             await writeJson(distPackageJson, lockPackageJson);
