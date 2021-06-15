@@ -43,7 +43,7 @@
     "@rmwc/snackbar": "^5.6.0",
     "@rmwc/switch": "^5.6.0",
     "@rmwc/tabs": "^5.6.0",
-    "@rmwc/textfield": "file:./rmwc/textfield",
+    "@rmwc/textfield": "portal:./rmwc/textfield",
     "@rmwc/top-app-bar": "^5.6.0",
     "@rmwc/types": "^5.6.0",
     "@rmwc/typography": "^5.6.0",
