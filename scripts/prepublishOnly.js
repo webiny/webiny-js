@@ -64,11 +64,6 @@ const resolvePackageVersion = require("./utils/resolvePackageVersion");
                 lockPackageJson.dependencies[key] = resolvePackageVersion(key, {
                     cwd: distDirectory
                 });
-
-                if (key === "graphql-scalars") {
-                    console.log(lockPackageJson.dependencies[key]);
-                    process.exit();
-                }
             });
 
             await writeJson(distPackageJson, lockPackageJson);
