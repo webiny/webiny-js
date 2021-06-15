@@ -20,6 +20,7 @@ export const LIST_PAGES = gql`
                     id
                     title
                     path
+                    status
                 }
                 error {
                     ${ERROR_FIELDS}

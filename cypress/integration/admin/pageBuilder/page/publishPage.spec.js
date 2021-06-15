@@ -55,7 +55,9 @@ context(
             cy.visit("/page-builder/pages");
             // Select page
             cy.findByTestId("default-data-list").within(() => {
-                cy.findByText(pageTitle1).click({ force: true });
+                cy.findByText(pageTitle1)
+                    .trigger("mouseover") // This is needed for click to work in CI
+                    .click({ force: true });
             });
             // Create new revision
             cy.findByTestId("pb-page-details").within(() => {
