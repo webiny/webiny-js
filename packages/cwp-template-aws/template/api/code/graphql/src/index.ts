@@ -8,6 +8,7 @@ import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import elasticSearch from "@webiny/api-plugin-elastic-search-client";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
+import fileManagerDynamoDbElasticPlugins from "@webiny/api-file-manager-ddb-es";
 import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
 import logsPlugins from "@webiny/handler-logs";
 
@@ -38,6 +39,7 @@ export const handler = createHandler({
         i18nPlugins(),
         i18nContentPlugins(),
         fileManagerPlugins(),
+        fileManagerDynamoDbElasticPlugins(),
         // Add File storage S3 plugin for API file manager.
         fileManagerS3(),
         prerenderingServicePlugins({
