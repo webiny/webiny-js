@@ -1,3 +1,5 @@
+import uniqid from "uniqid";
+
 const deleteFile = () => {
     // Open file details
     cy.findByTestId("fm-list-wrapper").within(() => {
@@ -77,8 +79,10 @@ context("File Manager - Update file details", () => {
         // Open "File Manage" view
         cy.findByTestId("admin-drawer-footer-menu-file-manager").click();
 
-        // Drop file
-        cy.findByTestId("fm-list-wrapper").dropFiles(files);
+        // Drop files
+        files.forEach(({ fileName, type }) => {
+            cy.findByTestId("fm-list-wrapper").dropFile(fileName, type);
+        });
         cy.findByText("File upload complete.").should("exist");
     });
 
@@ -101,8 +105,8 @@ context("File Manager - Update file details", () => {
 
     it("should update file's name and search by name", () => {
         // Edit files name one by one
-        const newFileName1 = "File 1";
-        const newFileName2 = "File 2";
+        const newFileName1 = uniqid("File ");
+        const newFileName2 = uniqid("File ");
 
         // Select a file and open its details
         cy.findByTestId("fm-list-wrapper").within(() => {
