@@ -1,1 +1,1 @@
-# @webiny/api-plugin-security-cognito
+# @webiny/api-security-admin-users-cognito
