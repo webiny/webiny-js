@@ -4,7 +4,7 @@ import { IndexPageDataPlugin } from "~/plugins/IndexPageDataPlugin";
 export const getESPageData = (context: PbContext, page) => {
     return {
         __type: "page",
-        tenant: context.security.getTenant().id,
+        tenant: context.tenancy.getCurrentTenant().id,
         webinyVersion: context.WEBINY_VERSION,
         id: page.id,
         pid: page.pid,

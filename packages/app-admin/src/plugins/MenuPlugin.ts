@@ -2,12 +2,14 @@ import * as React from "react";
 import { Plugin } from "@webiny/plugins";
 import { Menu, Item, Section } from "./menu/Navigation/components";
 
+interface Props {
+    Menu: typeof Menu;
+    Section: typeof Section;
+    Item: typeof Item;
+}
+
 interface Config {
-    render(props: {
-        Menu: typeof Menu;
-        Section: typeof Section;
-        Item: typeof Item;
-    }): React.ReactNode;
+    render(props: Props): React.ReactNode;
     order?: number;
 }
 

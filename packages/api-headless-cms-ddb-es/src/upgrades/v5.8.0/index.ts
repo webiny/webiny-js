@@ -262,7 +262,7 @@ export default (): UpgradePlugin<CmsContext> => ({
                     entryRecords[entryId] = {
                         id: source.id,
                         entryId,
-                        tenant: context.security.getTenant().id,
+                        tenant: context.tenancy.getCurrentTenant().id,
                         locale: localeCode
                     };
                 }

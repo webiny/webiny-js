@@ -17,7 +17,7 @@ const getFileDocForES = (
     locale: string,
     context: FileManagerContext
 ) => ({
-    tenant: context.security.getTenant().id,
+    tenant: context.tenancy.getCurrentTenant().id,
     id: file.id,
     createdOn: file.createdOn,
     key: file.key,
@@ -44,7 +44,7 @@ const checkOwnership = (file: File, permission: FilePermission, context: FileMan
 };
 
 export default (context: FileManagerContext) => {
-    const { db, i18nContent, security } = context;
+    const { db, i18nContent, tenancy } = context;
     const localeCode = i18nContent?.locale?.code;
 
     const PK_FILE = id => `${getPKPrefix(context)}F#${id}`;
@@ -70,7 +70,7 @@ export default (context: FileManagerContext) => {
         async createFile(data) {
             await checkBasePermissions(context, { rwd: "w" });
             const identity = context.security.getIdentity();
-            const tenant = security.getTenant();
+            const tenant = tenancy.getCurrentTenant();
 
             const FileModel = createFileModel();
             const fileData = new FileModel().populate(data);
@@ -209,7 +209,7 @@ export default (context: FileManagerContext) => {
             await checkBasePermissions(context, { rwd: "w" });
 
             const identity = context.security.getIdentity();
-            const tenant = context.security.getTenant();
+            const tenant = context.tenancy.getCurrentTenant();
             const createdBy = {
                 id: identity.id,
                 displayName: identity.displayName,
@@ -262,7 +262,7 @@ export default (context: FileManagerContext) => {
         async listFiles(opts = {}) {
             const permission = await checkBasePermissions(context, { rwd: "r" });
 
-            const { i18nContent, security, elasticSearch } = context;
+            const { i18nContent, security, elasticSearch, tenancy } = context;
             const identity = security.getIdentity();
             const esDefaults = defaults.es(context);
 
@@ -278,7 +278,7 @@ export default (context: FileManagerContext) => {
             // When ES index is shared between tenants, we need to filter records by tenant ID
             const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
             if (sharedIndex) {
-                const tenant = security.getTenant();
+                const tenant = tenancy.getCurrentTenant();
                 must.push({ term: { "tenant.keyword": tenant.id } });
             }
 
@@ -352,7 +352,7 @@ export default (context: FileManagerContext) => {
         },
         async listTags() {
             await checkBasePermissions(context);
-            const { i18nContent } = context;
+            const { i18nContent, tenancy } = context;
             const esDefaults = defaults.es(context);
 
             const must: any = [
@@ -364,7 +364,7 @@ export default (context: FileManagerContext) => {
             // When ES index is shared between tenants, we need to filter records by tenant ID
             const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
             if (sharedIndex) {
-                const tenant = security.getTenant();
+                const tenant = tenancy.getCurrentTenant();
                 must.push({ term: { "tenant.keyword": tenant.id } });
             }
 

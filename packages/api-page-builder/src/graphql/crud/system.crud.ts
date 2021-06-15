@@ -13,8 +13,8 @@ import { InstallationPlugin } from "~/plugins/InstallationPlugin";
 export default {
     type: "context",
     apply(context: PbContext) {
-        const { security, db } = context;
-        const keys = () => ({ PK: `T#${security.getTenant().id}#SYSTEM`, SK: "PB" });
+        const { tenancy, db } = context;
+        const keys = () => ({ PK: `T#${tenancy.getCurrentTenant().id}#SYSTEM`, SK: "PB" });
 
         context.pageBuilder = {
             ...context.pageBuilder,
@@ -32,7 +32,7 @@ export default {
                         const [[oldInstall]] = await db.read({
                             ...defaults.db,
                             query: {
-                                PK: `T#${security.getTenant().id}#PB#SETTINGS`,
+                                PK: `T#${tenancy.getCurrentTenant().id}#PB#SETTINGS`,
                                 SK: "install"
                             }
                         });

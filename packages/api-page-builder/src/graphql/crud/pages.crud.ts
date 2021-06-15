@@ -334,7 +334,7 @@ const plugin: ContextPlugin<PbContext> = {
                     // When ES index is shared between tenants, we need to filter records by tenant ID
                     const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
                     if (sharedIndex) {
-                        const tenant = context.security.getTenant();
+                        const tenant = context.tenancy.getCurrentTenant();
                         query = {
                             bool: {
                                 filter: [{ term: { "tenant.keyword": tenant.id } }]
@@ -423,7 +423,7 @@ const plugin: ContextPlugin<PbContext> = {
                         id,
                         pid,
                         locale: context.i18nContent.getLocale().code,
-                        tenant: context.security.getTenant().id,
+                        tenant: context.tenancy.getCurrentTenant().id,
                         editor: DEFAULT_EDITOR,
                         category: category.slug,
                         title,
@@ -1482,14 +1482,14 @@ const plugin: ContextPlugin<PbContext> = {
                             defaults?.prerendering?.meta,
                             current?.prerendering?.meta,
                             {
-                                tenant: context.security.getTenant().id,
+                                tenant: context.tenancy.getCurrentTenant().id,
                                 locale: i18nContent.getLocale().code
                             }
                         );
 
                         const { paths, tags } = args;
 
-                        const dbNamespace = "T#" + context.security.getTenant().id;
+                        const dbNamespace = "T#" + context.tenancy.getCurrentTenant().id;
 
                         if (Array.isArray(paths)) {
                             await context.prerenderingServiceClient.render(
@@ -1547,7 +1547,7 @@ const plugin: ContextPlugin<PbContext> = {
 
                         const { paths, tags } = args;
 
-                        const dbNamespace = "T#" + context.security.getTenant().id;
+                        const dbNamespace = "T#" + context.tenancy.getCurrentTenant().id;
 
                         if (Array.isArray(paths)) {
                             await context.prerenderingServiceClient.flush(

@@ -72,7 +72,7 @@ const generateSchema = async (args: Args): Promise<GraphQLSchema> => {
 // depending on the schemaId created from type and locale parameters
 const getSchema = async (args: Args): Promise<GraphQLSchema> => {
     const { context, type, locale } = args;
-    const tenantId = context.security.getTenant().id;
+    const tenantId = context.tenancy.getCurrentTenant().id;
     const id = `${tenantId}#${type}#${locale.code}`;
 
     const cacheKey = await generateCacheKey(args);

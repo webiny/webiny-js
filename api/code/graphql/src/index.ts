@@ -3,6 +3,7 @@ import { createHandler } from "@webiny/handler-aws";
 import graphqlPlugins from "@webiny/handler-graphql";
 import i18nPlugins from "@webiny/api-i18n/graphql";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
+import adminUsersPlugins from "@webiny/api-security-admin-users";
 import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
 import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
 import dbPlugins from "@webiny/handler-db";
@@ -48,6 +49,7 @@ export const handler = createHandler({
                 }
             }
         }),
+        adminUsersPlugins(),
         pageBuilderPlugins(),
         formBuilderPlugins(),
         headlessCmsPlugins(),

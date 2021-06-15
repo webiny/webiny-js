@@ -8,13 +8,19 @@
       "path": "../../../packages/api-security"
     },
     {
+      "path": "../../../packages/api-security-admin-users"
+    },
+    {
+      "path": "../../../packages/api-security-cognito-authentication"
+    },
+    {
       "path": "../../../packages/api-i18n-content"
     },
     {
       "path": "../../../packages/api-page-builder"
     },
     {
-      "path": "../../../packages/api-security-tenancy"
+      "path": "../../../packages/api-tenancy"
     },
     {
       "path": "../../../packages/api-headless-cms"
@@ -30,9 +36,6 @@
     },
     {
       "path": "../../../packages/api-plugin-elastic-search-client"
-    },
-    {
-      "path": "../../../packages/api-plugin-security-cognito"
     },
     {
       "path": "../../../packages/db-dynamodb"
@@ -52,5 +55,21 @@
     {
       "path": "../../../packages/handler-graphql"
     }
-  ]
+  ],
+  "compilerOptions": {
+    "paths": {
+      "@webiny/handler-aws/*": ["../../../packages/handler-aws/src/*"],
+      "@webiny/handler-aws": ["../../../packages/handler-aws/src"],
+      "@webiny/api-security/*": ["../../../packages/api-security/src/*"],
+      "@webiny/api-security": ["../../../packages/api-security/src"],
+      "@webiny/api-tenancy/*": ["../../../packages/api-tenancy/src/*"],
+      "@webiny/api-tenancy": ["../../../packages/api-tenancy/src"],
+      "@webiny/api-security-admin-users/*": ["../../../packages/api-security-admin-users/src/*"],
+      "@webiny/api-security-admin-users": ["../../../packages/api-security-admin-users/src"],
+      "@webiny/api-security-cognito-authentication": [
+        "../../../packages/api-security-cognito-authentication/src"
+      ]
+    },
+    "baseUrl": "."
+  }
 }

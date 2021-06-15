@@ -1,15 +1,15 @@
-import cognitoSecurity from "@webiny/app-plugin-security-cognito";
-import cognitoIdentityProvider from "@webiny/app-plugin-security-cognito/identityProvider";
-import securityTenancy from "@webiny/app-security-tenancy/plugins";
-import accountDetails from "@webiny/app-security-tenancy/plugins/userMenu/accountDetails";
-import signOut from "@webiny/app-security-tenancy/plugins/userMenu/signOut";
-import userImage from "@webiny/app-security-tenancy/plugins/userMenu/userImage";
-import userInfo from "@webiny/app-security-tenancy/plugins/userMenu/userInfo";
+import cognitoSecurity from "@webiny/app-security-admin-users-cognito";
+import adminUsers from "@webiny/app-security-admin-users/plugins";
+import accountDetails from "@webiny/app-security-admin-users/plugins/userMenu/accountDetails";
+import signOut from "@webiny/app-security-admin-users/plugins/userMenu/signOut";
+import userImage from "@webiny/app-security-admin-users/plugins/userMenu/userImage";
+import userInfo from "@webiny/app-security-admin-users/plugins/userMenu/userInfo";
 import { getIdentityData } from "../components/getIdentityData";
 
 export default [
     /**
-     * Configures Amplify, adds "app-installer-security" and "apollo-link" plugins.
+     * Configures Amplify, adds Cognito related UI fields, and attaches Authorization header
+     * on every GraphQL request using the authenticated identity.
      */
     cognitoSecurity({
         region: process.env.REACT_APP_USER_POOL_REGION,
@@ -20,11 +20,7 @@ export default [
     /**
      * Add user management module to admin app.
      */
-    securityTenancy(),
-    /**
-     * Add Cognito password field to user views.
-     */
-    cognitoIdentityProvider(),
+    adminUsers(),
     /**
      * User menu plugins
      */

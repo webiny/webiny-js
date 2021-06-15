@@ -1,0 +1,21 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["./src"],
+  "exclude": [
+    "node_modules",
+    "../app",
+    "../form",
+    "../app-security-cognito-authentication",
+    "../plugins",
+    "../ui",
+    "../validation"
+  ],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {},
+    "baseUrl": "."
+  },
+  "references": []
+}
