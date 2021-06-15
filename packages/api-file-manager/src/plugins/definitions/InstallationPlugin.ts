@@ -1,4 +1,4 @@
-import { FileManagerContext } from "@webiny/api-file-manager/types";
+import { FileManagerContext } from "~/types";
 import { Plugin } from "@webiny/plugins";
 
 export type CallbackFunction<TParams> = (params: TParams) => Promise<void>;

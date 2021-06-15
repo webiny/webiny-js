@@ -8,9 +8,6 @@ import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { SecurityIdentity } from "@webiny/api-security";
-import elasticSearch from "@webiny/api-plugin-elastic-search-client";
-import { simulateStream } from "@webiny/project-utils/testing/dynamodb";
-import { Client } from "@elastic/elasticsearch";
 import filesPlugins from "~/plugins";
 
 // Graphql
@@ -29,16 +26,18 @@ import {
     UPDATE_SETTINGS
 } from "./graphql/fileManagerSettings";
 import { SecurityPermission } from "@webiny/api-security/types";
-import dynamoToElastic from "@webiny/api-dynamodb-to-elasticsearch/handler";
 
 type UseGqlHandlerParams = {
     permissions?: SecurityPermission[];
     identity?: SecurityIdentity;
 };
 
-const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
-
 export default ({ permissions, identity }: UseGqlHandlerParams) => {
+    // @ts-ignore
+    const storageOperationsPlugins = __getStorageOperationsPlugins();
+    if (typeof storageOperationsPlugins !== "function") {
+        throw new Error(`There is no global "storageOperationsPlugins" function.`);
+    }
     const tenant = { id: "root", name: "Root", parent: null };
 
     const documentClient = new DocumentClient({
@@ -48,20 +47,13 @@ export default ({ permissions, identity }: UseGqlHandlerParams) => {
         region: "local"
     });
 
-    const elasticSearchContext = elasticSearch({
-        endpoint: `http://localhost:${ELASTICSEARCH_PORT}`
-    });
-
-    // Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
-    simulateStream(documentClient, createHandler(elasticSearchContext, dynamoToElastic()));
-
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler(
+        storageOperationsPlugins(),
         dbPlugins({
             table: "FileManager",
             driver: new DynamoDbDriver({ documentClient })
         }),
-        elasticSearchContext,
         graphqlHandlerPlugins(),
         securityPlugins(),
         {
@@ -111,9 +103,6 @@ export default ({ permissions, identity }: UseGqlHandlerParams) => {
 
     return {
         tenant,
-        elasticSearch: new Client({
-            node: `http://localhost:${ELASTICSEARCH_PORT}`
-        }),
         sleep: (ms = 100) => {
             return new Promise(resolve => {
                 setTimeout(resolve, ms);
