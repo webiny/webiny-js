@@ -5293,8 +5293,8 @@ __metadata:
   linkType: hard
 
 "@octokit/core@npm:^3.3.1, @octokit/core@npm:^3.3.2, @octokit/core@npm:^3.4.0":
-  version: 3.5.1
-  resolution: "@octokit/core@npm:3.5.1"
+  version: 3.5.0
+  resolution: "@octokit/core@npm:3.5.0"
   dependencies:
     "@octokit/auth-token": ^2.4.4
     "@octokit/graphql": ^4.5.8
@@ -5303,7 +5303,7 @@ __metadata:
     "@octokit/types": ^6.0.3
     before-after-hook: ^2.2.0
     universal-user-agent: ^6.0.0
-  checksum: 2967d97b43ee152068980f22258c8f32cc4f9f62cf627eb3640724fa0a8465421edb274fc9d1b2aa804081f3a3e902d36d0dc88cfce3115989ffb39d1a8ae4cd
+  checksum: 7733bffa900037c049e5805370bdec290467cbf03c70f27aecffd460c6873927c0de9649313bd3b26afcfee45257c77d5e161b11a4ce3777e247b1ccd9d44656
   languageName: node
   linkType: hard
 
@@ -13262,8 +13262,8 @@ __metadata:
   linkType: hard
 
 "c8@npm:^7.6.0":
-  version: 7.7.3
-  resolution: "c8@npm:7.7.3"
+  version: 7.7.2
+  resolution: "c8@npm:7.7.2"
   dependencies:
     "@bcoe/v8-coverage": ^0.2.3
     "@istanbuljs/schema": ^0.1.2
@@ -13274,12 +13274,12 @@ __metadata:
     istanbul-reports: ^3.0.2
     rimraf: ^3.0.0
     test-exclude: ^6.0.0
-    v8-to-istanbul: ^8.0.0
+    v8-to-istanbul: ^7.1.0
     yargs: ^16.2.0
     yargs-parser: ^20.2.7
   bin:
     c8: bin/c8.js
-  checksum: 54bded9332124a61fc716c34ff09f677382eba8a60ffa5650cbcea3ec775db333eb15fda758ba5068949d747e1b25164940d2e03f2ee74fcd014508a5d205378
+  checksum: e36a68e992c082a2813ce2a4ee6077852e4e09ff98a37cbfbd0eb0782def80f9c6c39a39f583f5ed570782eca777a2872786c4090b1dd3ba516bc9fc0f291307
   languageName: node
   linkType: hard
 
@@ -30935,9 +30935,9 @@ fsevents@^1.2.7:
   linkType: hard
 
 "regexpp@npm:^3.0.0, regexpp@npm:^3.1.0":
-  version: 3.2.0
-  resolution: "regexpp@npm:3.2.0"
-  checksum: 91aaccadd046fc1b60477df4f44bb69d61aeca81082f2ebf879a32ff25cd7bcb7067fcd69eb9a0987ca0a3e8e2d837b2737e80961c14a504a912bed4c51c8e3e
+  version: 3.1.0
+  resolution: "regexpp@npm:3.1.0"
+  checksum: 69d0ce6b449cf35d3732d6341a1e70850360ffc619f8eef10629871c462e614853fffb80d3f00fc17cd0bb5b8f34b0cde5be4b434e72c0eb3fbba2360c8b5ac4
   languageName: node
   linkType: hard
 
@@ -35119,7 +35119,7 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
-"v8-to-istanbul@npm:^7.0.0":
+"v8-to-istanbul@npm:^7.0.0, v8-to-istanbul@npm:^7.1.0":
   version: 7.1.2
   resolution: "v8-to-istanbul@npm:7.1.2"
   dependencies:
@@ -35127,17 +35127,6 @@ resolve@^2.0.0-next.3:
     convert-source-map: ^1.6.0
     source-map: ^0.7.3
   checksum: ff653089c952d618b01c5ff1ab4517144240ba0b6193a9e7116d2f19a6990a76f9bdb3e8f31424f556169c3bf29beadb5ddbaa0aded62da9f5ea63116c27c610
-  languageName: node
-  linkType: hard
-
-"v8-to-istanbul@npm:^8.0.0":
-  version: 8.0.0
-  resolution: "v8-to-istanbul@npm:8.0.0"
-  dependencies:
-    "@types/istanbul-lib-coverage": ^2.0.1
-    convert-source-map: ^1.6.0
-    source-map: ^0.7.3
-  checksum: ada29177f2944438eecb6a2fafb2144553c9dc9e623a253083149f4bbb193d862f93bda3cfde93178f3ca799df67da8f0b87222bde8d415a06550476893de0fc
   languageName: node
   linkType: hard
 
