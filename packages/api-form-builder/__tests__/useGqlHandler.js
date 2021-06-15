@@ -4,6 +4,7 @@ import { createHandler } from "@webiny/handler-aws";
 import apolloServerPlugins from "@webiny/handler-graphql";
 import securityPlugins from "@webiny/api-security/authenticator";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
+import fileManagerDynamoDbElasticPlugins from "@webiny/api-file-manager-ddb-es";
 import dbPlugins from "@webiny/handler-db";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
@@ -122,6 +123,7 @@ export default ({ permissions, identity, tenant } = {}) => {
         i18nContentPlugins(),
         mockLocalesPlugins(),
         fileManagerPlugins(),
+        fileManagerDynamoDbElasticPlugins(),
         formBuilderPlugins(),
         {
             type: "security-authorization",

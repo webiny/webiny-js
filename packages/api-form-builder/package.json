@@ -47,6 +47,7 @@
     "@elastic/elasticsearch": "^7.9.1",
     "@shelf/jest-elasticsearch": "^1.0.0",
     "@webiny/api-dynamodb-to-elasticsearch": "^5.8.0",
+    "@webiny/api-file-manager-ddb-es": "^5.8.0",
     "@webiny/cli": "^5.8.0",
     "@webiny/project-utils": "^5.8.0",
     "csvtojson": "^2.0.10",

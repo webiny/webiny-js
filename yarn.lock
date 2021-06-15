@@ -7746,6 +7746,7 @@ __metadata:
     "@shelf/jest-elasticsearch": ^1.0.0
     "@webiny/api-dynamodb-to-elasticsearch": ^5.8.0
     "@webiny/api-file-manager": ^5.8.0
+    "@webiny/api-file-manager-ddb-es": ^5.8.0
     "@webiny/api-i18n": ^5.8.0
     "@webiny/api-i18n-content": ^5.8.0
     "@webiny/api-plugin-elastic-search-client": ^5.8.0

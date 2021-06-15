@@ -5,6 +5,9 @@
       "path": "../api-file-manager"
     },
     {
+      "path": "../api-file-manager-ddb-es"
+    },
+    {
       "path": "../api-i18n"
     },
     {
