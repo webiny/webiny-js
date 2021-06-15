@@ -39,10 +39,10 @@ context("I18N app", () => {
             cy.get("div")
                 .first()
                 .within(() => {
-                    cy.findByTestId("app-i18n.data-list-item.delete").click({ force: true });
+                    cy.findByTestId("default-data-list.delete").click({ force: true });
                 });
         });
-        cy.findByTestId("app-i18n.data-list.delete-dialog").within(() => {
+        cy.findByTestId("default-data-list.delete-dialog").within(() => {
             cy.findByText(/Confirmation/i);
             cy.findByText(/confirm$/i).click();
         });
@@ -55,7 +55,7 @@ context("I18N app", () => {
                 });
         });
     });
-
+    // TODO: @ashutosh Update this test as per changes https://github.com/webiny/webiny-js/pull/1712
     it("should not allow Setting an existing locale as default", () => {
         const newCode = "de-DE";
         cy.visit("/i18n/locales");
@@ -80,10 +80,10 @@ context("I18N app", () => {
             cy.get("div")
                 .first()
                 .within(() => {
-                    cy.findByTestId("app-i18n.data-list-item.delete").click({ force: true });
+                    cy.findByTestId("default-data-list.delete").click({ force: true });
                 });
         });
-        cy.findByTestId("app-i18n.data-list.delete-dialog").within(() => {
+        cy.findByTestId("default-data-list.delete-dialog").within(() => {
             cy.findByText(/Confirmation/i);
             cy.findByText(/confirm$/i).click();
         });
