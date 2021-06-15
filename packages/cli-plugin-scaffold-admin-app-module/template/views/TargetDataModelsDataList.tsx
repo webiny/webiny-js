@@ -13,7 +13,7 @@ import {
 import { useTargetDataModelsDataList } from "./hooks/useTargetDataModelsDataList";
 
 /**
- * Renders a list of all Target Data Model entries. Includes basic deletion, pagination, and sorting capabilities.
+ * Renders a list of all TargetDataModel entries. Includes basic deletion, pagination, and sorting capabilities.
  * The data querying functionality is located in the `useTargetDataModelsDataList` React hook.
  */
 
@@ -34,26 +34,30 @@ const TargetDataModelsDataList = () => {
     const {
         targetDataModels,
         loading,
-        currentTargetDataModelId,
+        refresh,
+        pagination,
+        setSort,
         newTargetDataModel,
         editTargetDataModel,
         deleteTargetDataModel,
-        setSort
+        currentTargetDataModelId
     } = useTargetDataModelsDataList();
 
     return (
         <DataList
+            title={"Target Data Models"}
+            data={targetDataModels}
             loading={loading}
+            refresh={refresh}
+            pagination={pagination}
+            sorters={sorters}
+            setSorters={setSort}
             actions={
                 <ButtonSecondary onClick={newTargetDataModel}>
                     <ButtonIcon icon={<AddIcon />} />
                     New Target Data Model
                 </ButtonSecondary>
             }
-            sorters={sorters}
-            setSorters={setSort}
-            data={targetDataModels}
-            title={"Target Data Models"}
         >
             {({ data }) => (
                 <ScrollList>

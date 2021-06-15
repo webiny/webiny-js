@@ -1,8 +1,9 @@
-import { useCallback, useState } from "react";
+import { useCallback, useReducer } from "react";
 import { useRouter } from "@webiny/react-router";
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { useConfirmationDialog } from "@webiny/app-admin/hooks/useConfirmationDialog";
+import { PaginationProp } from "@webiny/ui/List/DataList/types";
 import { LIST_TARGET_DATA_MODELS, DELETE_TARGET_DATA_MODEL } from "./graphql";
 
 /**
@@ -11,7 +12,6 @@ import { LIST_TARGET_DATA_MODELS, DELETE_TARGET_DATA_MODEL } from "./graphql";
 
 interface useTargetDataModelsDataListHook {
     (): {
-        loading: boolean;
         targetDataModels: Array<{
             id: string;
             title: string;
@@ -19,31 +19,54 @@ interface useTargetDataModelsDataListHook {
             createdOn: string;
             [key: string]: any;
         }>;
-        currentTargetDataModelId: string;
-        sort: string;
+        loading: boolean;
+        pagination: PaginationProp;
+        refresh: () => void;
         setSort: (sort: string) => void;
         newTargetDataModel: () => void;
         editTargetDataModel: (id: string) => void;
         deleteTargetDataModel: (id: string) => void;
+        currentTargetDataModelId: string;
     };
 }
 
+const reducer = (prev, next) => ({ ...prev, ...next });
+
 export const useTargetDataModelsDataList: useTargetDataModelsDataListHook = () => {
-    const [sort, setSort] = useState<string>();
+    // Base state and UI React hooks.
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
-    const listQuery = useQuery(LIST_TARGET_DATA_MODELS, { variables: { sort } });
+    const { showConfirmation } = useConfirmationDialog();
+    const [variables, setVariables] = useReducer(reducer, {
+        limit: undefined,
+        after: undefined,
+        before: undefined,
+        sort: undefined
+    });
+
     const searchParams = new URLSearchParams(location.search);
     const currentTargetDataModelId = searchParams.get("id");
+
+    // Queries and mutations.
+    const listQuery = useQuery(LIST_TARGET_DATA_MODELS, {
+        variables,
+        onError: e => showSnackbar(e.message)
+    });
+
     const [deleteIt, deleteMutation] = useMutation(DELETE_TARGET_DATA_MODEL, {
         refetchQueries: [{ query: LIST_TARGET_DATA_MODELS }]
     });
 
-    const { showConfirmation } = useConfirmationDialog();
+    const { data: targetDataModels = [], meta = {} } = listQuery.loading
+        ? {}
+        : listQuery?.data?.targetDataModels?.listTargetDataModels || {};
+    const loading = [listQuery, deleteMutation].some(item => item.loading);
 
-    const targetDataModels = listQuery.loading
-        ? []
-        : listQuery.data.targetDataModels.listTargetDataModels.data;
+    // Base CRUD actions - new, edit, and delete.
+    const newTargetDataModel = useCallback(() => history.push("/target-data-models?new"), []);
+    const editTargetDataModel = useCallback(id => {
+        history.push(`/target-data-models?id=${id}`);
+    }, []);
 
     const deleteTargetDataModel = useCallback(
         item => {
@@ -65,20 +88,44 @@ export const useTargetDataModelsDataList: useTargetDataModelsDataListHook = () =
         [currentTargetDataModelId]
     );
 
-    const loading = [listQuery, deleteMutation].some(item => item.loading);
-    const newTargetDataModel = useCallback(() => history.push("/target-data-models?new"), []);
-    const editTargetDataModel = useCallback(id => {
-        history.push(`/target-data-models?id=${id}`);
-    }, []);
+    // Sorting.
+    const setSort = useCallback(
+        value => setVariables({ after: undefined, before: undefined, sort: value }),
+        []
+    );
+
+    // Pagination metadata and controls.
+    const setPreviousPage = useCallback(
+        () => setVariables({ after: undefined, before: meta.before }),
+        undefined
+    );
+    const setNextPage = useCallback(
+        () => setVariables({ after: meta.after, before: undefined }),
+        undefined
+    );
+    const setLimit = useCallback(
+        value => setVariables({ after: undefined, before: undefined, limit: value }),
+        []
+    );
+
+    const pagination: PaginationProp = {
+        setPerPage: setLimit,
+        perPageOptions: [10, 25, 50],
+        setPreviousPage,
+        setNextPage,
+        hasPreviousPage: meta.before,
+        hasNextPage: meta.after
+    };
 
     return {
         targetDataModels,
         loading,
-        currentTargetDataModelId,
-        sort,
+        refresh: listQuery.refetch,
+        pagination,
         setSort,
         newTargetDataModel,
         editTargetDataModel,
-        deleteTargetDataModel
+        deleteTargetDataModel,
+        currentTargetDataModelId
     };
 };
