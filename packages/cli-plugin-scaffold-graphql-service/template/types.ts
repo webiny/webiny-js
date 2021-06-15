@@ -12,7 +12,7 @@ export interface TargetDataModelEntity {
     description?: string;
     createdOn: string;
     savedOn: string;
-    createdBy: SecurityIdentity;
+    createdBy: Pick<SecurityIdentity, "id" | "displayName" | "type">;
     webinyVersion: string;
 }
 

@@ -39,7 +39,8 @@ interface TargetDataModelsMutation {
  * To define our GraphQL resolvers, we are using the "class method resolvers" approach.
  * https://www.graphql-tools.com/docs/resolvers#class-method-resolvers
  */
-export default class TargetDataModelsMutationResolver extends TargetDataModelsResolver implements TargetDataModelsMutation {
+export default class TargetDataModelsMutationResolver extends TargetDataModelsResolver
+    implements TargetDataModelsMutation {
     /**
      * Creates and returns a new TargetDataModel entry.
      * @param data
@@ -51,6 +52,7 @@ export default class TargetDataModelsMutationResolver extends TargetDataModelsRe
         // a random, unique, and sequential (sortable) ID for our new entry.
         const id = mdbid();
 
+        const identity = await security.getIdentity();
         const targetDataModel = {
             PK: this.getPK(),
             SK: id,
@@ -59,7 +61,11 @@ export default class TargetDataModelsMutationResolver extends TargetDataModelsRe
             description: data.description,
             createdOn: new Date().toISOString(),
             savedOn: new Date().toISOString(),
-            createdBy: await security.getIdentity(),
+            createdBy: {
+                id: identity.id,
+                type: identity.type,
+                displayName: identity.displayName
+            },
             webinyVersion: process.env.WEBINY_VERSION
         };
 

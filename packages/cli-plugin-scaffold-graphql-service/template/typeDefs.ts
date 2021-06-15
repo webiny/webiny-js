@@ -10,8 +10,8 @@ export default /* GraphQL */ `
 
     type TargetDataModelCreatedBy {
         id: String!
-        displayName: String!
         type: String!
+        displayName: String!
     }
 
     input TargetDataModelCreateInput {
