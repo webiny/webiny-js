@@ -39,10 +39,9 @@ interface TargetDataModelsMutation {
  * To define our GraphQL resolvers, we are using the "class method resolvers" approach.
  * https://www.graphql-tools.com/docs/resolvers#class-method-resolvers
  */
-export default class TargetDataModelsMutationResolver extends TargetDataModelsResolver
-    implements TargetDataModelsMutation {
+export default class TargetDataModelsMutationResolver extends TargetDataModelsResolver implements TargetDataModelsMutation {
     /**
-     * Creates a new TargetDataModel entry and responds with it.
+     * Creates and returns a new TargetDataModel entry.
      * @param data
      */
     async createTargetDataModel({ data }: CreateTargetDataModelParams) {
@@ -71,7 +70,7 @@ export default class TargetDataModelsMutationResolver extends TargetDataModelsRe
     }
 
     /**
-     * Updates an existing TargetDataModel entry and responds with it.
+     * Updates and returns an existing TargetDataModel entry.
      * @param id
      * @param data
      */
@@ -91,7 +90,7 @@ export default class TargetDataModelsMutationResolver extends TargetDataModelsRe
     }
 
     /**
-     * Deletes an existing TargetDataModel entry and responds with it.
+     * Deletes and returns an existing TargetDataModel entry.
      * @param id
      */
     async deleteTargetDataModel({ id }: DeleteTargetDataModelParams) {

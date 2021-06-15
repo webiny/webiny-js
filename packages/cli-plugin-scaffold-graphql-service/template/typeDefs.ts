@@ -26,7 +26,8 @@ export default /* GraphQL */ `
 
     type TargetDataModelsListMeta {
         limit: Number
-        cursor: String
+        before: String
+        after: String
     }
 
     enum TargetDataModelsListSort {
@@ -42,15 +43,21 @@ export default /* GraphQL */ `
     type TargetDataModelQuery {
         getTargetDataModel(id: ID!): TargetDataModel
         listTargetDataModels(
-            sort: TargetDataModelsListSort
             limit: Int
+            before: String
             after: String
+            sort: TargetDataModelsListSort
         ): TargetDataModelsList!
     }
 
     type TargetDataModelMutation {
+        # Creates and returns a new TargetDataModel entry.
         createTargetDataModel(data: TargetDataModelCreateInput!): TargetDataModel!
+
+        # Updates and returns an existing TargetDataModel entry.
         updateTargetDataModel(id: ID!, data: TargetDataModelUpdateInput!): TargetDataModel!
+
+        # Deletes and returns an existing TargetDataModel entry.
         deleteTargetDataModel(id: ID!): TargetDataModel!
     }
 

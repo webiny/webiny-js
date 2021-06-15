@@ -5,7 +5,7 @@
 
 export const GET_TARGET_DATA_MODEL = /* GraphQL */ `
     query GetTargetDataModel($id: ID!) {
-        targetDataModels {
+        books {
             getTargetDataModel(id: $id) {
                 id
                 title
@@ -17,7 +17,7 @@ export const GET_TARGET_DATA_MODEL = /* GraphQL */ `
 
 export const CREATE_TARGET_DATA_MODEL = /* GraphQL */ `
     mutation CreateTargetDataModel($data: TargetDataModelCreateInput!) {
-        targetDataModels {
+        books {
             createTargetDataModel(data: $data) {
                 id
                 title
@@ -29,7 +29,7 @@ export const CREATE_TARGET_DATA_MODEL = /* GraphQL */ `
 
 export const UPDATE_TARGET_DATA_MODEL = /* GraphQL*/ `
     mutation UpdateTargetDataModel($id: ID!, $data: TargetDataModelUpdateInput!) {
-        targetDataModels {
+        books {
             updateTargetDataModel(id: $id, data: $data) {
                 id
                 title
@@ -41,7 +41,7 @@ export const UPDATE_TARGET_DATA_MODEL = /* GraphQL*/ `
 
 export const DELETE_TARGET_DATA_MODEL = /* GraphQL */ `
     mutation DeleteTargetDataModel($id: ID!) {
-        targetDataModels {
+        books {
             deleteTargetDataModel(id: $id) {
                 id
                 title
@@ -53,7 +53,7 @@ export const DELETE_TARGET_DATA_MODEL = /* GraphQL */ `
 
 export const LIST_TARGET_DATA_MODELS = /* GraphQL */ `
     query ListTargetDataModels($sort: TargetDataModelsListSort, $limit: Int, $after: String) {
-        targetDataModels {
+        books {
             listTargetDataModels(sort: $sort, limit: $limit, after: $after) {
                 data {
                     id
@@ -62,7 +62,8 @@ export const LIST_TARGET_DATA_MODELS = /* GraphQL */ `
                 }
                 meta {
                     limit
-                    cursor
+                    after
+                    before
                 }
             }
         }

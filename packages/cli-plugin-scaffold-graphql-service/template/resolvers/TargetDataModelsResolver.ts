@@ -14,7 +14,8 @@ export default class TargetDataModelMutationResolver {
     getPK(base = "TargetDataModels") {
         // By default, Webiny Admin Area supports content creation in multiple locales.
         // The prepended "L#${locale}" designates to which locale our data belongs to.
-        const locale = this.context.i18nContent.getLocale();
+        const locale = this.context.i18nContent.getLocale().code
+        ;
         base = `L#${locale}#${base}`;
 
         // In integration test environments, we use the `process.env.TEST_RUN_ID` as a suffix.

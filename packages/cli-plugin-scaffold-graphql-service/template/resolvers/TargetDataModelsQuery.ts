@@ -17,11 +17,12 @@ interface ListTargetDataModelsParams {
     sort?: "createdOn_ASC" | "createdOn_DESC";
     limit?: number;
     after?: string;
+    before?: string;
 }
 
 interface ListTargetDataModelsResponse {
     data: TargetDataModelEntity[];
-    meta: { limit: number; cursor: string };
+    meta: { limit: number; after: string; before: string };
 }
 
 interface TargetDataModelsQuery {
@@ -33,8 +34,7 @@ interface TargetDataModelsQuery {
  * To define our GraphQL resolvers, we are using the "class method resolvers" approach.
  * https://www.graphql-tools.com/docs/resolvers#class-method-resolvers
  */
-export default class TargetDataModelsQueryResolver extends TargetDataModelsResolver
-    implements TargetDataModelsQuery {
+export default class TargetDataModelsQueryResolver extends TargetDataModelsResolver implements TargetDataModelsQuery {
     /**
      * Returns a single TargetDataModel entry from the database.
      * @param id
@@ -55,19 +55,36 @@ export default class TargetDataModelsQueryResolver extends TargetDataModelsResol
      * @param limit
      * @param sort
      * @param after
+     * @param before
      */
-    async listTargetDataModels({ limit, sort, after }: ListTargetDataModelsParams) {
-        // Let's create the query object. By default, we apply a limit of 10 entries per page and return entries
-        // sorted by their time of creation, in a descending order. For this, we rely on the "SK" database column,
-        // which contains a sequential MongoDB ID. Check "./TargetDataModelsMutations.ts" to see how storing is performed.
-        const query = {
-            limit: limit || 10,
-            reverse: sort !== "createdOn_ASC",
-            gt: undefined,
-            lt: undefined
-        };
+    async listTargetDataModels({ limit = 10, sort, after, before }: ListTargetDataModelsParams) {
+        const PK = this.getPK();
+        const query = { limit, reverse: sort !== "createdOn_ASC", gt: undefined, lt: undefined };
+        const meta = { limit, after: null, before: null };
 
-        // If `after` (cursor string) is specified, we have to apply a lower-than or greater-than query filter.
+        // The query is constructed differently, depending on the "before" or "after" values.
+        if (before) {
+            query.reverse = !query.reverse;
+            if (query.reverse) {
+                query.lt = before;
+            } else {
+                query.gt = before;
+            }
+
+            const { Items } = await TargetDataModels.query(PK, { ...query, limit: limit + 1 });
+
+            const data = Items.slice(0, limit).reverse();
+
+            const hasBefore = Items.length > limit;
+            if (hasBefore) {
+                meta.before = Items[Items.length - 1].id;
+            }
+
+            meta.after = Items[0].id;
+
+            return { data, meta };
+        }
+
         if (after) {
             if (query.reverse) {
                 query.lt = after;
@@ -76,15 +93,19 @@ export default class TargetDataModelsQueryResolver extends TargetDataModelsResol
             }
         }
 
-        // Finally, query the database and return the results, along with some meta-data.
-        const { Items: data } = await TargetDataModels.query(this.getPK(), query);
+        const { Items } = await TargetDataModels.query(PK, { ...query, limit: limit + 1 });
 
-        const cursor = data.length === query.limit ? data[data.length - 1].id : null;
-        const meta = {
-            limit: query.limit,
-            cursor
-        };
+        const data = Items.slice(0, limit);
 
-        return { meta, data };
+        const hasAfter = Items.length > limit;
+        if (hasAfter) {
+            meta.after = Items[limit - 1].id;
+        }
+
+        if (after) {
+            meta.before = Items[0].id;
+        }
+
+        return { data, meta };
     }
 }
