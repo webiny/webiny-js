@@ -1,4 +1,4 @@
-import { Project, SyntaxKind, ArrayLiteralExpression } from "ts-morph";
+import { Project, ArrayLiteralExpression, Node } from "ts-morph";
 
 export default async ({ scaffoldsIndexPath, importName, importPath }) => {
     const project = new Project();
@@ -6,14 +6,24 @@ export default async ({ scaffoldsIndexPath, importName, importPath }) => {
 
     const source = project.getSourceFileOrThrow(scaffoldsIndexPath);
 
-    source.insertStatements(1, `import ${importName} from "${importPath}";`);
+    const existingImportDeclaration = source.getImportDeclaration(importPath);
+    if (existingImportDeclaration) {
+        throw new Error('Already exists.')
+    }
 
-    source.forEachDescendant(node => {
-        if (node.getKind() === SyntaxKind.ArrayLiteralExpression) {
-            const current = node as ArrayLiteralExpression;
-            current.addElement(importName);
-        }
+    const importDeclarations = source.getImportDeclarations();
+    const last = importDeclarations[importDeclarations.length - 1];
+
+    source.insertImportDeclaration(last.getChildIndex() + 1, {
+        defaultImport: importName,
+        moduleSpecifier: importPath
     });
+
+    const pluginsArray = source.getFirstDescendant(node =>
+        Node.isArrayLiteralExpression(node)
+    ) as ArrayLiteralExpression;
+
+    pluginsArray.addElement(importName);
 
     await source.save();
 };
