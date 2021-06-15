@@ -68,7 +68,9 @@ export const useLocalesList: UseLocalesListHook = (config: Config) => {
         refetchQueries: [{ query: LIST_LOCALES }]
     });
 
-    const { showConfirmation } = useConfirmationDialog();
+    const { showConfirmation } = useConfirmationDialog({
+        dataTestId: "default-data-list.delete-dialog"
+    });
 
     const filterLocales = useCallback(
         ({ code }) => {

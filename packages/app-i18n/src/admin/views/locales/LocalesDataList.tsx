@@ -91,7 +91,7 @@ const LocalesDataList = () => {
             modalOverlayAction={<DataListModalOverlayAction icon={<FilterIcon />} />}
         >
             {({ data }) => (
-                <ScrollList>
+                <ScrollList data-testid="default-data-list">
                     {data.map(item => (
                         <ListItem key={item.code} selected={item.code === currentLocaleCode}>
                             <ListItemText onClick={() => editLocale(item.code)}>
@@ -103,7 +103,10 @@ const LocalesDataList = () => {
 
                             <ListItemMeta>
                                 <ListActions>
-                                    <DeleteIcon onClick={() => deleteLocale(item)} />
+                                    <DeleteIcon
+                                        onClick={() => deleteLocale(item)}
+                                        data-testid={"default-data-list.delete"}
+                                    />
                                 </ListActions>
                             </ListItemMeta>
                         </ListItem>
