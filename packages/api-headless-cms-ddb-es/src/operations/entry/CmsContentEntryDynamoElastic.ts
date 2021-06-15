@@ -31,6 +31,7 @@ import {
 } from "../../helpers";
 import { createBasePartitionKey, encodeElasticsearchCursor, paginateBatch } from "../../utils";
 import { entryFromStorageTransform } from "@webiny/api-headless-cms/transformers";
+import { Client } from "@elastic/elasticsearch";
 
 export const TYPE_ENTRY = "cms.entry";
 export const TYPE_ENTRY_LATEST = TYPE_ENTRY + ".l";
@@ -74,6 +75,19 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
     private readonly _context: CmsContext;
     private _partitionKey: string;
     private readonly _dataLoaders: DataLoadersHandler;
+    private _esClient: Client;
+
+    private get esClient(): Client {
+        if (this._esClient) {
+            return this._esClient;
+        }
+        const ctx = this.context as any;
+        if (!ctx.elasticSearch) {
+            throw new WebinyError("Missing Elasticsearch client on the context");
+        }
+        this._esClient = ctx.elasticSearch as Client;
+        return this._esClient;
+    }
 
     private get context(): CmsContext {
         return this._context;
@@ -436,7 +450,6 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         model: CmsContentModel,
         args: CmsContentEntryStorageOperationsListArgs
     ): Promise<CmsContentEntryStorageOperationsListResponse> {
-        const { elasticSearch } = this.context;
         const limit = createElasticsearchLimit(args.limit, 50);
         const body = createElasticsearchQueryBody({
             model,
@@ -451,7 +464,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         let response;
         const esConfig = configurations.es(this.context, model);
         try {
-            response = await elasticSearch.search({
+            response = await this.esClient.search({
                 ...esConfig,
                 body
             });

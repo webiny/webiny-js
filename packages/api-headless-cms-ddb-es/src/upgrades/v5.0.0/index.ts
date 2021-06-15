@@ -11,6 +11,7 @@ import { paginateBatch } from "../utils";
 import { CmsContentIndexEntry } from "../../types";
 import { CmsContentModel, CmsContext } from "@webiny/api-headless-cms/types";
 import configurations from "../../configurations";
+import { Client } from "@elastic/elasticsearch";
 
 interface Hit {
     _id: string;
@@ -24,7 +25,11 @@ const plugin = (): UpgradePlugin<CmsContext> => ({
     app: "headless-cms",
     version: "5.0.0",
     async apply(context) {
-        const { elasticSearch, db, fileManager } = context;
+        const { db, fileManager } = context;
+        const elasticSearch: Client = (context as any).elasticSearch;
+        if (!elasticSearch) {
+            throw new WebinyError("Missing Elasticsearch client on the context.");
+        }
 
         // Check if we still have the old elasticsearch index
         const esIndex = createOldVersionIndiceName(context);
@@ -224,7 +229,7 @@ const plugin = (): UpgradePlugin<CmsContext> => ({
         }
 
         // ES BULK INSERT
-        const bulkInsert = await context.elasticSearch.bulk({
+        const bulkInsert = await elasticSearch.bulk({
             body: esOperations
         });
 
