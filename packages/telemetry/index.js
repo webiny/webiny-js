@@ -24,7 +24,8 @@ const getConfig = async () => {
 module.exports.sendEvent = async ({ event, data }) => {
     const config = await getConfig();
 
-    if (config.telemetry === false) {
+    // Check both `telemetry` and `tracking` for backwards compatibility
+    if (config.telemetry === false || config.tracking === false) {
         return;
     }
 
