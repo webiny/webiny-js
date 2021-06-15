@@ -86,9 +86,10 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             fs.mkdirSync(newCodePath, { recursive: true });
             await ncp(templateFolderPath, newCodePath);
 
-            // Replace generic "Target" with received "dataModelName" argument.
+            // Replace generic "TargetDataModel" with received "dataModelName" argument.
             const codeReplacements = [
                 { find: "targetDataModels", replaceWith: Case.camel(dataModelName.plural) },
+                { find: "targetDataModel", replaceWith: Case.camel(dataModelName.singular) },
                 { find: "TargetDataModel", replaceWith: Case.pascal(dataModelName.singular) },
                 {
                     find: "targetDataModelDataModels",
