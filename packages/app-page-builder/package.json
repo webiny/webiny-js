@@ -31,7 +31,7 @@
     "@webiny/form": "^5.7.0",
     "@webiny/plugins": "^5.7.0",
     "@webiny/react-router": "^5.7.0",
-    "@webiny/tracking": "^5.7.0",
+    "@webiny/telemetry": "^5.7.0",
     "@webiny/ui": "^5.7.0",
     "@webiny/validation": "^5.7.0",
     "aos": "^2.3.4",

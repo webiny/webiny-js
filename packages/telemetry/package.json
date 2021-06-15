@@ -1,5 +1,5 @@
 {
-  "name": "@webiny/tracking",
+  "name": "@webiny/telemetry",
   "version": "5.8.0",
   "main": "index.js",
   "license": "MIT",
@@ -11,6 +11,5 @@
   "publishConfig": {
     "access": "public",
     "directory": "."
-  },
-  "gitHead": "b8aec8a1be3f25c3b428b357fe1e352c7cbff9ae"
+  }
 }

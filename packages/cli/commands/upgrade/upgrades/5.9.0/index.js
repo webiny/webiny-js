@@ -8,7 +8,9 @@ const {
     upgradeAdminApp,
     upgradeAdminGetIdentityData,
     upgradeAdminSecurity
-} = require("./upgradeAPI");
+} = require("./upgradeSecurity");
+
+const { upgradeTelemetry } = require("./upgradeTelemetry");
 
 const targetVersion = "5.9.0";
 
@@ -47,7 +49,8 @@ module.exports = {
             "api/code/headlessCMS/src/security.ts",
             "apps/admin/code/src/App.tsx",
             "apps/admin/code/src/components/getIdentityData.ts",
-            "apps/admin/code/src/plugins/security.ts"
+            "apps/admin/code/src/plugins/security.ts",
+            "apps/admin/code/src/components/Telemetry.tsx"
         ];
 
         const upgrade = createMorphProject(files.map(f => path.resolve(process.cwd(), f)));
@@ -69,6 +72,9 @@ module.exports = {
 
         // apps/admin/code/src/plugins/security.ts
         await upgradeAdminSecurity(upgrade.getSourceFile(files[5]), files[5], context);
+
+        // apps/admin/code/src/components/Telemetry.tsx
+        await upgradeTelemetry(upgrade.getSourceFile(files[6]), files[6], context);
 
         context.info("Adding dependencies...");
 
@@ -93,7 +99,9 @@ module.exports = {
             "@webiny/app-security-tenancy": null,
             "@webiny/app-security-admin-users": targetVersion,
             "@webiny/app-security-admin-users-cognito": targetVersion,
-            "@webiny/app-tenancy": targetVersion
+            "@webiny/app-tenancy": targetVersion,
+            "@webiny/tracking": null,
+            "@webiny/telemetry": targetVersion
         });
 
         context.info("Writing changes...");

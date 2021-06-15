@@ -24,7 +24,7 @@ const getConfig = async () => {
 module.exports.sendEvent = async ({ event, data }) => {
     const config = await getConfig();
 
-    if (config.tracking === false) {
+    if (config.telemetry === false) {
         return;
     }
 

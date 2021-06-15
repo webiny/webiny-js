@@ -13,7 +13,7 @@
   "author": "Webiny Ltd.",
   "license": "MIT",
   "dependencies": {
-    "@webiny/tracking": "^5.8.0",
+    "@webiny/telemetry": "^5.8.0",
     "chalk": "4.1.0",
     "execa": "^4.1.0",
     "find-up": "^5.0.0",

@@ -13,7 +13,7 @@ import { GET_SETTINGS, UPDATE_SETTINGS } from "./graphql";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { get, set } from "lodash";
 import { validation } from "@webiny/validation";
-import { sendEvent, setProperties } from "@webiny/tracking/react";
+import { sendEvent, setProperties } from "@webiny/telemetry/react";
 import { ReactComponent as EditIcon } from "~/admin/assets/edit.svg";
 import { useRouter } from "@webiny/react-router";
 
