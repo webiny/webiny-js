@@ -13,7 +13,7 @@
   "author": "Pavel Denisjuk <pavel@webiny.com>",
   "description": "A tool to bootstrap a Webiny project.",
   "dependencies": {
-    "@webiny/tracking": "^5.8.0",
+    "@webiny/telemetry": "^5.8.0",
     "camelcase": "5.3.1",
     "chalk": "2.4.2",
     "dotenv": "8.2.0",

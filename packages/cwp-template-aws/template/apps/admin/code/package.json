@@ -29,7 +29,7 @@
     "@webiny/plugins": "latest",
     "@webiny/project-utils": "latest",
     "@webiny/react-router": "latest",
-    "@webiny/tracking": "latest",
+    "@webiny/telemetry": "latest",
     "@webiny/ui": "latest",
     "apollo-cache": "^1.3.5",
     "apollo-cache-inmemory": "^1.6.6",
