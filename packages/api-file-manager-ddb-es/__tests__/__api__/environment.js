@@ -69,7 +69,12 @@ class FileManagerTestEnvironment extends NodeEnvironment {
                 documentClient
             });
         };
-        this.global.__beforeEach = clearEsIndices;
+        this.global.__beforeEach = async () => {
+            await clearEsIndices();
+            return elasticsearchClient.indices.create({
+                index: "root-file-manager"
+            });
+        };
         this.global.__afterEach = clearEsIndices;
         this.global.__beforeAll = clearEsIndices;
         this.global.__afterAll = clearEsIndices;

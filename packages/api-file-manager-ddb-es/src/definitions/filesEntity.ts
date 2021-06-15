@@ -42,6 +42,15 @@ export default (params: { context: FileManagerContext; table: Table }): Entity<a
             },
             createdBy: {
                 type: "map"
+            },
+            tenant: {
+                type: "string"
+            },
+            locale: {
+                type: "string"
+            },
+            webinyVersion: {
+                type: "string"
             }
         }
     });

@@ -51,6 +51,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
     private readonly _context: any;
     private _partitionKeyPrefix: string;
     private readonly _table: Table;
+    private readonly _esTable: Table;
     private readonly _entity: Entity<any>;
     private readonly _esEntity: Entity<any>;
     private _esIndex: string;
@@ -104,13 +105,13 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             table: this._table
         });
 
-        const esTable = defineEsTable({
+        this._esTable = defineEsTable({
             context
         });
 
         this._esEntity = defineFilesEsEntity({
             context,
-            table: esTable
+            table: this._esTable
         });
     }
 
@@ -120,7 +121,10 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
                 PK: this.getPartitionKey(id),
                 SK: SORT_KEY
             });
-            return cleanStorageFile(file) || null;
+            if (!file || !file.Item) {
+                return null;
+            }
+            return cleanStorageFile(file.Item);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not fetch requested file.",
@@ -150,10 +154,11 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             data: file
         };
         try {
-            await this._table.batchWrite([item, esItem]);
+            await this._entity.put(item);
+            await this._esEntity.put(esItem);
         } catch (ex) {
             throw new WebinyError(
-                ex.message || "Could not create a new file to the DynamoDB.",
+                ex.message || "Could not create a new file in the DynamoDB.",
                 ex.code || "CREATE_FILE_ERROR",
                 {
                     item,
@@ -182,7 +187,8 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             data: file
         };
         try {
-            await this._table.batchWrite([item, esItem]);
+            await this._entity.put(item);
+            await this._esEntity.put(esItem);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not update a file in the DynamoDB.",
@@ -349,7 +355,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
         const files = hits.map(item => item._source);
 
         let hasMoreItems = false;
-        if (files.length > limit + 1) {
+        if (files.length > limit) {
             files.pop();
             hasMoreItems = true;
         }

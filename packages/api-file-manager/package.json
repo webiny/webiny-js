@@ -19,7 +19,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "@commodo/fields": "^1.2.1",
+    "@commodo/fields": "beta",
     "@webiny/api-i18n-content": "^5.8.0",
     "@webiny/api-security": "^5.8.0",
     "@webiny/api-security-tenancy": "^5.8.0",

@@ -1,5 +1,5 @@
 import { BaseI18NContentContext } from "@webiny/api-i18n-content/types";
-import { FileStorage } from "./plugins/FileStorage";
+import { FileStorage } from "./plugins/storage/FileStorage";
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { ContextInterface } from "@webiny/handler/types";

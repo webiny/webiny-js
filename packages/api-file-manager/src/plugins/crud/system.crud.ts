@@ -8,7 +8,7 @@ import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { executeCallbacks } from "~/utils";
 import { InstallationPlugin, SystemStorageOperationsProviderPlugin } from "~/plugins/definitions";
 
-export default new ContextPlugin<FileManagerContext>(async context => {
+const systemCrudContextPlugin = new ContextPlugin<FileManagerContext>(async context => {
     const pluginType = SystemStorageOperationsProviderPlugin.type;
     const providerPlugin = context.plugins
         .byType<SystemStorageOperationsProviderPlugin>(pluginType)
@@ -23,6 +23,10 @@ export default new ContextPlugin<FileManagerContext>(async context => {
     const storageOperations = await providerPlugin.provide({
         context
     });
+
+    if (!context.fileManager) {
+        context.fileManager = {} as any;
+    }
 
     context.fileManager.system = {
         async getVersion() {
@@ -139,3 +143,7 @@ export default new ContextPlugin<FileManagerContext>(async context => {
         }
     };
 });
+
+systemCrudContextPlugin.name = "FileManagerSystemCrud";
+
+export default systemCrudContextPlugin;

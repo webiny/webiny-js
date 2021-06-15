@@ -33,7 +33,7 @@ const UpdateDataModel = withFields({
     })(string())
 })();
 
-export default new ContextPlugin<FileManagerContext>(async context => {
+const settingsCrudContextPlugin = new ContextPlugin<FileManagerContext>(async context => {
     const pluginType = SettingsStorageOperationsProviderPlugin.type;
 
     const providerPlugin = context.plugins
@@ -49,6 +49,10 @@ export default new ContextPlugin<FileManagerContext>(async context => {
     const storageOperations = await providerPlugin.provide({
         context
     });
+
+    if (!context.fileManager) {
+        context.fileManager = {} as any;
+    }
 
     context.fileManager.settings = {
         async getSettings() {
@@ -89,3 +93,7 @@ export default new ContextPlugin<FileManagerContext>(async context => {
         }
     };
 });
+
+settingsCrudContextPlugin.name = "FileMangerSettingsCrud";
+
+export default settingsCrudContextPlugin;

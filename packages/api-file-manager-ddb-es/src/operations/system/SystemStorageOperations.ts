@@ -50,7 +50,10 @@ export class SystemStorageOperations implements FileManagerSystemStorageOperatio
                 PK: this.partitionKey,
                 SK: SORT_KEY
             });
-            return system || null;
+            if (!system || !system.Item) {
+                return null;
+            }
+            return system.Item;
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not fetch the FileManager system.",

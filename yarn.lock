@@ -7705,7 +7705,7 @@ __metadata:
     "@babel/preset-env": ^7.5.5
     "@babel/preset-typescript": ^7.0.0
     "@babel/runtime": ^7.5.5
-    "@commodo/fields": ^1.2.1
+    "@commodo/fields": beta
     "@webiny/api-i18n": ^5.8.0
     "@webiny/api-i18n-content": ^5.8.0
     "@webiny/api-security": ^5.8.0

@@ -50,7 +50,10 @@ export class SettingsStorageOperations implements FileManagerSettingsStorageOper
                 PK: this.partitionKey,
                 SK: SORT_KEY
             });
-            return settings || null;
+            if (!settings || !settings.Item) {
+                return null;
+            }
+            return settings.Item;
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not fetch the FileManager settings.",

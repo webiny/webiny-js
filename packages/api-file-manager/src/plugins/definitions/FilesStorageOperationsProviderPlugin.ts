@@ -6,7 +6,7 @@ interface FileManagerFilesStorageOperationsProviderProvideParams {
 }
 
 export abstract class FilesStorageOperationsProviderPlugin extends Plugin {
-    public static readonly type = "fm.storageOperationsProvider.settings";
+    public static readonly type = "fm.storageOperationsProvider.files";
 
     public abstract provide(
         params: FileManagerFilesStorageOperationsProviderProvideParams

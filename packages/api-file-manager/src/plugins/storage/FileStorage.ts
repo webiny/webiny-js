@@ -1,4 +1,4 @@
-import { FileManagerContext } from "../types";
+import { FileManagerContext } from "~/types";
 
 export type Args = {
     name: string;

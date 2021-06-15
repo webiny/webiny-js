@@ -1,4 +1,7 @@
 import graphql from "./graphql";
-import context from "./context";
+import filesCRUD from "./crud/files.crud";
+import settingsCRUD from "./crud/settings.crud";
+import systemCRUD from "./crud/system.crud";
+import storage from "./storage";
 
-export default (): any => [graphql, context];
+export default () => [systemCRUD, settingsCRUD, filesCRUD, storage, graphql];

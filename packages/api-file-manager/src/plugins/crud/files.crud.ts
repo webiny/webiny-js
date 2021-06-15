@@ -29,7 +29,7 @@ const checkOwnership = (file: File, permission: FilePermission, context: FileMan
     }
 };
 
-export default new ContextPlugin<FileManagerContext>(async context => {
+const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async context => {
     const { i18nContent, security } = context;
     const localeCode = i18nContent?.locale?.code;
 
@@ -48,6 +48,10 @@ export default new ContextPlugin<FileManagerContext>(async context => {
     const storageOperations = await providerPlugin.provide({
         context
     });
+
+    if (!context.fileManager) {
+        context.fileManager = {} as any;
+    }
 
     context.fileManager.files = {
         async getFile(id: string) {
@@ -318,3 +322,7 @@ export default new ContextPlugin<FileManagerContext>(async context => {
         }
     };
 });
+
+filesContextCrudPlugin.name = "FileManagerFilesCrud";
+
+export default filesContextCrudPlugin;

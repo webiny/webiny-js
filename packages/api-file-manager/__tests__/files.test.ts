@@ -26,34 +26,9 @@ const fileBData = {
 };
 
 describe("Files CRUD test", () => {
-    const {
-        tenant,
-        elasticSearch,
-        sleep,
-        createFile,
-        updateFile,
-        createFiles,
-        getFile,
-        listFiles
-    } = useGqlHandler({
+    const { createFile, updateFile, createFiles, getFile, listFiles, until } = useGqlHandler({
         permissions: [{ name: "*" }],
         identity: identityA
-    });
-
-    beforeEach(async () => {
-        try {
-            await elasticSearch.indices.create({
-                index: tenant.id + "-file-manager"
-            });
-        } catch (e) {}
-    });
-
-    afterEach(async () => {
-        try {
-            await elasticSearch.indices.delete({
-                index: tenant.id + "-file-manager"
-            });
-        } catch (e) {}
     });
 
     test("should create, read, update and delete files", async () => {
@@ -62,7 +37,10 @@ describe("Files CRUD test", () => {
             data: {
                 fileManager: {
                     createFile: {
-                        data: { ...fileAData, id: create.data.fileManager.createFile.data.id },
+                        data: {
+                            ...fileAData,
+                            id: expect.any(String)
+                        },
                         error: null
                     }
                 }
@@ -167,14 +145,13 @@ describe("Files CRUD test", () => {
             }
         });
 
-        // TODO: replace with the `until` utility we have in api-form-builder and api-page-builder
-        while (true) {
-            await sleep(1000);
-            const [list1] = await listFiles({});
-            if (Array.isArray(list1.data.fileManager.listFiles.data)) {
-                break;
-            }
-        }
+        await until(
+            () => listFiles({}).then(([data]) => data),
+            ({ data }) => {
+                return data.fileManager.listFiles.data.length === 2;
+            },
+            { name: "list all files", tries: 10 }
+        );
 
         // Let's get a all files
         const [list2] = await listFiles();
@@ -210,7 +187,16 @@ describe("Files CRUD test", () => {
             }
         }
 
-        await sleep(1000);
+        await until(
+            () =>
+                listFiles({
+                    limit: 1000
+                }).then(([data]) => data),
+            ({ data }) => {
+                return data.fileManager.listFiles.data.length === testFiles.length;
+            },
+            { name: "bulk list all files", tries: 10 }
+        );
 
         const inElastic = testFiles.reverse();
 

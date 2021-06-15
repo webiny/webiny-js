@@ -26,6 +26,7 @@ import {
     UPDATE_SETTINGS
 } from "./graphql/fileManagerSettings";
 import { SecurityPermission } from "@webiny/api-security/types";
+import { until } from "./helpers";
 
 type UseGqlHandlerParams = {
     permissions?: SecurityPermission[];
@@ -103,11 +104,7 @@ export default ({ permissions, identity }: UseGqlHandlerParams) => {
 
     return {
         tenant,
-        sleep: (ms = 100) => {
-            return new Promise(resolve => {
-                setTimeout(resolve, ms);
-            });
-        },
+        until,
         handler,
         invoke,
         // Files
