@@ -1,5 +1,5 @@
 import { QuestionCollection } from "inquirer";
-import { ContextInterface } from "@webiny/handler/types";
+import { CliContext } from "@webiny/cli/types";
 import { Plugin } from "@webiny/plugins/types";
 import { Ora } from "ora";
 import inquirer from "inquirer";
@@ -11,7 +11,7 @@ import inquirer from "inquirer";
  */
 export interface CliCommandPluginArgs {
     yargs: any;
-    context: ContextInterface;
+    context: CliContext;
 }
 
 /**
@@ -34,7 +34,7 @@ export interface CliCommandPlugin extends Plugin {
  * @category Template
  */
 export interface CliCommandScaffoldQuestionsCallableArgs {
-    context: ContextInterface;
+    context: CliContext;
 }
 
 /**
@@ -56,7 +56,7 @@ export type CliCommandScaffoldQuestionsCallable = (
  */
 export interface CliCommandScaffoldCallableArgs<T extends Record<string, any>> {
     input: T;
-    context: ContextInterface;
+    context: CliContext;
     wait: (ms?: number) => Promise<void>;
     inquirer: typeof inquirer;
     ora: Ora;
