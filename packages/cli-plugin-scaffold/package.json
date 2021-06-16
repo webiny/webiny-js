@@ -25,7 +25,6 @@
     "@babel/preset-flow": "^7.0.0",
     "@types/inquirer": "^7.3.1",
     "@webiny/cli": "^5.7.0",
-    "@webiny/handler": "^5.7.0",
     "@webiny/plugins": "^5.7.0",
     "@webiny/project-utils": "^5.7.0",
     "rimraf": "^3.0.2",
