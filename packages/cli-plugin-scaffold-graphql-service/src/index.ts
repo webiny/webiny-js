@@ -5,10 +5,12 @@ import ncpBase from "ncp";
 import pluralize from "pluralize";
 import Case from "case";
 import { replaceInPath } from "replace-in-path";
+import loadJsonFile from "load-json-file";
+import writeJsonFile from "write-json-file";
 import chalk from "chalk";
-import indentString from "indent-string";
 import { CliCommandScaffoldTemplate } from "@webiny/cli-plugin-scaffold/types";
-import prettier from "prettier";
+import findUp from "find-up";
+import execa from "execa";
 import {
     createScaffoldsIndexFile,
     updateScaffoldsIndexFile,
@@ -20,47 +22,56 @@ const ncp = util.promisify(ncpBase.ncp);
 interface Input {
     pluginsFolderPath: string;
     dataModelName: string;
+    showConfirmation?: boolean;
 }
 
-const createPackageName = ({
-    initial,
-    location
-}: {
-    initial?: string;
-    location: string;
-}): string => {
-    if (initial) {
-        return initial;
-    }
-    return Case.kebab(location);
-};
-
 export default (): CliCommandScaffoldTemplate<Input> => ({
-    name: "cli-plugin-scaffold-template-graphql-service",
+    name: "cli-plugin-scaffold-graphql",
     type: "cli-plugin-scaffold-template",
     scaffold: {
         name: "Extend GraphQL API",
-        questions: () => {
+        description: "Extends your GraphQL API with base CRUD queries and mutations.",
+        questions: ({ context }) => {
             return [
                 {
-                    name: "dataModelName",
-                    message: "Enter initial data model name:",
-                    default: "Book",
-                    validate: name => {
-                        if (!name.match(/^([a-zA-Z]+)$/)) {
-                            return "A valid targetDataModel name must consist of letters only.";
+                    name: "pluginsFolderPath",
+                    message: "Enter plugins folder path:",
+                    default: `api/code/graphql/src/plugins`,
+                    validate: pluginsFolderPath => {
+                        if (pluginsFolderPath.length < 2) {
+                            return `Please enter GraphQL API ${chalk.cyan("plugins")} folder path.`;
                         }
 
                         return true;
                     }
                 },
                 {
-                    name: "pluginsFolderPath",
-                    message: "Enter plugins folder path:",
-                    default: `api/code/graphql/src/plugins`,
-                    validate: location => {
-                        if (location.length < 2) {
-                            return "Please enter the package location.";
+                    name: "dataModelName",
+                    message: "Enter initial data model name:",
+                    default: "Book",
+                    validate: (dataModelName, answers) => {
+                        if (!dataModelName.match(/^([a-zA-Z]+)$/)) {
+                            return "A valid targetDataModel name must consist of letters only.";
+                        }
+
+                        const pluralizedCamelCasedDataModelName = pluralize(
+                            Case.camel(dataModelName)
+                        );
+
+                        const newCodePath = path.resolve(
+                            path.join(
+                                answers.pluginsFolderPath,
+                                "scaffolds",
+                                "graphql",
+                                pluralizedCamelCasedDataModelName
+                            )
+                        );
+
+                        if (fs.existsSync(newCodePath)) {
+                            const relativePath = path.relative(context.project.root, newCodePath);
+                            return `Cannot continue - the ${chalk.red(
+                                relativePath
+                            )} folder already exists.`;
                         }
 
                         return true;
@@ -68,7 +79,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 }
             ];
         },
-        generate: async ({ input, ora }) => {
+        generate: async ({ input, ora, inquirer, wait, context }) => {
             const dataModelName = {
                 plural: pluralize(Case.camel(input.dataModelName)),
                 singular: pluralize.singular(Case.camel(input.dataModelName))
@@ -81,7 +92,53 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 "graphql",
                 Case.camel(dataModelName.plural)
             );
+            const packageJsonPath = path.relative(
+                context.project.root,
+                findUp.sync("package.json", { cwd: input.pluginsFolderPath })
+            );
             const templateFolderPath = path.join(__dirname, "template");
+
+            // Get needed dependencies updates.
+            const dependenciesUpdates = [];
+            const packageJson = await loadJsonFile<Record<string, any>>(packageJsonPath);
+            if (!packageJson?.devDependencies?.["graphql-request"]) {
+                dependenciesUpdates.push(["devDependencies", "graphql-request", "^3.4.0"]);
+            }
+
+            if (input.showConfirmation !== false) {
+                console.log();
+                console.log(
+                    `${chalk.bold("The following operations will be performed on your behalf:")}`
+                );
+
+                console.log(`- new plugins will be created in ${chalk.green(newCodePath)}`);
+                console.log(
+                    `- created plugins will be imported in ${chalk.green(scaffoldsIndexPath)}`
+                );
+
+                if (dependenciesUpdates.length) {
+                    console.log(
+                        `- dependencies in ${chalk.green(packageJsonPath)} will be updated `
+                    );
+                }
+
+                const prompt = inquirer.createPromptModule();
+
+                const { proceed } = await prompt({
+                    name: "proceed",
+                    message: `Are you sure you want to continue?`,
+                    type: "confirm",
+                    default: false
+                });
+
+                if (!proceed) {
+                    process.exit(0);
+                }
+                console.log();
+            }
+
+            ora.start(`Creating new plugins in ${chalk.green(newCodePath)}...`);
+            await wait(1000);
 
             fs.mkdirSync(newCodePath, { recursive: true });
             await ncp(templateFolderPath, newCodePath);
@@ -132,6 +189,14 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 );
             }
 
+            ora.stopAndPersist({
+                symbol: chalk.green("✔"),
+                text: `New plugins created in ${chalk.green(newCodePath)}.`
+            });
+
+            ora.start(`Importing created plugins in ${chalk.green(scaffoldsIndexPath)}.`);
+            await wait(1000);
+
             createScaffoldsIndexFile(scaffoldsPath);
             await updateScaffoldsIndexFile({
                 scaffoldsIndexPath,
@@ -139,303 +204,48 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 importPath: `./graphql/${dataModelName.plural}`
             });
 
-            await formatCode(["**/*.ts"], { cwd: newCodePath });
-
-            return;
-            // Format all generated code.
-            await prettier.resolveConfig(process.cwd()).then(options => {
-                console.log("dibeiiii", options);
-            });
-
-            return;
-
-            /*      const project = getProject();
-
-            const locationRelative = path.relative(project.root, fullPluginsFolderPath);
-
-            const packageName = createPackageName({
-                initial: initialPackageName,
-                location
-            });
-            //
-            const templateFolder = path.join(__dirname, "template");
-
-            if (fs.existsSync(location)) {
-                throw new Error(`Destination folder ${location} already exists!`);
-            }
-
-            // Get base TS config path
-            const baseTsConfigFullPath = findUp.sync("tsconfig.json", {
-                cwd: fullPluginsFolderPath
-            });
-            const baseTsConfigRelativePath = path
-                .relative(fullPluginsFolderPath, baseTsConfigFullPath)
-                .replace(/\\/g, "/");
-
-            const baseTsConfigBuildJsonPath = baseTsConfigFullPath.replace(
-                "tsconfig.json",
-                "tsconfig.build.json"
-            );
-            const baseTsConfigBuildJson = await readJson<TsConfigJson>(baseTsConfigBuildJsonPath);
-
-            ora.start(`Creating service files in ${chalk.green(fullPluginsFolderPath)}...`);
-
-            const relativeRootPath = path.relative(fullPluginsFolderPath, project.root);
-
-            await fs.mkdirSync(location, { recursive: true });
-
-            // Copy template files
-            await ncp(templateFolder, fullPluginsFolderPath);
-
-            const graphqlPath = path.relative(process.cwd(), "api/code/graphql");
-
-            // Replace generic "Target" with received "entityName" argument.
-            const entity = {
-                plural: pluralize(Case.camel(dataModelName)),
-                singular: pluralize.singular(Case.camel(dataModelName))
-            };
-
-            const codeReplacements = [
-                { find: "targetDataModelKebabCase", replaceWith: Case.kebab(entity.singular) },
-                { find: "targetDataModels", replaceWith: Case.camel(entity.plural) },
-                { find: "Targets", replaceWith: Case.pascal(entity.plural) },
-                { find: "TARGETS", replaceWith: Case.constant(entity.plural) },
-                { find: "targetDataModel", replaceWith: Case.camel(entity.singular) },
-                { find: "Target", replaceWith: Case.pascal(entity.singular) },
-                { find: "TARGET", replaceWith: Case.constant(entity.singular) },
-                { find: "RELATIVE_ROOT_PATH", replaceWith: relativeRootPath.replace(/\\/g, "/") },
-                { find: "packageName", replaceWith: packageName },
-                { find: "packageLocation", replaceWith: location },
-                { find: "graphQlIndexFile", replaceWith: `${graphqlPath}//index.ts` },
-                { find: "location", replaceWith: location }
-            ];
-
-            replaceInPath(path.join(fullPluginsFolderPath, ".babelrc.js"), codeReplacements);
-            replaceInPath(path.join(fullPluginsFolderPath, "jest.config.js"), codeReplacements);
-            replaceInPath(
-                path.join(fullPluginsFolderPath, "jest-dynalite-config.js"),
-                codeReplacements
-            );
-            replaceInPath(path.join(fullPluginsFolderPath, "/!**!/!*.ts"), codeReplacements);
-            replaceInPath(path.join(fullPluginsFolderPath, "__tests__/!**!/!*.ts"), codeReplacements);
-            replaceInPath(path.join(fullPluginsFolderPath, "README.md"), codeReplacements);
-
-            // Make sure to also rename base file names.
-            const fileNameReplacements = [
-                {
-                    find: "__tests__/graphql/targetDataModels.ts",
-                    replaceWith: `__tests__/graphql/${entity.plural}.ts`
-                },
-                {
-                    find: "/resolvers/createTarget.ts",
-                    replaceWith: `/resolvers/create${Case.pascal(entity.singular)}.ts`
-                },
-                {
-                    find: "/resolvers/deleteTarget.ts",
-                    replaceWith: `/resolvers/delete${Case.pascal(entity.singular)}.ts`
-                },
-                {
-                    find: "/resolvers/getTarget.ts",
-                    replaceWith: `/resolvers/get${Case.pascal(entity.singular)}.ts`
-                },
-                {
-                    find: "/resolvers/listTargets.ts",
-                    replaceWith: `/resolvers/list${Case.pascal(entity.plural)}.ts`
-                },
-                {
-                    find: "/resolvers/updateTarget.ts",
-                    replaceWith: `/resolvers/update${Case.pascal(entity.singular)}.ts`
-                }
-            ];
-
-            for (const fileNameReplacement of fileNameReplacements) {
-                fs.renameSync(
-                    path.join(fullPluginsFolderPath, fileNameReplacement.find),
-                    path.join(fullPluginsFolderPath, fileNameReplacement.replaceWith)
-                );
-            }
-
             ora.stopAndPersist({
                 symbol: chalk.green("✔"),
-                text: `Service files created in ${chalk.green(fullPluginsFolderPath)}.`
+                text: `Imported created plugins in ${chalk.green(scaffoldsIndexPath)}.`
             });
 
-            // Update root package.json - update "workspaces.packages" section.
-            ora.start(
-                `Adding ${chalk.green(location)} workspace in root ${chalk.green(
-                    `package.json`
-                )}...`
-            );
-            const rootPackageJsonPath = path.join(project.root, "package.json");
-            const rootPackageJson = await readJson<PackageJson>(rootPackageJsonPath);
-            if (!rootPackageJson.workspaces.packages.includes(location)) {
-                rootPackageJson.workspaces.packages.push(location);
-                await writeJson(rootPackageJsonPath, rootPackageJson);
-            }
+            if (dependenciesUpdates.length) {
+                ora.start(`Updating dependencies...`);
+                dependenciesUpdates.forEach(([type, name, version]) => {
+                    if (!packageJson[type]) {
+                        packageJson[type] = {};
+                    }
 
-            ora.start(`Adding ${chalk.green(packageName)} to api package.json.`);
-            const graphqlPackageJsonPath = path.resolve(graphqlPath, "package.json");
-            const graphqlPackageJson = await readJson<PackageJson>(graphqlPackageJsonPath);
-            graphqlPackageJson.dependencies[packageName] = "^1.0.0";
-            await writeJson(graphqlPackageJsonPath, graphqlPackageJson);
+                    packageJson[type][name] = version;
+                });
 
-            ora.stopAndPersist({
-                symbol: chalk.green("✔"),
-                text: `Added ${chalk.green(packageName)} to api package.json.`
-            });
-
-            ora.start(`Updating api tsconfig.json.`);
-            // Update graphql tsconfig file
-            const graphqlTsconfigPath = path.resolve(graphqlPath, "tsconfig.json");
-            const packagePathRelativeToGraphql = path.relative(graphqlPath, fullPluginsFolderPath);
-            const graphqlTsconfig = readJson.sync<TsConfigJson>(graphqlTsconfigPath);
-            graphqlTsconfig.references = (graphqlTsconfig.references || []).concat([
-                {
-                    path: packagePathRelativeToGraphql
-                }
-            ]);
-            await writeJson(graphqlTsconfigPath, graphqlTsconfig);
-            ora.stopAndPersist({
-                symbol: chalk.green("✔"),
-                text: `Workspace ${chalk.green(location)} added in root ${chalk.green(
-                    `package.json`
-                )}.`
-            });
-
-            ora.start(`Updating package name...`);
-
-            // Update the package's name
-            const packageJsonPath = path.resolve(location, "package.json");
-            const packageJson = await readJson<PackageJson>(packageJsonPath);
-            packageJson.name = packageName;
-
-            const { version } = require("@webiny/cli-plugin-scaffold/package.json");
-
-            // Inject Webiny packages version
-            Object.keys(packageJson.dependencies).forEach(name => {
-                if (name.startsWith("@webiny")) {
-                    packageJson.dependencies[name] = version;
-                }
-            });
-
-            Object.keys(packageJson.devDependencies).forEach(name => {
-                if (name.startsWith("@webiny")) {
-                    packageJson.devDependencies[name] = version;
-                }
-            });
-
-            await writeJson(packageJsonPath, packageJson);
-            ora.stopAndPersist({
-                symbol: chalk.green("✔"),
-                text: `Package name set into ${chalk.green(`package.json`)}.`
-            });
-
-            // Update package tsconfig "extends" path
-            ora.start(`Updating package tsconfig extends path to root tsconfig...`);
-            const tsConfigPath = path.join(fullPluginsFolderPath, "tsconfig.json");
-            const tsConfig = await readJson<TsConfigJson>(tsConfigPath);
-            tsConfig.extends = baseTsConfigRelativePath;
-            await writeJson(tsConfigPath, tsConfig);
-            ora.stopAndPersist({
-                symbol: chalk.green("✔"),
-                text: `Update package tsconfig extends path.`
-            });
-
-            // Update package tsconfig.build "extends" path
-            ora.start(`Updating package tsconfig.build extends path to root tsconfig.build...`);
-            const tsConfigBuildPath = tsConfigPath.replace("tsconfig.json", "tsconfig.build.json");
-            const tsConfigBuild = await readJson<TsConfigJson>(tsConfigBuildPath);
-            tsConfigBuild.extends = baseTsConfigRelativePath.replace(
-                "tsconfig.json",
-                "tsconfig.build.json"
-            );
-            await writeJson(tsConfigBuildPath, tsConfigBuild);
-            ora.stopAndPersist({
-                symbol: chalk.green("✔"),
-                text: `Update package tsconfig.build extends path.`
-            });
-
-            // Update root tsconfig.build.json file paths
-            ora.start(`Updating base tsconfig compilerOptions.paths to contain the package...`);
-            if (!baseTsConfigBuildJson.compilerOptions) {
-                baseTsConfigBuildJson.compilerOptions = {};
-            }
-            baseTsConfigBuildJson.compilerOptions.paths[`${packageName}`] = [
-                `./${locationRelative}/src`
-            ];
-            baseTsConfigBuildJson.compilerOptions.paths[`${packageName}/!*`] = [
-                `./${locationRelative}//!*`
-            ];
-            await writeJson(baseTsConfigBuildJsonPath, baseTsConfigBuildJson);
-            ora.stopAndPersist({
-                symbol: chalk.green("✔"),
-                text: `Updated base tsconfig compilerOptions.paths.`
-            });
-
-            // Once everything is done, run `yarn` so the new packages are automatically installed.
-            try {
-                ora.start(`Installing dependencies...`);
-                await execa("yarn");
+                await writeJsonFile(packageJsonPath, packageJson);
+                await execa("yarn", [], { cwd: path.dirname(packageJsonPath) });
                 ora.stopAndPersist({
                     symbol: chalk.green("✔"),
-                    text: "Dependencies installed."
+                    text: `Dependencies updated.`
                 });
-                ora.start(`Building generated package...`);
-                const cwd = process.cwd();
-                process.chdir(location);
-                await execa("yarn", ["build"]);
-                process.chdir(cwd);
-                ora.stopAndPersist({
-                    symbol: chalk.green("✔"),
-                    text: "Package built."
-                });
-                ora.start(`Linking package...`);
-                await execa("yarn", ["postinstall"]);
-                ora.stopAndPersist({
-                    symbol: chalk.green("✔"),
-                    text: "Package linked."
-                });
-            } catch (err) {
-                throw new WebinyError(
-                    `Unable to install dependencies. Try running "yarn" in project root manually.`,
-                    err.message
-                );
-            }*/
+            }
+
+            await formatCode("**/*.ts", { cwd: newCodePath });
+            await formatCode("package.json", { cwd: path.dirname(packageJsonPath) });
         },
-        onSuccess: async ({ input }) => {
-            const { location, dataModelName, packageName: initialPackageName } = input;
-
-            const entity = {
-                singular: Case.camel(dataModelName),
-                plural: pluralize(Case.camel(dataModelName))
-            };
-
-            const packageName = createPackageName({
-                initial: initialPackageName,
-                location
-            });
-
-            const graphqlPath = path.relative(process.cwd(), "./api/code/graphql");
-            const graphqlSrcPath = `${path.relative(process.cwd(), `${graphqlPath}/src`)}`;
-
-            console.log(`The next steps:`);
+        onSuccess: async ({ input, ora }) => {
+            console.log();
             console.log(
-                indentString(
-                    `1. Open ${chalk.green(
-                        `${graphqlSrcPath}/index.ts`
-                    )} and copy the code into it:`,
-                    2
-                )
+                `${chalk.green("✔")} New GraphQL API plugins created and imported successfully.`
             );
+            console.log();
+            console.log(chalk.bold("Next steps:"));
 
             console.log(
-                indentString(
-                    `3. Deploy the ${chalk.green(packageName)} by running ${chalk.green(
-                        `yarn webiny deploy api --env=dev`
-                    )}.`,
-                    2
-                )
+                `- deploy the extended GraphQL API and continue developing by running the ${chalk.green(
+                    "yarn webiny watch api --env {env}"
+                )} command`
             );
+
+            console.log("- learn more about the created plugins and the scaffold itself at https://www.webiny.com/docs/key-topics/todo");
+            console.log(`- learn more about the ${chalk.green('webiny watch')} command at https://www.webiny.com/docs/key-topics/todo`);
         }
     }
 });
