@@ -8,7 +8,7 @@ const { getStackOutput } = require("@webiny/cli-plugin-deploy-pulumi/utils");
  */
 const stackOutput = getStackOutput({ folder: "api", env: "dev" });
 
-Object.assign(process.env, {
+stackOutput && Object.assign(process.env, {
     // We assign `region`, `dynamoDbTable`, and `apiUrl` as AWS_REGION, DB_TABLE, and API_URL
     // environment variables. If needed, you can export additional values from the mentioned
     // `api/pulumi/dev/index.ts` file and assign them here.
