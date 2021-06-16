@@ -8,7 +8,7 @@ import { ApplicationContext } from "../types";
  * Can be removed if Elasticsearch is not used.
  */
 const install = async (_, __, context: ApplicationContext) => {
-    const { security, elasticSearch } = context;
+    const { security, elasticsearch } = context;
     /**
      * The user running this code MUST have full access to the system.
      */
@@ -24,7 +24,7 @@ const install = async (_, __, context: ApplicationContext) => {
      * We need to check if given index already exists. If it does it means installation procedure was already done.
      * Fail with response in that case.
      */
-    const { body: hasIndice } = await elasticSearch.indices.exists(esConfig);
+    const { body: hasIndice } = await elasticsearch.indices.exists(esConfig);
     if (hasIndice) {
         return new ErrorResponse({
             message: "Already installed.",
@@ -36,7 +36,7 @@ const install = async (_, __, context: ApplicationContext) => {
      * Fail with ErrorResponse on any error.
      */
     try {
-        await elasticSearch.indices.create({
+        await elasticsearch.indices.create({
             ...esConfig,
             body: {
                 /**

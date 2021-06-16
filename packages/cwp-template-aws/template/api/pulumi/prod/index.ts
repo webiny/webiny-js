@@ -20,13 +20,13 @@ export default () => {
     const dynamoDb = new DynamoDB({ protectedEnvironment });
     const cognito = new Cognito({ protectedEnvironment });
 
-    const elasticSearch = new ElasticSearch({ protectedEnvironment });
+    const elasticsearch = new ElasticSearch({ protectedEnvironment });
     const fileManager = new FileManager({ protectedEnvironment });
 
     const prerenderingService = new PrerenderingService({
         env: {
             DB_TABLE: dynamoDb.table.name,
-            DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
+            DB_TABLE_ELASTICSEARCH: elasticsearch.table.name,
             DEBUG: String(process.env.DEBUG)
         }
     });
@@ -34,7 +34,7 @@ export default () => {
     const pageBuilder = new PageBuilder({
         env: {
             DB_TABLE: dynamoDb.table.name,
-            DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
+            DB_TABLE_ELASTICSEARCH: elasticsearch.table.name,
             DEBUG: String(process.env.DEBUG)
         },
         bucket: fileManager.bucket
@@ -45,9 +45,9 @@ export default () => {
             COGNITO_REGION: String(process.env.AWS_REGION),
             COGNITO_USER_POOL_ID: cognito.userPool.id,
             DB_TABLE: dynamoDb.table.name,
-            DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
+            DB_TABLE_ELASTICSEARCH: elasticsearch.table.name,
             DEBUG: String(process.env.DEBUG),
-            ELASTIC_SEARCH_ENDPOINT: elasticSearch.domain.endpoint,
+            ELASTIC_SEARCH_ENDPOINT: elasticsearch.domain.endpoint,
             PRERENDERING_RENDER_HANDLER: prerenderingService.functions.render.arn,
             PRERENDERING_FLUSH_HANDLER: prerenderingService.functions.flush.arn,
             PRERENDERING_QUEUE_ADD_HANDLER: prerenderingService.functions.queue.add.arn,
@@ -62,9 +62,9 @@ export default () => {
             COGNITO_REGION: String(process.env.AWS_REGION),
             COGNITO_USER_POOL_ID: cognito.userPool.id,
             DB_TABLE: dynamoDb.table.name,
-            DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
+            DB_TABLE_ELASTICSEARCH: elasticsearch.table.name,
             DEBUG: String(process.env.DEBUG),
-            ELASTIC_SEARCH_ENDPOINT: elasticSearch.domain.endpoint,
+            ELASTIC_SEARCH_ENDPOINT: elasticsearch.domain.endpoint,
             S3_BUCKET: fileManager.bucket.id,
             WEBINY_LOGS_FORWARD_URL: String(process.env.WEBINY_LOGS_FORWARD_URL)
         }

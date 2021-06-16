@@ -1,7 +1,7 @@
 import { createHandler } from "@webiny/handler-aws";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
-import elasticSearch from "@webiny/api-elasticsearch";
+import elasticsearchClientContextPlugin from "@webiny/api-elasticsearch";
 import securityPlugins from "@webiny/api-security/authenticator";
 // uncomment if you want to use in tests
 // import apiKeyAuthentication from "@webiny/api-security-tenancy/authentication/apiKey";
@@ -104,14 +104,14 @@ export default () => {
     /**
      *
      */
-    const elasticSearchContext = elasticSearch({
+    const elasticsearchClientContext = elasticsearchClientContextPlugin({
         endpoint: `http://localhost:${ELASTICSEARCH_PORT}`
     });
 
     /**
      * Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
      */
-    simulateStream(documentClient, createHandler(elasticSearchContext, dynamoToElastic()));
+    simulateStream(documentClient, createHandler(elasticsearchClientContext, dynamoToElastic()));
 
     /**
      * Creates the actual handler. Feel free to add additional plugins if needed.
@@ -133,7 +133,7 @@ export default () => {
         /**
          *
          */
-        elasticSearch({ endpoint: `http://localhost:${ELASTICSEARCH_PORT}` }),
+        elasticsearchClientContext,
         /**
          * Tenant simulation.
          */
@@ -215,7 +215,7 @@ export default () => {
     };
 
     return {
-        elasticSearch: elasticsearchClient,
+        elasticsearch: elasticsearchClient,
         handler,
         invoke,
         createElasticsearchIndices,

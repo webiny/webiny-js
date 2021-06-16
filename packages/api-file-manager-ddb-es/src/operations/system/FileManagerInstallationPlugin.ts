@@ -5,13 +5,13 @@ export class FileManagerInstallationPlugin extends InstallationPlugin {
     public name = "fm.system.ddb-es-installation";
 
     public async beforeInstall({ context }): Promise<void> {
-        const { elasticSearch } = context;
+        const { elasticsearch } = context;
         const esIndex = configurations.es(context);
-        const { body: exists } = await elasticSearch.indices.exists(esIndex);
+        const { body: exists } = await elasticsearch.indices.exists(esIndex);
         if (exists) {
             return;
         }
-        await elasticSearch.indices.create({
+        await elasticsearch.indices.create({
             ...esIndex,
             body: {
                 // need this part for sorting to work on text fields

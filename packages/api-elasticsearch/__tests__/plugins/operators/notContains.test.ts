@@ -21,7 +21,6 @@ describe("ElasticsearchQueryBuilderOperatorNotContainsPlugin", () => {
                         allow_leading_wildcard: true,
                         fields: ["name"],
                         query: "*John*",
-                        // @ts-ignore
                         default_operator: "and"
                     }
                 }

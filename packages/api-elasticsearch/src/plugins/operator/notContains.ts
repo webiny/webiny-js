@@ -19,7 +19,6 @@ export class ElasticsearchQueryBuilderOperatorNotContainsPlugin extends Elastics
                 allow_leading_wildcard: true,
                 fields: [path],
                 query: normalizeValue(value),
-                // @ts-ignore
                 default_operator: "and"
             }
         });

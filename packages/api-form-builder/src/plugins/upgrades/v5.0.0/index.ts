@@ -9,14 +9,14 @@ const plugin: UpgradePlugin<FormBuilderContext> = {
     app: "form-builder",
     version: "5.0.0",
     async apply(context) {
-        const { elasticSearch, fileManager, db } = context;
+        const { elasticsearch, fileManager, db } = context;
         const limit = 1000;
         let hasMoreItems = true;
         let after = undefined;
         let esItems = [];
 
         while (hasMoreItems) {
-            const response = await elasticSearch.search({
+            const response = await elasticsearch.search({
                 ...defaults.es(context),
                 body: {
                     sort: {
@@ -100,7 +100,7 @@ const plugin: UpgradePlugin<FormBuilderContext> = {
 
         const {
             body: { items, errors }
-        } = await elasticSearch.bulk({
+        } = await elasticsearch.bulk({
             body: operations,
             // eslint-disable-next-line
             filter_path: "errors,items.*.error"

@@ -219,7 +219,7 @@ const plugin: ContextPlugin<PbContext> = {
                             filter.push({ term: { "tenant.keyword": tenant.id } });
                         }
 
-                        const response = await context.elasticSearch.search({
+                        const response = await context.elasticsearch.search({
                             ...ES_DEFAULTS(),
                             body: {
                                 size: 1,

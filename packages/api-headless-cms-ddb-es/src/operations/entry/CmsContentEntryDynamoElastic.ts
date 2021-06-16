@@ -32,6 +32,7 @@ import {
 import { createBasePartitionKey, encodeElasticsearchCursor, paginateBatch } from "../../utils";
 import { entryFromStorageTransform } from "@webiny/api-headless-cms/transformers";
 import { Client } from "@elastic/elasticsearch";
+import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 
 export const TYPE_ENTRY = "cms.entry";
 export const TYPE_ENTRY_LATEST = TYPE_ENTRY + ".l";
@@ -81,11 +82,11 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         if (this._esClient) {
             return this._esClient;
         }
-        const ctx = this.context as any;
-        if (!ctx.elasticSearch) {
+        const ctx = this.context as Partial<ElasticsearchContext>;
+        if (!ctx.elasticsearch) {
             throw new WebinyError("Missing Elasticsearch client on the context");
         }
-        this._esClient = ctx.elasticSearch as Client;
+        this._esClient = ctx.elasticsearch as Client;
         return this._esClient;
     }
 

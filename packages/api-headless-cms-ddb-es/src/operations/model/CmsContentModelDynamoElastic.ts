@@ -11,6 +11,7 @@ import WebinyError from "@webiny/error";
 import configurations from "../../configurations";
 import { createBasePartitionKey } from "../../utils";
 import { Client } from "@elastic/elasticsearch";
+import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 
 interface ConstructorArgs {
     context: CmsContext;
@@ -24,11 +25,11 @@ export default class CmsContentModelDynamoElastic implements CmsContentModelStor
         if (this._esClient) {
             return this._esClient;
         }
-        const ctx = this.context as any;
-        if (!ctx.elasticSearch) {
+        const ctx = this.context as Partial<ElasticsearchContext>;
+        if (!ctx.elasticsearch) {
             throw new WebinyError("Missing Elasticsearch client on the context");
         }
-        this._esClient = ctx.elasticSearch as Client;
+        this._esClient = ctx.elasticsearch as Client;
         return this._esClient;
     }
 

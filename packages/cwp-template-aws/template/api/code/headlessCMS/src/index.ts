@@ -4,7 +4,7 @@ import i18nPlugins from "@webiny/api-i18n/graphql";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
-import elasticSearch from "@webiny/api-elasticsearch";
+import elasticsearchClientContextPlugin from "@webiny/api-elasticsearch";
 import headlessCmsPlugins from "@webiny/api-headless-cms/content";
 import securityPlugins from "./security";
 import headlessCmsDynamoDbElasticStorageOperation from "@webiny/api-headless-cms-ddb-es";
@@ -15,7 +15,9 @@ const debug = process.env.DEBUG === "true";
 export const handler = createHandler({
     plugins: [
         logsPlugins(),
-        elasticSearch({ endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}` }),
+        elasticsearchClientContextPlugin({
+            endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}`
+        }),
         dbPlugins({
             table: process.env.DB_TABLE,
             driver: new DynamoDbDriver({

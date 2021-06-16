@@ -56,13 +56,13 @@ describe("Forms Security Test", () => {
 
     beforeEach(async () => {
         try {
-            await defaultHandler.elasticSearch.indices.create({ index: esFbIndex });
+            await defaultHandler.elasticsearch.indices.create({ index: esFbIndex });
         } catch (e) {}
     });
 
     afterEach(async () => {
         try {
-            await defaultHandler.elasticSearch.indices.delete({ index: esFbIndex });
+            await defaultHandler.elasticsearch.indices.delete({ index: esFbIndex });
         } catch (e) {}
     });
 

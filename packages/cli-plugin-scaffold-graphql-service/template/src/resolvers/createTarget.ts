@@ -8,7 +8,7 @@ const createTarget = async (
     args: CreateTargetArgs,
     context: ApplicationContext
 ): Promise<ResolverResponse<Target>> => {
-    const { db, security, elasticSearch } = context;
+    const { db, security, elasticsearch } = context;
     const { data } = args;
 
     /**
@@ -36,7 +36,7 @@ const createTarget = async (
      */
     const esConfig = utils.es(context);
     try {
-        const { body: hasIndice } = await elasticSearch.indices.exists(esConfig);
+        const { body: hasIndice } = await elasticsearch.indices.exists(esConfig);
         if (!hasIndice) {
             return new ErrorResponse({
                 message: "You must run the install mutation to create the Elasticsearch index.",

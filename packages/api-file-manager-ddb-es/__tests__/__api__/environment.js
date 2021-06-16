@@ -1,7 +1,7 @@
 const dbPlugins = require("@webiny/handler-db").default;
 const { DynamoDbDriver } = require("@webiny/db-dynamodb");
 const { DocumentClient } = require("aws-sdk/clients/dynamodb");
-const elasticSearch = require("@webiny/api-elasticsearch").default;
+const elasticsearchClientContextPlugin = require("@webiny/api-elasticsearch").default;
 const { createHandler } = require("@webiny/handler-aws");
 const dynamoToElastic = require("@webiny/api-dynamodb-to-elasticsearch/handler").default;
 const { Client } = require("@elastic/elasticsearch");
@@ -18,9 +18,9 @@ if (typeof plugins !== "function") {
 
 const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
 
-const getStorageOperationsPlugins = ({ documentClient, elasticSearchContext }) => {
+const getStorageOperationsPlugins = ({ documentClient, elasticsearchClientContext }) => {
     // Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
-    simulateStream(documentClient, createHandler(elasticSearchContext, dynamoToElastic()));
+    simulateStream(documentClient, createHandler(elasticsearchClientContext, dynamoToElastic()));
 
     return () => {
         return [
@@ -31,7 +31,7 @@ const getStorageOperationsPlugins = ({ documentClient, elasticSearchContext }) =
                     documentClient
                 })
             }),
-            elasticSearchContext
+            elasticsearchClientContext
         ];
     };
 };
@@ -51,7 +51,7 @@ class FileManagerTestEnvironment extends NodeEnvironment {
             accessKeyId: "test",
             secretAccessKey: "test"
         });
-        const elasticSearchContext = elasticSearch({
+        const elasticsearchClientContext = elasticsearchClientContextPlugin({
             endpoint: `http://localhost:${ELASTICSEARCH_PORT}`,
             auth: {}
         });
@@ -65,7 +65,7 @@ class FileManagerTestEnvironment extends NodeEnvironment {
          */
         this.global.__getStorageOperationsPlugins = () => {
             return getStorageOperationsPlugins({
-                elasticSearchContext,
+                elasticsearchClientContext,
                 documentClient
             });
         };

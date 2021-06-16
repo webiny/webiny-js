@@ -7645,12 +7645,13 @@ __metadata:
     "@babel/core": ^7.5.5
     "@elastic/elasticsearch": ^7.9.1
     "@webiny/cli": ^5.8.0
+    "@webiny/error": ^5.8.0
     "@webiny/handler": ^5.8.0
     "@webiny/plugins": ^5.8.0
     "@webiny/project-utils": ^5.8.0
     aws-elasticsearch-connector: ^9.0.0
     aws-sdk: ^2.539.0
-    elastic-ts: ^0.6.0
+    elastic-ts: ^0.7.0
     rimraf: ^3.0.2
     typescript: ^4.1.3
   languageName: unknown
@@ -16331,12 +16332,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"elastic-ts@npm:^0.6.0":
-  version: 0.6.0
-  resolution: "elastic-ts@npm:0.6.0"
+"elastic-ts@npm:^0.7.0":
+  version: 0.7.0
+  resolution: "elastic-ts@npm:0.7.0"
   dependencies:
     "@sindresorhus/is": ^4.0.0
-  checksum: 3d7e2940da3999be328b5ae621db2435fd8f4880a7bd483ee0a28721a9925caa778847b0cf508937c8a2906fe9958a0a8a92682622c37c130cd258211ec67dcb
+  checksum: de96a3bf8bdc277a733bd5dabf930e88a8dd662ab7470de370907956cbafe15135f7fd72388ca72c861d0264f51dc9d8fddd3fbc764e33ce3cd3f80cef2826b8
   languageName: node
   linkType: hard
 

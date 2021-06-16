@@ -46,7 +46,7 @@ type DbItem<T = unknown> = T & {
 export default {
     type: "context",
     apply(context) {
-        const { db, i18nContent, elasticSearch, security } = context;
+        const { db, i18nContent, elasticsearch, security } = context;
 
         const PK_FORM = formId => `${utils.getPKPrefix(context)}F#${formId}`;
         const SK_FORM_REVISION = version => {
@@ -149,7 +149,7 @@ export default {
                     };
 
                     // Get "latest" form revisions from Elasticsearch.
-                    const response = await elasticSearch.search({
+                    const response = await elasticsearch.search({
                         ...defaults.es(context),
                         body
                     });
@@ -1009,7 +1009,7 @@ export default {
                         body["search_after"] = utils.decodeCursor(after);
                     }
 
-                    const response = await elasticSearch.search({
+                    const response = await elasticsearch.search({
                         ...defaults.es(context),
                         body
                     });

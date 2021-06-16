@@ -31,7 +31,7 @@ const listTargets = async (
     args: ListTargetsArgs,
     context: ApplicationContext
 ): Promise<ListResolverResponse<Target>> => {
-    const { elasticSearch } = context;
+    const { elasticsearch } = context;
     const { where, sort, limit, after } = args;
     /**
      * Keep limit in some constraint.
@@ -60,7 +60,7 @@ const listTargets = async (
     };
     let response;
     try {
-        response = await elasticSearch.search({
+        response = await elasticsearch.search({
             ...utils.es(context),
             body
         });

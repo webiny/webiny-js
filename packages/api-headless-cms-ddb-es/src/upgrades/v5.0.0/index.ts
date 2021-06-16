@@ -26,14 +26,14 @@ const plugin = (): UpgradePlugin<CmsContext> => ({
     version: "5.0.0",
     async apply(context) {
         const { db, fileManager } = context;
-        const elasticSearch: Client = (context as any).elasticSearch;
-        if (!elasticSearch) {
+        const elasticsearch: Client = (context as any).elasticsearch;
+        if (!elasticsearch) {
             throw new WebinyError("Missing Elasticsearch client on the context.");
         }
 
         // Check if we still have the old elasticsearch index
         const esIndex = createOldVersionIndiceName(context);
-        const { body: exists } = await elasticSearch.indices.exists({
+        const { body: exists } = await elasticsearch.indices.exists({
             index: esIndex
         });
 
@@ -42,7 +42,7 @@ const plugin = (): UpgradePlugin<CmsContext> => ({
         }
 
         try {
-            await elasticSearch.indices.putTemplate({
+            await elasticsearch.indices.putTemplate({
                 name: "headless-cms-entries-index",
                 body: {
                     index_patterns: ["*headless-cms*"],
@@ -90,7 +90,7 @@ const plugin = (): UpgradePlugin<CmsContext> => ({
 
         // go through old index and load data in bulks of 1000
         while (hasMoreItems) {
-            const response = await elasticSearch.search({
+            const response = await elasticsearch.search({
                 index: esIndex,
                 body: {
                     sort: {
@@ -229,7 +229,7 @@ const plugin = (): UpgradePlugin<CmsContext> => ({
         }
 
         // ES BULK INSERT
-        const bulkInsert = await elasticSearch.bulk({
+        const bulkInsert = await elasticsearch.bulk({
             body: esOperations
         });
 

@@ -6,7 +6,7 @@ import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
-import elasticSearch from "@webiny/api-elasticsearch";
+import elasticsearchClientContextPlugin from "@webiny/api-elasticsearch";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
 import fileManagerDynamoDbElasticPlugins from "@webiny/api-file-manager-ddb-es";
 import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
@@ -25,7 +25,9 @@ export const handler = createHandler({
     plugins: [
         logsPlugins(),
         graphqlPlugins({ debug }),
-        elasticSearch({ endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}` }),
+        elasticsearchClientContextPlugin({
+            endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}`
+        }),
         dbPlugins({
             table: process.env.DB_TABLE,
             driver: new DynamoDbDriver({

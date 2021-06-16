@@ -2,22 +2,22 @@ import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { paginateBatch } from "../utils";
 import configurations from "~/operations/configurations";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
-import { ElasticSearchClientContext } from "@webiny/api-elasticsearch/types";
+import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import { DbContext } from "@webiny/handler-db/types";
 
-const plugin: UpgradePlugin<FileManagerContext & ElasticSearchClientContext & DbContext> = {
+const plugin: UpgradePlugin<FileManagerContext & ElasticsearchContext & DbContext> = {
     name: "api-upgrade-file-manager",
     type: "api-upgrade",
     app: "file-manager",
     version: "5.0.0",
-    async apply({ elasticSearch, fileManager, db }) {
+    async apply({ elasticsearch, fileManager, db }) {
         const limit = 1000;
         let hasMoreItems = true;
         let after = undefined;
         let esItems = [];
 
         while (hasMoreItems) {
-            const response = await elasticSearch.search({
+            const response = await elasticsearch.search({
                 index: "root-file-manager",
                 body: {
                     sort: {
@@ -84,7 +84,7 @@ const plugin: UpgradePlugin<FileManagerContext & ElasticSearchClientContext & Db
 
         const {
             body: { items, errors }
-        } = await elasticSearch.bulk({
+        } = await elasticsearch.bulk({
             body: operations,
             // eslint-disable-next-line
             filter_path: "errors,items.*.error"

@@ -1,8 +1,8 @@
 import { Converter } from "aws-sdk/clients/dynamodb";
 import { HandlerPlugin } from "@webiny/handler/types";
-import { ElasticSearchClientContext } from "@webiny/api-elasticsearch/types";
+import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 
-export default (): HandlerPlugin<ElasticSearchClientContext> => ({
+export default (): HandlerPlugin<ElasticsearchContext> => ({
     type: "handler",
     async handle(context) {
         const [event] = context.args;
@@ -37,7 +37,7 @@ export default (): HandlerPlugin<ElasticSearchClientContext> => ({
         }
 
         try {
-            const res = await context.elasticSearch.bulk({ body: operations });
+            const res = await context.elasticsearch.bulk({ body: operations });
             if (process.env.DEBUG === "true") {
                 console.log("Bulk response", JSON.stringify(res, null, 2));
             }

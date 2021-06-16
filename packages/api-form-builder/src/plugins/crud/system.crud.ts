@@ -64,7 +64,7 @@ export default {
                     }
                 },
                 async install({ domain }) {
-                    const { formBuilder, elasticSearch } = context;
+                    const { formBuilder, elasticsearch } = context;
 
                     const version = await this.getVersion();
                     if (version) {
@@ -85,9 +85,9 @@ export default {
 
                     // Create ES index if it doesn't already exist.
                     const esIndex = defaults.es(context);
-                    const { body: exists } = await elasticSearch.indices.exists(esIndex);
+                    const { body: exists } = await elasticsearch.indices.exists(esIndex);
                     if (!exists) {
-                        await elasticSearch.indices.create({
+                        await elasticsearch.indices.create({
                             ...esIndex,
                             body: {
                                 // need this part for sorting to work on text fields

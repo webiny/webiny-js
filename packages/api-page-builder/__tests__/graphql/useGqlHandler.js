@@ -8,7 +8,7 @@ import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import elasticSearchPlugins from "@webiny/api-elasticsearch";
+import elasticsearchClientContextPlugin from "@webiny/api-elasticsearch";
 import { simulateStream } from "@webiny/project-utils/testing/dynamodb";
 import dynamoToElastic from "@webiny/api-dynamodb-to-elasticsearch/handler";
 import { Client } from "@elastic/elasticsearch";
@@ -86,12 +86,12 @@ export default ({ permissions, identity, tenant } = {}) => {
         region: "local"
     });
 
-    const elasticSearchContext = elasticSearchPlugins({
+    const elasticsearchContext = elasticsearchClientContextPlugin({
         endpoint: `http://localhost:${ELASTICSEARCH_PORT}`
     });
 
     // Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
-    simulateStream(documentClient, createHandler(elasticSearchContext, dynamoToElastic()));
+    simulateStream(documentClient, createHandler(elasticsearchContext, dynamoToElastic()));
 
     const db = new Db({
         table: "PageBuilder",
@@ -106,7 +106,7 @@ export default ({ permissions, identity, tenant } = {}) => {
         }),
         // TODO figure out a way to load these automatically
         fileManagerDdbEsPlugins(),
-        elasticSearchContext,
+        elasticsearchContext,
         apolloServerPlugins(),
         securityPlugins(),
         {
@@ -188,7 +188,7 @@ export default ({ permissions, identity, tenant } = {}) => {
         });
     };
 
-    const elasticSearch = new Client({
+    const elasticsearchClient = new Client({
         hosts: [`http://localhost:${ELASTICSEARCH_PORT}`],
         node: `http://localhost:${ELASTICSEARCH_PORT}`
     });
@@ -210,19 +210,19 @@ export default ({ permissions, identity, tenant } = {}) => {
                 ]
             }
         },
-        elasticSearch,
+        elasticsearchClient,
         logsDb,
         createElasticSearchIndex: async () => {
             try {
                 const tenantId = tenant ? tenant.id : defaultTenant.id;
-                await elasticSearch.indices.create({ index: tenantId + "-page-builder" });
+                await elasticsearchClient.indices.create({ index: tenantId + "-page-builder" });
             } catch {}
         },
         deleteElasticSearchIndex: async () => {
             try {
                 const tenantId = tenant ? tenant.id : defaultTenant.id;
                 await sleep();
-                await elasticSearch.indices.delete({ index: tenantId + "-page-builder" });
+                await elasticsearchClient.indices.delete({ index: tenantId + "-page-builder" });
             } catch {}
         },
         sleep,

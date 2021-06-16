@@ -6,7 +6,7 @@ import { ApplicationContext } from "../types";
  * Can be removed if Elasticsearch is not used.
  */
 const uninstall = async (_, __, context: ApplicationContext) => {
-    const { security, elasticSearch } = context;
+    const { security, elasticsearch } = context;
     /**
      * The user running this code MUST have full access to the system.
      */
@@ -25,7 +25,7 @@ const uninstall = async (_, __, context: ApplicationContext) => {
      * We need to check if given index already exists. If it does not it means that there is no need to proceed.
      * Fail with response in that case.
      */
-    const { body: hasIndice } = await elasticSearch.indices.exists(esConfig);
+    const { body: hasIndice } = await elasticsearch.indices.exists(esConfig);
     if (!hasIndice) {
         return new ErrorResponse({
             message: "Not installed.",
@@ -37,7 +37,7 @@ const uninstall = async (_, __, context: ApplicationContext) => {
      * Fail with ErrorResponse on any error.
      */
     try {
-        await elasticSearch.indices.delete(esConfig);
+        await elasticsearch.indices.delete(esConfig);
     } catch (ex) {
         return new ErrorResponse({
             message: "Could not delete Elasticsearch index.",

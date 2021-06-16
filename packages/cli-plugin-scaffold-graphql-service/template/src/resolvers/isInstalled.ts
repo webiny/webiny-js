@@ -7,7 +7,7 @@ import { NotAuthorizedResponse } from "@webiny/api-security";
  * Can be removed if Elasticsearch is not used.
  */
 const isInstalled = async (_, __, context: ApplicationContext) => {
-    const { security, elasticSearch } = context;
+    const { security, elasticsearch } = context;
     /**
      * The user running this code MUST have full access to the system.
      */
@@ -20,7 +20,7 @@ const isInstalled = async (_, __, context: ApplicationContext) => {
      */
     const esConfig = utils.es(context);
     try {
-        const { body: hasIndice } = await elasticSearch.indices.exists(esConfig);
+        const { body: hasIndice } = await elasticsearch.indices.exists(esConfig);
         /**
          * Just plain true/false to return so user can act on the information.
          */

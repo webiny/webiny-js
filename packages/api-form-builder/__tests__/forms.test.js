@@ -9,7 +9,7 @@ jest.setTimeout(60000);
 describe('Form Builder "Form" Test', () => {
     const {
         until,
-        elasticSearch,
+        elasticsearch,
         install,
         installFileManager,
         createForm,
@@ -45,11 +45,11 @@ describe('Form Builder "Form" Test', () => {
 
     afterEach(async () => {
         try {
-            await elasticSearch.indices.delete({ index: esFbIndex });
+            await elasticsearch.indices.delete({ index: esFbIndex });
         } catch (e) {}
 
         try {
-            await elasticSearch.indices.delete({ index: esFmIndex });
+            await elasticsearch.indices.delete({ index: esFmIndex });
         } catch (e) {}
     });
 

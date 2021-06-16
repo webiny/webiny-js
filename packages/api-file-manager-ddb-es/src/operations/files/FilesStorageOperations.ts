@@ -70,13 +70,13 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
 
     private get esClient() {
         const ctx = this.context as any;
-        if (!ctx.elasticSearch) {
+        if (!ctx.elasticsearch) {
             throw new WebinyError(
                 "Missing Elasticsearch client on the context.",
                 "ELASTICSEARCH_CLIENT_ERROR"
             );
         }
-        return ctx.elasticSearch as Client;
+        return ctx.elasticsearch as Client;
     }
 
     private get partitionKeyPrefix(): string {

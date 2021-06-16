@@ -12,7 +12,7 @@ import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { SecurityIdentity } from "@webiny/api-security";
-import elasticSearch from "@webiny/api-elasticsearch";
+import elasticsearchClientContextPlugin from "@webiny/api-elasticsearch";
 import { simulateStream } from "@webiny/project-utils/testing/dynamodb";
 import dynamoToElastic from "@webiny/api-dynamodb-to-elasticsearch/handler";
 import { Client } from "@elastic/elasticsearch";
@@ -96,19 +96,19 @@ export default ({ permissions, identity, tenant } = {}) => {
         region: "local"
     });
 
-    const elasticSearchContext = elasticSearch({
+    const elasticsearchClientContext = elasticsearchClientContextPlugin({
         endpoint: `http://localhost:${ELASTICSEARCH_PORT}`
     });
 
     // Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
-    simulateStream(documentClient, createHandler(elasticSearchContext, dynamoToElastic()));
+    simulateStream(documentClient, createHandler(elasticsearchClientContext, dynamoToElastic()));
 
     const handler = createHandler(
         dbPlugins({
             table: "FormBuilder",
             driver: new DynamoDbDriver({ documentClient })
         }),
-        elasticSearchContext,
+        elasticsearchClientContext,
         apolloServerPlugins(),
         securityPlugins(),
         {
@@ -178,7 +178,7 @@ export default ({ permissions, identity, tenant } = {}) => {
 
     return {
         until,
-        elasticSearch: new Client({
+        elasticsearch: new Client({
             hosts: [`http://localhost:${ELASTICSEARCH_PORT}`],
             node: `http://localhost:${ELASTICSEARCH_PORT}`
         }),

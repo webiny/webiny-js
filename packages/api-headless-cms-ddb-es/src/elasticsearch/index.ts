@@ -10,8 +10,8 @@ import { elasticsearchOperatorGtePlugin } from "./operators/gte";
 import { elasticsearchOperatorGtPlugin } from "./operators/gt";
 import { elasticsearchOperatorLtePlugin } from "./operators/lte";
 import { elasticsearchOperatorLtPlugin } from "./operators/lt";
-import elasticSearchIndexingPlugins from "./indexing";
-import elasticSearchSearchPlugins from "./search";
+import elasticsearchIndexingPlugins from "./indexing";
+import elasticsearchSearchPlugins from "./search";
 
 export default () => [
     elasticsearchOperatorBetweenPlugin(),
@@ -26,6 +26,6 @@ export default () => [
     elasticsearchOperatorGtPlugin(),
     elasticsearchOperatorLtePlugin(),
     elasticsearchOperatorLtPlugin(),
-    elasticSearchIndexingPlugins(),
-    elasticSearchSearchPlugins()
+    elasticsearchIndexingPlugins(),
+    elasticsearchSearchPlugins()
 ];
