@@ -389,47 +389,6 @@ describe("MANAGE - Resolvers", () => {
         });
     });
 
-    test(`list entries (limit)`, async () => {
-        await setupContentModel();
-        const query = /* GraphQL */ `
-            {
-                listCategories(limit: 1) {
-                    data {
-                        id
-                    }
-                }
-            }
-        `;
-    });
-
-    test(`list categories (sort ASC)`, async () => {
-        await setupContentModel();
-        // Test resolvers
-        const query = /* GraphQL */ `
-            query ListCategories($sort: [CategoryListSorter]) {
-                listCategories(sort: $sort) {
-                    data {
-                        title
-                    }
-                }
-            }
-        `;
-    });
-
-    test(`list categories (sort DESC)`, async () => {
-        await setupContentModel();
-        // Test resolvers
-        const query = /* GraphQL */ `
-            query ListCategories($sort: [CategoryListSorter]) {
-                listCategories(sort: $sort) {
-                    data {
-                        title
-                    }
-                }
-            }
-        `;
-    });
-
     test(`should create category`, async () => {
         await setupContentModel();
         const { until, createCategory, listCategories } = useCategoryManageHandler(manageOpts);
@@ -689,7 +648,7 @@ describe("MANAGE - Resolvers", () => {
         expect(createdOn).toBeLessThan(updatedOn);
 
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
-        const listCategoriesResponse = await until(
+        await until(
             () => listCategories({}).then(([data]) => data),
             ({ data }) => data.listCategories.data[0].id === updatedCategory.id,
             { name: "create category" }
@@ -802,9 +761,27 @@ describe("MANAGE - Resolvers", () => {
 
         // Create 2 more revisions
         const [revision2] = await createCategoryFrom({ revision: id });
-        const { id: id2 } = revision2.data.createCategoryFrom.data;
+
+        expect(revision2).toEqual({
+            data: {
+                createCategoryFrom: {
+                    data: expect.any(Object),
+                    error: null
+                }
+            }
+        });
 
         const [revision3] = await createCategoryFrom({ revision: id });
+
+        expect(revision3).toEqual({
+            data: {
+                createCategoryFrom: {
+                    data: expect.any(Object),
+                    error: null
+                }
+            }
+        });
+
         const { id: id3 } = revision3.data.createCategoryFrom.data;
 
         // Wait until the new revision is indexed
@@ -817,6 +794,15 @@ describe("MANAGE - Resolvers", () => {
         // Publish latest revision
         const [res] = await publishCategory({ revision: id3 });
 
+        expect(res).toEqual({
+            data: {
+                publishCategory: {
+                    data: expect.any(Object),
+                    error: null
+                }
+            }
+        });
+
         // Wait until the previous revision is indexed
         await until(
             () => listPublishedCategories().then(([data]) => data),
@@ -826,10 +812,14 @@ describe("MANAGE - Resolvers", () => {
 
         const [unpublish] = await unpublishCategory({ revision: id3 });
 
-        if (unpublish.data.unpublishCategory.error) {
-            console.log(unpublish.data.unpublishCategory.error);
-            process.exit(1);
-        }
+        expect(unpublish).toEqual({
+            data: {
+                unpublishCategory: {
+                    data: expect.any(Object),
+                    error: null
+                }
+            }
+        });
 
         expect(unpublish.data.unpublishCategory.data.meta.status).toBe("unpublished");
 
@@ -842,6 +832,15 @@ describe("MANAGE - Resolvers", () => {
 
         // Publish the latest revision again
         const [publish2] = await publishCategory({ revision: id3 });
+
+        expect(publish2).toEqual({
+            data: {
+                publishCategory: {
+                    data: expect.any(Object),
+                    error: null
+                }
+            }
+        });
 
         // Wait until the previous revision is indexed
         await until(

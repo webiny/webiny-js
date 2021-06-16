@@ -19,8 +19,7 @@ module.exports = ({ entry, output, debug = false, babelOptions, define }) => {
         externals: [/^aws-sdk/],
         mode: "production",
         optimization: {
-            // We do not want to minimize our code.
-            minimize: false
+            minimize: true
         },
         performance: {
             // Turn off size warnings for entry points

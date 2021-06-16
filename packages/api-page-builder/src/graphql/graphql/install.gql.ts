@@ -37,8 +37,8 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
         resolvers: {
             PbQuery: {
                 version: async (_, args, context) => {
-                    const { security, pageBuilder } = context;
-                    if (!security.getTenant()) {
+                    const { tenancy, pageBuilder } = context;
+                    if (!tenancy.getCurrentTenant()) {
                         return null;
                     }
 

@@ -1,7 +1,7 @@
 import { Plugin } from "@webiny/plugins/types";
 import { ClientContext } from "@webiny/handler-client/types";
 import { ContextInterface } from "@webiny/handler/types";
-import { TenancyContext } from "@webiny/api-security-tenancy/types";
+import { TenancyContext } from "@webiny/api-tenancy/types";
 
 export type I18NLocale = {
     code: string;

@@ -92,7 +92,7 @@ async function build() {
     if (packagesNoCache.length > 10) {
         console.log(`Running build for ${green(packagesNoCache.length)} packages.`);
     } else {
-        console.log("Running build for following packages:");
+        console.log("Running build for the following packages:");
         for (let i = 0; i < packagesNoCache.length; i++) {
             const item = packagesNoCache[i];
             console.log(`- ${green(item.packageJson.name)}`);

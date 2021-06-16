@@ -21,7 +21,7 @@
     "../db-dynamodb",
     "../error",
     "../api-file-manager",
-    "../api-security-tenancy",
+    "../api-tenancy",
     "../api-prerendering-service"
   ],
   "compilerOptions": {

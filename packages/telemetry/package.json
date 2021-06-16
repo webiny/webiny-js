@@ -1,0 +1,15 @@
+{
+  "name": "@webiny/telemetry",
+  "version": "5.8.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "form-data": "3.0.0",
+    "load-json-file": "6.2.0",
+    "node-fetch": "2.6.1"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "."
+  }
+}

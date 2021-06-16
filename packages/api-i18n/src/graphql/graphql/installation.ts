@@ -25,8 +25,8 @@ const plugin: GraphQLSchemaPlugin<I18NContext & SecurityContext> = {
         resolvers: {
             I18NQuery: {
                 version: async (_, __, context) => {
-                    const { security, i18n } = context;
-                    if (!security.getTenant()) {
+                    const { tenancy, i18n } = context;
+                    if (!tenancy.getCurrentTenant()) {
                         return null;
                     }
 

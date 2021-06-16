@@ -19,7 +19,9 @@ const sortEntries = (list, sort) => {
 export const addEntryToListCache = (model, cache, entry: CmsEditorContentEntry, variables) => {
     const gqlParams = { query: GQL.createListQuery(model), variables };
     const { content } = cache.readQuery(gqlParams);
-
+    if (!content || !content.data) {
+        return;
+    }
     cache.writeQuery({
         ...gqlParams,
         data: {
@@ -37,6 +39,9 @@ export const updateLatestRevisionInListCache = (model, cache, revision, variable
     const [uniqueId] = revision.id.split("#");
 
     const { content } = cache.readQuery(gqlParams);
+    if (!content || !content.data) {
+        return;
+    }
     const index = content.data.findIndex(item => item.id.startsWith(uniqueId));
     if (index === -1) {
         return;
@@ -54,6 +59,9 @@ export const removeEntryFromListCache = (model, cache, revision, variables) => {
     // Delete the item from list cache
     const gqlParams = { query: GQL.createListQuery(model), variables };
     const { content } = cache.readQuery(gqlParams);
+    if (!content || !content.data) {
+        return;
+    }
     const entryId = revision.id.split("#")[0];
     const index = content.data.findIndex(item => item.id.startsWith(entryId));
     if (index === -1) {
@@ -75,6 +83,9 @@ export const removeRevisionFromEntryCache = (model, cache, revision) => {
     };
 
     const { revisions } = cache.readQuery(gqlParams);
+    if (!revisions || !revisions.data) {
+        return;
+    }
     const index = revisions.data.findIndex(item => item.id === revision.id);
     const newRevisions = dotProp.delete(revisions, `data.${index}`);
 
@@ -97,6 +108,10 @@ export const addRevisionToRevisionsCache = (model, cache, revision) => {
 
     const { revisions } = cache.readQuery(gqlParams);
 
+    if (!revisions || !revisions.data) {
+        return;
+    }
+
     cache.writeQuery({
         ...gqlParams,
         data: {
@@ -112,6 +127,10 @@ export const unpublishPreviouslyPublishedRevision = (model, cache, publishedId) 
     };
 
     const { revisions } = cache.readQuery(gqlParams);
+
+    if (!revisions || !revisions.data) {
+        return;
+    }
 
     const prevPublished = revisions.data.findIndex(
         item => item.id !== publishedId && item.meta.status === "published"

@@ -240,9 +240,9 @@ export const toSlug = text => {
 export const zeroPad = version => `${version}`.padStart(4, "0");
 
 export const createCmsPK = (context: CmsContext) => {
-    const { security, cms } = context;
+    const { tenancy, cms } = context;
 
-    const tenant = security.getTenant();
+    const tenant = tenancy.getCurrentTenant();
     if (!tenant) {
         throw new Error("Tenant missing.");
     }
