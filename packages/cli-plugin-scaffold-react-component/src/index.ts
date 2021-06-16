@@ -45,7 +45,8 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
     type: "cli-plugin-scaffold-template",
     scaffold: {
         name: "React Component Package",
-        description: "Creates a new package that exports a simple React component. Useful for\n  creating components that are shared across multiple project applications.",
+        description:
+            "Creates a new package that exports a simple React component.\n  Useful when creating components that are shared across\n  multiple project applications.",
         questions: () => {
             return [
                 {
