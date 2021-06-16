@@ -27,14 +27,16 @@ export const scaffold = async (args: ScaffoldArgs) => {
         process.exit(1);
     }
 
-    const choices = Object.values(scaffoldPlugins).map(plugin => {
-        const name = `${chalk.bold(plugin.scaffold.name)}\n  ${plugin.scaffold.description}\n`;
+    const choices = scaffoldPlugins.map(plugin => {
+        const { name, description } = plugin.scaffold;
 
         return {
-            name,
+            name: `${chalk.bold(name)}\n  ${description}\n`,
+            short: name,
             value: plugin.name
         };
     });
+
     const { selectedPluginName } = await inquirer.prompt({
         type: "list",
         pageSize: 18,
@@ -65,8 +67,6 @@ export const scaffold = async (args: ScaffoldArgs) => {
         if (typeof scaffold.onSuccess === "function") {
             await scaffold.onSuccess(callbackArgs);
         }
-
-        oraInstance.succeed("Done!");
     } catch (e) {
         oraInstance.stop();
         if (typeof scaffold.onError === "function") {

@@ -230,7 +230,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             await formatCode("**/*.ts", { cwd: newCodePath });
             await formatCode("package.json", { cwd: path.dirname(packageJsonPath) });
         },
-        onSuccess: async ({ input, ora }) => {
+        onSuccess: async () => {
             console.log();
             console.log(
                 `${chalk.green("✔")} New GraphQL API plugins created and imported successfully.`
@@ -240,7 +240,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             console.log(
                 `- deploy the extended GraphQL API and continue developing by running the ${chalk.green(
-                    "yarn webiny watch api --env {env}"
+                    "yarn webiny watch api --env {dev}"
                 )} command`
             );
 
