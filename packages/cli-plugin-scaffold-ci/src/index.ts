@@ -26,8 +26,8 @@ export default (): [CliCommandScaffoldTemplate<Input>, CliPluginsScaffoldCi<Inpu
         name: "cli-plugin-scaffold-template-ci",
         type: "cli-plugin-scaffold-template",
         scaffold: {
-            name: "Set up a CI/CD pipeline",
-            description: "Sets up a CI/CD pipeline for your project using a provider of your choice.",
+            name: "Set up a CI/CD Pipeline",
+            description: "Sets up a CI/CD pipeline for your Webiny project using a\n  provider of your choice.",
             questions: () => {
                 return [
                     {
