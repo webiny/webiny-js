@@ -107,7 +107,7 @@ const UserAccountForm = () => {
                                                 <Cell span={12}>
                                                     <Input
                                                         value={data.login}
-                                                        label={t`E-mail`}
+                                                        label={t`Email`}
                                                         description={
                                                             "Email is your unique identifier and cannot be changed!"
                                                         }
