@@ -55,8 +55,8 @@ context("I18N app", () => {
                 });
         });
     });
-    // TODO: @ashutosh Update this test as per changes https://github.com/webiny/webiny-js/pull/1712
-    it("should not allow Setting an existing locale as default", () => {
+
+    it(`should able to update an existing locale as "default" and immediately restore defaults`, () => {
         const newCode = "de-DE";
         cy.visit("/i18n/locales");
         // Create new locale
@@ -64,18 +64,51 @@ context("I18N app", () => {
             .first()
             .click();
         cy.findByLabelText("Code").type(newCode);
-        cy.wait(1000);
+        // cy.wait(1000);
         cy.findByText(newCode).click();
         cy.findByText(/Save/i).click();
-        cy.wait(1000);
+        // cy.wait(1000);
         // Check newly created locale in selector
         cy.findByTestId("app-i18n-content.menu").click();
         cy.findAllByTestId(`app-i18n-content.menu-item.${newCode}`).should("exist");
-        // Setting it as "Default locale" should result in error
+        // Set it as "Default locale"
         cy.findByLabelText("Default").check();
         cy.findByText(/Save locale/i).click();
-        cy.findByText(/Locale with key "de-DE" already exist./i).should("exist");
-        // Delete new locale
+        // Wait for loading to complete
+        cy.get(".react-spinner-material").should("not.exist");
+        // Check the change in data list
+        cy.findByTestId("default-data-list").within(() => {
+            cy.get("div")
+                .first()
+
+                .within(() => {
+                    cy.findByText(newCode);
+                    cy.findByText("Default locale");
+                });
+        });
+
+        /**
+         * Restore defaults
+         */
+
+        // Select "en-US" locale
+        cy.findByTestId("default-data-list").within(() => {
+            cy.get("div")
+                .first()
+                .next()
+                .within(() => {
+                    cy.findByText(/en-US/i).click();
+                });
+        });
+        // Wait for loading to complete
+        cy.get(".react-spinner-material").should("not.exist");
+        // Update it as "default"
+        cy.findByLabelText("Default").check();
+        cy.findByText(/Save locale/i).click();
+        // Wait for loading to complete
+        cy.get(".react-spinner-material").should("not.exist");
+
+        // Deleting new locale
         cy.findByTestId("default-data-list").within(() => {
             cy.get("div")
                 .first()
@@ -93,6 +126,8 @@ context("I18N app", () => {
                 .first()
                 .within(() => {
                     cy.findByText(newCode).should("not.exist");
+                    cy.findByText(/en-US/i).should("exist");
+                    cy.findByText("Default locale").should("exist");
                 });
         });
     });
