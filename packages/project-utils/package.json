@@ -30,7 +30,7 @@
     "boolean": "3.0.2",
     "camelcase": "5.3.1",
     "case-sensitive-paths-webpack-plugin": "2.2.0",
-    "chalk": "4.1.0"
+    "chalk": "4.1.0",
     "css-loader": "3.2.0",
     "eslint": "6.8.0",
     "eslint-loader": "3.0.2",
