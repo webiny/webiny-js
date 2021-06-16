@@ -1,5 +1,6 @@
 import { Client } from "@elastic/elasticsearch";
 import { BoolQueryConfig as esBoolQueryConfig, Query as esQuery } from "elastic-ts";
+import { ContextInterface } from "@webiny/handler/types";
 export * from "elastic-ts";
 
 export type ElasticSearchClientContext = {
@@ -35,3 +36,19 @@ export type ElasticsearchQueryOperator =
     | "gte"
     | "lt"
     | "lte";
+
+/**
+ * Definition for arguments of the ElasticsearchQueryBuilderOperatorPlugin.apply method.
+ *
+ * @see ElasticsearchQueryBuilderOperatorPlugin.apply
+ *
+ * @category Plugin
+ * @category Elasticsearch
+ */
+export interface ElasticsearchQueryBuilderArgsPlugin<
+    T extends ContextInterface = ContextInterface
+> {
+    path: string;
+    value: any;
+    context: T;
+}

@@ -4,10 +4,12 @@
     "rootDir": "./src",
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "paths": {},
+    "paths": {
+      "~/*": ["./src/*"]
+    },
     "baseUrl": "."
   },
-  "exclude": ["node_modules", "dist", "../handler"],
+  "exclude": ["node_modules", "dist", "../handler", "../api-headless-cms"],
   "include": ["./src"],
   "references": []
 }

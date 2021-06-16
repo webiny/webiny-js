@@ -4,7 +4,7 @@ import { DbContext } from "@webiny/handler-db/types";
 import { SecurityContext, SecurityPermission } from "@webiny/api-security/types";
 import { TenancyContext } from "@webiny/api-security-tenancy/types";
 import { I18NContext } from "@webiny/api-i18n/types";
-import { ElasticSearchClientContext } from "@webiny/api-plugin-elastic-search-client/types";
+import { ElasticSearchClientContext } from "@webiny/api-elasticsearch/types";
 import DataLoader from "dataloader";
 import { ClientContext } from "@webiny/handler-client/types";
 import { Category, DefaultSettings, Menu, Page, PageElement } from "../types";

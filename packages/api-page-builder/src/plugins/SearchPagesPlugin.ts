@@ -2,7 +2,7 @@ import { Plugin } from "@webiny/plugins";
 import {
     ElasticsearchBoolQueryConfig,
     Sort as esSort
-} from "@webiny/api-plugin-elastic-search-client/types";
+} from "@webiny/api-elasticsearch/types";
 import { PbContext } from "~/graphql/types";
 
 interface ModifyQueryArgs {

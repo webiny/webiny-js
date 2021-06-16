@@ -1,0 +1,32 @@
+import { createBlankQuery } from "../../helpers";
+import { ElasticsearchBoolQueryConfig } from "@webiny/api-plugin-elastic-search-client/types";
+import { ElasticsearchQueryBuilderOperatorInPlugin } from "~/plugins/operator";
+
+describe("ElasticsearchQueryBuilderOperatorInPlugin", () => {
+    const plugin = new ElasticsearchQueryBuilderOperatorInPlugin();
+    const context: any = {};
+
+    it("should apply must in correctly", () => {
+        const query = createBlankQuery();
+
+        plugin.apply(query, {
+            path: "name",
+            value: ["John", "Johnny"],
+            context
+        });
+
+        const expected: ElasticsearchBoolQueryConfig = {
+            must_not: [],
+            must: [
+                {
+                    terms: {
+                        ["name.keyword"]: ["John", "Johnny"]
+                    }
+                }
+            ],
+            filter: [],
+            should: []
+        };
+        expect(query).toEqual(expected);
+    });
+});

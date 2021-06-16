@@ -16,7 +16,7 @@
     "../api-i18n-content",
     "../handler-aws",
     "../handler-db",
-    "../api-plugin-elastic-search-client",
+    "../api-elasticsearch",
     "../api-dynamodb-to-elasticsearch",
     "../db-dynamodb",
     "../api-security-tenancy"

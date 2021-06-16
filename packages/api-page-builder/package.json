@@ -56,7 +56,7 @@
     "@types/puppeteer": "^5.4.2",
     "@webiny/api-dynamodb-to-elasticsearch": "^5.8.0",
     "@webiny/api-file-manager-ddb-es": "^5.8.0",
-    "@webiny/api-plugin-elastic-search-client": "^5.8.0",
+    "@webiny/api-elasticsearch": "^5.8.0",
     "@webiny/cli": "^5.8.0",
     "@webiny/db": "^5.8.0",
     "@webiny/project-utils": "^5.8.0",

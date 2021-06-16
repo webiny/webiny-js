@@ -1,10 +1,10 @@
 {
-  "name": "@webiny/api-plugin-elastic-search-client",
+  "name": "@webiny/api-elasticsearch",
   "version": "5.8.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git",
-    "directory": "packages/api-plugin-elastic-search-client"
+    "directory": "packages/api-elasticsearch"
   },
   "description": "A client to work with Elastic Search domain.",
   "contributors": [
@@ -14,6 +14,7 @@
   "dependencies": {
     "@elastic/elasticsearch": "^7.9.1",
     "@webiny/handler": "^5.8.0",
+    "@webiny/plugins": "^5.8.0",
     "aws-elasticsearch-connector": "^9.0.0",
     "aws-sdk": "^2.539.0",
     "elastic-ts": "^0.6.0"
