@@ -18,6 +18,11 @@ const BASE_CONTENT_MODEL_FIELDS = `
         id
         name
     }
+    createdBy {
+        id
+        displayName
+        type
+    }
 `;
 
 // Fetches data needed for constructing content models list in the main menu.
@@ -47,11 +52,6 @@ export const LIST_CONTENT_MODELS = gql`
         listContentModels {
             data {
                 ${BASE_CONTENT_MODEL_FIELDS}
-                createdBy {
-                    id
-                    displayName
-                    type
-                }
             }
         }
     }
