@@ -85,6 +85,10 @@ interface CliCommandScaffold<T extends Record<string, any>> {
      */
     name: string;
     /**
+     * A short description of the scaffold.
+     */
+    description: string;
+    /**
      * Definition of questions for users to go through when they run the scaffold.
      */
     questions: QuestionCollection | CliCommandScaffoldQuestionsCallable;
