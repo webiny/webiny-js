@@ -1,7 +1,7 @@
 import { createHandler } from "@webiny/handler-aws";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
-import elasticSearch from "@webiny/api-plugin-elastic-search-client";
+import elasticSearch from "@webiny/api-elasticsearch";
 import securityPlugins from "@webiny/api-security/authenticator";
 // uncomment if you want to use in tests
 // import apiKeyAuthentication from "@webiny/api-security-tenancy/authentication/apiKey";

@@ -2,7 +2,7 @@ import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { paginateBatch } from "../utils";
 import configurations from "~/operations/configurations";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
-import { ElasticSearchClientContext } from "@webiny/api-plugin-elastic-search-client/types";
+import { ElasticSearchClientContext } from "@webiny/api-elasticsearch/types";
 import { DbContext } from "@webiny/handler-db/types";
 
 const plugin: UpgradePlugin<FileManagerContext & ElasticSearchClientContext & DbContext> = {

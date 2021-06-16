@@ -11,7 +11,7 @@
     "@elastic/elasticsearch": "^7.9.1",
     "@webiny/api-i18n": "5.2.1",
     "@webiny/api-i18n-content": "5.2.1",
-    "@webiny/api-plugin-elastic-search-client": "5.2.1",
+    "@webiny/api-elasticsearch": "5.2.1",
     "@webiny/api-security": "5.2.1",
     "@webiny/api-security-tenancy": "5.2.1",
     "@webiny/db-dynamodb": "5.2.1",

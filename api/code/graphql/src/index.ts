@@ -7,7 +7,7 @@ import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
 import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
-import elasticSearch from "@webiny/api-plugin-elastic-search-client";
+import elasticSearch from "@webiny/api-elasticsearch";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
 import fileManagerDynamoDbElasticStorageOperation from "@webiny/api-file-manager-ddb-es";
 import logsPlugins from "@webiny/handler-logs";

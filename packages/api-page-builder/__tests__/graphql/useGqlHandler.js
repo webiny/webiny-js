@@ -8,7 +8,7 @@ import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import elasticSearchPlugins from "@webiny/api-plugin-elastic-search-client";
+import elasticSearchPlugins from "@webiny/api-elasticsearch";
 import { simulateStream } from "@webiny/project-utils/testing/dynamodb";
 import dynamoToElastic from "@webiny/api-dynamodb-to-elasticsearch/handler";
 import { Client } from "@elastic/elasticsearch";

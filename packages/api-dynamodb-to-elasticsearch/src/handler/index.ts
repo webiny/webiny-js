@@ -1,6 +1,6 @@
 import { Converter } from "aws-sdk/clients/dynamodb";
 import { HandlerPlugin } from "@webiny/handler/types";
-import { ElasticSearchClientContext } from "@webiny/api-plugin-elastic-search-client/types";
+import { ElasticSearchClientContext } from "@webiny/api-elasticsearch/types";
 
 export default (): HandlerPlugin<ElasticSearchClientContext> => ({
     type: "handler",

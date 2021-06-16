@@ -14,7 +14,7 @@
       "path": "../api-i18n-content"
     },
     {
-      "path": "../api-plugin-elastic-search-client"
+      "path": "../api-elasticsearch"
     },
     {
       "path": "../api-security"
@@ -61,8 +61,8 @@
       "@webiny/api-i18n": ["../api-i18n/src"],
       "@webiny/api-i18n-content/*": ["../api-i18n-content/src/*"],
       "@webiny/api-i18n-content": ["../api-i18n-content/src"],
-      "@webiny/api-plugin-elastic-search-client/*": ["../api-plugin-elastic-search-client/src/*"],
-      "@webiny/api-plugin-elastic-search-client": ["../api-plugin-elastic-search-client/src"],
+      "@webiny/api-elasticsearch/*": ["../api-elasticsearch/src/*"],
+      "@webiny/api-elasticsearch": ["../api-elasticsearch/src"],
       "@webiny/api-security/*": ["../api-security/src/*"],
       "@webiny/api-security": ["../api-security/src"],
       "@webiny/api-security-tenancy/*": ["../api-security-tenancy/src/*"],
