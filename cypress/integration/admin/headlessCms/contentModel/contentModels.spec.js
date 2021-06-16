@@ -99,6 +99,7 @@ context("Headless CMS - Content Models CRUD", () => {
         cy.findByTestId("cms-editor-top-bar").within(() => {
             cy.findByText("Save").click();
         });
+        cy.findByText("Your content model was saved successfully!");
 
         // 5. Test validator in preview
         cy.findByTestId("cms.editor.tab.preview").click();

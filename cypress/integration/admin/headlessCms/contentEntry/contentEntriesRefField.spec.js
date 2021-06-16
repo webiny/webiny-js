@@ -145,16 +145,34 @@ context("Headless CMS - Content Entry with Ref field", () => {
         // Create an author.
         cy.findByTestId("cms-content-details").within(() => {
             cy.findByLabelText("Name").type(`${newAuthor}-1`);
-            cy.findByLabelText("Books").type(`${newBook.substr(0, 13)}`);
-            cy.wait(1000);
-            cy.findByText(`${newBook}-1`).click();
+            cy.findByLabelText("Books").type(`${newBook.substr(0, 10)}`);
+            /**
+             * Testing "Autocomplete" component is tricky.
+             * We're making sure option exist before triggering a click because;
+             * sometimes the option item gets detached from the DOM due to re-render.
+             *
+             * Read more about it: https://www.cypress.io/blog/2020/07/22/do-not-get-too-detached/#investigation
+             */
+            cy.findByText(`${newBook}-1`)
+                .as("book1")
+                .should("exist");
+            cy.get("@book1").click();
 
             // Add one more book
             cy.findByLabelText("Books")
                 .clear()
                 .type(`${newBook.substr(0, 13)}`);
-            cy.wait(1000);
-            cy.findByText(`${newBook}-2`).click();
+            /**
+             * Testing "Autocomplete" component is tricky.
+             * We're making sure option exist before triggering a click because;
+             * sometimes the option item gets detached from the DOM due to re-render.
+             *
+             * Read more about it: https://www.cypress.io/blog/2020/07/22/do-not-get-too-detached/#investigation
+             */
+            cy.findByText(`${newBook}-2`)
+                .as("book2")
+                .should("exist");
+            cy.get("@book2").click();
             // Publish the entry
             cy.findByText(/save & publish/i).click();
         });
