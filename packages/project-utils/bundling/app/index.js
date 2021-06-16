@@ -7,7 +7,7 @@ const applyDefaults = () => {
     }
 
     if (!("REACT_APP_WEBINY_TELEMETRY" in process.env)) {
-        process.env.REACT_APP_WEBINY_TELEMETRY = config.telemetry.toString();
+        process.env.REACT_APP_WEBINY_TELEMETRY = "telemetry" in config ? config.telemetry : "true";
     }
 
     if (!("INLINE_RUNTIME_CHUNK" in process.env)) {
