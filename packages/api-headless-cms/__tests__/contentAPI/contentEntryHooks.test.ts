@@ -198,9 +198,12 @@ describe("contentEntryHooks", () => {
     });
 
     test("should execute hooks on delete revision", async () => {
-        const { createCategory, deleteCategory, sleep } = useCategoryManageHandler(manageOpts, [
-            contentEntryHooks()
-        ]);
+        const {
+            createCategory,
+            createCategoryFrom,
+            deleteCategory,
+            sleep
+        } = useCategoryManageHandler(manageOpts, [contentEntryHooks()]);
 
         const [createResponse] = await createCategory({
             data: {
@@ -209,10 +212,15 @@ describe("contentEntryHooks", () => {
             }
         });
 
+        const { id } = createResponse.data.createCategory.data;
+
+        // create another category
+        await createCategoryFrom({
+            revision: id
+        });
+
         // wait for data to be come available
         await sleep(1000);
-
-        const { id } = createResponse.data.createCategory.data;
 
         hooksTracker.reset();
 

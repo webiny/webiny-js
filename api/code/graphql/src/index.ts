@@ -10,13 +10,11 @@ import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import elasticSearch from "@webiny/api-plugin-elastic-search-client";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
 import logsPlugins from "@webiny/handler-logs";
-
-// File storage S3 plugin for API file manager.
 import fileManagerS3 from "@webiny/api-file-manager-s3";
 import formBuilderPlugins from "@webiny/api-form-builder/plugins";
 import securityPlugins from "./security";
 import headlessCmsPlugins from "@webiny/api-headless-cms/plugins";
-import cmsDynamoDbElasticsearch from "@webiny/api-headless-cms-ddb-es";
+import headlessCmsDynamoDbElasticStorageOperation from "@webiny/api-headless-cms-ddb-es";
 
 // Imports plugins created via scaffolding utilities.
 import scaffoldsPlugins from "./plugins/scaffolds";
@@ -56,8 +54,8 @@ export const handler = createHandler({
         pageBuilderPlugins(),
         formBuilderPlugins(),
         headlessCmsPlugins(),
-        cmsDynamoDbElasticsearch(),
-        scaffoldsPlugins(),
+        headlessCmsDynamoDbElasticStorageOperation(),
+        scaffoldsPlugins()
     ],
     http: { debug }
 });

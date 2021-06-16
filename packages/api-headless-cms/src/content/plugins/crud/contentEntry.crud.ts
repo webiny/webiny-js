@@ -157,25 +157,31 @@ export default (): ContextPlugin<CmsContext> => ({
                 );
             }
         };
+        /**
+         * A helper to get entries by revision IDs
+         */
+        const getEntriesByIds = async (model: CmsContentModel, ids: string[]) => {
+            const permission = await checkEntryPermissions({ rwd: "r" });
+            await utils.checkModelAccess(context, model);
+
+            const entries = await storageOperations.getByIds(model, ids);
+
+            return entries.filter(entry => utils.validateOwnership(context, permission, entry));
+        };
 
         const entries: CmsContentEntryContext = {
             operations: storageOperations,
             /**
              * Get entries by exact revision IDs from the database.
              */
-            getByIds: async (model: CmsContentModel, ids: string[]) => {
-                const permission = await checkEntryPermissions({ rwd: "r" });
-                await utils.checkModelAccess(context, model);
-
-                const entries = await storageOperations.getByIds(model, ids);
-
-                return entries.filter(entry => utils.validateOwnership(context, permission, entry));
-            },
-
+            getByIds: getEntriesByIds,
+            /**
+             * Get a single entry by revision ID from the database.
+             */
             getById: async (model, id) => {
-                const [entry] = await context.cms.entries.getByIds(model, [id]);
+                const [entry] = await getEntriesByIds(model, [id]);
                 if (!entry) {
-                    throw new NotFoundError();
+                    throw new NotFoundError(`Entry by ID "${id}" not found.`);
                 }
                 return entry;
             },
@@ -563,22 +569,20 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 utils.checkOwnership(context, permission, entryRevisionToDelete, "ownedBy");
 
+                const latestEntryRevisionId = latestEntryRevision ? latestEntryRevision.id : null;
                 /**
                  * If targeted record is the latest entry record and there is no previous one, we need to run full delete with hooks.
                  * At this point deleteEntry hooks are not fired.
                  * TODO determine if not running the deleteRevision hooks is ok.
                  */
-                if (
-                    entryRevisionToDelete.id === latestEntryRevision?.id &&
-                    !previousEntryRevision
-                ) {
+                if (entryRevisionToDelete.id === latestEntryRevisionId && !previousEntryRevision) {
                     return await deleteEntry(model, entryRevisionToDelete);
                 }
                 /**
                  * If targeted record is latest entry revision, set the previous one as the new latest
                  */
                 const entryRevisionToSetAsLatest =
-                    entryRevisionToDelete.id === latestEntryRevision?.id
+                    entryRevisionToDelete.id === latestEntryRevisionId
                         ? previousEntryRevision
                         : null;
 
@@ -619,7 +623,7 @@ export default (): ContextPlugin<CmsContext> => ({
                 const entry = await storageOperations.getLatestRevisionByEntryId(model, entryId);
 
                 if (!entry) {
-                    throw new NotFoundError("Entry not found!");
+                    throw new NotFoundError(`Entry "${entryId}" was not found!`);
                 }
 
                 utils.checkOwnership(context, permission, entry, "ownedBy");
