@@ -244,8 +244,14 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 )} command`
             );
 
-            console.log("- learn more about the created plugins and the scaffold itself at https://www.webiny.com/docs/key-topics/todo");
-            console.log(`- learn more about the ${chalk.green('webiny watch')} command at https://www.webiny.com/docs/key-topics/todo`);
+            console.log(
+                "- learn more about the created plugins and the scaffold itself at https://www.webiny.com/docs/key-topics/todo"
+            );
+            console.log(
+                `- learn more about the ${chalk.green(
+                    "webiny watch"
+                )} command at https://www.webiny.com/docs/key-topics/todo`
+            );
         }
     }
 });

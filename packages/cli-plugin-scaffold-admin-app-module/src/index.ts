@@ -300,7 +300,9 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
         onSuccess: async () => {
             console.log();
             console.log(
-                `${chalk.green("✔")} New GraphQL API and Admin Area plugins created and imported successfully.`
+                `${chalk.green(
+                    "✔"
+                )} New GraphQL API and Admin Area plugins created and imported successfully.`
             );
             console.log();
             console.log(chalk.bold("Next steps:"));

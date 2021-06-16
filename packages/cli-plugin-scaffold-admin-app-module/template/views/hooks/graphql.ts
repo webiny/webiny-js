@@ -1,7 +1,12 @@
 import gql from "graphql-tag";
 
 export const LIST_TARGET_DATA_MODELS = gql`
-    query ListTargetDataModels($sort: TargetDataModelsListSort, $limit: Int, $after: String, $before: String) {
+    query ListTargetDataModels(
+        $sort: TargetDataModelsListSort
+        $limit: Int
+        $after: String
+        $before: String
+    ) {
         targetDataModels {
             listTargetDataModels(sort: $sort, limit: $limit, after: $after, before: $before) {
                 data {

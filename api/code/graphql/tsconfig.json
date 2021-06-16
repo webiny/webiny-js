@@ -87,7 +87,7 @@
       ],
       "@webiny/api-security-cognito-authentication": [
         "../../../packages/api-security-cognito-authentication/src"
-      ],
+      ]
     },
     "baseUrl": "."
   }

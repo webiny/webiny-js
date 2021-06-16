@@ -2,7 +2,12 @@ import { useCallback } from "react";
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
-import { GET_TARGET_DATA_MODEL, CREATE_TARGET_DATA_MODEL, UPDATE_TARGET_DATA_MODEL, LIST_TARGET_DATA_MODELS } from "./graphql";
+import {
+    GET_TARGET_DATA_MODEL,
+    CREATE_TARGET_DATA_MODEL,
+    UPDATE_TARGET_DATA_MODEL,
+    LIST_TARGET_DATA_MODELS
+} from "./graphql";
 
 /**
  * Contains essential form functionality - data querying and submission, and UI control.

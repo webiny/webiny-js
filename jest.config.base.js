@@ -12,7 +12,7 @@ module.exports = ({ path }, presets = []) => {
     // Enables us to run tests of only a specific type (for example "integration" or "e2e").
     let type = "";
     if (process.env.TEST_TYPE) {
-        type = `.${process.env.TEST_TYPE}`
+        type = `.${process.env.TEST_TYPE}`;
     }
 
     return merge.recursive({}, tsPreset, ...presets, {
