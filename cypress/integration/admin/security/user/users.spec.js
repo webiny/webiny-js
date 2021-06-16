@@ -19,7 +19,7 @@ context("Security -> Users", () => {
         // Add user's detail
         cy.findByLabelText("First Name").type(firstName);
         cy.findByLabelText("Last Name").type(lastName);
-        cy.findByLabelText("E-mail").type(email);
+        cy.findByLabelText("Email").type(email);
         cy.findByLabelText("Password").type(password);
         cy.findByLabelText("Group").type(groupName);
         cy.wait(1000);
@@ -36,7 +36,7 @@ context("Security -> Users", () => {
         const [newFirstName, newLastName, newPassword] = [uniqid(), uniqid(), uniqid()];
         const newGroupName = "Anonymous";
 
-        cy.findByLabelText("E-mail").should("have.value", email);
+        cy.findByLabelText("Email").should("have.value", email);
         // Add user's detail
         cy.findByLabelText("First Name").type(newFirstName);
         cy.findByLabelText("Last Name").type(newLastName);

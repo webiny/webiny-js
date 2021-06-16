@@ -7,7 +7,7 @@ context("Account Module", () => {
         const [firstName, lastName] = [uniqid(), uniqid()];
 
         cy.visit("/account");
-        cy.findByLabelText("E-mail");
+        cy.findByLabelText("Email");
         cy.should("value", Cypress.env("DEFAULT_ADMIN_USER_USERNAME"));
         cy.findByLabelText("Password");
         cy.should("value", "");
