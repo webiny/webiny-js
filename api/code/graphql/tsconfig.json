@@ -62,6 +62,10 @@
       "@webiny/handler-graphql": ["../../../packages/handler-graphql/src"],
       "@webiny/api-page-builder/*": ["../../../packages/api-page-builder/src/*"],
       "@webiny/api-page-builder": ["../../../packages/api-page-builder/src"],
+      "@webiny/api-i18n-content/*": ["../../../packages/api-i18n-content/src/*"],
+      "@webiny/api-i18n-content": ["../../../packages/api-i18n-content/src"],
+      "@webiny/api-i18n/*": ["../../../packages/api-i18n/src/*"],
+      "@webiny/api-i18n": ["../../../packages/api-i18n/src"],
       "~/*": ["./src/*"]
     },
     "baseUrl": "."
