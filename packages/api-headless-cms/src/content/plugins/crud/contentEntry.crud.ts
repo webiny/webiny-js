@@ -84,6 +84,7 @@ interface EntryIdResult {
      */
     id: string;
 }
+
 const createEntryId = (version: number): EntryIdResult => {
     const entryId = mdbid();
     return {
@@ -420,7 +421,7 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 await validateModelEntryData(context, model, values);
 
-                utils.checkOwnership(context, permission, originalEntry, "ownedBy");
+                utils.checkOwnership(context, permission, originalEntry);
 
                 const latestEntry = await entryFromStorageTransform(
                     context,
@@ -541,7 +542,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     originalStorageEntry
                 );
 
-                utils.checkOwnership(context, permission, originalEntry, "ownedBy");
+                utils.checkOwnership(context, permission, originalEntry);
 
                 /**
                  * We always send the full entry to the hooks and storage operations update.
@@ -631,7 +632,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     throw new NotFoundError(`Entry "${revisionId}" was not found!`);
                 }
 
-                utils.checkOwnership(context, permission, storageEntryToDelete, "ownedBy");
+                utils.checkOwnership(context, permission, storageEntryToDelete);
 
                 const latestEntryRevisionId = latestStorageEntry ? latestStorageEntry.id : null;
 
@@ -715,7 +716,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     throw new NotFoundError(`Entry "${entryId}" was not found!`);
                 }
 
-                utils.checkOwnership(context, permission, storageEntry, "ownedBy");
+                utils.checkOwnership(context, permission, storageEntry);
 
                 const entry = await entryFromStorageTransform(context, model, storageEntry);
 
@@ -737,7 +738,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     );
                 }
 
-                utils.checkOwnership(context, permission, originalStorageEntry, "ownedBy");
+                utils.checkOwnership(context, permission, originalStorageEntry);
 
                 const originalEntry = await entryFromStorageTransform(
                     context,
@@ -827,7 +828,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     );
                 }
 
-                utils.checkOwnership(context, permission, originalEntry, "ownedBy");
+                utils.checkOwnership(context, permission, originalEntry);
 
                 const entry: CmsContentEntry = {
                     ...originalEntry,
@@ -911,7 +912,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     );
                 }
 
-                utils.checkOwnership(context, permission, originalEntry, "ownedBy");
+                utils.checkOwnership(context, permission, originalEntry);
 
                 const entry: CmsContentEntry = {
                     ...originalEntry,
@@ -982,7 +983,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     });
                 }
 
-                utils.checkOwnership(context, permission, originalStorageEntry, "ownedBy");
+                utils.checkOwnership(context, permission, originalStorageEntry);
 
                 const originalEntry = await entryFromStorageTransform(
                     context,

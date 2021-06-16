@@ -117,16 +117,17 @@ export const checkPermissions = async <TPermission = SecurityPermission>(
 export const checkOwnership = (
     context: CmsContext,
     permission: SecurityPermission,
-    record: { createdBy?: CreatedBy; ownedBy?: CreatedBy },
-    field = "createdBy"
+    record: { createdBy?: CreatedBy; ownedBy?: CreatedBy }
 ): void => {
     if (!permission.own) {
         return;
     }
 
     const identity = context.security.getIdentity();
+    const owner = identity && record["ownedBy"] && record["ownedBy"].id === identity.id;
+    const creator = identity && record["createdBy"] && record["createdBy"].id === identity.id;
 
-    if (!identity || !record[field] || record[field].id !== identity.id) {
+    if (!owner && !creator) {
         throw new NotAuthorizedError({
             data: {
                 reason: `You are not the owner of the record.`
@@ -138,11 +139,10 @@ export const checkOwnership = (
 export const validateOwnership = (
     context: CmsContext,
     permission: SecurityPermission,
-    record: { createdBy?: CreatedBy; ownedBy?: CreatedBy },
-    field = "createdBy"
+    record: { createdBy?: CreatedBy; ownedBy?: CreatedBy }
 ): boolean => {
     try {
-        checkOwnership(context, permission, record, field);
+        checkOwnership(context, permission, record);
         return true;
     } catch {
         return false;

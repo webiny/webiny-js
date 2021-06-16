@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { useSecurity } from "@webiny/app-security";
+import get from "lodash/get";
 
 const usePermission = () => {
     const { identity } = useSecurity();
@@ -9,11 +10,12 @@ const usePermission = () => {
 
     const canEdit = useCallback(
         item => {
+            const creatorId = get(item, "createdBy.id");
             if (!fbFormPermission) {
                 return false;
             }
-            if (fbFormPermission.own) {
-                return item.createdBy.id === identity.login;
+            if (fbFormPermission.own && creatorId) {
+                return creatorId === identity.login;
             }
             if (typeof fbFormPermission.rwd === "string") {
                 return fbFormPermission.rwd.includes("w");
