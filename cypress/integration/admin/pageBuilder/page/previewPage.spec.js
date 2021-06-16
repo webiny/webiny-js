@@ -51,7 +51,7 @@ context('Pages Previewing - with the "ssr-no-cache" query param', () => {
         cy.visit("/page-builder/pages");
 
         cy.findByTestId("default-data-list").within(() => {
-            cy.findByText(pageTitle1).click({ force: true });
+            cy.findByText(pageTitle1).click();
         });
 
         cy.findByTestId("pb-page-details").within(() => {
