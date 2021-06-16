@@ -27,7 +27,7 @@ const RequireNewPassword = () => {
     return (
         <StateContainer>
             <Form
-                onSubmit={({ password, ...requiredAttributes }) =>
+                onSubmit={({ password, requiredAttributes }) =>
                     confirm({ password, requiredAttributes })
                 }
                 submitOnEnter
