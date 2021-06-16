@@ -61,7 +61,7 @@ export const CREATE_LOCALE = gql`
 `;
 
 export const UPDATE_LOCALE = gql`
-    mutation updateI18NLocale($code: String!, $data: I18NLocaleInput!){
+    mutation updateI18NLocale($code: String!, $data: I18NLocaleUpdateInput!){
         i18n {
             locale: updateI18NLocale(code: $code, data: $data) {
                 data {

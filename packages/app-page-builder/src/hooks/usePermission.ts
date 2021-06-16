@@ -10,11 +10,12 @@ const usePermission = () => {
 
     const canEdit = useCallback(
         item => {
+            const creatorId = get(item, "createdBy.id");
             if (!pbPagePermission) {
                 return false;
             }
-            if (pbPagePermission.own) {
-                return get(item, "createdBy.id") === identity.login;
+            if (pbPagePermission.own && creatorId) {
+                return creatorId === identity.login;
             }
             if (typeof pbPagePermission.rwd === "string") {
                 return pbPagePermission.rwd.includes("w");

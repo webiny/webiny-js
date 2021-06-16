@@ -13,7 +13,7 @@
     "@webiny/api-i18n-content": "5.2.1",
     "@webiny/api-plugin-elastic-search-client": "5.2.1",
     "@webiny/api-security": "5.2.1",
-    "@webiny/api-security-tenancy": "5.2.1",
+    "@webiny/api-tenancy": "5.2.1",
     "@webiny/db-dynamodb": "5.2.1",
     "@webiny/error": "5.2.1",
     "@webiny/handler": "5.2.1",

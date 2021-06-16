@@ -3,6 +3,75 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.8.0](https://github.com/webiny/webiny-js/compare/v5.8.0-beta.1...v5.8.0) (2021-06-07)
+
+**Note:** Version bump only for package webiny-js
+
+
+
+
+
+# [5.8.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.8.0-beta.0...v5.8.0-beta.1) (2021-06-05)
+
+
+### Bug Fixes
+
+* **cli:** use uuid instead of public-ip ([36e1bbe](https://github.com/webiny/webiny-js/commit/36e1bbe39a752e4981345cd0c00b4e91b34959ed))
+
+
+
+
+
+# [5.8.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.7.0...v5.8.0-beta.0) (2021-06-03)
+
+
+### Bug Fixes
+
+* add "typescript" to resolutions ([5f8dea8](https://github.com/webiny/webiny-js/commit/5f8dea882b2bbc00efed5b20e4029f74d12deb62))
+* **api-headless-cms:** content model group schema required variables ([#1672](https://github.com/webiny/webiny-js/issues/1672)) ([4ded6fd](https://github.com/webiny/webiny-js/commit/4ded6fdeb4ca68466686952ff6f0dfcda5e3b3d1))
+* **api-headless-cms-ddb-es:** get previous entry ([#1679](https://github.com/webiny/webiny-js/issues/1679)) ([1d32e51](https://github.com/webiny/webiny-js/commit/1d32e51c5e76fa8db730b238f74943c0a3395ceb))
+* **app-headless-cms:** add selection to createdBy field due to schema changes ([#1673](https://github.com/webiny/webiny-js/issues/1673)) ([b6a5556](https://github.com/webiny/webiny-js/commit/b6a555663c4cfd3c1e6213b616b1decbd048caa0))
+* add comment about the "staging" environment ([2d9e11a](https://github.com/webiny/webiny-js/commit/2d9e11a661952b59d0b72c3b308b184e744a74ef))
+* add comment about the "staging" environment ([68f9a2b](https://github.com/webiny/webiny-js/commit/68f9a2b07fbebb9300a3c7bdfa9e3880503ca120))
+* bring back build check ([ef3d061](https://github.com/webiny/webiny-js/commit/ef3d061632010c281fc0e396722136f7ddd63807))
+* correct loading of env variables ([9011368](https://github.com/webiny/webiny-js/commit/9011368b33082305a345e10c0db44f8681845550))
+* remove unnecessary code ([cb781d1](https://github.com/webiny/webiny-js/commit/cb781d16ac90b1eac542a24f9744687167f92fb7))
+* reorder checks ([bff84bc](https://github.com/webiny/webiny-js/commit/bff84bc0b07a48ef0f2525b01908d70fe0a2f45b))
+* send project root to login calls ([e8f79cb](https://github.com/webiny/webiny-js/commit/e8f79cbea0373310c15b9b19e57158ac196bab86))
+* set waitForDeployment: true, ([1e07580](https://github.com/webiny/webiny-js/commit/1e07580bf2cc6375aa2f12f4f4aa935bac5f4e3f))
+* set waitForDeployments: false ([b981fd8](https://github.com/webiny/webiny-js/commit/b981fd87c16467301483aba755aaeb2ba246991c))
+* update dependencies ([3a9813c](https://github.com/webiny/webiny-js/commit/3a9813cb7899f2e09a8f5282e5c701c9bcc8e349))
+* **api-file-manager:** update validators ([e89fa39](https://github.com/webiny/webiny-js/commit/e89fa399651cb02c202329375bf3cb7084640879))
+* **api-headless-cms-ddb-es:** add missing filter property ([#1667](https://github.com/webiny/webiny-js/issues/1667)) ([0821e86](https://github.com/webiny/webiny-js/commit/0821e86af054d92d69944aa2139d354fad9ba8a6))
+* **app-admin:** add missing dependency ([7845e15](https://github.com/webiny/webiny-js/commit/7845e15c14687f737ab2d15e0e9091f9499d0092))
+* update ElasticsearchQuery types ([4ab620e](https://github.com/webiny/webiny-js/commit/4ab620e5838c7e95e51c381235426cd9d4df0009))
+* **app-admin:** improve type handling with minimatch ([a9a3aab](https://github.com/webiny/webiny-js/commit/a9a3aab566cabe96c7e7f98a51e090794914c576))
+* **app-admin:** tooltip hover type of file ([#1634](https://github.com/webiny/webiny-js/issues/1634)) ([ee5733e](https://github.com/webiny/webiny-js/commit/ee5733e3bb9dca066600141516a3607a07eb38b5))
+* **cwp-template-aws:** remove "eu-south-1" AWS region ([49d1ab2](https://github.com/webiny/webiny-js/commit/49d1ab2d22f5331519172fa626536092e2ed9ac7))
+* **plugins:** make name property public ([3a95846](https://github.com/webiny/webiny-js/commit/3a95846339a04ab5ca6dbda973087a8c263cd2c5))
+* **pulumi:** update ES policy pattern ([ad3b13c](https://github.com/webiny/webiny-js/commit/ad3b13ce5ec29b45d931bb9e8baf58b95d877ff7))
+* update 'Configure AWS Credentials' link ([#1632](https://github.com/webiny/webiny-js/issues/1632)) ([52da7b3](https://github.com/webiny/webiny-js/commit/52da7b3badea1e3560c516641368b5ec5058dd51))
+* use newly added uploadFolderToS3 utility function ([8efb4e5](https://github.com/webiny/webiny-js/commit/8efb4e5c554bf108f05063ee368be6c764bec894))
+
+
+### Features
+
+* **api-headless-cms:** add createdBy, ownedBy and entryId filtering ([#1660](https://github.com/webiny/webiny-js/issues/1660)) ([7e7b276](https://github.com/webiny/webiny-js/commit/7e7b27619337fc23497fb47c17887316d7a8da85))
+* **api-headless-cms:** pluginable crud operations ([#1544](https://github.com/webiny/webiny-js/issues/1544)) ([#1570](https://github.com/webiny/webiny-js/issues/1570)) ([c9cd4b7](https://github.com/webiny/webiny-js/commit/c9cd4b76665f4e96ccb8997ff9ba4288e344b905))
+* **app:** introduce RoutePlugin class ([6ae73ff](https://github.com/webiny/webiny-js/commit/6ae73ffc6672ab56dfb3e2d03e23b9706751601e))
+* **app-admin:** introduce FileManagerFileTypePlugin ([9ba618b](https://github.com/webiny/webiny-js/commit/9ba618b8dd2d4ee9b145629b4bfdd033ba042ba7))
+* **app-admin:** introduce MenuPlugin and PermissionRendererPlugin class ([567df61](https://github.com/webiny/webiny-js/commit/567df61cd0d8070458295f47fcee55b88a15cc3d))
+* **app-admin:** use FileManagerFileTypePlugin in file type detection ([67a86cf](https://github.com/webiny/webiny-js/commit/67a86cf2e8f7346f15197eee2d8e859bac6fd415))
+* **cli:** upgrade to 5.8.0 ([#1680](https://github.com/webiny/webiny-js/issues/1680)) ([06cbf4a](https://github.com/webiny/webiny-js/commit/06cbf4a8dfa9f44a6f19102b3152d4aaf7bb889b))
+* create uploadFolderToS3 utility function ([d1e17ff](https://github.com/webiny/webiny-js/commit/d1e17ffd03c152371228eae233320b3a915145b7))
+* enable passing args as object ([e641daf](https://github.com/webiny/webiny-js/commit/e641daf4e9ada58598d654eeb66ae66df3057f17))
+* **where-parser:** standardize the where input object to ease the querying ([#1601](https://github.com/webiny/webiny-js/issues/1601)) ([f23f9fb](https://github.com/webiny/webiny-js/commit/f23f9fb65fc06492d9bd1a92a288ec96eded4afd))
+* introduce AWS_ELASTIC_SEARCH_DOMAIN_NAME env variable ([923af4c](https://github.com/webiny/webiny-js/commit/923af4c8594a4b04432cd3f129bb39d3178c9c04))
+
+
+
+
+
 # [5.7.0](https://github.com/webiny/webiny-js/compare/v5.7.0-beta.0...v5.7.0) (2021-05-24)
 
 **Note:** Version bump only for package webiny-js

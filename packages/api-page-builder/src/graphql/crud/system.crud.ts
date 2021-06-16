@@ -2,18 +2,19 @@ import Error from "@webiny/error";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import { getApplicablePlugin } from "@webiny/api-upgrade";
-import executeHookCallbacks from "./utils/executeHookCallbacks";
+import executeCallbacks from "./utils/executeCallbacks";
 import { preparePageData } from "./install/welcome-to-webiny-page-data";
 import { notFoundPageData } from "./install/notFoundPageData";
 import savePageAssets from "./install/utils/savePageAssets";
 import defaults from "./utils/defaults";
-import { PbInstallPlugin, PbContext } from "../../types";
+import { PbContext } from "~/types";
+import { InstallationPlugin } from "~/plugins/InstallationPlugin";
 
 export default {
     type: "context",
     apply(context: PbContext) {
-        const { security, db } = context;
-        const keys = () => ({ PK: `T#${security.getTenant().id}#SYSTEM`, SK: "PB" });
+        const { tenancy, db } = context;
+        const keys = () => ({ PK: `T#${tenancy.getCurrentTenant().id}#SYSTEM`, SK: "PB" });
 
         context.pageBuilder = {
             ...context.pageBuilder,
@@ -31,7 +32,7 @@ export default {
                         const [[oldInstall]] = await db.read({
                             ...defaults.db,
                             query: {
-                                PK: `T#${security.getTenant().id}#PB#SETTINGS`,
+                                PK: `T#${tenancy.getCurrentTenant().id}#PB#SETTINGS`,
                                 SK: "install"
                             }
                         });
@@ -68,8 +69,10 @@ export default {
                 async install({ name, insertDemoData }) {
                     const { pageBuilder, fileManager, elasticSearch } = context;
 
-                    const hookPlugins = context.plugins.byType<PbInstallPlugin>("pb-install");
-                    await executeHookCallbacks<PbInstallPlugin["beforeInstall"]>(
+                    const hookPlugins = context.plugins.byType<InstallationPlugin>(
+                        InstallationPlugin.type
+                    );
+                    await executeCallbacks<InstallationPlugin["beforeInstall"]>(
                         hookPlugins,
                         "beforeInstall",
                         { context }
@@ -195,7 +198,7 @@ export default {
                     // 6. Mark the Page Builder app as installed.
                     await this.setVersion(context.WEBINY_VERSION);
 
-                    await executeHookCallbacks<PbInstallPlugin["afterInstall"]>(
+                    await executeCallbacks<InstallationPlugin["afterInstall"]>(
                         hookPlugins,
                         "afterInstall",
                         { context }

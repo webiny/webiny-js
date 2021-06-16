@@ -92,11 +92,12 @@ async function build() {
     if (packagesNoCache.length > 10) {
         console.log(`Running build for ${green(packagesNoCache.length)} packages.`);
     } else {
-        console.log("Running build for following packages:");
+        console.log("Running build for the following packages:");
         for (let i = 0; i < packagesNoCache.length; i++) {
             const item = packagesNoCache[i];
-            console.log(green(item.packageJson.name));
+            console.log(`- ${green(item.packageJson.name)}`);
         }
+        console.log();
     }
 
     const isFullBuild = packagesNoCache.length === workspacesPackages.length;
@@ -160,7 +161,7 @@ function partialBuild(workspacePackages) {
     for (let i = 0; i < topologicallySortedPackagesList.length; i++) {
         const pckg = topologicallySortedPackagesList[i];
         if (workspacePackages.find(item => item.packageJson.name === pckg.name)) {
-            console.log(`Building ${pckg.name}...`);
+            console.log(`Building ${green(pckg.name)}...`);
             execa.sync("yarn", ["build"], {
                 stdio: "inherit",
                 cwd: pckg.location

@@ -1,11 +1,12 @@
-import { PbMenuPlugin, PbPagePlugin, PbSettingsPlugin } from "../types";
+import { PagePlugin } from "~/plugins/PagePlugin";
+import { SettingsPlugin } from "~/plugins/SettingsPlugin";
+import { MenuPlugin } from "~/plugins/MenuPlugin";
 
 const NOT_FOUND_FOLDER = "_NOT_FOUND_PAGE_";
 
 export default [
-    {
+    new PagePlugin({
         // After a page was unpublished, we need to flush the page.
-        type: "pb-page",
         async afterUnpublish({ context, page }) {
             const promises = [];
             promises.push(
@@ -102,10 +103,9 @@ export default [
 
             await Promise.all(promises);
         }
-    } as PbPagePlugin,
-    {
+    }),
+    new SettingsPlugin({
         // After settings were changed, invalidate all pages that contain pb-page tag.
-        type: "pb-settings",
         async afterUpdate({ context, nextSettings, meta }) {
             if (!nextSettings) {
                 return;
@@ -141,14 +141,13 @@ export default [
                 }
             }
         }
-    } as PbSettingsPlugin,
-    {
-        // After a menu has changed, invalidate all pages that contains the updated menu.
-        type: "pb-menu",
+    }),
+    new MenuPlugin({
+        // After a menu has changed, invalidate all pages that contain the updated menu.
         async afterUpdate({ context, menu }) {
             await context.pageBuilder.pages.prerendering.render({
                 tags: [{ tag: { key: "pb-menu", value: menu.slug } }]
             });
         }
-    } as PbMenuPlugin
+    })
 ];

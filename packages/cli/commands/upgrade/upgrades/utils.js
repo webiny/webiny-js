@@ -79,13 +79,19 @@ const addPackagesToDeps = (type, targetPath, packages) => {
             continue;
         }
         const version = packages[pkg];
-        const coerced = semverCoerce(version);
-        if (!coerced) {
-            throw new Error(
-                `Package "${pkg}" version is not a valid semver version: "${version}".`
-            );
+
+        if (version === null) {
+            // Remove package from deps
+            delete dependencies[pkg];
+        } else {
+            const coerced = semverCoerce(version);
+            if (!coerced) {
+                throw new Error(
+                    `Package "${pkg}" version is not a valid semver version: "${version}".`
+                );
+            }
+            dependencies[pkg] = version;
         }
-        dependencies[pkg] = version;
     }
     json[type] = dependencies;
 

@@ -6,6 +6,7 @@ export interface PermissionsArg {
     locales?: string[];
     rwd?: string;
     pw?: string;
+    own?: boolean;
 }
 
 export const identity = {

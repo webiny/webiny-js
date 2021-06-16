@@ -1,8 +1,8 @@
 import { FileManagerContext } from "~/types";
 
 export default (context: FileManagerContext) => {
-    const { security, i18nContent } = context;
-    if (!security.getTenant()) {
+    const { tenancy, i18nContent } = context;
+    if (!tenancy.getCurrentTenant()) {
         throw new Error("Tenant missing.");
     }
 
@@ -10,5 +10,5 @@ export default (context: FileManagerContext) => {
         throw new Error("Locale missing.");
     }
 
-    return `T#${security.getTenant().id}#L#${i18nContent.getLocale().code}#FM#`;
+    return `T#${tenancy.getCurrentTenant().id}#L#${i18nContent.getLocale().code}#FM#`;
 };

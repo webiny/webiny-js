@@ -1,13 +1,14 @@
 import { ContextPlugin } from "@webiny/handler/types";
 import defaults from "./utils/defaults";
 import getPKPrefix from "./utils/getPKPrefix";
-import { PbContext, DefaultSettings, PbSettingsPlugin } from "../../types";
+import { PbContext, DefaultSettings } from "../../types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import DataLoader from "dataloader";
-import executeHookCallbacks from "./utils/executeHookCallbacks";
+import executeCallbacks from "./utils/executeCallbacks";
 import { DefaultSettingsModel } from "../../utils/models";
 import merge from "lodash/merge";
 import Error from "@webiny/error";
+import { SettingsPlugin } from "~/plugins/SettingsPlugin";
 
 const TYPE = "pb.settings";
 
@@ -22,9 +23,9 @@ const checkBasePermissions = async (context: PbContext) => {
 const plugin: ContextPlugin<PbContext> = {
     type: "context",
     async apply(context) {
-        const { db, security, i18nContent } = context;
+        const { db, tenancy, i18nContent } = context;
 
-        const settingsPlugins = context.plugins.byType<PbSettingsPlugin>("pb-settings");
+        const settingsPlugins = context.plugins.byType<SettingsPlugin>(SettingsPlugin.type);
 
         context.pageBuilder = {
             ...context.pageBuilder,
@@ -93,7 +94,7 @@ const plugin: ContextPlugin<PbContext> = {
                             let tenant = undefined,
                                 locale = undefined;
                             if (options?.tenant !== false) {
-                                tenant = options?.tenant || security.getTenant().id;
+                                tenant = options?.tenant || tenancy.getCurrentTenant().id;
                             }
                             if (options?.locale !== false) {
                                 locale = options?.locale || i18nContent.getLocale().code;
@@ -148,7 +149,7 @@ const plugin: ContextPlugin<PbContext> = {
                             }
                         }
 
-                        await executeHookCallbacks<PbSettingsPlugin["beforeUpdate"]>(
+                        await executeCallbacks<SettingsPlugin["beforeUpdate"]>(
                             settingsPlugins,
                             "beforeUpdate",
                             {
@@ -169,7 +170,7 @@ const plugin: ContextPlugin<PbContext> = {
                             data: next
                         });
 
-                        await executeHookCallbacks<PbSettingsPlugin["afterUpdate"]>(
+                        await executeCallbacks<SettingsPlugin["afterUpdate"]>(
                             settingsPlugins,
                             "afterUpdate",
                             {

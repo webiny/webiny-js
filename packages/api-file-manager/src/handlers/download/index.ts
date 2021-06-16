@@ -52,7 +52,7 @@ const getS3Object = async (event, s3, context) => {
     // If no processors handled the file request, just return the S3 object by default.
     const params = getObjectParams(filename);
     return {
-        object: s3.getObject(params).promise(),
+        object: await s3.getObject(params).promise(),
         params: params
     };
 };

@@ -1,6 +1,6 @@
 {
   "name": "@webiny/app-page-builder",
-  "version": "5.7.0",
+  "version": "5.8.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -27,11 +27,11 @@
     "@webiny/app-i18n": "^5.7.0",
     "@webiny/app-plugin-admin-welcome-screen": "^5.7.0",
     "@webiny/app-security": "^5.7.0",
-    "@webiny/app-security-tenancy": "^5.7.0",
+    "@webiny/app-tenancy": "^5.7.0",
     "@webiny/form": "^5.7.0",
     "@webiny/plugins": "^5.7.0",
     "@webiny/react-router": "^5.7.0",
-    "@webiny/tracking": "^5.7.0",
+    "@webiny/telemetry": "^5.7.0",
     "@webiny/ui": "^5.7.0",
     "@webiny/validation": "^5.7.0",
     "aos": "^2.3.4",

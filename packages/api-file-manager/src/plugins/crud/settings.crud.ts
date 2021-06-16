@@ -32,8 +32,8 @@ const UpdateDataModel = withFields({
 })();
 
 export default (context: FileManagerContext): SettingsCRUD => {
-    const { db, security } = context;
-    const PK_SETTINGS = () => `T#${security.getTenant().id}#FM#SETTINGS`;
+    const { db, tenancy } = context;
+    const PK_SETTINGS = () => `T#${tenancy.getCurrentTenant().id}#FM#SETTINGS`;
     const SK_SETTINGS = () => `default`;
 
     return {

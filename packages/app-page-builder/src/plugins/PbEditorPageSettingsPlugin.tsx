@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Plugin } from "@webiny/plugins";
 
 interface Config {
     title: string;
@@ -7,11 +8,12 @@ interface Config {
     render(props: any): React.ReactElement<any>;
 }
 
-export class PbEditorPageSettingsPlugin {
-    type = "pb-editor-page-settings";
-    config: Record<string, any>;
+export class PbEditorPageSettingsPlugin extends Plugin {
+    public static readonly type = "pb-editor-page-settings";
+    config: Config;
 
     constructor(config: Config) {
+        super();
         this.config = config;
     }
 

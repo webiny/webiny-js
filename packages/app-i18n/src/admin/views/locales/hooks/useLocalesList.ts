@@ -59,7 +59,7 @@ export const useLocalesList: UseLocalesListHook = (config: Config) => {
     const defaultSorter = config.sorters.length ? config.sorters[0].sorters : null;
     const [filter, setFilter] = useState<string>("");
     const [sort, setSort] = useState<string>(serializeSorters(defaultSorter));
-    const { refetchLocales } = useI18N();
+    const { refetchLocales, getDefaultLocale, getCurrentLocale, setCurrentLocale } = useI18N();
     const { history } = useRouter();
     const { showSnackbar } = useSnackbar();
     const listQuery = useQuery(LIST_LOCALES);
@@ -105,6 +105,12 @@ export const useLocalesList: UseLocalesListHook = (config: Config) => {
                 }
 
                 showSnackbar(t`Locale "{code}" deleted.`({ code: item.code }));
+
+                if (getCurrentLocale("content") === item.code) {
+                    // Update current "content" locale
+                    const defaultLocale = getDefaultLocale();
+                    setCurrentLocale(defaultLocale.code, "content");
+                }
 
                 if (currentLocaleCode === item.code) {
                     history.push(`/i18n/locales`);

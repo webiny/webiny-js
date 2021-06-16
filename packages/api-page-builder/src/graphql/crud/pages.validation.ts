@@ -1,11 +1,7 @@
-import { PbPagePlugin } from "../types";
 import { UpdateDataModel, UpdateSettingsModel } from "./pages/models";
+import { PagePlugin } from "~/plugins/PagePlugin";
 
-/**
- * Execute validation
- */
-const validationPlugin: PbPagePlugin = {
-    type: "pb-page",
+export default new PagePlugin({
     async beforeUpdate({ inputData, existingPage, updateData }) {
         const updateDataModel = new UpdateDataModel().populate(inputData);
         await updateDataModel.validate();
@@ -22,6 +18,4 @@ const validationPlugin: PbPagePlugin = {
             await updateSettingsModel.toJSON()
         );
     }
-};
-
-export default validationPlugin;
+});

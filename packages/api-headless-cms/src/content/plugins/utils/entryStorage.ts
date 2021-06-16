@@ -133,8 +133,11 @@ export const entryToStorageTransform = async (
 export const entryFromStorageTransform = async (
     context: CmsContext,
     model: CmsContentModel,
-    entry: CmsContentEntry & Record<string, any>
+    entry?: CmsContentEntry & Record<string, any>
 ): Promise<CmsContentEntry> => {
+    if (!entry) {
+        return null;
+    }
     const transform = entryStorageTransformFactory(context, model, "fromStorage");
     if (!transform) {
         return entry;

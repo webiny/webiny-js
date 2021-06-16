@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-file-manager",
-  "version": "5.7.0",
+  "version": "5.8.0",
   "main": "index.js",
   "repository": {
     "type": "git",
@@ -20,11 +20,12 @@
     "@webiny/api-i18n-content": "^5.7.0",
     "@webiny/api-plugin-elastic-search-client": "^5.7.0",
     "@webiny/api-security": "^5.7.0",
-    "@webiny/api-security-tenancy": "^5.7.0",
+    "@webiny/api-tenancy": "^5.7.0",
     "@webiny/api-upgrade": "^5.7.0",
     "@webiny/error": "^5.7.0",
     "@webiny/handler": "^5.7.0",
     "@webiny/handler-client": "^5.7.0",
+    "@webiny/handler-db": "^5.7.0",
     "@webiny/handler-graphql": "^5.7.0",
     "@webiny/project-utils": "^5.7.0",
     "@webiny/validation": "^5.7.0",
