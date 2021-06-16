@@ -1,7 +1,7 @@
 const dbPlugins = require("@webiny/handler-db").default;
 const { DynamoDbDriver } = require("@webiny/db-dynamodb");
 const { DocumentClient } = require("aws-sdk/clients/dynamodb");
-const elasticSearch = require("@webiny/api-plugin-elastic-search-client").default;
+const elasticSearch = require("@webiny/api-elasticsearch").default;
 const { createHandler } = require("@webiny/handler-aws");
 const dynamoToElastic = require("@webiny/api-dynamodb-to-elasticsearch/handler").default;
 const { Client } = require("@elastic/elasticsearch");
