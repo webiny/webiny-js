@@ -8,13 +8,18 @@ export default async ({ scaffoldsIndexPath, importName, importPath }) => {
 
     const existingImportDeclaration = source.getImportDeclaration(importPath);
     if (existingImportDeclaration) {
-        throw new Error('Already exists.')
+        throw new Error("Already exists.");
     }
 
-    const importDeclarations = source.getImportDeclarations();
-    const last = importDeclarations[importDeclarations.length - 1];
+    let index = 1;
 
-    source.insertImportDeclaration(last.getChildIndex() + 1, {
+    const importDeclarations = source.getImportDeclarations();
+    if (importDeclarations.length) {
+        const last = importDeclarations[importDeclarations.length - 1];
+        index = last.getChildIndex() + 1;
+    }
+
+    source.insertImportDeclaration(index, {
         defaultImport: importName,
         moduleSpecifier: importPath
     });
