@@ -10,7 +10,7 @@
     "../app-i18n",
     "../app-plugin-admin-welcome-screen",
     "../app-security",
-    "../app-security-tenancy",
+    "../app-tenancy",
     "../form",
     "../plugins",
     "../react-router",

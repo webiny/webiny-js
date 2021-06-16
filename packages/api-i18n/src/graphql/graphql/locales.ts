@@ -14,6 +14,7 @@ const plugin: GraphQLSchemaPlugin<I18NContext & SecurityContext> = {
             type I18NCreatedBy {
                 id: ID
                 displayName: String
+                type: String
             }
 
             type I18NLocale {
@@ -26,7 +27,10 @@ const plugin: GraphQLSchemaPlugin<I18NContext & SecurityContext> = {
             input I18NLocaleInput {
                 code: String
                 default: Boolean
-                createdOn: DateTime
+            }
+
+            input I18NLocaleUpdateInput {
+                default: Boolean!
             }
 
             type I18NLocaleResponse {
@@ -69,7 +73,7 @@ const plugin: GraphQLSchemaPlugin<I18NContext & SecurityContext> = {
 
             extend type I18NMutation {
                 createI18NLocale(data: I18NLocaleInput!): I18NLocaleResponse
-                updateI18NLocale(code: String!, data: I18NLocaleInput!): I18NLocaleResponse
+                updateI18NLocale(code: String!, data: I18NLocaleUpdateInput!): I18NLocaleResponse
                 deleteI18NLocale(code: String!): I18NLocaleResponse
             }
         `,
@@ -124,12 +128,16 @@ const plugin: GraphQLSchemaPlugin<I18NContext & SecurityContext> = {
                     if (data.default) {
                         await i18n.locales.updateDefault(data.code);
                     }
-
-                    return new Response(data);
+                    const locale = await i18n.locales.getByCode(data.code);
+                    return new Response(locale);
                 },
-                updateI18NLocale: async (_, args: { code: string; default: boolean }, context) => {
+                updateI18NLocale: async (
+                    _,
+                    args: { code: string; data: { default: boolean } },
+                    context
+                ) => {
                     const { i18n, security } = context;
-                    const { code } = args;
+                    const { code, data } = args;
 
                     const permission = await security.getPermission("i18n.locale");
 
@@ -142,15 +150,20 @@ const plugin: GraphQLSchemaPlugin<I18NContext & SecurityContext> = {
                         return new NotFoundResponse(`Locale "${args.code}" not found.`);
                     }
 
-                    await i18n.locales.update(code, {
-                        default: args.default
-                    });
-
-                    if (locale.default) {
-                        await i18n.locales.updateDefault(code);
+                    if (locale.default && !data.default) {
+                        return new ErrorResponse({
+                            message:
+                                "Cannot unset default locale, please set another locale as default first."
+                        });
                     }
 
-                    return new Response(locale);
+                    await i18n.locales.update(code, data);
+
+                    if (data.default) {
+                        await i18n.locales.updateDefault(code);
+                    }
+                    const updatedLocale = await i18n.locales.getByCode(code);
+                    return new Response(updatedLocale);
                 },
                 deleteI18NLocale: async (_, args: { code: string }, context) => {
                     const { i18n, security } = context;

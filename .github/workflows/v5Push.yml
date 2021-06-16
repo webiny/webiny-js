@@ -215,7 +215,7 @@ jobs:
         run: git config --global user.name "webiny-bot"
 
       - name: Disable Webiny tracking
-        run: mkdir ~/.webiny && echo '{id:"ci",tracking:false}' > ~/.webiny/config
+        run: mkdir ~/.webiny && echo '{id:"ci",telemetry:false}' > ~/.webiny/config
 
       - name: Create a new Webiny project
         run: >
@@ -279,7 +279,7 @@ jobs:
         run: git config --global user.name "webiny-bot"
 
       - name: Disable Webiny tracking
-        run: mkdir ~/.webiny && echo '{id:"ci",tracking:false}' > ~/.webiny/config
+        run: mkdir ~/.webiny && echo '{id:"ci",telemetry:false}' > ~/.webiny/config
 
       - name: Create a new Webiny project
         run: >
@@ -345,17 +345,13 @@ jobs:
 #        run: yarn cypress run --spec "cypress/integration/admin/**/*.spec.js"
 
   npm-release-beta:
-    needs: [code-analysis, jest-tests, e2e-tests]
+    needs: [cache-keys, code-analysis, jest-tests, e2e-tests]
     name: NPM release ("beta" tag)
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
     steps:
-      - name: Get day of month (for caching purposes)
-        id: day-of-month
-        run: echo "::set-output name=day::$(node --eval "console.log(new Date().getDate())")"
-
       - uses: actions/setup-node@v2
         with:
           node-version: 12
@@ -372,7 +368,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: cached-packages-${{ runner.os }}-${{ steps.day-of-month.outputs.day }}
+          key: cached-packages-${{ runner.os }}-${{ needs.cache-keys.outputs.day }}
 
       - name: Install dependencies
         run: yarn --immutable

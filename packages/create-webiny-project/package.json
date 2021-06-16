@@ -1,6 +1,6 @@
 {
   "name": "create-webiny-project",
-  "version": "5.7.0",
+  "version": "5.8.0",
   "description": "Webiny project bootstrap tool.",
   "main": "index.js",
   "scripts": {
@@ -13,7 +13,7 @@
   "author": "Webiny Ltd.",
   "license": "MIT",
   "dependencies": {
-    "@webiny/tracking": "^5.7.0",
+    "@webiny/telemetry": "^5.8.0",
     "chalk": "4.1.0",
     "execa": "^4.1.0",
     "find-up": "^5.0.0",
@@ -24,9 +24,9 @@
     "node-fetch": "2.6.1",
     "os": "0.1.1",
     "p-retry": "4.2.0",
-    "public-ip": "4.0.3",
     "rimraf": "3.0.2",
     "semver": "7.3.4",
+    "uuid": "^8.3.2",
     "validate-npm-package-name": "3.0.0",
     "write-json-file": "4.3.0",
     "yargs": "15.4.1"

@@ -7,7 +7,8 @@
     "../api-i18n",
     "../api-i18n-content",
     "../api-security",
-    "../api-security-tenancy",
+    "../api-security-admin-users",
+    "../api-tenancy",
     "../api-file-manager",
     "../api-upgrade",
     "../error",
@@ -24,7 +25,9 @@
     "outDir": "dist",
     "rootDir": "src",
     "declarationDir": "dist",
-    "paths": {},
+    "paths": {
+      "~/*": ["./src/*"]
+    },
     "baseUrl": "."
   },
   "references": []

@@ -12,7 +12,7 @@ import SingleImageUpload from "@webiny/app-admin/components/SingleImageUpload";
 import {
     PbEditorPageElementSettingsRenderComponentProps,
     PbEditorResponsiveModePlugin
-} from "../../../../types";
+} from "~/types";
 import {
     activeElementAtom,
     elementWithChildrenByIdSelector,
@@ -84,7 +84,7 @@ const BackgroundSettings: React.FunctionComponent<SettingsPropsType &
     ]);
     const setPosition = useCallback(
         value => getUpdateValue(`${displayMode}.image.position`)(value),
-        [getUpdateValue]
+        [getUpdateValue, displayMode]
     );
     const setColor = useCallback(value => getUpdateValue(`${displayMode}.color`)(value), [
         getUpdateValue,
@@ -100,7 +100,7 @@ const BackgroundSettings: React.FunctionComponent<SettingsPropsType &
             applyFallbackDisplayMode(displayMode, mode =>
                 get(element, `${DATA_NAMESPACE}.${mode}`)
             ),
-        [displayMode]
+        [displayMode, element]
     );
 
     const background = get(element, `${DATA_NAMESPACE}.${displayMode}`, fallbackValue || {});

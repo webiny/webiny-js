@@ -1,7 +1,7 @@
 import { ContextPlugin } from "@webiny/handler/types";
 import defaults from "./utils/defaults";
 import getPKPrefix from "./utils/getPKPrefix";
-import { PbMenuPlugin, PbContext } from "../types";
+import { PbContext } from "../types";
 import { Menu } from "../../types";
 import { NotFoundError } from "@webiny/handler-graphql";
 import checkBasePermissions from "./utils/checkBasePermissions";
@@ -10,8 +10,9 @@ import Error from "@webiny/error";
 import { validation } from "@webiny/validation";
 import { withFields, string } from "@commodo/fields";
 import { object } from "commodo-fields-object";
-import executeHookCallbacks from "./utils/executeHookCallbacks";
+import executeCallbacks from "./utils/executeCallbacks";
 import prepareMenuItems from "./menus/prepareMenuItems";
+import { MenuPlugin } from "~/plugins/MenuPlugin";
 
 const CreateDataModel = withFields({
     title: string({ validation: validation.create("required,minLength:1,maxLength:100") }),
@@ -35,7 +36,7 @@ const plugin: ContextPlugin<PbContext> = {
         const { db } = context;
         const PK = () => `${getPKPrefix(context)}M`;
 
-        const hookPlugins = context.plugins.byType<PbMenuPlugin>("pb-menu");
+        const hookPlugins = context.plugins.byType<MenuPlugin>(MenuPlugin.type);
 
         context.pageBuilder = {
             ...context.pageBuilder,
@@ -124,7 +125,7 @@ const plugin: ContextPlugin<PbContext> = {
                         throw new Error(`Menu "${menu.slug}" already exists.`);
                     }
 
-                    await executeHookCallbacks<PbMenuPlugin["beforeCreate"]>(
+                    await executeCallbacks<MenuPlugin["beforeCreate"]>(
                         hookPlugins,
                         "beforeCreate",
                         {
@@ -140,19 +141,15 @@ const plugin: ContextPlugin<PbContext> = {
                             PK: PK(),
                             SK: createDataModel.slug,
                             TYPE,
-                            tenant: context.security.getTenant().id,
+                            tenant: context.tenancy.getCurrentTenant().id,
                             locale: context.i18nContent.getLocale().code
                         }
                     });
 
-                    await executeHookCallbacks<PbMenuPlugin["afterCreate"]>(
-                        hookPlugins,
-                        "afterCreate",
-                        {
-                            context,
-                            menu
-                        }
-                    );
+                    await executeCallbacks<MenuPlugin["afterCreate"]>(hookPlugins, "afterCreate", {
+                        context,
+                        menu
+                    });
 
                     return menu;
                 },
@@ -175,7 +172,7 @@ const plugin: ContextPlugin<PbContext> = {
 
                     const updateData = await updateDataModel.toJSON({ onlyDirty: true });
 
-                    await executeHookCallbacks<PbMenuPlugin["beforeUpdate"]>(
+                    await executeCallbacks<MenuPlugin["beforeUpdate"]>(
                         hookPlugins,
                         "beforeUpdate",
                         {
@@ -190,11 +187,10 @@ const plugin: ContextPlugin<PbContext> = {
                         data: updateData
                     });
 
-                    await executeHookCallbacks<PbMenuPlugin["afterUpdate"]>(
-                        hookPlugins,
-                        "afterUpdate",
-                        { context, menu }
-                    );
+                    await executeCallbacks<MenuPlugin["afterUpdate"]>(hookPlugins, "afterUpdate", {
+                        context,
+                        menu
+                    });
 
                     return { ...menu, ...updateData };
                 },
@@ -211,7 +207,7 @@ const plugin: ContextPlugin<PbContext> = {
                     const identity = context.security.getIdentity();
                     checkOwnPermissions(identity, permission, menu);
 
-                    await executeHookCallbacks<PbMenuPlugin["beforeDelete"]>(
+                    await executeCallbacks<MenuPlugin["beforeDelete"]>(
                         hookPlugins,
                         "beforeDelete",
                         {
@@ -225,14 +221,10 @@ const plugin: ContextPlugin<PbContext> = {
                         query: { PK: PK(), SK: slug }
                     });
 
-                    await executeHookCallbacks<PbMenuPlugin["afterDelete"]>(
-                        hookPlugins,
-                        "afterDelete",
-                        {
-                            context,
-                            menu
-                        }
-                    );
+                    await executeCallbacks<MenuPlugin["afterDelete"]>(hookPlugins, "afterDelete", {
+                        context,
+                        menu
+                    });
 
                     return menu;
                 }

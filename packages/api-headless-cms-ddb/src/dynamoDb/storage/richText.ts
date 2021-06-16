@@ -64,15 +64,30 @@ export default (): CmsModelFieldToStoragePlugin<OriginalValue, StorageValue> => 
                     `Value received in "fromStorage" function is not an object in field "${field.fieldId}".`
                 );
             }
+            /**
+             * This is to circumvent a bug introduced with 5.8.0 storage operations.
+             * TODO: remove with 5.9.0 upgrade
+             */
+            if (storageValue.hasOwnProperty("compression") === false) {
+                return storageValue;
+            }
             const { compression, value } = storageValue;
             if (!compression) {
                 throw new WebinyError(
-                    `Missing compression in "fromStorage" function in field "${field.fieldId}".`
+                    `Missing compression in "fromStorage" function in field "${field.fieldId}".`,
+                    "MISSING_COMPRESSION",
+                    {
+                        value: storageValue
+                    }
                 );
             }
             if (compression !== "jsonpack") {
                 throw new WebinyError(
-                    `This plugin cannot transform something not packed with "jsonpack".`
+                    `This plugin cannot transform something not packed with "jsonpack".`,
+                    "WRONG_COMPRESSION",
+                    {
+                        compression
+                    }
                 );
             }
 
@@ -83,6 +98,14 @@ export default (): CmsModelFieldToStoragePlugin<OriginalValue, StorageValue> => 
             return unpacked;
         },
         async toStorage({ model, field, entry, value }) {
+            /**
+             * There is a possibility that we are trying to compress already compressed value.
+             * Introduced a bug with 5.8.0 storage operations, so just return the value to correct it.
+             * TODO: remove with 5.9.0 upgrade.
+             */
+            if (value && value.hasOwnProperty("compression") === true) {
+                return value as any;
+            }
             const cacheKey = createCacheKey({
                 model,
                 field,

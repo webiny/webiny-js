@@ -1,4 +1,4 @@
-import { LOGIN } from "@webiny/app-security-tenancy/graphql";
+import { LOGIN } from "@webiny/app-security-admin-users/graphql";
 
 /**
  * `getIdentityData` is a function that has to return information about the identity (a user within Webiny).

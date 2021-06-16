@@ -1,8 +1,9 @@
 import path from "path";
 import fs from "fs";
 import { createHandler } from "@webiny/handler-aws";
-import apolloServerPlugins from "@webiny/handler-graphql";
-import securityPlugins from "@webiny/api-security/authenticator";
+import graphqlHandlerPlugins from "@webiny/handler-graphql";
+import tenancyPlugins from "@webiny/api-tenancy";
+import securityPlugins from "@webiny/api-security";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
 import dbPlugins from "@webiny/handler-db";
 import i18nContext from "@webiny/api-i18n/graphql/context";
@@ -108,12 +109,13 @@ export default ({ permissions, identity, tenant } = {}) => {
             driver: new DynamoDbDriver({ documentClient })
         }),
         elasticSearchContext,
-        apolloServerPlugins(),
+        graphqlHandlerPlugins(),
+        tenancyPlugins(),
         securityPlugins(),
         {
             type: "context",
             apply(context) {
-                context.security.getTenant = () => {
+                context.tenancy.getCurrentTenant = () => {
                     return tenant || defaultTenant;
                 };
             }

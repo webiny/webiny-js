@@ -1,8 +1,8 @@
 import WebinyError from "@webiny/error";
 import { CmsContext } from "@webiny/api-headless-cms/types";
 
-export const createBasePartitionKey = ({ security, cms }: CmsContext): string => {
-    const tenant = security.getTenant();
+export const createBasePartitionKey = ({ tenancy, cms }: CmsContext): string => {
+    const tenant = tenancy.getCurrentTenant();
     if (!tenant) {
         throw new WebinyError("Tenant missing.", "TENANT_NOT_FOUND");
     }

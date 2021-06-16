@@ -157,7 +157,7 @@ const createInitialQueryValue = (
     // When ES index is shared between tenants, we need to filter records by tenant ID
     const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
     if (sharedIndex) {
-        const tenant = context.security.getTenant();
+        const tenant = context.tenancy.getCurrentTenant();
         query.must.push({ term: { "tenant.keyword": tenant.id } });
     }
     /**

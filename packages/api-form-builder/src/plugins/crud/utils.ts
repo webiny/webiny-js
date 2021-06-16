@@ -101,8 +101,8 @@ export const normalizeSortInput = (sort: Record<string, number>) => {
 };
 
 export const getPKPrefix = (context: FormBuilderContext) => {
-    const { security, i18nContent } = context;
-    if (!security.getTenant()) {
+    const { tenancy, i18nContent } = context;
+    if (!tenancy.getCurrentTenant()) {
         throw new Error("Tenant missing.");
     }
 
@@ -110,7 +110,7 @@ export const getPKPrefix = (context: FormBuilderContext) => {
         throw new Error("Locale missing.");
     }
 
-    return `T#${security.getTenant().id}#L#${i18nContent.getLocale().code}#FB#`;
+    return `T#${tenancy.getCurrentTenant().id}#L#${i18nContent.getLocale().code}#FB#`;
 };
 
 export const checkOwnership = (

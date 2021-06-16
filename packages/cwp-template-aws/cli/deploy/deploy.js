@@ -1,7 +1,7 @@
 const { green } = require("chalk");
 const { getStackOutput, getPulumi } = require("@webiny/cli-plugin-deploy-pulumi/utils");
 const execa = require("execa");
-const { sendEvent } = require("@webiny/tracking");
+const { sendEvent } = require("@webiny/telemetry");
 const sleep = require("../utils/sleep");
 
 const deploy = (stack, env, inputs) =>

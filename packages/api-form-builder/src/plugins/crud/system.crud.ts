@@ -8,8 +8,8 @@ import { FormBuilderContext, Settings } from "../../types";
 export default {
     type: "context",
     apply(context: FormBuilderContext) {
-        const { security } = context;
-        const keys = () => ({ PK: `T#${security.getTenant().id}#SYSTEM`, SK: "FB" });
+        const { tenancy } = context;
+        const keys = () => ({ PK: `T#${tenancy.getCurrentTenant().id}#SYSTEM`, SK: "FB" });
 
         context.formBuilder = {
             ...context.formBuilder,

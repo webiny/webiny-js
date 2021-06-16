@@ -22,7 +22,7 @@ export default class CmsSystemDynamo implements CmsSystemStorageOperations {
 
     private get partitionKey(): string {
         if (!this._partitionKey) {
-            const tenant = this._context.security.getTenant();
+            const tenant = this._context.tenancy.getCurrentTenant();
             if (!tenant) {
                 throw new WebinyError("Tenant missing.", "TENANT_NOT_FOUND");
             }
@@ -39,6 +39,7 @@ export default class CmsSystemDynamo implements CmsSystemStorageOperations {
             sortKey: "SK",
             DocumentClient: getDocumentClient(context)
         });
+
         this._entity = new Entity({
             name: "System",
             table: this._table,
@@ -50,6 +51,9 @@ export default class CmsSystemDynamo implements CmsSystemStorageOperations {
                     sortKey: true
                 },
                 version: {
+                    type: "string"
+                },
+                readAPIKey: {
                     type: "string"
                 }
             }
