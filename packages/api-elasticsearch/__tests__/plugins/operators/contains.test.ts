@@ -1,5 +1,5 @@
 import { createBlankQuery } from "../../helpers";
-import { ElasticsearchBoolQueryConfig } from "@webiny/api-plugin-elastic-search-client/types";
+import { ElasticsearchBoolQueryConfig } from "~/types";
 import { ElasticsearchQueryBuilderOperatorContainsPlugin } from "~/plugins/operator";
 
 describe("ElasticsearchQueryBuilderOperatorContainsPlugin", () => {
@@ -28,7 +28,7 @@ describe("ElasticsearchQueryBuilderOperatorContainsPlugin", () => {
                     query_string: {
                         allow_leading_wildcard: true,
                         // @ts-ignore
-                        default_operator: "AND",
+                        default_operator: "and",
                         fields: ["name"],
                         query: "*John*"
                     }
@@ -37,7 +37,7 @@ describe("ElasticsearchQueryBuilderOperatorContainsPlugin", () => {
                     query_string: {
                         allow_leading_wildcard: true,
                         // @ts-ignore
-                        default_operator: "AND",
+                        default_operator: "and",
                         fields: ["name"],
                         query: "*Doe*"
                     }

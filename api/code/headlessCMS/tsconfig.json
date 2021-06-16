@@ -29,7 +29,7 @@
       "path": "../../../packages/api-form-builder"
     },
     {
-      "path": "../../../packages/api-plugin-elastic-search-client"
+      "path": "../../../packages/api-elasticsearch"
     },
     {
       "path": "../../../packages/api-plugin-security-cognito"

@@ -9,7 +9,7 @@
     },
     "baseUrl": "."
   },
-  "exclude": ["node_modules", "dist", "../handler", "../api-headless-cms"],
+  "exclude": ["node_modules", "dist", "../error", "../handler", "../plugins"],
   "include": ["./src"],
   "references": []
 }

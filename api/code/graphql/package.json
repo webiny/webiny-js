@@ -6,6 +6,7 @@
     "watch": "yarn webiny run watch"
   },
   "dependencies": {
+    "@webiny/api-elasticsearch": "^5.8.0-beta.0",
     "@webiny/api-file-manager": "^5.8.0-beta.0",
     "@webiny/api-file-manager-ddb-es": "^5.8.0",
     "@webiny/api-file-manager-s3": "^5.8.0-beta.0",
@@ -15,7 +16,6 @@
     "@webiny/api-i18n": "^5.8.0-beta.0",
     "@webiny/api-i18n-content": "^5.8.0-beta.0",
     "@webiny/api-page-builder": "^5.8.0-beta.0",
-    "@webiny/api-plugin-elastic-search-client": "^5.8.0-beta.0",
     "@webiny/api-plugin-security-cognito": "^5.8.0-beta.0",
     "@webiny/api-prerendering-service": "^5.8.0-beta.0",
     "@webiny/api-security": "^5.8.0-beta.0",

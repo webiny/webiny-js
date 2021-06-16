@@ -2,6 +2,9 @@
   "extends": "../../tsconfig",
   "references": [
     {
+      "path": "../error"
+    },
+    {
       "path": "../handler"
     },
     {
@@ -11,6 +14,8 @@
   "compilerOptions": {
     "paths": {
       "~/*": ["./src/*"],
+      "@webiny/error/*": ["../error/src/*"],
+      "@webiny/error": ["../error/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],

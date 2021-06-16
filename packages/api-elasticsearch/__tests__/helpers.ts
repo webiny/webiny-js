@@ -1,4 +1,4 @@
-import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
+import { ElasticsearchBoolQueryConfig } from "~/types";
 
 export const createBlankQuery = (): ElasticsearchBoolQueryConfig => ({
     must_not: [],

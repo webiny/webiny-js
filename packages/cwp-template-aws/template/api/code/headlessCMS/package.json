@@ -10,7 +10,7 @@
     "@webiny/api-headless-cms-ddb-es": "latest",
     "@webiny/api-i18n": "latest",
     "@webiny/api-i18n-content": "latest",
-    "@webiny/api-plugin-elastic-search-client": "latest",
+    "@webiny/api-elasticsearch": "latest",
     "@webiny/api-plugin-security-cognito": "latest",
     "@webiny/api-security": "latest",
     "@webiny/api-security-tenancy": "latest",

@@ -6,13 +6,14 @@
     "url": "https://github.com/webiny/webiny-js.git",
     "directory": "packages/api-elasticsearch"
   },
-  "description": "A client to work with Elastic Search domain.",
+  "description": "A set of plugins to work with Elasticsearch.",
   "contributors": [
     "Pavel Denisjuk <pavel@webiny.com>"
   ],
   "license": "MIT",
   "dependencies": {
     "@elastic/elasticsearch": "^7.9.1",
+    "@webiny/error": "^5.8.0",
     "@webiny/handler": "^5.8.0",
     "@webiny/plugins": "^5.8.0",
     "aws-elasticsearch-connector": "^9.0.0",

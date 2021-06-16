@@ -1,5 +1,5 @@
 import { createBlankQuery } from "../../helpers";
-import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
+import { ElasticsearchBoolQueryConfig } from "~/types";
 import { ElasticsearchQueryBuilderOperatorNotBetweenPlugin } from "~/plugins/operator";
 
 describe("ElasticsearchQueryBuilderOperatorNotBetweenPlugin", () => {

@@ -3,9 +3,9 @@ import { BoolQueryConfig as esBoolQueryConfig, Query as esQuery } from "elastic-
 import { ContextInterface } from "@webiny/handler/types";
 export * from "elastic-ts";
 
-export type ElasticSearchClientContext = {
-    elasticSearch: Client;
-};
+export interface ElasticsearchContext extends ContextInterface {
+    elasticsearch: Client;
+}
 
 /**
  * To simplify our plugins, we say that query contains arrays of objects, not single objects.

@@ -6,7 +6,7 @@
     "../plugins",
     "../db",
     "../api-i18n-content",
-    "../api-plugin-elastic-search-client",
+    "../api-elasticsearch",
     "../api-dynamodb-to-elasticsearch",
     "../api-security",
     "../api-upgrade",

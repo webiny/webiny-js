@@ -4,7 +4,7 @@
     { "path": "../../../packages/handler-aws" },
     { "path": "../../../packages/handler-logs" },
     {
-      "path": "../../../packages/api-plugin-elastic-search-client"
+      "path": "../../../packages/api-elasticsearch"
     },
     { "path": "../../../packages/api-dynamodb-to-elasticsearch" }
   ]

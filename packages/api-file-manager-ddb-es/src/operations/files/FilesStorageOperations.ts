@@ -19,7 +19,7 @@ import defineFilesEsEntity from "~/definitions/filesElasticsearchEntity";
 import configurations from "~/operations/configurations";
 import lodashOmit from "lodash.omit";
 import lodashChunk from "lodash.chunk";
-import { encodeCursor, decodeCursor } from "@webiny/api-plugin-elastic-search-client/cursors";
+import { encodeCursor, decodeCursor } from "@webiny/api-elasticsearch/cursors";
 
 interface FileItem extends File {
     PK: string;

@@ -1,6 +1,6 @@
 import { ElasticsearchQueryBuilderOperatorBetweenPlugin } from "~/plugins/operator";
 import { createBlankQuery } from "../../helpers";
-import { ElasticsearchBoolQueryConfig } from "@webiny/api-plugin-elastic-search-client/types";
+import { ElasticsearchBoolQueryConfig } from "~/types";
 
 describe("ElasticsearchQueryBuilderOperatorBetweenPlugin", () => {
     const plugin = new ElasticsearchQueryBuilderOperatorBetweenPlugin();
