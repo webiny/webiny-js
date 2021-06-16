@@ -27,6 +27,7 @@ export default (): [CliCommandScaffoldTemplate<Input>, CliPluginsScaffoldCi<Inpu
         type: "cli-plugin-scaffold-template",
         scaffold: {
             name: "Set up a CI/CD pipeline",
+            description: "Sets up a CI/CD pipeline for your project using a provider of your choice. " + infoLink,
             questions: () => {
                 return [
                     {
