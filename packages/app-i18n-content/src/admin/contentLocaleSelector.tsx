@@ -48,6 +48,7 @@ const plugin: AdminHeaderRightPlugin = {
                         Locale: {currentLocale}
                     </ButtonPrimary>
                 }
+                data-testid={"app-i18n-content.menu"}
             >
                 {localeList.map(locale => (
                     <MenuItem
@@ -56,6 +57,7 @@ const plugin: AdminHeaderRightPlugin = {
                             setCurrentLocale(locale.code, "content");
                             window.location.reload();
                         }}
+                        data-testid={`app-i18n-content.menu-item.${locale.code}`}
                     >
                         <span style={{ minWidth: 35 }}>
                             {currentLocale === locale.code && (

@@ -340,6 +340,6 @@ jobs:
         working-directory: webiny-js
         run: yarn cypress run --spec "cypress/integration/adminInstallation/**/*.spec.js"
 
-#      - name: Cypress - run the rest of Admin Area tests
-#        working-directory: webiny-js
-#        run: yarn cypress run --spec "cypress/integration/admin/**/*.spec.js"
+      - name: Cypress - run the rest of Admin Area tests
+        working-directory: webiny-js
+        run: yarn cypress run --spec "cypress/integration/admin/**/*.spec.js"

@@ -248,11 +248,17 @@ const PagesDataList = ({ onCreatePage, canCreate }: PagesDataListProps) => {
                 <SearchUI value={filter} onChange={setFilter} inputPlaceholder={t`Search pages`} />
             }
             modalOverlay={pagesDataListModalOverlay}
-            modalOverlayAction={<DataListModalOverlayAction icon={<FilterIcon />} />}
+            modalOverlayAction={
+                <DataListModalOverlayAction
+                    icon={<FilterIcon />}
+                    data-testid={"default-data-list.filter"}
+                />
+            }
         >
             {({ data }) => (
                 <>
                     <Scrollbar
+                        data-testid="default-data-list"
                         onScrollFrame={scrollFrame =>
                             loadMoreOnScroll({ scrollFrame, fetchMore: listQuery.fetchMore })
                         }
@@ -279,7 +285,7 @@ const PagesDataList = ({ onCreatePage, canCreate }: PagesDataListProps) => {
                                     </ListItemText>
                                     <ListItemMeta className={rightAlign}>
                                         <Typography use={"subtitle2"}>
-                                            {statusesLabels[page.status]} (v{page.version})
+                                            {`${statusesLabels[page.status]} (v${page.version})`}
                                         </Typography>
                                     </ListItemMeta>
                                 </ListItem>

@@ -5,6 +5,7 @@ import { validation } from "@webiny/validation";
 import { Tenant } from "@webiny/api-tenancy/types";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { NotFoundError } from "@webiny/handler-graphql";
+import WebinyError from "@webiny/error";
 import { Base } from "./base.crud";
 import { UserPlugin } from "../plugins/UserPlugin";
 import {
@@ -53,6 +54,7 @@ export class Users extends Base implements UsersCRUD {
         context.plugins.register(validationPlugin);
         this.loaders = new UserLoaders(context);
     }
+
     get plugins(): UserPlugin[] {
         return this.context.plugins.byType<UserPlugin>(UserPlugin.type);
     }
@@ -208,9 +210,14 @@ export class Users extends Base implements UsersCRUD {
         }
 
         const user = await this.getUser(login);
+        const identity = security.getIdentity();
 
         if (!user) {
             throw new NotFoundError(`User "${login}" was not found!`);
+        }
+
+        if (user.login === identity.id) {
+            throw new WebinyError(`You can't delete your own user account.`);
         }
 
         await this.executeCallback<UserPlugin["beforeDelete"]>("beforeDelete", {

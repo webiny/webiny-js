@@ -14,6 +14,7 @@ export default new PermissionRendererPlugin({
                 icon={<TranslateIcon />}
                 title={t`I18N`}
                 description={t`Manage I18N app access permissions.`}
+                data-testid={"permission.i18n"}
             >
                 <I18NPermissions {...props} />
             </AccordionItem>

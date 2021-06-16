@@ -51,6 +51,7 @@ const args = {
 
     cypressConfig.env.API_URL = apiOutput.apiUrl;
     cypressConfig.env.GRAPHQL_API_URL = apiOutput.apiUrl + "/graphql";
+    cypressConfig.env.CMS_MANAGE_GRAPHQL_API_URL = apiOutput.apiUrl + "/cms/manage";
 
     cypressConfig.env.AWS_COGNITO_USER_POOL_ID = apiOutput.cognitoUserPoolId;
     cypressConfig.env.AWS_COGNITO_CLIENT_ID = apiOutput.cognitoAppClientId;

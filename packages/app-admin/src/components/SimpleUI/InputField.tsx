@@ -83,7 +83,7 @@ const InputField = ({
                 className={classNames(inputStyle, className)}
                 value={getValue({ value, type: props.type, defaultValue })}
                 onChange={({ target: { value } }) => {
-                    onChange(value);
+                    onChange(value.toLowerCase());
                 }}
                 {...omit(props, "validate")}
             />

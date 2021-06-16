@@ -61,7 +61,9 @@ const ContentModelGroupsDataList = ({ canCreate }: ContentModelGroupsDataListPro
     const client = useApolloClient();
     const listQuery = useQuery(GQL.LIST_CONTENT_MODEL_GROUPS);
 
-    const { showConfirmation } = useConfirmationDialog();
+    const { showConfirmation } = useConfirmationDialog({
+        dataTestId: "cms.contentModelGroup.list-item.delete-dialog"
+    });
     const { canDelete } = usePermission();
 
     const filterData = useCallback(
@@ -183,7 +185,12 @@ const ContentModelGroupsDataList = ({ canCreate }: ContentModelGroupsDataListPro
                 />
             }
             modalOverlay={contentModelGroupsDataListModalOverlay}
-            modalOverlayAction={<DataListModalOverlayAction icon={<FilterIcon />} />}
+            modalOverlayAction={
+                <DataListModalOverlayAction
+                    icon={<FilterIcon />}
+                    data-testid={"default-data-list.filter"}
+                />
+            }
         >
             {({ data }) => (
                 <List data-testid="default-data-list">
@@ -208,7 +215,10 @@ const ContentModelGroupsDataList = ({ canCreate }: ContentModelGroupsDataListPro
                             {canDelete(item, "cms.contentModelGroup") && (
                                 <ListItemMeta>
                                     <ListActions>
-                                        <DeleteIcon onClick={() => deleteItem(item)} />
+                                        <DeleteIcon
+                                            onClick={() => deleteItem(item)}
+                                            data-testid={"cms.contentModelGroup.list-item.delete"}
+                                        />
                                     </ListActions>
                                 </ListItemMeta>
                             )}

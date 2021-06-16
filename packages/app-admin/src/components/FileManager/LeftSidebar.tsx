@@ -60,7 +60,7 @@ function LeftSidebar({ toggleTag, queryParams: { tags } }) {
 
     if (list.length === 0) {
         return (
-            <div className={style.leftDrawer}>
+            <div className={style.leftDrawer} data-testid={"fm.left-drawer.empty-tag"}>
                 <div className={style.noTagged}>
                     Once you tag an image, the tag will be displayed here.
                 </div>
@@ -72,7 +72,7 @@ function LeftSidebar({ toggleTag, queryParams: { tags } }) {
 
     return (
         <div className={style.leftDrawer}>
-            <TagList>
+            <TagList data-testid={"fm.left-drawer.tag-list"}>
                 {tagList.map((item, index) => (
                     <Tag
                         className={activeTags.includes(item) && "active"}

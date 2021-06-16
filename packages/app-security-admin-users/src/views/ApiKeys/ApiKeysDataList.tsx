@@ -52,12 +52,15 @@ const ApiKeysDataList = () => {
     const [sort, setSort] = useState(serializeSorters(SORTERS[0].sorters));
     const { history, location } = useRouter();
     const { showSnackbar } = useSnackbar();
-    const { showConfirmation } = useConfirmationDialog();
+    const { showConfirmation } = useConfirmationDialog({
+        dataTestId: "default-data-list.delete-dialog"
+    });
 
     const filterAPIKey = useCallback(
         ({ description, name }) => {
             return (
-                description.toLowerCase().includes(filter) || name.toLowerCase().includes(filter)
+                (description && description.toLowerCase().includes(filter)) ||
+                name.toLowerCase().includes(filter)
             );
         },
         [filter]
@@ -150,7 +153,12 @@ const ApiKeysDataList = () => {
                 />
             }
             modalOverlay={groupsDataListModalOverlay}
-            modalOverlayAction={<DataListModalOverlayAction icon={<FilterIcon />} />}
+            modalOverlayAction={
+                <DataListModalOverlayAction
+                    icon={<FilterIcon />}
+                    data-testid={"default-data-list.filter"}
+                />
+            }
         >
             {({ data }) => (
                 <ScrollList data-testid="default-data-list">
@@ -165,7 +173,10 @@ const ApiKeysDataList = () => {
 
                             <ListItemMeta>
                                 <ListActions>
-                                    <DeleteIcon onClick={() => deleteItem(item)} />
+                                    <DeleteIcon
+                                        onClick={() => deleteItem(item)}
+                                        data-testid={"default-data-list.delete"}
+                                    />
                                 </ListActions>
                             </ListItemMeta>
                         </ListItem>

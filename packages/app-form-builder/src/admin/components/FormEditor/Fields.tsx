@@ -70,7 +70,12 @@ const Field = ({ onFieldDragStart, fieldType: { name, label } }) => {
     return (
         <Draggable beginDrag={{ ui: "field", name }}>
             {({ drag }) => (
-                <div ref={drag} style={{ marginBottom: 10 }} onDragStart={onFieldDragStart}>
+                <div
+                    ref={drag}
+                    style={{ marginBottom: 10 }}
+                    data-testid={`fb.editor.fields.field.${name}`}
+                    onDragStart={onFieldDragStart}
+                >
                     <FieldContainer>
                         <FieldHandle>
                             <Icon icon={<HandleIcon />} />
@@ -118,6 +123,7 @@ export const Fields = ({ onFieldDragStart }) => {
                         title={group.title}
                         icon={null}
                         className={accordionItem}
+                        data-testid={group.name}
                     >
                         <FormAccordionContent>
                             {!group.fields.length && (

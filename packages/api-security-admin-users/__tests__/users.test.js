@@ -293,4 +293,25 @@ describe("Security User CRUD Test", () => {
             }
         });
     });
+
+    test("should not allow deletion of own user account", async () => {
+        const [response] = await securityUser.delete({
+            login: "admin@webiny.com"
+        });
+
+        expect(response).toEqual({
+            data: {
+                security: {
+                    deleteUser: {
+                        data: null,
+                        error: {
+                            message: `You can't delete your own user account.`,
+                            code: "",
+                            data: null
+                        }
+                    }
+                }
+            }
+        });
+    });
 });

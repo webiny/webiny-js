@@ -1,0 +1,212 @@
+import uniqid from "uniqid";
+
+context("Headless CMS - Content Model Groups", () => {
+    beforeEach(() => cy.login());
+
+    it("should able to create, update, and immediately delete everything", () => {
+        cy.visit("/cms/content-model-groups");
+        const newGroup = `Group ${uniqid()}`;
+        const newGroup2 = `Group-2 ${uniqid()}`;
+        // Create a new group
+        cy.findAllByTestId("new-record-button")
+            .first()
+            .click();
+        cy.findByLabelText("Name").type(newGroup);
+        cy.findByLabelText("Description").type(
+            `Trying to create a new Content Model Group: ${newGroup}`
+        );
+        cy.wait(500);
+        cy.findByText(/Save content model group/i).click();
+        cy.wait(1000);
+
+        // Check newly created group in list
+        cy.findByTestId("default-data-list").within(() => {
+            cy.get("div").within(() => {
+                cy.findByText(newGroup).should("exist");
+            });
+        });
+
+        // Update groups' name
+        cy.findByLabelText("Name")
+            .clear()
+            .type(newGroup2);
+        cy.wait(500);
+        cy.findByText(/Save content model group/i).click();
+        cy.wait(1000);
+        // Check if the updated group is present in the list
+        cy.findByTestId("default-data-list").within(() => {
+            cy.get("div").within(() => {
+                cy.findByText(newGroup2).should("exist");
+                // Initiate delete
+                cy.findByTestId("cms.contentModelGroup.list-item.delete").click({ force: true });
+            });
+        });
+
+        // Delete the newly created group
+        cy.findByTestId("cms.contentModelGroup.list-item.delete-dialog").within(() => {
+            cy.findByText(/Confirmation/i).should("exist");
+            cy.findByText(/confirm$/i).click();
+            cy.wait(500);
+        });
+        // Group should not present in the list
+        cy.findByTestId("default-data-list").within(() => {
+            cy.get("div").within(() => {
+                cy.findByText(newGroup).should("not.exist");
+            });
+        });
+    });
+
+    it("should able to create, search, sort, and immediately delete everything", () => {
+        cy.visit("/cms/content-model-groups");
+        // Create few content model groups
+        const newGroup1 = `A Group ${uniqid()}`;
+        const newGroup2 = `Z Group ${uniqid()}`;
+
+        // Create a new group one
+        cy.findAllByTestId("new-record-button")
+            .first()
+            .click();
+        cy.findByLabelText("Name").type(newGroup1);
+        cy.findByLabelText("Description").type(
+            `Trying to create a new Content Model Group: ${newGroup1}`
+        );
+        cy.findByText(/Save content model group/i).click();
+        cy.wait(1000);
+        // Create a new group two
+        cy.findAllByTestId("new-record-button")
+            .first()
+            .click();
+        cy.findByLabelText("Name").type(newGroup2);
+        cy.findByLabelText("Description").type(
+            `Trying to create a new Content Model Group: ${newGroup2}`
+        );
+        cy.findByText(/Save content model group/i).click();
+        cy.wait(1000);
+
+        // Should show no results when searching for non existing group
+        cy.findByTestId("default-data-list.search").within(() => {
+            cy.findByPlaceholderText(/search content model group/i).type(
+                "NON_EXISTING_MODEL_GROUP_NAME"
+            );
+            cy.wait(500);
+        });
+        cy.findByTestId("ui.list.data-list").within(() => {
+            cy.findByText(/no records found./i).should("exist");
+        });
+
+        // Should able to search "Ungrouped" group
+        cy.findByTestId("default-data-list.search").within(() => {
+            cy.findByPlaceholderText(/search content model group/i)
+                .clear()
+                .type("ungrouped");
+            cy.wait(500);
+        });
+        cy.findByTestId("ui.list.data-list").within(() => {
+            cy.findByText(/ungrouped/i).should("exist");
+        });
+
+        // Should able to search Group1 and Group2
+        cy.findByTestId("default-data-list.search").within(() => {
+            cy.findByPlaceholderText(/search content model group/i)
+                .clear()
+                .type("Group");
+            cy.wait(500);
+        });
+        cy.findByTestId("ui.list.data-list").within(() => {
+            cy.findByText(newGroup1).should("exist");
+            cy.findByText(newGroup2).should("exist");
+        });
+
+        // Should able to search Group1 only
+        cy.findByTestId("default-data-list.search").within(() => {
+            cy.findByPlaceholderText(/search content model group/i)
+                .clear()
+                .type(newGroup1);
+            cy.wait(500);
+        });
+        cy.findByTestId("ui.list.data-list").within(() => {
+            cy.findByText(newGroup1).should("exist");
+            cy.findByText(newGroup2).should("not.exist");
+        });
+        // Clear search input field
+        cy.findByTestId("default-data-list.search").within(() => {
+            cy.findByPlaceholderText(/search content model group/i).clear();
+            cy.wait(500);
+        });
+
+        // Sort groups by "Name A->Z"
+        cy.findByTestId("default-data-list.filter").click();
+        cy.findByTestId("ui.list.data-list").within(() => {
+            cy.get("select").select("name:asc");
+            cy.wait(500);
+        });
+        cy.findByTestId("default-data-list.filter").click();
+
+        // Group1 should be at the top of the list
+        cy.findByTestId("default-data-list").within(() => {
+            cy.get("div")
+                .first()
+                .within(() => {
+                    cy.findByText(newGroup1).should("exist");
+                });
+        });
+        // Sort groups by "Name Z->A"
+        cy.findByTestId("default-data-list.filter").click();
+        cy.findByTestId("ui.list.data-list").within(() => {
+            cy.get("select").select("name:desc");
+            cy.wait(500);
+        });
+        cy.findByTestId("default-data-list.filter").click();
+
+        // Group2 should be at the top of the list
+        cy.findByTestId("default-data-list").within(() => {
+            cy.get("div")
+                .first()
+                .within(() => {
+                    cy.findByText(newGroup2).should("exist");
+                });
+        });
+
+        // Sort groups by "Newest to Oldest"
+        cy.findByTestId("default-data-list.filter").click();
+        cy.findByTestId("ui.list.data-list").within(() => {
+            cy.get("select").select("createdOn:desc");
+            cy.wait(500);
+        });
+        cy.findByTestId("default-data-list.filter").click();
+
+        // Finally, delete group2
+        cy.findByTestId("default-data-list").within(() => {
+            cy.get("div").within(() => {
+                cy.findByText(newGroup2).should("exist");
+                // Initiate delete
+                cy.findByTestId("cms.contentModelGroup.list-item.delete").click({ force: true });
+            });
+        });
+        // Delete the newly created group
+        cy.findByTestId("cms.contentModelGroup.list-item.delete-dialog").within(() => {
+            cy.findByText(/Confirmation/i).should("exist");
+            cy.findByText(/confirm$/i).click();
+            cy.wait(500);
+        });
+        // Confirm that group is deleted successfully
+        cy.findByText(`Content model group "${newGroup2}" deleted.`);
+
+        // Delete group1
+        cy.findByTestId("default-data-list").within(() => {
+            cy.get("div").within(() => {
+                cy.findByText(newGroup1).should("exist");
+                // Initiate delete
+                cy.findByTestId("cms.contentModelGroup.list-item.delete").click({ force: true });
+            });
+        });
+        // Delete the newly created group
+        cy.findByTestId("cms.contentModelGroup.list-item.delete-dialog").within(() => {
+            cy.findByText(/Confirmation/i).should("exist");
+            cy.findByText(/confirm$/i).click();
+            cy.wait(500);
+        });
+        // Confirm that group is deleted successfully
+        cy.findByText(`Content model group "${newGroup1}" deleted.`);
+    });
+});
