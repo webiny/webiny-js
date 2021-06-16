@@ -1,0 +1,20 @@
+{
+  "extends": "../../tsconfig",
+  "references": [
+    {
+      "path": "../api-security-admin-users"
+    },
+    {
+      "path": "../handler-graphql"
+    }
+  ],
+  "compilerOptions": {
+    "paths": {
+      "@webiny/api-security-admin-users/*": ["../api-security-admin-users/src/*"],
+      "@webiny/api-security-admin-users": ["../api-security-admin-users/src"],
+      "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
+      "@webiny/handler-graphql": ["../handler-graphql/src"]
+    },
+    "baseUrl": "."
+  }
+}

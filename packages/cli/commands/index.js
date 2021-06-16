@@ -1,9 +1,9 @@
 const run = require("./run");
-const tracking = require("./tracking");
+const telemetry = require("./telemetry");
 const upgrade = require("./upgrade");
 
 module.exports.createCommands = async (yargs, context) => {
-    context.plugins.register(run, tracking, upgrade);
+    context.plugins.register(run, telemetry, upgrade);
 
     await context.loadUserPlugins();
 

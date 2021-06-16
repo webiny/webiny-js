@@ -6,7 +6,7 @@ import {
     I18NContextObject,
     I18NLocaleContextPlugin
 } from "~/types";
-import { TenancyContext } from "@webiny/api-security-tenancy/types";
+import { TenancyContext } from "@webiny/api-tenancy/types";
 import localesCRUD from "./crud/locales.crud";
 import systemCRUD from "./crud/system.crud";
 
@@ -66,7 +66,7 @@ export default (): ContextPlugin<I18NContext, TenancyContext> => ({
         context.i18n.system = systemCRUD(context);
 
         let locales = [];
-        if (context.security.getTenant()) {
+        if (context.tenancy.getCurrentTenant()) {
             const plugin = context.plugins.byName<ContextI18NGetLocales>(
                 "context-i18n-get-locales"
             );

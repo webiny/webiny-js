@@ -17,7 +17,7 @@
       "path": "../api-security"
     },
     {
-      "path": "../api-security-tenancy"
+      "path": "../api-tenancy"
     },
     {
       "path": "../api-upgrade"
@@ -62,8 +62,8 @@
       "@webiny/api-plugin-elastic-search-client": ["../api-plugin-elastic-search-client/src"],
       "@webiny/api-security/*": ["../api-security/src/*"],
       "@webiny/api-security": ["../api-security/src"],
-      "@webiny/api-security-tenancy/*": ["../api-security-tenancy/src/*"],
-      "@webiny/api-security-tenancy": ["../api-security-tenancy/src"],
+      "@webiny/api-tenancy/*": ["../api-tenancy/src/*"],
+      "@webiny/api-tenancy": ["../api-tenancy/src"],
       "@webiny/api-upgrade/*": ["../api-upgrade/src/*"],
       "@webiny/api-upgrade": ["../api-upgrade/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],

@@ -1,8 +1,9 @@
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
-import securityPlugins from "@webiny/api-security/authenticator";
-import apiKeyAuthentication from "@webiny/api-security-tenancy/authentication/apiKey";
-import apiKeyAuthorization from "@webiny/api-security-tenancy/authorization/apiKey";
+import tenancyPlugins from "@webiny/api-tenancy";
+import securityPlugins from "@webiny/api-security";
+import apiKeyAuthentication from "@webiny/api-security-admin-users/authentication/apiKey";
+import apiKeyAuthorization from "@webiny/api-security-admin-users/authorization/apiKey";
 import { createHandler } from "@webiny/handler-aws";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { SecurityIdentity } from "@webiny/api-security/types";
@@ -24,7 +25,7 @@ import {
 } from "./graphql/contentModel";
 
 import { INTROSPECTION } from "./graphql/schema";
-import { ApiKey } from "@webiny/api-security-tenancy/types";
+import { ApiKey } from "@webiny/api-security-admin-users/types";
 
 export interface GQLHandlerCallableArgs {
     permissions?: PermissionsArg[];
@@ -42,111 +43,115 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
     const tenant = { id: "root", name: "Root", parent: null };
     const { permissions, identity, plugins = [], path } = args || {};
 
-    const handler = createHandler(
-        storageOperationsPlugins(),
-        {
-            type: "context",
-            name: "context-security-tenant",
-            apply(context) {
-                if (!context.security) {
-                    context.security = {};
-                }
-                context.security.getTenant = () => {
-                    return tenant;
-                };
-                context.security.apiKeys = {
-                    getApiKeyByToken: async (token: string): Promise<ApiKey | null> => {
-                        if (!token || token !== "aToken") {
-                            return null;
+    const handler = createHandler({
+        plugins: [
+            storageOperationsPlugins(),
+            tenancyPlugins(),
+            {
+                type: "context",
+                name: "context-security-tenant",
+                apply(context) {
+                    if (!context.security) {
+                        context.security = {};
+                    }
+                    context.tenancy.getCurrentTenant = () => {
+                        return tenant;
+                    };
+                    context.security.apiKeys = {
+                        getApiKeyByToken: async (token: string): Promise<ApiKey | null> => {
+                            if (!token || token !== "aToken") {
+                                return null;
+                            }
+                            const apiKey = "a1234567890";
+                            return {
+                                id: apiKey,
+                                name: apiKey,
+                                permissions: identity.permissions || [],
+                                token,
+                                createdBy: {
+                                    id: "test",
+                                    displayName: "test",
+                                    type: "admin"
+                                },
+                                description: "test",
+                                createdOn: new Date().toISOString()
+                            };
                         }
-                        const apiKey = "a1234567890";
-                        return {
-                            id: apiKey,
-                            name: apiKey,
-                            permissions: identity.permissions || [],
-                            token,
-                            createdBy: {
-                                id: "test",
-                                displayName: "test",
-                                type: "admin"
-                            },
-                            description: "test",
-                            createdOn: new Date().toISOString()
+                    };
+                }
+            },
+            {
+                type: "context",
+                name: "context-path-parameters",
+                apply(context) {
+                    if (!context.http) {
+                        context.http = {
+                            request: {
+                                path: {
+                                    parameters: null
+                                }
+                            }
+                        };
+                    } else if (!context.http.request.path) {
+                        context.http.request.path = {
+                            parameters: null
                         };
                     }
-                };
-            }
-        },
-        {
-            type: "context",
-            name: "context-path-parameters",
-            apply(context) {
-                if (!context.http) {
-                    context.http = {
-                        request: {
-                            path: {
-                                parameters: null
-                            }
-                        }
+                    context.http.request.path.parameters = { key: path };
+                }
+            },
+            securityPlugins(),
+            apiKeyAuthentication({ identityType: "api-key" }),
+            apiKeyAuthorization({ identityType: "api-key" }),
+            i18nContext(),
+            i18nContentPlugins(),
+            mockLocalesPlugins(),
+            {
+                type: "security-authorization",
+                name: "security-authorization",
+                getPermissions: context => {
+                    const { headers = {} } = context.http || {};
+                    if (
+                        headers["Authorization"] ||
+                        headers["authorization"] ||
+                        (identity && identity.type === "api-key")
+                    ) {
+                        return;
+                    }
+                    return createPermissions(permissions);
+                }
+            },
+            {
+                type: "security-authentication",
+                authenticate: async context => {
+                    const { headers = {} } = context.http || {};
+                    if (
+                        headers["Authorization"] ||
+                        headers["authorization"] ||
+                        (identity && identity.type === "api-key")
+                    ) {
+                        return;
+                    }
+                    return createIdentity(identity);
+                }
+            },
+            {
+                type: "context",
+                apply(context) {
+                    context.cms = {
+                        ...(context.cms || {}),
+                        getLocale: () => ({
+                            code: "en-US"
+                        }),
+                        locale: "en-US"
                     };
-                } else if (!context.http.request.path) {
-                    context.http.request.path = {
-                        parameters: null
-                    };
                 }
-                context.http.request.path.parameters = { key: path };
-            }
-        },
-        securityPlugins(),
-        apiKeyAuthentication({ identityType: "api-key" }),
-        apiKeyAuthorization({ identityType: "api-key" }),
-        i18nContext(),
-        i18nContentPlugins(),
-        mockLocalesPlugins(),
-        {
-            type: "security-authorization",
-            name: "security-authorization",
-            getPermissions: context => {
-                const { headers = {} } = context.http || {};
-                if (
-                    headers["Authorization"] ||
-                    headers["authorization"] ||
-                    (identity && identity.type === "api-key")
-                ) {
-                    return;
-                }
-                return createPermissions(permissions);
-            }
-        },
-        {
-            type: "security-authentication",
-            authenticate: async context => {
-                const { headers = {} } = context.http || {};
-                if (
-                    headers["Authorization"] ||
-                    headers["authorization"] ||
-                    (identity && identity.type === "api-key")
-                ) {
-                    return;
-                }
-                return createIdentity(identity);
-            }
-        },
-        {
-            type: "context",
-            apply(context) {
-                context.cms = {
-                    ...(context.cms || {}),
-                    getLocale: () => ({
-                        code: "en-US"
-                    }),
-                    locale: "en-US"
-                };
-            }
-        },
-        //
-        plugins
-    );
+            },
+            //
+            plugins
+        ],
+        http: { debug: true }
+    });
 
     const invoke = async ({ httpMethod = "POST", body, headers = {}, ...rest }) => {
         const response = await handler({

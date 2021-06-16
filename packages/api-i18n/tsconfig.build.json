@@ -4,7 +4,7 @@
   "exclude": [
     "node_modules",
     "../api-security",
-    "../api-security-tenancy",
+    "../api-tenancy",
     "../plugins",
     "../handler",
     "../handler-aws",

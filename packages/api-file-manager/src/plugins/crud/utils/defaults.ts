@@ -1,6 +1,6 @@
 import { SecurityContext } from "@webiny/api-security/types";
 import { Context } from "@webiny/handler/types";
-import { TenancyContext } from "@webiny/api-security-tenancy/types";
+import { TenancyContext } from "@webiny/api-tenancy/types";
 
 export default {
     db: {
@@ -26,7 +26,7 @@ export default {
         ]
     },
     es(context: Context<SecurityContext, TenancyContext>) {
-        const tenant = context.security.getTenant();
+        const tenant = context.tenancy.getCurrentTenant();
         if (!tenant) {
             throw new Error("Tenant missing.");
         }

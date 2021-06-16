@@ -1,12 +1,12 @@
-import tenancy from "@webiny/api-security-tenancy";
-import authenticator from "@webiny/api-security/authenticator";
-import personalAccessTokenAuthentication from "@webiny/api-security-tenancy/authentication/personalAccessToken";
-import apiKeyAuthentication from "@webiny/api-security-tenancy/authentication/apiKey";
-import userAuthorization from "@webiny/api-security-tenancy/authorization/user";
-import apiKeyAuthorization from "@webiny/api-security-tenancy/authorization/apiKey";
-import anonymousAuthorization from "@webiny/api-security-tenancy/authorization/anonymous";
-import cognitoAuthentication from "@webiny/api-plugin-security-cognito/authentication";
-import cognitoIdentityProvider from "@webiny/api-plugin-security-cognito/identityProvider";
+import tenancy from "@webiny/api-tenancy";
+import security from "@webiny/api-security";
+import personalAccessTokenAuthentication from "@webiny/api-security-admin-users/authentication/personalAccessToken";
+import apiKeyAuthentication from "@webiny/api-security-admin-users/authentication/apiKey";
+import userAuthorization from "@webiny/api-security-admin-users/authorization/user";
+import apiKeyAuthorization from "@webiny/api-security-admin-users/authorization/apiKey";
+import anonymousAuthorization from "@webiny/api-security-admin-users/authorization/anonymous";
+import cognitoAuthentication from "@webiny/api-security-cognito-authentication";
+import cognitoIdentityProvider from "@webiny/api-security-admin-users-cognito";
 
 export default () => [
     /**
@@ -34,7 +34,7 @@ export default () => [
      * NOTE: this has to be registered *after* the "tenancy" plugins
      * as some of the authentication plugins rely on tenancy context.
      */
-    authenticator(),
+    security(),
 
     /**
      * Authentication plugin for Personal Access Tokens.

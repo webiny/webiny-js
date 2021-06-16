@@ -7,7 +7,8 @@ import {
     CmsContentEntry,
     CmsContentModel,
     CmsContext,
-    CmsContentEntryStorageOperationsProvider
+    CmsContentEntryStorageOperationsProvider,
+    CmsStorageContentEntry
 } from "../../../types";
 import * as utils from "../../../utils";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation";
@@ -32,7 +33,7 @@ import {
     afterCreateRevisionFromHook
 } from "./contentEntry/hooks";
 import WebinyError from "@webiny/error";
-import { entryFromStorageTransform } from "../utils/entryStorage";
+import { entryFromStorageTransform, entryToStorageTransform } from "../utils/entryStorage";
 
 export const STATUS_DRAFT = "draft";
 export const STATUS_PUBLISHED = "published";
@@ -50,6 +51,25 @@ const cleanInputData = (
     }, {});
 };
 
+const cleanUpdatedInputData = (
+    model: CmsContentModel,
+    input: Record<string, any>
+): Record<string, any> => {
+    return model.fields.reduce((acc, field) => {
+        if (input[field.fieldId] === undefined) {
+            return acc;
+        }
+        acc[field.fieldId] = input[field.fieldId];
+        return acc;
+    }, {});
+};
+
+interface DeleteEntryParams {
+    model: CmsContentModel;
+    entry: CmsContentEntry;
+    storageEntry: CmsStorageContentEntry;
+}
+
 interface EntryIdResult {
     /**
      * A generated id that will connect all the entry records.
@@ -64,7 +84,6 @@ interface EntryIdResult {
      */
     id: string;
 }
-
 const createEntryId = (version: number): EntryIdResult => {
     const entryId = mdbid();
     return {
@@ -128,24 +147,25 @@ export default (): ContextPlugin<CmsContext> => ({
         /**
          * A helper to delete the entire entry.
          */
-        const deleteEntry = async (
-            model: CmsContentModel,
-            entry: CmsContentEntry
-        ): Promise<void> => {
+        const deleteEntry = async (params: DeleteEntryParams): Promise<void> => {
+            const { model, entry, storageEntry } = params;
             try {
                 await beforeDeleteHook({
                     context,
                     model,
                     entry,
+                    storageEntry,
                     storageOperations
                 });
                 await storageOperations.delete(model, {
-                    entry
+                    entry,
+                    storageEntry
                 });
                 await afterDeleteHook({
                     context,
                     model,
                     entry,
+                    storageEntry,
                     storageOperations
                 });
             } catch (ex) {
@@ -230,8 +250,10 @@ export default (): ContextPlugin<CmsContext> => ({
                 await utils.checkModelAccess(context, model);
 
                 const { where = {} } = args || {};
-                // Possibly only get records which are owned by current user
-                // Or if searching for the owner set that value - in the case that user can see other entries than their own
+                /**
+                 * Possibly only get records which are owned by current user.
+                 * Or if searching for the owner set that value - in the case that user can see other entries than their own.
+                 */
                 const ownedBy = permission.own ? context.security.getIdentity().id : where.ownedBy;
                 const listWhere = {
                     ...where
@@ -284,7 +306,9 @@ export default (): ContextPlugin<CmsContext> => ({
                 await checkEntryPermissions({ rwd: "w" });
                 await utils.checkModelAccess(context, model);
 
-                // Make sure we only work with fields that are defined in the model.
+                /**
+                 * Make sure we only work with fields that are defined in the model.
+                 */
                 const input = cleanInputData(model, inputData);
 
                 await validateModelEntryData(context, model, input);
@@ -300,9 +324,9 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 const { id, entryId, version } = createEntryId(1);
 
-                const data: CmsContentEntry = {
+                const entry: CmsContentEntry = {
                     webinyVersion: context.WEBINY_VERSION,
-                    tenant: context.security.getTenant().id,
+                    tenant: context.tenancy.getCurrentTenant().id,
                     entryId,
                     id,
                     modelId: model.modelId,
@@ -317,21 +341,27 @@ export default (): ContextPlugin<CmsContext> => ({
                     values: input
                 };
 
+                let storageEntry: CmsStorageContentEntry = null;
                 try {
-                    await beforeCreateHook({ model, input, data, context, storageOperations });
-                    const entryRevision = await storageOperations.create(model, {
+                    await beforeCreateHook({ model, input, entry, context, storageOperations });
+                    storageEntry = await entryToStorageTransform(context, model, entry);
+                    const result = await storageOperations.create(model, {
                         input,
-                        data
+                        entry,
+                        storageEntry
                     });
                     await afterCreateHook({
                         model,
                         input,
-                        data,
-                        entryRevision,
+                        entry,
+                        /**
+                         * Pass the result because storage operations might have changed something (saved date, etc...)
+                         */
+                        storageEntry: result,
                         context,
                         storageOperations
                     });
-                    return entryRevision;
+                    return result;
                 } catch (ex) {
                     throw new WebinyError(
                         ex.message || "Could not create content entry.",
@@ -339,16 +369,24 @@ export default (): ContextPlugin<CmsContext> => ({
                         ex.data || {
                             error: ex,
                             input,
-                            data
+                            entry,
+                            storageEntry
                         }
                     );
                 }
             },
-            createRevisionFrom: async (model, sourceId, data = {}) => {
+            createRevisionFrom: async (model, sourceId, inputData = {}) => {
                 const permission = await checkEntryPermissions({ rwd: "w" });
                 await utils.checkModelAccess(context, model);
 
-                // Entries are identified by a common parent ID + Revision number
+                /**
+                 * Make sure we only work with fields that are defined in the model.
+                 */
+                const input = cleanUpdatedInputData(model, inputData);
+
+                /**
+                 * Entries are identified by a common parent ID + Revision number.
+                 */
                 const [uniqueId] = sourceId.split("#");
 
                 const originalStorageEntry = await storageOperations.getRevisionById(
@@ -366,28 +404,37 @@ export default (): ContextPlugin<CmsContext> => ({
                     );
                 }
 
-                // We need to convert data from DB to its original form before constructing ES index data.
-                const originalEntryRevision = await entryFromStorageTransform(
+                /**
+                 * We need to convert data from DB to its original form before using it further.
+                 */
+                const originalEntry = await entryFromStorageTransform(
                     context,
                     model,
                     originalStorageEntry
                 );
 
-                const latestEntryRevision = latestStorageEntry
-                    ? await entryFromStorageTransform(context, model, latestStorageEntry)
-                    : null;
+                const values = {
+                    ...originalEntry.values,
+                    ...input
+                };
 
-                utils.checkOwnership(context, permission, originalEntryRevision);
+                await validateModelEntryData(context, model, values);
 
-                const identity = security.getIdentity();
-                // const nextVersion = parseInt(latestEntry.version as any) + 1;
-                // const id = `${uniqueId}#${utils.zeroPad(nextVersion)}`;
-                const { id, version: nextVersion } = increaseEntryIdVersion(
-                    latestEntryRevision ? latestEntryRevision.id : sourceId
+                utils.checkOwnership(context, permission, originalEntry, "ownedBy");
+
+                const latestEntry = await entryFromStorageTransform(
+                    context,
+                    model,
+                    latestStorageEntry
                 );
 
+                const identity = security.getIdentity();
+
+                const latestId = latestStorageEntry ? latestStorageEntry.id : sourceId;
+                const { id, version: nextVersion } = increaseEntryIdVersion(latestId);
+
                 const entry: CmsContentEntry = {
-                    ...originalEntryRevision,
+                    ...originalEntry,
                     id,
                     version: nextVersion,
                     savedOn: new Date().toISOString(),
@@ -400,33 +447,46 @@ export default (): ContextPlugin<CmsContext> => ({
                     locked: false,
                     publishedOn: null,
                     status: STATUS_DRAFT,
-                    values: {
-                        ...originalEntryRevision.values,
-                        ...data
-                    }
+                    values
                 };
+
+                let storageEntry: CmsStorageContentEntry = undefined;
 
                 try {
                     await beforeCreateRevisionFromHook({
                         context,
                         model,
-                        data: entry,
-                        originalEntryRevision,
-                        latestEntryRevision,
+                        entry,
+                        storageEntry,
+                        originalEntry,
+                        originalStorageEntry,
+                        latestEntry,
+                        latestStorageEntry,
                         storageOperations
                     });
+
+                    storageEntry = await entryToStorageTransform(context, model, entry);
+
                     const result = await storageOperations.createRevisionFrom(model, {
-                        data: entry,
-                        originalEntryRevision,
-                        latestEntryRevision
+                        entry,
+                        storageEntry,
+                        originalEntry,
+                        originalStorageEntry,
+                        latestEntry,
+                        latestStorageEntry
                     });
                     await afterCreateRevisionFromHook({
                         context,
                         model,
-                        originalEntryRevision,
-                        latestEntryRevision,
-                        data: entry,
-                        entry: result,
+                        originalEntry,
+                        originalStorageEntry,
+                        latestEntry,
+                        latestStorageEntry,
+                        entry,
+                        /**
+                         * Passing result due to storage operations might have changed something on the entry.
+                         */
+                        storageEntry: result,
                         storageOperations
                     });
                     return result;
@@ -437,8 +497,9 @@ export default (): ContextPlugin<CmsContext> => ({
                         {
                             error: ex,
                             entry,
-                            originalEntryRevision,
-                            latestEntryRevision
+                            storageEntry,
+                            originalEntry,
+                            originalStorageEntry
                         }
                     );
                 }
@@ -447,94 +508,100 @@ export default (): ContextPlugin<CmsContext> => ({
                 const permission = await checkEntryPermissions({ rwd: "w" });
                 await utils.checkModelAccess(context, model);
 
-                // Make sure we only work with fields that are defined in the model.
+                /**
+                 * Make sure we only work with fields that are defined in the model.
+                 */
                 const input = cleanInputData(model, inputData);
 
-                // Validate data early. We don't want to query DB if input data is invalid.
+                /**
+                 * Validate data early. We don't want to query DB if input data is invalid.
+                 */
                 await validateModelEntryData(context, model, input);
-
-                // Now we know the data is valid, proceed with DB calls.
-                const [entryId] = id.split("#");
-
+                /**
+                 * The entry we are going to update.
+                 */
                 const originalStorageEntry = await storageOperations.getRevisionById(model, id);
-                const latestOriginalStorageEntry = await storageOperations.getLatestRevisionByEntryId(
-                    model,
-                    entryId
-                );
 
-                const originalEntryRevision = await entryFromStorageTransform(
-                    context,
-                    model,
-                    originalStorageEntry
-                );
-                const latestOriginalEntryRevision = latestOriginalStorageEntry
-                    ? await entryFromStorageTransform(context, model, latestOriginalStorageEntry)
-                    : null;
-
-                if (!originalEntryRevision) {
+                if (!originalStorageEntry) {
                     throw new NotFoundError(
                         `Entry "${id}" of model "${model.modelId}" was not found.`
                     );
                 }
 
-                if (originalEntryRevision.locked) {
+                if (originalStorageEntry.locked) {
                     throw new WebinyError(
                         `Cannot update entry because it's locked.`,
                         "CONTENT_ENTRY_UPDATE_ERROR"
                     );
                 }
 
-                utils.checkOwnership(context, permission, originalEntryRevision);
+                const originalEntry = await entryFromStorageTransform(
+                    context,
+                    model,
+                    originalStorageEntry
+                );
 
-                // we always send the full entry to the hooks and updater
-                const updatedEntry: CmsContentEntry = {
-                    ...originalEntryRevision,
+                utils.checkOwnership(context, permission, originalEntry, "ownedBy");
+
+                /**
+                 * We always send the full entry to the hooks and storage operations update.
+                 */
+                const entry: CmsContentEntry = {
+                    ...originalEntry,
                     savedOn: new Date().toISOString(),
                     values: {
-                        // Values from DB
-                        ...originalEntryRevision.values,
-                        // New values
+                        /**
+                         * Existing values from the database, transformed back to original, of course.
+                         */
+                        ...originalEntry.values,
+                        /**
+                         * Add new values.
+                         */
                         ...input
                     }
                 };
+
+                let storageEntry: CmsStorageContentEntry = undefined;
 
                 try {
                     await beforeUpdateHook({
                         context,
                         model,
                         input,
-                        data: updatedEntry,
-                        originalEntryRevision,
-                        latestEntryRevision: latestOriginalEntryRevision,
+                        entry,
+                        originalEntry,
+                        originalStorageEntry,
                         storageOperations
                     });
+                    storageEntry = await entryToStorageTransform(context, model, entry);
 
-                    const entry = await storageOperations.update(model, {
-                        originalEntryRevision,
-                        latestEntryRevision: latestOriginalEntryRevision,
-                        data: updatedEntry,
+                    const result = await storageOperations.update(model, {
+                        originalEntry,
+                        originalStorageEntry,
+                        entry,
+                        storageEntry,
                         input
                     });
                     await afterUpdateHook({
                         context,
                         model,
                         input,
-                        data: updatedEntry,
                         entry,
-                        originalEntryRevision,
-                        latestEntryRevision: latestOriginalEntryRevision,
+                        storageEntry: result,
+                        originalEntry,
+                        originalStorageEntry,
                         storageOperations
                     });
-                    return entry;
+                    return result;
                 } catch (ex) {
                     throw new WebinyError(
                         ex.message || "Could not update existing entry.",
                         ex.code || "UPDATE_ERROR",
                         {
                             error: ex,
-                            data: updatedEntry,
-                            originalEntryRevision,
-                            latestEntry: latestOriginalEntryRevision,
+                            entry,
+                            storageEntry,
+                            originalEntry,
                             input
                         }
                     );
@@ -546,74 +613,92 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 const [entryId, version] = revisionId.split("#");
 
-                const entryRevisionToDelete = await storageOperations.getRevisionById(
+                const storageEntryToDelete = await storageOperations.getRevisionById(
                     model,
                     revisionId
                 );
-                const latestEntryRevision = await storageOperations.getLatestRevisionByEntryId(
+                const latestStorageEntry = await storageOperations.getLatestRevisionByEntryId(
                     model,
                     entryId
                 );
-                const publishedEntryRevision = await storageOperations.getPublishedRevisionByEntryId(
-                    model,
-                    entryId
-                );
-                const previousEntryRevision = await storageOperations.getPreviousRevision(
+                const previousStorageEntry = await storageOperations.getPreviousRevision(
                     model,
                     entryId,
                     parseInt(version)
                 );
 
-                if (!entryRevisionToDelete) {
+                if (!storageEntryToDelete) {
                     throw new NotFoundError(`Entry "${revisionId}" was not found!`);
                 }
 
-                utils.checkOwnership(context, permission, entryRevisionToDelete);
+                utils.checkOwnership(context, permission, storageEntryToDelete, "ownedBy");
 
-                const latestEntryRevisionId = latestEntryRevision ? latestEntryRevision.id : null;
+                const latestEntryRevisionId = latestStorageEntry ? latestStorageEntry.id : null;
+
+                const entryToDelete = await entryFromStorageTransform(
+                    context,
+                    model,
+                    storageEntryToDelete
+                );
                 /**
                  * If targeted record is the latest entry record and there is no previous one, we need to run full delete with hooks.
                  * At this point deleteEntry hooks are not fired.
                  * TODO determine if not running the deleteRevision hooks is ok.
                  */
-                if (entryRevisionToDelete.id === latestEntryRevisionId && !previousEntryRevision) {
-                    return await deleteEntry(model, entryRevisionToDelete);
+                if (entryToDelete.id === latestEntryRevisionId && !previousStorageEntry) {
+                    return await deleteEntry({
+                        model,
+                        entry: entryToDelete,
+                        storageEntry: storageEntryToDelete
+                    });
                 }
                 /**
                  * If targeted record is latest entry revision, set the previous one as the new latest
                  */
-                const entryRevisionToSetAsLatest =
-                    entryRevisionToDelete.id === latestEntryRevisionId
-                        ? previousEntryRevision
-                        : null;
+                let entryToSetAsLatest: CmsContentEntry = null;
+                let storageEntryToSetAsLatest: CmsStorageContentEntry = null;
+                if (entryToDelete.id === latestEntryRevisionId) {
+                    entryToSetAsLatest = await entryFromStorageTransform(
+                        context,
+                        model,
+                        previousStorageEntry
+                    );
+                    storageEntryToSetAsLatest = previousStorageEntry;
+                }
 
                 try {
                     await beforeDeleteRevisionHook({
                         context,
                         model,
                         storageOperations,
-                        entryRevisionToDelete,
-                        entryRevisionToSetAsLatest
+                        entryToDelete,
+                        storageEntryToDelete,
+                        entryToSetAsLatest,
+                        storageEntryToSetAsLatest
                     });
                     await storageOperations.deleteRevision(model, {
-                        entryRevisionToDelete,
-                        entryRevisionToSetAsLatest,
-                        publishedEntryRevision,
-                        latestEntryRevision
+                        entryToDelete,
+                        storageEntryToDelete,
+                        entryToSetAsLatest,
+                        storageEntryToSetAsLatest
                     });
 
                     await afterDeleteRevisionHook({
                         context,
                         model,
                         storageOperations,
-                        deletedEntryRevision: entryRevisionToDelete,
-                        latestEntryRevision: entryRevisionToSetAsLatest
+                        entryToDelete,
+                        storageEntryToDelete,
+                        entryToSetAsLatest,
+                        storageEntryToSetAsLatest
                     });
                 } catch (ex) {
                     throw new WebinyError(ex.message, ex.code || "DELETE_REVISION_ERROR", {
                         error: ex,
-                        deletedEntryRevision: entryRevisionToDelete,
-                        latestEntryRevision: entryRevisionToSetAsLatest
+                        entryToDelete,
+                        storageEntryToDelete,
+                        entryToSetAsLatest,
+                        storageEntryToSetAsLatest
                     });
                 }
             },
@@ -621,104 +706,113 @@ export default (): ContextPlugin<CmsContext> => ({
                 const permission = await checkEntryPermissions({ rwd: "d" });
                 await utils.checkModelAccess(context, model);
 
-                const entry = await storageOperations.getLatestRevisionByEntryId(model, entryId);
+                const storageEntry = await storageOperations.getLatestRevisionByEntryId(
+                    model,
+                    entryId
+                );
 
-                if (!entry) {
+                if (!storageEntry) {
                     throw new NotFoundError(`Entry "${entryId}" was not found!`);
                 }
 
-                utils.checkOwnership(context, permission, entry);
+                utils.checkOwnership(context, permission, storageEntry, "ownedBy");
 
-                return await deleteEntry(model, entry);
+                const entry = await entryFromStorageTransform(context, model, storageEntry);
+
+                return await deleteEntry({
+                    model,
+                    entry,
+                    storageEntry
+                });
             },
             publish: async (model, id) => {
                 const permission = await checkEntryPermissions({ pw: "p" });
                 await utils.checkModelAccess(context, model);
 
-                const [uniqueId] = id.split("#");
+                const originalStorageEntry = await storageOperations.getRevisionById(model, id);
 
-                const originalEntryRevision = await storageOperations.getRevisionById(model, id);
-                const latestEntryRevision = await storageOperations.getLatestRevisionByEntryId(
-                    model,
-                    uniqueId
-                );
-                const publishedEntryRevision = await storageOperations.getPublishedRevisionByEntryId(
-                    model,
-                    uniqueId
-                );
-
-                if (!originalEntryRevision) {
+                if (!originalStorageEntry) {
                     throw new NotFoundError(
-                        `Entry "${id}" of model "${model.modelId}" was not found.`
+                        `Entry "${id}" in the model "${model.modelId}" was not found.`
                     );
                 }
 
-                utils.checkOwnership(context, permission, originalEntryRevision);
+                utils.checkOwnership(context, permission, originalStorageEntry, "ownedBy");
+
+                const originalEntry = await entryFromStorageTransform(
+                    context,
+                    model,
+                    originalStorageEntry
+                );
 
                 const currentDate = new Date().toISOString();
                 const entry: CmsContentEntry = {
-                    ...originalEntryRevision,
+                    ...originalEntry,
                     status: STATUS_PUBLISHED,
                     locked: true,
                     savedOn: currentDate,
                     publishedOn: currentDate
                 };
 
+                let storageEntry: CmsStorageContentEntry = undefined;
+
                 try {
                     await beforePublishHook({
                         context,
                         storageOperations,
                         model,
-                        originalEntryRevision,
                         entry,
-                        latestEntryRevision,
-                        publishedEntryRevision
+                        originalEntry,
+                        originalStorageEntry
                     });
-                    const newPublishedEntry = await storageOperations.publish(model, {
+                    storageEntry = await entryToStorageTransform(context, model, entry);
+                    const result = await storageOperations.publish(model, {
                         entry,
-                        originalEntryRevision,
-                        latestEntryRevision,
-                        publishedEntryRevision
+                        storageEntry,
+                        originalEntry,
+                        originalStorageEntry
                     });
                     await afterPublishHook({
                         context,
                         storageOperations,
                         model,
-                        originalEntryRevision,
-                        entry: newPublishedEntry,
-                        latestEntryRevision,
-                        publishedEntryRevision
+                        originalEntry,
+                        originalStorageEntry,
+                        entry,
+                        storageEntry: result
                     });
-                    return newPublishedEntry;
+                    return result;
                 } catch (ex) {
                     throw new WebinyError(
                         ex.message || "Could not publish entry.",
                         ex.code || "PUBLISH_ERROR",
                         {
                             entry,
-                            latestEntryRevision,
-                            publishedEntryRevision
+                            storageEntry,
+                            originalEntry,
+                            originalStorageEntry
                         }
                     );
                 }
             },
             requestChanges: async (model, id) => {
                 const permission = await checkEntryPermissions({ pw: "c" });
-                const [entryId] = id.split("#");
 
-                const originalEntryRevision = await storageOperations.getRevisionById(model, id);
-                const latestEntryRevision = await storageOperations.getLatestRevisionByEntryId(
-                    model,
-                    entryId
-                );
+                const originalStorageEntry = await storageOperations.getRevisionById(model, id);
 
-                if (!originalEntryRevision) {
+                if (!originalStorageEntry) {
                     throw new NotFoundError(
                         `Entry "${id}" of model "${model.modelId}" was not found.`
                     );
                 }
 
-                if (originalEntryRevision.status !== STATUS_REVIEW_REQUESTED) {
+                const originalEntry = await entryFromStorageTransform(
+                    context,
+                    model,
+                    originalStorageEntry
+                );
+
+                if (originalEntry.status !== STATUS_REVIEW_REQUESTED) {
                     throw new WebinyError(
                         "Cannot request changes on an entry that's not under review.",
                         "ENTRY_NOT_UNDER_REVIEW"
@@ -726,54 +820,58 @@ export default (): ContextPlugin<CmsContext> => ({
                 }
 
                 const identity = context.security.getIdentity();
-                if (originalEntryRevision.ownedBy.id === identity.id) {
+                if (originalEntry.ownedBy.id === identity.id) {
                     throw new WebinyError(
                         "You cannot request changes on your own entry.",
                         "CANNOT_REQUEST_CHANGES_ON_OWN_ENTRY"
                     );
                 }
 
-                utils.checkOwnership(context, permission, originalEntryRevision);
+                utils.checkOwnership(context, permission, originalEntry, "ownedBy");
 
                 const entry: CmsContentEntry = {
-                    ...originalEntryRevision,
+                    ...originalEntry,
                     status: STATUS_CHANGES_REQUESTED,
                     locked: false
                 };
+
+                let storageEntry: CmsStorageContentEntry = undefined;
 
                 try {
                     await beforeRequestChangesHook({
                         context,
                         model,
-                        originalEntryRevision,
-                        latestEntryRevision,
+                        originalEntry,
+                        originalStorageEntry,
                         entry,
                         storageOperations
                     });
-                    const updatedRequestChangesEntry = await storageOperations.requestChanges(
-                        model,
-                        {
-                            originalEntryRevision,
-                            latestEntryRevision,
-                            entry
-                        }
-                    );
+
+                    storageEntry = await entryToStorageTransform(context, model, entry);
+
+                    const result = await storageOperations.requestChanges(model, {
+                        originalEntry,
+                        originalStorageEntry,
+                        entry,
+                        storageEntry
+                    });
                     await afterRequestChangesHook({
                         context,
                         model,
-                        originalEntryRevision,
-                        latestEntryRevision,
-                        entry: updatedRequestChangesEntry,
+                        originalEntry,
+                        originalStorageEntry,
+                        entry,
+                        storageEntry: result,
                         storageOperations
                     });
-                    return updatedRequestChangesEntry;
+                    return result;
                 } catch (ex) {
                     throw new WebinyError(
                         ex.message || "Could not request changes for the entry.",
                         ex.code || "REQUEST_CHANGES_ERROR",
                         {
                             entry,
-                            originalEntry: originalEntryRevision
+                            originalEntry
                         }
                     );
                 }
@@ -782,13 +880,13 @@ export default (): ContextPlugin<CmsContext> => ({
                 const permission = await checkEntryPermissions({ pw: "r" });
                 const [entryId] = id.split("#");
 
-                const originalEntryRevision = await storageOperations.getRevisionById(model, id);
+                const originalStorageEntry = await storageOperations.getRevisionById(model, id);
                 const latestEntryRevision = await storageOperations.getLatestRevisionByEntryId(
                     model,
                     entryId
                 );
 
-                if (!originalEntryRevision) {
+                if (!originalStorageEntry) {
                     throw new NotFoundError(
                         `Entry "${id}" of model "${model.modelId}" was not found.`
                     );
@@ -796,56 +894,67 @@ export default (): ContextPlugin<CmsContext> => ({
                     throw new NotFoundError(`Entry "${id}" does not have latest record`);
                 }
 
+                const originalEntry = await entryFromStorageTransform(
+                    context,
+                    model,
+                    originalStorageEntry
+                );
+
                 const allowedStatuses = [STATUS_DRAFT, STATUS_CHANGES_REQUESTED];
-                if (!allowedStatuses.includes(originalEntryRevision.status)) {
+                if (!allowedStatuses.includes(originalEntry.status)) {
                     throw new WebinyError(
                         "Cannot request review - entry is not a draft nor was a change request issued.",
                         "REQUEST_REVIEW_ERROR",
                         {
-                            entry: originalEntryRevision
+                            entry: originalEntry
                         }
                     );
                 }
 
-                utils.checkOwnership(context, permission, originalEntryRevision);
+                utils.checkOwnership(context, permission, originalEntry, "ownedBy");
 
-                // Change entry's status.
                 const entry: CmsContentEntry = {
-                    ...originalEntryRevision,
+                    ...originalEntry,
                     status: STATUS_REVIEW_REQUESTED,
                     locked: true
                 };
+
+                let storageEntry: CmsStorageContentEntry = undefined;
 
                 try {
                     await beforeRequestReviewHook({
                         context,
                         model,
-                        originalEntryRevision,
+                        originalEntry,
+                        originalStorageEntry,
                         entry,
-                        latestEntryRevision,
                         storageOperations
                     });
-                    const updateRequestReviewEntry = await storageOperations.requestReview(model, {
-                        originalEntryRevision,
-                        latestEntryRevision,
-                        entry
+
+                    storageEntry = await entryToStorageTransform(context, model, entry);
+
+                    const result = await storageOperations.requestReview(model, {
+                        originalEntry,
+                        originalStorageEntry,
+                        entry,
+                        storageEntry
                     });
                     await afterRequestReviewHook({
                         context,
                         model,
-                        originalEntryRevision,
-                        entry: updateRequestReviewEntry,
-                        latestEntryRevision,
+                        originalEntry,
+                        originalStorageEntry,
+                        entry,
+                        storageEntry: result,
                         storageOperations
                     });
-                    return updateRequestReviewEntry;
+                    return result;
                 } catch (ex) {
                     throw new WebinyError(
                         ex.message || "Could not request review on the entry.",
                         ex.code || "REQUEST_REVIEW_ERROR",
                         {
-                            originalEntry: originalEntryRevision,
-                            latestEntry: latestEntryRevision,
+                            originalEntry,
                             entry
                         }
                     );
@@ -856,70 +965,75 @@ export default (): ContextPlugin<CmsContext> => ({
 
                 const [entryId] = id.split("#");
 
-                const originalEntryRevision = await storageOperations.getRevisionById(model, id);
-                const latestEntryRevision = await storageOperations.getLatestRevisionByEntryId(
-                    model,
-                    entryId
-                );
-                const publishedEntryRevision = await storageOperations.getPublishedRevisionByEntryId(
+                const originalStorageEntry = await storageOperations.getPublishedRevisionByEntryId(
                     model,
                     entryId
                 );
 
-                if (!originalEntryRevision) {
+                if (!originalStorageEntry) {
                     throw new NotFoundError(
                         `Entry "${id}" of model "${model.modelId}" was not found.`
                     );
                 }
 
-                utils.checkOwnership(context, permission, originalEntryRevision);
-
-                if (!publishedEntryRevision || publishedEntryRevision.id !== id) {
+                if (originalStorageEntry.id !== id) {
                     throw new WebinyError(`Entry is not published.`, "UNPUBLISH_ERROR", {
-                        originalEntry: originalEntryRevision
+                        entry: originalStorageEntry
                     });
                 }
 
+                utils.checkOwnership(context, permission, originalStorageEntry, "ownedBy");
+
+                const originalEntry = await entryFromStorageTransform(
+                    context,
+                    model,
+                    originalStorageEntry
+                );
+
                 const entry: CmsContentEntry = {
-                    ...originalEntryRevision,
+                    ...originalEntry,
                     status: STATUS_UNPUBLISHED
                 };
+
+                let storageEntry: CmsStorageContentEntry = undefined;
 
                 try {
                     await beforeUnpublishHook({
                         context,
                         model,
-                        originalEntryRevision,
+                        originalEntry,
+                        originalStorageEntry,
                         entry,
-                        latestEntryRevision,
-                        publishedEntryRevision,
                         storageOperations
                     });
-                    const newUnpublishedEntry = await storageOperations.unpublish(model, {
-                        originalEntryRevision,
+
+                    storageEntry = await entryToStorageTransform(context, model, entry);
+
+                    const result = await storageOperations.unpublish(model, {
+                        originalEntry,
+                        originalStorageEntry,
                         entry,
-                        latestEntryRevision,
-                        publishedEntryRevision
+                        storageEntry
                     });
                     await afterUnpublishHook({
                         context,
                         model,
-                        originalEntryRevision,
+                        originalEntry,
+                        originalStorageEntry,
                         entry,
-                        latestEntryRevision,
-                        publishedEntryRevision,
+                        storageEntry: result,
                         storageOperations
                     });
-                    return newUnpublishedEntry;
+                    return result;
                 } catch (ex) {
                     throw new WebinyError(
                         ex.message || "Could not unpublish entry.",
                         ex.code || "UNPUBLISH_ERROR",
                         {
+                            originalEntry,
+                            originalStorageEntry,
                             entry,
-                            originalEntry: originalEntryRevision,
-                            latestEntry: latestEntryRevision,
-                            publishedEntry: publishedEntryRevision
+                            storageEntry
                         }
                     );
                 }

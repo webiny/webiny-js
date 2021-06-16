@@ -2,7 +2,6 @@ import { CmsContentEntryHookPlugin, CmsContext } from "../../../../types";
 
 export const runContentEntryLifecycleHooks = async (
     hookName: string,
-    // TODO fix this
     args: { context: CmsContext }
 ): Promise<void> => {
     const { context } = args;

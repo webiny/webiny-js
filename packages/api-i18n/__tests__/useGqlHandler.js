@@ -1,7 +1,8 @@
 import { createHandler } from "@webiny/handler-aws";
-import apolloServerPlugins from "@webiny/handler-graphql";
+import graphqlHandler from "@webiny/handler-graphql";
 import i18nPlugins from "../src/graphql";
-import securityPlugins from "@webiny/api-security/authenticator";
+import tenancyPlugins from "@webiny/api-tenancy";
+import securityPlugins from "@webiny/api-security";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
@@ -20,13 +21,14 @@ export default () => {
                 })
             })
         }),
-        apolloServerPlugins(),
+        tenancyPlugins(),
+        graphqlHandler(),
         securityPlugins(),
         { type: "security-authorization", getPermissions: () => [{ name: "*" }] },
         {
             type: "context",
             apply(context) {
-                context.security.getTenant = () => {
+                context.tenancy.getCurrentTenant = () => {
                     return { id: "root", name: "Root", parent: null };
                 };
             }

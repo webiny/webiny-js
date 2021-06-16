@@ -148,6 +148,8 @@ interface CmsModelFieldToElasticsearchToArgs {
     toIndexEntry: CmsContentIndexEntry;
     /**
      * This is the entry in the same form it gets stored to DB (processed, possibly compressed, etc.)
+     * !! IMPORTANT !!
+     * This entry is used when running toIndex because it is required by the Entry CRUD to receive the transformed storage entry as the value from the storage operations.
      */
     storageEntry: CmsContentEntry;
     /**

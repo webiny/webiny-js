@@ -236,4 +236,106 @@ describe("refField", () => {
             }
         });
     });
+
+    test("should create a product with empty rich-text field and then update it with some value", async () => {
+        const contentModelGroup = await setupContentModelGroup();
+        await setupContentModels(contentModelGroup);
+
+        const category = await createCategory();
+
+        const { createProduct, updateProduct } = useProductManageHandler({
+            ...manageOpts
+        });
+
+        const productData = {
+            title: "Potato",
+            price: 100,
+            availableOn: "2020-12-25",
+            color: "white",
+            availableSizes: ["s", "m"],
+            image: "file.jpg",
+            category: {
+                modelId: "category",
+                entryId: category.id
+            }
+        };
+        /**
+         * First we create the product without the rich text populated.
+         */
+        const [createProductResponse] = await createProduct({
+            data: productData
+        });
+
+        const expectedCreatedProduct = {
+            id: expect.any(String),
+            createdOn: expect.stringMatching(/^20/),
+            createdBy: {
+                id: "123",
+                displayName: "User 123",
+                type: "admin"
+            },
+            savedOn: expect.stringMatching(/^20/),
+            title: "Potato",
+            price: 100,
+            availableOn: expect.stringMatching(/^20/),
+            color: "white",
+            availableSizes: ["s", "m"],
+            category: {
+                modelId: "category",
+                entryId: category.id
+            },
+            richText: null,
+            inStock: null,
+            itemsInStock: null,
+            meta: {
+                locked: false,
+                modelId: "product",
+                publishedOn: null,
+                revisions: [
+                    {
+                        id: expect.any(String),
+                        title: "Potato"
+                    }
+                ],
+                status: "draft",
+                title: "Potato",
+                version: 1
+            }
+        };
+        /**
+         * Make sure that the response is ok.
+         */
+        expect(createProductResponse).toEqual({
+            data: {
+                createProduct: {
+                    data: expectedCreatedProduct,
+                    error: null
+                }
+            }
+        });
+        /**
+         * We now update the rich text field with some value.
+         */
+        const [updateProductResponse] = await updateProduct({
+            revision: createProductResponse.data.createProduct.data.id,
+            data: {
+                ...productData,
+                richText: richTextMock
+            }
+        });
+        /**
+         * And check that everything is ok.
+         */
+        expect(updateProductResponse).toEqual({
+            data: {
+                updateProduct: {
+                    data: {
+                        ...expectedCreatedProduct,
+                        richText: richTextMock
+                    },
+                    error: null
+                }
+            }
+        });
+    });
 });

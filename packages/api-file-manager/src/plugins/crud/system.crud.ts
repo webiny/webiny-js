@@ -6,9 +6,9 @@ import defaults from "./utils/defaults";
 import { UpgradePlugin } from "@webiny/api-upgrade/types";
 
 export default (context: FileManagerContext): SystemCRUD => {
-    const { security } = context;
+    const { tenancy } = context;
 
-    const keys = () => ({ PK: `T#${security.getTenant().id}#SYSTEM`, SK: "FM" });
+    const keys = () => ({ PK: `T#${tenancy.getCurrentTenant().id}#SYSTEM`, SK: "FM" });
 
     return {
         async getVersion() {
