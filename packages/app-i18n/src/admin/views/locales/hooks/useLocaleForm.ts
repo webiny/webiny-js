@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { useMutation, useQuery } from "@apollo/react-hooks";
 import isEmpty from "lodash/isEmpty";
+import pick from "lodash/pick";
 import { i18n } from "@webiny/app/i18n";
 import { useRouter } from "@webiny/react-router";
 import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
@@ -42,7 +43,7 @@ export const useLocaleForm = () => {
         async data => {
             const isUpdate = data.createdOn;
             const [operation, args] = isUpdate
-                ? [update, { variables: { code: data.code, data } }]
+                ? [update, { variables: { code: data.code, data: pick(data, "default") } }]
                 : [create, { variables: { data } }];
 
             const response = await operation(args);

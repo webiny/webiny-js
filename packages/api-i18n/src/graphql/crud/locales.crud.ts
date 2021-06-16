@@ -6,7 +6,7 @@ import dbArgs from "./utils/dbArgs";
 import { I18NContext, I18NLocale } from "~/types";
 
 export default (context: Context<DbContext, TenancyContext, I18NContext>) => {
-    const { db } = context;
+    const { db, security } = context;
 
     const PK_LOCALE = () => `${getPKPrefix(context)}L`;
     const PK_DEFAULT_LOCALE = () => `${PK_LOCALE()}#D`;
@@ -40,13 +40,21 @@ export default (context: Context<DbContext, TenancyContext, I18NContext>) => {
             return locales;
         },
         create(data) {
+            const identity = security.getIdentity();
+
             return db.create({
                 ...dbArgs,
                 data: {
                     PK: PK_LOCALE(),
                     SK: data.code,
                     code: data.code,
-                    default: data.default
+                    default: data.default,
+                    createdOn: new Date().toISOString(),
+                    createdBy: {
+                        id: identity.id,
+                        displayName: identity.displayName,
+                        type: identity.type
+                    }
                 }
             });
         },
@@ -66,9 +74,9 @@ export default (context: Context<DbContext, TenancyContext, I18NContext>) => {
                 limit: 1
             });
         },
-
         async updateDefault(code) {
             const defaultLocale = await this.getDefault();
+            const currentLocale = await this.getByCode(code);
             const batch = db.batch();
 
             if (defaultLocale) {
@@ -77,6 +85,7 @@ export default (context: Context<DbContext, TenancyContext, I18NContext>) => {
                     return;
                 }
 
+                const defaultLocaleData = await this.getByCode(defaultLocale.code);
                 batch.update({
                     ...dbArgs,
                     query: { PK: PK_DEFAULT_LOCALE(), SK: "default" },
@@ -91,6 +100,7 @@ export default (context: Context<DbContext, TenancyContext, I18NContext>) => {
                     ...dbArgs,
                     query: { PK: PK_LOCALE(), SK: defaultLocale.code },
                     data: {
+                        ...defaultLocaleData,
                         PK: PK_LOCALE(),
                         SK: defaultLocale.code,
                         code: defaultLocale.code,
@@ -112,6 +122,7 @@ export default (context: Context<DbContext, TenancyContext, I18NContext>) => {
                 ...dbArgs,
                 query: { PK: PK_LOCALE(), SK: code },
                 data: {
+                    ...currentLocale,
                     PK: PK_LOCALE(),
                     SK: code,
                     code: code,
