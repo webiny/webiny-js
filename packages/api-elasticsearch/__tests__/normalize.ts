@@ -1,4 +1,4 @@
-import { normalizeValue } from "~/plugins/operator/utils";
+import { normalizeValue } from "~/normalize";
 
 describe(`GraphQL "contains" operator - query normalization`, () => {
     test("must properly escape ES reserved characters", async () => {

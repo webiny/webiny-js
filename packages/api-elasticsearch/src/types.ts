@@ -52,3 +52,9 @@ export interface ElasticsearchQueryBuilderArgsPlugin<
     value: any;
     context: T;
 }
+
+export interface ElasticsearchQueryModifierPluginParams<
+    T extends ContextInterface = ContextInterface
+> {
+    context: T;
+}

@@ -1,5 +1,5 @@
 import { ElasticsearchQueryBuilderOperatorPlugin } from "~/plugins/definition";
-import { normalizeValue } from "./utils";
+import { normalizeValue } from "~/normalize";
 import { ElasticsearchBoolQueryConfig, ElasticsearchQueryBuilderArgsPlugin } from "~/types";
 
 export class ElasticsearchQueryBuilderOperatorContainsPlugin extends ElasticsearchQueryBuilderOperatorPlugin {
