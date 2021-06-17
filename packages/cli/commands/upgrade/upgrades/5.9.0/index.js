@@ -11,6 +11,7 @@ const {
 } = require("./upgradeSecurity");
 
 const { upgradeTelemetry } = require("./upgradeTelemetry");
+const { upgradeScaffolding } = require("./upgradeScaffolding");
 
 const targetVersion = "5.9.0";
 
@@ -106,6 +107,8 @@ module.exports = {
 
         context.info("Writing changes...");
         await upgrade.save();
+
+        await upgradeScaffolding(context);
 
         try {
             info("Running prettier...");
