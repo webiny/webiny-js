@@ -141,18 +141,18 @@ const cpBabelRcJestConfig = appPath => {
  * @param tsConfigPath
  */
 const updateTsConfigWithSupportForTildeImports = tsConfigPath => {
-    const { info, error, warning } = log;
+    const { info, error } = log;
 
     // Add support for importing packages via "~".
     try {
         let tsConfig = loadJsonFile.sync(tsConfigPath);
-        if (
-            tsConfig?.compilerOptions?.baseUrl === "." &&
-            Array.isArray(tsConfig?.compilerOptions?.paths?.["~/*"])
-        ) {
-            warning(`Skipping updating ${warning.hl(tsConfigPath)} - changes already applied.`);
-            return;
-        }
+        // if (
+        //     tsConfig?.compilerOptions?.baseUrl === "." &&
+        //     Array.isArray(tsConfig?.compilerOptions?.paths?.["~/*"])
+        // ) {
+        //     warning(`Skipping updating ${warning.hl(tsConfigPath)} - changes already applied.`);
+        //     return;
+        // }
 
         info(`Updating ${info.hl(tsConfigPath)}...`);
         if (!tsConfig) {
