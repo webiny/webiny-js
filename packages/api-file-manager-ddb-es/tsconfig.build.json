@@ -6,6 +6,7 @@
     "./dist",
     "../error",
     "../handler-db",
+    "../db-dynamodb",
     "../api-elasticsearch",
     "../api-dynamodb-to-elasticsearch",
     "../api-file-manager",

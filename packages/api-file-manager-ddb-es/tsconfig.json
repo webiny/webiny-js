@@ -15,6 +15,9 @@
       "path": "../handler-db"
     },
     {
+      "path": "../db-dynamodb"
+    },
+    {
       "path": "../api-upgrade"
     },
     {
@@ -30,6 +33,8 @@
       "@webiny/error": ["../error/src"],
       "@webiny/handler-db/*": ["../handler-db/src/*"],
       "@webiny/handler-db": ["../handler-db/src"],
+      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
+      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/api-dynamodb-to-elasticsearch/*": ["../api-dynamodb-to-elasticsearch/src/*"],
       "@webiny/api-dynamodb-to-elasticsearch": ["../api-dynamodb-to-elasticsearch/src"],
       "@webiny/api-file-manager/*": ["../api-file-manager/src/*"],

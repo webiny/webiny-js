@@ -1,10 +1,12 @@
 import { Entity, Table } from "dynamodb-toolbox";
 import { FileManagerContext } from "@webiny/api-file-manager/types";
+import { getExtraAttributes } from "@webiny/db-dynamodb/attributes";
 
 export default (params: { context: FileManagerContext; table: Table }): Entity<any> => {
-    const { table } = params;
+    const { context, table } = params;
+    const entityName = "Settings";
     return new Entity({
-        name: "Settings",
+        name: entityName,
         table,
         attributes: {
             PK: {
@@ -27,7 +29,8 @@ export default (params: { context: FileManagerContext; table: Table }): Entity<a
             },
             srcPrefix: {
                 type: "string"
-            }
+            },
+            ...getExtraAttributes(context, entityName)
         }
     });
 };

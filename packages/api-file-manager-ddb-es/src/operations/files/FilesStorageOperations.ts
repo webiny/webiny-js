@@ -19,7 +19,8 @@ import defineFilesEsEntity from "~/definitions/filesElasticsearchEntity";
 import configurations from "~/operations/configurations";
 import lodashOmit from "lodash.omit";
 import lodashChunk from "lodash.chunk";
-import { encodeCursor, decodeCursor } from "@webiny/api-elasticsearch/cursors";
+import { decodeCursor, encodeCursor } from "@webiny/api-elasticsearch/cursors";
+import { createElasticsearchBody } from "~/operations/files/body";
 
 interface FileItem extends File {
     PK: string;
@@ -268,71 +269,15 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
     public async list(
         params: FileManagerFilesStorageOperationsListParams
     ): Promise<FileManagerFilesStorageOperationsListResponse> {
-        const { security } = this.context;
+        const { where, limit, after, sort } = params;
 
-        const { where, limit, after } = params;
-
-        const must: any[] = [];
-
-        if (where.private !== undefined) {
-            must.push({ term: { "meta.private": where.private } });
-        }
-
-        if (where.locale) {
-            must.push({ term: { "locale.keyword": where.locale } });
-        }
-
-        const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
-        if (sharedIndex) {
-            const tenant = security.getTenant();
-            must.push({ term: { "tenant.keyword": tenant.id } });
-        }
-
-        if (where.createdBy) {
-            must.push({ term: { "createdBy.id.keyword": where.createdBy } });
-        }
-
-        if (where.type_in) {
-            must.push({ terms: { "type.keyword": where.type_in } });
-        }
-
-        if (where.search) {
-            must.push({
-                bool: {
-                    should: [
-                        { wildcard: { name: `*${where.search}*` } },
-                        { terms: { tags: where.search.toLowerCase().split(" ") } }
-                    ]
-                }
-            });
-        }
-
-        if (where.tag_in) {
-            must.push({
-                terms: { "tags.keyword": where.tag_in }
-            });
-        }
-
-        if (where.id_in) {
-            must.push({
-                terms: { "id.keyword": where.id_in }
-            });
-        }
-
-        const body = {
-            query: {
-                constant_score: {
-                    filter: {
-                        bool: {
-                            must: must
-                        }
-                    }
-                }
-            },
-            size: limit + 1,
-            search_after: after ? decodeCursor(after) : undefined,
-            sort: [{ "id.keyword": "desc" }]
-        };
+        const body = createElasticsearchBody({
+            context: this.context,
+            where,
+            limit,
+            sort,
+            after
+        });
 
         let response;
         try {
@@ -399,8 +344,8 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
                 listTags: {
                     terms: { field: "tags.keyword" }
                 }
-            }
-            // search_after: decodeCursor(after)
+            },
+            search_after: decodeCursor(null)
         };
 
         let response = undefined;
