@@ -28,7 +28,7 @@ module.exports = async ({ path: root, bucket, onFileUploadSuccess, onFileUploadE
 
             // We also replace "\" with "/", which can occur on Windows' CMD or Powershell.
             // https://github.com/webiny/webiny-js/issues/1701#issuecomment-860123555
-            const key = relative(root, path).replace("\\", "/");
+            const key = relative(root, path).replace(/\\/g, "/");
 
             promises.push(
                 new Promise(async resolve => {
