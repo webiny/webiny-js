@@ -54,7 +54,17 @@ describe("Files settings test", () => {
             srcPrefix: "https://0c6fb883-webiny-latest-files.s3.amazonaws.com/"
         });
 
-        console.log(installResponse);
+        expect(installResponse).toEqual({
+            data: {
+                fileManager: {
+                    install: {
+                        data: true,
+                        error: null
+                    }
+                }
+            }
+        });
+
         let [response] = await getSettings();
         expect(response).toEqual({
             data: {

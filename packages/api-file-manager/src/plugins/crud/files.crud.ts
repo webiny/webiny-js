@@ -286,7 +286,8 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
             return storageOperations.list({
                 where,
                 after,
-                limit
+                limit,
+                sort: ["id_DESC"]
             });
         },
         async listTags({ after, limit }) {

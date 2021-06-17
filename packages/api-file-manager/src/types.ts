@@ -274,6 +274,7 @@ export interface FileManagerFilesStorageOperationsListParamsWhere {
  */
 export interface FileManagerFilesStorageOperationsListParams {
     where: FileManagerFilesStorageOperationsListParamsWhere;
+    sort: string[];
     limit: number;
     after: string | null;
 }
