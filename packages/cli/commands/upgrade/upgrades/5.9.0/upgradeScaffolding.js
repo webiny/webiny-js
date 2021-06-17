@@ -145,8 +145,8 @@ const updateTsConfigWithSupportForTildeImports = tsConfigPath => {
 
     // Add support for importing packages via "~".
     try {
-        let tsConfig = loadJsonFile.sync(tsConfigPath);
         info(`Updating ${info.hl(tsConfigPath)}...`);
+        let tsConfig = loadJsonFile.sync(tsConfigPath);
         if (!tsConfig) {
             tsConfig = {};
         }
