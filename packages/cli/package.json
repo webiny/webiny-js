@@ -51,7 +51,8 @@
     "ignore": {
       "src": [
         "@webiny/project-utils",
-        "@webiny/api-file-manager"
+        "@webiny/api-file-manager",
+        "@webiny/cli-plugin-deploy-pulumi"
       ]
     }
   },
