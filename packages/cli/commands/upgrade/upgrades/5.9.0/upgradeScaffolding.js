@@ -10,7 +10,7 @@ const { Project, Node } = require("ts-morph");
  * @param context
  * @returns {Promise<void>}
  */
-const upgradeScaffolding = async context => {
+const upgradeScaffolding = async (context, targetVersion) => {
     // Base paths.
     const gqlPath = path.join(context.project.root, "api", "code", "graphql");
     const cmsPath = path.join(context.project.root, "api", "code", "headlessCMS");
@@ -26,8 +26,8 @@ const upgradeScaffolding = async context => {
     updateJestConfigBase(context);
 
     // Add @webiny/cli-plugin-deploy-pulumi to "devDependencies".
-    addCliPluginDeployPulumiToDevDeps(gqlPath, context);
-    addCliPluginDeployPulumiToDevDeps(cmsPath, context);
+    addCliPluginDeployPulumiToDevDeps(gqlPath, context, targetVersion);
+    addCliPluginDeployPulumiToDevDeps(cmsPath, context, targetVersion);
 
     // Import "scaffoldsPlugins" in "index.ts" file.
     await addScaffoldsPlugins(path.join(gqlPath, "src/index.ts"), context);
@@ -48,8 +48,9 @@ const upgradeScaffolding = async context => {
  * Add @webiny/cli-plugin-deploy-pulumi to "devDependencies".
  * @param appPath
  * @param context
+ * @param targetVersion
  */
-const addCliPluginDeployPulumiToDevDeps = (appPath, context) => {
+const addCliPluginDeployPulumiToDevDeps = (appPath, context, targetVersion) => {
     const { info, error, success } = context.log;
 
     const name = "@webiny/cli-plugin-deploy-pulumi";
@@ -58,7 +59,7 @@ const addCliPluginDeployPulumiToDevDeps = (appPath, context) => {
     try {
         info(`Adding ${info.hl(name)} to ${info.hl(packageJsonPath)}...`);
         addPackagesToDevDependencies(appPath, {
-            "@webiny/cli-plugin-deploy-pulumi": `^${context.version}`
+            "@webiny/cli-plugin-deploy-pulumi": `^${targetVersion}`
         });
         success(`Successfully added ${info.hl(name)} to ${info.hl(packageJsonPath)}.`);
     } catch (e) {

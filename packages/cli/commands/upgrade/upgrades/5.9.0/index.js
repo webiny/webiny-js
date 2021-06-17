@@ -108,7 +108,7 @@ module.exports = {
         context.info("Writing changes...");
         await upgrade.save();
 
-        await upgradeScaffolding(context);
+        await upgradeScaffolding(context, targetVersion);
 
         try {
             info("Running prettier...");
