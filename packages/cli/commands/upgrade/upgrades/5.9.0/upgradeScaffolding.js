@@ -4,10 +4,12 @@ const loadJsonFile = require("load-json-file");
 const writeJsonFile = require("write-json-file");
 const { addPackagesToDevDependencies } = require("../utils");
 const { Project, Node } = require("ts-morph");
+const { log } = require("@webiny/cli/utils");
 
 /**
  * Applies a couple of changes related to new scaffolds and DX improvements.
  * @param context
+ * @param targetVersion
  * @returns {Promise<void>}
  */
 const upgradeScaffolding = async (context, targetVersion) => {
@@ -16,42 +18,44 @@ const upgradeScaffolding = async (context, targetVersion) => {
     const cmsPath = path.join(context.project.root, "api", "code", "headlessCMS");
 
     // GraphQL & Headless CMS - create ".babelrc.js" and "jest.config.js" files.
-    [gqlPath, cmsPath].forEach(appPath => cpBabelRcJestConfig(appPath, context));
+    [gqlPath, cmsPath].forEach(appPath => cpBabelRcJestConfig(appPath));
 
     // Add support for importing packages via "~".
     updateTsConfigWithSupportForTildeImports(path.join(gqlPath, "tsconfig.json"));
     updateTsConfigWithSupportForTildeImports(path.join(cmsPath, "tsconfig.json"));
 
     // Edit jest.config.base.js - enable running tests from any folder by adding "**".
-    updateJestConfigBase(context);
+    updateJestConfigBase(path.join(context.project.root, "jest.config.base.js"));
 
     // Add @webiny/cli-plugin-deploy-pulumi to "devDependencies".
-    addCliPluginDeployPulumiToDevDeps(gqlPath, context, targetVersion);
-    addCliPluginDeployPulumiToDevDeps(cmsPath, context, targetVersion);
+    addCliPluginDeployPulumiToDevDeps(gqlPath, targetVersion);
+    addCliPluginDeployPulumiToDevDeps(cmsPath, targetVersion);
+
+    // Create new scaffolds folder and index.ts file.
+    createScaffoldsFolder(path.join(gqlPath, "src", "plugins", "scaffolds"));
+    createScaffoldsFolder(path.join(cmsPath, "src", "plugins", "scaffolds"));
 
     // Import "scaffoldsPlugins" in "index.ts" file.
-    await addScaffoldsPlugins(path.join(gqlPath, "src/index.ts"), context);
-    await addScaffoldsPlugins(path.join(cmsPath, "src/index.ts"), context);
+    await addScaffoldsPlugins(path.join(gqlPath, "src/index.ts"));
+    await addScaffoldsPlugins(path.join(cmsPath, "src/index.ts"));
 
     // Make sure "dynamoDbTable: dynamoDb.table.name" is exported in the exported object.
     await addDynamoDbTableExport(
-        path.join(context.project.root, "api", "pulumi", "dev", "index.ts"),
-        context
+        path.join(context.project.root, "api", "pulumi", "dev", "index.ts")
     );
+
     await addDynamoDbTableExport(
-        path.join(context.project.root, "api", "pulumi", "prod", "index.ts"),
-        context
+        path.join(context.project.root, "api", "pulumi", "prod", "index.ts")
     );
 };
 
 /**
  * Add @webiny/cli-plugin-deploy-pulumi to "devDependencies".
  * @param appPath
- * @param context
  * @param targetVersion
  */
-const addCliPluginDeployPulumiToDevDeps = (appPath, context, targetVersion) => {
-    const { info, error, success } = context.log;
+const addCliPluginDeployPulumiToDevDeps = (appPath, targetVersion) => {
+    const { info, error } = log;
 
     const name = "@webiny/cli-plugin-deploy-pulumi";
     const packageJsonPath = path.join(appPath, "package.json");
@@ -61,7 +65,6 @@ const addCliPluginDeployPulumiToDevDeps = (appPath, context, targetVersion) => {
         addPackagesToDevDependencies(appPath, {
             "@webiny/cli-plugin-deploy-pulumi": `^${targetVersion}`
         });
-        success(`Successfully added ${info.hl(name)} to ${info.hl(packageJsonPath)}.`);
     } catch (e) {
         error(`Failed adding ${info.hl(name)} to ${info.hl(packageJsonPath)}:`);
         console.log(e);
@@ -70,23 +73,28 @@ const addCliPluginDeployPulumiToDevDeps = (appPath, context, targetVersion) => {
 
 /**
  * Edit jest.config.base.js - enable running tests from any folder by adding "**".
- * @param context
+ * @param jestConfigBasePath
  */
-const updateJestConfigBase = context => {
-    const { info, error, success } = context.log;
-    const jestConfigBasePath = path.join(context.project.root, "jest.config.base.js");
+const updateJestConfigBase = jestConfigBasePath => {
+    const { info, error, warning } = log;
 
     try {
-        info(`Updating ${info.hl(jestConfigBasePath)}...`);
-        const jestConfigBase = fs.readFileSync(jestConfigBasePath).toString("utf8");
+        let jestConfigBase = fs.readFileSync(jestConfigBasePath).toString("utf8");
 
-        jestConfigBase.replace(
+        if (jestConfigBase.includes("testMatch: [`${path}/**/__tests__")) {
+            warning(
+                `Skipping updating ${warning.hl(jestConfigBasePath)} - changes already applied.`
+            );
+            return;
+        }
+
+        info(`Updating ${info.hl(jestConfigBasePath)}...`);
+        jestConfigBase = jestConfigBase.replace(
             "testMatch: [`${path}/__tests__/**/*.test.[jt]s?(x)`],",
             "testMatch: [`${path}/**/__tests__/**/*${type}.test.[jt]s?(x)`],"
         );
 
         fs.writeFileSync(jestConfigBasePath, jestConfigBase);
-        success(`Successfully updated ${success.hl(jestConfigBasePath)}.`);
     } catch (e) {
         error(`Failed updating ${error.hl(jestConfigBasePath)}:`);
         console.log(e);
@@ -96,20 +104,18 @@ const updateJestConfigBase = context => {
 /**
  * Copy/paste new ".babelrc.js" and "jest.config.js" files.
  * @param appPath
- * @param context
  */
-const cpBabelRcJestConfig = (appPath, context) => {
+const cpBabelRcJestConfig = appPath => {
     const filesFolder = path.join(__dirname, "upgradeScaffolding");
-    const { info, error, success } = context.log;
+    const { info, error, warning } = log;
 
     const babelRcPath = path.join(appPath, ".babelrc.js");
     try {
         if (fs.existsSync(babelRcPath)) {
-            info(`Skipping creation of ${info.hl(babelRcPath)} - already exists.`);
+            warning(`Skipping creation of ${warning.hl(babelRcPath)} - already exists.`);
         } else {
             info(`Creating ${info.hl(babelRcPath)}...`);
             fs.copyFileSync(path.join(filesFolder, "babelrc.js"), babelRcPath);
-            success(`Successfully created ${success.hl(babelRcPath)}.`);
         }
     } catch (e) {
         error(`Failed creating ${error.hl(babelRcPath)}:`);
@@ -119,11 +125,10 @@ const cpBabelRcJestConfig = (appPath, context) => {
     const jestConfigPath = path.join(appPath, "jest.config.js");
     try {
         if (fs.existsSync(jestConfigPath)) {
-            info(`Skipping creation of ${info.hl(jestConfigPath)} - already exists.`);
+            warning(`Skipping creation of ${warning.hl(jestConfigPath)} - already exists.`);
         } else {
             info(`Creating ${info.hl(jestConfigPath)}...`);
             fs.copyFileSync(path.join(filesFolder, "jestConfig.js"), jestConfigPath);
-            success(`Successfully created ${success.hl(jestConfigPath)}.`);
         }
     } catch (e) {
         error(`Failed creating ${error.hl(jestConfigPath)}:`);
@@ -134,17 +139,23 @@ const cpBabelRcJestConfig = (appPath, context) => {
 /**
  * Add support for importing packages via "~".
  * @param tsConfigPath
- * @param context
  */
-const updateTsConfigWithSupportForTildeImports = (tsConfigPath, context) => {
-    const { info, error, success } = context.log;
+const updateTsConfigWithSupportForTildeImports = tsConfigPath => {
+    const { info, error, warning } = log;
 
     // Add support for importing packages via "~".
     try {
-        info(`Updating ${info.hl(tsConfigPath)}...`);
-
         let tsConfig = loadJsonFile.sync(tsConfigPath);
-        if (tsConfig) {
+        if (
+            tsConfig?.compilerOptions?.baseUrl === "." &&
+            Array.isArray(tsConfig?.compilerOptions?.paths?.["~/*"])
+        ) {
+            warning(`Skipping updating ${warning.hl(tsConfigPath)} - changes already applied.`);
+            return;
+        }
+
+        info(`Updating ${info.hl(tsConfigPath)}...`);
+        if (!tsConfig) {
             tsConfig = {};
         }
 
@@ -165,7 +176,6 @@ const updateTsConfigWithSupportForTildeImports = (tsConfigPath, context) => {
         }
 
         writeJsonFile.sync(tsConfigPath, tsConfig);
-        success(`Successfully updated ${success.hl(tsConfigPath)}.`);
     } catch (e) {
         error(`Failed updating ${error.hl(tsConfigPath)}:`);
         console.log(e);
@@ -175,13 +185,23 @@ const updateTsConfigWithSupportForTildeImports = (tsConfigPath, context) => {
 /**
  * Make sure "dynamoDbTable: dynamoDb.table.name" is exported in the exported object.
  * @param filePath
- * @param context
  * @returns {Promise<*>}
  */
-const addDynamoDbTableExport = async (filePath, context) => {
-    const { info, error, success } = context.log;
+const addDynamoDbTableExport = async filePath => {
+    const { info, error, warning } = log;
 
     try {
+        const content = fs.readFileSync(filePath).toString("utf8");
+        if (content.includes("dynamoDbTable: dynamoDb.table.name")) {
+            warning(
+                `Skipping adding ${warning.hl(
+                    "dynamoDbTable: dynamoDb.table.name"
+                )} to ${warning.hl(filePath)} - changes already applied.`
+            );
+
+            return;
+        }
+
         info(`Adding ${info.hl("dynamoDbTable: dynamoDb.table.name")} to ${info.hl(filePath)}...`);
 
         const project = new Project();
@@ -189,7 +209,6 @@ const addDynamoDbTableExport = async (filePath, context) => {
 
         const source = project.getSourceFileOrThrow(filePath);
 
-        // If import declaration exists, exit.
         const defaultExport = source.getFirstDescendant(node => Node.isExportAssignment(node));
         const arrowFunction = defaultExport.getFirstDescendant(node => Node.isArrowFunction(node));
         const returnStatement = arrowFunction.getFirstDescendant(node =>
@@ -201,15 +220,7 @@ const addDynamoDbTableExport = async (filePath, context) => {
 
         returnObjectLiteral.insertProperty(0, "dynamoDbTable: dynamoDb.table.name");
 
-        return source
-            .save()
-            .then(() =>
-                success(
-                    `Successfully added ${success.hl(
-                        "dynamoDbTable: dynamoDb.table.name"
-                    )} to ${success.hl(filePath)}.`
-                )
-            );
+        return source.save();
     } catch (e) {
         error(
             `Failed adding ${error.hl("dynamoDbTable: dynamoDb.table.name")} to ${error.hl(
@@ -223,13 +234,22 @@ const addDynamoDbTableExport = async (filePath, context) => {
 /**
  * Import "scaffoldsPlugins" in "index.ts" file.
  * @param indexPath
- * @param context
  * @returns {Promise<*>}
  */
-const addScaffoldsPlugins = async (indexPath, context) => {
-    const { info, error, success } = context.log;
+const addScaffoldsPlugins = async indexPath => {
+    const { info, error, warning } = log;
 
     try {
+        const content = fs.readFileSync(indexPath).toString("utf8");
+        if (content.includes("scaffoldsPlugins")) {
+            warning(
+                `Skipping importing and adding ${warning.hl("scaffoldsPlugins")} in ${warning.hl(
+                    indexPath
+                )} - changes already applied.`
+            );
+            return;
+        }
+
         info(`Importing and adding ${info.hl("scaffoldsPlugins")} in ${info.hl(indexPath)}...`);
 
         const project = new Project();
@@ -262,21 +282,27 @@ const addScaffoldsPlugins = async (indexPath, context) => {
         const pluginsArray = pluginsObject.getInitializer();
         pluginsArray.addElement("scaffoldsPlugins()");
 
-        return source
-            .save()
-            .then(() =>
-                success(
-                    `Successfully imported and added ${success.hl(
-                        "scaffoldsPlugins"
-                    )} in ${success.hl(indexPath)}...`
-                )
-            );
+        return source.save();
     } catch (e) {
         error(
             `Failed importing and adding ${error.hl("scaffoldsPlugins")} in ${error.hl(indexPath)}:`
         );
         console.log(e);
     }
+};
+
+const content = `// This file is automatically updated via various scaffolding utilities.
+
+export default () => [];`;
+
+const createScaffoldsFolder = folder => {
+    fs.mkdirSync(folder, { recursive: true });
+    const indexPath = path.join(folder, "index.ts");
+    if (fs.existsSync(indexPath)) {
+        return;
+    }
+
+    fs.writeFileSync(indexPath, content);
 };
 
 module.exports = {
