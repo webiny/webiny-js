@@ -5,6 +5,11 @@ const writeJsonFile = require("write-json-file");
 const { addPackagesToDevDependencies } = require("../utils");
 import { Project, Node } from "ts-morph";
 
+/**
+ * Applies a couple of changes related to new scaffolds and DX improvements.
+ * @param context
+ * @returns {Promise<void>}
+ */
 const upgradeScaffolding = async context => {
     // Base paths.
     const gqlPath = path.join(context.project.root, "api", "code", "graphql");
@@ -87,6 +92,11 @@ const updateJestConfigBase = context => {
     }
 };
 
+/**
+ * Copy/paste new ".babelrc.js" and "jest.config.js" files.
+ * @param appPath
+ * @param context
+ */
 const cpBabelRcJestConfig = (appPath, context) => {
     const filesFolder = path.join(__dirname, "upgradeScaffolding");
     const { info, error, success } = context.log;
