@@ -320,12 +320,12 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             );
 
             console.log(
-                "- learn more about the created plugins and the scaffold itself at https://www.webiny.com/docs/key-topics/todo"
+                "- learn more about the created plugins and the scaffold itself at https://www.webiny.com/docs/how-to-guides/webiny-cli/scaffolding/extend-admin-area"
             );
             console.log(
                 `- learn more about the ${chalk.green(
                     "webiny watch"
-                )} command at https://www.webiny.com/docs/key-topics/todo`
+                )} command at https://www.webiny.com/docs/how-to-guides/webiny-cli/use-watch-command`
             );
         }
     }
