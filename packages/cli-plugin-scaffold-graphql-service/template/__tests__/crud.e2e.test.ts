@@ -16,7 +16,7 @@ import { request } from "graphql-request";
  */
 
 const query = async ({ query = "", variables = {} } = {}) => {
-    return request(process.env.API_URL + "/graphql", query, variables).catch(() => {});
+    return request(process.env.API_URL + "/graphql", query, variables);
 };
 
 let testTargetDataModels = [];
