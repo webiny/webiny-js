@@ -3,7 +3,7 @@ const path = require("path");
 const loadJsonFile = require("load-json-file");
 const writeJsonFile = require("write-json-file");
 const { addPackagesToDevDependencies } = require("../utils");
-import { Project, Node } from "ts-morph";
+const { Project, Node } = require("ts-morph");
 
 /**
  * Applies a couple of changes related to new scaffolds and DX improvements.
