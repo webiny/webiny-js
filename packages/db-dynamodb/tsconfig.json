@@ -3,12 +3,23 @@
   "references": [
     {
       "path": "../db"
+    },
+    {
+      "path": "../plugins"
+    },
+    {
+      "path": "../error"
     }
   ],
   "compilerOptions": {
     "paths": {
+      "~/*": ["./src/*"],
       "@webiny/db/*": ["../db/src/*"],
-      "@webiny/db": ["../db/src"]
+      "@webiny/db": ["../db/src"],
+      "@webiny/plugins/*": ["../plugins/src/*"],
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/error/*": ["../error/src/*"],
+      "@webiny/error": ["../error/src"]
     },
     "baseUrl": "."
   }
