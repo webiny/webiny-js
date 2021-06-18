@@ -4,7 +4,7 @@ import { DynamoDbAttributePluginParams } from "~/types";
 const reservedFields = ["PK", "SK", "index", "data"];
 
 export class DynamoDbAttributePlugin extends Plugin {
-    public static type: "db.dynamodb.attribute";
+    public static readonly type: "db.dynamodb.attribute";
     private readonly _entity: string;
     private readonly _attribute: string;
     private readonly _params: DynamoDbAttributePluginParams;

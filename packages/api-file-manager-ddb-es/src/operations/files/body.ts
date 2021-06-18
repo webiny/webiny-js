@@ -48,11 +48,11 @@ const findFieldPlugin = (
     plugins: Record<string, ElasticsearchFieldPlugin>,
     field: string
 ): ElasticsearchFieldPlugin => {
-    const fieldPlugin = plugins[field] || field["*"];
+    const fieldPlugin = plugins[field] || plugins["*"];
     if (fieldPlugin) {
         return fieldPlugin;
     }
-    throw new WebinyError(`Missing plugin for the field "${field}"`, "PLUGIN_ERROR", {
+    throw new WebinyError(`Missing plugin for the field "${field}".`, "PLUGIN_ERROR", {
         field
     });
 };
@@ -160,9 +160,19 @@ const createElasticsearchQuery = (
         const fieldPlugin = findFieldPlugin(fieldPlugins, field);
         const operatorPlugin = findOperatorPlugin(operatorPlugins, op);
 
-        const value = fieldPlugin.toSearchValue(where[key]);
-
-        const path = fieldPlugin.getPath();
+        /**
+         * Get the path but in the case of * (all fields, replace * with the field.
+         * Custom path would return its own value anyways.
+         */
+        const path = fieldPlugin.getPath().replace("*", field);
+        /**
+         * Transform the value for the search.
+         */
+        const value = fieldPlugin.toSearchValue({
+            context,
+            value: where[key],
+            path
+        });
 
         operatorPlugin.apply(query, {
             context,
@@ -181,6 +191,9 @@ export const createElasticsearchBody = (
 
     const fieldPlugins: Record<string, ElasticsearchFieldPlugin> = context.plugins
         .byType<ElasticsearchFieldPlugin>(ElasticsearchFieldPlugin.type)
+        .filter(plugin => {
+            return plugin.entity === "FilesElasticsearch";
+        })
         .reduce((acc, plugin) => {
             acc[plugin.field] = plugin;
             return acc;

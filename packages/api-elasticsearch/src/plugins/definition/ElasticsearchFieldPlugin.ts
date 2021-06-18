@@ -10,6 +10,10 @@ interface ToSearchValueParams {
 }
 interface ElasticsearchFieldPluginParams {
     /**
+     * Which entity is this plugin for.
+     */
+    entity: string;
+    /**
      * Which field is this plugin for.
      */
     field: string;
@@ -43,14 +47,19 @@ interface ElasticsearchFieldPluginParams {
 }
 
 export class ElasticsearchFieldPlugin extends Plugin {
-    public static type: "elasticsearch.fieldDefinition";
+    public static readonly type = "elasticsearch.fieldDefinition";
 
+    private readonly _entity: string;
     private readonly _field: string;
     private readonly _path: string;
     private readonly _keyword: boolean;
     private readonly _unmappedType: string;
     private readonly _sortable: boolean;
     private readonly _searchable: boolean;
+
+    public get entity(): string {
+        return this._entity;
+    }
 
     public get field(): string {
         return this._field;
@@ -78,6 +87,7 @@ export class ElasticsearchFieldPlugin extends Plugin {
 
     constructor(params: ElasticsearchFieldPluginParams) {
         super();
+        this._entity = params.entity;
         this._field = params.field;
         this._path = params.path || params.field;
         this._keyword = params.keyword === undefined ? true : params.keyword;
@@ -89,8 +99,14 @@ export class ElasticsearchFieldPlugin extends Plugin {
      * The default sort options. Extend in your own plugin if you want to add more options.
      */
     public getSortOptions(order: SortOrder): FieldSortOptions {
+        const options = {
+            order
+        };
+        if (!this._unmappedType) {
+            return options;
+        }
         return {
-            order,
+            ...options,
             unmapped_type: this._unmappedType
         };
     }
