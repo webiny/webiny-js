@@ -1,7 +1,8 @@
 import ora from "ora";
 import inquirer from "inquirer";
+import chalk from "chalk";
 import { CliCommandScaffoldTemplate } from "./types";
-import { ContextInterface } from "@webiny/handler/types";
+import { CliContext } from "@webiny/cli/types";
 
 const wait = (ms?: number): Promise<void> => {
     return new Promise((resolve: () => void) => {
@@ -10,7 +11,7 @@ const wait = (ms?: number): Promise<void> => {
 };
 
 interface ScaffoldArgs {
-    context: ContextInterface;
+    context: CliContext;
 }
 
 export const scaffold = async (args: ScaffoldArgs) => {
@@ -26,12 +27,19 @@ export const scaffold = async (args: ScaffoldArgs) => {
         process.exit(1);
     }
 
-    const choices = Object.values(scaffoldPlugins).map(plugin => ({
-        name: `${plugin.scaffold.name}`,
-        value: plugin.name
-    }));
+    const choices = scaffoldPlugins.map(plugin => {
+        const { name, description } = plugin.scaffold;
+
+        return {
+            name: `${chalk.bold(name)}\n  ${description}\n`,
+            short: name,
+            value: plugin.name
+        };
+    });
+
     const { selectedPluginName } = await inquirer.prompt({
         type: "list",
+        pageSize: 18,
         name: "selectedPluginName",
         message: "Choose a scaffold:",
         choices
@@ -54,14 +62,11 @@ export const scaffold = async (args: ScaffoldArgs) => {
             await scaffold.onGenerate(callbackArgs);
         }
 
-        console.log("Scaffolding...");
         await scaffold.generate(callbackArgs);
 
         if (typeof scaffold.onSuccess === "function") {
             await scaffold.onSuccess(callbackArgs);
         }
-
-        oraInstance.succeed("Done!");
     } catch (e) {
         oraInstance.stop();
         if (typeof scaffold.onError === "function") {

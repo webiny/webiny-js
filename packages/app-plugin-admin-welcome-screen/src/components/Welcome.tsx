@@ -155,7 +155,7 @@ const Welcome = () => {
                             <WelcomeScreenWidgetsWrapper>
                                 {widgets.map(pl => {
                                     return (
-                                        <Widget key={pl.name}>
+                                        <Widget key={pl.name} data-testid={pl.name}>
                                             <Elevation z={2} style={{ padding: 10 }}>
                                                 <Typography use={"headline6"}>
                                                     <p className={widgetTitleStyle}>

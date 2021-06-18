@@ -116,6 +116,13 @@ describe("Forms Security Test", () => {
             const [permissions, identity] = sufficientPermissionsAll[i];
             const { listForms } = useGqlHandler({ permissions, identity });
 
+            await until(
+                () => listForms().then(([data]) => data),
+                ({ data }) =>
+                    data.formBuilder.listForms.data[0].id === formB2Id &&
+                    data.formBuilder.listForms.data[3].id === formA1Id
+            );
+
             const [response] = await listForms();
             expect(response).toMatchObject({
                 data: {

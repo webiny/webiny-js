@@ -22,7 +22,7 @@
     "../error",
     "../api-file-manager",
     "../api-file-manager-ddb-es",
-    "../api-security-tenancy",
+    "../api-tenancy",
     "../api-prerendering-service"
   ],
   "compilerOptions": {

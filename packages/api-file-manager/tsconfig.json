@@ -12,7 +12,7 @@
       "path": "../api-security"
     },
     {
-      "path": "../api-security-tenancy"
+      "path": "../api-tenancy"
     },
     {
       "path": "../api-upgrade"
@@ -47,8 +47,8 @@
       "@webiny/api-upgrade": ["../api-upgrade/src"],
       "@webiny/api-security/*": ["../api-security/src/*"],
       "@webiny/api-security": ["../api-security/src"],
-      "@webiny/api-security-tenancy/*": ["../api-security-tenancy/src/*"],
-      "@webiny/api-security-tenancy": ["../api-security-tenancy/src"],
+      "@webiny/api-tenancy/*": ["../api-tenancy/src/*"],
+      "@webiny/api-tenancy": ["../api-tenancy/src"],
       "@webiny/error/*": ["../error/src/*"],
       "@webiny/error": ["../error/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],

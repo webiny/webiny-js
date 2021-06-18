@@ -13,9 +13,9 @@
   "author": "Pavel Denisjuk <pavel@webiny.com>",
   "description": "A tool to bootstrap a Webiny project.",
   "dependencies": {
-    "@webiny/tracking": "^5.8.0",
+    "@webiny/telemetry": "^5.8.0",
     "camelcase": "5.3.1",
-    "chalk": "2.4.2",
+    "chalk": "^4.1.0",
     "dotenv": "8.2.0",
     "execa": "2.1.0",
     "find-up": "5.0.0",
@@ -51,7 +51,8 @@
     "ignore": {
       "src": [
         "@webiny/project-utils",
-        "@webiny/api-file-manager"
+        "@webiny/api-file-manager",
+        "@webiny/cli-plugin-deploy-pulumi"
       ]
     }
   },

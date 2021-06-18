@@ -1,5 +1,5 @@
 import { Response, ErrorResponse, ListResponse } from "@webiny/handler-graphql";
-import { FileInput, FileManagerContext, FilesListOpts, FileManagerSettings } from "../types";
+import { FileInput, FileManagerContext, FilesListOpts, FileManagerSettings } from "~/types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 
 const emptyResolver = () => ({});
@@ -187,8 +187,8 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                     }
                 },
                 async version(_, args, context) {
-                    const { i18nContent, security, fileManager } = context;
-                    if (!security.getTenant() || !i18nContent.getLocale()) {
+                    const { i18nContent, tenancy, fileManager } = context;
+                    if (!tenancy.getCurrentTenant() || !i18nContent.getLocale()) {
                         return null;
                     }
 

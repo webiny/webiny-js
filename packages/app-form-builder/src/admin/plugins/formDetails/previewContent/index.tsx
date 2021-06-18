@@ -57,7 +57,11 @@ export default [
         type: "forms-form-details-revision-content",
         render(props) {
             return (
-                <Tab label={t`Form preview`} disabled={props.loading}>
+                <Tab
+                    label={t`Form preview`}
+                    disabled={props.loading}
+                    data-testid={"fb.form-details.tab.form-preview"}
+                >
                     <PreviewContentTab {...props} />
                 </Tab>
             );

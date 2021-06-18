@@ -51,7 +51,7 @@ const configurations: Configurations = {
         ]
     }),
     es(context, model) {
-        const tenant = context.security.getTenant();
+        const tenant = context.tenancy.getCurrentTenant();
         if (!tenant) {
             throw new Error(`There is no tenant on "context.security".`);
         }

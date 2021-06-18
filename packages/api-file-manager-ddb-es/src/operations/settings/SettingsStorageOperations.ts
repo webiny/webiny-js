@@ -23,7 +23,7 @@ export class SettingsStorageOperations implements FileManagerSettingsStorageOper
 
     private get partitionKey(): string {
         if (!this._partitionKey) {
-            const tenant = this._context.security.getTenant();
+            const tenant = this._context.tenancy.getCurrentTenant();
             if (!tenant) {
                 throw new WebinyError("Tenant missing.", "TENANT_NOT_FOUND");
             }
@@ -66,7 +66,9 @@ export class SettingsStorageOperations implements FileManagerSettingsStorageOper
         data
     }: FileManagerSettingsStorageOperationsCreateParams): Promise<FileManagerSettings> {
         const original = await this.get();
-        // TODO check if need to throw an error on existing settings
+        /**
+         * TODO: check if need to throw an error on existing settings
+         */
         if (original) {
             return await this.update({ original, data });
         }

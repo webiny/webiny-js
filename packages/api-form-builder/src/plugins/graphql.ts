@@ -55,9 +55,9 @@ const plugin: GraphQLSchemaPlugin<FormBuilderContext> = {
             },
             FbQuery: {
                 version: async (root, args, context) => {
-                    const { i18nContent, security, formBuilder } = context;
+                    const { i18nContent, tenancy, formBuilder } = context;
 
-                    if (!security.getTenant() || !i18nContent.getLocale()) {
+                    if (!tenancy.getCurrentTenant() || !i18nContent.getLocale()) {
                         return null;
                     }
 

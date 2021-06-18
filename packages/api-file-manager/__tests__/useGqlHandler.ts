@@ -1,6 +1,7 @@
 import { createHandler } from "@webiny/handler-aws";
 import graphqlHandlerPlugins from "@webiny/handler-graphql";
-import securityPlugins from "@webiny/api-security/authenticator";
+import tenancyPlugins from "@webiny/api-tenancy";
+import securityPlugins from "@webiny/api-security";
 import dbPlugins from "@webiny/handler-db";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
@@ -56,11 +57,12 @@ export default ({ permissions, identity }: UseGqlHandlerParams) => {
             driver: new DynamoDbDriver({ documentClient })
         }),
         graphqlHandlerPlugins(),
+        tenancyPlugins(),
         securityPlugins(),
         {
             type: "context",
             apply(context) {
-                context.security.getTenant = () => {
+                context.tenancy.getCurrentTenant = () => {
                     return tenant;
                 };
             }

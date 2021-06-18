@@ -19,7 +19,7 @@
     "../api-elasticsearch",
     "../api-dynamodb-to-elasticsearch",
     "../db-dynamodb",
-    "../api-security-tenancy"
+    "../api-tenancy"
   ],
   "compilerOptions": {
     "rootDir": "./src",

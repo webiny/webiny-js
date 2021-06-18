@@ -26,6 +26,7 @@ const menuList = css({
 const RevisionSelector = ({ revisions, revision, selectRevision }) => {
     return (
         <Menu
+            data-testid={"fb.form-preview.header.revision-selector"}
             className={menuList}
             onSelect={evt => selectRevision(revisions[evt.detail.index])}
             handle={
@@ -35,7 +36,10 @@ const RevisionSelector = ({ revisions, revision, selectRevision }) => {
             }
         >
             {(revisions || []).map(rev => (
-                <MenuItem key={rev.id}>
+                <MenuItem
+                    key={rev.id}
+                    data-testid={`fb.form-preview.header.revision-v${rev.version}`}
+                >
                     <Typography use={"body2"}>v{rev.version}</Typography>
                     <Typography use={"caption"}>({rev.status})</Typography>
                 </MenuItem>

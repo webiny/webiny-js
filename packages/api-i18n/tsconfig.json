@@ -5,7 +5,7 @@
       "path": "../api-security"
     },
     {
-      "path": "../api-security-tenancy"
+      "path": "../api-tenancy"
     },
     {
       "path": "../db-dynamodb"
@@ -34,8 +34,8 @@
       "~/*": ["./src/*"],
       "@webiny/api-security/*": ["../api-security/src/*"],
       "@webiny/api-security": ["../api-security/src"],
-      "@webiny/api-security-tenancy/*": ["../api-security-tenancy/src/*"],
-      "@webiny/api-security-tenancy": ["../api-security-tenancy/src"],
+      "@webiny/api-tenancy/*": ["../api-tenancy/src/*"],
+      "@webiny/api-tenancy": ["../api-tenancy/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/handler/*": ["../handler/src/*"],

@@ -52,7 +52,7 @@ const I18NLocaleForm = () => {
     return (
         <Form data={locale} onSubmit={onSubmit}>
             {({ data, form, Bind }) => (
-                <SimpleForm>
+                <SimpleForm data-testid={"i18n-locale-form"}>
                     {loading && <CircularProgress />}
                     <SimpleFormHeader title={data.code || t`New locale`} />
                     <SimpleFormContent>

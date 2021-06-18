@@ -5,11 +5,11 @@ export function getStackOutput(
     folder: string,
     env: string,
     map?: Record<string, string>
-): Promise<StackOutput>;
+): StackOutput;
 
 export function getStackOutput(options: {
     folder: string;
     env: string;
     map?: Record<string, string>;
-    cwd?: string
+    cwd?: string;
 }): Promise<StackOutput>;

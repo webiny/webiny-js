@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import get from "lodash/get";
 import { IconButton } from "@webiny/ui/Button";
 import { Typography } from "@webiny/ui/Typography";
 import { i18n } from "../../i18n";
@@ -18,6 +19,8 @@ const ErrorOverlay = ({ query, networkError }) => {
     if (!open) {
         return null;
     }
+
+    const stackTrace = get(networkError, "result.error.stack");
 
     return (
         <OverlayWrapper>
@@ -39,12 +42,14 @@ const ErrorOverlay = ({ query, networkError }) => {
                             <code>{query}</code>
                         </Pre>
                     </div>
-                    <div className="body__description">
-                        <Typography use={"subtitle1"}>{t`Complete stack trace:`}</Typography>
-                        <Pre>
-                            <code>{networkError.result.error.stack}</code>
-                        </Pre>
-                    </div>
+                    {stackTrace && (
+                        <div className="body__description">
+                            <Typography use={"subtitle1"}>{t`Complete stack trace:`}</Typography>
+                            <Pre>
+                                <code>{stackTrace}</code>
+                            </Pre>
+                        </div>
+                    )}
                 </div>
                 <div className="footer">
                     <Typography use={"body2"}>

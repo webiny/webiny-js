@@ -3,6 +3,7 @@ import { createHandler } from "@webiny/handler-aws";
 import graphqlPlugins from "@webiny/handler-graphql";
 import i18nPlugins from "@webiny/api-i18n/graphql";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
+import adminUsersPlugins from "@webiny/api-security-admin-users";
 import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
 import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
 import dbPlugins from "@webiny/handler-db";
@@ -16,6 +17,9 @@ import formBuilderPlugins from "@webiny/api-form-builder/plugins";
 import securityPlugins from "./security";
 import headlessCmsPlugins from "@webiny/api-headless-cms/plugins";
 import headlessCmsDynamoDbElasticStorageOperation from "@webiny/api-headless-cms-ddb-es";
+
+// Imports plugins created via scaffolding utilities.
+import scaffoldsPlugins from "./plugins/scaffolds";
 
 const debug = process.env.DEBUG === "true";
 
@@ -50,10 +54,12 @@ export const handler = createHandler({
                 }
             }
         }),
+        adminUsersPlugins(),
         pageBuilderPlugins(),
         formBuilderPlugins(),
         headlessCmsPlugins(),
-        headlessCmsDynamoDbElasticStorageOperation()
+        headlessCmsDynamoDbElasticStorageOperation(),
+        scaffoldsPlugins()
     ],
     http: { debug }
 });

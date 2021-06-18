@@ -82,7 +82,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
 
     private get partitionKeyPrefix(): string {
         if (!this._partitionKeyPrefix) {
-            const tenant = this.context.security.getTenant();
+            const tenant = this.context.tenancy.getCurrentTenant();
             const locale = this.context.i18nContent.getLocale();
             if (!tenant) {
                 throw new WebinyError("Tenant missing.", "TENANT_NOT_FOUND");
@@ -316,7 +316,6 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
     public async tags(
         params: FileManagerFilesStorageOperationsTagsParams
     ): Promise<FileManagerFilesStorageOperationsTagsResponse> {
-        const { security } = this.context;
         const { where, limit } = params;
 
         const esDefaults = configurations.es(this.context);
@@ -329,7 +328,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
         // When ES index is shared between tenants, we need to filter records by tenant ID
         const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
         if (sharedIndex) {
-            const tenant = security.getTenant();
+            const tenant = this.context.tenancy.getCurrentTenant();
             must.push({ term: { "tenant.keyword": tenant.id } });
         }
 

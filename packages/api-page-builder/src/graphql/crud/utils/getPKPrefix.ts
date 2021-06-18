@@ -1,5 +1,5 @@
 import { I18NContentContext } from "@webiny/api-i18n-content/types";
-import { TenancyContext } from "@webiny/api-security-tenancy/types";
+import { TenancyContext } from "@webiny/api-tenancy/types";
 import { Context } from "@webiny/handler/types";
 import Error from "@webiny/error";
 
@@ -30,8 +30,8 @@ export default (context: Context<TenancyContext, I18NContentContext>, options: O
     if (options.tenant !== false) {
         let tenant = options.tenant;
         if (tenant !== "string") {
-            const { security } = context;
-            tenant = security.getTenant()?.id;
+            const { tenancy } = context;
+            tenant = tenancy.getCurrentTenant()?.id;
         }
 
         if (!tenant) {

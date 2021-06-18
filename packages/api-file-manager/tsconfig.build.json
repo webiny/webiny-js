@@ -7,7 +7,7 @@
     "../api-i18n",
     "../api-i18n-content",
     "../api-security",
-    "../api-security-tenancy",
+    "../api-tenancy",
     "../api-upgrade",
     "../error",
     "../handler",

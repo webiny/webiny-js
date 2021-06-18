@@ -1,7 +1,8 @@
 import { createHandler } from "@webiny/handler-aws";
-import apolloServerPlugins from "@webiny/handler-graphql";
+import graphqlHandler from "@webiny/handler-graphql";
 import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
-import securityPlugins from "@webiny/api-security/authenticator";
+import tenancyPlugins from "@webiny/api-tenancy";
+import securityPlugins from "@webiny/api-security";
 import dbPlugins from "@webiny/handler-db";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
@@ -107,12 +108,13 @@ export default ({ permissions, identity, tenant } = {}) => {
         // TODO figure out a way to load these automatically
         fileManagerDdbEsPlugins(),
         elasticsearchContext,
-        apolloServerPlugins(),
+        graphqlHandler(),
+        tenancyPlugins(),
         securityPlugins(),
         {
             type: "context",
             apply(context) {
-                context.security.getTenant = () => {
+                context.tenancy.getCurrentTenant = () => {
                     return tenant || defaultTenant;
                 };
             }

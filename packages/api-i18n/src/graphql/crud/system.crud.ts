@@ -3,9 +3,9 @@ import dbArgs from "./utils/dbArgs";
 import { I18NContext, SystemCRUD } from "~/types";
 
 export default (context: DbContext & I18NContext): SystemCRUD => {
-    const { db, i18n, security } = context;
+    const { db, i18n, tenancy } = context;
 
-    const keys = () => ({ PK: `T#${security.getTenant().id}#SYSTEM`, SK: "I18N" });
+    const keys = () => ({ PK: `T#${tenancy.getCurrentTenant().id}#SYSTEM`, SK: "I18N" });
 
     return {
         async getVersion() {

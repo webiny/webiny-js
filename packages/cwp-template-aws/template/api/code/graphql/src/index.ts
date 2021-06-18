@@ -2,8 +2,10 @@ import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createHandler } from "@webiny/handler-aws";
 import graphqlPlugins from "@webiny/handler-graphql";
 import i18nPlugins from "@webiny/api-i18n/graphql";
+import adminUsersPlugins from "@webiny/api-security-admin-users";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
+import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import elasticsearchClientContextPlugin from "@webiny/api-elasticsearch";
@@ -11,13 +13,14 @@ import fileManagerPlugins from "@webiny/api-file-manager/plugins";
 import fileManagerDynamoDbElasticPlugins from "@webiny/api-file-manager-ddb-es";
 import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
 import logsPlugins from "@webiny/handler-logs";
-
-// File storage S3 plugin for API file manager.
 import fileManagerS3 from "@webiny/api-file-manager-s3";
 import formBuilderPlugins from "@webiny/api-form-builder/plugins";
 import securityPlugins from "./security";
 import headlessCmsPlugins from "@webiny/api-headless-cms/plugins";
 import headlessCmsDynamoDbElasticStorageOperation from "@webiny/api-headless-cms-ddb-es";
+
+// Imports plugins created via scaffolding utilities.
+import scaffoldsPlugins from "./plugins/scaffolds";
 
 const debug = process.env.DEBUG === "true";
 
@@ -54,10 +57,12 @@ export const handler = createHandler({
                 }
             }
         }),
+        adminUsersPlugins(),
         pageBuilderPlugins(),
         formBuilderPlugins(),
         headlessCmsPlugins(),
-        headlessCmsDynamoDbElasticStorageOperation()
+        headlessCmsDynamoDbElasticStorageOperation(),
+        scaffoldsPlugins()
     ],
     http: { debug }
 });

@@ -25,7 +25,11 @@ const RevisionsList = ({ form, revisions, loading }) => {
             <Elevation className={listWrapper} z={2}>
                 <div style={{ position: "relative" }}>
                     {loading && <CircularProgress />}
-                    <List nonInteractive twoLine>
+                    <List
+                        nonInteractive
+                        twoLine
+                        data-testid={"fb.form-details.tab.revisions.content-list"}
+                    >
                         {Array.isArray(revisions)
                             ? revisions.map(rev => (
                                   <Revision form={form} revision={rev} key={rev.id} />

@@ -16,7 +16,7 @@ const initialContentModelGroup = {
 };
 
 export default new ContextPlugin<CmsContext>(async context => {
-    const { security } = context;
+    const { tenancy } = context;
 
     const pluginType = "cms-system-storage-operations-provider";
     const providerPlugins = context.plugins.byType<CmsSystemStorageOperationsProviderPlugin>(
@@ -41,7 +41,7 @@ export default new ContextPlugin<CmsContext>(async context => {
         ...context.cms,
         system: {
             async getVersion() {
-                if (!security.getTenant()) {
+                if (!tenancy.getCurrentTenant()) {
                     return null;
                 }
 
@@ -72,6 +72,10 @@ export default new ContextPlugin<CmsContext>(async context => {
             },
             getReadAPIKey: async () => {
                 const system = await storageOperations.get();
+
+                if (!system) {
+                    return null;
+                }
 
                 if (!system.readAPIKey) {
                     const apiKey = createReadAPIKey();

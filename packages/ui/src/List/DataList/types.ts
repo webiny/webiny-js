@@ -23,7 +23,7 @@ export type PaginationProp = {
     perPageOptions?: number[];
 };
 
-export type SortersProp = Array<{ label: string; sorters: { [key: string]: string | number } }>;
+export type SortersProp = Array<{ label: string; value: any }>;
 
 export type Props = {
     // Pass a function to take full control of list render.

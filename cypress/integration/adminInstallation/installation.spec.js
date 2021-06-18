@@ -15,12 +15,12 @@ context("Admin Installation", () => {
         cy.findByText("Install Security").click();
         cy.findByLabelText("First Name").type(Cypress.env("DEFAULT_ADMIN_USER_FIRST_NAME"));
         cy.findByLabelText("Last Name").type(Cypress.env("DEFAULT_ADMIN_USER_LAST_NAME"));
-        cy.findByLabelText("E-mail").type(Cypress.env("DEFAULT_ADMIN_USER_LAST_NAME"));
+        cy.findByLabelText("Email").type(Cypress.env("DEFAULT_ADMIN_USER_LAST_NAME"));
         cy.findByTestId("install-security-button").click();
 
         cy.findByText("Value must be a valid e-mail address.").should("exist");
 
-        cy.findByLabelText("E-mail")
+        cy.findByLabelText("Email")
             .clear()
             .type(Cypress.env("DEFAULT_ADMIN_USER_USERNAME"));
         cy.findByLabelText("Password").type(Cypress.env("DEFAULT_ADMIN_USER_PASSWORD"));
@@ -34,8 +34,8 @@ context("Admin Installation", () => {
         // 2. I18N installation.
         cy.findByLabelText("Select default locale")
             .clear()
-            .type("en-g");
-        cy.findByText("en-GB").click();
+            .type("en-u");
+        cy.findByText("en-US").click();
         cy.findByTestId("install-i18n-button").click();
 
         // 3. File Manager installation (happens automatically, nothing to type / select here).
@@ -57,7 +57,9 @@ context("Admin Installation", () => {
 
         // 5. Form Builder installation (happens automatically, nothing to type / select here).
 
-        // 6. Installation complete, click the button and check if the pages list was shown to the user.
+        // 6. Headless CMS installation (happens automatically, nothing to type / select here).
+
+        // 7. Installation complete, click the button and check if the pages list was shown to the user.
         cy.findByTestId("open-webiny-cms-admin-button").click();
         cy.findByText(/Learn more about Webiny/i).should("exist");
     });

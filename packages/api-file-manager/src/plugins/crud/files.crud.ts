@@ -30,7 +30,7 @@ const checkOwnership = (file: File, permission: FilePermission, context: FileMan
 };
 
 const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async context => {
-    const { i18nContent, security } = context;
+    const { i18nContent } = context;
     const localeCode = i18nContent?.locale?.code;
 
     const pluginType = FilesStorageOperationsProviderPlugin.type;
@@ -70,7 +70,7 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
         async createFile(input) {
             await checkBasePermissions(context, { rwd: "w" });
             const identity = context.security.getIdentity();
-            const tenant = security.getTenant();
+            const tenant = context.tenancy.getCurrentTenant();
 
             const FileModel = createFileModel();
             const fileData = new FileModel().populate(input);
@@ -194,7 +194,7 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
             await checkBasePermissions(context, { rwd: "w" });
 
             const identity = context.security.getIdentity();
-            const tenant = context.security.getTenant();
+            const tenant = context.tenancy.getCurrentTenant();
             const createdBy = {
                 id: identity.id,
                 displayName: identity.displayName,

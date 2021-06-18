@@ -7,6 +7,7 @@ import { ReactComponent as FileIcon } from "../../assets/icons/insert_drive_file
 
 import { i18n } from "@webiny/app/i18n";
 import { FileManager } from "../../components";
+
 const t = i18n.ns("app-admin/navigation");
 
 const listItemStyle = css({
@@ -28,6 +29,7 @@ export default (): AdminDrawerFooterMenuPlugin => ({
                             ripple={false}
                             onClick={showFileManager}
                             className={listItemStyle}
+                            data-testid={"admin-drawer-footer-menu-file-manager"}
                         >
                             <ListItemGraphic>
                                 <Icon icon={<FileIcon />} />

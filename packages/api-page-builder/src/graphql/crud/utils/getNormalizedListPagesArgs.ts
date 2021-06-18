@@ -29,7 +29,7 @@ const getQuery = (args: ListPagesParams, context: PbContext): ElasticsearchBoolQ
     // When ES index is shared between tenants, we need to filter records by tenant ID
     const sharedIndex = process.env.ELASTICSEARCH_SHARED_INDEXES === "true";
     if (sharedIndex) {
-        const tenant = context.security.getTenant();
+        const tenant = context.tenancy.getCurrentTenant();
         query.filter.push({ term: { "tenant.keyword": tenant.id } });
     }
 

@@ -51,10 +51,13 @@ describe("MANAGE - resolvers - api key", () => {
     const {
         createContentModelMutation,
         updateContentModelMutation,
-        createContentModelGroupMutation
+        createContentModelGroupMutation,
+        installMutation
     } = useContentGqlHandler(manageOpts);
 
     beforeEach(async () => {
+        await installMutation();
+
         const [createCMG] = await createContentModelGroupMutation({
             data: {
                 name: "Group",

@@ -15,6 +15,6 @@ module.exports = async () => {
     } catch (e) {
         const { v4: uuidv4 } = require("uuid");
         // A new config file is written if it doesn't exist or is invalid.
-        writeJson.sync(configPath, { id: uuidv4() });
+        writeJson.sync(configPath, { id: uuidv4(), telemetry: true });
     }
 };

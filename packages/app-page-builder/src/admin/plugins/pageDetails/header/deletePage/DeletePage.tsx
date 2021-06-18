@@ -7,7 +7,7 @@ import { useDialog } from "@webiny/app-admin/hooks/useDialog";
 import { IconButton } from "@webiny/ui/Button";
 import { Tooltip } from "@webiny/ui/Tooltip";
 import { ReactComponent as DeleteIcon } from "../../../../assets/delete.svg";
-import { DELETE_PAGE, LIST_PAGES } from "../../../../graphql/pages";
+import { DELETE_PAGE, LIST_PAGES } from "~/admin/graphql/pages";
 import { i18n } from "@webiny/app/i18n";
 import cloneDeep from "lodash/cloneDeep";
 import usePermission from "../../../../../hooks/usePermission";
@@ -32,7 +32,8 @@ const DeletePage = props => {
                     title: <strong>{page.title}</strong>
                 })}
             </p>
-        )
+        ),
+        dataTestId: "pb-page-details-header-delete-dialog"
     });
 
     const confirmDelete = useCallback(
@@ -105,7 +106,11 @@ const DeletePage = props => {
 
     return (
         <Tooltip content={"Delete"} placement={"top"}>
-            <IconButton icon={<DeleteIcon />} onClick={confirmDelete} />
+            <IconButton
+                icon={<DeleteIcon />}
+                onClick={confirmDelete}
+                data-testid={"pb-page-details-header-delete-button"}
+            />
         </Tooltip>
     );
 };

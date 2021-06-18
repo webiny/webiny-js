@@ -1,6 +1,6 @@
 import { Plugin } from "@webiny/plugins/types";
 import { Context } from "@webiny/handler/types";
-import { TenancyContext } from "@webiny/api-security-tenancy/types";
+import { TenancyContext } from "@webiny/api-tenancy/types";
 import { I18NContentContext } from "@webiny/api-i18n-content/types";
 import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import { SecurityPermission } from "@webiny/api-security/types";

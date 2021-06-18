@@ -16,6 +16,7 @@ export default {
                 icon={<FileManagerIcon />}
                 title={t`File Manager`}
                 description={t`Manage File manager app access permissions.`}
+                data-testid={"permission.fm"}
             >
                 <FileManagerPermissions {...props} />
             </AccordionItem>

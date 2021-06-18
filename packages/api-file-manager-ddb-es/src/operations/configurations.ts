@@ -24,7 +24,7 @@ export default {
         ]
     }),
     es(context: FileManagerContext) {
-        const tenant = context.security.getTenant();
+        const tenant = context.tenancy.getCurrentTenant();
         if (!tenant) {
             throw new Error("Tenant missing.");
         }

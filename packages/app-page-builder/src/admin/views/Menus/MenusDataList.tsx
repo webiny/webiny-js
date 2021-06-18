@@ -70,7 +70,7 @@ const PageBuilderMenusDataList = ({ canCreate }: PageBuilderMenusDataListProps) 
             return (
                 title.toLowerCase().includes(filter) ||
                 slug.toLowerCase().includes(filter) ||
-                description.toLowerCase().includes(filter)
+                (description && description.toLowerCase().includes(filter))
             );
         },
         [filter]
@@ -179,7 +179,12 @@ const PageBuilderMenusDataList = ({ canCreate }: PageBuilderMenusDataListProps) 
                 <SearchUI value={filter} onChange={setFilter} inputPlaceholder={t`Search menus`} />
             }
             modalOverlay={menusDataListModalOverlay}
-            modalOverlayAction={<DataListModalOverlayAction icon={<FilterIcon />} />}
+            modalOverlayAction={
+                <DataListModalOverlayAction
+                    icon={<FilterIcon />}
+                    data-testid={"default-data-list.filter"}
+                />
+            }
         >
             {({ data }) => (
                 <ScrollList data-testid="default-data-list">

@@ -57,12 +57,13 @@ const usePermission = () => {
     const canEdit = useCallback(
         (item, permissionName) => {
             const permission = identity.getPermission(permissionName);
+            const creatorId = get(item, "createdBy.id");
 
             if (!permission) {
                 return false;
             }
-            if (permission.own) {
-                return get(item, "createdBy.id") === identity.login;
+            if (permission.own && creatorId) {
+                return creatorId === identity.login;
             }
             if (typeof permission.rwd === "string") {
                 return permission.rwd.includes("w");
