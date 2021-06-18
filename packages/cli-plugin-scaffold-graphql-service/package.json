@@ -26,7 +26,8 @@
     "ncp": "^2.0.0",
     "pluralize": "^8.0.0",
     "replace-in-path": "^1.0.4",
-    "write-json-file": "^4.3.0"
+    "write-json-file": "^4.3.0",
+    "terminal-link": "^3.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
