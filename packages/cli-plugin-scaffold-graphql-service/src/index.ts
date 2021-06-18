@@ -242,21 +242,29 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 `${chalk.green("✔")} New GraphQL API plugins created and imported successfully.`
             );
             console.log();
-            console.log(chalk.bold("Next steps:"));
+            console.log(chalk.bold("Next Steps"));
 
             console.log(
-                `- deploy the extended GraphQL API and continue developing by running the ${chalk.green(
+                `‣ deploy the extended GraphQL API and continue developing by running the ${chalk.green(
                     "yarn webiny watch api/code/graphql --env {dev}"
                 )} command`
             );
 
-            console.log(
-                `- learn more about the created plugins and the scaffold itself at ${SCAFFOLD_DOCS_LINK}`
-            );
-            console.log(
-                `- learn more about the ${chalk.green(
-                    "webiny watch"
-                )} command at https://www.webiny.com/docs/how-to-guides/webiny-cli/use-watch-command`
+            console.log();
+            console.log(chalk.bold("Useful Links"));
+
+            const links = [
+                ["Extend GraphQL API", SCAFFOLD_DOCS_LINK],
+                [
+                    "Use the Watch Command",
+                    "https://www.webiny.com/docs/how-to-guides/webiny-cli/use-watch-command"
+                ]
+            ];
+
+            links.forEach(([text, url]) =>
+                console.log(
+                    link("‣ " + text, url, { fallback: (text, link) => text + " - " + link })
+                )
             );
         }
     }
