@@ -172,7 +172,8 @@ const createElasticsearchQuery = (
         const value = fieldPlugin.toSearchValue({
             context,
             value: where[key],
-            path
+            path,
+            basePath
         });
 
         operatorPlugin.apply(query, {

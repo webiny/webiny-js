@@ -3,10 +3,24 @@ import { FieldSortOptions, SortOrder } from "elastic-ts";
 import { ContextInterface } from "@webiny/handler/types";
 
 type UnmappedTypes = "date" | "long" | string;
+
 interface ToSearchValueParams {
+    /**
+     * Some variable that has a ContextInterface as a base.
+     */
     context: ContextInterface;
+    /**
+     * The value to transform.
+     */
     value: any;
+    /**
+     * When using toSearchValue() in our code we send a field.getPath() value here.
+     */
     path: string;
+    /**
+     * When using toSearchValue() in our code we send a field.getBasePath() value here.
+     */
+    basePath: string;
 }
 interface ElasticsearchFieldPluginParams {
     /**
