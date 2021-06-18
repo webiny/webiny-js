@@ -10,6 +10,7 @@ import { checkOwnership, encodeCursor } from "./utils";
 import defaults from "./defaults";
 import * as models from "./forms.models";
 import { FbForm, FbSubmission, FormBuilderContext } from "../../types";
+import WebinyError from "@webiny/error";
 
 const TYPE_FORM = "fb.form";
 const TYPE_FORM_LATEST = "fb.form.latest";
@@ -45,8 +46,8 @@ type DbItem<T = unknown> = T & {
 
 export default {
     type: "context",
-    apply(context) {
-        const { db, i18nContent, elasticSearch, tenancy } = context;
+    apply(context: FormBuilderContext) {
+        const { db, i18nContent, elasticsearch, tenancy } = context;
 
         const PK_FORM = formId => `${utils.getPKPrefix(context)}F#${formId}`;
         const SK_FORM_REVISION = version => {
@@ -149,12 +150,22 @@ export default {
                     };
 
                     // Get "latest" form revisions from Elasticsearch.
-                    const response = await elasticSearch.search({
-                        ...defaults.es(context),
-                        body
-                    });
+                    try {
+                        const response = await elasticsearch.search({
+                            ...defaults.es(context),
+                            body
+                        });
 
-                    return response.body.hits.hits.map(item => item._source);
+                        return response.body.hits.hits.map(item => item._source);
+                    } catch (ex) {
+                        throw new WebinyError(
+                            ex.message || "Could not perform search.",
+                            ex.code || "ELASTICSEARCH_ERROR",
+                            {
+                                body
+                            }
+                        );
+                    }
                 },
                 async getFormRevisions(id) {
                     const permission = await utils.checkBaseFormPermissions(context, { rwd: "r" });
@@ -1009,7 +1020,7 @@ export default {
                         body["search_after"] = utils.decodeCursor(after);
                     }
 
-                    const response = await elasticSearch.search({
+                    const response = await elasticsearch.search({
                         ...defaults.es(context),
                         body
                     });
