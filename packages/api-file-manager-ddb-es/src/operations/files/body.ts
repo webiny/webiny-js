@@ -164,7 +164,8 @@ const createElasticsearchQuery = (
          * Get the path but in the case of * (all fields, replace * with the field.
          * Custom path would return its own value anyways.
          */
-        const path = fieldPlugin.getPath().replace("*", field);
+        const path = fieldPlugin.getPath(field);
+        const basePath = fieldPlugin.getBasePath(field);
         /**
          * Transform the value for the search.
          */
@@ -177,7 +178,9 @@ const createElasticsearchQuery = (
         operatorPlugin.apply(query, {
             context,
             value,
-            path
+            path,
+            basePath: basePath,
+            keyword: fieldPlugin.keyword
         });
     }
 
@@ -232,7 +235,12 @@ export const createElasticsearchBody = (
             }
         },
         size: limit + 1,
-        search_after: searchAfter ? [searchAfter] : undefined,
+        /**
+         * Casting as any is required due to search_after is accepting an array of values.
+         * Which is correct in some cases. In our case, it is not.
+         * https://www.elastic.co/guide/en/elasticsearch/reference/7.13/paginate-search-results.html
+         */
+        search_after: searchAfter as any,
         sort: createSort({
             context,
             sort,
