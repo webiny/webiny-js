@@ -11,6 +11,7 @@ import chalk from "chalk";
 import { CliCommandScaffoldTemplate } from "@webiny/cli-plugin-scaffold/types";
 import findUp from "find-up";
 import execa from "execa";
+import link from "terminal-link";
 import {
     createScaffoldsIndexFile,
     updateScaffoldsIndexFile,
@@ -25,12 +26,17 @@ interface Input {
     showConfirmation?: boolean;
 }
 
+const SCAFFOLD_DOCS_LINK =
+    "https://www.webiny.com/docs/how-to-guides/webiny-cli/scaffolding/extend-graphql-api";
+
 export default (): CliCommandScaffoldTemplate<Input> => ({
     name: "cli-plugin-scaffold-graphql",
     type: "cli-plugin-scaffold-template",
     scaffold: {
         name: "Extend GraphQL API",
-        description: "Extends your GraphQL API with base CRUD queries and mutations.",
+        description:
+            "Extends your GraphQL API with new CRUD query and mutation operations." +
+            (link.isSupported ? "\n  " + link("Learn more.", SCAFFOLD_DOCS_LINK) : ""),
         questions: ({ context }) => {
             return [
                 {
@@ -245,7 +251,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             );
 
             console.log(
-                "- learn more about the created plugins and the scaffold itself at https://www.webiny.com/docs/how-to-guides/webiny-cli/scaffolding/extend-graphql-api"
+                `- learn more about the created plugins and the scaffold itself at ${SCAFFOLD_DOCS_LINK}`
             );
             console.log(
                 `- learn more about the ${chalk.green(

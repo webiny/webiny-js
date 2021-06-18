@@ -4,6 +4,7 @@ import {
 } from "@webiny/cli-plugin-scaffold/types";
 import githubActions from "./githubActions";
 import { CliPluginsScaffoldCi } from "./types";
+import link from "terminal-link";
 
 interface Input {
     provider: string;
@@ -21,14 +22,17 @@ const runHookCallback = async (hookName: string, args: CliCommandScaffoldCallabl
     }
 };
 
+const SCAFFOLD_DOCS_LINK = "https://www.webiny.com/docs/how-to-guides/webiny-cli/scaffolding/ci-cd";
+
 export default (): [CliCommandScaffoldTemplate<Input>, CliPluginsScaffoldCi<Input>] => [
     {
         name: "cli-plugin-scaffold-template-ci",
         type: "cli-plugin-scaffold-template",
         scaffold: {
-            name: "Set up a CI/CD Pipeline",
+            name: "Set up CI/CD",
             description:
-                "Sets up a CI/CD pipeline for your Webiny project using a\n  provider of your choice.",
+                "Sets up a CI/CD pipeline for your Webiny project using a\n  provider of your choice." +
+                (link.isSupported ? " " + link("Learn more.", SCAFFOLD_DOCS_LINK) : ""),
             questions: () => {
                 return [
                     {

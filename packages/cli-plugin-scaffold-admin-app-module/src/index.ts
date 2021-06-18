@@ -9,7 +9,7 @@ import loadJsonFile from "load-json-file";
 import { replaceInPath } from "replace-in-path";
 import chalk from "chalk";
 import findUp from "find-up";
-
+import link from "terminal-link";
 import {
     createScaffoldsIndexFile,
     updateScaffoldsIndexFile,
@@ -25,13 +25,17 @@ interface Input {
     showConfirmation?: boolean;
 }
 
+const SCAFFOLD_DOCS_LINK =
+    "https://www.webiny.com/docs/how-to-guides/webiny-cli/scaffolding/extend-admin-area";
+
 export default (): CliCommandScaffoldTemplate<Input> => ({
     name: "cli-plugin-scaffold-template-graphql-app",
     type: "cli-plugin-scaffold-template",
     scaffold: {
         name: "Extend Admin Area",
         description:
-            "Creates a new Admin Area module and extends your GraphQL API\n  with base CRUD queries and mutations.",
+            "Creates a new Admin Area module and extends your GraphQL API with\n  supporting CRUD query and mutation operations." +
+            (link.isSupported ? " " + link("Learn more.", SCAFFOLD_DOCS_LINK) : ""),
         questions: ({ context }) => {
             return [
                 {
@@ -320,7 +324,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             );
 
             console.log(
-                "- learn more about the created plugins and the scaffold itself at https://www.webiny.com/docs/how-to-guides/webiny-cli/scaffolding/extend-admin-area"
+                `- learn more about the created plugins and the scaffold itself at ${SCAFFOLD_DOCS_LINK}`
             );
             console.log(
                 `- learn more about the ${chalk.green(
