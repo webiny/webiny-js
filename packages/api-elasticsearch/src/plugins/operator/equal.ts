@@ -12,24 +12,15 @@ export class ElasticsearchQueryBuilderOperatorEqualPlugin extends ElasticsearchQ
         query: ElasticsearchBoolQueryConfig,
         params: ElasticsearchQueryBuilderArgsPlugin
     ): void {
-        const { value, path } = params;
+        const { value, path, basePath } = params;
         /**
-         * In case we are searching for a string, use keyword.
+         * In case we are searching for a string, use regular path.
+         * Otherwise use base path
          */
-        if (typeof value === "string") {
-            query.must.push({
-                term: {
-                    [`${path}.keyword`]: value
-                }
-            });
-            return;
-        }
-        /**
-         * And in other cases do not use keyword because it finds nothing.
-         */
+        const useBasePath = typeof value !== "string";
         query.must.push({
             term: {
-                [path]: value
+                [useBasePath ? basePath : path]: value
             }
         });
     }

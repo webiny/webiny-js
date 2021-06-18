@@ -48,13 +48,36 @@ export type ElasticsearchQueryOperator =
 export interface ElasticsearchQueryBuilderArgsPlugin<
     T extends ContextInterface = ContextInterface
 > {
+    /**
+     * A full path to the field. Including the ".keyword" if it is added.
+     */
     path: string;
+    /**
+     * A path to the field, plain.
+     */
+    basePath: string;
+    /**
+     * Value to apply.
+     */
     value: any;
+    /**
+     * Is path containing the ".keyword"
+     */
+    keyword: boolean;
+    /**
+     * Context we are working in.
+     */
     context: T;
 }
 
+/**
+ * Definition for the ElasticsearchQueryModifierPlugin parameters.
+ */
 export interface ElasticsearchQueryModifierPluginParams<
     T extends ContextInterface = ContextInterface
 > {
+    /**
+     * Context we are working in.
+     */
     context: T;
 }

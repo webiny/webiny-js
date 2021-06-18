@@ -11,7 +11,9 @@ describe("ElasticsearchQueryBuilderOperatorGreaterThanPlugin", () => {
         plugin.apply(query, {
             value: 100,
             path: "id",
-            context
+            basePath: "id",
+            context,
+            keyword: false
         });
 
         const expected: ElasticsearchBoolQueryConfig = {
@@ -37,14 +39,18 @@ describe("ElasticsearchQueryBuilderOperatorGreaterThanPlugin", () => {
         plugin.apply(query, {
             value: 100,
             path: "id",
-            context
+            basePath: "id",
+            context,
+            keyword: false
         });
 
         const from = new Date();
         plugin.apply(query, {
             value: from,
             path: "date",
-            context
+            basePath: "date",
+            context,
+            keyword: false
         });
 
         const expected: ElasticsearchBoolQueryConfig = {

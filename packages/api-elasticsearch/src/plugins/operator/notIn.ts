@@ -12,29 +12,19 @@ export class ElasticsearchQueryBuilderOperatorNotInPlugin extends ElasticsearchQ
         query: ElasticsearchBoolQueryConfig,
         params: ElasticsearchQueryBuilderArgsPlugin
     ): void {
-        const { value: values, path } = params;
+        const { value: values, path, basePath } = params;
         const isArray = Array.isArray(values);
         if (isArray === false || values.length === 0) {
             throw new Error(
-                `You cannot filter "${path}" with not_in and not send an array of values.`
+                `You cannot filter field path "${basePath}" with not_in and not send an array of values.`
             );
         }
 
-        // Only use ".keyword" if all of the provided values are strings.
-        for (const value of values) {
-            if (typeof value !== "string") {
-                query.must_not.push({
-                    terms: {
-                        [path]: values
-                    }
-                });
-                return;
-            }
-        }
+        const useBasePath = values.some(value => typeof value !== "string");
 
         query.must_not.push({
             terms: {
-                [`${path}.keyword`]: values
+                [useBasePath ? basePath : path]: values
             }
         });
     }

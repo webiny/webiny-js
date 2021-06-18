@@ -10,9 +10,11 @@ describe("ElasticsearchQueryBuilderOperatorNotInPlugin", () => {
         const query = createBlankQuery();
 
         plugin.apply(query, {
-            path: "name",
+            basePath: "name",
+            path: "name.keyword",
             value: ["John", "Doe", "P."],
-            context
+            context,
+            keyword: true
         });
         const expected: ElasticsearchBoolQueryConfig = {
             must_not: [
@@ -34,11 +36,15 @@ describe("ElasticsearchQueryBuilderOperatorNotInPlugin", () => {
 
         expect(() => {
             plugin.apply(query, {
-                path: "name",
+                basePath: "name",
+                path: "name.keyword",
                 value: "somethingString",
-                context
+                context,
+                keyword: true
             });
-        }).toThrow(`You cannot filter "name" with not_in and not send an array of values.`);
+        }).toThrow(
+            `You cannot filter field path "name" with not_in and not send an array of values.`
+        );
     });
 
     it("should throw an error when passing a object", () => {
@@ -46,12 +52,16 @@ describe("ElasticsearchQueryBuilderOperatorNotInPlugin", () => {
 
         expect(() => {
             plugin.apply(query, {
-                path: "name",
+                basePath: "name",
+                path: "name.keyword",
                 value: {
                     key: "value"
                 },
-                context
+                context,
+                keyword: true
             });
-        }).toThrow(`You cannot filter "name" with not_in and not send an array of values.`);
+        }).toThrow(
+            `You cannot filter field path "name" with not_in and not send an array of values.`
+        );
     });
 });

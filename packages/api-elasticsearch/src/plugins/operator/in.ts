@@ -12,7 +12,7 @@ export class ElasticsearchQueryBuilderOperatorInPlugin extends ElasticsearchQuer
         query: ElasticsearchBoolQueryConfig,
         params: ElasticsearchQueryBuilderArgsPlugin
     ): void {
-        const { value: values, path } = params;
+        const { value: values, path, basePath } = params;
         const isArray = Array.isArray(values);
         if (isArray === false || values.length === 0) {
             throw new Error(
@@ -20,21 +20,18 @@ export class ElasticsearchQueryBuilderOperatorInPlugin extends ElasticsearchQuer
             );
         }
 
+        let useBasePath = false;
         // Only use ".keyword" if all of the provided values are strings.
         for (const value of values) {
             if (typeof value !== "string") {
-                query.must.push({
-                    terms: {
-                        [path]: values
-                    }
-                });
-                return;
+                useBasePath = true;
+                break;
             }
         }
 
         query.must.push({
             terms: {
-                [`${path}.keyword`]: values
+                [useBasePath ? basePath : path]: values
             }
         });
     }

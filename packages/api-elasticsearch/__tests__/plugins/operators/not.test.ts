@@ -11,9 +11,11 @@ describe("ElasticsearchQueryBuilderOperatorNotPlugin", () => {
         const query = createBlankQuery();
 
         plugin.apply(query, {
-            path: "name",
+            path: "name.keyword",
+            basePath: "name",
             value: "John",
-            context
+            context,
+            keyword: true
         });
         const expected: ElasticsearchBoolQueryConfig = {
             must_not: [

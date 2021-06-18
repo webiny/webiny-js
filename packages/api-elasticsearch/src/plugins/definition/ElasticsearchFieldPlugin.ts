@@ -48,6 +48,7 @@ interface ElasticsearchFieldPluginParams {
 
 export class ElasticsearchFieldPlugin extends Plugin {
     public static readonly type = "elasticsearch.fieldDefinition";
+    public static readonly ALL = "*";
 
     private readonly _entity: string;
     private readonly _field: string;
@@ -112,9 +113,21 @@ export class ElasticsearchFieldPlugin extends Plugin {
     }
     /**
      * The default path generator. Extend in your own plugin if you want to add more options.
+     * Field parameter is here because there is a possibility that this is the ALL field plugin, so we need to know which field are we working on.
      */
-    public getPath(): string {
-        return `${this.path}${this.keyword ? ".keyword" : ""}`;
+    public getPath(field: string): string {
+        return `${this.getBasePath(field)}${this._keyword ? ".keyword" : ""}`;
+    }
+    /**
+     * @see getPath
+     *
+     * This is the default base path generator. Basically it replaces ALL with given field name.
+     */
+    public getBasePath(field: string): string {
+        if (this._path === (this.constructor as any).ALL) {
+            return field;
+        }
+        return this._path;
     }
     /**
      * The default transformer. Just returns the value by default.

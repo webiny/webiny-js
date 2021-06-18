@@ -53,7 +53,7 @@ export const createSort = (params: CreateSortParams): ElasticTsSortType => {
          * In case field plugin is the global one, change the * with actual field name.
          * Custom path methods will return their own values anyway so replacing * will not matter.
          */
-        const path = plugin.getPath().replace("*", field);
+        const path = plugin.getPath(field);
 
         acc[path] = plugin.getSortOptions(order);
 

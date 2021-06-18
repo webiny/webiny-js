@@ -11,8 +11,10 @@ describe("ElasticsearchQueryBuilderOperatorNotBetweenPlugin", () => {
 
         plugin.apply(query, {
             path: "id",
+            basePath: "id",
             value: [100, 200],
-            context
+            context,
+            keyword: false
         });
 
         const expected: ElasticsearchBoolQueryConfig = {

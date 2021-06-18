@@ -10,15 +10,19 @@ describe("ElasticsearchQueryBuilderOperatorEqualPlugin", () => {
         const query = createBlankQuery();
 
         plugin.apply(query, {
-            path: "name",
+            basePath: "name",
+            path: "name.keyword",
             value: "John",
-            context
+            context,
+            keyword: true
         });
 
         plugin.apply(query, {
-            path: "name",
+            basePath: "name",
+            path: "name.keyword",
             value: "Doe",
-            context
+            context,
+            keyword: true
         });
 
         const expected: ElasticsearchBoolQueryConfig = {

@@ -11,7 +11,9 @@ describe("ElasticsearchQueryBuilderOperatorBetweenPlugin", () => {
         plugin.apply(query, {
             value: [100, 110],
             path: "id",
-            context
+            basePath: "id",
+            context,
+            keyword: false
         });
 
         const expected: ElasticsearchBoolQueryConfig = {
@@ -38,7 +40,9 @@ describe("ElasticsearchQueryBuilderOperatorBetweenPlugin", () => {
         plugin.apply(query, {
             value: [100, 110],
             path: "id",
-            context
+            basePath: "id",
+            context,
+            keyword: false
         });
 
         const from = new Date();
@@ -47,7 +51,9 @@ describe("ElasticsearchQueryBuilderOperatorBetweenPlugin", () => {
         plugin.apply(query, {
             value: [from, to],
             path: "date",
-            context
+            basePath: "date",
+            context,
+            keyword: false
         });
 
         const expected: ElasticsearchBoolQueryConfig = {
@@ -83,9 +89,13 @@ describe("ElasticsearchQueryBuilderOperatorBetweenPlugin", () => {
             plugin.apply(query, {
                 value: "notAnArray",
                 path: "id",
-                context
+                basePath: "id",
+                context,
+                keyword: false
             });
-        }).toThrow(`You cannot filter "id" with between query and not send an array of values.`);
+        }).toThrow(
+            `You cannot filter field path "id" with between query and not send an array of values.`
+        );
     });
 
     const values = [[[1, 2, 3]], [[1]]];
@@ -99,9 +109,11 @@ describe("ElasticsearchQueryBuilderOperatorBetweenPlugin", () => {
                 plugin.apply(query, {
                     value,
                     path: "id",
-                    context
+                    basePath: "id",
+                    context,
+                    keyword: false
                 });
-            }).toThrow(`You must pass 2 values in the array for field "id" filtering.`);
+            }).toThrow(`You must pass 2 values in the array for field path "id" filtering.`);
         }
     );
 });

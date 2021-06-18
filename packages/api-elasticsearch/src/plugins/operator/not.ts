@@ -12,24 +12,12 @@ export class ElasticsearchQueryBuilderOperatorNotPlugin extends ElasticsearchQue
         query: ElasticsearchBoolQueryConfig,
         params: ElasticsearchQueryBuilderArgsPlugin
     ): void {
-        const { value, path } = params;
-        /**
-         * In case we are searching for a string, use keyword.
-         */
-        if (typeof value === "string") {
-            query.must_not.push({
-                term: {
-                    [`${path}.keyword`]: value
-                }
-            });
-            return;
-        }
-        /**
-         * And in other cases do not use keyword because it finds nothing.
-         */
+        const { value, path, basePath } = params;
+
+        const useBasePath = typeof value !== "string";
         query.must_not.push({
             term: {
-                [`${path}`]: value
+                [useBasePath ? basePath : path]: value
             }
         });
     }

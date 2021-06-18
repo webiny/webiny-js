@@ -13,11 +13,11 @@ export class ElasticsearchQueryBuilderOperatorContainsPlugin extends Elasticsear
         query: ElasticsearchBoolQueryConfig,
         params: ElasticsearchQueryBuilderArgsPlugin
     ): void {
-        const { value, path } = params;
+        const { value, basePath } = params;
         query.must.push({
             query_string: {
                 allow_leading_wildcard: true,
-                fields: [path],
+                fields: [basePath],
                 query: normalizeValue(value),
                 default_operator: "and"
             }

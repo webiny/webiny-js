@@ -12,10 +12,10 @@ export class ElasticsearchQueryBuilderOperatorGreaterThanPlugin extends Elastics
         query: ElasticsearchBoolQueryConfig,
         params: ElasticsearchQueryBuilderArgsPlugin
     ): void {
-        const { value, path } = params;
+        const { value, basePath } = params;
         query.must.push({
             range: {
-                [path]: {
+                [basePath]: {
                     gt: value
                 }
             }
