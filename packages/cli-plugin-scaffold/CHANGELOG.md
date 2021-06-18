@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.9.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.8.0...v5.9.0-beta.0) (2021-06-18)
+
+
+### Bug Fixes
+
+* check if imports exist first ([4661cde](https://github.com/webiny/webiny-js/commit/4661cdec87cfaac6aeedd833d88cf2a230f713b3))
+* improve messaging and visual feedback ([8d5f5aa](https://github.com/webiny/webiny-js/commit/8d5f5aa71e2f7859cce7a86adfe89383e3bab359))
+* improve ts-morph code ([e58b852](https://github.com/webiny/webiny-js/commit/e58b8522b2698e461b480440754baa23065e9e91))
+* unify chalk version ([56e2f73](https://github.com/webiny/webiny-js/commit/56e2f73152ebff0d2501f4d51e4e8f82a5ba15b5))
+* update dependencies ([485deaa](https://github.com/webiny/webiny-js/commit/485deaaf6f16e381a31e6127cb0ed7632404f995))
+* update dependencies ([c99e57f](https://github.com/webiny/webiny-js/commit/c99e57fa6eb7d86fbc0627478599b5cabd95b433))
+* use newly added `CliContext` type ([92a0284](https://github.com/webiny/webiny-js/commit/92a02844db44bb8dc10f87060cf41a4c187a9f54))
+* visually improve scaffolds list ([919346e](https://github.com/webiny/webiny-js/commit/919346ea924488b7dad602dcbf909a16f218906e))
+
+
+### Features
+
+* create formatCode utility function ([43980f4](https://github.com/webiny/webiny-js/commit/43980f48f15f4b8e4a74e0c4fb06e2fe7ac8256e))
+* create updateScaffoldsIndexFile utility function ([b214c02](https://github.com/webiny/webiny-js/commit/b214c022d6210d732a55cf017a81776152d027ac))
+
+
+
+
+
 # [5.8.0](https://github.com/webiny/webiny-js/compare/v5.8.0-beta.1...v5.8.0) (2021-06-07)
 
 **Note:** Version bump only for package @webiny/cli-plugin-scaffold
