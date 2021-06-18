@@ -129,6 +129,7 @@ story.add(
                             {...generalOptionsAndCallbacks}
                             data={dataProp}
                             meta={metaProp}
+                            // @ts-ignore
                             sorters={sortersProp.list}
                         >
                             {({ data }) => (

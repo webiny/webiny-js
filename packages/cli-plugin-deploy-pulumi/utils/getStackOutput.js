@@ -2,10 +2,10 @@ const execa = require("execa");
 const mapStackOutput = require("./mapStackOutput");
 const { getProject } = require("@webiny/cli/utils");
 
-const getOutputJson = async ({ folder, env, cwd }) => {
+const getOutputJson = ({ folder, env, cwd }) => {
     const project = getProject();
     try {
-        const { stdout } = await execa(
+        const { stdout } = execa.sync(
             "yarn",
             ["webiny", "output", folder, "--env", env, "--json", "--no-debug"].filter(Boolean),
             {
@@ -21,7 +21,7 @@ const getOutputJson = async ({ folder, env, cwd }) => {
     }
 };
 
-module.exports = async (folderOrArgs, env, map) => {
+module.exports = (folderOrArgs, env, map) => {
     if (!folderOrArgs) {
         throw new Error("Missing initial argument.");
     }
@@ -46,7 +46,7 @@ module.exports = async (folderOrArgs, env, map) => {
         throw new Error(`Please specify environment, for example "dev".`);
     }
 
-    const output = await getOutputJson(args);
+    const output = getOutputJson(args);
     if (!output) {
         return output;
     }

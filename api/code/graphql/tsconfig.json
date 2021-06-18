@@ -62,6 +62,11 @@
   ],
   "compilerOptions": {
     "paths": {
+      "~/*": ["./src/*"],
+      "@webiny/api-i18n/*": ["../../../packages/api-i18n/src/*"],
+      "@webiny/api-i18n": ["../../../packages/api-i18n/src"],
+      "@webiny/api-i18n-content/*": ["../../../packages/api-i18n-content/src/*"],
+      "@webiny/api-i18n-content": ["../../../packages/api-i18n-content/src"],
       "@webiny/handler-aws/*": ["../../../packages/handler-aws/src/*"],
       "@webiny/handler-aws": ["../../../packages/handler-aws/src"],
       "@webiny/handler-graphql/*": ["../../../packages/handler-graphql/src/*"],
