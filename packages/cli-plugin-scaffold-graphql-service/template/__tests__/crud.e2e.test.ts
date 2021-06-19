@@ -1,9 +1,9 @@
 import {
-    GET_BOOK,
-    CREATE_BOOK,
-    DELETE_BOOK,
-    LIST_BOOKS,
-    UPDATE_BOOK
+    GET_TARGET_DATA_MODEL,
+    CREATE_TARGET_DATA_MODEL,
+    DELETE_TARGET_DATA_MODEL,
+    LIST_TARGET_DATA_MODELS,
+    UPDATE_TARGET_DATA_MODEL
 } from "./graphql/targetDataModels";
 import { request } from "graphql-request";
 
@@ -26,7 +26,7 @@ describe("TargetDataModels CRUD tests (end-to-end)", () => {
         for (let i = 0; i < 3; i++) {
             testTargetDataModels.push(
                 await query({
-                    query: CREATE_BOOK,
+                    query: CREATE_TARGET_DATA_MODEL,
                     variables: {
                         data: {
                             title: `TargetDataModel ${i}`,
@@ -41,7 +41,7 @@ describe("TargetDataModels CRUD tests (end-to-end)", () => {
     afterEach(async () => {
         for (let i = 0; i < 3; i++) {
             await query({
-                query: DELETE_BOOK,
+                query: DELETE_TARGET_DATA_MODEL,
                 variables: {
                     id: testTargetDataModels[i].id
                 }
@@ -55,7 +55,7 @@ describe("TargetDataModels CRUD tests (end-to-end)", () => {
         const [targetDataModel0, targetDataModel1, targetDataModel2] = testTargetDataModels;
 
         await query({
-            query: LIST_BOOKS,
+            query: LIST_TARGET_DATA_MODELS,
             variables: { limit: 3 }
         }).then(response =>
             expect(response.targetDataModels.listTargetDataModels).toMatchObject({
@@ -68,14 +68,14 @@ describe("TargetDataModels CRUD tests (end-to-end)", () => {
 
         // 2. Delete targetDataModel 1.
         await query({
-            query: DELETE_BOOK,
+            query: DELETE_TARGET_DATA_MODEL,
             variables: {
                 id: targetDataModel1.id
             }
         });
 
         await query({
-            query: LIST_BOOKS,
+            query: LIST_TARGET_DATA_MODELS,
             variables: {
                 limit: 2
             }
@@ -90,7 +90,7 @@ describe("TargetDataModels CRUD tests (end-to-end)", () => {
 
         // 3. Update targetDataModel 0.
         await query({
-            query: UPDATE_BOOK,
+            query: UPDATE_TARGET_DATA_MODEL,
             variables: {
                 id: targetDataModel0.id,
                 data: {
@@ -108,7 +108,7 @@ describe("TargetDataModels CRUD tests (end-to-end)", () => {
 
         // 4. Get targetDataModel 0 after the update.
         await query({
-            query: GET_BOOK,
+            query: GET_TARGET_DATA_MODEL,
             variables: {
                 id: targetDataModel0.id
             }
