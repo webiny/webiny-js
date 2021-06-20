@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.9.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.0...v5.9.0-beta.1) (2021-06-20)
+
+
+### Bug Fixes
+
+* catch thrown errors ([ee87967](https://github.com/webiny/webiny-js/commit/ee87967dcacdd41246ed9ec117a6b48996f87e01))
+* correct variable name replacement ([4a3f54c](https://github.com/webiny/webiny-js/commit/4a3f54cf54ad0e368c28253ac7f5f3996bf89435))
+* remove hard-coded "book" word ([fe15fc8](https://github.com/webiny/webiny-js/commit/fe15fc8dd514de615402e4077fec9953be03afbc))
+
+
+
+
+
 # [5.9.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.8.0...v5.9.0-beta.0) (2021-06-18)
 
 
