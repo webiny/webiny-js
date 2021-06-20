@@ -13,11 +13,12 @@ const TEST_TYPE = process.env.TEST_TYPE;
 const DEPLOY_ENVIRONMENT = "dev";
 
 if (TEST_TYPE !== "unit") {
-    log.info(`Retrieving ${log.info.hl("API")} project application\'s stack output...`);
+    log.info(`${log.info.hl('api/code/graphql')}: Assigning environment variables...`);
     const stackOutput = getStackOutput({ folder: "api", env: DEPLOY_ENVIRONMENT });
 
     if (stackOutput) {
-        const assign = {
+        // Assign received values as environment variables.
+        Object.assign(process.env, {
             // We assign `region`, `dynamoDbTable`, and `apiUrl` as AWS_REGION, DB_TABLE, and API_URL
             // environment variables. If needed, you can export additional values from the mentioned
             // `api/pulumi/dev/index.ts` file and assign them here.
@@ -27,21 +28,12 @@ if (TEST_TYPE !== "unit") {
 
             // Can be of use while writing tests, for example to distinguish test data from non-test data.
             TEST_RUN_ID: new Date().getTime()
-        };
-
-        // Assign received values as environment variables.
-        Object.assign(process.env, assign);
-        log.success("The following environments variables were assigned:");
-        console.log(log.success.hl(JSON.stringify(assign, null, 2)));
+        });
+        log.success("Environment variables successfully assigned.");
     } else {
-        log.warning(
-            `Could not read ${log.warning.hl(
-                "API"
-            )} project application's stack output (${log.warning.hl(
-                DEPLOY_ENVIRONMENT
-            )} environment). Maybe you didn't deploy it?`
-        );
+        log.warning(`Could not assign environment variables.`);
     }
+    console.log();
 }
 
 // Finally, export Jest config to be used while tests are being run.
