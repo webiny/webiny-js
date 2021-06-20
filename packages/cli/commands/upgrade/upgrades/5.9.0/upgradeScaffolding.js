@@ -115,6 +115,16 @@ const updateJestConfigBase = jestConfigBasePath => {
 
         info(`Updating ${info.hl(jestConfigBasePath)}...`);
         jestConfigBase = jestConfigBase.replace(
+            `const name = basename(path);`,
+            "const name = basename(path);\n" +
+                `    // Enables us to run tests of only a specific type (for example "integration" or "e2e").
+    let type = "";
+    if (process.env.TEST_TYPE) {
+        type = \`.${process.env.TEST_TYPE}\`;
+    }`
+        );
+
+        jestConfigBase = jestConfigBase.replace(
             "testMatch: [`${path}/__tests__/**/*.test.[jt]s?(x)`],",
             "testMatch: [`${path}/**/__tests__/**/*${type}.test.[jt]s?(x)`],"
         );
