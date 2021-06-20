@@ -31,6 +31,8 @@ const upgradeScaffolding = async (context, targetVersion) => {
     addCliPluginDeployPulumiToDevDeps(gqlPath, targetVersion);
     addCliPluginDeployPulumiToDevDeps(cmsPath, targetVersion);
 
+    addCrossEnvToRootDevDeps(context.project.root);
+
     // Create new scaffolds folder and index.ts file.
     createScaffoldsFolder(path.join(gqlPath, "src", "plugins", "scaffolds"));
     createScaffoldsFolder(path.join(cmsPath, "src", "plugins", "scaffolds"));
@@ -64,6 +66,29 @@ const addCliPluginDeployPulumiToDevDeps = (appPath, targetVersion) => {
         info(`Adding ${info.hl(name)} to ${info.hl(packageJsonPath)}...`);
         addPackagesToDevDependencies(appPath, {
             "@webiny/cli-plugin-deploy-pulumi": `^${targetVersion}`
+        });
+    } catch (e) {
+        error(`Failed adding ${info.hl(name)} to ${info.hl(packageJsonPath)}:`);
+        console.log(e);
+    }
+};
+
+/**
+ * Add `"cross-env": "^7.0.3"` to root package.json.
+ * @param projectRootPath
+ */
+const addCrossEnvToRootDevDeps = projectRootPath => {
+    const { info, error } = log;
+
+    const name = "cross-env";
+    const targetVersion = "^7.0.3";
+
+    const packageJsonPath = path.join(projectRootPath, "package.json");
+
+    try {
+        info(`Adding ${info.hl(name)} to ${info.hl(packageJsonPath)}...`);
+        addPackagesToDevDependencies(projectRootPath, {
+            [name]: [targetVersion]
         });
     } catch (e) {
         error(`Failed adding ${info.hl(name)} to ${info.hl(packageJsonPath)}:`);
