@@ -13,7 +13,7 @@ const TEST_TYPE = process.env.TEST_TYPE;
 const DEPLOY_ENVIRONMENT = "dev";
 
 if (TEST_TYPE !== "unit") {
-    log.info(`${log.info.hl('api/code/headlessCMS')}: Assigning environment variables...`);
+    log.info(`${log.info.hl("api/code/headlessCMS")}: Assigning environment variables...`);
     const stackOutput = getStackOutput({ folder: "api", env: DEPLOY_ENVIRONMENT });
 
     if (stackOutput) {
