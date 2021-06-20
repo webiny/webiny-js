@@ -11,6 +11,7 @@ const {
 } = require("./upgradeSecurity");
 
 const { upgradeTelemetry } = require("./upgradeTelemetry");
+const { upgradeScaffolding } = require("./upgradeScaffolding");
 
 const targetVersion = "5.9.0";
 
@@ -27,7 +28,6 @@ module.exports = {
      * @returns {Promise<boolean>}
      */
     async canUpgrade(options, context) {
-        return true;
         if (context.version === targetVersion) {
             return true;
         }
@@ -35,6 +35,7 @@ module.exports = {
             `Upgrade must be on Webiny CLI version "${targetVersion}". Current CLI version is "${context.version}".`
         );
     },
+
     /**
      * @param options {CliUpgradePluginOptions}
      * @param context {CliContext}
@@ -106,6 +107,9 @@ module.exports = {
 
         context.info("Writing changes...");
         await upgrade.save();
+
+        // Perform scaffolding and DX related upgrades.
+        await upgradeScaffolding(context, targetVersion);
 
         try {
             info("Running prettier...");

@@ -1,8 +1,25 @@
 /**
  * Rename file to types.ts when switching the package to Typescript.
  */
-import {Plugin} from "@webiny/plugins/types";
-import {ContextInterface} from "@webiny/handler/types";
+
+/**
+ * A simplified plugins container interface, used specifically within the Webiny CLI.
+ * Not in relation with "@webiny/plugins" package.
+ */
+export interface PluginsContainer {
+    byType<T extends Plugin>(type: T["type"]): T[];
+    byName<T extends Plugin>(name: T["name"]): T;
+}
+
+/**
+ * A simplified plugin interface, used specifically within the Webiny CLI.
+ * Not in relation with "@webiny/plugins" package.
+ */
+export interface Plugin<T = Record<string, any>> {
+    type: string;
+    name?: string;
+    [key: string]: any;
+}
 
 interface Project {
     /**
@@ -31,7 +48,11 @@ interface Log {
 /**
  * Interface representing the CLI Context.
  */
-export interface CliContext extends ContextInterface {
+export interface CliContext {
+    /**
+     * All registered plugins.
+     */
+    plugins: PluginsContainer;
     /**
      * All the environment variables.
      */

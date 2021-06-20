@@ -1,5 +1,5 @@
 {
-  "name": "api-page-builder-flush",
+  "name": "api-prerendering-service-flush",
   "version": "0.1.0",
   "scripts": {
     "build": "yarn webiny run build",

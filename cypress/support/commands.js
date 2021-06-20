@@ -25,6 +25,9 @@ import "./security/securityDeleteGroup";
 import "./security/securityReadApiKey";
 import "./security/securityCreateApiKey";
 import "./security/securityDeleteApiKey";
+import "./fileManager/fmListFiles";
+import "./fileManager/fmDeleteFile";
+import "./fileManager/fmListTags";
 
 Cypress.Commands.overwrite("visit", (orig, url, options) => {
     return orig(url, { ...options, failOnStatusCode: false });

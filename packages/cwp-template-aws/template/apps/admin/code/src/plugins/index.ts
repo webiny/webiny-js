@@ -13,6 +13,9 @@ import formBuilderPlugins from "./formBuilder";
 import headlessCmsPlugins from "./headlessCms";
 import theme from "theme";
 
+// Imports plugins created via scaffolding utilities.
+import scaffoldsPlugins from "./scaffolds";
+
 plugins.register([
     /**
      * Base app plugins (files, images).
@@ -61,7 +64,11 @@ plugins.register([
     /**
      * App theme controls page builder and form builder layouts, styles, etc.
      */
-    theme()
+    theme(),
+    /**
+     * Plugins created via scaffolding utilities.
+     */
+    scaffoldsPlugins()
 ]);
 
 /**
