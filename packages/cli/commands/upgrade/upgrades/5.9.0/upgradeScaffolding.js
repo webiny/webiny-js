@@ -74,21 +74,21 @@ const addCliPluginDeployPulumiToDevDeps = (appPath, targetVersion) => {
 };
 
 /**
- * Add `"cross-env": "^7.0.3"` to root package.json.
+ * Add `"cross-env": "^5.0.2"` to root package.json.
  * @param projectRootPath
  */
 const addCrossEnvToRootDevDeps = projectRootPath => {
     const { info, error } = log;
 
     const name = "cross-env";
-    const targetVersion = "^7.0.3";
+    const targetVersion = "^5.0.2";
 
     const packageJsonPath = path.join(projectRootPath, "package.json");
 
     try {
         info(`Adding ${info.hl(name)} to ${info.hl(packageJsonPath)}...`);
         addPackagesToDevDependencies(projectRootPath, {
-            [name]: [targetVersion]
+            [name]: targetVersion
         });
     } catch (e) {
         error(`Failed adding ${info.hl(name)} to ${info.hl(packageJsonPath)}:`);
