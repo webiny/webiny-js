@@ -26,6 +26,7 @@
     "js-base64": "^3.6.0",
     "octokit": "^1.0.4",
     "open": "^8.0.6",
+    "terminal-link": "^2.1.1",
     "validate-npm-package-name": "^3.0.0"
   },
   "devDependencies": {

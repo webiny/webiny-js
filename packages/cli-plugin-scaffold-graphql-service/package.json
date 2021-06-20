@@ -18,17 +18,15 @@
   "dependencies": {
     "@webiny/cli": "^5.8.0",
     "@webiny/cli-plugin-scaffold": "^5.8.0",
-    "@webiny/error": "^5.8.0",
     "case": "^1.6.3",
     "chalk": "^4.1.0",
     "execa": "^5.0.0",
     "find-up": "^5.0.0",
-    "indent-string": "^4.0.0",
     "load-json-file": "^6.2.0",
     "ncp": "^2.0.0",
     "pluralize": "^8.0.0",
     "replace-in-path": "^1.0.4",
-    "validate-npm-package-name": "^3.0.0",
+    "terminal-link": "^2.1.1",
     "write-json-file": "^4.3.0"
   },
   "devDependencies": {

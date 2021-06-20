@@ -14,8 +14,8 @@ export default {
                     import("@webiny/api-page-builder/cli"),
                     import("@webiny/cwp-template-aws/cli"),
                     import("@webiny/cli-plugin-scaffold"),
-                    import("@webiny/cli-plugin-scaffold-graphql-service"),
                     import("@webiny/cli-plugin-scaffold-admin-app-module"),
+                    import("@webiny/cli-plugin-scaffold-graphql-service"),
                     import("@webiny/cli-plugin-scaffold-react-component"),
                     import("@webiny/cli-plugin-scaffold-ci")
                 ]);

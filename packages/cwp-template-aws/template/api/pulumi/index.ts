@@ -1,13 +1,15 @@
 import { tagResources } from "@webiny/cli-plugin-deploy-pulumi/utils";
 
-// By default, we only deploy "prod" stack when the WEBINY_ENV is equal to "prod". But do note that it's
-// recommended to we deploy both application code and cloud infrastructure resources into staging environments
-// as well. For cost reasons, by default, this is disabled, but feel free to add "staging" if needed.
+// By default, we only deploy "prod" stack when the WEBINY_ENV environment variable is equal to "prod".
+// But do note that it's recommended the same application code and cloud infrastructure resources are
+// deployed into staging environments too (these should be as equal to the prod environment as possible).
+// For cost reasons, by default this is disabled, but feel free to uncomment the "staging" environment.
 // https://www.webiny.com/docs/key-topics/ci-cd/environments/staging-prod-deployments
 const PROD_STACK_ENVIRONMENTS = ["prod" /*"staging"*/];
 
 export = async () => {
-    // Add tags to all resources that support tagging.
+    // Add tags to all resources that support tagging. Read more about the default environment variables:
+    // https://www.webiny.com/docs/how-to-guides/development/environment-variables#webiny-environment-variables
     tagResources({
         WbyProjectName: process.env.WEBINY_PROJECT_NAME as string,
         WbyEnvironment: process.env.WEBINY_ENV as string

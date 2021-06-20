@@ -18,8 +18,8 @@ export default {
             cliPageBuilder(),
             cliAwsTemplate(),
             cliScaffold(),
-            cliScaffoldGraphql(),
             cliScaffoldAdminModule(),
+            cliScaffoldGraphql(),
             cliScaffoldReactComponent(),
             cliScaffoldCiCd()
         ]

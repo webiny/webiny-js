@@ -17,7 +17,7 @@ async function upgradeGraphQLIndex(file, filePath, { info, error }) {
             moduleSpecifier: importPath
         });
 
-        // Try fetching plugins from handler conig object
+        // Try fetching plugins from handler config object
         let plugins = file.getFirstDescendant(
             node => Node.isPropertyAssignment(node) && node.getName() === "plugins"
         );

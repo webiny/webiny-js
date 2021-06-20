@@ -1,5 +1,6 @@
 const upgrades = require("./upgrades");
 const { red } = require("chalk");
+const execa = require("execa");
 
 module.exports = [
     upgrades,
@@ -18,6 +19,29 @@ module.exports = [
                     });
                 },
                 async argv => {
+                    // Before doing any upgrading, there must not be any active changes in the current branch.
+                    let gitStatus = "";
+                    try {
+                        let { stdout } = execa.sync("git", ["status", "--porcelain"]);
+                        gitStatus = stdout.trim();
+                    } catch {}
+
+                    if (gitStatus) {
+                        console.error(
+                            red("This git repository has untracked files or uncommitted changes:") +
+                                "\n\n" +
+                                gitStatus
+                                    .split("\n")
+                                    .map(line => line.match(/ .*/g)[0].trim())
+                                    .join("\n") +
+                                "\n\n" +
+                                red(
+                                    "Remove untracked files, stash or commit any changes, and try again."
+                                )
+                        );
+                        process.exit(1);
+                    }
+
                     const plugin = context.plugins
                         .byType("cli-upgrade")
                         .find(plugin => plugin.version === argv.targetVersion);
