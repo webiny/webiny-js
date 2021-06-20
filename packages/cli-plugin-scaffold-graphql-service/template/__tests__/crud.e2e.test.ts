@@ -40,12 +40,17 @@ describe("TargetDataModels CRUD tests (end-to-end)", () => {
 
     afterEach(async () => {
         for (let i = 0; i < 3; i++) {
-            await query({
-                query: DELETE_TARGET_DATA_MODEL,
-                variables: {
-                    id: testTargetDataModels[i].id
-                }
-            });
+            try {
+                await query({
+                    query: DELETE_TARGET_DATA_MODEL,
+                    variables: {
+                        id: testTargetDataModels[i].id
+                    }
+                });
+            } catch {
+                // Some of the entries might've been deleted during runtime.
+                // We can ignore thrown errors.
+            }
         }
         testTargetDataModels = [];
     });
