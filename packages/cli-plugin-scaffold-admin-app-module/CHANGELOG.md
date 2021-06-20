@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.9.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.8.0...v5.9.0-beta.0) (2021-06-18)
+
+
+### Bug Fixes
+
+* add comments ([1c98679](https://github.com/webiny/webiny-js/commit/1c98679e7d6365969d175f71156cad6a284d9a94))
+* downgrade terminal-link version ([d88182c](https://github.com/webiny/webiny-js/commit/d88182ce1fd62e900262a4456d11b795b8c6f537))
+* format code ([6ca4e6e](https://github.com/webiny/webiny-js/commit/6ca4e6ee110a72b9437905f3ad5c1f7c3f1c733e))
+* improve description ([a1b1c03](https://github.com/webiny/webiny-js/commit/a1b1c0304a29ac80539a84756c03891f766f8ac5))
+* improve messaging and visual feedback ([8d5f5aa](https://github.com/webiny/webiny-js/commit/8d5f5aa71e2f7859cce7a86adfe89383e3bab359))
+* remove __types old file ([fe52c52](https://github.com/webiny/webiny-js/commit/fe52c5228634894ddc4999710640834f65bef1ec))
+* remove old files ([d741ea6](https://github.com/webiny/webiny-js/commit/d741ea6e00a5f48fcbb55ef8ecfeed4997218aaf))
+* update command ([4585da2](https://github.com/webiny/webiny-js/commit/4585da261dea9849a3126522aef4a10a47c4f273))
+* update dependencies ([fc8bae3](https://github.com/webiny/webiny-js/commit/fc8bae3ef74e7bdc89de0cc684d1c621abc7033b))
+* update dependencies ([485deaa](https://github.com/webiny/webiny-js/commit/485deaaf6f16e381a31e6127cb0ed7632404f995))
+* update next steps / useful links sections ([83b24a5](https://github.com/webiny/webiny-js/commit/83b24a57564e3d344df56091045bceb6f9bbd47f))
+* update template ([56b70fd](https://github.com/webiny/webiny-js/commit/56b70fda33a107ef3982486a3b75df0fe4e28a67))
+* update TS configs ([bd59190](https://github.com/webiny/webiny-js/commit/bd5919018234ad1799e5b6de3921870b0b3a9b8a))
+
+
+### Features
+
+* automatically update scaffolds index file ([193da0f](https://github.com/webiny/webiny-js/commit/193da0f313debee8753a2102a3b5d28d54b82bed))
+
+
+
+
+
 # [5.8.0](https://github.com/webiny/webiny-js/compare/v5.8.0-beta.1...v5.8.0) (2021-06-07)
 
 **Note:** Version bump only for package @webiny/cli-plugin-scaffold-admin-app-module

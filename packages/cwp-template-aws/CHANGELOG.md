@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.9.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.8.0...v5.9.0-beta.0) (2021-06-18)
+
+
+### Bug Fixes
+
+* add dynamoDbTable export ([0ab8217](https://github.com/webiny/webiny-js/commit/0ab8217d4519cd5f0aa071635ae49f77afed8c43))
+* add missing `ELASTIC_SEARCH_INDEX_PREFIX` env variable ([f74e48d](https://github.com/webiny/webiny-js/commit/f74e48d93b43162e93a2270cf9a34963734f03da))
+* add support for importing via "~" ([6abc66b](https://github.com/webiny/webiny-js/commit/6abc66bcd85b5da449040a38b3712ffa7e1d3d68))
+* check if stackOutput empty ([08ca161](https://github.com/webiny/webiny-js/commit/08ca1616abc68b04a754c40284ad8cdf5ca63345))
+* correct link ([7b929f7](https://github.com/webiny/webiny-js/commit/7b929f710d9ef086c30dca8568c95f376cf27000))
+* export `dynamoDbTable` ([0980e2c](https://github.com/webiny/webiny-js/commit/0980e2c98ffe25439552cbc4e932f787965af407))
+* format code ([6ca4e6e](https://github.com/webiny/webiny-js/commit/6ca4e6ee110a72b9437905f3ad5c1f7c3f1c733e))
+* remove "~" entry ([02fa8dd](https://github.com/webiny/webiny-js/commit/02fa8dd30ef49775362788a60eea6632ff041417))
+* reorder registration ([ca2eaf2](https://github.com/webiny/webiny-js/commit/ca2eaf2c8871c32a691ac85bf2ee385be7efaa3f))
+* **telemetry:** rename package and upgrade configs and env vars loading ([4791937](https://github.com/webiny/webiny-js/commit/4791937de3ec1431c82fca1dc2e91da9c7ac49d3))
+* correct package name ([afc5acf](https://github.com/webiny/webiny-js/commit/afc5acf20ef26054ebfe05791686c81a26b58df5))
+* remove `cache.restore(window.__APOLLO_STATE__);` (old code) ([112bd59](https://github.com/webiny/webiny-js/commit/112bd59263bf1b88aa98633178befec2099bd678))
+* update comments ([6f4c5c4](https://github.com/webiny/webiny-js/commit/6f4c5c43b2e2991cbd427fc402d58a878d12061a))
+* update tests configuration ([de5b421](https://github.com/webiny/webiny-js/commit/de5b421fa7b621467da6908b5209c709ad9c7d3a))
+
+
+### Features
+
+* add .babelrc and jest.config.js files ([89c1985](https://github.com/webiny/webiny-js/commit/89c19855e43f8105e766bba0604f4f7bf2ec7542))
+* add babelrc / jest.config.js ([185535e](https://github.com/webiny/webiny-js/commit/185535ec28c2abd620af9a32b7f981d6d9fe5cb6))
+* add scaffolds index file ([5e84825](https://github.com/webiny/webiny-js/commit/5e84825a0a76dab43afe3e78b41e78a1586f59bd))
+* add scaffolds index file ([321cef3](https://github.com/webiny/webiny-js/commit/321cef3da43757a2bec4f2b4df5d1880ff220fe1))
+
+
+
+
+
 # [5.8.0](https://github.com/webiny/webiny-js/compare/v5.8.0-beta.1...v5.8.0) (2021-06-07)
 
 **Note:** Version bump only for package @webiny/cwp-template-aws

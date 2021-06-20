@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.9.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.8.0...v5.9.0-beta.0) (2021-06-18)
+
+
+### Bug Fixes
+
+* ensure forward slashes used in "key" ([43cb0c5](https://github.com/webiny/webiny-js/commit/43cb0c5af4a771b3cbc4f78e935cbcc794a36bd6))
+* make getStackOutput sync ([beec7a5](https://github.com/webiny/webiny-js/commit/beec7a51529553b9368bd75f13ebfa3b39d5bea3))
+* unify chalk version ([56e2f73](https://github.com/webiny/webiny-js/commit/56e2f73152ebff0d2501f4d51e4e8f82a5ba15b5))
+* use regex to replace all occurrences of "\" ([74cbf7f](https://github.com/webiny/webiny-js/commit/74cbf7f54af6a83675b4184c1c8694a9b69f00ba))
+
+
+
+
+
 # [5.8.0](https://github.com/webiny/webiny-js/compare/v5.8.0-beta.1...v5.8.0) (2021-06-07)
 
 **Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi

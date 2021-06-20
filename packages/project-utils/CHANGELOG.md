@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.9.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.8.0...v5.9.0-beta.0) (2021-06-18)
+
+
+### Bug Fixes
+
+* unify chalk version ([56e2f73](https://github.com/webiny/webiny-js/commit/56e2f73152ebff0d2501f4d51e4e8f82a5ba15b5))
+* update dependencies ([485deaa](https://github.com/webiny/webiny-js/commit/485deaaf6f16e381a31e6127cb0ed7632404f995))
+* **project-utils:** improve error output ([6419cd1](https://github.com/webiny/webiny-js/commit/6419cd133764b5d35d9d059dbde41fd056a62f89))
+* **project-utils:** use / for package paths ([f1dfc42](https://github.com/webiny/webiny-js/commit/f1dfc427ef982dbca3a63179ed165b506a7d11e0))
+* **telemetry:** rename package and upgrade configs and env vars loading ([4791937](https://github.com/webiny/webiny-js/commit/4791937de3ec1431c82fca1dc2e91da9c7ac49d3))
+
+
+### Features
+
+* **project-utils:** enable minification on function builds ([036661a](https://github.com/webiny/webiny-js/commit/036661acaf764ffc1f91560ed30060aedeba2df8))
+
+
+
+
+
 # [5.8.0](https://github.com/webiny/webiny-js/compare/v5.8.0-beta.1...v5.8.0) (2021-06-07)
 
 **Note:** Version bump only for package @webiny/project-utils
