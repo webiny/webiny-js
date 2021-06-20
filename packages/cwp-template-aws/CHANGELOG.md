@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.9.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.1...v5.9.0-beta.2) (2021-06-20)
+
+
+### Bug Fixes
+
+* downgrade cross-env (use same as apps) ([f7c96f4](https://github.com/webiny/webiny-js/commit/f7c96f4a0dd1fe1ec5a14e141c7805d4e3bc7d7a))
+* simplify output ([116e6a5](https://github.com/webiny/webiny-js/commit/116e6a556c85c8e3440001b57867203419946ce7))
+
+
+
+
+
 # [5.9.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.0...v5.9.0-beta.1) (2021-06-20)
 
 

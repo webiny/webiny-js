@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.9.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.1...v5.9.0-beta.2) (2021-06-20)
+
+
+### Bug Fixes
+
+* add cross-env to root package.json ([6f8e00d](https://github.com/webiny/webiny-js/commit/6f8e00db92638b97a44acc05013594a0132dd9f7))
+* add missing type variable initialization ([00aa4cf](https://github.com/webiny/webiny-js/commit/00aa4cf2e5bf45f6282d04eb9e2acfec5eb1a5af))
+* check if identity exists before accessing props ([09b823d](https://github.com/webiny/webiny-js/commit/09b823dd9138069b1508e095886f8d984db1746d))
+* downgrade cross-env (use same as apps) ([f7c96f4](https://github.com/webiny/webiny-js/commit/f7c96f4a0dd1fe1ec5a14e141c7805d4e3bc7d7a))
+* simplify output ([116e6a5](https://github.com/webiny/webiny-js/commit/116e6a556c85c8e3440001b57867203419946ce7))
+* update template ([30664c2](https://github.com/webiny/webiny-js/commit/30664c20bd3a212c23cf361b26a36cebbf29d5dd))
+
+
+### Features
+
+* add output caching ([5ab95df](https://github.com/webiny/webiny-js/commit/5ab95df9ae350034d0fd7b15d029662977202c05))
+
+
+
+
+
 # [5.9.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.0...v5.9.0-beta.1) (2021-06-20)
 
 
