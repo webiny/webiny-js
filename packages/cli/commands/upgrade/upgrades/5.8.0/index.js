@@ -63,7 +63,7 @@ const plugin = {
         const headlessCmsIndexFilePath = `${headlessCmsPath}/src/index.ts`;
         const graphQlIndexFilePath = `${graphQLPath}/src/index.ts`;
         const packages = {
-            "@webiny/api-headless-cms-ddb-es": "^5.9.0-beta.0"
+            "@webiny/api-headless-cms-ddb-es": "^5.8.0"
         };
         /**
          * Headless CMS API upgrade
