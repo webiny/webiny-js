@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.9.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.1...v5.9.0-beta.2) (2021-06-20)
+
+
+### Features
+
+* add output caching ([5ab95df](https://github.com/webiny/webiny-js/commit/5ab95df9ae350034d0fd7b15d029662977202c05))
+
+
+
+
+
 # [5.9.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.0...v5.9.0-beta.1) (2021-06-20)
 
 **Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
