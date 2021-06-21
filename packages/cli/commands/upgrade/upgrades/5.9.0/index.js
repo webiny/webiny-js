@@ -114,9 +114,9 @@ module.exports = {
         try {
             info("Running prettier...");
             const config = context.resolve(".prettierrc.js");
-            const { stdout: prettierBin } = await execa("yarn bin prettier");
-            const source = files.map(f => path.resolve(process.cwd(), f)).join(" ");
-            await execa(`node ${prettierBin} --write --config ${config} ${source}`);
+            const { stdout: prettierBin } = await execa("yarn", ["bin", "prettier"]);
+            const source = files.map(f => path.resolve(process.cwd(), f));
+            await execa("node", [prettierBin, "--write", "--config", config, ...source]);
             info("Finished formatting files.");
         } catch (ex) {
             console.log(error.hl("Prettier failed."));
