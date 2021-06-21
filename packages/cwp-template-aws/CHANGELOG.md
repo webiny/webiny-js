@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.9.0](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.2...v5.9.0) (2021-06-21)
+
+
+### Bug Fixes
+
+* add missing config args ([67bc05a](https://github.com/webiny/webiny-js/commit/67bc05ab21bb0137bb902511e51f2c3c74bfb4ca))
+
+
+
+
+
 # [5.9.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.1...v5.9.0-beta.2) (2021-06-20)
 
 
