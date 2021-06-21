@@ -3,6 +3,76 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.9.0](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.2...v5.9.0) (2021-06-21)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold-graphql-service
+
+
+
+
+
+# [5.9.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.1...v5.9.0-beta.2) (2021-06-20)
+
+
+### Bug Fixes
+
+* check if identity exists before accessing props ([09b823d](https://github.com/webiny/webiny-js/commit/09b823dd9138069b1508e095886f8d984db1746d))
+
+
+
+
+
+# [5.9.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.0...v5.9.0-beta.1) (2021-06-20)
+
+
+### Bug Fixes
+
+* catch thrown errors ([ee87967](https://github.com/webiny/webiny-js/commit/ee87967dcacdd41246ed9ec117a6b48996f87e01))
+* correct variable name replacement ([4a3f54c](https://github.com/webiny/webiny-js/commit/4a3f54cf54ad0e368c28253ac7f5f3996bf89435))
+* remove hard-coded "book" word ([fe15fc8](https://github.com/webiny/webiny-js/commit/fe15fc8dd514de615402e4077fec9953be03afbc))
+
+
+
+
+
+# [5.9.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.8.0...v5.9.0-beta.0) (2021-06-18)
+
+
+### Bug Fixes
+
+* add missing replacement ([dcc3bfa](https://github.com/webiny/webiny-js/commit/dcc3bfa39ee34f6265e4378cda80fbdecaf611ef))
+* add note about mdbid ([0e5ecaf](https://github.com/webiny/webiny-js/commit/0e5ecaf16b2415276c9050285a5079cb8457d79f))
+* add note about webinyVersion ([1a74d72](https://github.com/webiny/webiny-js/commit/1a74d727cdc111dfbcbe23a4e2faef77659e026e))
+* downgrade terminal-link version ([d88182c](https://github.com/webiny/webiny-js/commit/d88182ce1fd62e900262a4456d11b795b8c6f537))
+* format code ([6ca4e6e](https://github.com/webiny/webiny-js/commit/6ca4e6ee110a72b9437905f3ad5c1f7c3f1c733e))
+* improve description ([a1b1c03](https://github.com/webiny/webiny-js/commit/a1b1c0304a29ac80539a84756c03891f766f8ac5))
+* improve messaging and visual feedback ([8d5f5aa](https://github.com/webiny/webiny-js/commit/8d5f5aa71e2f7859cce7a86adfe89383e3bab359))
+* improve messaging and visual feedback ([59a12b1](https://github.com/webiny/webiny-js/commit/59a12b1b565a129aba10eb14db21a65d01ff9df2))
+* remove mentions of Elasticsearch ([1f2e44d](https://github.com/webiny/webiny-js/commit/1f2e44dc5353a979f9e83a58a2a9ecb174a84e51))
+* remove redundant catch ([74f30aa](https://github.com/webiny/webiny-js/commit/74f30aaffd20b36b14efec2be49114eaf7af218f))
+* update command ([4585da2](https://github.com/webiny/webiny-js/commit/4585da261dea9849a3126522aef4a10a47c4f273))
+* update context ([f48c7d9](https://github.com/webiny/webiny-js/commit/f48c7d92331227f59b6b0527155ed66b1dc94e78))
+* update dependencies ([073e35a](https://github.com/webiny/webiny-js/commit/073e35a0e82bdbbc612867bbc0f5f27274494c1c))
+* update dependencies ([fc8bae3](https://github.com/webiny/webiny-js/commit/fc8bae3ef74e7bdc89de0cc684d1c621abc7033b))
+* update dependencies ([485deaa](https://github.com/webiny/webiny-js/commit/485deaaf6f16e381a31e6127cb0ed7632404f995))
+* update next steps / useful links sections ([83b24a5](https://github.com/webiny/webiny-js/commit/83b24a57564e3d344df56091045bceb6f9bbd47f))
+* update template ([af1e61f](https://github.com/webiny/webiny-js/commit/af1e61f1a62254399d30a344af7778164ecbfdba))
+* update template ([f50f913](https://github.com/webiny/webiny-js/commit/f50f913e148562542c21a10eec2cbf28391e05d4))
+* update template ([3098748](https://github.com/webiny/webiny-js/commit/30987480dccf32a79b61c9aa708921d5c8dc9ba5))
+* update template ([01bcb61](https://github.com/webiny/webiny-js/commit/01bcb61e301f5ab88586073a77b6fcae65e0c7ea))
+* update TS configs ([bd59190](https://github.com/webiny/webiny-js/commit/bd5919018234ad1799e5b6de3921870b0b3a9b8a))
+* use "~/index" ([b68451c](https://github.com/webiny/webiny-js/commit/b68451c6c645c677b2194fd7ede3a44ba584f21c))
+
+
+### Features
+
+* automatically update scaffolds index file ([193da0f](https://github.com/webiny/webiny-js/commit/193da0f313debee8753a2102a3b5d28d54b82bed))
+* create new GraphQL package template ([9fea030](https://github.com/webiny/webiny-js/commit/9fea0301dc47c2c180be78a4de7b86262c29a1d8))
+
+
+
+
+
 # [5.8.0](https://github.com/webiny/webiny-js/compare/v5.8.0-beta.1...v5.8.0) (2021-06-07)
 
 **Note:** Version bump only for package @webiny/cli-plugin-scaffold-graphql-service

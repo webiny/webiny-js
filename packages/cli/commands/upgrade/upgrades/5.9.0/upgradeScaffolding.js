@@ -31,6 +31,8 @@ const upgradeScaffolding = async (context, targetVersion) => {
     addCliPluginDeployPulumiToDevDeps(gqlPath, targetVersion);
     addCliPluginDeployPulumiToDevDeps(cmsPath, targetVersion);
 
+    addCrossEnvToRootDevDeps(context.project.root);
+
     // Create new scaffolds folder and index.ts file.
     createScaffoldsFolder(path.join(gqlPath, "src", "plugins", "scaffolds"));
     createScaffoldsFolder(path.join(cmsPath, "src", "plugins", "scaffolds"));
@@ -72,6 +74,29 @@ const addCliPluginDeployPulumiToDevDeps = (appPath, targetVersion) => {
 };
 
 /**
+ * Add `"cross-env": "^5.0.2"` to root package.json.
+ * @param projectRootPath
+ */
+const addCrossEnvToRootDevDeps = projectRootPath => {
+    const { info, error } = log;
+
+    const name = "cross-env";
+    const targetVersion = "^5.0.2";
+
+    const packageJsonPath = path.join(projectRootPath, "package.json");
+
+    try {
+        info(`Adding ${info.hl(name)} to ${info.hl(packageJsonPath)}...`);
+        addPackagesToDevDependencies(projectRootPath, {
+            [name]: targetVersion
+        });
+    } catch (e) {
+        error(`Failed adding ${info.hl(name)} to ${info.hl(packageJsonPath)}:`);
+        console.log(e);
+    }
+};
+
+/**
  * Edit jest.config.base.js - enable running tests from any folder by adding "**".
  * @param jestConfigBasePath
  */
@@ -89,6 +114,16 @@ const updateJestConfigBase = jestConfigBasePath => {
         }
 
         info(`Updating ${info.hl(jestConfigBasePath)}...`);
+        jestConfigBase = jestConfigBase.replace(
+            `const name = basename(path);`,
+            "const name = basename(path);\n" +
+                `    // Enables us to run tests of only a specific type (for example "integration" or "e2e").
+    let type = "";
+    if (process.env.TEST_TYPE) {
+        type = \`.${process.env.TEST_TYPE}\`;
+    }`
+        );
+
         jestConfigBase = jestConfigBase.replace(
             "testMatch: [`${path}/__tests__/**/*.test.[jt]s?(x)`],",
             "testMatch: [`${path}/**/__tests__/**/*${type}.test.[jt]s?(x)`],"
