@@ -45,7 +45,7 @@ const SORT_KEY = "A";
  * This is required due to sometimes file data sent is from the DynamoDB and we want to remove the unnecessary stuff.
  */
 const cleanStorageFile = (file: File & Record<string, any>): File => {
-    return lodashOmit(file, ["PK", "SK", "TYPE"]);
+    return lodashOmit(file, ["PK", "SK", "TYPE", "created", "modified", "entity"]);
 };
 
 export class FilesStorageOperations implements FileManagerFilesStorageOperations {
