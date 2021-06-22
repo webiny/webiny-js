@@ -103,6 +103,16 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                 error: FileError
             }
 
+            input FileWhereInput {
+                search: String
+                type: String
+                type_in: [String!]
+                tag: String
+                tags_in: [String!]
+                id_in: [ID!]
+                id: ID
+            }
+
             type FmQuery {
                 getFile(id: ID, where: JSON, sort: String): FileResponse
 
