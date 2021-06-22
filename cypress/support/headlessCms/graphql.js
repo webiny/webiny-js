@@ -112,3 +112,24 @@ export const LIST_CONTENT_MODEL_GROUPS = gql`
         }
     }
 `;
+
+export const LIST_BOOKS = gql`
+    query CmsListBooks {
+        listBooks {
+            data {
+                id
+                title
+                meta {
+                    locked
+                    status
+                }
+            }
+            meta {
+                totalCount
+            }
+            error {
+                ${ERROR_FIELDS}
+            }
+        }
+    }
+`;
