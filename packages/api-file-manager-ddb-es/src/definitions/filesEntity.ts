@@ -5,6 +5,7 @@ import { getExtraAttributes } from "@webiny/db-dynamodb/attributes";
 export default (params: { context: FileManagerContext; table: Table }): Entity<any> => {
     const { context, table } = params;
     const entityName = "Files";
+    const attributes = getExtraAttributes(context, entityName);
     return new Entity({
         name: entityName,
         table,
@@ -54,7 +55,7 @@ export default (params: { context: FileManagerContext; table: Table }): Entity<a
             webinyVersion: {
                 type: "string"
             },
-            ...getExtraAttributes(context, entityName)
+            ...attributes
         }
     });
 };

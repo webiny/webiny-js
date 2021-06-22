@@ -5,6 +5,7 @@ import { getExtraAttributes } from "@webiny/db-dynamodb/attributes";
 export default (params: { context: FileManagerContext; table: Table }): Entity<any> => {
     const { context, table } = params;
     const entityName = "FilesElasticsearch";
+    const attributes = getExtraAttributes(context, entityName);
     return new Entity({
         name: entityName,
         table,
@@ -21,7 +22,7 @@ export default (params: { context: FileManagerContext; table: Table }): Entity<a
             data: {
                 type: "map"
             },
-            ...getExtraAttributes(context, entityName)
+            ...attributes
         }
     });
 };
