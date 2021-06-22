@@ -1,6 +1,6 @@
 {
   "name": "@webiny/api-file-manager-ddb-es",
-  "version": "5.8.0",
+  "version": "5.9.0",
   "main": "index.js",
   "keywords": [
     "@webiny/api-file-manager",
