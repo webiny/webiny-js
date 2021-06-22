@@ -28,11 +28,11 @@ context("Headless CMS - Content Entry with Ref field", () => {
 
     before(() => {
         // Setup the stage
-        const newBookModel = uniqid("Book ");
-        const newAuthorModel = uniqid("Author ");
+        const newBookModel = "Book";
+        const newAuthorModel = "Author";
 
         cy.cmsCreateContentModelGroup({
-            data: { name: uniqid("Group-"), icon: "fas/star" }
+            data: { name: "Library", icon: "fas/star" }
         }).then(group => {
             createdContentModelGroup = group;
 
@@ -135,6 +135,22 @@ context("Headless CMS - Content Entry with Ref field", () => {
         // Loading should be completed
         cy.get(".react-spinner-material").should("not.exist");
         cy.findByText(/Successfully published revision/i).should("exist");
+
+        // Make sure that both "Books" are published
+        cy.waitUntil(
+            () =>
+                cy
+                    .cmsListBooks()
+                    .then(
+                        data =>
+                            data &&
+                            data.length === 2 &&
+                            data.every(item => item.meta.status === "published")
+                    ),
+            {
+                description: `Wait until "Books" are published`
+            }
+        );
 
         // Now we first create an author
         cy.visit(`/cms/content-entries/${authorModel.modelId}`);

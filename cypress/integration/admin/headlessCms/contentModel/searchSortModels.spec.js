@@ -8,39 +8,73 @@ context("Headless CMS - Search and Sort Content Models", () => {
     let contentModelGroup;
 
     before(() => {
+        // Create content model group
         cy.cmsCreateContentModelGroup({
             data: { name: uniqid("Testing-"), icon: "fas/star" }
         }).then(data => {
             contentModelGroup = data;
-            // Create content models
-            for (let i = 0; i < totalModels; i++) {
+            // Create first content model
+            cy.cmsCreateContentModel({
+                data: {
+                    name: `${newModel} 1`,
+                    modelId: `${newModel}-1`,
+                    group: contentModelGroup.id
+                }
+            }).then(data => {
+                models.push({ name: data.name, modelId: data.modelId });
+                // Create second content model
                 cy.cmsCreateContentModel({
                     data: {
-                        name: `${newModel} ${i}`,
-                        modelId: `${newModel}-${i}`,
+                        name: `${newModel} 2`,
+                        modelId: `${newModel}-2`,
                         group: contentModelGroup.id
                     }
-                }).then(data => models.push({ name: data.name, modelId: data.modelId }));
-            }
+                }).then(data => {
+                    models.push({ name: data.name, modelId: data.modelId });
+                });
+            });
         });
     });
 
     beforeEach(() => cy.login());
 
     after(() => {
-        const deleteModelPromises = [];
-        for (let i = 0; i < totalModels; i++) {
-            deleteModelPromises.push(
-                new Promise(resolve => {
-                    cy.cmsDeleteContentModel({
-                        modelId: models[i].modelId
-                    }).then(data => resolve(data));
-                })
-            );
-        }
+        const [firstModel, secondModel] = models;
+        // Delete content models
+        cy.waitUntil(
+            () =>
+                cy
+                    .cmsDeleteContentModel({
+                        modelId: firstModel.modelId
+                    })
+                    .then(data => data === true),
+
+            {
+                description: `wait until "ContentModel" one is deleted`
+            }
+        );
+
+        cy.waitUntil(
+            () =>
+                cy
+                    .cmsDeleteContentModel({
+                        modelId: secondModel.modelId
+                    })
+                    .then(data => data === true),
+
+            {
+                description: `wait until "ContentModel" two is deleted`
+            }
+        );
         // Delete content model group after all models has been deleted
-        Promise.all(deleteModelPromises).then(() =>
-            cy.cmsDeleteContentModelGroup({ id: contentModelGroup.id })
+        cy.waitUntil(
+            () =>
+                cy
+                    .cmsDeleteContentModelGroup({ id: contentModelGroup.id })
+                    .then(data => data === true),
+            {
+                description: `Wait until "ContentModelGroup" is deleted`
+            }
         );
     });
 

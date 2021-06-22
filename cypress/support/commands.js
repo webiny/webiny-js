@@ -17,6 +17,7 @@ import "./headlessCms/cmsDeleteContentModel";
 import "./headlessCms/cmsListContentModelGroup";
 import "./headlessCms/cmsCreateContentModelGroup";
 import "./headlessCms/cmsDeleteContentModelGroup";
+import "./headlessCms/cmsListBooks";
 import "./security/securityCreateUser";
 import "./security/securityDeleteUser";
 import "./security/securityReadGroup";
@@ -25,6 +26,9 @@ import "./security/securityDeleteGroup";
 import "./security/securityReadApiKey";
 import "./security/securityCreateApiKey";
 import "./security/securityDeleteApiKey";
+import "./fileManager/fmListFiles";
+import "./fileManager/fmDeleteFile";
+import "./fileManager/fmListTags";
 
 Cypress.Commands.overwrite("visit", (orig, url, options) => {
     return orig(url, { ...options, failOnStatusCode: false });
