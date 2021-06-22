@@ -1,13 +1,13 @@
 import { Plugin } from "@webiny/plugins";
 import WebinyError from "@webiny/error";
-import { DynamoDbAttributePluginParams } from "~/types";
+import { DynamoDbAttributePluginArgs, DynamoDbAttributePluginAttributeParams } from "~/types";
 const reservedFields = ["PK", "SK", "index", "data"];
 
-export class DynamoDbAttributePlugin extends Plugin {
-    public static readonly type: "db.dynamodb.attribute";
+export abstract class DynamoDbAttributePlugin extends Plugin {
+    public static readonly type = "db.dynamodb.attribute";
     private readonly _entity: string;
     private readonly _attribute: string;
-    private readonly _params: DynamoDbAttributePluginParams;
+    private readonly _params: DynamoDbAttributePluginAttributeParams;
 
     public get entity(): string {
         return this._entity;
@@ -16,33 +16,33 @@ export class DynamoDbAttributePlugin extends Plugin {
     public get attribute(): string {
         return this._attribute;
     }
-    /**
-     *
-     * @param entity Defines which entity is this attribute for.
-     * @param attribute Name of the attribute.
-     * @param params Definition params for the attribute.
-     */
-    public constructor(entity: string, attribute: string, params: DynamoDbAttributePluginParams) {
+
+    public constructor({ entity, attribute, params }: DynamoDbAttributePluginArgs) {
         super();
-        if (reservedFields.includes(attribute)) {
-            throw new WebinyError(
-                `Attribute name "${attribute}" is not allowed.`,
-                "ATTRIBUTE_NOT_ALLOWED",
-                {
-                    attribute,
-                    params
-                }
-            );
-        }
+
+        this.validateReserved(attribute);
 
         this._entity = entity;
         this._attribute = attribute;
         this._params = params;
     }
 
-    public getDefinition(): Record<string, DynamoDbAttributePluginParams> {
+    public getDefinition(): Record<string, DynamoDbAttributePluginAttributeParams> {
         return {
             [this.attribute]: this._params
         };
+    }
+
+    private validateReserved(attribute: string): void {
+        if (reservedFields.includes(attribute) === false) {
+            return;
+        }
+        throw new WebinyError(
+            `Attribute name "${attribute}" is not allowed.`,
+            "ATTRIBUTE_NOT_ALLOWED",
+            {
+                attribute
+            }
+        );
     }
 }
