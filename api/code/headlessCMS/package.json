@@ -6,23 +6,23 @@
     "watch": "yarn webiny run watch"
   },
   "dependencies": {
-    "@webiny/api-elasticsearch": "^5.8.0",
-    "@webiny/api-headless-cms": "^5.8.0",
-    "@webiny/api-headless-cms-ddb-es": "^5.8.0",
-    "@webiny/api-i18n": "^5.8.0",
-    "@webiny/api-i18n-content": "^5.8.0",
-    "@webiny/api-security": "^5.8.0",
-    "@webiny/api-security-admin-users": "^5.8.0",
-    "@webiny/api-security-cognito-authentication": "^5.8.0",
-    "@webiny/api-tenancy": "^5.8.0",
-    "@webiny/cli": "^5.8.0",
-    "@webiny/db-dynamodb": "^5.8.0",
-    "@webiny/handler-aws": "^5.8.0",
-    "@webiny/handler-db": "^5.8.0",
-    "@webiny/handler-logs": "^5.8.0",
-    "@webiny/project-utils": "^5.8.0"
+    "@webiny/api-elasticsearch": "^5.9.0",
+    "@webiny/api-headless-cms": "^5.9.0",
+    "@webiny/api-headless-cms-ddb-es": "^5.9.0",
+    "@webiny/api-i18n": "^5.9.0",
+    "@webiny/api-i18n-content": "^5.9.0",
+    "@webiny/api-security": "^5.9.0",
+    "@webiny/api-security-admin-users": "^5.9.0",
+    "@webiny/api-security-cognito-authentication": "^5.9.0",
+    "@webiny/api-tenancy": "^5.9.0",
+    "@webiny/cli": "^5.9.0",
+    "@webiny/db-dynamodb": "^5.9.0",
+    "@webiny/handler-aws": "^5.9.0",
+    "@webiny/handler-db": "^5.9.0",
+    "@webiny/handler-logs": "^5.9.0",
+    "@webiny/project-utils": "^5.9.0"
   },
   "devDependencies": {
-    "@webiny/cli-plugin-deploy-pulumi": "^5.8.0"
+    "@webiny/cli-plugin-deploy-pulumi": "^5.9.0"
   }
 }

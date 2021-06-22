@@ -2,7 +2,7 @@ name: Next Branch - Push
 
 on:
   push:
-    branches: [next]
+    branches: [test/v5/cypress-ci-cd]
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096

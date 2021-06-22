@@ -2,8 +2,14 @@ const execa = require("execa");
 const mapStackOutput = require("./mapStackOutput");
 const { getProject } = require("@webiny/cli/utils");
 
+const cache = {};
 const getOutputJson = ({ folder, env, cwd }) => {
     const project = getProject();
+
+    if (cache[folder + env]) {
+        return cache[folder + env];
+    }
+
     try {
         const { stdout } = execa.sync(
             "yarn",
@@ -15,7 +21,8 @@ const getOutputJson = ({ folder, env, cwd }) => {
 
         // Let's get the output after the first line break. Everything before is just yarn stuff.
         const extractedJSON = stdout.substring(stdout.indexOf("{"));
-        return JSON.parse(extractedJSON);
+        cache[folder + env] = JSON.parse(extractedJSON);
+        return cache[folder + env];
     } catch (e) {
         return null;
     }

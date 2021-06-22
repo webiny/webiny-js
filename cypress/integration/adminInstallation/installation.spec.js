@@ -12,7 +12,7 @@ context("Admin Installation", () => {
     it("should be able to complete the initial installation wizard", () => {
         // 1. Security installation.
         cy.visit(Cypress.env("ADMIN_URL"));
-        cy.findByText("Install Security").click();
+        cy.findByTestId("install-security-button").click();
         cy.findByLabelText("First Name").type(Cypress.env("DEFAULT_ADMIN_USER_FIRST_NAME"));
         cy.findByLabelText("Last Name").type(Cypress.env("DEFAULT_ADMIN_USER_LAST_NAME"));
         cy.findByLabelText("Email").type(Cypress.env("DEFAULT_ADMIN_USER_LAST_NAME"));
@@ -24,6 +24,7 @@ context("Admin Installation", () => {
             .clear()
             .type(Cypress.env("DEFAULT_ADMIN_USER_USERNAME"));
         cy.findByLabelText("Password").type(Cypress.env("DEFAULT_ADMIN_USER_PASSWORD"));
+
         cy.findByTestId("install-security-button").click();
 
         // 1.1. Log in with the newly created user.

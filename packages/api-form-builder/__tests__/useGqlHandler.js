@@ -50,7 +50,7 @@ const defaultTenant = { id: "root", name: "Root", parent: null };
 
 const until = async (execute, until, options = {}) => {
     const tries = options.tries ?? 5;
-    const wait = options.wait ?? 333;
+    const wait = options.wait ?? 1000;
 
     let result;
     let triesCount = 0;

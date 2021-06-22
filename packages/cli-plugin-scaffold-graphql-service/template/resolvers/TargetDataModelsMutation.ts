@@ -61,7 +61,7 @@ export default class TargetDataModelsMutationResolver extends TargetDataModelsRe
             description: data.description,
             createdOn: new Date().toISOString(),
             savedOn: new Date().toISOString(),
-            createdBy: {
+            createdBy: identity && {
                 id: identity.id,
                 type: identity.type,
                 displayName: identity.displayName

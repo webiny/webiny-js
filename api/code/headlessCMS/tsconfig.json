@@ -58,6 +58,7 @@
   ],
   "compilerOptions": {
     "paths": {
+      "~/*": ["./src/*"],
       "@webiny/handler-aws/*": ["../../../packages/handler-aws/src/*"],
       "@webiny/handler-aws": ["../../../packages/handler-aws/src"],
       "@webiny/api-security/*": ["../../../packages/api-security/src/*"],

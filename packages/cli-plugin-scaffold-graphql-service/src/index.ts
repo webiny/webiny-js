@@ -152,14 +152,11 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             // Replace generic "TargetDataModel" with received "dataModelName" argument.
             const codeReplacements = [
                 { find: "targetDataModels", replaceWith: Case.camel(dataModelName.plural) },
-                { find: "targetDataModel", replaceWith: Case.camel(dataModelName.singular) },
-                { find: "TargetDataModel", replaceWith: Case.pascal(dataModelName.singular) },
-                {
-                    find: "targetDataModelDataModels",
-                    replaceWith: Case.camel(dataModelName.plural)
-                },
                 { find: "TargetDataModels", replaceWith: Case.pascal(dataModelName.plural) },
                 { find: "TARGET_DATA_MODELS", replaceWith: Case.constant(dataModelName.plural) },
+
+                { find: "targetDataModel", replaceWith: Case.camel(dataModelName.singular) },
+                { find: "TargetDataModel", replaceWith: Case.pascal(dataModelName.singular) },
                 { find: "TARGET_DATA_MODEL", replaceWith: Case.constant(dataModelName.singular) }
             ];
 

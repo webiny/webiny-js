@@ -3,6 +3,48 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.9.0](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.2...v5.9.0) (2021-06-21)
+
+**Note:** Version bump only for package @webiny/api-security
+
+
+
+
+
+# [5.9.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.1...v5.9.0-beta.2) (2021-06-20)
+
+**Note:** Version bump only for package @webiny/api-security
+
+
+
+
+
+# [5.9.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.0...v5.9.0-beta.1) (2021-06-20)
+
+**Note:** Version bump only for package @webiny/api-security
+
+
+
+
+
+# [5.9.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.8.0...v5.9.0-beta.0) (2021-06-18)
+
+
+### Bug Fixes
+
+* **api-security:** add generic context parameter to plugin classes ([a131f98](https://github.com/webiny/webiny-js/commit/a131f980cb132c6369e417e4843410828bc38baf))
+* **api-security:** update return type ([228f388](https://github.com/webiny/webiny-js/commit/228f3884c7e67490617b5bbd4c17c5de0e968959))
+
+
+### Features
+
+* **api-security:** introduce AuthenticationPlugin and AuthorizationPlugin classes ([89184b8](https://github.com/webiny/webiny-js/commit/89184b8b7711d7414eb51f05bddbadbaf1b14700))
+* **api-tenancy:** introduce tenancy package ([5f4a472](https://github.com/webiny/webiny-js/commit/5f4a472c7e7ee4154550c815723e17bcd5257608))
+
+
+
+
+
 # [5.8.0](https://github.com/webiny/webiny-js/compare/v5.8.0-beta.1...v5.8.0) (2021-06-07)
 
 **Note:** Version bump only for package @webiny/api-security
