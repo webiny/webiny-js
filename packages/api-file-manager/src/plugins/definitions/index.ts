@@ -1,11 +1,5 @@
-import { InstallationPlugin } from "./InstallationPlugin";
-import { FilesStorageOperationsProviderPlugin } from "./FilesStorageOperationsProviderPlugin";
-import { SettingsStorageOperationsProviderPlugin } from "./SettingsStorageOperationsProviderPlugin";
-import { SystemStorageOperationsProviderPlugin } from "./SystemStorageOperationsProviderPlugin";
-
-export {
-    InstallationPlugin,
-    SettingsStorageOperationsProviderPlugin,
-    SystemStorageOperationsProviderPlugin,
-    FilesStorageOperationsProviderPlugin
-};
+export * from "./InstallationPlugin";
+export * from "./FilePlugin";
+export * from "./FilesStorageOperationsProviderPlugin";
+export * from "./SettingsStorageOperationsProviderPlugin";
+export * from "./SystemStorageOperationsProviderPlugin";

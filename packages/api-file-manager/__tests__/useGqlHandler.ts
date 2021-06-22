@@ -10,6 +10,7 @@ import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { SecurityIdentity } from "@webiny/api-security";
 import filesPlugins from "~/plugins";
+import { Plugin } from "@webiny/plugins";
 
 // Graphql
 import {
@@ -32,9 +33,11 @@ import { until } from "./helpers";
 type UseGqlHandlerParams = {
     permissions?: SecurityPermission[];
     identity?: SecurityIdentity;
+    plugins?: Plugin[];
 };
 
-export default ({ permissions, identity }: UseGqlHandlerParams) => {
+export default (params?: UseGqlHandlerParams) => {
+    const { permissions, identity, plugins = [] } = params;
     // @ts-ignore
     const storageOperationsPlugins = __getStorageOperationsPlugins();
     if (typeof storageOperationsPlugins !== "function") {
@@ -88,7 +91,11 @@ export default ({ permissions, identity }: UseGqlHandlerParams) => {
                     })
                 );
             }
-        }
+        },
+        /**
+         * To make sure plugins is not undefined.
+         */
+        plugins || []
     );
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.

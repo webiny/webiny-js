@@ -12,8 +12,9 @@ import {
 import createFileModel from "./utils/createFileModel";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
-import { FilesStorageOperationsProviderPlugin } from "~/plugins/definitions";
+import { FilesStorageOperationsProviderPlugin, FilePlugin } from "~/plugins/definitions";
 import WebinyError from "@webiny/error";
+import { runLifecycleEvent } from "~/plugins/crud/files/lifecycleEvents";
 
 const BATCH_CREATE_MAX_FILES = 20;
 
@@ -52,6 +53,8 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
     if (!context.fileManager) {
         context.fileManager = {} as any;
     }
+
+    const fileLifecyclePlugins = context.plugins.byType<FilePlugin>(FilePlugin.type);
 
     context.fileManager.files = {
         async getFile(id: string) {
@@ -95,9 +98,19 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
             };
 
             try {
-                return await storageOperations.create({
+                await runLifecycleEvent("beforeCreate", {
+                    plugins: fileLifecyclePlugins,
+                    data: file
+                });
+                const result = await storageOperations.create({
                     file
                 });
+                await runLifecycleEvent("afterCreate", {
+                    plugins: fileLifecyclePlugins,
+                    data: file,
+                    file: result
+                });
+                return result;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not create a file.",
@@ -132,10 +145,22 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
             };
 
             try {
-                return await storageOperations.update({
+                await runLifecycleEvent("beforeUpdate", {
+                    plugins: fileLifecyclePlugins,
+                    original,
+                    data: file
+                });
+                const result = await storageOperations.update({
                     original,
                     file
                 });
+                await runLifecycleEvent("afterUpdate", {
+                    plugins: fileLifecyclePlugins,
+                    original,
+                    data: file,
+                    file: result
+                });
+                return result;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not update a file.",
@@ -158,7 +183,15 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
             checkOwnership(file, permission, context);
 
             try {
+                await runLifecycleEvent("beforeDelete", {
+                    plugins: fileLifecyclePlugins,
+                    file
+                });
                 await storageOperations.delete(id);
+                await runLifecycleEvent("afterDelete", {
+                    plugins: fileLifecyclePlugins,
+                    file
+                });
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not delete a file.",
@@ -208,20 +241,32 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
                 const fileInstance = new FileModel().populate(input);
                 await fileInstance.validate();
                 const fileData: File = await fileInstance.toJSON();
-                files.push({
+                const file = {
                     ...fileData,
                     id: mdbid(),
                     tenant: tenant.id,
+                    createdOn: new Date().toISOString(),
                     createdBy,
                     locale: localeCode,
                     webinyVersion: context.WEBINY_VERSION
-                });
+                };
+                files.push(file);
             }
 
             try {
-                return await storageOperations.createBatch({
+                await runLifecycleEvent("beforeBatchCreate", {
+                    plugins: fileLifecyclePlugins,
+                    data: files
+                });
+                const results = await storageOperations.createBatch({
                     files
                 });
+                await runLifecycleEvent("afterBatchCreate", {
+                    plugins: fileLifecyclePlugins,
+                    data: files,
+                    files: results
+                });
+                return results;
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not create a batch of files.",

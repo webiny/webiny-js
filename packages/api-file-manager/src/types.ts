@@ -352,3 +352,114 @@ export interface FileManagerFilesStorageOperations {
         params: FileManagerFilesStorageOperationsTagsParams
     ) => Promise<FileManagerFilesStorageOperationsTagsResponse>;
 }
+
+/**
+ * Parameters for beforeCreate lifecycle.
+ */
+export interface FilePluginBeforeCreateConfig {
+    /**
+     * Data to be inserted into the storage.
+     */
+    data: File;
+}
+/**
+ * Parameters for afterCreate lifecycle.
+ */
+export interface FilePluginAfterCreateConfig {
+    /**
+     * Data that was inserted into the storage.
+     */
+    data: File;
+    /**
+     * Result of the storage operations create method.
+     * Possibly changed something on the "data".
+     */
+    file: File;
+}
+/**
+ * Parameters for beforeUpdate lifecycle.
+ */
+export interface FilePluginBeforeUpdateConfig {
+    /**
+     * Original file from the storage.
+     */
+    original: File;
+    /**
+     * Data to be updated to the storage.
+     */
+    data: File;
+}
+/**
+ * Parameters for afterUpdate lifecycle.
+ */
+export interface FilePluginAfterUpdateConfig {
+    /**
+     * Original file from the storage.
+     */
+    original: File;
+    /**
+     * Data that was updated in the storage.
+     */
+    data: File;
+    /**
+     * Result of the storage operations update method.
+     * Possibly changed something on the "data".
+     */
+    file: File;
+}
+/**
+ * Parameters for beforeBatchCreate lifecycle.
+ */
+export interface FilePluginBeforeBatchCreateConfig {
+    /**
+     * Files to be inserted into the storage.
+     */
+    data: File[];
+}
+
+/**
+ * Parameters for afterBatchCreate lifecycle.
+ */
+export interface FilePluginAfterBatchCreateConfig {
+    /**
+     * Files that were inserted into the storage.
+     */
+    data: File[];
+    /**
+     * Results of the insert.
+     */
+    files: File[];
+}
+/**
+ * Parameters for beforeDelete lifecycle.
+ */
+export interface FilePluginBeforeDeleteConfig {
+    /**
+     * File to be deleted from the storage.
+     */
+    file: File;
+}
+/**
+ * Parameters for afterDelete lifecycle.
+ */
+export interface FilePluginAfterDeleteConfig {
+    /**
+     * File that was deleted from the storage.
+     */
+    file: File;
+}
+/**
+ * Definition for the constructor parameters of the FilePlugin.
+ *
+ * @category FilePlugin
+ */
+export interface FilePluginConfig {
+    beforeCreate?: (params: FilePluginBeforeCreateConfig) => Promise<void>;
+    afterCreate?: (params: FilePluginAfterCreateConfig) => Promise<void>;
+    beforeUpdate?: (params: FilePluginBeforeUpdateConfig) => Promise<void>;
+    afterUpdate?: (params: FilePluginAfterUpdateConfig) => Promise<void>;
+    beforeBatchCreate?: (params: FilePluginBeforeBatchCreateConfig) => Promise<void>;
+    afterBatchCreate?: (params: FilePluginAfterBatchCreateConfig) => Promise<void>;
+    beforeDelete?: (params: FilePluginBeforeDeleteConfig) => Promise<void>;
+    afterDelete?: (params: FilePluginAfterDeleteConfig) => Promise<void>;
+}
