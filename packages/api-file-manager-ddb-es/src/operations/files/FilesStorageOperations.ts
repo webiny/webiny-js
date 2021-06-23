@@ -21,6 +21,8 @@ import lodashOmit from "lodash.omit";
 import lodashChunk from "lodash.chunk";
 import { decodeCursor, encodeCursor } from "@webiny/api-elasticsearch/cursors";
 import { createElasticsearchBody } from "~/operations/files/body";
+import { transformFromIndex, transformToIndex } from "~/operations/files/transformers";
+import { FileIndexTransformPlugin } from "~/plugins";
 
 interface FileItem extends File {
     PK: string;
@@ -149,10 +151,14 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             TYPE: "fm.file",
             ...file
         };
+        const esData = await transformToIndex({
+            plugins: this.getFileIndexTransformPlugins(),
+            file
+        });
         const esItem: EsFileItem = {
             ...keys,
             index: this.esIndex,
-            data: file
+            data: esData
         };
         try {
             await this._entity.put(item);
@@ -182,10 +188,14 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             TYPE: "fm.file",
             ...file
         };
+        const esData = await transformToIndex({
+            plugins: this.getFileIndexTransformPlugins(),
+            file
+        });
         const esItem: EsFileItem = {
             ...keys,
             index: this.esIndex,
-            data: file
+            data: esData
         };
         try {
             await this._entity.put(item);
@@ -295,9 +305,16 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
                 }
             );
         }
-
+        const plugins = this.getFileIndexTransformPlugins();
         const { hits, total } = response.body.hits;
-        const files = hits.map(item => item._source);
+        const files = await Promise.all<File>(
+            hits.map(async item => {
+                return await transformFromIndex({
+                    plugins,
+                    file: item._source
+                });
+            })
+        );
 
         let hasMoreItems = false;
         if (files.length > limit) {
@@ -387,5 +404,9 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
      */
     private getPartitionKey(id: string): string {
         return `${this.partitionKeyPrefix}#F#${id}`;
+    }
+
+    private getFileIndexTransformPlugins(): FileIndexTransformPlugin[] {
+        return this.context.plugins.byType<FileIndexTransformPlugin>(FileIndexTransformPlugin.type);
     }
 }

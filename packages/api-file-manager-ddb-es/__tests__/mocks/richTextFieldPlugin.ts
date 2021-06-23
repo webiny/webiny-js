@@ -4,12 +4,20 @@
  * - FileAttributePlugin - add new attribute to the Files entity definition
  * - ElasticsearchFieldPlugin - field transformations and definitions for the elasticsearch
  * - GraphQLSchemaPlugin - add new schema definitions to the existing graphql
+ * - FilePlugin - lifecycle events when saving
+ * - FileStorageTransformPlugin - transform the file data to and from the storage engine
+ * - FileIndexTransformPlugin - transform the file data to and from index engine
  */
 import { ElasticsearchFieldPlugin } from "@webiny/api-elasticsearch/plugins/definition";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { FileAttributePlugin } from "~/plugins/FileAttributePlugin";
 import WebinyError from "@webiny/error";
-import { FilePlugin } from "@webiny/api-file-manager/plugins/definitions";
+import {
+    FilePlugin,
+    FileStorageTransformPlugin
+} from "@webiny/api-file-manager/plugins/definitions";
+import * as jsonpack from "jsonpack";
+import { FileIndexTransformPlugin } from "~/plugins";
 
 const fieldName = "richText";
 
@@ -50,7 +58,7 @@ const validateRichTextField = (file: File & Record<string, any>): void => {
 
 export default () => [
     /**
-     * Must add new field to attributes of the Entity definition.
+     * Must add new field to attributes of the object being stored and to the Entity definition.
      */
     new FileAttributePlugin({
         attribute: fieldName,
@@ -76,7 +84,7 @@ export default () => [
             File: {}
         },
         typeDefs: `
-            type FileRichTextInput {
+            input FileRichTextInput {
                 editor: String!
                 data: JSON!
             }
@@ -87,9 +95,9 @@ export default () => [
                 editor: String
                 data: JSON
             }
-            type FileWhereInputRichText {
+            input FileWhereInputRichText {
                 editor: String
-                text: String
+                data: JSON
             }
             extend type File {
                 richText: FileRichText
@@ -103,6 +111,7 @@ export default () => [
      * We want to validate file data so we need to add the lifecycle events.
      */
     new FilePlugin({
+        field: "richText",
         beforeCreate: async params => {
             const file = params.data as any;
             validateRichTextField(file);
@@ -115,6 +124,49 @@ export default () => [
             for (const file of params.data) {
                 validateRichTextField(file as any);
             }
+        }
+    }),
+    new FileStorageTransformPlugin({
+        toStorage: async ({ file }) => {
+            const value = file.richText;
+            return {
+                ...file,
+                richText: jsonpack.pack(value)
+            };
+        },
+        fromStorage: async ({ file }) => {
+            const value = file.richText;
+            return {
+                ...file,
+                richText: value ? jsonpack.unpack(value) : null
+            };
+        }
+    }),
+    new FileIndexTransformPlugin({
+        toIndex: async ({ file }) => {
+            const newFile = {
+                ...file
+            };
+            const value = file.richText;
+            delete newFile.richText;
+            return {
+                ...newFile,
+                rawValues: {
+                    ...(newFile.rawValues || ({} as any)),
+                    richText: value ? jsonpack.pack(value) : null
+                }
+            };
+        },
+        fromIndex: async ({ file }) => {
+            const rawValues = {
+                ...file.rawValues
+            };
+            const value = rawValues.richText;
+            delete rawValues.richText;
+            return {
+                ...file,
+                richText: value ? jsonpack.unpack(value) : null
+            };
         }
     })
 ];

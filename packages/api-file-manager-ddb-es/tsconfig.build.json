@@ -10,7 +10,8 @@
     "../api-elasticsearch",
     "../api-dynamodb-to-elasticsearch",
     "../api-file-manager",
-    "../api-upgrade"
+    "../api-upgrade",
+    "../plugins"
   ],
   "compilerOptions": {
     "rootDir": "./src",

@@ -37,6 +37,10 @@ export class FileManagerInstallationPlugin extends InstallationPlugin {
                                 }
                             },
                             analyzer: "lowercase_analyzer"
+                        },
+                        rawValues: {
+                            type: "object",
+                            enabled: false
                         }
                     }
                 }
