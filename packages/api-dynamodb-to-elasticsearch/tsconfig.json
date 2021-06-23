@@ -7,6 +7,9 @@
     },
     {
       "path": "../handler"
+    },
+    {
+      "path": "../error"
     }
   ],
   "compilerOptions": {
@@ -14,7 +17,9 @@
       "@webiny/api-elasticsearch/*": ["../api-elasticsearch/src/*"],
       "@webiny/api-elasticsearch": ["../api-elasticsearch/src"],
       "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"]
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/error/*": ["../error/src/*"],
+      "@webiny/error": ["../error/src"]
     },
     "baseUrl": "."
   }

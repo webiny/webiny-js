@@ -1,6 +1,19 @@
 import { Converter } from "aws-sdk/clients/dynamodb";
 import { HandlerPlugin } from "@webiny/handler/types";
 import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
+import WebinyError from "@webiny/error";
+
+const checkErrors = (result: any) => {
+    if (!result || !result.body || !result.body.items) {
+        return;
+    }
+    for (const item of result.body.items) {
+        if (!item.index || !item.index.error || !item.index.error.reason) {
+            continue;
+        }
+        throw new WebinyError(item.index.error.reason, "DYNAMODB_TO_ELASTICSEARCH_ERROR", item);
+    }
+};
 
 export default (): HandlerPlugin<ElasticsearchContext> => ({
     type: "handler",
@@ -38,6 +51,7 @@ export default (): HandlerPlugin<ElasticsearchContext> => ({
 
         try {
             const res = await context.elasticsearch.bulk({ body: operations });
+            checkErrors(res);
             if (process.env.DEBUG === "true") {
                 console.log("Bulk response", JSON.stringify(res, null, 2));
             }

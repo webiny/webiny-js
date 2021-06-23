@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.build.json",
   "include": ["./src"],
-  "exclude": ["node_modules", "../api-elasticsearch", "../handler"],
+  "exclude": ["node_modules", "../api-elasticsearch", "../handler", "../error"],
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",

@@ -13,6 +13,7 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@webiny/api-elasticsearch": "^5.9.0",
+    "@webiny/error": "^5.9.0",
     "@webiny/handler": "^5.9.0",
     "aws-sdk": "^2.539.0"
   },
