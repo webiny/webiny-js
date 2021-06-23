@@ -39,6 +39,10 @@ export interface File {
     tenant: string;
     locale: string;
     webinyVersion: string;
+    /**
+     * User can add new fields to the File object so we must allow it in the types.
+     */
+    [key: string]: any;
 }
 
 export interface CreatedBy {
@@ -448,12 +452,18 @@ export interface FilePluginAfterDeleteConfig {
      */
     file: File;
 }
+
 /**
  * Definition for the constructor parameters of the FilePlugin.
  *
  * @category FilePlugin
  */
 export interface FilePluginConfig {
+    /**
+     * A field name this plugin is for.
+     * Must be defined because it is used to add the field into the File object.
+     */
+    field: string;
     beforeCreate?: (params: FilePluginBeforeCreateConfig) => Promise<void>;
     afterCreate?: (params: FilePluginAfterCreateConfig) => Promise<void>;
     beforeUpdate?: (params: FilePluginBeforeUpdateConfig) => Promise<void>;
@@ -462,4 +472,23 @@ export interface FilePluginConfig {
     afterBatchCreate?: (params: FilePluginAfterBatchCreateConfig) => Promise<void>;
     beforeDelete?: (params: FilePluginBeforeDeleteConfig) => Promise<void>;
     afterDelete?: (params: FilePluginAfterDeleteConfig) => Promise<void>;
+}
+
+export interface FileStorageTransformToConfig {
+    /**
+     * File that is being sent to the storage operations method.
+     */
+    file: File & Record<string, any>;
+}
+
+export interface FileStorageTransformFromConfig {
+    /**
+     * File that was fetched from the storage operations method.
+     */
+    file: File & Record<string, any>;
+}
+
+export interface FileStorageTransformPluginConfig {
+    toStorage?: (params: FileStorageTransformToConfig) => Promise<File & Record<string, any>>;
+    fromStorage?: (params: FileStorageTransformFromConfig) => Promise<File & Record<string, any>>;
 }

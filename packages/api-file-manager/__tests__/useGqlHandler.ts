@@ -2,12 +2,12 @@ import { createHandler } from "@webiny/handler-aws";
 import graphqlHandlerPlugins from "@webiny/handler-graphql";
 import tenancyPlugins from "@webiny/api-tenancy";
 import securityPlugins from "@webiny/api-security";
-import dbPlugins from "@webiny/handler-db";
+// import dbPlugins from "@webiny/handler-db";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
-import { DynamoDbDriver } from "@webiny/db-dynamodb";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
+// import { DynamoDbDriver } from "@webiny/db-dynamodb";
+// import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { SecurityIdentity } from "@webiny/api-security";
 import filesPlugins from "~/plugins";
 import { Plugin } from "@webiny/plugins";
@@ -34,31 +34,41 @@ type UseGqlHandlerParams = {
     permissions?: SecurityPermission[];
     identity?: SecurityIdentity;
     plugins?: Plugin[];
+    extraVariables?: Record<string, any>;
+    skipGlobals?: boolean;
 };
 
 export default (params?: UseGqlHandlerParams) => {
-    const { permissions, identity, plugins = [] } = params;
-    // @ts-ignore
-    const storageOperationsPlugins = __getStorageOperationsPlugins();
-    if (typeof storageOperationsPlugins !== "function") {
-        throw new Error(`There is no global "storageOperationsPlugins" function.`);
+    const { permissions, identity, plugins = [], extraVariables = {}, skipGlobals } = params;
+    let storageOperationsPlugins = () => [];
+    if (skipGlobals !== true) {
+        // @ts-ignore
+        if (typeof __getStorageOperationsPlugins !== "function") {
+            throw new Error(`There is no global "storageOperationsPlugins" function.`);
+        }
+        // @ts-ignore
+        storageOperationsPlugins = __getStorageOperationsPlugins();
     }
     const tenant = { id: "root", name: "Root", parent: null };
 
-    const documentClient = new DocumentClient({
-        convertEmptyValues: true,
-        endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
-        sslEnabled: false,
-        region: "local"
-    });
+    // const documentClient = new DocumentClient({
+    //     convertEmptyValues: true,
+    //     endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
+    //     sslEnabled: false,
+    //     region: "local"
+    // });
 
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler(
+        /**
+         * To make sure plugins is not undefined.
+         */
+        plugins || [],
         storageOperationsPlugins(),
-        dbPlugins({
-            table: "FileManager",
-            driver: new DynamoDbDriver({ documentClient })
-        }),
+        // dbPlugins({
+        //     table: "FileManager",
+        //     driver: new DynamoDbDriver({ documentClient })
+        // }),
         graphqlHandlerPlugins(),
         tenancyPlugins(),
         securityPlugins(),
@@ -73,7 +83,7 @@ export default (params?: UseGqlHandlerParams) => {
         i18nContext(),
         i18nContentPlugins(),
         mockLocalesPlugins(),
-        filesPlugins(),
+        filesPlugins ? filesPlugins() : [],
         {
             type: "security-authorization",
             name: "security-authorization",
@@ -91,11 +101,7 @@ export default (params?: UseGqlHandlerParams) => {
                     })
                 );
             }
-        },
-        /**
-         * To make sure plugins is not undefined.
-         */
-        plugins || []
+        }
     );
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
@@ -117,23 +123,23 @@ export default (params?: UseGqlHandlerParams) => {
         handler,
         invoke,
         // Files
-        async createFile(variables) {
-            return invoke({ body: { query: CREATE_FILE, variables } });
+        async createFile(variables, fields: string[] = []) {
+            return invoke({ body: { query: CREATE_FILE(fields), variables } });
         },
-        async updateFile(variables) {
-            return invoke({ body: { query: UPDATE_FILE, variables } });
+        async updateFile(variables, fields: string[] = []) {
+            return invoke({ body: { query: UPDATE_FILE(fields), variables } });
         },
-        async createFiles(variables) {
-            return invoke({ body: { query: CREATE_FILES, variables } });
+        async createFiles(variables, fields: string[] = []) {
+            return invoke({ body: { query: CREATE_FILES(fields), variables } });
         },
         async deleteFile(variables) {
             return invoke({ body: { query: DELETE_FILE, variables } });
         },
-        async getFile(variables) {
-            return invoke({ body: { query: GET_FILE, variables } });
+        async getFile(variables, fields: string[] = []) {
+            return invoke({ body: { query: GET_FILE(fields), variables } });
         },
-        async listFiles(variables = {}) {
-            return invoke({ body: { query: LIST_FILES, variables } });
+        async listFiles(variables = {}, fields: string[] = []) {
+            return invoke({ body: { query: LIST_FILES(fields), variables } });
         },
         // File Manager settings
         async isInstalled(variables) {
@@ -147,6 +153,7 @@ export default (params?: UseGqlHandlerParams) => {
         },
         async updateSettings(variables) {
             return invoke({ body: { query: UPDATE_SETTINGS, variables } });
-        }
+        },
+        ...extraVariables
     };
 };

@@ -15,6 +15,10 @@ export class FilePlugin extends Plugin {
     public static readonly type = "fm.file";
     private readonly _params: FilePluginConfig;
 
+    public get field(): string {
+        return this._params.field;
+    }
+
     public constructor(params?: FilePluginConfig) {
         super();
         this._params = params || ({} as any);

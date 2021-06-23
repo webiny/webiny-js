@@ -4,6 +4,7 @@ import { NotAuthorizedError } from "@webiny/api-security";
 import Error from "@webiny/error";
 import {
     File,
+    FileInput,
     FileManagerContext,
     FileManagerFilesStorageOperationsListParamsWhere,
     FileManagerFilesStorageOperationsTagsParamsWhere,
@@ -30,10 +31,41 @@ const checkOwnership = (file: File, permission: FilePermission, context: FileMan
     }
 };
 
-const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async context => {
-    const { i18nContent } = context;
-    const localeCode = i18nContent?.locale?.code;
+const getAdditionalFields = (params: {
+    plugins: FilePlugin[];
+    input: Partial<FileInput>;
+}): Record<string, any> => {
+    const { plugins, input } = params;
+    return plugins.reduce((fields, plugin) => {
+        if (input[plugin.field] === undefined) {
+            return fields;
+        }
+        fields[plugin.field] = input[plugin.field];
+        return fields;
+    }, {});
+};
 
+const getLocaleCode = (context: FileManagerContext): string => {
+    if (!context.i18nContent) {
+        throw new WebinyError(
+            "Missing i18nContent on the FileManagerContext.",
+            "MISSING_I18N_CONTENT"
+        );
+    } else if (!context.i18nContent.locale) {
+        throw new WebinyError(
+            "Missing i18nContent.locale on the FileManagerContext.",
+            "MISSING_I18N_CONTENT_LOCALE"
+        );
+    } else if (!context.i18nContent.locale.code) {
+        throw new WebinyError(
+            "Missing i18nContent.locale.code on the FileManagerContext.",
+            "MISSING_I18N_CONTENT_LOCALE_CODE"
+        );
+    }
+    return context.i18nContent.locale.code;
+};
+
+const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async context => {
     const pluginType = FilesStorageOperationsProviderPlugin.type;
 
     const providerPlugin = context.plugins
@@ -54,7 +86,7 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
         context.fileManager = {} as any;
     }
 
-    const fileLifecyclePlugins = context.plugins.byType<FilePlugin>(FilePlugin.type);
+    const filePlugins = context.plugins.byType<FilePlugin>(FilePlugin.type);
 
     context.fileManager.files = {
         async getFile(id: string) {
@@ -83,6 +115,11 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
 
             const id = mdbid();
 
+            const fields = getAdditionalFields({
+                plugins: filePlugins,
+                input
+            });
+
             const file: File = {
                 id,
                 tenant: tenant.id,
@@ -92,21 +129,22 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
                     displayName: identity.displayName,
                     type: identity.type
                 },
-                locale: localeCode,
+                locale: getLocaleCode(context),
                 webinyVersion: context.WEBINY_VERSION,
-                ...data
+                ...data,
+                ...fields
             };
 
             try {
                 await runLifecycleEvent("beforeCreate", {
-                    plugins: fileLifecyclePlugins,
+                    plugins: filePlugins,
                     data: file
                 });
                 const result = await storageOperations.create({
                     file
                 });
                 await runLifecycleEvent("afterCreate", {
-                    plugins: fileLifecyclePlugins,
+                    plugins: filePlugins,
                     data: file,
                     file: result
                 });
@@ -138,15 +176,21 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
 
             const data = await updatedFileData.toJSON({ onlyDirty: true });
 
+            const fields = getAdditionalFields({
+                plugins: filePlugins,
+                input
+            });
+
             const file = {
                 ...original,
                 ...data,
+                ...fields,
                 webinyVersion: context.WEBINY_VERSION
             };
 
             try {
                 await runLifecycleEvent("beforeUpdate", {
-                    plugins: fileLifecyclePlugins,
+                    plugins: filePlugins,
                     original,
                     data: file
                 });
@@ -155,7 +199,7 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
                     file
                 });
                 await runLifecycleEvent("afterUpdate", {
-                    plugins: fileLifecyclePlugins,
+                    plugins: filePlugins,
                     original,
                     data: file,
                     file: result
@@ -184,12 +228,12 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
 
             try {
                 await runLifecycleEvent("beforeDelete", {
-                    plugins: fileLifecyclePlugins,
+                    plugins: filePlugins,
                     file
                 });
                 await storageOperations.delete(id);
                 await runLifecycleEvent("afterDelete", {
-                    plugins: fileLifecyclePlugins,
+                    plugins: filePlugins,
                     file
                 });
             } catch (ex) {
@@ -241,13 +285,18 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
                 const fileInstance = new FileModel().populate(input);
                 await fileInstance.validate();
                 const fileData: File = await fileInstance.toJSON();
+                const fields = getAdditionalFields({
+                    plugins: filePlugins,
+                    input
+                });
                 const file = {
                     ...fileData,
+                    ...fields,
                     id: mdbid(),
                     tenant: tenant.id,
                     createdOn: new Date().toISOString(),
                     createdBy,
-                    locale: localeCode,
+                    locale: getLocaleCode(context),
                     webinyVersion: context.WEBINY_VERSION
                 };
                 files.push(file);
@@ -255,14 +304,14 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
 
             try {
                 await runLifecycleEvent("beforeBatchCreate", {
-                    plugins: fileLifecyclePlugins,
+                    plugins: filePlugins,
                     data: files
                 });
                 const results = await storageOperations.createBatch({
                     files
                 });
                 await runLifecycleEvent("afterBatchCreate", {
-                    plugins: fileLifecyclePlugins,
+                    plugins: filePlugins,
                     data: files,
                     files: results
                 });
