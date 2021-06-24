@@ -71,7 +71,9 @@ describe("Files CRUD test", () => {
                                         data: null,
                                         message: `Tag ${LONG_STRING} is more than 50 characters long.`
                                     }
-                                }
+                                },
+                                original: expect.any(Object),
+                                file: expect.any(Object)
                             }
                         }
                     }

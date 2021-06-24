@@ -1,7 +1,7 @@
 import { withFields, string, number, onSet } from "@commodo/fields";
 import { validation } from "@webiny/validation";
 import { FileManagerContext, FileManagerSettings } from "~/types";
-import { SettingsStorageOperationsProviderPlugin } from "~/plugins/definitions";
+import { SettingsStorageOperationsProviderPlugin } from "~/plugins/definitions/SettingsStorageOperationsProviderPlugin";
 import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 

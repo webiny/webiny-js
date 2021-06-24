@@ -4,16 +4,15 @@ import { NotAuthorizedError } from "@webiny/api-security";
 import Error from "@webiny/error";
 import {
     File,
-    FileInput,
     FileManagerContext,
     FileManagerFilesStorageOperationsListParamsWhere,
     FileManagerFilesStorageOperationsTagsParamsWhere,
     FilePermission
 } from "~/types";
-import createFileModel from "./utils/createFileModel";
 import checkBasePermissions from "./utils/checkBasePermissions";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
-import { FilesStorageOperationsProviderPlugin, FilePlugin } from "~/plugins/definitions";
+import { FilePlugin } from "~/plugins/definitions/FilePlugin";
+import { FilesStorageOperationsProviderPlugin } from "~/plugins/definitions/FilesStorageOperationsProviderPlugin";
 import WebinyError from "@webiny/error";
 import { runLifecycleEvent } from "~/plugins/crud/files/lifecycleEvents";
 
@@ -29,20 +28,6 @@ const checkOwnership = (file: File, permission: FilePermission, context: FileMan
             throw new NotAuthorizedError();
         }
     }
-};
-
-const getAdditionalFields = (params: {
-    plugins: FilePlugin[];
-    input: Partial<FileInput>;
-}): Record<string, any> => {
-    const { plugins, input } = params;
-    return plugins.reduce((fields, plugin) => {
-        if (input[plugin.field] === undefined) {
-            return fields;
-        }
-        fields[plugin.field] = input[plugin.field];
-        return fields;
-    }, {});
 };
 
 const getLocaleCode = (context: FileManagerContext): string => {
@@ -107,21 +92,14 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
             const identity = context.security.getIdentity();
             const tenant = context.tenancy.getCurrentTenant();
 
-            const FileModel = createFileModel();
-            const fileData = new FileModel().populate(input);
-            await fileData.validate();
-
-            const data = await fileData.toJSON();
-
             const id = mdbid();
 
-            const fields = getAdditionalFields({
-                plugins: filePlugins,
-                input
-            });
-
             const file: File = {
+                ...input,
                 id,
+                meta: {
+                    private: false
+                },
                 tenant: tenant.id,
                 createdOn: new Date().toISOString(),
                 createdBy: {
@@ -130,9 +108,7 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
                     type: identity.type
                 },
                 locale: getLocaleCode(context),
-                webinyVersion: context.WEBINY_VERSION,
-                ...data,
-                ...fields
+                webinyVersion: context.WEBINY_VERSION
             };
 
             try {
@@ -154,6 +130,7 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
                     ex.message || "Could not create a file.",
                     ex.code || "CREATE_FILE_ERROR",
                     {
+                        ...(ex.data || {}),
                         file
                     }
                 );
@@ -170,21 +147,10 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
 
             checkOwnership(original, permission, context);
 
-            const FileModel = createFileModel(false);
-            const updatedFileData = new FileModel().populate(input);
-            await updatedFileData.validate();
-
-            const data = await updatedFileData.toJSON({ onlyDirty: true });
-
-            const fields = getAdditionalFields({
-                plugins: filePlugins,
-                input
-            });
-
             const file = {
                 ...original,
-                ...data,
-                ...fields,
+                ...input,
+                id: original.id,
                 webinyVersion: context.WEBINY_VERSION
             };
 
@@ -210,6 +176,7 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
                     ex.message || "Could not update a file.",
                     ex.code || "UPDATE_FILE_ERROR",
                     {
+                        ...(ex.data || {}),
                         original,
                         file
                     }
@@ -241,6 +208,7 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
                     ex.message || "Could not delete a file.",
                     ex.code || "DELETE_FILE_ERROR",
                     {
+                        ...(ex.data || {}),
                         id,
                         file
                     }
@@ -278,20 +246,12 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
                 type: identity.type
             };
 
-            const FileModel = createFileModel();
-
-            const files: File[] = [];
-            for (const input of inputs) {
-                const fileInstance = new FileModel().populate(input);
-                await fileInstance.validate();
-                const fileData: File = await fileInstance.toJSON();
-                const fields = getAdditionalFields({
-                    plugins: filePlugins,
-                    input
-                });
-                const file = {
-                    ...fileData,
-                    ...fields,
+            const files: File[] = inputs.map(input => {
+                return {
+                    ...input,
+                    meta: {
+                        private: false
+                    },
                     id: mdbid(),
                     tenant: tenant.id,
                     createdOn: new Date().toISOString(),
@@ -299,8 +259,7 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
                     locale: getLocaleCode(context),
                     webinyVersion: context.WEBINY_VERSION
                 };
-                files.push(file);
-            }
+            });
 
             try {
                 await runLifecycleEvent("beforeBatchCreate", {
@@ -321,6 +280,7 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
                     ex.message || "Could not create a batch of files.",
                     ex.code || "CREATE_FILES_ERROR",
                     {
+                        ...(ex.data || {}),
                         files
                     }
                 );
@@ -410,6 +370,7 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
                     ex.message || "Could not search for tags.",
                     ex.code || "FILE_TAG_SEARCH_ERROR",
                     {
+                        ...(ex.data || {}),
                         params
                     }
                 );

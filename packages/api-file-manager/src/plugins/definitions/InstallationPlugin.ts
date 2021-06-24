@@ -3,13 +3,13 @@ import { Plugin } from "@webiny/plugins";
 
 export type CallbackFunction<TParams> = (params: TParams) => Promise<void>;
 
-interface InstallationParams {
+export interface Params {
     context: FileManagerContext;
 }
 
 interface Config {
-    beforeInstall?: CallbackFunction<InstallationParams>;
-    afterInstall?: CallbackFunction<InstallationParams>;
+    beforeInstall?: CallbackFunction<Params>;
+    afterInstall?: CallbackFunction<Params>;
 }
 
 export abstract class InstallationPlugin extends Plugin {
@@ -21,11 +21,11 @@ export abstract class InstallationPlugin extends Plugin {
         this._config = config || {};
     }
 
-    public async beforeInstall(params: InstallationParams): Promise<void> {
+    public async beforeInstall(params: Params): Promise<void> {
         return this._execute("beforeInstall", params);
     }
 
-    public async afterInstall(params: InstallationParams): Promise<void> {
+    public async afterInstall(params: Params): Promise<void> {
         return this._execute("afterInstall", params);
     }
 

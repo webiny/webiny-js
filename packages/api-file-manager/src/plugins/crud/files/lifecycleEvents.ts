@@ -1,4 +1,4 @@
-import { FilePlugin } from "~/plugins/definitions";
+import { FilePlugin } from "~/plugins/definitions/FilePlugin";
 
 export const runLifecycleEvent = async (
     hook: string,

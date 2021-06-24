@@ -6,7 +6,8 @@ import { UpgradePlugin } from "@webiny/api-upgrade/types";
 import WebinyError from "@webiny/error";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { executeCallbacks } from "~/utils";
-import { InstallationPlugin, SystemStorageOperationsProviderPlugin } from "~/plugins/definitions";
+import { InstallationPlugin } from "~/plugins/definitions/InstallationPlugin";
+import { SystemStorageOperationsProviderPlugin } from "~/plugins/definitions/SystemStorageOperationsProviderPlugin";
 
 const systemCrudContextPlugin = new ContextPlugin<FileManagerContext>(async context => {
     const pluginType = SystemStorageOperationsProviderPlugin.type;

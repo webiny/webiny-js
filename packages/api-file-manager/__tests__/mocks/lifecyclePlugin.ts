@@ -1,4 +1,4 @@
-import { FilePlugin } from "~/plugins/definitions";
+import { FilePlugin } from "~/plugins/definitions/FilePlugin";
 
 class LifecycleEventTracker {
     private _tracked: Record<string, { count: number; params: any }> = {};

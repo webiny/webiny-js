@@ -24,7 +24,7 @@ const fileData = {
     tags: ["sketch"]
 };
 
-describe("File lifecycle hooks", () => {
+describe("File lifecycle events", () => {
     const { createFile, updateFile, createFiles, deleteFile } = useGqlHandler({
         plugins: [fileLifecyclePlugin]
     });

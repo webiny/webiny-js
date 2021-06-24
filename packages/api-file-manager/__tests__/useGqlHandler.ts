@@ -2,15 +2,11 @@ import { createHandler } from "@webiny/handler-aws";
 import graphqlHandlerPlugins from "@webiny/handler-graphql";
 import tenancyPlugins from "@webiny/api-tenancy";
 import securityPlugins from "@webiny/api-security";
-// import dbPlugins from "@webiny/handler-db";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
-// import { DynamoDbDriver } from "@webiny/db-dynamodb";
-// import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { SecurityIdentity } from "@webiny/api-security";
 import filesPlugins from "~/plugins";
-import { Plugin } from "@webiny/plugins";
 
 // Graphql
 import {
@@ -33,42 +29,26 @@ import { until } from "./helpers";
 type UseGqlHandlerParams = {
     permissions?: SecurityPermission[];
     identity?: SecurityIdentity;
-    plugins?: Plugin[];
-    extraVariables?: Record<string, any>;
-    skipGlobals?: boolean;
+    plugins?: any;
 };
 
 export default (params?: UseGqlHandlerParams) => {
-    const { permissions, identity, plugins = [], extraVariables = {}, skipGlobals } = params;
-    let storageOperationsPlugins = () => [];
-    if (skipGlobals !== true) {
-        // @ts-ignore
-        if (typeof __getStorageOperationsPlugins !== "function") {
-            throw new Error(`There is no global "storageOperationsPlugins" function.`);
-        }
-        // @ts-ignore
-        storageOperationsPlugins = __getStorageOperationsPlugins();
+    const { permissions, identity, plugins = [] } = params;
+    // @ts-ignore
+    if (typeof __getStorageOperationsPlugins !== "function") {
+        throw new Error(`There is no global "__getStorageOperationsPlugins" function.`);
+    }
+    // @ts-ignore
+    const storageOperations = __getStorageOperationsPlugins();
+    if (typeof storageOperations !== "function") {
+        throw new Error(
+            `A product of "__getStorageOperationsPlugins" must be a function to initialize storage operations.`
+        );
     }
     const tenant = { id: "root", name: "Root", parent: null };
-
-    // const documentClient = new DocumentClient({
-    //     convertEmptyValues: true,
-    //     endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
-    //     sslEnabled: false,
-    //     region: "local"
-    // });
-
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler(
-        /**
-         * To make sure plugins is not undefined.
-         */
-        plugins || [],
-        storageOperationsPlugins(),
-        // dbPlugins({
-        //     table: "FileManager",
-        //     driver: new DynamoDbDriver({ documentClient })
-        // }),
+        storageOperations(),
         graphqlHandlerPlugins(),
         tenancyPlugins(),
         securityPlugins(),
@@ -83,7 +63,7 @@ export default (params?: UseGqlHandlerParams) => {
         i18nContext(),
         i18nContentPlugins(),
         mockLocalesPlugins(),
-        filesPlugins ? filesPlugins() : [],
+        filesPlugins(),
         {
             type: "security-authorization",
             name: "security-authorization",
@@ -101,7 +81,11 @@ export default (params?: UseGqlHandlerParams) => {
                     })
                 );
             }
-        }
+        },
+        /**
+         * Make sure we dont have undefined plugins value.
+         */
+        plugins || []
     );
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
@@ -153,7 +137,6 @@ export default (params?: UseGqlHandlerParams) => {
         },
         async updateSettings(variables) {
             return invoke({ body: { query: UPDATE_SETTINGS, variables } });
-        },
-        ...extraVariables
+        }
     };
 };
