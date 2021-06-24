@@ -3,15 +3,30 @@ import { HandlerPlugin } from "@webiny/handler/types";
 import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
 import WebinyError from "@webiny/error";
 
+const getError = (item: any): string | null => {
+    if (!item.index || !item.index.error || !item.index.error.reason) {
+        return null;
+    }
+    const reason = item.index.error.reason;
+    if (reason.match(/no such index \[([a-zA-Z0-9_-]+)\]/) !== null) {
+        return "index";
+    }
+    return reason;
+};
 const checkErrors = (result: any) => {
     if (!result || !result.body || !result.body.items) {
         return;
     }
     for (const item of result.body.items) {
-        if (!item.index || !item.index.error || !item.index.error.reason) {
+        const err = getError(item);
+        if (!err) {
             continue;
+        } else if (err === "index") {
+            if (process.env.DEBUG === "true") {
+                console.log("Bulk response", JSON.stringify(result, null, 2));
+            }
         }
-        throw new WebinyError(item.index.error.reason, "DYNAMODB_TO_ELASTICSEARCH_ERROR", item);
+        throw new WebinyError(err, "DYNAMODB_TO_ELASTICSEARCH_ERROR", item);
     }
 };
 
