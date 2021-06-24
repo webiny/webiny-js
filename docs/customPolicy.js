@@ -129,7 +129,7 @@ const customPolicyForProgrammaticAccess = {
             ]
         },
         {
-            Sid: "PermissionForApiLambda",
+            Sid: "PermissionForLambda",
             Effect: "Allow",
             Action: [
                 "lambda:AddPermission",
@@ -157,7 +157,8 @@ const customPolicyForProgrammaticAccess = {
                 "lambda:TagResource",
                 "lambda:UntagResource",
                 "lambda:UpdateEventSourceMapping",
-                "lambda:UpdateFunctionCode"
+                "lambda:UpdateFunctionCode",
+                "lambda:UpdateFunctionConfiguration"
             ]
         },
         {
