@@ -2,9 +2,9 @@ import { Plugin } from "@webiny/plugins";
 import { FieldSortOptions, SortOrder } from "elastic-ts";
 import { ContextInterface } from "@webiny/handler/types";
 
-type UnmappedTypes = "date" | "long" | string;
+export type UnmappedTypes = "date" | "long" | string;
 
-interface ToSearchValueParams {
+export interface ToSearchValueParams {
     /**
      * Some variable that has a ContextInterface as a base.
      */
@@ -22,7 +22,7 @@ interface ToSearchValueParams {
      */
     basePath: string;
 }
-interface ElasticsearchFieldPluginParams {
+export interface Params {
     /**
      * Which entity is this plugin for.
      */
@@ -100,7 +100,7 @@ export class ElasticsearchFieldPlugin extends Plugin {
         return this._searchable;
     }
 
-    constructor(params: ElasticsearchFieldPluginParams) {
+    constructor(params: Params) {
         super();
         this._entity = params.entity;
         this._field = params.field;

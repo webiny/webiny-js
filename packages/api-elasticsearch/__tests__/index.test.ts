@@ -1,7 +1,7 @@
 import elasticsearchContext from "~/index";
 import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { PluginsContainer } from "@webiny/plugins";
-import { ElasticsearchQueryBuilderOperatorPlugin } from "~/plugins/definition";
+import { ElasticsearchQueryBuilderOperatorPlugin } from "~/plugins/definition/ElasticsearchQueryBuilderOperatorPlugin";
 import { Client } from "@elastic/elasticsearch";
 
 const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";

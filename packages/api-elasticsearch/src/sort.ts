@@ -4,7 +4,7 @@ import {
     SortOrder as ElasticTsSortOrder
 } from "./types";
 import WebinyError from "@webiny/error";
-import { ElasticsearchFieldPlugin } from "./plugins/definition";
+import { ElasticsearchFieldPlugin } from "./plugins/definition/ElasticsearchFieldPlugin";
 import { ContextInterface } from "@webiny/handler/types";
 
 const sortRegExp = new RegExp(/^([a-zA-Z-0-9_]+)_(ASC|DESC)$/);
