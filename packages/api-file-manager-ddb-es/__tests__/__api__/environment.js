@@ -23,16 +23,14 @@ const getStorageOperationsPlugins = ({ documentClient, elasticsearchClientContex
     simulateStream(documentClient, createHandler(elasticsearchClientContext, dynamoToElastic()));
 
     return () => {
-        return [
-            plugins(),
-            dbPlugins({
-                table: "FileManager",
-                driver: new DynamoDbDriver({
-                    documentClient
-                })
-            }),
-            elasticsearchClientContext
-        ];
+        const pluginsValue = plugins();
+        const dbPluginsValue = dbPlugins({
+            table: "FileManager",
+            driver: new DynamoDbDriver({
+                documentClient
+            })
+        });
+        return [...pluginsValue, ...dbPluginsValue, elasticsearchClientContext];
     };
 };
 

@@ -1,5 +1,5 @@
 import { File } from "@webiny/api-file-manager/types";
-import { FileIndexTransformPlugin } from "~/plugins";
+import { FileIndexTransformPlugin } from "~/plugins/FileIndexTransformPlugin";
 
 interface ToIndexParams {
     plugins: FileIndexTransformPlugin[];

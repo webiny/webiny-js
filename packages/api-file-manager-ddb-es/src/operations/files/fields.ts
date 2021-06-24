@@ -1,4 +1,4 @@
-import { ElasticsearchFieldPlugin } from "@webiny/api-elasticsearch/plugins/definition";
+import { ElasticsearchFieldPlugin } from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchFieldPlugin";
 
 const entityName = "FilesElasticsearch";
 export default () => [

@@ -63,10 +63,10 @@ describe("Files CRUD ddb/es", () => {
 
     beforeEach(async () => {
         await clearElasticsearch();
-        return createElasticsearchIndice();
+        await createElasticsearchIndice();
     });
     afterEach(async () => {
-        return clearElasticsearch();
+        await clearElasticsearch();
     });
 
     test("it should create a new file with custom richText field and then update it", async () => {

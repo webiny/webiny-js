@@ -1,4 +1,4 @@
-import { FilesStorageOperationsProviderPlugin } from "@webiny/api-file-manager/plugins/definitions";
+import { FilesStorageOperationsProviderPlugin } from "@webiny/api-file-manager/plugins/definitions/FilesStorageOperationsProviderPlugin";
 import { FilesStorageOperations } from "./FilesStorageOperations";
 import fields from "./fields";
 

@@ -11,7 +11,8 @@
     "../api-dynamodb-to-elasticsearch",
     "../api-file-manager",
     "../api-upgrade",
-    "../plugins"
+    "../plugins",
+    "../api-i18n"
   ],
   "compilerOptions": {
     "rootDir": "./src",

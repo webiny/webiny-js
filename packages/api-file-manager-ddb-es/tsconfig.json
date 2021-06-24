@@ -25,6 +25,9 @@
     },
     {
       "path": "../plugins"
+    },
+    {
+      "path": "../api-i18n"
     }
   ],
   "compilerOptions": {
@@ -45,7 +48,9 @@
       "@webiny/api-upgrade/*": ["../api-upgrade/src/*"],
       "@webiny/api-upgrade": ["../api-upgrade/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"]
+      "@webiny/plugins": ["../plugins/src"],
+      "@webiny/api-i18n/*": ["../api-i18n/src/*"],
+      "@webiny/api-i18n": ["../api-i18n/src"]
     },
     "baseUrl": "."
   }

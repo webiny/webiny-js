@@ -7,11 +7,9 @@ import {
     ElasticsearchBoolQueryConfig,
     SearchBody as ElasticTsSearchBody
 } from "@webiny/api-elasticsearch/types";
-import {
-    ElasticsearchFieldPlugin,
-    ElasticsearchQueryBuilderOperatorPlugin,
-    ElasticsearchQueryModifierPlugin
-} from "@webiny/api-elasticsearch/plugins/definition";
+import { ElasticsearchQueryModifierPlugin } from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchQueryModifierPlugin";
+import { ElasticsearchFieldPlugin } from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchFieldPlugin";
+import { ElasticsearchQueryBuilderOperatorPlugin } from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchQueryBuilderOperatorPlugin";
 import { createLimit } from "@webiny/api-elasticsearch/limit";
 import { createSort } from "@webiny/api-elasticsearch/sort";
 import { normalizeValue } from "@webiny/api-elasticsearch/normalize";

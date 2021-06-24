@@ -8292,6 +8292,7 @@ __metadata:
     "@webiny/api-dynamodb-to-elasticsearch": ^5.9.0
     "@webiny/api-elasticsearch": ^5.9.0
     "@webiny/api-file-manager": ^5.9.0
+    "@webiny/api-i18n": ^5.9.0
     "@webiny/api-upgrade": ^5.9.0
     "@webiny/cli": ^5.9.0
     "@webiny/db-dynamodb": ^5.9.0

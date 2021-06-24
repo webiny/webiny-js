@@ -8,16 +8,14 @@
  * - FileStorageTransformPlugin - transform the file data to and from the storage engine
  * - FileIndexTransformPlugin - transform the file data to and from index engine
  */
-import { ElasticsearchFieldPlugin } from "@webiny/api-elasticsearch/plugins/definition";
+import { ElasticsearchFieldPlugin } from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchFieldPlugin";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { FileAttributePlugin } from "~/plugins/FileAttributePlugin";
 import WebinyError from "@webiny/error";
-import {
-    FilePlugin,
-    FileStorageTransformPlugin
-} from "@webiny/api-file-manager/plugins/definitions";
+import { FilePlugin } from "@webiny/api-file-manager/plugins/definitions/FilePlugin";
+import { FileStorageTransformPlugin } from "@webiny/api-file-manager/plugins/definitions/FileStorageTransformPlugin";
 import * as jsonpack from "jsonpack";
-import { FileIndexTransformPlugin } from "~/plugins";
+import { FileIndexTransformPlugin } from "~/plugins/FileIndexTransformPlugin";
 
 const fieldName = "richText";
 
@@ -78,11 +76,6 @@ export default () => [
         unmappedType: undefined
     }),
     new GraphQLSchemaPlugin({
-        resolvers: {
-            FmQuery: {},
-            FmMutation: {},
-            File: {}
-        },
         typeDefs: `
             input FileRichTextInput {
                 editor: String!
@@ -111,17 +104,25 @@ export default () => [
      * We want to validate file data so we need to add the lifecycle events.
      */
     new FilePlugin({
-        field: "richText",
         beforeCreate: async params => {
             const file = params.data as any;
+            if (!file.richText) {
+                return;
+            }
             validateRichTextField(file);
         },
         beforeUpdate: async params => {
             const file = params.data as any;
+            if (!file.richText) {
+                return;
+            }
             validateRichTextField(file);
         },
         beforeBatchCreate: async params => {
             for (const file of params.data) {
+                if (!file.richText) {
+                    continue;
+                }
                 validateRichTextField(file as any);
             }
         }
@@ -152,14 +153,14 @@ export default () => [
             return {
                 ...newFile,
                 rawValues: {
-                    ...(newFile.rawValues || ({} as any)),
+                    ...(newFile.rawValues || {}),
                     richText: value ? jsonpack.pack(value) : null
                 }
             };
         },
         fromIndex: async ({ file }) => {
             const rawValues = {
-                ...file.rawValues
+                ...(file.rawValues || {})
             };
             const value = rawValues.richText;
             delete rawValues.richText;

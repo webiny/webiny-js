@@ -22,7 +22,7 @@ import lodashChunk from "lodash.chunk";
 import { decodeCursor, encodeCursor } from "@webiny/api-elasticsearch/cursors";
 import { createElasticsearchBody } from "~/operations/files/body";
 import { transformFromIndex, transformToIndex } from "~/operations/files/transformers";
-import { FileIndexTransformPlugin } from "~/plugins";
+import { FileIndexTransformPlugin } from "~/plugins/FileIndexTransformPlugin";
 
 interface FileItem extends File {
     PK: string;
