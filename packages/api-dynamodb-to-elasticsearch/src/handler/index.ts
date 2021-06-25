@@ -25,6 +25,7 @@ const checkErrors = (result: any) => {
             if (process.env.DEBUG === "true") {
                 console.log("Bulk response", JSON.stringify(result, null, 2));
             }
+            continue;
         }
         throw new WebinyError(err, "DYNAMODB_TO_ELASTICSEARCH_ERROR", item);
     }
