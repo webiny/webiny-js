@@ -29,7 +29,7 @@ describe("Files CRUD test", () => {
     const {
         tenant,
         elasticSearch,
-        sleep,
+        until,
         createFile,
         updateFile,
         createFiles,
@@ -134,6 +134,17 @@ describe("Files CRUD test", () => {
             }
         });
 
+        await until(
+            () => listFiles().then(([data]) => data),
+            ({ data }) =>
+                Array.isArray(data.fileManager.listFiles.data) &&
+                data.fileManager.listFiles.data.length === 1 &&
+                data.fileManager.listFiles.data[0].tags.length === 1,
+            {
+                tries: 10
+            }
+        );
+
         // Let's create multiple files
         const [create2] = await createFiles({
             data: [fileBData]
@@ -167,14 +178,12 @@ describe("Files CRUD test", () => {
             }
         });
 
-        // TODO: replace with the `until` utility we have in api-form-builder and api-page-builder
-        while (true) {
-            await sleep(1000);
-            const [list1] = await listFiles({});
-            if (Array.isArray(list1.data.fileManager.listFiles.data)) {
-                break;
-            }
-        }
+        await until(
+            () => listFiles().then(([data]) => data),
+            ({ data }) =>
+                Array.isArray(data.fileManager.listFiles.data) &&
+                data.fileManager.listFiles.data.length === 2
+        );
 
         // Let's get a all files
         const [list2] = await listFiles();
@@ -210,7 +219,12 @@ describe("Files CRUD test", () => {
             }
         }
 
-        await sleep(1000);
+        await until(
+            () => listFiles({ limit: testFiles.length }).then(([response]) => response),
+            ({ data }) =>
+                Array.isArray(data.fileManager.listFiles.data) &&
+                data.fileManager.listFiles.meta.totalCount === testFiles.length
+        );
 
         const inElastic = testFiles.reverse();
 

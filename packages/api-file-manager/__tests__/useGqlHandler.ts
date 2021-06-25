@@ -37,6 +37,45 @@ type UseGqlHandlerParams = {
     identity?: SecurityIdentity;
 };
 
+const until = async (execute, until, options: { tries?: number; wait?: number } = {}) => {
+    const tries = options.tries ?? 5;
+    const wait = options.wait ?? 1000;
+
+    let result;
+    let triesCount = 0;
+
+    while (true) {
+        result = await execute();
+
+        let done;
+        try {
+            done = await until(result);
+        } catch {}
+
+        if (done) {
+            return result;
+        }
+
+        triesCount++;
+        if (triesCount === tries) {
+            break;
+        }
+
+        // Wait.
+        await new Promise<void>(resolve => {
+            setTimeout(() => resolve(), wait);
+        });
+    }
+
+    throw new Error(
+        `Tried ${tries} times but failed. Last result that was received: ${JSON.stringify(
+            result,
+            null,
+            2
+        )}`
+    );
+};
+
 const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
 
 export default ({ permissions, identity }: UseGqlHandlerParams) => {
@@ -116,11 +155,7 @@ export default ({ permissions, identity }: UseGqlHandlerParams) => {
         elasticSearch: new Client({
             node: `http://localhost:${ELASTICSEARCH_PORT}`
         }),
-        sleep: (ms = 100) => {
-            return new Promise(resolve => {
-                setTimeout(resolve, ms);
-            });
-        },
+        until,
         handler,
         invoke,
         // Files
