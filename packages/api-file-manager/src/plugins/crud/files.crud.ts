@@ -14,7 +14,7 @@ import { ContextPlugin } from "@webiny/handler/plugins/ContextPlugin";
 import { FilePlugin } from "~/plugins/definitions/FilePlugin";
 import { FilesStorageOperationsProviderPlugin } from "~/plugins/definitions/FilesStorageOperationsProviderPlugin";
 import WebinyError from "@webiny/error";
-import { runLifecycleEvent } from "~/plugins/crud/files/lifecycleEvents";
+import { runLifecycleEvent } from "~/plugins/crud/utils/lifecycleEvents";
 
 const BATCH_CREATE_MAX_FILES = 20;
 

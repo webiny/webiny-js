@@ -123,55 +123,41 @@ export class FilePlugin extends Plugin {
     }
 
     public async beforeCreate(params: BeforeCreateParams): Promise<void> {
-        if (!this._params.beforeCreate) {
-            return;
-        }
-        return this._params.beforeCreate(params);
+        await this._execute("beforeCreate", params);
     }
 
     public async afterCreate(params: AfterCreateParams): Promise<void> {
-        if (!this._params.afterCreate) {
-            return;
-        }
-        return this._params.afterCreate(params);
+        await this._execute("afterCreate", params);
     }
 
     public async beforeUpdate(params: BeforeUpdateParams): Promise<void> {
-        if (!this._params.beforeUpdate) {
-            return;
-        }
-        return this._params.beforeUpdate(params);
+        await this._execute("beforeUpdate", params);
     }
+
     public async afterUpdate(params: AfterUpdateParams): Promise<void> {
-        if (!this._params.afterUpdate) {
-            return;
-        }
-        return this._params.afterUpdate(params);
+        await this._execute("afterUpdate", params);
     }
 
     public async beforeBatchCreate(params: BeforeBatchCreateParams): Promise<void> {
-        if (!this._params.beforeBatchCreate) {
-            return;
-        }
-        return this._params.beforeBatchCreate(params);
+        await this._execute("beforeBatchCreate", params);
     }
+
     public async afterBatchCreate(params: AfterBatchCreateParams): Promise<void> {
-        if (!this._params.afterBatchCreate) {
-            return;
-        }
-        return this._params.afterBatchCreate(params);
+        await this._execute("afterBatchCreate", params);
     }
 
     public async beforeDelete(params: BeforeDeleteParams): Promise<void> {
-        if (!this._params.beforeDelete) {
-            return;
-        }
-        return this._params.beforeDelete(params);
+        await this._execute("beforeDelete", params);
     }
+
     public async afterDelete(params: AfterDeleteParams): Promise<void> {
-        if (!this._params.afterDelete) {
+        await this._execute("afterDelete", params);
+    }
+
+    private async _execute(callback: string, params: any): Promise<void> {
+        if (typeof this._params[callback] !== "function") {
             return;
         }
-        return this._params.afterDelete(params);
+        await this._params[callback](params);
     }
 }
