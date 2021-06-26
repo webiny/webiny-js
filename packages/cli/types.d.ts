@@ -97,6 +97,10 @@ export interface CliContext {
      * Errors logging.
      */
     error: Log;
+    /**
+     * Resolve given dir or dirs against project root path.
+     */
+    resolve: (dir) => string;
 }
 
 /**
