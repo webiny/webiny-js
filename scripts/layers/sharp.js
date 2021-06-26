@@ -1,19 +1,21 @@
 const path = require("path");
 const execa = require("execa");
 const writeJson = require("write-json-file");
+const { green, blue } = require("chalk");
 const regions = require("./regions");
 
-const LAYER_NAME = "webiny-v4-sharp";
+const LAYER_NAME = "sharp";
 
 (async () => {
     process.env.AWS_PROFILE = "webiny";
+    console.log(`Using profile ${green(process.env.AWS_PROFILE)}`);
     const layersPath = path.join(__dirname, "layers.json");
     const layers = require(layersPath);
     try {
         for (let i = 0; i < regions.length; i++) {
             const region = regions[i];
             try {
-                console.log(`Creating layer ${LAYER_NAME} in ${region}...`);
+                console.log(`Creating layer ${green(LAYER_NAME)} in ${green(region)}...`);
                 // Create layer
                 const { stdout } = await execa("aws", [
                     "lambda",
@@ -23,10 +25,10 @@ const LAYER_NAME = "webiny-v4-sharp";
                     "--description",
                     "Sharp dependency for image transformation",
                     "--zip-file",
-                    "fileb://" + path.join(__dirname, "sharp", "layer.zip"),
+                    "fileb://" + path.join(__dirname, "sharp", "layer-node-latest.zip"),
                     "--compatible-runtimes",
-                    "nodejs10.x",
                     "nodejs12.x",
+                    "nodejs14.x",
                     "--region",
                     region,
                     "--cli-read-timeout",
@@ -39,7 +41,7 @@ const LAYER_NAME = "webiny-v4-sharp";
 
                 const layer = JSON.parse(stdout);
 
-                console.log(`Created`, layer.LayerVersionArn);
+                console.log(`Created`, blue(layer.LayerVersionArn));
 
                 await execa("aws", [
                     "lambda",
