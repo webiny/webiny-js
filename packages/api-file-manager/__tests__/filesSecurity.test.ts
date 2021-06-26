@@ -1,6 +1,7 @@
 import { SecurityIdentity } from "@webiny/api-security";
 import useGqlHandler from "./useGqlHandler";
 import { SecurityPermission } from "@webiny/api-security/types";
+
 jest.setTimeout(10000);
 
 function Mock(prefix) {

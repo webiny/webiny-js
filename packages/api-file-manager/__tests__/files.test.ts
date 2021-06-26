@@ -114,6 +114,17 @@ describe("Files CRUD test", () => {
             }
         });
 
+        await until(
+            () => listFiles().then(([data]) => data),
+            ({ data }) =>
+                Array.isArray(data.fileManager.listFiles.data) &&
+                data.fileManager.listFiles.data.length === 1 &&
+                data.fileManager.listFiles.data[0].tags.length === 1,
+            {
+                tries: 10
+            }
+        );
+
         // Let's create multiple files
         const [create2] = await createFiles({
             data: [fileBData]
