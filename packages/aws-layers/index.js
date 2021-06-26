@@ -1,6 +1,11 @@
 const { green, red } = require("chalk");
 
 module.exports.getLayerArn = (name, region) => {
+    if (!region) {
+        // Try using AWS_REGION from environment variables as a fallback.
+        region = process.env.AWS_REGION;
+    }
+
     const layers = require("./layers");
 
     if (!layers[name]) {
