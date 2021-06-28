@@ -54,11 +54,10 @@ export default class TargetDataModelsMutationResolver extends TargetDataModelsRe
 
         const identity = await security.getIdentity();
         const targetDataModel = {
+            ...data,
             PK: this.getPK(),
             SK: id,
             id,
-            title: data.title,
-            description: data.description,
             createdOn: new Date().toISOString(),
             savedOn: new Date().toISOString(),
             createdBy: identity && {
