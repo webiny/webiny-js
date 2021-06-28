@@ -36,6 +36,7 @@ import {
 } from "../../api-file-manager/__tests__/graphql/fileManagerSettings";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { until } from "@webiny/project-utils/testing/helpers/until";
+import { FilePhysicalStoragePlugin } from "@webiny/api-file-manager/plugins/definitions/FilePhysicalStoragePlugin";
 
 type UseGqlHandlerParams = {
     permissions?: SecurityPermission[];
@@ -149,7 +150,16 @@ export default (params?: UseGqlHandlerParams) => {
                     })
                 );
             }
-        }
+        },
+        /**
+         * Mock physical file storage plugin.
+         */
+        new FilePhysicalStoragePlugin({
+            // eslint-disable-next-line
+            upload: async () => {},
+            // eslint-disable-next-line
+            delete: async () => {}
+        })
     );
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
