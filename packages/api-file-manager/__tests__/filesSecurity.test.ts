@@ -1,6 +1,7 @@
 import { SecurityIdentity } from "@webiny/api-security";
 import useGqlHandler from "./useGqlHandler";
 import { SecurityPermission } from "@webiny/api-security/types";
+
 jest.setTimeout(10000);
 
 function Mock(prefix) {
@@ -52,7 +53,7 @@ const identityB = new SecurityIdentity({
 type IdentityPermissions = Array<[SecurityPermission[], SecurityIdentity]>;
 
 describe("Files Security Test", () => {
-    const { tenant, elasticSearch, createFile, createFiles, sleep } = useGqlHandler({
+    const { tenant, elasticSearch, createFile, createFiles, until } = useGqlHandler({
         permissions: [{ name: "content.i18n" }, { name: "fm.*" }],
         identity: identityA
     });
@@ -132,14 +133,12 @@ describe("Files Security Test", () => {
 
             // List should not be empty.
             // Wait for the "Elasticsearch" to finish indexing.
-            while (true) {
-                await sleep(1000);
-                const [response] = await listFiles();
-
-                if (Array.isArray(response.data.fileManager.listFiles.data)) {
-                    break;
-                }
-            }
+            await until(
+                () => listFiles().then(([response]) => response),
+                ({ data }) =>
+                    Array.isArray(data.fileManager.listFiles.data) &&
+                    data.fileManager.listFiles.data.length === 4
+            );
 
             const [response] = await listFiles();
             expect(response).toEqual({
