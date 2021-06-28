@@ -64,11 +64,11 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 },
                 {
                     name: "dataModelName",
-                    message: "Enter initial data model name:",
+                    message: "Enter initial entity name:",
                     default: "Book",
                     validate: (dataModelName, answers) => {
                         if (!dataModelName.match(/^([a-zA-Z]+)$/)) {
-                            return "A valid targetDataModel name must consist of letters only.";
+                            return "A valid name must consist of letters only.";
                         }
 
                         const pluralizedCamelCasedDataModelName = pluralize(
