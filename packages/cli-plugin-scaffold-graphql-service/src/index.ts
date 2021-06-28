@@ -68,7 +68,6 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                             path.join(
                                 answers.pluginsFolderPath,
                                 "scaffolds",
-                                "graphql",
                                 pluralizedCamelCasedDataModelName
                             )
                         );
@@ -95,7 +94,6 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             const scaffoldsIndexPath = path.join(scaffoldsPath, "index.ts");
             const newCodePath = path.join(
                 scaffoldsPath,
-                "graphql",
                 Case.camel(dataModelName.plural)
             );
             const packageJsonPath = path.relative(
@@ -204,7 +202,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             await updateScaffoldsIndexFile({
                 scaffoldsIndexPath,
                 importName: dataModelName.plural,
-                importPath: `./graphql/${dataModelName.plural}`
+                importPath: `./${dataModelName.plural}`
             });
 
             ora.stopAndPersist({
