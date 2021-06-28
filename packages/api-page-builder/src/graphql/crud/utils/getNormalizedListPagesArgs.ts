@@ -1,5 +1,5 @@
 import { ListPagesParams, PbContext } from "../../types";
-import { ElasticsearchBoolQueryConfig } from "@webiny/api-plugin-elastic-search-client/types";
+import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
 
 /**
  * Returns arguments suited to be sent to ElasticSearch's `search` method.

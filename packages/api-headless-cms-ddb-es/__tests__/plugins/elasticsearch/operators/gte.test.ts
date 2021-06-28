@@ -1,6 +1,6 @@
 import { elasticsearchOperatorGtePlugin } from "../../../../src/elasticsearch/operators/gte";
 import { createBlankQuery } from "../helpers";
-import { ElasticsearchBoolQueryConfig } from "@webiny/api-plugin-elastic-search-client/types";
+import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
 
 describe("elasticsearchOperatorGtePlugin", () => {
     const plugin = elasticsearchOperatorGtePlugin();

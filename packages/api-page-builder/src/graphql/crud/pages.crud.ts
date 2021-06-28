@@ -41,7 +41,7 @@ const PERMISSION_NAME = "pb.page";
 const plugin: ContextPlugin<PbContext> = {
     type: "context",
     async apply(context) {
-        const { db, i18nContent, elasticSearch } = context;
+        const { db, i18nContent, elasticsearch } = context;
 
         const PK_PAGE = pid => `${getPKPrefix(context)}P#${pid}`;
         const PK_PAGE_PUBLISHED_PATH = () => `${getPKPrefix(context)}PATH`;
@@ -250,7 +250,7 @@ const plugin: ContextPlugin<PbContext> = {
                         plugin.modifySort({ sort, args, context });
                     }
 
-                    const response = await elasticSearch.search({
+                    const response = await elasticsearch.search({
                         ...ES_DEFAULTS(),
                         body: {
                             query: {
@@ -300,7 +300,7 @@ const plugin: ContextPlugin<PbContext> = {
                         plugin.modifySort({ sort, args, context });
                     }
 
-                    const response = await elasticSearch.search({
+                    const response = await elasticsearch.search({
                         ...ES_DEFAULTS(),
                         body: {
                             query: {
@@ -342,7 +342,7 @@ const plugin: ContextPlugin<PbContext> = {
                         };
                     }
 
-                    const response = await elasticSearch.search({
+                    const response = await elasticsearch.search({
                         ...ES_DEFAULTS(),
                         body: {
                             query,

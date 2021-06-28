@@ -2,16 +2,16 @@ import { Plugin } from "@webiny/plugins";
 import { GraphQLSchemaDefinition, Resolvers, Types } from "../types";
 import { Context } from "@webiny/handler/types";
 
-interface Config<TContext> {
+export interface GraphQLSchemaPluginConfig<TContext> {
     typeDefs: Types;
     resolvers?: Resolvers<TContext>;
 }
 
 export class GraphQLSchemaPlugin<TContext = Context> extends Plugin {
     public static readonly type = "graphql-schema";
-    private config: Config<TContext>;
+    private config: GraphQLSchemaPluginConfig<TContext>;
 
-    constructor(config: Config<TContext>) {
+    constructor(config: GraphQLSchemaPluginConfig<TContext>) {
         super();
         this.config = config;
     }

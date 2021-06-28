@@ -3,18 +3,23 @@
   "include": ["./src"],
   "references": [
     {
-      "path": "../api-plugin-elastic-search-client"
+      "path": "../api-elasticsearch"
     },
     {
       "path": "../handler"
+    },
+    {
+      "path": "../error"
     }
   ],
   "compilerOptions": {
     "paths": {
-      "@webiny/api-plugin-elastic-search-client/*": ["../api-plugin-elastic-search-client/src/*"],
-      "@webiny/api-plugin-elastic-search-client": ["../api-plugin-elastic-search-client/src"],
+      "@webiny/api-elasticsearch/*": ["../api-elasticsearch/src/*"],
+      "@webiny/api-elasticsearch": ["../api-elasticsearch/src"],
       "@webiny/handler/*": ["../handler/src/*"],
-      "@webiny/handler": ["../handler/src"]
+      "@webiny/handler": ["../handler/src"],
+      "@webiny/error/*": ["../error/src/*"],
+      "@webiny/error": ["../error/src"]
     },
     "baseUrl": "."
   }

@@ -6,11 +6,11 @@
     "watch": "yarn webiny run watch"
   },
   "dependencies": {
+    "@webiny/api-elasticsearch": "^5.9.0",
     "@webiny/api-headless-cms": "^5.9.0",
     "@webiny/api-headless-cms-ddb-es": "^5.9.0",
     "@webiny/api-i18n": "^5.9.0",
     "@webiny/api-i18n-content": "^5.9.0",
-    "@webiny/api-plugin-elastic-search-client": "^5.9.0",
     "@webiny/api-security": "^5.9.0",
     "@webiny/api-security-admin-users": "^5.9.0",
     "@webiny/api-security-cognito-authentication": "^5.9.0",

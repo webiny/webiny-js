@@ -9,9 +9,9 @@ export class CmsSystemInstallationPlugin extends InstallationPlugin {
     public name = "cms.system.ddb-es-installation";
 
     async beforeInstall({ context }) {
-        const { elasticSearch } = context;
+        const { elasticsearch } = context;
         try {
-            await elasticSearch.indices.putTemplate({
+            await elasticsearch.indices.putTemplate({
                 name: "headless-cms-entries-index",
                 body: {
                     index_patterns: ["*headless-cms*"],
