@@ -121,7 +121,8 @@ describe("Files CRUD test", () => {
                 data.fileManager.listFiles.data.length === 1 &&
                 data.fileManager.listFiles.data[0].tags.length === 1,
             {
-                tries: 10
+                tries: 10,
+                name: "list files after update tags"
             }
         );
 

@@ -221,7 +221,10 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                 async deleteFile(_, args, context) {
                     return resolve(async () => {
                         const file = await context.fileManager.files.getFile(args.id);
-                        return context.fileManager.storage.delete({ id: file.id, key: file.key });
+                        return await context.fileManager.storage.delete({
+                            id: file.id,
+                            key: file.key
+                        });
                     });
                 },
                 async install(_, args, context) {

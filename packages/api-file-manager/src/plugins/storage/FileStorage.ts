@@ -1,4 +1,5 @@
 import { FileManagerContext } from "~/types";
+import WebinyError from "@webiny/error";
 
 export type Args = {
     name: string;
@@ -15,12 +16,19 @@ export interface FileStoragePlugin {
     delete: (args: { key: string }) => Promise<void>;
 }
 
+const storagePluginType = "fm.files.physicalStorage";
+
 export class FileStorage {
     storagePlugin: FileStoragePlugin;
     context: FileManagerContext;
     constructor({ context }) {
-        // Get file storage plugin. We get it `byName` because we only support 1 storage plugin.
-        this.storagePlugin = context.plugins.byName("api-file-manager-storage");
+        this.storagePlugin = context.plugins.byType(storagePluginType).pop();
+        if (!this.storagePlugin) {
+            throw new WebinyError(
+                `Missing plugin of type "${storagePluginType}".`,
+                "STORAGE_PLUGIN_ERROR"
+            );
+        }
         this.context = context;
     }
 
@@ -64,7 +72,7 @@ export class FileStorage {
         return fileManager.files.createFilesInBatch(filesData);
     }
 
-    async delete(args) {
+    async delete(args: { id: string; key: string }) {
         const { id, key } = args;
         const { fileManager } = this.context;
         // Delete file from cloud storage.
@@ -72,6 +80,6 @@ export class FileStorage {
             key
         });
         // Delete file from the DB.
-        await fileManager.files.deleteFile(id);
+        return await fileManager.files.deleteFile(id);
     }
 }

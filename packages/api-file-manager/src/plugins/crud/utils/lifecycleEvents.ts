@@ -1,8 +1,9 @@
 import { FilePlugin } from "~/plugins/definitions/FilePlugin";
+import { FileManagerContext } from "~/types";
 
 export const runLifecycleEvent = async (
     hook: string,
-    params: { plugins: FilePlugin[] } & Record<string, any>
+    params: { context: FileManagerContext; plugins: FilePlugin[] } & Record<string, any>
 ): Promise<void> => {
     const { plugins, ...rest } = params;
     if (plugins.length === 0) {

@@ -113,6 +113,7 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
 
             try {
                 await runLifecycleEvent("beforeCreate", {
+                    context,
                     plugins: filePlugins,
                     data: file
                 });
@@ -120,6 +121,7 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
                     file
                 });
                 await runLifecycleEvent("afterCreate", {
+                    context,
                     plugins: filePlugins,
                     data: file,
                     file: result
@@ -156,6 +158,7 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
 
             try {
                 await runLifecycleEvent("beforeUpdate", {
+                    context,
                     plugins: filePlugins,
                     original,
                     data: file
@@ -165,6 +168,7 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
                     file
                 });
                 await runLifecycleEvent("afterUpdate", {
+                    context,
                     plugins: filePlugins,
                     original,
                     data: file,
@@ -195,11 +199,13 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
 
             try {
                 await runLifecycleEvent("beforeDelete", {
+                    context,
                     plugins: filePlugins,
                     file
                 });
                 await storageOperations.delete(id);
                 await runLifecycleEvent("afterDelete", {
+                    context,
                     plugins: filePlugins,
                     file
                 });
@@ -263,6 +269,7 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
 
             try {
                 await runLifecycleEvent("beforeBatchCreate", {
+                    context,
                     plugins: filePlugins,
                     data: files
                 });
@@ -270,6 +277,7 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
                     files
                 });
                 await runLifecycleEvent("afterBatchCreate", {
+                    context,
                     plugins: filePlugins,
                     data: files,
                     files: results

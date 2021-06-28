@@ -82,6 +82,7 @@ describe("File lifecycle events", () => {
          */
         const beforeCreate = lifecycleEventTracker.getLast(FileLifecycle.BEFORE_CREATE);
         expect(beforeCreate.params[0]).toEqual({
+            context: expect.any(Object),
             data: {
                 ...fileData,
                 ...hookParamsExpected
@@ -89,6 +90,7 @@ describe("File lifecycle events", () => {
         });
         const afterCreate = lifecycleEventTracker.getLast(FileLifecycle.AFTER_CREATE);
         expect(afterCreate.params[0]).toEqual({
+            context: expect.any(Object),
             data: {
                 ...fileData,
                 ...hookParamsExpected
@@ -139,6 +141,7 @@ describe("File lifecycle events", () => {
          */
         const beforeUpdate = lifecycleEventTracker.getLast(FileLifecycle.BEFORE_UPDATE);
         expect(beforeUpdate.params[0]).toEqual({
+            context: expect.any(Object),
             original: {
                 ...fileData,
                 ...hookParamsExpected,
@@ -152,6 +155,7 @@ describe("File lifecycle events", () => {
         });
         const afterUpdate = lifecycleEventTracker.getLast(FileLifecycle.AFTER_UPDATE);
         expect(afterUpdate.params[0]).toEqual({
+            context: expect.any(Object),
             original: {
                 ...fileData,
                 ...hookParamsExpected,
@@ -203,6 +207,7 @@ describe("File lifecycle events", () => {
          */
         const beforeDelete = lifecycleEventTracker.getLast(FileLifecycle.BEFORE_DELETE);
         expect(beforeDelete.params[0]).toEqual({
+            context: expect.any(Object),
             file: {
                 ...fileData,
                 ...hookParamsExpected
@@ -210,6 +215,7 @@ describe("File lifecycle events", () => {
         });
         const afterDelete = lifecycleEventTracker.getLast(FileLifecycle.AFTER_DELETE);
         expect(afterDelete.params[0]).toEqual({
+            context: expect.any(Object),
             file: {
                 ...fileData,
                 ...hookParamsExpected
@@ -252,6 +258,7 @@ describe("File lifecycle events", () => {
          */
         const beforeBatchCreate = lifecycleEventTracker.getLast(FileLifecycle.BEFORE_BATCH_CREATE);
         expect(beforeBatchCreate.params[0]).toEqual({
+            context: expect.any(Object),
             data: [
                 {
                     ...fileData,
@@ -261,6 +268,7 @@ describe("File lifecycle events", () => {
         });
         const afterBatchCreate = lifecycleEventTracker.getLast(FileLifecycle.AFTER_BATCH_CREATE);
         expect(afterBatchCreate.params[0]).toEqual({
+            context: expect.any(Object),
             data: [
                 {
                     ...fileData,

@@ -1,10 +1,11 @@
 import { Plugin } from "@webiny/plugins";
-import { File } from "~/types";
+import { File, FileManagerContext } from "~/types";
 
 /**
  * Parameters for beforeCreate lifecycle.
  */
 export interface BeforeCreateParams {
+    context: FileManagerContext;
     /**
      * Data to be inserted into the storage.
      */
@@ -14,6 +15,7 @@ export interface BeforeCreateParams {
  * Parameters for afterCreate lifecycle.
  */
 export interface AfterCreateParams {
+    context: FileManagerContext;
     /**
      * Data that was inserted into the storage.
      */
@@ -28,6 +30,7 @@ export interface AfterCreateParams {
  * Parameters for beforeUpdate lifecycle.
  */
 export interface BeforeUpdateParams {
+    context: FileManagerContext;
     /**
      * Original file from the storage.
      */
@@ -41,6 +44,7 @@ export interface BeforeUpdateParams {
  * Parameters for afterUpdate lifecycle.
  */
 export interface AfterUpdateParams {
+    context: FileManagerContext;
     /**
      * Original file from the storage.
      */
@@ -59,6 +63,7 @@ export interface AfterUpdateParams {
  * Parameters for beforeBatchCreate lifecycle.
  */
 export interface BeforeBatchCreateParams {
+    context: FileManagerContext;
     /**
      * Files to be inserted into the storage.
      */
@@ -69,6 +74,7 @@ export interface BeforeBatchCreateParams {
  * Parameters for afterBatchCreate lifecycle.
  */
 export interface AfterBatchCreateParams {
+    context: FileManagerContext;
     /**
      * Files that were inserted into the storage.
      */
@@ -82,6 +88,7 @@ export interface AfterBatchCreateParams {
  * Parameters for beforeDelete lifecycle.
  */
 export interface BeforeDeleteParams {
+    context: FileManagerContext;
     /**
      * File to be deleted from the storage.
      */
@@ -91,6 +98,7 @@ export interface BeforeDeleteParams {
  * Parameters for afterDelete lifecycle.
  */
 export interface AfterDeleteParams {
+    context: FileManagerContext;
     /**
      * File that was deleted from the storage.
      */

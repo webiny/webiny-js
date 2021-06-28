@@ -21,7 +21,7 @@ export interface Params {
 }
 
 export class FileStorageTransformPlugin extends Plugin {
-    public static readonly type = "fm.file.storage";
+    public static readonly type = "fm.files.storage.transform";
     private readonly _params: Params;
 
     public constructor(params: Params) {

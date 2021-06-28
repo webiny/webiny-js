@@ -25,6 +25,7 @@ import {
 } from "./graphql/fileManagerSettings";
 import { SecurityPermission } from "@webiny/api-security/types";
 import { until } from "./helpers";
+import { FilePhysicalStoragePlugin } from "~/plugins/definitions/FilePhysicalStoragePlugin";
 
 type UseGqlHandlerParams = {
     permissions?: SecurityPermission[];
@@ -82,6 +83,15 @@ export default (params?: UseGqlHandlerParams) => {
                 );
             }
         },
+        /**
+         * Mock physical file storage plugin.
+         */
+        new FilePhysicalStoragePlugin({
+            // eslint-disable-next-line
+            upload: async () => {},
+            // eslint-disable-next-line
+            delete: async () => {}
+        }),
         /**
          * Make sure we dont have undefined plugins value.
          */
