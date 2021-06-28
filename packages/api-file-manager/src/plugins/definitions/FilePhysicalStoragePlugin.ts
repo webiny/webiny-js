@@ -18,7 +18,7 @@ export interface DeleteParams {
 }
 
 export class FilePhysicalStoragePlugin extends Plugin {
-    public static readonly type = "fm.files.physicalStorage";
+    public static readonly type = "api-file-manager-storage";
     private readonly _params: Params;
 
     public constructor(params: Params) {

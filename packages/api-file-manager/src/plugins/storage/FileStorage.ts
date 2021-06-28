@@ -16,7 +16,7 @@ export interface FileStoragePlugin {
     delete: (args: { key: string }) => Promise<void>;
 }
 
-const storagePluginType = "fm.files.physicalStorage";
+const storagePluginType = "api-file-manager-storage";
 
 export class FileStorage {
     storagePlugin: FileStoragePlugin;
