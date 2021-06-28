@@ -1,6 +1,6 @@
 import { TargetDataModelEntity } from "../types";
 import mdbid from "mdbid";
-import { TargetDataModels } from "../entities";
+import { TargetDataModel } from "../entities";
 import TargetDataModelsResolver from "./TargetDataModelsResolver";
 
 /**
@@ -69,7 +69,7 @@ export default class TargetDataModelsMutationResolver extends TargetDataModelsRe
         };
 
         // Will throw an error if something goes wrong.
-        await TargetDataModels.put(targetDataModel);
+        await TargetDataModel.put(targetDataModel);
 
         return targetDataModel;
     }
@@ -89,7 +89,7 @@ export default class TargetDataModelsMutationResolver extends TargetDataModelsRe
         const updatedTargetDataModel = { ...targetDataModel, ...data };
 
         // Will throw an error if something goes wrong.
-        await TargetDataModels.update(updatedTargetDataModel);
+        await TargetDataModel.update(updatedTargetDataModel);
 
         return updatedTargetDataModel;
     }

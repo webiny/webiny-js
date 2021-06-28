@@ -166,8 +166,8 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     replaceWith: `__tests__/graphql/${dataModelName.plural}.ts`
                 },
                 {
-                    find: "/entities/TargetDataModels.ts",
-                    replaceWith: `/entities/${Case.pascal(dataModelName.plural)}.ts`
+                    find: "/entities/TargetDataModel.ts",
+                    replaceWith: `/entities/${Case.pascal(dataModelName.singular)}.ts`
                 },
                 {
                     find: "/resolvers/TargetDataModelsMutation.ts",
