@@ -1,6 +1,7 @@
 import { SecurityIdentity } from "@webiny/api-security";
 import useGqlHandler from "./useGqlHandler";
 import { SecurityPermission } from "@webiny/api-security/types";
+
 jest.setTimeout(10000);
 
 function Mock(prefix) {
@@ -52,25 +53,9 @@ const identityB = new SecurityIdentity({
 type IdentityPermissions = Array<[SecurityPermission[], SecurityIdentity]>;
 
 describe("Files Security Test", () => {
-    const { tenant, elasticSearch, createFile, createFiles, sleep } = useGqlHandler({
+    const { createFile, createFiles, until } = useGqlHandler({
         permissions: [{ name: "content.i18n" }, { name: "fm.*" }],
         identity: identityA
-    });
-
-    beforeEach(async () => {
-        try {
-            await elasticSearch.indices.create({
-                index: tenant.id + "-file-manager"
-            });
-        } catch (e) {}
-    });
-
-    afterEach(async () => {
-        try {
-            await elasticSearch.indices.delete({
-                index: tenant.id + "-file-manager"
-            });
-        } catch (e) {}
     });
 
     test(`"listFiles" only returns entries to which the identity has access to`, async () => {
@@ -130,16 +115,16 @@ describe("Files Security Test", () => {
             const [permissions, identity] = sufficientPermissionsAll[i];
             const { listFiles } = useGqlHandler({ permissions, identity });
 
-            // List should not be empty.
-            // Wait for the "Elasticsearch" to finish indexing.
-            while (true) {
-                await sleep(1000);
-                const [response] = await listFiles();
-
-                if (Array.isArray(response.data.fileManager.listFiles.data)) {
-                    break;
-                }
-            }
+            await until(
+                () =>
+                    listFiles({
+                        limit: 1000
+                    }).then(([data]) => data),
+                ({ data }) => {
+                    return !!data.fileManager.listFiles.data.length;
+                },
+                { name: "sufficientPermissionsAll list all files", tries: 10 }
+            );
 
             const [response] = await listFiles();
             expect(response).toEqual({

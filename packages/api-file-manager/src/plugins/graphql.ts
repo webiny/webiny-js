@@ -1,5 +1,5 @@
 import { Response, ErrorResponse, ListResponse } from "@webiny/handler-graphql";
-import { FileInput, FileManagerContext, FilesListOpts, Settings } from "../types";
+import { FileInput, FileManagerContext, FilesListOpts, FileManagerSettings } from "~/types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 
 const emptyResolver = () => ({});
@@ -101,6 +101,16 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
             type FileManagerSettingsResponse {
                 data: FileManagerSettings
                 error: FileError
+            }
+
+            input FileWhereInput {
+                search: String
+                type: String
+                type_in: [String!]
+                tag: String
+                tags_in: [String!]
+                id_in: [ID!]
+                id: ID
             }
 
             type FmQuery {
@@ -209,7 +219,13 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                     return resolve(() => context.fileManager.files.createFilesInBatch(args.data));
                 },
                 async deleteFile(_, args, context) {
-                    return resolve(() => context.fileManager.files.deleteFile(args.id));
+                    return resolve(async () => {
+                        const file = await context.fileManager.files.getFile(args.id);
+                        return await context.fileManager.storage.delete({
+                            id: file.id,
+                            key: file.key
+                        });
+                    });
                 },
                 async install(_, args, context) {
                     return resolve(() =>
@@ -219,7 +235,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                 async upgrade(_, args, context) {
                     return resolve(() => context.fileManager.system.upgrade(args.version));
                 },
-                async updateSettings(_, args: { data: Partial<Settings> }, context) {
+                async updateSettings(_, args: { data: Partial<FileManagerSettings> }, context) {
                     return resolve(() => context.fileManager.settings.updateSettings(args.data));
                 }
             }

@@ -6,7 +6,7 @@ interface Callable<TContext> {
 
 export class ContextPlugin<TContext> extends Plugin {
     public static readonly type = "context";
-    private _callable: Callable<TContext>;
+    private readonly _callable: Callable<TContext>;
 
     constructor(callable?: Callable<TContext>) {
         super();

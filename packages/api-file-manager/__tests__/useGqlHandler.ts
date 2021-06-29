@@ -2,16 +2,10 @@ import { createHandler } from "@webiny/handler-aws";
 import graphqlHandlerPlugins from "@webiny/handler-graphql";
 import tenancyPlugins from "@webiny/api-tenancy";
 import securityPlugins from "@webiny/api-security";
-import dbPlugins from "@webiny/handler-db";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
-import { DynamoDbDriver } from "@webiny/db-dynamodb";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { SecurityIdentity } from "@webiny/api-security";
-import elasticSearch from "@webiny/api-plugin-elastic-search-client";
-import { simulateStream } from "@webiny/project-utils/testing/dynamodb";
-import { Client } from "@elastic/elasticsearch";
 import filesPlugins from "~/plugins";
 
 // Graphql
@@ -30,39 +24,32 @@ import {
     UPDATE_SETTINGS
 } from "./graphql/fileManagerSettings";
 import { SecurityPermission } from "@webiny/api-security/types";
-import dynamoToElastic from "@webiny/api-dynamodb-to-elasticsearch/handler";
+import { until } from "./helpers";
+import { FilePhysicalStoragePlugin } from "~/plugins/definitions/FilePhysicalStoragePlugin";
 
 type UseGqlHandlerParams = {
     permissions?: SecurityPermission[];
     identity?: SecurityIdentity;
+    plugins?: any;
 };
 
-const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
-
-export default ({ permissions, identity }: UseGqlHandlerParams) => {
+export default (params?: UseGqlHandlerParams) => {
+    const { permissions, identity, plugins = [] } = params;
+    // @ts-ignore
+    if (typeof __getStorageOperationsPlugins !== "function") {
+        throw new Error(`There is no global "__getStorageOperationsPlugins" function.`);
+    }
+    // @ts-ignore
+    const storageOperations = __getStorageOperationsPlugins();
+    if (typeof storageOperations !== "function") {
+        throw new Error(
+            `A product of "__getStorageOperationsPlugins" must be a function to initialize storage operations.`
+        );
+    }
     const tenant = { id: "root", name: "Root", parent: null };
-
-    const documentClient = new DocumentClient({
-        convertEmptyValues: true,
-        endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
-        sslEnabled: false,
-        region: "local"
-    });
-
-    const elasticSearchContext = elasticSearch({
-        endpoint: `http://localhost:${ELASTICSEARCH_PORT}`
-    });
-
-    // Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
-    simulateStream(documentClient, createHandler(elasticSearchContext, dynamoToElastic()));
-
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler(
-        dbPlugins({
-            table: "FileManager",
-            driver: new DynamoDbDriver({ documentClient })
-        }),
-        elasticSearchContext,
+        storageOperations(),
         graphqlHandlerPlugins(),
         tenancyPlugins(),
         securityPlugins(),
@@ -95,7 +82,20 @@ export default ({ permissions, identity }: UseGqlHandlerParams) => {
                     })
                 );
             }
-        }
+        },
+        /**
+         * Mock physical file storage plugin.
+         */
+        new FilePhysicalStoragePlugin({
+            // eslint-disable-next-line
+            upload: async () => {},
+            // eslint-disable-next-line
+            delete: async () => {}
+        }),
+        /**
+         * Make sure we dont have undefined plugins value.
+         */
+        plugins || []
     );
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
@@ -113,34 +113,27 @@ export default ({ permissions, identity }: UseGqlHandlerParams) => {
 
     return {
         tenant,
-        elasticSearch: new Client({
-            node: `http://localhost:${ELASTICSEARCH_PORT}`
-        }),
-        sleep: (ms = 100) => {
-            return new Promise(resolve => {
-                setTimeout(resolve, ms);
-            });
-        },
+        until,
         handler,
         invoke,
         // Files
-        async createFile(variables) {
-            return invoke({ body: { query: CREATE_FILE, variables } });
+        async createFile(variables, fields: string[] = []) {
+            return invoke({ body: { query: CREATE_FILE(fields), variables } });
         },
-        async updateFile(variables) {
-            return invoke({ body: { query: UPDATE_FILE, variables } });
+        async updateFile(variables, fields: string[] = []) {
+            return invoke({ body: { query: UPDATE_FILE(fields), variables } });
         },
-        async createFiles(variables) {
-            return invoke({ body: { query: CREATE_FILES, variables } });
+        async createFiles(variables, fields: string[] = []) {
+            return invoke({ body: { query: CREATE_FILES(fields), variables } });
         },
         async deleteFile(variables) {
             return invoke({ body: { query: DELETE_FILE, variables } });
         },
-        async getFile(variables) {
-            return invoke({ body: { query: GET_FILE, variables } });
+        async getFile(variables, fields: string[] = []) {
+            return invoke({ body: { query: GET_FILE(fields), variables } });
         },
-        async listFiles(variables = {}) {
-            return invoke({ body: { query: LIST_FILES, variables } });
+        async listFiles(variables = {}, fields: string[] = []) {
+            return invoke({ body: { query: LIST_FILES(fields), variables } });
         },
         // File Manager settings
         async isInstalled(variables) {
