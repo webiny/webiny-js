@@ -1,12 +1,20 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import vpc from "./vpc";
-import defaultLambdaRole from "./defaultLambdaRole";
+import policies from "./policies";
 
 // @ts-ignore
 import { getLayerArn } from "@webiny/aws-layers";
 
+interface PreRenderingServiceParams {
+    env: Record<string, any>;
+    primaryDynamodbTable: aws.dynamodb.Table;
+    elasticsearchDynamodbTable: aws.dynamodb.Table;
+    bucket: aws.s3.Bucket;
+}
+
 class PageBuilder {
+    role: aws.iam.Role;
     functions: {
         render: aws.lambda.Function;
         flush: aws.lambda.Function;
@@ -15,9 +23,47 @@ class PageBuilder {
             process: aws.lambda.Function;
         };
     };
-    constructor({ env }: { env: Record<string, any> }) {
+
+    constructor({
+        env,
+        primaryDynamodbTable,
+        elasticsearchDynamodbTable,
+        bucket
+    }: PreRenderingServiceParams) {
+        const roleName = "pre-rendering-service-lambda-role";
+        this.role = new aws.iam.Role(roleName, {
+            assumeRolePolicy: {
+                Version: "2012-10-17",
+                Statement: [
+                    {
+                        Action: "sts:AssumeRole",
+                        Principal: {
+                            Service: "lambda.amazonaws.com"
+                        },
+                        Effect: "Allow"
+                    }
+                ]
+            }
+        });
+
+        const policy = policies.getPreRenderingServiceLambdaPolicy(
+            primaryDynamodbTable,
+            elasticsearchDynamodbTable,
+            bucket
+        );
+
+        new aws.iam.RolePolicyAttachment(`${roleName}-PreRenderingServiceLambdaPolicy`, {
+            role: this.role,
+            policyArn: policy.arn.apply(arn => arn)
+        });
+
+        new aws.iam.RolePolicyAttachment(`${roleName}-AWSLambdaVPCAccessExecutionRole`, {
+            role: this.role,
+            policyArn: aws.iam.ManagedPolicy.AWSLambdaVPCAccessExecutionRole
+        });
+
         const render = new aws.lambda.Function("ps-render", {
-            role: defaultLambdaRole.role.arn,
+            role: this.role.arn,
             runtime: "nodejs12.x",
             handler: "handler.handler",
             timeout: 600,
@@ -41,7 +87,7 @@ class PageBuilder {
         });
 
         const flush = new aws.lambda.Function("ps-flush", {
-            role: defaultLambdaRole.role.arn,
+            role: this.role.arn,
             runtime: "nodejs12.x",
             handler: "handler.handler",
             timeout: 30,
@@ -62,7 +108,7 @@ class PageBuilder {
         });
 
         const queueAdd = new aws.lambda.Function("ps-queue-add", {
-            role: defaultLambdaRole.role.arn,
+            role: this.role.arn,
             runtime: "nodejs12.x",
             handler: "handler.handler",
             timeout: 30,
@@ -83,7 +129,7 @@ class PageBuilder {
         });
 
         const queueProcess = new aws.lambda.Function("ps-queue-process", {
-            role: defaultLambdaRole.role.arn,
+            role: this.role.arn,
             runtime: "nodejs12.x",
             handler: "handler.handler",
             timeout: 300, // 5 minutes.
