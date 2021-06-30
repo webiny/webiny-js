@@ -1,8 +1,7 @@
-import { DynamoDbAttributePlugin } from "@webiny/db-dynamodb/plugins";
-import { DynamoDbAttributePluginArgs } from "@webiny/db-dynamodb/types";
+import { AttributePlugin, Params } from "@webiny/db-dynamodb/plugins/AttributePlugin";
 
-export class FileElasticsearchAttributePlugin extends DynamoDbAttributePlugin {
-    public constructor(params: Omit<DynamoDbAttributePluginArgs, "entity">) {
+export class FileElasticsearchAttributePlugin extends AttributePlugin {
+    public constructor(params: Omit<Params, "entity">) {
         super({
             ...params,
             entity: "FilesElasticsearch"

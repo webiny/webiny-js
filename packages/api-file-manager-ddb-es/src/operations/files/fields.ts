@@ -23,6 +23,12 @@ export default () => [
         field: "size",
         keyword: false
     }),
+    new ElasticsearchFieldPlugin({
+        entity: entityName,
+        field: "tag",
+        path: "tags",
+        keyword: true
+    }),
     /**
      * Defines all fields that are not strictly defined.
      */

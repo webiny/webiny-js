@@ -23,6 +23,7 @@ import { decodeCursor, encodeCursor } from "@webiny/api-elasticsearch/cursors";
 import { createElasticsearchBody } from "~/operations/files/body";
 import { transformFromIndex, transformToIndex } from "~/operations/files/transformers";
 import { FileIndexTransformPlugin } from "~/plugins/FileIndexTransformPlugin";
+import { createLimit } from "@webiny/api-elasticsearch/limit";
 
 interface FileItem extends File {
     PK: string;
@@ -333,7 +334,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
     public async tags(
         params: FileManagerFilesStorageOperationsTagsParams
     ): Promise<FileManagerFilesStorageOperationsTagsResponse> {
-        const { where, limit } = params;
+        const { where, limit: initialLimit } = params;
 
         const esDefaults = configurations.es(this.context);
 
@@ -348,6 +349,8 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             const tenant = this.context.tenancy.getCurrentTenant();
             must.push({ term: { "tenant.keyword": tenant.id } });
         }
+
+        const limit = createLimit(initialLimit);
 
         const body = {
             query: {

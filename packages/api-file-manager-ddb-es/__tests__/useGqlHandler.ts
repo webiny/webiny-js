@@ -18,7 +18,7 @@ import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { SecurityIdentity } from "@webiny/api-security";
 
 /**
- * Load some stuff from the api-headless-cms
+ * Load some test stuff from the api-file-manager
  */
 import {
     CREATE_FILE,
