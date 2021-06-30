@@ -15,6 +15,7 @@ import { FilePlugin } from "~/plugins/definitions/FilePlugin";
 import { FilesStorageOperationsProviderPlugin } from "~/plugins/definitions/FilesStorageOperationsProviderPlugin";
 import WebinyError from "@webiny/error";
 import { runLifecycleEvent } from "~/plugins/crud/utils/lifecycleEvents";
+import { createLimit } from "@webiny/api-elasticsearch/limit";
 
 const BATCH_CREATE_MAX_FILES = 20;
 
@@ -352,7 +353,7 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
                 sort: ["id_DESC"]
             });
         },
-        async listTags({ after, limit }) {
+        async listTags({ after, limit } = {}) {
             await checkBasePermissions(context);
             const { i18nContent } = context;
 
@@ -362,7 +363,7 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
 
             const params = {
                 where,
-                limit: limit || 10000,
+                limit: createLimit(limit),
                 after
             };
 
@@ -372,7 +373,10 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
                  * TODO: use when changing GraphQL output of the tags.
                  */
                 const [tags] = await storageOperations.tags(params);
-                return tags;
+                /**
+                 * just to keep it standardized, sort by the tag ASC
+                 */
+                return tags.sort();
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not search for tags.",

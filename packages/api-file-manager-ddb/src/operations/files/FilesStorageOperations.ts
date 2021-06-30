@@ -304,7 +304,8 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
         }
 
         const options: DynamoDBToolboxQueryOptions = {
-            filters
+            filters,
+            reverse: false
         };
 
         let items: FileItem[] = [];
@@ -338,7 +339,7 @@ export class FilesStorageOperations implements FileManagerFilesStorageOperations
             return collection;
         }, {});
 
-        const tags: string[] = Object.values(tagsObject);
+        const tags: string[] = Object.keys(tagsObject);
 
         const hasMoreItems = false;
         const totalCount = tags.length;

@@ -127,3 +127,11 @@ export const LIST_FILES = (fields: string[]) => {
         }
     `;
 };
+
+export const LIST_TAGS = /* GraphQL */ `
+    query ListTags {
+        fileManager {
+            listTags
+        }
+    }
+`;

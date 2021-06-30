@@ -22,6 +22,15 @@ export default () => [
         }
     }),
     /**
+     * Path plugin for tag field.
+     */
+    new FieldPathPlugin({
+        fields: ["tag", "tags"],
+        createPath: () => {
+            return `tags`;
+        }
+    }),
+    /**
      * Value transformation for the dateTime fields.
      */
     new DateTimeTransformPlugin({

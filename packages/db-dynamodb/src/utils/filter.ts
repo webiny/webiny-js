@@ -1,8 +1,8 @@
 import dotProp from "dot-prop";
 import WebinyError from "@webiny/error";
 import { Plugin } from "@webiny/plugins";
-import { ValueFilterPlugin, Matches, MatchesParams } from "~/plugins/ValueFilterPlugin";
-import { ValueTransformPlugin, Transform } from "~/plugins/ValueTransformPlugin";
+import { ValueFilterPlugin } from "~/plugins/ValueFilterPlugin";
+import { ValueTransformPlugin } from "~/plugins/ValueTransformPlugin";
 import { FieldPathPlugin } from "~/plugins/FieldPathPlugin";
 import { ContextInterface } from "@webiny/handler/types";
 
@@ -20,8 +20,8 @@ interface MappedPluginParams {
 
 interface Filter {
     compareValue: any;
-    matches: Matches;
-    transformValue: Transform;
+    filterPlugin: ValueFilterPlugin;
+    transformValuePlugin: ValueTransformPlugin;
     path: string;
     negate: boolean;
 }
@@ -87,10 +87,8 @@ const createFilters = (params: Omit<Params, "items">): Filter[] => {
             return {
                 field,
                 compareValue: value,
-                matches: (values: MatchesParams) => filterPlugin.matches(values),
-                transformValue: transformValuePlugin
-                    ? transformValuePlugin.transform
-                    : value => value,
+                filterPlugin,
+                transformValuePlugin,
                 path: fieldPathPlugin ? fieldPathPlugin.createPath(field) : field,
                 negate
             };
@@ -100,11 +98,14 @@ const createFilters = (params: Omit<Params, "items">): Filter[] => {
 /**
  * Transforms the value with given transformer callable.
  */
-const transform = (value: any, transformValue: (value: any) => any): any => {
-    if (Array.isArray(value)) {
-        return value.map(transformValue);
+const transform = (value: any, transformValuePlugin?: ValueTransformPlugin): any => {
+    if (!transformValuePlugin) {
+        return value;
     }
-    return transformValue(value);
+    if (Array.isArray(value)) {
+        return value.map(v => transformValuePlugin.transform(v));
+    }
+    return transformValuePlugin.transform(value);
 };
 /**
  * Creates a filter callable that we can send to the .filter() method of the array.
@@ -117,11 +118,11 @@ const createFilterCallable = ({ where, context }) => {
 
     return (item: any) => {
         for (const filter of filters) {
-            const { compareValue, path, transformValue } = filter;
-            const value = dotProp.get(item, path);
-            const matched = filter.matches({
-                value: transform(value, transformValue),
-                compareValue: transform(compareValue, transformValue)
+            const value = transform(dotProp.get(item, filter.path), filter.transformValuePlugin);
+            const compareValue = transform(filter.compareValue, filter.transformValuePlugin);
+            const matched = filter.filterPlugin.matches({
+                value,
+                compareValue
             });
             if ((filter.negate ? !matched : matched) === false) {
                 return false;
