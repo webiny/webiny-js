@@ -1,5 +1,7 @@
 const path = require("path");
 const { upgradeGraphQLIndex } = require("./upgradeApiFileManager");
+const { upgradeDeliveryPath } = require("./upgradeDeliveryPath");
+
 const {
     createMorphProject,
     addPackagesToDependencies,
@@ -58,6 +60,10 @@ const plugin = () => {
 
             info("Writing changes...");
             await upgrade.save();
+
+            // Changes "/static-*" to "/static/*", in delivery.ts Pulumi file.
+            upgradeDeliveryPath({ context });
+
             /**
              * Run prettier on all changed files.
              */
