@@ -1,8 +1,7 @@
-import { DynamoDbAttributePlugin } from "@webiny/db-dynamodb/plugins";
-import { DynamoDbAttributePluginArgs } from "@webiny/db-dynamodb/types";
+import { AttributePlugin, Params } from "@webiny/db-dynamodb/plugins";
 
-export class FileAttributePlugin extends DynamoDbAttributePlugin {
-    public constructor(params: Omit<DynamoDbAttributePluginArgs, "entity">) {
+export class FileAttributePlugin extends AttributePlugin {
+    public constructor(params: Omit<Params, "entity">) {
         super({
             ...params,
             entity: "Files"
