@@ -9,13 +9,9 @@ import { Plugin } from "@webiny/plugins/types";
 import WebinyError from "@webiny/error";
 import lodashSortBy from "lodash.sortby";
 import dotProp from "dot-prop";
-import {
-    CmsFieldFilterPathPlugin,
-    CmsFieldFilterValueTransformPlugin,
-    CmsFieldValueFilterArgs,
-    CmsFieldValueFilterPlugin
-} from "../../types";
+import { CmsFieldFilterPathPlugin, CmsFieldFilterValueTransformPlugin } from "../../types";
 import { systemFields } from "./systemFields";
+import { ValueFilterPlugin } from "@webiny/db-dynamodb/plugins/ValueFilterPlugin";
 
 interface ModelField {
     def: CmsContentModelField;
@@ -35,7 +31,7 @@ interface CreateFiltersArgs {
 interface ItemFilter {
     fieldId: string;
     valuePath: string;
-    matches: (args: CmsFieldValueFilterArgs<any, any>) => boolean;
+    filterPlugin: ValueFilterPlugin;
     negate: boolean;
     compareValue: any;
     transformValue: <I = any, O = any>(value: I) => O;
@@ -70,9 +66,9 @@ const extractWhereArgs = (key: string) => {
 };
 const createFilters = (args: CreateFiltersArgs): ItemFilter[] => {
     const { where, context, fields } = args;
-    const filterPlugins = getMappedPlugins<CmsFieldValueFilterPlugin<any>>({
+    const filterPlugins = getMappedPlugins<ValueFilterPlugin>({
         context,
-        type: "cms-field-value-filter",
+        type: ValueFilterPlugin.type,
         property: "operation"
     });
     const transformValuePlugins = getMappedPlugins<CmsFieldFilterValueTransformPlugin>({
@@ -134,7 +130,7 @@ const createFilters = (args: CreateFiltersArgs): ItemFilter[] => {
         return {
             fieldId,
             valuePath,
-            matches: filterPlugin.matches,
+            filterPlugin,
             negate,
             compareValue: where[key],
             transformValue: (value: any) => {
@@ -167,8 +163,8 @@ export const filterItems = (args: FilterItemsArgs): CmsContentEntry[] => {
             const transformedCompareValue = Array.isArray(compareValue)
                 ? compareValue.map(transformValue)
                 : transformValue(compareValue);
-            const matched = filter.matches({
-                fieldValue: transformedFieldValue,
+            const matched = filter.filterPlugin.matches({
+                value: transformedFieldValue,
                 compareValue: transformedCompareValue
             });
             if ((filter.negate ? !matched : matched) === false) {
