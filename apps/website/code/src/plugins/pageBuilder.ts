@@ -96,5 +96,5 @@ export default [
     margin,
     textSetting,
     visibility,
-    responsiveMode(),
+    responsiveMode()
 ];
