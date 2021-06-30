@@ -1,7 +1,7 @@
 import { ContextInterface } from "@webiny/handler/types";
 import { PluginsContainer } from "@webiny/plugins";
 import { getExtraAttributes } from "~/utils/attributes";
-import { AttributePlugin, Params } from "~/plugins";
+import { AttributePlugin, Params } from "~/plugins/AttributePlugin";
 
 const testEntityName = "testEntity";
 class TestEntityAttributePlugin extends AttributePlugin {
