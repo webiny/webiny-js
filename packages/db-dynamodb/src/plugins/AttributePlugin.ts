@@ -1,13 +1,25 @@
 import { Plugin } from "@webiny/plugins";
 import WebinyError from "@webiny/error";
-import { DynamoDbAttributePluginArgs, DynamoDbAttributePluginAttributeParams } from "~/types";
+import { DynamoDBTypes } from "dynamodb-toolbox/dist/classes/Table";
+import {
+    EntityAttributeConfig,
+    EntityCompositeAttributes
+} from "dynamodb-toolbox/dist/classes/Entity";
 const reservedFields = ["PK", "SK", "index", "data"];
+
+export type DefinitionParams = DynamoDBTypes | EntityAttributeConfig | EntityCompositeAttributes;
+
+export interface Params {
+    entity: string;
+    attribute: string;
+    params: DefinitionParams;
+}
 
 export abstract class AttributePlugin extends Plugin {
     public static readonly type = "db.dynamodb.attribute";
     private readonly _entity: string;
     private readonly _attribute: string;
-    private readonly _params: DynamoDbAttributePluginAttributeParams;
+    private readonly _params: DefinitionParams;
 
     public get entity(): string {
         return this._entity;
@@ -17,7 +29,7 @@ export abstract class AttributePlugin extends Plugin {
         return this._attribute;
     }
 
-    public constructor({ entity, attribute, params }: DynamoDbAttributePluginArgs) {
+    public constructor({ entity, attribute, params }: Params) {
         super();
 
         this.validateReserved(attribute);
@@ -27,7 +39,7 @@ export abstract class AttributePlugin extends Plugin {
         this._params = params;
     }
 
-    public getDefinition(): Record<string, DynamoDbAttributePluginAttributeParams> {
+    public getDefinition(): Record<string, DefinitionParams> {
         return {
             [this.attribute]: this._params
         };

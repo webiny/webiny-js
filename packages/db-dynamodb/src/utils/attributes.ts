@@ -1,13 +1,12 @@
 import { ContextInterface } from "@webiny/handler/types";
-import { DynamoDbAttributePlugin } from "~/plugins";
-import { DynamoDbAttributePluginAttributeParams } from "~/types";
+import { AttributePlugin, DefinitionParams } from "~/plugins";
 
 export const getExtraAttributes = (
     context: ContextInterface,
     entity: string
-): Record<string, DynamoDbAttributePluginAttributeParams> => {
+): Record<string, DefinitionParams> => {
     return context.plugins
-        .byType<DynamoDbAttributePlugin>(DynamoDbAttributePlugin.type)
+        .byType<AttributePlugin>(AttributePlugin.type)
         .filter(plugin => plugin.entity === entity)
         .reduce((attributes, plugin) => {
             return {
