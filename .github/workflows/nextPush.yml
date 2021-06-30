@@ -2,7 +2,7 @@ name: Next Branch - Push
 
 on:
   push:
-    branches: [test/v5/cypress-ci-cd]
+    branches: [next]
 
 env:
   NODE_OPTIONS: --max_old_space_size=4096
@@ -135,6 +135,8 @@ jobs:
           node-version: 12
 
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - uses: actions/cache@v2
         with:
