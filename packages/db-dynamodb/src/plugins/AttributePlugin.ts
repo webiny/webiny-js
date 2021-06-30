@@ -3,7 +3,7 @@ import WebinyError from "@webiny/error";
 import { DynamoDbAttributePluginArgs, DynamoDbAttributePluginAttributeParams } from "~/types";
 const reservedFields = ["PK", "SK", "index", "data"];
 
-export abstract class DynamoDbAttributePlugin extends Plugin {
+export abstract class AttributePlugin extends Plugin {
     public static readonly type = "db.dynamodb.attribute";
     private readonly _entity: string;
     private readonly _attribute: string;

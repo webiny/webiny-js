@@ -1,1 +1,1 @@
-export * from "./DynamoDbAttributePlugin";
+export * from "./AttributePlugin";
