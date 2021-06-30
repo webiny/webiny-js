@@ -27,7 +27,7 @@
       "path": "../api-dynamodb-to-elasticsearch"
     },
     {
-      "path": "../api-plugin-elastic-search-client"
+      "path": "../api-elasticsearch"
     }
   ],
   "compilerOptions": {
@@ -48,8 +48,8 @@
       "@webiny/db-dynamodb": ["../db-dynamodb/src"],
       "@webiny/api-dynamodb-to-elasticsearch/*": ["../api-dynamodb-to-elasticsearch/src/*"],
       "@webiny/api-dynamodb-to-elasticsearch": ["../api-dynamodb-to-elasticsearch/src"],
-      "@webiny/api-plugin-elastic-search-client/*": ["../api-plugin-elastic-search-client/src/*"],
-      "@webiny/api-plugin-elastic-search-client": ["../api-plugin-elastic-search-client/src"]
+      "@webiny/api-elasticsearch/*": ["../api-elasticsearch/src/*"],
+      "@webiny/api-elasticsearch": ["../api-elasticsearch/src"]
     },
     "baseUrl": "."
   }

@@ -22,7 +22,7 @@ import {
     Sort as esSort,
     FieldSortOptions as esFieldSortOptions,
     ElasticsearchBoolQueryConfig
-} from "@webiny/api-plugin-elastic-search-client/types";
+} from "@webiny/api-elasticsearch/types";
 
 type ModelFieldPath = string | ((value: string) => string);
 interface ModelField {

@@ -26,34 +26,9 @@ const fileBData = {
 };
 
 describe("Files CRUD test", () => {
-    const {
-        tenant,
-        elasticSearch,
-        until,
-        createFile,
-        updateFile,
-        createFiles,
-        getFile,
-        listFiles
-    } = useGqlHandler({
+    const { createFile, updateFile, createFiles, getFile, listFiles, until } = useGqlHandler({
         permissions: [{ name: "*" }],
         identity: identityA
-    });
-
-    beforeEach(async () => {
-        try {
-            await elasticSearch.indices.create({
-                index: tenant.id + "-file-manager"
-            });
-        } catch (e) {}
-    });
-
-    afterEach(async () => {
-        try {
-            await elasticSearch.indices.delete({
-                index: tenant.id + "-file-manager"
-            });
-        } catch (e) {}
     });
 
     test("should create, read, update and delete files", async () => {
@@ -62,7 +37,10 @@ describe("Files CRUD test", () => {
             data: {
                 fileManager: {
                     createFile: {
-                        data: { ...fileAData, id: create.data.fileManager.createFile.data.id },
+                        data: {
+                            ...fileAData,
+                            id: expect.any(String)
+                        },
                         error: null
                     }
                 }
@@ -93,7 +71,9 @@ describe("Files CRUD test", () => {
                                         data: null,
                                         message: `Tag ${LONG_STRING} is more than 50 characters long.`
                                     }
-                                }
+                                },
+                                original: expect.any(Object),
+                                file: expect.any(Object)
                             }
                         }
                     }
@@ -141,7 +121,8 @@ describe("Files CRUD test", () => {
                 data.fileManager.listFiles.data.length === 1 &&
                 data.fileManager.listFiles.data[0].tags.length === 1,
             {
-                tries: 10
+                tries: 10,
+                name: "list files after update tags"
             }
         );
 
@@ -179,10 +160,11 @@ describe("Files CRUD test", () => {
         });
 
         await until(
-            () => listFiles().then(([data]) => data),
-            ({ data }) =>
-                Array.isArray(data.fileManager.listFiles.data) &&
-                data.fileManager.listFiles.data.length === 2
+            () => listFiles({}).then(([data]) => data),
+            ({ data }) => {
+                return data.fileManager.listFiles.data.length === 2;
+            },
+            { name: "list all files", tries: 10 }
         );
 
         // Let's get a all files
@@ -220,10 +202,14 @@ describe("Files CRUD test", () => {
         }
 
         await until(
-            () => listFiles({ limit: testFiles.length }).then(([response]) => response),
-            ({ data }) =>
-                Array.isArray(data.fileManager.listFiles.data) &&
-                data.fileManager.listFiles.meta.totalCount === testFiles.length
+            () =>
+                listFiles({
+                    limit: 1000
+                }).then(([data]) => data),
+            ({ data }) => {
+                return data.fileManager.listFiles.data.length === testFiles.length;
+            },
+            { name: "bulk list all files", tries: 10 }
         );
 
         const inElastic = testFiles.reverse();

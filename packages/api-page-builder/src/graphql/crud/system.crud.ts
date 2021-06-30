@@ -67,7 +67,7 @@ export default {
                     }
                 },
                 async install({ name, insertDemoData }) {
-                    const { pageBuilder, fileManager, elasticSearch } = context;
+                    const { pageBuilder, fileManager, elasticsearch } = context;
 
                     const hookPlugins = context.plugins.byType<InstallationPlugin>(
                         InstallationPlugin.type
@@ -86,9 +86,9 @@ export default {
 
                     // 1. Create ES index if it doesn't already exist.
                     const { index } = defaults.es(context);
-                    const { body: exists } = await elasticSearch.indices.exists({ index });
+                    const { body: exists } = await elasticsearch.indices.exists({ index });
                     if (!exists) {
-                        await elasticSearch.indices.create({
+                        await elasticsearch.indices.create({
                             index,
                             body: {
                                 // need this part for sorting to work on text fields
