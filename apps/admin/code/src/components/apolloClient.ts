@@ -10,7 +10,7 @@ export const createApolloClient = ({ uri }) => {
     return new ApolloClient({
         link: ApolloLink.from([
             /**
-             * This will process links from plugins on every request
+             * This will process links from plugins on every request.
              */
             new ApolloDynamicLink(),
             /**
