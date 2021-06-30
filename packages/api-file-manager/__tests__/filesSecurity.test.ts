@@ -139,7 +139,8 @@ describe("Files Security Test", () => {
                             ],
                             meta: {
                                 cursor: expect.any(String),
-                                totalCount: expect.any(Number)
+                                totalCount: expect.any(Number),
+                                hasMoreItems: false
                             },
                             error: null
                         }
@@ -164,7 +165,8 @@ describe("Files Security Test", () => {
                         ],
                         meta: {
                             cursor: expect.any(String),
-                            totalCount: expect.any(Number)
+                            totalCount: expect.any(Number),
+                            hasMoreItems: false
                         },
                         error: null
                     }
@@ -188,7 +190,8 @@ describe("Files Security Test", () => {
                         ],
                         meta: {
                             cursor: expect.any(String),
-                            totalCount: expect.any(Number)
+                            totalCount: expect.any(Number),
+                            hasMoreItems: false
                         },
                         error: null
                     }

@@ -119,6 +119,7 @@ export const LIST_FILES = (fields: string[]) => {
                     meta {
                         cursor
                         totalCount
+                        hasMoreItems
                     }
                     error ${ERROR_FIELD}
                 }

@@ -46,6 +46,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
             type FileListMeta {
                 cursor: String
                 totalCount: Int
+                hasMoreItems: Boolean
             }
 
             type FileError {
