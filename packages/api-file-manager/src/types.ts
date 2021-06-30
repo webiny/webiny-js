@@ -88,7 +88,7 @@ interface FilesCrudListTagsParams {
 export interface FilesCRUD {
     getFile(id: string): Promise<File>;
     listFiles(opts?: FilesListOpts): Promise<[File[], FileListMeta]>;
-    listTags(params?: FilesCrudListTagsParams): Promise<string[]>;
+    listTags(params: FilesCrudListTagsParams): Promise<string[]>;
     createFile(data: FileInput): Promise<File>;
     updateFile(id: string, data: Partial<FileInput>): Promise<File>;
     deleteFile(id: string): Promise<boolean>;
