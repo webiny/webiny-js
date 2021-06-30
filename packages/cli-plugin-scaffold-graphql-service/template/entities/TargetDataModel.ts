@@ -9,7 +9,7 @@ import { TargetDataModelEntity } from "../types";
  */
 export default new Entity<TargetDataModelEntity>({
     table,
-    name: "TargetDataModels",
+    name: "TargetDataModel",
     timestamps: false,
     attributes: {
         PK: { partitionKey: true },

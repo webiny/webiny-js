@@ -8302,7 +8302,35 @@ __metadata:
     "@webiny/project-utils": ^5.9.0
     aws-sdk: ^2.539.0
     dynamodb-toolbox: ^0.3.4
-    execa: ^5.0.0
+    jest: ^26.6.3
+    jest-dynalite: ^3.2.0
+    jsonpack: ^1.1.5
+    lodash.chunk: ^4.2.0
+    lodash.omit: ^4.5.0
+    rimraf: ^3.0.2
+    ttypescript: ^1.5.12
+    typescript: ^4.1.3
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-file-manager-ddb@workspace:packages/api-file-manager-ddb":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-file-manager-ddb@workspace:packages/api-file-manager-ddb"
+  dependencies:
+    "@babel/cli": ^7.5.5
+    "@babel/core": ^7.5.5
+    "@babel/plugin-proposal-object-rest-spread": ^7.5.5
+    "@babel/plugin-transform-runtime": ^7.5.5
+    "@babel/preset-env": ^7.5.5
+    "@babel/preset-typescript": ^7.0.0
+    "@babel/runtime": ^7.5.5
+    "@webiny/api-file-manager": ^5.9.0
+    "@webiny/cli": ^5.9.0
+    "@webiny/db-dynamodb": ^5.9.0
+    "@webiny/error": ^5.9.0
+    "@webiny/project-utils": ^5.9.0
+    aws-sdk: ^2.539.0
+    dynamodb-toolbox: ^0.3.4
     jest: ^26.6.3
     jest-dynalite: ^3.2.0
     jsonpack: ^1.1.5
@@ -9777,6 +9805,7 @@ __metadata:
     ncp: ^2.0.0
     pirates: ^4.0.1
     prettier: ^1.14.2
+    replace-in-path: ^1.0.4
     rimraf: ^3.0.2
     semver: 7.3.4
     ts-morph: ^11.0.0
@@ -9845,9 +9874,13 @@ __metadata:
     "@webiny/handler": ^5.9.0
     "@webiny/plugins": ^5.9.0
     "@webiny/project-utils": ^5.9.0
+    date-fns: ^2.22.1
+    dot-prop: ^6.0.1
     dynamodb-toolbox: ^0.3.4
+    is-number: ^7.0.0
     jest: ^26.6.3
     jest-dynalite: ^3.2.0
+    lodash.sortby: ^4.7.0
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: ^4.1.3
@@ -15852,7 +15885,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:^2.21.1":
+"date-fns@npm:^2.21.1, date-fns@npm:^2.22.1":
   version: 2.22.1
   resolution: "date-fns@npm:2.22.1"
   checksum: a89dc6cdf3929b3f0d54d129a3c288df995fc3e6c8099dacc215e5404b4950fc8551d11a58968dfd3b8d576d0c5e637072f615e8f9c3e47d82c81e3952007d5b
@@ -16812,6 +16845,15 @@ __metadata:
   dependencies:
     is-obj: ^2.0.0
   checksum: 76e6693d8803eeff9cb920988446bf223cf1f6e5b1c0c2fe07a66906392134931a481b11e3c0bd852c5cfc97fad65258bcb4359169ad1d8d624cb3f56932be98
+  languageName: node
+  linkType: hard
+
+"dot-prop@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "dot-prop@npm:6.0.1"
+  dependencies:
+    is-obj: ^2.0.0
+  checksum: 06793b868079d70bffce4f0ac7e32055778723cc90b6e0bb12a2dff157298e693fb9ac7733556e4bb2d54de9d670a0b6a67610295cb1119a204fb7e340fafe54
   languageName: node
   linkType: hard
 

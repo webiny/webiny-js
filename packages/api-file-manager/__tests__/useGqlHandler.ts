@@ -15,7 +15,8 @@ import {
     UPDATE_FILE,
     DELETE_FILE,
     GET_FILE,
-    LIST_FILES
+    LIST_FILES,
+    LIST_TAGS
 } from "./graphql/file";
 import {
     INSTALL,
@@ -134,6 +135,9 @@ export default (params?: UseGqlHandlerParams) => {
         },
         async listFiles(variables = {}, fields: string[] = []) {
             return invoke({ body: { query: LIST_FILES(fields), variables } });
+        },
+        async listTags(variables = {}) {
+            return invoke({ body: { query: LIST_TAGS, variables } });
         },
         // File Manager settings
         async isInstalled(variables) {

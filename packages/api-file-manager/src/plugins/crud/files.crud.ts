@@ -362,7 +362,7 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
 
             const params = {
                 where,
-                limit: limit || 10000,
+                limit: limit || 100000,
                 after
             };
 
@@ -372,7 +372,10 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
                  * TODO: use when changing GraphQL output of the tags.
                  */
                 const [tags] = await storageOperations.tags(params);
-                return tags;
+                /**
+                 * just to keep it standardized, sort by the tag ASC
+                 */
+                return tags.sort();
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not search for tags.",

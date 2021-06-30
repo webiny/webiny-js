@@ -46,6 +46,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
             type FileListMeta {
                 cursor: String
                 totalCount: Int
+                hasMoreItems: Boolean
             }
 
             type FileError {
@@ -191,7 +192,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                 },
                 async listTags(_, args, context) {
                     try {
-                        return await context.fileManager.files.listTags();
+                        return await context.fileManager.files.listTags(args || {});
                     } catch (error) {
                         return new ErrorResponse(error);
                     }
