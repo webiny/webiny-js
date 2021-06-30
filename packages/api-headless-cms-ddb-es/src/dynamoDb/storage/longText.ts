@@ -1,4 +1,3 @@
-import { gzip, ungzip } from "node-gzip";
 import WebinyError from "@webiny/error";
 import {
     CmsContentEntry,
@@ -6,12 +5,13 @@ import {
     CmsContentModelField,
     CmsModelFieldToStoragePlugin
 } from "@webiny/api-headless-cms/types";
+import { gzip, ungzip } from "@webiny/api-headless-cms/utils";
 
-export type OriginalValue = Record<string, any> | any[];
+export type OriginalValue = string | string[] | Record<string, any>;
 
 export interface StorageValue {
     compression: string;
-    value: any;
+    value: string | string[];
 }
 
 interface CreateCacheKeyArgs {
@@ -88,7 +88,7 @@ export default (): CmsModelFieldToStoragePlugin<OriginalValue, StorageValue> => 
              * In case of field with "multipleValues", value will be an array
              */
             if (Array.isArray(value)) {
-                const decompressed = [];
+                const decompressed: string[] = [];
                 for (let i = 0; i < value.length; i++) {
                     const current = convertToBuffer(value[i]);
                     const decompressedBuffer = await ungzip(current);
@@ -136,6 +136,10 @@ export default (): CmsModelFieldToStoragePlugin<OriginalValue, StorageValue> => 
                     compression: GZIP,
                     value: compressedValues
                 };
+            }
+            // FIXME: Have to refine OriginalValue type
+            if (typeof value !== "string") {
+                return value;
             }
 
             const compressed = await gzip(value);
