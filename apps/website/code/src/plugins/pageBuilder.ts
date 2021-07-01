@@ -4,6 +4,11 @@
 import linkPreload from "./linkPreload";
 
 /**
+ * Ensures GraphQL's PbPage and PbPageListItem types are correctly cached.
+ */
+import apolloCacheObjectId from "@webiny/app-page-builder/render/plugins/apolloCacheObjectId";
+
+/**
  * Page element plugins to render page content.
  */
 import document from "@webiny/app-page-builder/render/plugins/elements/document";
@@ -45,6 +50,7 @@ import padding from "@webiny/app-page-builder/render/plugins/elementSettings/pad
 import margin from "@webiny/app-page-builder/render/plugins/elementSettings/margin";
 import textSetting from "@webiny/app-page-builder/render/plugins/elementSettings/text";
 import visibility from "@webiny/app-page-builder/render/plugins/elementSettings/visibility";
+
 /**
  * Responsive display mode plugins.
  */
@@ -52,6 +58,8 @@ import responsiveMode from "@webiny/app-page-builder/render/plugins/responsiveMo
 
 export default [
     linkPreload(),
+    apolloCacheObjectId,
+
     // Page elements
     document(),
     block(),
@@ -72,8 +80,10 @@ export default [
     pinterest(),
     pagesList(),
     imagesList(),
+
     // Page settings
     pageSettings(),
+
     // Page element settings
     align,
     animation,

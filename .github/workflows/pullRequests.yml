@@ -35,7 +35,7 @@ jobs:
         id: cached-packages
         with:
           path: .webiny/cached-packages
-          key: cached-packages-${{ runner.os }}-${{ github.ref }}
+          key: cached-packages-${{ runner.os }}-${{ github.ref }}-v2
 
       - name: Install dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true' || steps.cached-packages.outputs.cache-hit != 'true'
@@ -64,7 +64,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: cached-packages-${{ runner.os }}-${{ github.ref }}
+          key: cached-packages-${{ runner.os }}-${{ github.ref }}-v2
 
       - name: Install dependencies
         run: yarn --immutable
@@ -105,7 +105,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: cached-packages-${{ runner.os }}-${{ github.ref }}
+          key: cached-packages-${{ runner.os }}-${{ github.ref }}-v2
 
       - name: Install dependencies
         run: yarn --immutable
@@ -139,7 +139,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: cached-packages-${{ runner.os }}-${{ github.ref }}
+          key: cached-packages-${{ runner.os }}-${{ github.ref }}-v2
 
       - name: Install dependencies
         run: yarn --immutable

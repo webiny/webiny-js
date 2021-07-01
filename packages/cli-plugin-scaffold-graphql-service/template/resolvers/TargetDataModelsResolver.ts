@@ -11,7 +11,7 @@ export default class TargetDataModelMutationResolver {
      * Generates primary key (PK), to be used upon mutating / querying DynamoDB data.
      * @param base
      */
-    getPK(base = "TargetDataModels") {
+    getPK(base = "TargetDataModel") {
         // By default, Webiny Admin Area supports content creation in multiple locales.
         // The prepended "L#${locale}" designates to which locale our data belongs to.
         const locale = this.context.i18nContent.getLocale().code;

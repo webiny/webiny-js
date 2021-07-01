@@ -80,29 +80,29 @@ __metadata:
   linkType: hard
 
 "@aws-amplify/auth@npm:^4.0.2":
-  version: 4.0.2
-  resolution: "@aws-amplify/auth@npm:4.0.2"
+  version: 4.0.3
+  resolution: "@aws-amplify/auth@npm:4.0.3"
   dependencies:
-    "@aws-amplify/cache": 4.0.4
-    "@aws-amplify/core": 4.1.0
+    "@aws-amplify/cache": 4.0.5
+    "@aws-amplify/core": 4.1.1
     amazon-cognito-identity-js: 5.0.3
     crypto-js: ^4.0.0
-  checksum: e4d0338373c193d1115912308a08cdc6bde1e38d7bcb555dd03f96a05ad5f10a2c30f549051ea0c39a9510b2bae5676827d1b64243692e7d53913985f250e6f6
+  checksum: 9e8e092fe3ff1003ff115d21c282ff438d695571a9987fc9e7d3bfc06c43be175753c7086b79402fbc23ab494b6941919bb432c00af9eadb4ff5bdcf74fca3b1
   languageName: node
   linkType: hard
 
-"@aws-amplify/cache@npm:4.0.4":
-  version: 4.0.4
-  resolution: "@aws-amplify/cache@npm:4.0.4"
+"@aws-amplify/cache@npm:4.0.5":
+  version: 4.0.5
+  resolution: "@aws-amplify/cache@npm:4.0.5"
   dependencies:
-    "@aws-amplify/core": 4.1.0
-  checksum: b37f00cb71f94c8dfd01ec7028cfde41162a288c6df6866503fbaf9d8f3b8992750bfc25675f16fd94ffc887e5307f9a9f8bc9fbca8dd61a385882e50bafc716
+    "@aws-amplify/core": 4.1.1
+  checksum: 722fda69c352f39dd0f58ad72476705a015bb35db7b8e447507a0d0f9e7af0d1c6d26a1f7107aede247983d0c25f7526e7a7e37725111d7afd8b5740b9058814
   languageName: node
   linkType: hard
 
-"@aws-amplify/core@npm:4.1.0":
-  version: 4.1.0
-  resolution: "@aws-amplify/core@npm:4.1.0"
+"@aws-amplify/core@npm:4.1.1":
+  version: 4.1.1
+  resolution: "@aws-amplify/core@npm:4.1.1"
   dependencies:
     "@aws-crypto/sha256-js": 1.0.0-alpha.0
     "@aws-sdk/client-cognito-identity": 3.6.1
@@ -111,7 +111,7 @@ __metadata:
     "@aws-sdk/util-hex-encoding": 3.6.1
     universal-cookie: ^4.0.4
     zen-observable-ts: 0.8.19
-  checksum: 39380f9cef963272606199a011d682c031c4f566308c417311fbace8661b290df8bdf5dafd12cdfbe378891bbc7ea5b2780df68b43b32a4df763093f2021d830
+  checksum: 080a79c3ccabd7a721a169ff8e251119c7542bbeb535ac73b78b5842477d21d5bcdbbb61036603c471dd53f31a0dd31e4c81ab03f781e94eb787e1b9b15fc298
   languageName: node
   linkType: hard
 
@@ -4530,9 +4530,9 @@ __metadata:
   linkType: hard
 
 "@logdna/tail-file@npm:^2.0.6":
-  version: 2.0.6
-  resolution: "@logdna/tail-file@npm:2.0.6"
-  checksum: 63464140f0997603899e2be71aaace859c67a5bdeb81f87ad3b20396c7354912d9816954c96c100a834c3a9629913612bc2ed99dde270926262b4f4ce46640fa
+  version: 2.0.7
+  resolution: "@logdna/tail-file@npm:2.0.7"
+  checksum: 83fbf1e14af7a8415200d331307022ffae449deb7ad5e00583eeda5a312d564b8f35ea83010c4af3f230a0e48c3e63ee460582a85bb0b039113bc1cb3678a719
   languageName: node
   linkType: hard
 
@@ -5155,20 +5155,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nodelib/fs.scandir@npm:2.1.4":
-  version: 2.1.4
-  resolution: "@nodelib/fs.scandir@npm:2.1.4"
+"@nodelib/fs.scandir@npm:2.1.5":
+  version: 2.1.5
+  resolution: "@nodelib/fs.scandir@npm:2.1.5"
   dependencies:
-    "@nodelib/fs.stat": 2.0.4
+    "@nodelib/fs.stat": 2.0.5
     run-parallel: ^1.1.9
-  checksum: 30b3102ee37e1c1a0cb939a8e93f9a58b1637e2b4b546bb9143b3fb5efacd2abde3237a5313d5329bf1bc4231c418a77c3cb7f5434ce410e61a91ff4051cf215
+  checksum: 91b3de88d9ba843b74057ebec53d97bb1ca006fcb794f1eb2becfe6faf114cb575c90b10fc20f7390358106ffa5e6bbc493506c24f2263a33aa69f90c1e77f74
   languageName: node
   linkType: hard
 
-"@nodelib/fs.stat@npm:2.0.4, @nodelib/fs.stat@npm:^2.0.2":
-  version: 2.0.4
-  resolution: "@nodelib/fs.stat@npm:2.0.4"
-  checksum: 6454a79e945dd55102b5c2e158813804ed349f9c1cc806f8754fca4587688a5d8e4115fc3eedbdf3d8a6b343169a6b664ecd8a7a42289eed210c686a4d0897c4
+"@nodelib/fs.stat@npm:2.0.5, @nodelib/fs.stat@npm:^2.0.2":
+  version: 2.0.5
+  resolution: "@nodelib/fs.stat@npm:2.0.5"
+  checksum: a4fcf7408f2a1e11737856629b1259fb9ed658c464fabb17f77db1069fea5dd47abd5e92325b217617dbc116138d82ea6d33ffc07a426de940c5f6e08603da88
   languageName: node
   linkType: hard
 
@@ -5180,12 +5180,12 @@ __metadata:
   linkType: hard
 
 "@nodelib/fs.walk@npm:^1.2.3":
-  version: 1.2.6
-  resolution: "@nodelib/fs.walk@npm:1.2.6"
+  version: 1.2.7
+  resolution: "@nodelib/fs.walk@npm:1.2.7"
   dependencies:
-    "@nodelib/fs.scandir": 2.1.4
+    "@nodelib/fs.scandir": 2.1.5
     fastq: ^1.6.0
-  checksum: d0503ffd0bb4172d5ac5d23993b14665f5f6d42a460a719ad97743ce71e60588d134cc60df12ca76be0e5e3a93c9a3156904d9296b78a8cdf19425c3423c0b58
+  checksum: ac8e2d9ca000b9f7fca2a7b005b9e476ba7b2f416d2873f64b94b207ed1854bd30f63ced4c221969c5e470ec82fbeb353c97504a86c3838cda11f98660fac284
   languageName: node
   linkType: hard
 
@@ -5441,14 +5441,14 @@ __metadata:
   linkType: hard
 
 "@octokit/plugin-throttling@npm:^3.4.1":
-  version: 3.4.1
-  resolution: "@octokit/plugin-throttling@npm:3.4.1"
+  version: 3.4.2
+  resolution: "@octokit/plugin-throttling@npm:3.4.2"
   dependencies:
     "@octokit/types": ^6.0.1
     bottleneck: ^2.15.3
   peerDependencies:
     "@octokit/core": ^3.0.0
-  checksum: d5411fcab6e4ad7dd8834852aab7d245ba91403d36c12230ec48e65d79deae13685359130061b4c0d459083859536890e11a0846e72abd0172017d14baf301df
+  checksum: df57449470cf568d5a06469f528124fcb05ece853d3967c649e402f1b0fc54653dac20c67450be17b64ebd843e8405692ee64923ed0c87042e54a88d40dbd979
   languageName: node
   linkType: hard
 
@@ -6959,18 +6959,18 @@ __metadata:
   linkType: hard
 
 "@testing-library/dom@npm:^7.28.1":
-  version: 7.31.0
-  resolution: "@testing-library/dom@npm:7.31.0"
+  version: 7.31.2
+  resolution: "@testing-library/dom@npm:7.31.2"
   dependencies:
     "@babel/code-frame": ^7.10.4
     "@babel/runtime": ^7.12.5
     "@types/aria-query": ^4.2.0
     aria-query: ^4.2.2
     chalk: ^4.1.0
-    dom-accessibility-api: ^0.5.4
+    dom-accessibility-api: ^0.5.6
     lz-string: ^1.4.4
     pretty-format: ^26.6.2
-  checksum: 84c4bf5d33091b2eb668d8305591362bf9e3037eaca636bc97469622feaa3407ce1cc2af6d5f1a81b66b3e566cebef5b2c01d3ee47bc4c92abca38969f0f155d
+  checksum: f930b4797fd41e515e645427027574fb82a46d90edde20523c2269916be88aeb302f2a4eb982d7c41afbe2de4ed3129e6b269424db2a90974ea76bdb9f26e3ed
   languageName: node
   linkType: hard
 
@@ -7184,11 +7184,11 @@ __metadata:
   linkType: hard
 
 "@types/istanbul-reports@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "@types/istanbul-reports@npm:3.0.0"
+  version: 3.0.1
+  resolution: "@types/istanbul-reports@npm:3.0.1"
   dependencies:
     "@types/istanbul-lib-report": "*"
-  checksum: 8aee794ea2e8065aa83e0a1017420068d10110f5e67f8473f5751e74462509306c451f79db3856e6848507519bf1d4de7d101daede6539701cc4d74b4646acd9
+  checksum: 398cc6bea308522f70829875c983cb26a19f2e420859a629d57713e3bfad64a02cf1c505575b29b5c3a1816397ad523135ae43a67eaeeae3b054f75233f4e7c4
   languageName: node
   linkType: hard
 
@@ -7311,9 +7311,9 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:*, @types/node@npm:>= 8, @types/node@npm:>=12.12.47, @types/node@npm:>=13.7.0, @types/node@npm:>=6":
-  version: 15.6.1
-  resolution: "@types/node@npm:15.6.1"
-  checksum: 07b3855bc0a1ba2215455a3ef4ed5e88711321b3cdc0ba1ea0286f6facbdf61530970b9fa7eec79eb1d46231f986c21ef3b7c1f1e0c365cf1b887d76b0addb86
+  version: 15.12.1
+  resolution: "@types/node@npm:15.12.1"
+  checksum: 8a111dc99281e07b1a6408437a09eafb081760aa8bd73d481793345b302a565772c45f2be7fdd7386a8a7ce589a999ccfb513dba15a0b3320dba03c94308253f
   languageName: node
   linkType: hard
 
@@ -7332,9 +7332,9 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:^12.12.22":
-  version: 12.20.13
-  resolution: "@types/node@npm:12.20.13"
-  checksum: 4e0f02ec78b8d911595b20b9a7c3ac6c8e5f77ab5c57d0c14197fa021dec2c791469e1597b890f0d443f3809c908952e9ea56a2866d3cccf6076ff8a4579d969
+  version: 12.20.14
+  resolution: "@types/node@npm:12.20.14"
+  checksum: 2047f32e4a5a7f5be80745bdfd834635de673b2ee23259cf1dd2023513c33af7f165387a5ebb0f0aab605fe078b4840e4e810152266e5611aa755538d9bf77df
   languageName: node
   linkType: hard
 
@@ -7397,11 +7397,11 @@ __metadata:
   linkType: hard
 
 "@types/reach__router@npm:^1.2.3":
-  version: 1.3.7
-  resolution: "@types/reach__router@npm:1.3.7"
+  version: 1.3.8
+  resolution: "@types/reach__router@npm:1.3.8"
   dependencies:
     "@types/react": "*"
-  checksum: a17679f85c6f39a94cacbac62fff7b976adadd660ee9a8e2c5ab58036520869d4875b2707f7dd097f9eb14756b2041462d3615dfbb1efa61b37327f377866c61
+  checksum: 52cdde63e520101179a2f83f504906a8eb389220b9e0e9de2330d806230f83a7ca17889f8f69aa2ee3f4800727c1f236de59ef55e1b52b307d62487f937aba43
   languageName: node
   linkType: hard
 
@@ -7416,11 +7416,11 @@ __metadata:
   linkType: hard
 
 "@types/react-dom@npm:^17.0.0":
-  version: 17.0.5
-  resolution: "@types/react-dom@npm:17.0.5"
+  version: 17.0.6
+  resolution: "@types/react-dom@npm:17.0.6"
   dependencies:
     "@types/react": "*"
-  checksum: b3e23acb7be9405050abb4bcd443d14b16b2f3ded2d1853528199e4307b17b25186f905ddd236c27b6ef0297e6779b7fedd11fd24ee9170771be45a7e8e70f4b
+  checksum: baf0e2ea405768ccfe30399c1d2d5bc35d48023c6d67394b0c9a8179e51ff3d5e0363e7166114195ea275f97611aae9d8d0163a2813c7a3f1e95ef99f8070390
   languageName: node
   linkType: hard
 
@@ -8244,11 +8244,100 @@ __metadata:
     "@babel/preset-env": ^7.5.5
     "@babel/preset-typescript": ^7.0.0
     "@babel/runtime": ^7.5.5
-    "@webiny/api-plugin-elastic-search-client": ^5.9.0
+    "@webiny/api-elasticsearch": ^5.9.0
     "@webiny/cli": ^5.9.0
+    "@webiny/error": ^5.9.0
     "@webiny/handler": ^5.9.0
     "@webiny/project-utils": ^5.9.0
     aws-sdk: ^2.539.0
+    typescript: ^4.1.3
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-elasticsearch@^5.9.0, @webiny/api-elasticsearch@workspace:packages/api-elasticsearch":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-elasticsearch@workspace:packages/api-elasticsearch"
+  dependencies:
+    "@babel/cli": ^7.5.5
+    "@babel/core": ^7.5.5
+    "@elastic/elasticsearch": ^7.9.1
+    "@webiny/cli": ^5.9.0
+    "@webiny/error": ^5.9.0
+    "@webiny/handler": ^5.9.0
+    "@webiny/plugins": ^5.9.0
+    "@webiny/project-utils": ^5.9.0
+    aws-elasticsearch-connector: ^9.0.0
+    aws-sdk: ^2.539.0
+    elastic-ts: ^0.7.0
+    rimraf: ^3.0.2
+    ttypescript: ^1.5.12
+    typescript: ^4.1.3
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-file-manager-ddb-es@^5.9.0, @webiny/api-file-manager-ddb-es@workspace:packages/api-file-manager-ddb-es":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-file-manager-ddb-es@workspace:packages/api-file-manager-ddb-es"
+  dependencies:
+    "@babel/cli": ^7.5.5
+    "@babel/core": ^7.5.5
+    "@babel/plugin-proposal-object-rest-spread": ^7.5.5
+    "@babel/plugin-transform-runtime": ^7.5.5
+    "@babel/preset-env": ^7.5.5
+    "@babel/preset-typescript": ^7.0.0
+    "@babel/runtime": ^7.5.5
+    "@elastic/elasticsearch": ^7.9.1
+    "@elastic/elasticsearch-mock": 0.3.0
+    "@shelf/jest-elasticsearch": ^1.0.0
+    "@webiny/api-dynamodb-to-elasticsearch": ^5.9.0
+    "@webiny/api-elasticsearch": ^5.9.0
+    "@webiny/api-file-manager": ^5.9.0
+    "@webiny/api-i18n": ^5.9.0
+    "@webiny/api-upgrade": ^5.9.0
+    "@webiny/cli": ^5.9.0
+    "@webiny/db-dynamodb": ^5.9.0
+    "@webiny/error": ^5.9.0
+    "@webiny/handler-db": ^5.9.0
+    "@webiny/plugins": ^5.9.0
+    "@webiny/project-utils": ^5.9.0
+    aws-sdk: ^2.539.0
+    dynamodb-toolbox: ^0.3.4
+    jest: ^26.6.3
+    jest-dynalite: ^3.2.0
+    jsonpack: ^1.1.5
+    lodash.chunk: ^4.2.0
+    lodash.omit: ^4.5.0
+    rimraf: ^3.0.2
+    ttypescript: ^1.5.12
+    typescript: ^4.1.3
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-file-manager-ddb@workspace:packages/api-file-manager-ddb":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-file-manager-ddb@workspace:packages/api-file-manager-ddb"
+  dependencies:
+    "@babel/cli": ^7.5.5
+    "@babel/core": ^7.5.5
+    "@babel/plugin-proposal-object-rest-spread": ^7.5.5
+    "@babel/plugin-transform-runtime": ^7.5.5
+    "@babel/preset-env": ^7.5.5
+    "@babel/preset-typescript": ^7.0.0
+    "@babel/runtime": ^7.5.5
+    "@webiny/api-file-manager": ^5.9.0
+    "@webiny/cli": ^5.9.0
+    "@webiny/db-dynamodb": ^5.9.0
+    "@webiny/error": ^5.9.0
+    "@webiny/project-utils": ^5.9.0
+    aws-sdk: ^2.539.0
+    dynamodb-toolbox: ^0.3.4
+    jest: ^26.6.3
+    jest-dynalite: ^3.2.0
+    jsonpack: ^1.1.5
+    lodash.chunk: ^4.2.0
+    lodash.omit: ^4.5.0
+    rimraf: ^3.0.2
+    ttypescript: ^1.5.12
     typescript: ^4.1.3
   languageName: unknown
   linkType: soft
@@ -8261,9 +8350,7 @@ __metadata:
     "@babel/core": ^7.5.5
     "@webiny/api-file-manager": ^5.9.0
     "@webiny/cli": ^5.9.0
-    "@webiny/handler": ^5.9.0
     "@webiny/handler-graphql": ^5.9.0
-    "@webiny/plugins": ^5.9.0
     "@webiny/project-utils": ^5.9.0
     "@webiny/validation": ^5.9.0
     form-data: ^3.0.0
@@ -8287,12 +8374,8 @@ __metadata:
     "@babel/preset-typescript": ^7.0.0
     "@babel/runtime": ^7.5.5
     "@commodo/fields": 1.1.2-beta.20
-    "@elastic/elasticsearch": ^7.9.1
-    "@elastic/elasticsearch-mock": 0.3.0
-    "@shelf/jest-elasticsearch": ^1.0.0
-    "@webiny/api-dynamodb-to-elasticsearch": ^5.9.0
+    "@webiny/api-i18n": ^5.9.0
     "@webiny/api-i18n-content": ^5.9.0
-    "@webiny/api-plugin-elastic-search-client": ^5.9.0
     "@webiny/api-security": ^5.9.0
     "@webiny/api-tenancy": ^5.9.0
     "@webiny/api-upgrade": ^5.9.0
@@ -8300,15 +8383,14 @@ __metadata:
     "@webiny/error": ^5.9.0
     "@webiny/handler": ^5.9.0
     "@webiny/handler-client": ^5.9.0
-    "@webiny/handler-db": ^5.9.0
     "@webiny/handler-graphql": ^5.9.0
+    "@webiny/plugins": ^5.9.0
     "@webiny/project-utils": ^5.9.0
     "@webiny/validation": ^5.9.0
     aws-sdk: ^2.539.0
     commodo-fields-object: ^1.0.6
     execa: ^5.0.0
     jest: ^26.6.3
-    jest-dynalite: ^3.2.0
     mdbid: ^1.0.0
     object-hash: ^1.3.1
     rimraf: ^3.0.2
@@ -8331,10 +8413,11 @@ __metadata:
     "@elastic/elasticsearch": ^7.9.1
     "@shelf/jest-elasticsearch": ^1.0.0
     "@webiny/api-dynamodb-to-elasticsearch": ^5.9.0
+    "@webiny/api-elasticsearch": ^5.9.0
     "@webiny/api-file-manager": ^5.9.0
+    "@webiny/api-file-manager-ddb-es": ^5.9.0
     "@webiny/api-i18n": ^5.9.0
     "@webiny/api-i18n-content": ^5.9.0
-    "@webiny/api-plugin-elastic-search-client": ^5.9.0
     "@webiny/api-security": ^5.9.0
     "@webiny/api-tenancy": ^5.9.0
     "@webiny/api-upgrade": ^5.9.0
@@ -8376,8 +8459,8 @@ __metadata:
     "@shelf/jest-elasticsearch": ^1.0.0
     "@types/jsonpack": ^1.1.0
     "@webiny/api-dynamodb-to-elasticsearch": ^5.9.0
+    "@webiny/api-elasticsearch": ^5.9.0
     "@webiny/api-headless-cms": ^5.9.0
-    "@webiny/api-plugin-elastic-search-client": ^5.9.0
     "@webiny/api-upgrade": ^5.9.0
     "@webiny/cli": ^5.9.0
     "@webiny/db-dynamodb": ^5.9.0
@@ -8399,6 +8482,7 @@ __metadata:
     prettier: ^1.19.1
     rimraf: ^3.0.2
     sinon: ^9.0.2
+    ttypescript: ^1.5.12
     typescript: ^4.1.3
   languageName: unknown
   linkType: soft
@@ -8575,10 +8659,11 @@ __metadata:
     "@shelf/jest-elasticsearch": ^1.0.0
     "@types/puppeteer": ^5.4.2
     "@webiny/api-dynamodb-to-elasticsearch": ^5.9.0
+    "@webiny/api-elasticsearch": ^5.9.0
     "@webiny/api-file-manager": ^5.9.0
+    "@webiny/api-file-manager-ddb-es": ^5.9.0
     "@webiny/api-i18n": ^5.9.0
     "@webiny/api-i18n-content": ^5.9.0
-    "@webiny/api-plugin-elastic-search-client": ^5.9.0
     "@webiny/api-prerendering-service": ^5.9.0
     "@webiny/api-security": ^5.9.0
     "@webiny/api-tenancy": ^5.9.0
@@ -8614,24 +8699,6 @@ __metadata:
     typescript: ^4.1.3
     uniqid: ^5.2.0
     zip-local: ^0.3.4
-  languageName: unknown
-  linkType: soft
-
-"@webiny/api-plugin-elastic-search-client@^5.9.0, @webiny/api-plugin-elastic-search-client@workspace:packages/api-plugin-elastic-search-client":
-  version: 0.0.0-use.local
-  resolution: "@webiny/api-plugin-elastic-search-client@workspace:packages/api-plugin-elastic-search-client"
-  dependencies:
-    "@babel/cli": ^7.5.5
-    "@babel/core": ^7.5.5
-    "@elastic/elasticsearch": ^7.9.1
-    "@webiny/cli": ^5.9.0
-    "@webiny/handler": ^5.9.0
-    "@webiny/project-utils": ^5.9.0
-    aws-elasticsearch-connector: ^9.0.0
-    aws-sdk: ^2.539.0
-    elastic-ts: ^0.6.0
-    rimraf: ^3.0.2
-    typescript: ^4.1.3
   languageName: unknown
   linkType: soft
 
@@ -9738,6 +9805,7 @@ __metadata:
     ncp: ^2.0.0
     pirates: ^4.0.1
     prettier: ^1.14.2
+    replace-in-path: ^1.0.4
     rimraf: ^3.0.2
     semver: 7.3.4
     ts-morph: ^11.0.0
@@ -9802,10 +9870,19 @@ __metadata:
     "@babel/core": ^7.5.5
     "@webiny/cli": ^5.9.0
     "@webiny/db": ^5.9.0
+    "@webiny/error": ^5.9.0
+    "@webiny/handler": ^5.9.0
+    "@webiny/plugins": ^5.9.0
     "@webiny/project-utils": ^5.9.0
+    date-fns: ^2.22.1
+    dot-prop: ^6.0.1
+    dynamodb-toolbox: ^0.3.4
+    is-number: ^7.0.0
     jest: ^26.6.3
     jest-dynalite: ^3.2.0
+    lodash.sortby: ^4.7.0
     rimraf: ^3.0.2
+    ttypescript: ^1.5.12
     typescript: ^4.1.3
   languageName: unknown
   linkType: soft
@@ -11095,7 +11172,7 @@ __metadata:
   resolution: "api-dynamo-to-elastic@workspace:api/code/dynamoToElastic"
   dependencies:
     "@webiny/api-dynamodb-to-elasticsearch": ^5.9.0
-    "@webiny/api-plugin-elastic-search-client": ^5.9.0
+    "@webiny/api-elasticsearch": ^5.9.0
     "@webiny/cli": ^5.9.0
     "@webiny/handler-aws": ^5.9.0
     "@webiny/handler-logs": ^5.9.0
@@ -11143,7 +11220,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "api-graphql@workspace:api/code/graphql"
   dependencies:
+    "@webiny/api-elasticsearch": ^5.9.0
     "@webiny/api-file-manager": ^5.9.0
+    "@webiny/api-file-manager-ddb-es": ^5.9.0
     "@webiny/api-file-manager-s3": ^5.9.0
     "@webiny/api-form-builder": ^5.9.0
     "@webiny/api-headless-cms": ^5.9.0
@@ -11151,7 +11230,6 @@ __metadata:
     "@webiny/api-i18n": ^5.9.0
     "@webiny/api-i18n-content": ^5.9.0
     "@webiny/api-page-builder": ^5.9.0
-    "@webiny/api-plugin-elastic-search-client": ^5.9.0
     "@webiny/api-prerendering-service": ^5.9.0
     "@webiny/api-security": ^5.9.0
     "@webiny/api-security-admin-users": ^5.9.0
@@ -11173,11 +11251,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "api-headless-cms@workspace:api/code/headlessCMS"
   dependencies:
+    "@webiny/api-elasticsearch": ^5.9.0
     "@webiny/api-headless-cms": ^5.9.0
     "@webiny/api-headless-cms-ddb-es": ^5.9.0
     "@webiny/api-i18n": ^5.9.0
     "@webiny/api-i18n-content": ^5.9.0
-    "@webiny/api-plugin-elastic-search-client": ^5.9.0
     "@webiny/api-security": ^5.9.0
     "@webiny/api-security-admin-users": ^5.9.0
     "@webiny/api-security-cognito-authentication": ^5.9.0
@@ -11916,8 +11994,8 @@ __metadata:
   linkType: hard
 
 "aws-sdk@npm:^2.0.0, aws-sdk@npm:^2.539.0":
-  version: 2.918.0
-  resolution: "aws-sdk@npm:2.918.0"
+  version: 2.921.0
+  resolution: "aws-sdk@npm:2.921.0"
   dependencies:
     buffer: 4.9.2
     events: 1.1.1
@@ -11928,7 +12006,7 @@ __metadata:
     url: 0.10.3
     uuid: 3.3.2
     xml2js: 0.4.19
-  checksum: 72d0648d76fcc806286617d4a9cd43b5c2380b6de17b31677193f65af9733d67bd7cdac656729d98da6a2ecb1bec9cebea9965396530333608df683c7baeb576
+  checksum: 3c321006767e5c3b132eaf9969c2e63d41608b5b938ddb762890e8cf6e1a7d2d962626d6f5785af1c8fc2e5f61fd76645bbb54bee02567a6cc011061dcb7b183
   languageName: node
   linkType: hard
 
@@ -13602,9 +13680,9 @@ __metadata:
   linkType: hard
 
 "caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30000981, caniuse-lite@npm:^1.0.30000989, caniuse-lite@npm:^1.0.30001035, caniuse-lite@npm:^1.0.30001109, caniuse-lite@npm:^1.0.30001219":
-  version: 1.0.30001232
-  resolution: "caniuse-lite@npm:1.0.30001232"
-  checksum: 4334a9cd733ebd4e82252ff51d5e80cfc13367e7a052161498b433799946e039a4452c8950e7e5ebfb61040c8bca6fafcb6bfa0a174f77635ec4a03d4aaac54d
+  version: 1.0.30001234
+  resolution: "caniuse-lite@npm:1.0.30001234"
+  checksum: 0c8e2b68e227eb47121ca0c93bda530bbe8475a3e2ab14138a3d751258817c1a16c8a86a0809637fb90d48f92b63e47740f863c806f3e6de012e417dc3cb54c4
   languageName: node
   linkType: hard
 
@@ -14614,12 +14692,12 @@ __metadata:
   linkType: hard
 
 "config-chain@npm:^1.1.11":
-  version: 1.1.12
-  resolution: "config-chain@npm:1.1.12"
+  version: 1.1.13
+  resolution: "config-chain@npm:1.1.13"
   dependencies:
     ini: ^1.3.4
     proto-list: ~1.2.1
-  checksum: caf4b96491c2ea6fc5e6e23cebc526040cf21779ffc544c705a21b788f7dc3d34bc439878dcdfae8c15830052be55d62b26acada13da1236142d3efc5b4329be
+  checksum: 047fb0971ba48cf242aa390e8e404ced375e136e2e4a8b753d2ce2b83928d62ef6b3ec74ee35e8f5b2d7cd9cb38fedd7962a83d64422c10afd7e9acfa83ecbb1
   languageName: node
   linkType: hard
 
@@ -15807,7 +15885,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:^2.21.1":
+"date-fns@npm:^2.21.1, date-fns@npm:^2.22.1":
   version: 2.22.1
   resolution: "date-fns@npm:2.22.1"
   checksum: a89dc6cdf3929b3f0d54d129a3c288df995fc3e6c8099dacc215e5404b4950fc8551d11a58968dfd3b8d576d0c5e637072f615e8f9c3e47d82c81e3952007d5b
@@ -16543,10 +16621,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dom-accessibility-api@npm:^0.5.4":
-  version: 0.5.5
-  resolution: "dom-accessibility-api@npm:0.5.5"
-  checksum: 255aa6ae5ab931a52a03a6fde76665ede0e8429b8702d4c17aa0262ddf7e55fb98d2b625164a56bb24977c2073ab0706edd7d98ad32b540c3d7ff4325109fd9d
+"dom-accessibility-api@npm:^0.5.6":
+  version: 0.5.6
+  resolution: "dom-accessibility-api@npm:0.5.6"
+  checksum: b579681083e683291df022bdf094dae2c7e39db0ff28f70ed2c8368eda203fe4c45bcf92f1c623ce4b746cb245f9a5dc9d176f1781d600b9218728d3a1d1580f
   languageName: node
   linkType: hard
 
@@ -16767,6 +16845,15 @@ __metadata:
   dependencies:
     is-obj: ^2.0.0
   checksum: 76e6693d8803eeff9cb920988446bf223cf1f6e5b1c0c2fe07a66906392134931a481b11e3c0bd852c5cfc97fad65258bcb4359169ad1d8d624cb3f56932be98
+  languageName: node
+  linkType: hard
+
+"dot-prop@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "dot-prop@npm:6.0.1"
+  dependencies:
+    is-obj: ^2.0.0
+  checksum: 06793b868079d70bffce4f0ac7e32055778723cc90b6e0bb12a2dff157298e693fb9ac7733556e4bb2d54de9d670a0b6a67610295cb1119a204fb7e340fafe54
   languageName: node
   linkType: hard
 
@@ -17000,19 +17087,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"elastic-ts@npm:^0.6.0":
-  version: 0.6.0
-  resolution: "elastic-ts@npm:0.6.0"
+"elastic-ts@npm:^0.7.0":
+  version: 0.7.0
+  resolution: "elastic-ts@npm:0.7.0"
   dependencies:
     "@sindresorhus/is": ^4.0.0
-  checksum: 3d7e2940da3999be328b5ae621db2435fd8f4880a7bd483ee0a28721a9925caa778847b0cf508937c8a2906fe9958a0a8a92682622c37c130cd258211ec67dcb
+  checksum: de96a3bf8bdc277a733bd5dabf930e88a8dd662ab7470de370907956cbafe15135f7fd72388ca72c861d0264f51dc9d8fddd3fbc764e33ce3cd3f80cef2826b8
   languageName: node
   linkType: hard
 
 "electron-to-chromium@npm:^1.3.247, electron-to-chromium@npm:^1.3.378, electron-to-chromium@npm:^1.3.723":
-  version: 1.3.743
-  resolution: "electron-to-chromium@npm:1.3.743"
-  checksum: d077d8daabff7af8dfa94183e4ff9ea7ef05e71c3c526ddd48a4a90f32a02a4d9d53df777451710bfd9404fa7e27894cc6b65dd87e08a8a628210b48d25620c9
+  version: 1.3.748
+  resolution: "electron-to-chromium@npm:1.3.748"
+  checksum: 748b43a7699cea081735d2b1cdfc092b98ff9d7fce5f4609270eb0dac91eb0a5fc4f61738b58fe260347a2f0462ea740c0743a10bb1a112c3a8ed6ed3682fcdc
   languageName: node
   linkType: hard
 
@@ -18119,8 +18206,8 @@ __metadata:
   linkType: hard
 
 "execa@npm:^5.0.0":
-  version: 5.0.1
-  resolution: "execa@npm:5.0.1"
+  version: 5.1.1
+  resolution: "execa@npm:5.1.1"
   dependencies:
     cross-spawn: ^7.0.3
     get-stream: ^6.0.0
@@ -18131,7 +18218,7 @@ __metadata:
     onetime: ^5.1.2
     signal-exit: ^3.0.3
     strip-final-newline: ^2.0.0
-  checksum: f80f4bdf0a6192e66a36279b739730a7f706f49b49a8ca7fbad504756c972b375716cc6521ffa95fc0098906dac73d1d9346c74a1332fc0079c05e6bb21f08a2
+  checksum: 4286ade8cdb267bfb982bddbf894a58df29ff4f3bb871252a4832c4608e485dd71e5a8bbfde9f95d7db4af864f5de1aa6a1780017217bd946a16409b8e022987
   languageName: node
   linkType: hard
 
@@ -20071,9 +20158,9 @@ fsevents@^1.2.7:
   linkType: hard
 
 "google-protobuf@npm:^3.5.0":
-  version: 3.17.1
-  resolution: "google-protobuf@npm:3.17.1"
-  checksum: c74efa290057956a29335428223e7e6ea678bc48f39a1600d63ef8bf1ea6e6cc5b953b616a5b66000cba1ffde50f96cd4d0ab4ad883b0fd7ca84f01f950b5493
+  version: 3.17.2
+  resolution: "google-protobuf@npm:3.17.2"
+  checksum: 1ae6f76d78f01e7074fbdb8f8b6a3b3d42d6c91d670b56c8523c317c053a9388588c60284e8e6333163de9f7177553a75ed2d4487b4b930ae4784a3b3210487e
   languageName: node
   linkType: hard
 
@@ -24909,11 +24996,11 @@ fsevents@^1.2.7:
   linkType: hard
 
 "marked@npm:^2.0.1":
-  version: 2.0.6
-  resolution: "marked@npm:2.0.6"
+  version: 2.0.7
+  resolution: "marked@npm:2.0.7"
   bin:
     marked: bin/marked
-  checksum: 73c10b8531521f16ba79b4f9cfd6d35a9e454ab795586aaff004a5f88c2db8e669c7db4e4079123823baf596df2a5a5aa39e50663eb8b86b25a59bc0d5f4b5b3
+  checksum: f2df7d761530ec0794f6a4cdac052f2bdb4a4cdbad3578d019cf665a35cf29688f1c0d3885a8abd80de76451b780418048bfcb43999e4a7c5a9fa5f1264f2168
   languageName: node
   linkType: hard
 
@@ -25299,14 +25386,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"mime-db@npm:1.47.0":
-  version: 1.47.0
-  resolution: "mime-db@npm:1.47.0"
-  checksum: f5f9220dd53c240c9234323571f632486c663e36676ebfdca9963fb9a92d1dd28b16124bceff60868fb70743764ade8466dd5e6a1a833decde89ae6d15211503
-  languageName: node
-  linkType: hard
-
-"mime-db@npm:>= 1.43.0 < 2":
+"mime-db@npm:1.48.0, mime-db@npm:>= 1.43.0 < 2":
   version: 1.48.0
   resolution: "mime-db@npm:1.48.0"
   checksum: 346d5df2ff2f501bdeff07e88a28d205f9cd27bccd3b8604847d3aee6ce73d4ecf88e943bbbce46c167d404487f46cdf09d57354c51b6f08a4d5833bcaafa59f
@@ -25314,11 +25394,11 @@ fsevents@^1.2.7:
   linkType: hard
 
 "mime-types@npm:^2.1.12, mime-types@npm:~2.1.17, mime-types@npm:~2.1.19, mime-types@npm:~2.1.24":
-  version: 2.1.30
-  resolution: "mime-types@npm:2.1.30"
+  version: 2.1.31
+  resolution: "mime-types@npm:2.1.31"
   dependencies:
-    mime-db: 1.47.0
-  checksum: c7ca8a9980bdae0b760820aded39ea9541a8236f4abc105df645ea5b09a9c4a5299e28667c0c9596ab8e4ca84b219fd8b94b5c68e32b59891ca1f57a7e848c02
+    mime-db: 1.48.0
+  checksum: 0373e58e3826802e462cf0c180ca5556fd0990acaf123d421d5f8643f0ca61d2126ea57eb6f4ba96f9ef07d3e627c06261825418a6549b0671261cc1bb4219b4
   languageName: node
   linkType: hard
 
@@ -26354,7 +26434,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"normalize-url@npm:^3.0.0, normalize-url@npm:^3.3.0":
+"normalize-url@npm:^3.0.0":
   version: 3.3.0
   resolution: "normalize-url@npm:3.3.0"
   checksum: 5704115f74833cf157a5f104477d9c8e8b4e2c00275624159bcd3c65dbdac93db4f6f008f91364d0f20f93655bd2b643afa9e8875c67b4ab8673cd1dd0fb7a5c
@@ -26365,6 +26445,13 @@ fsevents@^1.2.7:
   version: 4.5.1
   resolution: "normalize-url@npm:4.5.1"
   checksum: 31dd05ad33cc649d5c1cd390f1e494d36bdcd3c0a440fd873290ffc5d4f838e2d0c1f4e9c29c9395d4907318cd8c0aaa759af336ac04ec0bd6fecb62ef1f4556
+  languageName: node
+  linkType: hard
+
+"normalize-url@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "normalize-url@npm:6.0.1"
+  checksum: 63fe38bbc1c1b41fcc4ba9f54411755ce75aaeb25624d3c95f6d84501ea7a0e4ddd79fbcfcf9e497de7952e3c4856cba8719e9417cfbdd8e082aea5c900f3de4
   languageName: node
   linkType: hard
 
@@ -27495,14 +27582,14 @@ fsevents@^1.2.7:
   linkType: hard
 
 "parse-url@npm:^5.0.0":
-  version: 5.0.2
-  resolution: "parse-url@npm:5.0.2"
+  version: 5.0.3
+  resolution: "parse-url@npm:5.0.3"
   dependencies:
     is-ssh: ^1.3.0
-    normalize-url: ^3.3.0
+    normalize-url: ^6.0.1
     parse-path: ^4.0.0
     protocols: ^1.4.0
-  checksum: 412d3851bd52a3016615526034a76ccbf104432d8b4ec5c21782753b9d5e2e36dd55f7de6ce92387299002cdaae0401dc9efcc927535655fd243bc991019dc1a
+  checksum: 4f333974d82709f42e999f7992c86e750593def38bf47d350aa9ccbeef940578115da63646ab0c78bfdcde3db86bfa6456e00978d25ef1043369004211087772
   languageName: node
   linkType: hard
 
@@ -35975,11 +36062,11 @@ resolve@^2.0.0-next.3:
   linkType: hard
 
 "ws@npm:^6.2.1":
-  version: 6.2.1
-  resolution: "ws@npm:6.2.1"
+  version: 6.2.2
+  resolution: "ws@npm:6.2.2"
   dependencies:
     async-limiter: ~1.0.0
-  checksum: 35d32b09e28f799f04708c3a7bd9eff469ae63e60543d7e18335f28689228a42ee21210f48de680aad6e5317df76b5b1183d1a1ea4b4d14cb6e0943528f40e76
+  checksum: 00d406fb98114e6404c71f445e41818d9eb23644247a70be3f8da1f981c5f1db0f8ea191bee972fa5f5387c2ebd360268622871354be324acafaab43d7612362
   languageName: node
   linkType: hard
 

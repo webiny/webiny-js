@@ -1,7 +1,7 @@
 import { Plugin } from "@webiny/plugins";
 
 export interface Object {
-    __typename: string;
+    __typename?: string;
     [key: string]: any;
 }
 

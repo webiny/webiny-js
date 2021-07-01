@@ -1,5 +1,5 @@
 export { default as table } from "./table";
-export { default as TargetDataModels } from "./TargetDataModels";
+export { default as TargetDataModel } from "./TargetDataModel";
 
 /**
  * This folder contains all of the entities that you might need in your application.

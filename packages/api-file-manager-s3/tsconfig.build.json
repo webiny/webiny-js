@@ -6,9 +6,7 @@
     "./dist",
     "../api-file-manager",
     "../validation",
-    "../handler-graphql",
-    "../plugins",
-    "../handler"
+    "../handler-graphql"
   ],
   "compilerOptions": {
     "rootDir": "./src",

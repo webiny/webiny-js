@@ -1,0 +1,27 @@
+{
+  "extends": "../../tsconfig",
+  "include": ["./src", "./__tests__"],
+  "references": [
+    {
+      "path": "../api-file-manager"
+    },
+    {
+      "path": "../error"
+    },
+    {
+      "path": "../db-dynamodb"
+    }
+  ],
+  "compilerOptions": {
+    "paths": {
+      "~/*": ["./src/*"],
+      "@webiny/error/*": ["../error/src/*"],
+      "@webiny/error": ["../error/src"],
+      "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
+      "@webiny/db-dynamodb": ["../db-dynamodb/src"],
+      "@webiny/api-file-manager/*": ["../api-file-manager/src/*"],
+      "@webiny/api-file-manager": ["../api-file-manager/src"]
+    },
+    "baseUrl": "."
+  }
+}

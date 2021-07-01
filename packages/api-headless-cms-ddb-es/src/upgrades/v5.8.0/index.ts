@@ -6,6 +6,7 @@ import WebinyError from "@webiny/error";
 import lodashChunk from "lodash.chunk";
 import definitions from "../../definitions";
 import { Entity } from "dynamodb-toolbox";
+import { Client } from "@elastic/elasticsearch";
 
 interface EntryRecordData {
     /**
@@ -149,7 +150,11 @@ export default (): UpgradePlugin<CmsContext> => ({
     app: "headless-cms",
     version: "5.8.0",
     async apply(context: CmsContext): Promise<void> {
-        const { i18n, elasticSearch } = context;
+        const { i18n } = context;
+        const elasticsearch: Client = (context as any).elasticsearch;
+        if (!elasticsearch) {
+            throw new WebinyError("Missing Elasticsearch client on the context.");
+        }
         console.log("Started with the update of CMS entries.");
 
         /**
@@ -215,7 +220,7 @@ export default (): UpgradePlugin<CmsContext> => ({
             let hasMoreItems = true;
             let after: string;
             while (hasMoreItems) {
-                const response = await elasticSearch.search({
+                const response = await elasticsearch.search({
                     index: esIndex,
                     body: {
                         query: {
