@@ -6,7 +6,7 @@ import { NotAuthorizedError } from "@webiny/api-security";
 import DataLoader from "dataloader";
 import executeCallbacks from "./utils/executeCallbacks";
 import { DefaultSettingsModel } from "../../utils/models";
-import merge from "lodash/merge";
+import mergeWith from "lodash/mergeWith";
 import Error from "@webiny/error";
 import { SettingsPlugin } from "~/plugins/SettingsPlugin";
 
@@ -73,11 +73,17 @@ const plugin: ContextPlugin<PbContext> = {
                         })) as DefaultSettings;
 
                         // If no options were passed (no specific tenant / locale), then we also
-                        // load defaults, and make sure all values are merged properly. Otherwise,
+                        // load defaults, and make sure all values are merged properly.
                         // Closes https://github.com/webiny/webiny-js/issues/1734.
                         if (!options) {
                             const defaults = (await context.pageBuilder.settings.default.getDefault()) as DefaultSettings;
-                            return merge({}, defaults, current);
+                            return mergeWith({}, defaults, current, (next, prev) => {
+                                // No need to use falsy value if we have it set in the default settings.
+                                if (prev && !next) {
+                                    return prev;
+                                }
+                                return next;
+                            });
                         }
 
                         return current;
@@ -92,7 +98,13 @@ const plugin: ContextPlugin<PbContext> = {
                             return null;
                         }
 
-                        return merge({}, allTenants, tenantAllLocales);
+                        return mergeWith({}, allTenants, tenantAllLocales, (next, prev) => {
+                            // No need to use falsy value if we have it set in the default settings.
+                            if (prev && !next) {
+                                return prev;
+                            }
+                            return next;
+                        });
                     },
                     async update(rawData, options) {
                         options?.auth !== false && (await checkBasePermissions(context));
