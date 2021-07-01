@@ -160,7 +160,9 @@ export const defaultRenderUrlFunction = async (url: string, args: Args): Promise
             for (let i = 0; i < operations.length; i++) {
                 const { operationName, query, variables } = operations[i];
 
-                if (operationName === "PbGetPublishedPage") {
+                // TODO: Should be handled via a plugin.
+                const operationsAllowedToCached = ["PbGetPublishedPage", "PbListPublishedPages"];
+                if (operationsAllowedToCached.includes(operationName)) {
                     gqlCache.push({
                         query,
                         variables,
