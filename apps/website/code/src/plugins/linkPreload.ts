@@ -5,6 +5,7 @@ import { GET_PUBLISHED_PAGE } from "../components/Page/graphql";
 declare global {
     interface Window {
         __PS_RENDER_ID__: string;
+        __PS_RENDER__: boolean;
     }
 }
 
@@ -15,7 +16,8 @@ export default (): ReactRouterOnLinkPlugin => {
         name: "react-router-on-link-pb",
         type: "react-router-on-link",
         async onLink({ link: path, apolloClient }) {
-            if (process.env.REACT_APP_ENV !== "browser") {
+            // If the page is being pre-re, then we don't want to execute this functionality.
+            if (window.__PS_RENDER__) {
                 return;
             }
 
