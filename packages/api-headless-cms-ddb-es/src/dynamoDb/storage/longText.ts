@@ -137,7 +137,7 @@ export default (): CmsModelFieldToStoragePlugin<OriginalValue, StorageValue> => 
                     value: compressedValues
                 };
             }
-            // FIXME: Have to refine OriginalValue type
+
             if (typeof value !== "string") {
                 return value;
             }
