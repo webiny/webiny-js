@@ -67,10 +67,20 @@ const plugin: ContextPlugin<PbContext> = {
                         // It's possible we'll create another GraphQL field, made for this exact purpose.
                         // auth !== false && (await checkBasePermissions(context));
 
-                        return context.pageBuilder.settings.dataLoaders.get.load({
+                        const current = (await context.pageBuilder.settings.dataLoaders.get.load({
                             PK: this.PK(options),
                             SK: this.SK
-                        }) as Promise<DefaultSettings>;
+                        })) as DefaultSettings;
+
+                        // If no options were passed (no specific tenant / locale), then we also
+                        // load defaults, and make sure all values are merged properly. Otherwise,
+                        // Closes https://github.com/webiny/webiny-js/issues/1734.
+                        if (!options) {
+                            const defaults = (await context.pageBuilder.settings.default.getDefault()) as DefaultSettings;
+                            return merge({}, defaults, current);
+                        }
+
+                        return current;
                     },
                     async getDefault(options) {
                         const allTenants = await this.get({ tenant: false, locale: false });
