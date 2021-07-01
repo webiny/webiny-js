@@ -146,4 +146,61 @@ describe("page full URL test", () => {
             ])
         );
     });
+
+    test("`null` must no be part of the page URL", async () => {
+        await createCategory({
+            data: {
+                slug: `category`,
+                name: `name`,
+                url: `/some-url/`,
+                layout: `layout`
+            }
+        });
+
+        const letters = ["a", "z", "b"];
+        const ids = [];
+        for (let i = 0; i < letters.length; i++) {
+            const [response] = await createPage({ category: "category" });
+            const { id } = response.data.pageBuilder.createPage.data;
+            ids.push(id);
+            await updatePage({
+                id,
+                data: {
+                    title: `page-${letters[i]}`
+                }
+            });
+        }
+
+        // Ensure that a settings entry exists in the database.
+        await updateSettings({ data: {} });
+
+        await until(
+            listPages,
+            ([res]) => res.data.pageBuilder.listPages.data.length === 3
+        ).then(([res]) =>
+            expect(res.data.pageBuilder.listPages.data).toMatchObject([
+                { url: expect.stringMatching(/^\/some-url\/untitled-/) },
+                { url: expect.stringMatching(/^\/some-url\/untitled-/) },
+                { url: expect.stringMatching(/^\/some-url\/untitled-/) }
+            ])
+        );
+
+        for (let i = 0; i < ids.length; i++) {
+            const id = ids[i];
+            await publishPage({
+                id
+            });
+        }
+
+        await until(
+            listPublishedPages,
+            ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 3
+        ).then(([res]) =>
+            expect(res.data.pageBuilder.listPublishedPages.data).toMatchObject([
+                { url: /^https:\/\/domain.com\/some-url\/untitled-/ },
+                { url: /^https:\/\/domain.com\/some-url\/untitled-/ },
+                { url: /^https:\/\/domain.com\/some-url\/untitled-/ }
+            ])
+        );
+    });
 });

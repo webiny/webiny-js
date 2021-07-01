@@ -289,7 +289,10 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 },
                 url: async (page: Page, args, context) => {
                     const settings = await context.pageBuilder.settings.default.get();
-                    return settings ? settings.websiteUrl + page.path : page.path;
+                    if (!settings || !settings.websiteUrl) {
+                        return page.path;
+                    }
+                    return settings.websiteUrl + page.path;
                 }
             },
             PbPageListItem: {
@@ -302,7 +305,10 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                 },
                 url: async (page: Page, args, context) => {
                     const settings = await context.pageBuilder.settings.default.get();
-                    return settings ? settings.websiteUrl + page.path : page.path;
+                    if (!settings || !settings.websiteUrl) {
+                        return page.path;
+                    }
+                    return settings.websiteUrl + page.path;
                 }
             },
             PbQuery: {
