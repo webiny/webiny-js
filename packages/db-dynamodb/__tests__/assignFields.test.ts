@@ -24,4 +24,10 @@ describe("assign fields", () => {
             assignFields([undefined, "webiny"]);
         }).toThrow("Passed empty field value into the plugin.");
     });
+
+    it("should throw an error on empty fields array", () => {
+        expect(() => {
+            assignFields([]);
+        }).toThrow("Could not assign fields because there are none.");
+    });
 });

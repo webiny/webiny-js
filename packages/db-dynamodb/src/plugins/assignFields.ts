@@ -2,6 +2,12 @@ import WebinyError from "@webiny/error";
 
 export const assignFields = (rawInput: string | string[]): string[] => {
     const input = Array.isArray(rawInput) ? rawInput : [rawInput];
+    if (input.length === 0) {
+        throw new WebinyError(
+            "Could not assign fields because there are none.",
+            "ASSIGN_FIELDS_ERROR"
+        );
+    }
     const fields: string[] = [];
     for (const field of input) {
         /**

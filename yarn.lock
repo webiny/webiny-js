@@ -8389,7 +8389,6 @@ __metadata:
     "@webiny/validation": ^5.9.0
     aws-sdk: ^2.539.0
     commodo-fields-object: ^1.0.6
-    execa: ^5.0.0
     jest: ^26.6.3
     mdbid: ^1.0.0
     object-hash: ^1.3.1
@@ -8506,20 +8505,15 @@ __metadata:
     "@webiny/project-utils": ^5.9.0
     aws-sdk: 2.868.0
     dataloader: ^2.0.0
-    date-fns: ^2.21.1
     dot-prop: ^5.3.0
     dynamodb-toolbox: ^0.3.3
-    is-number: ^7.0.0
     jest: ^26.6.3
     jest-dynalite: ^3.2.0
     jest-environment-node: ^26.6.2
     jsonpack: ^1.1.5
     lodash.clonedeep: ^4.5.0
     lodash.sortby: ^4.5.0
-    mdbid: ^1.0.0
-    prettier: ^1.19.1
-    rimraf: ^3.0.2
-    sinon: ^9.0.2
+    ttypescript: ^1.5.12
     typescript: ^4.1.3
   languageName: unknown
   linkType: soft
@@ -15885,7 +15879,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:^2.21.1, date-fns@npm:^2.22.1":
+"date-fns@npm:^2.22.1":
   version: 2.22.1
   resolution: "date-fns@npm:2.22.1"
   checksum: a89dc6cdf3929b3f0d54d129a3c288df995fc3e6c8099dacc215e5404b4950fc8551d11a58968dfd3b8d576d0c5e637072f615e8f9c3e47d82c81e3952007d5b

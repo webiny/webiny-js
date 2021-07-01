@@ -7,8 +7,8 @@ import {
     CmsContentModelPermission,
     CmsContentModelStorageOperationsProvider,
     CmsContentModelUpdateInput
-} from "../../../types";
-import * as utils from "../../../utils";
+} from "~/types";
+import * as utils from "~/utils";
 import DataLoader from "dataloader";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { contentModelManagerFactory } from "./contentModel/contentModelManagerFactory";
