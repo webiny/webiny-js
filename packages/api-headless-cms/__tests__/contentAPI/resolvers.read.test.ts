@@ -48,6 +48,10 @@ const categoryManagerHelper = async manageOpts => {
         }
     });
     const fruits = fruitsResponse.data.createCategory.data;
+    /**
+     * Intentionally wait between "create" operations so that we can test filter by date
+     */
+    await sleep(15);
     const [vegetablesResponse] = await createCategory({
         data: {
             title: "Vegetables",
@@ -55,6 +59,10 @@ const categoryManagerHelper = async manageOpts => {
         }
     });
     const vegetables = vegetablesResponse.data.createCategory.data;
+    /**
+     * Intentionally wait between "create" operations so that we can test filter by date
+     */
+    await sleep(15);
     const [animalsResponse] = await createCategory({
         data: {
             title: "Animals",
@@ -1052,9 +1060,9 @@ describe("READ - Resolvers", () => {
         const { listCategories } = useCategoryReadHandler(readOpts);
 
         const from = new Date(vegetables.savedOn);
-        from.setTime(from.getTime() - 10);
+        from.setTime(from.getTime() - 5);
         const to = new Date(vegetables.savedOn);
-        to.setTime(to.getTime() + 10);
+        to.setTime(to.getTime() + 5);
         // If this `until` resolves successfully, we know entry is accessible via the "read" API
         const result = await until(
             () =>
