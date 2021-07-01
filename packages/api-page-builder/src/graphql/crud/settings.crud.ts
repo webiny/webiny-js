@@ -61,32 +61,33 @@ const plugin: ContextPlugin<PbContext> = {
                     getSettingsCacheKey(options) {
                         return this.PK(options);
                     },
+
+                    async getCurrent() {
+                        // With this line commented, we made this endpoint public.
+                        // We did this because of the public website pages which need to access the settings.
+                        // It's possible we'll create another GraphQL field, made for this exact purpose.
+                        // auth !== false && (await checkBasePermissions(context));
+
+                        const current = await context.pageBuilder.settings.default.get({});
+                        const defaults = await context.pageBuilder.settings.default.getDefault();
+
+                        return mergeWith({}, defaults, current, (prev, next) => {
+                            // No need to use falsy value if we have it set in the default settings.
+                            if (prev && !next) {
+                                return prev;
+                            }
+                        });
+                    },
                     async get(options) {
                         // With this line commented, we made this endpoint public.
                         // We did this because of the public website pages which need to access the settings.
                         // It's possible we'll create another GraphQL field, made for this exact purpose.
                         // auth !== false && (await checkBasePermissions(context));
 
-                        const current = (await context.pageBuilder.settings.dataLoaders.get.load({
+                        return context.pageBuilder.settings.dataLoaders.get.load({
                             PK: this.PK(options),
                             SK: this.SK
-                        })) as DefaultSettings;
-
-                        // If no options were passed (no specific tenant / locale), then we also
-                        // load defaults, and make sure all values are merged properly.
-                        // Closes https://github.com/webiny/webiny-js/issues/1734.
-                        if (!options) {
-                            const defaults = (await context.pageBuilder.settings.default.getDefault()) as DefaultSettings;
-                            return mergeWith({}, defaults, current, (next, prev) => {
-                                // No need to use falsy value if we have it set in the default settings.
-                                if (prev && !next) {
-                                    return prev;
-                                }
-                                return next;
-                            });
-                        }
-
-                        return current;
+                        });
                     },
                     async getDefault(options) {
                         const allTenants = await this.get({ tenant: false, locale: false });
@@ -103,7 +104,6 @@ const plugin: ContextPlugin<PbContext> = {
                             if (prev && !next) {
                                 return prev;
                             }
-                            return next;
                         });
                     },
                     async update(rawData, options) {
