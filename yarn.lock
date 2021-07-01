@@ -8746,6 +8746,7 @@ __metadata:
     pluralize: ^8.0.0
     posthtml: ^0.15.0
     posthtml-noopener: ^1.0.5
+    posthtml-plugin-link-preload: ^1.0.0
     prettier: ^1.14.2
     rimraf: ^3.0.2
     shortid: ^2.2.16
@@ -28915,6 +28916,15 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"posthtml-match-helper@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "posthtml-match-helper@npm:1.0.1"
+  peerDependencies:
+    posthtml: ">=0.5.0"
+  checksum: 943790e29fcc127c207b85da36adf6d901913fc13bd99c0a78c44d3aab9ca33285223ec51cc3aac3bebc978a05f0651a7e6f05d3569e6c0f1cc2f3fdc9e88757
+  languageName: node
+  linkType: hard
+
 "posthtml-noopener@npm:^1.0.5":
   version: 1.0.5
   resolution: "posthtml-noopener@npm:1.0.5"
@@ -28939,6 +28949,15 @@ fsevents@^1.2.7:
   dependencies:
     htmlparser2: ^6.0.0
   checksum: f2b855cd794fe86b119348e8a299cec0dcfdd7448545e059541546c7146b269212c15c0d4bc99090810c6b86db54026638e0432e2fa11d50933438d6a8cf89a4
+  languageName: node
+  linkType: hard
+
+"posthtml-plugin-link-preload@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "posthtml-plugin-link-preload@npm:1.0.0"
+  dependencies:
+    posthtml-match-helper: ^1.0.1
+  checksum: 9832de6f9784563a1a4da460c484a1d90f38a4ea340024e2e32154e4e645c42cdc12c44fc2670c8b0ef9d7222922a74011d59fb670dc2e913b398b2877327e7f
   languageName: node
   linkType: hard
 
