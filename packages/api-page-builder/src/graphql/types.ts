@@ -124,6 +124,7 @@ export type SettingsCrud = {
     default: {
         PK: (options: Record<string, any>) => string;
         SK: "default";
+        getCurrent: () => Promise<DefaultSettings>;
         get: (options?: DefaultSettingsCrudOptions) => Promise<DefaultSettings>;
         getDefault: (options?: { tenant?: string }) => Promise<DefaultSettings>;
         update: (
