@@ -112,12 +112,12 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
             extend type PbQuery {
                 # Returns settings for current locale and tenant (uses defaults).
                 getCurrentSettings: PbSettingsResponse
-                
+
                 # Returns settings for current locale and tenant (does not use defaults).
                 getSettings: PbSettingsResponse
 
-                # Returns default settings that are composed of the default settings for all tenants, 
-                # overwritten by the default settings for the current tenant. Use a value from these 
+                # Returns default settings that are composed of the default settings for all tenants,
+                # overwritten by the default settings for the current tenant. Use a value from these
                 # settings if it hasn't been returned by the base getSettings field.
                 getDefaultSettings: PbDefaultSettingsResponse
             }
