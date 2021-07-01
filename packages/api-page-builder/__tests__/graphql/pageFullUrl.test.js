@@ -7,7 +7,9 @@ describe("page full URL test", () => {
         createCategory,
         createPage,
         updateSettings,
+        publishPage,
         listPages,
+        listPublishedPages,
         updatePage,
         until
     } = useGqlHandler();
@@ -35,9 +37,11 @@ describe("page full URL test", () => {
         });
 
         const letters = ["a", "z", "b"];
+        const ids = [];
         for (let i = 0; i < letters.length; i++) {
             const [response] = await createPage({ category: "category" });
             const { id } = response.data.pageBuilder.createPage.data;
+            ids.push(id);
             await updatePage({
                 id,
                 data: {
@@ -53,6 +57,24 @@ describe("page full URL test", () => {
             ([res]) => res.data.pageBuilder.listPages.data.length === 3
         ).then(([res]) =>
             expect(res.data.pageBuilder.listPages.data).toMatchObject([
+                { url: /^https:\/\/domain.com\/some-url\/untitled-/ },
+                { url: /^https:\/\/domain.com\/some-url\/untitled-/ },
+                { url: /^https:\/\/domain.com\/some-url\/untitled-/ }
+            ])
+        );
+
+        for (let i = 0; i < ids.length; i++) {
+            const id = ids[i];
+            await publishPage({
+                id
+            });
+        }
+
+        await until(
+            listPublishedPages,
+            ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 3
+        ).then(([res]) =>
+            expect(res.data.pageBuilder.listPublishedPages.data).toMatchObject([
                 { url: /^https:\/\/domain.com\/some-url\/untitled-/ },
                 { url: /^https:\/\/domain.com\/some-url\/untitled-/ },
                 { url: /^https:\/\/domain.com\/some-url\/untitled-/ }
