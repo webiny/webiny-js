@@ -143,19 +143,26 @@ const plugin: ContextPlugin<PbContext> = {
                             const specialType = specialTypes[i];
                             const p = previous?.pages?.[specialType];
                             const n = next?.pages?.[specialType];
+
                             if (p !== n) {
-                                if (!n) {
+                                // Only throw if previously we had a page (p), and now all of a sudden
+                                // we don't (!n). Allows updating settings without sending these.
+                                if (p && !n) {
                                     throw new Error(
                                         `Cannot unset "${specialType}" page. Please provide a new page if you want to unset current one.`,
                                         "CANNOT_UNSET_SPECIAL_PAGE"
                                     );
                                 }
 
-                                const page = await context.pageBuilder.pages.getPublishedById({
-                                    id: n
-                                });
+                                // Only load if the next page (n) has been sent, which is always a
+                                // must if previously a page was defined (p).
+                                if (n) {
+                                    const page = await context.pageBuilder.pages.getPublishedById({
+                                        id: n
+                                    });
 
-                                changedPages.push([specialType, p, n, page]);
+                                    changedPages.push([specialType, p, n, page]);
+                                }
                             }
                         }
 
