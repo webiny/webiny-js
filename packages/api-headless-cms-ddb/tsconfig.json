@@ -20,6 +20,7 @@
   ],
   "compilerOptions": {
     "paths": {
+      "~/*": ["./src/*"],
       "@webiny/api-headless-cms/*": ["../api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../api-headless-cms/src"],
       "@webiny/error/*": ["../error/src/*"],
