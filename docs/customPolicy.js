@@ -176,6 +176,39 @@ const customPolicyForProgrammaticAccess = {
             Sid: "PermissionForApiTag",
             Effect: "Allow",
             Action: ["tag:TagResources", "tag:UntagResources"]
+        },
+        {
+            Sid: "PermissionForEC2",
+            Effect: "Allow",
+            Action: ["ec2:*"]
+        },
+        {
+            Sid: "PermissionForLogs",
+            Effect: "Allow",
+            Action: [
+                "logs:CancelExportTask",
+                "logs:CreateLogDelivery",
+                "logs:DeleteDestination",
+                "logs:DeleteLogDelivery",
+                "logs:DeleteQueryDefinition",
+                "logs:DeleteResourcePolicy",
+                "logs:DescribeDestinations",
+                "logs:DescribeExportTasks",
+                "logs:DescribeQueries",
+                "logs:DescribeQueryDefinitions",
+                "logs:DescribeResourcePolicies",
+                "logs:GetLogDelivery",
+                "logs:GetLogRecord",
+                "logs:GetQueryResults",
+                "logs:ListLogDeliveries",
+                "logs:PutDestination",
+                "logs:PutDestinationPolicy",
+                "logs:PutQueryDefinition",
+                "logs:PutResourcePolicy",
+                "logs:StopQuery",
+                "logs:TestMetricFilter",
+                "logs:UpdateLogDelivery"
+            ]
         }
     ]
 };
