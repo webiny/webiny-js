@@ -1,6 +1,7 @@
 import useGqlHandler from "./useGqlHandler";
 import useUpdateSettingsHandler from "../updateSettings/useHandler";
 
+let ids = [];
 describe("page full URL test", () => {
     const {
         createElasticSearchIndex,
@@ -21,13 +22,7 @@ describe("page full URL test", () => {
 
     beforeEach(async () => {
         await createElasticSearchIndex();
-    });
 
-    afterEach(async () => {
-        await deleteElasticSearchIndex();
-    });
-
-    test("full URL must be returned correctly", async () => {
         await createCategory({
             data: {
                 slug: `category`,
@@ -37,20 +32,27 @@ describe("page full URL test", () => {
             }
         });
 
-        const letters = ["a", "z", "b"];
-        const ids = [];
-        for (let i = 0; i < letters.length; i++) {
+        ids = [];
+        for (let i = 0; i < 3; i++) {
             const [response] = await createPage({ category: "category" });
             const { id } = response.data.pageBuilder.createPage.data;
             ids.push(id);
             await updatePage({
                 id,
                 data: {
-                    title: `page-${letters[i]}`
+                    title: `page-${i}`
                 }
             });
         }
+    });
 
+    afterEach(async () => {
+        await deleteElasticSearchIndex();
+
+        ids = [];
+    });
+
+    test("full URL must be returned correctly", async () => {
         await updateSettings({ data: { websiteUrl: "https://domain.com" } });
 
         await until(
@@ -58,9 +60,9 @@ describe("page full URL test", () => {
             ([res]) => res.data.pageBuilder.listPages.data.length === 3
         ).then(([res]) =>
             expect(res.data.pageBuilder.listPages.data).toMatchObject([
-                { url: /^https:\/\/domain.com\/some-url\/untitled-/ },
-                { url: /^https:\/\/domain.com\/some-url\/untitled-/ },
-                { url: /^https:\/\/domain.com\/some-url\/untitled-/ }
+                { url: expect.stringMatching(/^https:\/\/domain.com\/some-url\/untitled-/) },
+                { url: expect.stringMatching(/^https:\/\/domain.com\/some-url\/untitled-/) },
+                { url: expect.stringMatching(/^https:\/\/domain.com\/some-url\/untitled-/) }
             ])
         );
 
@@ -76,9 +78,9 @@ describe("page full URL test", () => {
             ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 3
         ).then(([res]) =>
             expect(res.data.pageBuilder.listPublishedPages.data).toMatchObject([
-                { url: /^https:\/\/domain.com\/some-url\/untitled-/ },
-                { url: /^https:\/\/domain.com\/some-url\/untitled-/ },
-                { url: /^https:\/\/domain.com\/some-url\/untitled-/ }
+                { url: expect.stringMatching(/^https:\/\/domain.com\/some-url\/untitled-/) },
+                { url: expect.stringMatching(/^https:\/\/domain.com\/some-url\/untitled-/) },
+                { url: expect.stringMatching(/^https:\/\/domain.com\/some-url\/untitled-/) }
             ])
         );
     });
@@ -100,29 +102,6 @@ describe("page full URL test", () => {
             }
         });
 
-        await createCategory({
-            data: {
-                slug: `category`,
-                name: `name`,
-                url: `/some-url/`,
-                layout: `layout`
-            }
-        });
-
-        const letters = ["a", "z", "b"];
-        const ids = [];
-        for (let i = 0; i < letters.length; i++) {
-            const [response] = await createPage({ category: "category" });
-            const { id } = response.data.pageBuilder.createPage.data;
-            ids.push(id);
-            await updatePage({
-                id,
-                data: {
-                    title: `page-${letters[i]}`
-                }
-            });
-        }
-
         await until(
             listPages,
             ([res]) => res.data.pageBuilder.listPages.data.length === 3
@@ -140,37 +119,18 @@ describe("page full URL test", () => {
             res.data.pageBuilder.listPages.data[0].url.startsWith("https://updated-domain")
         ).then(([res]) =>
             expect(res.data.pageBuilder.listPages.data).toMatchObject([
-                { url: /^https:\/\/updated-domain.com\/some-url\/untitled-/ },
-                { url: /^https:\/\/updated-domain.com\/some-url\/untitled-/ },
-                { url: /^https:\/\/updated-domain.com\/some-url\/untitled-/ }
+                {
+                    url: expect.stringMatching(/^https:\/\/updated-domain.com\/some-url\/untitled-/)
+                },
+                {
+                    url: expect.stringMatching(/^https:\/\/updated-domain.com\/some-url\/untitled-/)
+                },
+                { url: expect.stringMatching(/^https:\/\/updated-domain.com\/some-url\/untitled-/) }
             ])
         );
     });
 
     test("`null` must no be part of the page URL", async () => {
-        await createCategory({
-            data: {
-                slug: `category`,
-                name: `name`,
-                url: `/some-url/`,
-                layout: `layout`
-            }
-        });
-
-        const letters = ["a", "z", "b"];
-        const ids = [];
-        for (let i = 0; i < letters.length; i++) {
-            const [response] = await createPage({ category: "category" });
-            const { id } = response.data.pageBuilder.createPage.data;
-            ids.push(id);
-            await updatePage({
-                id,
-                data: {
-                    title: `page-${letters[i]}`
-                }
-            });
-        }
-
         // Ensure that a settings entry exists in the database.
         await updateSettings({ data: {} });
 
@@ -197,9 +157,9 @@ describe("page full URL test", () => {
             ([res]) => res.data.pageBuilder.listPublishedPages.data.length === 3
         ).then(([res]) =>
             expect(res.data.pageBuilder.listPublishedPages.data).toMatchObject([
-                { url: /^https:\/\/domain.com\/some-url\/untitled-/ },
-                { url: /^https:\/\/domain.com\/some-url\/untitled-/ },
-                { url: /^https:\/\/domain.com\/some-url\/untitled-/ }
+                { url: expect.stringMatching(/^\/some-url\/untitled-/) },
+                { url: expect.stringMatching(/^\/some-url\/untitled-/) },
+                { url: expect.stringMatching(/^\/some-url\/untitled-/) }
             ])
         );
     });
