@@ -5,7 +5,7 @@ interface PageBuilderObject extends Object {
 }
 
 export default new ApolloCacheObjectIdPlugin<PageBuilderObject>(obj => {
-    if (obj.__typename === "PbPage" || "PbPageListItem") {
+    if (obj.__typename === "PbPage" || obj.__typename === "PbPageListItem") {
         return obj.__typename + obj.id;
     }
 });
