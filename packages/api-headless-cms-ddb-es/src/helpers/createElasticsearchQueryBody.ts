@@ -11,7 +11,11 @@ import {
     CmsContext,
     CmsModelFieldToGraphQLPlugin
 } from "@webiny/api-headless-cms/types";
-import { CmsModelFieldToElasticsearchPlugin, ElasticsearchQueryPlugin } from "../types";
+import {
+    CmsModelFieldToElasticsearchPlugin,
+    ElasticsearchQueryBuilderValueSearchPlugin,
+    ElasticsearchQueryPlugin
+} from "../types";
 import { decodeElasticsearchCursor } from "../utils";
 import {
     TYPE_ENTRY_LATEST,
@@ -27,6 +31,7 @@ import {
 type ModelFieldPath = string | ((value: string) => string);
 interface ModelField {
     unmappedType?: string;
+    keyword?: boolean;
     isSearchable: boolean;
     isSortable: boolean;
     type: string;
@@ -199,6 +204,37 @@ const createInitialQueryValue = (
 };
 
 const specialFields = ["published", "latest"];
+
+const noKeywordFields = ["date", "number", "boolean"];
+
+interface CreateFieldParams {
+    modelField: ModelField;
+    searchPlugin?: ElasticsearchQueryBuilderValueSearchPlugin;
+    context: CmsContext;
+    parentPath?: string;
+}
+const createFieldPath = ({
+    modelField,
+    searchPlugin,
+    context,
+    parentPath
+}: CreateFieldParams): string => {
+    let path;
+    if (searchPlugin && typeof searchPlugin.createPath === "function") {
+        path = searchPlugin.createPath({
+            field: modelField.field,
+            context
+        });
+    } else if (typeof modelField.path === "function") {
+        path = modelField.path(modelField.field.fieldId);
+    }
+    if (!path) {
+        path = modelField.path || modelField.field.fieldId || modelField.field.id;
+    }
+    return modelField.isSystemField || !parentPath || path.match(parentPath)
+        ? path
+        : `${parentPath}.${path}`;
+};
 /*
  * Iterate through where keys and apply plugins where necessary
  */
@@ -213,13 +249,6 @@ const execElasticsearchBuildQueryPlugins = (
     for (const sf of specialFields) {
         delete where[sf];
     }
-
-    const withParentObject = (field: string) => {
-        if (!parentObject) {
-            return null;
-        }
-        return `${parentObject}.${field}`;
-    };
 
     if (!where || Object.keys(where).length === 0) {
         return query;
@@ -241,11 +270,12 @@ const execElasticsearchBuildQueryPlugins = (
         }
         const { field, op } = parseWhereKey(key);
         const modelField = modelFields[field];
-        const { isSearchable = false, isSystemField, field: cmsField } = modelField || {};
 
         if (!modelField) {
             throw new WebinyError(`There is no field "${field}".`);
-        } else if (!isSearchable) {
+        }
+        const { isSearchable = false, field: cmsField } = modelField;
+        if (!isSearchable) {
             throw new WebinyError(`Field "${field}" is not searchable.`);
         }
         const plugin = operatorPlugins[op];
@@ -261,25 +291,20 @@ const execElasticsearchBuildQueryPlugins = (
             value: where[key],
             context
         });
-        /**
-         * A possibility to build field custom path for the Elasticsearch record.
-         */
-        const customFieldPath =
-            fieldSearchPlugin && typeof fieldSearchPlugin.createPath === "function"
-                ? fieldSearchPlugin.createPath({
-                      field: modelField.field,
-                      context
-                  })
-                : modelField.path || null;
-        const fieldWithParent = isSystemField
-            ? customFieldPath
-            : customFieldPath || withParentObject(field);
+
+        const fieldPath = createFieldPath({
+            context,
+            searchPlugin: fieldSearchPlugin,
+            modelField,
+            parentPath: parentObject
+        });
+        const keyword = !noKeywordFields.includes(modelField.type);
         plugin.apply(query, {
-            field: fieldWithParent || field,
+            basePath: fieldPath,
+            path: keyword ? `${fieldPath}.keyword` : fieldPath,
             value,
-            parentObject,
-            originalField: fieldWithParent ? field : undefined,
-            context
+            context,
+            keyword
         });
     }
 
@@ -334,6 +359,7 @@ const createModelFieldOptions = (context: CmsContext, model: CmsContentModel): M
         savedOn: {
             type: "date",
             unmappedType: "date",
+            keyword: false,
             isSystemField: true,
             isSearchable: true,
             isSortable: true,
@@ -386,6 +412,7 @@ const createModelFieldOptions = (context: CmsContext, model: CmsContentModel): M
         version: {
             type: "number",
             unmappedType: undefined,
+            keyword: false,
             isSystemField: true,
             isSearchable: true,
             isSortable: true,
