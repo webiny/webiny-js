@@ -1,6 +1,7 @@
 import chromium from "chrome-aws-lambda";
 import posthtml from "posthtml";
 import { noopener } from "posthtml-noopener";
+import posthtmlPluginLinkPreload from "posthtml-plugin-link-preload";
 import injectApolloState from "./injectApolloState";
 import injectRenderId from "./injectRenderId";
 import injectRenderTs from "./injectRenderTs";
@@ -37,9 +38,24 @@ export default async (url: string, args: Args): Promise<[File[], Meta]> => {
     // TODO: should be plugins (will also eliminate lower @ts-ignore instructions).
     console.log("Processing HTML...");
 
+    // TODO: regular text processing plugins...
+
+    {
+        const regex = /<script (src="\/static\/js\/)/gm;
+        const subst = `<script data-link-preload data-link-preload-type="markup" src="/static/js/`;
+        render.content = render.content.replace(regex, subst);
+    }
+
+    {
+        const regex = /<link href="\/static\/css\//gm;
+        const subst = `<link data-link-preload data-link-preload-type="markup" href="/static/css/`;
+        render.content = render.content.replace(regex, subst);
+    }
+
     const allArgs = { render, args, url, id, ts };
     const { html } = await posthtml([
         noopener(),
+        posthtmlPluginLinkPreload(),
         // @ts-ignore
         injectRenderId(allArgs),
         // @ts-ignore
