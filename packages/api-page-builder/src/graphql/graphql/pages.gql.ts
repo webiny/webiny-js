@@ -5,6 +5,7 @@ import Error from "@webiny/error";
 import resolve from "./utils/resolve";
 import pageSettings from "./pages/pageSettings";
 import { fetchEmbed, findProvider } from "./pages/oEmbed";
+import get from "lodash/get";
 
 const plugin: GraphQLSchemaPlugin<PbContext> = {
     type: "graphql-schema",
@@ -288,11 +289,9 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     return context.pageBuilder.pages.listPageRevisions(page.id);
                 },
                 url: async (page: Page, args, context) => {
-                    const settings = await context.pageBuilder.settings.default.get();
-                    if (!settings || !settings.websiteUrl) {
-                        return page.path;
-                    }
-                    return settings.websiteUrl + page.path;
+                    const settings = await context.pageBuilder.settings.default.getCurrent();
+                    const websiteUrl = get(settings, "websiteUrl") || "";
+                    return websiteUrl + page.path;
                 }
             },
             PbPageListItem: {
@@ -304,11 +303,9 @@ const plugin: GraphQLSchemaPlugin<PbContext> = {
                     return context.pageBuilder.categories.get(page.category, { auth: false });
                 },
                 url: async (page: Page, args, context) => {
-                    const settings = await context.pageBuilder.settings.default.get();
-                    if (!settings || !settings.websiteUrl) {
-                        return page.path;
-                    }
-                    return settings.websiteUrl + page.path;
+                    const settings = await context.pageBuilder.settings.default.getCurrent();
+                    const websiteUrl = get(settings, "websiteUrl") || "";
+                    return websiteUrl + page.path;
                 }
             },
             PbQuery: {
