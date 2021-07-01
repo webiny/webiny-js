@@ -5,7 +5,7 @@
  * It is NOT a strict implementation of the least privilege security principle i.e.
  * there might be some permissions in this list that are not needed at all which we can remove with help of access analyzer.
  */
-const customPolicyForProgrammaticAccess = {
+const policyForProgrammaticAccess = {
     Version: "2012-10-17",
     Statement: [
         {
@@ -20,12 +20,14 @@ const customPolicyForProgrammaticAccess = {
                 "cloudfront:TagResource",
                 "cloudfront:UntagResource",
                 "cloudfront:UpdateDistribution"
-            ]
+            ],
+            Resource: "*"
         },
         {
             Sid: "PermissionForApiGateway",
             Effect: "Allow",
-            Action: ["apigateway:*"]
+            Action: ["apigateway:*"],
+            Resource: "*"
         },
         {
             Sid: "PermissionForCognitoIdp",
@@ -40,7 +42,8 @@ const customPolicyForProgrammaticAccess = {
                 "cognito-idp:GetUserPoolMfaConfig",
                 "cognito-idp:TagResource",
                 "cognito-idp:UntagResource"
-            ]
+            ],
+            Resource: "*"
         },
         {
             Sid: "PermissionForDynamodb",
@@ -54,7 +57,8 @@ const customPolicyForProgrammaticAccess = {
                 "dynamodb:ListTagsOfResource",
                 "dynamodb:TagResource",
                 "dynamodb:UntagResource"
-            ]
+            ],
+            Resource: "*"
         },
         {
             Sid: "PermissionForElasticsearch",
@@ -68,7 +72,8 @@ const customPolicyForProgrammaticAccess = {
                 "es:ListTags",
                 "es:RemoveTags",
                 "es:UpdateElasticsearchDomainConfig"
-            ]
+            ],
+            Resource: "*"
         },
         {
             Sid: "PermissionForEventBridge",
@@ -83,7 +88,8 @@ const customPolicyForProgrammaticAccess = {
                 "events:RemoveTargets",
                 "events:TagResource",
                 "events:UntagResource"
-            ]
+            ],
+            Resource: "*"
         },
         {
             Sid: "PermissionForIAM",
@@ -107,7 +113,8 @@ const customPolicyForProgrammaticAccess = {
                 "iam:PutRolePolicy",
                 "iam:TagRole",
                 "iam:UntagRole"
-            ]
+            ],
+            Resource: "*"
         },
         {
             Sid: "PermissionForApiKms",
@@ -127,7 +134,8 @@ const customPolicyForProgrammaticAccess = {
                 "kms:ReEncryptTo",
                 "kms:TagResource",
                 "kms:UntagResource"
-            ]
+            ],
+            Resource: "*"
         },
         {
             Sid: "PermissionForLambda",
@@ -160,27 +168,32 @@ const customPolicyForProgrammaticAccess = {
                 "lambda:UpdateEventSourceMapping",
                 "lambda:UpdateFunctionCode",
                 "lambda:UpdateFunctionConfiguration"
-            ]
+            ],
+            Resource: "*"
         },
         {
             Sid: "PermissionForApiS3",
             Effect: "Allow",
-            Action: ["s3:*"]
+            Action: ["s3:*"],
+            Resource: "*"
         },
         {
             Sid: "PermissionForApiSts",
             Effect: "Allow",
-            Action: ["sts:GetCallerIdentity"]
+            Action: ["sts:GetCallerIdentity"],
+            Resource: "*"
         },
         {
             Sid: "PermissionForApiTag",
             Effect: "Allow",
-            Action: ["tag:TagResources", "tag:UntagResources"]
+            Action: ["tag:TagResources", "tag:UntagResources"],
+            Resource: "*"
         },
         {
             Sid: "PermissionForEC2",
             Effect: "Allow",
-            Action: ["ec2:*"]
+            Action: ["ec2:*"],
+            Resource: "*"
         },
         {
             Sid: "PermissionForLogs",
