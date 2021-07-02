@@ -9,13 +9,9 @@ import { Plugin } from "@webiny/plugins/types";
 import WebinyError from "@webiny/error";
 import lodashSortBy from "lodash.sortby";
 import dotProp from "dot-prop";
-import {
-    CmsFieldFilterPathPlugin,
-    CmsFieldFilterValueTransformPlugin,
-    CmsFieldValueFilterArgs,
-    CmsFieldValueFilterPlugin
-} from "../../types";
+import { CmsFieldFilterPathPlugin, CmsFieldFilterValueTransformPlugin } from "../../types";
 import { systemFields } from "./systemFields";
+import { ValueFilterPlugin } from "@webiny/db-dynamodb/plugins/ValueFilterPlugin";
 
 interface ModelField {
     def: CmsContentModelField;
@@ -34,8 +30,8 @@ interface CreateFiltersArgs {
 
 interface ItemFilter {
     fieldId: string;
-    valuePath: string;
-    matches: (args: CmsFieldValueFilterArgs<any, any>) => boolean;
+    path: string;
+    filterPlugin: ValueFilterPlugin;
     negate: boolean;
     compareValue: any;
     transformValue: <I = any, O = any>(value: I) => O;
@@ -68,11 +64,19 @@ const extractWhereArgs = (key: string) => {
     const operation = rawOp.replace("not_", "");
     return { fieldId, operation, negate };
 };
+
+const transformValue = (value: any, transform: (value: any) => any): any => {
+    if (Array.isArray(value)) {
+        return value.map(v => transform(v));
+    }
+    return transform(value);
+};
+
 const createFilters = (args: CreateFiltersArgs): ItemFilter[] => {
     const { where, context, fields } = args;
-    const filterPlugins = getMappedPlugins<CmsFieldValueFilterPlugin<any>>({
+    const filterPlugins = getMappedPlugins<ValueFilterPlugin>({
         context,
-        type: "cms-field-value-filter",
+        type: ValueFilterPlugin.type,
         property: "operation"
     });
     const transformValuePlugins = getMappedPlugins<CmsFieldFilterValueTransformPlugin>({
@@ -131,24 +135,27 @@ const createFilters = (args: CreateFiltersArgs): ItemFilter[] => {
             );
         }
 
+        const transformValueCallable = (value: any) => {
+            if (!transformValuePlugin) {
+                return value;
+            }
+            return transformValuePlugin.transform({
+                field: field.def,
+                value
+            });
+        };
+
         return {
             fieldId,
-            valuePath,
-            matches: filterPlugin.matches,
+            path: valuePath,
+            filterPlugin,
             negate,
-            compareValue: where[key],
-            transformValue: (value: any) => {
-                if (!transformValuePlugin) {
-                    return value;
-                }
-                return transformValuePlugin.transform({
-                    field: field.def,
-                    value
-                });
-            }
+            compareValue: transformValue(where[key], transformValueCallable),
+            transformValue: transformValueCallable
         };
     });
 };
+
 export const filterItems = (args: FilterItemsArgs): CmsContentEntry[] => {
     const { items, where, context, fields } = args;
 
@@ -159,17 +166,10 @@ export const filterItems = (args: FilterItemsArgs): CmsContentEntry[] => {
     });
     return items.filter(item => {
         for (const filter of filters) {
-            const { compareValue, valuePath, transformValue } = filter;
-            const value = dotProp.get(item, valuePath);
-            const transformedFieldValue = Array.isArray(value)
-                ? value.map(transformValue)
-                : transformValue(value);
-            const transformedCompareValue = Array.isArray(compareValue)
-                ? compareValue.map(transformValue)
-                : transformValue(compareValue);
-            const matched = filter.matches({
-                fieldValue: transformedFieldValue,
-                compareValue: transformedCompareValue
+            const value = transformValue(dotProp.get(item, filter.path), filter.transformValue);
+            const matched = filter.filterPlugin.matches({
+                value,
+                compareValue: filter.compareValue
             });
             if ((filter.negate ? !matched : matched) === false) {
                 return false;

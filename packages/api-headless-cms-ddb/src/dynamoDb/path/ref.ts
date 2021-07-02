@@ -1,4 +1,4 @@
-import { CmsFieldFilterPathPlugin } from "../../types";
+import { CmsFieldFilterPathPlugin } from "~/types";
 
 export default (): CmsFieldFilterPathPlugin => ({
     type: "cms-field-filter-path",

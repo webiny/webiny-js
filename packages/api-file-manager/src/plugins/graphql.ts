@@ -1,5 +1,5 @@
 import { Response, ErrorResponse, ListResponse } from "@webiny/handler-graphql";
-import { FileInput, FileManagerContext, FilesListOpts, Settings } from "../types";
+import { FileInput, FileManagerContext, FilesListOpts, FileManagerSettings } from "~/types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 
 const emptyResolver = () => ({});
@@ -46,6 +46,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
             type FileListMeta {
                 cursor: String
                 totalCount: Int
+                hasMoreItems: Boolean
             }
 
             type FileError {
@@ -101,6 +102,16 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
             type FileManagerSettingsResponse {
                 data: FileManagerSettings
                 error: FileError
+            }
+
+            input FileWhereInput {
+                search: String
+                type: String
+                type_in: [String!]
+                tag: String
+                tags_in: [String!]
+                id_in: [ID!]
+                id: ID
             }
 
             type FmQuery {
@@ -181,7 +192,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                 },
                 async listTags(_, args, context) {
                     try {
-                        return await context.fileManager.files.listTags();
+                        return await context.fileManager.files.listTags(args || {});
                     } catch (error) {
                         return new ErrorResponse(error);
                     }
@@ -211,7 +222,10 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                 async deleteFile(_, args, context) {
                     return resolve(async () => {
                         const file = await context.fileManager.files.getFile(args.id);
-                        return context.fileManager.storage.delete({ id: file.id, key: file.key });
+                        return await context.fileManager.storage.delete({
+                            id: file.id,
+                            key: file.key
+                        });
                     });
                 },
                 async install(_, args, context) {
@@ -222,7 +236,7 @@ const plugin: GraphQLSchemaPlugin<FileManagerContext> = {
                 async upgrade(_, args, context) {
                     return resolve(() => context.fileManager.system.upgrade(args.version));
                 },
-                async updateSettings(_, args: { data: Partial<Settings> }, context) {
+                async updateSettings(_, args: { data: Partial<FileManagerSettings> }, context) {
                     return resolve(() => context.fileManager.settings.updateSettings(args.data));
                 }
             }

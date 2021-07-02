@@ -1,6 +1,6 @@
 import { elasticsearchOperatorNotInPlugin } from "../../../../src/elasticsearch/operators/notIn";
 import { createBlankQuery } from "../helpers";
-import { ElasticsearchBoolQueryConfig } from "@webiny/api-plugin-elastic-search-client/types";
+import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
 
 describe("elasticsearchOperatorNotInPlugin", () => {
     const plugin = elasticsearchOperatorNotInPlugin();

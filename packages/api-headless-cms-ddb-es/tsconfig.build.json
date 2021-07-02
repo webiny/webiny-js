@@ -5,7 +5,7 @@
     "node_modules",
     "../api-headless-cms",
     "../api-dynamodb-to-elasticsearch",
-    "../api-plugin-elastic-search-client",
+    "../api-elasticsearch",
     "../api-upgrade",
     "../handler-db",
     "../handler-aws",

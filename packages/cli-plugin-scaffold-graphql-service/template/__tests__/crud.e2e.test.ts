@@ -12,7 +12,7 @@ import { request } from "graphql-request";
  * setup is working. That's why, here we're not executing the handler code directly, but issuing real
  * HTTP requests over to the deployed Amazon Cloudfront distribution. These tests provide the highest
  * level of confidence that our application is working, but they take more time in order to complete.
- * https://www.webiny.com/docs/how-to-guides/webiny-cli/scaffolding/extend-graphql-api/testing/e2e
+ * https://www.webiny.com/docs/how-to-guides/webiny-cli/scaffolding/extend-graphql-api#crude2etestts
  */
 
 const query = async ({ query = "", variables = {} } = {}) => {

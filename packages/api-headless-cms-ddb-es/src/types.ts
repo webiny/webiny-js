@@ -9,7 +9,7 @@ import {
 import {
     ElasticsearchBoolQueryConfig,
     ElasticsearchQueryOperator
-} from "@webiny/api-plugin-elastic-search-client/types";
+} from "@webiny/api-elasticsearch/types";
 
 /**
  * Definition for arguments of the ElasticsearchQueryBuilderPlugin.apply method.

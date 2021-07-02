@@ -90,13 +90,13 @@ module.exports = async (inputs, context) => {
     let output = inputs.output === "browser" ? browserOutput : terminalOutput;
     await output.initialize(inputs);
 
-    try {
-        const logging = {
-            url: null
-        };
+    const logging = {
+        url: null
+    };
 
-        // Forward logs from the cloud to here, using the "localtunnel" library.
-        if (inputs.logs) {
+    // Forward logs from the cloud to here, using the "localtunnel" library.
+    if (inputs.logs) {
+        try {
             const tunnel = await localtunnel({ port: 3010 });
 
             logging.url = tunnel.url;
@@ -138,10 +138,17 @@ module.exports = async (inputs, context) => {
                     )
                 });
             }
+        } catch (e) {
+            output.log({
+                type: "logs",
+                message: chalk.red(e.message)
+            });
         }
+    }
 
-        // Add deploy logs.
-        if (inputs.deploy && projectApplication) {
+    // Add deploy logs.
+    if (inputs.deploy && projectApplication) {
+        try {
             output.log({
                 type: "deploy",
                 message: chalk.green("Watching cloud infrastructure resources...")
@@ -193,10 +200,17 @@ module.exports = async (inputs, context) => {
                     });
                 }, 3000);
             }
+        } catch (e) {
+            output.log({
+                type: "deploy",
+                message: chalk.red(e.message)
+            });
         }
+    }
 
-        // Add build logs.
-        if (inputs.build) {
+    // Add build logs.
+    if (inputs.build) {
+        try {
             output.log({
                 type: "build",
                 message: chalk.green("Watching packages...")
@@ -258,10 +272,12 @@ module.exports = async (inputs, context) => {
                     });
                 });
             });
+        } catch (e) {
+            output.log({
+                type: "build",
+                message: chalk.red(e.message)
+            });
         }
-    } catch (e) {
-        output.error(e);
-        throw e;
     }
 };
 

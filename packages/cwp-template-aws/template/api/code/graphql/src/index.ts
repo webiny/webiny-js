@@ -5,11 +5,12 @@ import i18nPlugins from "@webiny/api-i18n/graphql";
 import adminUsersPlugins from "@webiny/api-security-admin-users";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
-import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
-import elasticSearch from "@webiny/api-plugin-elastic-search-client";
+import elasticsearchClientContextPlugin from "@webiny/api-elasticsearch";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
+import fileManagerDynamoDbElasticPlugins from "@webiny/api-file-manager-ddb-es";
+import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
 import logsPlugins from "@webiny/handler-logs";
 import fileManagerS3 from "@webiny/api-file-manager-s3";
 import formBuilderPlugins from "@webiny/api-form-builder/plugins";
@@ -26,7 +27,9 @@ export const handler = createHandler({
     plugins: [
         logsPlugins(),
         graphqlPlugins({ debug }),
-        elasticSearch({ endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}` }),
+        elasticsearchClientContextPlugin({
+            endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}`
+        }),
         dbPlugins({
             table: process.env.DB_TABLE,
             driver: new DynamoDbDriver({
@@ -40,6 +43,7 @@ export const handler = createHandler({
         i18nPlugins(),
         i18nContentPlugins(),
         fileManagerPlugins(),
+        fileManagerDynamoDbElasticPlugins(),
         // Add File storage S3 plugin for API file manager.
         fileManagerS3(),
         prerenderingServicePlugins({

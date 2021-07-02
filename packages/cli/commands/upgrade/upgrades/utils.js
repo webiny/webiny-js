@@ -5,6 +5,7 @@ const prettier = require("prettier");
 const loadJson = require("load-json-file");
 const writeJson = require("write-json-file");
 const semverCoerce = require("semver/functions/coerce");
+const execa = require("execa");
 
 const insertImport = (source, name, pkg) => {
     const statements = source.getStatements();
@@ -132,11 +133,30 @@ const prettierFormat = async (files, context) => {
     }
 };
 
+/**
+ * Run to install new packages in the project.
+ */
+const yarnInstall = async ({ context }) => {
+    const { info, error } = context;
+    try {
+        info("Installing new packages...");
+        await execa("yarn", { cwd: process.cwd() });
+        info("Finished installing new packages.");
+    } catch (ex) {
+        error("Installation of new packages failed.");
+        console.log(error(ex.message));
+        if (ex.stdout) {
+            console.log(ex.stdout);
+        }
+    }
+};
+
 module.exports = {
     insertImport,
     addPackagesToDependencies,
     addPackagesToDevDependencies,
     addPackagesToPeerDependencies,
     createMorphProject,
-    prettierFormat
+    prettierFormat,
+    yarnInstall
 };

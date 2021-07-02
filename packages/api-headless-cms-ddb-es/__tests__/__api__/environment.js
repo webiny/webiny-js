@@ -1,7 +1,7 @@
 const dbPlugins = require("@webiny/handler-db").default;
 const { DynamoDbDriver } = require("@webiny/db-dynamodb");
 const { DocumentClient } = require("aws-sdk/clients/dynamodb");
-const elasticSearch = require("@webiny/api-plugin-elastic-search-client").default;
+const elasticsearchClientContextPlugin = require("@webiny/api-elasticsearch").default;
 const { createHandler } = require("@webiny/handler-aws");
 const dynamoToElastic = require("@webiny/api-dynamodb-to-elasticsearch/handler").default;
 const { Client } = require("@elastic/elasticsearch");
@@ -21,10 +21,10 @@ const ELASTICSEARCH_PORT = process.env.ELASTICSEARCH_PORT || "9200";
 const getStorageOperationsPlugins = ({
     elasticsearchClient,
     documentClient,
-    elasticSearchContext
+    elasticsearchClientContext
 }) => {
     // Intercept DocumentClient operations and trigger dynamoToElastic function (almost like a DynamoDB Stream trigger)
-    simulateStream(documentClient, createHandler(elasticSearchContext, dynamoToElastic()));
+    simulateStream(documentClient, createHandler(elasticsearchClientContext, dynamoToElastic()));
 
     return () => {
         return [
@@ -35,7 +35,7 @@ const getStorageOperationsPlugins = ({
                     documentClient
                 })
             }),
-            elasticSearchContext,
+            elasticsearchClientContext,
             {
                 type: "context",
                 async apply() {
@@ -95,7 +95,7 @@ class CmsTestEnvironment extends NodeEnvironment {
             accessKeyId: "test",
             secretAccessKey: "test"
         });
-        const elasticSearchContext = elasticSearch({
+        const elasticsearchClientContext = elasticsearchClientContextPlugin({
             endpoint: `http://localhost:${ELASTICSEARCH_PORT}`,
             auth: {}
         });
@@ -110,7 +110,7 @@ class CmsTestEnvironment extends NodeEnvironment {
         this.global.__getStorageOperationsPlugins = () => {
             return getStorageOperationsPlugins({
                 elasticsearchClient,
-                elasticSearchContext,
+                elasticsearchClientContext,
                 documentClient
             });
         };

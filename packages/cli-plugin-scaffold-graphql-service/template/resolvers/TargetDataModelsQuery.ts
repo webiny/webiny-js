@@ -1,12 +1,12 @@
 import { TargetDataModelEntity } from "../types";
-import { TargetDataModels } from "../entities";
+import { TargetDataModel } from "../entities";
 import TargetDataModelsResolver from "./TargetDataModelsResolver";
 
 /**
  * Contains base `getTargetDataModel` and `listTargetDataModels` GraphQL resolver functions.
  * Feel free to adjust the code to your needs. Also, note that at some point in time, you will
  * most probably want to implement security-related checks.
- * https://www.webiny.com/docs/how-to-guides/webiny-cli/scaffolding/extend-graphql-api/resolvers/query
+ * https://www.webiny.com/docs/how-to-guides/webiny-cli/scaffolding/extend-graphql-api#essential-files
  */
 
 interface GetTargetDataModelParams {
@@ -42,7 +42,7 @@ export default class TargetDataModelsQueryResolver extends TargetDataModelsResol
      */
     async getTargetDataModel({ id }: GetTargetDataModelParams) {
         // Query the database and return the entry. If entry was not found, an error is thrown.
-        const { Item: targetDataModel } = await TargetDataModels.get({ PK: this.getPK(), SK: id });
+        const { Item: targetDataModel } = await TargetDataModel.get({ PK: this.getPK(), SK: id });
         if (!targetDataModel) {
             throw new Error(`TargetDataModel "${id}" not found.`);
         }
@@ -72,7 +72,7 @@ export default class TargetDataModelsQueryResolver extends TargetDataModelsResol
                 query.gt = before;
             }
 
-            const { Items } = await TargetDataModels.query(PK, { ...query, limit: limit + 1 });
+            const { Items } = await TargetDataModel.query(PK, { ...query, limit: limit + 1 });
 
             const data = Items.slice(0, limit).reverse();
 
@@ -94,7 +94,7 @@ export default class TargetDataModelsQueryResolver extends TargetDataModelsResol
             }
         }
 
-        const { Items } = await TargetDataModels.query(PK, { ...query, limit: limit + 1 });
+        const { Items } = await TargetDataModel.query(PK, { ...query, limit: limit + 1 });
 
         const data = Items.slice(0, limit);
 

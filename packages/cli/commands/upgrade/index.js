@@ -18,14 +18,14 @@ module.exports = [
                         type: "string"
                     });
 
-                    yargs.option("git-check", {
-                        describe: "Prevent upgrade if there are uncommited changes.",
+                    yargs.option("skip-checks", {
+                        describe: "Do not perform CLI version and Git tree checks.",
                         type: "boolean",
-                        default: true
+                        default: false
                     });
                 },
                 async argv => {
-                    if (argv.gitCheck) {
+                    if (!argv.skipChecks) {
                         // Before doing any upgrading, there must not be any active changes in the current branch.
                         let gitStatus = "";
                         try {
@@ -64,7 +64,7 @@ module.exports = [
                         );
                     }
 
-                    if (typeof plugin.canUpgrade === "function") {
+                    if (typeof plugin.canUpgrade === "function" && !argv.skipChecks) {
                         try {
                             const canUpgrade = await plugin.canUpgrade(argv, context);
                             if (canUpgrade === false) {
