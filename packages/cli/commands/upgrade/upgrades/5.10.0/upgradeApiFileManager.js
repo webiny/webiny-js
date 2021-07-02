@@ -2,18 +2,22 @@ const tsMorph = require("ts-morph");
 const importPath = "@webiny/api-file-manager-ddb-es";
 const importedVariableName = "fileManagerDynamoDbElasticPlugins";
 
-const upgradeGraphQLIndex = async ({ source, file, context }) => {
+const FILES = { index: "api/code/graphql/src/index.ts" };
+
+const upgradeGraphQLIndex = async (project, context) => {
     const { info } = context;
-    info(`Upgrading ${info.hl(file)}`);
+    info(`Upgrading ${info.hl(FILES.index)}`);
+
+    const source = project.getSourceFile(FILES.index);
 
     const fileManagerDynamoDbElasticPluginsImport = source.getImportDeclaration(importPath);
     if (fileManagerDynamoDbElasticPluginsImport) {
-        info(`Import ${info.hl(importPath)} already exists in ${info.hl(file)}.`);
+        info(`Import ${info.hl(importPath)} already exists in ${info.hl(FILES.index)}.`);
         return;
     }
     const lastImport = source.getImportDeclarations().pop();
     if (!lastImport) {
-        throw new Error(`Missing imports in "${file}".`);
+        throw new Error(`Missing imports in "${FILES.index}".`);
     }
 
     source.insertImportDeclaration(lastImport.getChildIndex() + 1, {
@@ -52,8 +56,9 @@ const upgradeGraphQLIndex = async ({ source, file, context }) => {
      * Add new the DynamoDB/Elasticsearch plugins to the array of plugins.
      */
     plugins.getInitializer().insertElement(fileManagerPlugins, `${importedVariableName}()`);
-    info(`Upgrade done.`);
 };
+
+upgradeGraphQLIndex.files = FILES;
 
 module.exports = {
     upgradeGraphQLIndex
