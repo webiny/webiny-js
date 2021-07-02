@@ -243,20 +243,20 @@ jobs:
     steps:
       # After the run is over, destroy deployed cloud infrastructure.
       # Must be immediately defined here.
-      - uses: webiny/action-post-run@2.0.1
-        with:
-          working-directory: test-project
-          run: yarn webiny destroy api --env dev
-
-      - uses: webiny/action-post-run@2.0.1
-        with:
-          working-directory: test-project
-          run: yarn webiny destroy apps/admin --env dev
-
-      - uses: webiny/action-post-run@2.0.1
-        with:
-          working-directory: test-project
-          run: yarn webiny destroy apps/website --env dev
+#      - uses: webiny/action-post-run@2.0.1
+#        with:
+#          working-directory: test-project
+#          run: yarn webiny destroy api --env dev
+#
+#      - uses: webiny/action-post-run@2.0.1
+#        with:
+#          working-directory: test-project
+#          run: yarn webiny destroy apps/admin --env dev
+#
+#      - uses: webiny/action-post-run@2.0.1
+#        with:
+#          working-directory: test-project
+#          run: yarn webiny destroy apps/website --env dev
 
       - uses: actions/setup-node@v2
         with:
