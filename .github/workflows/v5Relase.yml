@@ -357,6 +357,7 @@ jobs:
     needs: [cache-keys, code-analysis, jest-tests, e2e-tests]
     name: NPM release ("latest" tag)
     runs-on: ubuntu-latest
+    environment: release
     env:
       GH_TOKEN: ${{ secrets.GH_TOKEN }}
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
