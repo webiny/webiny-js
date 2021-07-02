@@ -7,15 +7,9 @@ import {
     CmsContentEntryListSort,
     CmsContentEntryListWhere,
     CmsContentModel,
-    CmsContentModelField,
-    CmsContext,
-    CmsModelFieldToGraphQLPlugin
+    CmsContext
 } from "@webiny/api-headless-cms/types";
-import {
-    CmsModelFieldToElasticsearchPlugin,
-    ElasticsearchQueryBuilderValueSearchPlugin,
-    ElasticsearchQueryPlugin
-} from "~/types";
+import { ElasticsearchQueryBuilderValueSearchPlugin, ElasticsearchQueryPlugin } from "~/types";
 import {
     TYPE_ENTRY_LATEST,
     TYPE_ENTRY_PUBLISHED
@@ -28,31 +22,7 @@ import {
 import { decodeCursor } from "@webiny/api-elasticsearch/cursors";
 import { ElasticsearchFieldPlugin } from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchFieldPlugin";
 import { createSort } from "@webiny/api-elasticsearch/sort";
-
-type ModelFieldPath = string | ((value: string) => string);
-interface ModelField {
-    unmappedType?: string;
-    keyword?: boolean;
-    isSearchable: boolean;
-    isSortable: boolean;
-    type: string;
-    isSystemField?: boolean;
-    field: CmsContentModelField;
-    path?: ModelFieldPath;
-}
-
-type ModelFields = Record<string, ModelField>;
-
-type UnmappedFieldTypes = {
-    [type: string]: (field: CmsContentModelField) => string | undefined;
-};
-
-interface FieldTypePlugin {
-    unmappedType?: (field: CmsContentModelField) => string | undefined;
-    isSearchable: boolean;
-    isSortable: boolean;
-}
-type FieldTypePlugins = Record<string, FieldTypePlugin>;
+import { createModelFields, ModelField, ModelFields } from "./fields";
 
 interface CreateElasticsearchParams {
     context: CmsContext;
@@ -195,7 +165,7 @@ const createInitialQueryValue = (
     return query;
 };
 
-interface CreateFieldParams {
+interface CreateFieldPathParams {
     modelField: ModelField;
     searchPlugin?: ElasticsearchQueryBuilderValueSearchPlugin;
     context: CmsContext;
@@ -206,7 +176,7 @@ const createFieldPath = ({
     searchPlugin,
     context,
     parentPath
-}: CreateFieldParams): string => {
+}: CreateFieldPathParams): string => {
     let path;
     if (searchPlugin && typeof searchPlugin.createPath === "function") {
         path = searchPlugin.createPath({
@@ -231,14 +201,14 @@ const hasKeyword = (modelField: ModelField): boolean => {
     if (noKeywordFields.includes(modelField.type)) {
         return false;
     } else if (modelField.unmappedType) {
-    /**
-     * If modelField has unmapped type defined, do not add keyword.
-     */
+        /**
+         * If modelField has unmapped type defined, do not add keyword.
+         */
         return false;
     } else if (modelField.keyword === false) {
-    /**
-     * And if specifically defined that modelField has no keyword, do not add it.
-     */
+        /**
+         * And if specifically defined that modelField has no keyword, do not add it.
+         */
         return false;
     }
     /**
@@ -322,165 +292,11 @@ const execElasticsearchBuildQueryPlugins = (
     return query;
 };
 
-const createSystemField = (field: Partial<CmsContentModelField>): CmsContentModelField => {
-    if (!field.fieldId) {
-        throw new WebinyError(
-            `When creating system field it must have a "entryId".`,
-            "SYSTEM_FIELD_ERROR",
-            {
-                field
-            }
-        );
-    } else if (!field.type) {
-        throw new WebinyError(
-            `When creating system field it must have a "type".`,
-            "SYSTEM_FIELD_ERROR",
-            {
-                field
-            }
-        );
-    }
-    return (field as unknown) as CmsContentModelField;
-};
-/*
- * Create an object with key fieldType and options for that field
- */
-const createModelFieldOptions = (context: CmsContext, model: CmsContentModel): ModelFields => {
-    const systemFields: ModelFields = {
-        id: {
-            type: "text",
-            isSystemField: true,
-            isSearchable: true,
-            isSortable: true,
-            field: createSystemField({
-                fieldId: "id",
-                type: "text"
-            })
-        },
-        entryId: {
-            type: "text",
-            isSystemField: true,
-            isSearchable: true,
-            isSortable: true,
-            field: createSystemField({
-                fieldId: "entryId",
-                type: "text"
-            })
-        },
-        savedOn: {
-            type: "date",
-            unmappedType: "date",
-            keyword: false,
-            isSystemField: true,
-            isSearchable: true,
-            isSortable: true,
-            field: createSystemField({
-                fieldId: "savedOn",
-                type: "date",
-                settings: {
-                    type: "dateTimeWithoutTimezone"
-                }
-            })
-        },
-        createdOn: {
-            type: "date",
-            unmappedType: "date",
-            keyword: false,
-            isSystemField: true,
-            isSearchable: true,
-            isSortable: true,
-            field: createSystemField({
-                fieldId: "createdOn",
-                type: "text",
-                settings: {
-                    type: "dateTimeWithoutTimezone"
-                }
-            })
-        },
-        createdBy: {
-            type: "text",
-            unmappedType: undefined,
-            isSystemField: true,
-            isSearchable: true,
-            isSortable: false,
-            path: "createdBy.id",
-            field: createSystemField({
-                fieldId: "createdBy",
-                type: "text"
-            })
-        },
-        ownedBy: {
-            type: "text",
-            unmappedType: undefined,
-            isSystemField: true,
-            isSearchable: true,
-            isSortable: false,
-            path: "ownedBy.id",
-            field: createSystemField({
-                fieldId: "ownedBy",
-                type: "text"
-            })
-        },
-        version: {
-            type: "number",
-            unmappedType: undefined,
-            keyword: false,
-            isSystemField: true,
-            isSearchable: true,
-            isSortable: true,
-            field: createSystemField({
-                fieldId: "version",
-                type: "number"
-            })
-        }
-    };
-    // collect all unmappedType from elastic plugins
-    const unmappedTypes: UnmappedFieldTypes = context.plugins
-        .byType<CmsModelFieldToElasticsearchPlugin>("cms-model-field-to-elastic-search")
-        .reduce((acc, plugin) => {
-            if (!plugin.unmappedType) {
-                return acc;
-            }
-            acc[plugin.fieldType] = plugin.unmappedType;
-            return acc;
-        }, {});
-    // collect all field types from the plugins
-    const fieldTypePlugins: FieldTypePlugins = context.plugins
-        .byType<CmsModelFieldToGraphQLPlugin>("cms-model-field-to-graphql")
-        .reduce((types, plugin) => {
-            const { fieldType, isSearchable, isSortable } = plugin;
-            types[fieldType] = {
-                unmappedType: unmappedTypes[fieldType],
-                isSearchable: isSearchable === true,
-                isSortable: isSortable === true
-            };
-            return types;
-        }, {});
-
-    return model.fields.reduce((fields, field) => {
-        const { fieldId, type } = field;
-        if (!fieldTypePlugins[type]) {
-            throw new WebinyError(`There is no plugin for field type "${type}".`);
-        }
-        const { isSearchable, isSortable, unmappedType } = fieldTypePlugins[type];
-        fields[fieldId] = {
-            type,
-            isSearchable,
-            isSortable,
-            unmappedType: typeof unmappedType === "function" ? unmappedType(field) : undefined,
-            isSystemField: false,
-            field
-        };
-
-        return fields;
-    }, systemFields);
-};
-
 export const createElasticsearchQueryBody = (params: CreateElasticsearchParams): esSearchBody => {
     const { context, model, args, parentPath = null } = params;
     const { where, after, limit, sort } = args;
 
-    const modelFields = createModelFieldOptions(context, model);
+    const modelFields = createModelFields(context, model);
     const searchPlugins = searchPluginsList(context);
 
     const query = execElasticsearchBuildQueryPlugins({
