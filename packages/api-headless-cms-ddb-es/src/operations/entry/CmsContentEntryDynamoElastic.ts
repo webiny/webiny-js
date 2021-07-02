@@ -24,15 +24,16 @@ import {
 import configurations from "../../configurations";
 import { zeroPad } from "@webiny/api-headless-cms/utils";
 import {
-    createElasticsearchLimit,
     createElasticsearchQueryBody,
     extractEntriesFromIndex,
     prepareEntryToIndex
 } from "../../helpers";
-import { createBasePartitionKey, encodeElasticsearchCursor, paginateBatch } from "../../utils";
+import { createBasePartitionKey, paginateBatch } from "~/utils";
 import { entryFromStorageTransform } from "@webiny/api-headless-cms/transformers";
 import { Client } from "@elastic/elasticsearch";
 import { ElasticsearchContext } from "@webiny/api-elasticsearch/types";
+import { createLimit } from "@webiny/api-elasticsearch/limit";
+import { encodeCursor } from "@webiny/api-elasticsearch/cursors";
 
 export const TYPE_ENTRY = "cms.entry";
 export const TYPE_ENTRY_LATEST = TYPE_ENTRY + ".l";
@@ -451,7 +452,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         model: CmsContentModel,
         args: CmsContentEntryStorageOperationsListArgs
     ): Promise<CmsContentEntryStorageOperationsListResponse> {
-        const limit = createElasticsearchLimit(args.limit, 50);
+        const limit = createLimit(args.limit, 50);
         const body = createElasticsearchQueryBody({
             model,
             args: {
@@ -459,7 +460,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                 limit
             },
             context: this.context,
-            parentObject: "values"
+            parentPath: "values"
         });
 
         let response;
@@ -495,8 +496,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
          * Cursor is the `sort` value of the last item in the array.
          * https://www.elastic.co/guide/en/elasticsearch/reference/current/paginate-search-results.html#search-after
          */
-        const cursor =
-            items.length > 0 ? encodeElasticsearchCursor(hits[items.length - 1].sort) : null;
+        const cursor = items.length > 0 ? encodeCursor(hits[items.length - 1].sort) : null;
         return {
             hasMoreItems,
             totalCount: total.value,

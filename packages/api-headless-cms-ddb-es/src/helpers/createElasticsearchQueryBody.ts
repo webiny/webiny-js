@@ -15,18 +15,19 @@ import {
     CmsModelFieldToElasticsearchPlugin,
     ElasticsearchQueryBuilderValueSearchPlugin,
     ElasticsearchQueryPlugin
-} from "../types";
-import { decodeElasticsearchCursor } from "../utils";
+} from "~/types";
 import {
     TYPE_ENTRY_LATEST,
     TYPE_ENTRY_PUBLISHED
-} from "../operations/entry/CmsContentEntryDynamoElastic";
+} from "~/operations/entry/CmsContentEntryDynamoElastic";
 import {
     SearchBody as esSearchBody,
     Sort as esSort,
-    FieldSortOptions as esFieldSortOptions,
     ElasticsearchBoolQueryConfig
 } from "@webiny/api-elasticsearch/types";
+import { decodeCursor } from "@webiny/api-elasticsearch/cursors";
+import { ElasticsearchFieldPlugin } from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchFieldPlugin";
+import { createSort } from "@webiny/api-elasticsearch/sort";
 
 type ModelFieldPath = string | ((value: string) => string);
 interface ModelField {
@@ -57,14 +58,16 @@ interface CreateElasticsearchParams {
     context: CmsContext;
     model: CmsContentModel;
     args: CmsContentEntryListArgs;
-    parentObject?: string;
+    parentPath?: string;
 }
 
 interface CreateElasticsearchSortParams {
-    sort: CmsContentEntryListSort;
+    context: CmsContext;
+    sort?: CmsContentEntryListSort;
     modelFields: ModelFields;
-    parentObject?: string;
+    parentPath?: string;
     model: CmsContentModel;
+    searchPlugins: Record<string, ElasticsearchQueryBuilderValueSearchPlugin>;
 }
 
 interface CreateElasticsearchQueryArgs {
@@ -72,8 +75,12 @@ interface CreateElasticsearchQueryArgs {
     context: CmsContext;
     where: CmsContentEntryListWhere;
     modelFields: ModelFields;
-    parentObject?: string;
+    parentPath?: string;
+    searchPlugins: Record<string, ElasticsearchQueryBuilderValueSearchPlugin>;
 }
+
+const specialFields = ["published", "latest"];
+const noKeywordFields = ["date", "number", "boolean"];
 
 const parseWhereKeyRegExp = new RegExp(/^([a-zA-Z0-9]+)(_[a-zA-Z0-9_]+)?$/);
 
@@ -94,53 +101,38 @@ const parseWhereKey = (key: string) => {
     return { field, op };
 };
 
-const sortRegExp = new RegExp(/^([a-zA-Z-0-9_]+)_(ASC|DESC)$/);
-
 const createElasticsearchSortParams = (args: CreateElasticsearchSortParams): esSort => {
-    const { sort, modelFields, parentObject } = args;
+    const { context, sort, modelFields, parentPath, searchPlugins } = args;
 
-    if (!sort) {
+    if (!sort || sort.length === 0) {
         return undefined;
     }
 
-    const withParentObject = (field: string) => {
-        if (!parentObject) {
-            return null;
-        }
-        return `${parentObject}.${field}`;
-    };
+    const sortPlugins = Object.values(modelFields).reduce((plugins, modelField) => {
+        const searchPlugin = searchPlugins[modelField.type];
 
-    const sorts: Record<string, esFieldSortOptions> = {};
+        plugins[modelField.field.fieldId] = new ElasticsearchFieldPlugin({
+            unmappedType: modelField.unmappedType,
+            keyword: hasKeyword(modelField),
+            sortable: modelField.isSortable,
+            searchable: modelField.isSearchable,
+            entity: "ContentElasticsearchEntry",
+            field: modelField.field.fieldId,
+            path: createFieldPath({
+                context,
+                parentPath,
+                modelField: modelField,
+                searchPlugin
+            })
+        });
+        return plugins;
+    }, {});
 
-    return sort.reduce((acc, value) => {
-        const match = value.match(sortRegExp);
-
-        if (!match) {
-            throw new WebinyError(`Cannot sort by "${value}".`);
-        }
-
-        const [, field, order] = match;
-        const modelFieldOptions = modelFields[field] || (({} as unknown) as ModelField);
-        const { isSortable = false, unmappedType, isSystemField = false } = modelFieldOptions;
-
-        if (!isSortable) {
-            throw new WebinyError(`Field is not sortable.`, "FIELD_NOT_SORTABLE", {
-                field
-            });
-        }
-
-        const name = isSystemField ? field : withParentObject(field);
-
-        const fieldName = unmappedType ? name : `${name}.keyword`;
-
-        acc[fieldName] = {
-            order: order.toLowerCase() === "asc" ? "asc" : "desc",
-            // eslint-disable-next-line
-            unmapped_type: unmappedType
-        };
-
-        return acc;
-    }, sorts);
+    return createSort({
+        context,
+        plugins: sortPlugins,
+        sort
+    });
 };
 /**
  * Latest and published are specific in Elasticsearch to that extend that they are tagged in the __type property.
@@ -203,10 +195,6 @@ const createInitialQueryValue = (
     return query;
 };
 
-const specialFields = ["published", "latest"];
-
-const noKeywordFields = ["date", "number", "boolean"];
-
 interface CreateFieldParams {
     modelField: ModelField;
     searchPlugin?: ElasticsearchQueryBuilderValueSearchPlugin;
@@ -235,17 +223,41 @@ const createFieldPath = ({
         ? path
         : `${parentPath}.${path}`;
 };
+
+const hasKeyword = (modelField: ModelField): boolean => {
+    /**
+     * We defined some field types that MUST have no keyword added to the field path
+     */
+    if (noKeywordFields.includes(modelField.type)) {
+        return false;
+    } else if (modelField.unmappedType) {
+    /**
+     * If modelField has unmapped type defined, do not add keyword.
+     */
+        return false;
+    } else if (modelField.keyword === false) {
+    /**
+     * And if specifically defined that modelField has no keyword, do not add it.
+     */
+        return false;
+    }
+    /**
+     * All other fields have keyword added.
+     */
+    return true;
+};
 /*
  * Iterate through where keys and apply plugins where necessary
  */
 const execElasticsearchBuildQueryPlugins = (
     args: CreateElasticsearchQueryArgs
 ): ElasticsearchBoolQueryConfig => {
-    const { where, modelFields, parentObject, context } = args;
+    const { where, modelFields, parentPath, context, searchPlugins } = args;
     const query = createInitialQueryValue(args);
 
-    // always remove special fields
-    // these do not exist in elasticsearch
+    /**
+     * Always remove special fields, as these do not exist in Elasticsearch.
+     */
     for (const sf of specialFields) {
         delete where[sf];
     }
@@ -255,7 +267,6 @@ const execElasticsearchBuildQueryPlugins = (
     }
 
     const operatorPlugins = operatorPluginsList(context);
-    const searchPlugins = searchPluginsList(context);
 
     for (const key in where) {
         if (where.hasOwnProperty(key) === false) {
@@ -296,9 +307,9 @@ const execElasticsearchBuildQueryPlugins = (
             context,
             searchPlugin: fieldSearchPlugin,
             modelField,
-            parentPath: parentObject
+            parentPath: parentPath
         });
-        const keyword = !noKeywordFields.includes(modelField.type);
+        const keyword = hasKeyword(modelField);
         plugin.apply(query, {
             basePath: fieldPath,
             path: keyword ? `${fieldPath}.keyword` : fieldPath,
@@ -374,6 +385,7 @@ const createModelFieldOptions = (context: CmsContext, model: CmsContentModel): M
         createdOn: {
             type: "date",
             unmappedType: "date",
+            keyword: false,
             isSystemField: true,
             isSearchable: true,
             isSortable: true,
@@ -465,17 +477,19 @@ const createModelFieldOptions = (context: CmsContext, model: CmsContentModel): M
 };
 
 export const createElasticsearchQueryBody = (params: CreateElasticsearchParams): esSearchBody => {
-    const { context, model, args, parentObject = null } = params;
+    const { context, model, args, parentPath = null } = params;
     const { where, after, limit, sort } = args;
 
     const modelFields = createModelFieldOptions(context, model);
+    const searchPlugins = searchPluginsList(context);
 
     const query = execElasticsearchBuildQueryPlugins({
         model,
         context,
         where,
         modelFields,
-        parentObject
+        parentPath,
+        searchPlugins
     });
 
     const queryPlugins = context.plugins.byType<ElasticsearchQueryPlugin>(
@@ -494,10 +508,17 @@ export const createElasticsearchQueryBody = (params: CreateElasticsearchParams):
                 filter: query.filter.length > 0 ? query.filter : undefined
             }
         },
-        sort: createElasticsearchSortParams({ sort, modelFields, parentObject, model }),
+        sort: createElasticsearchSortParams({
+            context,
+            sort,
+            modelFields,
+            parentPath,
+            model,
+            searchPlugins
+        }),
         size: limit + 1,
         // eslint-disable-next-line
-        search_after: decodeElasticsearchCursor(after) || undefined,
+        search_after: decodeCursor(after) as any,
         // eslint-disable-next-line
         track_total_hits: true
     };
