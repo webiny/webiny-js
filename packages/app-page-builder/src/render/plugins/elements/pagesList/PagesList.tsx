@@ -73,8 +73,7 @@ const PagesListRender = props => {
 
     const { data, loading } = useQuery(LIST_PUBLISHED_PAGES, {
         variables,
-        skip: !ListComponent,
-        fetchPolicy: "network-only"
+        skip: !ListComponent
     });
 
     if (!ListComponent) {
