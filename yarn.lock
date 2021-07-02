@@ -9795,6 +9795,7 @@ __metadata:
     chalk: ^4.1.0
     dotenv: 8.2.0
     execa: 2.1.0
+    fast-glob: ^3.2.5
     find-up: 5.0.0
     load-json-file: 6.2.0
     ncp: ^2.0.0
