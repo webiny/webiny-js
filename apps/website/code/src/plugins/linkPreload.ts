@@ -16,7 +16,7 @@ export default (): ReactRouterOnLinkPlugin => {
         type: "react-router-on-link",
         async onLink({ link: path, apolloClient }) {
             // Only if we're serving a pre-rendered page, we want to activate this feature.
-            if (window.__PS_RENDER_ID__) {
+            if (!window.__PS_RENDER_ID__) {
                 return;
             }
 
