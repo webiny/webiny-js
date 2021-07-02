@@ -4,7 +4,9 @@ import { useQuery } from "@apollo/react-hooks";
 import { usePageBuilder } from "../../../../hooks/usePageBuilder";
 import { LIST_PUBLISHED_PAGES } from "./graphql";
 import { plugins } from "@webiny/plugins";
-import { get } from "lodash";
+import get from "lodash/get";
+import trimEnd from "lodash/trimEnd";
+
 import { PbPageElementPagesListComponentPlugin } from "../../../../types";
 
 declare global {
@@ -48,6 +50,9 @@ const PagesListRender = props => {
         sort = { [vars.sortBy]: vars.sortDirection };
     }
 
+    // Lets ensure the trailing "/" is removed.
+    const path = trimEnd(location.pathname, "/");
+
     const variables = {
         sort,
         where: {
@@ -63,7 +68,7 @@ const PagesListRender = props => {
          * When rendering page preview inside admin app there will be no page path/slug present in URL.
          * In that case we'll use the extracted page id from URL.
          */
-        exclude: [pageId ? pageId : location.pathname]
+        exclude: [pageId ? pageId : path]
     };
 
     const { data, loading } = useQuery(LIST_PUBLISHED_PAGES, {
