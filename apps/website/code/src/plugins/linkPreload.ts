@@ -30,11 +30,7 @@ export default (): ReactRouterOnLinkPlugin => {
 
             preloadedPaths.push(path);
 
-            let graphqlJson = "graphql.json";
-            if (window.__PS_RENDER_ID__) {
-                graphqlJson += `?k=${window.__PS_RENDER_ID__}`;
-            }
-
+            const graphqlJson = `graphql.json?k=${window.__PS_RENDER_ID__}`;
             const fetchPath = path !== "/" ? `${path}/${graphqlJson}` : `/${graphqlJson}`;
             const pageState = await fetch(fetchPath)
                 .then(res => res.json())
