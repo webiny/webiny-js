@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.10.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.9.0...v5.10.0-beta.0) (2021-07-02)
+
+
+### Features
+
+* **api-file-manager:** storage operations ([#1716](https://github.com/webiny/webiny-js/issues/1716)) ([7b81e0b](https://github.com/webiny/webiny-js/commit/7b81e0b7c2ddf396cad09334e10c39e588d8643b))
+* **api-file-manager-ddb:** dynamodb storage operations ([#1745](https://github.com/webiny/webiny-js/issues/1745)) ([6788849](https://github.com/webiny/webiny-js/commit/6788849d3a1489b82764ca02fc5ca809dc633c54))
+
+
+
+
+
 # [5.9.0](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.2...v5.9.0) (2021-06-21)
 
 **Note:** Version bump only for package @webiny/api-file-manager

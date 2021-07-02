@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.10.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.9.0...v5.10.0-beta.0) (2021-07-02)
+
+
+### Bug Fixes
+
+* allow sending settings without special pages set (only if none was already set) ([6c23195](https://github.com/webiny/webiny-js/commit/6c231950e6fd1c7745aa78e4446c9c8358076125))
+* correct merging of default and current settings ([0c9e78c](https://github.com/webiny/webiny-js/commit/0c9e78c8b1cc6743f326e69a932b7fa9464b227e))
+* ensure 'null' is not prepended in the page URL ([74df5fc](https://github.com/webiny/webiny-js/commit/74df5fc1dd978678d902c9201a45caabb9402408))
+* trim trailing forward slash ([3ed7a88](https://github.com/webiny/webiny-js/commit/3ed7a881efed0d27c780710f80bd3a6ba10830c3))
+* use new `getCurrentSettings` ([1f5c466](https://github.com/webiny/webiny-js/commit/1f5c466570eb7cafffabd4fdaf14e74de9b55241))
+* when getting PB settings, ensure default are loaded first ([d9fdd28](https://github.com/webiny/webiny-js/commit/d9fdd289abd9adc61b68424cbf77c22cbab3a9e2))
+
+
+### Features
+
+* add `getCurrentSettings` ([00c1480](https://github.com/webiny/webiny-js/commit/00c148028b9933d1bd1e8df1332be5c61a6cb651))
+* **api-file-manager:** storage operations ([#1716](https://github.com/webiny/webiny-js/issues/1716)) ([7b81e0b](https://github.com/webiny/webiny-js/commit/7b81e0b7c2ddf396cad09334e10c39e588d8643b))
+
+
+
+
+
 # [5.9.0](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.2...v5.9.0) (2021-06-21)
 
 **Note:** Version bump only for package @webiny/api-page-builder

@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.10.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.9.0...v5.10.0-beta.0) (2021-07-02)
+
+
+### Bug Fixes
+
+* adjust link-preloading activation logic ([23ef79d](https://github.com/webiny/webiny-js/commit/23ef79da8f619cb48a3afdb0e3d306f9e86b5c2e))
+* adjust link-preloading activation logic ([f03b8e6](https://github.com/webiny/webiny-js/commit/f03b8e651e8aba282132d06e6552631282c51bbe))
+* remove "**/__tests__/**" ([fbd643b](https://github.com/webiny/webiny-js/commit/fbd643ba8dac8fe929414bf79c5e56e19d8118c8))
+* remove redundant if statement ([6b99e31](https://github.com/webiny/webiny-js/commit/6b99e317e12fa01538d740e09be5ffb649ec67a4))
+* update template ([437daff](https://github.com/webiny/webiny-js/commit/437daff453b11d6a6b99e17757504d992cfe62e8))
+* update template ([c201900](https://github.com/webiny/webiny-js/commit/c2019001ce182b23de1624973f0349849146b5ab))
+* use __PS_RENDER__ window property to check if the page is being pre-rendered ([7c4b65f](https://github.com/webiny/webiny-js/commit/7c4b65f0087d40117ef01851007f7d0de311cef6))
+
+
+### Features
+
+* import and register new ApolloCacheObjectIdPlugin plugin ([a8d57d3](https://github.com/webiny/webiny-js/commit/a8d57d373eb7621b1c02f656d12f013c072e62f3))
+* update Lambda runtime and sharp layer ([#1738](https://github.com/webiny/webiny-js/issues/1738)) ([c03af0a](https://github.com/webiny/webiny-js/commit/c03af0aba0a315c3823251d9fecd888cc191250c))
+* **api-file-manager:** storage operations ([#1716](https://github.com/webiny/webiny-js/issues/1716)) ([7b81e0b](https://github.com/webiny/webiny-js/commit/7b81e0b7c2ddf396cad09334e10c39e588d8643b))
+
+
+
+
+
 # [5.9.0](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.2...v5.9.0) (2021-06-21)
 
 

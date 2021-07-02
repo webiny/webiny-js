@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.10.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.9.0...v5.10.0-beta.0) (2021-07-02)
+
+
+### Bug Fixes
+
+* remove parent graphql/admin folder ([99e6a08](https://github.com/webiny/webiny-js/commit/99e6a08a3a10a81ca639dfe86e6c48bcdc61b784))
+* use 'entity' word instead 'data model' ([1279bc1](https://github.com/webiny/webiny-js/commit/1279bc1a66f2efdf1a467e5a65fb1ce16574deea))
+
+
+
+
+
 # [5.9.0](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.2...v5.9.0) (2021-06-21)
 
 **Note:** Version bump only for package @webiny/cli-plugin-scaffold-admin-app-module
