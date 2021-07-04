@@ -44,7 +44,7 @@ jobs:
         id: cached-packages
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-${{ needs.cache-keys.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+          key: ${{ runner.os }}-${{ needs.cache-keys.outputs.ts }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
       - name: Install dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true' || steps.cached-packages.outputs.cache-hit != 'true'
@@ -73,7 +73,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-${{ needs.cache-keys.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+          key: ${{ runner.os }}-${{ needs.cache-keys.outputs.ts }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
       - name: Install dependencies
         run: yarn --immutable
@@ -117,7 +117,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-${{ needs.cache-keys.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+          key: ${{ runner.os }}-${{ needs.cache-keys.outputs.ts }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
       - name: Build packages
         run: node scripts/buildWithCache.js
@@ -146,7 +146,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-${{ needs.cache-keys.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+          key: ${{ runner.os }}-${{ needs.cache-keys.outputs.ts }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
       - name: Install dependencies
         run: yarn --immutable
@@ -313,7 +313,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-${{ needs.cache-keys.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+          key: ${{ runner.os }}-${{ needs.cache-keys.outputs.ts }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
       - name: Move .webiny to webiny-js/.webiny
         run: mv .webiny webiny-js/.webiny
@@ -371,7 +371,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: ${{ runner.os }}-${{ needs.cache-keys.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
+          key: ${{ runner.os }}-${{ needs.cache-keys.outputs.ts }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
       - name: Install dependencies
         run: yarn --immutable
