@@ -394,5 +394,8 @@ jobs:
       - name: Release packages to NPM
         run: yarn lerna:publish:beta
 
+      - name: Update package versions in the sample project applications' packages
+        run: "yarn webiny-versions && git add . && git commit --m \"chore: update package versions (webiny-versions)\" --no-verify && git push"
+
       - name: Update and commit "yarn.lock" file
         run: "yarn && git add yarn.lock && git commit --m \"chore: update yarn.lock\" --no-verify && git push"
