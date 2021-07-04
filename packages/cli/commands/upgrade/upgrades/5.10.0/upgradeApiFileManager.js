@@ -2,22 +2,24 @@ const tsMorph = require("ts-morph");
 const importPath = "@webiny/api-file-manager-ddb-es";
 const importedVariableName = "fileManagerDynamoDbElasticPlugins";
 
-const FILES = { index: "api/code/graphql/src/index.ts" };
+const FM_FILES = { index: "api/code/graphql/src/index.ts" };
+const CMS_FILES = { index: "api/code/headlessCMS/src/index.ts" };
+const DDB2ES_FILES = { index: "api/code/dynamoToElastic/src/index.ts" };
 
 const upgradeGraphQLIndex = async (project, context) => {
     const { info } = context;
-    info(`Upgrading ${info.hl(FILES.index)}`);
+    info(`Upgrading ${info.hl(FM_FILES.index)}`);
 
-    const source = project.getSourceFile(FILES.index);
+    const source = project.getSourceFile(FM_FILES.index);
 
     const fileManagerDynamoDbElasticPluginsImport = source.getImportDeclaration(importPath);
     if (fileManagerDynamoDbElasticPluginsImport) {
-        info(`Import ${info.hl(importPath)} already exists in ${info.hl(FILES.index)}.`);
+        info(`Import ${info.hl(importPath)} already exists in ${info.hl(FM_FILES.index)}.`);
         return;
     }
     const lastImport = source.getImportDeclarations().pop();
     if (!lastImport) {
-        throw new Error(`Missing imports in "${FILES.index}".`);
+        throw new Error(`Missing imports in "${FM_FILES.index}".`);
     }
 
     source.insertImportDeclaration(lastImport.getChildIndex() + 1, {
@@ -56,10 +58,59 @@ const upgradeGraphQLIndex = async (project, context) => {
      * Add new the DynamoDB/Elasticsearch plugins to the array of plugins.
      */
     plugins.getInitializer().insertElement(fileManagerPlugins, `${importedVariableName}()`);
+	
+	/**
+	 * Find the "api-plugin-elastic-search" and replace it with the "api-elasticsearch".
+	 */
+	const elasticsearchImportDeclaration = source.getImportDeclaration(declaration => {
+		return declaration.getModuleSpecifierValue() === "@webiny/api-plugin-elastic-search"
+	});
+	if (!elasticsearchImportDeclaration){
+		return;
+	}
+	elasticsearchImportDeclaration.setModuleSpecifier("@webiny/api-elasticsearch");
 };
 
-upgradeGraphQLIndex.files = FILES;
+const upgradeHeadlessCMSIndex = async (project, context) => {
+	const { info } = context;
+	info(`Upgrading ${info.hl(CMS_FILES.index)}`);
+	
+	const source = project.getSourceFile(CMS_FILES.index);
+	/**
+	 * Find the "api-plugin-elastic-search" and replace it with the "api-elasticsearch".
+	 */
+	const elasticsearchImportDeclaration = source.getImportDeclaration(declaration => {
+		return declaration.getModuleSpecifierValue() === "@webiny/api-plugin-elastic-search"
+	});
+	if (!elasticsearchImportDeclaration){
+		return;
+	}
+	elasticsearchImportDeclaration.setModuleSpecifier("@webiny/api-elasticsearch");
+};
+
+const upgradeDynamoDbToElasticIndex = async (project, context) => {
+	const { info } = context;
+	info(`Upgrading ${info.hl(DDB2ES_FILES.index)}`);
+	
+	const source = project.getSourceFile(DDB2ES_FILES.index);
+	/**
+	 * Find the "api-plugin-elastic-search" and replace it with the "api-elasticsearch".
+	 */
+	const elasticsearchImportDeclaration = source.getImportDeclaration(declaration => {
+		return declaration.getModuleSpecifierValue() === "@webiny/api-plugin-elastic-search"
+	});
+	if (!elasticsearchImportDeclaration){
+		return;
+	}
+	elasticsearchImportDeclaration.setModuleSpecifier("@webiny/api-elasticsearch");
+};
+
+upgradeGraphQLIndex.files = FM_FILES;
+upgradeHeadlessCMSIndex.files = CMS_FILES;
+upgradeDynamoDbToElasticIndex.files = DDB2ES_FILES;
 
 module.exports = {
-    upgradeGraphQLIndex
+    upgradeGraphQLIndex,
+	upgradeHeadlessCMSIndex,
+	upgradeDynamoDbToElasticIndex
 };
