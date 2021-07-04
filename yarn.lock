@@ -8696,9 +8696,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-plugin-elastic-search@workspace:packages/api-plugin-elastic-search":
+"@webiny/api-plugin-elastic-search-client@workspace:packages/api-plugin-elastic-search-client":
   version: 0.0.0-use.local
-  resolution: "@webiny/api-plugin-elastic-search@workspace:packages/api-plugin-elastic-search"
+  resolution: "@webiny/api-plugin-elastic-search-client@workspace:packages/api-plugin-elastic-search-client"
   dependencies:
     "@babel/cli": ^7.5.5
     "@babel/core": ^7.5.5
