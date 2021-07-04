@@ -31,7 +31,11 @@ module.exports = {
         const { info } = context;
         const glob = require("fast-glob");
         const { upgradeLambdaConfig } = require("./upgradeLambdaConfig");
-        const { upgradeGraphQLIndex, upgradeHeadlessCMSIndex, upgradeDynamoDbToElasticIndex } = require("./upgradeApiFileManager");
+        const {
+            upgradeGraphQLIndex,
+            upgradeHeadlessCMSIndex,
+            upgradeDynamoDbToElasticIndex
+        } = require("./upgradeApiFileManager");
         const { upgradeDeliveryPath } = require("./upgradeDeliveryPath");
         const { upgradeApolloCachePlugins } = require("./upgradeApolloCachePlugins");
 
@@ -48,7 +52,7 @@ module.exports = {
                 ...Object.values(upgradeGraphQLIndex.files),
                 ...Object.values(upgradeHeadlessCMSIndex.files),
                 ...Object.values(upgradeDynamoDbToElasticIndex.files),
-                ...Object.values(upgradeApolloCachePlugins.files),
+                ...Object.values(upgradeApolloCachePlugins.files)
             ],
             {
                 cwd: context.project.root,
@@ -68,20 +72,20 @@ module.exports = {
         info("Adding dependencies...");
 
         addPackagesToDependencies(path.resolve(process.cwd(), "api/code/graphql"), {
-	        "@webiny/api-plugin-elastic-search": null,
+            "@webiny/api-plugin-elastic-search-client": null,
             "@webiny/api-file-manager-ddb-es": targetVersion,
-	        "@webiny/api-elasticsearch": targetVersion,
+            "@webiny/api-elasticsearch": targetVersion
         });
-	
-	    addPackagesToDependencies(path.resolve(process.cwd(), "api/code/headlessCMS"), {
-		    "@webiny/api-plugin-elastic-search": null,
-		    "@webiny/api-elasticsearch": targetVersion,
-	    });
-	
-	    addPackagesToDependencies(path.resolve(process.cwd(), "api/code/dynamoToElastic"), {
-		    "@webiny/api-plugin-elastic-search": null,
-		    "@webiny/api-elasticsearch": targetVersion,
-	    });
+
+        addPackagesToDependencies(path.resolve(process.cwd(), "api/code/headlessCMS"), {
+            "@webiny/api-plugin-elastic-search-client": null,
+            "@webiny/api-elasticsearch": targetVersion
+        });
+
+        addPackagesToDependencies(path.resolve(process.cwd(), "api/code/dynamoToElastic"), {
+            "@webiny/api-plugin-elastic-search-client": null,
+            "@webiny/api-elasticsearch": targetVersion
+        });
 
         /**
          * Adds the Apollo Cache plugin to the Website's React application.

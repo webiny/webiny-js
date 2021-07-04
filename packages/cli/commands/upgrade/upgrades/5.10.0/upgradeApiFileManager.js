@@ -58,51 +58,51 @@ const upgradeGraphQLIndex = async (project, context) => {
      * Add new the DynamoDB/Elasticsearch plugins to the array of plugins.
      */
     plugins.getInitializer().insertElement(fileManagerPlugins, `${importedVariableName}()`);
-	
-	/**
-	 * Find the "api-plugin-elastic-search" and replace it with the "api-elasticsearch".
-	 */
-	const elasticsearchImportDeclaration = source.getImportDeclaration(declaration => {
-		return declaration.getModuleSpecifierValue() === "@webiny/api-plugin-elastic-search"
-	});
-	if (!elasticsearchImportDeclaration){
-		return;
-	}
-	elasticsearchImportDeclaration.setModuleSpecifier("@webiny/api-elasticsearch");
+
+    /**
+     * Find the "api-plugin-elastic-search-client" and replace it with the "api-elasticsearch".
+     */
+    const elasticsearchImportDeclaration = source.getImportDeclaration(declaration => {
+        return declaration.getModuleSpecifierValue() === "@webiny/api-plugin-elastic-search-client";
+    });
+    if (!elasticsearchImportDeclaration) {
+        return;
+    }
+    elasticsearchImportDeclaration.setModuleSpecifier("@webiny/api-elasticsearch");
 };
 
 const upgradeHeadlessCMSIndex = async (project, context) => {
-	const { info } = context;
-	info(`Upgrading ${info.hl(CMS_FILES.index)}`);
-	
-	const source = project.getSourceFile(CMS_FILES.index);
-	/**
-	 * Find the "api-plugin-elastic-search" and replace it with the "api-elasticsearch".
-	 */
-	const elasticsearchImportDeclaration = source.getImportDeclaration(declaration => {
-		return declaration.getModuleSpecifierValue() === "@webiny/api-plugin-elastic-search"
-	});
-	if (!elasticsearchImportDeclaration){
-		return;
-	}
-	elasticsearchImportDeclaration.setModuleSpecifier("@webiny/api-elasticsearch");
+    const { info } = context;
+    info(`Upgrading ${info.hl(CMS_FILES.index)}`);
+
+    const source = project.getSourceFile(CMS_FILES.index);
+    /**
+     * Find the "api-plugin-elastic-search-client" and replace it with the "api-elasticsearch".
+     */
+    const elasticsearchImportDeclaration = source.getImportDeclaration(declaration => {
+        return declaration.getModuleSpecifierValue() === "@webiny/api-plugin-elastic-search-client";
+    });
+    if (!elasticsearchImportDeclaration) {
+        return;
+    }
+    elasticsearchImportDeclaration.setModuleSpecifier("@webiny/api-elasticsearch");
 };
 
 const upgradeDynamoDbToElasticIndex = async (project, context) => {
-	const { info } = context;
-	info(`Upgrading ${info.hl(DDB2ES_FILES.index)}`);
-	
-	const source = project.getSourceFile(DDB2ES_FILES.index);
-	/**
-	 * Find the "api-plugin-elastic-search" and replace it with the "api-elasticsearch".
-	 */
-	const elasticsearchImportDeclaration = source.getImportDeclaration(declaration => {
-		return declaration.getModuleSpecifierValue() === "@webiny/api-plugin-elastic-search"
-	});
-	if (!elasticsearchImportDeclaration){
-		return;
-	}
-	elasticsearchImportDeclaration.setModuleSpecifier("@webiny/api-elasticsearch");
+    const { info } = context;
+    info(`Upgrading ${info.hl(DDB2ES_FILES.index)}`);
+
+    const source = project.getSourceFile(DDB2ES_FILES.index);
+    /**
+     * Find the "api-plugin-elastic-search-client" and replace it with the "api-elasticsearch".
+     */
+    const elasticsearchImportDeclaration = source.getImportDeclaration(declaration => {
+        return declaration.getModuleSpecifierValue() === "@webiny/api-plugin-elastic-search-client";
+    });
+    if (!elasticsearchImportDeclaration) {
+        return;
+    }
+    elasticsearchImportDeclaration.setModuleSpecifier("@webiny/api-elasticsearch");
 };
 
 upgradeGraphQLIndex.files = FM_FILES;
@@ -111,6 +111,6 @@ upgradeDynamoDbToElasticIndex.files = DDB2ES_FILES;
 
 module.exports = {
     upgradeGraphQLIndex,
-	upgradeHeadlessCMSIndex,
-	upgradeDynamoDbToElasticIndex
+    upgradeHeadlessCMSIndex,
+    upgradeDynamoDbToElasticIndex
 };
