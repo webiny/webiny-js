@@ -16,6 +16,17 @@ module.exports = {
     async canUpgrade(options, context) {
         if (context.version === targetVersion) {
             return true;
+        } else if (
+            context.version.match(
+                new RegExp(
+                    /**
+                     * This is for beta testing.
+                     */
+                    `^${targetVersion}-`
+                )
+            )
+        ) {
+            return true;
         }
         throw new Error(
             `Upgrade must be on Webiny CLI version "${targetVersion}". Current CLI version is "${context.version}".`
@@ -68,23 +79,31 @@ module.exports = {
          * Upgrade the graphql with new packages.
          */
         await upgradeGraphQLIndex(project, context);
+        /**
+         * Upgrade the headless cms with new packages.
+         */
+        await upgradeHeadlessCMSIndex(project, context);
+        /**
+         * Upgrade the dynamodbToElastic with new packages.
+         */
+        await upgradeDynamoDbToElasticIndex(project, context);
 
         info("Adding dependencies...");
 
         addPackagesToDependencies(path.resolve(process.cwd(), "api/code/graphql"), {
             "@webiny/api-plugin-elastic-search-client": null,
-            "@webiny/api-file-manager-ddb-es": targetVersion,
-            "@webiny/api-elasticsearch": targetVersion
+            "@webiny/api-file-manager-ddb-es": "5.10.0-beta.2",
+            "@webiny/api-elasticsearch": "5.10.0-beta.2"
         });
 
         addPackagesToDependencies(path.resolve(process.cwd(), "api/code/headlessCMS"), {
             "@webiny/api-plugin-elastic-search-client": null,
-            "@webiny/api-elasticsearch": targetVersion
+            "@webiny/api-elasticsearch": "5.10.0-beta.2"
         });
 
         addPackagesToDependencies(path.resolve(process.cwd(), "api/code/dynamoToElastic"), {
             "@webiny/api-plugin-elastic-search-client": null,
-            "@webiny/api-elasticsearch": targetVersion
+            "@webiny/api-elasticsearch": "5.10.0-beta.2"
         });
 
         /**
