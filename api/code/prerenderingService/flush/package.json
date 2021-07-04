@@ -1,18 +1,18 @@
 {
-  "name": "api-page-builder-flush",
-  "version": "0.1.0",
-  "scripts": {
-    "build": "yarn webiny run build",
-    "watch": "yarn webiny run watch"
-  },
-  "dependencies": {
-    "@webiny/api-prerendering-service": "^5.9.0",
-    "@webiny/api-prerendering-service-aws": "^5.9.0",
-    "@webiny/cli": "^5.9.0",
-    "@webiny/db-dynamodb": "^5.9.0",
-    "@webiny/handler-aws": "^5.9.0",
-    "@webiny/handler-db": "^5.9.0",
-    "@webiny/handler-logs": "^5.9.0",
-    "@webiny/project-utils": "^5.9.0"
-  }
+	"name": "api-page-builder-flush",
+	"version": "0.1.0",
+	"scripts": {
+		"build": "yarn webiny run build",
+		"watch": "yarn webiny run watch"
+	},
+	"dependencies": {
+		"@webiny/api-prerendering-service": "^5.10.0-beta.0",
+		"@webiny/api-prerendering-service-aws": "^5.10.0-beta.0",
+		"@webiny/cli": "^5.10.0-beta.0",
+		"@webiny/db-dynamodb": "^5.10.0-beta.0",
+		"@webiny/handler-aws": "^5.10.0-beta.0",
+		"@webiny/handler-db": "^5.10.0-beta.0",
+		"@webiny/handler-logs": "^5.10.0-beta.0",
+		"@webiny/project-utils": "^5.10.0-beta.0"
+	}
 }
