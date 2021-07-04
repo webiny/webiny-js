@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "paths": {
+      "~/*": ["./src/*"]
+    },
+    "baseUrl": "."
+  },
+  "exclude": ["node_modules", "dist"],
+  "include": ["./src"],
+  "references": []
+}
