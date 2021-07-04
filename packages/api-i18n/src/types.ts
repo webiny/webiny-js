@@ -47,3 +47,21 @@ export type I18NLocaleContextPlugin = Plugin<{
         name: string;
     };
 }>;
+
+
+export interface I18NSystem {
+    version: string;
+}
+/**
+ * Definition for the system part of the i18n.
+ */
+export interface I18NSystemStorageOperations {
+    /**
+     * Get the current version of the i18n installation.
+     */
+    getVersion: () => Promise<string | null>;
+    /**
+     * Set the version of the i18n installation.
+     */
+    setVersion: (version: string) => Promise<void>;
+}

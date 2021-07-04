@@ -1,0 +1,27 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "include": ["src"],
+  "exclude": [
+    "node_modules",
+    "../api-i18n",
+    "../api-security",
+    "../api-tenancy",
+    "../plugins",
+    "../handler",
+    "../handler-aws",
+    "../handler-graphql",
+    "../handler-client",
+    "../handler-db",
+    "../db-dynamodb"
+  ],
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "declarationDir": "dist",
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./src/*"]
+    }
+  },
+  "references": []
+}
