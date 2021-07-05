@@ -119,6 +119,7 @@ export const LIST_FILES = (fields: string[]) => {
                     meta {
                         cursor
                         totalCount
+                        hasMoreItems
                     }
                     error ${ERROR_FIELD}
                 }
@@ -126,3 +127,11 @@ export const LIST_FILES = (fields: string[]) => {
         }
     `;
 };
+
+export const LIST_TAGS = /* GraphQL */ `
+    query ListTags {
+        fileManager {
+            listTags
+        }
+    }
+`;

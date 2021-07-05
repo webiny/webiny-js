@@ -8302,7 +8302,35 @@ __metadata:
     "@webiny/project-utils": ^5.9.0
     aws-sdk: ^2.539.0
     dynamodb-toolbox: ^0.3.4
-    execa: ^5.0.0
+    jest: ^26.6.3
+    jest-dynalite: ^3.2.0
+    jsonpack: ^1.1.5
+    lodash.chunk: ^4.2.0
+    lodash.omit: ^4.5.0
+    rimraf: ^3.0.2
+    ttypescript: ^1.5.12
+    typescript: ^4.1.3
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-file-manager-ddb@workspace:packages/api-file-manager-ddb":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-file-manager-ddb@workspace:packages/api-file-manager-ddb"
+  dependencies:
+    "@babel/cli": ^7.5.5
+    "@babel/core": ^7.5.5
+    "@babel/plugin-proposal-object-rest-spread": ^7.5.5
+    "@babel/plugin-transform-runtime": ^7.5.5
+    "@babel/preset-env": ^7.5.5
+    "@babel/preset-typescript": ^7.0.0
+    "@babel/runtime": ^7.5.5
+    "@webiny/api-file-manager": ^5.9.0
+    "@webiny/cli": ^5.9.0
+    "@webiny/db-dynamodb": ^5.9.0
+    "@webiny/error": ^5.9.0
+    "@webiny/project-utils": ^5.9.0
+    aws-sdk: ^2.539.0
+    dynamodb-toolbox: ^0.3.4
     jest: ^26.6.3
     jest-dynalite: ^3.2.0
     jsonpack: ^1.1.5
@@ -8361,7 +8389,6 @@ __metadata:
     "@webiny/validation": ^5.9.0
     aws-sdk: ^2.539.0
     commodo-fields-object: ^1.0.6
-    execa: ^5.0.0
     jest: ^26.6.3
     mdbid: ^1.0.0
     object-hash: ^1.3.1
@@ -8478,20 +8505,15 @@ __metadata:
     "@webiny/project-utils": ^5.9.0
     aws-sdk: 2.868.0
     dataloader: ^2.0.0
-    date-fns: ^2.21.1
     dot-prop: ^5.3.0
     dynamodb-toolbox: ^0.3.3
-    is-number: ^7.0.0
     jest: ^26.6.3
     jest-dynalite: ^3.2.0
     jest-environment-node: ^26.6.2
     jsonpack: ^1.1.5
     lodash.clonedeep: ^4.5.0
     lodash.sortby: ^4.5.0
-    mdbid: ^1.0.0
-    prettier: ^1.19.1
-    rimraf: ^3.0.2
-    sinon: ^9.0.2
+    ttypescript: ^1.5.12
     typescript: ^4.1.3
   languageName: unknown
   linkType: soft
@@ -8724,6 +8746,7 @@ __metadata:
     pluralize: ^8.0.0
     posthtml: ^0.15.0
     posthtml-noopener: ^1.0.5
+    posthtml-plugin-link-preload: ^1.0.0
     prettier: ^1.14.2
     rimraf: ^3.0.2
     shortid: ^2.2.16
@@ -9772,11 +9795,13 @@ __metadata:
     chalk: ^4.1.0
     dotenv: 8.2.0
     execa: 2.1.0
+    fast-glob: ^3.2.5
     find-up: 5.0.0
     load-json-file: 6.2.0
     ncp: ^2.0.0
     pirates: ^4.0.1
     prettier: ^1.14.2
+    replace-in-path: ^1.0.4
     rimraf: ^3.0.2
     semver: 7.3.4
     ts-morph: ^11.0.0
@@ -9845,9 +9870,13 @@ __metadata:
     "@webiny/handler": ^5.9.0
     "@webiny/plugins": ^5.9.0
     "@webiny/project-utils": ^5.9.0
+    date-fns: ^2.22.1
+    dot-prop: ^6.0.1
     dynamodb-toolbox: ^0.3.4
+    is-number: ^7.0.0
     jest: ^26.6.3
     jest-dynalite: ^3.2.0
+    lodash.sortby: ^4.7.0
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: ^4.1.3
@@ -15852,7 +15881,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"date-fns@npm:^2.21.1":
+"date-fns@npm:^2.22.1":
   version: 2.22.1
   resolution: "date-fns@npm:2.22.1"
   checksum: a89dc6cdf3929b3f0d54d129a3c288df995fc3e6c8099dacc215e5404b4950fc8551d11a58968dfd3b8d576d0c5e637072f615e8f9c3e47d82c81e3952007d5b
@@ -16812,6 +16841,15 @@ __metadata:
   dependencies:
     is-obj: ^2.0.0
   checksum: 76e6693d8803eeff9cb920988446bf223cf1f6e5b1c0c2fe07a66906392134931a481b11e3c0bd852c5cfc97fad65258bcb4359169ad1d8d624cb3f56932be98
+  languageName: node
+  linkType: hard
+
+"dot-prop@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "dot-prop@npm:6.0.1"
+  dependencies:
+    is-obj: ^2.0.0
+  checksum: 06793b868079d70bffce4f0ac7e32055778723cc90b6e0bb12a2dff157298e693fb9ac7733556e4bb2d54de9d670a0b6a67610295cb1119a204fb7e340fafe54
   languageName: node
   linkType: hard
 
@@ -28879,6 +28917,15 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
+"posthtml-match-helper@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "posthtml-match-helper@npm:1.0.1"
+  peerDependencies:
+    posthtml: ">=0.5.0"
+  checksum: 943790e29fcc127c207b85da36adf6d901913fc13bd99c0a78c44d3aab9ca33285223ec51cc3aac3bebc978a05f0651a7e6f05d3569e6c0f1cc2f3fdc9e88757
+  languageName: node
+  linkType: hard
+
 "posthtml-noopener@npm:^1.0.5":
   version: 1.0.5
   resolution: "posthtml-noopener@npm:1.0.5"
@@ -28903,6 +28950,15 @@ fsevents@^1.2.7:
   dependencies:
     htmlparser2: ^6.0.0
   checksum: f2b855cd794fe86b119348e8a299cec0dcfdd7448545e059541546c7146b269212c15c0d4bc99090810c6b86db54026638e0432e2fa11d50933438d6a8cf89a4
+  languageName: node
+  linkType: hard
+
+"posthtml-plugin-link-preload@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "posthtml-plugin-link-preload@npm:1.0.0"
+  dependencies:
+    posthtml-match-helper: ^1.0.1
+  checksum: 9832de6f9784563a1a4da460c484a1d90f38a4ea340024e2e32154e4e645c42cdc12c44fc2670c8b0ef9d7222922a74011d59fb670dc2e913b398b2877327e7f
   languageName: node
   linkType: hard
 

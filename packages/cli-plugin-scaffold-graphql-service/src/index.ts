@@ -53,11 +53,11 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                 },
                 {
                     name: "dataModelName",
-                    message: "Enter initial data model name:",
+                    message: "Enter initial entity name:",
                     default: "Book",
                     validate: (dataModelName, answers) => {
                         if (!dataModelName.match(/^([a-zA-Z]+)$/)) {
-                            return "A valid targetDataModel name must consist of letters only.";
+                            return "A valid name must consist of letters only.";
                         }
 
                         const pluralizedCamelCasedDataModelName = pluralize(
@@ -68,7 +68,6 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                             path.join(
                                 answers.pluginsFolderPath,
                                 "scaffolds",
-                                "graphql",
                                 pluralizedCamelCasedDataModelName
                             )
                         );
@@ -93,11 +92,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
 
             const scaffoldsPath = path.join(input.pluginsFolderPath, "scaffolds");
             const scaffoldsIndexPath = path.join(scaffoldsPath, "index.ts");
-            const newCodePath = path.join(
-                scaffoldsPath,
-                "graphql",
-                Case.camel(dataModelName.plural)
-            );
+            const newCodePath = path.join(scaffoldsPath, Case.camel(dataModelName.plural));
             const packageJsonPath = path.relative(
                 context.project.root,
                 findUp.sync("package.json", { cwd: input.pluginsFolderPath })
@@ -168,8 +163,8 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
                     replaceWith: `__tests__/graphql/${dataModelName.plural}.ts`
                 },
                 {
-                    find: "/entities/TargetDataModels.ts",
-                    replaceWith: `/entities/${Case.pascal(dataModelName.plural)}.ts`
+                    find: "/entities/TargetDataModel.ts",
+                    replaceWith: `/entities/${Case.pascal(dataModelName.singular)}.ts`
                 },
                 {
                     find: "/resolvers/TargetDataModelsMutation.ts",
@@ -204,7 +199,7 @@ export default (): CliCommandScaffoldTemplate<Input> => ({
             await updateScaffoldsIndexFile({
                 scaffoldsIndexPath,
                 importName: dataModelName.plural,
-                importPath: `./graphql/${dataModelName.plural}`
+                importPath: `./${dataModelName.plural}`
             });
 
             ora.stopAndPersist({

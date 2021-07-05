@@ -22,9 +22,7 @@ class PageBuilder {
             handler: "handler.handler",
             timeout: 600,
             memorySize: 2048,
-            layers: [
-                getLayerArn("shelf-io-chrome-aws-lambda-layer", String(process.env.AWS_REGION))
-            ],
+            layers: [getLayerArn("shelf-io-chrome-aws-lambda-layer")],
             environment: {
                 variables: {
                     ...env

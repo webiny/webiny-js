@@ -1,13 +1,13 @@
 import { TargetDataModelEntity } from "../types";
 import mdbid from "mdbid";
-import { TargetDataModels } from "../entities";
+import { TargetDataModel } from "../entities";
 import TargetDataModelsResolver from "./TargetDataModelsResolver";
 
 /**
  * Contains base `createTargetDataModel`, `updateTargetDataModel`, and `deleteTargetDataModel` GraphQL resolver functions.
  * Feel free to adjust the code to your needs. Also, note that at some point in time, you will
  * most probably want to implement custom data validation and security-related checks.
- * https://www.webiny.com/docs/how-to-guides/webiny-cli/scaffolding/extend-graphql-api/resolvers/mutation
+ * https://www.webiny.com/docs/how-to-guides/webiny-cli/scaffolding/extend-graphql-api#essential-files
  */
 
 interface CreateTargetDataModelParams {
@@ -54,11 +54,10 @@ export default class TargetDataModelsMutationResolver extends TargetDataModelsRe
 
         const identity = await security.getIdentity();
         const targetDataModel = {
+            ...data,
             PK: this.getPK(),
             SK: id,
             id,
-            title: data.title,
-            description: data.description,
             createdOn: new Date().toISOString(),
             savedOn: new Date().toISOString(),
             createdBy: identity && {
@@ -70,7 +69,7 @@ export default class TargetDataModelsMutationResolver extends TargetDataModelsRe
         };
 
         // Will throw an error if something goes wrong.
-        await TargetDataModels.put(targetDataModel);
+        await TargetDataModel.put(targetDataModel);
 
         return targetDataModel;
     }
@@ -90,7 +89,7 @@ export default class TargetDataModelsMutationResolver extends TargetDataModelsRe
         const updatedTargetDataModel = { ...targetDataModel, ...data };
 
         // Will throw an error if something goes wrong.
-        await TargetDataModels.update(updatedTargetDataModel);
+        await TargetDataModel.update(updatedTargetDataModel);
 
         return updatedTargetDataModel;
     }
