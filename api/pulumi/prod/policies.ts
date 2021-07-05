@@ -216,8 +216,8 @@ class Policies {
                             "dynamodb:UpdateTimeToLive"
                         ],
                         Resource: [
-                            pulumi.interpolate`${primaryDynamodbTable.arn}`,
-                            pulumi.interpolate`${elasticsearchDynamodbTable.arn}`
+                            pulumi.interpolate`${primaryDynamodbTable.arn}/*`,
+                            pulumi.interpolate`${elasticsearchDynamodbTable.arn}/*`
                         ]
                     },
                     {
