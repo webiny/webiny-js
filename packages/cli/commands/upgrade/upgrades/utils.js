@@ -6,6 +6,23 @@ const loadJson = require("load-json-file");
 const writeJson = require("write-json-file");
 const semverCoerce = require("semver/functions/coerce");
 const execa = require("execa");
+/**
+ *
+ * @param pkg {string}
+ * @param version {string}
+ */
+const validateVersion = (pkg, version) => {
+	if (version === "latest") {
+		return;
+	}
+	const coerced = semverCoerce(version);
+	if (coerced) {
+		return;
+	}
+	throw new Error(
+		`Package "${pkg}" version is not a valid semver version: "${version}".`
+	);
+};
 
 const insertImport = (source, name, pkg) => {
     const statements = source.getStatements();
@@ -86,15 +103,10 @@ const addPackagesToDeps = (type, targetPath, packages) => {
         if (version === null) {
             // Remove package from deps
             delete dependencies[pkg];
-        } else {
-            const coerced = semverCoerce(version);
-            if (!coerced) {
-                throw new Error(
-                    `Package "${pkg}" version is not a valid semver version: "${version}".`
-                );
-            }
-            dependencies[pkg] = version;
+            continue;
         }
+	    validateVersion(pkg, version);
+        dependencies[pkg] = version;
     }
     json[type] = dependencies;
 

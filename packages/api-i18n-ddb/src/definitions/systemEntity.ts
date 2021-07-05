@@ -4,7 +4,7 @@ import { getExtraAttributes } from "@webiny/db-dynamodb/utils/attributes";
 
 export default (params: { context: I18NContext; table: Table }): Entity<any> => {
     const { context, table } = params;
-    const entityName = "System";
+    const entityName = "I18NSystem";
     const attributes = getExtraAttributes(context, entityName);
     return new Entity({
         name: entityName,
