@@ -30,7 +30,10 @@ class Policies {
                             "es:ESHttpPost",
                             "es:ESHttpPut"
                         ],
-                        Resource: pulumi.interpolate`${domain.arn}`
+                        Resource: [
+                            pulumi.interpolate`${domain.arn}`,
+                            pulumi.interpolate`${domain.arn}/*`
+                        ]
                     }
                 ]
             }
@@ -84,7 +87,9 @@ class Policies {
                             "dynamodb:UpdateItem"
                         ],
                         Resource: [
+                            pulumi.interpolate`${primaryDynamodbTable.arn}`,
                             pulumi.interpolate`${primaryDynamodbTable.arn}/*`,
+                            pulumi.interpolate`${elasticsearchDynamodbTable.arn}`,
                             pulumi.interpolate`${elasticsearchDynamodbTable.arn}/*`
                         ]
                     },
@@ -104,7 +109,15 @@ class Policies {
                             "s3:PutObject",
                             "s3:PutObjectAcl"
                         ],
-                        Resource: pulumi.interpolate`arn:aws:s3:::${bucket.id}/*`
+                        Resource: [
+                            pulumi.interpolate`arn:aws:s3:::${bucket.id}/*`,
+                            /**
+                             * We're using the hard-coded value for "delivery" S3 bucket because;
+                             * It is created during deployment of the `apps/website` stack which is after the api stack,
+                             * so, we don't know its ARN.
+                             */
+                            "arn:aws:s3:::delivery-*/*"
+                        ]
                     },
                     {
                         Sid: "PermissionForCloudfront",
@@ -135,7 +148,10 @@ class Policies {
                             "dynamodb:Query",
                             "dynamodb:UpdateItem"
                         ],
-                        Resource: pulumi.interpolate`${primaryDynamodbTable.arn}`
+                        Resource: [
+                            pulumi.interpolate`${primaryDynamodbTable.arn}`,
+                            pulumi.interpolate`${primaryDynamodbTable.arn}/*`
+                        ]
                     }
                 ]
             }
@@ -216,7 +232,9 @@ class Policies {
                             "dynamodb:UpdateTimeToLive"
                         ],
                         Resource: [
+                            pulumi.interpolate`${primaryDynamodbTable.arn}`,
                             pulumi.interpolate`${primaryDynamodbTable.arn}/*`,
+                            pulumi.interpolate`${elasticsearchDynamodbTable.arn}`,
                             pulumi.interpolate`${elasticsearchDynamodbTable.arn}/*`
                         ]
                     },
@@ -248,7 +266,10 @@ class Policies {
                         Sid: "PermissionForES",
                         Effect: "Allow",
                         Action: "es:*",
-                        Resource: pulumi.interpolate`${elasticsearchDomain.arn}`
+                        Resource: [
+                            pulumi.interpolate`${elasticsearchDomain.arn}`,
+                            pulumi.interpolate`${elasticsearchDomain.arn}/*`
+                        ]
                     }
                 ]
             }
@@ -325,7 +346,9 @@ class Policies {
                             "dynamodb:UpdateTimeToLive"
                         ],
                         Resource: [
+                            pulumi.interpolate`${primaryDynamodbTable.arn}`,
                             pulumi.interpolate`${primaryDynamodbTable.arn}/*`,
+                            pulumi.interpolate`${elasticsearchDynamodbTable.arn}`,
                             pulumi.interpolate`${elasticsearchDynamodbTable.arn}/*`
                         ]
                     },
@@ -333,7 +356,10 @@ class Policies {
                         Sid: "PermissionForES",
                         Effect: "Allow",
                         Action: "es:*",
-                        Resource: pulumi.interpolate`${elasticsearchDomain.arn}`
+                        Resource: [
+                            pulumi.interpolate`${elasticsearchDomain.arn}`,
+                            pulumi.interpolate`${elasticsearchDomain.arn}/*`
+                        ]
                     }
                 ]
             }
