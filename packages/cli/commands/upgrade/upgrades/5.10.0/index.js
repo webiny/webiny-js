@@ -91,19 +91,7 @@ module.exports = {
         info("Adding dependencies...");
 
         addPackagesToDependencies(path.resolve(process.cwd(), "api/code/graphql"), {
-            "@webiny/api-plugin-elastic-search-client": null,
-            "@webiny/api-file-manager-ddb-es": "5.10.0-beta.2",
-            "@webiny/api-elasticsearch": "5.10.0-beta.2"
-        });
-
-        addPackagesToDependencies(path.resolve(process.cwd(), "api/code/headlessCMS"), {
-            "@webiny/api-plugin-elastic-search-client": null,
-            "@webiny/api-elasticsearch": "5.10.0-beta.2"
-        });
-
-        addPackagesToDependencies(path.resolve(process.cwd(), "api/code/dynamoToElastic"), {
-            "@webiny/api-plugin-elastic-search-client": null,
-            "@webiny/api-elasticsearch": "5.10.0-beta.2"
+            "@webiny/api-file-manager-ddb-es": targetVersion
         });
 
         /**
