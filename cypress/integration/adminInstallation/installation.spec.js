@@ -10,6 +10,7 @@
  */
 context("Admin Installation", () => {
     it("should be able to complete the initial installation wizard", () => {
+        cy.clearLocalStorage();
         // 1. Security installation.
         cy.visit(Cypress.env("ADMIN_URL"));
         cy.findByTestId("install-security-button").click();
