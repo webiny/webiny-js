@@ -47,7 +47,9 @@ const upgradeGraphQLIndex = async (project, context) => {
             .findIndex(isFileManagerPlugins);
 
         if (fileManagerPlugins > -1) {
-            plugins.getInitializer().insertElement(fileManagerPlugins + 1, `${importedVariableName}()`);
+            plugins
+                .getInitializer()
+                .insertElement(fileManagerPlugins + 1, `${importedVariableName}()`);
         }
     } else {
         // Old "createHandler" syntax
@@ -66,7 +68,7 @@ const upgradeGraphQLIndex = async (project, context) => {
      * Find the position of the file manager plugins in the createHandler.plugins array.
      */
 
-    replaceElasticsearchImportDeclarationPath(source, FM_FILES.index);
+    replaceElasticsearchImportDeclarationPath(source);
 };
 
 const upgradeHeadlessCMSIndex = async (project, context) => {
@@ -74,7 +76,7 @@ const upgradeHeadlessCMSIndex = async (project, context) => {
     info(`Upgrading ${info.hl(CMS_FILES.index)}`);
 
     const source = project.getSourceFile(CMS_FILES.index);
-    replaceElasticsearchImportDeclarationPath(source, CMS_FILES.index);
+    replaceElasticsearchImportDeclarationPath(source);
 };
 
 const upgradeDynamoDbToElasticIndex = async (project, context) => {
@@ -82,10 +84,10 @@ const upgradeDynamoDbToElasticIndex = async (project, context) => {
     info(`Upgrading ${info.hl(DDB2ES_FILES.index)}`);
 
     const source = project.getSourceFile(DDB2ES_FILES.index);
-    replaceElasticsearchImportDeclarationPath(source, DDB2ES_FILES.index);
+    replaceElasticsearchImportDeclarationPath(source);
 };
 
-const replaceElasticsearchImportDeclarationPath = (source, file) => {
+const replaceElasticsearchImportDeclarationPath = (source) => {
     /**
      * Find the old package and replace it with the "api-elasticsearch".
      */
