@@ -87,7 +87,7 @@ const upgradeDynamoDbToElasticIndex = async (project, context) => {
     replaceElasticsearchImportDeclarationPath(source);
 };
 
-const replaceElasticsearchImportDeclarationPath = (source) => {
+const replaceElasticsearchImportDeclarationPath = source => {
     /**
      * Find the old package and replace it with the "api-elasticsearch".
      */
