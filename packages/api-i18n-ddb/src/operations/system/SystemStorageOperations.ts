@@ -3,7 +3,7 @@ import { Entity } from "dynamodb-toolbox";
 import WebinyError from "@webiny/error";
 import defineSystemEntity from "~/definitions/systemEntity";
 import defineTable from "~/definitions/table";
-import {cleanupItem} from "@webiny/db-dynamodb/utils/cleanup";
+import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 
 interface ConstructorParams {
     context: I18NContext;

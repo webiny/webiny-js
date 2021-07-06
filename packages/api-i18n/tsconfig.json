@@ -8,6 +8,9 @@
       "path": "../api-tenancy"
     },
     {
+      "path": "../error"
+    },
+    {
       "path": "../handler"
     },
     {
@@ -32,6 +35,8 @@
       "@webiny/api-tenancy": ["../api-tenancy/src"],
       "@webiny/handler/*": ["../handler/src/*"],
       "@webiny/handler": ["../handler/src"],
+      "@webiny/error/*": ["../error/src/*"],
+      "@webiny/error": ["../error/src"],
       "@webiny/handler-aws/*": ["../handler-aws/src/*"],
       "@webiny/handler-aws": ["../handler-aws/src"],
       "@webiny/handler-client/*": ["../handler-client/src/*"],
