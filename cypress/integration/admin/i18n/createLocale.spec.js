@@ -11,10 +11,21 @@ context("I18N app", () => {
             .click();
 
         cy.findByLabelText("Code").type(newCode);
-        cy.wait(1000);
-        cy.findByText(newCode).click();
+        /**
+         * Testing "Autocomplete" component is tricky.
+         * We're making sure option exist before triggering a click because;
+         * sometimes the option item gets detached from the DOM due to re-render.
+         *
+         * Read more about it: https://www.cypress.io/blog/2020/07/22/do-not-get-too-detached/#investigation
+         */
+        cy.findByText(newCode)
+            .as("code")
+            .should("exist");
+        cy.get("@code").click();
+
         cy.findByText(/Save/i).click();
-        cy.wait(1000);
+        // Loading should be completed
+        cy.get(".react-spinner-material").should("not.exist");
         // Confirm that "Default locale" is selected
         cy.findByTestId("app-i18n-content.menu").within(() => {
             cy.findByText(/Locale:/i).should("exist");
@@ -24,7 +35,8 @@ context("I18N app", () => {
         cy.findByTestId("app-i18n-content.menu").click();
         cy.findAllByTestId(`app-i18n-content.menu-item.de-DE`).should("exist");
         cy.findAllByTestId(`app-i18n-content.menu-item.de-DE`).click();
-        cy.wait(1000);
+        // Loading should be completed
+        cy.get(".react-spinner-material").should("not.exist");
         // Confirm that "new locale" is selected
         cy.findByTestId("app-i18n-content.menu").within(() => {
             cy.findByText(/Locale:/i).should("exist");
@@ -33,7 +45,8 @@ context("I18N app", () => {
         // Switch back to the "Default locale"
         cy.findByTestId("app-i18n-content.menu").click();
         cy.findAllByTestId(`app-i18n-content.menu-item.en-US`).click();
-        cy.wait(1000);
+        // Loading should be completed
+        cy.get(".react-spinner-material").should("not.exist");
         // Delete new locale
         cy.findByTestId("default-data-list").within(() => {
             cy.get("div")
@@ -58,16 +71,28 @@ context("I18N app", () => {
 
     it(`should able to update an existing locale as "default" and immediately restore defaults`, () => {
         const newCode = "de-DE";
+
         cy.visit("/i18n/locales");
         // Create new locale
         cy.findAllByTestId("new-record-button")
             .first()
             .click();
         cy.findByLabelText("Code").type(newCode);
-        // cy.wait(1000);
-        cy.findByText(newCode).click();
+        /**
+         * Testing "Autocomplete" component is tricky.
+         * We're making sure option exist before triggering a click because;
+         * sometimes the option item gets detached from the DOM due to re-render.
+         *
+         * Read more about it: https://www.cypress.io/blog/2020/07/22/do-not-get-too-detached/#investigation
+         */
+        cy.findByText(newCode)
+            .as("code")
+            .should("exist");
+        cy.get("@code").click();
+
         cy.findByText(/Save/i).click();
-        // cy.wait(1000);
+        // Loading should be completed
+        cy.get(".react-spinner-material").should("not.exist");
         // Check newly created locale in selector
         cy.findByTestId("app-i18n-content.menu").click();
         cy.findAllByTestId(`app-i18n-content.menu-item.${newCode}`).should("exist");
