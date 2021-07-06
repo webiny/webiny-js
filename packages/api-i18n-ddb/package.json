@@ -2,6 +2,12 @@
   "name": "@webiny/api-i18n-ddb",
   "version": "5.9.0",
   "main": "index.js",
+  "keywords": [
+    "@webiny/api-i18n",
+    "storage-operations",
+    "dynamodb",
+    "i18n:ddb"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/webiny/webiny-js.git",

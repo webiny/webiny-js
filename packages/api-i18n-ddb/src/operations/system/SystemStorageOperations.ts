@@ -1,12 +1,9 @@
-import {
-    I18NContext,
-    I18NSystem,
-    I18NSystemStorageOperations,
-} from "@webiny/api-i18n/types";
+import { I18NContext, I18NSystem, I18NSystemStorageOperations } from "@webiny/api-i18n/types";
 import { Entity } from "dynamodb-toolbox";
 import WebinyError from "@webiny/error";
 import defineSystemEntity from "~/definitions/systemEntity";
 import defineTable from "~/definitions/table";
+import {cleanupItem} from "@webiny/db-dynamodb/utils/cleanup";
 
 interface ConstructorParams {
     context: I18NContext;
@@ -42,59 +39,61 @@ export class SystemStorageOperations implements I18NSystemStorageOperations {
         });
     }
 
-    
-    public async getVersion(): Promise<string | null> {
+    public async get(): Promise<I18NSystem> {
         const keys = {
             PK: this.partitionKey,
-            SK: SORT_KEY,
+            SK: SORT_KEY
         };
         try {
             const result = await this._entity.get(keys);
-            
-            
-            const item = this.cleanupItem(result?.Item);
-            return item?.version || null;
-        } catch(ex) {
+
+            return cleanupItem(result?.Item);
+        } catch (ex) {
             throw new WebinyError(
-                "Could not read system data from the database.",
-                "GET_VERSION_ERROR",
-                keys,
+                "Could not load system data from the database.",
+                "GET_SYSTEM_ERROR",
+                keys
             );
         }
     }
-    
-    public async setVersion(version: string): Promise<void> {
+
+    public async create({ system }): Promise<I18NSystem> {
         const keys = {
             PK: this.partitionKey,
-            SK: SORT_KEY,
+            SK: SORT_KEY
         };
         try {
             await this._entity.put({
                 ...keys,
-                version,
+                ...system
             });
-        } catch(ex) {
+            return system;
+        } catch (ex) {
             throw new WebinyError(
-                "Could not set system data in the database.",
-                "SET_VERSION_ERROR",
-                keys,
+                "Could not create system data in the database.",
+                "CREATE_SYSTEM_ERROR",
+                keys
             );
         }
     }
-    
-    private cleanupItem(item?: I18NSystem & Record<string, any>): I18NSystem | null {
-        if (!item) {
-            return null;
+
+    public async update({ system }): Promise<I18NSystem> {
+        const keys = {
+            PK: this.partitionKey,
+            SK: SORT_KEY
+        };
+        try {
+            await this._entity.put({
+                ...keys,
+                ...system
+            });
+            return system;
+        } catch (ex) {
+            throw new WebinyError(
+                "Could not update system data in the database.",
+                "UPDATE_VERSION_ERROR",
+                keys
+            );
         }
-        return Object.keys(this._entity.schema.attributes).reduce((values, attr) => {
-            const attribute = this._entity.attribute(attr);
-            if (attribute.partitionKey || attribute.sortKey) {
-                return values;
-            }
-            return {
-                ...values,
-                [attr]: item[attr],
-            }
-        }, {} as I18NSystem);
     }
 }

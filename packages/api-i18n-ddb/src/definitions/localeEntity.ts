@@ -4,7 +4,7 @@ import { getExtraAttributes } from "@webiny/db-dynamodb/utils/attributes";
 
 export default (params: { context: I18NContext; table: Table }): Entity<any> => {
     const { context, table } = params;
-    const entityName = "I18NSettings";
+    const entityName = "I18NLocale";
     const attributes = getExtraAttributes(context, entityName);
     return new Entity({
         name: entityName,
@@ -16,20 +16,17 @@ export default (params: { context: I18NContext; table: Table }): Entity<any> => 
             SK: {
                 sortKey: true
             },
-            TYPE: {
+            createdOn: {
                 type: "string"
             },
-            key: {
+            createdBy: {
+                type: "map"
+            },
+            code: {
                 type: "string"
             },
-            uploadMinFileSize: {
-                type: "number"
-            },
-            uploadMaxFileSize: {
-                type: "number"
-            },
-            srcPrefix: {
-                type: "string"
+            default: {
+                type: "boolean"
             },
             ...attributes
         }

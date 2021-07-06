@@ -8607,15 +8607,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-i18n@^5.9.0, @webiny/api-i18n@workspace:packages/api-i18n":
+"@webiny/api-i18n-ddb@workspace:packages/api-i18n-ddb":
   version: 0.0.0-use.local
-  resolution: "@webiny/api-i18n@workspace:packages/api-i18n"
+  resolution: "@webiny/api-i18n-ddb@workspace:packages/api-i18n-ddb"
   dependencies:
     "@babel/cli": ^7.5.5
     "@babel/core": ^7.5.5
     "@babel/preset-env": ^7.5.5
     "@babel/preset-typescript": ^7.8.3
     "@babel/runtime": ^7.5.5
+    "@webiny/api-i18n": ^5.9.0
     "@webiny/api-security": ^5.9.0
     "@webiny/api-tenancy": ^5.9.0
     "@webiny/cli": ^5.9.0
@@ -8628,10 +8629,36 @@ __metadata:
     "@webiny/plugins": ^5.9.0
     "@webiny/project-utils": ^5.9.0
     accept-language-parser: ^1.5.0
-    execa: ^5.0.0
     i18n-locales: ^0.0.2
     jest: ^26.6.3
     jest-dynalite: ^3.2.0
+    rimraf: ^3.0.2
+    ttypescript: ^1.5.12
+    typescript: ^4.1.3
+  languageName: unknown
+  linkType: soft
+
+"@webiny/api-i18n@^5.9.0, @webiny/api-i18n@workspace:packages/api-i18n":
+  version: 0.0.0-use.local
+  resolution: "@webiny/api-i18n@workspace:packages/api-i18n"
+  dependencies:
+    "@babel/cli": ^7.5.5
+    "@babel/core": ^7.5.5
+    "@babel/preset-env": ^7.5.5
+    "@babel/preset-typescript": ^7.8.3
+    "@babel/runtime": ^7.5.5
+    "@webiny/api-security": ^5.9.0
+    "@webiny/api-tenancy": ^5.9.0
+    "@webiny/cli": ^5.9.0
+    "@webiny/handler": ^5.9.0
+    "@webiny/handler-aws": ^5.9.0
+    "@webiny/handler-client": ^5.9.0
+    "@webiny/handler-graphql": ^5.9.0
+    "@webiny/plugins": ^5.9.0
+    "@webiny/project-utils": ^5.9.0
+    accept-language-parser: ^1.5.0
+    i18n-locales: ^0.0.2
+    jest: ^26.6.3
     rimraf: ^3.0.2
     ttypescript: ^1.5.12
     typescript: ^4.1.3
