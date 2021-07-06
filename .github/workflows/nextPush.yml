@@ -344,6 +344,7 @@ jobs:
 
       - name: Upload screenshots and videos to Slack
         uses: trymbill/cypress-slack-video-upload-action@v1.3.0
+        if: ${{ failure() }}
         with:
           token: ${{ secrets.SLACK_TOKEN }}
           channels: C027VQG8080
