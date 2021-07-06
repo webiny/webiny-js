@@ -12,16 +12,14 @@ const execa = require("execa");
  * @param version {string}
  */
 const validateVersion = (pkg, version) => {
-	if (version === "latest") {
-		return;
-	}
-	const coerced = semverCoerce(version);
-	if (coerced) {
-		return;
-	}
-	throw new Error(
-		`Package "${pkg}" version is not a valid semver version: "${version}".`
-	);
+    if (version === "latest") {
+        return;
+    }
+    const coerced = semverCoerce(version);
+    if (coerced) {
+        return;
+    }
+    throw new Error(`Package "${pkg}" version is not a valid semver version: "${version}".`);
 };
 
 const insertImport = (source, name, pkg) => {
@@ -105,7 +103,7 @@ const addPackagesToDeps = (type, targetPath, packages) => {
             delete dependencies[pkg];
             continue;
         }
-	    validateVersion(pkg, version);
+        validateVersion(pkg, version);
         dependencies[pkg] = version;
     }
     json[type] = dependencies;

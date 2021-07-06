@@ -14,11 +14,15 @@ describe("CRUD Test", () => {
         displayName: "John Doe"
     };
 
-    test("create, read, update and delete locales", async () => {
-        let [response] = await createI18NLocale({ data: { code: "en-US", default: true } });
+    test("should create a single locale", async () => {
+        const [createResponse] = await createI18NLocale({
+            data: {
+                code: "en-US",
+                default: true
+            }
+        });
 
-        // Let's create two locales.
-        expect(response).toEqual({
+        expect(createResponse).toEqual({
             data: {
                 i18n: {
                     createI18NLocale: {
@@ -34,8 +38,55 @@ describe("CRUD Test", () => {
             }
         });
 
-        [response] = await createI18NLocale({ data: { code: "en-GB", default: true } });
+        const [response] = await listI18NLocales();
+
         expect(response).toEqual({
+            data: {
+                i18n: {
+                    listI18NLocales: {
+                        data: [
+                            {
+                                code: "en-US",
+                                default: true,
+                                createdOn: expect.stringMatching(/^20/),
+                                createdBy: identity
+                            }
+                        ],
+                        error: null
+                    }
+                }
+            }
+        });
+    });
+
+    test("create, read, update and delete locales", async () => {
+        const [createResponseUs] = await createI18NLocale({
+            data: { code: "en-US", default: true }
+        });
+
+        /**
+         * Let's create few locales
+         */
+        expect(createResponseUs).toEqual({
+            data: {
+                i18n: {
+                    createI18NLocale: {
+                        data: {
+                            code: "en-US",
+                            default: true,
+                            createdOn: expect.stringMatching(/^20/),
+                            createdBy: identity
+                        },
+                        error: null
+                    }
+                }
+            }
+        });
+
+        const [createResponseGb] = await createI18NLocale({
+            data: { code: "en-GB", default: true }
+        });
+        expect(createResponseGb).toEqual({
             data: {
                 i18n: {
                     createI18NLocale: {
@@ -51,9 +102,11 @@ describe("CRUD Test", () => {
             }
         });
 
-        [response] = await createI18NLocale({ data: { code: "hr-HR", default: true } });
+        const [createResponseHrHr] = await createI18NLocale({
+            data: { code: "hr-HR", default: true }
+        });
 
-        expect(response).toEqual({
+        expect(createResponseHrHr).toEqual({
             data: {
                 i18n: {
                     createI18NLocale: {
@@ -70,9 +123,9 @@ describe("CRUD Test", () => {
         });
 
         // Try creating a locale with default not set as true.
-        [response] = await createI18NLocale({ data: { code: "hr", default: false } });
+        const [createResponseHr] = await createI18NLocale({ data: { code: "hr", default: false } });
 
-        expect(response).toEqual({
+        expect(createResponseHr).toEqual({
             data: {
                 i18n: {
                     createI18NLocale: {
@@ -88,13 +141,27 @@ describe("CRUD Test", () => {
             }
         });
 
-        // List should show three locales.
-        [response] = await listI18NLocales();
-        expect(response).toEqual({
+        /**
+         * List should show four locales.
+         */
+        const [listResponse] = await listI18NLocales();
+        expect(listResponse).toEqual({
             data: {
                 i18n: {
                     listI18NLocales: {
                         data: [
+                            {
+                                code: "hr",
+                                default: false,
+                                createdOn: expect.stringMatching(/^20/),
+                                createdBy: identity
+                            },
+                            {
+                                code: "hr-HR",
+                                default: true,
+                                createdOn: expect.stringMatching(/^20/),
+                                createdBy: identity
+                            },
                             {
                                 code: "en-GB",
                                 default: false,
@@ -106,19 +173,6 @@ describe("CRUD Test", () => {
                                 default: false,
                                 createdOn: expect.stringMatching(/^20/),
                                 createdBy: identity
-                            },
-                            {
-                                code: "hr",
-                                default: false,
-                                createdOn: expect.stringMatching(/^20/),
-                                createdBy: identity
-                            },
-
-                            {
-                                code: "hr-HR",
-                                default: true,
-                                createdOn: expect.stringMatching(/^20/),
-                                createdBy: identity
                             }
                         ],
                         error: null
@@ -128,8 +182,8 @@ describe("CRUD Test", () => {
         });
 
         // We should also be able to get the locale directly by providing the code.
-        [response] = await getI18NLocale({ code: "en-GB" });
-        expect(response).toEqual({
+        const [getGbResponse] = await getI18NLocale({ code: "en-GB" });
+        expect(getGbResponse).toEqual({
             data: {
                 i18n: {
                     getI18NLocale: {
@@ -145,8 +199,8 @@ describe("CRUD Test", () => {
             }
         });
 
-        [response] = await getI18NLocale({ code: "hr-HR" });
-        expect(response).toEqual({
+        const [getHrHrResponse] = await getI18NLocale({ code: "hr-HR" });
+        expect(getHrHrResponse).toEqual({
             data: {
                 i18n: {
                     getI18NLocale: {
@@ -163,8 +217,8 @@ describe("CRUD Test", () => {
         });
 
         // After deleting two locales, list should return only 1 locale.
-        [response] = await deleteI18NLocale({ code: "en-US" });
-        expect(response).toEqual({
+        const [deleteUsResponse] = await deleteI18NLocale({ code: "en-US" });
+        expect(deleteUsResponse).toEqual({
             data: {
                 i18n: {
                     deleteI18NLocale: {
@@ -180,8 +234,8 @@ describe("CRUD Test", () => {
             }
         });
 
-        [response] = await deleteI18NLocale({ code: "en-GB" });
-        expect(response).toEqual({
+        const [deleteGbResponse] = await deleteI18NLocale({ code: "en-GB" });
+        expect(deleteGbResponse).toEqual({
             data: {
                 i18n: {
                     deleteI18NLocale: {
@@ -198,8 +252,8 @@ describe("CRUD Test", () => {
         });
 
         // We tried deleting the third locale, but we can't do that since it's the default one.
-        [response] = await deleteI18NLocale({ code: "hr-HR" });
-        expect(response).toEqual({
+        const [deleteHrHr] = await deleteI18NLocale({ code: "hr-HR" });
+        expect(deleteHrHr).toEqual({
             data: {
                 i18n: {
                     deleteI18NLocale: {
@@ -216,8 +270,8 @@ describe("CRUD Test", () => {
         });
 
         // Two locales should be returned here.
-        [response] = await listI18NLocales();
-        expect(response).toEqual({
+        const [listAfterDeleteResponse] = await listI18NLocales();
+        expect(listAfterDeleteResponse).toEqual({
             data: {
                 i18n: {
                     listI18NLocales: {
@@ -242,8 +296,11 @@ describe("CRUD Test", () => {
         });
 
         // Update "non-default" locale as default
-        [response] = await updateI18NLocale({ code: "hr", data: { default: true } });
-        expect(response).toEqual({
+        const [setDefaultResponse] = await updateI18NLocale({
+            code: "hr",
+            data: { default: true }
+        });
+        expect(setDefaultResponse).toEqual({
             data: {
                 i18n: {
                     updateI18NLocale: {
@@ -260,8 +317,8 @@ describe("CRUD Test", () => {
         });
 
         // Previously set "default" locale should not be "default now
-        [response] = await getI18NLocale({ code: "hr-HR" });
-        expect(response).toEqual({
+        const [afterSetDefaultResponse] = await getI18NLocale({ code: "hr-HR" });
+        expect(afterSetDefaultResponse).toEqual({
             data: {
                 i18n: {
                     getI18NLocale: {
@@ -278,8 +335,8 @@ describe("CRUD Test", () => {
         });
 
         // Two locales should be returned here.
-        [response] = await listI18NLocales();
-        expect(response).toEqual({
+        const [listAfterDefaultResponse] = await listI18NLocales();
+        expect(listAfterDefaultResponse).toEqual({
             data: {
                 i18n: {
                     listI18NLocales: {
@@ -306,8 +363,8 @@ describe("CRUD Test", () => {
 
     test(`set and unset "default" locale`, async () => {
         // Create a "default" locale
-        let [response] = await createI18NLocale({ data: { code: "hr", default: true } });
-        expect(response).toEqual({
+        const [createResponse] = await createI18NLocale({ data: { code: "hr", default: true } });
+        expect(createResponse).toEqual({
             data: {
                 i18n: {
                     createI18NLocale: {
@@ -324,15 +381,21 @@ describe("CRUD Test", () => {
         });
 
         // Trying to unset "default" for an existing locale should return error
-        [response] = await updateI18NLocale({ code: "hr", data: { default: false } });
-        expect(response).toEqual({
+        const [updateUnsetResponse] = await updateI18NLocale({
+            code: "hr",
+            data: { default: false }
+        });
+        expect(updateUnsetResponse).toEqual({
             data: {
                 i18n: {
                     updateI18NLocale: {
                         data: null,
                         error: {
-                            code: "",
-                            data: null,
+                            code: "CANNOT_CHANGE_DEFAULT_LOCALE",
+                            data: {
+                                input: expect.any(Object),
+                                original: expect.any(Object)
+                            },
                             message:
                                 "Cannot unset default locale, please set another locale as default first."
                         }
@@ -342,14 +405,14 @@ describe("CRUD Test", () => {
         });
 
         // Create a locale without default
-        [response] = await createI18NLocale({ data: { code: "de-De" } });
-        expect(response).toEqual({
+        const [createNoDefaultResponse] = await createI18NLocale({ data: { code: "de-De" } });
+        expect(createNoDefaultResponse).toEqual({
             data: {
                 i18n: {
                     createI18NLocale: {
                         data: {
                             code: "de-De",
-                            default: null,
+                            default: false,
                             createdOn: expect.stringMatching(/^20/),
                             createdBy: identity
                         },
@@ -360,8 +423,11 @@ describe("CRUD Test", () => {
         });
 
         // Update newly created locale as "default"
-        [response] = await updateI18NLocale({ code: "de-De", data: { default: true } });
-        expect(response).toEqual({
+        const [updateAsDefaultResponse] = await updateI18NLocale({
+            code: "de-De",
+            data: { default: true }
+        });
+        expect(updateAsDefaultResponse).toEqual({
             data: {
                 i18n: {
                     updateI18NLocale: {
@@ -378,7 +444,7 @@ describe("CRUD Test", () => {
         });
 
         // Three locales should be returned here.
-        [response] = await listI18NLocales();
+        const [response] = await listI18NLocales();
         expect(response).toEqual({
             data: {
                 i18n: {

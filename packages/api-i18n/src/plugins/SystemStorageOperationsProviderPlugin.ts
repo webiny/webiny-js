@@ -1,12 +1,12 @@
-import {Plugin} from "@webiny/plugins";
-import {I18NContext} from "~/types";
+import { Plugin } from "@webiny/plugins";
+import { I18NContext, I18NSystemStorageOperations } from "~/types";
 
 export interface Params {
     context: I18NContext;
 }
 
-export abstract class SystemStorageOperationsProviderPlugin<T> extends Plugin {
+export abstract class SystemStorageOperationsProviderPlugin extends Plugin {
     public static readonly type = "i18n.storageOperationsProvider.system";
-    
-    public abstract provide(params: Params): Promise<T>;
+
+    public abstract provide(params: Params): Promise<I18NSystemStorageOperations>;
 }

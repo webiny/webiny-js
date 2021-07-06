@@ -3,25 +3,23 @@ import graphqlHandler from "@webiny/handler-graphql";
 import i18nPlugins from "../src/graphql";
 import tenancyPlugins from "@webiny/api-tenancy";
 import securityPlugins from "@webiny/api-security";
-import dbPlugins from "@webiny/handler-db";
-import { DynamoDbDriver } from "@webiny/db-dynamodb";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { SecurityIdentity } from "@webiny/api-security";
 
 export default () => {
+    // @ts-ignore
+    if (typeof __getStorageOperationsPlugins !== "function") {
+        throw new Error(`There is no global "__getStorageOperationsPlugins" function.`);
+    }
+    // @ts-ignore
+    const storageOperations = __getStorageOperationsPlugins();
+    if (typeof storageOperations !== "function") {
+        throw new Error(
+            `A product of "__getStorageOperationsPlugins" must be a function to initialize storage operations.`
+        );
+    }
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler(
-        dbPlugins({
-            table: "I18N",
-            driver: new DynamoDbDriver({
-                documentClient: new DocumentClient({
-                    convertEmptyValues: true,
-                    endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
-                    sslEnabled: false,
-                    region: "local"
-                })
-            })
-        }),
+        storageOperations(),
         tenancyPlugins(),
         graphqlHandler(),
         securityPlugins(),
@@ -76,13 +74,13 @@ export default () => {
         async deleteI18NLocale(variables) {
             return invoke({ body: { query: DELETE_LOCALE, variables } });
         },
-        async listI18NLocales(variables) {
+        async listI18NLocales(variables = {}) {
             return invoke({ body: { query: LIST_LOCALES, variables } });
         },
         async getI18NLocale(variables) {
             return invoke({ body: { query: GET_LOCALE, variables } });
         },
-        async getI18NInformation(variables, rest = {}) {
+        async getI18NInformation(variables = {}, rest = {}) {
             return invoke({ body: { query: GET_I18N_INFORMATION, variables }, ...rest });
         }
     };

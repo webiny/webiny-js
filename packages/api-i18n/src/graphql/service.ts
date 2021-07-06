@@ -11,7 +11,7 @@ export default (options: ServicePluginsOptions) => {
     }
 
     return [
-        i18nContext,
+        i18nContext(),
         {
             name: "context-i18n-get-locales",
             type: "context-i18n-get-locales",

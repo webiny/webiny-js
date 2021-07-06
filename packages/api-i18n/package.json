@@ -7,6 +7,9 @@
     "url": "https://github.com/webiny/webiny-js.git",
     "directory": "packages/api-i18n"
   },
+  "keywords": [
+    "i18n:base"
+  ],
   "author": "Webiny Ltd",
   "description": "The API for the Webiny I18N app.",
   "license": "MIT",
@@ -17,7 +20,6 @@
     "@webiny/handler": "^5.9.0",
     "@webiny/handler-aws": "^5.9.0",
     "@webiny/handler-client": "^5.9.0",
-    "@webiny/handler-db": "^5.9.0",
     "@webiny/handler-graphql": "^5.9.0",
     "@webiny/plugins": "^5.9.0",
     "accept-language-parser": "^1.5.0",

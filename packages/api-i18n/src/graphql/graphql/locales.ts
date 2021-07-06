@@ -1,10 +1,30 @@
-import { Response, ErrorResponse, NotFoundResponse } from "@webiny/handler-graphql/responses";
+import {
+    Response,
+    ErrorResponse,
+    NotFoundResponse,
+    ListResponse
+} from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
 import { SecurityContext } from "@webiny/api-security/types";
-import { I18NContext } from "~/types";
+import { I18NContext, LocalesCRUDCreate, LocalesCRUDUpdate } from "~/types";
 import searchLocaleCodes from "./resolvers/searchLocaleCodes";
 import getI18NInformation from "./resolvers/getI18NInformation";
 import NotAuthorizedResponse from "@webiny/api-security/NotAuthorizedResponse";
+import { NotFoundError } from "@webiny/handler-graphql";
+import { NotAuthorizedError } from "@webiny/api-security";
+
+const resolve = async fn => {
+    try {
+        return new Response(await fn());
+    } catch (ex) {
+        if (ex instanceof NotFoundError) {
+            return new NotFoundResponse(ex.message);
+        } else if (ex instanceof NotAuthorizedError) {
+            return new NotAuthorizedResponse(ex);
+        }
+        return new ErrorResponse(ex);
+    }
+};
 
 const plugin: GraphQLSchemaPlugin<I18NContext & SecurityContext> = {
     type: "graphql-schema",
@@ -64,9 +84,37 @@ const plugin: GraphQLSchemaPlugin<I18NContext & SecurityContext> = {
                 defaultLocale: I18NInformationLocale
             }
 
+            input I18NListLocalesWhere {
+                code: String
+                code_in: [String!]
+                code_not_in: [String!]
+                code_not: String
+                default: Boolean
+                createdBy: String
+                createdOn: String
+                createdOn_not: String
+                createdOn_not_in: [String!]
+                createdOn_lt: String
+                createdOn_lte: String
+                createdOn_gt: String
+                createdOn_gte: String
+            }
+
+            enum I18NListLocalesSorter {
+                code_ASC
+                code_DESC
+                createdOn_ASC
+                createdOn_DESC
+                createdBy_ASC
+                createdBy_DESC
+            }
+
             extend type I18NQuery {
                 getI18NLocale(code: String!): I18NLocaleResponse
-                listI18NLocales: I18NLocaleListResponse
+                listI18NLocales(
+                    where: I18NListLocalesWhere
+                    sort: I18NListLocalesSorter
+                ): I18NLocaleListResponse
                 getI18NInformation: I18NInformationResponse
                 searchLocaleCodes(search: String): SearchLocaleCodesResponse
             }
@@ -80,123 +128,32 @@ const plugin: GraphQLSchemaPlugin<I18NContext & SecurityContext> = {
         resolvers: {
             I18NQuery: {
                 getI18NLocale: async (_, args: { code: string }, context) => {
-                    const { i18n, security } = context;
-
-                    const permission = await security.getPermission("i18n.locale");
-
-                    if (!permission) {
-                        return new NotAuthorizedResponse();
-                    }
-
-                    const locale = await i18n.locales.getByCode(args.code);
-                    if (!locale) {
-                        return new NotFoundResponse(`Locale "${args.code}" not found.`);
-                    }
-
-                    return new Response(locale);
+                    return resolve(() => context.i18n.locales.get(args.code));
                 },
                 listI18NLocales: async (_, args, context) => {
-                    const { i18n, security } = context;
-                    const permission = await security.getPermission("i18n.locale");
-
-                    if (!permission) {
-                        return new NotAuthorizedResponse();
+                    try {
+                        const [items, meta] = await context.i18n.locales.list(args);
+                        return new ListResponse(items, meta);
+                    } catch (ex) {
+                        return new ErrorResponse(ex);
                     }
-                    return new Response(await i18n.locales.list());
                 },
                 searchLocaleCodes,
                 getI18NInformation
             },
             I18NMutation: {
-                createI18NLocale: async (_, args: { data: Record<string, any> }, context) => {
-                    const { i18n, security } = context;
-                    const { data } = args;
-
-                    const permission = await security.getPermission("i18n.locale");
-
-                    if (!permission) {
-                        return new NotAuthorizedResponse();
-                    }
-
-                    if (await i18n.locales.getByCode(data.code)) {
-                        return new NotFoundResponse(
-                            `Locale with key "${data.code}" already exists.`
-                        );
-                    }
-
-                    await i18n.locales.create(data);
-                    if (data.default) {
-                        await i18n.locales.updateDefault(data.code);
-                    }
-                    const locale = await i18n.locales.getByCode(data.code);
-                    return new Response(locale);
+                createI18NLocale: async (_, args: { data: LocalesCRUDCreate }, context) => {
+                    return resolve(() => context.i18n.locales.create(args.data));
                 },
                 updateI18NLocale: async (
                     _,
-                    args: { code: string; data: { default: boolean } },
+                    args: { code: string; data: LocalesCRUDUpdate },
                     context
                 ) => {
-                    const { i18n, security } = context;
-                    const { code, data } = args;
-
-                    const permission = await security.getPermission("i18n.locale");
-
-                    if (!permission) {
-                        return new NotAuthorizedResponse();
-                    }
-
-                    const locale = await i18n.locales.getByCode(code);
-                    if (!locale) {
-                        return new NotFoundResponse(`Locale "${args.code}" not found.`);
-                    }
-
-                    if (locale.default && !data.default) {
-                        return new ErrorResponse({
-                            message:
-                                "Cannot unset default locale, please set another locale as default first."
-                        });
-                    }
-
-                    await i18n.locales.update(code, data);
-
-                    if (data.default) {
-                        await i18n.locales.updateDefault(code);
-                    }
-                    const updatedLocale = await i18n.locales.getByCode(code);
-                    return new Response(updatedLocale);
+                    return resolve(() => context.i18n.locales.update(args.code, args.data));
                 },
                 deleteI18NLocale: async (_, args: { code: string }, context) => {
-                    const { i18n, security } = context;
-                    const { code } = args;
-
-                    const permission = await security.getPermission("i18n.locale");
-
-                    if (!permission) {
-                        return new NotAuthorizedResponse();
-                    }
-
-                    const locale = await i18n.locales.getByCode(code);
-                    if (!locale) {
-                        return new NotFoundResponse(`Locale "${args.code}" not found.`);
-                    }
-
-                    if (locale.default) {
-                        return new ErrorResponse({
-                            message:
-                                "Cannot delete default locale, please set another locale as default first."
-                        });
-                    }
-
-                    const allLocales = await i18n.locales.list();
-                    if (allLocales.length === 1) {
-                        return new ErrorResponse({
-                            message: "Cannot delete the last locale."
-                        });
-                    }
-
-                    await i18n.locales.delete(code);
-
-                    return new Response(locale);
+                    return resolve(() => context.i18n.locales.delete(args.code));
                 }
             }
         }
