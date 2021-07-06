@@ -356,10 +356,10 @@ jobs:
         run: yarn cypress run --spec "cypress/integration/admin/**/*.spec.js"
 
       - name: Admin Area tests - Upload screenshots and videos to Slack
-          uses: trymbill/cypress-slack-video-upload-action@v1.3.0
-          if: ${{ failure() }}
-          with:
-            token: ${{ secrets.SLACK_TOKEN }}
-            channels: C027VQG8080
-            workdir: webiny-js/cypress
-            message-text: Admin Area Cypress tests failed! They have been placed in this thread, good luck.
+        uses: trymbill/cypress-slack-video-upload-action@v1.3.0
+        if: ${{ failure() }}
+        with:
+          token: ${{ secrets.SLACK_TOKEN }}
+          channels: C027VQG8080
+          workdir: webiny-js/cypress
+          message-text: Admin Area Cypress tests failed! They have been placed in this thread, good luck.
