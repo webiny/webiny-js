@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.10.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.1...v5.10.0-beta.2) (2021-07-06)
+
+
+### Bug Fixes
+
+* **app-page-builder:** export PageBuilderObject interface ([f7fa109](https://github.com/webiny/webiny-js/commit/f7fa10966642fe20f0396ececc394a5e66a95e72))
+
+
+
+
+
 # [5.10.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.0...v5.10.0-beta.1) (2021-07-06)
 
 **Note:** Version bump only for package @webiny/app-page-builder

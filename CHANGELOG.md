@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.10.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.1...v5.10.0-beta.2) (2021-07-06)
+
+
+### Bug Fixes
+
+* **api-security-admin-users:** use context object to access tenancy ([80c48ba](https://github.com/webiny/webiny-js/commit/80c48baa1ad6f9395e262ef130c0699566f5824c))
+* **app-page-builder:** export PageBuilderObject interface ([f7fa109](https://github.com/webiny/webiny-js/commit/f7fa10966642fe20f0396ececc394a5e66a95e72))
+* **upgrade:** cleanup website apollo setup and support both new and old handlers ([332b52a](https://github.com/webiny/webiny-js/commit/332b52a3fe28baa7bf6a5800d77e19e3faa22d97))
+
+
+
+
+
 # [5.10.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.0...v5.10.0-beta.1) (2021-07-06)
 
 
