@@ -8332,7 +8332,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-file-manager-ddb-es@^5.10.0, @webiny/api-file-manager-ddb-es@^5.10.0-beta.2, @webiny/api-file-manager-ddb-es@workspace:packages/api-file-manager-ddb-es":
+"@webiny/api-file-manager-ddb-es@^5.10.0, @webiny/api-file-manager-ddb-es@workspace:packages/api-file-manager-ddb-es":
   version: 0.0.0-use.local
   resolution: "@webiny/api-file-manager-ddb-es@workspace:packages/api-file-manager-ddb-es"
   dependencies:
@@ -8399,7 +8399,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-file-manager-s3@^5.10.0-beta.2, @webiny/api-file-manager-s3@workspace:packages/api-file-manager-s3":
+"@webiny/api-file-manager-s3@^5.10.0, @webiny/api-file-manager-s3@workspace:packages/api-file-manager-s3":
   version: 0.0.0-use.local
   resolution: "@webiny/api-file-manager-s3@workspace:packages/api-file-manager-s3"
   dependencies:
@@ -8456,7 +8456,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-form-builder@^5.10.0-beta.2, @webiny/api-form-builder@workspace:packages/api-form-builder":
+"@webiny/api-form-builder@^5.10.0, @webiny/api-form-builder@workspace:packages/api-form-builder":
   version: 0.0.0-use.local
   resolution: "@webiny/api-form-builder@workspace:packages/api-form-builder"
   dependencies:
@@ -8502,7 +8502,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-headless-cms-ddb-es@^5.10.0-beta.2, @webiny/api-headless-cms-ddb-es@workspace:packages/api-headless-cms-ddb-es":
+"@webiny/api-headless-cms-ddb-es@^5.10.0, @webiny/api-headless-cms-ddb-es@workspace:packages/api-headless-cms-ddb-es":
   version: 0.0.0-use.local
   resolution: "@webiny/api-headless-cms-ddb-es@workspace:packages/api-headless-cms-ddb-es"
   dependencies:
@@ -8597,7 +8597,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-headless-cms@^5.10.0, @webiny/api-headless-cms@^5.10.0-beta.2, @webiny/api-headless-cms@workspace:packages/api-headless-cms":
+"@webiny/api-headless-cms@^5.10.0, @webiny/api-headless-cms@workspace:packages/api-headless-cms":
   version: 0.0.0-use.local
   resolution: "@webiny/api-headless-cms@workspace:packages/api-headless-cms"
   dependencies:
@@ -8611,6 +8611,7 @@ __metadata:
     "@webiny/api-file-manager": ^5.10.0
     "@webiny/api-i18n": ^5.10.0
     "@webiny/api-i18n-content": ^5.10.0
+    "@webiny/api-i18n-ddb": ^5.10.0
     "@webiny/api-security": ^5.10.0
     "@webiny/api-security-admin-users": ^5.10.0
     "@webiny/api-tenancy": ^5.10.0
@@ -8646,7 +8647,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-i18n-content@^5.10.0, @webiny/api-i18n-content@^5.10.0-beta.2, @webiny/api-i18n-content@workspace:packages/api-i18n-content":
+"@webiny/api-i18n-content@^5.10.0, @webiny/api-i18n-content@workspace:packages/api-i18n-content":
   version: 0.0.0-use.local
   resolution: "@webiny/api-i18n-content@workspace:packages/api-i18n-content"
   dependencies:
@@ -8664,7 +8665,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-i18n-ddb@workspace:packages/api-i18n-ddb":
+"@webiny/api-i18n-ddb@^5.10.0, @webiny/api-i18n-ddb@workspace:packages/api-i18n-ddb":
   version: 0.0.0-use.local
   resolution: "@webiny/api-i18n-ddb@workspace:packages/api-i18n-ddb"
   dependencies:
@@ -8689,7 +8690,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-i18n@^5.10.0, @webiny/api-i18n@^5.10.0-beta.2, @webiny/api-i18n@workspace:packages/api-i18n":
+"@webiny/api-i18n@^5.10.0, @webiny/api-i18n@workspace:packages/api-i18n":
   version: 0.0.0-use.local
   resolution: "@webiny/api-i18n@workspace:packages/api-i18n"
   dependencies:
@@ -8833,7 +8834,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-security-admin-users-cognito@^5.10.0-beta.2, @webiny/api-security-admin-users-cognito@workspace:packages/api-security-admin-users-cognito":
+"@webiny/api-security-admin-users-cognito@^5.10.0, @webiny/api-security-admin-users-cognito@workspace:packages/api-security-admin-users-cognito":
   version: 0.0.0-use.local
   resolution: "@webiny/api-security-admin-users-cognito@workspace:packages/api-security-admin-users-cognito"
   dependencies:
@@ -8849,7 +8850,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-security-admin-users@^5.10.0, @webiny/api-security-admin-users@^5.10.0-beta.2, @webiny/api-security-admin-users@workspace:packages/api-security-admin-users":
+"@webiny/api-security-admin-users@^5.10.0, @webiny/api-security-admin-users@workspace:packages/api-security-admin-users":
   version: 0.0.0-use.local
   resolution: "@webiny/api-security-admin-users@workspace:packages/api-security-admin-users"
   dependencies:
@@ -8884,7 +8885,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-security-cognito-authentication@^5.10.0-beta.2, @webiny/api-security-cognito-authentication@workspace:packages/api-security-cognito-authentication":
+"@webiny/api-security-cognito-authentication@^5.10.0, @webiny/api-security-cognito-authentication@workspace:packages/api-security-cognito-authentication":
   version: 0.0.0-use.local
   resolution: "@webiny/api-security-cognito-authentication@workspace:packages/api-security-cognito-authentication"
   dependencies:
@@ -8904,7 +8905,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-security@^5.10.0, @webiny/api-security@^5.10.0-beta.2, @webiny/api-security@workspace:packages/api-security":
+"@webiny/api-security@^5.10.0, @webiny/api-security@workspace:packages/api-security":
   version: 0.0.0-use.local
   resolution: "@webiny/api-security@workspace:packages/api-security"
   dependencies:
@@ -8925,7 +8926,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/api-tenancy@^5.10.0, @webiny/api-tenancy@^5.10.0-beta.2, @webiny/api-tenancy@workspace:packages/api-tenancy":
+"@webiny/api-tenancy@^5.10.0, @webiny/api-tenancy@workspace:packages/api-tenancy":
   version: 0.0.0-use.local
   resolution: "@webiny/api-tenancy@workspace:packages/api-tenancy"
   dependencies:
@@ -10088,7 +10089,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler-graphql@^5.10.0, @webiny/handler-graphql@^5.10.0-beta.2, @webiny/handler-graphql@workspace:packages/handler-graphql":
+"@webiny/handler-graphql@^5.10.0, @webiny/handler-graphql@workspace:packages/handler-graphql":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-graphql@workspace:packages/handler-graphql"
   dependencies:
@@ -10132,7 +10133,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@webiny/handler-logs@^5.10.0-beta.2, @webiny/handler-logs@workspace:packages/handler-logs":
+"@webiny/handler-logs@^5.10.0, @webiny/handler-logs@^5.10.0-beta.2, @webiny/handler-logs@workspace:packages/handler-logs":
   version: 0.0.0-use.local
   resolution: "@webiny/handler-logs@workspace:packages/handler-logs"
   dependencies:
@@ -11295,30 +11296,31 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "api-graphql@workspace:api/code/graphql"
   dependencies:
-    "@webiny/api-elasticsearch": ^5.10.0-beta.2
-    "@webiny/api-file-manager": ^5.10.0-beta.2
-    "@webiny/api-file-manager-ddb-es": ^5.10.0-beta.2
-    "@webiny/api-file-manager-s3": ^5.10.0-beta.2
-    "@webiny/api-form-builder": ^5.10.0-beta.2
-    "@webiny/api-headless-cms": ^5.10.0-beta.2
-    "@webiny/api-headless-cms-ddb-es": ^5.10.0-beta.2
-    "@webiny/api-i18n": ^5.10.0-beta.2
-    "@webiny/api-i18n-content": ^5.10.0-beta.2
-    "@webiny/api-page-builder": ^5.10.0-beta.2
-    "@webiny/api-prerendering-service": ^5.10.0-beta.2
-    "@webiny/api-security": ^5.10.0-beta.2
-    "@webiny/api-security-admin-users": ^5.10.0-beta.2
-    "@webiny/api-security-admin-users-cognito": ^5.10.0-beta.2
-    "@webiny/api-security-cognito-authentication": ^5.10.0-beta.2
-    "@webiny/api-tenancy": ^5.10.0-beta.2
-    "@webiny/cli": ^5.10.0-beta.2
-    "@webiny/cli-plugin-deploy-pulumi": ^5.10.0-beta.2
-    "@webiny/db-dynamodb": ^5.10.0-beta.2
-    "@webiny/handler-aws": ^5.10.0-beta.2
-    "@webiny/handler-db": ^5.10.0-beta.2
-    "@webiny/handler-graphql": ^5.10.0-beta.2
-    "@webiny/handler-logs": ^5.10.0-beta.2
-    "@webiny/project-utils": ^5.10.0-beta.2
+    "@webiny/api-elasticsearch": ^5.10.0
+    "@webiny/api-file-manager": ^5.10.0
+    "@webiny/api-file-manager-ddb-es": ^5.10.0
+    "@webiny/api-file-manager-s3": ^5.10.0
+    "@webiny/api-form-builder": ^5.10.0
+    "@webiny/api-headless-cms": ^5.10.0
+    "@webiny/api-headless-cms-ddb-es": ^5.10.0
+    "@webiny/api-i18n": ^5.10.0
+    "@webiny/api-i18n-content": ^5.10.0
+    "@webiny/api-i18n-ddb": ^5.10.0
+    "@webiny/api-page-builder": ^5.10.0
+    "@webiny/api-prerendering-service": ^5.10.0
+    "@webiny/api-security": ^5.10.0
+    "@webiny/api-security-admin-users": ^5.10.0
+    "@webiny/api-security-admin-users-cognito": ^5.10.0
+    "@webiny/api-security-cognito-authentication": ^5.10.0
+    "@webiny/api-tenancy": ^5.10.0
+    "@webiny/cli": ^5.10.0
+    "@webiny/cli-plugin-deploy-pulumi": ^5.10.0
+    "@webiny/db-dynamodb": ^5.10.0
+    "@webiny/handler-aws": ^5.10.0
+    "@webiny/handler-db": ^5.10.0
+    "@webiny/handler-graphql": ^5.10.0
+    "@webiny/handler-logs": ^5.10.0
+    "@webiny/project-utils": ^5.10.0
   languageName: unknown
   linkType: soft
 
@@ -11326,22 +11328,23 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "api-headless-cms@workspace:api/code/headlessCMS"
   dependencies:
-    "@webiny/api-elasticsearch": ^5.10.0-beta.2
-    "@webiny/api-headless-cms": ^5.10.0-beta.2
-    "@webiny/api-headless-cms-ddb-es": ^5.10.0-beta.2
-    "@webiny/api-i18n": ^5.10.0-beta.2
-    "@webiny/api-i18n-content": ^5.10.0-beta.2
-    "@webiny/api-security": ^5.10.0-beta.2
-    "@webiny/api-security-admin-users": ^5.10.0-beta.2
-    "@webiny/api-security-cognito-authentication": ^5.10.0-beta.2
-    "@webiny/api-tenancy": ^5.10.0-beta.2
-    "@webiny/cli": ^5.10.0-beta.2
-    "@webiny/cli-plugin-deploy-pulumi": ^5.10.0-beta.2
-    "@webiny/db-dynamodb": ^5.10.0-beta.2
-    "@webiny/handler-aws": ^5.10.0-beta.2
-    "@webiny/handler-db": ^5.10.0-beta.2
-    "@webiny/handler-logs": ^5.10.0-beta.2
-    "@webiny/project-utils": ^5.10.0-beta.2
+    "@webiny/api-elasticsearch": ^5.10.0
+    "@webiny/api-headless-cms": ^5.10.0
+    "@webiny/api-headless-cms-ddb-es": ^5.10.0
+    "@webiny/api-i18n": ^5.10.0
+    "@webiny/api-i18n-content": ^5.10.0
+    "@webiny/api-i18n-ddb": ^5.10.0
+    "@webiny/api-security": ^5.10.0
+    "@webiny/api-security-admin-users": ^5.10.0
+    "@webiny/api-security-cognito-authentication": ^5.10.0
+    "@webiny/api-tenancy": ^5.10.0
+    "@webiny/cli": ^5.10.0
+    "@webiny/cli-plugin-deploy-pulumi": ^5.10.0
+    "@webiny/db-dynamodb": ^5.10.0
+    "@webiny/handler-aws": ^5.10.0
+    "@webiny/handler-db": ^5.10.0
+    "@webiny/handler-logs": ^5.10.0
+    "@webiny/project-utils": ^5.10.0
   languageName: unknown
   linkType: soft
 
