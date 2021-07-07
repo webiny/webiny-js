@@ -64,7 +64,7 @@ export default {
                     }
                 },
                 async install({ domain }) {
-                    const { formBuilder, elasticsearch } = context;
+                    const { db, i18n, formBuilder, elasticsearch } = context;
 
                     const version = await this.getVersion();
                     if (version) {
@@ -84,40 +84,56 @@ export default {
                     await formBuilder.settings.createSettings(data);
 
                     // Create ES index if it doesn't already exist.
-                    const esIndex = defaults.es(context);
-                    const { body: exists } = await elasticsearch.indices.exists(esIndex);
-                    if (!exists) {
-                        await elasticsearch.indices.create({
-                            ...esIndex,
-                            body: {
-                                // need this part for sorting to work on text fields
-                                settings: {
-                                    analysis: {
-                                        analyzer: {
-                                            lowercase_analyzer: {
-                                                type: "custom",
-                                                filter: ["lowercase", "trim"],
-                                                tokenizer: "keyword"
+                    try {
+                        const esIndex = defaults.es(context);
+                        const { body: exists } = await elasticsearch.indices.exists(esIndex);
+                        if (!exists) {
+                            await elasticsearch.indices.create({
+                                ...esIndex,
+                                body: {
+                                    // need this part for sorting to work on text fields
+                                    settings: {
+                                        analysis: {
+                                            analyzer: {
+                                                lowercase_analyzer: {
+                                                    type: "custom",
+                                                    filter: ["lowercase", "trim"],
+                                                    tokenizer: "keyword"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    mappings: {
+                                        properties: {
+                                            property: {
+                                                type: "text",
+                                                fields: {
+                                                    keyword: {
+                                                        type: "keyword",
+                                                        ignore_above: 256
+                                                    }
+                                                },
+                                                analyzer: "lowercase_analyzer"
                                             }
                                         }
                                     }
-                                },
-                                mappings: {
-                                    properties: {
-                                        property: {
-                                            type: "text",
-                                            fields: {
-                                                keyword: {
-                                                    type: "keyword",
-                                                    ignore_above: 256
-                                                }
-                                            },
-                                            analyzer: "lowercase_analyzer"
-                                        }
-                                    }
                                 }
+                            });
+                        }
+                    } catch (err) {
+                        await db.delete({
+                            ...defaults.db,
+                            query: {
+                                PK: `T#root#L#${i18n.getDefaultLocale().code}#FB#SETTINGS`,
+                                SK: "default"
                             }
                         });
+
+                        throw new Error(
+                            "Form builder failed to install!",
+                            "FORM_BUILDER_INSTALL_ABORTED",
+                            { reason: err.message }
+                        );
                     }
 
                     await formBuilder.system.setVersion(context.WEBINY_VERSION);

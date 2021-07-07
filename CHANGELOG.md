@@ -3,6 +3,105 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.10.0](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.2...v5.10.0) (2021-07-06)
+
+
+### Bug Fixes
+
+* failing admin installation Cypress test ([#1763](https://github.com/webiny/webiny-js/issues/1763)) ([d39dfa7](https://github.com/webiny/webiny-js/commit/d39dfa7952634a7722947e4fab84647d88ef744d))
+
+
+
+
+
+# [5.10.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.1...v5.10.0-beta.2) (2021-07-06)
+
+
+### Bug Fixes
+
+* **api-security-admin-users:** use context object to access tenancy ([80c48ba](https://github.com/webiny/webiny-js/commit/80c48baa1ad6f9395e262ef130c0699566f5824c))
+* **app-page-builder:** export PageBuilderObject interface ([f7fa109](https://github.com/webiny/webiny-js/commit/f7fa10966642fe20f0396ececc394a5e66a95e72))
+* **upgrade:** cleanup website apollo setup and support both new and old handlers ([332b52a](https://github.com/webiny/webiny-js/commit/332b52a3fe28baa7bf6a5800d77e19e3faa22d97))
+
+
+
+
+
+# [5.10.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.0...v5.10.0-beta.1) (2021-07-06)
+
+
+### Bug Fixes
+
+* **api-file-manager:** use input meta data on top of predefined one ([5bbfb3d](https://github.com/webiny/webiny-js/commit/5bbfb3d668f11669db32bd1204eda5cd8787b3f0))
+* **api-form-builder:** delete settings record if ES installation fails ([8abe74b](https://github.com/webiny/webiny-js/commit/8abe74bb87f6ae94f75d9a1487e93ca1c26568e6))
+* **api-page-builder:** remove unnecessary logs ([a3b2549](https://github.com/webiny/webiny-js/commit/a3b25499fe53701f161f81683ad236dddca7021a))
+* **cypress:** clear local storage before admin installation ([858dca2](https://github.com/webiny/webiny-js/commit/858dca2d15e479022de1db1066e1293350db7099))
+* **v5:** upgrade es package path  ([#1757](https://github.com/webiny/webiny-js/issues/1757)) ([6a793c3](https://github.com/webiny/webiny-js/commit/6a793c3bce58e228b9d7214f512df7e7dc067fe3))
+* replace TargetDataModels with TargetDataModels ([8b1b554](https://github.com/webiny/webiny-js/commit/8b1b5540a3df8bb568939b67a3b31b4be72dbe22))
+* simplify code with a GraphQL fragment ([1ebb8ac](https://github.com/webiny/webiny-js/commit/1ebb8aca26436047bacab387638e9edf48dcc59d))
+* simplify code with the `getMutationData` helper function ([838cc00](https://github.com/webiny/webiny-js/commit/838cc00106e0dd1eb8d4fa0593fe5169ad785458))
+
+
+
+
+
+# [5.10.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.9.0...v5.10.0-beta.0) (2021-07-02)
+
+
+### Bug Fixes
+
+* add "PbListPublishedPages" to the list of queries to cache ([182c657](https://github.com/webiny/webiny-js/commit/182c657de08a0fadd73d177fdaa47ae8dc3a932d))
+* add cache-control header ([cab2365](https://github.com/webiny/webiny-js/commit/cab236557e13ac08ed7d1aa4c840b77442881a25))
+* add upgrade step ([816fa82](https://github.com/webiny/webiny-js/commit/816fa82ce52a6a96544b9ad41acc906917abad02))
+* adjust link-preloading activation logic ([23ef79d](https://github.com/webiny/webiny-js/commit/23ef79da8f619cb48a3afdb0e3d306f9e86b5c2e))
+* adjust link-preloading activation logic ([f03b8e6](https://github.com/webiny/webiny-js/commit/f03b8e651e8aba282132d06e6552631282c51bbe))
+* allow sending settings without special pages set (only if none was already set) ([6c23195](https://github.com/webiny/webiny-js/commit/6c231950e6fd1c7745aa78e4446c9c8358076125))
+* correct if statement ([3f9d278](https://github.com/webiny/webiny-js/commit/3f9d2782d76ae799ef00748e3fd02e87d9783dcd))
+* correct merging of default and current settings ([0c9e78c](https://github.com/webiny/webiny-js/commit/0c9e78c8b1cc6743f326e69a932b7fa9464b227e))
+* ensure 'null' is not prepended in the page URL ([74df5fc](https://github.com/webiny/webiny-js/commit/74df5fc1dd978678d902c9201a45caabb9402408))
+* improve error reporting ([46726ca](https://github.com/webiny/webiny-js/commit/46726ca01a95581bc0acb214a989b450477fd74c))
+* make `dataIdFromObject` pluggable ([2934479](https://github.com/webiny/webiny-js/commit/2934479e90e43948ec2a3a2474b8c0e7acf06f98))
+* reformat code ([a8fb268](https://github.com/webiny/webiny-js/commit/a8fb26810c6cdb714bac9b8090f40852f94ed967))
+* remove "**/__tests__/**" ([fbd643b](https://github.com/webiny/webiny-js/commit/fbd643ba8dac8fe929414bf79c5e56e19d8118c8))
+* remove `fetchPolicy: "network-only"` ([d2a0bd7](https://github.com/webiny/webiny-js/commit/d2a0bd7cc5cdb8683ee16ef4102dec75d7cdc1e1))
+* remove parent graphql/admin folder ([99e6a08](https://github.com/webiny/webiny-js/commit/99e6a08a3a10a81ca639dfe86e6c48bcdc61b784))
+* remove redundant if statement ([6b99e31](https://github.com/webiny/webiny-js/commit/6b99e317e12fa01538d740e09be5ffb649ec67a4))
+* remove unique ID from "static" folder name ([b63e775](https://github.com/webiny/webiny-js/commit/b63e7750415da3281384cb81a66e15c36ce54fa4))
+* replace PbListPublishedPages with PbPageListResponse ([5cd5803](https://github.com/webiny/webiny-js/commit/5cd58030bd43c89967102e22fbab04f833e3c316))
+* revert version change ([32c38b1](https://github.com/webiny/webiny-js/commit/32c38b117d40847465adb3334e0b9f8b904b9c51))
+* spread data instead of manual assignment ([8dd03be](https://github.com/webiny/webiny-js/commit/8dd03be00828d9eca73df3206da048e1fa79cb8f))
+* temporarily disable destroy step ([3766b74](https://github.com/webiny/webiny-js/commit/3766b74f3bdba3c87fc55120b84c0bf0919286f4))
+* trim trailing forward slash ([3ed7a88](https://github.com/webiny/webiny-js/commit/3ed7a881efed0d27c780710f80bd3a6ba10830c3))
+* update dependencies ([f6e6878](https://github.com/webiny/webiny-js/commit/f6e6878325822c1cdf7ee310aaa549c37d0f2847))
+* update dependencies ([a149966](https://github.com/webiny/webiny-js/commit/a149966a984b3e4c97b72e670d62b24b78c783d8))
+* update links ([3f996fc](https://github.com/webiny/webiny-js/commit/3f996fc6c46451820298a6b8b5803946768941fa))
+* update template ([437daff](https://github.com/webiny/webiny-js/commit/437daff453b11d6a6b99e17757504d992cfe62e8))
+* update template ([c201900](https://github.com/webiny/webiny-js/commit/c2019001ce182b23de1624973f0349849146b5ab))
+* use __PS_RENDER__ window property to check if the page is being pre-rendered ([7c4b65f](https://github.com/webiny/webiny-js/commit/7c4b65f0087d40117ef01851007f7d0de311cef6))
+* use 'entity' word instead 'data model' ([1279bc1](https://github.com/webiny/webiny-js/commit/1279bc1a66f2efdf1a467e5a65fb1ce16574deea))
+* use `ApolloCacheObjectIdPlugin` ([a32936a](https://github.com/webiny/webiny-js/commit/a32936ab2dadf947973a70d517c5b524c4ff4c20))
+* use `ApolloCacheObjectIdPlugin` ([217a83d](https://github.com/webiny/webiny-js/commit/217a83d54308ac099ba61dc559530116f3d6c47c))
+* use new `getCurrentSettings` ([1f5c466](https://github.com/webiny/webiny-js/commit/1f5c466570eb7cafffabd4fdaf14e74de9b55241))
+* use singular for entity name ([4c23fdd](https://github.com/webiny/webiny-js/commit/4c23fdddacc3906978667a9aa4cbb5d183f2055b))
+* when getting PB settings, ensure default are loaded first ([d9fdd28](https://github.com/webiny/webiny-js/commit/d9fdd289abd9adc61b68424cbf77c22cbab3a9e2))
+
+
+### Features
+
+* add `getCurrentSettings` ([00c1480](https://github.com/webiny/webiny-js/commit/00c148028b9933d1bd1e8df1332be5c61a6cb651))
+* add `posthtmlPluginLinkPreload` ([acc874f](https://github.com/webiny/webiny-js/commit/acc874fe2c5f14d37ec205bf205307c3ce951155))
+* add upgradeApolloCachePlugins step ([d818ca7](https://github.com/webiny/webiny-js/commit/d818ca740df62c8a417ae5c66c5aa9505d10c7f4))
+* create a new ApolloCacheObjectIdPlugin plugin ([0179ecc](https://github.com/webiny/webiny-js/commit/0179ecc6c88263e72dc5a0bb81fdbda52d9fcf14))
+* import and register new ApolloCacheObjectIdPlugin plugin ([a8d57d3](https://github.com/webiny/webiny-js/commit/a8d57d373eb7621b1c02f656d12f013c072e62f3))
+* update Lambda runtime and sharp layer ([#1738](https://github.com/webiny/webiny-js/issues/1738)) ([c03af0a](https://github.com/webiny/webiny-js/commit/c03af0aba0a315c3823251d9fecd888cc191250c))
+* **api-file-manager:** storage operations ([#1716](https://github.com/webiny/webiny-js/issues/1716)) ([7b81e0b](https://github.com/webiny/webiny-js/commit/7b81e0b7c2ddf396cad09334e10c39e588d8643b))
+* **api-file-manager-ddb:** dynamodb storage operations ([#1745](https://github.com/webiny/webiny-js/issues/1745)) ([6788849](https://github.com/webiny/webiny-js/commit/6788849d3a1489b82764ca02fc5ca809dc633c54))
+* make __typename optional ([dda5775](https://github.com/webiny/webiny-js/commit/dda57758f3d2575ccb18465ba7617f24d4fa47fd))
+
+
+
+
+
 # [5.9.0](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.2...v5.9.0) (2021-06-21)
 
 
