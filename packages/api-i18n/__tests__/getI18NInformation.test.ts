@@ -30,6 +30,10 @@ describe("getI18NInformation Test", () => {
                         },
                         locales: [
                             {
+                                code: "hr-HR",
+                                default: true
+                            },
+                            {
                                 code: "en-GB",
                                 default: false
                             },
@@ -37,10 +41,6 @@ describe("getI18NInformation Test", () => {
                                 code: "en-US",
                                 default: false
                             },
-                            {
-                                code: "hr-HR",
-                                default: true
-                            }
                         ]
                     }
                 }
