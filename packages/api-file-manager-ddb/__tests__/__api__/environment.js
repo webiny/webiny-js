@@ -1,6 +1,6 @@
 const dbPlugins = require("@webiny/handler-db").default;
 const { DynamoDbDriver } = require("@webiny/db-dynamodb");
-const dynamoDbPlugins = require("@webiny/db-dynamodb/plugins");
+const dynamoDbPlugins = require("@webiny/db-dynamodb/plugins").default;
 const { DocumentClient } = require("aws-sdk/clients/dynamodb");
 const NodeEnvironment = require("jest-environment-node");
 /**
