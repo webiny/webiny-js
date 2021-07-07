@@ -44,7 +44,7 @@ jobs:
         id: cached-packages
         with:
           path: .webiny/cached-packages
-          key: cached-packages-${{ runner.os }}-${{ needs.cache-keys.outputs.day }}
+          key: ${{ runner.os }}-${{ needs.cache-keys.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
       - name: Install dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true' || steps.cached-packages.outputs.cache-hit != 'true'
@@ -73,7 +73,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: cached-packages-${{ runner.os }}-${{ needs.cache-keys.outputs.day }}
+          key: ${{ runner.os }}-${{ needs.cache-keys.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
       - name: Install dependencies
         run: yarn --immutable
@@ -117,7 +117,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: cached-packages-${{ runner.os }}-${{ needs.cache-keys.outputs.day }}
+          key: ${{ runner.os }}-${{ needs.cache-keys.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
       - name: Build packages
         run: node scripts/buildWithCache.js
@@ -146,7 +146,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: cached-packages-${{ runner.os }}-${{ needs.cache-keys.outputs.day }}
+          key: ${{ runner.os }}-${{ needs.cache-keys.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
       - name: Install dependencies
         run: yarn --immutable
@@ -313,7 +313,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: .webiny/cached-packages
-          key: cached-packages-${{ runner.os }}-${{ needs.cache-keys.outputs.day }}
+          key: ${{ runner.os }}-${{ needs.cache-keys.outputs.day }}-${{ secrets.RANDOM_CACHE_KEY_SUFFIX }}
 
       - name: Move .webiny to webiny-js/.webiny
         run: mv .webiny webiny-js/.webiny
@@ -342,6 +342,24 @@ jobs:
         working-directory: webiny-js
         run: yarn cypress run --spec "cypress/integration/adminInstallation/**/*.spec.js"
 
+      - name: Installation wizard test - Upload screenshots and videos to Slack
+        uses: trymbill/cypress-slack-video-upload-action@v1.3.0
+        if: ${{ failure() }}
+        with:
+          token: ${{ secrets.SLACK_TOKEN }}
+          channels: C027VQG8080
+          workdir: webiny-js/cypress
+          message-text: Installation wizard Cypress tests failed! They have been placed in this thread, good luck.
+
       - name: Cypress - run the rest of Admin Area tests
         working-directory: webiny-js
         run: yarn cypress run --spec "cypress/integration/admin/**/*.spec.js"
+
+      - name: Admin Area tests - Upload screenshots and videos to Slack
+        uses: trymbill/cypress-slack-video-upload-action@v1.3.0
+        if: ${{ failure() }}
+        with:
+          token: ${{ secrets.SLACK_TOKEN }}
+          channels: C027VQG8080
+          workdir: webiny-js/cypress
+          message-text: Admin Area Cypress tests failed! They have been placed in this thread, good luck.

@@ -80,6 +80,8 @@ const args = {
         cypressConfig.env.ADMIN_URL = adminOutput.appUrl;
         cypressConfig.env.WEBSITE_URL = websiteOutput.deliveryUrl;
         cypressConfig.env.WEBSITE_PREVIEW_URL = websiteOutput.appUrl;
+        // Record video
+        cypressConfig.video = true;
     }
 
     await writeJson(cypressConfigPath, cypressConfig);

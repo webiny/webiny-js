@@ -31,16 +31,12 @@ export default async ({ context }) => {
 
         // Gives an array of chunks (each consists of FILES_COUNT_IN_EACH_BATCH items).
         const filesChunks = chunk(pagesFilesData, FILES_COUNT_IN_EACH_BATCH);
-        await console.log(
-            `[savePageAssets]: there are total of ${filesChunks.length} chunks of ${FILES_COUNT_IN_EACH_BATCH} files to save.`
-        );
 
         for (let i = 0; i < filesChunks.length; i++) {
             chunksProcesses.push(
                 // eslint-disable-next-line
                 new Promise(async (promise, reject) => {
                     try {
-                        await console.log(`[savePageAssets]: started with chunk index ${i}`);
                         const filesChunk = filesChunks[i];
 
                         // 2. Use received pre-signed POST payloads to upload files directly to S3.

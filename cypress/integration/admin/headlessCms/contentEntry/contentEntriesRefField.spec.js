@@ -148,7 +148,8 @@ context("Headless CMS - Content Entry with Ref field", () => {
                             data.every(item => item.meta.status === "published")
                     ),
             {
-                description: `Wait until "Books" are published`
+                description: `Wait until "Books" are published`,
+                timeout: 30000
             }
         );
 

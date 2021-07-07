@@ -3,6 +3,47 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.10.0](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.2...v5.10.0) (2021-07-06)
+
+**Note:** Version bump only for package @webiny/api-prerendering-service
+
+
+
+
+
+# [5.10.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.1...v5.10.0-beta.2) (2021-07-06)
+
+**Note:** Version bump only for package @webiny/api-prerendering-service
+
+
+
+
+
+# [5.10.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.0...v5.10.0-beta.1) (2021-07-06)
+
+**Note:** Version bump only for package @webiny/api-prerendering-service
+
+
+
+
+
+# [5.10.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.9.0...v5.10.0-beta.0) (2021-07-02)
+
+
+### Bug Fixes
+
+* add "PbListPublishedPages" to the list of queries to cache ([182c657](https://github.com/webiny/webiny-js/commit/182c657de08a0fadd73d177fdaa47ae8dc3a932d))
+* replace PbListPublishedPages with PbPageListResponse ([5cd5803](https://github.com/webiny/webiny-js/commit/5cd58030bd43c89967102e22fbab04f833e3c316))
+
+
+### Features
+
+* add `posthtmlPluginLinkPreload` ([acc874f](https://github.com/webiny/webiny-js/commit/acc874fe2c5f14d37ec205bf205307c3ce951155))
+
+
+
+
+
 # [5.9.0](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.2...v5.9.0) (2021-06-21)
 
 **Note:** Version bump only for package @webiny/api-prerendering-service

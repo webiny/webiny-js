@@ -10,6 +10,7 @@
  */
 context("Admin Installation", () => {
     it("should be able to complete the initial installation wizard", () => {
+        cy.clearLocalStorage();
         // 1. Security installation.
         cy.visit(Cypress.env("ADMIN_URL"));
         cy.findByTestId("install-security-button").click();
@@ -40,7 +41,9 @@ context("Admin Installation", () => {
         cy.findByTestId("install-i18n-button").click();
 
         // 3. File Manager installation (happens automatically, nothing to type / select here).
-        cy.wait(5000);
+
+        // Wait for the File Manager installation to finish.
+        cy.get(".react-spinner-material").should("not.exist");
 
         // 4. Page Builder and Form Builder Installation.
 
@@ -52,9 +55,10 @@ context("Admin Installation", () => {
         cy.findByText("Value is required.").should("exist");
 
         cy.findByLabelText("Site Name").type(Cypress.env("WEBSITE_NAME"));
-        cy.findByTestId("install-pb-button")
-            .click()
-            .wait(18000); // Wait for the Page Builder installation to finish.
+        cy.findByTestId("install-pb-button").click();
+
+        // Wait for the Page Builder installation to finish.
+        cy.get(".react-spinner-material", { timeout: 30000 * 2 }).should("not.exist");
 
         // 5. Form Builder installation (happens automatically, nothing to type / select here).
 

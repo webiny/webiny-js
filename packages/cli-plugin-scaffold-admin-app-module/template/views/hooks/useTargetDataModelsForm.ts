@@ -10,8 +10,18 @@ import {
 } from "./graphql";
 
 /**
- * Contains essential form functionality - data querying and submission, and UI control.
+ * Contains essential form functionality: data fetching, form submission, notifications, redirecting, and more.
  */
+
+/**
+ * Omits irrelevant values from the submitted form data (`id`, `createdOn`, `savedOn`, `createdBy`).
+ * @param formData
+ */
+const getMutationData = formData => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { id, createdOn, savedOn, createdBy, ...data } = formData;
+    return data;
+};
 
 export const useTargetDataModelsForm = () => {
     const { location, history } = useRouter();
@@ -38,15 +48,15 @@ export const useTargetDataModelsForm = () => {
 
     const onSubmit = useCallback(
         async formData => {
-            const isCreate = !formData.createdOn;
-            const { id, title, description } = formData;
-            const [operation, options] = isCreate
-                ? [create, { variables: { data: { title, description } } }]
-                : [update, { variables: { id, data: { title, description } } }];
+            const { id } = formData;
+            const data = getMutationData(formData);
+            const [operation, options] = id
+                ? [update, { variables: { id, data } }]
+                : [create, { variables: { data } }];
 
             try {
                 const result = await operation(options);
-                if (isCreate) {
+                if (!id) {
                     const { id } = result.data.targetDataModels.createTargetDataModel;
                     history.push(`/target-data-models?id=${id}`);
                 }

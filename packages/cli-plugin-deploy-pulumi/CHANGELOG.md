@@ -3,6 +3,42 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.10.0](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.2...v5.10.0) (2021-07-06)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.10.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.1...v5.10.0-beta.2) (2021-07-06)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.10.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.0...v5.10.0-beta.1) (2021-07-06)
+
+**Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi
+
+
+
+
+
+# [5.10.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.9.0...v5.10.0-beta.0) (2021-07-02)
+
+
+### Bug Fixes
+
+* add cache-control header ([cab2365](https://github.com/webiny/webiny-js/commit/cab236557e13ac08ed7d1aa4c840b77442881a25))
+* improve error reporting ([46726ca](https://github.com/webiny/webiny-js/commit/46726ca01a95581bc0acb214a989b450477fd74c))
+
+
+
+
+
 # [5.9.0](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.2...v5.9.0) (2021-06-21)
 
 **Note:** Version bump only for package @webiny/cli-plugin-deploy-pulumi

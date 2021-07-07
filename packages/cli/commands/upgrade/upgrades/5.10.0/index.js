@@ -16,6 +16,17 @@ module.exports = {
     async canUpgrade(options, context) {
         if (context.version === targetVersion) {
             return true;
+        } else if (
+            context.version.match(
+                new RegExp(
+                    /**
+                     * This is for beta testing.
+                     */
+                    `^${targetVersion}-`
+                )
+            )
+        ) {
+            return true;
         }
         throw new Error(
             `Upgrade must be on Webiny CLI version "${targetVersion}". Current CLI version is "${context.version}".`
@@ -31,7 +42,11 @@ module.exports = {
         const { info } = context;
         const glob = require("fast-glob");
         const { upgradeLambdaConfig } = require("./upgradeLambdaConfig");
-        const { upgradeGraphQLIndex } = require("./upgradeApiFileManager");
+        const {
+            upgradeGraphQLIndex,
+            upgradeHeadlessCMSIndex,
+            upgradeDynamoDbToElasticIndex
+        } = require("./upgradeApiFileManager");
         const { upgradeDeliveryPath } = require("./upgradeDeliveryPath");
         const { upgradeApolloCachePlugins } = require("./upgradeApolloCachePlugins");
 
@@ -46,6 +61,8 @@ module.exports = {
             [
                 "api/pulumi/**/*.ts",
                 ...Object.values(upgradeGraphQLIndex.files),
+                ...Object.values(upgradeHeadlessCMSIndex.files),
+                ...Object.values(upgradeDynamoDbToElasticIndex.files),
                 ...Object.values(upgradeApolloCachePlugins.files)
             ],
             {
@@ -62,6 +79,14 @@ module.exports = {
          * Upgrade the graphql with new packages.
          */
         await upgradeGraphQLIndex(project, context);
+        /**
+         * Upgrade the headless cms with new packages.
+         */
+        await upgradeHeadlessCMSIndex(project, context);
+        /**
+         * Upgrade the dynamodbToElastic with new packages.
+         */
+        await upgradeDynamoDbToElasticIndex(project, context);
 
         info("Adding dependencies...");
 

@@ -44,6 +44,24 @@ const upgradeApolloCachePlugins = async (tsmProject, context) => {
                 moduleSpecifier: "@webiny/app/plugins/ApolloCacheObjectIdPlugin"
             });
         }
+
+        // Remove old `if` statement
+        const ifStatement = source.getFirstDescendant(
+            node => Node.isIfStatement(node) && node.getFullText().includes("REACT_APP_ENV")
+        );
+
+        if (ifStatement) {
+            ifStatement.remove();
+        }
+
+        // Remove `isProduction` variable
+        const isProduction = source.getFirstDescendant(
+            node => Node.isVariableDeclaration(node) && node.getName() === "isProduction"
+        );
+
+        if (isProduction) {
+            isProduction.remove();
+        }
     }
 
     // 2. Update "apps/website/code/src/plugins/pageBuilder.ts"...
