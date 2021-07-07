@@ -40,7 +40,7 @@ describe("getI18NInformation Test", () => {
                             {
                                 code: "en-US",
                                 default: false
-                            },
+                            }
                         ]
                     }
                 }

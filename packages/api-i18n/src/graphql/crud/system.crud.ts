@@ -29,7 +29,7 @@ export default new ContextPlugin<I18NContext>(async context => {
 
             // Backwards compatibility check
             if (!system) {
-                const locales = await context.i18n.locales.list({
+                const [locales] = await context.i18n.locales.list({
                     where: {
                         default: true
                     },
@@ -83,6 +83,12 @@ export default new ContextPlugin<I18NContext>(async context => {
         },
         install: async ({ code }) => {
             const { i18n } = context;
+            const version = await i18n.system.getVersion();
+            if (version) {
+                throw new WebinyError("I18N is already installed.", "INSTALL_ERROR", {
+                    version
+                });
+            }
             await i18n.locales.create({
                 code,
                 default: true

@@ -5,7 +5,6 @@ import {
     ListResponse
 } from "@webiny/handler-graphql/responses";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { SecurityContext } from "@webiny/api-security/types";
 import { I18NContext, LocalesCRUDCreate, LocalesCRUDUpdate } from "~/types";
 import searchLocaleCodes from "./resolvers/searchLocaleCodes";
 import getI18NInformation from "./resolvers/getI18NInformation";
@@ -26,7 +25,7 @@ const resolve = async fn => {
     }
 };
 
-const plugin: GraphQLSchemaPlugin<I18NContext & SecurityContext> = {
+const plugin: GraphQLSchemaPlugin<I18NContext> = {
     type: "graphql-schema",
     name: "graphql-schema-i18n-locales",
     schema: {
