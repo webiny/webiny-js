@@ -8738,6 +8738,7 @@ __metadata:
     "@webiny/api-file-manager-ddb-es": ^5.10.0
     "@webiny/api-i18n": ^5.10.0
     "@webiny/api-i18n-content": ^5.10.0
+    "@webiny/api-i18n-ddb": ^5.10.0
     "@webiny/api-prerendering-service": ^5.10.0
     "@webiny/api-security": ^5.10.0
     "@webiny/api-tenancy": ^5.10.0

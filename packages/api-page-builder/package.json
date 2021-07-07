@@ -41,7 +41,7 @@
     "lodash": "^4.17.11",
     "mdbid": "^1.0.0",
     "node-fetch": "^2.6.1",
-    "rimraf": "^2.6.2",
+    "rimraf": "^3.0.2",
     "stream": "^0.0.2",
     "uniqid": "^5.2.0",
     "zip-local": "^0.3.4"
@@ -57,6 +57,7 @@
     "@types/puppeteer": "^5.4.2",
     "@webiny/api-dynamodb-to-elasticsearch": "^5.10.0",
     "@webiny/api-file-manager-ddb-es": "^5.10.0",
+    "@webiny/api-i18n-ddb": "^5.10.0",
     "@webiny/cli": "^5.10.0",
     "@webiny/db": "^5.10.0",
     "@webiny/project-utils": "^5.10.0",
