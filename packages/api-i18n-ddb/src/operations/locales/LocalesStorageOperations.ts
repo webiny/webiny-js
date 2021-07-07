@@ -67,7 +67,7 @@ export class LocalesStorageOperations implements I18NLocalesStorageOperations {
             if (!locale || !locale.Item) {
                 return null;
             }
-            return cleanupItem(locale.Item);
+            return cleanupItem(this._entity, locale.Item);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not fetch the I18N locale.",
@@ -85,7 +85,7 @@ export class LocalesStorageOperations implements I18NLocalesStorageOperations {
             if (!locale || !locale.Item) {
                 return null;
             }
-            return cleanupItem(locale.Item);
+            return cleanupItem(this._entity, locale.Item);
         } catch (ex) {
             throw new WebinyError(
                 ex.message || "Could not fetch the I18N locale.",
@@ -255,7 +255,7 @@ export class LocalesStorageOperations implements I18NLocalesStorageOperations {
          * Use the common db-dynamodb method to create the required response.
          */
         return createListResponse<I18NLocale>({
-            items: cleanupItems(sortedFiles),
+            items: cleanupItems(this._entity, sortedFiles),
             after,
             totalCount,
             limit

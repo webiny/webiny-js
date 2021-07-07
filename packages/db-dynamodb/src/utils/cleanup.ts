@@ -1,18 +1,31 @@
+import { Entity } from "dynamodb-toolbox";
+
+/**
+ * The attributes defined by us or the dynamodb-toolbox library.
+ * Add more attributes if necessary.
+ */
 const attributesToRemove = ["PK", "SK", "created", "_ct", "modified", "_mt", "entity", "_et"];
 
-export const cleanupItem = <T>(item?: T & Record<string, any>): T | null => {
+export const cleanupItem = <T>(entity: Entity<any>, item?: T & Record<string, any>): T | null => {
     if (!item) {
         return null;
     }
     const newItem = {
         ...item
     };
-    for (const attr of attributesToRemove) {
-        delete newItem[attr];
+    const attributes = entity.schema.attributes;
+    for (const key in item) {
+        if (item.hasOwnProperty(key) === false) {
+            continue;
+        }
+        if (attributes[key] && attributesToRemove.includes(key) === false) {
+            continue;
+        }
+        delete newItem[key];
     }
     return newItem;
 };
 
-export const cleanupItems = <T>(items: (T & Record<string, any>)[]): T[] => {
-    return items.map(item => cleanupItem<T>(item));
+export const cleanupItems = <T>(entity: Entity<any>, items: (T & Record<string, any>)[]): T[] => {
+    return items.map(item => cleanupItem<T>(entity, item));
 };

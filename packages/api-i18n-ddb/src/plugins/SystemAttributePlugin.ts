@@ -4,7 +4,7 @@ export class SystemAttributePlugin extends AttributePlugin {
     public constructor(params: Omit<Params, "entity">) {
         super({
             ...params,
-            entity: "System"
+            entity: "I18NSystem"
         });
     }
 }

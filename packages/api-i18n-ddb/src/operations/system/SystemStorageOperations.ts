@@ -47,7 +47,7 @@ export class SystemStorageOperations implements I18NSystemStorageOperations {
         try {
             const result = await this._entity.get(keys);
 
-            return cleanupItem(result?.Item);
+            return cleanupItem(this._entity, result?.Item);
         } catch (ex) {
             throw new WebinyError(
                 "Could not load system data from the database.",

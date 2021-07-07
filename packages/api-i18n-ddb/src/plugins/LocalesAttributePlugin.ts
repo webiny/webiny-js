@@ -4,7 +4,7 @@ export class LocalesAttributePlugin extends AttributePlugin {
     public constructor(params: Omit<Params, "entity">) {
         super({
             ...params,
-            entity: "Locales"
+            entity: "I18NLocales"
         });
     }
 }
