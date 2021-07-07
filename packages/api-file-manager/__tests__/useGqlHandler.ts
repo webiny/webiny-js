@@ -3,6 +3,7 @@ import graphqlHandlerPlugins from "@webiny/handler-graphql";
 import tenancyPlugins from "@webiny/api-tenancy";
 import securityPlugins from "@webiny/api-security";
 import i18nContext from "@webiny/api-i18n/graphql/context";
+import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { SecurityIdentity } from "@webiny/api-security";
@@ -51,6 +52,7 @@ export default (params?: UseGqlHandlerParams) => {
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler(
         storageOperations(),
+        i18nDynamoDbStorageOperations(),
         graphqlHandlerPlugins(),
         tenancyPlugins(),
         securityPlugins(),
