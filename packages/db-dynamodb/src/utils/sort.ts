@@ -1,6 +1,6 @@
 import lodashSortBy from "lodash.sortby";
 import WebinyError from "@webiny/error";
-import { FieldPathPlugin } from "~/plugins/FieldPathPlugin";
+import { FieldPathPlugin } from "~/plugins/definitions/FieldPathPlugin";
 import { ContextInterface } from "@webiny/handler/types";
 
 interface ExtractSortResult {

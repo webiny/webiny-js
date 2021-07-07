@@ -71,6 +71,8 @@
       "@webiny/api-security": ["../../../packages/api-security/src"],
       "@webiny/api-tenancy/*": ["../../../packages/api-tenancy/src/*"],
       "@webiny/api-tenancy": ["../../../packages/api-tenancy/src"],
+      "@webiny/db-dynamodb/*": ["../../../packages/db-dynamodb/src/*"],
+      "@webiny/db-dynamodb": ["../../../packages/db-dynamodb/src"],
       "@webiny/api-headless-cms/*": ["../../../packages/api-headless-cms/src/*"],
       "@webiny/api-headless-cms": ["../../../packages/api-headless-cms/src"],
       "@webiny/api-headless-cms-ddb-es/*": ["../../../packages/api-headless-cms-ddb-es/src/*"],

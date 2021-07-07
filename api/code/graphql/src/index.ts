@@ -9,6 +9,7 @@ import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
 import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
+import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
 import elasticSearch from "@webiny/api-elasticsearch";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
 import fileManagerDynamoDbElasticStorageOperation from "@webiny/api-file-manager-ddb-es";
@@ -26,6 +27,7 @@ const debug = process.env.DEBUG === "true";
 
 export const handler = createHandler({
     plugins: [
+        dynamoDbPlugins(),
         logsPlugins(),
         graphqlPlugins({ debug }),
         elasticSearch({ endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}` }),

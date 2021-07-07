@@ -9,9 +9,9 @@ import { Plugin } from "@webiny/plugins/types";
 import WebinyError from "@webiny/error";
 import lodashSortBy from "lodash.sortby";
 import dotProp from "dot-prop";
-import { CmsFieldFilterPathPlugin, CmsFieldFilterValueTransformPlugin } from "../../types";
+import { CmsFieldFilterPathPlugin, CmsFieldFilterValueTransformPlugin } from "~/types";
 import { systemFields } from "./systemFields";
-import { ValueFilterPlugin } from "@webiny/db-dynamodb/plugins/ValueFilterPlugin";
+import { ValueFilterPlugin } from "@webiny/db-dynamodb/plugins/definitions/ValueFilterPlugin";
 
 interface ModelField {
     def: CmsContentModelField;

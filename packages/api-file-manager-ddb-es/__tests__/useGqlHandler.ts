@@ -5,6 +5,7 @@ import dynamoToElastic from "@webiny/api-dynamodb-to-elasticsearch/handler";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import dbPlugins from "@webiny/handler-db";
+import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
 import { Client } from "@elastic/elasticsearch";
 import { simulateStream } from "@webiny/project-utils/testing/dynamodb";
 import elasticsearchClientContextPlugin from "@webiny/api-elasticsearch";
@@ -115,6 +116,7 @@ export default (params?: UseGqlHandlerParams) => {
                 documentClient
             })
         }),
+        dynamoDbPlugins(),
         graphqlHandlerPlugins(),
         tenancyPlugins(),
         securityPlugins(),

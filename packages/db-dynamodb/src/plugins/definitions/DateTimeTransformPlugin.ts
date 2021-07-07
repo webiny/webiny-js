@@ -1,4 +1,4 @@
-import { ValueTransformPlugin, Params, TransformParams } from "~/plugins/ValueTransformPlugin";
+import { ValueTransformPlugin, Params, TransformParams } from "./ValueTransformPlugin";
 import WebinyError from "@webiny/error";
 import { parseISO } from "date-fns";
 
