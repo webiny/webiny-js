@@ -209,8 +209,10 @@ jobs:
       - name: Set git username (needed for create-webiny-project)
         run: git config --global user.name "webiny-bot"
 
-      - name: Disable Webiny tracking
-        run: mkdir ~/.webiny && echo '{id:"ci",telemetry:false}' > ~/.webiny/config
+      - name: Disable Webiny telemetry
+        run: >
+          mkdir ~/.webiny && 
+          echo '{ "id": "ci", "telemetry": false }' > ~/.webiny/config
 
       - name: Create a new Webiny project
         run: >
