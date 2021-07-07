@@ -58,7 +58,7 @@ context("Admin Installation", () => {
         cy.findByTestId("install-pb-button").click();
 
         // Wait for the Page Builder installation to finish.
-        cy.get(".react-spinner-material", { timeout: 30000 * 2 }).should("not.exist");
+        cy.get(".react-spinner-material", { timeout: 30000 * 3 }).should("not.exist");
 
         // 5. Form Builder installation (happens automatically, nothing to type / select here).
 
