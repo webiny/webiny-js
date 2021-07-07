@@ -274,9 +274,8 @@ const getMappedPlugins = <T extends Plugin>(args: {
     context: CmsContext;
     type: string;
     property: string;
-    allowOverrides?: boolean;
 }): Record<string, T> => {
-    const { context, type, property, allowOverrides } = args;
+    const { context, type, property } = args;
     const plugins = context.plugins.byType<T>(type);
     if (plugins.length === 0) {
         throw new WebinyError(`There are no plugins of type "${type}".`, "PLUGINS_ERROR", {
@@ -292,16 +291,6 @@ const getMappedPlugins = <T extends Plugin>(args: {
                 {
                     type,
                     property
-                }
-            );
-        } else if (allowOverrides !== true && collection[key]) {
-            throw new WebinyError(
-                `Plugin with given mapping property "${key}" already exists.`,
-                "EXISTING_PLUGIN_PROPERTY_ERROR",
-                {
-                    type,
-                    property,
-                    key
                 }
             );
         }

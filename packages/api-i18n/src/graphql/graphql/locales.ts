@@ -113,6 +113,7 @@ const plugin: GraphQLSchemaPlugin<I18NContext> = {
                 listI18NLocales(
                     where: I18NListLocalesWhere
                     sort: I18NListLocalesSorter
+                    limit: Int
                 ): I18NLocaleListResponse
                 getI18NInformation: I18NInformationResponse
                 searchLocaleCodes(search: String): SearchLocaleCodesResponse
