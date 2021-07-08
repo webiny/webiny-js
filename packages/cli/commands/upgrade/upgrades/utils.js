@@ -168,9 +168,9 @@ const yarnInstall = async ({ context }) => {
  * @returns {null|number}
  */
 const findElementIndex = (plugins, afterElement) => {
-	if (!afterElement) {
-		return null;
-	}
+    if (!afterElement) {
+        return null;
+    }
     const index = plugins
         .getInitializer()
         .getElements()
