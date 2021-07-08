@@ -225,7 +225,8 @@ const policyForProgrammaticAccess = {
                 "logs:StopQuery",
                 "logs:TestMetricFilter",
                 "logs:UpdateLogDelivery"
-            ]
+            ],
+            Resource: "*"
         }
     ]
 };
