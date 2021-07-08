@@ -1,26 +1,16 @@
 import { createHandler } from "@webiny/handler-aws";
 import graphqlHandler from "@webiny/handler-graphql";
-import i18nPlugins from "../src/graphql";
+import i18nPlugins from "@webiny/api-i18n/graphql";
+import i18nDynamoDbStorageOperations from "~/index";
+import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
 import tenancyPlugins from "@webiny/api-tenancy";
 import securityPlugins from "@webiny/api-security";
 import { SecurityIdentity } from "@webiny/api-security";
-import { apiCallsFactory } from "./helpers";
+import { apiCallsFactory } from "../../api-i18n/__tests__/helpers";
 
 export default () => {
-    // @ts-ignore
-    if (typeof __getStorageOperationsPlugins !== "function") {
-        throw new Error(`There is no global "__getStorageOperationsPlugins" function.`);
-    }
-    // @ts-ignore
-    const storageOperations = __getStorageOperationsPlugins();
-    if (typeof storageOperations !== "function") {
-        throw new Error(
-            `A product of "__getStorageOperationsPlugins" must be a function to initialize storage operations.`
-        );
-    }
     // Creates the actual handler. Feel free to add additional plugins if needed.
     const handler = createHandler(
-        storageOperations(),
         tenancyPlugins(),
         graphqlHandler(),
         securityPlugins(),
@@ -47,7 +37,9 @@ export default () => {
                 };
             }
         },
-        i18nPlugins()
+        i18nPlugins(),
+        dynamoDbPlugins(),
+        i18nDynamoDbStorageOperations()
     );
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
