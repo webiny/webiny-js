@@ -2,6 +2,7 @@ import DataLoader from "dataloader";
 import { CmsContentEntry, CmsContentModel, CmsContext } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
 import { CmsContentEntryDynamo } from "./CmsContentEntryDynamo";
+import {queryOptions as DynamoDBToolboxQueryOptions} from "dynamodb-toolbox/dist/classes/Table";
 
 /**
  * *** GLOBAL NOTE ***
@@ -51,11 +52,16 @@ const getAllEntryRevisions = (
     return new DataLoader<string, CmsContentEntry[]>(async ids => {
         const promises = ids.map(id => {
             const partitionKey = storageOperations.getPartitionKey(id);
+            const options: DynamoDBToolboxQueryOptions = {};
+            const sortKey = storageOperations.getSortKeyFromId(id);
+            if (sortKey) {
+                options.eq = sortKey;
+            } else {
+                options.beginsWith = "REV#";
+            }
             return storageOperations.runQuery({
                 partitionKey,
-                options: {
-                    beginsWith: "REV#"
-                }
+                options
             });
         });
 
@@ -222,6 +228,21 @@ export class DataLoadersHandler {
             results = await this.getLoader(loader, model).loadMany(ids);
             if (Array.isArray(results) === true) {
                 return results.reduce((acc, res) => {
+                    if (Array.isArray(res) === false) {
+                        if (res?.message) {
+                            throw new WebinyError(
+                                res.message,
+                                res.code,
+                                {
+                                    ...res,
+                                    data: JSON.stringify(res.data || {}),
+                                },
+                            );
+                        }
+                        throw new WebinyError(
+                            "Result from the data loader must be an array of arrays which contain requested items."
+                        );
+                    }
                     acc.push(...res);
                     return acc;
                 }, []);
@@ -233,7 +254,8 @@ export class DataLoadersHandler {
                 {
                     loader,
                     ids,
-                    model
+                    model,
+                    data: ex.data || {},
                 }
             );
         }

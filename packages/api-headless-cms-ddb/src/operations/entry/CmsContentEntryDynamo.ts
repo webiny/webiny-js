@@ -1005,6 +1005,17 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
         }
         return `REV#${zeroPad(version)}`;
     }
+    
+    public getSortKeyFromId(id: string): string | null {
+        if (!id) {
+            return null;
+        }
+        const [, version] = id.split("#");
+        if (!version) {
+            return null;
+        }
+        return `REV#${zeroPad(version)}`;
+    }
 
     public getSortKeyLatest(): string {
         return "L";
