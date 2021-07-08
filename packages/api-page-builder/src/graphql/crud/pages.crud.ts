@@ -178,7 +178,7 @@ const plugin: ContextPlugin<PbContext> = {
 
                     const normalizedPath = normalizePath(args.path);
                     if (normalizedPath === "/") {
-                        const settings = await context.pageBuilder.settings.default.get();
+                        const settings = await context.pageBuilder.settings.default.getCurrent();
                         if (!settings?.pages?.home) {
                             throw notFoundError;
                         }
@@ -740,7 +740,7 @@ const plugin: ContextPlugin<PbContext> = {
                     const identity = context.security.getIdentity();
                     checkOwnPermissions(identity, permission, page, "ownedBy");
 
-                    const settings = await context.pageBuilder.settings.default.get();
+                    const settings = await context.pageBuilder.settings.default.getCurrent();
                     const pages = settings?.pages || {};
                     for (const key in pages) {
                         if (pages[key] === page.pid) {
@@ -1223,7 +1223,7 @@ const plugin: ContextPlugin<PbContext> = {
                         throw new Error(`Page "${pageId}" is not published.`);
                     }
 
-                    const settings = await context.pageBuilder.settings.default.get();
+                    const settings = await context.pageBuilder.settings.default.getCurrent();
                     const pages = settings?.pages || {};
                     for (const key in pages) {
                         if (pages[key] === page.pid) {
@@ -1464,28 +1464,18 @@ const plugin: ContextPlugin<PbContext> = {
 
                 prerendering: {
                     async render(args) {
-                        const current = await context.pageBuilder.settings.default.get();
-                        const defaults = await context.pageBuilder.settings.default.getDefault();
-
-                        const appUrl =
-                            current?.prerendering?.app?.url || defaults?.prerendering?.app?.url;
-
-                        const storageName =
-                            current?.prerendering?.storage?.name ||
-                            defaults?.prerendering?.storage?.name;
+                        const current = await context.pageBuilder.settings.default.getCurrent();
+                        const appUrl = get(current, "prerendering.app.url");
+                        const storageName = get(current, "prerendering.storage.name");
 
                         if (!appUrl || !storageName) {
                             return;
                         }
 
-                        const meta = merge(
-                            defaults?.prerendering?.meta,
-                            current?.prerendering?.meta,
-                            {
-                                tenant: context.tenancy.getCurrentTenant().id,
-                                locale: i18nContent.getLocale().code
-                            }
-                        );
+                        const meta = merge(current?.prerendering?.meta, {
+                            tenant: context.tenancy.getCurrentTenant().id,
+                            locale: i18nContent.getLocale().code
+                        });
 
                         const { paths, tags } = args;
 
@@ -1531,15 +1521,9 @@ const plugin: ContextPlugin<PbContext> = {
                         }
                     },
                     async flush(args) {
-                        const current = await context.pageBuilder.settings.default.get();
-                        const defaults = await context.pageBuilder.settings.default.getDefault();
-
-                        const appUrl =
-                            current?.prerendering?.app?.url || defaults?.prerendering?.app?.url;
-
-                        const storageName =
-                            current?.prerendering?.storage?.name ||
-                            defaults?.prerendering?.storage?.name;
+                        const current = await context.pageBuilder.settings.default.getCurrent();
+                        const appUrl = get(current, "prerendering.app.url");
+                        const storageName = get(current, "prerendering.storage.name");
 
                         if (!storageName) {
                             return;

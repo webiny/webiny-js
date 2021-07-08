@@ -3,4 +3,4 @@ const upgrade580 = require("./5.8.0");
 const upgrade590 = require("./5.9.0");
 const upgrade5100 = require("./5.10.0");
 
-module.exports = [upgrade550, upgrade580(), upgrade590, upgrade5100()];
+module.exports = [upgrade550, upgrade580(), upgrade590, upgrade5100];

@@ -15,7 +15,8 @@ export default (): ReactRouterOnLinkPlugin => {
         name: "react-router-on-link-pb",
         type: "react-router-on-link",
         async onLink({ link: path, apolloClient }) {
-            if (process.env.REACT_APP_ENV !== "browser") {
+            // Only if we're serving a pre-rendered page, we want to activate this feature.
+            if (!window.__PS_RENDER_ID__) {
                 return;
             }
 
@@ -29,11 +30,7 @@ export default (): ReactRouterOnLinkPlugin => {
 
             preloadedPaths.push(path);
 
-            let graphqlJson = "graphql.json";
-            if (window.__PS_RENDER_ID__) {
-                graphqlJson += `?k=${window.__PS_RENDER_ID__}`;
-            }
-
+            const graphqlJson = `graphql.json?k=${window.__PS_RENDER_ID__}`;
             const fetchPath = path !== "/" ? `${path}/${graphqlJson}` : `/${graphqlJson}`;
             const pageState = await fetch(fetchPath)
                 .then(res => res.json())

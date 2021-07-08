@@ -3,6 +3,46 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.10.0](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.2...v5.10.0) (2021-07-06)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold-admin-app-module
+
+
+
+
+
+# [5.10.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.1...v5.10.0-beta.2) (2021-07-06)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold-admin-app-module
+
+
+
+
+
+# [5.10.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.0...v5.10.0-beta.1) (2021-07-06)
+
+
+### Bug Fixes
+
+* simplify code with a GraphQL fragment ([1ebb8ac](https://github.com/webiny/webiny-js/commit/1ebb8aca26436047bacab387638e9edf48dcc59d))
+* simplify code with the `getMutationData` helper function ([838cc00](https://github.com/webiny/webiny-js/commit/838cc00106e0dd1eb8d4fa0593fe5169ad785458))
+
+
+
+
+
+# [5.10.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.9.0...v5.10.0-beta.0) (2021-07-02)
+
+
+### Bug Fixes
+
+* remove parent graphql/admin folder ([99e6a08](https://github.com/webiny/webiny-js/commit/99e6a08a3a10a81ca639dfe86e6c48bcdc61b784))
+* use 'entity' word instead 'data model' ([1279bc1](https://github.com/webiny/webiny-js/commit/1279bc1a66f2efdf1a467e5a65fb1ce16574deea))
+
+
+
+
+
 # [5.9.0](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.2...v5.9.0) (2021-06-21)
 
 **Note:** Version bump only for package @webiny/cli-plugin-scaffold-admin-app-module

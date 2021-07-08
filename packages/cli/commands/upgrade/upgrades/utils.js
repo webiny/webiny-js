@@ -1,5 +1,7 @@
 const tsMorph = require("ts-morph");
+const path = require("path");
 const fs = require("fs");
+const prettier = require("prettier");
 const loadJson = require("load-json-file");
 const writeJson = require("write-json-file");
 const semverCoerce = require("semver/functions/coerce");
@@ -106,26 +108,31 @@ const createMorphProject = files => {
     }
     return project;
 };
-/**
- * The function expects files to have resolved paths.
- * It will do nothing if file paths are not good.
- */
-const prettierRun = async ({ context, files }) => {
-    const { info, error } = context;
+
+const prettierFormat = async (files, context) => {
     try {
-        info("Running prettier...");
-        const config = context.resolve(".prettierrc.js");
-        const { stdout: prettierBin } = await execa("yarn", ["bin", "prettier"]);
-        await execa("node", [prettierBin, "--write", "--config", config, ...files]);
-        info("Finished formatting files.");
+        context.info("Running prettier...");
+        for (const file of files) {
+            const filePath = path.join(process.cwd(), file);
+            const options = await prettier.resolveConfig(filePath);
+            const fileContentRaw = fs.readFileSync(filePath).toString("utf8");
+            const fileContentFormatted = prettier.format(fileContentRaw, {
+                ...options,
+                filepath: filePath
+            });
+            fs.writeFileSync(filePath, fileContentFormatted);
+        }
+
+        context.info("Finished formatting files.");
     } catch (ex) {
-        console.log(error.hl("Prettier failed."));
-        console.log(error(ex.message));
+        console.log(context.error.hl("Prettier failed."));
+        context.error(ex.message);
         if (ex.stdout) {
             console.log(ex.stdout);
         }
     }
 };
+
 /**
  * Run to install new packages in the project.
  */
@@ -133,7 +140,7 @@ const yarnInstall = async ({ context }) => {
     const { info, error } = context;
     try {
         info("Installing new packages...");
-        await execa("yarn");
+        await execa("yarn", { cwd: process.cwd() });
         info("Finished installing new packages.");
     } catch (ex) {
         error("Installation of new packages failed.");
@@ -150,6 +157,6 @@ module.exports = {
     addPackagesToDevDependencies,
     addPackagesToPeerDependencies,
     createMorphProject,
-    yarnInstall,
-    prettierRun
+    prettierFormat,
+    yarnInstall
 };

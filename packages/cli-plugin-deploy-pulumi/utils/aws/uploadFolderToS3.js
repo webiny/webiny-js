@@ -38,6 +38,7 @@ module.exports = async ({ path: root, bucket, onFileUploadSuccess, onFileUploadE
                                 Bucket: bucket,
                                 Key: key,
                                 ACL: "public-read",
+                                CacheControl: "max-age=31536000",
                                 ContentType: mime.getType(path) || undefined,
                                 Body: fs.readFileSync(path)
                             })

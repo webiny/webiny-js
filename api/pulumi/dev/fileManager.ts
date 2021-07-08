@@ -52,14 +52,14 @@ class FileManager {
         const transform = new aws.lambda.Function("fm-image-transformer", {
             handler: "handler.handler",
             timeout: 30,
-            runtime: "nodejs10.x", // Because of the "sharp" library (built for Node10).
+            runtime: "nodejs12.x",
             memorySize: 1600,
             role: this.role.arn,
             description: "Performs image optimization, resizing, etc.",
             code: new pulumi.asset.AssetArchive({
                 ".": new pulumi.asset.FileArchive("../code/fileManager/transform/build")
             }),
-            layers: [getLayerArn("webiny-v4-sharp", String(process.env.AWS_REGION))],
+            layers: [getLayerArn("sharp")],
             environment: {
                 variables: {
                     S3_BUCKET: this.bucket.id

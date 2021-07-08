@@ -11,7 +11,7 @@ context("I18N app", () => {
                     cy.findByTestId("default-data-list.delete").click({ force: true });
                 });
         });
-        cy.wait(500);
+
         cy.findByTestId("default-data-list.delete-dialog").within(() => {
             cy.findByText(/Confirmation/i);
             cy.findByText(/confirm$/i).click();
