@@ -36,9 +36,7 @@
                 {
                   "Sid": "PermissionForApiGateway",
                   "Effect": "Allow",
-                  "Action": [
-                    "apigateway:*"
-                  ],
+                  "Action": ["apigateway:*"],
                   "Resource": "*"
                 },
                 {
@@ -190,34 +188,25 @@
                 {
                   "Sid": "PermissionForApiS3",
                   "Effect": "Allow",
-                  "Action": [
-                    "s3:*"
-                  ],
+                  "Action": ["s3:*"],
                   "Resource": "*"
                 },
                 {
                   "Sid": "PermissionForApiSts",
                   "Effect": "Allow",
-                  "Action": [
-                    "sts:GetCallerIdentity"
-                  ],
+                  "Action": ["sts:GetCallerIdentity"],
                   "Resource": "*"
                 },
                 {
                   "Sid": "PermissionForApiTag",
                   "Effect": "Allow",
-                  "Action": [
-                    "tag:TagResources",
-                    "tag:UntagResources"
-                  ],
+                  "Action": ["tag:TagResources", "tag:UntagResources"],
                   "Resource": "*"
                 },
                 {
                   "Sid": "PermissionForEC2",
                   "Effect": "Allow",
-                  "Action": [
-                    "ec2:*"
-                  ],
+                  "Action": ["ec2:*"],
                   "Resource": "*"
                 },
                 {
