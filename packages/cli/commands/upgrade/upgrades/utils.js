@@ -164,15 +164,18 @@ const yarnInstall = async ({ context }) => {
 /**
  *
  * @param plugins {tsMorph.Node}
- * @param after {String|undefined}
+ * @param afterElement {String|undefined}
  * @returns {null|number}
  */
-const findElementIndex = (plugins, after) => {
+const findElementIndex = (plugins, afterElement) => {
+	if (!afterElement) {
+		return null;
+	}
     const index = plugins
         .getInitializer()
         .getElements()
         .findIndex(node => {
-            return Node.isCallExpression(node) && node.getExpression().getText() === after;
+            return Node.isCallExpression(node) && node.getExpression().getText() === afterElement;
         });
     if (index >= 0) {
         return index;
@@ -193,7 +196,7 @@ const addImportsToSource = ({ context, source, imports, file }) => {
      * @type {tsMorph.Node}
      */
     const plugins = source.getFirstDescendant(
-        node => Node.isPropertyAssignment(node) && node.getName() === "plugins"
+        node => tsMorph.Node.isPropertyAssignment(node) && node.getName() === "plugins"
     );
     if (!plugins) {
         error(
@@ -251,7 +254,7 @@ const addImportsToSource = ({ context, source, imports, file }) => {
          * If after is specified, add the imported value after the one given in the args..
          */
         if (afterElement) {
-            const afterIndex = findElementIndex(plugins, after);
+            const afterIndex = findElementIndex(plugins, afterElement);
             if (afterIndex === null) {
                 warning(
                     `Could not find ${warning.hl(
