@@ -1,10 +1,10 @@
 import React, { useCallback, useState } from "react";
 import { Input } from "@webiny/ui/Input";
 import { Tooltip } from "@webiny/ui/Tooltip";
-import { useContentModelEditor } from "../../../../views/components/ContentModelEditor/Context";
 import { useHotkeys } from "react-hotkeyz";
 import { FormName, formNameWrapper, NameInputWrapper, NameWrapper } from "./NameStyled";
 import { i18n } from "@webiny/app/i18n";
+import {useContentModelEditor} from "~/admin/components/ContentModelEditor/useContentModelEditor";
 
 const t = i18n.namespace("ContentModelEditor.Name");
 
@@ -15,7 +15,7 @@ declare global {
 }
 
 export const Name = () => {
-    const { state, setData } = useContentModelEditor();
+    const { data, setData } = useContentModelEditor();
     const [localName, setLocalName] = useState(null);
     const [editingEnabled, setEditing] = useState(false);
 
@@ -24,7 +24,7 @@ export const Name = () => {
     };
 
     const startEditing = () => {
-        setLocalName(state.data.name);
+        setLocalName(data.name);
         setEditing(true);
     };
 
@@ -81,7 +81,7 @@ export const Name = () => {
                 content={<span>{t`rename`}</span>}
             >
                 <FormName data-testid="cms-editor-model-title" onClick={startEditing}>
-                    {state.data.name}
+                    {data.name}
                 </FormName>
             </Tooltip>
         </NameWrapper>

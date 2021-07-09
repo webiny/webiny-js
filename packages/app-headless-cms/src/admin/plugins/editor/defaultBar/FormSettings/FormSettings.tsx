@@ -11,8 +11,8 @@ import { useSnackbar } from "@webiny/app-admin/hooks/useSnackbar";
 import { i18n } from "@webiny/app/i18n";
 import * as SF from "@webiny/app-admin/components/SimpleForm";
 import { CmsEditorFormSettingsPlugin } from "~/types";
-import { useContentModelEditor } from "~/admin/views/components/ContentModelEditor/Context";
 import { Title, listItem, ListItemTitle, listStyle, TitleContent } from "./FormSettingsStyled";
+import {useContentModelEditor} from "~/admin/components/ContentModelEditor/useContentModelEditor";
 
 const t = i18n.namespace("FormsApp.Editor.FormSettings");
 

@@ -13,7 +13,6 @@ export default {
                 icon={<HeadlessCMSIcon />}
                 title={"Headless CMS"}
                 description={"Manage Headless CMS app access permissions."}
-                data-testid={"permission.cms"}
             >
                 <CMSPermissions {...props} />
             </AccordionItem>
