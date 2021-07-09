@@ -176,4 +176,89 @@ describe("longTextField", () => {
             }
         });
     });
+
+    test("should able to search long text field", async () => {
+        const contentModelGroup = await setupContentModelGroup();
+        await setupContentModel(contentModelGroup, "patient");
+        const { getPatient, listPatients, until } = usePatientReadHandler({
+            ...readOpts
+        });
+
+        const patient = await createPatient();
+
+        // If this `until` resolves successfully, we know entry is accessible via the "read" API
+        await until(
+            () =>
+                getPatient({
+                    where: {
+                        id: patient.id
+                    }
+                }).then(([data]) => data),
+            ({ data }) => data.getPatient.data.id === patient.id,
+            { name: "get created patient", tries: 10 }
+        );
+
+        const [getPatientResponse] = await getPatient({
+            where: {
+                id: patient.id
+            }
+        });
+
+        expect(getPatientResponse).toEqual({
+            data: {
+                getPatient: {
+                    data: {
+                        id: expect.any(String),
+                        createdOn: expect.stringMatching(/^20/),
+                        savedOn: expect.stringMatching(/^20/),
+                        name: "Jame Butler",
+                        bio: REALLY_LONG_TEXT,
+                        prescription: [REALLY_LONG_TEXT, REALLY_LONG_TEXT]
+                    },
+                    error: null
+                }
+            }
+        });
+        // Should return the entry
+        let [listPatientsResponse] = await listPatients({ where: { bio_contains: "ipsum dolor" } });
+
+        expect(listPatientsResponse).toEqual({
+            data: {
+                listPatients: {
+                    data: [
+                        {
+                            id: expect.any(String),
+                            createdOn: expect.stringMatching(/^20/),
+                            savedOn: expect.stringMatching(/^20/),
+                            name: "Jame Butler",
+                            bio: REALLY_LONG_TEXT,
+                            prescription: [REALLY_LONG_TEXT, REALLY_LONG_TEXT]
+                        }
+                    ],
+                    meta: {
+                        cursor: null,
+                        hasMoreItems: false,
+                        totalCount: 1
+                    },
+                    error: null
+                }
+            }
+        });
+        // Should return empty list when searching for non-existing text
+        [listPatientsResponse] = await listPatients({ where: { bio_contains: "coffee" } });
+
+        expect(listPatientsResponse).toEqual({
+            data: {
+                listPatients: {
+                    data: [],
+                    meta: {
+                        cursor: null,
+                        hasMoreItems: false,
+                        totalCount: 0
+                    },
+                    error: null
+                }
+            }
+        });
+    });
 });
