@@ -34,7 +34,7 @@ const getAllEntryRevisions = (
             const [entries] = await context.db.read({
                 ...configurations.db(),
                 query: {
-                    PK: storageOperations.getPrimaryKey(id),
+                    PK: storageOperations.getPartitionKey(id),
                     SK: { $beginsWith: "REV#" }
                 }
             });
@@ -51,20 +51,38 @@ const getRevisionById = (
     model: CmsContentModel,
     storageOperations: CmsContentEntryDynamoElastic
 ) => {
-    return batchLoadKeys(keys => {
-        const queries = keys.map(id => ({
-            ...configurations.db(),
-            query: {
-                PK: storageOperations.getPrimaryKey(id),
-                SK: storageOperations.getSecondaryKeyRevision(id)
+    return batchLoadKeys(async keys => {
+        const queries = keys.reduce((collection, id) => {
+            const partitionKey = storageOperations.getPartitionKey(id);
+            const sortKey = storageOperations.getSortKeyRevision(id);
+            const keys = `${partitionKey}__${sortKey}`;
+            if (collection[keys]) {
+                return collection;
             }
-        }));
+            collection[keys] = {
+                ...configurations.db(),
+                query: {
+                    PK: storageOperations.getPartitionKey(id),
+                    SK: storageOperations.getSortKeyRevision(id)
+                }
+            };
 
-        return context.db
+            return collection;
+        }, {});
+
+        const items = await context.db
             .batch()
-            .read(...queries)
+            .read(...Object.values(queries))
             .execute()
             .then(results => results.map(result => result[0]));
+
+        return keys.map(id => {
+            return items.filter(item => {
+                const partitionKey = storageOperations.getPartitionKey(id);
+                const sortKey = storageOperations.getSortKeyRevision(id);
+                return item.PK === partitionKey && item.SK === sortKey;
+            });
+        }) as any;
     });
 };
 
@@ -74,16 +92,24 @@ const getPublishedRevisionByEntryId = (
     storageOperations: CmsContentEntryDynamoElastic
 ) => {
     return batchLoadKeys(keys => {
-        const queries = keys.map(id => ({
-            ...configurations.db(),
-            query: {
-                PK: storageOperations.getPrimaryKey(id),
-                SK: storageOperations.getSecondaryKeyPublished()
+        const sortKey = storageOperations.getSortKeyPublished();
+        const queries = keys.reduce((collection, id) => {
+            const partitionKey = storageOperations.getPartitionKey(id);
+            if (collection[partitionKey]) {
+                return collection;
             }
-        }));
+            collection[partitionKey] = {
+                ...configurations.db(),
+                query: {
+                    PK: partitionKey,
+                    SK: sortKey
+                }
+            };
+            return collection;
+        }, {});
         return context.db
             .batch()
-            .read(...queries)
+            .read(...Object.values(queries))
             .execute()
             .then(results => results.map(result => result[0]));
     });
@@ -94,21 +120,29 @@ const getLatestRevisionByEntryId = (
     model: CmsContentModel,
     storageOperations: CmsContentEntryDynamoElastic
 ) => {
-    return batchLoadKeys(chunk =>
-        context.db
+    return batchLoadKeys(chunk => {
+        const sortKey = storageOperations.getSortKeyLatest();
+        const queries = chunk.reduce((collection, id) => {
+            const partitionKey = storageOperations.getPartitionKey(id);
+            if (collection[partitionKey]) {
+                return collection;
+            }
+            collection[partitionKey] = {
+                ...configurations.db(),
+                query: {
+                    PK: storageOperations.getPartitionKey(id),
+                    SK: sortKey
+                }
+            };
+            return collection;
+        }, {});
+
+        return context.db
             .batch()
-            .read(
-                ...chunk.map(id => ({
-                    ...configurations.db(),
-                    query: {
-                        PK: storageOperations.getPrimaryKey(id),
-                        SK: storageOperations.getSecondaryKeyLatest()
-                    }
-                }))
-            )
+            .read(...Object.values(queries))
             .execute()
-            .then(results => results.map(result => result[0]))
-    );
+            .then(results => results.map(result => result[0]));
+    });
 };
 
 const dataLoaders = {
@@ -197,6 +231,17 @@ export class DataLoadersHandler {
             results = await this.getLoader(loader, model).loadMany(ids);
             if (Array.isArray(results) === true) {
                 return results.reduce((acc, res) => {
+                    if (Array.isArray(res) === false) {
+                        if (res?.message) {
+                            throw new WebinyError(res.message, res.code, {
+                                ...res,
+                                data: JSON.stringify(res.data || {})
+                            });
+                        }
+                        throw new WebinyError(
+                            "Result from the data loader must be an array of arrays which contain requested items."
+                        );
+                    }
                     acc.push(...res);
                     return acc;
                 }, []);
@@ -233,6 +278,6 @@ export class DataLoadersHandler {
             return;
         }
         loader.clear(entry.id);
-        loader.clear(this._storageOperations.getPrimaryKey(entry.id));
+        loader.clear(this._storageOperations.getPartitionKey(entry.id));
     }
 }
