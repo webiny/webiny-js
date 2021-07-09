@@ -1,7 +1,5 @@
 import { useFruitManageHandler } from "../utils/useFruitManageHandler";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import { CmsContentModelGroup } from "../../src/types";
-import models from "./mocks/contentModels";
 import { useFruitReadHandler } from "../utils/useFruitReadHandler";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useProductManageHandler } from "../utils/useProductManageHandler";
@@ -9,6 +7,7 @@ import { useProductReadHandler } from "../utils/useProductReadHandler";
 import { useArticleManageHandler } from "../utils/useArticleManageHandler";
 import { useArticleReadHandler } from "../utils/useArticleReadHandler";
 import { SecurityIdentity } from "@webiny/api-security";
+import { setupContentModelGroup, setupContentModels } from "../utils/setup";
 
 jest.setTimeout(25000);
 
@@ -61,67 +60,11 @@ describe("filtering", () => {
     const manageOpts = { path: "manage/en-US" };
     const readOpts = { path: "read/en-US" };
 
-    const {
-        createContentModelMutation,
-        updateContentModelMutation,
-        createContentModelGroupMutation
-    } = useContentGqlHandler(manageOpts);
+    const mainManager = useContentGqlHandler(manageOpts);
 
     const { until, createFruit, publishFruit } = useFruitManageHandler({
         ...manageOpts
     });
-
-    // This function is not directly within `beforeEach` as we don't always setup the same content model.
-    // We call this function manually at the beginning of each test, where needed.
-    const setupContentModelGroup = async (): Promise<CmsContentModelGroup> => {
-        const [createCMG] = await createContentModelGroupMutation({
-            data: {
-                name: "Group",
-                slug: "group",
-                icon: "ico/ico",
-                description: "description"
-            }
-        });
-        return createCMG.data.createContentModelGroup.data;
-    };
-
-    const setupContentModel = async (contentModelGroup: CmsContentModelGroup, name: string) => {
-        const model = models.find(m => m.modelId === name);
-        // Create initial record
-        const [create] = await createContentModelMutation({
-            data: {
-                name: model.name,
-                modelId: model.modelId,
-                group: contentModelGroup.id
-            }
-        });
-
-        if (create.errors) {
-            console.error(`[beforeEach] ${create.errors[0].message}`);
-            process.exit(1);
-        } else if (create.data.createContentModel.data.error) {
-            console.error(`[beforeEach] ${create.data.createContentModel.data.error.message}`);
-            process.exit(1);
-        }
-
-        const [update] = await updateContentModelMutation({
-            modelId: create.data.createContentModel.data.modelId,
-            data: {
-                fields: model.fields,
-                layout: model.layout
-            }
-        });
-        return update.data.updateContentModel.data;
-    };
-    const setupContentModels = async (contentModelGroup: CmsContentModelGroup) => {
-        const models = {
-            fruit: null
-        };
-        for (const name in models) {
-            models[name] = await setupContentModel(contentModelGroup, name);
-        }
-        return models;
-    };
 
     const filterOutFields = ["meta"];
 
@@ -156,8 +99,8 @@ describe("filtering", () => {
     };
 
     const setupFruits = async () => {
-        const group = await setupContentModelGroup();
-        await setupContentModels(group);
+        const group = await setupContentModelGroup(mainManager);
+        await setupContentModels(mainManager, group, ["fruit"]);
         return createFruits();
     };
 
@@ -586,9 +529,11 @@ describe("filtering", () => {
         const productManager = useProductManageHandler(manageOpts);
         const productReader = useProductReadHandler(readOpts);
 
-        const group = await setupContentModelGroup();
-        const categoryModel = await setupContentModel(group, "category");
-        await setupContentModel(group, "product");
+        const group = await setupContentModelGroup(mainManager);
+        const { category: categoryModel } = await setupContentModels(mainManager, group, [
+            "category",
+            "product"
+        ]);
 
         const [createFruitResponse] = await categoryManager.createCategory({
             data: {
@@ -1060,9 +1005,8 @@ describe("filtering", () => {
         const articleManager = useArticleManageHandler(manageOpts);
         const articleReader = useArticleReadHandler(readOpts);
 
-        const group = await setupContentModelGroup();
-        await setupContentModel(group, "category");
-        await setupContentModel(group, "article");
+        const group = await setupContentModelGroup(mainManager);
+        await setupContentModels(mainManager, group, ["category", "article"]);
 
         const [createFruitResponse] = await articleManager.createArticle({
             data: {
@@ -1405,9 +1349,9 @@ describe("filtering", () => {
             })
         });
 
-        const group = await setupContentModelGroup();
-        await setupContentModel(group, "category");
-        await setupContentModel(group, "article");
+        const group = await setupContentModelGroup(mainManager);
+
+        await setupContentModels(mainManager, group, ["category", "article"]);
 
         const [createFruitResponse] = await articleManager.createArticle({
             data: {
@@ -1582,9 +1526,8 @@ describe("filtering", () => {
             })
         });
 
-        const group = await setupContentModelGroup();
-        await setupContentModel(group, "category");
-        await setupContentModel(group, "article");
+        const group = await setupContentModelGroup(mainManager);
+        await setupContentModels(mainManager, group, ["category", "article"]);
 
         const [createFruitResponse] = await articleManager.createArticle({
             data: {
