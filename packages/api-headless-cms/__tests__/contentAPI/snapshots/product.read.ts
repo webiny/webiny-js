@@ -2,6 +2,17 @@ export default /* GraphQL */ `
     """
     Products being sold in our webshop
     """
+    type Product_Variant_Options {
+        name: String
+        price: Number
+    }
+    
+    type Product_Variant {
+        name: String
+        price: Number
+        options: [Product_Variant_Options]
+    }
+    
     type Product {
         id: ID!
         entryId: String!
@@ -19,6 +30,7 @@ export default /* GraphQL */ `
         availableSizes: [String]
         image: String
         richText: JSON
+        variant: Product_Variant
     }
 
     input ProductGetWhereInput {

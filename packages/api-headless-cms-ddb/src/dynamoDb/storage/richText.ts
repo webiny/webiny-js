@@ -1,7 +1,6 @@
 import jsonpack from "jsonpack";
 import WebinyError from "@webiny/error";
 import {
-    CmsContentEntry,
     CmsContentModel,
     CmsContentModelField,
     CmsModelFieldToStoragePlugin
@@ -15,12 +14,13 @@ export interface StorageValue {
 
 interface CreateCacheKeyArgs {
     model: CmsContentModel;
-    entry: CmsContentEntry;
     field: CmsContentModelField;
+    fieldPath: string;
 }
-const createCacheKey = ({ model, entry, field }: CreateCacheKeyArgs): string => {
-    return [model.modelId, entry.id, entry.savedOn, field.fieldId].join(".");
+const createCacheKey = ({ model, field, fieldPath }: CreateCacheKeyArgs): string => {
+    return [model.modelId, field.id, fieldPath].join(".");
 };
+
 /**
  * Remove when jsonpack gets PR with a fix merged
  * https://github.com/rgcl/jsonpack/pull/25/files
@@ -40,25 +40,26 @@ const transformArray = (value: Record<string, any> | any[]) => {
     return value;
 };
 
+function formatValue(fieldPath: string, value: any) {
+    return { values: { [fieldPath]: value } };
+}
+
 export default (): CmsModelFieldToStoragePlugin<OriginalValue, StorageValue> => {
     const cache = new Map<string, OriginalValue>();
     return {
         type: "cms-model-field-to-storage",
         name: "cms-model-field-to-storage-rich-text",
         fieldType: "rich-text",
-        async fromStorage({ model, entry, field, value: storageValue }) {
-            const cacheKey = createCacheKey({
-                model,
-                field,
-                entry
-            });
+        async fromStorage({ model, field, fieldPath, getValue }) {
+            const cacheKey = createCacheKey({ model, field, fieldPath });
+            const storageValue = getValue(fieldPath);
 
             if (cache.has(cacheKey)) {
-                return cache.get(cacheKey);
+                return formatValue(fieldPath, cache.get(cacheKey));
             }
 
             if (!storageValue) {
-                return storageValue;
+                return formatValue(fieldPath, storageValue);
             } else if (typeof storageValue !== "object") {
                 throw new WebinyError(
                     `Value received in "fromStorage" function is not an object in field "${field.fieldId}".`
@@ -69,7 +70,7 @@ export default (): CmsModelFieldToStoragePlugin<OriginalValue, StorageValue> => 
              * TODO: remove with 5.9.0 upgrade
              */
             if (storageValue.hasOwnProperty("compression") === false) {
-                return storageValue;
+                return formatValue(fieldPath, storageValue);
             }
             const { compression, value } = storageValue;
             if (!compression) {
@@ -95,29 +96,27 @@ export default (): CmsModelFieldToStoragePlugin<OriginalValue, StorageValue> => 
 
             cache.set(cacheKey, unpacked);
 
-            return unpacked;
+            return formatValue(fieldPath, unpacked);
         },
-        async toStorage({ model, field, entry, value }) {
+        async toStorage({ model, field, fieldPath, getValue }) {
+            let value = getValue(fieldPath);
             /**
              * There is a possibility that we are trying to compress already compressed value.
              * Introduced a bug with 5.8.0 storage operations, so just return the value to correct it.
              * TODO: remove with 5.9.0 upgrade.
              */
             if (value && value.hasOwnProperty("compression") === true) {
-                return value as any;
+                return formatValue(fieldPath, value);
             }
-            const cacheKey = createCacheKey({
-                model,
-                field,
-                entry
-            });
+            const cacheKey = createCacheKey({ model, field, fieldPath });
             value = transformArray(value);
             const packed = jsonpack.pack(value);
             cache.set(cacheKey, value);
-            return {
+            
+            return formatValue(fieldPath, {
                 compression: "jsonpack",
                 value: packed
-            };
+            });
         }
     };
 };

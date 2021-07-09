@@ -21,21 +21,19 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
     unmappedType: () => {
         return "float";
     },
-    toIndex: ({ toIndexEntry, field }) => {
-        const value = toIndexEntry.values[field.fieldId];
+    toIndex({ fieldPath, getValue }) {
+        const value = getValue(fieldPath);
         return {
             values: {
-                ...toIndexEntry.values,
-                [field.fieldId]: convertToString(value)
+                [fieldPath]: convertToString(value)
             }
         };
     },
-    fromIndex: ({ entry, field }) => {
-        const value = entry.values[field.fieldId];
+    fromIndex({ fieldPath, getValue }) {
+        const value = getValue(fieldPath);
         return {
             values: {
-                ...entry.values,
-                [field.fieldId]: convertToFloat(value)
+                [fieldPath]: convertToFloat(value)
             }
         };
     }

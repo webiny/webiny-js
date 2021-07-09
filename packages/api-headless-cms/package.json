@@ -39,7 +39,6 @@
     "boolean": "^3.0.2",
     "commodo-fields-object": "^1.0.6",
     "dataloader": "^2.0.0",
-    "dot-prop-immutable": "^1.4.0",
     "lodash": "^4.5.0",
     "pluralize": "^8.0.0",
     "shortid": "^2.2.15",

@@ -6,10 +6,15 @@ interface CmsFieldFilterValueTransformArgs<T> {
      * A field which value we are transforming.
      */
     field: CmsContentModelField;
-    /**
-     * Value that we are transforming.
-     */
-    value: T;
+    value: any;
+    // /**
+    //  * Full field value path `variant.product.name`.
+    //  */
+    // fieldPath: string;
+    // /**
+    //  * Get value to transform.
+    //  */
+    // getValue(fieldPath: string): T;
 }
 
 export interface CmsFieldFilterValueTransformPlugin<T = any, R = any> extends Plugin {

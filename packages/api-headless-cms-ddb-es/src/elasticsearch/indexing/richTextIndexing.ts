@@ -1,40 +1,52 @@
-import { CmsModelFieldToElasticsearchPlugin } from "../../types";
+import { CmsModelFieldToElasticsearchPlugin } from "~/types";
+import { CmsContentModelField } from "@webiny/api-headless-cms/types";
 
 export default (): CmsModelFieldToElasticsearchPlugin => ({
     type: "cms-model-field-to-elastic-search",
     name: "cms-model-field-to-elastic-search-rich-text",
     fieldType: "rich-text",
-    toIndex(args) {
-        const { toIndexEntry, field } = args;
-        const values = toIndexEntry.values;
-        const value = values[field.fieldId];
-        // TODO: convert rich-text object to a searchable string to offer full-text search at some point
-
+    toIndex({ field, fieldPath, getValue, getFieldIndexPlugin, ...params }) {
         // we are removing the field value from "values" because we do not want it indexed.
-        delete values[field.fieldId];
+        // delete values[field.fieldId];
+        const childFields: CmsContentModelField[] = field.settings.fields;
 
-        //
-        return {
-            values,
-            rawValues: {
-                ...(toIndexEntry.rawValues || {}),
-                [field.fieldId]: value
-            }
-        };
+        const values = {};
+        const rawValues = { [fieldPath]: getValue(fieldPath) };
+
+        for (const f of childFields) {
+            const fromIndex = getFieldIndexPlugin(f.type).toIndex({
+                field: f,
+                fieldPath: `${fieldPath}.${f.fieldId}`,
+                getValue,
+                getFieldIndexPlugin,
+                ...params
+            });
+
+            Object.assign(values, fromIndex.values || {});
+            Object.assign(rawValues, fromIndex.rawValues || {});
+        }
+
+        return { values, rawValues };
     },
-    fromIndex(args) {
-        const { field, entry } = args;
-        const rawValues = entry.rawValues || {};
-        const value = rawValues[field.fieldId];
-        // we want to remove rawValues so next plugin does not run some action because of it
-        delete rawValues[field.fieldId];
+    fromIndex({ field, fieldPath, getRawValue, getFieldIndexPlugin, ...params }) {
+        const childFields: CmsContentModelField[] = field.settings.fields;
 
-        return {
-            values: {
-                ...(entry.values || {}),
-                [field.fieldId]: value
-            },
-            rawValues
-        };
+        const values = { [fieldPath]: getRawValue(fieldPath) };
+        const rawValues = {};
+
+        for (const f of childFields) {
+            const fromIndex = getFieldIndexPlugin(f.type).fromIndex({
+                field: f,
+                fieldPath: `${fieldPath}.${f.fieldId}`,
+                getRawValue,
+                getFieldIndexPlugin,
+                ...params
+            });
+
+            Object.assign(values, fromIndex.values || {});
+            Object.assign(rawValues, fromIndex.rawValues || {});
+        }
+
+        return { values, rawValues };
     }
 });

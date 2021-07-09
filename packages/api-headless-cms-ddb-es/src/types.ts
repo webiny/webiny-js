@@ -1,7 +1,6 @@
 import { Plugin } from "@webiny/plugins/types";
 import {
     CmsContentEntry,
-    CmsModelFieldToGraphQLPlugin,
     CmsContentModel,
     CmsContentModelField,
     CmsContext
@@ -136,26 +135,12 @@ export interface CmsContentIndexEntry extends CmsContentEntry {
  * @category ContentEntry
  */
 interface CmsModelFieldToElasticsearchToArgs {
-    fieldTypePlugin: CmsModelFieldToGraphQLPlugin;
-    field: CmsContentModelField;
     context: CmsContext;
     model: CmsContentModel;
-    /**
-     * This is the entry that will go into the index
-     * It is exact copy of storageEntry at the beginning of the toIndex loop
-     * Always return top level properties that you want to merge together, eg. {values: {...toIndexEntry.values, ...myValues}}
-     */
-    toIndexEntry: CmsContentIndexEntry;
-    /**
-     * This is the entry in the same form it gets stored to DB (processed, possibly compressed, etc.)
-     * !! IMPORTANT !!
-     * This entry is used when running toIndex because it is required by the Entry CRUD to receive the transformed storage entry as the value from the storage operations.
-     */
-    storageEntry: CmsContentEntry;
-    /**
-     * This is the entry in the original form (the way it comes into the API)
-     */
-    originalEntry: CmsContentEntry;
+    field: CmsContentModelField;
+    fieldPath: string;
+    getValue(fieldPath: string): any;
+    getFieldIndexPlugin(fieldType: string): CmsModelFieldToElasticsearchPlugin;
 }
 
 /**
@@ -167,12 +152,11 @@ interface CmsModelFieldToElasticsearchToArgs {
 interface CmsModelFieldToElasticsearchFromArgs {
     context: CmsContext;
     model: CmsContentModel;
-    fieldTypePlugin: CmsModelFieldToGraphQLPlugin;
     field: CmsContentModelField;
-    /**
-     * The entry that is received from Elasticsearch.
-     */
-    entry: CmsContentIndexEntry;
+    fieldPath: string;
+    getValue(fieldPath: string): any;
+    getRawValue(fieldPath: string): any;
+    getFieldIndexPlugin(fieldType: string): CmsModelFieldToElasticsearchPlugin;
 }
 
 /**

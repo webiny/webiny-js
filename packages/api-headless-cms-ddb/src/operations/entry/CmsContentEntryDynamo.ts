@@ -26,7 +26,7 @@ import {
     createBasePartitionKey,
     decodePaginationCursor,
     encodePaginationCursor
-} from "../../utils";
+} from "~/utils";
 import { Entity, Table } from "dynamodb-toolbox";
 import { getDocumentClient, getTable } from "../helpers";
 import { filterItems, buildModelFields, sortEntryItems } from "./utils";

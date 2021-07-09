@@ -32,7 +32,7 @@ const richTextMock = [
     }
 ];
 
-describe("refField", () => {
+describe("richTextField", () => {
     const manageOpts = { path: "manage/en-US" };
     const readOpts = { path: "read/en-US" };
 
@@ -167,6 +167,7 @@ describe("refField", () => {
                         richText: richTextMock,
                         inStock: null,
                         itemsInStock: null,
+                        variant: null,
                         meta: {
                             locked: false,
                             modelId: "product",
@@ -229,7 +230,8 @@ describe("refField", () => {
                         },
                         richText: richTextMock,
                         inStock: null,
-                        itemsInStock: null
+                        itemsInStock: null,
+                        variant: null
                     },
                     error: null
                 }
@@ -287,6 +289,7 @@ describe("refField", () => {
             richText: null,
             inStock: null,
             itemsInStock: null,
+            variant: null,
             meta: {
                 locked: false,
                 modelId: "product",

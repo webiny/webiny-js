@@ -6,37 +6,45 @@ import {
 
 const excludeTypes = ["time", "dateTimeWithTimezone"];
 
+function formatValue(fieldPath: string, value: any) {
+    return { values: { [fieldPath]: value } };
+}
+
 export default (): CmsModelFieldToStoragePlugin<Date | string, string> => ({
     type: "cms-model-field-to-storage",
     name: "cms-model-field-to-storage-datetime",
     fieldType: "datetime",
-    async fromStorage({ field, value }) {
+    async fromStorage({ field, fieldPath, getValue }) {
         const { type } = (field as CmsContentModelDateTimeField).settings;
+        const value = getValue(fieldPath);
         if (!value || !type || excludeTypes.includes(type)) {
-            return value;
+            return formatValue(fieldPath, value);
         }
+
         try {
-            return new Date(value);
+            return formatValue(fieldPath, new Date(value));
         } catch {
-            return value;
+            return formatValue(fieldPath, value);
         }
     },
-    async toStorage({ value, field }) {
+    async toStorage({ field, fieldPath, getValue }) {
+        const value = getValue(fieldPath);
         const { type } = (field as CmsContentModelDateTimeField).settings;
         if (!value || !type || excludeTypes.includes(type)) {
             if (value && (value as Date).toISOString) {
-                return (value as Date).toISOString();
+                return formatValue(fieldPath, (value as Date).toISOString());
             }
-            return value as string;
+            return formatValue(fieldPath, value);
         }
         if ((value as any).toISOString) {
-            return (value as Date).toISOString();
+            return formatValue(fieldPath, (value as Date).toISOString());
         } else if (typeof value === "string") {
-            return value as string;
+            return { values: { [fieldPath]: value} };
         }
         throw new WebinyError("Error converting value to a storage type.", "TO_STORAGE_ERROR", {
             value,
-            fieldId: field.fieldId
+            fieldId: field.fieldId,
+            fieldPath
         });
     }
 });

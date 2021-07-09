@@ -1,4 +1,4 @@
-import { CmsFieldTypePlugins, CmsContentModel } from "../../../types";
+import { CmsFieldTypePlugins, CmsContentModel } from "~/types";
 import { createManageTypeName, createTypeName } from "../utils/createTypeName";
 import { renderInputFields } from "../utils/renderInputFields";
 import { renderSortEnum } from "../utils/renderSortEnum";
@@ -23,7 +23,7 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
 
     const sortEnumRender = renderSortEnum({ model, fieldTypePlugins });
     const getFilterFieldsRender = renderGetFilterFields({ model, fieldTypePlugins });
-    const inputFieldsRender = renderInputFields({ model, fieldTypePlugins });
+    const inputFields = renderInputFields({ model, fieldTypePlugins });
     const fields = renderFields({ model, type: "manage", fieldTypePlugins });
 
     return /* GraphQL */ `
@@ -32,6 +32,7 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
             .map(f => f.typeDefs)
             .filter(Boolean)
             .join("\n")}
+
         type ${mTypeName} {
             id: ID!
             entryId: String!
@@ -56,10 +57,16 @@ export const createManageSDL: CreateManageSDL = ({ model, fieldTypePlugins }): s
             revisions: [${mTypeName}]
             title: String
         }
+        
+                    
+        ${inputFields
+            .map(f => f.typeDefs)
+            .filter(Boolean)
+            .join("\n")}
 
-        ${inputFieldsRender &&
+        ${inputFields &&
             `input ${mTypeName}Input {
-            ${inputFieldsRender}
+            ${inputFields.map(f => f.fields).join("\n")}
         }`}
 
         ${getFilterFieldsRender &&
