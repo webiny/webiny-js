@@ -2,7 +2,6 @@ import DataLoader from "dataloader";
 import { CmsContentEntry, CmsContentModel, CmsContext } from "@webiny/api-headless-cms/types";
 import WebinyError from "@webiny/error";
 import { CmsContentEntryDynamo } from "./CmsContentEntryDynamo";
-import {queryOptions as DynamoDBToolboxQueryOptions} from "dynamodb-toolbox/dist/classes/Table";
 
 /**
  * *** GLOBAL NOTE ***
@@ -52,16 +51,11 @@ const getAllEntryRevisions = (
     return new DataLoader<string, CmsContentEntry[]>(async ids => {
         const promises = ids.map(id => {
             const partitionKey = storageOperations.getPartitionKey(id);
-            const options: DynamoDBToolboxQueryOptions = {};
-            const sortKey = storageOperations.getSortKeyFromId(id);
-            if (sortKey) {
-                options.eq = sortKey;
-            } else {
-                options.beginsWith = "REV#";
-            }
             return storageOperations.runQuery({
                 partitionKey,
-                options
+                options: {
+                    beginsWith: "REV#"
+                }
             });
         });
 
@@ -75,14 +69,21 @@ const getRevisionById = (
     storageOperations: CmsContentEntryDynamo
 ) => {
     return new DataLoader<string, CmsContentEntry>(async ids => {
-        const batch = ids.map(id => {
-            return storageOperations.entity.getBatch({
-                PK: storageOperations.getPartitionKey(id),
-                SK: storageOperations.getSortKeyRevision(id)
+        const batch = ids.reduce((collection, id) => {
+            const partitionKey = storageOperations.getPartitionKey(id);
+            const sortKey = storageOperations.getSortKeyRevision(id);
+            const keys = `${partitionKey}__${sortKey}`;
+            if (collection[keys]) {
+                return collection;
+            }
+            collection[keys] = storageOperations.entity.getBatch({
+                PK: partitionKey,
+                SK: sortKey
             });
-        });
+            return collection;
+        }, {});
 
-        const items = await executeBatchGet(storageOperations, batch);
+        const items = await executeBatchGet(storageOperations, Object.values(batch));
 
         return ids.map(id => {
             return items.filter(item => {
@@ -101,14 +102,19 @@ const getPublishedRevisionByEntryId = (
 ) => {
     return new DataLoader<string, CmsContentEntry>(async ids => {
         const sortKey = storageOperations.getSortKeyPublished();
-        const batch = ids.map(id => {
-            return storageOperations.entity.getBatch({
-                PK: storageOperations.getPartitionKey(id),
+        const batch = ids.reduce((collection, id) => {
+            const partitionKey = storageOperations.getPartitionKey(id);
+            if (collection[partitionKey]) {
+                return collection;
+            }
+            collection[partitionKey] = storageOperations.entity.getBatch({
+                PK: partitionKey,
                 SK: sortKey
             });
-        });
+            return collection;
+        }, {});
 
-        const items = await executeBatchGet(storageOperations, batch);
+        const items = await executeBatchGet(storageOperations, Object.values(batch));
         return ids.map(id => {
             return items.filter(item => {
                 const partitionKey = storageOperations.getPartitionKey(id);
@@ -125,14 +131,19 @@ const getLatestRevisionByEntryId = (
 ) => {
     return new DataLoader<string, CmsContentEntry>(async ids => {
         const sortKey = storageOperations.getSortKeyLatest();
-        const batch = ids.map(id => {
-            return storageOperations.entity.getBatch({
-                PK: storageOperations.getPartitionKey(id),
+        const batch = ids.reduce((collection, id) => {
+            const partitionKey = storageOperations.getPartitionKey(id);
+            if (collection[partitionKey]) {
+                return collection;
+            }
+            collection[partitionKey] = storageOperations.entity.getBatch({
+                PK: partitionKey,
                 SK: sortKey
             });
-        });
+            return collection;
+        }, {});
 
-        const items = await executeBatchGet(storageOperations, batch);
+        const items = await executeBatchGet(storageOperations, Object.values(batch));
         return ids.map(id => {
             return items.filter(item => {
                 const partitionKey = storageOperations.getPartitionKey(id);
@@ -230,14 +241,10 @@ export class DataLoadersHandler {
                 return results.reduce((acc, res) => {
                     if (Array.isArray(res) === false) {
                         if (res?.message) {
-                            throw new WebinyError(
-                                res.message,
-                                res.code,
-                                {
-                                    ...res,
-                                    data: JSON.stringify(res.data || {}),
-                                },
-                            );
+                            throw new WebinyError(res.message, res.code, {
+                                ...res,
+                                data: JSON.stringify(res.data || {})
+                            });
                         }
                         throw new WebinyError(
                             "Result from the data loader must be an array of arrays which contain requested items."
@@ -255,7 +262,7 @@ export class DataLoadersHandler {
                     loader,
                     ids,
                     model,
-                    data: ex.data || {},
+                    data: ex.data || {}
                 }
             );
         }
