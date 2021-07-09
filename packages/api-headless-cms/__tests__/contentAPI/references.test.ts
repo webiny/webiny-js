@@ -85,7 +85,7 @@ const createArticleItem = async ({ manager, from = null, publish, data }) => {
     return publishResponse.data.publishArticle.data;
 };
 
-describe("references", () => {
+describe("entry references", () => {
     const manageOpts = { path: "manage/en-US" };
     const readOpts = { path: "read/en-US" };
 
@@ -215,7 +215,9 @@ describe("references", () => {
                 ]
             };
         };
-
+        /**
+         * All the articles must have last published revision of the category.
+         */
         expect(readListResponse).toEqual({
             data: {
                 listArticles: {
@@ -230,6 +232,48 @@ describe("references", () => {
                         hasMoreItems: false,
                         totalCount: 3
                     }
+                }
+            }
+        });
+        /**
+         * First article is expected to have the published revision of the category when loading a single article
+         */
+        const [readArticleResponse] = await articleRead.getArticle({
+            where: {
+                id: techArticle.id
+            }
+        });
+        expect(readArticleResponse).toEqual({
+            data: {
+                getArticle: {
+                    data: extractReadArticle(techArticle),
+                    error: null
+                }
+            }
+        });
+        /**
+         * When loading the article via manage API it must have the assigned revision of the category.
+         */
+        const [readArticleManageResponse] = await articleManager.getArticle({
+            revision: techArticle.id
+        });
+
+        expect(readArticleManageResponse).toEqual({
+            data: {
+                getArticle: {
+                    data: {
+                        ...techArticle,
+                        /**
+                         * This is to prove that category in the loaded article really is the first one created and assigned to the article.
+                         */
+                        categories: [
+                            {
+                                entryId: techCategory.id,
+                                modelId: techCategory.meta.modelId
+                            }
+                        ]
+                    },
+                    error: null
                 }
             }
         });
