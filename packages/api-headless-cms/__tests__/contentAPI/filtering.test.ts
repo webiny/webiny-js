@@ -1,7 +1,5 @@
 import { useFruitManageHandler } from "../utils/useFruitManageHandler";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import { CmsContentModelGroup } from "~/types";
-import models from "./mocks/contentModels";
 import { useFruitReadHandler } from "../utils/useFruitReadHandler";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useProductManageHandler } from "../utils/useProductManageHandler";
@@ -9,6 +7,7 @@ import { useProductReadHandler } from "../utils/useProductReadHandler";
 import { useArticleManageHandler } from "../utils/useArticleManageHandler";
 import { useArticleReadHandler } from "../utils/useArticleReadHandler";
 import { SecurityIdentity } from "@webiny/api-security";
+import { setupContentModelGroup, setupContentModels } from "../utils/setup";
 
 jest.setTimeout(25000);
 
@@ -57,151 +56,15 @@ const bananaData = {
     time: "11:59:01"
 };
 
-const createCategoryItem = async ({ manager, from = null, publish, data }) => {
-    const [response] = await (from
-        ? manager.createCategoryFrom({ revision: from.id })
-        : manager.createCategory({ data }));
-    const category = from
-        ? response?.data?.createCategoryFrom?.data
-        : response?.data?.createCategory?.data;
-    const error = from
-        ? response?.data?.createCategoryFrom?.error
-        : response?.data?.createCategory?.error;
-    if (!category?.id || error) {
-        console.log(error.message);
-        console.log(JSON.stringify(error.data));
-        throw new Error("Could not create category.");
-    }
-    if (from) {
-        const [updateResponse] = await manager.updateCategory({
-            revision: category.id,
-            data
-        });
-        const updatedCategory = updateResponse?.data?.updateCategory?.data;
-        const updatedError = updateResponse?.data?.updateCategory?.error;
-        if (!updatedCategory?.id || updatedError) {
-            console.log(updatedError.message);
-            throw new Error("Could not update category.");
-        }
-    }
-    if (!publish) {
-        return category;
-    }
-    const [publishResponse] = await manager.publishCategory({
-        revision: category.id
-    });
-    if (!publishResponse?.data?.publishCategory?.data?.id) {
-        console.log(publishResponse?.data?.publishCategory?.error?.message);
-        throw new Error("Could not publish category.");
-    }
-    return publishResponse.data.publishCategory.data;
-};
-
-const createArticleItem = async ({ manager, from = null, publish, data }) => {
-    const [response] = await (from
-        ? manager.createArticleFrom({ revision: from.id })
-        : manager.createArticle({ data }));
-    const article = from
-        ? response?.data?.createArticleFrom?.data
-        : response?.data?.createArticle?.data;
-    const error = from
-        ? response?.data?.createArticleFrom?.error
-        : response?.data?.createArticle?.error;
-    if (!article?.id || error) {
-        console.log(error.message);
-        console.log(JSON.stringify(error.data));
-        throw new Error("Could not create article.");
-    }
-    if (from) {
-        const [updateResponse] = await manager.updateArticle({
-            revision: article.id,
-            data
-        });
-        const updatedArticle = updateResponse?.data?.updateArticle?.data;
-        const updatedError = updateResponse?.data?.updateArticle?.error;
-        if (!updatedArticle?.id || updatedError) {
-            console.log(updatedError.message);
-            throw new Error("Could not update article.");
-        }
-    }
-    if (!publish) {
-        return article;
-    }
-    const [publishResponse] = await manager.publishArticle({
-        revision: article.id
-    });
-    if (!publishResponse?.data?.publishArticle?.data?.id) {
-        console.log(publishResponse?.data?.publishArticle?.error?.message);
-        throw new Error("Could not publish article.");
-    }
-    return publishResponse.data.publishArticle.data;
-};
-
 describe("filtering", () => {
     const manageOpts = { path: "manage/en-US" };
     const readOpts = { path: "read/en-US" };
 
-    const {
-        createContentModelMutation,
-        updateContentModelMutation,
-        createContentModelGroupMutation
-    } = useContentGqlHandler(manageOpts);
+    const mainManager = useContentGqlHandler(manageOpts);
 
     const { until, createFruit, publishFruit } = useFruitManageHandler({
         ...manageOpts
     });
-
-    // This function is not directly within `beforeEach` as we don't always setup the same content model.
-    // We call this function manually at the beginning of each test, where needed.
-    const setupContentModelGroup = async (): Promise<CmsContentModelGroup> => {
-        const [createCMG] = await createContentModelGroupMutation({
-            data: {
-                name: "Group",
-                slug: "group",
-                icon: "ico/ico",
-                description: "description"
-            }
-        });
-        return createCMG.data.createContentModelGroup.data;
-    };
-
-    const setupContentModel = async (contentModelGroup: CmsContentModelGroup, name: string) => {
-        const model = models.find(m => m.modelId === name);
-        // Create initial record
-        const [create] = await createContentModelMutation({
-            data: {
-                name: model.name,
-                modelId: model.modelId,
-                group: contentModelGroup.id
-            }
-        });
-
-        if (create.errors) {
-            console.error(`[beforeEach] ${create.errors[0].message}`);
-            process.exit(1);
-        } else if (create.data.createContentModel.data.error) {
-            console.error(`[beforeEach] ${create.data.createContentModel.data.error.message}`);
-            process.exit(1);
-        }
-
-        const [update] = await updateContentModelMutation({
-            modelId: create.data.createContentModel.data.modelId,
-            data: {
-                fields: model.fields,
-                layout: model.layout
-            }
-        });
-        return update.data.updateContentModel.data;
-    };
-    const setupContentModels = async (contentModelGroup: CmsContentModelGroup) => {
-        const models = {
-            fruit: null
-        };
-        for (const name in models) {
-            models[name] = await setupContentModel(contentModelGroup, name);
-        }
-        return models;
-    };
 
     const filterOutFields = ["meta"];
 
@@ -236,8 +99,8 @@ describe("filtering", () => {
     };
 
     const setupFruits = async () => {
-        const group = await setupContentModelGroup();
-        await setupContentModels(group);
+        const group = await setupContentModelGroup(mainManager);
+        await setupContentModels(mainManager, group, ["fruit"]);
         return createFruits();
     };
 
@@ -666,9 +529,11 @@ describe("filtering", () => {
         const productManager = useProductManageHandler(manageOpts);
         const productReader = useProductReadHandler(readOpts);
 
-        const group = await setupContentModelGroup();
-        const categoryModel = await setupContentModel(group, "category");
-        await setupContentModel(group, "product");
+        const group = await setupContentModelGroup(mainManager);
+        const { category: categoryModel } = await setupContentModels(mainManager, group, [
+            "category",
+            "product"
+        ]);
 
         const [createFruitResponse] = await categoryManager.createCategory({
             data: {
@@ -1140,9 +1005,8 @@ describe("filtering", () => {
         const articleManager = useArticleManageHandler(manageOpts);
         const articleReader = useArticleReadHandler(readOpts);
 
-        const group = await setupContentModelGroup();
-        await setupContentModel(group, "category");
-        await setupContentModel(group, "article");
+        const group = await setupContentModelGroup(mainManager);
+        await setupContentModels(mainManager, group, ["category", "article"]);
 
         const [createFruitResponse] = await articleManager.createArticle({
             data: {
@@ -1485,9 +1349,9 @@ describe("filtering", () => {
             })
         });
 
-        const group = await setupContentModelGroup();
-        await setupContentModel(group, "category");
-        await setupContentModel(group, "article");
+        const group = await setupContentModelGroup(mainManager);
+
+        await setupContentModels(mainManager, group, ["category", "article"]);
 
         const [createFruitResponse] = await articleManager.createArticle({
             data: {
@@ -1662,9 +1526,8 @@ describe("filtering", () => {
             })
         });
 
-        const group = await setupContentModelGroup();
-        await setupContentModel(group, "category");
-        await setupContentModel(group, "article");
+        const group = await setupContentModelGroup(mainManager);
+        await setupContentModels(mainManager, group, ["category", "article"]);
 
         const [createFruitResponse] = await articleManager.createArticle({
             data: {
@@ -1823,151 +1686,6 @@ describe("filtering", () => {
                         cursor: null
                     },
                     error: null
-                }
-            }
-        });
-    });
-
-    it("should get published referenced entry revisions", async () => {
-        const group = await setupContentModelGroup();
-        await setupContentModel(group, "category");
-        await setupContentModel(group, "article");
-
-        const categoryManager = useCategoryManageHandler(manageOpts);
-        const articleManager = useArticleManageHandler(manageOpts);
-        const articleRead = useArticleReadHandler(readOpts);
-
-        const techCategory = await createCategoryItem({
-            manager: categoryManager,
-            data: {
-                title: "Tech category",
-                slug: "tech-category"
-            },
-            publish: true
-        });
-
-        const techArticle = await createArticleItem({
-            manager: articleManager,
-            data: {
-                title: "Tech article",
-                body: null,
-                categories: [
-                    {
-                        entryId: techCategory.id,
-                        modelId: "category"
-                    }
-                ]
-            },
-            publish: true
-        });
-        const techCategory2 = await createCategoryItem({
-            manager: categoryManager,
-            from: techCategory,
-            data: {
-                title: "Tech category 2",
-                slug: "tech-category-2"
-            },
-            publish: true
-        });
-
-        const techArticle2 = await createArticleItem({
-            manager: articleManager,
-            // from: techArticle,
-            data: {
-                title: "Tech article 2",
-                body: null,
-                categories: [
-                    {
-                        entryId: techCategory2.id,
-                        modelId: "category"
-                    }
-                ]
-            },
-            publish: true
-        });
-
-        const techCategory3 = await createCategoryItem({
-            manager: categoryManager,
-            from: techCategory2,
-            data: {
-                title: "Tech category 3",
-                slug: "tech-category-3"
-            },
-            publish: true
-        });
-
-        const techArticle3 = await createArticleItem({
-            manager: articleManager,
-            // from: techArticle2,
-            data: {
-                title: "Tech article 3",
-                body: null,
-                categories: [
-                    {
-                        entryId: techCategory3.id,
-                        modelId: "category"
-                    }
-                ]
-            },
-            publish: true
-        });
-
-        /**
-         * Make sure we have all articles published.
-         */
-        await until(
-            () => articleManager.listArticles().then(([data]) => data),
-            ({ data }) => {
-                const entries = data?.listArticles?.data || [];
-                if (entries.length !== 3) {
-                    return false;
-                }
-                return entries.every(entry => {
-                    return !!entry.meta.publishedOn;
-                });
-            },
-            { name: "list all published articles", tries: 10 }
-        );
-
-        const [readListResponse] = await articleRead.listArticles({
-            sort: ["createdOn_DESC"]
-        });
-        /**
-         * We need only certain values from the article data when created.
-         */
-        const extractReadArticle = (item: Record<string, any>): Record<string, any> => {
-            return {
-                id: item.id,
-                entryId: item.entryId,
-                createdOn: item.createdOn,
-                savedOn: item.savedOn,
-                createdBy: item.createdBy,
-                ownedBy: item.ownedBy,
-                title: item.title,
-                body: item.body,
-                categories: [
-                    {
-                        id: techCategory3.id,
-                        title: techCategory3.title
-                    }
-                ]
-            };
-        };
-
-        expect(readListResponse).toEqual({
-            data: {
-                listArticles: {
-                    data: [
-                        extractReadArticle(techArticle3),
-                        extractReadArticle(techArticle2),
-                        extractReadArticle(techArticle)
-                    ],
-                    error: null,
-                    meta: {
-                        cursor: null,
-                        hasMoreItems: false,
-                        totalCount: 3
-                    }
                 }
             }
         });
