@@ -18,8 +18,15 @@ const batchLoadKeys = loadChunk => {
         });
 
         const entriesChunks = await Promise.all(promises);
-        return entriesChunks.reduce((current, item) => current.concat(item), []);
+        return entriesChunks.reduce((current, items) => current.concat(items), []);
     });
+};
+
+const flattenResults = (results: any[]): any[] => {
+    return results.reduce((collection, items) => {
+        collection.push(...items);
+        return collection;
+    }, []);
 };
 
 const getAllEntryRevisions = (
@@ -51,7 +58,7 @@ const getRevisionById = (
     model: CmsContentModel,
     storageOperations: CmsContentEntryDynamoElastic
 ) => {
-    return batchLoadKeys(async keys => {
+    return batchLoadKeys(keys => {
         const queries = keys.reduce((collection, id) => {
             const partitionKey = storageOperations.getPartitionKey(id);
             const sortKey = storageOperations.getSortKeyRevision(id);
@@ -70,19 +77,21 @@ const getRevisionById = (
             return collection;
         }, {});
 
-        const items = await context.db
+        return context.db
             .batch()
             .read(...Object.values(queries))
             .execute()
-            .then(results => results.map(result => result[0]));
-
-        return keys.map(id => {
-            return items.filter(item => {
-                const partitionKey = storageOperations.getPartitionKey(id);
-                const sortKey = storageOperations.getSortKeyRevision(id);
-                return item.PK === partitionKey && item.SK === sortKey;
+            .then(results => results.map(result => result[0]))
+            .then(results => {
+                const items = flattenResults(results);
+                return keys.map(id => {
+                    return items.filter(item => {
+                        const partitionKey = storageOperations.getPartitionKey(id);
+                        const sortKey = storageOperations.getSortKeyRevision(id);
+                        return item.PK === partitionKey && item.SK === sortKey;
+                    });
+                }) as any;
             });
-        }) as any;
     });
 };
 
@@ -107,11 +116,21 @@ const getPublishedRevisionByEntryId = (
             };
             return collection;
         }, {});
+
         return context.db
             .batch()
             .read(...Object.values(queries))
             .execute()
-            .then(results => results.map(result => result[0]));
+            .then(results => results.map(result => result[0]))
+            .then(results => {
+                const items = flattenResults(results);
+                return keys.map(id => {
+                    return items.filter(item => {
+                        const partitionKey = storageOperations.getPartitionKey(id);
+                        return item.PK === partitionKey && item.SK === sortKey;
+                    });
+                }) as any;
+            });
     });
 };
 
@@ -120,9 +139,9 @@ const getLatestRevisionByEntryId = (
     model: CmsContentModel,
     storageOperations: CmsContentEntryDynamoElastic
 ) => {
-    return batchLoadKeys(chunk => {
+    return batchLoadKeys(keys => {
         const sortKey = storageOperations.getSortKeyLatest();
-        const queries = chunk.reduce((collection, id) => {
+        const queries = keys.reduce((collection, id) => {
             const partitionKey = storageOperations.getPartitionKey(id);
             if (collection[partitionKey]) {
                 return collection;
@@ -141,7 +160,16 @@ const getLatestRevisionByEntryId = (
             .batch()
             .read(...Object.values(queries))
             .execute()
-            .then(results => results.map(result => result[0]));
+            .then(results => results.map(result => result[0]))
+            .then(results => {
+                const items = flattenResults(results);
+                return keys.map(id => {
+                    return items.filter(item => {
+                        const partitionKey = storageOperations.getPartitionKey(id);
+                        return item.PK === partitionKey && item.SK === sortKey;
+                    });
+                }) as any;
+            });
     });
 };
 

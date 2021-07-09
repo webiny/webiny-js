@@ -1828,7 +1828,7 @@ describe("filtering", () => {
         });
     });
 
-    it("should get all revisions", async () => {
+    it("should get published referenced entry revisions", async () => {
         const group = await setupContentModelGroup();
         await setupContentModel(group, "category");
         await setupContentModel(group, "article");
