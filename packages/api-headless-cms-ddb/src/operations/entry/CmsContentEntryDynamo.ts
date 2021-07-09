@@ -20,18 +20,14 @@ import {
     CmsContext,
     CONTENT_ENTRY_STATUS
 } from "@webiny/api-headless-cms/types";
-import configurations from "../../configurations";
 import { zeroPad } from "@webiny/api-headless-cms/utils";
-import {
-    createBasePartitionKey,
-    decodePaginationCursor,
-    encodePaginationCursor
-} from "../../utils";
+import { createBasePartitionKey, decodePaginationCursor, encodePaginationCursor } from "~/utils";
 import { Entity, Table } from "dynamodb-toolbox";
-import { getDocumentClient, getTable } from "../helpers";
 import { filterItems, buildModelFields, sortEntryItems } from "./utils";
 import { queryOptions as DynamoDBToolboxQueryOptions } from "dynamodb-toolbox/dist/classes/Table";
 import lodashCloneDeep from "lodash.clonedeep";
+import { createEntryEntity } from "~/definitions/entry";
+import { createTable } from "~/definitions/table";
 
 export const TYPE_ENTRY = "cms.entry";
 export const TYPE_ENTRY_LATEST = TYPE_ENTRY + ".l";
@@ -103,11 +99,8 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
         this._modelPartitionKey = `${this._partitionKey}#M`;
         this._dataLoaders = new DataLoadersHandler(context, this);
 
-        this._table = new Table({
-            name: configurations.db().table || getTable(context),
-            partitionKey: "PK",
-            sortKey: "SK",
-            DocumentClient: getDocumentClient(context),
+        this._table = createTable({
+            context,
             indexes: {
                 [GSI1_INDEX]: {
                     partitionKey: "GSI1_PK",
@@ -116,73 +109,8 @@ export class CmsContentEntryDynamo implements CmsContentEntryStorageOperations {
             }
         });
 
-        this._entity = new Entity({
-            name: "ContentEntry",
-            table: this._table,
-            attributes: {
-                PK: {
-                    type: "string",
-                    partitionKey: true
-                },
-                SK: {
-                    type: "string",
-                    sortKey: true
-                },
-                GSI1_PK: {
-                    type: "string"
-                },
-                GSI1_SK: {
-                    type: "string"
-                },
-                TYPE: {
-                    type: "string"
-                },
-                webinyVersion: {
-                    type: "string"
-                },
-                tenant: {
-                    type: "string"
-                },
-                entryId: {
-                    type: "string"
-                },
-                id: {
-                    type: "string"
-                },
-                createdBy: {
-                    type: "map"
-                },
-                ownedBy: {
-                    type: "map"
-                },
-                createdOn: {
-                    type: "string"
-                },
-                savedOn: {
-                    type: "string"
-                },
-                modelId: {
-                    type: "string"
-                },
-                locale: {
-                    type: "string"
-                },
-                publishedOn: {
-                    type: "string"
-                },
-                version: {
-                    type: "number"
-                },
-                locked: {
-                    type: "boolean"
-                },
-                status: {
-                    type: "string"
-                },
-                values: {
-                    type: "map"
-                }
-            }
+        this._entity = createEntryEntity({
+            table: this._table
         });
     }
 
