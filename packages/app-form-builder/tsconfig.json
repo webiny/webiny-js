@@ -8,6 +8,9 @@
       "path": "../app-admin"
     },
     {
+      "path": "../app-form-builder"
+    },
+    {
       "path": "../app-page-builder"
     },
     {
@@ -38,6 +41,8 @@
       "@webiny/app": ["../app/src"],
       "@webiny/app-admin/*": ["../app-admin/src/*"],
       "@webiny/app-admin": ["../app-admin/src"],
+      "@webiny/app-form-builder/*": ["../app-form-builder/src/*"],
+      "@webiny/app-form-builder": ["../app-form-builder/src"],
       "@webiny/app-page-builder/*": ["../app-page-builder/src/*"],
       "@webiny/app-page-builder": ["../app-page-builder/src"],
       "@webiny/app-plugin-admin-welcome-screen/*": ["../app-plugin-admin-welcome-screen/src/*"],
