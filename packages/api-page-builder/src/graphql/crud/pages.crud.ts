@@ -395,7 +395,9 @@ const plugin: ContextPlugin<PbContext> = {
                         pagePath = normalizePath("untitled-" + uniqid.time());
                     } else {
                         pagePath = normalizePath(
-                            path.join(category.url, "untitled-" + uniqid.time())
+                            [category.url, "untitled-" + uniqid.time()]
+                                .join("/")
+                                .replace(/\/\//g, "/")
                         );
                     }
 
