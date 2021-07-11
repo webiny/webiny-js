@@ -68,8 +68,15 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                 typeDefs
             };
         },
-        createResolver({ field, createFieldResolvers }) {
-            return createFieldResolvers({ fields: field.settings.fields });
+        createResolver({ field, createFieldResolvers, graphQLType }) {
+            const fieldType = `${graphQLType}_${upperFirst(field.fieldId)}`;
+            return {
+                resolver: null,
+                typeResolvers: createFieldResolvers({
+                    graphQLType: fieldType,
+                    fields: field.settings.fields
+                })
+            };
         }
     },
     manage: {
@@ -107,7 +114,6 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                 resolver: null,
                 typeResolvers: createFieldResolvers({
                     graphQLType: fieldType,
-                    parentPath: `${field.fieldId}`,
                     fields: field.settings.fields
                 })
             };

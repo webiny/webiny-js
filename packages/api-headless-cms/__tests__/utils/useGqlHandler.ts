@@ -1,4 +1,4 @@
-import { introspectionQuery  } from "graphql";
+import { introspectionQuery } from "graphql";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import tenancyPlugins from "@webiny/api-tenancy";

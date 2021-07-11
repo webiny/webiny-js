@@ -19,13 +19,7 @@ interface ContentEntryFormProps extends UseContentEntryFormParams {
 
 export const ContentEntryForm = ({ onForm, ...props }: ContentEntryFormProps) => {
     const { contentModel } = props;
-    const {
-        loading,
-        data,
-        onChange,
-        onSubmit,
-        invalidFields
-    } = useContentEntryForm(props);
+    const { loading, data, onChange, onSubmit, invalidFields } = useContentEntryForm(props);
 
     const ref = useRef(null);
 

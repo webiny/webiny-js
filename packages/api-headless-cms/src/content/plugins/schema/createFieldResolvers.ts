@@ -7,7 +7,7 @@ import { Resolvers } from "@webiny/handler-graphql/types";
 interface CreateFieldResolvers {
     graphQLType: string;
     fields: CmsContentModelField[];
-    parentPath?: string;
+    isRoot: boolean;
     extraResolvers?: Resolvers<any>;
 }
 
@@ -17,7 +17,7 @@ interface CreateFieldResolvers {
  */
 export function createFieldResolversFactory({ endpointType, models, model, fieldTypePlugins }) {
     return function createFieldResolvers(params: CreateFieldResolvers) {
-        const { graphQLType, fields, extraResolvers = {}, parentPath } = params;
+        const { graphQLType, fields, isRoot = false, extraResolvers = {} } = params;
 
         const fieldResolvers = { ...extraResolvers };
         const typeResolvers = {};
@@ -44,36 +44,28 @@ export function createFieldResolversFactory({ endpointType, models, model, field
                 Object.assign(typeResolvers, fieldResolver.typeResolvers);
             }
 
-            fieldResolvers[field.fieldId] = async (
-                parent,
-                args,
-                context: CmsContext,
-                info
-            ) => {
-                // Get transformed value (eg. data decompression)
-                const { values } = await entryFieldFromStorageTransform({
-                    context,
-                    model,
-                    field,
-                    fieldPath: field.fieldId,
-                    getValue(fieldPath) {
-                        return get(parent.values, fieldPath);
+            const { fieldId } = field;
+
+            fieldResolvers[fieldId] = async (parent, args, context: CmsContext, info) => {
+                try {
+                    // Get transformed value (eg. data decompression)
+                    const transformedValue = await entryFieldFromStorageTransform({
+                        context,
+                        model,
+                        field,
+                        value: isRoot ? parent.values[fieldId] : parent[fieldId]
+                    });
+
+                    set(isRoot ? parent.values : parent, fieldId, transformedValue);
+
+                    if (!resolver) {
+                        return isRoot ? parent.values[fieldId] : parent[fieldId];
                     }
-                });
-                
-                Object.keys(values).forEach(key => {
-                    set(parent.values, key, values[key]);
-                })
 
-
-                if (!resolver) {
-                    return parent.values[field.fieldId];
+                    return await resolver(isRoot ? parent.values : parent, args, context, info);
+                } catch(err) {
+                    const a = err;
                 }
-
-                /**
-                 * We need to pass the entire entry, but also isolated "parent" value (for nested objects).
-                 */
-                return await resolver({ entry: parent, parent: parent.values, args, context, info, field });
             };
         }
 

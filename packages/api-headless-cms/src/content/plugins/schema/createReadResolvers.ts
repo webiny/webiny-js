@@ -32,7 +32,8 @@ export const createReadResolvers: CreateReadResolvers = ({ models, model, fieldT
         },
         ...createFieldResolvers({
             graphQLType: rTypeName,
-            fields: model.fields
+            fields: model.fields,
+            isRoot: true
         })
     };
 };

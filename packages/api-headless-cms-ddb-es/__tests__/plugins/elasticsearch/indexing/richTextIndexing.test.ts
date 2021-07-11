@@ -1,10 +1,5 @@
-import richTextIndexing from "../../../../src/elasticsearch/indexing/richTextIndexing";
-import lodashCloneDeep from "lodash.clonedeep";
-import {
-    CmsContentEntry,
-    CmsContentModelField,
-    CmsModelFieldToGraphQLPlugin
-} from "@webiny/api-headless-cms/types";
+import richTextIndexingPlugin from "~/elasticsearch/indexing/richTextIndexing";
+import { CmsContentModelField } from "@webiny/api-headless-cms/types";
 
 const mockValue = [
     {
@@ -14,30 +9,7 @@ const mockValue = [
 ];
 const mockContext: any = {};
 const mockModel: any = {};
-const mockInputEntry: Partial<CmsContentEntry> = {
-    values: {
-        notAffectedNumber: 1,
-        notAffectedString: "some text",
-        notAffectedObject: {
-            test: true
-        },
-        notAffectedArray: ["first", "second"],
-        text: mockValue
-    }
-};
-const mockIndexedEntry: Partial<CmsContentEntry> & Record<string, any> = {
-    values: {
-        notAffectedNumber: 1,
-        notAffectedString: "some text",
-        notAffectedObject: {
-            test: true
-        },
-        notAffectedArray: ["first", "second"]
-    },
-    rawValues: {
-        text: mockValue
-    }
-};
+
 const mockField: CmsContentModelField = {
     id: "textField",
     type: "text",
@@ -56,56 +28,50 @@ const mockField: CmsContentModelField = {
     placeholderText: "text",
     helpText: "text"
 };
-const mockFieldTypePlugin: CmsModelFieldToGraphQLPlugin = {
-    type: "cms-model-field-to-graphql",
-    fieldType: "text",
-    isSearchable: false,
-    isSortable: false,
-    manage: {} as any,
-    read: {} as any
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const getFieldTypePlugin = (fieldType: string) => {
+    return null;
+};
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const getFieldIndexPlugin = (fieldType: string) => {
+    return null;
 };
 
 describe("richTextIndexing", () => {
     test("toIndex should return transformed objects", () => {
-        const plugin = richTextIndexing();
+        const plugin = richTextIndexingPlugin();
 
         const result = plugin.toIndex({
-            toIndexEntry: lodashCloneDeep(mockInputEntry) as any,
-            originalEntry: lodashCloneDeep(mockInputEntry) as any,
-            storageEntry: lodashCloneDeep(mockInputEntry) as any,
+            value: mockValue,
             field: mockField,
             model: mockModel,
             context: mockContext,
-            fieldTypePlugin: mockFieldTypePlugin
+            getFieldTypePlugin,
+            getFieldIndexPlugin
         });
 
         // here we receive new values and rawValues objects that are populated, in rawValues case, and values being without given fieldId
-        expect(result).toEqual(mockIndexedEntry);
+        expect(result).toEqual({
+            rawValue: mockValue
+        });
     });
 
     test("fromIndex should return transformed objects", () => {
-        const plugin = richTextIndexing();
+        const plugin = richTextIndexingPlugin();
         const result = plugin.fromIndex({
-            entry: lodashCloneDeep(mockIndexedEntry) as any,
+            value: undefined,
+            rawValue: mockValue,
             field: mockField,
             model: mockModel,
             context: mockContext,
-            fieldTypePlugin: mockFieldTypePlugin
+            getFieldTypePlugin,
+            getFieldIndexPlugin
         });
 
         // we receive a bit different output than in toIndex since here we take field from rawValues and put it into values obj
         // it is being merged into new entry after that
-        expect(result).toEqual({
-            values: {
-                notAffectedNumber: 1,
-                notAffectedString: "some text",
-                notAffectedObject: {
-                    test: true
-                },
-                notAffectedArray: ["first", "second"],
-                text: mockValue
-            },
-            rawValues: {}
-        });
+        expect(result).toEqual(mockValue);
     });
 });

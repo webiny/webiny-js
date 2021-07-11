@@ -22,11 +22,7 @@ import {
 } from "@webiny/api-headless-cms/types";
 import configurations from "../../configurations";
 import { zeroPad } from "@webiny/api-headless-cms/utils";
-import {
-    createBasePartitionKey,
-    decodePaginationCursor,
-    encodePaginationCursor
-} from "~/utils";
+import { createBasePartitionKey, decodePaginationCursor, encodePaginationCursor } from "~/utils";
 import { Entity, Table } from "dynamodb-toolbox";
 import { getDocumentClient, getTable } from "../helpers";
 import { filterItems, buildModelFields, sortEntryItems } from "./utils";

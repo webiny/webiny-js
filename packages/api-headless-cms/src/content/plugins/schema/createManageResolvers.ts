@@ -60,6 +60,7 @@ export const createManageResolvers: CreateManageResolvers = ({
         ...createFieldResolvers({
             graphQLType: mTypeName,
             fields: model.fields,
+            isRoot: true,
             // These are extra fields we want to apply to field resolvers of "gqlType"
             extraResolvers: {
                 ...commonFieldResolvers(),
@@ -82,7 +83,6 @@ export const createManageResolvers: CreateManageResolvers = ({
             }
         }
     };
-    
-    
+
     return manageResolvers;
 };

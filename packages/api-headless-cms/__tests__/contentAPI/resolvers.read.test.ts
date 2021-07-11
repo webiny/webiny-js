@@ -4,6 +4,7 @@ import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
 import { useProductManageHandler } from "../utils/useProductManageHandler";
+import { useProductReadHandler } from "../utils/useProductReadHandler";
 
 jest.setTimeout(25000);
 
@@ -1411,12 +1412,17 @@ describe("READ - Resolvers", () => {
         const { vegetables } = await categoryManagerHelper({
             ...manageOpts
         });
-        const { createProduct } = useProductManageHandler({
+
+        const { until, getProduct } = useProductReadHandler({ ...readOpts });
+
+        const { createProduct, publishProduct } = useProductManageHandler({
             ...manageOpts
         });
 
-        // const [introspection] = await introspect();
-        // console.log(printSchema(buildClientSchema(introspection.data)));
+        const categoryValue = {
+            modelId: "category",
+            entryId: vegetables.id
+        };
 
         const [potatoResponse] = await createProduct({
             data: {
@@ -1424,18 +1430,24 @@ describe("READ - Resolvers", () => {
                 price: 99.9,
                 availableOn: "2020-12-25",
                 color: "white",
-                image: "image.png", 
+                image: "image.png",
                 availableSizes: ["s", "m"],
-                category: {
-                    modelId: "category",
-                    entryId: vegetables.id
-                },
+                category: categoryValue,
                 variant: {
                     name: "Variant 1",
                     price: 100,
+                    category: categoryValue,
                     options: [
-                        { name: "Option 1", price: 10 },
-                        { name: "Option 2", price: 20 }
+                        {
+                            name: "Option 1",
+                            price: 10,
+                            category: categoryValue
+                        },
+                        {
+                            name: "Option 2",
+                            price: 20,
+                            category: categoryValue
+                        }
                     ]
                 }
             }
@@ -1443,7 +1455,19 @@ describe("READ - Resolvers", () => {
 
         const potato = potatoResponse.data.createProduct.data;
 
-        expect(potato).toMatchObject({
+        await publishProduct({ revision: potato.id });
+
+        const result = await until(
+            () =>
+                getProduct({
+                    where: {
+                        id: potato.id
+                    }
+                }).then(([data]) => data),
+            ({ data }) => !!data.getProduct.data.id
+        );
+
+        expect(result.data.getProduct.data).toMatchObject({
             id: potato.id,
             title: "Potato",
             price: 99.9,
@@ -1451,14 +1475,14 @@ describe("READ - Resolvers", () => {
             color: "white",
             availableSizes: ["s", "m"],
             category: {
-                modelId: "category",
-                entryId: vegetables.id
+                id: vegetables.id,
+                title: "Vegetables"
             },
             variant: {
                 name: "Variant 1",
                 price: 100,
                 options: [
-                    { name: "Option 1", price: 10, user: [{}] },
+                    { name: "Option 1", price: 10 },
                     { name: "Option 2", price: 20 }
                 ]
             }

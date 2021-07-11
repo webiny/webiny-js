@@ -8,7 +8,6 @@ import { GET_CONTENT_MODEL, UPDATE_CONTENT_MODEL } from "~/admin/graphql/content
 import { LIST_MENU_CONTENT_GROUPS_MODELS } from "~/admin/viewsGraphql";
 import { CmsEditorContentModel, CmsEditorField } from "~/types";
 
-
 export interface Context {
     apolloClient: ApolloClient<any>;
     data: CmsEditorContentModel;
@@ -152,12 +151,8 @@ export function ContentModelEditorProvider({ children, apolloClient, modelId }: 
         }),
         [state, apolloClient]
     );
-    
+
     const { Provider } = contentModelEditorContext;
 
-    return (
-        <Provider value={value}>
-            {children}
-        </Provider>
-    );
+    return <Provider value={value}>{children}</Provider>;
 }

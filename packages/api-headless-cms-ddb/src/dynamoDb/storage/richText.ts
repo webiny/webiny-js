@@ -15,12 +15,10 @@ export interface StorageValue {
 interface CreateCacheKeyArgs {
     model: CmsContentModel;
     field: CmsContentModelField;
-    fieldPath: string;
 }
-const createCacheKey = ({ model, field, fieldPath }: CreateCacheKeyArgs): string => {
-    return [model.modelId, field.id, fieldPath].join(".");
+const createCacheKey = ({ model, field }: CreateCacheKeyArgs): string => {
+    return [model.modelId, field.id].join(".");
 };
-
 /**
  * Remove when jsonpack gets PR with a fix merged
  * https://github.com/rgcl/jsonpack/pull/25/files
@@ -40,26 +38,21 @@ const transformArray = (value: Record<string, any> | any[]) => {
     return value;
 };
 
-function formatValue(fieldPath: string, value: any) {
-    return { values: { [fieldPath]: value } };
-}
-
 export default (): CmsModelFieldToStoragePlugin<OriginalValue, StorageValue> => {
     const cache = new Map<string, OriginalValue>();
     return {
         type: "cms-model-field-to-storage",
         name: "cms-model-field-to-storage-rich-text",
         fieldType: "rich-text",
-        async fromStorage({ model, field, fieldPath, getValue }) {
-            const cacheKey = createCacheKey({ model, field, fieldPath });
-            const storageValue = getValue(fieldPath);
+        async fromStorage({ model, field, value: storageValue }) {
+            const cacheKey = createCacheKey({ model, field });
 
             if (cache.has(cacheKey)) {
-                return formatValue(fieldPath, cache.get(cacheKey));
+                return cache.get(cacheKey);
             }
 
             if (!storageValue) {
-                return formatValue(fieldPath, storageValue);
+                return storageValue;
             } else if (typeof storageValue !== "object") {
                 throw new WebinyError(
                     `Value received in "fromStorage" function is not an object in field "${field.fieldId}".`
@@ -70,7 +63,7 @@ export default (): CmsModelFieldToStoragePlugin<OriginalValue, StorageValue> => 
              * TODO: remove with 5.9.0 upgrade
              */
             if (storageValue.hasOwnProperty("compression") === false) {
-                return formatValue(fieldPath, storageValue);
+                return storageValue;
             }
             const { compression, value } = storageValue;
             if (!compression) {
@@ -92,31 +85,33 @@ export default (): CmsModelFieldToStoragePlugin<OriginalValue, StorageValue> => 
                 );
             }
 
-            const unpacked = jsonpack.unpack(value);
+            try {
+                const unpacked = jsonpack.unpack(value);
 
-            cache.set(cacheKey, unpacked);
-
-            return formatValue(fieldPath, unpacked);
+                cache.set(cacheKey, unpacked);
+                
+                return unpacked;
+            } catch {
+                return null;
+            }
         },
-        async toStorage({ model, field, fieldPath, getValue }) {
-            let value = getValue(fieldPath);
+        async toStorage({ model, field, value }) {
             /**
              * There is a possibility that we are trying to compress already compressed value.
              * Introduced a bug with 5.8.0 storage operations, so just return the value to correct it.
              * TODO: remove with 5.9.0 upgrade.
              */
             if (value && value.hasOwnProperty("compression") === true) {
-                return formatValue(fieldPath, value);
+                return value as any;
             }
-            const cacheKey = createCacheKey({ model, field, fieldPath });
+            const cacheKey = createCacheKey({ model, field });
             value = transformArray(value);
             const packed = jsonpack.pack(value);
             cache.set(cacheKey, value);
-            
-            return formatValue(fieldPath, {
+            return {
                 compression: "jsonpack",
                 value: packed
-            });
+            };
         }
     };
 };

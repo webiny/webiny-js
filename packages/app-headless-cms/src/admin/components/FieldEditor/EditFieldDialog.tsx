@@ -19,7 +19,7 @@ import ValidatorsTab from "./EditFieldDialog/ValidatorsTab";
 import { Grid, Cell } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
 import { Elevation } from "@webiny/ui/Elevation";
-import {useFieldEditor} from "~/admin/components/FieldEditor/useFieldEditor";
+import { useFieldEditor } from "~/admin/components/FieldEditor/useFieldEditor";
 
 const t = i18n.namespace("app-headless-cms/admin/components/editor");
 

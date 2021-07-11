@@ -171,9 +171,7 @@ const ContentEntriesList = () => {
                                 className={listItemMinHeight}
                                 selected={item.id === entryId}
                             >
-                                <UIList.ListItemText
-                                    onClick={editEntry(item)}
-                                >
+                                <UIList.ListItemText onClick={editEntry(item)}>
                                     {item.meta.title || "Untitled"}
                                     <UIList.ListItemTextSecondary>
                                         {t`Last modified: {time}.`({

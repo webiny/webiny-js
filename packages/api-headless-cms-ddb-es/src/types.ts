@@ -3,7 +3,8 @@ import {
     CmsContentEntry,
     CmsContentModel,
     CmsContentModelField,
-    CmsContext
+    CmsContext,
+    CmsModelFieldToGraphQLPlugin
 } from "@webiny/api-headless-cms/types";
 import {
     ElasticsearchBoolQueryConfig,
@@ -138,9 +139,9 @@ interface CmsModelFieldToElasticsearchToArgs {
     context: CmsContext;
     model: CmsContentModel;
     field: CmsContentModelField;
-    fieldPath: string;
-    getValue(fieldPath: string): any;
+    value: any;
     getFieldIndexPlugin(fieldType: string): CmsModelFieldToElasticsearchPlugin;
+    getFieldTypePlugin(fieldType: string): CmsModelFieldToGraphQLPlugin;
 }
 
 /**
@@ -153,10 +154,21 @@ interface CmsModelFieldToElasticsearchFromArgs {
     context: CmsContext;
     model: CmsContentModel;
     field: CmsContentModelField;
-    fieldPath: string;
-    getValue(fieldPath: string): any;
-    getRawValue(fieldPath: string): any;
+    value: any;
+    rawValue: any;
     getFieldIndexPlugin(fieldType: string): CmsModelFieldToElasticsearchPlugin;
+    getFieldTypePlugin(fieldType: string): CmsModelFieldToGraphQLPlugin;
+}
+
+interface ToIndexValue {
+    /**
+     * Use this key to store value for indexing.
+     */
+    value?: any;
+    /**
+     * Use this key to tell ES that this value should not be indexed.
+     */
+    rawValue?: any;
 }
 
 /**
@@ -194,36 +206,24 @@ export interface CmsModelFieldToElasticsearchPlugin extends Plugin {
      * It returns `Partial<CmsContentIndexEntryType>`. Always return a top-level property of the entry since it is merged via spread operator.
      *
      * ```ts
-     * toIndex({toIndexEntry, storageEntry, originalEntry, field}) {
-     *    const value = toIndexEntry.values[field.fieldId];
-     *    delete toIndexEntry.values[field.fieldId];
+     * toIndex({ value }) {
      *    return {
-     *        values: toIndexEntry.values,
-     *        rawValues: {
-     *            ...toIndexEntry.rawValues,
-     *            [field.fieldId]: JSON.stringify(value),
-     *        },
+     *        value: value, // This will be stored and indexed
+     *        rawValue: JSON.stringify(value) // This will be stored but excluded from indexing
      *    };
      * }
      * ```
      */
-    toIndex?: (params: CmsModelFieldToElasticsearchToArgs) => Partial<CmsContentIndexEntry>;
+    toIndex?: (params: CmsModelFieldToElasticsearchToArgs) => ToIndexValue;
     /**
-     * This is meant to revert a transformation done in the `toIndex` method. Again, you can transform any field but try to keep things separated. It returns `Partial<CmsContentIndexEntryType>`. Always return a top-level property of the entry since it is merged via spread operator.
+     * This is meant to revert a transformation done in the `toIndex` method.
+     * You have access to "value" or a "rawValue", depending on what you returned from `toIndex`.
      *
      * ```ts
-     * fromIndex({entry, field}) {
-     *     const value = entry.rawValues[field.fieldId];
-     *     delete entry.rawValues[field.fieldId];
-     *     return {
-     *         values: {
-     *             ...entry.values,
-     *             [field.fieldId]: JSON.parse(value),
-     *         },
-     *         rawValues: entry.rawValues,
-     *     };
+     * fromIndex({ value, rawValue }) {
+     *     return JSON.parse(rawValue);
      * }
      * ```
      */
-    fromIndex?: (params: CmsModelFieldToElasticsearchFromArgs) => Partial<CmsContentIndexEntry>;
+    fromIndex?: (params: CmsModelFieldToElasticsearchFromArgs) => any;
 }

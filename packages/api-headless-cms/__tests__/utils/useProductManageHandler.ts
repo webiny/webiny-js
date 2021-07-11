@@ -38,9 +38,17 @@ const productFields = `
     variant {
         name
         price
+        category {
+            modelId
+            entryId
+        }
         options {
             name
             price
+            category {
+                modelId
+                entryId
+            }
         }
     }
 `;

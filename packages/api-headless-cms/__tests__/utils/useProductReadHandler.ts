@@ -21,9 +21,17 @@ const productFields = `
     variant {
         name
         price
+        category {
+            id
+            title
+        }
         options {
             name
             price
+            category {
+                id
+                title
+            }
         }
     }
 `;

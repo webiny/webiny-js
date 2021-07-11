@@ -48,7 +48,7 @@ export function useContentEntriesList() {
 
                 return next;
             });
-            
+
             if (search !== filter) {
                 query.set("search", filter);
                 history.push(`${baseUrl}?${query.toString()}`);

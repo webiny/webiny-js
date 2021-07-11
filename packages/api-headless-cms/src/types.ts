@@ -1554,8 +1554,7 @@ export interface CmsContentEntryPermission extends SecurityPermission {
 export interface CmsModelFieldToStoragePluginToStorageArgs<T> {
     model: CmsContentModel;
     field: CmsContentModelField;
-    fieldPath: string;
-    getValue(fieldPath: string): any;
+    value: T;
     getStoragePlugin(fieldType: string): CmsModelFieldToStoragePlugin<T>;
     context: CmsContext;
 }
@@ -1572,14 +1571,9 @@ export interface CmsModelFieldToStoragePluginToStorageArgs<T> {
 export interface CmsModelFieldToStoragePluginFromStorageArgs<T> {
     model: CmsContentModel;
     field: CmsContentModelField;
-    fieldPath: string;
-    getValue(fieldPath: string): any;
+    value: T;
     getStoragePlugin(fieldType: string): CmsModelFieldToStoragePlugin<T>;
     context: CmsContext;
-}
-
-interface StorageValues<T = any> {
-    values: Record<string, T>;
 }
 
 /**
@@ -1610,26 +1604,24 @@ export interface CmsModelFieldToStoragePlugin<
      * A function that is ran when storing the data. You can do what ever transformations you need on input value and return a new value that is stored into the database.
      *
      * ```ts
-     * toStorage({ fieldPath, getValue }) {
-     *      return { values: { [fieldPath]: gzip(getValue(fieldPath)) } };
+     * toStorage({ value }) {
+     *      return gzip(value);
      * }
      * ```
      */
-    toStorage: (
-        args: CmsModelFieldToStoragePluginToStorageArgs<Original>
-    ) => Promise<StorageValues<Converted>>;
+    toStorage: (args: CmsModelFieldToStoragePluginToStorageArgs<Original>) => Promise<Converted>;
     /**
      * A function that is ran when retrieving the data from the database. You either revert the action you did in the `toStorage` or handle it via some other way available to you.
      *
      * ```ts
-     * fromStorage({ fieldPath, getValue }) {
-     *      return { values: { [fieldPath]: ungzip(getValue(fieldPath)) } };
+     * fromStorage({ value }) {
+     *      return ungzip(value);
      * }
      * ```
      */
     fromStorage: (
-        args: CmsModelFieldToStoragePluginFromStorageArgs<StorageValues>
-    ) => Promise<StorageValues<Original>>;
+        args: CmsModelFieldToStoragePluginFromStorageArgs<Converted>
+    ) => Promise<Original>;
 }
 
 /**

@@ -1,5 +1,3 @@
-import lodashGet from "lodash.get";
-import lodashSet from "lodash.set";
 import Error from "@webiny/error";
 import {
     CmsContentEntry,
@@ -21,7 +19,6 @@ interface ExtractEntriesFromIndexArgs extends SetupEntriesIndexHelpersArgs {
 interface PrepareElasticsearchDataArgs extends SetupEntriesIndexHelpersArgs {
     model: CmsContentModel;
     storageEntry: CmsContentEntry;
-    originalEntry: CmsContentEntry;
 }
 
 export const prepareEntryToIndex = (args: PrepareElasticsearchDataArgs): CmsContentIndexEntry => {
@@ -33,16 +30,16 @@ export const prepareEntryToIndex = (args: PrepareElasticsearchDataArgs): CmsCont
     } = setupEntriesIndexHelpers({ context });
 
     function getFieldIndexPlugin(fieldType: string) {
-        return fieldIndexPlugins[fieldType];
+        return fieldIndexPlugins[fieldType] || defaultIndexFieldPlugin;
     }
 
-    function getValue(fieldPath: string) {
-        return lodashGet(storageEntry.values, fieldPath);
+    function getFieldTypePlugin(fieldType: string) {
+        return fieldTypePlugins[fieldType];
     }
 
     // These objects will contain values processed by field index plugins
-    const indexValues = {};
-    const indexRawValues = {};
+    const values = {};
+    const rawValues = {};
 
     // We're only interested in current model fields.
     for (const field of model.fields) {
@@ -50,38 +47,37 @@ export const prepareEntryToIndex = (args: PrepareElasticsearchDataArgs): CmsCont
             continue;
         }
 
-        const fieldTypePlugin = fieldTypePlugins[field.type];
+        const fieldTypePlugin = getFieldTypePlugin(field.type);
         if (!fieldTypePlugin) {
             throw new Error(`Missing field type plugin "${field.type}".`);
         }
 
-        const targetFieldPlugin = fieldIndexPlugins[field.type] || defaultIndexFieldPlugin;
-        /**
-         * We decided to use only the last registered plugin for the given field type.
-         */
+        const targetFieldPlugin = getFieldIndexPlugin(field.type);
+
+        // TODO: remove this `if` once we convert this plugin to proper plugin class
         if (targetFieldPlugin && targetFieldPlugin.toIndex) {
-            const { values = {}, rawValues = {} } = targetFieldPlugin.toIndex({
+            const { value, rawValue } = targetFieldPlugin.toIndex({
                 context,
                 model,
                 field,
-                getValue,
+                value: storageEntry.values[field.fieldId],
                 getFieldIndexPlugin,
-                fieldPath: field.fieldId
+                getFieldTypePlugin
             });
 
-            Object.keys(values).forEach(key => {
-                lodashSet(indexValues, key, values[key]);
-            });
+            if (typeof value !== "undefined") {
+                values[field.fieldId] = value;
+            }
 
-            Object.keys(rawValues).forEach(key => {
-                lodashSet(indexRawValues, key, rawValues[key]);
-            });
+            if (typeof rawValue !== "undefined") {
+                rawValues[field.fieldId] = rawValue;
+            }
         }
     }
     return {
         ...storageEntry,
-        values: indexValues,
-        rawValues: indexRawValues
+        values,
+        rawValues
     } as CmsContentIndexEntry;
 };
 
@@ -124,22 +120,18 @@ export const extractEntriesFromIndex = ({
     } = setupEntriesIndexHelpers({ context });
 
     function getFieldIndexPlugin(fieldType: string) {
-        return fieldIndexPlugins[fieldType];
+        return fieldIndexPlugins[fieldType] || defaultIndexFieldPlugin;
+    }
+
+    function getFieldTypePlugin(fieldType: string) {
+        return fieldTypePlugins[fieldType];
     }
 
     const list: CmsContentEntry[] = [];
-    
+
     for (const entry of entries) {
         // This object will contain values processed by field index plugins
         const indexValues = {};
-
-        function getValue(fieldPath: string) {
-            return lodashGet(entry.values, fieldPath);
-        }
-
-        function getRawValue(fieldPath: string) {
-            return lodashGet(entry.rawValues, fieldPath);
-        }
 
         // We only consider fields that are present in the model
         for (const field of model.fields) {
@@ -148,21 +140,17 @@ export const extractEntriesFromIndex = ({
                 throw new Error(`Missing field type plugin "${field.type}".`);
             }
 
-            const targetFieldPlugin = fieldIndexPlugins[field.type] || defaultIndexFieldPlugin;
+            const targetFieldPlugin = getFieldIndexPlugin(field.type);
             if (targetFieldPlugin && targetFieldPlugin.fromIndex) {
                 try {
-                    const { values } = targetFieldPlugin.fromIndex({
+                    indexValues[field.fieldId] = targetFieldPlugin.fromIndex({
                         context,
                         model,
                         field,
-                        fieldPath: field.fieldId,
                         getFieldIndexPlugin,
-                        getValue,
-                        getRawValue
-                    });
-
-                    Object.keys(values).forEach(key => {
-                        lodashSet(indexValues, key, values[key]);
+                        getFieldTypePlugin,
+                        value: entry.values[field.fieldId],
+                        rawValue: entry.rawValues[field.fieldId]
                     });
                 } catch (ex) {
                     throw new Error(

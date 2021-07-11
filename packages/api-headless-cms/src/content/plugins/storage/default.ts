@@ -4,14 +4,10 @@ export default (): CmsModelFieldToStoragePlugin => ({
     type: "cms-model-field-to-storage",
     name: "cms-model-field-to-storage-default",
     fieldType: "*",
-    async fromStorage({ fieldPath, getValue }) {
-        return {
-            values: { [fieldPath]: getValue(fieldPath) }
-        };
+    async fromStorage({ value }) {
+        return value;
     },
-    async toStorage({ fieldPath, getValue }) {
-        return {
-            values: { [fieldPath]: getValue(fieldPath) }
-        };
+    async toStorage({ value }) {
+        return value;
     }
 });

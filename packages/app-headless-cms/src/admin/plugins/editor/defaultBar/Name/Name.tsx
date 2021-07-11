@@ -4,7 +4,7 @@ import { Tooltip } from "@webiny/ui/Tooltip";
 import { useHotkeys } from "react-hotkeyz";
 import { FormName, formNameWrapper, NameInputWrapper, NameWrapper } from "./NameStyled";
 import { i18n } from "@webiny/app/i18n";
-import {useContentModelEditor} from "~/admin/components/ContentModelEditor/useContentModelEditor";
+import { useContentModelEditor } from "~/admin/components/ContentModelEditor/useContentModelEditor";
 
 const t = i18n.namespace("ContentModelEditor.Name");
 

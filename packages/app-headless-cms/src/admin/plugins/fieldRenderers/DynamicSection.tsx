@@ -24,7 +24,14 @@ type Props = {
     emptyValue?: any;
 };
 
-const DynamicSection = ({ field, getBind, Label, children, showLabel = true, emptyValue = "" }: Props) => {
+const DynamicSection = ({
+    field,
+    getBind,
+    Label,
+    children,
+    showLabel = true,
+    emptyValue = ""
+}: Props) => {
     const Bind = getBind();
     const FirstFieldBind = getBind(0);
 

@@ -31,7 +31,7 @@ export const createReadQuery = model => {
                     createdBy {
                         id
                     }
-                    ${createFieldsList(model)}
+                    ${createFieldsList(model.fields)}
                     savedOn
                     meta {
                         ${CONTENT_META_FIELDS}
@@ -121,7 +121,7 @@ export const createCreateMutation = model => {
                 data {
                     id
                     savedOn
-                    ${createFieldsList(model)}
+                    ${createFieldsList(model.fields)}
                     meta {
                         ${CONTENT_META_FIELDS}
                     }
@@ -141,7 +141,7 @@ export const createCreateFromMutation = model => {
                 data {
                     id
                     savedOn
-                    ${createFieldsList(model)}
+                    ${createFieldsList(model.fields)}
                     meta {
                         ${CONTENT_META_FIELDS}
                     }
@@ -159,7 +159,7 @@ export const createUpdateMutation = model => {
             content: update${ucFirstModelId}(revision: $revision, data: $data) {
                 data {
                     id
-                    ${createFieldsList(model)}
+                    ${createFieldsList(model.fields)}
                     savedOn
                     meta { 
                         ${CONTENT_META_FIELDS} 

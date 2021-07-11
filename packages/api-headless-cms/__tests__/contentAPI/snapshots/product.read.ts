@@ -5,14 +5,16 @@ export default /* GraphQL */ `
     type Product_Variant_Options {
         name: String
         price: Number
+        category: Category
     }
-    
+
     type Product_Variant {
         name: String
         price: Number
-        options: [Product_Variant_Options]
+        category: Category
+        options: [Product_Variant_Options!]
     }
-    
+
     type Product {
         id: ID!
         entryId: String!

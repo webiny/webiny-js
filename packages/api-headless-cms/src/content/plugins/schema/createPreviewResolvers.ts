@@ -1,3 +1,43 @@
-import { createReadResolvers } from "./createReadResolvers";
+import { CmsContentModel, CmsFieldTypePlugins, CmsContext } from "~/types";
+import { createReadTypeName, createTypeName } from "../utils/createTypeName";
+import { resolveGet } from "./resolvers/preview/resolveGet";
+import { resolveList } from "./resolvers/preview/resolveList";
+import { pluralizedTypeName } from "../utils/pluralizedTypeName";
+import { createFieldResolversFactory } from "~/content/plugins/schema/createFieldResolvers";
 
-export const createPreviewResolvers = createReadResolvers;
+export interface CreateReadResolvers {
+    (params: {
+        models: CmsContentModel[];
+        model: CmsContentModel;
+        context: CmsContext;
+        fieldTypePlugins: CmsFieldTypePlugins;
+    }): any;
+}
+
+export const createPreviewResolvers: CreateReadResolvers = ({
+    models,
+    model,
+    fieldTypePlugins
+}) => {
+    const typeName = createTypeName(model.modelId);
+    const rTypeName = createReadTypeName(typeName);
+
+    const createFieldResolvers = createFieldResolversFactory({
+        endpointType: "read",
+        models,
+        model,
+        fieldTypePlugins
+    });
+
+    return {
+        Query: {
+            [`get${typeName}`]: resolveGet({ model }),
+            [`list${pluralizedTypeName(typeName)}`]: resolveList({ model })
+        },
+        ...createFieldResolvers({
+            graphQLType: rTypeName,
+            fields: model.fields,
+            isRoot: true
+        })
+    };
+};

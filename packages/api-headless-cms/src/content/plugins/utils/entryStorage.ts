@@ -1,5 +1,5 @@
-import lodashGet from "lodash.get";
-import lodashSet from "lodash.set";
+import lodashGet from "lodash/get";
+import lodashSet from "lodash/set";
 import Error from "@webiny/error";
 import {
     CmsContentEntry,
@@ -48,9 +48,6 @@ const entryStorageTransform = async (
     entry: CmsContentEntry
 ): Promise<CmsContentEntry> => {
     const getStoragePlugin = getStoragePluginFactory(context);
-    function getValue(fieldPath: string) {
-        return lodashGet(entry.values, fieldPath);
-    }
 
     const transformedValues: Record<string, any> = {};
     for (const field of model.fields) {
@@ -62,19 +59,12 @@ const entryStorageTransform = async (
             );
         }
 
-        const transformed = await plugin[operation]({
+        transformedValues[field.fieldId] = await plugin[operation]({
             context,
             model,
             field,
-            fieldPath: field.fieldId,
-            getValue,
+            value: entry.values[field.fieldId],
             getStoragePlugin
-        });
-
-        const { values } = transformed;
-
-        Object.keys(values).forEach(key => {
-            lodashSet(transformedValues, key, values[key]);
         });
     }
 
@@ -110,8 +100,7 @@ interface EntryFieldFromStorageTransformParams {
     context: CmsContext;
     model: CmsContentModel;
     field: CmsContentModelField;
-    fieldPath: string;
-    getValue(fieldPath: string): any;
+    value: any;
 }
 /*
  * A function that is used to transform a single field from storage
@@ -119,7 +108,7 @@ interface EntryFieldFromStorageTransformParams {
 export const entryFieldFromStorageTransform = async (
     params: EntryFieldFromStorageTransformParams
 ): Promise<any> => {
-    const { context, model, field, getValue } = params;
+    const { context, model, field, value } = params;
     const getStoragePlugin = getStoragePluginFactory(context);
 
     const plugin = getStoragePlugin(field.type);
@@ -135,8 +124,7 @@ export const entryFieldFromStorageTransform = async (
         context,
         model,
         field,
-        fieldPath: field.fieldId,
-        getValue,
+        value,
         getStoragePlugin
     });
 };

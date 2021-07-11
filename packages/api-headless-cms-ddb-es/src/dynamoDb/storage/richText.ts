@@ -15,11 +15,10 @@ export interface StorageValue {
 
 interface CreateCacheKeyArgs {
     model: CmsContentModel;
-    entry: CmsContentEntry;
     field: CmsContentModelField;
 }
-const createCacheKey = ({ model, entry, field }: CreateCacheKeyArgs): string => {
-    return [model.modelId, entry.id, entry.savedOn, field.fieldId].join(".");
+const createCacheKey = ({ model, field }: CreateCacheKeyArgs): string => {
+    return [model.modelId, field.fieldId, field.id].join(".");
 };
 /**
  * Remove when jsonpack gets PR with a fix merged
@@ -46,12 +45,8 @@ export default (): CmsModelFieldToStoragePlugin<OriginalValue, StorageValue> => 
         type: "cms-model-field-to-storage",
         name: "cms-model-field-to-storage-rich-text",
         fieldType: "rich-text",
-        async fromStorage({ model, entry, field, value: storageValue }) {
-            const cacheKey = createCacheKey({
-                model,
-                field,
-                entry
-            });
+        async fromStorage({ model, field, value: storageValue }) {
+            const cacheKey = createCacheKey({ model, field });
 
             if (cache.has(cacheKey)) {
                 return cache.get(cacheKey);
@@ -99,7 +94,7 @@ export default (): CmsModelFieldToStoragePlugin<OriginalValue, StorageValue> => 
 
             return unpacked;
         },
-        async toStorage({ model, field, entry, value }) {
+        async toStorage({ model, field, value }) {
             /**
              * There is a possibility that we are trying to compress already compressed value.
              * Introduced a bug with 5.8.0 storage operations, so just return the value to correct it.
@@ -108,11 +103,7 @@ export default (): CmsModelFieldToStoragePlugin<OriginalValue, StorageValue> => 
             if (value && value.hasOwnProperty("compression") === true) {
                 return value as any;
             }
-            const cacheKey = createCacheKey({
-                model,
-                field,
-                entry
-            });
+            const cacheKey = createCacheKey({ model, field });
             value = transformArray(value);
             const packed = jsonpack.pack(value);
             cache.set(cacheKey, value);

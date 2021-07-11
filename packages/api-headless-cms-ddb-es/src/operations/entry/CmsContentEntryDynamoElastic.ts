@@ -120,7 +120,6 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         const esEntry = prepareEntryToIndex({
             context: this.context,
             model,
-            originalEntry: lodashCloneDeep(entry),
             storageEntry: lodashCloneDeep(storageEntry)
         });
 
@@ -191,7 +190,6 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         const esEntry = prepareEntryToIndex({
             context: this.context,
             model,
-            originalEntry: lodashCloneDeep(entry),
             storageEntry: lodashCloneDeep(storageEntry)
         });
         const { index: esIndex } = configurations.es(this.context, model);
@@ -388,7 +386,6 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
             const esEntry = prepareEntryToIndex({
                 context: this.context,
                 model,
-                originalEntry: lodashCloneDeep(entryToSetAsLatest),
                 storageEntry: lodashCloneDeep(storageEntryToSetAsLatest)
             });
             /**
@@ -563,7 +560,6 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
             const esEntry = prepareEntryToIndex({
                 context: this.context,
                 model,
-                originalEntry: lodashCloneDeep(entry),
                 storageEntry: lodashCloneDeep(storageEntry)
             });
             const esDoc = {
@@ -771,7 +767,6 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         const preparedEntryData = prepareEntryToIndex({
             context: this.context,
             model,
-            originalEntry: lodashCloneDeep(entry),
             storageEntry: lodashCloneDeep(storageEntry)
         });
         /**
@@ -881,7 +876,6 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
             const preparedEntryData = prepareEntryToIndex({
                 context: this.context,
                 model,
-                originalEntry: lodashCloneDeep(latestEntry),
                 storageEntry: lodashCloneDeep(latestStorageEntry)
             });
 
@@ -964,7 +958,6 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
             const preparedEntryData = prepareEntryToIndex({
                 context: this.context,
                 model,
-                originalEntry: lodashCloneDeep(latestEntry),
                 storageEntry: lodashCloneDeep(latestStorageEntry)
             });
 
@@ -1043,7 +1036,6 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
             const preparedEntryData = prepareEntryToIndex({
                 context: this.context,
                 model,
-                originalEntry: lodashCloneDeep(latestEntry),
                 storageEntry: lodashCloneDeep(latestStorageEntry)
             });
             batch.update({

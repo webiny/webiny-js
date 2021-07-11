@@ -40,7 +40,7 @@ const RevisionSelector = () => {
 
     const allRevisions: Partial<CmsContentEntryRevision>[] = revisions.length
         ? revisions
-        : [{ id: "new", meta: { version: 1, status: "draft" } }] as any;
+        : ([{ id: "new", meta: { version: 1, status: "draft" } }] as any);
 
     return (
         <Menu
