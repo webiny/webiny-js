@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.10.0](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.2...v5.10.0) (2021-07-06)
+
+**Note:** Version bump only for package @webiny/api-form-builder
+
+
+
+
+
+# [5.10.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.1...v5.10.0-beta.2) (2021-07-06)
+
+**Note:** Version bump only for package @webiny/api-form-builder
+
+
+
+
+
+# [5.10.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.0...v5.10.0-beta.1) (2021-07-06)
+
+
+### Bug Fixes
+
+* **api-form-builder:** delete settings record if ES installation fails ([8abe74b](https://github.com/webiny/webiny-js/commit/8abe74bb87f6ae94f75d9a1487e93ca1c26568e6))
+
+
+
+
+
+# [5.10.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.9.0...v5.10.0-beta.0) (2021-07-02)
+
+
+### Features
+
+* **api-file-manager:** storage operations ([#1716](https://github.com/webiny/webiny-js/issues/1716)) ([7b81e0b](https://github.com/webiny/webiny-js/commit/7b81e0b7c2ddf396cad09334e10c39e588d8643b))
+
+
+
+
+
 # [5.9.0](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.2...v5.9.0) (2021-06-21)
 
 **Note:** Version bump only for package @webiny/api-form-builder

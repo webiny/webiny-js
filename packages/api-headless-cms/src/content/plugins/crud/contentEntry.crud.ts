@@ -9,8 +9,8 @@ import {
     CmsContext,
     CmsContentEntryStorageOperationsProvider,
     CmsStorageContentEntry
-} from "../../../types";
-import * as utils from "../../../utils";
+} from "~/types";
+import * as utils from "~/utils";
 import { validateModelEntryData } from "./contentEntry/entryDataValidation";
 import {
     afterCreateHook,

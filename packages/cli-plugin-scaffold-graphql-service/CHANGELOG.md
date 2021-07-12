@@ -3,6 +3,48 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.10.0](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.2...v5.10.0) (2021-07-06)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold-graphql-service
+
+
+
+
+
+# [5.10.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.1...v5.10.0-beta.2) (2021-07-06)
+
+**Note:** Version bump only for package @webiny/cli-plugin-scaffold-graphql-service
+
+
+
+
+
+# [5.10.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.0...v5.10.0-beta.1) (2021-07-06)
+
+
+### Bug Fixes
+
+* replace TargetDataModels with TargetDataModels ([8b1b554](https://github.com/webiny/webiny-js/commit/8b1b5540a3df8bb568939b67a3b31b4be72dbe22))
+
+
+
+
+
+# [5.10.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.9.0...v5.10.0-beta.0) (2021-07-02)
+
+
+### Bug Fixes
+
+* remove parent graphql/admin folder ([99e6a08](https://github.com/webiny/webiny-js/commit/99e6a08a3a10a81ca639dfe86e6c48bcdc61b784))
+* spread data instead of manual assignment ([8dd03be](https://github.com/webiny/webiny-js/commit/8dd03be00828d9eca73df3206da048e1fa79cb8f))
+* update links ([3f996fc](https://github.com/webiny/webiny-js/commit/3f996fc6c46451820298a6b8b5803946768941fa))
+* use 'entity' word instead 'data model' ([1279bc1](https://github.com/webiny/webiny-js/commit/1279bc1a66f2efdf1a467e5a65fb1ce16574deea))
+* use singular for entity name ([4c23fdd](https://github.com/webiny/webiny-js/commit/4c23fdddacc3906978667a9aa4cbb5d183f2055b))
+
+
+
+
+
 # [5.9.0](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.2...v5.9.0) (2021-06-21)
 
 **Note:** Version bump only for package @webiny/cli-plugin-scaffold-graphql-service

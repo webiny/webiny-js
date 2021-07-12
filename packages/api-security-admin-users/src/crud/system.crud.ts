@@ -2,13 +2,16 @@ import { SystemCRUD, AdminUsersContext } from "../types";
 import dbArgs from "./dbArgs";
 
 export default (context: AdminUsersContext): SystemCRUD => {
-    const { db, tenancy } = context;
+    const { db } = context;
 
-    const keys = () => ({ PK: `T#${tenancy.getCurrentTenant().id}#SYSTEM`, SK: "SECURITY" });
+    const keys = () => ({
+        PK: `T#${context.tenancy.getCurrentTenant().id}#SYSTEM`,
+        SK: "SECURITY"
+    });
 
     return {
         async getVersion() {
-            const rootTenant = await tenancy.getRootTenant();
+            const rootTenant = await context.tenancy.getRootTenant();
             if (!rootTenant) {
                 return null;
             }

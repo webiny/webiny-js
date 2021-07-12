@@ -98,7 +98,8 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
                 ...input,
                 id,
                 meta: {
-                    private: false
+                    private: false,
+                    ...(input.meta || {})
                 },
                 tenant: tenant.id,
                 createdOn: new Date().toISOString(),
@@ -256,7 +257,8 @@ const filesContextCrudPlugin = new ContextPlugin<FileManagerContext>(async conte
                 return {
                     ...input,
                     meta: {
-                        private: false
+                        private: false,
+                        ...(input.meta || {})
                     },
                     id: mdbid(),
                     tenant: tenant.id,

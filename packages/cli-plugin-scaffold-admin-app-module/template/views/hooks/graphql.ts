@@ -1,6 +1,23 @@
 import gql from "graphql-tag";
 
+// The same set of fields is being used on all query and mutation operations below.
+export const TARGET_DATA_MODEL_FIELDS_FRAGMENT = /* GraphQL */ `
+    fragment TargetDataModelFields on TargetDataModel {
+        id
+        title
+        description
+        createdOn
+        savedOn
+        createdBy {
+            id
+            displayName
+            type
+        }
+    }
+`;
+
 export const LIST_TARGET_DATA_MODELS = gql`
+    ${TARGET_DATA_MODEL_FIELDS_FRAGMENT}
     query ListTargetDataModels(
         $sort: TargetDataModelsListSort
         $limit: Int
@@ -10,16 +27,7 @@ export const LIST_TARGET_DATA_MODELS = gql`
         targetDataModels {
             listTargetDataModels(sort: $sort, limit: $limit, after: $after, before: $before) {
                 data {
-                    id
-                    title
-                    description
-                    createdOn
-                    savedOn
-                    createdBy {
-                        id
-                        displayName
-                        type
-                    }
+                    ...TargetDataModelFields
                 }
                 meta {
                     before
@@ -32,76 +40,44 @@ export const LIST_TARGET_DATA_MODELS = gql`
 `;
 
 export const CREATE_TARGET_DATA_MODEL = gql`
+    ${TARGET_DATA_MODEL_FIELDS_FRAGMENT}
     mutation CreateTargetDataModel($data: TargetDataModelCreateInput!) {
         targetDataModels {
             createTargetDataModel(data: $data) {
-                id
-                title
-                description
-                createdOn
-                savedOn
-                createdBy {
-                    id
-                    displayName
-                    type
-                }
+                ...TargetDataModelFields
             }
         }
     }
 `;
 
 export const GET_TARGET_DATA_MODEL = gql`
+    ${TARGET_DATA_MODEL_FIELDS_FRAGMENT}
     query GetTargetDataModel($id: ID!) {
         targetDataModels {
             getTargetDataModel(id: $id) {
-                id
-                title
-                description
-                createdOn
-                savedOn
-                createdBy {
-                    id
-                    displayName
-                    type
-                }
+                ...TargetDataModelFields
             }
         }
     }
 `;
 
 export const DELETE_TARGET_DATA_MODEL = gql`
+    ${TARGET_DATA_MODEL_FIELDS_FRAGMENT}
     mutation DeleteTargetDataModel($id: ID!) {
         targetDataModels {
             deleteTargetDataModel(id: $id) {
-                id
-                title
-                description
-                createdOn
-                savedOn
-                createdBy {
-                    id
-                    displayName
-                    type
-                }
+                ...TargetDataModelFields
             }
         }
     }
 `;
 
 export const UPDATE_TARGET_DATA_MODEL = gql`
+    ${TARGET_DATA_MODEL_FIELDS_FRAGMENT}
     mutation UpdateTargetDataModel($id: ID!, $data: TargetDataModelUpdateInput!) {
         targetDataModels {
             updateTargetDataModel(id: $id, data: $data) {
-                id
-                title
-                description
-                createdOn
-                savedOn
-                createdBy {
-                    id
-                    displayName
-                    type
-                }
+                ...TargetDataModelFields
             }
         }
     }

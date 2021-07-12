@@ -81,7 +81,7 @@ export default class TargetDataModelsMutationResolver extends TargetDataModelsRe
      */
     async updateTargetDataModel({ id, data }: UpdateTargetDataModelParams) {
         // If entry is not found, we throw an error.
-        const { Item: targetDataModel } = await TargetDataModels.get({ PK: this.getPK(), SK: id });
+        const { Item: targetDataModel } = await TargetDataModel.get({ PK: this.getPK(), SK: id });
         if (!targetDataModel) {
             throw new Error(`TargetDataModel "${id}" not found.`);
         }
@@ -100,13 +100,13 @@ export default class TargetDataModelsMutationResolver extends TargetDataModelsRe
      */
     async deleteTargetDataModel({ id }: DeleteTargetDataModelParams) {
         // If entry is not found, we throw an error.
-        const { Item: targetDataModel } = await TargetDataModels.get({ PK: this.getPK(), SK: id });
+        const { Item: targetDataModel } = await TargetDataModel.get({ PK: this.getPK(), SK: id });
         if (!targetDataModel) {
             throw new Error(`TargetDataModel "${id}" not found.`);
         }
 
         // Will throw an error if something goes wrong.
-        await TargetDataModels.delete(targetDataModel);
+        await TargetDataModel.delete(targetDataModel);
 
         return targetDataModel;
     }
