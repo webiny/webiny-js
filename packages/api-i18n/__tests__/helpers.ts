@@ -10,11 +10,11 @@ import { GET_VERSION, INSTALL } from "./graphql/system";
 
 export const apiCallsFactory = invoke => {
     return {
-        async createI18NLocale(variables) {
-            return invoke({ body: { query: CREATE_LOCALE, variables } });
+        async createI18NLocale(variables, fields: string[] = []) {
+            return invoke({ body: { query: CREATE_LOCALE(fields), variables } });
         },
-        async updateI18NLocale(variables) {
-            return invoke({ body: { query: UPDATE_LOCALE, variables } });
+        async updateI18NLocale(variables, fields: string[] = []) {
+            return invoke({ body: { query: UPDATE_LOCALE(fields), variables } });
         },
         async deleteI18NLocale(variables) {
             return invoke({ body: { query: DELETE_LOCALE, variables } });

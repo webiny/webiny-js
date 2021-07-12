@@ -99,8 +99,8 @@ export default new ContextPlugin<I18NContext>(async context => {
             const defaultLocale = await storageOperations.getDefault();
 
             const locale: I18NLocale = {
+                ...input,
                 default: input.default === true,
-                code: input.code,
                 createdOn: new Date().toISOString(),
                 createdBy: {
                     id: identity.id,
@@ -192,7 +192,7 @@ export default new ContextPlugin<I18NContext>(async context => {
                     original,
                     locale
                 });
-                if (locale.default) {
+                if (locale.default && original.default !== locale.default) {
                     await storageOperations.updateDefault({
                         previous: defaultLocale,
                         locale

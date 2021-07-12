@@ -28,6 +28,12 @@ export default (params: { context: I18NContext; table: Table }): Entity<any> => 
             default: {
                 type: "boolean"
             },
+            webinyVersion: {
+                type: "string"
+            },
+            tenant: {
+                type: "string"
+            },
             ...attributes
         }
     });

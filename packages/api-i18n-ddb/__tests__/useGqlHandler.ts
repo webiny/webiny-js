@@ -7,10 +7,37 @@ import tenancyPlugins from "@webiny/api-tenancy";
 import securityPlugins from "@webiny/api-security";
 import { SecurityIdentity } from "@webiny/api-security";
 import { apiCallsFactory } from "../../api-i18n/__tests__/helpers";
+import { SecurityPermission } from "@webiny/api-security/types";
+import dbPlugins from "@webiny/handler-db";
+import { DynamoDbDriver } from "@webiny/db-dynamodb";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
-export default () => {
-    // Creates the actual handler. Feel free to add additional plugins if needed.
+type UseGqlHandlerParams = {
+    permissions?: SecurityPermission[];
+    identity?: SecurityIdentity;
+    plugins?: any;
+};
+export default (params: UseGqlHandlerParams) => {
+    const { plugins: extraPlugins } = params;
+
+    const documentClient = new DocumentClient({
+        convertEmptyValues: true,
+        endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
+        sslEnabled: false,
+        region: "local",
+        accessKeyId: "test",
+        secretAccessKey: "test"
+    });
+
     const handler = createHandler(
+        dbPlugins({
+            table: "I18N",
+            driver: new DynamoDbDriver({
+                documentClient
+            })
+        }),
+        i18nDynamoDbStorageOperations(),
+        dynamoDbPlugins(),
         tenancyPlugins(),
         graphqlHandler(),
         securityPlugins(),
@@ -38,8 +65,7 @@ export default () => {
             }
         },
         i18nPlugins(),
-        dynamoDbPlugins(),
-        i18nDynamoDbStorageOperations()
+        extraPlugins || []
     );
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.

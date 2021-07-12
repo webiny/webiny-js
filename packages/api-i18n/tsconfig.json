@@ -24,9 +24,6 @@
     },
     {
       "path": "../plugins"
-    },
-    {
-      "path": "../project-utils"
     }
   ],
   "compilerOptions": {
@@ -47,9 +44,7 @@
       "@webiny/handler-graphql/*": ["../handler-graphql/src/*"],
       "@webiny/handler-graphql": ["../handler-graphql/src"],
       "@webiny/plugins/*": ["../plugins/src/*"],
-      "@webiny/plugins": ["../plugins/src"],
-      "@webiny/project-utils/*": ["../project-utils/src/*"],
-      "@webiny/project-utils": ["../project-utils/src"]
+      "@webiny/plugins": ["../plugins/src"]
     },
     "baseUrl": "."
   }
