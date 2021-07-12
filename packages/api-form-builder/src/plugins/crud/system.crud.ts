@@ -22,7 +22,7 @@ export default {
                         query: keys()
                     });
 
-                    return system.version;
+                    return system ? system.version : null;
                 },
                 async setVersion(version: string) {
                     const { db } = context;
