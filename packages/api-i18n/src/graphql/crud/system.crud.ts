@@ -27,20 +27,7 @@ export default new ContextPlugin<I18NContext>(async context => {
         getVersion: async () => {
             const system = await storageOperations.get();
 
-            // Backwards compatibility check
-            if (!system) {
-                const [locales] = await context.i18n.locales.list({
-                    where: {
-                        default: true
-                    },
-                    limit: 1
-                });
-                // If defaultLocale exists, it means this system was installed before versioning was introduced.
-                // 5.0.0-beta.4 is the last version before versioning was introduced.
-                return locales.length > 0 ? "5.0.0-beta.4" : null;
-            }
-
-            return system.version;
+            return system ? system.version : null;
         },
         setVersion: async version => {
             const original = await storageOperations.get();

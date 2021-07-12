@@ -15,25 +15,12 @@ export default {
             ...context.formBuilder,
             system: {
                 async getVersion() {
-                    const { db, i18n } = context;
+                    const { db } = context;
 
                     const [[system]] = await db.read({
                         ...defaults.db,
                         query: keys()
                     });
-
-                    // Backwards compatibility check
-                    if (!system) {
-                        const [[settings]] = await db.read({
-                            ...defaults.db,
-                            query: {
-                                PK: `T#root#L#${i18n.getDefaultLocale().code}#FB#SETTINGS`,
-                                SK: "default"
-                            }
-                        });
-
-                        return settings ? "5.0.0-beta.4" : null;
-                    }
 
                     return system.version;
                 },
