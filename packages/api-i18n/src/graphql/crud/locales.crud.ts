@@ -4,6 +4,8 @@ import WebinyError from "@webiny/error";
 import { NotFoundError } from "@webiny/handler-graphql";
 import { NotAuthorizedError } from "@webiny/api-security";
 import { LocalesStorageOperationsProviderPlugin } from "~/plugins/LocalesStorageOperationsProviderPlugin";
+import { LocalePlugin } from "~/plugins/LocalePlugin";
+import { runLifecycleEvent } from "./locales/lifecycleEvent";
 
 export default new ContextPlugin<I18NContext>(async context => {
     if (!context.i18n) {
@@ -24,6 +26,8 @@ export default new ContextPlugin<I18NContext>(async context => {
     const storageOperations = await providerPlugin.provide({
         context
     });
+
+    const localePlugins = context.plugins.byType<LocalePlugin>(LocalePlugin.type);
 
     context.i18n.locales = {
         getDefault: async () => {
@@ -76,7 +80,7 @@ export default new ContextPlugin<I18NContext>(async context => {
         },
 
         create: async input => {
-            const { security } = context;
+            const { security, tenancy } = context;
 
             const permission = await security.getPermission("i18n.locale");
 
@@ -95,26 +99,39 @@ export default new ContextPlugin<I18NContext>(async context => {
             const defaultLocale = await storageOperations.getDefault();
 
             const locale: I18NLocale = {
+                ...input,
                 default: input.default === true,
-                code: input.code,
                 createdOn: new Date().toISOString(),
                 createdBy: {
                     id: identity.id,
                     displayName: identity.displayName,
                     type: identity.type
-                }
+                },
+                tenant: tenancy.getCurrentTenant().id,
+                webinyVersion: context.WEBINY_VERSION
             };
 
             try {
-                await storageOperations.create({
+                await runLifecycleEvent("beforeCreate", {
+                    context,
+                    plugins: localePlugins,
+                    data: locale
+                });
+                const result = await storageOperations.create({
                     locale
                 });
                 if (locale.default) {
                     await storageOperations.updateDefault({
                         previous: defaultLocale,
-                        locale
+                        locale: result
                     });
                 }
+                await runLifecycleEvent("afterCreate", {
+                    context,
+                    plugins: localePlugins,
+                    data: locale,
+                    locale: result
+                });
                 return locale;
             } catch (ex) {
                 throw new WebinyError(
@@ -160,20 +177,34 @@ export default new ContextPlugin<I18NContext>(async context => {
 
             const locale: I18NLocale = {
                 ...original,
-                ...input
+                ...input,
+                webinyVersion: context.WEBINY_VERSION
             };
 
             try {
-                await storageOperations.update({
+                await runLifecycleEvent("beforeUpdate", {
+                    context,
+                    plugins: localePlugins,
+                    original,
+                    data: locale
+                });
+                const result = await storageOperations.update({
                     original,
                     locale
                 });
-                if (locale.default) {
+                if (locale.default && original.default !== locale.default) {
                     await storageOperations.updateDefault({
                         previous: defaultLocale,
                         locale
                     });
                 }
+                await runLifecycleEvent("afterUpdate", {
+                    context,
+                    plugins: localePlugins,
+                    data: locale,
+                    original,
+                    locale: result
+                });
                 return locale;
             } catch (ex) {
                 throw new WebinyError(
@@ -209,7 +240,17 @@ export default new ContextPlugin<I18NContext>(async context => {
                 throw new WebinyError("Cannot delete the last locale.");
             }
             try {
+                await runLifecycleEvent("beforeDelete", {
+                    context,
+                    plugins: localePlugins,
+                    locale
+                });
                 await storageOperations.delete({
+                    locale
+                });
+                await runLifecycleEvent("afterDelete", {
+                    context,
+                    plugins: localePlugins,
                     locale
                 });
                 return locale;

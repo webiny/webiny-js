@@ -36,35 +36,41 @@ export const ERROR_FIELDS = `
     message
 `;
 
-export const CREATE_LOCALE = /* GraphQL */ `
-    mutation CreateI18NLocale($data: I18NLocaleInput!) {
-        i18n {
-            createI18NLocale(data: $data) {
-                data {
-                    ${BASE_FIELDS}
-                }
-                error {
-                    ${ERROR_FIELDS}
+export const CREATE_LOCALE = (fields: string[] = []) => {
+    return /* GraphQL */ `
+        mutation CreateI18NLocale($data: I18NLocaleInput!) {
+            i18n {
+                createI18NLocale(data: $data) {
+                    data {
+                        ${BASE_FIELDS}
+                        ${fields.join("\n")}
+                    }
+                    error {
+                        ${ERROR_FIELDS}
+                    }
                 }
             }
         }
-    }
-`;
+    `;
+};
 
-export const UPDATE_LOCALE = /* GraphQL */ `
-    mutation UpdateI18NLocale($code: String!, $data: I18NLocaleUpdateInput!) {
-        i18n {
-            updateI18NLocale(code: $code, data: $data) {
-                data {
-                    ${BASE_FIELDS}
-                }
-                error {
-                    ${ERROR_FIELDS}
+export const UPDATE_LOCALE = (fields: string[] = []) => {
+    return /* GraphQL */ `
+        mutation UpdateI18NLocale($code: String!, $data: I18NLocaleUpdateInput!) {
+            i18n {
+                updateI18NLocale(code: $code, data: $data) {
+                    data {
+                        ${BASE_FIELDS}
+                        ${fields.join("\n")}
+                    }
+                    error {
+                        ${ERROR_FIELDS}
+                    }
                 }
             }
         }
-    }
-`;
+    `;
+};
 
 export const LIST_LOCALES = /* GraphQL */ `
     query ListI18NLocales {

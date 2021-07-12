@@ -1,34 +1,43 @@
 import { createHandler } from "@webiny/handler-aws";
 import graphqlHandler from "@webiny/handler-graphql";
-import i18nPlugins from "../src/graphql";
+import i18nPlugins from "@webiny/api-i18n/graphql";
+import i18nDynamoDbStorageOperations from "~/index";
+import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
 import tenancyPlugins from "@webiny/api-tenancy";
 import securityPlugins from "@webiny/api-security";
 import { SecurityIdentity } from "@webiny/api-security";
-import { apiCallsFactory } from "./helpers";
+import { apiCallsFactory } from "../../api-i18n/__tests__/helpers";
 import { SecurityPermission } from "@webiny/api-security/types";
+import dbPlugins from "@webiny/handler-db";
+import { DynamoDbDriver } from "@webiny/db-dynamodb";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
 type UseGqlHandlerParams = {
     permissions?: SecurityPermission[];
     identity?: SecurityIdentity;
     plugins?: any;
 };
-
-export default (params: UseGqlHandlerParams = {}) => {
+export default (params: UseGqlHandlerParams) => {
     const { plugins: extraPlugins } = params;
-    // @ts-ignore
-    if (typeof __getStorageOperationsPlugins !== "function") {
-        throw new Error(`There is no global "__getStorageOperationsPlugins" function.`);
-    }
-    // @ts-ignore
-    const storageOperations = __getStorageOperationsPlugins();
-    if (typeof storageOperations !== "function") {
-        throw new Error(
-            `A product of "__getStorageOperationsPlugins" must be a function to initialize storage operations.`
-        );
-    }
-    // Creates the actual handler. Feel free to add additional plugins if needed.
+
+    const documentClient = new DocumentClient({
+        convertEmptyValues: true,
+        endpoint: process.env.MOCK_DYNAMODB_ENDPOINT || "http://localhost:8001",
+        sslEnabled: false,
+        region: "local",
+        accessKeyId: "test",
+        secretAccessKey: "test"
+    });
+
     const handler = createHandler(
-        storageOperations(),
+        dbPlugins({
+            table: "I18N",
+            driver: new DynamoDbDriver({
+                documentClient
+            })
+        }),
+        i18nDynamoDbStorageOperations(),
+        dynamoDbPlugins(),
         tenancyPlugins(),
         graphqlHandler(),
         securityPlugins(),
