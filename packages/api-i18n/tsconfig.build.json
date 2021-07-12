@@ -10,7 +10,8 @@
     "../handler",
     "../handler-aws",
     "../handler-graphql",
-    "../handler-client"
+    "../handler-client",
+    "../project-utils"
   ],
   "compilerOptions": {
     "outDir": "dist",

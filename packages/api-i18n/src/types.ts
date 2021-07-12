@@ -12,6 +12,8 @@ export interface I18NLocale {
         displayName: string;
         type: string;
     };
+    tenant: string;
+    webinyVersion: string;
 }
 
 export interface I18NContextObject {

@@ -5,8 +5,16 @@ import tenancyPlugins from "@webiny/api-tenancy";
 import securityPlugins from "@webiny/api-security";
 import { SecurityIdentity } from "@webiny/api-security";
 import { apiCallsFactory } from "./helpers";
+import { SecurityPermission } from "@webiny/api-security/types";
 
-export default () => {
+type UseGqlHandlerParams = {
+    permissions?: SecurityPermission[];
+    identity?: SecurityIdentity;
+    plugins?: any;
+};
+
+export default (params: UseGqlHandlerParams = {}) => {
+    const { plugins: extraPlugins } = params;
     // @ts-ignore
     if (typeof __getStorageOperationsPlugins !== "function") {
         throw new Error(`There is no global "__getStorageOperationsPlugins" function.`);
@@ -47,7 +55,8 @@ export default () => {
                 };
             }
         },
-        i18nPlugins()
+        i18nPlugins(),
+        extraPlugins || []
     );
 
     // Let's also create the "invoke" function. This will make handler invocations in actual tests easier and nicer.
