@@ -2,12 +2,14 @@ import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createHandler } from "@webiny/handler-aws";
 import graphqlPlugins from "@webiny/handler-graphql";
 import i18nPlugins from "@webiny/api-i18n/graphql";
+import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import adminUsersPlugins from "@webiny/api-security-admin-users";
 import pageBuilderPlugins from "@webiny/api-page-builder/graphql";
 import prerenderingServicePlugins from "@webiny/api-prerendering-service/client";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
+import dynamoDbPlugins from "@webiny/db-dynamodb/plugins";
 import elasticSearch from "@webiny/api-elasticsearch";
 import fileManagerPlugins from "@webiny/api-file-manager/plugins";
 import fileManagerDynamoDbElasticStorageOperation from "@webiny/api-file-manager-ddb-es";
@@ -25,6 +27,7 @@ const debug = process.env.DEBUG === "true";
 
 export const handler = createHandler({
     plugins: [
+        dynamoDbPlugins(),
         logsPlugins(),
         graphqlPlugins({ debug }),
         elasticSearch({ endpoint: `https://${process.env.ELASTIC_SEARCH_ENDPOINT}` }),
@@ -39,6 +42,7 @@ export const handler = createHandler({
         }),
         securityPlugins(),
         i18nPlugins(),
+        i18nDynamoDbStorageOperations(),
         i18nContentPlugins(),
         fileManagerPlugins(),
         fileManagerDynamoDbElasticStorageOperation(),

@@ -1,4 +1,4 @@
-import { assignFields } from "~/plugins/assignFields";
+import { assignFields } from "~/plugins/definitions/assignFields";
 
 describe("assign fields", () => {
     it("should properly assign a single field", () => {

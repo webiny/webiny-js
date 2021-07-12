@@ -1,5 +1,5 @@
 import { ContextInterface } from "@webiny/handler/types";
-import { AttributePlugin, DefinitionParams } from "~/plugins/AttributePlugin";
+import { AttributePlugin, DefinitionParams } from "~/plugins/definitions/AttributePlugin";
 
 export const getExtraAttributes = (
     context: ContextInterface,
