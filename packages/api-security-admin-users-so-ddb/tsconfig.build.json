@@ -10,6 +10,7 @@
     "../handler-http",
     "../handler-db",
     "../api-security",
+    "../api-security-admin-users",
     "../api-tenancy",
     "../plugins",
     "../validation",
