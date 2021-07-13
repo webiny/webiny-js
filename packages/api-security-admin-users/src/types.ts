@@ -4,13 +4,13 @@ import { TenancyContext, Tenant } from "@webiny/api-tenancy/types";
 import { HttpContext } from "@webiny/handler-http/types";
 import { DbContext } from "@webiny/handler-db/types";
 
-export type CreatedBy = {
+export interface CreatedBy {
     id: string;
     displayName: string;
     type: string;
-};
+}
 
-export type Group = {
+export interface Group {
     tenant: string;
     createdOn: string;
     createdBy: CreatedBy;
@@ -19,26 +19,26 @@ export type Group = {
     description: string;
     system: boolean;
     permissions: SecurityPermission[];
-};
+}
 
-export type User = {
+export interface User {
     login: string;
     firstName: string;
     lastName: string;
     avatar?: Record<string, any>;
     createdOn: string;
     createdBy: CreatedBy;
-};
+}
 
-export type UserPersonalAccessToken = {
+export interface UserPersonalAccessToken {
     id: string;
     name: string;
     token: string;
     login: string;
     createdOn: string;
-};
+}
 
-export type TenantAccess = {
+export interface TenantAccess {
     tenant: {
         id: string;
         name: string;
@@ -48,35 +48,36 @@ export type TenantAccess = {
         name: string;
         permissions: SecurityPermission[];
     };
-};
+}
 
-export type CreateUserInput = {
+export interface CreateUserInput {
     login: string;
     firstName: string;
     lastName: string;
     avatar?: Record<string, any>;
     group?: string;
-};
+}
 
 export type UpdateUserInput = Partial<Omit<CreateUserInput, "login">>;
 
-export type GroupInput = {
+export interface GroupInput {
     name: string;
     slug: string;
     description: string;
     system: boolean;
     permissions: SecurityPermission[];
-};
+}
 
-export type CreatePersonalAccessTokenInput = {
+export interface CreatePersonalAccessTokenInput {
     name: string;
     token: string;
-};
-export type UpdatePersonalAccessTokenInput = {
-    name: string;
-};
+}
 
-export type ApiKey = {
+export interface UpdatePersonalAccessTokenInput {
+    name: string;
+}
+
+export interface ApiKey {
     id: string;
     name: string;
     description: string;
@@ -84,27 +85,27 @@ export type ApiKey = {
     permissions: SecurityPermission[];
     createdBy: CreatedBy;
     createdOn: string;
-};
+}
 
-export type ApiKeyInput = {
+export interface ApiKeyInput {
     name: string;
     description: string;
     permissions: SecurityPermission[];
-};
+}
 
-export type SystemCRUD = {
+export interface SystemCRUD {
     getVersion(): Promise<string>;
     setVersion(version: string): Promise<void>;
-};
+}
 
-export type GroupsCRUD = {
+export interface GroupsCRUD {
     getGroup(tenant: Tenant, slug: string): Promise<Group>;
     listGroups(tenant: Tenant): Promise<Group[]>;
     createGroup(tenant: Tenant, data: GroupInput): Promise<Group>;
     updateGroup(tenant: Tenant, slug: string, data: Partial<GroupInput>): Promise<boolean>;
     deleteGroup(tenant: Tenant, slug: string): Promise<boolean>;
     updateUserLinks(tenant: Tenant, group: Group): Promise<void>;
-};
+}
 
 export interface UsersCRUD {
     login(): Promise<User>;
@@ -131,17 +132,17 @@ export interface UsersCRUD {
     deleteToken(login: string, tokenId: string): Promise<boolean>;
 }
 
-export type ApiKeysCRUD = {
+export interface ApiKeysCRUD {
     getApiKey(id: string): Promise<ApiKey>;
     getApiKeyByToken(token: string): Promise<ApiKey>;
     listApiKeys(): Promise<ApiKey[]>;
     createApiKey(data: ApiKeyInput): Promise<ApiKey>;
     updateApiKey(id: string, data: ApiKeyInput): Promise<ApiKey>;
     deleteApiKey(id: string): Promise<boolean>;
-};
+}
 
 // Helper types when working with database
-export type DbItemSecurityUser2Tenant = {
+export interface DbItemSecurityUser2Tenant {
     PK: string;
     SK: string;
     TYPE: "SecurityUser2Tenant";
@@ -154,18 +155,18 @@ export type DbItemSecurityUser2Tenant = {
         name: string;
         permissions: SecurityPermission[];
     };
-};
+}
 
 export interface ApiKeyPermission extends SecurityPermission {
     name: "security.apiKey";
 }
 
-export type AdminUsers = {
+export interface AdminUsers {
     users?: UsersCRUD;
     groups?: GroupsCRUD;
     apiKeys?: ApiKeysCRUD;
     system?: SystemCRUD;
-};
+}
 
 export interface AdminUsersContext
     extends TenancyContext,
@@ -173,4 +174,38 @@ export interface AdminUsersContext
         HttpContext,
         DbContext {
     security: AdminUsers & SecurityContextBase;
+}
+
+export interface ApiKeyStorageOperationsGetParams {
+    id: string;
+}
+export interface ApiKeyStorageOperationsGetByTokenParams {
+    token: string;
+}
+export interface ApiKeyStorageOperationsListWhere {
+    token?: string;
+}
+export interface ApiKeyStorageOperationsListParams {
+    where?: ApiKeyStorageOperationsListWhere;
+    sort?: string[];
+}
+export interface ApiKeyStorageOperationsCreateParams {
+    apiKey: ApiKey;
+}
+export interface ApiKeyStorageOperationsUpdateParams {
+    id: string;
+    original: ApiKey;
+    apiKey: ApiKey;
+}
+export interface ApiKeyStorageOperationsDeleteParams {
+    apiKey: ApiKey;
+}
+
+export interface ApiKeyStorageOperations {
+    get: (params: ApiKeyStorageOperationsGetParams) => Promise<ApiKey>;
+    getByToken: (params: ApiKeyStorageOperationsGetByTokenParams) => Promise<ApiKey>;
+    list: (params: ApiKeyStorageOperationsListParams) => Promise<ApiKey[]>;
+    create: (params: ApiKeyStorageOperationsCreateParams) => Promise<ApiKey>;
+    update: (params: ApiKeyStorageOperationsUpdateParams) => Promise<ApiKey>;
+    delete: (params: ApiKeyStorageOperationsDeleteParams) => Promise<ApiKey>;
 }

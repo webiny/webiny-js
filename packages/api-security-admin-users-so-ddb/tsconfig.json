@@ -6,6 +6,9 @@
       "path": "../api-security"
     },
     {
+      "path": "../api-security-admin-users"
+    },
+    {
       "path": "../api-tenancy"
     },
     {
@@ -38,9 +41,11 @@
   ],
   "compilerOptions": {
     "paths": {
-      "~/*": ["./src/*"],
+        "~/*": ["./src/*"]
       "@webiny/api-security/*": ["../api-security/src/*"],
       "@webiny/api-security": ["../api-security/src"],
+      "@webiny/api-security-admin-users/*": ["../api-security-admin-users/src/*"],
+      "@webiny/api-security-admin-users": ["../api-security-admin-users/src"],
       "@webiny/api-tenancy/*": ["../api-tenancy/src/*"],
       "@webiny/api-tenancy": ["../api-tenancy/src"],
       "@webiny/db-dynamodb/*": ["../db-dynamodb/src/*"],
