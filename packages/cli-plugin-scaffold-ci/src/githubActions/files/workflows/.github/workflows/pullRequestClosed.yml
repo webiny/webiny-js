@@ -23,43 +23,6 @@ jobs:
     name: Build and run static and unit tests
     needs: repository-check
     runs-on: ubuntu-latest
-    if: needs.repository-check.outputs.ready == 'true'
-    steps:
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 12
-
-      - uses: actions/checkout@v2
-
-      # 1. Install and cache dependencies.
-      - uses: actions/cache@v2
-        id: yarn-cache
-        with:
-          path: .yarn/cache
-          key: yarn-${{ hashFiles('**/yarn.lock') }}
-
-      - name: Install dependencies
-        run: yarn --immutable
-
-      # 2. Run static code analysis.
-      - name: Check code formatting
-        run: yarn prettier:check
-
-      - name: ESLint
-        run: yarn eslint
-
-      # 3. Build custom packages (all packages located within the "packages" folder).
-      - name: Build packages
-        run: yarn webiny workspaces run build --folder packages
-
-      # 4. Run unit tests.
-      - name: Run unit tests
-        run: yarn test:unit
-
-  build-test-integration-e2e:
-    name: Build and run integration and E2E tests
-    needs: build-test-static-unit
-    runs-on: ubuntu-latest
 
     # We skip this job if the WEBINY_PULUMI_BACKEND environment variable is missing.
     # This environment variable must exist because it determines where our cloud infrastructure
@@ -75,6 +38,7 @@ jobs:
       PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}
+
     steps:
       - uses: actions/setup-node@v2
         with:
@@ -92,21 +56,12 @@ jobs:
       - name: Install dependencies
         run: yarn --immutable
 
-      # 2. Build custom packages (all packages located within the "packages" folder).
-      - name: Build packages
-        run: yarn webiny workspaces run build --folder packages
+      # 2. Destroy short-lived environment.
+      - name: Destroy API project application
+        run: yarn webiny destroy api --env pr${{ github.event.pull_request.number }}
 
-      # 3. Deploy to a short-lived environment (will be destroyed once the PR is closed).
-      - name: Deploy
-        run: yarn webiny deploy --env pr${{ github.event.pull_request.number }}
+      - name: Destroy Admin Area project application
+        run: yarn webiny destroy apps/admin --env pr${{ github.event.pull_request.number }}
 
-      # 4. Run integration tests.
-      - name: Run integration tests
-        run: yarn test:integration
-
-      # 5. Run end-to-end tests.
-      - name: Run end-to-end tests
-        run: yarn test:e2e
-
-      # Add additional steps if needed. For example, if you have additional E2E
-      # tests done with Cypress (https://www.cypress.io/), you can run them here.
+      - name: Destroy Website project application
+        run: yarn webiny destroy apps/website --env pr${{ github.event.pull_request.number }}
