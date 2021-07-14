@@ -12,7 +12,7 @@ import {
 import WebinyError from "@webiny/error";
 import { Entity, Table } from "dynamodb-toolbox";
 import { createTable } from "~/definitions/table";
-import { createEntity } from "~/definitions/entity";
+import { createApiKeyEntity } from "~/definitions/apiKeyEntity";
 import { cleanupItem } from "@webiny/db-dynamodb/utils/cleanup";
 import { queryAll } from "@webiny/db-dynamodb/utils/query";
 import { sortItems } from "@webiny/db-dynamodb/utils/sort";
@@ -20,8 +20,6 @@ import { sortItems } from "@webiny/db-dynamodb/utils/sort";
 interface Params {
     context: AdminUsersContext;
 }
-
-const GSI1_INDEX = "GSI1";
 
 export class ApiKeyStorageOperationsDdb implements ApiKeyStorageOperations {
     private readonly context: AdminUsersContext;
@@ -32,16 +30,10 @@ export class ApiKeyStorageOperationsDdb implements ApiKeyStorageOperations {
         this.context = params.context;
 
         this.table = createTable({
-            context: this.context,
-            indexes: {
-                [GSI1_INDEX]: {
-                    partitionKey: "GSI1_PK",
-                    sortKey: "GSI1_SK"
-                }
-            }
+            context: this.context
         });
 
-        this.entity = createEntity({
+        this.entity = createApiKeyEntity({
             context: this.context,
             table: this.table
         });
@@ -116,7 +108,7 @@ export class ApiKeyStorageOperationsDdb implements ApiKeyStorageOperations {
             items,
             sort,
             context: this.context,
-            fields: ["createdOn"]
+            fields: ["createdOn_DESC"]
         });
         return sortedItems.map(item => this.cleanupItem(item));
     }

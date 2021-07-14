@@ -99,6 +99,7 @@ export default (context: AdminUsersContext): ApiKeysCRUD => {
 
             const apiKey: ApiKey = {
                 id: mdbid(),
+                tenant: tenant.id,
                 token: generateToken(),
                 createdBy: {
                     id: identity.id,
