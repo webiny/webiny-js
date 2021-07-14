@@ -89,7 +89,7 @@ export default (): CmsModelFieldToStoragePlugin<OriginalValue, StorageValue> => 
                 const unpacked = jsonpack.unpack(value);
 
                 cache.set(cacheKey, unpacked);
-                
+
                 return unpacked;
             } catch {
                 return null;

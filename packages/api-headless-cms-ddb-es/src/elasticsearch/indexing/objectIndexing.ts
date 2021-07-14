@@ -162,7 +162,7 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
              * we can never be sure which array we can reliably use as a source of values.
              */
             const source = value || rawValue || [];
-            
+
             return source.map((_, index) =>
                 processFromIndex({
                     value: value ? value[index] || {} : {},

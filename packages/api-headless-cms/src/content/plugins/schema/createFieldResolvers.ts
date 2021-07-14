@@ -63,7 +63,7 @@ export function createFieldResolversFactory({ endpointType, models, model, field
                     }
 
                     return await resolver(isRoot ? parent.values : parent, args, context, info);
-                } catch(err) {
+                } catch (err) {
                     const a = err;
                 }
             };
