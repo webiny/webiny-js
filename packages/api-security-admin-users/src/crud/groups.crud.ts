@@ -4,6 +4,7 @@ import { validation } from "@webiny/validation";
 import dbArgs from "./dbArgs";
 import { AdminUsersContext, DbItemSecurityUser2Tenant, Group, GroupsCRUD } from "../types";
 import { paginateBatch } from "./paginateBatch";
+import WebinyError from "@webiny/error";
 
 const CreateDataModel = withFields({
     tenant: string({ validation: validation.create("required") }),
@@ -24,6 +25,7 @@ const UpdateDataModel = withFields({
 
 export default (context: AdminUsersContext): GroupsCRUD => {
     const { db } = context;
+
     return {
         async getGroup(tenant, slug) {
             const [[group]] = await db.read<Group>({
@@ -45,16 +47,17 @@ export default (context: AdminUsersContext): GroupsCRUD => {
         async createGroup(tenant, data) {
             const identity = context.security.getIdentity();
 
-            if (await this.getGroup(tenant, data.slug)) {
-                throw {
-                    message: `Group with slug "${data.slug}" already exists.`,
-                    code: "GROUP_EXISTS"
-                };
+            const existing = await this.getGroup(tenant, data.slug);
+            if (existing) {
+                throw new WebinyError(
+                    `Group with slug "${data.slug}" already exists.`,
+                    "GROUP_EXISTS"
+                );
             }
 
             await new CreateDataModel().populate({ ...data, tenant: tenant.id }).validate();
 
-            const group = {
+            const group: Group = {
                 tenant: tenant.id,
                 system: false,
                 ...data,

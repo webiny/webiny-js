@@ -79,6 +79,7 @@ export interface UpdatePersonalAccessTokenInput {
 
 export interface ApiKey {
     id: string;
+    tenant: string;
     name: string;
     description: string;
     token: string;
@@ -175,32 +176,51 @@ export interface AdminUsersContext
         DbContext {
     security: AdminUsers & SecurityContextBase;
 }
-
+/**
+ * @category ApiKeyStorageOperations
+ */
 export interface ApiKeyStorageOperationsGetParams {
     id: string;
 }
+/**
+ * @category ApiKeyStorageOperations
+ */
 export interface ApiKeyStorageOperationsGetByTokenParams {
     token: string;
 }
-export interface ApiKeyStorageOperationsListWhere {
-    token?: string;
-}
+/**
+ * @category ApiKeyStorageOperations
+ */
 export interface ApiKeyStorageOperationsListParams {
-    where?: ApiKeyStorageOperationsListWhere;
     sort?: string[];
 }
+/**
+ * @category ApiKeyStorageOperations
+ */
 export interface ApiKeyStorageOperationsCreateParams {
     apiKey: ApiKey;
 }
+/**
+ * @category ApiKeyStorageOperations
+ */
 export interface ApiKeyStorageOperationsUpdateParams {
     id: string;
     original: ApiKey;
     apiKey: ApiKey;
 }
+/**
+ * @category ApiKeyStorageOperations
+ */
 export interface ApiKeyStorageOperationsDeleteParams {
     apiKey: ApiKey;
 }
 
+/**
+ * Description on how to implement the storage operation in the package.
+ *
+ * @category StorageOperations
+ * @category ApiKeyStorageOperations
+ */
 export interface ApiKeyStorageOperations {
     get: (params: ApiKeyStorageOperationsGetParams) => Promise<ApiKey>;
     getByToken: (params: ApiKeyStorageOperationsGetByTokenParams) => Promise<ApiKey>;
@@ -208,4 +228,59 @@ export interface ApiKeyStorageOperations {
     create: (params: ApiKeyStorageOperationsCreateParams) => Promise<ApiKey>;
     update: (params: ApiKeyStorageOperationsUpdateParams) => Promise<ApiKey>;
     delete: (params: ApiKeyStorageOperationsDeleteParams) => Promise<ApiKey>;
+}
+/**
+ * @category GroupsStorageOperations
+ */
+export interface GroupsStorageOperationsGetParams {
+    slug: string;
+}
+/**
+ * @category GroupsStorageOperations
+ */
+export interface GroupsStorageOperationsListParams {
+    sort?: string[];
+}
+/**
+ * @category GroupsStorageOperations
+ */
+export interface GroupsStorageOperationsCreateParams {
+    group: Group;
+}
+/**
+ * @category GroupsStorageOperations
+ */
+export interface GroupsStorageOperationsCreateParams {
+    group: Group;
+}
+/**
+ * @category GroupsStorageOperations
+ */
+export interface GroupsStorageOperationsUpdateParams {
+    original: Group;
+    group: Group;
+}
+/**
+ * @category GroupsStorageOperations
+ */
+export interface GroupsStorageOperationsDeleteParams {
+    group: Group;
+}
+/**
+ * @category GroupsStorageOperations
+ */
+export interface GroupsStorageOperationsUpdateUserLinksParams {
+    group: Group;
+}
+/**
+ * @category StorageOperations
+ * @category GroupsStorageOperations
+ */
+export interface GroupsStorageOperations {
+    get: (params: GroupsStorageOperationsGetParams) => Promise<Group>;
+    list: (params: GroupsStorageOperationsListParams) => Promise<Group[]>;
+    create: (params: GroupsStorageOperationsCreateParams) => Promise<Group>;
+    update: (params: GroupsStorageOperationsUpdateParams) => Promise<Group>;
+    delete: (params: GroupsStorageOperationsDeleteParams) => Promise<Group>;
+    updateUserLinks: (params: GroupsStorageOperationsUpdateUserLinksParams) => Promise<void>;
 }

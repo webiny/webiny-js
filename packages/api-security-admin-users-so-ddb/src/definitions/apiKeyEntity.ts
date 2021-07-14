@@ -7,9 +7,9 @@ interface Params {
     table: Table;
 }
 
-export const createEntity = (params: Params): Entity<any> => {
+export const createApiKeyEntity = (params: Params): Entity<any> => {
     const { context, table } = params;
-    const entityName = "AdminUsers";
+    const entityName = "ApiKey";
     const attributes = getExtraAttributes(context, entityName);
     return new Entity({
         table,
@@ -28,6 +28,9 @@ export const createEntity = (params: Params): Entity<any> => {
                 type: "string"
             },
             token: {
+                type: "string"
+            },
+            tenant: {
                 type: "string"
             },
             createdBy: {
