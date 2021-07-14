@@ -13,6 +13,8 @@ interface Params {
 /**
  * Method is meant for batch writing to a single table.
  * It expects already prepared items for the write.
+ * It can either delete or put items
+ * The method does not check items before actually sending them into the underlying library.
  */
 export const batchWriteAll = async (params: Params, maxChunk = 25): Promise<void> => {
     const chunkedItems: Item[][] = lodashChunk(params.items, maxChunk);
