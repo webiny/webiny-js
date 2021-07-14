@@ -1,6 +1,6 @@
 import { CmsFieldFilterValueTransformPlugin } from "~/types";
-import { TimeTransformPlugin } from "@webiny/db-dynamodb/plugins/transformers/TimeTransformPlugin";
-import { DateTimeTransformPlugin } from "@webiny/db-dynamodb/plugins/transformers/DateTimeTransformPlugin";
+import { TimeTransformPlugin } from "@webiny/db-dynamodb/plugins/definitions/TimeTransformPlugin";
+import { DateTimeTransformPlugin } from "@webiny/db-dynamodb/plugins/definitions/DateTimeTransformPlugin";
 
 const timeTransformer = new TimeTransformPlugin({
     fields: ["*"]

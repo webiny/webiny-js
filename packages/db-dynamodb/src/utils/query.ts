@@ -2,11 +2,14 @@ import { queryOptions as DynamoDBToolboxQueryOptions } from "dynamodb-toolbox/di
 import WebinyError from "@webiny/error";
 import { Entity } from "dynamodb-toolbox";
 
-export interface QueryParams {
+export interface QueryAllParams {
     entity: Entity<any>;
-    previous: any;
     partitionKey: string;
     options?: DynamoDBToolboxQueryOptions;
+}
+
+export interface QueryParams extends QueryAllParams {
+    previous: any;
 }
 
 export interface QueryResult<T> {
@@ -79,10 +82,10 @@ export const query = async <T>(params: QueryParams): Promise<QueryResult<T>> => 
 /**
  * Will run the query to fetch the results no matter how much iterations it needs to go through.
  */
-export const queryAll = async <T>(params: Omit<QueryParams, "previous">): Promise<T[]> => {
+export const queryAll = async <T>(params: QueryAllParams): Promise<T[]> => {
     const items: T[] = [];
     let results: QueryResult<T>;
-    let previousResult: any;
+    let previousResult: any = undefined;
     while ((results = await query({ ...params, previous: previousResult }))) {
         items.push(...results.items);
         if (!results.result) {

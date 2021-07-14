@@ -5,6 +5,7 @@
     "node_modules",
     "../plugins",
     "../api-i18n",
+    "../api-i18n-ddb",
     "../api-file-manager",
     "../api-file-manager-ddb-es",
     "../api-security",

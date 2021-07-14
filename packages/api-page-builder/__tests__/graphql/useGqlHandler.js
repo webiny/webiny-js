@@ -5,6 +5,7 @@ import tenancyPlugins from "@webiny/api-tenancy";
 import securityPlugins from "@webiny/api-security";
 import dbPlugins from "@webiny/handler-db";
 import i18nContext from "@webiny/api-i18n/graphql/context";
+import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import { mockLocalesPlugins } from "@webiny/api-i18n/graphql/testing";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
@@ -120,6 +121,7 @@ export default ({ permissions, identity, tenant } = {}) => {
             }
         },
         i18nContext(),
+        i18nDynamoDbStorageOperations(),
         i18nContentPlugins(),
         fileManagerPlugins(),
         mockLocalesPlugins(),

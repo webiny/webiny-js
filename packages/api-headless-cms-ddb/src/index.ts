@@ -5,7 +5,6 @@ import contentModelStorageOperationsProvider from "./operations/model";
 import contentEntryStorageOperationsProvider from "./operations/entry";
 import dynamoDbPlugins from "./dynamoDb";
 import { CmsContentEntryConfiguration } from "./operations/entry/CmsContentEntryDynamo";
-import filterPlugins from "@webiny/db-dynamodb/plugins/filters";
 
 interface Configuration {
     entry?: CmsContentEntryConfiguration;
@@ -18,7 +17,6 @@ export default (configuration?: Configuration) => {
         contentModelGroupStorageOperationsProvider(),
         contentModelStorageOperationsProvider(),
         contentEntryStorageOperationsProvider(entry),
-        dynamoDbPlugins(),
-        filterPlugins()
+        dynamoDbPlugins()
     ];
 };

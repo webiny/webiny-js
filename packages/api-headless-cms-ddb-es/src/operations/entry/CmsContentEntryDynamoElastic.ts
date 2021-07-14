@@ -133,8 +133,8 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
             .create({
                 ...configurations.db(),
                 data: {
-                    PK: this.getPrimaryKey(entry.id),
-                    SK: this.getSecondaryKeyRevision(entry.version),
+                    PK: this.getPartitionKey(entry.id),
+                    SK: this.getSortKeyRevision(entry.version),
                     TYPE: TYPE_ENTRY,
                     ...storageEntry
                 }
@@ -145,8 +145,8 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
             .create({
                 ...configurations.db(),
                 data: {
-                    PK: this.getPrimaryKey(entry.id),
-                    SK: this.getSecondaryKeyLatest(),
+                    PK: this.getPartitionKey(entry.id),
+                    SK: this.getSortKeyLatest(),
                     TYPE: TYPE_ENTRY_LATEST,
                     ...storageEntry
                 }
@@ -154,8 +154,8 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
             .create({
                 ...configurations.esDb(),
                 data: {
-                    PK: this.getPrimaryKey(entry.id),
-                    SK: this.getSecondaryKeyLatest(),
+                    PK: this.getPartitionKey(entry.id),
+                    SK: this.getSortKeyLatest(),
                     index: esIndex,
                     data: getESLatestEntryData(this.context, esEntry)
                 }
@@ -194,7 +194,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         });
         const { index: esIndex } = configurations.es(this.context, model);
 
-        const primaryKey = this.getPrimaryKey(storageEntry.id);
+        const primaryKey = this.getPartitionKey(storageEntry.id);
         const batch = db.batch();
         batch
             /**
@@ -204,7 +204,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                 ...configurations.db(),
                 data: {
                     PK: primaryKey,
-                    SK: this.getSecondaryKeyRevision(storageEntry.version),
+                    SK: this.getSortKeyRevision(storageEntry.version),
                     TYPE: TYPE_ENTRY,
                     ...getEntryData(this.context, storageEntry)
                 }
@@ -216,11 +216,11 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                 ...configurations.db(),
                 query: {
                     PK: primaryKey,
-                    SK: this.getSecondaryKeyLatest()
+                    SK: this.getSortKeyLatest()
                 },
                 data: {
                     PK: primaryKey,
-                    SK: this.getSecondaryKeyLatest(),
+                    SK: this.getSortKeyLatest(),
                     TYPE: TYPE_ENTRY_LATEST,
                     ...getEntryData(this.context, storageEntry)
                 }
@@ -232,11 +232,11 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                 ...configurations.esDb(),
                 query: {
                     PK: primaryKey,
-                    SK: this.getSecondaryKeyLatest()
+                    SK: this.getSortKeyLatest()
                 },
                 data: {
                     PK: primaryKey,
-                    SK: this.getSecondaryKeyLatest(),
+                    SK: this.getSortKeyLatest(),
                     index: esIndex,
                     data: getESLatestEntryData(this.context, esEntry)
                 }
@@ -269,7 +269,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         const { db } = this.context;
         const { entry } = args;
 
-        const primaryKey = this.getPrimaryKey(entry.id);
+        const primaryKey = this.getPartitionKey(entry.id);
 
         const [dbItems] = await db.read<CmsContentEntry>({
             ...configurations.db(),
@@ -331,7 +331,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         const { db } = this.context;
         const { entryToDelete, entryToSetAsLatest, storageEntryToSetAsLatest } = args;
 
-        const primaryKey = this.getPrimaryKey(entryToDelete.id);
+        const primaryKey = this.getPartitionKey(entryToDelete.id);
         const esConfig = configurations.es(this.context, model);
         /**
          * We need published entry to delete it if necessary.
@@ -352,14 +352,14 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                 ...configurations.db(),
                 query: {
                     PK: primaryKey,
-                    SK: this.getSecondaryKeyRevision(entryToDelete.id)
+                    SK: this.getSortKeyRevision(entryToDelete.id)
                 }
             })
             .delete({
                 ...configurations.esDb(),
                 query: {
                     PK: primaryKey,
-                    SK: this.getSecondaryKeyRevision(entryToDelete.id)
+                    SK: this.getSortKeyRevision(entryToDelete.id)
                 }
             });
         /**
@@ -371,14 +371,14 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                     ...configurations.db(),
                     query: {
                         PK: primaryKey,
-                        SK: this.getSecondaryKeyPublished()
+                        SK: this.getSortKeyPublished()
                     }
                 })
                 .delete({
                     ...configurations.esDb(),
                     query: {
                         PK: primaryKey,
-                        SK: this.getSecondaryKeyPublished()
+                        SK: this.getSortKeyPublished()
                     }
                 });
         }
@@ -396,7 +396,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                     ...configurations.db(),
                     query: {
                         PK: primaryKey,
-                        SK: this.getSecondaryKeyLatest()
+                        SK: this.getSortKeyLatest()
                     },
                     data: {
                         ...storageEntryToSetAsLatest,
@@ -407,11 +407,11 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                     ...configurations.esDb(),
                     query: {
                         PK: primaryKey,
-                        SK: this.getSecondaryKeyLatest()
+                        SK: this.getSortKeyLatest()
                     },
                     data: {
                         PK: primaryKey,
-                        SK: this.getSecondaryKeyLatest(),
+                        SK: this.getSortKeyLatest(),
                         index: esConfig.index,
                         data: getESLatestEntryData(this.context, esEntry)
                     }
@@ -514,7 +514,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
 
         const { db } = this.context;
 
-        const primaryKey = this.getPrimaryKey(originalEntry.id);
+        const primaryKey = this.getPartitionKey(originalEntry.id);
 
         /**
          * We need the latest entry to check if it needs to be updated.
@@ -527,11 +527,11 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
             ...configurations.db(),
             query: {
                 PK: primaryKey,
-                SK: this.getSecondaryKeyRevision(originalEntry.version)
+                SK: this.getSortKeyRevision(originalEntry.version)
             },
             data: {
                 ...storageEntry,
-                SK: this.getSecondaryKeyRevision(originalEntry.version)
+                SK: this.getSortKeyRevision(originalEntry.version)
             }
         });
         /**
@@ -545,13 +545,13 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                 ...configurations.db(),
                 query: {
                     PK: primaryKey,
-                    SK: this.getSecondaryKeyLatest()
+                    SK: this.getSortKeyLatest()
                 },
                 data: {
                     ...storageEntry,
                     TYPE: TYPE_ENTRY_LATEST,
                     PK: primaryKey,
-                    SK: this.getSecondaryKeyLatest()
+                    SK: this.getSortKeyLatest()
                 }
             });
             /**
@@ -573,11 +573,11 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                 ...configurations.esDb(),
                 query: {
                     PK: primaryKey,
-                    SK: this.getSecondaryKeyLatest()
+                    SK: this.getSortKeyLatest()
                 },
                 data: {
                     PK: primaryKey,
-                    SK: this.getSecondaryKeyLatest(),
+                    SK: this.getSortKeyLatest(),
                     index: esIndex,
                     data: getESLatestEntryData(this.context, esDoc)
                 }
@@ -619,7 +619,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
          */
         const publishedStorageEntry = await this.getPublishedRevisionByEntryId(model, entry.id);
 
-        const primaryKey = this.getPrimaryKey(entry.id);
+        const primaryKey = this.getPartitionKey(entry.id);
 
         const readBatch = db
             .batch()
@@ -627,14 +627,14 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                 ...configurations.esDb(),
                 query: {
                     PK: primaryKey,
-                    SK: this.getSecondaryKeyLatest()
+                    SK: this.getSortKeyLatest()
                 }
             })
             .read({
                 ...configurations.esDb(),
                 query: {
                     PK: primaryKey,
-                    SK: this.getSecondaryKeyPublished()
+                    SK: this.getSortKeyPublished()
                 }
             });
         let latestESEntryData: CmsContentEntry | undefined;
@@ -648,11 +648,11 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                 {
                     latest: {
                         PK: primaryKey,
-                        SK: this.getSecondaryKeyLatest()
+                        SK: this.getSortKeyLatest()
                     },
                     published: {
                         PK: primaryKey,
-                        SK: this.getSecondaryKeyPublished()
+                        SK: this.getSortKeyPublished()
                     }
                 }
             );
@@ -664,11 +664,11 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
             ...configurations.db(),
             query: {
                 PK: primaryKey,
-                SK: this.getSecondaryKeyRevision(entry.version)
+                SK: this.getSortKeyRevision(entry.version)
             },
             data: {
                 ...storageEntry,
-                SK: this.getSecondaryKeyRevision(entry.version)
+                SK: this.getSortKeyRevision(entry.version)
             }
         });
 
@@ -686,7 +686,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                 ...configurations.db(),
                 query: {
                     PK: primaryKey,
-                    SK: this.getSecondaryKeyRevision(publishedStorageEntry.version)
+                    SK: this.getSortKeyRevision(publishedStorageEntry.version)
                 }
             });
 
@@ -700,11 +700,11 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                     ...configurations.db(),
                     query: {
                         PK: primaryKey,
-                        SK: this.getSecondaryKeyRevision(publishedStorageEntry.version)
+                        SK: this.getSortKeyRevision(publishedStorageEntry.version)
                     },
                     data: {
                         ...previouslyPublishedStorageEntry,
-                        SK: this.getSecondaryKeyRevision(publishedStorageEntry.version),
+                        SK: this.getSortKeyRevision(publishedStorageEntry.version),
                         savedOn: entry.savedOn
                     }
                 })
@@ -715,12 +715,12 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                     ...configurations.db(),
                     query: {
                         PK: primaryKey,
-                        SK: this.getSecondaryKeyPublished()
+                        SK: this.getSortKeyPublished()
                     },
                     data: {
                         ...getEntryData(this.context, storageEntry),
                         PK: primaryKey,
-                        SK: this.getSecondaryKeyPublished()
+                        SK: this.getSortKeyPublished()
                     }
                 });
         } else {
@@ -729,7 +729,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                 data: {
                     ...getEntryData(this.context, storageEntry),
                     PK: primaryKey,
-                    SK: this.getSecondaryKeyPublished(),
+                    SK: this.getSortKeyPublished(),
                     TYPE: TYPE_ENTRY_PUBLISHED
                 }
             });
@@ -748,11 +748,11 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                 ...configurations.esDb(),
                 query: {
                     PK: primaryKey,
-                    SK: this.getSecondaryKeyLatest()
+                    SK: this.getSortKeyLatest()
                 },
                 data: {
                     ...latestESEntryData,
-                    SK: this.getSecondaryKeyLatest(),
+                    SK: this.getSortKeyLatest(),
                     data: {
                         ...((latestESEntryData as any).data || {}),
                         status: CONTENT_ENTRY_STATUS.PUBLISHED,
@@ -774,7 +774,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
          */
         const esData = {
             PK: primaryKey,
-            SK: this.getSecondaryKeyPublished(),
+            SK: this.getSortKeyPublished(),
             index: es.index,
             data: getESPublishedEntryData(this.context, preparedEntryData)
         };
@@ -784,7 +784,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                 ...configurations.esDb(),
                 query: {
                     PK: primaryKey,
-                    SK: this.getSecondaryKeyPublished()
+                    SK: this.getSortKeyPublished()
                 },
                 data: esData
             });
@@ -828,7 +828,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
          */
         const latestStorageEntry = await this.getLatestRevisionByEntryId(model, entry.id);
 
-        const primaryKey = this.getPrimaryKey(entry.id);
+        const primaryKey = this.getPartitionKey(entry.id);
 
         const batch = db
             .batch()
@@ -836,25 +836,25 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                 ...configurations.db(),
                 query: {
                     PK: primaryKey,
-                    SK: this.getSecondaryKeyPublished()
+                    SK: this.getSortKeyPublished()
                 }
             })
             .delete({
                 ...configurations.esDb(),
                 query: {
                     PK: primaryKey,
-                    SK: this.getSecondaryKeyPublished()
+                    SK: this.getSortKeyPublished()
                 }
             })
             .update({
                 ...configurations.db(),
                 query: {
                     PK: primaryKey,
-                    SK: this.getSecondaryKeyRevision(entry.version)
+                    SK: this.getSortKeyRevision(entry.version)
                 },
                 data: {
                     ...storageEntry,
-                    SK: this.getSecondaryKeyRevision(entry.version)
+                    SK: this.getSortKeyRevision(entry.version)
                 }
             });
         /**
@@ -883,15 +883,15 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                 ...configurations.esDb(),
                 query: {
                     PK: primaryKey,
-                    SK: this.getSecondaryKeyLatest()
+                    SK: this.getSortKeyLatest()
                 },
                 data: {
                     PK: primaryKey,
-                    SK: this.getSecondaryKeyLatest(),
+                    SK: this.getSortKeyLatest(),
                     index: es.index,
                     data: {
                         ...getESLatestEntryData(this.context, preparedEntryData),
-                        SK: this.getSecondaryKeyLatest()
+                        SK: this.getSortKeyLatest()
                     }
                 }
             });
@@ -924,17 +924,17 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
          */
         const latestStorageEntry = await this.getLatestRevisionByEntryId(model, entry.id);
 
-        const primaryKey = this.getPrimaryKey(entry.id);
+        const primaryKey = this.getPartitionKey(entry.id);
 
         const batch = db.batch().update({
             ...configurations.db(),
             query: {
                 PK: primaryKey,
-                SK: this.getSecondaryKeyRevision(entry.version)
+                SK: this.getSortKeyRevision(entry.version)
             },
             data: {
                 ...storageEntry,
-                SK: this.getSecondaryKeyRevision(entry.version)
+                SK: this.getSortKeyRevision(entry.version)
             }
         });
 
@@ -965,11 +965,11 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
                 ...configurations.esDb(),
                 query: {
                     PK: primaryKey,
-                    SK: this.getSecondaryKeyLatest()
+                    SK: this.getSortKeyLatest()
                 },
                 data: {
                     PK: primaryKey,
-                    SK: this.getSecondaryKeyLatest(),
+                    SK: this.getSortKeyLatest(),
                     index: es.index,
                     data: getESLatestEntryData(this.context, preparedEntryData)
                 }
@@ -1003,17 +1003,17 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
          */
         const latestStorageEntry = await this.getLatestRevisionByEntryId(model, entry.id);
 
-        const primaryKey = this.getPrimaryKey(entry.id);
+        const primaryKey = this.getPartitionKey(entry.id);
 
         const batch = db.batch().update({
             ...configurations.db(),
             query: {
                 PK: primaryKey,
-                SK: this.getSecondaryKeyRevision(entry.version)
+                SK: this.getSortKeyRevision(entry.version)
             },
             data: {
                 ...storageEntry,
-                SK: this.getSecondaryKeyRevision(entry.version)
+                SK: this.getSortKeyRevision(entry.version)
             }
         });
 
@@ -1041,11 +1041,11 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
             batch.update({
                 query: {
                     PK: primaryKey,
-                    SK: this.getSecondaryKeyLatest()
+                    SK: this.getSortKeyLatest()
                 },
                 data: {
                     PK: primaryKey,
-                    SK: this.getSecondaryKeyLatest(),
+                    SK: this.getSortKeyLatest(),
                     index: es.index,
                     data: getESLatestEntryData(this.context, preparedEntryData)
                 }
@@ -1167,8 +1167,8 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         id: string
     ): Promise<CmsContentEntry | null> {
         return this.getSingleDynamoDbItem({
-            PK: this.getPrimaryKey(id),
-            SK: this.getSecondaryKeyRevision(id)
+            PK: this.getPartitionKey(id),
+            SK: this.getSortKeyRevision(id)
         });
     }
 
@@ -1177,8 +1177,8 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         entryId: string
     ): Promise<CmsContentEntry | null> {
         return this.getSingleDynamoDbItem({
-            PK: this.getPrimaryKey(entryId),
-            SK: this.getSecondaryKeyPublished()
+            PK: this.getPartitionKey(entryId),
+            SK: this.getSortKeyPublished()
         });
     }
 
@@ -1187,8 +1187,8 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         entryId: string
     ): Promise<CmsContentEntry | null> {
         return this.getSingleDynamoDbItem({
-            PK: this.getPrimaryKey(entryId),
-            SK: this.getSecondaryKeyLatest()
+            PK: this.getPartitionKey(entryId),
+            SK: this.getSortKeyLatest()
         });
     }
 
@@ -1199,9 +1199,9 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
     ): Promise<CmsContentEntry | null> {
         const entry = await this.getSingleDynamoDbItem(
             {
-                PK: this.getPrimaryKey(entryId),
+                PK: this.getPartitionKey(entryId),
                 SK: {
-                    $lt: this.getSecondaryKeyRevision(version)
+                    $lt: this.getSortKeyRevision(version)
                 }
             },
             {
@@ -1247,7 +1247,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         return entry;
     }
 
-    public getPrimaryKey(id: string): string {
+    public getPartitionKey(id: string): string {
         /**
          * If ID includes # it means it is composed of ID and VERSION.
          * We need ID only so extract it.
@@ -1258,23 +1258,23 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         return `${this.partitionKey}#${id}`;
     }
     /**
-     * Gets a secondary key in form of REV#version from:
+     * Gets a sort key in form of REV#version from:
      *   id#0003
      *   0003
      *   3
      */
-    public getSecondaryKeyRevision(version: string | number) {
+    public getSortKeyRevision(version: string | number) {
         if (typeof version === "string" && version.includes("#") === true) {
             version = version.split("#").pop();
         }
         return `REV#${zeroPad(version)}`;
     }
 
-    public getSecondaryKeyLatest(): string {
+    public getSortKeyLatest(): string {
         return "L";
     }
 
-    public getSecondaryKeyPublished(): string {
+    public getSortKeyPublished(): string {
         return "P";
     }
 }

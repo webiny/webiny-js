@@ -1,5 +1,6 @@
 const dbPlugins = require("@webiny/handler-db").default;
 const { DynamoDbDriver } = require("@webiny/db-dynamodb");
+const dynamoDbPlugins = require("@webiny/db-dynamodb/plugins").default;
 const { DocumentClient } = require("aws-sdk/clients/dynamodb");
 const NodeEnvironment = require("jest-environment-node");
 /**
@@ -13,14 +14,16 @@ if (typeof plugins !== "function") {
 
 const getStorageOperationsPlugins = ({ documentClient }) => {
     return () => {
-        const pluginsValue = plugins();
-        const dbPluginsValue = dbPlugins({
-            table: "FileManager",
-            driver: new DynamoDbDriver({
-                documentClient
+        return [
+            ...dynamoDbPlugins(),
+            ...plugins(),
+            ...dbPlugins({
+                table: "FileManager",
+                driver: new DynamoDbDriver({
+                    documentClient
+                })
             })
-        });
-        return [...pluginsValue, ...dbPluginsValue];
+        ];
     };
 };
 

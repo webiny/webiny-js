@@ -3,6 +3,7 @@ import * as aws from "@pulumi/aws";
 class Cognito {
     userPoolClient: aws.cognito.UserPoolClient;
     userPool: aws.cognito.UserPool;
+
     constructor() {
         this.userPool = new aws.cognito.UserPool("api-user-pool", {
             passwordPolicy: {

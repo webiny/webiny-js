@@ -27,6 +27,11 @@ import {
 
 import { ApiKey } from "@webiny/api-security-admin-users/types";
 
+/**
+ * Unfortunately at we need to import the api-i18n-ddb package manually
+ */
+import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
+
 export interface GQLHandlerCallableArgs {
     permissions?: PermissionsArg[];
     identity?: SecurityIdentity;
@@ -104,6 +109,7 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
             apiKeyAuthentication({ identityType: "api-key" }),
             apiKeyAuthorization({ identityType: "api-key" }),
             i18nContext(),
+            i18nDynamoDbStorageOperations(),
             i18nContentPlugins(),
             mockLocalesPlugins(),
             {

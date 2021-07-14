@@ -31,17 +31,9 @@ const systemCrudContextPlugin = new ContextPlugin<FileManagerContext>(async cont
 
     context.fileManager.system = {
         async getVersion() {
-            const { fileManager } = context;
             const system = await storageOperations.get();
-            // Backwards compatibility check
-            if (!system) {
-                // If settings exist, it means this system was installed before versioning was introduced.
-                // 5.0.0-beta.4 is the last version before versioning was introduced.
-                const settings = await fileManager.settings.getSettings();
-                return settings ? "5.0.0-beta.4" : null;
-            }
 
-            return system.version;
+            return system ? system.version : null;
         },
         async setVersion(version: string) {
             const system = await storageOperations.get();
