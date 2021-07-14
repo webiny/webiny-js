@@ -24,6 +24,7 @@ type Props = {
     Label: React.ComponentType<any>;
     children: (params: any) => React.ReactNode;
     emptyValue?: any;
+    renderTitle?: (value: any[]) => React.ReactElement;
 };
 
 const DynamicSection = ({
@@ -32,7 +33,8 @@ const DynamicSection = ({
     Label,
     children,
     showLabel = true,
-    emptyValue = ""
+    emptyValue = "",
+    renderTitle
 }: Props) => {
     const Bind = getBind();
     const FirstFieldBind = getBind(0);
@@ -50,6 +52,7 @@ const DynamicSection = ({
                 const bindFieldValue = value || [];
                 return (
                     <Grid>
+                        {typeof renderTitle === "function" && renderTitle(bindFieldValue)}
                         <Cell span={12}>
                             {/* We always render the first item, for better UX */}
                             {showLabel && field.label && <Label>{field.label}</Label>}
