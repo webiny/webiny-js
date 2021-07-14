@@ -2,16 +2,18 @@ import React from "react";
 import { css } from "emotion";
 import { i18n } from "@webiny/app/i18n";
 import { Cell, Grid } from "@webiny/ui/Grid";
-import { ButtonDefault } from "@webiny/ui/Button";
+import { ButtonDefault, ButtonIcon } from "@webiny/ui/Button";
 import { CmsEditorField } from "~/types";
 import { FormElementMessage } from "@webiny/ui/FormElementMessage";
+import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18px.svg";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
 const style = {
     addButton: css({
-        textAlign: "center",
-        width: "100%"
+        width: "100%",
+        borderTop: "1px solid var(--mdc-theme-background)",
+        paddingTop: 8
     })
 };
 
@@ -98,7 +100,10 @@ const DynamicSection = ({
                             <ButtonDefault
                                 disabled={bindFieldValue[0] === undefined}
                                 onClick={() => appendValue(emptyValue)}
-                            >{t`+ Add value`}</ButtonDefault>
+                            >
+                                <ButtonIcon icon={<AddIcon />} />
+                                {t`Add value`}
+                            </ButtonDefault>
                         </Cell>
                     </Grid>
                 );
