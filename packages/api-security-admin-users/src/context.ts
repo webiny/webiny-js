@@ -28,8 +28,12 @@ export default () => {
             );
             context.tenancy.setCurrentTenant(tenant);
         };
-
-        context.security.users = new Users(context);
+        /**
+         * We must initialize Users to have storageOperations.
+         */
+        const users = new Users(context);
+        await users.init();
+        context.security.users = users;
         context.security.groups = groupCrud(context);
         context.security.apiKeys = apiKeyCrud(context);
         context.security.system = systemCrud(context);

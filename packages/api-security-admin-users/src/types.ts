@@ -22,6 +22,13 @@ export interface Group {
 }
 
 export interface User {
+    /**
+     * Added for the storage operations refactoring.
+     */
+    id: string;
+    /**
+     * Old.
+     */
     login: string;
     firstName: string;
     lastName: string;
@@ -115,8 +122,8 @@ export interface UsersCRUD {
     createUser(data: CreateUserInput, options?: { auth?: boolean }): Promise<User>;
     updateUser(login: string, data: UpdateUserInput): Promise<User>;
     deleteUser(login: string): Promise<boolean>;
-    linkUserToTenant(login: string, tenant: Tenant, group: Group): Promise<void>;
-    unlinkUserFromTenant(login: string, tenant: Tenant): Promise<void>;
+    linkUserToTenant(id: string, tenant: Tenant, group: Group): Promise<void>;
+    unlinkUserFromTenant(id: string, tenant: Tenant): Promise<void>;
     getUserAccess(login: string): Promise<TenantAccess[]>;
     getPersonalAccessToken(login: string, tokenId: string): Promise<UserPersonalAccessToken>;
     getUserByPersonalAccessToken(token: string): Promise<User>;
@@ -307,9 +314,84 @@ export interface SystemStorageOperationsUpdateParams {
     original: System;
     system: System;
 }
-
+/**
+ * @category StorageOperations
+ * @category SystemStorageOperations
+ */
 export interface SystemStorageOperations {
     get: () => Promise<System>;
     create: (params: SystemStorageOperationsCreateParams) => Promise<System>;
     update: (params: SystemStorageOperationsUpdateParams) => Promise<System>;
+}
+
+/**
+ * @category StorageOperations
+ * @category UserStorageOperations
+ */
+export interface UserStorageOperationsGetParams {
+    id: string;
+}
+/**
+ * @category StorageOperations
+ * @category UserStorageOperations
+ */
+export interface UserStorageOperationsListParamsWhere {
+    tenant: string;
+}
+/**
+ * @category StorageOperations
+ * @category UserStorageOperations
+ */
+export interface UserStorageOperationsListParams {
+    where: UserStorageOperationsListParamsWhere;
+    sort?: string[];
+}
+/**
+ * @category StorageOperations
+ * @category UserStorageOperations
+ */
+export interface UserStorageOperationsCreateParams {
+    user: User;
+}
+/**
+ * @category StorageOperations
+ * @category UserStorageOperations
+ */
+export interface UserStorageOperationsUpdateParams {
+    user: User;
+    original: User;
+}
+/**
+ * @category StorageOperations
+ * @category UserStorageOperations
+ */
+export interface UserStorageOperationsDeleteParams {
+    user: User;
+}
+
+export interface UserStorageOperationsLinkUserToTenantParams {
+    tenant: Tenant;
+    group: Group;
+    user: User;
+    link: TenantAccess;
+}
+export interface UserStorageOperationsUnlinkUserFromTenantParams {
+    tenant: Tenant;
+    user: User;
+}
+/**
+ * @category StorageOperations
+ * @category UserStorageOperations
+ */
+export interface UserStorageOperations {
+    get: (params: UserStorageOperationsGetParams) => Promise<User>;
+    list: (params: UserStorageOperationsListParams) => Promise<User[]>;
+    create: (params: UserStorageOperationsCreateParams) => Promise<User>;
+    update: (params: UserStorageOperationsUpdateParams) => Promise<User>;
+    delete: (params: UserStorageOperationsDeleteParams) => Promise<User>;
+
+    linkUserToTenant: (params: UserStorageOperationsLinkUserToTenantParams) => Promise<void>;
+    unlinkUserFromTenant: (
+        params: UserStorageOperationsUnlinkUserFromTenantParams
+    ) => Promise<void>;
 }
