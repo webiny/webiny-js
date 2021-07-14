@@ -1,6 +1,6 @@
-import { FieldPathPlugin } from "@webiny/db-dynamodb/plugins/FieldPathPlugin";
-import { DateTimeTransformPlugin } from "@webiny/db-dynamodb/plugins/transformers/DateTimeTransformPlugin";
-import { NumberTransformPlugin } from "@webiny/db-dynamodb/plugins/transformers/NumberTransformPlugin";
+import { FieldPathPlugin } from "@webiny/db-dynamodb/plugins/definitions/FieldPathPlugin";
+import { DateTimeTransformPlugin } from "@webiny/db-dynamodb/plugins/definitions/DateTimeTransformPlugin";
+import { NumberTransformPlugin } from "@webiny/db-dynamodb/plugins/definitions/NumberTransformPlugin";
 
 export default () => [
     /**

@@ -2,13 +2,16 @@ import { SystemCRUD, AdminUsersContext } from "../types";
 import dbArgs from "./dbArgs";
 
 export default (context: AdminUsersContext): SystemCRUD => {
-    const { db, tenancy } = context;
+    const { db } = context;
 
-    const keys = () => ({ PK: `T#${tenancy.getCurrentTenant().id}#SYSTEM`, SK: "SECURITY" });
+    const keys = () => ({
+        PK: `T#${context.tenancy.getCurrentTenant().id}#SYSTEM`,
+        SK: "SECURITY"
+    });
 
     return {
         async getVersion() {
-            const rootTenant = await tenancy.getRootTenant();
+            const rootTenant = await context.tenancy.getRootTenant();
             if (!rootTenant) {
                 return null;
             }
@@ -18,12 +21,7 @@ export default (context: AdminUsersContext): SystemCRUD => {
                 query: keys()
             });
 
-            // Backwards compatibility check
-            if (!system) {
-                return "5.0.0-beta.4";
-            }
-
-            return system.version;
+            return system ? system.version : null;
         },
         async setVersion(version: string) {
             const [[system]] = await db.read({

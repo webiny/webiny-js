@@ -1,5 +1,6 @@
 import { ListPagesParams, PbContext } from "../../types";
 import { ElasticsearchBoolQueryConfig } from "@webiny/api-elasticsearch/types";
+import trimEnd from "lodash/trimEnd";
 
 /**
  * Returns arguments suited to be sent to ElasticSearch's `search` method.
@@ -77,7 +78,8 @@ const getQuery = (args: ListPagesParams, context: PbContext): ElasticsearchBoolQ
         exclude.forEach(item => {
             // Page "path" will always starts with a slash.
             if (item.includes("/")) {
-                paths.push(item);
+                // Let's also ensure the trailing slash is removed.
+                paths.push(trimEnd(item, "/"));
             } else {
                 pageIds.push(item);
             }

@@ -1,6 +1,6 @@
 {
   "name": "@webiny/telemetry",
-  "version": "5.9.0",
+  "version": "5.10.0",
   "main": "index.js",
   "license": "MIT",
   "dependencies": {

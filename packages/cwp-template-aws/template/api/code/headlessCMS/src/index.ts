@@ -1,6 +1,7 @@
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { createHandler } from "@webiny/handler-aws";
 import i18nPlugins from "@webiny/api-i18n/graphql";
+import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import dbPlugins from "@webiny/handler-db";
 import { DynamoDbDriver } from "@webiny/db-dynamodb";
@@ -32,6 +33,7 @@ export const handler = createHandler({
         }),
         securityPlugins(),
         i18nPlugins(),
+        i18nDynamoDbStorageOperations(),
         i18nContentPlugins(),
         headlessCmsPlugins({ debug }),
         headlessCmsDynamoDbElasticStorageOperation(),

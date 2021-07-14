@@ -21,38 +21,75 @@ const upgradeApolloCachePlugins = async (tsmProject, context) => {
 
         dataIdFromObjectProperty.setInitializer(dataIdFromObjectValueInitializer);
 
-        const importDeclarations = source.getImportDeclarations();
-        const lastImportDeclaration = importDeclarations[importDeclarations.length - 1];
-        const index = lastImportDeclaration.getChildIndex() + 1;
+        const pluginsImport = source.getImportDeclaration("@webiny/plugins");
+        const index =
+            source
+                .getImportDeclarations()
+                .pop()
+                .getChildIndex() + 1;
+        if (!pluginsImport) {
+            source.insertImportDeclaration(index, {
+                defaultImport: "{ plugins }",
+                moduleSpecifier: "@webiny/plugins"
+            });
+        }
 
-        source.insertImportDeclaration(index, {
-            defaultImport: "{ plugins }",
-            moduleSpecifier: "@webiny/plugins"
-        });
+        const apolloCachePluginImport = source.getImportDeclaration(
+            "@webiny/app/plugins/ApolloCacheObjectIdPlugin"
+        );
 
-        source.insertImportDeclaration(index + 1, {
-            defaultImport: "{ ApolloCacheObjectIdPlugin }",
-            moduleSpecifier: "@webiny/app/plugins/ApolloCacheObjectIdPlugin"
-        });
+        if (!apolloCachePluginImport) {
+            source.insertImportDeclaration(index + 1, {
+                defaultImport: "{ ApolloCacheObjectIdPlugin }",
+                moduleSpecifier: "@webiny/app/plugins/ApolloCacheObjectIdPlugin"
+            });
+        }
+
+        // Remove old `if` statement
+        const ifStatement = source.getFirstDescendant(
+            node => Node.isIfStatement(node) && node.getFullText().includes("REACT_APP_ENV")
+        );
+
+        if (ifStatement) {
+            ifStatement.remove();
+        }
+
+        // Remove `isProduction` variable
+        const isProduction = source.getFirstDescendant(
+            node => Node.isVariableDeclaration(node) && node.getName() === "isProduction"
+        );
+
+        if (isProduction) {
+            isProduction.remove();
+        }
     }
 
     // 2. Update "apps/website/code/src/plugins/pageBuilder.ts"...
     {
         let source = tsmProject.getSourceFile(FILES.websitePbPlugins);
-        const importDeclarations = source.getImportDeclarations();
-        const lastImportDeclaration = importDeclarations[importDeclarations.length - 1];
-        const index = lastImportDeclaration.getChildIndex() + 1;
 
-        source.insertImportDeclaration(index, {
-            defaultImport: "apolloCacheObjectId",
-            moduleSpecifier: "@webiny/app-page-builder/render/plugins/apolloCacheObjectId"
-        });
-
-        const defaultExport = source.getFirstDescendant(node => Node.isExportAssignment(node));
-        const exportedArray = defaultExport.getFirstDescendant(node =>
-            Node.isArrayLiteralExpression(node)
+        const apolloCachePluginImport = source.getImportDeclaration(
+            "@webiny/app-page-builder/render/plugins/apolloCacheObjectId"
         );
-        exportedArray.addElement("apolloCacheObjectId");
+
+        if (!apolloCachePluginImport) {
+            const index =
+                source
+                    .getImportDeclarations()
+                    .pop()
+                    .getChildIndex() + 1;
+
+            source.insertImportDeclaration(index, {
+                defaultImport: "apolloCacheObjectId",
+                moduleSpecifier: "@webiny/app-page-builder/render/plugins/apolloCacheObjectId"
+            });
+
+            const defaultExport = source.getFirstDescendant(node => Node.isExportAssignment(node));
+            const exportedArray = defaultExport.getFirstDescendant(node =>
+                Node.isArrayLiteralExpression(node)
+            );
+            exportedArray.addElement("apolloCacheObjectId");
+        }
     }
 };
 

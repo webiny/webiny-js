@@ -1,0 +1,4 @@
+{
+  "name": "API I18n DynamoDB",
+  "entryPoints": ["types.ts"]
+}

@@ -17,29 +17,39 @@ module.exports = [
                         describe: `A version to which you want to upgrade`,
                         type: "string"
                     });
+
+                    yargs.option("skip-checks", {
+                        describe: "Do not perform CLI version and Git tree checks.",
+                        type: "boolean",
+                        default: false
+                    });
                 },
                 async argv => {
-                    // Before doing any upgrading, there must not be any active changes in the current branch.
-                    let gitStatus = "";
-                    try {
-                        let { stdout } = execa.sync("git", ["status", "--porcelain"]);
-                        gitStatus = stdout.trim();
-                    } catch {}
+                    if (!argv.skipChecks) {
+                        // Before doing any upgrading, there must not be any active changes in the current branch.
+                        let gitStatus = "";
+                        try {
+                            let { stdout } = execa.sync("git", ["status", "--porcelain"]);
+                            gitStatus = stdout.trim();
+                        } catch {}
 
-                    if (gitStatus) {
-                        console.error(
-                            red("This git repository has untracked files or uncommitted changes:") +
-                                "\n\n" +
-                                gitStatus
-                                    .split("\n")
-                                    .map(line => line.match(/ .*/g)[0].trim())
-                                    .join("\n") +
-                                "\n\n" +
+                        if (gitStatus) {
+                            console.error(
                                 red(
-                                    "Remove untracked files, stash or commit any changes, and try again."
-                                )
-                        );
-                        process.exit(1);
+                                    "This git repository has untracked files or uncommitted changes:"
+                                ) +
+                                    "\n\n" +
+                                    gitStatus
+                                        .split("\n")
+                                        .map(line => line.match(/ .*/g)[0].trim())
+                                        .join("\n") +
+                                    "\n\n" +
+                                    red(
+                                        "Remove untracked files, stash or commit any changes, and try again."
+                                    )
+                            );
+                            process.exit(1);
+                        }
                     }
 
                     const plugin = context.plugins
@@ -54,7 +64,7 @@ module.exports = [
                         );
                     }
 
-                    if (typeof plugin.canUpgrade === "function") {
+                    if (typeof plugin.canUpgrade === "function" && !argv.skipChecks) {
                         try {
                             const canUpgrade = await plugin.canUpgrade(argv, context);
                             if (canUpgrade === false) {

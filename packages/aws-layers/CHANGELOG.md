@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.10.0](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.2...v5.10.0) (2021-07-06)
+
+**Note:** Version bump only for package @webiny/aws-layers
+
+
+
+
+
+# [5.10.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.1...v5.10.0-beta.2) (2021-07-06)
+
+**Note:** Version bump only for package @webiny/aws-layers
+
+
+
+
+
+# [5.10.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.0...v5.10.0-beta.1) (2021-07-06)
+
+**Note:** Version bump only for package @webiny/aws-layers
+
+
+
+
+
+# [5.10.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.9.0...v5.10.0-beta.0) (2021-07-02)
+
+
+### Features
+
+* update Lambda runtime and sharp layer ([#1738](https://github.com/webiny/webiny-js/issues/1738)) ([c03af0a](https://github.com/webiny/webiny-js/commit/c03af0aba0a315c3823251d9fecd888cc191250c))
+
+
+
+
+
 # [5.9.0](https://github.com/webiny/webiny-js/compare/v5.9.0-beta.2...v5.9.0) (2021-06-21)
 
 **Note:** Version bump only for package @webiny/aws-layers

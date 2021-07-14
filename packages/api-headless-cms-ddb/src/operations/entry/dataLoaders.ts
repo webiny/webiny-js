@@ -69,14 +69,21 @@ const getRevisionById = (
     storageOperations: CmsContentEntryDynamo
 ) => {
     return new DataLoader<string, CmsContentEntry>(async ids => {
-        const batch = ids.map(id => {
-            return storageOperations.entity.getBatch({
-                PK: storageOperations.getPartitionKey(id),
-                SK: storageOperations.getSortKeyRevision(id)
+        const batch = ids.reduce((collection, id) => {
+            const partitionKey = storageOperations.getPartitionKey(id);
+            const sortKey = storageOperations.getSortKeyRevision(id);
+            const keys = `${partitionKey}__${sortKey}`;
+            if (collection[keys]) {
+                return collection;
+            }
+            collection[keys] = storageOperations.entity.getBatch({
+                PK: partitionKey,
+                SK: sortKey
             });
-        });
+            return collection;
+        }, {});
 
-        const items = await executeBatchGet(storageOperations, batch);
+        const items = await executeBatchGet(storageOperations, Object.values(batch));
 
         return ids.map(id => {
             return items.filter(item => {
@@ -95,14 +102,19 @@ const getPublishedRevisionByEntryId = (
 ) => {
     return new DataLoader<string, CmsContentEntry>(async ids => {
         const sortKey = storageOperations.getSortKeyPublished();
-        const batch = ids.map(id => {
-            return storageOperations.entity.getBatch({
-                PK: storageOperations.getPartitionKey(id),
+        const batch = ids.reduce((collection, id) => {
+            const partitionKey = storageOperations.getPartitionKey(id);
+            if (collection[partitionKey]) {
+                return collection;
+            }
+            collection[partitionKey] = storageOperations.entity.getBatch({
+                PK: partitionKey,
                 SK: sortKey
             });
-        });
+            return collection;
+        }, {});
 
-        const items = await executeBatchGet(storageOperations, batch);
+        const items = await executeBatchGet(storageOperations, Object.values(batch));
         return ids.map(id => {
             return items.filter(item => {
                 const partitionKey = storageOperations.getPartitionKey(id);
@@ -119,14 +131,19 @@ const getLatestRevisionByEntryId = (
 ) => {
     return new DataLoader<string, CmsContentEntry>(async ids => {
         const sortKey = storageOperations.getSortKeyLatest();
-        const batch = ids.map(id => {
-            return storageOperations.entity.getBatch({
-                PK: storageOperations.getPartitionKey(id),
+        const batch = ids.reduce((collection, id) => {
+            const partitionKey = storageOperations.getPartitionKey(id);
+            if (collection[partitionKey]) {
+                return collection;
+            }
+            collection[partitionKey] = storageOperations.entity.getBatch({
+                PK: partitionKey,
                 SK: sortKey
             });
-        });
+            return collection;
+        }, {});
 
-        const items = await executeBatchGet(storageOperations, batch);
+        const items = await executeBatchGet(storageOperations, Object.values(batch));
         return ids.map(id => {
             return items.filter(item => {
                 const partitionKey = storageOperations.getPartitionKey(id);
@@ -222,6 +239,17 @@ export class DataLoadersHandler {
             results = await this.getLoader(loader, model).loadMany(ids);
             if (Array.isArray(results) === true) {
                 return results.reduce((acc, res) => {
+                    if (Array.isArray(res) === false) {
+                        if (res?.message) {
+                            throw new WebinyError(res.message, res.code, {
+                                ...res,
+                                data: JSON.stringify(res.data || {})
+                            });
+                        }
+                        throw new WebinyError(
+                            "Result from the data loader must be an array of arrays which contain requested items."
+                        );
+                    }
                     acc.push(...res);
                     return acc;
                 }, []);
@@ -233,7 +261,8 @@ export class DataLoadersHandler {
                 {
                     loader,
                     ids,
-                    model
+                    model,
+                    data: ex.data || {}
                 }
             );
         }

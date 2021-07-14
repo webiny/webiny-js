@@ -16,6 +16,7 @@
     "../handler-db",
     "../validation",
     "../api-i18n",
+    "../api-i18n-ddb",
     "../handler-graphql",
     "../handler-aws",
     "../db-dynamodb",

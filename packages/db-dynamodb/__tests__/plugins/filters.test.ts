@@ -1,6 +1,6 @@
 import { PluginsContainer } from "@webiny/plugins";
 import filterPlugins from "~/plugins/filters";
-import { ValueFilterPlugin } from "~/plugins/ValueFilterPlugin";
+import { ValueFilterPlugin } from "~/plugins/definitions/ValueFilterPlugin";
 
 describe("filters", () => {
     let plugins: PluginsContainer;
