@@ -5,7 +5,7 @@ on:
     branches: [staging]
 
 # Ensures only one deployment to "staging" environment can be in progress at the same time.
-concurrency: environment
+concurrency: staging
 
 jobs:
   # This first step ensures we don't run the workflow if the repository is empty.
@@ -64,9 +64,9 @@ jobs:
       - name: Build packages
         run: yarn webiny workspaces run build --folder packages
 
-      # 4. Run tests.
-      - name: Run tests
-        run: yarn test
+      # 4. Run unit tests.
+      - name: Run unit tests
+        run: yarn test:unit
 
       # 5. Deploy to "staging" environment (we skip deployment if the WEBINY_PULUMI_BACKEND is missing).
       # We want to have a single central storage of our cloud infrastructure state files, for example
@@ -75,6 +75,16 @@ jobs:
       - name: Deploy
         if: env.WEBINY_PULUMI_BACKEND
         run: yarn webiny deploy --env staging
+
+      # 6. Run integration tests.
+      - name: Run integration tests
+        if: env.WEBINY_PULUMI_BACKEND
+        run: yarn test:integration
+
+      # 7. Run end-to-end tests.
+      - name: Run end-to-end tests
+        if: env.WEBINY_PULUMI_BACKEND
+        run: yarn test:e2e
 
       # Add additional steps if needed. For example, if you have additional E2E
       # tests done with Cypress (https://www.cypress.io/), you can run them here.
