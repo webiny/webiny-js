@@ -1,5 +1,5 @@
 import { GroupsStorageOperationsProvider } from "@webiny/api-security-admin-users/plugins/GroupsStorageOperationsProvider";
-import { GroupsStorageOperationsDdb } from "~/operations/groups/GroupsStorageOperations";
+import { GroupsStorageOperationsDdb } from "./GroupsStorageOperations";
 
 export class GroupsStorageOperationsProviderDdb extends GroupsStorageOperationsProvider {
     public name = "sau.storageOperationsProvider.groups.ddb";
