@@ -7,24 +7,25 @@ import { NotAuthorizedError } from "@webiny/api-security";
 import { NotFoundError } from "@webiny/handler-graphql";
 import WebinyError from "@webiny/error";
 import { Base } from "./base.crud";
-import { UserPlugin } from "../plugins/UserPlugin";
+import { UserPlugin } from "~/plugins/UserPlugin";
 import {
     AdminUsersContext,
     CreatePersonalAccessTokenInput,
     CreateUserInput,
-    DbItemSecurityUser2Tenant,
     Group,
     TenantAccess,
     UpdatePersonalAccessTokenInput,
     UpdateUserInput,
     User,
     UserPersonalAccessToken,
-    UsersCRUD
-} from "../types";
+    UsersCRUD,
+    UserStorageOperations
+} from "~/types";
 
 import dbArgs from "./dbArgs";
 import { UserLoaders } from "./users.loaders";
 import validationPlugin from "./users.validation";
+import { UserStorageOperationsProvider } from "~/plugins/UserStorageOperationsProvider";
 
 type DbItem<T> = T & {
     PK: string;
@@ -47,6 +48,8 @@ const UpdateAccessTokenDataModel = withFields({
 
 export class Users extends Base implements UsersCRUD {
     private loaders: UserLoaders;
+    private _initialized: boolean;
+    private storageOperations: UserStorageOperations;
 
     constructor(context: AdminUsersContext) {
         super(context);
@@ -57,6 +60,36 @@ export class Users extends Base implements UsersCRUD {
 
     get plugins(): UserPlugin[] {
         return this.context.plugins.byType<UserPlugin>(UserPlugin.type);
+    }
+    /**
+     * We need a init function because provider is async and it cannot be run inside the constructor.
+     */
+    public async init(): Promise<void> {
+        if (this._initialized) {
+            throw new WebinyError("Users.init() should not be called more than once.");
+        }
+        this._initialized = true;
+        const providers = this.context.plugins.byType<UserStorageOperationsProvider>(
+            UserStorageOperationsProvider.type
+        );
+        /**
+         * Always take the last given provider - although if everything is loaded as it must, there should not be more than one.
+         * We do not check/verify for multiple providers.
+         */
+        const provider = providers.pop();
+        if (!provider) {
+            throw new WebinyError(
+                "Could not find a UserStorageOperationsProvider plugin registered.",
+                "PROVIDER_PLUGIN_ERROR",
+                {
+                    type: UserStorageOperationsProvider.type
+                }
+            );
+        }
+
+        this.storageOperations = await provider.provide({
+            context: this.context
+        });
     }
 
     async login(): Promise<User> {
@@ -126,7 +159,7 @@ export class Users extends Base implements UsersCRUD {
     }
 
     async createUser(data: CreateUserInput, options: { auth?: boolean } = {}): Promise<User> {
-        const { db, security, tenancy } = this.context;
+        const { security, tenancy } = this.context;
 
         const auth = "auth" in options ? options.auth : true;
 
@@ -140,24 +173,31 @@ export class Users extends Base implements UsersCRUD {
         const login = data.login.toLowerCase();
         const identity = security.getIdentity();
 
-        if (await this.getUser(login, { auth: false })) {
+        const existing = await this.getUser(login, {
+            auth: false
+        });
+
+        if (existing) {
             throw {
                 message: "User with that login already exists.",
                 code: "USER_EXISTS"
             };
         }
+        let createdBy = null;
+        if (identity) {
+            createdBy = {
+                id: identity.id,
+                displayName: identity.displayName,
+                type: identity.type
+            };
+        }
 
         const user: User = {
             ...data,
+            id: mdbid(),
             login,
             createdOn: new Date().toISOString(),
-            createdBy: identity
-                ? {
-                      id: identity.id,
-                      displayName: identity.displayName,
-                      type: identity.type
-                  }
-                : null
+            createdBy
         };
 
         await this.executeCallback<UserPlugin["beforeCreate"]>("beforeCreate", {
@@ -166,15 +206,19 @@ export class Users extends Base implements UsersCRUD {
             inputData: data
         });
 
-        await db.create({
-            ...dbArgs,
-            data: {
-                PK: `U#${user.login}`,
-                SK: "A",
-                TYPE: "security.user",
-                ...user
-            }
-        });
+        try {
+            await this.storageOperations.create({
+                user
+            });
+        } catch (ex) {
+            throw new WebinyError(
+                ex.message || "Could not create user.",
+                ex.code || "CREATE_USER_ERROR",
+                {
+                    user
+                }
+            );
+        }
 
         await this.executeCallback<UserPlugin["afterCreate"]>("afterCreate", {
             context: this.context,
@@ -303,8 +347,16 @@ export class Users extends Base implements UsersCRUD {
         return await this.getUser(pat.login, { auth: false });
     }
 
-    async linkUserToTenant(login: string, tenant: Tenant, group: Group): Promise<void> {
-        const data: TenantAccess = {
+    async linkUserToTenant(id: string, tenant: Tenant, group: Group): Promise<void> {
+        const user = await this.getUser(id, {
+            auth: false
+        });
+        if (!user) {
+            throw new WebinyError("User not found.", "USER_NOT_FOUND", {
+                id
+            });
+        }
+        const link: TenantAccess = {
             tenant: {
                 id: tenant.id,
                 name: tenant.name
@@ -316,19 +368,55 @@ export class Users extends Base implements UsersCRUD {
             }
         };
 
-        await this.context.db.create({
-            ...dbArgs,
-            data: {
-                PK: `U#${login}`,
-                SK: `LINK#T#${tenant.id}#G#${group.slug}`,
-                GSI1_PK: `T#${tenant.id}`,
-                GSI1_SK: `G#${group.slug}#U#${login}`,
-                TYPE: "security.user2tenant",
-                ...data
-            }
-        });
+        try {
+            await this.storageOperations.linkUserToTenant({
+                user,
+                tenant,
+                group,
+                link
+            });
+        } catch (ex) {
+            throw new WebinyError(
+                ex.messsage || "Cannot link user to tenant.",
+                ex.code || "LINK_USER_TO_TENANT_ERROR",
+                {
+                    link,
+                    user
+                }
+            );
+        }
+        /**
+         * Add the data into cache so it is not loaded again if required in this request.
+         */
+        await this.loaders.addDataLoaderAccessCache(id, link);
+    }
 
-        await this.loaders.addDataLoaderAccessCache(login, data);
+    async unlinkUserFromTenant(id: string, tenant: Tenant): Promise<void> {
+        const user = await this.getUser(id, {
+            auth: false
+        });
+        if (!user) {
+            throw new WebinyError("User not found.", "USER_NOT_FOUND", {
+                id
+            });
+        }
+
+        try {
+            await this.storageOperations.unlinkUserFromTenant({
+                tenant,
+                user
+            });
+        } catch (ex) {
+            throw new WebinyError(
+                ex.messsage || "Cannot unlink user from tenant.",
+                ex.code || "UNLINK_USER_FROM_TENANT_ERROR",
+                {
+                    tenant,
+                    user
+                }
+            );
+        }
+        await this.loaders.deleteDataLoaderAccessCache(id, tenant);
     }
 
     async listTokens(login: string): Promise<UserPersonalAccessToken[]> {
@@ -377,27 +465,6 @@ export class Users extends Base implements UsersCRUD {
         const results = await batch.execute();
 
         return results.map(res => res[0][0]);
-    }
-
-    async unlinkUserFromTenant(login: string, tenant: Tenant): Promise<void> {
-        const { db } = this.context;
-        const [[link]] = await db.read<DbItemSecurityUser2Tenant>({
-            ...dbArgs,
-            query: {
-                PK: `U#${login}`,
-                SK: { $beginsWith: `LINK#T#${tenant.id}#G#` }
-            },
-            limit: 1
-        });
-
-        await db.delete({
-            ...dbArgs,
-            query: {
-                PK: link.PK,
-                SK: link.SK
-            }
-        });
-        await this.loaders.deleteDataLoaderAccessCache(login, tenant);
     }
 
     async updateToken(

@@ -1,8 +1,8 @@
 import { Plugin } from "@webiny/plugins";
-import { AdminUsersContext } from "../types";
+import { AdminUsersContext } from "~/types";
 
 export abstract class Base {
-    protected context: AdminUsersContext;
+    protected readonly context: AdminUsersContext;
 
     constructor(context: AdminUsersContext) {
         this.context = context;
