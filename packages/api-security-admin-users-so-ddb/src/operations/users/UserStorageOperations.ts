@@ -271,7 +271,7 @@ export class UserStorageOperationsDdb implements UserStorageOperations {
             );
         }
         if (userTenantAccessList.length === 0) {
-            throw new WebinyError("Could not find a relation between the ");
+            throw new WebinyError("Could not find a relation user <-> tenant");
         }
         const keys = {
             PK: userTenantAccessList[0].PK,
