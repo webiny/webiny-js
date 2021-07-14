@@ -29,20 +29,20 @@ export class GroupsStorageOperationsDdb implements GroupsStorageOperations {
     private readonly entity: Entity<any>;
     private readonly linksEntity: Entity<any>;
 
-    public constructor(params: Params) {
-        this.context = params.context;
+    public constructor({ context }: Params) {
+        this.context = context;
 
         this.table = createTable({
             context: this.context
         });
 
         this.entity = createGroupEntity({
-            context: this.context,
+            context,
             table: this.table
         });
 
         this.linksEntity = createLinksEntity({
-            context: this.context,
+            context,
             table: this.table
         });
     }

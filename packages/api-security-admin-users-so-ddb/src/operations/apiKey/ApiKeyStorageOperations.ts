@@ -26,15 +26,15 @@ export class ApiKeyStorageOperationsDdb implements ApiKeyStorageOperations {
     private readonly table: Table;
     private readonly entity: Entity<any>;
 
-    public constructor(params: Params) {
-        this.context = params.context;
+    public constructor({ context }: Params) {
+        this.context = context;
 
         this.table = createTable({
-            context: this.context
+            context
         });
 
         this.entity = createApiKeyEntity({
-            context: this.context,
+            context,
             table: this.table
         });
     }

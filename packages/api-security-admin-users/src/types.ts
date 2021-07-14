@@ -284,3 +284,32 @@ export interface GroupsStorageOperations {
     delete: (params: GroupsStorageOperationsDeleteParams) => Promise<Group>;
     updateUserLinks: (params: GroupsStorageOperationsUpdateUserLinksParams) => Promise<void>;
 }
+
+/**
+ * @category System
+ * @category Model
+ */
+export interface System {
+    version?: string;
+}
+/**
+ * @category StorageOperations
+ * @category SystemStorageOperations
+ */
+export interface SystemStorageOperationsCreateParams {
+    system: System;
+}
+/**
+ * @category StorageOperations
+ * @category SystemStorageOperations
+ */
+export interface SystemStorageOperationsUpdateParams {
+    original: System;
+    system: System;
+}
+
+export interface SystemStorageOperations {
+    get: () => Promise<System>;
+    create: (params: SystemStorageOperationsCreateParams) => Promise<System>;
+    update: (params: SystemStorageOperationsUpdateParams) => Promise<System>;
+}
