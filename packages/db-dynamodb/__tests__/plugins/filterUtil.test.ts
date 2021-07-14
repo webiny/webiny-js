@@ -2,7 +2,7 @@ import { filterItems } from "~/utils/filter";
 import filters from "~/plugins/filters";
 import { ContextInterface } from "@webiny/handler/types";
 import { PluginsContainer } from "@webiny/plugins";
-import { FieldPathPlugin } from "~/plugins/FieldPathPlugin";
+import { FieldPathPlugin } from "~/plugins/definitions/FieldPathPlugin";
 
 const itemJohn = {
     id: 1,

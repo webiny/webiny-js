@@ -20,7 +20,10 @@ export default () => {
             DB_TABLE: dynamoDb.table.name,
             DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
             DEBUG: String(process.env.DEBUG)
-        }
+        },
+        primaryDynamodbTable: dynamoDb.table,
+        elasticsearchDynamodbTable: elasticSearch.table,
+        bucket: fileManager.bucket
     });
 
     const pageBuilder = new PageBuilder({
@@ -29,7 +32,8 @@ export default () => {
             DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
             DEBUG: String(process.env.DEBUG)
         },
-        bucket: fileManager.bucket
+        bucket: fileManager.bucket,
+        primaryDynamodbTable: dynamoDb.table
     });
 
     const api = new Graphql({
@@ -40,18 +44,18 @@ export default () => {
             DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
             DEBUG: String(process.env.DEBUG),
             ELASTIC_SEARCH_ENDPOINT: elasticSearch.domain.endpoint,
-
-            // Not required. Useful for testing purposes / ephemeral environments.
-            // https://www.webiny.com/docs/key-topics/ci-cd/testing/slow-ephemeral-environments
-            ELASTIC_SEARCH_INDEX_PREFIX: process.env.ELASTIC_SEARCH_INDEX_PREFIX,
-
             PRERENDERING_RENDER_HANDLER: prerenderingService.functions.render.arn,
             PRERENDERING_FLUSH_HANDLER: prerenderingService.functions.flush.arn,
             PRERENDERING_QUEUE_ADD_HANDLER: prerenderingService.functions.queue.add.arn,
             PRERENDERING_QUEUE_PROCESS_HANDLER: prerenderingService.functions.queue.process.arn,
             S3_BUCKET: fileManager.bucket.id,
             WEBINY_LOGS_FORWARD_URL: String(process.env.WEBINY_LOGS_FORWARD_URL)
-        }
+        },
+        primaryDynamodbTable: dynamoDb.table,
+        elasticsearchDynamodbTable: elasticSearch.table,
+        elasticsearchDomain: elasticSearch.domain,
+        bucket: fileManager.bucket,
+        cognitoUserPool: cognito.userPool
     });
 
     const headlessCms = new HeadlessCMS({
@@ -62,14 +66,12 @@ export default () => {
             DB_TABLE_ELASTICSEARCH: elasticSearch.table.name,
             DEBUG: String(process.env.DEBUG),
             ELASTIC_SEARCH_ENDPOINT: elasticSearch.domain.endpoint,
-
-            // Not required. Useful for testing purposes / ephemeral environments.
-            // https://www.webiny.com/docs/key-topics/ci-cd/testing/slow-ephemeral-environments
-            ELASTIC_SEARCH_INDEX_PREFIX: process.env.ELASTIC_SEARCH_INDEX_PREFIX,
-
             S3_BUCKET: fileManager.bucket.id,
             WEBINY_LOGS_FORWARD_URL: String(process.env.WEBINY_LOGS_FORWARD_URL)
-        }
+        },
+        primaryDynamodbTable: dynamoDb.table,
+        elasticsearchDynamodbTable: elasticSearch.table,
+        elasticsearchDomain: elasticSearch.domain
     });
 
     const apiGateway = new ApiGateway({
@@ -116,7 +118,6 @@ export default () => {
         cognitoAppClientId: cognito.userPoolClient.id,
         updatePbSettingsFunction: pageBuilder.functions.updateSettings.arn,
         psQueueAdd: prerenderingService.functions.queue.add.arn,
-        psQueueProcess: prerenderingService.functions.queue.process.arn,
-        dynamoDbTable: dynamoDb.table.name
+        psQueueProcess: prerenderingService.functions.queue.process.arn
     };
 };

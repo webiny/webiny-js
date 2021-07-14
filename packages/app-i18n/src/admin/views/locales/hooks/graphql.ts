@@ -9,18 +9,19 @@ const BASE_FIELDS = `
 export const LIST_LOCALES = gql`
     query listI18NLocales {
         i18n {
-            listI18NLocales {
+            listI18NLocales(limit: 1000) {
                 data {
                     ${BASE_FIELDS}
                 }
                 meta {
-                    cursors {
-                        next
-                        previous
-                    }
-                    hasNextPage
-                    hasPreviousPage
                     totalCount
+                    hasMoreItems
+                    cursor
+                }
+                error {
+                    code
+                    message
+                    data
                 }
             }
         }

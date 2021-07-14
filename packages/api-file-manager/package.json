@@ -45,6 +45,7 @@
     "@babel/preset-env": "^7.5.5",
     "@babel/preset-typescript": "^7.0.0",
     "@webiny/api-i18n": "^5.10.0",
+    "@webiny/api-i18n-ddb": "^5.10.0",
     "@webiny/cli": "^5.10.0",
     "jest": "^26.6.3",
     "rimraf": "^3.0.2",

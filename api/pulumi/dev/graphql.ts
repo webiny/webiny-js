@@ -1,14 +1,32 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
+import policies, { EsDomain } from "./policies";
+
+interface GraphqlParams {
+    env: Record<string, any>;
+    primaryDynamodbTable: aws.dynamodb.Table;
+    elasticsearchDynamodbTable: aws.dynamodb.Table;
+    bucket: aws.s3.Bucket;
+    elasticsearchDomain: EsDomain;
+    cognitoUserPool: aws.cognito.UserPool;
+}
 
 class Graphql {
     functions: {
         api: aws.lambda.Function;
     };
     role: aws.iam.Role;
-    policy: aws.iam.RolePolicyAttachment;
-    constructor({ env }: { env: Record<string, any> }) {
-        this.role = new aws.iam.Role("api-lambda-role", {
+
+    constructor({
+        env,
+        primaryDynamodbTable,
+        elasticsearchDynamodbTable,
+        bucket,
+        elasticsearchDomain,
+        cognitoUserPool
+    }: GraphqlParams) {
+        const roleName = "api-lambda-role";
+        this.role = new aws.iam.Role(roleName, {
             assumeRolePolicy: {
                 Version: "2012-10-17",
                 Statement: [
@@ -23,9 +41,22 @@ class Graphql {
             }
         });
 
-        this.policy = new aws.iam.RolePolicyAttachment("api-lambda-role-policy", {
+        const policy = policies.getApiGraphqlLambdaPolicy({
+            primaryDynamodbTable,
+            elasticsearchDynamodbTable,
+            bucket,
+            elasticsearchDomain,
+            cognitoUserPool
+        });
+
+        new aws.iam.RolePolicyAttachment(`${roleName}-ApiGraphqlLambdaPolicy`, {
             role: this.role,
-            policyArn: "arn:aws:iam::aws:policy/AdministratorAccess"
+            policyArn: policy.arn.apply(arn => arn)
+        });
+
+        new aws.iam.RolePolicyAttachment(`${roleName}-AWSLambdaBasicExecutionRole`, {
+            role: this.role,
+            policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole
         });
 
         this.functions = {

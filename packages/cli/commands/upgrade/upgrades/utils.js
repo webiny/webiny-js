@@ -6,6 +6,21 @@ const loadJson = require("load-json-file");
 const writeJson = require("write-json-file");
 const semverCoerce = require("semver/functions/coerce");
 const execa = require("execa");
+/**
+ *
+ * @param pkg {string}
+ * @param version {string}
+ */
+const validateVersion = (pkg, version) => {
+    if (version === "latest") {
+        return;
+    }
+    const coerced = semverCoerce(version);
+    if (coerced) {
+        return;
+    }
+    throw new Error(`Package "${pkg}" version is not a valid semver version: "${version}".`);
+};
 
 const insertImport = (source, name, pkg) => {
     const statements = source.getStatements();
@@ -86,15 +101,10 @@ const addPackagesToDeps = (type, targetPath, packages) => {
         if (version === null) {
             // Remove package from deps
             delete dependencies[pkg];
-        } else {
-            const coerced = semverCoerce(version);
-            if (!coerced) {
-                throw new Error(
-                    `Package "${pkg}" version is not a valid semver version: "${version}".`
-                );
-            }
-            dependencies[pkg] = version;
+            continue;
         }
+        validateVersion(pkg, version);
+        dependencies[pkg] = version;
     }
     json[type] = dependencies;
 
@@ -151,6 +161,118 @@ const yarnInstall = async ({ context }) => {
     }
 };
 
+/**
+ *
+ * @param plugins {tsMorph.Node}
+ * @param afterElement {String|undefined}
+ * @returns {null|number}
+ */
+const findElementIndex = (plugins, afterElement) => {
+    if (!afterElement) {
+        return null;
+    }
+    const index = plugins
+        .getInitializer()
+        .getElements()
+        .findIndex(node => {
+            return Node.isCallExpression(node) && node.getExpression().getText() === afterElement;
+        });
+    if (index >= 0) {
+        return index;
+    }
+    return null;
+};
+/**
+ *
+ * @param context {CliContext}
+ * @param source {tsMorph.SourceFile}
+ * @param imports {{importName: String, importPath: String, afterElement: String | undefined}[]}
+ * @param file {String}
+ */
+const addImportsToSource = ({ context, source, imports, file }) => {
+    const { info, warning, error } = context;
+    /**
+     * We need the plugins property in the createHandler argument.
+     * @type {tsMorph.Node}
+     */
+    const plugins = source.getFirstDescendant(
+        node => tsMorph.Node.isPropertyAssignment(node) && node.getName() === "plugins"
+    );
+    if (!plugins) {
+        error(
+            `Cannot find "plugins" property of the "createHandler" argument object in ${info.hl(
+                file
+            )}.`
+        );
+        return;
+    }
+    for (const value of imports) {
+        const { importName, importPath, afterElement, afterImport } = value;
+
+        const importDefinition = source.getImportDeclaration(importPath);
+        /**
+         * If there is required import already, do not proceed.
+         * We do not check if imported plugins are actually sent into the handler because we dont know what user might have done.
+         */
+        if (importDefinition) {
+            info(`Import ${info.hl(importPath)} already exists in ${info.hl(file)}.`);
+            continue;
+        }
+        let addedImport = false;
+        /**
+         * If we need to import after already defined import.
+         */
+        if (afterImport) {
+            const afterImportDeclaration = source.getImportDeclaration(afterImport);
+            if (afterImportDeclaration) {
+                source.insertImportDeclaration(afterImportDeclaration.getChildIndex() + 1, {
+                    defaultImport: importName,
+                    moduleSpecifier: importPath
+                });
+                addedImport = true;
+            } else {
+                warning(
+                    `Import ${warning.hl(afterImport)} does not exist in ${warning.hl(
+                        file
+                    )}. Adding new import after the last one.`
+                );
+            }
+        }
+        /**
+         * If no import was added, add it at the end.
+         */
+        if (addedImport === false) {
+            /**
+             * We add the import and after that we add the imported name to the plugins array in the createHandler.
+             */
+            source.addImportDeclaration({
+                defaultImport: importName,
+                moduleSpecifier: importPath
+            });
+        }
+        /**
+         * If after is specified, add the imported value after the one given in the args..
+         */
+        if (afterElement) {
+            const afterIndex = findElementIndex(plugins, afterElement);
+            if (afterIndex === null) {
+                warning(
+                    `Could not find ${warning.hl(
+                        after
+                    )} of the createHandler.plugins array in ${warning.hl(file)}.`
+                );
+            } else {
+                plugins.getInitializer().insertElement(afterIndex + 1, `${importName}()`);
+                continue;
+            }
+        }
+        /**
+         * Add imported plugin at the end of the array as no other options are viable.
+         */
+        plugins.getInitializer().addElement(`${importName}()`);
+    }
+};
+
 module.exports = {
     insertImport,
     addPackagesToDependencies,
@@ -158,5 +280,6 @@ module.exports = {
     addPackagesToPeerDependencies,
     createMorphProject,
     prettierFormat,
-    yarnInstall
+    yarnInstall,
+    addImportsToSource
 };
