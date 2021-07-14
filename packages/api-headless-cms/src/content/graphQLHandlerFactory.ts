@@ -8,6 +8,7 @@ import { PluginCollection } from "@webiny/plugins/types";
 import debugPlugins from "@webiny/handler-graphql/debugPlugins";
 import processRequestBody from "@webiny/handler-graphql/processRequestBody";
 import buildSchemaPlugins from "./plugins/buildSchemaPlugins";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins";
 
 interface CreateGraphQLHandlerOptions {
     debug?: boolean;
@@ -52,12 +53,13 @@ const generateCacheKey = async (args: Args): Promise<string> => {
 const generateSchema = async (args: Args): Promise<GraphQLSchema> => {
     const { context } = args;
 
-    const schemaPlugins = await buildSchemaPlugins(context);
+    context.plugins.register(await buildSchemaPlugins(context));
 
     const typeDefs = [];
     const resolvers = [];
 
     // Get schema definitions from plugins
+    const schemaPlugins = context.plugins.byType<GraphQLSchemaPlugin>(GraphQLSchemaPlugin.type);
     for (const pl of schemaPlugins) {
         typeDefs.push(pl.schema.typeDefs);
         resolvers.push(pl.schema.resolvers);
@@ -68,6 +70,7 @@ const generateSchema = async (args: Args): Promise<GraphQLSchema> => {
         resolvers
     });
 };
+
 // gets an existing schema or rewrites existing one or creates a completely new one
 // depending on the schemaId created from type and locale parameters
 const getSchema = async (args: Args): Promise<GraphQLSchema> => {
