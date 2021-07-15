@@ -1,4 +1,4 @@
-import { CmsModelFieldToElasticsearchPlugin } from "../../types";
+import { CmsModelFieldToElasticsearchPlugin } from "~/types";
 
 export default (): CmsModelFieldToElasticsearchPlugin => ({
     type: "cms-model-field-to-elastic-search",
@@ -8,12 +8,13 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
         const { toIndexEntry, field, originalEntry } = args;
         const values = toIndexEntry.values;
         const value = values[field.fieldId];
-        // Save the original entry value to make the field searchable
-        values[field.fieldId] = originalEntry[field.fieldId];
 
-        //
         return {
-            values,
+            values: {
+                ...values,
+                // Save the original entry value to make the field searchable
+                [field.fieldId]: originalEntry.values[field.fieldId]
+            },
             rawValues: {
                 ...(toIndexEntry.rawValues || {}),
                 [field.fieldId]: value
