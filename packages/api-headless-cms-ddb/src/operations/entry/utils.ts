@@ -192,13 +192,23 @@ export const filterItems = async (args: FilterItemsArgs): Promise<CmsContentEntr
              * If there is a storage transform plugin for the given field, we need to apply it.
              */
             if (filter.storageTransformPlugin) {
-                value = await filter.storageTransformPlugin.fromStorage({
-                    context,
-                    model,
-                    entry: item,
-                    field: filter.field,
-                    value
-                });
+                try {
+                    value = await filter.storageTransformPlugin.fromStorage({
+                        context,
+                        model,
+                        entry: item,
+                        field: filter.field,
+                        value
+                    });
+                } catch (ex) {
+                    throw new WebinyError(
+                        ex.message || "Could not transform field value from storage.",
+                        ex.code || "FIELD_VALUE_FROM_STORAGE_ERROR",
+                        {
+                            field: filter.field
+                        }
+                    );
+                }
             }
             const matched = filter.filterPlugin.matches({
                 value,
@@ -215,32 +225,6 @@ export const filterItems = async (args: FilterItemsArgs): Promise<CmsContentEntr
         filteredItems.push(item);
     }
     return filteredItems;
-
-    // return items.filter(item => {
-    //     for (const filter of filters) {
-    //         let value = transformValue(dotProp.get(item, filter.path), filter.transformValue);
-    //         /**
-    //          * If there is a storage transform plugin for the given field, we need to apply it.
-    //          */
-    //         if (filter.storageTransformPlugin) {
-    //             value = await filter.storageTransformPlugin.fromStorage({
-    //                 context,
-    //                 model,
-    //                 entry: item,
-    //                 field: model.fields[filter.fieldId],
-    //                 value,
-    //             });
-    //         }
-    //         const matched = filter.filterPlugin.matches({
-    //             value,
-    //             compareValue: filter.compareValue
-    //         });
-    //         if ((filter.negate ? !matched : matched) === false) {
-    //             return false;
-    //         }
-    //     }
-    //     return true;
-    // });
 };
 
 const extractSort = (
