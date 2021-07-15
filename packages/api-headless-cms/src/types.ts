@@ -112,25 +112,25 @@ export interface CmsContentModelField {
     /**
      * Text below the field to clarify what is it meant to be in the field value
      */
-    helpText: string;
+    helpText?: string;
     /**
      * Text to be displayed in the field
      */
-    placeholderText: string;
+    placeholderText?: string;
     /**
      * Are predefined values enabled? And list of them
      */
-    predefinedValues: CmsContentModelFieldPredefinedValues;
+    predefinedValues?: CmsContentModelFieldPredefinedValues;
     /**
      * Field renderer. Blank if determined automatically.
      */
-    renderer: CmsContentModelFieldRenderer;
+    renderer?: CmsContentModelFieldRenderer;
     /**
      * List of validations for the field
      *
      * @default []
      */
-    validation: CmsContentModelFieldValidation[];
+    validation?: CmsContentModelFieldValidation[];
     /**
      * List of validations for the list of values, when a field is set to accept a list of values.
      * These validations will be applied to the entire list, and `validation` (see above) will be applied
@@ -138,12 +138,12 @@ export interface CmsContentModelField {
      *
      * @default []
      */
-    listValidation: CmsContentModelFieldValidation[];
+    listValidation?: CmsContentModelFieldValidation[];
     /**
      * Is this a multiple values field?
      *
      */
-    multipleValues: boolean;
+    multipleValues?: boolean;
     /**
      * Any user defined settings.
      *
@@ -308,11 +308,11 @@ export interface CmsContentModel {
     /**
      * Date created
      */
-    createdOn: Date;
+    createdOn?: Date;
     /**
      * Date saved. Changes on both save and create.
      */
-    savedOn: Date;
+    savedOn?: Date;
     /**
      * CreatedBy object wrapper. Contains id, name and type of the user.
      */

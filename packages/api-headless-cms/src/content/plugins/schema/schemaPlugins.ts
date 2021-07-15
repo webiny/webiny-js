@@ -1,11 +1,17 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/types";
-import { CmsModelFieldToGraphQLPlugin, CmsFieldTypePlugins, CmsContext } from "../../../types";
+import {
+    CmsModelFieldToGraphQLPlugin,
+    CmsFieldTypePlugins,
+    CmsContext,
+    CmsContentModel
+} from "../../../types";
 import { createManageSDL } from "./createManageSDL";
 import { createReadSDL } from "./createReadSDL";
 import { createManageResolvers } from "./createManageResolvers";
 import { createReadResolvers } from "./createReadResolvers";
 import { createPreviewResolvers } from "./createPreviewResolvers";
 import { getSchemaFromFieldPlugins } from "../utils/getSchemaFromFieldPlugins";
+import { ContentModelPlugin } from "../ContentModelPlugin";
 
 export const generateSchemaPlugins = async (
     context: CmsContext
@@ -22,7 +28,12 @@ export const generateSchemaPlugins = async (
 
     // Load model data
 
-    const models = await cms.models.noAuth().list();
+    const databaseModels = await cms.models.noAuth().list();
+    const pluginsModels: CmsContentModel[] = context.plugins
+        .byType<ContentModelPlugin>(ContentModelPlugin.type)
+        .map<CmsContentModel>(plugin => plugin.contentModel);
+
+    const models = [...databaseModels, ...pluginsModels];
 
     const schemas = getSchemaFromFieldPlugins({ models, fieldTypePlugins, type: cms.type });
 
