@@ -1,5 +1,4 @@
 import mdbid from "mdbid";
-import path from "path";
 import uniqid from "uniqid";
 import trimStart from "lodash/trimStart";
 import omit from "lodash/omit";

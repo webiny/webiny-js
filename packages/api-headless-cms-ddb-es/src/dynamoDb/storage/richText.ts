@@ -1,7 +1,6 @@
 import jsonpack from "jsonpack";
 import WebinyError from "@webiny/error";
 import {
-    CmsContentEntry,
     CmsContentModel,
     CmsContentModelField,
     CmsModelFieldToStoragePlugin

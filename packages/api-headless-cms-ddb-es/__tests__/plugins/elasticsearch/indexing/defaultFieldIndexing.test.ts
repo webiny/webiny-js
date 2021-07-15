@@ -54,7 +54,7 @@ const mockIndexedEntry: Partial<CmsContentEntry> & Record<string, any> = {
     }
 };
 
-const getFieldIndexPlugin = (fieldType: string) => {
+const getFieldIndexPlugin = () => {
     return defaultFieldIndexPlugin();
 };
 

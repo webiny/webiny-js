@@ -1,6 +1,7 @@
 import { Plugin } from "@webiny/plugins/types";
 import { CmsContentModelField } from "@webiny/api-headless-cms/types";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface CmsFieldFilterValueTransformArgs<T> {
     /**
      * A field which value we are transforming.

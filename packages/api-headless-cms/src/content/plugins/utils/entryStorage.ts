@@ -1,5 +1,3 @@
-import lodashGet from "lodash/get";
-import lodashSet from "lodash/set";
 import Error from "@webiny/error";
 import {
     CmsContentEntry,

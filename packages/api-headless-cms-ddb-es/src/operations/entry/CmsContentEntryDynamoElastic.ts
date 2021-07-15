@@ -442,6 +442,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         }
         return items.shift();
     }
+
     /**
      * Implemented search via the Elasticsearch.
      */
@@ -501,6 +502,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
             items
         };
     }
+
     public async update(
         model: CmsContentModel,
         args: CmsContentEntryStorageOperationsUpdateArgs
@@ -866,11 +868,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
              * Unfortunately we need to transform from the storage because prepare entry needs the non-transformed version of it.
              * This should not be done in the storage operations unless it is really, really necessary.
              */
-            const latestEntry = await entryFromStorageTransform(
-                this.context,
-                model,
-                latestStorageEntry
-            );
+            await entryFromStorageTransform(this.context, model, latestStorageEntry);
             const es = configurations.es(this.context, model);
 
             const preparedEntryData = prepareEntryToIndex({
@@ -947,11 +945,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
              * Unfortunately we need to transform from the storage because prepare entry needs the non-transformed version of it.
              * This should not be done in the storage operations unless it is really, really necessary.
              */
-            const latestEntry = await entryFromStorageTransform(
-                this.context,
-                model,
-                latestStorageEntry
-            );
+            await entryFromStorageTransform(this.context, model, latestStorageEntry);
 
             const es = configurations.es(this.context, model);
 
@@ -1026,11 +1020,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
              * Unfortunately we need to transform from the storage because prepare entry needs the non-transformed version of it.
              * This should not be done in the storage operations unless it is really, really necessary.
              */
-            const latestEntry = await entryFromStorageTransform(
-                this.context,
-                model,
-                latestStorageEntry
-            );
+            await entryFromStorageTransform(this.context, model, latestStorageEntry);
             const es = configurations.es(this.context, model);
 
             const preparedEntryData = prepareEntryToIndex({
@@ -1257,6 +1247,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         }
         return `${this.partitionKey}#${id}`;
     }
+
     /**
      * Gets a sort key in form of REV#version from:
      *   id#0003

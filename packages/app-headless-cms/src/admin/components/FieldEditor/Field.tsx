@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useEffect } from "react";
+import React, { Fragment, useCallback } from "react";
 import { css } from "emotion";
 import styled from "@emotion/styled";
 import { IconButton } from "@webiny/ui/Button";
