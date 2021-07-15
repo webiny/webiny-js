@@ -437,20 +437,45 @@ describe("entry references", () => {
             },
             { name: "list all categories after delete", tries: 10 }
         );
-    
+
+        const [listAfterDeleteManageResponse] = await articleManager.listArticles();
+        expect(listAfterDeleteManageResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [techArticle],
+                    meta: {
+                        cursor: null,
+                        hasMoreItems: false,
+                        totalCount: 1
+                    },
+                    error: null
+                }
+            }
+        });
+
+        const [getAfterDeleteManageResponse] = await articleManager.getArticle({
+            revision: techArticle.id
+        });
+        expect(getAfterDeleteManageResponse).toEqual({
+            data: {
+                getArticle: {
+                    data: techArticle,
+                    error: null
+                }
+            }
+        });
+
         const [listAfterDeleteReadResponse] = await articleRead.listArticles();
         expect(listAfterDeleteReadResponse).toEqual({
             data: {
                 listArticles: {
-                    data: [
-                        extractReadArticle(techArticle),
-                    ],
+                    data: [extractReadArticle(techArticle)],
                     meta: {
                         cursor: null,
                         hasMoreItems: false,
-                        totalCount: 1,
+                        totalCount: 1
                     },
-                    error: null,
+                    error: null
                 }
             }
         });
