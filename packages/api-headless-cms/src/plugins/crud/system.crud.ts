@@ -47,16 +47,7 @@ export default new ContextPlugin<CmsContext>(async context => {
 
                 const system = await storageOperations.get();
 
-                // Backwards compatibility check
-                if (!system) {
-                    // If settings already exist, it means this system was installed before versioning was introduced.
-                    // 5.0.0-beta.4 is the last version before versioning was introduced.
-                    const settings = await context.cms.settings.noAuth().get();
-
-                    return settings ? "5.0.0-beta.4" : null;
-                }
-
-                return system.version;
+                return system ? system.version : null;
             },
             async setVersion(version: string) {
                 const system = await storageOperations.get();

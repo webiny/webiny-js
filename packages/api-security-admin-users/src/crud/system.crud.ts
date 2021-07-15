@@ -21,12 +21,7 @@ export default (context: AdminUsersContext): SystemCRUD => {
                 query: keys()
             });
 
-            // Backwards compatibility check
-            if (!system) {
-                return "5.0.0-beta.4";
-            }
-
-            return system.version;
+            return system ? system.version : null;
         },
         async setVersion(version: string) {
             const [[system]] = await db.read({

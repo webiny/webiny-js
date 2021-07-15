@@ -25,22 +25,7 @@ export default {
                         query: keys()
                     });
 
-                    // Backwards compatibility check
-                    if (!system) {
-                        // Check for the old "install" item; it means this system was installed before versioning was introduced.
-                        // 5.0.0-beta.4 is the last version before versioning was introduced.
-                        const [[oldInstall]] = await db.read({
-                            ...defaults.db,
-                            query: {
-                                PK: `T#${tenancy.getCurrentTenant().id}#PB#SETTINGS`,
-                                SK: "install"
-                            }
-                        });
-
-                        return oldInstall ? "5.0.0-beta.4" : null;
-                    }
-
-                    return system.version;
+                    return system ? system.version : null;
                 },
                 async setVersion(version: string) {
                     const [[system]] = await db.read({

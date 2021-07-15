@@ -6,6 +6,9 @@
       "path": "../../../packages/api-i18n"
     },
     {
+      "path": "../../../packages/api-i18n-ddb"
+    },
+    {
       "path": "../../../packages/api-security"
     },
     {
@@ -25,6 +28,9 @@
     },
     {
       "path": "../../../packages/api-headless-cms"
+    },
+    {
+      "path": "../../../packages/api-headless-cms-ddb-es"
     },
     {
       "path": "../../../packages/api-file-manager"
@@ -65,6 +71,8 @@
       "~/*": ["./src/*"],
       "@webiny/api-i18n/*": ["../../../packages/api-i18n/src/*"],
       "@webiny/api-i18n": ["../../../packages/api-i18n/src"],
+      "@webiny/api-i18n-ddb/*": ["../../../packages/api-i18n-ddb/src/*"],
+      "@webiny/api-i18n-ddb": ["../../../packages/api-i18n-ddb/src"],
       "@webiny/api-i18n-content/*": ["../../../packages/api-i18n-content/src/*"],
       "@webiny/api-i18n-content": ["../../../packages/api-i18n-content/src"],
       "@webiny/handler-aws/*": ["../../../packages/handler-aws/src/*"],
@@ -77,6 +85,12 @@
       "@webiny/api-security": ["../../../packages/api-security/src"],
       "@webiny/api-tenancy/*": ["../../../packages/api-tenancy/src/*"],
       "@webiny/api-tenancy": ["../../../packages/api-tenancy/src"],
+      "@webiny/db-dynamodb/*": ["../../../packages/db-dynamodb/src/*"],
+      "@webiny/db-dynamodb": ["../../../packages/db-dynamodb/src"],
+      "@webiny/api-headless-cms/*": ["../../../packages/api-headless-cms/src/*"],
+      "@webiny/api-headless-cms": ["../../../packages/api-headless-cms/src"],
+      "@webiny/api-headless-cms-ddb-es/*": ["../../../packages/api-headless-cms-ddb-es/src/*"],
+      "@webiny/api-headless-cms-ddb-es": ["../../../packages/api-headless-cms-ddb-es/src"],
       "@webiny/api-security-admin-users/*": ["../../../packages/api-security-admin-users/src/*"],
       "@webiny/api-security-admin-users": ["../../../packages/api-security-admin-users/src"],
       "@webiny/api-security-admin-users-cognito/*": [

@@ -1,9 +1,9 @@
 import dotProp from "dot-prop";
 import WebinyError from "@webiny/error";
 import { Plugin } from "@webiny/plugins";
-import { ValueFilterPlugin } from "~/plugins/ValueFilterPlugin";
-import { ValueTransformPlugin } from "~/plugins/ValueTransformPlugin";
-import { FieldPathPlugin } from "~/plugins/FieldPathPlugin";
+import { ValueFilterPlugin } from "~/plugins/definitions/ValueFilterPlugin";
+import { ValueTransformPlugin } from "~/plugins/definitions/ValueTransformPlugin";
+import { FieldPathPlugin } from "~/plugins/definitions/FieldPathPlugin";
 import { ContextInterface } from "@webiny/handler/types";
 
 export interface Params<T extends any = any> {
