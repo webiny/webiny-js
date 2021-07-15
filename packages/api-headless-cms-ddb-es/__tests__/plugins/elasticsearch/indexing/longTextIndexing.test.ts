@@ -21,6 +21,13 @@ const mockInputEntry: Partial<CmsContentEntry> = {
         reallyLongText: mockValue
     }
 };
+const mockOriginalEntry = {
+    ...mockInputEntry,
+    values: {
+        ...mockInputEntry.values,
+        reallyLongText: "the original text"
+    }
+};
 const mockIndexedEntry: Partial<CmsContentEntry> & Record<string, any> = {
     values: {
         notAffectedNumber: 1,
@@ -79,7 +86,7 @@ describe("longTextIndexing", () => {
 
         const result = plugin.toIndex({
             toIndexEntry: lodashCloneDeep(mockInputEntry) as any,
-            originalEntry: lodashCloneDeep(mockInputEntry) as any,
+            originalEntry: lodashCloneDeep(mockOriginalEntry) as any,
             storageEntry: lodashCloneDeep(mockInputEntry) as any,
             field: mockField,
             model: mockModel,
@@ -87,8 +94,18 @@ describe("longTextIndexing", () => {
             fieldTypePlugin: mockFieldTypePlugin
         });
 
-        // here we receive new values and rawValues objects that are populated, in rawValues case, and values being without given fieldId
-        expect(result).toEqual(mockIndexedEntry);
+        /**
+         * There must be the "reallyLongText" field from the original entry because the plugin
+         * takes the value from the "originalEntry" and sets it as the one in the values.
+         * This is for search to actually work on the long-text field type.
+         */
+        expect(result).toEqual({
+            ...mockIndexedEntry,
+            values: {
+                ...mockInputEntry.values,
+                reallyLongText: mockOriginalEntry.values.reallyLongText
+            }
+        });
     });
 
     test("fromIndex should return transformed objects", () => {
