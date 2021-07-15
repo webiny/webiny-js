@@ -437,6 +437,23 @@ describe("entry references", () => {
             },
             { name: "list all categories after delete", tries: 10 }
         );
+    
+        const [listAfterDeleteReadResponse] = await articleRead.listArticles();
+        expect(listAfterDeleteReadResponse).toEqual({
+            data: {
+                listArticles: {
+                    data: [
+                        extractReadArticle(techArticle),
+                    ],
+                    meta: {
+                        cursor: null,
+                        hasMoreItems: false,
+                        totalCount: 1,
+                    },
+                    error: null,
+                }
+            }
+        });
 
         const [getAfterDeleteReadResponse] = await articleRead.getArticle({
             where: {
