@@ -27,7 +27,7 @@ export default {
                             try {
                                 return m.value.default();
                             } catch {
-                                // This one is most like not built yet.
+                                // This one is most likely not built yet.
                                 return null;
                             }
                         }

@@ -22,6 +22,10 @@ const fields = `
         id
         title
     }
+    category {
+        id
+        title
+    }
 `;
 
 const errorFields = `

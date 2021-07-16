@@ -13,10 +13,10 @@ const Loader = ({ children, ...props }) => (
     <Suspense fallback={<CircularProgress />}>{React.cloneElement(children, props)}</Suspense>
 );
 
-const ContentModelEditor = lazy(() => import("../views/Editor"));
-const ContentModelsView = lazy(() => import("../views/ContentModels/ContentModels"));
-const ContentModelGroupsView = lazy(() => import("../views/ContentModelGroups/ContentModelGroups"));
-const ContentEntiesView = lazy(() => import("../views/ContentEntries"));
+const ContentModelEditor = lazy(() => import("../views/contentModels/ContentModelEditor"));
+const ContentModelsView = lazy(() => import("../views/contentModels/ContentModels"));
+const ContentModelGroupsView = lazy(() => import("../views/contentModelGroups/ContentModelGroups"));
+const ContentEntiesView = lazy(() => import("../views/contentEntries/ContentEntries"));
 
 const plugins: RoutePlugin[] = [
     {

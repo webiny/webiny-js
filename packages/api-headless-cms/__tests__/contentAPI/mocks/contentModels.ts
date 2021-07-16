@@ -1,6 +1,6 @@
 import shortId from "shortid";
 import contentModelGroup from "./contentModelGroup";
-import { CmsContentModel } from "../../../src/types";
+import { CmsContentModel } from "~/types";
 
 const ids = {
     // product category
@@ -17,6 +17,14 @@ const ids = {
     field208: shortId.generate(),
     field209: shortId.generate(),
     field210: shortId.generate(),
+    field211: shortId.generate(),
+    field212: shortId.generate(),
+    field213: shortId.generate(),
+    field214: shortId.generate(),
+    field215: shortId.generate(),
+    field216: shortId.generate(),
+    field217: shortId.generate(),
+    field218: shortId.generate(),
     // product review
     field31: shortId.generate(),
     field32: shortId.generate(),
@@ -45,7 +53,8 @@ const ids = {
     // article
     field701: shortId.generate(),
     field702: shortId.generate(),
-    field703: shortId.generate()
+    field703: shortId.generate(),
+    field704: shortId.generate()
 };
 
 const models: CmsContentModel[] = [
@@ -144,7 +153,8 @@ const models: CmsContentModel[] = [
             [ids.field207],
             [ids.field208],
             [ids.field209],
-            [ids.field210]
+            [ids.field210],
+            [ids.field211]
         ],
         fields: [
             {
@@ -407,6 +417,186 @@ const models: CmsContentModel[] = [
                 validation: [],
                 listValidation: [],
                 placeholderText: "Rich text",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                }
+            },
+            {
+                id: ids.field211,
+                multipleValues: false,
+                helpText: "",
+                label: "Variant",
+                fieldId: "variant",
+                type: "object",
+                settings: {
+                    fields: [
+                        {
+                            id: ids.field212,
+                            multipleValues: false,
+                            helpText: "",
+                            label: "Name",
+                            fieldId: "name",
+                            type: "text",
+                            settings: {
+                                type: "text"
+                            },
+                            validation: [],
+                            listValidation: [],
+                            placeholderText: "",
+                            predefinedValues: {
+                                enabled: false,
+                                values: []
+                            },
+                            renderer: {
+                                name: "renderer"
+                            }
+                        },
+                        {
+                            id: ids.field213,
+                            multipleValues: false,
+                            helpText: "",
+                            label: "Price",
+                            fieldId: "price",
+                            type: "number",
+                            settings: {
+                                type: "number"
+                            },
+                            validation: [],
+                            listValidation: [],
+                            placeholderText: "",
+                            predefinedValues: {
+                                enabled: false,
+                                values: []
+                            },
+                            renderer: {
+                                name: "renderer"
+                            }
+                        },
+                        {
+                            id: ids.field217,
+                            multipleValues: false,
+                            helpText: "",
+                            label: "Category",
+                            fieldId: "category",
+                            type: "ref",
+                            validation: [
+                                {
+                                    name: "required",
+                                    message: "Please select a category"
+                                }
+                            ],
+                            listValidation: [],
+                            settings: {
+                                models: [{ modelId: "category" }]
+                            },
+                            placeholderText: "placeholder text",
+                            predefinedValues: {
+                                enabled: false,
+                                values: []
+                            },
+                            renderer: {
+                                name: "renderer"
+                            }
+                        },
+                        {
+                            id: ids.field214,
+                            multipleValues: true,
+                            helpText: "",
+                            label: "Options",
+                            fieldId: "options",
+                            type: "object",
+                            settings: {
+                                fields: [
+                                    {
+                                        id: ids.field215,
+                                        multipleValues: false,
+                                        helpText: "",
+                                        label: "Name",
+                                        fieldId: "name",
+                                        type: "text",
+                                        settings: {
+                                            type: "text"
+                                        },
+                                        validation: [],
+                                        listValidation: [],
+                                        placeholderText: "",
+                                        predefinedValues: {
+                                            enabled: false,
+                                            values: []
+                                        },
+                                        renderer: {
+                                            name: "renderer"
+                                        }
+                                    },
+                                    {
+                                        id: ids.field216,
+                                        multipleValues: false,
+                                        helpText: "",
+                                        label: "Price",
+                                        fieldId: "price",
+                                        type: "number",
+                                        settings: {
+                                            type: "number"
+                                        },
+                                        validation: [],
+                                        listValidation: [],
+                                        placeholderText: "",
+                                        predefinedValues: {
+                                            enabled: false,
+                                            values: []
+                                        },
+                                        renderer: {
+                                            name: "renderer"
+                                        }
+                                    },
+                                    {
+                                        id: ids.field218,
+                                        multipleValues: false,
+                                        helpText: "",
+                                        label: "Category",
+                                        fieldId: "category",
+                                        type: "ref",
+                                        validation: [
+                                            {
+                                                name: "required",
+                                                message: "Please select a category"
+                                            }
+                                        ],
+                                        listValidation: [],
+                                        settings: {
+                                            models: [{ modelId: "category" }]
+                                        },
+                                        placeholderText: "placeholder text",
+                                        predefinedValues: {
+                                            enabled: false,
+                                            values: []
+                                        },
+                                        renderer: {
+                                            name: "renderer"
+                                        }
+                                    }
+                                ]
+                            },
+                            validation: [],
+                            listValidation: [],
+                            placeholderText: "",
+                            predefinedValues: {
+                                enabled: false,
+                                values: []
+                            },
+                            renderer: {
+                                name: "renderer"
+                            }
+                        }
+                    ]
+                },
+                validation: [],
+                listValidation: [],
+                placeholderText: "",
                 predefinedValues: {
                     enabled: false,
                     values: []
@@ -1146,7 +1336,7 @@ const models: CmsContentModel[] = [
             id: contentModelGroup.id,
             name: contentModelGroup.name
         },
-        layout: [[ids.field701, ids.field702, ids.field703]],
+        layout: [[ids.field701, ids.field702, ids.field703, ids.field704]],
         fields: [
             {
                 id: ids.field701,
@@ -1194,6 +1384,27 @@ const models: CmsContentModel[] = [
                 validation: [],
                 listValidation: [],
                 placeholderText: "Categories",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                },
+                settings: {
+                    models: [{ modelId: "category" }]
+                }
+            },
+            {
+                id: ids.field704,
+                multipleValues: false,
+                helpText: "",
+                label: "Category",
+                type: "ref",
+                fieldId: "category",
+                validation: [],
+                listValidation: [],
+                placeholderText: "Category",
                 predefinedValues: {
                     enabled: false,
                     values: []

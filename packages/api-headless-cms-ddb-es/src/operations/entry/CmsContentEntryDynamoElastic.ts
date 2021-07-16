@@ -120,7 +120,6 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         const esEntry = prepareEntryToIndex({
             context: this.context,
             model,
-            originalEntry: lodashCloneDeep(entry),
             storageEntry: lodashCloneDeep(storageEntry)
         });
 
@@ -191,7 +190,6 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         const esEntry = prepareEntryToIndex({
             context: this.context,
             model,
-            originalEntry: lodashCloneDeep(entry),
             storageEntry: lodashCloneDeep(storageEntry)
         });
         const { index: esIndex } = configurations.es(this.context, model);
@@ -388,7 +386,6 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
             const esEntry = prepareEntryToIndex({
                 context: this.context,
                 model,
-                originalEntry: lodashCloneDeep(entryToSetAsLatest),
                 storageEntry: lodashCloneDeep(storageEntryToSetAsLatest)
             });
             /**
@@ -445,6 +442,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         }
         return items.shift();
     }
+
     /**
      * Implemented search via the Elasticsearch.
      */
@@ -504,6 +502,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
             items
         };
     }
+
     public async update(
         model: CmsContentModel,
         args: CmsContentEntryStorageOperationsUpdateArgs
@@ -563,7 +562,6 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
             const esEntry = prepareEntryToIndex({
                 context: this.context,
                 model,
-                originalEntry: lodashCloneDeep(entry),
                 storageEntry: lodashCloneDeep(storageEntry)
             });
             const esDoc = {
@@ -771,7 +769,6 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         const preparedEntryData = prepareEntryToIndex({
             context: this.context,
             model,
-            originalEntry: lodashCloneDeep(entry),
             storageEntry: lodashCloneDeep(storageEntry)
         });
         /**
@@ -871,17 +868,12 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
              * Unfortunately we need to transform from the storage because prepare entry needs the non-transformed version of it.
              * This should not be done in the storage operations unless it is really, really necessary.
              */
-            const latestEntry = await entryFromStorageTransform(
-                this.context,
-                model,
-                latestStorageEntry
-            );
+            await entryFromStorageTransform(this.context, model, latestStorageEntry);
             const es = configurations.es(this.context, model);
 
             const preparedEntryData = prepareEntryToIndex({
                 context: this.context,
                 model,
-                originalEntry: lodashCloneDeep(latestEntry),
                 storageEntry: lodashCloneDeep(latestStorageEntry)
             });
 
@@ -953,18 +945,13 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
              * Unfortunately we need to transform from the storage because prepare entry needs the non-transformed version of it.
              * This should not be done in the storage operations unless it is really, really necessary.
              */
-            const latestEntry = await entryFromStorageTransform(
-                this.context,
-                model,
-                latestStorageEntry
-            );
+            await entryFromStorageTransform(this.context, model, latestStorageEntry);
 
             const es = configurations.es(this.context, model);
 
             const preparedEntryData = prepareEntryToIndex({
                 context: this.context,
                 model,
-                originalEntry: lodashCloneDeep(latestEntry),
                 storageEntry: lodashCloneDeep(latestStorageEntry)
             });
 
@@ -1033,17 +1020,12 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
              * Unfortunately we need to transform from the storage because prepare entry needs the non-transformed version of it.
              * This should not be done in the storage operations unless it is really, really necessary.
              */
-            const latestEntry = await entryFromStorageTransform(
-                this.context,
-                model,
-                latestStorageEntry
-            );
+            await entryFromStorageTransform(this.context, model, latestStorageEntry);
             const es = configurations.es(this.context, model);
 
             const preparedEntryData = prepareEntryToIndex({
                 context: this.context,
                 model,
-                originalEntry: lodashCloneDeep(latestEntry),
                 storageEntry: lodashCloneDeep(latestStorageEntry)
             });
             batch.update({
@@ -1217,6 +1199,13 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
             }
         );
         /**
+         * When there are no lower versions from the given one, it seems that random one is taken.
+         * So just make sure that fetched entry version is not greater or equal to requested one.
+         */
+        if (!entry || entry.version >= version) {
+            return null;
+        }
+        /**
          * We need this due to possibly getting latest or published if given revision does not exist
          */
         if ((entry as any).TYPE !== TYPE_ENTRY) {
@@ -1265,6 +1254,7 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
         }
         return `${this.partitionKey}#${id}`;
     }
+
     /**
      * Gets a sort key in form of REV#version from:
      *   id#0003

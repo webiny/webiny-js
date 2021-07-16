@@ -62,24 +62,13 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
     unmappedType: () => {
         return "date";
     },
-    toIndex({ field, toIndexEntry }) {
-        const value = toIndexEntry.values[field.fieldId];
+    toIndex({ field, value }) {
         const dateValue = convertValueToIndex(value, field as CmsContentModelDateTimeField);
         return {
-            values: {
-                ...toIndexEntry.values,
-                [field.fieldId]: dateValue
-            }
+            value: dateValue
         };
     },
-    fromIndex({ field, entry }) {
-        const value = entry.values[field.fieldId];
-        const dateValue = convertValueFromIndex(value, field as CmsContentModelDateTimeField);
-        return {
-            values: {
-                ...entry.values,
-                [field.fieldId]: dateValue
-            }
-        };
+    fromIndex({ field, value }) {
+        return convertValueFromIndex(value, field as CmsContentModelDateTimeField);
     }
 });
