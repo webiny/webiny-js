@@ -8,3 +8,15 @@ export const fieldsWrapperStyle = css`
 export const dynamicSectionTitleStyle = css`
     margin-top: 24px;
 `;
+
+export const dynamicSectionGridStyle = css`
+    & > .mdc-layout-grid__inner {
+        grid-gap: 8px;
+    }
+`;
+
+export const fieldsGridStyle = css`
+    &.mdc-layout-grid {
+        padding: 8px;
+    }
+`;

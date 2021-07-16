@@ -9,13 +9,14 @@ interface Props {
     contentModel: CmsEditorContentModel;
     fields: CmsEditorField[];
     layout: CmsEditorFieldsLayout;
+    gridClassName?: string;
 }
 
 const getFieldById = (fields, id) => fields.find(field => field.id === id);
 
-export const Fields = ({ Bind, fields, layout, contentModel }: Props) => {
+export const Fields = ({ Bind, fields, layout, contentModel, gridClassName }: Props) => {
     return (
-        <Grid>
+        <Grid className={gridClassName}>
             {layout.map((row, rowIndex) => (
                 <React.Fragment key={rowIndex}>
                     {row.map(fieldId => (

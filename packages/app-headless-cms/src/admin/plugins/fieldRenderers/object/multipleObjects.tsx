@@ -8,7 +8,12 @@ import { IconButton } from "@webiny/ui/Button";
 import { Cell } from "@webiny/ui/Grid";
 import { Typography } from "@webiny/ui/Typography";
 import Accordion from "~/admin/plugins/fieldRenderers/Accordion";
-import { fieldsWrapperStyle, dynamicSectionTitleStyle } from "./StyledComponents";
+import {
+    fieldsWrapperStyle,
+    dynamicSectionTitleStyle,
+    dynamicSectionGridStyle,
+    fieldsGridStyle
+} from "./StyledComponents";
 
 const t = i18n.ns("app-headless-cms/admin/fields/text");
 
@@ -37,6 +42,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
                             </Typography>
                         </Cell>
                     )}
+                    gridClassName={dynamicSectionGridStyle}
                 >
                     {({ Bind, bind, index }) => (
                         <Accordion
@@ -59,6 +65,7 @@ const plugin: CmsEditorFieldRendererPlugin = {
                                     contentModel={contentModel}
                                     fields={field.settings.fields}
                                     layout={field.settings.layout}
+                                    gridClassName={fieldsGridStyle}
                                 />
                             </Cell>
                         </Accordion>

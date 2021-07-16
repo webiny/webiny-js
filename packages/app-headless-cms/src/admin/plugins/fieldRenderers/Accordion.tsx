@@ -17,8 +17,8 @@ const classes = {
         position: "relative",
         color: "var(--mdc-theme-text-secondary-on-background)",
         cursor: "pointer",
-        padding: "12px 16px",
-
+        padding: "0px 8px",
+        minHeight: 48, // To have same height as the remove value action button.
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
@@ -35,10 +35,6 @@ const classes = {
         },
         "& .accordion-header--right": {
             display: "flex",
-            "& .action-container": {
-                // display: "none",
-                // marginRight: 8
-            },
             "& .icon-container": {
                 display: "flex",
                 alignItems: "center",
@@ -57,7 +53,7 @@ const classes = {
         "&::before": {
             position: "absolute",
             top: "calc(50% - 5px)",
-            left: 16,
+            left: 8,
             content: '""',
             width: 0,
             height: 0,
@@ -83,10 +79,6 @@ const classes = {
         "&.collapsed": {
             maxHeight: 0,
             transition: "max-height 0.35s cubic-bezier(0, 1, 0, 1)"
-        },
-
-        "& .accordion-content": {
-            padding: "16px 12px 24px"
         }
     })
 };
