@@ -108,7 +108,13 @@ const extractReadArticle = (
                       title: category.title
                   }
               ]
-            : []
+            : [],
+        category: category
+            ? {
+                  id: category.id,
+                  title: category.title
+              }
+            : null
     };
 };
 
@@ -140,6 +146,10 @@ describe("entry references", () => {
             data: {
                 title: "Tech article",
                 body: null,
+                category: {
+                    entryId: techCategory.id,
+                    modelId: "category"
+                },
                 categories: [
                     {
                         entryId: techCategory.id,
@@ -165,6 +175,10 @@ describe("entry references", () => {
             data: {
                 title: "Tech article 2",
                 body: null,
+                category: {
+                    entryId: techCategory2.id,
+                    modelId: "category"
+                },
                 categories: [
                     {
                         entryId: techCategory2.id,
@@ -191,6 +205,10 @@ describe("entry references", () => {
             data: {
                 title: "Tech article 3",
                 body: null,
+                category: {
+                    entryId: techCategory3.id,
+                    modelId: "category"
+                },
                 categories: [
                     {
                         entryId: techCategory3.id,
@@ -310,6 +328,10 @@ describe("entry references", () => {
             data: {
                 title: "Tech article",
                 body: null,
+                category: {
+                    entryId: techCategory.id,
+                    modelId: "category"
+                },
                 categories: [
                     {
                         entryId: techCategory.id,
