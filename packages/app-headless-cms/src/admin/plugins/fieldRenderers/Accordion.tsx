@@ -17,7 +17,7 @@ const classes = {
         position: "relative",
         color: "var(--mdc-theme-text-secondary-on-background)",
         cursor: "pointer",
-        padding: "0px 8px",
+        padding: "0px",
         minHeight: 48, // To have same height as the remove value action button.
         display: "flex",
         alignItems: "center",
@@ -53,7 +53,7 @@ const classes = {
         "&::before": {
             position: "absolute",
             top: "calc(50% - 5px)",
-            left: 8,
+            left: 0,
             content: '""',
             width: 0,
             height: 0,
