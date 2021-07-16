@@ -1,20 +1,12 @@
 import { Plugin } from "@webiny/plugins";
 import { CmsContentModel } from "../../types";
 
-export interface ContentModelPluginConfig {
-    contentModel: CmsContentModel;
-}
-
 export class ContentModelPlugin extends Plugin {
     public static readonly type = "cms-content-model";
-    private config: ContentModelPluginConfig;
+    contentModel: CmsContentModel;
 
-    constructor(config: ContentModelPluginConfig) {
+    constructor(contentModel: CmsContentModel) {
         super();
-        this.config = config;
-    }
-
-    get contentModel(): CmsContentModel {
-        return this.config.contentModel;
+        this.contentModel = contentModel;
     }
 }
