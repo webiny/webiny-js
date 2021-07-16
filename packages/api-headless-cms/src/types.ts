@@ -335,7 +335,7 @@ export interface CmsContentModel {
     /**
      * List of locked fields. Updated when entry is saved and a field has been used.
      */
-    lockedFields: LockedField[];
+    lockedFields?: LockedField[];
     /**
      * The field that is being displayed as entry title.
      * It is picked as first available text field. Or user can select own field.
