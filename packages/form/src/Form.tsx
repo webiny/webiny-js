@@ -142,7 +142,7 @@ export class Form extends React.Component<FormProps, State> {
     /**
      * MAIN FORM ACTION METHODS
      */
-    submit = (event?: React.SyntheticEvent<any, any>): Promise<void> => {
+    submit = (event?: React.SyntheticEvent<any, any>): Promise<any> => {
         // If event is present - prevent default behaviour
         if (event && event.preventDefault) {
             event.preventDefault();

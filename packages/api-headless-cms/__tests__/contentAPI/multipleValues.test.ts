@@ -1,4 +1,4 @@
-import { CmsContentEntry, CmsContentModelGroup, CmsContentModel } from "../../src/types";
+import { CmsContentEntry, CmsContentModelGroup, CmsContentModel } from "~/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import models from "./mocks/contentModels";
 import { useProductManageHandler } from "../utils/useProductManageHandler";
@@ -255,6 +255,7 @@ describe("multiple values in field", () => {
                         availableSizes: ["s", "m"],
                         inStock: null,
                         itemsInStock: null,
+                        variant: null,
                         richText: [
                             {
                                 tag: "p",

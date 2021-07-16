@@ -1,5 +1,5 @@
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
-import { CmsContentModel, CmsContentModelGroup } from "../../src/types";
+import { CmsContentModel, CmsContentModelGroup } from "~/types";
 import models from "./mocks/contentModels";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useArticleManageHandler } from "../utils/useArticleManageHandler";
