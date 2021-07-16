@@ -13,6 +13,7 @@ import dotProp from "dot-prop";
 import { CmsFieldFilterPathPlugin, CmsFieldFilterValueTransformPlugin } from "~/types";
 import { systemFields } from "./systemFields";
 import { ValueFilterPlugin } from "@webiny/db-dynamodb/plugins/definitions/ValueFilterPlugin";
+import { getStoragePluginFactory } from "@webiny/api-headless-cms/content/plugins/utils/entryStorage";
 
 interface ModelField {
     def: CmsContentModelField;
@@ -177,6 +178,8 @@ const createFilters = (args: CreateFiltersArgs): ItemFilter[] => {
 export const filterItems = async (args: FilterItemsArgs): Promise<CmsContentEntry[]> => {
     const { items, where, model, context, fields } = args;
 
+    const getStoragePlugin = getStoragePluginFactory(context);
+
     const filters = createFilters({
         context,
         where,
@@ -196,9 +199,9 @@ export const filterItems = async (args: FilterItemsArgs): Promise<CmsContentEntr
                     value = await filter.storageTransformPlugin.fromStorage({
                         context,
                         model,
-                        entry: item,
                         field: filter.field,
-                        value
+                        value,
+                        getStoragePlugin
                     });
                 } catch (ex) {
                     throw new WebinyError(

@@ -1,6 +1,5 @@
 import WebinyError from "@webiny/error";
 import {
-    CmsContentEntry,
     CmsContentModel,
     CmsContentModelField,
     CmsModelFieldToStoragePlugin
@@ -16,12 +15,11 @@ export interface StorageValue {
 
 interface CreateCacheKeyArgs {
     model: CmsContentModel;
-    entry: CmsContentEntry;
     field: CmsContentModelField;
 }
 
-const createCacheKey = ({ model, entry, field }: CreateCacheKeyArgs): string => {
-    return [model.modelId, entry.id, entry.savedOn, field.fieldId].join(".");
+const createCacheKey = ({ model, field }: CreateCacheKeyArgs): string => {
+    return [model.modelId, field.id].join(".");
 };
 
 const GZIP = "gzip";
@@ -41,11 +39,10 @@ export default (): CmsModelFieldToStoragePlugin<OriginalValue, StorageValue> => 
         type: "cms-model-field-to-storage",
         name: "cms-model-field-to-storage-long-text",
         fieldType: "long-text",
-        async fromStorage({ model, entry, field, value: storageValue }) {
+        async fromStorage({ model, field, value: storageValue }) {
             const cacheKey = createCacheKey({
                 model,
-                field,
-                entry
+                field
             });
 
             if (cache.has(cacheKey)) {
@@ -103,7 +100,7 @@ export default (): CmsModelFieldToStoragePlugin<OriginalValue, StorageValue> => 
             cache.set(cacheKey, decompressed);
             return decompressed;
         },
-        async toStorage({ model, field, entry, value }) {
+        async toStorage({ model, field, value }) {
             /**
              * There is a possibility that we are trying to compress already compressed value.
              * Introduced a bug with 5.8.0 storage operations, so just return the value to correct it.
@@ -115,8 +112,7 @@ export default (): CmsModelFieldToStoragePlugin<OriginalValue, StorageValue> => 
 
             const cacheKey = createCacheKey({
                 model,
-                field,
-                entry
+                field
             });
 
             /**
