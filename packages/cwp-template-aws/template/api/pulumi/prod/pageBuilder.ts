@@ -2,16 +2,24 @@ import * as path from "path";
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import vpc from "./vpc";
-import defaultLambdaRole from "./defaultLambdaRole";
+import policies from "./policies";
 
 //@ts-ignore
 import { createInstallationZip } from "@webiny/api-page-builder/installation";
 
+interface PageBuilderParams {
+    env: Record<string, any>;
+    bucket: aws.s3.Bucket;
+    primaryDynamodbTable: aws.dynamodb.Table;
+}
+
 class PageBuilder {
+    role: aws.iam.Role;
     functions: {
         updateSettings: aws.lambda.Function;
     };
-    constructor({ env, bucket }: { env: Record<string, any>; bucket: aws.s3.Bucket }) {
+
+    constructor({ env, bucket, primaryDynamodbTable }: PageBuilderParams) {
         const pbInstallationZipPath = path.join(path.resolve(), ".tmp", "pbInstallation.zip");
 
         // Will create "pbInstallation.zip" and save it in the `pbInstallationZipPath` path.
@@ -31,8 +39,38 @@ class PageBuilder {
             }
         );
 
+        this.role = new aws.iam.Role("pb-update-settings-lambda-role", {
+            assumeRolePolicy: {
+                Version: "2012-10-17",
+                Statement: [
+                    {
+                        Action: "sts:AssumeRole",
+                        Principal: {
+                            Service: "lambda.amazonaws.com"
+                        },
+                        Effect: "Allow"
+                    }
+                ]
+            }
+        });
+
+        const policy = policies.getPbUpdateSettingsLambdaPolicy(primaryDynamodbTable);
+
+        new aws.iam.RolePolicyAttachment(`pb-update-settings-lambda-role-policy-attachment`, {
+            role: this.role,
+            policyArn: policy.arn.apply(arn => arn)
+        });
+
+        new aws.iam.RolePolicyAttachment(
+            `pb-update-settings-lambda-AWSLambdaVPCAccessExecutionRole`,
+            {
+                role: this.role,
+                policyArn: aws.iam.ManagedPolicy.AWSLambdaVPCAccessExecutionRole
+            }
+        );
+
         const updateSettings = new aws.lambda.Function("pb-update-settings", {
-            role: defaultLambdaRole.role.arn,
+            role: this.role.arn,
             runtime: "nodejs12.x",
             handler: "handler.handler",
             timeout: 10,
