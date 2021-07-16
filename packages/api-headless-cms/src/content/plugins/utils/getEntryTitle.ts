@@ -12,7 +12,7 @@ export function getEntryTitle(model: CmsContentModel, entry: CmsContentEntry) {
     if (!field) {
         return titleValue;
     }
-    const { enabled = false, values } = field.predefinedValues;
+    const { enabled = false, values } = field.predefinedValues || {};
     if (!enabled || Array.isArray(values) === false) {
         return titleValue;
     }
