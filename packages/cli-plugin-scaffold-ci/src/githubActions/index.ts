@@ -196,9 +196,9 @@ const plugin: CliPluginsScaffoldCi<Input> = {
         console.log(`- set ${chalk.green("dev")} as the default branch`);
 
         console.log(
-            `- create ${chalk.green("dev")}, ${chalk.green("staging")}, and ${chalk.green(
-                "prod"
-            )} code repository environments`
+            `- create ${chalk.green("pr")}, ${chalk.green("dev")}, ${chalk.green(
+                "staging"
+            )}, and ${chalk.green("prod")} code repository environments`
         );
 
         const { proceed } = await prompt({
@@ -382,19 +382,20 @@ const plugin: CliPluginsScaffoldCi<Input> = {
         // 6. Create code repository environments
 
         ora.start(
-            `Creating ${chalk.green("dev")}, ${chalk.green("staging")}, and ${chalk.green(
-                "prod"
-            )} code repository environments...`
+            `Creating ${chalk.green("pr")}, ${chalk.green("dev")}, ${chalk.green(
+                "staging"
+            )}, and ${chalk.green("prod")} code repository environments...`
         );
 
-        // TODO: add an environment for PRs - ephemeral environments.
+        const REPOSITORY_ENVIRONMENTS = ["pr", ...LONG_LIVED_BRANCHES];
+
         try {
-            for (let i = 0; i < LONG_LIVED_BRANCHES.length; i++) {
-                const branch = LONG_LIVED_BRANCHES[i];
+            for (let i = 0; i < REPOSITORY_ENVIRONMENTS.length; i++) {
+                const env = REPOSITORY_ENVIRONMENTS[i];
                 await octokit.rest.repos.createOrUpdateEnvironment({
                     owner: repo.owner.login,
                     repo: repo.name,
-                    environment_name: branch,
+                    environment_name: env,
                     reviewers: [{ type: "User", id: user.id }],
                     deployment_branch_policy: null
                 });
@@ -402,15 +403,15 @@ const plugin: CliPluginsScaffoldCi<Input> = {
 
             ora.stopAndPersist({
                 symbol: chalk.green("✔"),
-                text: `${chalk.green("dev")}, ${chalk.green("staging")}, and ${chalk.green(
-                    "prod"
-                )} code repository environments created.`
+                text: `${chalk.green("pr")}, ${chalk.green("dev")}, ${chalk.green(
+                    "staging"
+                )}, and ${chalk.green("prod")} code repository environments created.`
             });
         } catch (e) {
             generateErrorsCount++;
             ora.stopAndPersist({
                 symbol: chalk.red("✘"),
-                text: `Creation of ${chalk.green("dev")}, ${chalk.green(
+                text: `Creation of ${chalk.green("pr")}, ${chalk.green("dev")}, ${chalk.green(
                     "staging"
                 )}, and ${chalk.green(
                     "prod"
