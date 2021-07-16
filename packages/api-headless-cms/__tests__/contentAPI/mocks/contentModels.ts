@@ -1,6 +1,6 @@
 import shortId from "shortid";
 import contentModelGroup from "./contentModelGroup";
-import { CmsContentModel } from "../../../src/types";
+import { CmsContentModel } from "~/types";
 
 const ids = {
     // product category
@@ -46,6 +46,7 @@ const ids = {
     field701: shortId.generate(),
     field702: shortId.generate(),
     field703: shortId.generate(),
+    field704: shortId.generate(),
     // patient
     field801: shortId.generate(),
     field802: shortId.generate(),
@@ -1234,7 +1235,7 @@ const models: CmsContentModel[] = [
             id: contentModelGroup.id,
             name: contentModelGroup.name
         },
-        layout: [[ids.field701, ids.field702, ids.field703]],
+        layout: [[ids.field701, ids.field702, ids.field703, ids.field704]],
         fields: [
             {
                 id: ids.field701,
@@ -1282,6 +1283,27 @@ const models: CmsContentModel[] = [
                 validation: [],
                 listValidation: [],
                 placeholderText: "Categories",
+                predefinedValues: {
+                    enabled: false,
+                    values: []
+                },
+                renderer: {
+                    name: "renderer"
+                },
+                settings: {
+                    models: [{ modelId: "category" }]
+                }
+            },
+            {
+                id: ids.field704,
+                multipleValues: false,
+                helpText: "",
+                label: "Category",
+                type: "ref",
+                fieldId: "category",
+                validation: [],
+                listValidation: [],
+                placeholderText: "Category",
                 predefinedValues: {
                     enabled: false,
                     values: []

@@ -1,14 +1,15 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Create an IAM group with required permissions for a Webiny project and add it to a given IAM user.",
   "Parameters": {
-    "UserName": {
+    "Username": {
       "Type": "String",
-      "Description": "Name of an existing User to which this policy will be attached",
+      "Description": "Name of an existing IAM user to be added to the group.",
       "AllowedPattern": ".+"
     }
   },
   "Resources": {
-    "TheGroup": {
+    "CwpGroup": {
       "Type": "AWS::IAM::Group",
       "Properties": {
         "GroupName": "CreateWebinyProjectAccessGroup",
@@ -237,6 +238,19 @@
                     "logs:UpdateLogDelivery"
                   ],
                   "Resource": "*"
+                },
+                {
+                  "Sid": "PermissionForPassRole",
+                  "Effect": "Allow",
+                  "Action": ["iam:PassRole"],
+                  "Resource": [
+                    "arn:aws:iam::*:role/fm-lambda-role-*",
+                    "arn:aws:iam::*:role/pre-rendering-service-lambda-role*",
+                    "arn:aws:iam::*:role/dynamo-to-elastic-lambda-role-*",
+                    "arn:aws:iam::*:role/headless-cms-lambda-role-*",
+                    "arn:aws:iam::*:role/pb-update-settings-lambda-role-*",
+                    "arn:aws:iam::*:role/api-lambda-role-*"
+                  ]
                 }
               ]
             }
@@ -244,15 +258,15 @@
         ]
       }
     },
-    "TheUserToGroup": {
+    "CwpUserToGroup": {
       "Type": "AWS::IAM::UserToGroupAddition",
       "Properties": {
         "GroupName": {
-          "Ref": "TheGroup"
+          "Ref": "CwpGroup"
         },
         "Users": [
           {
-            "Ref": "UserName"
+            "Ref": "Username"
           }
         ]
       }

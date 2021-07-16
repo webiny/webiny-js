@@ -35,6 +35,10 @@ const fields = `
         modelId
         entryId
     }
+    category {
+        modelId
+        entryId
+    }
 `;
 
 const errorFields = `

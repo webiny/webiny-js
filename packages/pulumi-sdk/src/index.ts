@@ -53,13 +53,19 @@ export class Pulumi {
                 continue;
             }
 
-            switch (typeof value) {
-                case "boolean":
-                    finalArgs.push(`--${kebabCase(key)}`);
-                    continue;
-                default:
-                    finalArgs.push(`--${kebabCase(key)}`, value);
+            if (Array.isArray(value)) {
+                for (let i = 0; i < value.length; i++) {
+                    finalArgs.push(`--${kebabCase(key)}`, value[i]);
+                }
+                continue;
             }
+
+            if (typeof value === "boolean") {
+                finalArgs.push(`--${kebabCase(key)}`);
+                continue;
+            }
+
+            finalArgs.push(`--${kebabCase(key)}`, value);
         }
 
         // Prepare execa args.

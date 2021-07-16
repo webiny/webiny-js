@@ -1217,6 +1217,13 @@ export default class CmsContentEntryDynamoElastic implements CmsContentEntryStor
             }
         );
         /**
+         * When there are no lower versions from the given one, it seems that random one is taken.
+         * So just make sure that fetched entry version is not greater or equal to requested one.
+         */
+        if (!entry || entry.version >= version) {
+            return null;
+        }
+        /**
          * We need this due to possibly getting latest or published if given revision does not exist
          */
         if ((entry as any).TYPE !== TYPE_ENTRY) {
