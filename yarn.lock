@@ -5764,9 +5764,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pulumi/aws@npm:^3.22.0 || 4.10.0":
-  version: 4.10.0
-  resolution: "@pulumi/aws@npm:4.10.0"
+"@pulumi/aws@npm:^4.10.0":
+  version: 4.12.0
+  resolution: "@pulumi/aws@npm:4.12.0"
   dependencies:
     "@pulumi/pulumi": ^3.0.0
     aws-sdk: ^2.0.0
@@ -5774,11 +5774,11 @@ __metadata:
     mime: ^2.0.0
     read-package-tree: ^5.2.1
     resolve: ^1.7.1
-  checksum: 0f685720489d80dafc7c9b89fe9844446d3c3af4c2241d99478eaf4a7c3a4c962f366e45d1f2dcf8043cfeb63ea909c62ec5382f98ad85a3f57adddf59c6fc73
+  checksum: ab2225b560f74fda99637d9d8142eb52a5bae896bdc43815cd6867726491dc637c3f38b1f78d0dfe4c328c3e068ada626c5468d133a62feeaa0f917601b15679
   languageName: node
   linkType: hard
 
-"@pulumi/pulumi@npm:^2.21.2 || ^3.6.0, @pulumi/pulumi@npm:^3.0.0":
+"@pulumi/pulumi@npm:^3.0.0":
   version: 3.6.0
   resolution: "@pulumi/pulumi@npm:3.6.0"
   dependencies:
@@ -5798,6 +5798,29 @@ __metadata:
     typescript: ~3.7.3
     upath: ^1.1.0
   checksum: 1aefbea251a3a10af7f63545dee41c63369e9e57605dd5440522da97ff79f2515225b1c07c825c929645b244b8301b8c337bd4bd4a1a9665390a818327b508aa
+  languageName: node
+  linkType: hard
+
+"@pulumi/pulumi@npm:^3.6.0":
+  version: 3.7.0
+  resolution: "@pulumi/pulumi@npm:3.7.0"
+  dependencies:
+    "@grpc/grpc-js": ^1.2.7
+    "@logdna/tail-file": ^2.0.6
+    "@pulumi/query": ^0.3.0
+    google-protobuf: ^3.5.0
+    js-yaml: ^3.14.0
+    minimist: ^1.2.0
+    normalize-package-data: ^2.4.0
+    protobufjs: ^6.8.6
+    read-package-tree: ^5.3.1
+    require-from-string: ^2.0.1
+    semver: ^6.1.0
+    source-map-support: ^0.4.16
+    ts-node: ^7.0.1
+    typescript: ~3.7.3
+    upath: ^1.1.0
+  checksum: ddaa9dbd7dbcf246d48ada4f0df74fe54dbe7441042d2536915f1d074cf5eef90490e44bb2a7cd16eab8ce0399a3c64024062539456b04a09767a929ab5d70e2
   languageName: node
   linkType: hard
 
@@ -9688,7 +9711,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@webiny/cli-plugin-deploy-pulumi@workspace:packages/cli-plugin-deploy-pulumi"
   dependencies:
-    "@pulumi/pulumi": ^2.21.2 || ^3.6.0
+    "@pulumi/pulumi": ^3.6.0
     "@webiny/cli": ^5.10.0
     "@webiny/pulumi-sdk": ^5.10.0
     ansi-to-html: ^0.6.14
@@ -9698,6 +9721,7 @@ __metadata:
     chalk: ^4.1.0
     execa: ^5.0.0
     express: ^4.17.1
+    fast-glob: ^3.2.5
     handlebars: ^4.7.7
     localtunnel: ^2.0.1
     lodash: 4.17.20
@@ -10303,8 +10327,8 @@ __metadata:
   dependencies:
     "@babel/cli": ^7.5.5
     "@babel/core": ^7.5.5
-    "@pulumi/aws": ^3.22.0 || 4.10.0
-    "@pulumi/pulumi": ^2.21.2 || ^3.6.0
+    "@pulumi/aws": ^4.10.0
+    "@pulumi/pulumi": ^3.6.0
     "@types/node": ^10.0.0
     "@webiny/cli": ^5.10.0
     "@webiny/project-utils": ^5.10.0
