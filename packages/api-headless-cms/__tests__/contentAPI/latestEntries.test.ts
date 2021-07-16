@@ -183,6 +183,7 @@ describe("latest entries", function() {
                         createdBy: expect.any(Object),
                         ownedBy: expect.any(Object),
                         savedOn: expect.any(String),
+                        category: null,
                         meta: {
                             title,
                             modelId: articleModel.modelId,
@@ -248,6 +249,7 @@ describe("latest entries", function() {
                             createdBy: article.createdBy,
                             ownedBy: article.ownedBy,
                             savedOn: article.savedOn,
+                            category: null,
                             title,
                             body,
                             categories: [
@@ -346,6 +348,7 @@ describe("latest entries", function() {
                             createdBy: article.createdBy,
                             ownedBy: article.ownedBy,
                             savedOn: article.savedOn,
+                            category: null,
                             title,
                             body,
                             categories: [

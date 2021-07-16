@@ -1,4 +1,4 @@
-import { CmsContentEntry } from "../../../../types";
+import { CmsContentEntry } from "~/types";
 
 export const commonFieldResolvers = () => ({
     id: (entry: CmsContentEntry) => entry.id || null,
