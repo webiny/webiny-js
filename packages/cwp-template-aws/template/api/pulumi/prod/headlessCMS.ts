@@ -1,15 +1,29 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import vpc from "./vpc";
+import policies, { EsDomain } from "./policies";
+
+interface HeadlessCMSParams {
+    env: Record<string, any>;
+    primaryDynamodbTable: aws.dynamodb.Table;
+    elasticsearchDynamodbTable: aws.dynamodb.Table;
+    elasticsearchDomain: EsDomain;
+}
 
 class HeadlessCMS {
     functions: {
         graphql: aws.lambda.Function;
     };
     role: aws.iam.Role;
-    policy: aws.iam.RolePolicyAttachment;
-    constructor({ env }: { env: Record<string, any> }) {
-        this.role = new aws.iam.Role("headless-cms-lambda-role", {
+
+    constructor({
+        env,
+        primaryDynamodbTable,
+        elasticsearchDynamodbTable,
+        elasticsearchDomain
+    }: HeadlessCMSParams) {
+        const roleName = "headless-cms-lambda-role";
+        this.role = new aws.iam.Role(roleName, {
             assumeRolePolicy: {
                 Version: "2012-10-17",
                 Statement: [
@@ -24,9 +38,20 @@ class HeadlessCMS {
             }
         });
 
-        this.policy = new aws.iam.RolePolicyAttachment("headless-cms-lambda-role-policy", {
+        const policy = policies.getHeadlessCmsLambdaPolicy({
+            primaryDynamodbTable,
+            elasticsearchDomain,
+            elasticsearchDynamodbTable
+        });
+
+        new aws.iam.RolePolicyAttachment(`${roleName}-HeadlessCmsLambdaPolicy`, {
             role: this.role,
-            policyArn: "arn:aws:iam::aws:policy/AdministratorAccess"
+            policyArn: policy.arn.apply(arn => arn)
+        });
+
+        new aws.iam.RolePolicyAttachment(`${roleName}-AWSLambdaVPCAccessExecutionRole`, {
+            role: this.role,
+            policyArn: aws.iam.ManagedPolicy.AWSLambdaVPCAccessExecutionRole
         });
 
         this.functions = {
