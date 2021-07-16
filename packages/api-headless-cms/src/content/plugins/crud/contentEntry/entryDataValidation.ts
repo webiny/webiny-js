@@ -25,7 +25,7 @@ const validateValue = async (
     value: any
 ): Promise<string | null> => {
     if (!fieldValidators) {
-        return null
+        return null;
     }
 
     const { validatorList, context } = args;
