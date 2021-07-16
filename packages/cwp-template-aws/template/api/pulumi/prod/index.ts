@@ -28,7 +28,10 @@ export default () => {
             DB_TABLE: dynamoDb.table.name,
             DB_TABLE_ELASTICSEARCH: elasticsearch.table.name,
             DEBUG: String(process.env.DEBUG)
-        }
+        },
+        primaryDynamodbTable: dynamoDb.table,
+        elasticsearchDynamodbTable: elasticsearch.table,
+        bucket: fileManager.bucket
     });
 
     const pageBuilder = new PageBuilder({
@@ -37,7 +40,8 @@ export default () => {
             DB_TABLE_ELASTICSEARCH: elasticsearch.table.name,
             DEBUG: String(process.env.DEBUG)
         },
-        bucket: fileManager.bucket
+        bucket: fileManager.bucket,
+        primaryDynamodbTable: dynamoDb.table
     });
 
     const api = new Graphql({
@@ -59,7 +63,12 @@ export default () => {
             PRERENDERING_QUEUE_PROCESS_HANDLER: prerenderingService.functions.queue.process.arn,
             S3_BUCKET: fileManager.bucket.id,
             WEBINY_LOGS_FORWARD_URL: String(process.env.WEBINY_LOGS_FORWARD_URL)
-        }
+        },
+        primaryDynamodbTable: dynamoDb.table,
+        elasticsearchDynamodbTable: elasticsearch.table,
+        elasticsearchDomain: elasticsearch.domain,
+        bucket: fileManager.bucket,
+        cognitoUserPool: cognito.userPool
     });
 
     const headlessCms = new HeadlessCMS({
@@ -72,7 +81,10 @@ export default () => {
             ELASTIC_SEARCH_ENDPOINT: elasticsearch.domain.endpoint,
             S3_BUCKET: fileManager.bucket.id,
             WEBINY_LOGS_FORWARD_URL: String(process.env.WEBINY_LOGS_FORWARD_URL)
-        }
+        },
+        primaryDynamodbTable: dynamoDb.table,
+        elasticsearchDynamodbTable: elasticsearch.table,
+        elasticsearchDomain: elasticsearch.domain
     });
 
     const apiGateway = new ApiGateway({
