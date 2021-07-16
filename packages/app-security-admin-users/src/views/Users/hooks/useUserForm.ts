@@ -22,8 +22,6 @@ export function useUserForm() {
     const newUser = query.get("new") === "true";
     const login = query.get("login");
     
-    console.log(login);
-
     const { data, loading: userLoading } = useQuery(READ_USER, {
         variables: { login },
         skip: !login,
@@ -90,8 +88,6 @@ export function useUserForm() {
 
     const showEmptyView = !newUser && !userLoading && isEmpty(user);
     
-    console.log(user);
-
     return {
         login,
         loading,

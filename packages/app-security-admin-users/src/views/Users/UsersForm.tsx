@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import styled from "@emotion/styled";
 import { Form } from "@webiny/form";
 import { Input } from "@webiny/ui/Input";
@@ -19,7 +19,6 @@ import GroupAutocomplete from "../Components/GroupAutocomplete";
 import AvatarImage from "./../Components/AvatarImage";
 import { ReactComponent as SettingsIcon } from "../../assets/icons/settings-24px.svg";
 import { ReactComponent as SecurityIcon } from "../../assets/icons/security-24px.svg";
-import * as Regions from "./UsersForm/Regions";
 import { useUserForm } from "~/views/Users/hooks/useUserForm";
 
 const AvatarWrapper = styled("div")({
@@ -63,7 +62,7 @@ const UsersForm = () => {
     return (
         <Form data={user} onSubmit={onSubmit}>
             {({ data, form, Bind }) => (
-                <Regions.Form Bind={Bind} data={data}>
+                <Fragment>
                     <AvatarWrapper>
                         <Bind name="avatar">
                             <AvatarImage round />
@@ -106,10 +105,12 @@ const UsersForm = () => {
                                                     }
                                                     validators={validation.create("required,email")}
                                                 >
-                                                    <Input label={"Email"} disabled={Boolean(login)} />
+                                                    <Input
+                                                        label={"Email"}
+                                                        disabled={Boolean(login)}
+                                                    />
                                                 </Bind>
                                             </Cell>
-                                            <Regions.Fields Bind={Bind} data={data} grid={12} />
                                         </Grid>
                                     </AccordionItem>
                                     <AccordionItem
@@ -141,7 +142,7 @@ const UsersForm = () => {
                             </SimpleFormFooter>
                         </SimpleForm>
                     </FormWrapper>
-                </Regions.Form>
+                </Fragment>
             )}
         </Form>
     );
