@@ -31,7 +31,17 @@ export const generateSchemaPlugins = async (
     const databaseModels = await cms.models.noAuth().list();
     const pluginsModels: CmsContentModel[] = context.plugins
         .byType<ContentModelPlugin>(ContentModelPlugin.type)
-        .map<CmsContentModel>(plugin => plugin.contentModel);
+        .map<CmsContentModel>(plugin => {
+            // While we're iterating, let's also check if a model with
+            // the same modelId was already returned from the database.
+            const contentModel = plugin.contentModel;
+            if (databaseModels.find(item => item.modelId === contentModel.modelId)) {
+                throw new Error(
+                    `Cannot register the "${contentModel.modelId}" content model via a plugin. A content model with the same model ID already exists in the database.`
+                );
+            }
+            return contentModel;
+        });
 
     const models = [...databaseModels, ...pluginsModels];
 
