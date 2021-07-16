@@ -91,7 +91,12 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                       await model.getPublishedByIds([value.entryId])
                     : // `preview` API works with `latest` data
                       await model.getLatestByIds([value.entryId]);
-
+                /**
+                 * If there are no revisions we must return null.
+                 */
+                if (!revisions || revisions.length === 0) {
+                    return null;
+                }
                 return { ...revisions[0], __typename: modelIdToTypeName.get(value.modelId) };
             };
         },
