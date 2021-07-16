@@ -51,7 +51,7 @@ module.exports = (options, context) => {
                 );
             }
 
-            if (messages.errors.length) {
+            if (Array.isArray(messages.errors) && messages.errors.length) {
                 // Only keep the first error. Others are often indicative
                 // of the same problem, but confuse the reader with noise.
                 if (messages.errors.length > 1) {
