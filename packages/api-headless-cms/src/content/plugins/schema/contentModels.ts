@@ -1,6 +1,7 @@
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
-import { GraphQLSchemaPlugin, Resolvers } from "@webiny/handler-graphql/types";
 import { CmsContentModelCreateInput, CmsContentModelUpdateInput, CmsContext } from "../../../types";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
+import { Resolvers } from "@webiny/handler-graphql/types";
 
 interface CreateContentModelArgs {
     data: CmsContentModelCreateInput;
@@ -135,85 +136,78 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
         `;
     }
 
-    return {
-        type: "graphql-schema",
-        schema: {
-            typeDefs: /* GraphQL */ `
-                type CmsFieldValidation {
-                    name: String!
-                    message: String
-                    settings: JSON
-                }
+    return new GraphQLSchemaPlugin<CmsContext>({
+        typeDefs: /* GraphQL */ `
+            type CmsFieldValidation {
+                name: String!
+                message: String
+                settings: JSON
+            }
 
-                type CmsFieldRenderer {
-                    name: String
-                }
+            type CmsFieldRenderer {
+                name: String
+            }
 
-                type CmsPredefinedValue {
-                    label: String
-                    value: String
-                }
+            type CmsPredefinedValue {
+                label: String
+                value: String
+            }
 
-                type CmsPredefinedValues {
-                    enabled: Boolean
-                    values: [CmsPredefinedValue]
-                }
+            type CmsPredefinedValues {
+                enabled: Boolean
+                values: [CmsPredefinedValue]
+            }
 
-                type CmsContentModelField {
-                    id: ID!
-                    fieldId: String!
-                    label: String!
-                    helpText: String
-                    placeholderText: String
-                    type: String!
-                    multipleValues: Boolean
-                    predefinedValues: CmsPredefinedValues
-                    renderer: CmsFieldRenderer
-                    validation: [CmsFieldValidation!]
-                    listValidation: [CmsFieldValidation!]
-                    settings: JSON
-                }
+            type CmsContentModelField {
+                id: ID!
+                fieldId: String!
+                label: String!
+                helpText: String
+                placeholderText: String
+                type: String!
+                multipleValues: Boolean
+                predefinedValues: CmsPredefinedValues
+                renderer: CmsFieldRenderer
+                validation: [CmsFieldValidation!]
+                listValidation: [CmsFieldValidation!]
+                settings: JSON
+            }
 
-                type CmsContentModel {
-                    name: String!
-                    modelId: String!
-                    description: String
-                    group: CmsContentModelGroup!
-                    createdOn: DateTime!
-                    savedOn: DateTime
-                    createdBy: CmsCreatedBy!
-                    fields: [CmsContentModelField!]!
-                    lockedFields: [JSON]
-                    layout: [[String!]!]!
-                    titleFieldId: String
-                }
+            type CmsContentModel {
+                name: String!
+                modelId: String!
+                description: String
+                group: CmsContentModelGroup!
+                createdOn: DateTime!
+                savedOn: DateTime
+                createdBy: CmsCreatedBy!
+                fields: [CmsContentModelField!]!
+                lockedFields: [JSON]
+                layout: [[String!]!]!
+                titleFieldId: String
+            }
 
-                type CmsContentModelResponse {
-                    data: CmsContentModel
-                    error: CmsError
-                }
+            type CmsContentModelResponse {
+                data: CmsContentModel
+                error: CmsError
+            }
 
-                type CmsContentModelListResponse {
-                    data: [CmsContentModel]
-                    meta: CmsListMeta
-                    error: CmsError
-                }
+            type CmsContentModelListResponse {
+                data: [CmsContentModel]
+                meta: CmsListMeta
+                error: CmsError
+            }
 
-                extend type Query {
-                    getContentModel(
-                        modelId: ID!
-                        where: JSON
-                        sort: String
-                    ): CmsContentModelResponse
+            extend type Query {
+                getContentModel(modelId: ID!, where: JSON, sort: String): CmsContentModelResponse
 
-                    listContentModels: CmsContentModelListResponse
-                }
+                listContentModels: CmsContentModelListResponse
+            }
 
-                ${manageSchema}
-            `,
-            resolvers
-        }
-    };
+            ${manageSchema}
+        `,
+        resolvers
+    });
 };
 
 export default plugin;

@@ -1,11 +1,12 @@
 /* eslint-disable */
 import Error from "@webiny/error";
-import { CmsContentEntry, CmsContentModelGroup } from "../../src/types";
+import { CmsContentEntry, CmsContentModelGroup } from "~/types";
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { useCategoryManageHandler } from "../utils/useCategoryManageHandler";
 import { useCategoryReadHandler } from "../utils/useCategoryReadHandler";
 import models from "./mocks/contentModels";
 import modelsWithoutValidation from "./mocks/contentModels.noValidation";
+import { useProductManageHandler } from "../utils/useProductManageHandler";
 
 jest.setTimeout(15000);
 
@@ -70,7 +71,13 @@ describe("MANAGE - Resolvers", () => {
                 description: "description"
             }
         });
-        contentModelGroup = createCMG.data.createContentModelGroup.data;
+
+        const { data, error } = createCMG.data.createContentModelGroup;
+        if (data) {
+            contentModelGroup = data;
+        } else if (error.code !== "SLUG_ALREADY_EXISTS") {
+            throw new Error(error.message, error.code);
+        }
 
         // Create initial record
         const [create] = await createContentModelMutation({
@@ -975,6 +982,102 @@ describe("MANAGE - Resolvers", () => {
                     },
                     error: null
                 }
+            }
+        });
+    });
+
+    test("should store and retrieve nested objects", async () => {
+        const model = models.find(model => model.modelId === "product");
+        await setupContentModel(model);
+
+        const { vegetables } = await createCategories();
+
+        const { createProduct } = useProductManageHandler({
+            ...manageOpts
+        });
+
+        // const [introspection] = await introspect();
+        // console.log(printSchema(buildClientSchema(introspection.data)));
+
+        const [potatoResponse] = await createProduct({
+            data: {
+                title: "Potato",
+                price: 99.9,
+                availableOn: "2020-12-25",
+                color: "white",
+                image: "image.png",
+                availableSizes: ["s", "m"],
+                category: {
+                    modelId: "category",
+                    entryId: vegetables.id
+                },
+                variant: {
+                    name: "Variant 1",
+                    price: 100,
+                    category: {
+                        modelId: "category",
+                        entryId: vegetables.id
+                    },
+                    options: [
+                        {
+                            name: "Option 1",
+                            price: 10,
+                            category: {
+                                modelId: "category",
+                                entryId: vegetables.id
+                            }
+                        },
+                        {
+                            name: "Option 2",
+                            price: 20,
+                            category: {
+                                modelId: "category",
+                                entryId: vegetables.id
+                            }
+                        }
+                    ]
+                }
+            }
+        });
+
+        const potato = potatoResponse.data.createProduct.data;
+
+        expect(potato).toMatchObject({
+            id: potato.id,
+            title: "Potato",
+            price: 99.9,
+            availableOn: "2020-12-25",
+            color: "white",
+            availableSizes: ["s", "m"],
+            category: {
+                modelId: "category",
+                entryId: vegetables.id
+            },
+            variant: {
+                name: "Variant 1",
+                price: 100,
+                category: {
+                    modelId: "category",
+                    entryId: vegetables.id
+                },
+                options: [
+                    {
+                        name: "Option 1",
+                        price: 10,
+                        category: {
+                            modelId: "category",
+                            entryId: vegetables.id
+                        }
+                    },
+                    {
+                        name: "Option 2",
+                        price: 20,
+                        category: {
+                            modelId: "category",
+                            entryId: vegetables.id
+                        }
+                    }
+                ]
             }
         });
     });

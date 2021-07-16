@@ -1,11 +1,12 @@
-import { GraphQLSchemaPlugin, Resolvers } from "@webiny/handler-graphql/types";
 import { ErrorResponse, Response } from "@webiny/handler-graphql";
 
 import {
     CmsContentModelGroupCreateInput,
     CmsContentModelGroupUpdateInput,
     CmsContext
-} from "../../../types";
+} from "~/types";
+import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
+import { Resolvers } from "@webiny/handler-graphql/types";
 
 interface CreateContentModelGroupArgs {
     data: CmsContentModelGroupCreateInput;
@@ -127,27 +128,24 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
         };
     }
 
-    return {
-        type: "graphql-schema",
-        schema: {
-            typeDefs: /* GraphQL */ `
-                type CmsContentModelGroup {
-                    id: ID!
-                    createdOn: DateTime!
-                    savedOn: DateTime!
-                    name: String!
-                    contentModels: [CmsContentModel!]
-                    totalContentModels: Int!
-                    slug: String!
-                    description: String
-                    icon: String
-                    createdBy: CmsCreatedBy!
-                }
-                ${manageSchema}
-            `,
-            resolvers
-        }
-    };
+    return new GraphQLSchemaPlugin<CmsContext>({
+        typeDefs: /* GraphQL */ `
+            type CmsContentModelGroup {
+                id: ID!
+                createdOn: DateTime!
+                savedOn: DateTime!
+                name: String!
+                contentModels: [CmsContentModel!]
+                totalContentModels: Int!
+                slug: String!
+                description: String
+                icon: String
+                createdBy: CmsCreatedBy!
+            }
+            ${manageSchema}
+        `,
+        resolvers
+    });
 };
 
 export default plugin;
