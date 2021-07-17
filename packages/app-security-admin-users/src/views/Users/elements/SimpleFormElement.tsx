@@ -1,21 +1,45 @@
 import React from "react";
+import { css } from "emotion";
 import { Form, FormOnSubmit } from "@webiny/form";
 import { LayoutElement } from "~/views/Users/elements/LayoutElement";
-import {
-    SimpleForm,
-    SimpleFormHeader,
-    SimpleFormFooter,
-    SimpleFormContent
-} from "@webiny/app-admin/components/SimpleForm";
+import { SimpleForm, SimpleFormHeader } from "@webiny/app-admin/components/SimpleForm";
 import styled from "@emotion/styled";
 import { ButtonElement } from "~/views/Users/elements/ButtonElement";
 import { Element } from "~/views/Users/elements/Element";
 import { GenericElement } from "~/views/Users/elements/GenericElement";
 import { CircularProgress } from "@webiny/ui/Progress";
+import { Icon } from "@webiny/ui/Icon";
+import { Typography } from "@webiny/ui/Typography";
+import { Cell, Grid } from "@webiny/ui/Grid";
 
 const ButtonWrapper = styled("div")({
     display: "flex",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
+    borderTop: "1px solid var(--mdc-theme-on-background)",
+    color: "var(--mdc-theme-text-primary-on-background)",
+    textAlign: "right",
+    padding: 25
+});
+
+const iconClass = css({
+    marginRight: 15,
+    color: "var(--mdc-theme-text-primary-on-background)"
+});
+
+const headerClass = css({
+    borderBottom: "1px solid var(--mdc-theme-on-background)",
+    color: "var(--mdc-theme-text-primary-on-background)"
+});
+
+const titleClass = css({
+    display: "flex",
+    alignItems: "center"
+});
+
+const actionsClass = css({
+    display: "flex",
+    justifyContent: "flex-end",
+    alignItems: "center"
 });
 
 interface Config {
@@ -26,31 +50,52 @@ interface Config {
     onCancel: ({ viewProps }) => void;
 }
 
-export class SimpleFormHeaderElement extends Element {
-    render(props) {
-        return <SimpleFormHeader title={this._config.getTitle(props)} />;
+interface SimpleFormHeaderConfig {
+    getTitle(props: any): string;
+    icon?: React.ReactElement<any>;
+}
+
+export class SimpleFormHeaderElement extends LayoutElement<SimpleFormHeaderConfig> {
+    constructor(id, config) {
+        super(id, config);
+
+        this.toggleGrid(false);
+    }
+    
+    setIcon(icon: React.ReactElement<any>) {
+        this._config.icon = icon;
+    }
+
+    render(props: any, depth = 0): any {
+        const { icon, getTitle } = this._config;
+
+        return (
+            <Grid className={headerClass}>
+                <Cell span={6} className={titleClass}>
+                    <React.Fragment>
+                        {icon && <Icon className={iconClass} icon={icon} />}
+                        <Typography use="headline5">{getTitle(props)}</Typography>
+                    </React.Fragment>
+                </Cell>
+                <Cell span={6} className={actionsClass}>
+                    {super.render(props, depth)}
+                </Cell>
+            </Grid>
+        );
     }
 }
 
-export class SimpleFormContentElement extends LayoutElement {
-    render(viewProps) {
-        return <SimpleFormContent>{super.render(viewProps)}</SimpleFormContent>;
-    }
-}
+export class SimpleFormContentElement extends LayoutElement {}
 
 export class SimpleFormFooterElement extends LayoutElement {
     constructor(id) {
         super(id);
 
-        this.disableGrid();
+        this.toggleGrid(false);
     }
 
     render(viewProps) {
-        return (
-            <SimpleFormFooter>
-                <ButtonWrapper>{super.render(viewProps)}</ButtonWrapper>
-            </SimpleFormFooter>
-        );
+        return <ButtonWrapper>{super.render(viewProps)}</ButtonWrapper>;
     }
 }
 
@@ -59,7 +104,7 @@ export class SimpleFormElement extends LayoutElement<Config> {
         super(id, config);
 
         this.addElements();
-        this.disableGrid();
+        this.toggleGrid(false);
     }
 
     getFormContentElement(): SimpleFormContentElement {

@@ -36,7 +36,7 @@ export class AccordionElement extends LayoutElement<Config> {
     constructor(id, config: Config) {
         super(id, config);
 
-        this.disableGrid();
+        this.toggleGrid(false);
 
         this._config.items.forEach(item => {
             this.addElement(new AccordionItemElement(item.id, item));

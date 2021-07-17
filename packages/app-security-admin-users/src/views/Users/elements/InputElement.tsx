@@ -5,7 +5,7 @@ import { Input } from "@webiny/ui/Input";
 
 export interface InputConfig extends ElementConfig {
     label: string;
-    validators: Function;
+    validators?: Function;
 }
 
 export class InputElement extends Element<InputConfig> {

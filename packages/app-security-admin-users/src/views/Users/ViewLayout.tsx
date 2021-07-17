@@ -1,11 +1,15 @@
 import React, { Fragment } from "react";
 import { Element } from "./elements/Element";
-import { Cell, Grid } from "@webiny/ui/Grid";
+import { Cell, Grid, GridInner } from "@webiny/ui/Grid";
 
 interface LayoutItem {
     element: string;
     span: number;
 }
+
+const ElementID = ({ children }) => {
+    return children;
+};
 
 export class ViewLayout {
     private _grid = true;
@@ -21,6 +25,8 @@ export class ViewLayout {
             for (let j = 0; j < row.length; j++) {
                 if (row[j].element === element.id) {
                     row.splice(j, 1);
+                    // Update spans on all items
+                    row.forEach(item => (item.span = 12 / row.length));
                     return;
                 }
             }
@@ -59,8 +65,10 @@ export class ViewLayout {
             for (let j = 0; j < row.length; j++) {
                 if (row[j].element === lookFor.id) {
                     const span = 12 / (row.length + 1);
-                    row[j].span = span;
+                    console.log(lookFor.id, element.id, row);
                     row.splice(j + 1, 0, { element: element.id, span });
+                    // Update spans on all items
+                    row.forEach(item => (item.span = span));
                     return this;
                 }
             }
@@ -75,13 +83,19 @@ export class ViewLayout {
             for (let j = 0; j < row.length; j++) {
                 if (row[j].element === lookFor.id) {
                     const span = 12 / (row.length + 1);
-                    row[j].span = span;
                     // Insert new element to the left
                     row.splice(j, 0, { element: element.id, span });
+                    // Update spans on all items
+                    row.forEach(item => (item.span = span));
                     return this;
                 }
             }
         }
+        return this;
+    }
+
+    insertElementAtTheTop(element: Element<any>) {
+        this._layout.unshift([{ element: element.id, span: 12 }]);
         return this;
     }
 
@@ -90,7 +104,7 @@ export class ViewLayout {
         return this;
     }
 
-    render(props: any, getElement: Function) {
+    render(props: any, getElement: Function, depth = 0) {
         if (!this._grid) {
             return (
                 <Fragment>
@@ -101,9 +115,12 @@ export class ViewLayout {
                                 if (!element.shouldRender(props)) {
                                     return null;
                                 }
-                                return React.cloneElement(element.render(props), {
-                                    key: item.element
-                                });
+
+                                return (
+                                    <ElementID key={item.element}>
+                                        {element.render(props)}
+                                    </ElementID>
+                                );
                             })}
                         </Fragment>
                     ))}
@@ -111,8 +128,10 @@ export class ViewLayout {
             );
         }
 
+        const GridComponent = depth > 0 ? GridInner : Grid;
+
         return (
-            <Grid>
+            <GridComponent>
                 {this._layout.map((row, index) => (
                     <Fragment key={index}>
                         {row.map(item => {
@@ -122,13 +141,15 @@ export class ViewLayout {
                             }
                             return (
                                 <Cell key={item.element} span={item.span}>
-                                    {element.render(props)}
+                                    <ElementID key={item.element}>
+                                        {element.render(props, depth + 1)}
+                                    </ElementID>
                                 </Cell>
                             );
                         })}
                     </Fragment>
                 ))}
-            </Grid>
+            </GridComponent>
         );
     }
 }

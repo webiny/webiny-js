@@ -11,7 +11,8 @@ import styled from "@emotion/styled";
 import { AccordionElement, AccordionItemElement } from "~/views/Users/elements/AccordionElement";
 import { ReactComponent as SecurityIcon } from "../../assets/icons/security-24px.svg";
 import { ReactComponent as SettingsIcon } from "~/assets/icons/settings-24px.svg";
-import {ButtonElement} from "~/views/Users/elements/ButtonElement";
+import { ButtonElement } from "~/views/Users/elements/ButtonElement";
+import { PanelElement } from "~/views/Users/elements/PanelElement";
 
 const FormWrapper = styled("div")({
     margin: "0 100px"
@@ -19,7 +20,7 @@ const FormWrapper = styled("div")({
 
 export class UsersFormView extends View {
     constructor() {
-        super();
+        super("users-form-view");
 
         // Setup default view
         this.addElements();
@@ -50,7 +51,6 @@ export class UsersFormView extends View {
                     this.submit(viewProps, data, form);
                 },
                 getTitle({ viewProps }) {
-                    console.log(viewProps, viewProps.fullName);
                     return viewProps.fullName || "New User";
                 },
                 getFormData({ viewProps }) {
@@ -79,11 +79,11 @@ export class UsersFormView extends View {
                 }
             ]
         });
-        
-        form.getFormContentElement().disableGrid();
-        
+
+        form.getFormContentElement().toggleGrid(false);
+
         form.getFormContentElement().addElement(accordion);
-        
+
         const bioAccordion = accordion.getElement<AccordionItemElement>("bio");
         bioAccordion.addElement(
             new InputElement("firstName", {
@@ -119,15 +119,34 @@ export class UsersFormView extends View {
             })
         );
 
-        groupAccordion.setTitle("Novi title")
-        groupAccordion.setDescription("Novi description")
+        groupAccordion.setTitle("Novi title");
+        groupAccordion.setDescription("Novi description");
 
-        this.disableGrid();
-        this.wrapWith(FormWrapper);
+        this.toggleGrid(false);
+        // this.wrapWith(FormWrapper);
 
-        this.onSubmit((data, form) => {
-            data.extraData = "Dang!"
-            console.log(data);
-        });
+        // MODIFY THE FORM BEYOND RECOGNIZABLE!
+        const leftIds = ["firstName", "lastName"];
+        const rightIds = ["login", "group"];
+
+        // Add left and right panels
+        const leftPanel = new PanelElement("leftPanel");
+        const rightPanel = new PanelElement("rightPanel");
+
+        const formContent = form.getFormContentElement();
+        formContent.insertElementAtTheTop(leftPanel);
+        rightPanel.moveToTheRightOf(leftPanel);
+
+        leftIds.forEach(id => this.getElement(id).moveToTheBottomOf(leftPanel));
+        rightIds.forEach(id => this.getElement(id).moveToTheBottomOf(rightPanel));
+
+        const extraData = new InputElement("extra", { label: "Extra Data" });
+        extraData.moveToTheRightOf(this.getElement("login"));
+
+        formContent.toggleGrid(true);
+        form.getFormHeaderElement().setIcon(<SecurityIcon />);
+        form.getSubmitButtonElement().moveTo(form.getFormHeaderElement());
+
+        accordion.removeElement();
     }
 }
