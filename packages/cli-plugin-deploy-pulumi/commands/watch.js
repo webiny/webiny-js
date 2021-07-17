@@ -165,7 +165,7 @@ module.exports = async (inputs, context) => {
             const buildFolders = glob.sync(buildFoldersGlob);
 
             // The final array of values that will be sent to Pulumi CLI's "--path" argument.
-            const pathArg = [pulumiFolder, buildFolders];
+            const pathArg = [pulumiFolder, ...buildFolders];
 
             // Log used values if debugging has been enabled.
             if (inputs.debug) {
