@@ -1,9 +1,5 @@
 import WebinyError from "@webiny/error";
-import {
-    CmsContentModel,
-    CmsContentModelField,
-    CmsModelFieldToStoragePlugin
-} from "@webiny/api-headless-cms/types";
+import { CmsModelFieldToStoragePlugin } from "@webiny/api-headless-cms/types";
 import { gzip, ungzip } from "@webiny/api-headless-cms/utils";
 
 export type OriginalValue = string | string[] | Record<string, any>;
@@ -12,15 +8,6 @@ export interface StorageValue {
     compression: string;
     value: string | string[];
 }
-
-interface CreateCacheKeyArgs {
-    model: CmsContentModel;
-    field: CmsContentModelField;
-}
-
-const createCacheKey = ({ model, field }: CreateCacheKeyArgs): string => {
-    return [model.modelId, field.fieldId, field.id].join(".");
-};
 
 const GZIP = "gzip";
 const TO_STORAGE_ENCODING = "base64";
@@ -34,21 +21,11 @@ const convertToBuffer = value => {
 };
 
 export default (): CmsModelFieldToStoragePlugin<OriginalValue, StorageValue> => {
-    const cache = new Map<string, OriginalValue>();
     return {
         type: "cms-model-field-to-storage",
         name: "cms-model-field-to-storage-long-text",
         fieldType: "long-text",
-        async fromStorage({ model, field, value: storageValue }) {
-            const cacheKey = createCacheKey({
-                model,
-                field
-            });
-
-            if (cache.has(cacheKey)) {
-                return cache.get(cacheKey);
-            }
-
+        async fromStorage({ field, value: storageValue }) {
             if (!storageValue || typeof storageValue !== "object") {
                 return storageValue;
             }
@@ -91,16 +68,13 @@ export default (): CmsModelFieldToStoragePlugin<OriginalValue, StorageValue> => 
                     const decompressedBuffer = await ungzip(current);
                     decompressed.push(decompressedBuffer.toString(FROM_STORAGE_ENCODING));
                 }
-                cache.set(cacheKey, decompressed);
                 return decompressed;
             }
 
             const decompressedBuffer = await ungzip(convertToBuffer(value));
-            const decompressed = decompressedBuffer.toString(FROM_STORAGE_ENCODING);
-            cache.set(cacheKey, decompressed);
-            return decompressed;
+            return decompressedBuffer.toString(FROM_STORAGE_ENCODING);
         },
-        async toStorage({ model, field, value }) {
+        async toStorage({ value }) {
             /**
              * There is a possibility that we are trying to compress already compressed value.
              * Introduced a bug with 5.8.0 storage operations, so just return the value to correct it.
@@ -109,11 +83,6 @@ export default (): CmsModelFieldToStoragePlugin<OriginalValue, StorageValue> => 
             if (value && value.hasOwnProperty("compression") === true) {
                 return value as any;
             }
-
-            const cacheKey = createCacheKey({
-                model,
-                field
-            });
 
             /**
              * In case of field with "multipleValues", value will be an array
@@ -127,7 +96,7 @@ export default (): CmsModelFieldToStoragePlugin<OriginalValue, StorageValue> => 
                     const compressedValue = compressed.toString(TO_STORAGE_ENCODING);
                     compressedValues.push(compressedValue);
                 }
-                cache.set(cacheKey, value);
+
                 return {
                     compression: GZIP,
                     value: compressedValues
@@ -140,7 +109,7 @@ export default (): CmsModelFieldToStoragePlugin<OriginalValue, StorageValue> => 
 
             const compressed = await gzip(value);
             const compressedValue = compressed.toString(TO_STORAGE_ENCODING);
-            cache.set(cacheKey, value);
+
             return {
                 compression: GZIP,
                 value: compressedValue
