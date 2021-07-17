@@ -190,7 +190,8 @@ module.exports = async (inputs, context) => {
                 args: {
                     secretsProvider: PULUMI_SECRETS_PROVIDER,
                     color: "always",
-                    path: pathArg
+                    path: pathArg,
+                    debug: inputs.debug
                 },
                 execa: {
                     env: {
