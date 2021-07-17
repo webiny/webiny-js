@@ -22,11 +22,15 @@ export const createReadSDL: CreateManageSDL = ({ model, fieldTypePlugins }): str
 
     const sortEnumRender = renderSortEnum({ model, fieldTypePlugins });
     const getFilterFieldsRender = renderGetFilterFields({ model, fieldTypePlugins });
-
     const fieldsRender = renderFields({ model, type: "read", fieldTypePlugins });
 
     return `
         """${model.description || ""}"""
+        ${fieldsRender
+            .map(f => f.typeDefs)
+            .filter(Boolean)
+            .join("\n")}
+        
         type ${rTypeName} {
             id: ID!
             entryId: String!

@@ -1,6 +1,6 @@
 import { TargetDataModelsContext } from "../types";
 
-export default class TargetDataModelMutationResolver {
+export default class TargetDataModelsResolver {
     protected readonly context: TargetDataModelsContext;
 
     constructor(context: TargetDataModelsContext) {

@@ -6,6 +6,8 @@ import { graphQLHandlerFactory } from "./graphQLHandlerFactory";
 import contextSetup from "./contextSetup";
 import modelManager from "./plugins/modelManager";
 import fieldTypePlugins from "./plugins/graphqlFields";
+import defaultStoragePlugin from "./plugins/storage/default";
+import objectStoragePlugin from "./plugins/storage/object";
 import validatorsPlugins from "./plugins/validators";
 import { InternalAuthenticationPlugin } from "./plugins/internalSecurity/InternalAuthenticationPlugin";
 import { InternalAuthorizationPlugin } from "./plugins/internalSecurity/InternalAuthorizationPlugin";
@@ -24,6 +26,8 @@ export default (options: CmsContentPluginsIndexArgs = {}) => [
     graphQLHandlerFactory(options),
     fieldTypePlugins(),
     validatorsPlugins(),
+    defaultStoragePlugin(),
+    objectStoragePlugin(),
     new InternalAuthenticationPlugin("read-api-key"),
     new InternalAuthorizationPlugin("read-api-key")
 ];

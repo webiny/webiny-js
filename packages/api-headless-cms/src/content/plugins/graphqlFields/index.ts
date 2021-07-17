@@ -6,5 +6,6 @@ import boolean from "./boolean";
 import datetime from "./datetime";
 import richText from "./richText";
 import file from "./file";
+import object from "./object";
 
-export default () => [text, ref, number, datetime, boolean, longText, richText, file];
+export default () => [text, ref, number, datetime, boolean, longText, richText, file, object];
