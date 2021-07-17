@@ -160,9 +160,9 @@ module.exports = async (inputs, context) => {
             const buildFoldersGlob = [
                 projectApplication.project.root,
                 inputs.folder,
-                "**/build/**/*.*"
+                "**/build"
             ].join("/");
-            const buildFolders = glob.sync(buildFoldersGlob);
+            const buildFolders = glob.sync(buildFoldersGlob, { onlyFiles: false });
 
             // The final array of values that will be sent to Pulumi CLI's "--path" argument.
             const pathArg = [pulumiFolder, ...buildFolders];
