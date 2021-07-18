@@ -431,7 +431,14 @@ describe("content model plugins", () => {
 
         await until(
             () => invoke({ body: { query: LIST_PRODUCTS } }),
-            ([response]) => response.data.listProducts.data[0].meta.status === "published"
+            ([response]) => {
+                const [ p1, p2, p3  ] = response.data.listProducts.data;
+                return (
+                    p1.meta.status === "published" &&
+                    p2.meta.status === "published" &&
+                    p3.meta.status === "published"
+                );
+            }
         );
 
         // The list should contain three products, all published.
