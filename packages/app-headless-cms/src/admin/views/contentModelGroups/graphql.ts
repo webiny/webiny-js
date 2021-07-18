@@ -7,6 +7,7 @@ const fields = `
     description
     icon
     createdOn
+    plugin
     createdBy {
         id
         displayName
