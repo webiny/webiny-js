@@ -20,7 +20,7 @@ export const beforeDeleteHook = async ({
         .find((item: ContentModelGroupPlugin) => item.contentModelGroup.slug === group.slug);
 
     if (groupPlugin) {
-        throw new Error(`Content model groups defined via a plugin cannot be deleted.`);
+        throw new Error(`Content model groups defined via plugins cannot be deleted.`);
     }
 
     const models = await context.cms.models.noAuth().list();

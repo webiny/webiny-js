@@ -110,7 +110,7 @@ export const beforeCreateHook = async (args: Args): Promise<void> => {
     if (modelPlugin) {
         throw new WebinyError(
             `Cannot create "${modelId}" content model because one is already registered via a plugin.`,
-            "CONTENT_MODEL_DELETE_ERROR",
+            "CONTENT_MODEL_CREATE_ERROR",
             {
                 modelId
             }

@@ -21,7 +21,7 @@ export const beforeUpdateHook = async ({
         .find((item: ContentModelGroupPlugin) => item.contentModelGroup.slug === input.slug);
 
     if (groupPlugin) {
-        throw new Error(`Content model groups defined via a plugin cannot be updated.`);
+        throw new Error(`Content model groups defined via plugins cannot be updated.`);
     }
 
     if (!storageOperations.beforeUpdate) {

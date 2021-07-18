@@ -23,7 +23,7 @@ export const beforeDeleteHook = async (args: Args) => {
 
     if (modelPlugin) {
         throw new WebinyError(
-            "Content models defined via a plugin cannot be deleted.",
+            "Content models defined via plugins cannot be deleted.",
             "CONTENT_MODEL_DELETE_ERROR",
             {
                 modelId

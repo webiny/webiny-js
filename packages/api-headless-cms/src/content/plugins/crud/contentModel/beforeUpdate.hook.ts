@@ -79,7 +79,7 @@ export const beforeUpdateHook = async (args: Args) => {
 
     if (modelPlugin) {
         throw new WebinyError(
-            "Content models defined via a plugin cannot be updated.",
+            "Content models defined via plugins cannot be updated.",
             "CONTENT_MODEL_UPDATE_ERROR",
             {
                 modelId: model.modelId
