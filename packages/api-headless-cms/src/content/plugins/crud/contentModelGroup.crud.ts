@@ -163,7 +163,7 @@ export default (): ContextPlugin<CmsContext> => ({
                     return group;
                 } catch (ex) {
                     throw new WebinyError(
-                        ex.message || "Could not save data model.",
+                        ex.message || "Could not save data model group.",
                         ex.code || "ERROR_ON_CREATE",
                         {
                             ...(ex.data || {}),
