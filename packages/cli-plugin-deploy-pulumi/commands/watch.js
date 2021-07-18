@@ -160,12 +160,12 @@ module.exports = async (inputs, context) => {
             const buildFoldersGlob = [
                 projectApplication.project.root,
                 inputs.folder,
-                "**/build/**/*.*"
+                "**/build"
             ].join("/");
-            const buildFolders = glob.sync(buildFoldersGlob);
+            const buildFolders = glob.sync(buildFoldersGlob, { onlyFiles: false });
 
             // The final array of values that will be sent to Pulumi CLI's "--path" argument.
-            const pathArg = [pulumiFolder, buildFolders];
+            const pathArg = [pulumiFolder, ...buildFolders];
 
             // Log used values if debugging has been enabled.
             if (inputs.debug) {
@@ -190,7 +190,8 @@ module.exports = async (inputs, context) => {
                 args: {
                     secretsProvider: PULUMI_SECRETS_PROVIDER,
                     color: "always",
-                    path: pathArg
+                    path: pathArg,
+                    debug: inputs.debug
                 },
                 execa: {
                     env: {

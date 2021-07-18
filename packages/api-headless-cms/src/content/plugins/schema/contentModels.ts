@@ -2,6 +2,7 @@ import { ErrorResponse, Response } from "@webiny/handler-graphql";
 import { CmsContentModelCreateInput, CmsContentModelUpdateInput, CmsContext } from "../../../types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { Resolvers } from "@webiny/handler-graphql/types";
+import { ContentModelPlugin } from "~/content/plugins/ContentModelPlugin";
 
 interface CreateContentModelArgs {
     data: CmsContentModelCreateInput;
@@ -37,6 +38,17 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 } catch (e) {
                     return new ErrorResponse(e);
                 }
+            }
+        },
+        CmsContentModel: {
+            plugin: async (model, args, context) => {
+                const modelPlugin: ContentModelPlugin = context.plugins
+                    .byType<ContentModelPlugin>(ContentModelPlugin.type)
+                    .find(
+                        (item: ContentModelPlugin) => item.contentModel.modelId === model.modelId
+                    );
+
+                return Boolean(modelPlugin);
             }
         }
     };
@@ -178,13 +190,16 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 modelId: String!
                 description: String
                 group: CmsContentModelGroup!
-                createdOn: DateTime!
+                createdOn: DateTime
                 savedOn: DateTime
-                createdBy: CmsCreatedBy!
+                createdBy: CmsCreatedBy
                 fields: [CmsContentModelField!]!
                 lockedFields: [JSON]
                 layout: [[String!]!]!
                 titleFieldId: String
+
+                # Returns true if the content model is registered via a plugin.
+                plugin: Boolean!
             }
 
             type CmsContentModelResponse {

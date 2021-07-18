@@ -6,6 +6,7 @@ import {
 } from "../../../../types";
 import WebinyError from "@webiny/error";
 import { runContentModelLifecycleHooks } from "./runContentModelLifecycleHooks";
+import { ContentModelPlugin } from "@webiny/api-headless-cms/content/plugins/ContentModelPlugin";
 
 interface Args extends CmsContentModelStorageOperationsBeforeDeleteArgs {
     context: CmsContext;
@@ -15,7 +16,23 @@ interface Args extends CmsContentModelStorageOperationsBeforeDeleteArgs {
 export const beforeDeleteHook = async (args: Args) => {
     const { context, model } = args;
     const { modelId } = model;
+
+    const modelPlugin: ContentModelPlugin = context.plugins
+        .byType<ContentModelPlugin>(ContentModelPlugin.type)
+        .find((item: ContentModelPlugin) => item.contentModel.modelId === modelId);
+
+    if (modelPlugin) {
+        throw new WebinyError(
+            "Content models defined via plugins cannot be deleted.",
+            "CONTENT_MODEL_DELETE_ERROR",
+            {
+                modelId
+            }
+        );
+    }
+
     const manager = await context.cms.getModel(modelId);
+
     let entries = [];
     try {
         [entries] = await manager.list({

@@ -116,25 +116,25 @@ export interface CmsContentModelField {
     /**
      * Text below the field to clarify what is it meant to be in the field value
      */
-    helpText: string;
+    helpText?: string;
     /**
      * Text to be displayed in the field
      */
-    placeholderText: string;
+    placeholderText?: string;
     /**
      * Are predefined values enabled? And list of them
      */
-    predefinedValues: CmsContentModelFieldPredefinedValues;
+    predefinedValues?: CmsContentModelFieldPredefinedValues;
     /**
      * Field renderer. Blank if determined automatically.
      */
-    renderer: CmsContentModelFieldRenderer;
+    renderer?: CmsContentModelFieldRenderer;
     /**
      * List of validations for the field
      *
      * @default []
      */
-    validation: CmsContentModelFieldValidation[];
+    validation?: CmsContentModelFieldValidation[];
     /**
      * List of validations for the list of values, when a field is set to accept a list of values.
      * These validations will be applied to the entire list, and `validation` (see above) will be applied
@@ -142,12 +142,12 @@ export interface CmsContentModelField {
      *
      * @default []
      */
-    listValidation: CmsContentModelFieldValidation[];
+    listValidation?: CmsContentModelFieldValidation[];
     /**
      * Is this a multiple values field?
      *
      */
-    multipleValues: boolean;
+    multipleValues?: boolean;
     /**
      * Any user defined settings.
      *
@@ -291,7 +291,7 @@ export interface CmsContentModel {
     /**
      * Locale this model belongs to.
      */
-    locale: string;
+    locale?: string;
     /**
      * Content model group reference object.
      */
@@ -312,11 +312,11 @@ export interface CmsContentModel {
     /**
      * Date created
      */
-    createdOn: Date;
+    createdOn?: Date;
     /**
      * Date saved. Changes on both save and create.
      */
-    savedOn: Date;
+    savedOn?: Date;
     /**
      * CreatedBy object wrapper. Contains id, name and type of the user.
      */
@@ -339,7 +339,7 @@ export interface CmsContentModel {
     /**
      * List of locked fields. Updated when entry is saved and a field has been used.
      */
-    lockedFields: LockedField[];
+    lockedFields?: LockedField[];
     /**
      * The field that is being displayed as entry title.
      * It is picked as first available text field. Or user can select own field.
@@ -741,27 +741,27 @@ export interface CmsContentModelGroup {
     /**
      * Locale this group belongs to.
      */
-    locale: string;
+    locale?: string;
     /**
      * Description for the group.
      */
-    description: string;
+    description?: string;
     /**
      * Icon for the group. In a form of "ico/ico".
      */
-    icon: string;
+    icon?: string;
     /**
      * CreatedBy reference object.
      */
-    createdBy: CreatedBy;
+    createdBy?: CreatedBy;
     /**
      * Date group was created on.
      */
-    createdOn: Date;
+    createdOn?: Date;
     /**
      * Date group was created or changed on.
      */
-    savedOn: Date;
+    savedOn?: Date;
 }
 
 /**

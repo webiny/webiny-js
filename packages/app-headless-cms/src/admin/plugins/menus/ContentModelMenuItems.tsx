@@ -31,17 +31,22 @@ const ContentModelMenuItems = ({ Section, Item }) => {
             return null;
         }
 
+        let icon = null;
+        if (contentModelGroup.icon) {
+            icon = (
+                <FontAwesomeIcon
+                    style={{ color: "var(--mdc-theme-text-secondary-on-background)" }}
+                    icon={contentModelGroup.icon.split("/")}
+                />
+            );
+        }
+
         return (
             <Section
                 key={contentModelGroup.id}
                 name={`cms-content-models-${contentModelGroup.id}`}
                 label={contentModelGroup.name}
-                icon={
-                    <FontAwesomeIcon
-                        style={{ color: "var(--mdc-theme-text-secondary-on-background)" }}
-                        icon={contentModelGroup.icon.split("/")}
-                    />
-                }
+                icon={icon}
             >
                 {contentModelGroup.contentModels.length === 0 && (
                     <Item style={{ opacity: 0.4 }} key={"empty-item"} label={t`Nothing to show.`} />
