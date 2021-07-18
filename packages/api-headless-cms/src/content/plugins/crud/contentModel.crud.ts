@@ -136,8 +136,7 @@ export default (): ContextPlugin<CmsContext> => ({
             async list() {
                 const permission = await checkModelPermissions("r");
                 const models = await modelsList();
-
-                return await utils.filterAsync(models, async model => {
+                return utils.filterAsync(models, async model => {
                     if (!utils.validateOwnership(context, permission, model)) {
                         return false;
                     }
