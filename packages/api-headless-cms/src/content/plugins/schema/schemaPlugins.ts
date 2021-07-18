@@ -6,7 +6,6 @@ import { createManageResolvers } from "./createManageResolvers";
 import { createReadResolvers } from "./createReadResolvers";
 import { createPreviewResolvers } from "./createPreviewResolvers";
 import { getSchemaFromFieldPlugins } from "../utils/getSchemaFromFieldPlugins";
-import { ContentModelPlugin } from "../ContentModelPlugin";
 
 export const generateSchemaPlugins = async (
     context: CmsContext
@@ -22,22 +21,7 @@ export const generateSchemaPlugins = async (
         }, {});
 
     // Load model data
-    const databaseModels = await cms.models.noAuth().list();
-    const pluginsModels: CmsContentModel[] = context.plugins
-        .byType<ContentModelPlugin>(ContentModelPlugin.type)
-        .map<CmsContentModel>(plugin => {
-            // While we're iterating, let's also check if a model with
-            // the same modelId was already returned from the database.
-            const contentModel = plugin.contentModel;
-            if (databaseModels.find(item => item.modelId === contentModel.modelId)) {
-                throw new Error(
-                    `Cannot register the "${contentModel.modelId}" content model via a plugin. A content model with the same model ID already exists in the database.`
-                );
-            }
-            return contentModel;
-        });
-
-    const models = [...databaseModels, ...pluginsModels];
+    const models = await cms.models.noAuth().list();
 
     const schemas = getSchemaFromFieldPlugins({ models, fieldTypePlugins, type: cms.type });
 
