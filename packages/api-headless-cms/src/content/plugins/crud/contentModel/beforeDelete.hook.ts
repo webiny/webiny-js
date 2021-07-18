@@ -6,7 +6,7 @@ import {
 } from "../../../../types";
 import WebinyError from "@webiny/error";
 import { runContentModelLifecycleHooks } from "./runContentModelLifecycleHooks";
-import {ContentModelPlugin} from "@webiny/api-headless-cms/content/plugins/ContentModelPlugin";
+import { ContentModelPlugin } from "@webiny/api-headless-cms/content/plugins/ContentModelPlugin";
 
 interface Args extends CmsContentModelStorageOperationsBeforeDeleteArgs {
     context: CmsContext;
@@ -30,7 +30,6 @@ export const beforeDeleteHook = async (args: Args) => {
             }
         );
     }
-
 
     const manager = await context.cms.getModel(modelId);
 

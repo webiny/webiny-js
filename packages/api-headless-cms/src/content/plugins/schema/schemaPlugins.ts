@@ -1,5 +1,5 @@
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
-import { CmsModelFieldToGraphQLPlugin, CmsFieldTypePlugins, CmsContext, CmsContentModel } from "~/types";
+import { CmsModelFieldToGraphQLPlugin, CmsFieldTypePlugins, CmsContext } from "~/types";
 import { createManageSDL } from "./createManageSDL";
 import { createReadSDL } from "./createReadSDL";
 import { createManageResolvers } from "./createManageResolvers";
@@ -55,17 +55,17 @@ export const generateSchemaPlugins = async (
                             typeDefs: createReadSDL({ model, fieldTypePlugins }),
                             resolvers: cms.READ
                                 ? createReadResolvers({
-                                    models,
-                                    model,
-                                    fieldTypePlugins,
-                                    context
-                                })
+                                      models,
+                                      model,
+                                      fieldTypePlugins,
+                                      context
+                                  })
                                 : createPreviewResolvers({
-                                    models,
-                                    model,
-                                    fieldTypePlugins,
-                                    context
-                                })
+                                      models,
+                                      model,
+                                      fieldTypePlugins,
+                                      context
+                                  })
                         })
                     );
                     break;
