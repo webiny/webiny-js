@@ -25,6 +25,7 @@ import { ReactComponent as AddIcon } from "@webiny/app-admin/assets/icons/add-18
 import { useMutation, useQuery } from "../../hooks";
 import * as GQL from "./graphql";
 import usePermission from "../../hooks/usePermission";
+import { Tooltip } from "@webiny/ui/Tooltip";
 
 const t = i18n.ns("app-headless-cms/admin/content-model-groups/form");
 const ButtonWrapper = styled("div")({
@@ -171,10 +172,26 @@ function ContentModelGroupsForm({ canCreate }: ContentModelGroupsFormProps) {
                             <ButtonDefault
                                 onClick={() => history.push("/cms/content-model-groups")}
                             >{t`Cancel`}</ButtonDefault>
+
                             {canEdit(data, "cms.contentModelGroup") && (
-                                <ButtonPrimary
-                                    onClick={form.submit}
-                                >{t`Save content model group`}</ButtonPrimary>
+                                <React.Fragment>
+                                    {!data.plugin ? (
+                                        <ButtonPrimary
+                                            onClick={form.submit}
+                                        >{t`Save content model group`}</ButtonPrimary>
+                                    ) : (
+                                        <Tooltip
+                                            content={
+                                                "Content model group is registered via a plugin."
+                                            }
+                                            placement={"bottom"}
+                                        >
+                                            <ButtonPrimary
+                                                disabled
+                                            >{t`Save content model group`}</ButtonPrimary>
+                                        </Tooltip>
+                                    )}
+                                </React.Fragment>
                             )}
                         </ButtonWrapper>
                     </SimpleFormFooter>
