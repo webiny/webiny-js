@@ -44,7 +44,9 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
             plugin: async (model, args, context) => {
                 const modelPlugin: ContentModelPlugin = context.plugins
                     .byType<ContentModelPlugin>(ContentModelPlugin.type)
-                    .find((item: ContentModelPlugin) => item.contentModel.modelId === model.modelId);
+                    .find(
+                        (item: ContentModelPlugin) => item.contentModel.modelId === model.modelId
+                    );
 
                 return Boolean(modelPlugin);
             }
@@ -195,7 +197,7 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 lockedFields: [JSON]
                 layout: [[String!]!]!
                 titleFieldId: String
-                
+
                 # Returns true if the content model is registered via a plugin.
                 plugin: Boolean!
             }
