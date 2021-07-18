@@ -39,6 +39,7 @@ const DATA_FIELD = /* GraphQL*/ `
             }
             settings
         }
+        plugin
         createdOn
         savedOn
         createdBy {

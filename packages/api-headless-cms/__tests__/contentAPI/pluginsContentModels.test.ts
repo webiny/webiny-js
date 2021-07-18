@@ -1,5 +1,6 @@
 import { useContentGqlHandler } from "../utils/useContentGqlHandler";
 import { ContentModelPlugin } from "@webiny/api-headless-cms/content/plugins/ContentModelPlugin";
+import { until } from "./../utils/helpers";
 
 const contentModelPlugin = new ContentModelPlugin({
     name: "Product",
@@ -196,9 +197,7 @@ describe("content model plugins", () => {
             [contentModelPlugin]
         );
 
-        await getContentModelQuery({
-            modelId: "product"
-        }).then(([response]) =>
+        await getContentModelQuery({ modelId: "product" }).then(([response]) =>
             expect(response).toEqual({
                 data: {
                     getContentModel: {
@@ -257,6 +256,7 @@ describe("content model plugins", () => {
                             layout: [["name"], ["sku", "price"]],
                             modelId: "product",
                             name: "Product",
+                            plugin: true,
                             savedOn: null,
                             titleFieldId: "name"
                         },
@@ -326,6 +326,7 @@ describe("content model plugins", () => {
                                 layout: [["name"], ["sku", "price"]],
                                 modelId: "product",
                                 name: "Product",
+                                plugin: true,
                                 savedOn: null,
                                 titleFieldId: "name"
                             }
@@ -359,6 +360,11 @@ describe("content model plugins", () => {
                 }).then(([response]) => response)
             );
         }
+
+        await until(
+            () => invoke({ body: { query: LIST_PRODUCTS } }),
+            ([response]) => response.data.listProducts.data.length === 3
+        );
 
         await invoke({ body: { query: LIST_PRODUCTS } }).then(([response]) =>
             expect(response).toEqual({
@@ -423,6 +429,12 @@ describe("content model plugins", () => {
             });
         }
 
+        await until(
+            () => invoke({ body: { query: LIST_PRODUCTS } }),
+            ([response]) => response.data.listProducts.data[0].meta.status === "published"
+        );
+
+        // The list should contain three products, all published.
         await invoke({
             body: {
                 query: LIST_PRODUCTS
@@ -455,6 +467,58 @@ describe("content model plugins", () => {
                                 name: "product-0",
                                 price: 0,
                                 sku: "sku-0"
+                            }
+                        ],
+                        error: null
+                    }
+                }
+            })
+        );
+    });
+
+    test(`"plugin" GraphQL field must have the correct value`, async () => {
+        const {
+            createContentModelMutation,
+            createContentModelGroupMutation,
+            listContentModelsQuery
+        } = useContentGqlHandler(
+            {
+                path: "manage/en-US"
+            },
+            [contentModelPlugin]
+        );
+
+        const group = await createContentModelGroupMutation({
+            data: {
+                name: "Group",
+                slug: "group",
+                icon: "ico/ico",
+                description: "description"
+            }
+        }).then(([response]) => response.data.createContentModelGroup.data);
+
+        await createContentModelMutation({
+            data: {
+                name: "shop",
+                modelId: "shop",
+                group: group.id
+            }
+        });
+
+        await listContentModelsQuery().then(([response]) =>
+            expect(response).toMatchObject({
+                data: {
+                    listContentModels: {
+                        data: [
+                            {
+                                modelId: "shop",
+                                name: "shop",
+                                plugin: false
+                            },
+                            {
+                                modelId: "product",
+                                name: "Product",
+                                plugin: true
                             }
                         ],
                         error: null
