@@ -1,16 +1,22 @@
 import React from "react";
 import { css } from "emotion";
-import { Form, FormOnSubmit } from "@webiny/form";
-import { LayoutElement } from "~/views/Users/elements/LayoutElement";
-import { SimpleForm, SimpleFormHeader } from "@webiny/app-admin/components/SimpleForm";
+import { Form, FormOnSubmit, FormRenderPropParams } from "@webiny/form";
 import styled from "@emotion/styled";
+import classNames from "classnames";
 import { ButtonElement } from "~/views/Users/elements/ButtonElement";
-import { Element } from "~/views/Users/elements/Element";
+import { Element, ElementConfig } from "~/views/Users/elements/Element";
 import { GenericElement } from "~/views/Users/elements/GenericElement";
 import { CircularProgress } from "@webiny/ui/Progress";
 import { Icon } from "@webiny/ui/Icon";
 import { Typography } from "@webiny/ui/Typography";
 import { Cell, Grid } from "@webiny/ui/Grid";
+import { FormElement } from "~/views/Users/elements/FormElement";
+import { Elevation } from "@webiny/ui/Elevation";
+
+const SimpleFormContainerWrapper = styled("div")({
+    position: "relative",
+    margin: "17px 50px"
+});
 
 const ButtonWrapper = styled("div")({
     display: "flex",
@@ -42,32 +48,24 @@ const actionsClass = css({
     alignItems: "center"
 });
 
-interface Config {
-    onSubmit: (props: any) => FormOnSubmit;
-    getTitle: ({ viewProps }) => string;
-    getFormData: ({ viewProps }) => Record<string, any>;
-    isLoading: ({ viewProps }) => boolean;
-    onCancel: ({ viewProps }) => void;
-}
-
-interface SimpleFormHeaderConfig {
+interface SimpleFormHeaderConfig extends ElementConfig {
     getTitle(props: any): string;
     icon?: React.ReactElement<any>;
 }
 
-export class SimpleFormHeaderElement extends LayoutElement<SimpleFormHeaderConfig> {
+export class SimpleFormHeaderElement extends Element<SimpleFormHeaderConfig> {
     constructor(id, config) {
         super(id, config);
 
         this.toggleGrid(false);
     }
-    
+
     setIcon(icon: React.ReactElement<any>) {
-        this._config.icon = icon;
+        this.config.icon = icon;
     }
 
     render(props: any, depth = 0): any {
-        const { icon, getTitle } = this._config;
+        const { icon, getTitle } = this.config;
 
         return (
             <Grid className={headerClass}>
@@ -85,9 +83,9 @@ export class SimpleFormHeaderElement extends LayoutElement<SimpleFormHeaderConfi
     }
 }
 
-export class SimpleFormContentElement extends LayoutElement {}
+export class SimpleFormContentElement extends Element {}
 
-export class SimpleFormFooterElement extends LayoutElement {
+export class SimpleFormFooterElement extends Element {
     constructor(id) {
         super(id);
 
@@ -99,12 +97,62 @@ export class SimpleFormFooterElement extends LayoutElement {
     }
 }
 
-export class SimpleFormElement extends LayoutElement<Config> {
-    constructor(id, config) {
+interface SimpleFormContainerConfig extends ElementConfig {
+    testId?: string;
+    noElevation?: boolean;
+    className?: string;
+}
+
+class SimpleFormContainer extends Element<SimpleFormContainerConfig> {
+    constructor(id: string, config: SimpleFormContainerConfig) {
+        super(id, config);
+        this.toggleGrid(false);
+    }
+
+    render(props, depth) {
+        const children = super.render(props, depth);
+
+        return (
+            <SimpleFormContainerWrapper
+                className={classNames("webiny-data-list", this.config.className)}
+                data-testid={this.config.testId}
+            >
+                {this.config.noElevation ? children : <Elevation z={1}>{children}</Elevation>}
+            </SimpleFormContainerWrapper>
+        );
+    }
+}
+
+export interface SimpleFormElementRenderProps<TViewProps = Record<string, any>> {
+    viewProps: TViewProps;
+    formProps?: FormRenderPropParams;
+}
+
+interface SimpleFormElementConfig<TViewProps> extends ElementConfig {
+    onSubmit: (props: SimpleFormElementRenderProps<TViewProps>) => FormOnSubmit;
+    getTitle: (props: SimpleFormElementRenderProps<TViewProps>) => string;
+    getFormData: (props: SimpleFormElementRenderProps<TViewProps>) => Record<string, any>;
+    isLoading: (props: SimpleFormElementRenderProps<TViewProps>) => boolean;
+    onCancel: (props: SimpleFormElementRenderProps<TViewProps>) => void;
+    testId?: string;
+    noElevation?: boolean;
+    className?: string;
+}
+
+export class SimpleFormElement<TViewProps> extends Element<SimpleFormElementConfig<TViewProps>> {
+    constructor(id, config: SimpleFormElementConfig<TViewProps>) {
         super(id, config);
 
         this.addElements();
         this.toggleGrid(false);
+    }
+
+    addElement(element: Element<any>): Element<any> {
+        if (element.id === "form") {
+            return super.addElement(element);
+        }
+
+        return this.getElement("container").addElement(element);
     }
 
     getFormContentElement(): SimpleFormContentElement {
@@ -124,16 +172,31 @@ export class SimpleFormElement extends LayoutElement<Config> {
     }
 
     private addElements() {
+        const form = this.addElement(
+            new FormElement<TViewProps>("form", {
+                onSubmit: props => this.config.onSubmit(props),
+                getData: props => this.config.getFormData(props)
+            })
+        ) as FormElement<TViewProps>;
+
+        form.addElement(
+            new SimpleFormContainer("container", {
+                testId: this.config.testId,
+                className: this.config.className,
+                noElevation: this.config.noElevation
+            })
+        );
+
         this.addElement(
             new GenericElement("loading", props => {
-                return this._config.isLoading(props) ? <CircularProgress /> : <span />;
+                return this.config.isLoading(props) ? <CircularProgress /> : null;
             })
         );
 
         this.addElement(
             new SimpleFormHeaderElement("formHeader", {
                 getTitle: props => {
-                    return this._config.getTitle(props);
+                    return this.config.getTitle(props);
                 }
             })
         );
@@ -151,24 +214,11 @@ export class SimpleFormElement extends LayoutElement<Config> {
             })
         );
 
-        footer.insertElementToTheRightOf(
-            cancelButton,
-            new ButtonElement("submit", {
-                type: "primary",
-                label: "Save user",
-                onClick: ({ formProps }) => formProps.submit()
-            })
-        );
-    }
-
-    render(viewProps: any) {
-        return (
-            <Form
-                data={this._config.getFormData({ viewProps })}
-                onSubmit={this._config.onSubmit({ viewProps })}
-            >
-                {formProps => <SimpleForm>{super.render({ viewProps, formProps })}</SimpleForm>}
-            </Form>
-        );
+        const submitButton = new ButtonElement("submit", {
+            type: "primary",
+            label: "Save user",
+            onClick: ({ formProps }) => formProps.submit()
+        });
+        submitButton.moveToTheRightOf(cancelButton);
     }
 }

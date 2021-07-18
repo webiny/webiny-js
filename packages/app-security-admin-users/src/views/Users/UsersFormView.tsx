@@ -3,7 +3,10 @@ import { View } from "./View";
 import { plugins } from "@webiny/plugins";
 import { Form } from "@webiny/form";
 import { UsersFormViewPlugin } from "~/views/Users/UsersFormViewPlugin";
-import { SimpleFormElement } from "~/views/Users/elements/SimpleFormElement";
+import {
+    SimpleFormElement,
+    SimpleFormElementRenderProps
+} from "~/views/Users/elements/SimpleFormElement";
 import { InputElement } from "~/views/Users/elements/InputElement";
 import { validation } from "@webiny/validation";
 import { GroupAutocompleteElement } from "~/views/Users/elements/GroupAutocompleteElement";
@@ -11,12 +14,20 @@ import styled from "@emotion/styled";
 import { AccordionElement, AccordionItemElement } from "~/views/Users/elements/AccordionElement";
 import { ReactComponent as SecurityIcon } from "../../assets/icons/security-24px.svg";
 import { ReactComponent as SettingsIcon } from "~/assets/icons/settings-24px.svg";
-import { ButtonElement } from "~/views/Users/elements/ButtonElement";
 import { PanelElement } from "~/views/Users/elements/PanelElement";
+import { useUserForm } from "./hooks/useUserForm";
+import AvatarImage from "../Components/AvatarImage";
+import { GenericElement } from "~/views/Users/elements/GenericElement";
 
 const FormWrapper = styled("div")({
     margin: "0 100px"
 });
+
+const AvatarWrapper = styled("div")({
+    margin: "24px 100px 32px"
+});
+
+type ViewProps = ReturnType<typeof useUserForm>;
 
 export class UsersFormView extends View {
     constructor() {
@@ -42,10 +53,10 @@ export class UsersFormView extends View {
     }
 
     private addElements() {
-        const form = this.addElement(
-            new SimpleFormElement("form", {
-                isLoading({ viewProps }) {
-                    return viewProps.loading;
+        const simpleForm = this.addElement(
+            new SimpleFormElement<ViewProps>("users-form", {
+                isLoading(props) {
+                    return props.viewProps.loading;
                 },
                 onSubmit: ({ viewProps }) => (data: FormData, form) => {
                     this.submit(viewProps, data, form);
@@ -60,7 +71,24 @@ export class UsersFormView extends View {
                     viewProps.cancelEditing();
                 }
             })
-        ) as SimpleFormElement;
+        ) as SimpleFormElement<ViewProps>;
+
+        const avatar = new GenericElement<SimpleFormElementRenderProps<ViewProps>>(
+            "avatar",
+            props => {
+                const { Bind } = props.formProps;
+
+                return (
+                    <AvatarWrapper>
+                        <Bind name="avatar">
+                            <AvatarImage round />
+                        </Bind>
+                    </AvatarWrapper>
+                );
+            }
+        );
+
+        avatar.moveAbove(simpleForm.getElement("container"));
 
         const accordion = new AccordionElement("accordion", {
             items: [
@@ -74,15 +102,14 @@ export class UsersFormView extends View {
                 {
                     id: "groups",
                     title: "Groups",
-                    description: "Security Group",
+                    description: "Assign to security group",
                     icon: <SecurityIcon />
                 }
             ]
         });
 
-        form.getFormContentElement().toggleGrid(false);
-
-        form.getFormContentElement().addElement(accordion);
+        simpleForm.getFormContentElement().toggleGrid(false);
+        simpleForm.getFormContentElement().addElement(accordion);
 
         const bioAccordion = accordion.getElement<AccordionItemElement>("bio");
         bioAccordion.addElement(
@@ -119,34 +146,31 @@ export class UsersFormView extends View {
             })
         );
 
-        groupAccordion.setTitle("Novi title");
-        groupAccordion.setDescription("Novi description");
-
         this.toggleGrid(false);
-        // this.wrapWith(FormWrapper);
+        this.wrapWith(FormWrapper);
 
         // MODIFY THE FORM BEYOND RECOGNIZABLE!
-        const leftIds = ["firstName", "lastName"];
-        const rightIds = ["login", "group"];
-
-        // Add left and right panels
-        const leftPanel = new PanelElement("leftPanel");
-        const rightPanel = new PanelElement("rightPanel");
-
-        const formContent = form.getFormContentElement();
-        formContent.insertElementAtTheTop(leftPanel);
-        rightPanel.moveToTheRightOf(leftPanel);
-
-        leftIds.forEach(id => this.getElement(id).moveToTheBottomOf(leftPanel));
-        rightIds.forEach(id => this.getElement(id).moveToTheBottomOf(rightPanel));
-
-        const extraData = new InputElement("extra", { label: "Extra Data" });
-        extraData.moveToTheRightOf(this.getElement("login"));
-
-        formContent.toggleGrid(true);
-        form.getFormHeaderElement().setIcon(<SecurityIcon />);
-        form.getSubmitButtonElement().moveTo(form.getFormHeaderElement());
-
-        accordion.removeElement();
+        // const leftIds = ["firstName", "lastName"];
+        // const rightIds = ["login", "group"];
+        //
+        // // Add left and right panels
+        // const leftPanel = new PanelElement("leftPanel");
+        // const rightPanel = new PanelElement("rightPanel");
+        //
+        // const formContent = simpleForm.getFormContentElement();
+        // leftPanel.moveToTheTopOf(formContent);
+        // rightPanel.moveToTheRightOf(leftPanel);
+        //
+        // leftIds.forEach(id => this.getElement(id).moveToTheBottomOf(leftPanel));
+        // rightIds.forEach(id => this.getElement(id).moveToTheBottomOf(rightPanel));
+        //
+        // const extraData = new InputElement("extra", { label: "Extra Data" });
+        // extraData.moveToTheRightOf(this.getElement("login"));
+        //
+        // formContent.toggleGrid(true);
+        // simpleForm.getFormHeaderElement().setIcon(<SecurityIcon />);
+        // simpleForm.getSubmitButtonElement().moveTo(simpleForm.getFormHeaderElement());
+        //
+        // accordion.removeElement();
     }
 }

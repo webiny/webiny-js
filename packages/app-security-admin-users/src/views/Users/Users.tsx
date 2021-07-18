@@ -14,7 +14,7 @@ const Users = () => {
             </LeftPanel>
             <RightPanel>
                 <ViewComponent view={new UsersFormView()} hook={useUserForm} />
-                <UsersForm />
+                {/*<UsersForm />*/}
             </RightPanel>
         </SplitView>
     );

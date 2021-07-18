@@ -1,17 +1,32 @@
 import React, { Fragment } from "react";
 import { Form, FormOnSubmit } from "@webiny/form";
-import { LayoutElement } from "~/views/Users/elements/LayoutElement";
+import { Element, ElementConfig } from "~/views/Users/elements/Element";
 
-export class FormElement extends LayoutElement<{ onSubmit: FormOnSubmit }> {
-    constructor(id: string, config: any) {
+interface Props<TViewProps = Record<string, any>> {
+    viewProps: TViewProps;
+}
+
+interface FormElementConfig<TViewProps> extends ElementConfig {
+    onSubmit(props: Props<TViewProps>): FormOnSubmit;
+    getData(props: Props<TViewProps>): Record<string, any>;
+    getInvalidFields?(props: Props<TViewProps>): Record<string, any>;
+    isDisabled?(props: Props<TViewProps>): boolean;
+    onChange?: FormOnSubmit;
+    onInvalid?: () => void;
+    submitOnEnter?: boolean;
+    validateOnFirstSubmit?: boolean;
+}
+
+export class FormElement<TViewProps> extends Element<FormElementConfig<TViewProps>> {
+    constructor(id, config) {
         super(id, config);
-    }
 
-    render(viewProps: any) {
-        console.log("FormElement.render", viewProps);
+        this.toggleGrid(false);
+    }
+    render(props: Props<TViewProps>) {
         return (
-            <Form onSubmit={this._config.onSubmit}>
-                {formProps => <Fragment>{super.render({ viewProps, formProps })}</Fragment>}
+            <Form onSubmit={this.config.onSubmit(props)} data={this.config.getData(props)}>
+                {formProps => <Fragment>{super.render({ ...props, formProps })}</Fragment>}
             </Form>
         );
     }

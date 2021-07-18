@@ -1,8 +1,8 @@
 import React from "react";
-import { LayoutElement } from "~/views/Users/elements/LayoutElement";
+import { Element, ElementConfig } from "~/views/Users/elements/Element";
 import { Accordion, AccordionItem } from "@webiny/ui/Accordion";
 
-interface Item {
+interface Item extends ElementConfig {
     id: string;
     title: string;
     description: string;
@@ -10,35 +10,35 @@ interface Item {
     open?: boolean;
 }
 
-export class AccordionItemElement extends LayoutElement<Item> {
+export class AccordionItemElement extends Element<Item> {
     constructor(id, config: Item) {
         super(id, config);
     }
-    
+
     setTitle(title: string) {
-        this._config.title = title;
+        this.config.title = title;
     }
 
     setDescription(description: string) {
-        this._config.description = description;
+        this.config.description = description;
     }
 
     render(props: any): any {
-        return <AccordionItem {...this._config}>{super.render(props) as any}</AccordionItem>;
+        return <AccordionItem {...this.config}>{super.render(props) as any}</AccordionItem>;
     }
 }
 
-interface Config {
+interface Config extends ElementConfig {
     items: Item[];
 }
 
-export class AccordionElement extends LayoutElement<Config> {
+export class AccordionElement extends Element<Config> {
     constructor(id, config: Config) {
         super(id, config);
 
         this.toggleGrid(false);
 
-        this._config.items.forEach(item => {
+        this.config.items.forEach(item => {
             this.addElement(new AccordionItemElement(item.id, item));
         });
     }

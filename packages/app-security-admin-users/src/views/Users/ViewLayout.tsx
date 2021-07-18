@@ -11,9 +11,18 @@ const ElementID = ({ children }) => {
     return children;
 };
 
+interface ElementGetter {
+    (elementId: string): Element<any>;
+}
+
 export class ViewLayout {
     private _grid = true;
     private _layout: LayoutItem[][] = [];
+    private _getElement: ElementGetter;
+
+    constructor(elementGetter: ElementGetter) {
+        this._getElement = elementGetter;
+    }
 
     setGrid(flag: boolean) {
         this._grid = flag;
@@ -104,14 +113,14 @@ export class ViewLayout {
         return this;
     }
 
-    render(props: any, getElement: Function, depth = 0) {
+    render(props: any, depth = 0) {
         if (!this._grid) {
             return (
                 <Fragment>
                     {this._layout.map((row, index) => (
                         <Fragment key={index}>
                             {row.map(item => {
-                                const element = getElement(item.element);
+                                const element = this._getElement(item.element);
                                 if (!element.shouldRender(props)) {
                                     return null;
                                 }
@@ -135,7 +144,7 @@ export class ViewLayout {
                 {this._layout.map((row, index) => (
                     <Fragment key={index}>
                         {row.map(item => {
-                            const element = getElement(item.element);
+                            const element = this._getElement(item.element);
                             if (!element.shouldRender(props)) {
                                 return null;
                             }

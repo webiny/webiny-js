@@ -1,9 +1,9 @@
 import React from "react";
 import { Plugin } from "@webiny/plugins";
 import { UsersFormView } from "~/views/Users/UsersFormView";
-import { LayoutElement } from "~/views/Users/elements/LayoutElement";
+import { Element } from "~/views/Users/elements/Element";
 
-export class View extends LayoutElement {
+export class View extends Element {
     private _events = new Map();
 
     dispatchEvent(name: string, params = {}) {
@@ -16,7 +16,7 @@ export class View extends LayoutElement {
         callbacks.add(cb);
         this._events.set(event, callbacks);
     }
-    
+
     render(props: any) {
         return super.render(props, 0);
     }
@@ -31,8 +31,8 @@ interface ViewProps {
     hook: Function;
 }
 
-export const ViewComponent = ({ view, hook }: ViewProps) => {
+export const ViewComponent = ({ view, hook }: ViewProps): React.ReactElement => {
     const hookValue = hook();
 
-    return view.render({ ...hookValue });
+    return <>{view.render({ viewProps: hookValue })}</>;
 };

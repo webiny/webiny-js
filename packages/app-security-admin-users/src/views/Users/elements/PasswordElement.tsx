@@ -10,10 +10,10 @@ export class PasswordElement extends InputElement {
             <Bind name={this.id}>
                 {({ value, onChange }) => (
                     <Fragment>
-                        <label>{this._config.label}</label>
+                        <label>{this.config.label}</label>
                         <input
                             type="password"
-                            disabled={this._disabled}
+                            disabled={this.disabled}
                             value={value || ""}
                             onChange={e => onChange(e.target.value)}
                         />

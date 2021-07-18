@@ -1,19 +1,19 @@
 import React from "react";
 import { Element } from "~/views/Users/elements/Element";
 
-interface Renderer {
-    (props: any): React.ReactElement;
+interface Renderer<TProps> {
+    (props: TProps): React.ReactNode;
 }
 
-export class GenericElement extends Element {
-    private _render: Renderer;
+export class GenericElement<TRenderProps> extends Element {
+    private _render: Renderer<TRenderProps>;
 
-    constructor(id, render: Renderer) {
+    constructor(id, render: Renderer<TRenderProps>) {
         super(id);
 
         this._render = render;
     }
-    render(props) {
+    render(props: TRenderProps) {
         return this._render(props);
     }
 }
