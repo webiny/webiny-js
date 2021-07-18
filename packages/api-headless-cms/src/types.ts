@@ -741,27 +741,27 @@ export interface CmsContentModelGroup {
     /**
      * Locale this group belongs to.
      */
-    locale: string;
+    locale?: string;
     /**
      * Description for the group.
      */
-    description: string;
+    description?: string;
     /**
      * Icon for the group. In a form of "ico/ico".
      */
-    icon: string;
+    icon?: string;
     /**
      * CreatedBy reference object.
      */
-    createdBy: CreatedBy;
+    createdBy?: CreatedBy;
     /**
      * Date group was created on.
      */
-    createdOn: Date;
+    createdOn?: Date;
     /**
      * Date group was created or changed on.
      */
-    savedOn: Date;
+    savedOn?: Date;
 }
 
 /**
