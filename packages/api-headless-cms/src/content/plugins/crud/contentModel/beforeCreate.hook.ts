@@ -8,6 +8,8 @@ import {
 import camelCase from "lodash/camelCase";
 import { runContentModelLifecycleHooks } from "./runContentModelLifecycleHooks";
 import pluralize from "pluralize";
+import { ContentModelPlugin } from "~/content/plugins/ContentModelPlugin";
+import WebinyError from "@webiny/error";
 
 const MAX_MODEL_ID_SEARCH_AMOUNT = 50;
 
@@ -100,6 +102,20 @@ interface Args extends CmsContentModelStorageOperationsBeforeCreateArgs {
 export const beforeCreateHook = async (args: Args): Promise<void> => {
     const { context, data, storageOperations, input } = args;
     const { modelId } = data;
+
+    const modelPlugin: ContentModelPlugin = context.plugins
+        .byType<ContentModelPlugin>(ContentModelPlugin.type)
+        .find((item: ContentModelPlugin) => item.contentModel.modelId === modelId);
+
+    if (modelPlugin) {
+        throw new WebinyError(
+            `Cannot create "${modelId}" content model because one is already registered via a plugin.`,
+            "CONTENT_MODEL_DELETE_ERROR",
+            {
+                modelId
+            }
+        );
+    }
 
     const models = (await storageOperations.list()).map(m => m.modelId);
     // If there is a modelId assigned, check if it's unique ...

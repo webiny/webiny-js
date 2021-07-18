@@ -9,6 +9,7 @@ import {
 } from "../../../../types";
 import WebinyError from "@webiny/error";
 import { runContentModelLifecycleHooks } from "./runContentModelLifecycleHooks";
+import { ContentModelPlugin } from "~/content/plugins/ContentModelPlugin";
 
 interface Args extends CmsContentModelStorageOperationsBeforeUpdateArgs {
     context: CmsContext;
@@ -71,6 +72,21 @@ const getContentModelTitleFieldId = (
 
 export const beforeUpdateHook = async (args: Args) => {
     const { context, model, data } = args;
+
+    const modelPlugin: ContentModelPlugin = context.plugins
+        .byType<ContentModelPlugin>(ContentModelPlugin.type)
+        .find((item: ContentModelPlugin) => item.contentModel.modelId === model.modelId);
+
+    if (modelPlugin) {
+        throw new WebinyError(
+            "Content models defined via a plugin cannot be updated.",
+            "CONTENT_MODEL_UPDATE_ERROR",
+            {
+                modelId: model.modelId
+            }
+        );
+    }
+
     const combinedModel = {
         ...model,
         ...data
