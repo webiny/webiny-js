@@ -432,7 +432,7 @@ describe("content model plugins", () => {
         await until(
             () => invoke({ body: { query: LIST_PRODUCTS } }),
             ([response]) => {
-                const [ p1, p2, p3  ] = response.data.listProducts.data;
+                const [p1, p2, p3] = response.data.listProducts.data;
                 return (
                     p1.meta.status === "published" &&
                     p2.meta.status === "published" &&
