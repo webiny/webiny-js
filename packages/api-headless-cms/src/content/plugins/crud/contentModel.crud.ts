@@ -25,6 +25,7 @@ import {
 } from "./contentModel/hooks";
 import { NotAuthorizedError } from "@webiny/api-security";
 import WebinyError from "@webiny/error";
+import { ContentModelPlugin } from "@webiny/api-headless-cms/content/plugins/ContentModelPlugin";
 
 export default (): ContextPlugin<CmsContext> => ({
     type: "context",
@@ -71,19 +72,43 @@ export default (): ContextPlugin<CmsContext> => ({
         };
 
         const modelsGet = async (modelId: string) => {
-            const model = await storageOperations.get({
+            const pluginModel: ContentModelPlugin = context.plugins
+                .byType<ContentModelPlugin>(ContentModelPlugin.type)
+                .find(plugin => plugin.contentModel.modelId === modelId);
+
+            if (pluginModel) {
+                return pluginModel.contentModel;
+            }
+
+            const databaseModel = await storageOperations.get({
                 id: modelId
             });
 
-            if (!model) {
+            if (!databaseModel) {
                 throw new NotFoundError(`Content model "${modelId}" was not found!`);
             }
 
-            return model;
+            return databaseModel;
         };
 
         const modelsList = async (): Promise<CmsContentModel[]> => {
-            return await loaders.listModels.load("listModels");
+            const databaseModels = await loaders.listModels.load("listModels");
+
+            const pluginsModels: CmsContentModel[] = context.plugins
+                .byType<ContentModelPlugin>(ContentModelPlugin.type)
+                .map<CmsContentModel>(plugin => {
+                    // While we're iterating, let's also check if a model with
+                    // the same modelId was already returned from the database.
+                    const contentModel = plugin.contentModel;
+                    if (databaseModels.find(item => item.modelId === contentModel.modelId)) {
+                        throw new Error(
+                            `Cannot register the "${contentModel.modelId}" content model via a plugin. A content model with the same model ID already exists in the database.`
+                        );
+                    }
+                    return contentModel;
+                });
+
+            return [...databaseModels, ...pluginsModels];
         };
 
         const models: CmsContentModelContext = {
@@ -121,7 +146,8 @@ export default (): ContextPlugin<CmsContext> => ({
             async list() {
                 const permission = await checkModelPermissions("r");
                 const models = await modelsList();
-                return utils.filterAsync(models, async model => {
+
+                return await utils.filterAsync(models, async model => {
                     if (!utils.validateOwnership(context, permission, model)) {
                         return false;
                     }
