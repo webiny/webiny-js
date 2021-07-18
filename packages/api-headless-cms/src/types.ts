@@ -291,7 +291,7 @@ export interface CmsContentModel {
     /**
      * Locale this model belongs to.
      */
-    locale: string;
+    locale?: string;
     /**
      * Content model group reference object.
      */
