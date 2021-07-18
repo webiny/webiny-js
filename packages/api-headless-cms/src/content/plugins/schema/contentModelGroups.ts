@@ -7,6 +7,7 @@ import {
 } from "~/types";
 import { GraphQLSchemaPlugin } from "@webiny/handler-graphql/plugins/GraphQLSchemaPlugin";
 import { Resolvers } from "@webiny/handler-graphql/types";
+import { ContentModelGroupPlugin } from "~/content/plugins/ContentModelGroupPlugin";
 
 interface CreateContentModelGroupArgs {
     data: CmsContentModelGroupCreateInput;
@@ -78,6 +79,16 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
                 totalContentModels: async (group, args, context) => {
                     const models = await context.cms.models.silentAuth().list();
                     return models.filter(m => m.group === group.id).length;
+                },
+                plugin: async (group, args, context: CmsContext) => {
+                    const groupPlugin: ContentModelGroupPlugin = context.plugins
+                        .byType<ContentModelGroupPlugin>(ContentModelGroupPlugin.type)
+                        .find(
+                            (item: ContentModelGroupPlugin) =>
+                                item.contentModelGroup.id === group.id
+                        );
+
+                    return Boolean(groupPlugin);
                 }
             },
             Query: {
@@ -132,15 +143,18 @@ const plugin = (context: CmsContext): GraphQLSchemaPlugin<CmsContext> => {
         typeDefs: /* GraphQL */ `
             type CmsContentModelGroup {
                 id: ID!
-                createdOn: DateTime!
-                savedOn: DateTime!
+                createdOn: DateTime
+                savedOn: DateTime
                 name: String!
                 contentModels: [CmsContentModel!]
                 totalContentModels: Int!
                 slug: String!
                 description: String
                 icon: String
-                createdBy: CmsCreatedBy!
+                createdBy: CmsCreatedBy
+
+                # Returns true if the content model group is registered via a plugin.
+                plugin: Boolean!
             }
             ${manageSchema}
         `,
