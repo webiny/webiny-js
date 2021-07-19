@@ -42,7 +42,7 @@ const FBInstaller = ({ onInstalled }) => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        // Temporary fix for the Form Builder installation failure.
+        // Temporary fix for the ES index creation failure.
         // Let's try waiting a bit before running the installation.
         setTimeout(() => {
             client
@@ -60,7 +60,7 @@ const FBInstaller = ({ onInstalled }) => {
                     // Just so the user sees the actual message.
                     setTimeout(onInstalled, 3000);
                 });
-        }, 10000);
+        }, 7500);
 
     }, []);
 
