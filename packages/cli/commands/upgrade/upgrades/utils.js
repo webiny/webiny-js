@@ -186,7 +186,7 @@ const findElementIndex = (plugins, afterElement) => {
  *
  * @param context {CliContext}
  * @param source {tsMorph.SourceFile}
- * @param imports {{importName: String, importPath: String, afterElement: String | undefined}[]}
+ * @param imports {{elementName: String, importPath: String, afterElement: String | undefined}[]}
  * @param file {String}
  */
 const addImportsToSource = ({ context, source, imports, file }) => {
@@ -207,7 +207,7 @@ const addImportsToSource = ({ context, source, imports, file }) => {
         return;
     }
     for (const value of imports) {
-        const { importName, importPath, afterElement, afterImport } = value;
+        const { elementName, importPath, afterElement, afterImport } = value;
 
         const importDefinition = source.getImportDeclaration(importPath);
         /**
@@ -226,7 +226,7 @@ const addImportsToSource = ({ context, source, imports, file }) => {
             const afterImportDeclaration = source.getImportDeclaration(afterImport);
             if (afterImportDeclaration) {
                 source.insertImportDeclaration(afterImportDeclaration.getChildIndex() + 1, {
-                    defaultImport: importName,
+                    defaultImport: elementName,
                     moduleSpecifier: importPath
                 });
                 addedImport = true;
@@ -246,7 +246,7 @@ const addImportsToSource = ({ context, source, imports, file }) => {
              * We add the import and after that we add the imported name to the plugins array in the createHandler.
              */
             source.addImportDeclaration({
-                defaultImport: importName,
+                defaultImport: elementName,
                 moduleSpecifier: importPath
             });
         }
@@ -262,14 +262,14 @@ const addImportsToSource = ({ context, source, imports, file }) => {
                     )} of the createHandler.plugins array in ${warning.hl(file)}.`
                 );
             } else {
-                plugins.getInitializer().insertElement(afterIndex + 1, `${importName}()`);
+                plugins.getInitializer().insertElement(afterIndex + 1, `${elementName}()`);
                 continue;
             }
         }
         /**
          * Add imported plugin at the end of the array as no other options are viable.
          */
-        plugins.getInitializer().addElement(`${importName}()`);
+        plugins.getInitializer().addElement(`${elementName}()`);
     }
 };
 
