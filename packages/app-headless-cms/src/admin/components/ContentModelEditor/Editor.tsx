@@ -98,7 +98,7 @@ export const Editor = () => {
                             ref={tabsRef}
                             onActivate={e => setActiveTabIndex(e)}
                         >
-                            <Tab label={"Edit"}>
+                            <Tab label={"Edit"} data-testid={"cms.editor.tab.edit"}>
                                 <EditContainer>
                                     <FieldEditor
                                         fields={data.fields}
@@ -107,7 +107,7 @@ export const Editor = () => {
                                     />
                                 </EditContainer>
                             </Tab>
-                            <Tab label={"Preview"}>
+                            <Tab label={"Preview"} data-testid={"cms.editor.tab.preview"}>
                                 <PreviewTab activeTab={activeTabIndex === 1} />
                             </Tab>
                         </Tabs>

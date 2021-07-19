@@ -82,7 +82,11 @@ const ContentEntry = () => {
         <DetailsContainer>
             <test-id data-testid="cms-content-details">
                 <Tabs ref={tabs => setTabsRef(tabs)}>
-                    <Tab label={"Content"} disabled={loading}>
+                    <Tab
+                        label={"Content"}
+                        disabled={loading}
+                        data-testid={"cms.content-form.tabs.content"}
+                    >
                         <RenderBlock>
                             <Elevation z={2} className={elevationStyles}>
                                 {loading && <CircularProgress />}
@@ -95,7 +99,11 @@ const ContentEntry = () => {
                             </Elevation>
                         </RenderBlock>
                     </Tab>
-                    <Tab label={"Revisions"} disabled={loading}>
+                    <Tab
+                        label={"Revisions"}
+                        disabled={loading}
+                        data-testid={"cms.content-form.tabs.revisions"}
+                    >
                         <RevisionsList />
                     </Tab>
                 </Tabs>
