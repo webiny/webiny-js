@@ -54,15 +54,6 @@ export const ContentEntryFormPreview = (props: Props) => {
                             {...formProps}
                         />
                     )}
-                    <pre
-                        style={{
-                            fontFamily: "MonoLisa",
-                            padding: 15,
-                            backgroundColor: "var(--mdc-theme-background)"
-                        }}
-                    >
-                        {JSON.stringify(formProps.data, null, 2)}
-                    </pre>
                 </FormWrapper>
             )}
         </Form>
