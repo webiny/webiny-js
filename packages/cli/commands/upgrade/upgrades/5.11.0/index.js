@@ -69,10 +69,10 @@ module.exports = {
         info("Adding dependencies...");
 
         addPackagesToDependencies(path.resolve(process.cwd(), "api/code/graphql"), {
-            "@webiny/api-i18n-ddb": targetVersion
+            "@webiny/api-i18n-ddb": context.version
         });
         addPackagesToDependencies(path.resolve(process.cwd(), "api/code/headlessCMS"), {
-            "@webiny/api-i18n-ddb": targetVersion
+            "@webiny/api-i18n-ddb": context.version
         });
 
         info("Writing changes...");
