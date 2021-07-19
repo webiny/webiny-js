@@ -40,7 +40,8 @@ describe("longTextIndexing", () => {
         const plugin = longTextIndexing();
 
         const result = plugin.toIndex({
-            value: mockValue,
+            rawValue: mockValue,
+            storageValue: mockValue,
             field: mockField,
             model: mockModel,
             context: mockContext,

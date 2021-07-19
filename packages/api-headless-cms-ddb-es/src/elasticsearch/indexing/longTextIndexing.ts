@@ -5,11 +5,10 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
     name: "cms-model-field-to-elastic-search-long-text",
     fieldType: "long-text",
     toIndex(args) {
-        const { value } = args;
-
+        const { storageValue, rawValue } = args;
         return {
-            value,
-            rawValue: value
+            value: rawValue,
+            rawValue: storageValue
         };
     },
     fromIndex(args) {
@@ -18,10 +17,6 @@ export default (): CmsModelFieldToElasticsearchPlugin => ({
          * To handle backward compatibility;
          * there might be some entries where the indexed entry doesn't have any "rawValues"
          */
-        if (!rawValue) {
-            return value;
-        }
-
-        return rawValue;
+        return rawValue || value;
     }
 });
