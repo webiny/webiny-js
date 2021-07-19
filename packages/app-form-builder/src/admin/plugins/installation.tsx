@@ -42,21 +42,26 @@ const FBInstaller = ({ onInstalled }) => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        client
-            .mutate({
-                mutation: INSTALL,
-                variables: { domain: window.location.origin }
-            })
-            .then(({ data }) => {
-                const { error } = data.formBuilder.install;
-                if (error) {
-                    setError(error.message);
-                    return;
-                }
+        // Temporary fix for the Form Builder installation failure.
+        // Let's try waiting a bit before running the installation.
+        setTimeout(() => {
+            client
+                .mutate({
+                    mutation: INSTALL,
+                    variables: { domain: window.location.origin }
+                })
+                .then(({ data }) => {
+                    const { error } = data.formBuilder.install;
+                    if (error) {
+                        setError(error.message);
+                        return;
+                    }
 
-                // Just so the user sees the actual message.
-                setTimeout(onInstalled, 3000);
-            });
+                    // Just so the user sees the actual message.
+                    setTimeout(onInstalled, 3000);
+                });
+        }, 10000);
+
     }, []);
 
     const label = error ? (
