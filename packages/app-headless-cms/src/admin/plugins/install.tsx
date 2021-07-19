@@ -60,7 +60,7 @@ const CMSInstaller = ({ onInstalled }) => {
                     // Just so the user sees the actual message.
                     setTimeout(onInstalled, 3000);
                 });
-        }, 7500);
+        }, 10000);
     }, []);
 
     const label = error ? (
