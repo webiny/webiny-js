@@ -50,7 +50,10 @@ export default new ContextPlugin<I18NContext>(async context => {
                 if (!locale) {
                     throw new NotFoundError(`Locale "${code}" not found.`);
                 }
-                return locale;
+                return {
+                    ...locale,
+                    createdOn: locale.createdOn ? locale.createdOn : new Date().toISOString()
+                };
             } catch (ex) {
                 throw new WebinyError(
                     ex.message || "Could not load the requested locale.",
@@ -178,6 +181,7 @@ export default new ContextPlugin<I18NContext>(async context => {
             const locale: I18NLocale = {
                 ...original,
                 ...input,
+                createdOn: original.createdOn ? original.createdOn : new Date().toISOString(),
                 webinyVersion: context.WEBINY_VERSION
             };
 
