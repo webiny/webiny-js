@@ -2,7 +2,8 @@ import jsonpack from "jsonpack";
 import WebinyError from "@webiny/error";
 import { CmsModelFieldToStoragePlugin } from "@webiny/api-headless-cms/types";
 
-export type OriginalValue = Record<string, any> | any[];
+export type OriginalValue = Record<string, any> | any[] | null | undefined;
+
 export interface StorageValue {
     compression: string;
     value: any;
@@ -27,7 +28,7 @@ const transformArray = (value: Record<string, any> | any[]) => {
     return value;
 };
 
-export default (): CmsModelFieldToStoragePlugin<OriginalValue, StorageValue> => {
+export default (): CmsModelFieldToStoragePlugin<OriginalValue, StorageValue | null> => {
     return {
         type: "cms-model-field-to-storage",
         name: "cms-model-field-to-storage-rich-text",
@@ -74,6 +75,9 @@ export default (): CmsModelFieldToStoragePlugin<OriginalValue, StorageValue> => 
             }
         },
         async toStorage({ value }) {
+            if (value === undefined || value === null) {
+                return null;
+            }
             /**
              * There is a possibility that we are trying to compress already compressed value.
              * Introduced a bug with 5.8.0 storage operations, so just return the value to correct it.
