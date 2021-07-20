@@ -227,7 +227,7 @@ export class Users extends Base implements UsersCRUD {
         });
 
         const tenant = tenancy.getCurrentTenant();
-        const group = await security.groups.getGroup(tenant, data.group);
+        const group = await security.groups.getGroup(data.group);
         await security.users.linkUserToTenant(user.login, tenant, group);
 
         return user;
@@ -530,7 +530,7 @@ export class Users extends Base implements UsersCRUD {
             const tenant = tenancy.getCurrentTenant();
             await security.users.unlinkUserFromTenant(user.login, tenant);
 
-            const group = await security.groups.getGroup(tenant, data.group);
+            const group = await security.groups.getGroup(data.group);
 
             await security.users.linkUserToTenant(user.login, tenant, group);
         }

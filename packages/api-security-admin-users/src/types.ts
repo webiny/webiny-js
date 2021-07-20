@@ -102,8 +102,10 @@ export interface ApiKeyInput {
 }
 
 export interface SystemCRUD {
+    get(): Promise<System>;
     getVersion(): Promise<string>;
-    setVersion(version: string): Promise<void>;
+    setVersion(version: string): Promise<System>;
+    install(input: CreateUserInput): Promise<void>;
 }
 
 export interface GroupsCRUD {
