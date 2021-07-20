@@ -356,7 +356,7 @@ jobs:
           message-text: Cypress tests failed! Scrennshots have been placed in this thread, good luck.
 
   npm-release-beta:
-    needs: [cache-keys, code-analysis, jest-tests]
+    needs: [cache-keys, code-analysis, jest-tests, e2e-tests]
     name: NPM release ("beta" tag)
     runs-on: ubuntu-latest
     environment: release

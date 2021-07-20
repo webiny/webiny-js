@@ -355,7 +355,7 @@ jobs:
   #        run: yarn cypress run --spec "cypress/integration/admin/**/*.spec.js"
 
   npm-release-latest:
-    needs: [cache-keys, code-analysis, jest-tests]
+    needs: [cache-keys, code-analysis, jest-tests, e2e-tests]
     name: NPM release ("latest" tag)
     runs-on: ubuntu-latest
     environment: release
