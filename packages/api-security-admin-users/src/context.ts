@@ -4,13 +4,13 @@ import { Users } from "./crud/users.crud";
 import groupCrud from "./crud/groups.crud";
 import apiKeyCrud from "./crud/apiKey.crud";
 import systemCrud from "./crud/system.crud";
-import { AdminUsersContext } from "./types";
+import { AdminUsers, AdminUsersContext } from "./types";
+import { SecurityContextBase } from "@webiny/api-security/types";
 
 export default () => {
-    return new ContextPlugin<AdminUsersContext>(async context => {
+    const baseContext = new ContextPlugin<AdminUsersContext>(async context => {
         if (!context.security) {
-            // @ts-ignore
-            context.security = {};
+            context.security = {} as AdminUsers & SecurityContextBase;
         }
 
         // @ts-ignore
@@ -29,13 +29,12 @@ export default () => {
             context.tenancy.setCurrentTenant(tenant);
         };
         /**
-         * We must initialize Users to have storageOperations.
+         * We must initialize Users to have storageOperations because we cannt run async methods in the constructor.
          */
         const users = new Users(context);
         await users.init();
         context.security.users = users;
-        context.security.groups = groupCrud(context);
-        context.security.apiKeys = apiKeyCrud(context);
-        context.security.system = systemCrud(context);
     });
+
+    return [baseContext, apiKeyCrud, groupCrud, systemCrud];
 };
