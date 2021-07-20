@@ -342,15 +342,15 @@ jobs:
         working-directory: webiny-js
         run: yarn cypress run --spec "cypress/integration/adminInstallation/**/*.spec.js"
 
-      - name: Upload screenshots and videos to Slack
+      - name: Cypress - run the rest of Admin Area tests
+        working-directory: webiny-js
+        run: yarn cypress run --spec "cypress/integration/admin/**/*.spec.js"
+
+      - name: Upload screenshots to Slack
         uses: trymbill/cypress-slack-video-upload-action@v1.3.0
-        if: ${{ failure() }}
+        if: failure()
         with:
           token: ${{ secrets.SLACK_TOKEN }}
           channels: C027VQG8080
           workdir: webiny-js/cypress
-          message-text: Cypress tests failed! They have been placed in this thread, good luck.
-
-      - name: Cypress - run the rest of Admin Area tests
-        working-directory: webiny-js
-        run: yarn cypress run --spec "cypress/integration/admin/**/*.spec.js"
+          message-text: Cypress tests failed! Scrennshots have been placed in this thread, good luck.
