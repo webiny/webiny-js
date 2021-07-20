@@ -70,7 +70,12 @@ const ValidatorsTab: React.FunctionComponent<ValidatorsTabProps> = props => {
                     const data = (validationValue || [])[validatorIndex];
 
                     return (
-                        <SimpleForm key={validator.name} noElevation className={noMargin}>
+                        <SimpleForm
+                            key={validator.name}
+                            noElevation
+                            className={noMargin}
+                            data-testid={`cms.editor.field-validator.${validator.name}`}
+                        >
                             <SimpleFormHeader title={validator.label}>
                                 {optional && (
                                     <Switch
