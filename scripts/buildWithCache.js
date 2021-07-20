@@ -89,6 +89,9 @@ async function build() {
         return;
     }
 
+    // Wait three seconds, just in case the dev changes his/her mind. :)
+    await new Promise(resolve => setTimeout(resolve, 3000));
+
     if (packagesNoCache.length > 10) {
         console.log(`Running build for ${green(packagesNoCache.length)} packages.`);
     } else {
