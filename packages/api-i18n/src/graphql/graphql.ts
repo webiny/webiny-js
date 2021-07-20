@@ -33,15 +33,9 @@ const plugin: GraphQLSchemaPlugin = {
                 error: I18NError
             }
 
-            type I18NCursors {
-                next: String
-                previous: String
-            }
-
             type I18NListMeta {
-                cursors: I18NCursors
-                hasNextPage: Boolean
-                hasPreviousPage: Boolean
+                cursor: String
+                hasMoreItems: Boolean
                 totalCount: Int
             }
 

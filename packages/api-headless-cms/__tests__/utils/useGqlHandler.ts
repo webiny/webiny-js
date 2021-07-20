@@ -1,3 +1,4 @@
+import { introspectionQuery } from "graphql";
 import i18nContext from "@webiny/api-i18n/graphql/context";
 import i18nContentPlugins from "@webiny/api-i18n-content/plugins";
 import tenancyPlugins from "@webiny/api-tenancy";
@@ -24,8 +25,12 @@ import {
     UPDATE_CONTENT_MODEL_MUTATION
 } from "./graphql/contentModel";
 
-import { INTROSPECTION } from "./graphql/schema";
 import { ApiKey } from "@webiny/api-security-admin-users/types";
+
+/**
+ * Unfortunately at we need to import the api-i18n-ddb package manually
+ */
+import i18nDynamoDbStorageOperations from "@webiny/api-i18n-ddb";
 
 export interface GQLHandlerCallableArgs {
     permissions?: PermissionsArg[];
@@ -104,6 +109,7 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
             apiKeyAuthentication({ identityType: "api-key" }),
             apiKeyAuthorization({ identityType: "api-key" }),
             i18nContext(),
+            i18nDynamoDbStorageOperations(),
             i18nContentPlugins(),
             mockLocalesPlugins(),
             {
@@ -174,7 +180,7 @@ export const useGqlHandler = (args?: GQLHandlerCallableArgs) => {
         handler,
         invoke,
         async introspect() {
-            return invoke({ body: { query: INTROSPECTION } });
+            return invoke({ body: { query: introspectionQuery } });
         },
         // settings
         async isInstalledQuery() {

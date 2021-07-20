@@ -1,10 +1,11 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-import defaultLambdaRole from "./defaultLambdaRole";
+import policies, { EsDomain } from "./policies";
 
 class ElasticSearch {
-    domain: aws.elasticsearch.Domain | pulumi.Output<aws.elasticsearch.GetDomainResult>;
+    domain: EsDomain;
     table: aws.dynamodb.Table;
+    role: aws.iam.Role;
 
     constructor() {
         // Either create a new Amazon Elasticsearch Domain, or use an existing one.
@@ -106,6 +107,39 @@ class ElasticSearch {
             rangeKey: "SK"
         });
 
+        const roleName = "dynamo-to-elastic-lambda-role";
+        this.role = new aws.iam.Role(roleName, {
+            assumeRolePolicy: {
+                Version: "2012-10-17",
+                Statement: [
+                    {
+                        Action: "sts:AssumeRole",
+                        Principal: {
+                            Service: "lambda.amazonaws.com"
+                        },
+                        Effect: "Allow"
+                    }
+                ]
+            }
+        });
+
+        const policy = policies.getDynamoDbToElasticLambdaPolicy(this.domain);
+
+        new aws.iam.RolePolicyAttachment(`${roleName}-DynamoDbToElasticLambdaPolicy`, {
+            role: this.role,
+            policyArn: pulumi.interpolate`${policy.arn}`
+        });
+
+        new aws.iam.RolePolicyAttachment(`${roleName}-AWSLambdaBasicExecutionRole`, {
+            role: this.role,
+            policyArn: aws.iam.ManagedPolicy.AWSLambdaBasicExecutionRole
+        });
+
+        new aws.iam.RolePolicyAttachment(`${roleName}-AWSLambdaDynamoDBExecutionRole`, {
+            role: this.role,
+            policyArn: aws.iam.ManagedPolicy.AWSLambdaDynamoDBExecutionRole
+        });
+
         /**
          * This Lambda will process the stream events from DynamoDB table that contains Elasticsearch items.
          * Elasticsearch can't take large amount of individual writes in a short period of time, so this way
@@ -113,7 +147,7 @@ class ElasticSearch {
          * using batching.
          */
         const streamTarget = new aws.lambda.Function("dynamo-to-elastic", {
-            role: defaultLambdaRole.role.arn,
+            role: this.role.arn,
             runtime: "nodejs12.x",
             handler: "handler.handler",
             timeout: 600,

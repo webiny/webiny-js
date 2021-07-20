@@ -24,6 +24,7 @@
     "@webiny/api-file-manager": "^5.10.0",
     "@webiny/api-i18n": "^5.10.0",
     "@webiny/api-i18n-content": "^5.10.0",
+    "@webiny/api-i18n-ddb": "^5.10.0",
     "@webiny/api-security": "^5.10.0",
     "@webiny/api-security-admin-users": "^5.10.0",
     "@webiny/api-tenancy": "^5.10.0",
@@ -39,8 +40,9 @@
     "boolean": "^3.0.2",
     "commodo-fields-object": "^1.0.6",
     "dataloader": "^2.0.0",
-    "dot-prop-immutable": "^1.4.0",
     "lodash": "^4.5.0",
+    "p-map": "^4.0.0",
+    "p-reduce": "^2.1.0",
     "pluralize": "^8.0.0",
     "shortid": "^2.2.15",
     "slugify": "^1.4.0"

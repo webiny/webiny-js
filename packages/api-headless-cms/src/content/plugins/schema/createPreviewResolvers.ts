@@ -1,13 +1,11 @@
-import { CmsContentModel, CmsFieldTypePlugins, CmsContext } from "../../../types";
-import { GraphQLFieldResolver } from "@webiny/handler-graphql/types";
-import { commonFieldResolvers } from "./resolvers/commonFieldResolvers";
+import { CmsContentModel, CmsFieldTypePlugins, CmsContext } from "~/types";
+import { createReadTypeName, createTypeName } from "../utils/createTypeName";
 import { resolveGet } from "./resolvers/preview/resolveGet";
 import { resolveList } from "./resolvers/preview/resolveList";
-import { createReadTypeName, createTypeName } from "../utils/createTypeName";
 import { pluralizedTypeName } from "../utils/pluralizedTypeName";
-import { entryFieldFromStorageTransform } from "../utils/entryStorage";
+import { createFieldResolversFactory } from "~/content/plugins/schema/createFieldResolvers";
 
-interface CreatePreviewResolvers {
+export interface CreateReadResolvers {
     (params: {
         models: CmsContentModel[];
         model: CmsContentModel;
@@ -16,7 +14,7 @@ interface CreatePreviewResolvers {
     }): any;
 }
 
-export const createPreviewResolvers: CreatePreviewResolvers = ({
+export const createPreviewResolvers: CreateReadResolvers = ({
     models,
     model,
     fieldTypePlugins
@@ -24,36 +22,22 @@ export const createPreviewResolvers: CreatePreviewResolvers = ({
     const typeName = createTypeName(model.modelId);
     const rTypeName = createReadTypeName(typeName);
 
-    const resolvers: { [key: string]: GraphQLFieldResolver } = commonFieldResolvers();
+    const createFieldResolvers = createFieldResolversFactory({
+        endpointType: "read",
+        models,
+        model,
+        fieldTypePlugins
+    });
 
     return {
         Query: {
             [`get${typeName}`]: resolveGet({ model }),
             [`list${pluralizedTypeName(typeName)}`]: resolveList({ model })
         },
-        [rTypeName]: model.fields.reduce((resolvers, field) => {
-            const { read } = fieldTypePlugins[field.type];
-
-            const resolver = read.createResolver
-                ? read.createResolver({ models, model, field })
-                : null;
-
-            resolvers[field.fieldId] = async (entry, args, context: CmsContext, info) => {
-                // Get transformed value (eg. data decompression)
-                entry.values[field.fieldId] = await entryFieldFromStorageTransform({
-                    context,
-                    model,
-                    entry,
-                    field,
-                    value: entry.values[field.fieldId]
-                });
-                if (!resolver) {
-                    return entry.values[field.fieldId];
-                }
-                return await resolver(entry, args, context, info);
-            };
-
-            return resolvers;
-        }, resolvers)
+        ...createFieldResolvers({
+            graphQLType: rTypeName,
+            fields: model.fields,
+            isRoot: true
+        })
     };
 };

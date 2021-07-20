@@ -5,6 +5,7 @@
     "node_modules",
     "./dist",
     "../api-i18n",
+    "../api-i18n-ddb",
     "../api-i18n-content",
     "../api-security",
     "../api-tenancy",

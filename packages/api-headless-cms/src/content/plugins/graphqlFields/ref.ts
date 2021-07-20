@@ -44,9 +44,11 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                 modelIdToTypeName.set(item.modelId, createReadTypeName(item.modelId));
             }
 
-            return async (instance, args, { cms }: CmsContext) => {
+            return async (parent, args, context: CmsContext) => {
+                const { cms } = context;
+
                 // Get field value for this entry
-                const value = instance.values[field.fieldId];
+                const value = parent[field.fieldId];
 
                 if (!value) {
                     return null;
@@ -91,7 +93,12 @@ const plugin: CmsModelFieldToGraphQLPlugin = {
                       await model.getPublishedByIds([value.entryId])
                     : // `preview` API works with `latest` data
                       await model.getLatestByIds([value.entryId]);
-
+                /**
+                 * If there are no revisions we must return null.
+                 */
+                if (!revisions || revisions.length === 0) {
+                    return null;
+                }
                 return { ...revisions[0], __typename: modelIdToTypeName.get(value.modelId) };
             };
         },

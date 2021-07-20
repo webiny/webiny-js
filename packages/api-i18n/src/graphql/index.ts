@@ -15,8 +15,8 @@ export default () => [
         type: "context-i18n-get-locales",
         async resolve({ context }) {
             const { i18n } = context;
-            const list = await i18n.locales.list();
-            return list.map(locale => ({
+            const [items] = await i18n.locales.list();
+            return items.map(locale => ({
                 code: locale.code,
                 default: locale.default
             }));

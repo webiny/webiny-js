@@ -11,6 +11,7 @@ const merge = require("lodash/merge");
 const browserOutput = require("./watch/output/browserOutput");
 const terminalOutput = require("./watch/output/terminalOutput");
 const minimatch = require("minimatch");
+const glob = require("fast-glob");
 
 module.exports = async (inputs, context) => {
     // 1. Initial checks for deploy and build commands.
@@ -154,17 +155,43 @@ module.exports = async (inputs, context) => {
                 message: chalk.green("Watching cloud infrastructure resources...")
             });
 
+            const pulumiFolder = path.join(projectApplication.root, "pulumi");
+
+            const buildFoldersGlob = [
+                projectApplication.project.root,
+                inputs.folder,
+                "**/build"
+            ].join("/");
+            const buildFolders = glob.sync(buildFoldersGlob, { onlyFiles: false });
+
+            // The final array of values that will be sent to Pulumi CLI's "--path" argument.
+            const pathArg = [pulumiFolder, ...buildFolders];
+
+            // Log used values if debugging has been enabled.
+            if (inputs.debug) {
+                output.log({
+                    type: "deploy",
+                    message: [
+                        "The following files and folders are being watched:",
+                        ...pathArg.map(p => "‣ " + p)
+                    ].join("\n")
+                });
+            }
+
             const pulumi = await getPulumi({
                 execa: {
                     cwd: projectApplication.root
                 }
             });
 
+            // We only watch "code/**/build" and "pulumi" folders.
             const watchCloudInfrastructure = pulumi.run({
                 command: "watch",
                 args: {
                     secretsProvider: PULUMI_SECRETS_PROVIDER,
-                    color: "always"
+                    color: "always",
+                    path: pathArg,
+                    debug: inputs.debug
                 },
                 execa: {
                     env: {

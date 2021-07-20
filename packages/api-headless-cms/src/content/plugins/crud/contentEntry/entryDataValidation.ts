@@ -24,6 +24,10 @@ const validateValue = async (
     fieldValidators: CmsContentModelFieldValidation[],
     value: any
 ): Promise<string | null> => {
+    if (!fieldValidators) {
+        return null;
+    }
+
     const { validatorList, context } = args;
     try {
         for (const fieldValidator of fieldValidators) {
@@ -54,7 +58,7 @@ const validatePredefinedValue = (
     field: CmsContentModelField,
     value: any | any[]
 ): string | null => {
-    const { enabled = false, values: predefinedValues = [] } = field.predefinedValues;
+    const { enabled = false, values: predefinedValues = [] } = field.predefinedValues || {};
     if (!enabled) {
         return null;
     } else if (Array.isArray(predefinedValues) === false || predefinedValues.length === 0) {

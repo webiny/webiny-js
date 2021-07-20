@@ -1,0 +1,60 @@
+name: Pull Requests
+
+on:
+  pull_request:
+    branches: [dev, staging, prod]
+    types: [closed]
+
+jobs:
+  # This first step ensures we don't run the workflow if the repository is empty.
+  # Feel free to remove this step once your project is pushed to the repository.
+  repository-check:
+    name: Check if repository is empty
+    runs-on: ubuntu-latest
+    outputs:
+      ready: ${{ steps.webiny-project-js.outputs.ready }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Check if "webiny.project.js" exists
+        id: webiny-project-js
+        run: echo "::set-output name=ready::${{ hashFiles('webiny.project.ts') != '' }}"
+
+  destroy-project:
+    name: Destroy project deployed into a short-lived environment
+    needs: repository-check
+    runs-on: ubuntu-latest
+    environment: pr
+    env:
+      NODE_OPTIONS: --max_old_space_size=4096
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      PULUMI_SECRETS_PROVIDER: ${{ secrets.PULUMI_SECRETS_PROVIDER }}
+      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
+      WEBINY_PULUMI_BACKEND: ${{ secrets.WEBINY_PULUMI_BACKEND }}
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+
+      - uses: actions/checkout@v2
+
+      # 1. Install and cache dependencies.
+      - uses: actions/cache@v2
+        id: yarn-cache
+        with:
+          path: .yarn/cache
+          key: yarn-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install dependencies
+        run: yarn --immutable
+
+      # 2. Destroy short-lived environment.
+      - name: Destroy API project application
+        run: yarn webiny destroy api --env pr${{ github.event.pull_request.number }}
+
+      - name: Destroy Admin Area project application
+        run: yarn webiny destroy apps/admin --env pr${{ github.event.pull_request.number }}
+
+      - name: Destroy Website project application
+        run: yarn webiny destroy apps/website --env pr${{ github.event.pull_request.number }}

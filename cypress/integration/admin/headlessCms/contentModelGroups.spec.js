@@ -15,9 +15,10 @@ context("Headless CMS - Content Model Groups", () => {
         cy.findByLabelText("Description").type(
             `Trying to create a new Content Model Group: ${newGroup}`
         );
-        cy.wait(500);
         cy.findByText(/Save content model group/i).click();
-        cy.wait(1000);
+        // Loading should be completed
+        cy.get(".react-spinner-material").should("not.exist");
+        cy.findByText("Content model group saved successfully!").should("exist");
 
         // Check newly created group in list
         cy.findByTestId("default-data-list").within(() => {
@@ -30,9 +31,11 @@ context("Headless CMS - Content Model Groups", () => {
         cy.findByLabelText("Name")
             .clear()
             .type(newGroup2);
-        cy.wait(500);
+
         cy.findByText(/Save content model group/i).click();
-        cy.wait(1000);
+        // Loading should be completed
+        cy.get(".react-spinner-material").should("not.exist");
+        cy.findByText("Content model group saved successfully!").should("exist");
         // Check if the updated group is present in the list
         cy.findByTestId("default-data-list").within(() => {
             cy.get("div").within(() => {
@@ -46,8 +49,9 @@ context("Headless CMS - Content Model Groups", () => {
         cy.findByTestId("cms.contentModelGroup.list-item.delete-dialog").within(() => {
             cy.findByText(/Confirmation/i).should("exist");
             cy.findByText(/confirm$/i).click();
-            cy.wait(500);
         });
+        cy.findByText(`Content model group "${newGroup2}" deleted.`).should("exist");
+
         // Group should not present in the list
         cy.findByTestId("default-data-list").within(() => {
             cy.get("div").within(() => {
@@ -62,7 +66,7 @@ context("Headless CMS - Content Model Groups", () => {
         const newGroup1 = `A Group ${uniqid()}`;
         const newGroup2 = `Z Group ${uniqid()}`;
 
-        // Create a new group one
+        // Create a Group one
         cy.findAllByTestId("new-record-button")
             .first()
             .click();
@@ -71,8 +75,11 @@ context("Headless CMS - Content Model Groups", () => {
             `Trying to create a new Content Model Group: ${newGroup1}`
         );
         cy.findByText(/Save content model group/i).click();
-        cy.wait(1000);
-        // Create a new group two
+        // Loading should be completed
+        cy.get(".react-spinner-material").should("not.exist");
+        cy.findByText("Content model group saved successfully!").should("exist");
+
+        // Create a Group two
         cy.findAllByTestId("new-record-button")
             .first()
             .click();
@@ -81,14 +88,15 @@ context("Headless CMS - Content Model Groups", () => {
             `Trying to create a new Content Model Group: ${newGroup2}`
         );
         cy.findByText(/Save content model group/i).click();
-        cy.wait(1000);
+        // Loading should be completed
+        cy.get(".react-spinner-material").should("not.exist");
+        cy.findByText("Content model group saved successfully!").should("exist");
 
         // Should show no results when searching for non existing group
         cy.findByTestId("default-data-list.search").within(() => {
             cy.findByPlaceholderText(/search content model group/i).type(
                 "NON_EXISTING_MODEL_GROUP_NAME"
             );
-            cy.wait(500);
         });
         cy.findByTestId("ui.list.data-list").within(() => {
             cy.findByText(/no records found./i).should("exist");
@@ -99,7 +107,6 @@ context("Headless CMS - Content Model Groups", () => {
             cy.findByPlaceholderText(/search content model group/i)
                 .clear()
                 .type("ungrouped");
-            cy.wait(500);
         });
         cy.findByTestId("ui.list.data-list").within(() => {
             cy.findByText(/ungrouped/i).should("exist");
@@ -110,7 +117,6 @@ context("Headless CMS - Content Model Groups", () => {
             cy.findByPlaceholderText(/search content model group/i)
                 .clear()
                 .type("Group");
-            cy.wait(500);
         });
         cy.findByTestId("ui.list.data-list").within(() => {
             cy.findByText(newGroup1).should("exist");
@@ -122,7 +128,6 @@ context("Headless CMS - Content Model Groups", () => {
             cy.findByPlaceholderText(/search content model group/i)
                 .clear()
                 .type(newGroup1);
-            cy.wait(500);
         });
         cy.findByTestId("ui.list.data-list").within(() => {
             cy.findByText(newGroup1).should("exist");
@@ -131,14 +136,12 @@ context("Headless CMS - Content Model Groups", () => {
         // Clear search input field
         cy.findByTestId("default-data-list.search").within(() => {
             cy.findByPlaceholderText(/search content model group/i).clear();
-            cy.wait(500);
         });
 
         // Sort groups by "Name A->Z"
         cy.findByTestId("default-data-list.filter").click();
         cy.findByTestId("ui.list.data-list").within(() => {
             cy.get("select").select("name:asc");
-            cy.wait(500);
         });
         cy.findByTestId("default-data-list.filter").click();
 
@@ -154,7 +157,6 @@ context("Headless CMS - Content Model Groups", () => {
         cy.findByTestId("default-data-list.filter").click();
         cy.findByTestId("ui.list.data-list").within(() => {
             cy.get("select").select("name:desc");
-            cy.wait(500);
         });
         cy.findByTestId("default-data-list.filter").click();
 
@@ -171,7 +173,6 @@ context("Headless CMS - Content Model Groups", () => {
         cy.findByTestId("default-data-list.filter").click();
         cy.findByTestId("ui.list.data-list").within(() => {
             cy.get("select").select("createdOn:desc");
-            cy.wait(500);
         });
         cy.findByTestId("default-data-list.filter").click();
 
@@ -187,7 +188,6 @@ context("Headless CMS - Content Model Groups", () => {
         cy.findByTestId("cms.contentModelGroup.list-item.delete-dialog").within(() => {
             cy.findByText(/Confirmation/i).should("exist");
             cy.findByText(/confirm$/i).click();
-            cy.wait(500);
         });
         // Confirm that group is deleted successfully
         cy.findByText(`Content model group "${newGroup2}" deleted.`);
@@ -204,7 +204,6 @@ context("Headless CMS - Content Model Groups", () => {
         cy.findByTestId("cms.contentModelGroup.list-item.delete-dialog").within(() => {
             cy.findByText(/Confirmation/i).should("exist");
             cy.findByText(/confirm$/i).click();
-            cy.wait(500);
         });
         // Confirm that group is deleted successfully
         cy.findByText(`Content model group "${newGroup1}" deleted.`);

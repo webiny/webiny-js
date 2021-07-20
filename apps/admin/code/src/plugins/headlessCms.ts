@@ -7,6 +7,7 @@ import booleanField from "@webiny/app-headless-cms/admin/plugins/fields/boolean"
 import dateTimeField from "@webiny/app-headless-cms/admin/plugins/fields/dateTime";
 import fileField from "@webiny/app-headless-cms/admin/plugins/fields/file";
 import refField from "@webiny/app-headless-cms/admin/plugins/fields/ref";
+import objectField from "@webiny/app-headless-cms/admin/plugins/fields/object";
 
 import numberFieldRenderer from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/number";
 import textFieldRenderer from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/text";
@@ -19,6 +20,7 @@ import radioButtonsFieldRenderer from "@webiny/app-headless-cms/admin/plugins/fi
 import selectFieldRenderer from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/select";
 import checkboxesFieldRenderer from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/checkboxes";
 import refFieldRenderer from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/ref";
+import objectFieldRenderer from "@webiny/app-headless-cms/admin/plugins/fieldRenderers/object";
 
 import gteFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/gte";
 import inValidatorFieldValidator from "@webiny/app-headless-cms/admin/plugins/validators/in";
@@ -104,5 +106,7 @@ export default [
     editorUrlFieldValidator,
     editorLowerCaseFieldValidator,
     editorUpperCaseFieldValidator,
-    welcomeScreenWidget
+    welcomeScreenWidget,
+    objectField,
+    objectFieldRenderer
 ];

@@ -1,26 +1,29 @@
 import WebinyError from "@webiny/error";
-import { ElasticsearchQueryBuilderPlugin } from "../types";
 import { CmsContext } from "@webiny/api-headless-cms/types";
+import { ElasticsearchQueryBuilderOperatorPlugin } from "@webiny/api-elasticsearch/plugins/definition/ElasticsearchQueryBuilderOperatorPlugin";
 
 interface OperatorPlugins {
-    [operator: string]: ElasticsearchQueryBuilderPlugin;
+    [operator: string]: ElasticsearchQueryBuilderOperatorPlugin;
 }
 
 export const operatorPluginsList = (context: CmsContext): OperatorPlugins => {
     return context.plugins
-        .byType<ElasticsearchQueryBuilderPlugin>("cms-elastic-search-query-builder")
+        .byType<ElasticsearchQueryBuilderOperatorPlugin>(
+            ElasticsearchQueryBuilderOperatorPlugin.type
+        )
         .reduce((plugins, plugin) => {
-            if (plugins[plugin.operator]) {
+            const operator = plugin.getOperator();
+            if (plugins[operator]) {
                 throw new WebinyError(
-                    "There is a ElasticsearchQueryBuilderPlugin defined for the operator.",
+                    "There is a ElasticsearchQueryBuilderOperatorPlugin defined for the operator.",
                     "PLUGIN_ALREADY_EXISTS",
                     {
-                        operator: plugin.operator,
+                        operator: operator,
                         name: plugin.name || "unknown"
                     }
                 );
             }
-            plugins[plugin.operator] = plugin;
+            plugins[operator] = plugin;
 
             return plugins;
         }, {} as OperatorPlugins);

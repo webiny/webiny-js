@@ -11,7 +11,7 @@ import {
 
 export default {
     type: "form-editor-field-validator",
-    name: "fb-form-field-validator-pattern",
+    name: "form-editor-field-validator-pattern",
     validator: {
         name: "pattern",
         label: "Pattern",

@@ -1,113 +1,90 @@
-import lodashCloneDeep from "lodash.clonedeep";
 import Error from "@webiny/error";
 import {
     CmsContentEntry,
     CmsContentModel,
-    CmsContentModelField,
     CmsContext,
     CmsModelFieldToGraphQLPlugin
 } from "@webiny/api-headless-cms/types";
-import { CmsContentIndexEntry, CmsModelFieldToElasticsearchPlugin } from "../types";
-import WebinyError from "@webiny/error";
+import { CmsContentIndexEntry, CmsModelFieldToElasticsearchPlugin } from "~/types";
 
 interface SetupEntriesIndexHelpersArgs {
     context: CmsContext;
-    model: CmsContentModel;
 }
 
 interface ExtractEntriesFromIndexArgs extends SetupEntriesIndexHelpersArgs {
+    model: CmsContentModel;
     entries: CmsContentIndexEntry[];
 }
 
 interface PrepareElasticsearchDataArgs extends SetupEntriesIndexHelpersArgs {
+    model: CmsContentModel;
     storageEntry: CmsContentEntry;
-    originalEntry: CmsContentEntry;
 }
 
 export const prepareEntryToIndex = (args: PrepareElasticsearchDataArgs): CmsContentIndexEntry => {
-    const { context, originalEntry, storageEntry, model } = args;
-    const fieldToElasticsearchPlugins = context.plugins.byType<CmsModelFieldToElasticsearchPlugin>(
-        "cms-model-field-to-elastic-search"
-    );
-    // we will use this plugin if no targeted plugin found
-    const defaultIndexFieldPlugin = fieldToElasticsearchPlugins.find(
-        plugin => plugin.fieldType === "*"
-    );
+    const { context, storageEntry, model } = args;
+    const {
+        fieldIndexPlugins,
+        defaultIndexFieldPlugin,
+        fieldTypePlugins
+    } = setupEntriesIndexHelpers({ context });
 
-    const modelFieldToGraphqlPlugins = context.plugins.byType<CmsModelFieldToGraphQLPlugin>(
-        "cms-model-field-to-graphql"
-    );
-    const mappedPluginFieldTypes: Record<string, CmsModelFieldToGraphQLPlugin> = {};
-    for (const plugin of modelFieldToGraphqlPlugins) {
-        mappedPluginFieldTypes[plugin.fieldType] = plugin;
+    function getFieldIndexPlugin(fieldType: string) {
+        return fieldIndexPlugins[fieldType] || defaultIndexFieldPlugin;
     }
 
-    const fieldsAsObject: Record<string, CmsContentModelField> = {};
+    function getFieldTypePlugin(fieldType: string) {
+        return fieldTypePlugins[fieldType];
+    }
+
+    // These objects will contain values processed by field index plugins
+    const values = {};
+    const rawValues = {};
+
+    // We're only interested in current model fields.
     for (const field of model.fields) {
-        fieldsAsObject[field.fieldId] = field;
-    }
-
-    const mappedFieldToElasticsearchPlugins: Record<
-        string,
-        CmsModelFieldToElasticsearchPlugin
-    > = {};
-    for (const plugin of fieldToElasticsearchPlugins.reverse()) {
-        if (mappedFieldToElasticsearchPlugins[plugin.fieldType]) {
-            continue;
-        }
-        mappedFieldToElasticsearchPlugins[plugin.fieldType] = plugin;
-    }
-
-    let toIndexEntry: CmsContentIndexEntry = {
-        ...lodashCloneDeep(storageEntry),
-        rawValues: {}
-    };
-    for (const fieldId in storageEntry.values) {
-        if (storageEntry.values.hasOwnProperty(fieldId) === false) {
+        if (storageEntry.values.hasOwnProperty(field.fieldId) === false) {
             continue;
         }
 
-        const field = fieldsAsObject[fieldId];
-        if (!field) {
-            throw new Error(`There is no field type with fieldId "${fieldId}".`);
-        }
-        const fieldTypePlugin = mappedPluginFieldTypes[field.type];
+        const fieldTypePlugin = getFieldTypePlugin(field.type);
         if (!fieldTypePlugin) {
             throw new Error(`Missing field type plugin "${field.type}".`);
         }
 
-        const targetFieldPlugin =
-            mappedFieldToElasticsearchPlugins[field.type] || defaultIndexFieldPlugin;
-        /**
-         * We decided to take only last registered plugin for given field type
-         */
+        const targetFieldPlugin = getFieldIndexPlugin(field.type);
+
+        // TODO: remove this `if` once we convert this plugin to proper plugin class
         if (targetFieldPlugin && targetFieldPlugin.toIndex) {
-            const newEntryValues = targetFieldPlugin.toIndex({
+            const { value, rawValue } = targetFieldPlugin.toIndex({
                 context,
                 model,
                 field,
-                toIndexEntry,
-                originalEntry,
-                storageEntry,
-                fieldTypePlugin
+                value: storageEntry.values[field.fieldId],
+                getFieldIndexPlugin,
+                getFieldTypePlugin
             });
-            toIndexEntry = {
-                ...toIndexEntry,
-                ...newEntryValues
-            };
+
+            if (typeof value !== "undefined") {
+                values[field.fieldId] = value;
+            }
+
+            if (typeof rawValue !== "undefined") {
+                rawValues[field.fieldId] = rawValue;
+            }
         }
     }
-    return toIndexEntry;
+    return {
+        ...storageEntry,
+        values,
+        rawValues
+    } as CmsContentIndexEntry;
 };
 
-const setupEntriesIndexHelpers = ({ context, model }: SetupEntriesIndexHelpersArgs) => {
+const setupEntriesIndexHelpers = ({ context }: SetupEntriesIndexHelpersArgs) => {
     const plugins = context.plugins.byType<CmsModelFieldToElasticsearchPlugin>(
         "cms-model-field-to-elastic-search"
     );
-    const fieldsAsObject: Record<string, CmsContentModelField> = {};
-    for (const field of model.fields) {
-        fieldsAsObject[field.fieldId] = field;
-    }
 
     const fieldIndexPlugins: Record<string, CmsModelFieldToElasticsearchPlugin> = {};
     for (const plugin of plugins.reverse()) {
@@ -118,10 +95,16 @@ const setupEntriesIndexHelpers = ({ context, model }: SetupEntriesIndexHelpersAr
     }
     // we will use this plugin if no targeted plugin found
     const defaultIndexFieldPlugin = plugins.find(plugin => plugin.fieldType === "*");
+
+    // CmsModelFieldToGraphQLPlugin plugins
+    const fieldTypePlugins: Record<string, CmsModelFieldToGraphQLPlugin> = context.plugins
+        .byType<CmsModelFieldToGraphQLPlugin>("cms-model-field-to-graphql")
+        .reduce((plugins, plugin) => ({ ...plugins, [plugin.fieldType]: plugin }), {});
+
     return {
-        fieldsAsObject,
         fieldIndexPlugins,
-        defaultIndexFieldPlugin
+        defaultIndexFieldPlugin,
+        fieldTypePlugins
     };
 };
 
@@ -130,62 +113,58 @@ export const extractEntriesFromIndex = ({
     entries,
     model
 }: ExtractEntriesFromIndexArgs): CmsContentEntry[] => {
-    const { fieldsAsObject, fieldIndexPlugins, defaultIndexFieldPlugin } = setupEntriesIndexHelpers(
-        {
-            context,
-            model
-        }
-    );
+    const {
+        fieldIndexPlugins,
+        defaultIndexFieldPlugin,
+        fieldTypePlugins
+    } = setupEntriesIndexHelpers({ context });
 
-    const mappedPluginFieldTypes: Record<
-        string,
-        CmsModelFieldToGraphQLPlugin
-    > = context.plugins
-        .byType<CmsModelFieldToGraphQLPlugin>("cms-model-field-to-graphql")
-        .reduce((plugins, plugin) => {
-            plugins[plugin.fieldType] = plugin;
-            return plugins;
-        }, {});
+    function getFieldIndexPlugin(fieldType: string) {
+        return fieldIndexPlugins[fieldType] || defaultIndexFieldPlugin;
+    }
+
+    function getFieldTypePlugin(fieldType: string) {
+        return fieldTypePlugins[fieldType];
+    }
 
     const list: CmsContentEntry[] = [];
+
     for (const entry of entries) {
-        let fromIndexEntry: CmsContentIndexEntry = lodashCloneDeep(entry);
-        for (const fieldId in fieldsAsObject) {
-            if (fieldsAsObject.hasOwnProperty(fieldId) === false) {
-                continue;
-            }
-            const field = fieldsAsObject[fieldId];
-            const fieldTypePlugin = mappedPluginFieldTypes[field.type];
+        // This object will contain values processed by field index plugins
+        const indexValues = {};
+
+        // We only consider fields that are present in the model
+        for (const field of model.fields) {
+            const fieldTypePlugin = fieldTypePlugins[field.type];
             if (!fieldTypePlugin) {
                 throw new Error(`Missing field type plugin "${field.type}".`);
             }
-            const targetFieldPlugin = fieldIndexPlugins[field.type] || defaultIndexFieldPlugin;
+
+            const targetFieldPlugin = getFieldIndexPlugin(field.type);
             if (targetFieldPlugin && targetFieldPlugin.fromIndex) {
                 try {
-                    const calculatedEntry = targetFieldPlugin.fromIndex({
+                    indexValues[field.fieldId] = targetFieldPlugin.fromIndex({
                         context,
                         model,
                         field,
-                        entry: fromIndexEntry,
-                        fieldTypePlugin
+                        getFieldIndexPlugin,
+                        getFieldTypePlugin,
+                        value: entry.values[field.fieldId],
+                        rawValue: entry.rawValues[field.fieldId]
                     });
-                    fromIndexEntry = {
-                        ...fromIndexEntry,
-                        ...calculatedEntry
-                    };
                 } catch (ex) {
-                    throw new WebinyError(
+                    throw new Error(
                         ex.message || "Could not transform entry field from index.",
                         ex.code || "FIELD_FROM_INDEX_ERROR",
                         {
                             field,
-                            entry: fromIndexEntry
+                            entry
                         }
                     );
                 }
             }
         }
-        list.push(fromIndexEntry);
+        list.push({ ...entry, values: indexValues });
     }
 
     return list;

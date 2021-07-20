@@ -11,6 +11,9 @@
       "path": "../api-i18n"
     },
     {
+      "path": "../api-i18n-ddb"
+    },
+    {
       "path": "../api-i18n-content"
     },
     {
@@ -59,6 +62,8 @@
       "@webiny/api-file-manager": ["../api-file-manager/src"],
       "@webiny/api-i18n/*": ["../api-i18n/src/*"],
       "@webiny/api-i18n": ["../api-i18n/src"],
+      "@webiny/api-i18n-ddb/*": ["../api-i18n-ddb/src/*"],
+      "@webiny/api-i18n-ddb": ["../api-i18n-ddb/src"],
       "@webiny/api-i18n-content/*": ["../api-i18n-content/src/*"],
       "@webiny/api-i18n-content": ["../api-i18n-content/src"],
       "@webiny/api-elasticsearch/*": ["../api-elasticsearch/src/*"],

@@ -55,10 +55,10 @@
     "react-dom": "^16.14.0",
     "react-helmet": "^5.2.0",
     "react-hotkeyz": "^1.0.4",
-    "react-router": "^5.1.2",
     "react-virtualized": "^9.21.2",
     "shortid": "^2.2.14",
-    "timeago-react": "^2.0.0"
+    "timeago-react": "^2.0.0",
+    "use-deep-compare-effect": "^1.6.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
