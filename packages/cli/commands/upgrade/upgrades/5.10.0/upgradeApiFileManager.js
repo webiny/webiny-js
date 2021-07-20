@@ -1,4 +1,4 @@
-const tsMorph = require("ts-morph");
+const { Node } = require("ts-morph");
 const importPath = "@webiny/api-file-manager-ddb-es";
 const importedVariableName = "fileManagerDynamoDbElasticPlugins";
 
@@ -7,6 +7,10 @@ const CMS_FILES = { index: "api/code/headlessCMS/src/index.ts" };
 const DDB2ES_FILES = { index: "api/code/dynamoToElastic/src/index.ts" };
 
 const pluginElasticsearchClientImportPath = "@webiny/api-plugin-elastic-search-client";
+
+const isFileManagerPlugins = node => {
+    return Node.isCallExpression(node) && node.getExpression().getText() === "fileManagerPlugins";
+};
 
 const upgradeGraphQLIndex = async (project, context) => {
     const { info } = context;
@@ -20,48 +24,51 @@ const upgradeGraphQLIndex = async (project, context) => {
         return;
     }
     const lastImport = source.getImportDeclarations().pop();
-    if (!lastImport) {
-        throw new Error(`Missing imports in "${FM_FILES.index}".`);
+    if (lastImport) {
+        source.insertImportDeclaration(lastImport.getChildIndex() + 1, {
+            defaultImport: importedVariableName,
+            moduleSpecifier: importPath
+        });
     }
-
-    source.insertImportDeclaration(lastImport.getChildIndex() + 1, {
-        defaultImport: importedVariableName,
-        moduleSpecifier: importPath
-    });
 
     // Try fetching plugins from handler config object
     const plugins = source.getFirstDescendant(
-        node => tsMorph.Node.isPropertyAssignment(node) && node.getName() === "plugins"
+        node => Node.isPropertyAssignment(node) && node.getName() === "plugins"
     );
 
-    if (!plugins) {
-        throw new Error(
-            `Cannot upgrade the "api/code/graphql/index.ts" because it seems it's an old version of the code.`
-        );
-    }
-    /**
-     * Find the position of the file manager plugins in the createHandler.plugins array.
-     */
-    const fileManagerPlugins = plugins
-        .getInitializer()
-        .getElements()
-        .findIndex(node => {
-            return (
-                tsMorph.Node.isCallExpression(node) &&
-                node.getExpression().getText() === "fileManagerPlugins"
-            );
-        });
-    if (!fileManagerPlugins) {
-        throw new Error(
-            `Could not find "fileManagerPlugins()" in the "api/code/graphql/index.ts" createHandler.plugins array.`
-        );
-    }
     /**
      * Add new the DynamoDB/Elasticsearch plugins to the array of plugins.
      */
-    plugins.getInitializer().insertElement(fileManagerPlugins, `${importedVariableName}()`);
+    if (plugins) {
+        // New "createHandler" syntax
+        const fileManagerPlugins = plugins
+            .getInitializer()
+            .getElements()
+            .findIndex(isFileManagerPlugins);
 
-    replaceElasticsearchImportDeclarationPath(source, FM_FILES.index);
+        if (fileManagerPlugins > -1) {
+            plugins
+                .getInitializer()
+                .insertElement(fileManagerPlugins + 1, `${importedVariableName}()`);
+        }
+    } else {
+        // Old "createHandler" syntax
+        const plugins = file.getFirstDescendant(
+            node =>
+                Node.isCallExpression(node) && node.getExpression().getText() === "createHandler"
+        );
+
+        const fileManagerPlugins = plugins.getArguments().findIndex(isFileManagerPlugins);
+        if (fileManagerPlugins > -1) {
+            plugins.insertArgument(fileManagerPlugins + 1, `${importedVariableName}()`);
+        }
+    }
+
+    /**
+     * Find the position of the file manager plugins in the createHandler.plugins array.
+     */
+
+    replaceElasticsearchImportDeclarationPath(source);
 };
 
 const upgradeHeadlessCMSIndex = async (project, context) => {
@@ -69,7 +76,7 @@ const upgradeHeadlessCMSIndex = async (project, context) => {
     info(`Upgrading ${info.hl(CMS_FILES.index)}`);
 
     const source = project.getSourceFile(CMS_FILES.index);
-    replaceElasticsearchImportDeclarationPath(source, CMS_FILES.index);
+    replaceElasticsearchImportDeclarationPath(source);
 };
 
 const upgradeDynamoDbToElasticIndex = async (project, context) => {
@@ -77,22 +84,20 @@ const upgradeDynamoDbToElasticIndex = async (project, context) => {
     info(`Upgrading ${info.hl(DDB2ES_FILES.index)}`);
 
     const source = project.getSourceFile(DDB2ES_FILES.index);
-    replaceElasticsearchImportDeclarationPath(source, DDB2ES_FILES.index);
+    replaceElasticsearchImportDeclarationPath(source);
 };
 
-const replaceElasticsearchImportDeclarationPath = (source, file) => {
+const replaceElasticsearchImportDeclarationPath = source => {
     /**
      * Find the old package and replace it with the "api-elasticsearch".
      */
-    const elasticsearchImportDeclaration = source.getImportDeclaration(declaration => {
-        return declaration.getModuleSpecifierValue() === pluginElasticsearchClientImportPath;
-    });
-    if (!elasticsearchImportDeclaration) {
-        throw new Error(
-            `Could not find "${pluginElasticsearchClientImportPath}" in the "${file}".`
-        );
+    const elasticsearchImportDeclaration = source.getImportDeclaration(
+        pluginElasticsearchClientImportPath
+    );
+
+    if (elasticsearchImportDeclaration) {
+        elasticsearchImportDeclaration.setModuleSpecifier("@webiny/api-elasticsearch");
     }
-    elasticsearchImportDeclaration.setModuleSpecifier("@webiny/api-elasticsearch");
 };
 
 upgradeGraphQLIndex.files = FM_FILES;

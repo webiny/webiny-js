@@ -3,6 +3,48 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.10.0](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.2...v5.10.0) (2021-07-06)
+
+
+### Bug Fixes
+
+* failing admin installation Cypress test ([#1763](https://github.com/webiny/webiny-js/issues/1763)) ([d39dfa7](https://github.com/webiny/webiny-js/commit/d39dfa7952634a7722947e4fab84647d88ef744d))
+
+
+
+
+
+# [5.10.0-beta.2](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.1...v5.10.0-beta.2) (2021-07-06)
+
+
+### Bug Fixes
+
+* **api-security-admin-users:** use context object to access tenancy ([80c48ba](https://github.com/webiny/webiny-js/commit/80c48baa1ad6f9395e262ef130c0699566f5824c))
+* **app-page-builder:** export PageBuilderObject interface ([f7fa109](https://github.com/webiny/webiny-js/commit/f7fa10966642fe20f0396ececc394a5e66a95e72))
+* **upgrade:** cleanup website apollo setup and support both new and old handlers ([332b52a](https://github.com/webiny/webiny-js/commit/332b52a3fe28baa7bf6a5800d77e19e3faa22d97))
+
+
+
+
+
+# [5.10.0-beta.1](https://github.com/webiny/webiny-js/compare/v5.10.0-beta.0...v5.10.0-beta.1) (2021-07-06)
+
+
+### Bug Fixes
+
+* **api-file-manager:** use input meta data on top of predefined one ([5bbfb3d](https://github.com/webiny/webiny-js/commit/5bbfb3d668f11669db32bd1204eda5cd8787b3f0))
+* **api-form-builder:** delete settings record if ES installation fails ([8abe74b](https://github.com/webiny/webiny-js/commit/8abe74bb87f6ae94f75d9a1487e93ca1c26568e6))
+* **api-page-builder:** remove unnecessary logs ([a3b2549](https://github.com/webiny/webiny-js/commit/a3b25499fe53701f161f81683ad236dddca7021a))
+* **cypress:** clear local storage before admin installation ([858dca2](https://github.com/webiny/webiny-js/commit/858dca2d15e479022de1db1066e1293350db7099))
+* **v5:** upgrade es package path  ([#1757](https://github.com/webiny/webiny-js/issues/1757)) ([6a793c3](https://github.com/webiny/webiny-js/commit/6a793c3bce58e228b9d7214f512df7e7dc067fe3))
+* replace TargetDataModels with TargetDataModels ([8b1b554](https://github.com/webiny/webiny-js/commit/8b1b5540a3df8bb568939b67a3b31b4be72dbe22))
+* simplify code with a GraphQL fragment ([1ebb8ac](https://github.com/webiny/webiny-js/commit/1ebb8aca26436047bacab387638e9edf48dcc59d))
+* simplify code with the `getMutationData` helper function ([838cc00](https://github.com/webiny/webiny-js/commit/838cc00106e0dd1eb8d4fa0593fe5169ad785458))
+
+
+
+
+
 # [5.10.0-beta.0](https://github.com/webiny/webiny-js/compare/v5.9.0...v5.10.0-beta.0) (2021-07-02)
 
 
