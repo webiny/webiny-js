@@ -107,12 +107,11 @@ export interface SystemCRUD {
 }
 
 export interface GroupsCRUD {
-    getGroup(tenant: Tenant, slug: string): Promise<Group>;
-    listGroups(tenant: Tenant): Promise<Group[]>;
-    createGroup(tenant: Tenant, data: GroupInput): Promise<Group>;
-    updateGroup(tenant: Tenant, slug: string, data: Partial<GroupInput>): Promise<boolean>;
-    deleteGroup(tenant: Tenant, slug: string): Promise<boolean>;
-    updateUserLinks(tenant: Tenant, group: Group): Promise<void>;
+    getGroup(slug: string): Promise<Group | null>;
+    listGroups(): Promise<Group[]>;
+    createGroup(data: GroupInput): Promise<Group>;
+    updateGroup(slug: string, data: Partial<Omit<GroupInput, "system" | "slug">>): Promise<Group>;
+    deleteGroup(slug: string): Promise<boolean>;
 }
 
 export interface UsersCRUD {
@@ -211,7 +210,6 @@ export interface ApiKeyStorageOperationsCreateParams {
  * @category ApiKeyStorageOperations
  */
 export interface ApiKeyStorageOperationsUpdateParams {
-    id: string;
     original: ApiKey;
     apiKey: ApiKey;
 }
