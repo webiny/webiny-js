@@ -158,6 +158,7 @@ context(
                 {
                     description: `Wait until "Books" are published`,
                     timeout: 30000 * 2,
+                    interval: 2400,
                     verbose: true
                 }
             );
